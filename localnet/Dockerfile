@@ -21,7 +21,7 @@ RUN make build
 
 WORKDIR /osmosis/build
 
-RUN ./osmosisd init localnet --chain-id localnet
+RUN ./osmosisd init localnet --chain-id localnet-1
 
 RUN sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' ~/.osmosisd/config/config.toml
 RUN sed -i 's/cors_allowed_origins = \[\]/cors_allowed_origins = \["*"\]/g' ~/.osmosisd/config/config.toml
@@ -41,7 +41,7 @@ RUN ./osmosisd add-genesis-account $(./osmosisd keys show local1 -a --keyring-ba
 RUN ./osmosisd add-genesis-account $(./osmosisd keys show local2 -a --keyring-backend test) 10000000000uosmo,10000000000uatom,10000000000ufoo,10000000000ubar
 RUN ./osmosisd add-genesis-account $(./osmosisd keys show local3 -a --keyring-backend test) 10000000000uosmo,10000000000uatom,10000000000ufoo,10000000000ubar
 
-RUN ./osmosisd gentx val 10000000000uosmo --chain-id localnet --keyring-backend test
+RUN ./osmosisd gentx val 10000000000uosmo --chain-id localnet-1 --keyring-backend test
 RUN ./osmosisd collect-gentxs
 
 EXPOSE 26657

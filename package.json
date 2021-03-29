@@ -8,7 +8,8 @@
     "dev:analyzer": "cross-env NODE_ENV=development ANALYZER=true webpack",
     "lint-test": "eslint \"src/**/*\" webpack.config.js && prettier --check \"src/**/*\" webpack.config.js",
     "lint-fix": "eslint --fix \"src/**/*\" webpack.config.js && prettier --write \"src/**/*\" webpack.config.js",
-    "localnet": "sh ./scripts/run-localnet.sh"
+    "localnet": "sh ./scripts/run-localnet.sh",
+    "localnet:stop": "sudo docker rm --force osmosis_localnet"
   },
   "repository": {
     "type": "git",
