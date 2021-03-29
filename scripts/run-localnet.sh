@@ -19,3 +19,4 @@ echo "Account2 mnemonic: travel renew first fiction trick fly disease advance hu
 echo "Each account has the balances (10000000000uosmo,10000000000uatom,10000000000ufoo,10000000000ubar)"
 
 echo "Docker container is running on \"osmosis_localnet\""
+echo "After testing, to remove existing container, run \"sudo docker rm --force osmosis_localnet\""
