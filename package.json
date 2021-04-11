@@ -11,6 +11,9 @@
     "localnet": "sh ./scripts/run-localnet.sh",
     "localnet:stop": "sudo docker rm --force osmosis_localnet"
   },
+  "pre-commit": [
+    "lint-test"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/osmosis-front/osmosis-frontend.git"
@@ -22,6 +25,7 @@
   },
   "homepage": "https://github.com/osmosis-front/osmosis-frontend#readme",
   "dependencies": {
+    "@keplr-wallet/common": "^0.8.4",
     "@keplr-wallet/cosmos": "^0.8.4",
     "@keplr-wallet/stores": "^0.8.4",
     "@keplr-wallet/types": "^0.8.4",
