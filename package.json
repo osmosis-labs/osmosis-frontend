@@ -22,7 +22,9 @@
   },
   "homepage": "https://github.com/osmosis-front/osmosis-frontend#readme",
   "dependencies": {
-    "@keplr-wallet/stores": "^0.8.0",
+    "@keplr-wallet/cosmos": "^0.8.4",
+    "@keplr-wallet/stores": "^0.8.4",
+    "@keplr-wallet/types": "^0.8.4",
     "mobx": "^6.1.7",
     "mobx-react-lite": "^3.2.0",
     "mobx-utils": "^6.0.3",
