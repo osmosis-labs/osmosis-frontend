@@ -14,7 +14,7 @@ RUN git clone https://github.com/osmosis-labs/osmosis
 WORKDIR /osmosis
 
 # Change the commit hash if you want.
-RUN git fetch && git checkout 7dba0a62949312bf38b1f8906f64137c3c89cd41
+RUN git fetch && git checkout 6c07c00688ecb0b1f2ead835dd60f7920e0e1dd5
 
 # Build daemon.
 RUN make build
