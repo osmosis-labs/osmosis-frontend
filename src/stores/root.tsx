@@ -6,15 +6,17 @@ import { ChainStore } from './chain';
 import { ChainInfo } from '@keplr-wallet/types';
 
 import { EmbedChainInfos } from '../confg';
+import { LayoutStore } from './layout';
 
 export class RootStore {
 	public readonly chainStore: ChainStore;
 	public readonly accountStore: AccountStore;
 	public readonly queriesStore: QueriesStore;
+	public readonly layoutStore: LayoutStore;
 
 	constructor() {
+		// chain related stores
 		this.chainStore = new ChainStore(EmbedChainInfos, 'localnet-2');
-
 		this.queriesStore = new QueriesStore(new IndexedDBKVStore('store_web_queries'), this.chainStore);
 		this.accountStore = new AccountStore(this.chainStore, this.queriesStore, {
 			chainOpts: this.chainStore.chainInfos.map((chainInfo: ChainInfo) => {
@@ -25,6 +27,9 @@ export class RootStore {
 				};
 			}),
 		});
+
+		//	other stores
+		this.layoutStore = new LayoutStore();
 	}
 }
 

@@ -4,7 +4,7 @@
 	"description": "",
 	"scripts": {
 		"build": "cross-env NODE_ENV=production yarn build:css && webpack",
-		"dev": "cross-env NODE_ENV=development yarn build:css && webpack-dev-server",
+		"dev": "cross-env NODE_ENV=development webpack-dev-server",
 		"dev:analyzer": "cross-env NODE_ENV=development ANALYZER=true webpack",
 		"lint-test": "eslint \"src/**/*\" webpack.config.js && prettier --check \"src/**/*\" webpack.config.js",
 		"lint-fix": "eslint --fix \"src/**/*\" webpack.config.js && prettier --write \"src/**/*\" webpack.config.js",
@@ -35,6 +35,7 @@
 		"@keplr-wallet/stores": "^0.8.4",
 		"@keplr-wallet/types": "^0.8.4",
 		"autoprefixer": "^10.2.5",
+		"clsx": "^1.1.1",
 		"mobx": "^6.1.7",
 		"mobx-react-lite": "^3.2.0",
 		"mobx-utils": "^6.0.3",

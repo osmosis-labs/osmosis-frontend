@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter, Route } from 'react-router-dom';
 import { MainPage } from './pages/main';
-import { StoreProvider } from './stores';
+import { StoreProvider } from 'src/stores';
 
 const Router: FunctionComponent = () => {
 	return (

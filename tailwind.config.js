@@ -49,6 +49,14 @@ const sizes = {
 	75: '18.75rem',
 	150: '37.5rem',
 };
+const screenWidths = {
+	// 'screen-md': 'var(--screens-md)',
+	'screen-lg': 'var(--screens-lg)',
+};
+const sidebarWidths = {
+	'sidebar-open': 'var(--sidebar-open)',
+	'sidebar-closed': 'var(--sidebar-closed)',
+};
 module.exports = {
 	future: {
 		removeDeprecatedGapUtilities: false,
@@ -70,6 +78,9 @@ module.exports = {
 			'3xl': '48px',
 			'4xl': '60px',
 			'5xl': '96px',
+		},
+		boxShadow: {
+			container: '0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)',
 		},
 		colors: {
 			white: {
@@ -105,14 +116,22 @@ module.exports = {
 			background: '#170F34',
 			surface: '#231D4B',
 			card: '#2D2755',
-			icon: '#8E83AA',
+			iconDefault: '#8E83AA',
 			error: '#CF6679',
 		},
+		backgroundColor: themes => ({
+			...themes('colors'),
+			container: {
+				hover: 'rgba(255, 255, 255, 0.04)',
+				focus: 'rgba(255, 255, 255, 0.12)',
+				selected: 'rgba(255, 255, 255, 0.08)',
+			},
+		}),
 		screens: {
 			// sm: '820px',
 			// base: '1060px',
-			// md: '1368px',
-			lg: '1600px',
+			// md: 'var(--screens-md)',
+			lg: 'var(--screens-lg)',
 		},
 		spacing: {
 			...spacing,
@@ -125,6 +144,7 @@ module.exports = {
 			minHeight: {
 				...sizes,
 				screen: '100vh',
+				'sidebar-minHeight': 'var(--sidebar-minHeight)',
 			},
 			maxHeight: {
 				...sizes,
@@ -132,14 +152,15 @@ module.exports = {
 			},
 			width: {
 				...sizes,
-				screen: '100vw',
+				...screenWidths,
 			},
-			minWidth: theme => ({
-				...theme('maxWidth'),
-				screen: '100vw',
-			}),
+			minWidth: {
+				...screenWidths,
+				...sidebarWidths,
+			},
 			maxWidth: {
-				screen: '100vw',
+				...screenWidths,
+				...sidebarWidths,
 			},
 			borderOpacity: {
 				75: '0.75',
