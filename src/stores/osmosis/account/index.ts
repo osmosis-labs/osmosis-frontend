@@ -54,7 +54,7 @@ export class OsmosisAccountStoreInner {
         token: {
           denom: asset.token.currency.coinMinimalDenom,
           amount: new Dec(asset.token.amount)
-            .quo(DecUtils.getPrecisionDec(asset.token.currency.coinDecimals))
+            .mul(DecUtils.getPrecisionDec(asset.token.currency.coinDecimals))
             .truncate()
             .toString()
         }
@@ -83,6 +83,23 @@ export class OsmosisAccountStoreInner {
       tx => {
         if (tx.code == null || tx.code === 0) {
           // TODO: Refresh the pools list.
+
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries
+            .getQueryBalances()
+            .getQueryBech32Address(this.account.bech32Address)
+            .balances.forEach(bal => {
+              if (
+                assets.find(
+                  asset =>
+                    asset.token.currency.coinMinimalDenom ===
+                    bal.currency.coinMinimalDenom
+                )
+              ) {
+                bal.fetch();
+              }
+            });
         }
 
         if (onFulfill) {

@@ -6,11 +6,16 @@ import { ChainStore } from "./chain";
 import { ChainInfo } from "@keplr-wallet/types";
 
 import { EmbedChainInfos } from "../config";
+import { OsmosisAccountStore } from "./osmosis/account";
+import { OsmosisQueriesStore } from "./osmosis/query";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
   public readonly accountStore: AccountStore;
   public readonly queriesStore: QueriesStore;
+
+  public readonly osmosisAccountStore: OsmosisAccountStore;
+  public readonly osmosisQueriesStore: OsmosisQueriesStore;
 
   constructor() {
     this.chainStore = new ChainStore(EmbedChainInfos, "localnet-1");
@@ -28,6 +33,17 @@ export class RootStore {
         };
       })
     });
+
+    this.osmosisAccountStore = new OsmosisAccountStore(
+      this.accountStore,
+      this.chainStore,
+      this.queriesStore
+    );
+
+    this.osmosisQueriesStore = new OsmosisQueriesStore(
+      new IndexedDBKVStore("store_web_queries"),
+      this.chainStore
+    );
   }
 }
 

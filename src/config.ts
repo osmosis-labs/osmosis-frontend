@@ -21,6 +21,21 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinDenom: "OSMO",
         coinMinimalDenom: "uosmo",
         coinDecimals: 6
+      },
+      {
+        coinDenom: "ATOM",
+        coinMinimalDenom: "uatom",
+        coinDecimals: 6
+      },
+      {
+        coinDenom: "FOO",
+        coinMinimalDenom: "ufoo",
+        coinDecimals: 6
+      },
+      {
+        coinDenom: "BAR",
+        coinMinimalDenom: "ubar",
+        coinDecimals: 6
       }
     ],
     feeCurrencies: [

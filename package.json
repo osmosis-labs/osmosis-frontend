@@ -38,10 +38,12 @@
     "mobx": "^6.1.7",
     "mobx-react-lite": "^3.2.0",
     "mobx-utils": "^6.0.3",
+    "p-debounce": "2.1.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-router": "^5.1.2",
-    "react-router-dom": "^5.1.2"
+    "react-router-dom": "^5.1.2",
+    "utility-types": "^3.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.13.13",
@@ -84,5 +86,8 @@
     "webpack-cli": "^3.3.7",
     "webpack-dev-server": "^3.8.2",
     "write-file-webpack-plugin": "^4.5.1"
+  },
+  "resolutions": {
+    "p-debounce": "2.1.0"
   }
 }

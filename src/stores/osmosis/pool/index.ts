@@ -5,6 +5,10 @@ import * as Math from "./math";
 export class GAMMPool {
   constructor(protected readonly data: GAMMPoolData) {}
 
+  get id(): string {
+    return this.data.id;
+  }
+
   get totalWeight(): Int {
     return new Int(this.data.totalWeight);
   }
@@ -19,6 +23,10 @@ export class GAMMPool {
 
   get totalShare(): Int {
     return new Int(this.data.totalShare.amount);
+  }
+
+  get poolAssets(): GAMMPoolData["poolAssets"] {
+    return this.data.poolAssets;
   }
 
   estimateJoinPool(
