@@ -5,7 +5,7 @@ import { ChainStore } from "./chain";
 
 import { ChainInfo } from "@keplr-wallet/types";
 
-import { EmbedChainInfos } from "../confg";
+import { EmbedChainInfos } from "../config";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -13,7 +13,7 @@ export class RootStore {
   public readonly queriesStore: QueriesStore;
 
   constructor() {
-    this.chainStore = new ChainStore(EmbedChainInfos, "localnet-2");
+    this.chainStore = new ChainStore(EmbedChainInfos, "localnet-1");
 
     this.queriesStore = new QueriesStore(
       new IndexedDBKVStore("store_web_queries"),
