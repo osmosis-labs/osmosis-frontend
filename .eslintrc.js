@@ -7,6 +7,7 @@ module.exports = {
 		'prettier/react',
 		'prettier/standard',
 		'plugin:import/typescript',
+		'plugin:prettier/recommended', // Make this the last element so prettier config overrides other formatting rules
 	],
 	plugins: ['react-hooks', 'unicorn', 'import'],
 	parserOptions: {
@@ -17,7 +18,7 @@ module.exports = {
 		},
 	},
 	rules: {
-		'prettier/prettier': 'error',
+		'prettier/prettier': ['error', {}, { usePrettierrc: true }],
 		'react/prop-types': 'off',
 		'react/self-closing-comp': 'error',
 		'@typescript-eslint/explicit-function-return-type': 'off',

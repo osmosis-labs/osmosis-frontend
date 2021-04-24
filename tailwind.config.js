@@ -159,6 +159,7 @@ module.exports = {
 				...sidebarWidths,
 			},
 			maxWidth: {
+				...sizes,
 				...screenWidths,
 				...sidebarWidths,
 			},

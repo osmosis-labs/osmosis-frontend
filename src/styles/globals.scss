@@ -24,6 +24,7 @@ a {
 }
 
 * {
+	color: inherit;
 	box-sizing: border-box;
 }
 
@@ -34,3 +35,5 @@ textarea {
 		outline: none;
 	}
 }
+
+@import './custom';

@@ -63,6 +63,8 @@ const fileRule = {
 	],
 };
 
+//  https://webpack.js.org/guides/public-path/
+const ASSET_PATH = process.env.ASSET_PATH || '/';
 const webConfig = (env, args) => {
 	return {
 		mode: isEnvDevelopment ? 'development' : 'production',
@@ -72,6 +74,7 @@ const webConfig = (env, args) => {
 		watch: isEnvDevelopment,
 		devServer: {
 			port: 8081,
+			historyApiFallback: true,
 		},
 		entry: {
 			main: ['./src/index.tsx'],
@@ -79,6 +82,7 @@ const webConfig = (env, args) => {
 		output: {
 			path: path.resolve(__dirname, isEnvDevelopment ? 'dist' : 'prod'),
 			filename: '[name].bundle.js',
+			publicPath: ASSET_PATH,
 		},
 		resolve: commonResolve('src/assets'),
 		module: {
@@ -101,6 +105,10 @@ const webConfig = (env, args) => {
 			new webpack.EnvironmentPlugin(['NODE_ENV']),
 			new BundleAnalyzerPlugin({
 				analyzerMode: isEnvAnalyzer ? 'server' : 'disabled',
+			}),
+			// This makes it possible for us to safely use env vars on our code
+			new webpack.DefinePlugin({
+				'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH),
 			}),
 		],
 	};

@@ -1,16 +1,18 @@
 import React, { FunctionComponent, ReactNode } from 'react';
+import cn from 'clsx';
 import { ContainerWrapper } from './ContainerWrapper';
-import { IContainerSettings, IContainerState, TCardTypes } from '../../interfaces/layout';
+import { IContainerSettings, IContainerState, TCardTypes } from '../../interfaces';
 
 export const Container: FunctionComponent<TCardContainerProps> = ({
+	className,
 	children,
 	type = TCardTypes.CARD,
 	settings = {},
 }) => {
-	const wrapperClass = getContainerClass(type);
+	const containerClass = getContainerClass(type);
 	return (
 		<ContainerWrapper
-			className={`rounded-md ${wrapperClass}`}
+			className={cn(containerClass, className)}
 			defaultState={IContainerState.SELECTED}
 			draggable={settings?.draggable}
 			focusable={settings?.focusable}
@@ -26,6 +28,7 @@ const getContainerClass = (type: TCardTypes) => {
 };
 interface TCardContainerProps {
 	children: ReactNode;
+	className?: string;
 	type?: TCardTypes;
 	settings?: IContainerSettings;
 }

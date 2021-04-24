@@ -1,5 +1,5 @@
 import React, { FunctionComponent, ReactNode } from 'react';
-import { IContainerState } from '../../interfaces/layout';
+import { IContainerState } from '../../interfaces';
 import cn from 'clsx';
 
 export const ContainerWrapper: FunctionComponent<TContainerWrapperProps> = ({
@@ -85,7 +85,7 @@ const ContainerOverlay: FunctionComponent<TContainerOverlayProps> = ({ state, cl
 				return '';
 		}
 	}, [state]);
-	return <div className={cn('absolute w-full h-full z-0', stateClass, className)} />;
+	return <div className={cn('absolute w-full h-full z-0 pointer-events-none', stateClass, className)} />;
 };
 
 interface TContainerWrapperProps {
