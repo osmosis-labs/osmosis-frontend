@@ -1,33 +1,40 @@
 import { ObservableQueryPools } from "./pools";
-import { ChainGetter, HasMapStore } from "@keplr-wallet/stores";
+import {
+  ChainGetter,
+  QueriesSetBase,
+  QueriesWithCosmos
+} from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
 import { DeepReadonly } from "utility-types";
 
-export class OsmosisQueries {
-  protected readonly _queryPools: ObservableQueryPools;
+export interface HasOsmosisQueries {
+  osmosis: OsmosisQueries;
+}
+
+export class QueriesWithCosmosAndOsmosis extends QueriesWithCosmos
+  implements HasOsmosisQueries {
+  public readonly osmosis: DeepReadonly<OsmosisQueries>;
 
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-    this._queryPools = new ObservableQueryPools(kvStore, chainId, chainGetter);
-  }
+    super(kvStore, chainId, chainGetter);
 
-  getQueryPools(): DeepReadonly<ObservableQueryPools> {
-    return this._queryPools;
+    this.osmosis = new OsmosisQueries(this, kvStore, chainId, chainGetter);
   }
 }
 
-export class OsmosisQueriesStore extends HasMapStore<
-  DeepReadonly<OsmosisQueries>
-> {
-  constructor(
-    protected readonly kvStore: KVStore,
-    protected readonly chainGetter: ChainGetter
-  ) {
-    super((chainId: string) => {
-      return new OsmosisQueries(this.kvStore, chainId, this.chainGetter);
-    });
-  }
+export class OsmosisQueries {
+  public readonly queryGammPools: DeepReadonly<ObservableQueryPools>;
 
-  get(chainId: string): DeepReadonly<OsmosisQueries> {
-    return super.get(chainId);
+  constructor(
+    _: QueriesSetBase,
+    kvStore: KVStore,
+    chainId: string,
+    chainGetter: ChainGetter
+  ) {
+    this.queryGammPools = new ObservableQueryPools(
+      kvStore,
+      chainId,
+      chainGetter
+    );
   }
 }

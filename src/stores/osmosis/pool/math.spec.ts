@@ -1,12 +1,11 @@
 import assert from "assert";
-import "mocha";
 import * as Math from "./math";
 import { Dec } from "@keplr-wallet/unit";
 
 const powPrecision = new Dec("0.00000001");
 
 describe("Test osmosis math", () => {
-  it("TestAbsDifferenceWithSign", () => {
+  test("TestAbsDifferenceWithSign", () => {
     const [s, b] = Math.absDifferenceWithSign(
       new Dec("3.2"),
       new Dec("4.3432389")
@@ -15,7 +14,7 @@ describe("Test osmosis math", () => {
     assert.strictEqual(s.toString(), "1.143238900000000000");
   });
 
-  it("TestPowApprox", () => {
+  test("TestPowApprox", () => {
     const s = Math.powApprox(new Dec("0.8"), new Dec("0.32"), powPrecision);
     const expected = new Dec("0.93108385");
     assert.strictEqual(
@@ -28,7 +27,7 @@ describe("Test osmosis math", () => {
     );
   });
 
-  it("TestPow", () => {
+  test("TestPow", () => {
     const s = Math.pow(new Dec("1.68"), new Dec("0.32"));
     const expected = new Dec("1.18058965");
     assert.strictEqual(
@@ -41,7 +40,7 @@ describe("Test osmosis math", () => {
     );
   });
 
-  it("TestCalcSpotPrice", () => {
+  test("TestCalcSpotPrice", () => {
     const actual = Math.calcSpotPrice(
       new Dec("100"),
       new Dec("0.1"),
@@ -60,7 +59,7 @@ describe("Test osmosis math", () => {
     );
   });
 
-  it("TestCalcSpotPriceWithSwapFee", () => {
+  test("TestCalcSpotPriceWithSwapFee", () => {
     const actual = Math.calcSpotPrice(
       new Dec("100"),
       new Dec("0.1"),
@@ -79,7 +78,7 @@ describe("Test osmosis math", () => {
     );
   });
 
-  it("TestCalcOutGivenIn", () => {
+  test("TestCalcOutGivenIn", () => {
     const actual = Math.calcOutGivenIn(
       new Dec("100"),
       new Dec("0.1"),
@@ -99,7 +98,7 @@ describe("Test osmosis math", () => {
     );
   });
 
-  it("TestCalcInGivenOut", () => {
+  test("TestCalcInGivenOut", () => {
     const actual = Math.calcInGivenOut(
       new Dec("100"),
       new Dec("0.1"),
@@ -119,7 +118,7 @@ describe("Test osmosis math", () => {
     );
   });
 
-  it("TestCalcPoolOutGivenSingleIn", () => {
+  test("TestCalcPoolOutGivenSingleIn", () => {
     const actual = Math.calcPoolOutGivenSingleIn(
       new Dec("100"),
       new Dec("0.2"),
@@ -139,7 +138,7 @@ describe("Test osmosis math", () => {
     );
   });
 
-  it("TestCalcSingleInGivenPoolOut", () => {
+  test("TestCalcSingleInGivenPoolOut", () => {
     const actual = Math.calcSingleInGivenPoolOut(
       new Dec("100"),
       new Dec("0.2"),
@@ -159,7 +158,7 @@ describe("Test osmosis math", () => {
     );
   });
 
-  it("TestCalcSingleOutGivenPoolIn", () => {
+  test("TestCalcSingleOutGivenPoolIn", () => {
     const actual = Math.calcSingleOutGivenPoolIn(
       new Dec("200"),
       new Dec("0.8"),
@@ -179,7 +178,7 @@ describe("Test osmosis math", () => {
     );
   });
 
-  it("TestCalcPoolInGivenSingleOut", () => {
+  test("TestCalcPoolInGivenSingleOut", () => {
     const actual = Math.calcPoolInGivenSingleOut(
       new Dec("200"),
       new Dec("0.8"),

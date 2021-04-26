@@ -1,19 +1,82 @@
 import {
   ChainGetter,
   QueriesStore,
-  HasMapStore,
-  AccountStore,
-  AccountStoreInner
+  MsgOpt,
+  AccountSetBase,
+  CosmosMsgOpts,
+  HasCosmosQueries,
+  AccountWithCosmos,
+  QueriesSetBase,
+  AccountSetOpts,
+  CosmosAccount
 } from "@keplr-wallet/stores";
 import { Dec, DecUtils } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
+import { DeepReadonly } from "utility-types";
+import { HasOsmosisQueries } from "../query";
+import deepmerge from "deepmerge";
 
-export class OsmosisAccountStoreInner {
+export interface HasOsmosisAccount {
+  osmosis: DeepReadonly<OsmosisAccount>;
+}
+
+export interface OsmosisMsgOpts {
+  readonly createPool: MsgOpt;
+}
+
+export class AccountWithCosmosAndOsmosis extends AccountSetBase<
+  CosmosMsgOpts & OsmosisMsgOpts,
+  HasCosmosQueries & HasOsmosisQueries
+> {
+  public readonly cosmos: DeepReadonly<CosmosAccount>;
+  public readonly osmosis: DeepReadonly<OsmosisAccount>;
+
+  static readonly defaultMsgOpts: CosmosMsgOpts & OsmosisMsgOpts = deepmerge(
+    AccountWithCosmos.defaultMsgOpts,
+    {
+      createPool: {
+        type: "osmosis/gamm/create-pool",
+        gas: 10000000
+      }
+    }
+  );
+
   constructor(
-    protected readonly account: AccountStoreInner,
+    protected readonly eventListener: {
+      addEventListener: (type: string, fn: () => unknown) => void;
+    },
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
-    protected readonly queriesStore: QueriesStore
+    protected readonly queriesStore: QueriesStore<
+      QueriesSetBase & HasCosmosQueries & HasOsmosisQueries
+    >,
+    protected readonly opts: AccountSetOpts<CosmosMsgOpts & OsmosisMsgOpts>
+  ) {
+    super(eventListener, chainGetter, chainId, queriesStore, opts);
+
+    this.cosmos = new CosmosAccount(
+      this as AccountSetBase<CosmosMsgOpts, HasCosmosQueries>,
+      chainGetter,
+      chainId,
+      queriesStore
+    );
+    this.osmosis = new OsmosisAccount(
+      this as AccountSetBase<OsmosisMsgOpts, HasOsmosisQueries>,
+      chainGetter,
+      chainId,
+      queriesStore
+    );
+  }
+}
+
+export class OsmosisAccount {
+  constructor(
+    protected readonly base: AccountSetBase<OsmosisMsgOpts, HasOsmosisQueries>,
+    protected readonly chainGetter: ChainGetter,
+    protected readonly chainId: string,
+    protected readonly queriesStore: QueriesStore<
+      QueriesSetBase & HasOsmosisQueries
+    >
   ) {}
 
   /**
@@ -64,20 +127,18 @@ export class OsmosisAccountStoreInner {
     const msg = {
       type: "osmosis/gamm/create-pool",
       value: {
-        sender: this.account.bech32Address,
+        sender: this.base.bech32Address,
         poolParams,
         poolAssets
       }
     };
 
-    await this.account.sendMsgs(
-      // TODO: Currently, can't add the custom type.
-      "unknown",
+    await this.base.sendMsgs(
+      "createPool",
       [msg],
       {
         amount: [],
-        // TODO: Add the opts for osmosis txs.
-        gas: (10000000).toString()
+        gas: this.base.msgOpts.createPool.toString()
       },
       memo,
       tx => {
@@ -86,9 +147,8 @@ export class OsmosisAccountStoreInner {
 
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries
-            .getQueryBalances()
-            .getQueryBech32Address(this.account.bech32Address)
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach(bal => {
               if (
                 assets.find(
@@ -107,30 +167,5 @@ export class OsmosisAccountStoreInner {
         }
       }
     );
-  }
-}
-
-export class OsmosisAccountStore extends HasMapStore<OsmosisAccountStoreInner> {
-  constructor(
-    protected readonly accountStore: AccountStore,
-    protected readonly chainGetter: ChainGetter,
-    protected readonly queriesStore: QueriesStore
-  ) {
-    super((chainId: string) => {
-      return new OsmosisAccountStoreInner(
-        this.accountStore.getAccount(chainId),
-        this.chainGetter,
-        chainId,
-        this.queriesStore
-      );
-    });
-  }
-
-  getAccount(chainId: string): OsmosisAccountStoreInner {
-    return this.get(chainId);
-  }
-
-  hasAccount(chainId: string): boolean {
-    return this.has(chainId);
   }
 }

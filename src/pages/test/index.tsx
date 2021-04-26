@@ -3,28 +3,16 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 
 export const TestPage: FunctionComponent = observer(() => {
-  const {
-    chainStore,
-    accountStore,
-    osmosisAccountStore,
-    queriesStore,
-    osmosisQueriesStore
-  } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
 
   const queries = queriesStore.get(chainStore.current.chainId);
-  const osmosisQueries = osmosisQueriesStore.get(chainStore.current.chainId);
-
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-  const osmosisAccountInfo = osmosisAccountStore.getAccount(
-    chainStore.current.chainId
-  );
 
   return (
     <div>
       <div>{`Account: ${accountInfo.bech32Address}`}</div>
       <div>Balances</div>
-      {queries
-        .getQueryBalances()
+      {queries.queryBalances
         .getQueryBech32Address(accountInfo.bech32Address)
         .balances.map(bal => {
           return (
@@ -34,7 +22,7 @@ export const TestPage: FunctionComponent = observer(() => {
           );
         })}
       <div>Pools</div>
-      {osmosisQueries.getQueryPools().pools.map(pool => {
+      {queries.osmosis.queryGammPools.pools.map(pool => {
         return (
           <React.Fragment key={pool.id}>
             <div>Id</div>
@@ -52,13 +40,22 @@ export const TestPage: FunctionComponent = observer(() => {
           </React.Fragment>
         );
       })}
-      {JSON.stringify(osmosisQueries.getQueryPools().response)}
+      {JSON.stringify(queries.osmosis.queryGammPools.response)}
       <br />
+      <button
+        onClick={e => {
+          e.preventDefault();
+
+          accountInfo.init();
+        }}
+      >
+        Init
+      </button>
       <button
         onClick={async e => {
           e.preventDefault();
 
-          await osmosisAccountInfo.sendCreatePoolMsg(
+          await accountInfo.osmosis.sendCreatePoolMsg(
             "0.5",
             [
               {
