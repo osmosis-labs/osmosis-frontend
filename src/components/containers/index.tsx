@@ -4,6 +4,7 @@ import { ContainerWrapper } from './ContainerWrapper';
 import { IContainerSettings, IContainerState, TCardTypes } from '../../interfaces';
 
 export const Container: FunctionComponent<TCardContainerProps> = ({
+	overlayClasses,
 	className,
 	children,
 	type = TCardTypes.CARD,
@@ -12,8 +13,9 @@ export const Container: FunctionComponent<TCardContainerProps> = ({
 	const containerClass = getContainerClass(type);
 	return (
 		<ContainerWrapper
+			overlayClasses={overlayClasses}
 			className={cn(containerClass, className)}
-			defaultState={IContainerState.SELECTED}
+			defaultState={IContainerState.ENABLED}
 			draggable={settings?.draggable}
 			focusable={settings?.focusable}
 			hoverable={settings?.hoverable}>
@@ -29,6 +31,7 @@ const getContainerClass = (type: TCardTypes) => {
 interface TCardContainerProps {
 	children: ReactNode;
 	className?: string;
+	overlayClasses?: string;
 	type?: TCardTypes;
 	settings?: IContainerSettings;
 }

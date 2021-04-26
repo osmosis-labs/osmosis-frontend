@@ -16,7 +16,7 @@ export const Img: FunctionComponent<TImg> = ({ src, style, className, onClick, p
 				retry={retrySettings}
 			/>
 		),
-		[src, style, className, placeholder, error]
+		[src, style, className, placeholder, error, onClick]
 	);
 };
 

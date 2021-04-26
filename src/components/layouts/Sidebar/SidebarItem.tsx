@@ -39,3 +39,29 @@ interface TSidebarItem {
 	openSidebar: boolean;
 	sidebarItem: TSIDEBAR_ITEM;
 }
+
+export const DisplayIcon: FunctionComponent<TDisplayIcon> = ({ icon, iconSelected, className }) => {
+	const [hovering, setHovering] = React.useState(false);
+	return (
+		<div
+			onMouseEnter={() => setHovering(true)}
+			onMouseLeave={() => setHovering(false)}
+			className={cn('h-11 w-11 relative', className)}>
+			<Img
+				className="w-full h-full absolute top-0 left-0"
+				src={
+					hovering
+						? '/public/assets/sidebar/icon-border_selected.svg'
+						: '/public/assets/sidebar/icon-border_unselected.svg'
+				}
+			/>
+			<Img className="w-5 h-5 s-position-abs-center z-10" src={hovering ? iconSelected : icon} />
+		</div>
+	);
+};
+
+interface TDisplayIcon {
+	icon: string;
+	iconSelected: string;
+	className?: string;
+}

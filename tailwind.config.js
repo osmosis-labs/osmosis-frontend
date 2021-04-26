@@ -4,7 +4,7 @@ const spacing = {
 	0.5: '2px',
 	0.75: '3px',
 	1: '4px',
-	1.25: '5x',
+	1.25: '5px',
 	1.5: '6px',
 	2: '8px',
 	2.5: '10px',
@@ -81,13 +81,17 @@ module.exports = {
 		},
 		boxShadow: {
 			container: '0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)',
+			elevation:
+				'0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2)',
 		},
 		colors: {
 			white: {
 				high: 'rgba(255, 255, 255, 0.95)',
 				mid: 'rgba(255, 255, 255, 0.6)',
 				disabled: 'rgba(255, 255, 255, 0.38)',
+				faint: 'rgba(255, 255, 255, 0.12)',
 			},
+			transparent: 'transparent',
 			primary: {
 				50: '#8A86FF',
 				100: '#4540D8',
@@ -116,6 +120,7 @@ module.exports = {
 			background: '#170F34',
 			surface: '#231D4B',
 			card: '#2D2755',
+			cardInner: '#3C356D',
 			iconDefault: '#8E83AA',
 			error: '#CF6679',
 		},
@@ -151,6 +156,7 @@ module.exports = {
 				screen: '100vh',
 			},
 			width: {
+				fit: 'fit-content',
 				...sizes,
 				...screenWidths,
 			},

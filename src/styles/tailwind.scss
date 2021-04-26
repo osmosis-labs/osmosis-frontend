@@ -32,10 +32,11 @@
 	h5,
 	h6 {
 		@apply font-title;
-		@apply font-semibold;
+		@apply font-bold;
 	}
 
 	p {
+		@apply font-body;
 		@apply text-base;
 	}
 }

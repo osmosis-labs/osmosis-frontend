@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import '../../styles/index.scss';
 import '../../styles/globals.scss';
+import { TradeClipboard } from './TradeClipboard';
 
 export const MainPage: FunctionComponent = observer(() => {
 	// TODO : load data where data is needed, not here - move to relevant parts of the app
@@ -15,7 +16,7 @@ export const MainPage: FunctionComponent = observer(() => {
 			<div />
 			<div className="grid w-full h-full" style={{ gridTemplateRows: '2fr 648px 3fr' }}>
 				<div />
-				<div className="border border-error" />
+				<TradeClipboard />
 				<div />
 			</div>
 			<div />

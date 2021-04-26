@@ -72,7 +72,7 @@ const ContainerOverlay: FunctionComponent<TContainerOverlayProps> = ({ state, cl
 	const stateClass = React.useMemo(() => {
 		switch (state) {
 			case IContainerState.ENABLED:
-				return '';
+				return 'bg-transparent';
 			case IContainerState.HOVER:
 				return 'bg-container-hover';
 			case IContainerState.DRAG:
@@ -82,7 +82,7 @@ const ContainerOverlay: FunctionComponent<TContainerOverlayProps> = ({ state, cl
 			case IContainerState.SELECTED:
 				return 'bg-container-selected';
 			default:
-				return '';
+				return 'bg-transparent';
 		}
 	}, [state]);
 	return <div className={cn('absolute w-full h-full z-0 pointer-events-none', stateClass, className)} />;

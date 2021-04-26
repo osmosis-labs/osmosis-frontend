@@ -4,9 +4,15 @@ import { LINKS, MISC } from '../../../constants';
 import { Img } from '../../common/Img';
 
 export const SidebarBottom: FunctionComponent<TSidebarBottom> = ({ openSidebar }) => {
+	const buttonClick = React.useCallback(() => {
+		// TODO : @Thunnini Not sure what to add here since wallet is automatically connected
+		alert('not implemented yet');
+	}, []);
 	return (
 		<div>
-			<button className="bg-primary-200 h-9 w-full rounded-md py-2 px-3 flex items-center justify-center mb-8">
+			<button
+				onClick={buttonClick}
+				className="bg-primary-200 h-9 w-full rounded-md py-2 px-3 flex items-center justify-center mb-8">
 				<Img className="w-5 h-5" src={`${MISC.ASSETS_BASE}/Icons/Wallet.svg`} />
 				<p
 					style={{ maxWidth: openSidebar ? '105px' : '0px', marginLeft: `${openSidebar ? '12px' : '0px'}` }}
