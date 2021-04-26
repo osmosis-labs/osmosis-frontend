@@ -30,6 +30,8 @@ RUN sed -i 's/pruning = "syncable"/pruning = "nothing"/g' ~/.osmosisd/config/app
 RUN sed -i 's/enable = false/enable = true/g' ~/.osmosisd/config/app.toml
 RUN sed -i 's/swagger = false/swagger = true/g' ~/.osmosisd/config/app.toml
 RUN sed -i 's/enabled-unsafe-cors = false/enabled-unsafe-cors = true/g' ~/.osmosisd/config/app.toml
+# Decrease the commit timeout to fastify the chain for testing
+RUN sed -i 's/timeout_commit = "5s"/timeout_commit = "300ms"/g' ~/.osmosisd/config/config.toml
 
 RUN echo "high gain deposit chuckle hundred regular exist approve peanut enjoy comfort ride" | ./osmosisd keys add val --recover --keyring-backend test
 RUN echo "health nest provide snow total tissue intact loyal cargo must credit wrist" | ./osmosisd keys add local1 --recover --keyring-backend test

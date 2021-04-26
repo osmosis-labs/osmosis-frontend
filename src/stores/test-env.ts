@@ -12,7 +12,9 @@ import { QueriesWithCosmosAndOsmosis } from "./osmosis/query";
 import { MockKeplr } from "@keplr-wallet/provider";
 import { BroadcastMode, StdTx } from "@cosmjs/launchpad";
 import Axios from "axios";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import WebSocket from "ws";
+import { exec } from "child_process";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -82,6 +84,23 @@ export class RootStore {
       }
     );
   }
+}
+
+export function initLocalnet(): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    exec(
+      `sh ${__dirname}/../../scripts/run-localnet.sh`,
+      (error, _stdout, _stderr) => {
+        if (error) {
+          reject(new Error(`error: ${error.message}`));
+          return;
+        }
+
+        // Wait some time to init node and process genesis block.
+        setTimeout(resolve, 1000);
+      }
+    );
+  });
 }
 
 export async function waitAccountLoaded(

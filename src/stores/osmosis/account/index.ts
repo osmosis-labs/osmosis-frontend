@@ -138,7 +138,7 @@ export class OsmosisAccount {
       [msg],
       {
         amount: [],
-        gas: this.base.msgOpts.createPool.toString()
+        gas: this.base.msgOpts.createPool.gas.toString()
       },
       memo,
       tx => {
