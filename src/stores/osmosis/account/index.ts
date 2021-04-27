@@ -125,7 +125,7 @@ export class OsmosisAccount {
     }
 
     const msg = {
-      type: "osmosis/gamm/create-pool",
+      type: this.base.msgOpts.createPool.type,
       value: {
         sender: this.base.bech32Address,
         poolParams,
