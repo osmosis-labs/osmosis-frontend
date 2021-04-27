@@ -1,4 +1,10 @@
-import { initLocalnet, RootStore, waitAccountLoaded } from "../../test-env";
+import {
+  deepContained,
+  getEventFromTx,
+  initLocalnet,
+  RootStore,
+  waitAccountLoaded
+} from "../../test-env";
 
 describe("Test Osmosis Txs", () => {
   const { chainStore, accountStore } = new RootStore();
@@ -84,9 +90,8 @@ describe("Test Osmosis Txs", () => {
 
   test("Test CreatePool msg with 0 swap fee", async () => {
     const account = accountStore.getAccount(chainStore.current.chainId);
-    console.log(account.bech32Address);
 
-    const result = await new Promise<any>(resolve => {
+    const tx = await new Promise<any>(resolve => {
       account.osmosis.sendCreatePoolMsg(
         "0",
         [
@@ -120,6 +125,20 @@ describe("Test Osmosis Txs", () => {
       );
     });
 
-    console.log(result.tx_result.events);
+    const event = getEventFromTx(tx, "message");
+    deepContained(
+      {
+        type: "message",
+        attributes: [
+          { key: "action", value: "create_pool" },
+          { key: "module", value: "gamm" },
+          {
+            key: "sender",
+            value: account.bech32Address
+          }
+        ]
+      },
+      event
+    );
   });
 });
