@@ -6,7 +6,7 @@ import {
   waitAccountLoaded
 } from "../../test-env";
 
-describe("Test Osmosis Txs", () => {
+describe("Test Osmosis Create Pool Tx", () => {
   const { chainStore, accountStore } = new RootStore();
 
   beforeAll(async () => {
@@ -42,7 +42,7 @@ describe("Test Osmosis Txs", () => {
                 coinMinimalDenom: "uatom",
                 coinDecimals: 6
               },
-              amount: "10000"
+              amount: "100"
             }
           }
         ],
@@ -67,7 +67,7 @@ describe("Test Osmosis Txs", () => {
                 coinMinimalDenom: "uatom",
                 coinDecimals: 6
               },
-              amount: "10000"
+              amount: "100"
             }
           },
           {
@@ -78,7 +78,7 @@ describe("Test Osmosis Txs", () => {
                 coinMinimalDenom: "uatom",
                 coinDecimals: 6
               },
-              amount: "10000"
+              amount: "100"
             }
           }
         ],
@@ -103,7 +103,7 @@ describe("Test Osmosis Txs", () => {
                 coinMinimalDenom: "uatom",
                 coinDecimals: 6
               },
-              amount: "10000"
+              amount: "100"
             }
           },
           {
@@ -114,7 +114,7 @@ describe("Test Osmosis Txs", () => {
                 coinMinimalDenom: "uosmo",
                 coinDecimals: 6
               },
-              amount: "10000"
+              amount: "100"
             }
           }
         ],
@@ -125,7 +125,6 @@ describe("Test Osmosis Txs", () => {
       );
     });
 
-    const event = getEventFromTx(tx, "message");
     deepContained(
       {
         type: "message",
@@ -138,7 +137,15 @@ describe("Test Osmosis Txs", () => {
           }
         ]
       },
-      event
+      getEventFromTx(tx, "message")
+    );
+
+    deepContained(
+      {
+        type: "transfer",
+        attributes: [{ key: "amount", value: "100000000uatom,100000000uosmo" }]
+      },
+      getEventFromTx(tx, "transfer")
     );
   });
 });

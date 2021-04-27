@@ -22,6 +22,7 @@ export interface HasOsmosisAccount {
 
 export interface OsmosisMsgOpts {
   readonly createPool: MsgOpt;
+  readonly swapExactAmountIn: MsgOpt;
 }
 
 export class AccountWithCosmosAndOsmosis extends AccountSetBase<
@@ -36,6 +37,10 @@ export class AccountWithCosmosAndOsmosis extends AccountSetBase<
     {
       createPool: {
         type: "osmosis/gamm/create-pool",
+        gas: 10000000
+      },
+      swapExactAmountIn: {
+        type: "osmosis/gamm/swap-exact-amount-in",
         gas: 10000000
       }
     }
@@ -167,5 +172,72 @@ export class OsmosisAccount {
         }
       }
     );
+  }
+
+  async sendSwapExactAmountInMsg(
+    poolId: string,
+    tokenIn: { currency: Currency; amount: string },
+    tokenOutCurrency: Currency,
+    maxSlippage: string = "0",
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const queries = this.queries;
+
+    await this.base.sendMsgs(
+      "swapExactAmountIn",
+      async () => {
+        const queryPools = queries.osmosis.queryGammPools;
+        await queryPools.waitFreshResponse();
+
+        const pool = queryPools.pools.find(pool => pool.id === poolId);
+        if (!pool) {
+          throw new Error("Unknown pool");
+        }
+
+        return [
+          pool.makeSwapExactAmountInMsg(
+            this.base.msgOpts.swapExactAmountIn,
+            this.base.bech32Address,
+            tokenIn,
+            tokenOutCurrency,
+            maxSlippage
+          )
+        ];
+      },
+      {
+        amount: [],
+        gas: this.base.msgOpts.swapExactAmountIn.gas.toString()
+      },
+      memo,
+      tx => {
+        if (tx.code == null || tx.code === 0) {
+          // TODO: Refresh the pools list.
+
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach(bal => {
+              if (
+                bal.currency.coinMinimalDenom ===
+                  tokenIn.currency.coinMinimalDenom ||
+                bal.currency.coinMinimalDenom ===
+                  tokenOutCurrency.coinMinimalDenom
+              ) {
+                bal.fetch();
+              }
+            });
+        }
+
+        if (onFulfill) {
+          onFulfill(tx);
+        }
+      }
+    );
+  }
+
+  protected get queries(): DeepReadonly<QueriesSetBase & HasOsmosisQueries> {
+    return this.queriesStore.get(this.chainId);
   }
 }

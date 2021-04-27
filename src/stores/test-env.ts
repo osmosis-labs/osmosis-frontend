@@ -212,8 +212,17 @@ export function deepContained(obj1: any, obj2: any) {
   }
 }
 
-export function initLocalnet(): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
+export async function initLocalnet(): Promise<void> {
+  const delay = (time: number) => {
+    return new Promise(resolve => {
+      setTimeout(resolve, time);
+    });
+  };
+
+  // Wait some time to clear the prior websocket connections.
+  await delay(500);
+
+  await new Promise<void>((resolve, reject) => {
     exec(
       `sh ${__dirname}/../../scripts/run-localnet.sh`,
       (error, _stdout, _stderr) => {
@@ -222,11 +231,26 @@ export function initLocalnet(): Promise<void> {
           return;
         }
 
-        // Wait some time to init node and process genesis block.
-        setTimeout(resolve, 1000);
+        resolve();
       }
     );
   });
+
+  const instance = Axios.create({
+    baseURL: "http://localhost:1317"
+  });
+
+  // Wait untile the genesis block processed
+  while (true) {
+    await delay(500);
+    try {
+      await instance.get("/blocks/latest");
+    } catch {
+      continue;
+    }
+
+    return;
+  }
 }
 
 export async function waitAccountLoaded(
