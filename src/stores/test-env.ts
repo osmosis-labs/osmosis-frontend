@@ -9,7 +9,7 @@ import { autorun } from "mobx";
 import { AccountWithCosmosAndOsmosis } from "./osmosis/account";
 import { QueriesWithCosmosAndOsmosis } from "./osmosis/query";
 import { MockKeplr } from "@keplr-wallet/provider";
-import { BroadcastMode, StdTx } from "@cosmjs/launchpad";
+import { StdTx } from "@cosmjs/launchpad";
 import Axios from "axios";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import WebSocket from "ws";
@@ -72,7 +72,7 @@ export class RootStore {
 
   constructor() {
     const mockKeplr = new MockKeplr(
-      async (chainId: string, tx: StdTx, mode: BroadcastMode) => {
+      async (chainId: string, tx: StdTx) => {
         const chainInfo = TestChainInfos.find(info => info.chainId === chainId);
         if (!chainInfo) {
           throw new Error("Unknown chain info");
@@ -86,15 +86,25 @@ export class RootStore {
 
         const params = {
           tx,
-          mode
+          // Force to send as "block" mode
+          mode: "block"
         };
 
-        const result = await restInstance.post("/txs", params);
-        if (result.data.code != null && result.data.code !== 0) {
-          throw new Error(result.data["raw_log"]);
-        }
+        try {
+          const result = await restInstance.post("/txs", params);
+          if (result.data.code != null && result.data.code !== 0) {
+            throw new Error(result.data["raw_log"]);
+          }
 
-        return Buffer.from(result.data.txhash, "hex");
+          return Buffer.from(result.data.txhash, "hex");
+        } finally {
+          // Sending the other tx right after the response is fetched makes the other tx be failed sometimes,
+          // because actually the increased account number is commited after the block is fully processed.
+          // So, to prevent this problem, just wait more time after the response is fetched.
+          await new Promise(resolve => {
+            setTimeout(resolve, 500);
+          });
+        }
       },
       TestChainInfos,
       "health nest provide snow total tissue intact loyal cargo must credit wrist"
