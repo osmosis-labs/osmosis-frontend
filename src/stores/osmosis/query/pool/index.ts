@@ -36,8 +36,10 @@ export class ObservablePool {
     tokenOutCurrency: Currency
   ): {
     tokenOut: CoinPretty;
+    spotPriceBefore: IntPretty;
     spotPriceAfter: IntPretty;
     slippage: IntPretty;
+    raw: ReturnType<GAMMPool["estimateSwapExactAmountIn"]>;
   } {
     const amount = new Dec(tokenIn.amount)
       .mul(DecUtils.getPrecisionDec(tokenIn.currency.coinDecimals))
@@ -50,26 +52,28 @@ export class ObservablePool {
     );
 
     const tokenOut = new CoinPretty(tokenOutCurrency, estimated.tokenOutAmount);
-    // XXX: IntPretty에서 0.5같이 정수부가 0인 Dec이 들어가면 precision이 제대로 설정되지않는 버그가 있기 때문에
-    // 임시로 5를 곱하고 precision을 3으로 낮춰서 10^2가 곱해진 효과를 낸다.
-    const spotPriceAfter = new IntPretty(
-      estimated.spotPriceAfter.mul(DecUtils.getPrecisionDec(5))
-    )
-      .precision(3)
+    const spotPriceBefore = new IntPretty(estimated.spotPriceBefore)
+      .maxDecimals(4)
+      .trim(true);
+    const spotPriceAfter = new IntPretty(estimated.spotPriceAfter)
       .maxDecimals(4)
       .trim(true);
 
+    // XXX: IntPretty에서 0.5같이 정수부가 0인 Dec이 들어가면 precision이 제대로 설정되지않는 버그가 있기 때문에
+    // 임시로 18를 곱하고 precision을 16으로 올려서 10^2가 곱해진 효과를 낸다.
     const slippage = new IntPretty(
-      estimated.slippage.mul(DecUtils.getPrecisionDec(5))
+      estimated.slippage.mul(DecUtils.getPrecisionDec(18))
     )
-      .precision(3)
+      .precision(16)
       .maxDecimals(4)
       .trim(true);
 
     return {
       tokenOut,
+      spotPriceBefore,
       spotPriceAfter,
-      slippage
+      slippage,
+      raw: estimated
     };
   }
 
@@ -86,6 +90,16 @@ export class ObservablePool {
       DecUtils.getPrecisionDec(2)
     );
     // TODO: Compare the computed slippage and wanted max slippage?
+
+    const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
+      ? new Int(1)
+      : GAMMPool.calculateSlippage(
+          estimated.raw.spotPriceBefore,
+          new Dec(tokenIn.amount)
+            .mul(DecUtils.getPrecisionDec(tokenIn.currency.coinDecimals))
+            .truncate(),
+          maxSlippageDec
+        );
 
     const amount = new Dec(tokenIn.amount)
       .mul(DecUtils.getPrecisionDec(tokenIn.currency.coinDecimals))
@@ -106,14 +120,7 @@ export class ObservablePool {
           denom: coin.denom,
           amount: coin.amount.toString()
         },
-        tokenOutMinAmount: maxSlippageDec.equals(new Dec(0))
-          ? "1"
-          : estimated.tokenOut
-              .toDec()
-              .mul(DecUtils.getPrecisionDec(tokenOutCurrency.coinDecimals))
-              .mul(new Dec(1).sub(maxSlippageDec))
-              .truncate()
-              .toString()
+        tokenOutMinAmount: tokenOutMinAmount.toString()
       }
     };
   }
@@ -121,12 +128,12 @@ export class ObservablePool {
   @computed
   get swapFee(): IntPretty {
     let dec = this.pool.swapFee;
-    dec = dec.mul(DecUtils.getPrecisionDec(5));
+    dec = dec.mul(DecUtils.getPrecisionDec(18));
 
     // XXX: IntPretty에서 0.5같이 정수부가 0인 Dec이 들어가면 precision이 제대로 설정되지않는 버그가 있기 때문에
-    // 임시로 5를 곱하고 precision을 3으로 낮춰서 10^2가 곱해진 효과를 낸다.
+    // 임시로 18를 곱하고 precision을 16으로 올려서 10^2가 곱해진 효과를 낸다.
     return new IntPretty(dec)
-      .precision(3)
+      .precision(16)
       .maxDecimals(4)
       .trim(true);
   }

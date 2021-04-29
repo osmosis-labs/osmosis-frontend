@@ -5,7 +5,7 @@ import {
   RootStore,
   waitAccountLoaded
 } from "../../test-env";
-import { DecUtils } from "@keplr-wallet/unit";
+import { Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 
 describe("Test Osmosis Swap Exact Amount In Tx", () => {
   let { chainStore, accountStore, queriesStore } = new RootStore();
@@ -191,5 +191,212 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
       },
       getEventFromTx(tx, "transfer")
     );
+  });
+
+  test("SwapExactAmountIn with slippage", async () => {
+    const account = accountStore.getAccount(chainStore.current.chainId);
+
+    const poolId = "1";
+    const tokenIn = {
+      currency: {
+        coinDenom: "ATOM",
+        coinMinimalDenom: "uatom",
+        coinDecimals: 6
+      },
+      amount: "1"
+    };
+    const tokenOutCurrency = {
+      coinDenom: "OSMO",
+      coinMinimalDenom: "uosmo",
+      coinDecimals: 6
+    };
+
+    const queryPools = queriesStore.get(chainStore.current.chainId).osmosis
+      .queryGammPools;
+    await queryPools.waitFreshResponse();
+    const estimated = queryPools.pools
+      .find(pool => pool.id === poolId)!
+      .estimateSwapExactAmountIn(tokenIn, tokenOutCurrency);
+
+    const doubleSlippage = new IntPretty(
+      estimated.slippage.toDec().mul(new Dec(2))
+    )
+      .locale(false)
+      .maxDecimals(4)
+      .trim(true);
+
+    expect(doubleSlippage.toDec().gt(new Dec(0))).toBeTruthy();
+
+    const tx = await new Promise<any>(resolve => {
+      account.osmosis.sendSwapExactAmountInMsg(
+        poolId,
+        tokenIn,
+        tokenOutCurrency,
+        doubleSlippage.toString(),
+        "",
+        tx => {
+          resolve(tx);
+        }
+      );
+    });
+
+    deepContained(
+      {
+        type: "message",
+        attributes: [
+          { key: "action", value: "swap_exact_amount_in" },
+          { key: "module", value: "gamm" },
+          {
+            key: "sender",
+            value: account.bech32Address
+          }
+        ]
+      },
+      getEventFromTx(tx, "message")
+    );
+
+    deepContained(
+      {
+        type: "transfer",
+        attributes: [
+          { key: "amount", value: "1000000uatom" },
+          {
+            key: "amount",
+            value:
+              estimated.tokenOut
+                .toDec()
+                .mul(DecUtils.getPrecisionDec(tokenOutCurrency.coinDecimals))
+                .truncate()
+                .toString() + tokenOutCurrency.coinMinimalDenom
+          }
+        ]
+      },
+      getEventFromTx(tx, "transfer")
+    );
+  });
+
+  test("SwapExactAmountIn with exactly matched slippage and max slippage", async () => {
+    const account = accountStore.getAccount(chainStore.current.chainId);
+
+    const poolId = "1";
+    const tokenIn = {
+      currency: {
+        coinDenom: "ATOM",
+        coinMinimalDenom: "uatom",
+        coinDecimals: 6
+      },
+      amount: "1"
+    };
+    const tokenOutCurrency = {
+      coinDenom: "OSMO",
+      coinMinimalDenom: "uosmo",
+      coinDecimals: 6
+    };
+
+    const queryPools = queriesStore.get(chainStore.current.chainId).osmosis
+      .queryGammPools;
+    await queryPools.waitFreshResponse();
+    const estimated = queryPools.pools
+      .find(pool => pool.id === poolId)!
+      .estimateSwapExactAmountIn(tokenIn, tokenOutCurrency);
+
+    expect(estimated.slippage.toDec().gt(new Dec(0))).toBeTruthy();
+
+    const tx = await new Promise<any>(resolve => {
+      account.osmosis.sendSwapExactAmountInMsg(
+        poolId,
+        tokenIn,
+        tokenOutCurrency,
+        estimated.slippage.toString(),
+        "",
+        tx => {
+          resolve(tx);
+        }
+      );
+    });
+
+    deepContained(
+      {
+        type: "message",
+        attributes: [
+          { key: "action", value: "swap_exact_amount_in" },
+          { key: "module", value: "gamm" },
+          {
+            key: "sender",
+            value: account.bech32Address
+          }
+        ]
+      },
+      getEventFromTx(tx, "message")
+    );
+
+    deepContained(
+      {
+        type: "transfer",
+        attributes: [
+          { key: "amount", value: "1000000uatom" },
+          {
+            key: "amount",
+            value:
+              estimated.tokenOut
+                .toDec()
+                .mul(DecUtils.getPrecisionDec(tokenOutCurrency.coinDecimals))
+                .truncate()
+                .toString() + tokenOutCurrency.coinMinimalDenom
+          }
+        ]
+      },
+      getEventFromTx(tx, "transfer")
+    );
+  });
+
+  test("SwapExactAmountIn should be failed with more max slippage than calculated slippage", async () => {
+    const account = accountStore.getAccount(chainStore.current.chainId);
+
+    const poolId = "1";
+    const tokenIn = {
+      currency: {
+        coinDenom: "ATOM",
+        coinMinimalDenom: "uatom",
+        coinDecimals: 6
+      },
+      amount: "1"
+    };
+    const tokenOutCurrency = {
+      coinDenom: "OSMO",
+      coinMinimalDenom: "uosmo",
+      coinDecimals: 6
+    };
+
+    const queryPools = queriesStore.get(chainStore.current.chainId).osmosis
+      .queryGammPools;
+    await queryPools.waitFreshResponse();
+    const estimated = queryPools.pools
+      .find(pool => pool.id === poolId)!
+      .estimateSwapExactAmountIn(tokenIn, tokenOutCurrency);
+
+    const added = new IntPretty(estimated.slippage.toDec().sub(new Dec("0.01")))
+      .locale(false)
+      .maxDecimals(4);
+
+    expect(estimated.slippage.toDec().gt(new Dec(0))).toBeTruthy();
+    expect(added.toDec().gt(new Dec(0))).toBeTruthy();
+
+    await expect(
+      new Promise<any>((resolve, reject) => {
+        account.osmosis
+          .sendSwapExactAmountInMsg(
+            poolId,
+            tokenIn,
+            tokenOutCurrency,
+            added.toString(),
+            "",
+            tx => {
+              resolve(tx);
+            }
+          )
+          .catch(reject);
+      })
+    ).rejects.not.toBeNull();
   });
 });

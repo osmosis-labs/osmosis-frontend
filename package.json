@@ -7,6 +7,7 @@
     "dev": "cross-env NODE_ENV=development webpack-dev-server",
     "dev:analyzer": "cross-env NODE_ENV=development ANALYZER=true webpack",
     "test": "jest --passWithNoTests --runInBand",
+    "posttest": "yarn localnet:stop",
     "lint-test": "eslint \"src/**/*\" webpack.config.js && prettier --check \"src/**/*\" webpack.config.js",
     "lint-fix": "eslint --fix \"src/**/*\" webpack.config.js && prettier --write \"src/**/*\" webpack.config.js",
     "localnet": "sh ./scripts/run-localnet.sh",

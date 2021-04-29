@@ -3,6 +3,15 @@ import { Coin, Dec, Int } from "@keplr-wallet/unit";
 import * as Math from "./math";
 
 export class GAMMPool {
+  static calculateSlippage(
+    spotPriceBefore: Dec,
+    tokenIn: Int,
+    slippage: Dec
+  ): Int {
+    const effectivePrice = spotPriceBefore.mul(slippage.add(new Dec(1)));
+    return new Dec(tokenIn).quo(effectivePrice).truncate();
+  }
+
   constructor(protected readonly data: GAMMPoolData) {}
 
   get id(): string {
@@ -60,6 +69,7 @@ export class GAMMPool {
     tokenOutDenom: string
   ): {
     tokenOutAmount: Int;
+    spotPriceBefore: Dec;
     spotPriceAfter: Dec;
     slippage: Dec;
   } {
@@ -99,6 +109,7 @@ export class GAMMPool {
 
     return {
       tokenOutAmount,
+      spotPriceBefore,
       spotPriceAfter,
       slippage
     };
@@ -109,6 +120,7 @@ export class GAMMPool {
     tokenOut: Coin
   ): {
     tokenInAmount: Int;
+    spotPriceBefore: Dec;
     spotPriceAfter: Dec;
     slippage: Dec;
   } {
@@ -149,6 +161,7 @@ export class GAMMPool {
 
     return {
       tokenInAmount,
+      spotPriceBefore,
       spotPriceAfter,
       slippage
     };
