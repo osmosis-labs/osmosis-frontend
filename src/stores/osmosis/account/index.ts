@@ -22,6 +22,9 @@ export interface HasOsmosisAccount {
 
 export interface OsmosisMsgOpts {
   readonly createPool: MsgOpt;
+  readonly joinPool: MsgOpt & {
+    shareCoinDecimals: number;
+  };
   readonly swapExactAmountIn: MsgOpt;
   readonly swapExactAmountOut: MsgOpt;
 }
@@ -39,6 +42,11 @@ export class AccountWithCosmosAndOsmosis extends AccountSetBase<
       createPool: {
         type: "osmosis/gamm/create-pool",
         gas: 10000000
+      },
+      joinPool: {
+        type: "osmosis/gamm/join-pool",
+        gas: 10000000,
+        shareCoinDecimals: 6
       },
       swapExactAmountIn: {
         type: "osmosis/gamm/swap-exact-amount-in",
@@ -169,6 +177,96 @@ export class OsmosisAccount {
               ) {
                 bal.fetch();
               }
+            });
+        }
+
+        if (onFulfill) {
+          onFulfill(tx);
+        }
+      }
+    );
+  }
+
+  async sendJoinPoolMsg(
+    poolId: string,
+    shareOutAmount: string,
+    maxSlippage: string = "0",
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const queries = this.queries;
+
+    await this.base.sendMsgs(
+      "joinPool",
+      async () => {
+        const queryPools = queries.osmosis.queryGammPools;
+        await queryPools.waitFreshResponse();
+
+        const pool = queryPools.pools.find(pool => pool.id === poolId);
+        if (!pool) {
+          throw new Error("Unknown pool");
+        }
+
+        const maxSlippageDec = new Dec(maxSlippage).quo(
+          DecUtils.getPrecisionDec(2)
+        );
+
+        const estimated = pool.estimateJoinSwap(
+          shareOutAmount,
+          this.base.msgOpts.joinPool.shareCoinDecimals
+        );
+
+        const tokenInMaxs = maxSlippageDec.equals(new Dec(0))
+          ? null
+          : estimated.tokenIns.map(tokenIn => {
+              // TODO: Add the method like toPrimitiveCoin()?
+              const dec = tokenIn.toDec();
+              const amount = dec
+                .mul(DecUtils.getPrecisionDec(tokenIn.currency.coinDecimals))
+                .mul(new Dec(1).add(maxSlippageDec))
+                .truncate();
+
+              return {
+                denom: tokenIn.currency.coinMinimalDenom,
+                amount: amount.toString()
+              };
+            });
+
+        return [
+          {
+            type: this.base.msgOpts.joinPool.type,
+            value: {
+              sender: this.base.bech32Address,
+              poolId,
+              shareOutAmount: new Dec(shareOutAmount)
+                .mul(
+                  DecUtils.getPrecisionDec(
+                    this.base.msgOpts.joinPool.shareCoinDecimals
+                  )
+                )
+                .truncate()
+                .toString(),
+              tokenInMaxs
+            }
+          }
+        ];
+      },
+      {
+        amount: [],
+        gas: this.base.msgOpts.swapExactAmountIn.gas.toString()
+      },
+      memo,
+      tx => {
+        if (tx.code == null || tx.code === 0) {
+          // TODO: Refresh the pools list.
+
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach(bal => {
+              // TODO: Explicitly refresh the share expected to be minted and provided to the pool.
+              bal.fetch();
             });
         }
 

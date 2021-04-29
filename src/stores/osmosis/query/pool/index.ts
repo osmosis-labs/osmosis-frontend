@@ -31,6 +31,34 @@ export class ObservablePool {
     return this.pool.id;
   }
 
+  estimateJoinSwap(
+    shareOutAmount: string,
+    shareCoinDecimals: number
+  ): {
+    tokenIns: CoinPretty[];
+  } {
+    const estimated = this.pool.estimateJoinPool(
+      new Dec(shareOutAmount)
+        .mul(DecUtils.getPrecisionDec(shareCoinDecimals))
+        .truncate()
+    );
+
+    const tokenIns = estimated.tokenIns.map(primitive => {
+      const currency = this.chainGetter
+        .getChain(this.chainId)
+        .currencies.find(cur => cur.coinMinimalDenom === primitive.denom);
+      if (!currency) {
+        throw new Error("Unknown currency");
+      }
+
+      return new CoinPretty(currency, primitive.amount);
+    });
+
+    return {
+      tokenIns
+    };
+  }
+
   estimateSwapExactAmountIn(
     tokenIn: { currency: Currency; amount: string },
     tokenOutCurrency: Currency
