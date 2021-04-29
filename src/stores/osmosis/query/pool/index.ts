@@ -77,6 +77,52 @@ export class ObservablePool {
     };
   }
 
+  estimateSwapExactAmountOut(
+    tokenInCurrency: Currency,
+    tokenOut: { currency: Currency; amount: string }
+  ): {
+    tokenIn: CoinPretty;
+    spotPriceBefore: IntPretty;
+    spotPriceAfter: IntPretty;
+    slippage: IntPretty;
+    raw: ReturnType<GAMMPool["estimateSwapExactAmountOut"]>;
+  } {
+    const amount = new Dec(tokenOut.amount)
+      .mul(DecUtils.getPrecisionDec(tokenOut.currency.coinDecimals))
+      .truncate();
+    const coin = new Coin(tokenOut.currency.coinMinimalDenom, amount);
+
+    const estimated = this.pool.estimateSwapExactAmountOut(
+      tokenInCurrency.coinMinimalDenom,
+      coin
+    );
+
+    const tokenIn = new CoinPretty(tokenInCurrency, estimated.tokenInAmount);
+    const spotPriceBefore = new IntPretty(estimated.spotPriceBefore)
+      .maxDecimals(4)
+      .trim(true);
+    const spotPriceAfter = new IntPretty(estimated.spotPriceAfter)
+      .maxDecimals(4)
+      .trim(true);
+
+    // XXX: IntPretty에서 0.5같이 정수부가 0인 Dec이 들어가면 precision이 제대로 설정되지않는 버그가 있기 때문에
+    // 임시로 18를 곱하고 precision을 16으로 올려서 10^2가 곱해진 효과를 낸다.
+    const slippage = new IntPretty(
+      estimated.slippage.mul(DecUtils.getPrecisionDec(18))
+    )
+      .precision(16)
+      .maxDecimals(4)
+      .trim(true);
+
+    return {
+      tokenIn,
+      spotPriceBefore,
+      spotPriceAfter,
+      slippage,
+      raw: estimated
+    };
+  }
+
   makeSwapExactAmountInMsg(
     msgOpt: Pick<MsgOpt, "type">,
     sender: string,
@@ -93,7 +139,7 @@ export class ObservablePool {
 
     const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
       ? new Int(1)
-      : GAMMPool.calculateSlippage(
+      : GAMMPool.calculateSlippageTokenIn(
           estimated.raw.spotPriceBefore,
           new Dec(tokenIn.amount)
             .mul(DecUtils.getPrecisionDec(tokenIn.currency.coinDecimals))
@@ -121,6 +167,58 @@ export class ObservablePool {
           amount: coin.amount.toString()
         },
         tokenOutMinAmount: tokenOutMinAmount.toString()
+      }
+    };
+  }
+
+  makeSwapExactAmountOutMsg(
+    msgOpt: Pick<MsgOpt, "type">,
+    sender: string,
+    tokenInCurrency: Currency,
+    tokenOut: { currency: Currency; amount: string },
+    maxSlippage: string = "0"
+  ): Msg {
+    const estimated = this.estimateSwapExactAmountOut(
+      tokenInCurrency,
+      tokenOut
+    );
+
+    const maxSlippageDec = new Dec(maxSlippage).quo(
+      DecUtils.getPrecisionDec(2)
+    );
+    // TODO: Compare the computed slippage and wanted max slippage?
+
+    const tokenInMaxAmount = maxSlippageDec.equals(new Dec(0))
+      ? // TODO: Set exact 2^128 - 1
+        new Int(1000000000000)
+      : GAMMPool.calculateSlippageTokenOut(
+          estimated.raw.spotPriceBefore,
+          new Dec(tokenOut.amount)
+            .mul(DecUtils.getPrecisionDec(tokenOut.currency.coinDecimals))
+            .truncate(),
+          maxSlippageDec
+        );
+
+    const amount = new Dec(tokenOut.amount)
+      .mul(DecUtils.getPrecisionDec(tokenOut.currency.coinDecimals))
+      .truncate();
+    const coin = new Coin(tokenOut.currency.coinMinimalDenom, amount);
+
+    return {
+      type: msgOpt.type,
+      value: {
+        sender,
+        routes: [
+          {
+            poolId: this.id,
+            tokenInDenom: tokenInCurrency.coinMinimalDenom
+          }
+        ],
+        tokenOut: {
+          denom: coin.denom,
+          amount: coin.amount.toString()
+        },
+        tokenInMaxAmount: tokenInMaxAmount.toString()
       }
     };
   }

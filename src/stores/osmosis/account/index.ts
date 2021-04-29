@@ -23,6 +23,7 @@ export interface HasOsmosisAccount {
 export interface OsmosisMsgOpts {
   readonly createPool: MsgOpt;
   readonly swapExactAmountIn: MsgOpt;
+  readonly swapExactAmountOut: MsgOpt;
 }
 
 export class AccountWithCosmosAndOsmosis extends AccountSetBase<
@@ -41,6 +42,10 @@ export class AccountWithCosmosAndOsmosis extends AccountSetBase<
       },
       swapExactAmountIn: {
         type: "osmosis/gamm/swap-exact-amount-in",
+        gas: 10000000
+      },
+      swapExactAmountOut: {
+        type: "osmosis/gamm/swap-exact-amount-out",
         gas: 10000000
       }
     }
@@ -224,6 +229,69 @@ export class OsmosisAccount {
                   tokenIn.currency.coinMinimalDenom ||
                 bal.currency.coinMinimalDenom ===
                   tokenOutCurrency.coinMinimalDenom
+              ) {
+                bal.fetch();
+              }
+            });
+        }
+
+        if (onFulfill) {
+          onFulfill(tx);
+        }
+      }
+    );
+  }
+
+  async sendSwapExactAmountOutMsg(
+    poolId: string,
+    tokenInCurrency: Currency,
+    tokenOut: { currency: Currency; amount: string },
+    maxSlippage: string = "0",
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const queries = this.queries;
+
+    await this.base.sendMsgs(
+      "swapExactAmountOut",
+      async () => {
+        const queryPools = queries.osmosis.queryGammPools;
+        await queryPools.waitFreshResponse();
+
+        const pool = queryPools.pools.find(pool => pool.id === poolId);
+        if (!pool) {
+          throw new Error("Unknown pool");
+        }
+
+        return [
+          pool.makeSwapExactAmountOutMsg(
+            this.base.msgOpts.swapExactAmountOut,
+            this.base.bech32Address,
+            tokenInCurrency,
+            tokenOut,
+            maxSlippage
+          )
+        ];
+      },
+      {
+        amount: [],
+        gas: this.base.msgOpts.swapExactAmountIn.gas.toString()
+      },
+      memo,
+      tx => {
+        if (tx.code == null || tx.code === 0) {
+          // TODO: Refresh the pools list.
+
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach(bal => {
+              if (
+                bal.currency.coinMinimalDenom ===
+                  tokenInCurrency.coinMinimalDenom ||
+                bal.currency.coinMinimalDenom ===
+                  tokenOut.currency.coinMinimalDenom
               ) {
                 bal.fetch();
               }

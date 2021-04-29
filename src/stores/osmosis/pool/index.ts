@@ -3,13 +3,22 @@ import { Coin, Dec, Int } from "@keplr-wallet/unit";
 import * as Math from "./math";
 
 export class GAMMPool {
-  static calculateSlippage(
+  static calculateSlippageTokenIn(
     spotPriceBefore: Dec,
     tokenIn: Int,
     slippage: Dec
   ): Int {
     const effectivePrice = spotPriceBefore.mul(slippage.add(new Dec(1)));
     return new Dec(tokenIn).quo(effectivePrice).truncate();
+  }
+
+  static calculateSlippageTokenOut(
+    spotPriceBefore: Dec,
+    tokenOut: Int,
+    slippage: Dec
+  ): Int {
+    const effectivePrice = spotPriceBefore.mul(slippage.add(new Dec(1)));
+    return new Dec(tokenOut).mul(effectivePrice).truncate();
   }
 
   constructor(protected readonly data: GAMMPoolData) {}
@@ -115,7 +124,7 @@ export class GAMMPool {
     };
   }
 
-  estimateExactAmountOut(
+  estimateSwapExactAmountOut(
     tokenInDenom: string,
     tokenOut: Coin
   ): {
