@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const ReactRefreshTypeScript = require('react-refresh-typescript');
 const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+// const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
@@ -41,7 +43,20 @@ const sassRule = {
 		},
 	],
 };
-const tsRule = { test: /\.tsx?$/, loader: 'ts-loader' };
+const tsRule = {
+	test: /\.tsx?$/,
+	exclude: /node_modules/,
+	use: [
+		{
+			loader: require.resolve('ts-loader'),
+			options: {
+				getCustomTransformers: () => ({
+					before: isEnvDevelopment ? [ReactRefreshTypeScript()] : [],
+				}),
+			},
+		},
+	],
+};
 const jsxRule = {
 	test: /\.(js|jsx)$/,
 	exclude: /node_modules/,
@@ -65,13 +80,14 @@ const fileRule = {
 
 //  https://webpack.js.org/guides/public-path/
 const ASSET_PATH = process.env.ASSET_PATH || '/';
-const webConfig = (env, args) => {
+const webConfig = () => {
 	return {
 		mode: isEnvDevelopment ? 'development' : 'production',
+
 		// In development environment, turn on source map.
-		devtool: isEnvDevelopment ? 'source-map' : false,
+		// devtool: isEnvDevelopment ? 'source-map' : false,
 		// In development environment, webpack watch the file changes, and recompile
-		watch: isEnvDevelopment,
+		// watch: isEnvDevelopment,
 		devServer: {
 			port: 8081,
 			historyApiFallback: true,
@@ -110,7 +126,9 @@ const webConfig = (env, args) => {
 			new webpack.DefinePlugin({
 				'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH),
 			}),
-		],
+			isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
+			isEnvDevelopment && new ReactRefreshWebpackPlugin(),
+		].filter(Boolean),
 	};
 };
 

@@ -11,6 +11,7 @@ const spacing = {
 	3: '12px',
 	3.75: '15px',
 	4: '16px',
+	4.5: '18px',
 	5: '20px',
 	6: '24px',
 	7: '28px',
@@ -81,8 +82,10 @@ module.exports = {
 		},
 		boxShadow: {
 			container: '0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)',
-			elevation:
+			'elevation-24dp':
 				'0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2)',
+			'elevation-04dp':
+				'0px 4px 5px rgba(0, 0, 0, 0.14), 0px 1px 10px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.2)',
 		},
 		colors: {
 			white: {
@@ -116,6 +119,10 @@ module.exports = {
 				700: '#92630B',
 				800: '#875903',
 				900: '#734B00',
+			},
+			wireframes: {
+				grey: '#818181',
+				lightGrey: '#B7B7B7',
 			},
 			background: '#170F34',
 			surface: '#231D4B',
@@ -170,6 +177,7 @@ module.exports = {
 				...sidebarWidths,
 			},
 			borderOpacity: {
+				40: '0.4',
 				75: '0.75',
 			},
 			zIndex: {

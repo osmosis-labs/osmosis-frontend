@@ -1,0 +1,10 @@
+
+.s-tradebox-input {
+	font-family: Poppins, ui-sans-serif, system-ui;
+	font-size: 24px;
+	font-weight: 600;
+	text-align: right;
+	::placeholder {
+		text-align: right;
+	}
+}

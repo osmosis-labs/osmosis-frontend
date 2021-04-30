@@ -56,7 +56,7 @@ const SideBar: FunctionComponent<ChildComponentProps> = ({ history }) => {
 	);
 };
 
-export default withRouter(SideBar);
+export const Sidebar = withRouter(SideBar);
 const sidebarSettings = {
 	hoverable: true,
 };
