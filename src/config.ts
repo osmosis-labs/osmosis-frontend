@@ -26,6 +26,7 @@ export const EmbedChainInfos: ChainInfo[] = [
 				coinDenom: 'ATOM',
 				coinMinimalDenom: 'uatom',
 				coinDecimals: 6,
+				coinGeckoId: 'cosmos',
 			},
 			{
 				coinDenom: 'FOO',

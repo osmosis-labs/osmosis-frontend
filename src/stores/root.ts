@@ -1,4 +1,4 @@
-import { getKeplrFromWindow, QueriesStore } from '@keplr-wallet/stores';
+import { CoinGeckoPriceStore, getKeplrFromWindow, QueriesStore } from '@keplr-wallet/stores';
 import { AccountStore } from '@keplr-wallet/stores';
 import { IndexedDBKVStore } from '@keplr-wallet/common';
 import { ChainStore } from './chain';
@@ -13,6 +13,7 @@ export class RootStore {
 	public readonly chainStore: ChainStore;
 	public readonly accountStore: AccountStore<AccountWithCosmosAndOsmosis>;
 	public readonly queriesStore: QueriesStore<QueriesWithCosmosAndOsmosis>;
+	public readonly priceStore: CoinGeckoPriceStore;
 
 	constructor() {
 		this.chainStore = new ChainStore(EmbedChainInfos, 'localnet-1');
@@ -43,6 +44,15 @@ export class RootStore {
 					chainId: chainInfo.chainId,
 				};
 			}),
+		});
+
+		this.priceStore = new CoinGeckoPriceStore(new IndexedDBKVStore('store_web_prices'), {
+			usd: {
+				currency: 'usd',
+				symbol: '$',
+				maxDecimals: 2,
+				locale: 'en-US',
+			},
 		});
 	}
 }

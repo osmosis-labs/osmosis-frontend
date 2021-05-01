@@ -3,8 +3,10 @@ import { GAMMPool } from '../../pool';
 import { ChainGetter, MsgOpt } from '@keplr-wallet/stores';
 import { CoinPretty, DecUtils, IntPretty, Int, Coin, Dec } from '@keplr-wallet/unit';
 import { computed, makeObservable, observable } from 'mobx';
-import { Currency } from '@keplr-wallet/types';
+import { Currency, FiatCurrency } from '@keplr-wallet/types';
 import { Msg } from '@cosmjs/launchpad';
+import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
+import { computedFn } from 'mobx-utils';
 
 export class ObservablePool {
 	@observable.ref
@@ -215,6 +217,40 @@ export class ObservablePool {
 	}
 
 	@computed
+	get totalWeight(): IntPretty {
+		return new IntPretty(this.pool.totalWeight);
+	}
+
+	@computed
+	get poolRatios(): {
+		ratio: IntPretty;
+		amount: CoinPretty;
+	}[] {
+		const result: {
+			ratio: IntPretty;
+			amount: CoinPretty;
+		}[] = [];
+
+		for (const poolAsset of this.poolAssets) {
+			const ratio = new IntPretty(
+				poolAsset.weight
+					.toDec()
+					.quo(this.totalWeight.toDec())
+					.mul(DecUtils.getPrecisionDec(2))
+			)
+				.maxDecimals(2)
+				.trim(true);
+
+			result.push({
+				ratio,
+				amount: poolAsset.amount,
+			});
+		}
+
+		return result;
+	}
+
+	@computed
 	get poolAssets(): {
 		weight: IntPretty;
 		amount: CoinPretty;
@@ -236,4 +272,47 @@ export class ObservablePool {
 			};
 		});
 	}
+
+	readonly computeTotalValueLocked = computedFn(
+		(
+			priceStore: { getPrice(coinId: string, vsCurrency: string): number | undefined },
+			fiatCurrency: FiatCurrency
+		): PricePretty => {
+			const ratios = this.poolRatios;
+			let currencyWithCoingeckoId: Currency | undefined;
+
+			// Get the first currency that has the coingecko id.
+			for (const ratio of ratios) {
+				if (ratio.amount.currency.coinGeckoId) {
+					currencyWithCoingeckoId = ratio.amount.currency;
+					break;
+				}
+			}
+
+			if (!currencyWithCoingeckoId) {
+				return new PricePretty(fiatCurrency, new Int(0));
+			}
+
+			const basePrice = priceStore.getPrice(currencyWithCoingeckoId.coinGeckoId!, fiatCurrency.currency) ?? 0;
+			if (!basePrice) {
+				return new PricePretty(fiatCurrency, new Int(0));
+			}
+
+			let total = new Dec(0);
+
+			for (const ratio of ratios) {
+				const spotPrice = this.pool.calculateSpotPriceWithoutSwapFee(
+					ratio.amount.currency.coinMinimalDenom,
+					currencyWithCoingeckoId.coinMinimalDenom
+				);
+
+				const price = spotPrice.mul(new Dec(basePrice.toString()));
+				const multiplied = price.mul(ratio.amount.toDec());
+
+				total = total.add(multiplied);
+			}
+
+			return new PricePretty(fiatCurrency, total);
+		}
+	);
 }
