@@ -32,7 +32,8 @@
 	h5,
 	h6 {
 		@apply font-title;
-		@apply font-bold;
+		@apply font-semibold;
+		@apply leading-none;
 	}
 
 	p {

@@ -15,11 +15,14 @@ const spacing = {
 	5: '20px',
 	6: '24px',
 	7: '28px',
+	7.5: '30px',
 	8: '32px',
+	8.75: '35px',
 	10: '40px',
 	12.5: '50px',
 	15: '60px',
 	17.5: '70px',
+	20: '80px',
 };
 const sizes = {
 	0: '0px',
@@ -57,6 +60,9 @@ const screenWidths = {
 const sidebarWidths = {
 	'sidebar-open': 'var(--sidebar-open)',
 	'sidebar-closed': 'var(--sidebar-closed)',
+};
+const genericWidths = {
+	table: '1000px',
 };
 module.exports = {
 	future: {
@@ -130,6 +136,7 @@ module.exports = {
 			cardInner: '#3C356D',
 			iconDefault: '#8E83AA',
 			error: '#CF6679',
+			enabledGold: '#C4A46A',
 		},
 		backgroundColor: themes => ({
 			...themes('colors'),
@@ -139,6 +146,16 @@ module.exports = {
 				selected: 'rgba(255, 255, 255, 0.08)',
 			},
 		}),
+		backgroundImage: {
+			'gradients-socialLive': 'linear-gradient(180deg, #89EAFB 0%, #1377B0 100%)',
+			'gradients-greenBeach': 'linear-gradient(180deg, #00CEBA 0%, #008A7D 100%)',
+			'gradients-kashmir': 'linear-gradient(180deg, #6976FE 0%, #3339FF 100%)',
+			'gradients-frost': 'linear-gradient(180deg, #0069C4 0%, #00396A 100%)',
+			'gradients-cherry': 'linear-gradient(180deg, #FF652D 0%, #FF0000 100%)',
+			'gradients-sunset': 'linear-gradient(180deg, #FFBC00 0%, #FF8E00 100%)',
+			'gradients-orangeCoral': 'linear-gradient(180deg, #FF8200 0%, #FF2C00 100%)',
+			'gradients-pinky': 'linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)',
+		},
 		screens: {
 			// sm: '820px',
 			// base: '1060px',
@@ -170,11 +187,13 @@ module.exports = {
 			minWidth: {
 				...screenWidths,
 				...sidebarWidths,
+				...genericWidths,
 			},
 			maxWidth: {
 				...sizes,
 				...screenWidths,
 				...sidebarWidths,
+				...genericWidths,
 			},
 			borderOpacity: {
 				40: '0.4',

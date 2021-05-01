@@ -23,35 +23,37 @@ const SideBar: FunctionComponent<ChildComponentProps> = ({ history }) => {
 		<div
 			onMouseEnter={() => setOpenSidebar(true)}
 			onMouseLeave={() => setOpenSidebar(false)}
-			className="relative overflow-x-visible max-w-sidebar-closed min-w-sidebar-closed pointer-events-none h-full">
-			<Container
-				settings={sidebarSettings}
-				className={cn(
-					'h-full transition-all pointer-events-auto fixed overflow-x-hidden',
-					openSidebar ? 'min-w-sidebar-open max-w-sidebar-open' : 'min-w-sidebar-closed max-w-sidebar-closed'
-				)}
-				type={TCardTypes.CARD}>
-				<div className="w-full h-full py-6 px-4 flex flex-col justify-between">
-					<div>
-						<section className="mb-15 px-1">
-							<LogoArea openSidebar={openSidebar} />
-						</section>
-						<section>
-							{mapKeyValues(LAYOUT.SIDEBAR, (_: string, value: TSIDEBAR_ITEM) => (
-								<SidebarItem
-									key={value.ROUTE}
-									selected={value.ROUTE === pathname}
-									openSidebar={openSidebar}
-									sidebarItem={value}
-								/>
-							))}
-						</section>
+			className="overflow-x-visible max-w-sidebar-closed min-w-sidebar-closed pointer-events-none h-full">
+			<div className="fixed h-full">
+				<Container
+					settings={sidebarSettings}
+					className={cn(
+						'h-full transition-all pointer-events-auto fixed overflow-x-hidden',
+						openSidebar ? 'min-w-sidebar-open max-w-sidebar-open' : 'min-w-sidebar-closed max-w-sidebar-closed'
+					)}
+					type={TCardTypes.CARD}>
+					<div className="w-full h-full py-6 px-4 flex flex-col justify-between">
+						<div>
+							<section className="mb-15 px-1">
+								<LogoArea openSidebar={openSidebar} />
+							</section>
+							<section>
+								{mapKeyValues(LAYOUT.SIDEBAR, (_: string, value: TSIDEBAR_ITEM) => (
+									<SidebarItem
+										key={value.ROUTE}
+										selected={value.ROUTE === pathname}
+										openSidebar={openSidebar}
+										sidebarItem={value}
+									/>
+								))}
+							</section>
+						</div>
+						<div>
+							<SidebarBottom openSidebar={openSidebar} />
+						</div>
 					</div>
-					<div>
-						<SidebarBottom openSidebar={openSidebar} />
-					</div>
-				</div>
-			</Container>
+				</Container>
+			</div>
 		</div>
 	);
 };
