@@ -1,4 +1,6 @@
 import React, { FunctionComponent } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
 
 const widths = ['10%', '60%', '30%'];
 export const AllPools: FunctionComponent = () => {
@@ -12,21 +14,38 @@ export const AllPools: FunctionComponent = () => {
 	);
 };
 
-const PoolsTable: FunctionComponent = () => {
+const PoolsTable: FunctionComponent = observer(() => {
+	const { chainStore, queriesStore, priceStore } = useStore();
+
+	const queries = queriesStore.get(chainStore.current.chainId);
+
 	return (
 		<React.Fragment>
 			<table className="w-full">
 				<TableHeader />
 				<TableBody>
-					<TablePoolElement id="1" poolRatios="30% ATOM, 50% IRIS, 20% OSMO" totalValueLocked="$2,304" />
-					<TablePoolElement id="2" poolRatios="30% ATOM, 50% IRIS, 20% OSMO" totalValueLocked="$2,304" />
-					<TablePoolElement id="3" poolRatios="30% ATOM, 50% IRIS, 20% OSMO" totalValueLocked="$2,304" />
+					{queries.osmosis.queryGammPools.pools.map(pool => {
+						return (
+							<TablePoolElement
+								key={pool.id}
+								id={pool.id}
+								poolRatios={pool.poolRatios
+									.map(poolRatio => {
+										return `${poolRatio.ratio.maxDecimals(1).toString()}% ${poolRatio.amount.currency.coinDenom}`;
+									})
+									.join(', ')}
+								totalValueLocked={pool
+									.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!)
+									.toString()}
+							/>
+						);
+					})}
 				</TableBody>
 			</table>
 			<TablePagination />
 		</React.Fragment>
 	);
-};
+});
 
 const TableHeader: FunctionComponent = () => {
 	let i = 0;
