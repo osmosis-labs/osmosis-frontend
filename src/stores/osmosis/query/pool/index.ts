@@ -273,6 +273,13 @@ export class ObservablePool {
 		});
 	}
 
+	/**
+	 * 풀에 제공된 유동성의 fiat 총합을 계산한다.
+	 * 일단 풀에 제공된 유동성 중에서 fiat 가치를 알아낼 수 있는 코인을 선택하고
+	 * 그 코인의 fiat가치와 나머지 코인과의 spot price를 기반으로 총 가치를 알아낸다.
+	 * 풀의 유동성 중 어떤 코인도 fiat 가치를 알아낼 방법이 없으면 0를 반환한다.
+	 * QUESTION: 근데 유동성이 부족한 풀의 경우 이런 계산 방식은 문제가 될 수 있을듯...?
+	 */
 	readonly computeTotalValueLocked = computedFn(
 		(
 			priceStore: { getPrice(coinId: string, vsCurrency: string): number | undefined },
