@@ -6,6 +6,8 @@ import { useStore } from '../../stores';
 import { useRouteMatch } from 'react-router-dom';
 import { TModal } from '../../interfaces';
 import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
+import { CoinPretty, Dec, DecUtils } from '@keplr-wallet/unit';
+import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 
 const bgArray = [
 	'bg-gradients-socialLive',
@@ -42,10 +44,16 @@ export const PoolPage: FunctionComponent = observer(() => {
 const PoolInfoHeader: FunctionComponent<{
 	id: string;
 }> = observer(({ id }) => {
-	const { chainStore, queriesStore, priceStore } = useStore();
+	const { chainStore, queriesStore, priceStore, accountStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const pool = queries.osmosis.queryGammPools.getPool(id);
+
+	const account = accountStore.getAccount(chainStore.current.chainId);
+	const shareRatio = queries.osmosis.queryGammPoolShare.getGammShareRatio(account.bech32Address, id);
+
+	// `shareRatio`가 백분률로 오기 때문에 10^2를 나눠줘야한다.
+	const actualRatio = shareRatio.toDec().quo(DecUtils.getPrecisionDec(2));
 
 	return (
 		<React.Fragment>
@@ -65,7 +73,14 @@ const PoolInfoHeader: FunctionComponent<{
 						</ul>
 						<ul className="flex flex-col gap-6">
 							<OverviewLabelValue label="My Liquidity">
-								<h4>TODO</h4>
+								<h4>
+									{(() => {
+										const tvl = pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!);
+
+										// TODO: PricePretty에 mul과 quo도 추가하자...
+										return new PricePretty(tvl.fiatCurrency, tvl.toDec().mul(actualRatio)).toString();
+									})()}
+								</h4>
 							</OverviewLabelValue>
 							<OverviewLabelValue label="Swap Fee">
 								<h6>{pool.swapFee.toString()}%</h6>
@@ -81,10 +96,16 @@ const PoolInfoHeader: FunctionComponent<{
 const PoolCatalyst: FunctionComponent<{
 	id: string;
 }> = observer(({ id }) => {
-	const { chainStore, queriesStore } = useStore();
+	const { chainStore, queriesStore, accountStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const pool = queries.osmosis.queryGammPools.getPool(id);
+
+	const account = accountStore.getAccount(chainStore.current.chainId);
+	const shareRatio = queries.osmosis.queryGammPoolShare.getGammShareRatio(account.bech32Address, id);
+
+	// `shareRatio`가 백분률로 오기 때문에 10^2를 나눠줘야한다.
+	const actualRatio = shareRatio.toDec().quo(DecUtils.getPrecisionDec(2));
 
 	return (
 		<React.Fragment>
@@ -93,6 +114,7 @@ const PoolCatalyst: FunctionComponent<{
 					<h5 className="mb-7.5 ">Pool Catalyst</h5>
 					{/* TODO: 6개가 넘어갔을 때 어떡하지...? */}
 					<ul className="grid grid-cols-3 grid-rows-2 gap-8.75 w-full h-full">
+						{/* TODO: IntPretty에 mul과 quo도 추가하자... */}
 						{pool.poolRatios.map((poolRatio, i) => {
 							return (
 								<PoolAssetCard
@@ -104,7 +126,18 @@ const PoolCatalyst: FunctionComponent<{
 										.trim(true)
 										.shrink(true)
 										.toString()}
-									myAmount={'TODO'}
+									myAmount={new CoinPretty(
+										poolRatio.amount.currency,
+										poolRatio.amount
+											.toDec()
+											.mul(actualRatio)
+											.mul(DecUtils.getPrecisionDec(poolRatio.amount.currency.coinDecimals))
+											.truncate()
+									)
+										.maxDecimals(2)
+										.trim(true)
+										.shrink(true)
+										.toString()}
 								/>
 							);
 						})}

@@ -222,6 +222,12 @@ export class ObservablePool {
 	}
 
 	@computed
+	get totalShare(): IntPretty {
+		// 쉐어의 decimal은 6으로 고정되어 있다
+		return new IntPretty(this.pool.totalShare).precision(6);
+	}
+
+	@computed
 	get poolRatios(): {
 		ratio: IntPretty;
 		amount: CoinPretty;
