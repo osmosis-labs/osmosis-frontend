@@ -10,6 +10,7 @@ import { LINKS, TOKENS } from '../../constants';
 import { divide, fixed, multiply } from '../../utils/Big';
 import { isNumber } from '../../utils/scripts';
 import cn from 'clsx';
+import { TokenListDisplay } from '../../components/common/TokenListDisplay';
 
 const defaultState = {
 	isMax: false,
@@ -38,6 +39,11 @@ export const TradeClipboard: FunctionComponent = () => {
 		if (!isNumber(newAmount)) return;
 		setState(oldState => ({ ...oldState, from: { ...oldState.from, amount: `${newAmount}` } }));
 	}, []);
+
+	const setToken = React.useCallback((newToken: string, param: 'from' | 'to') => {
+		setState(oldState => ({ ...oldState, [param]: { ...oldState[param], token: newToken } }));
+	}, []);
+
 	return (
 		<Container
 			overlayClasses=""
@@ -55,15 +61,15 @@ export const TradeClipboard: FunctionComponent = () => {
 					</section>
 					<section className="mt-5 w-full mb-12.5">
 						<div className="relative">
+							<div className="mb-4.5">
+								<FromBox setToken={setToken} state={state.from} onInput={onInputFrom} />
+							</div>
+							<div className="mb-4.5">
+								<ToBox setToken={setToken} state={state} conversionRate={conversionRate} />
+							</div>
 							<div className="s-position-abs-center w-12 h-12 z-0">
 								<Img className="w-12 h-12" src="/public/assets/sidebar/icon-border_unselected.svg" />
 								<Img className="s-position-abs-center w-6 h-6" src="/public/assets/Icons/Switch.svg" />
-							</div>
-							<div className="mb-4.5">
-								<FromBox state={state.from} onInput={onInputFrom} />
-							</div>
-							<div className="mb-4.5">
-								<ToBox state={state} conversionRate={conversionRate} />
 							</div>
 						</div>
 						<FeesBox state={state} conversionRate={conversionRate} swapPercent={swapPercent} />
@@ -108,10 +114,10 @@ const FeesBox: FunctionComponent<IFeesBox> = ({ state, conversionRate, swapPerce
 						{state.from.token.toUpperCase()}
 					</p>
 				</div>
-				<div className="flex justify-between items-center">
+				<div className="grid grid-cols-5">
 					<p className="text-sm text-wireframes-lightGrey">Swap Fee</p>
-					<p className="text-sm text-wireframes-lightGrey">
-						{multiply(state.from.amount, swapPercent, TOKENS[state.to.token].DECIMALS)} {state.to.token.toUpperCase()} (
+					<p className="col-span-4 text-sm text-wireframes-lightGrey text-right truncate">
+						{multiply(state.from.amount, swapPercent, TOKENS[state.to.token].DECIMALS)} {state.to.token.toUpperCase()}(
 						{multiply(swapPercent, 100, 2)}%)
 					</p>
 				</div>
@@ -120,10 +126,10 @@ const FeesBox: FunctionComponent<IFeesBox> = ({ state, conversionRate, swapPerce
 	);
 };
 
-const FromBox: FunctionComponent<ITradeFromBox> = ({ state, onInput }) => {
-	// TODO : @Thunnini connect api that retrieves current applicable tokens
+const FromBox: FunctionComponent<ITradeFromBox> = ({ state, onInput, setToken }) => {
+	const [openSelector, setOpenSelector] = React.useState(false);
 	return (
-		<div className="bg-surface rounded-2xl py-4 pr-5 pl-4">
+		<div className="bg-surface rounded-2xl py-4 pr-5 pl-4 relative">
 			<section className="flex justify-between items-center mb-2">
 				<p>From</p>
 				<div className="flex items-center">
@@ -145,33 +151,41 @@ const FromBox: FunctionComponent<ITradeFromBox> = ({ state, onInput }) => {
 				</div>
 			</section>
 			<section className="flex justify-between items-center">
-				<TokenDisplay token={state.token} />
+				<TokenDisplay openSelector={openSelector} setOpenSelector={setOpenSelector} token={state.token} />
 				<TokenAmountInput state={state} onInput={onInput} />
 			</section>
+			<div
+				style={{ top: 'calc(100% - 16px)' }}
+				className={cn('bg-surface rounded-b-2xl z-10 left-0 w-full', openSelector ? 'absolute' : 'hidden')}>
+				<TokenListDisplay close={() => setOpenSelector(false)} onSelect={newToken => setToken(newToken, 'from')} />
+			</div>
 		</div>
 	);
 };
 
-const TokenAmountInput: FunctionComponent<ITradeFromBox> = ({ state, onInput }) => {
+const TokenAmountInput: FunctionComponent<ITokenAmountInput> = ({ state, onInput }) => {
 	// TODO : @Thunnini integrate proper token price
 	const tokenPrice = 12.5;
 	return (
-		<div className="flex flex-col items-end">
+		<div style={{ maxWidth: '250px' }} className="flex flex-col items-end">
 			<input
+				style={{ maxWidth: '250px' }}
 				onChange={e => onInput(e.currentTarget.value)}
 				value={state.amount}
 				placeholder="0"
 				className="s-tradebox-input"
 			/>
-			<p className="font-body font-semibold text-sm">≈ ${multiply(state.amount, tokenPrice, 2)}</p>
+			<p className="font-body font-semibold text-sm truncate w-full text-right">
+				≈ ${multiply(state.amount, tokenPrice, 2)}
+			</p>
 		</div>
 	);
 };
 
-const ToBox: FunctionComponent<ITradeToBox> = ({ state, conversionRate }) => {
-	// TODO : @Thunnini connect api that retrieves current applicable tokens
+const ToBox: FunctionComponent<ITradeToBox> = ({ setToken, state, conversionRate }) => {
+	const [openSelector, setOpenSelector] = React.useState(false);
 	return (
-		<div className="bg-surface rounded-2xl py-4 pr-5 pl-4">
+		<div className="bg-surface rounded-2xl py-4 pr-5 pl-4 relative">
 			<section className="flex justify-between items-center mb-2">
 				<p>To</p>
 				<div className="flex items-center">
@@ -192,36 +206,53 @@ const ToBox: FunctionComponent<ITradeToBox> = ({ state, conversionRate }) => {
 					</button>
 				</div>
 			</section>
-			<section className="flex justify-between items-center">
-				<TokenDisplay token={state.to.token} />
-				<div className="flex justify-end items-start">
-					<h5 className={cn('text-xl font-title font-semibold', { 'opacity-40': state.from.amount === '' })}>
+			<section className="grid grid-cols-2">
+				<TokenDisplay setOpenSelector={setOpenSelector} openSelector={openSelector} token={state.to.token} />
+				<div className="text-right flex flex-col justify-center h-full">
+					<h5
+						className={cn('text-xl font-title font-semibold truncate', {
+							'opacity-40': state.from.amount === '',
+						})}>
 						{multiply(state.from.amount, conversionRate, TOKENS[state.to.token]?.DECIMALS)}
 					</h5>
 				</div>
 			</section>
+			<div
+				style={{ top: 'calc(100% - 16px)' }}
+				className={cn('bg-surface rounded-b-2xl z-10 left-0 w-full', openSelector ? 'absolute' : 'hidden')}>
+				<TokenListDisplay close={() => setOpenSelector(false)} onSelect={newToken => setToken(newToken, 'to')} />
+			</div>
 		</div>
 	);
 };
 
-const TokenDisplay: FunctionComponent<Record<'token', string>> = ({ token }) => {
+const TokenDisplay: FunctionComponent<ITokenDisplay> = ({ token, openSelector, setOpenSelector }) => {
 	return (
 		<div className="flex items-center">
 			<figure
 				style={{ width: '56px', height: '56px' }}
 				className="flex justify-center items-center rounded-full border-secondary-200 border mr-3">
-				<Img loadingSpin style={{ width: '44px', height: '44px' }} src={LINKS.GET_TOKEN_IMG('eth')} />
+				<Img loadingSpin style={{ width: '44px', height: '44px' }} src={LINKS.GET_TOKEN_IMG(token)} />
 			</figure>
 			<div className="flex flex-col">
 				<div className="flex items-center">
 					<h5 className="leading-none font-semibold">{upperCase(token)}</h5>
-					<Img className="h-6 w-8 ml-1 p-2" src="/public/assets/Icons/Down.svg" />
+					<Img
+						onClick={() => setOpenSelector((v: boolean) => !v)}
+						className={cn('h-6 w-8 ml-1 p-2 cursor-pointer opacity-40 hover:opacity-100', openSelector ? 's-flip' : '')}
+						src="/public/assets/Icons/Down.svg"
+					/>
 				</div>
 				<p className="text-sm text-iconDefault">{TOKENS[token]?.LONG_NAME}</p>
 			</div>
 		</div>
 	);
 };
+interface ITokenDisplay {
+	token: string;
+	openSelector: boolean;
+	setOpenSelector: (bool: boolean | ((bool: boolean) => boolean)) => void;
+}
 
 const ClipboardClip: FunctionComponent = () => (
 	<div
@@ -279,12 +310,19 @@ interface ITradeClipboardState {
 	to: Record<'token', string>;
 }
 
+interface ITokenAmountInput {
+	state: TTradeSide;
+	onInput: (input: string) => void;
+}
+
 interface ITradeFromBox {
+	setToken: (newToken: string, param: 'from' | 'to') => void;
 	state: TTradeSide;
 	onInput: (input: string) => void;
 }
 
 interface ITradeToBox {
+	setToken: (newToken: string, param: 'from' | 'to') => void;
 	state: ITradeClipboardState;
 	conversionRate: number;
 }

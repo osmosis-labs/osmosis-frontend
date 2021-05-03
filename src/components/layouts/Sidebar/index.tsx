@@ -18,12 +18,12 @@ interface ChildComponentProps {
 const SideBar: FunctionComponent<ChildComponentProps> = ({ history }) => {
 	const pathname = history?.location?.pathname;
 
-	const [openSidebar, setOpenSidebar] = React.useState<boolean>(false);
+	const [openSidebar, setOpenSidebar] = React.useState<boolean>(true);
 	return (
 		<div
-			onMouseEnter={() => setOpenSidebar(true)}
-			onMouseLeave={() => setOpenSidebar(false)}
-			className="overflow-x-visible max-w-sidebar-closed min-w-sidebar-closed pointer-events-none h-full">
+			// onMouseEnter={() => setOpenSidebar(true)}
+			// onMouseLeave={() => setOpenSidebar(false)}
+			className="overflow-x-visible max-w-sidebar-open min-w-sidebar-open pointer-events-none h-full z-50">
 			<div className="fixed h-full">
 				<Container
 					settings={sidebarSettings}

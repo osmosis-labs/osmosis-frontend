@@ -1,8 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import '../../styles/index.scss';
-import '../../styles/globals.scss';
 import { TradeClipboard } from './TradeClipboard';
 
 export const MainPage: FunctionComponent = observer(() => {
@@ -16,7 +14,9 @@ export const MainPage: FunctionComponent = observer(() => {
 			<div />
 			<div className="grid w-full h-full" style={{ gridTemplateRows: '2fr 648px 3fr' }}>
 				<div />
-				<TradeClipboard />
+				<div style={{ maxWidth: '520px' }}>
+					<TradeClipboard />
+				</div>
 				<div />
 			</div>
 			<div />

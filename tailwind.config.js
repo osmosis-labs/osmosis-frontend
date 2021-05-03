@@ -18,6 +18,7 @@ const spacing = {
 	7.5: '30px',
 	8: '32px',
 	8.75: '35px',
+	9: '36px',
 	10: '40px',
 	12.5: '50px',
 	15: '60px',
@@ -56,6 +57,7 @@ const sizes = {
 const screenWidths = {
 	// 'screen-md': 'var(--screens-md)',
 	'screen-lg': 'var(--screens-lg)',
+	'true-screen': 'calc(100vw - var(--sidebar-open))',
 };
 const sidebarWidths = {
 	'sidebar-open': 'var(--sidebar-open)',
@@ -63,6 +65,7 @@ const sidebarWidths = {
 };
 const genericWidths = {
 	table: '1000px',
+	max: '1920px',
 };
 module.exports = {
 	future: {
@@ -96,6 +99,7 @@ module.exports = {
 		colors: {
 			white: {
 				high: 'rgba(255, 255, 255, 0.95)',
+				emphasis: 'rgba(255, 255, 255, 0.87)',
 				mid: 'rgba(255, 255, 255, 0.6)',
 				disabled: 'rgba(255, 255, 255, 0.38)',
 				faint: 'rgba(255, 255, 255, 0.12)',
@@ -137,6 +141,9 @@ module.exports = {
 			iconDefault: '#8E83AA',
 			error: '#CF6679',
 			enabledGold: '#C4A46A',
+			pass: '#34EF52',
+			missionError: '#EF3456',
+			black: '#000000',
 		},
 		backgroundColor: themes => ({
 			...themes('colors'),
@@ -144,6 +151,9 @@ module.exports = {
 				hover: 'rgba(255, 255, 255, 0.04)',
 				focus: 'rgba(255, 255, 255, 0.12)',
 				selected: 'rgba(255, 255, 255, 0.08)',
+			},
+			button: {
+				hover: 'rgba(196, 164, 106, 0.08)',
 			},
 		}),
 		backgroundImage: {
@@ -180,6 +190,7 @@ module.exports = {
 				screen: '100vh',
 			},
 			width: {
+				screen: '100vw',
 				fit: 'fit-content',
 				...sizes,
 				...screenWidths,

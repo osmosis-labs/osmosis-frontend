@@ -12,7 +12,7 @@ export class RootStore {
 	public readonly chainStore: ChainStore;
 	public readonly accountStore: AccountStore;
 	public readonly queriesStore: QueriesStore;
-	public readonly layoutStore: LayoutStore;
+	public layoutStore: LayoutStore;
 
 	constructor() {
 		// chain related stores

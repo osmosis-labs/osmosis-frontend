@@ -8,11 +8,15 @@ import { GovernancePage } from './pages/governance';
 import { AirdropPage } from './pages/airdrop';
 import { RouteWrapper } from './components/layouts/RouteWrapper';
 import { NotFoundPage } from './pages/NotFound';
+import './styles/index.scss';
+import './styles/globals.scss';
+import { ModalContainer } from './components/containers/ModalContainer';
 
 const Router: FunctionComponent = () => {
 	return (
 		<StoreProvider>
-			<div className="min-h-sidebar-minHeight min-w-screen-lg h-screen bg-background">
+			<ModalContainer />
+			<div className="min-h-sidebar-minHeight min-w-screen-lg h-screen bg-background z-0">
 				<BrowserRouter>
 					<Switch>
 						<Route exact path="/">

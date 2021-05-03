@@ -2,18 +2,22 @@
 export const TOKENS: Record<string, IToken> = {
 	eth: {
 		LONG_NAME: 'Ethereum',
-		GECKO_ID: 'ethereum',
+		// GECKO_ID: 'ethereum',
 		DECIMALS: 18,
 	},
 	atom: {
 		LONG_NAME: 'Cosmos',
-		GECKO_ID: 'cosmos',
+		// GECKO_ID: 'cosmos',
+		DECIMALS: 6,
+	},
+	akt: {
+		LONG_NAME: 'Akash',
 		DECIMALS: 6,
 	},
 };
 
-interface IToken {
+export interface IToken {
 	LONG_NAME: string;
-	GECKO_ID: string;
+	// GECKO_ID: string;
 	DECIMALS: number;
 }

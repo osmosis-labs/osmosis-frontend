@@ -18,3 +18,8 @@ export enum TCardTypes {
 	SURFACE,
 	CARD,
 }
+
+export enum TModal {
+	INIT,
+	NEW_POOL,
+}

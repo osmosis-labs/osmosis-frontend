@@ -25,7 +25,35 @@ const bgArray = [
 	'bg-gradients-sunset',
 ];
 
+const defaulMyData = times(3, i => {
+	return {
+		num: i + 1,
+		name: 'Lab',
+		apy: 3.25,
+		liquidity: 343234.53,
+		tokens: ['atom', 'iris', 'scrt'],
+	} as IPoolData;
+});
+export const MyPools: FunctionComponent = () => {
+	// TODO : @Thunnini fetch my pools
+	const [state, setState] = React.useState<IPoolData[]>(defaulMyData);
+	const [selected, setSelected] = React.useState<number>();
+	return (
+		<section>
+			<h5 className="mb-7.5 ">My Pools</h5>
+			<ul className="grid grid-cols-3 gap-8.75 w-full h-full">
+				{map(state, (pool, cnt) => {
+					return (
+						<PoolCard key={pool.num} data={pool} selected={cnt === selected} setSelected={() => setSelected(cnt)} />
+					);
+				})}
+			</ul>
+		</section>
+	);
+};
+
 export const IncentivizedPools: FunctionComponent = () => {
+	// TODO : @Thunnini fetch pools
 	const [state, setState] = React.useState<IPoolData[]>(defaultData);
 	const [selected, setSelected] = React.useState<number>();
 	return (
@@ -67,25 +95,14 @@ const PoolCard: FunctionComponent<IPoolCard> = ({ data, selected, setSelected })
 				</div>
 			</section>
 			<section className="flex items-center">
-				<div className="border-r border-enabledGold pr-10">
+				<div className="border-r border-enabledGold pr-5">
 					<p className="text-sm text-white-mid mb-2">APY</p>
-					<h6>{applyOptionalDecimal(multiply(data.apy, 100, 2))}%</h6>
+					<h6 className="text-white-emphasis">{applyOptionalDecimal(multiply(data.apy, 100, 2))}%</h6>
 				</div>
-				<div className="ml-8 relative">
-					<figure className="bg-primary-50 w-10 h-10 rounded-full border border-white-faint" />
-					<figure
-						style={{ left: '27px' }}
-						className="bg-primary-100 w-10 h-10 rounded-full absolute top-0 border border-white-faint"
-					/>
-					<figure
-						style={{ left: '54px' }}
-						className="bg-primary-200 w-10 h-10 rounded-full absolute top-0 border border-white-faint"
-					/>
+				<div className="ml-5">
+					<p className="text-sm text-white-mid mb-2">Liquidity</p>
+					<h6 className="text-white-emphasis">{formatUSD(data.liquidity)}</h6>
 				</div>
-			</section>
-			<section className="mt-4">
-				<p className="text-sm text-white-mid mb-2">Liquidity</p>
-				<h6>{formatUSD(data.liquidity)}</h6>
 			</section>
 		</li>
 	);
