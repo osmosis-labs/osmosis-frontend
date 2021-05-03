@@ -1,13 +1,15 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { Observer } from 'mobx-react-lite';
 
 import { createRootStore, RootStore } from './root';
 
 const storeContext = React.createContext<RootStore | null>(null);
 
-export const StoreProvider: FunctionComponent = ({ children }) => (
-	<storeContext.Provider value={createRootStore()}>{children}</storeContext.Provider>
-);
+export const StoreProvider: FunctionComponent = ({ children }) => {
+	const [stores] = useState(() => createRootStore());
+
+	return <storeContext.Provider value={stores}>{children}</storeContext.Provider>;
+};
 
 export const StoreConsumer: FunctionComponent<{
 	children: (rootStore: RootStore) => React.ReactNode;

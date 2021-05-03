@@ -36,7 +36,7 @@ export const NewPool: FunctionComponent = () => {
 };
 
 export const Pool: FunctionComponent<Record<'data', TPool>> = ({ data }) => {
-	return <li></li>;
+	return <li />;
 };
 
 export interface IPoolState {
