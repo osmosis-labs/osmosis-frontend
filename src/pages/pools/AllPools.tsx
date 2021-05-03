@@ -12,8 +12,6 @@ const defaultState = times(12, i => {
 	return {
 		id: i + 1,
 		liquidity: 24350.831,
-		volume: 250.342,
-		fees: 360.342,
 		tokenInfo: [
 			{ token: 'atom', percent: 0.3 },
 			{ token: 'iris', percent: 0.5 },
@@ -27,13 +25,11 @@ export const AllPools: FunctionComponent = () => {
 	return (
 		<section>
 			<h5 className="mb-7.5">All Pools</h5>
-			<section className="min-w-table">
+			<table className="min-w-table w-full">
 				<TableHeader />
-				<div>
-					<TableBody data={state} rowHeight={TABLE.ROW_HEIGHT} />
-				</div>
+				<TableBody data={state} rowHeight={TABLE.ROW_HEIGHT} />
 				{/*<PoolsTable />*/}
-			</section>
+			</table>
 		</section>
 	);
 };
@@ -48,11 +44,11 @@ const TableBody: FunctionComponent<ITableBody> = ({ data, rowHeight }) => {
 	}, [pager.currentPage, data]);
 	return (
 		<>
-			<div style={{ minHeight: `${Math.min(TABLE.ROW_CNT, data.length) * TABLE.ROW_HEIGHT}px` }} className="w-full">
+			<tbody className="w-full">
 				{map(paginatedData, pool => (
 					<TableRow key={pool.id} data={pool} rowHeight={rowHeight} />
 				))}
-			</div>
+			</tbody>
 			<TablePagination pager={pager} setCurrentPage={newPage => setPager(v => ({ ...v, currentPage: newPage }))} />
 		</>
 	);
@@ -89,13 +85,13 @@ interface ITablePagination {
 const TableRow: FunctionComponent<ITableRow> = ({ data, rowHeight }) => {
 	let i = 0;
 	return (
-		<ul
+		<tr
 			style={{ height: `${rowHeight}px` }}
-			className="flex items-center pl-7.5 pr-8.75 border-b border-white-faint text-white-emphasis hover:bg-card cursor-pointer group">
-			<li className="px-1" style={{ width: widths[i++] }}>
+			className="flex items-center pl-7.5 pr-8.75 border-b border-white-faint text-white-emphasis hover:bg-card cursor-pointer group w-full">
+			<td className="px-1" style={{ width: widths[i++] }}>
 				<p className="font-semibold text-white-disabled">{data.id}</p>
-			</li>
-			<li className="px-1 group-hover:text-enabledGold" style={{ width: widths[i++] }}>
+			</td>
+			<td className="px-1 group-hover:text-enabledGold" style={{ width: widths[i++] }}>
 				<p>
 					{map(data.tokenInfo, (info, i) => (
 						<span key={i}>
@@ -104,17 +100,11 @@ const TableRow: FunctionComponent<ITableRow> = ({ data, rowHeight }) => {
 						</span>
 					))}
 				</p>
-			</li>
-			<li className="px-1" style={{ width: widths[i++] }}>
+			</td>
+			<td className="px-1" style={{ width: widths[i++] }}>
 				<p>{formatUSD(data.liquidity)}</p>
-			</li>
-			<li className="px-1" style={{ width: widths[i++] }}>
-				<p>{formatUSD(data.volume)}</p>
-			</li>
-			<li className="px-1 flex justify-end items-center" style={{ width: widths[i++] }}>
-				<p>{formatUSD(data.fees)}</p>
-			</li>
-		</ul>
+			</td>
+		</tr>
 	);
 };
 
