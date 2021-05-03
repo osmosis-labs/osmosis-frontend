@@ -1,6 +1,9 @@
 import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import * as querystring from 'querystring';
+import clsx from 'clsx';
 
 const widths = ['10%', '60%', '30%'];
 export const AllPools: FunctionComponent = () => {
@@ -15,16 +18,23 @@ export const AllPools: FunctionComponent = () => {
 };
 
 const PoolsTable: FunctionComponent = observer(() => {
-	const { chainStore, queriesStore, priceStore } = useStore();
+	const location = useLocation();
+	const params = querystring.parse(location.search.replace('?', '')) as {
+		page?: string;
+	};
+	const page = params.page && !Number.isNaN(parseInt(params.page)) ? parseInt(params.page) : 1;
 
+	const { chainStore, queriesStore, priceStore } = useStore();
 	const queries = queriesStore.get(chainStore.current.chainId);
+
+	const pools = queries.osmosis.queryGammPools.getPoolsPagenation(5, page).pools;
 
 	return (
 		<React.Fragment>
 			<table className="w-full">
 				<TableHeader />
 				<TableBody>
-					{queries.osmosis.queryGammPools.pools.map(pool => {
+					{pools.map(pool => {
 						return (
 							<TablePoolElement
 								key={pool.id}
@@ -42,7 +52,7 @@ const PoolsTable: FunctionComponent = observer(() => {
 					})}
 				</TableBody>
 			</table>
-			<TablePagination />
+			<TablePagination page={page} />
 		</React.Fragment>
 	);
 });
@@ -94,21 +104,36 @@ const TablePoolElement: FunctionComponent<{
 	);
 };
 
-const TablePagination: FunctionComponent = () => {
+const TablePagination: FunctionComponent<{
+	page: number;
+}> = ({ page: propPage }) => {
+	// TODO: Total pool 갯수를 통해서 페이지네이션 하기
+	const pages = [1, 2, 3];
+
+	const history = useHistory();
+
 	return (
 		<div className="w-full p-4 flex items-center justify-center">
+			{pages.map(page => {
+				return (
+					<Link
+						key={page.toString()}
+						to={`/pools?page=${page}`}
+						className={clsx('flex items-center rounded-md h-9 px-3 text-sm text-secondary-200', {
+							'border border-secondary-200': page === propPage,
+						})}>
+						<p>{page}</p>
+					</Link>
+				);
+			})}
 			<button
 				type="button"
-				className="flex items-center rounded-md h-9 px-3 text-sm text-secondary-200 border border-secondary-200">
-				<p>1</p>
-			</button>
-			<button type="button" className="flex items-center rounded-md h-9 px-3 text-sm text-secondary-200">
-				<p>2</p>
-			</button>
-			<button type="button" className="flex items-center rounded-md h-9 px-3 text-sm text-secondary-200">
-				<p>3</p>
-			</button>
-			<button type="button" className="flex items-center h-9 text-secondary-200">
+				className="flex items-center h-9 text-secondary-200"
+				onClick={e => {
+					e.preventDefault();
+
+					history.push(`/pools?page=${propPage + 1}`);
+				}}>
 				<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24">
 					<g>
 						<g>
