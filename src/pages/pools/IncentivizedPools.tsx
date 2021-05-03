@@ -68,7 +68,7 @@ export const IncentivizedPools: FunctionComponent = () => {
 
 const PoolCard: FunctionComponent<IPoolCard> = ({ data }) => {
 	return (
-		<li className="rounded-xl bg-card py-6 px-7.5 border border-transparent hover:border-enabledGold border-opacity-40">
+		<li className="rounded-xl bg-card py-6 px-7.5 cursor-pointer border border-transparent hover:border-enabledGold border-opacity-40">
 			<section className="flex mb-4">
 				<figure
 					style={{ width: '84px', height: '84px' }}
