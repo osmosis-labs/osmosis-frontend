@@ -37,15 +37,13 @@ const defaulMyData = times(3, i => {
 export const MyPools: FunctionComponent = () => {
 	// TODO : @Thunnini fetch my pools
 	const [state, setState] = React.useState<IPoolData[]>(defaulMyData);
-	const [selected, setSelected] = React.useState<number>();
+
 	return (
 		<section>
 			<h5 className="mb-7.5 ">My Pools</h5>
 			<ul className="grid grid-cols-3 gap-8.75 w-full h-full">
-				{map(state, (pool, cnt) => {
-					return (
-						<PoolCard key={pool.num} data={pool} selected={cnt === selected} setSelected={() => setSelected(cnt)} />
-					);
+				{map(state, pool => {
+					return <PoolCard key={pool.num} data={pool} />;
 				})}
 			</ul>
 		</section>
@@ -55,28 +53,22 @@ export const MyPools: FunctionComponent = () => {
 export const IncentivizedPools: FunctionComponent = () => {
 	// TODO : @Thunnini fetch pools
 	const [state, setState] = React.useState<IPoolData[]>(defaultData);
-	const [selected, setSelected] = React.useState<number>();
+
 	return (
 		<section>
 			<h5 className="mb-7.5 ">Incentivized Pools</h5>
 			<ul className="grid grid-cols-3 grid-rows-2 gap-8.75 w-full h-full">
-				{map(state, (pool, cnt) => {
-					return (
-						<PoolCard key={pool.num} data={pool} selected={cnt === selected} setSelected={() => setSelected(cnt)} />
-					);
+				{map(state, pool => {
+					return <PoolCard key={pool.num} data={pool} />;
 				})}
 			</ul>
 		</section>
 	);
 };
 
-const PoolCard: FunctionComponent<IPoolCard> = ({ data, selected, setSelected }) => {
+const PoolCard: FunctionComponent<IPoolCard> = ({ data }) => {
 	return (
-		<li
-			onClick={setSelected}
-			className={cn('rounded-xl bg-card py-6 px-7.5 border border-transparent', {
-				'border border-enabledGold border-opacity-40': selected,
-			})}>
+		<li className="rounded-xl bg-card py-6 px-7.5 border border-transparent hover:border-enabledGold border-opacity-40">
 			<section className="flex mb-4">
 				<figure
 					style={{ width: '84px', height: '84px' }}
@@ -109,8 +101,6 @@ const PoolCard: FunctionComponent<IPoolCard> = ({ data, selected, setSelected })
 };
 interface IPoolCard {
 	data: IPoolData;
-	selected: boolean;
-	setSelected: () => void;
 }
 
 interface IPoolData {
