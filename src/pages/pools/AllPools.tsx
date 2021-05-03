@@ -6,7 +6,7 @@ import map from 'lodash-es/map';
 import { multiply } from '../../utils/Big';
 import { applyOptionalDecimal, formatUSD } from '../../utils/format';
 
-const widths = ['10%', '40%', '20%', '15%', '15%'];
+const widths = ['10%', '60%', '30%'];
 
 const defaultState = times(12, i => {
 	return {
@@ -24,7 +24,6 @@ const defaultState = times(12, i => {
 export const AllPools: FunctionComponent = () => {
 	// TODO : @Thunnini update all pools with real data
 	const [state, setState] = React.useState<TPool[]>(defaultState);
-	console.log(Math.min(TABLE.ROW_CNT, state.length) * TABLE.ROW_HEIGHT);
 	return (
 		<section>
 			<h5 className="mb-7.5">All Pools</h5>
@@ -33,6 +32,7 @@ export const AllPools: FunctionComponent = () => {
 				<div>
 					<TableBody data={state} rowHeight={TABLE.ROW_HEIGHT} />
 				</div>
+				{/*<PoolsTable />*/}
 			</section>
 		</section>
 	);
@@ -121,25 +121,95 @@ const TableRow: FunctionComponent<ITableRow> = ({ data, rowHeight }) => {
 const TableHeader: FunctionComponent = () => {
 	let i = 0;
 	return (
-		<ul className="h-11 w-full pl-7.5 pr-8.75 flex items-center rounded-t-2xl bg-card border-b border-white-faint">
-			<li style={{ width: `${widths[i++]}` }} className="flex items-center">
-				<p className="font-semibold text-white-disabled">ID</p>
-			</li>
-			<li style={{ width: `${widths[i++]}` }} className="flex items-center">
-				<p className="font-semibold text-white-disabled">Token Info</p>
-			</li>
-			<li style={{ width: `${widths[i++]}` }} className="flex items-center">
-				<p className="font-semibold text-white-disabled">TVL</p>
-			</li>
-			<li style={{ width: `${widths[i++]}` }} className="flex items-center">
-				<p className="font-semibold text-white-disabled">VOLUME</p>
-			</li>
-			<li style={{ width: `${widths[i++]}` }} className="flex items-center justify-end">
-				<p className="font-semibold text-white-disabled">Tx Fee (24h)</p>
-			</li>
-		</ul>
+		<thead className="h-11 w-full pl-7.5 pr-8.75 flex items-center rounded-t-2xl bg-card">
+			<tr style={{ width: `${widths[i++]}` }} className="flex items-center">
+				<th>
+					<p className="font-semibold text-white-disabled">ID</p>
+				</th>
+			</tr>
+			<tr style={{ width: `${widths[i++]}` }} className="flex items-center">
+				<th>
+					<p className="font-semibold text-white-disabled">Token Info</p>
+				</th>
+			</tr>
+			<tr style={{ width: `${widths[i++]}` }} className="flex items-center">
+				<th>
+					<p className="font-semibold text-white-disabled">TVL</p>
+				</th>
+			</tr>
+		</thead>
 	);
 };
+
+// const PoolsTable: FunctionComponent = () => {
+// 	return (
+// 		<React.Fragment>
+// 			<table className="w-full">
+// 				<TableHeader />
+// 				<TableBody>
+// 					<TablePoolElement id="1" poolRatios="30% ATOM, 50% IRIS, 20% OSMO" totalValueLocked="$2,304" />
+// 					<TablePoolElement id="2" poolRatios="30% ATOM, 50% IRIS, 20% OSMO" totalValueLocked="$2,304" />
+// 					<TablePoolElement id="3" poolRatios="30% ATOM, 50% IRIS, 20% OSMO" totalValueLocked="$2,304" />
+// 				</TableBody>
+// 			</table>
+// 			<TablePagination />
+// 		</React.Fragment>
+// 	);
+// };
+
+// const TableBody: FunctionComponent = ({ children }) => {
+// 	return <tbody className="w-full">{children}</tbody>;
+// };
+
+// const TablePoolElement: FunctionComponent<{
+// 	id: string;
+// 	poolRatios: string;
+// 	totalValueLocked: string;
+// }> = ({ id, poolRatios, totalValueLocked }) => {
+// 	return (
+// 		<tr className="h-14 w-full pl-7.5 pr-8.75 flex flex-row items-center group hover:bg-container-hover cursor-pointer border-b">
+// 			<td style={{ width: `${widths[0]}` }} className="flex items-center text-white-disabled">
+// 				<p>{id}</p>
+// 			</td>
+// 			<td style={{ width: `${widths[1]}` }} className="flex items-center group-hover:text-secondary-200">
+// 				<p>{poolRatios}</p>
+// 			</td>
+// 			<td style={{ width: `${widths[2]}` }} className="flex items-center">
+// 				<p>{totalValueLocked}</p>
+// 			</td>
+// 		</tr>
+// 	);
+// };
+
+// const TablePagination: FunctionComponent = () => {
+// 	return (
+// 		<div className="w-full p-4 flex items-center justify-center">
+// 			<button
+// 				type="button"
+// 				className="flex items-center rounded-md h-9 px-3 text-sm text-secondary-200 border border-secondary-200">
+// 				<p>1</p>
+// 			</button>
+// 			<button type="button" className="flex items-center rounded-md h-9 px-3 text-sm text-secondary-200">
+// 				<p>2</p>
+// 			</button>
+// 			<button type="button" className="flex items-center rounded-md h-9 px-3 text-sm text-secondary-200">
+// 				<p>3</p>
+// 			</button>
+// 			<button type="button" className="flex items-center h-9 text-secondary-200">
+// 				<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24">
+// 					<g>
+// 						<g>
+// 							<path
+// 								className="fill-current"
+// 								d="M9.759 7c.196 0 .391.072.54.214l4.437 4.18a.823.823 0 010 1.21l-4.433 4.184a.798.798 0 01-1.169-.094c-.222-.293-.157-.702.115-.96L13.206 12 9.253 8.267c-.288-.272-.341-.72-.077-1.014A.78.78 0 019.76 7z"
+// 							/>
+// 						</g>
+// 					</g>
+// 				</svg>
+// 			</button>
+// 		</div>
+// 	);
+// };
 
 interface TPool {
 	id: number;

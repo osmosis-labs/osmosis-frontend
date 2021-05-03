@@ -210,6 +210,10 @@ module.exports = {
 				40: '0.4',
 				75: '0.75',
 			},
+			borderColor: theme => ({
+				...theme('colors'),
+				DEFAULT: 'rgba(255, 255, 255, 0.12)',
+			}),
 			zIndex: {
 				50: 50,
 				60: 60,
