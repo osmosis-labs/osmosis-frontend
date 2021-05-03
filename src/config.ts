@@ -15,7 +15,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     bip44: {
       coinType: 118
     },
-    bech32Config: Bech32Address.defaultBech32Config("cosmos"),
+    bech32Config: Bech32Address.defaultBech32Config("osmo"),
     currencies: [
       {
         coinDenom: "OSMO",
