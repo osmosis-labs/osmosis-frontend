@@ -309,8 +309,8 @@ export class ObservablePool {
 
 			for (const ratio of ratios) {
 				const spotPrice = this.pool.calculateSpotPriceWithoutSwapFee(
-					ratio.amount.currency.coinMinimalDenom,
-					currencyWithCoingeckoId.coinMinimalDenom
+					currencyWithCoingeckoId.coinMinimalDenom,
+					ratio.amount.currency.coinMinimalDenom
 				);
 
 				const price = spotPrice.mul(new Dec(basePrice.toString()));
