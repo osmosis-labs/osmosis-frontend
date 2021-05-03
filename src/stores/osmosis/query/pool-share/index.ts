@@ -4,15 +4,43 @@ import { ObservableQueryCosmosBalances } from '@keplr-wallet/stores/build/query/
 import { CoinPretty, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
 import { Currency } from '@keplr-wallet/types';
 import { ObservableQueryPools } from '../pools';
+import { computedFn } from 'mobx-utils';
 
 // TODO: 수정해야됨. 좀 병맛같은 구현
+// 일단 이 스토어를 사용하게 되면 계속 Balances를 observe하는 상태가 되서
+// Balances가 언제 observe, unobserve될 지 예측하기 힘들어진다...
 export class ObservableQueryGammPoolShare {
 	constructor(
 		protected readonly queryPools: ObservableQueryPools,
 		protected readonly queryBalances: ObservableQueryBalances
 	) {}
 
+	/**
+	 * 특정 주소가 소유하고 있는 모든 share들의 pool id 배열을 반환한다.
+	 */
+	readonly getOwnPools = computedFn((bech32Address: string): string[] => {
+		// 어쨋든 stakable는 모든 네이티브 토큰들을 반환하긴 한다...
+		const balances = (this.queryBalances.getQueryBech32Address(bech32Address)
+			.stakable as unknown) as ObservableQueryCosmosBalances;
+
+		if (!balances.response) {
+			return [];
+		}
+
+		const result: string[] = [];
+
+		for (const primitive of balances.response.data.result) {
+			// Pool share 토큰은 `gamm/pool/${poolId}` 형태이다.
+			if (primitive.denom.startsWith('gamm/pool/')) {
+				result.push(primitive.denom.replace('gamm/pool/', ''));
+			}
+		}
+
+		return result;
+	});
+
 	getGammShare(bech32Address: string, poolId: string): CoinPretty {
+		// 어쨋든 stakable는 모든 네이티브 토큰들을 반환하긴 한다...
 		const balances = (this.queryBalances.getQueryBech32Address(bech32Address)
 			.stakable as unknown) as ObservableQueryCosmosBalances;
 

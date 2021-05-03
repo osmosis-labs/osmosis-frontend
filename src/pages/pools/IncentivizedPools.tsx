@@ -6,13 +6,15 @@ import { Img } from '../../components/common/Img';
 import { multiply } from '../../utils/Big';
 import { applyOptionalDecimal, formatUSD } from '../../utils/format';
 import { useHistory } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
 
 const defaultData = times(6, i => {
 	return {
 		num: i + 1,
 		name: 'Lab',
 		apy: 3.25,
-		liquidity: 343234.53,
+		liquidity: '$343234',
 		tokens: ['atom', 'iris', 'scrt'],
 	} as IPoolData;
 });
@@ -31,13 +33,36 @@ const defaulMyData = times(3, i => {
 		num: i + 1,
 		name: 'Lab',
 		apy: 3.25,
-		liquidity: 343234.53,
+		liquidity: '$343234',
 		tokens: ['atom', 'iris', 'scrt'],
 	} as IPoolData;
 });
-export const MyPools: FunctionComponent = () => {
-	// TODO : @Thunnini fetch my pools
-	const [state, setState] = React.useState<IPoolData[]>(defaulMyData);
+export const MyPools: FunctionComponent = observer(() => {
+	const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+
+	const queries = queriesStore.get(chainStore.current.chainId);
+	const account = accountStore.getAccount(chainStore.current.chainId);
+
+	const myPools = queries.osmosis.queryGammPoolShare.getOwnPools(account.bech32Address);
+
+	const state: IPoolData[] = myPools
+		.map(poolId => {
+			const pool = queries.osmosis.queryGammPools.getPool(poolId);
+			if (!pool) {
+				return undefined;
+			}
+
+			// 데이터 구조를 바꿀 필요가 있다.
+			return {
+				num: parseInt(pool.id),
+				name: 'Lab',
+				// TODO: APY는 TODO
+				apy: 3.25,
+				liquidity: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
+				tokens: pool.poolAssets.map(asset => asset.amount.currency.coinDenom),
+			};
+		})
+		.filter(d => d != null) as IPoolData[];
 
 	return (
 		<section>
@@ -49,7 +74,7 @@ export const MyPools: FunctionComponent = () => {
 			</ul>
 		</section>
 	);
-};
+});
 
 export const IncentivizedPools: FunctionComponent = () => {
 	// TODO : @Thunnini fetch pools
@@ -102,7 +127,7 @@ const PoolCard: FunctionComponent<IPoolCard> = ({ data }) => {
 				</div>
 				<div className="ml-5">
 					<p className="text-sm text-white-mid mb-2">Liquidity</p>
-					<h6 className="text-white-emphasis">{formatUSD(data.liquidity)}</h6>
+					<h6 className="text-white-emphasis">{data.liquidity}</h6>
 				</div>
 			</section>
 		</li>
@@ -116,6 +141,6 @@ interface IPoolData {
 	num: number;
 	name: string;
 	apy: number;
-	liquidity: number;
+	liquidity: string;
 	tokens: string[];
 }
