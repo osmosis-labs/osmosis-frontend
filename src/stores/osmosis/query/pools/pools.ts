@@ -5,6 +5,7 @@ import { KVStore } from '@keplr-wallet/common';
 import { computed, makeObservable, observable, runInAction } from 'mobx';
 import { ObservablePool } from '../pool';
 import { ObservableQueryPoolsPagination } from './page';
+import { computedFn } from 'mobx-utils';
 
 export class ObservableQueryPools extends ObservableChainQuery<Pools> {
 	@observable.shallow
@@ -47,4 +48,8 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
 			return new ObservablePool(this.chainId, this.chainGetter, pool);
 		});
 	}
+
+	getPool = computedFn((id: string): ObservablePool | undefined => {
+		return this.pools.find(pool => pool.id === id);
+	});
 }

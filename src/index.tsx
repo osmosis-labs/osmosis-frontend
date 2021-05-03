@@ -13,6 +13,7 @@ import { TestPage } from './pages/test';
 
 import './styles/index.scss';
 import './styles/globals.scss';
+import { PoolPage } from './pages/pool';
 
 const Router: FunctionComponent = () => {
 	return (
@@ -29,6 +30,11 @@ const Router: FunctionComponent = () => {
 						<Route exact path="/pools">
 							<RouteWrapper>
 								<PoolsPage />
+							</RouteWrapper>
+						</Route>
+						<Route path="/pool/:id">
+							<RouteWrapper>
+								<PoolPage />
 							</RouteWrapper>
 						</Route>
 						<Route exact path="/governance">

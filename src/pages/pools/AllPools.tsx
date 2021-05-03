@@ -89,8 +89,16 @@ const TablePoolElement: FunctionComponent<{
 	poolRatios: string;
 	totalValueLocked: string;
 }> = ({ id, poolRatios, totalValueLocked }) => {
+	const history = useHistory();
+
 	return (
-		<tr className="h-14 w-full pl-7.5 pr-8.75 flex flex-row items-center group hover:bg-container-hover cursor-pointer border-b">
+		<tr
+			className="h-14 w-full pl-7.5 pr-8.75 flex flex-row items-center group hover:bg-container-hover cursor-pointer border-b"
+			onClick={e => {
+				e.preventDefault();
+
+				history.push(`/pool/${id}`);
+			}}>
 			<td style={{ width: `${widths[0]}` }} className="flex items-center text-white-disabled">
 				<p>{id}</p>
 			</td>

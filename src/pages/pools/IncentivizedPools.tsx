@@ -5,6 +5,7 @@ import map from 'lodash-es/map';
 import { Img } from '../../components/common/Img';
 import { multiply } from '../../utils/Big';
 import { applyOptionalDecimal, formatUSD } from '../../utils/format';
+import { useHistory } from 'react-router-dom';
 
 const defaultData = times(6, i => {
 	return {
@@ -67,8 +68,16 @@ export const IncentivizedPools: FunctionComponent = () => {
 };
 
 const PoolCard: FunctionComponent<IPoolCard> = ({ data }) => {
+	const history = useHistory();
+
 	return (
-		<li className="rounded-xl bg-card py-6 px-7.5 cursor-pointer border border-transparent hover:border-enabledGold border-opacity-40">
+		<li
+			className="rounded-xl bg-card py-6 px-7.5 cursor-pointer border border-transparent hover:border-enabledGold border-opacity-40"
+			onClick={e => {
+				e.preventDefault();
+
+				history.push(`/pool/${data.num}`);
+			}}>
 			<section className="flex mb-4">
 				<figure
 					style={{ width: '84px', height: '84px' }}
