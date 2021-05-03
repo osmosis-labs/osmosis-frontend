@@ -6,6 +6,8 @@
 		"build": "cross-env NODE_ENV=production yarn build:css && webpack",
 		"dev": "cross-env NODE_ENV=development webpack-dev-server",
 		"dev:analyzer": "cross-env NODE_ENV=development ANALYZER=true webpack",
+		"test": "jest --passWithNoTests --runInBand",
+		"posttest": "yarn localnet:stop",
 		"lint-test": "eslint \"src/**/*\" webpack.config.js && prettier --check \"src/**/*\" webpack.config.js",
 		"lint-fix": "eslint --fix \"src/**/*\" webpack.config.js && prettier --write \"src/**/*\" webpack.config.js",
 		"localnet": "sh ./scripts/run-localnet.sh",
@@ -30,10 +32,14 @@
 	},
 	"homepage": "https://github.com/osmosis-front/osmosis-frontend#readme",
 	"dependencies": {
-		"@keplr-wallet/common": "^0.8.4",
-		"@keplr-wallet/cosmos": "^0.8.4",
-		"@keplr-wallet/stores": "^0.8.4",
-		"@keplr-wallet/types": "^0.8.4",
+		"@cosmjs/launchpad": "^0.24.1",
+		"@keplr-wallet/common": "0.9.0-alpha.1",
+		"@keplr-wallet/cosmos": "0.9.0-alpha.1",
+		"@keplr-wallet/provider": "0.9.0-alpha.1",
+		"@keplr-wallet/stores": "0.9.0-alpha.1",
+		"@keplr-wallet/types": "0.9.0-alpha.1",
+		"@keplr-wallet/unit": "0.9.0-alpha.1",
+		"buffer": "^6.0.3",
 		"autoprefixer": "^10.2.5",
 		"big.js": "^6.0.3",
 		"clsx": "^1.1.1",
@@ -53,7 +59,10 @@
 		"react-router-dom": "^5.1.2",
 		"react-svg": "^13.0.3",
 		"swr": "^0.5.5",
-		"tailwindcss": "^2.1.1"
+		"tailwindcss": "^2.1.1",
+		"utility-types": "^3.10.0",
+		"axios": "^0.21.1",
+		"deepmerge": "^4.2.2"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.13.13",
@@ -69,6 +78,8 @@
 		"@types/react-router": "^5.1.13",
 		"@types/react-router-dom": "^5.1.7",
 		"@types/webpack": "^4.39.1",
+		"@types/jest": "^26.0.22",
+		"@types/ws": "^7.4.1",
 		"@typescript-eslint/eslint-plugin": "^4.13.0",
 		"@typescript-eslint/parser": "^4.13.0",
 		"babel-loader": "^8.2.2",
@@ -107,7 +118,10 @@
 		"webpack-bundle-analyzer": "^4.4.0",
 		"webpack-cli": "^3.3.7",
 		"webpack-dev-server": "^3.8.2",
-		"write-file-webpack-plugin": "^4.5.1"
+		"write-file-webpack-plugin": "^4.5.1",
+		"jest": "^26.6.3",
+		"ts-jest": "^26.5.5",
+		"ws": "^7.4.5"
 	},
 	"importSort": {
 		".js, .jsx, .ts, .tsx": {

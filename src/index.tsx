@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { MainPage } from './pages/main';
 import { StoreProvider } from './stores';
 import { PoolsPage } from './pages/pools';
@@ -8,6 +8,7 @@ import { GovernancePage } from './pages/governance';
 import { AirdropPage } from './pages/airdrop';
 import { RouteWrapper } from './components/layouts/RouteWrapper';
 import { NotFoundPage } from './pages/NotFound';
+import { TestPage } from './pages/test';
 
 const Router: FunctionComponent = () => {
 	return (
@@ -33,6 +34,11 @@ const Router: FunctionComponent = () => {
 						<Route exact path="/airdrop">
 							<RouteWrapper>
 								<AirdropPage />
+							</RouteWrapper>
+						</Route>
+						<Route exact path="/test">
+							<RouteWrapper>
+								<TestPage />
 							</RouteWrapper>
 						</Route>
 						<Route>

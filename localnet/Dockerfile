@@ -14,7 +14,7 @@ RUN git clone https://github.com/osmosis-labs/osmosis
 WORKDIR /osmosis
 
 # Change the commit hash if you want.
-RUN git fetch && git checkout 6c07c00688ecb0b1f2ead835dd60f7920e0e1dd5
+RUN git fetch && git checkout 770515c671c19b32e752383b987d2d6ad3e9b848
 
 # Build daemon.
 RUN make build
@@ -30,6 +30,8 @@ RUN sed -i 's/pruning = "syncable"/pruning = "nothing"/g' ~/.osmosisd/config/app
 RUN sed -i 's/enable = false/enable = true/g' ~/.osmosisd/config/app.toml
 RUN sed -i 's/swagger = false/swagger = true/g' ~/.osmosisd/config/app.toml
 RUN sed -i 's/enabled-unsafe-cors = false/enabled-unsafe-cors = true/g' ~/.osmosisd/config/app.toml
+# Decrease the commit timeout to fastify the chain for testing
+RUN sed -i 's/timeout_commit = "5s"/timeout_commit = "300ms"/g' ~/.osmosisd/config/config.toml
 
 RUN echo "high gain deposit chuckle hundred regular exist approve peanut enjoy comfort ride" | ./osmosisd keys add val --recover --keyring-backend test
 RUN echo "health nest provide snow total tissue intact loyal cargo must credit wrist" | ./osmosisd keys add local1 --recover --keyring-backend test
