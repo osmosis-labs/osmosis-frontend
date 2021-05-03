@@ -6,7 +6,8 @@ export class LayoutStore {
 	private _currentModal: TModal;
 
 	constructor() {
-		this._currentModal = TModal.INIT;
+		// TODO : change to INIT
+		this._currentModal = TModal.NEW_POOL;
 		makeAutoObservable(this);
 	}
 
@@ -16,7 +17,6 @@ export class LayoutStore {
 	}
 
 	public updateCurrentModal(newModal: TModal) {
-		console.log('this', this);
 		this._currentModal = newModal;
 	}
 }

@@ -8,10 +8,8 @@ import { AllPools } from './AllPools';
 import { TModal } from '../../interfaces';
 
 export const PoolsPage: FunctionComponent = observer(() => {
-	const { layoutStore } = useStore();
 	return (
-		<div
-			className={cn(layoutStore.currentModal !== TModal.INIT ? 'w-screen h-screen overflow-hidden' : 'w-full h-full')}>
+		<div className="w-full h-full">
 			<div className="my-10 max-w-max mx-auto">
 				<div className="mx-15">
 					<LabsOverview />

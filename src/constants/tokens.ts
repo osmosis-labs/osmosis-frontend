@@ -16,6 +16,7 @@ export const TOKENS: Record<string, IToken> = {
 	},
 };
 
+// object property === token currency
 export interface IToken {
 	LONG_NAME: string;
 	// GECKO_ID: string;

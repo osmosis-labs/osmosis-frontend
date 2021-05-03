@@ -22,34 +22,34 @@ const defaultState = times(12, i => {
 export const AllPools: FunctionComponent = () => {
 	// TODO : @Thunnini update all pools with real data
 	const [state, setState] = React.useState<TPool[]>(defaultState);
+	const [pager, setPager] = React.useState<TPager>({
+		currentPage: 1,
+		totalPage: Math.ceil(state.length / TABLE.ROW_CNT),
+	});
+	const paginatedData = React.useMemo(() => {
+		return state.slice((pager.currentPage - 1) * TABLE.ROW_CNT, pager.currentPage * TABLE.ROW_CNT);
+	}, [pager.currentPage, state]);
 	return (
 		<section>
 			<h5 className="mb-7.5">All Pools</h5>
 			<table className="min-w-table w-full">
 				<TableHeader />
-				<TableBody data={state} rowHeight={TABLE.ROW_HEIGHT} />
+				<TableBody data={paginatedData} rowHeight={TABLE.ROW_HEIGHT} />
 				{/*<PoolsTable />*/}
 			</table>
+			<TablePagination pager={pager} setCurrentPage={newPage => setPager(v => ({ ...v, currentPage: newPage }))} />
 		</section>
 	);
 };
 
 const TableBody: FunctionComponent<ITableBody> = ({ data, rowHeight }) => {
-	const [pager, setPager] = React.useState<TPager>({
-		currentPage: 1,
-		totalPage: Math.ceil(data.length / TABLE.ROW_CNT),
-	});
-	const paginatedData = React.useMemo(() => {
-		return data.slice((pager.currentPage - 1) * TABLE.ROW_CNT, pager.currentPage * TABLE.ROW_CNT);
-	}, [pager.currentPage, data]);
 	return (
 		<>
 			<tbody className="w-full">
-				{map(paginatedData, pool => (
+				{map(data, pool => (
 					<TableRow key={pool.id} data={pool} rowHeight={rowHeight} />
 				))}
 			</tbody>
-			<TablePagination pager={pager} setCurrentPage={newPage => setPager(v => ({ ...v, currentPage: newPage }))} />
 		</>
 	);
 };
