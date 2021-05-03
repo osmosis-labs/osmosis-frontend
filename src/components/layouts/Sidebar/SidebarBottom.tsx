@@ -12,11 +12,11 @@ export const SidebarBottom: FunctionComponent<TSidebarBottom> = ({ openSidebar }
 		<div>
 			<button
 				onClick={buttonClick}
-				className="bg-primary-200 h-9 w-full rounded-md py-2 px-3 flex items-center justify-center mb-8">
+				className="bg-primary-200 h-9 w-full rounded-md py-2 px-1 flex items-center justify-center mb-8">
 				<Img className="w-5 h-5" src={`${MISC.ASSETS_BASE}/Icons/Wallet.svg`} />
 				<p
 					style={{ maxWidth: openSidebar ? '105px' : '0px', marginLeft: `${openSidebar ? '12px' : '0px'}` }}
-					className="text-sm text-white-high font-bold overflow-x-hidden truncate transition-all">
+					className="text-sm text-white-high font-semibold overflow-x-hidden truncate transition-all">
 					Connect Wallet
 				</p>
 			</button>
