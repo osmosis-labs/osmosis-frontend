@@ -36,6 +36,10 @@ export class ObservableQueryGammPoolShare {
 			}
 		}
 
+		result.sort((e1, e2) => {
+			return parseInt(e1) >= parseInt(e2) ? 1 : -1;
+		});
+
 		return result;
 	});
 
