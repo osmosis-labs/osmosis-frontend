@@ -8,6 +8,7 @@
 		"dev:analyzer": "cross-env NODE_ENV=development ANALYZER=true webpack",
 		"test": "jest --passWithNoTests --runInBand",
 		"posttest": "yarn localnet:stop",
+		"test:rand-pools": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node ./src/stores/rand-pools.ts",
 		"lint-test": "eslint \"src/**/*\" webpack.config.js && prettier --check \"src/**/*\" webpack.config.js",
 		"lint-fix": "eslint --fix \"src/**/*\" webpack.config.js && prettier --write \"src/**/*\" webpack.config.js",
 		"localnet": "sh ./scripts/run-localnet.sh",
