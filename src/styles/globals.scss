@@ -12,6 +12,10 @@
 	--sidebar-selectedIconGradient: linear-gradient(180deg, #ffbc00 0%, #ff8e00 100%);
 }
 
+#app {
+	overflow: auto;
+}
+
 html,
 body {
 	padding: 0;

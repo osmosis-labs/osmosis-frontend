@@ -1,9 +1,12 @@
 import React, { Dispatch, FunctionComponent, SetStateAction } from 'react';
-import cn from 'clsx';
 import { NewPoolStage1 } from './Step1';
 import { sumArray } from '../../../utils/Big';
 import map from 'lodash-es/map';
 import { NewPoolStage2 } from './Step2';
+import { NewPoolStage3 } from './Step3';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../../stores';
+import { TModal } from '../../../interfaces';
 
 const defaultState = {
 	pools: [
@@ -11,13 +14,13 @@ const defaultState = {
 			token: 'akt',
 			ratio: '50',
 			channel: 'Channel-1',
-			amount: '',
+			amount: '100.323122',
 		},
 		{
 			token: 'atom',
 			ratio: '50',
 			channel: 'Channel-1',
-			amount: '',
+			amount: '100.123123',
 		},
 	],
 	stage: 1,
@@ -27,6 +30,7 @@ export const NewPool: FunctionComponent = () => {
 	const content = React.useMemo(() => {
 		if (state.stage === 1) return <NewPoolStage1 poolState={state} setPoolState={setState} />;
 		else if (state.stage === 2) return <NewPoolStage2 poolState={state} setPoolState={setState} />;
+		else if (state.stage === 3) return <NewPoolStage3 poolState={state} setPoolState={setState} />;
 	}, [state]);
 	return (
 		<div style={{ width: '656px' }} className="bg-surface rounded-2xl pt-8 pb-7.5 px-7.5 text-white-high">
@@ -36,7 +40,8 @@ export const NewPool: FunctionComponent = () => {
 	);
 };
 
-const NewPoolButton: FunctionComponent<INewPoolButton> = ({ state, setPoolState }) => {
+const NewPoolButton: FunctionComponent<INewPoolButton> = observer(({ state, setPoolState }) => {
+	const { layoutStore } = useStore();
 	const onNextClick = React.useCallback(() => {
 		// data validation process
 		if (state.stage === 1) {
@@ -67,20 +72,26 @@ const NewPoolButton: FunctionComponent<INewPoolButton> = ({ state, setPoolState 
 				alert('There should be no coiniciding tokens');
 				return;
 			}
+		} else if (state.stage === 2) {
+			// TODO : @Thunnini Compare token amounts and validate.
+		} else if (state.stage === 3) {
+			// TODO : @Thunnini Request create pools
+			alert('Generated Pools!');
+			layoutStore.updateCurrentModal(TModal.INIT);
 		}
 		console.log(state);
 
 		setPoolState(prevState => ({ ...prevState, stage: prevState.stage + 1 }));
-	}, [setPoolState, state.pools, state.stage]);
+	}, [layoutStore, setPoolState, state]);
 
 	return (
 		<button
 			onClick={onNextClick}
 			className="mt-7.5 w-2/3 h-15 rounded-2xl bg-primary-200 flex items-center justify-center mx-auto hover:opacity-75">
-			<h6>Next</h6>
+			<h6>{state.stage < 3 ? 'Next' : 'Create Pool'}</h6>
 		</button>
 	);
-};
+});
 
 interface INewPoolButton {
 	state: IPoolState;
