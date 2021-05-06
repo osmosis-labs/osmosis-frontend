@@ -74,11 +74,11 @@ describe('Test Osmosis Join Pool Tx', () => {
 		const poolId = '1';
 		const shareOutAmount: string = '1';
 
-		const queryPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools;
-		await queryPools.waitFreshResponse();
-		const estimated = queryPools.pools
-			.find(pool => pool.id === poolId)!
-			.estimateJoinSwap(shareOutAmount, account.msgOpts.joinPool.shareCoinDecimals);
+		const queryPool = queriesStore
+			.get(chainStore.current.chainId)
+			.osmosis.queryGammPools.getObservableQueryPool(poolId);
+		await queryPool.waitFreshResponse();
+		const estimated = queryPool.pool!.estimateJoinSwap(shareOutAmount, account.msgOpts.joinPool.shareCoinDecimals);
 
 		const tx = await new Promise<any>(resolve => {
 			account.osmosis.sendJoinPoolMsg(poolId, shareOutAmount, '0', '', tx => {
@@ -138,11 +138,11 @@ describe('Test Osmosis Join Pool Tx', () => {
 		const poolId = '1';
 		const shareOutAmount: string = '1';
 
-		const queryPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools;
-		await queryPools.waitFreshResponse();
-		const estimated = queryPools.pools
-			.find(pool => pool.id === poolId)!
-			.estimateJoinSwap(shareOutAmount, account.msgOpts.joinPool.shareCoinDecimals);
+		const queryPool = queriesStore
+			.get(chainStore.current.chainId)
+			.osmosis.queryGammPools.getObservableQueryPool(poolId);
+		await queryPool.waitFreshResponse();
+		const estimated = queryPool.pool!.estimateJoinSwap(shareOutAmount, account.msgOpts.joinPool.shareCoinDecimals);
 
 		const tx = await new Promise<any>(resolve => {
 			account.osmosis.sendJoinPoolMsg(poolId, shareOutAmount, '0.1', '', tx => {

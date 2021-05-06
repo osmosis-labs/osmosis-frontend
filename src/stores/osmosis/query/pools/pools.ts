@@ -1,55 +1,48 @@
 import { ObservableChainQuery } from '@keplr-wallet/stores/build/query/chain-query';
 import { Pools } from './types';
-import { ChainGetter } from '@keplr-wallet/stores';
+import { ChainGetter, HasMapStore } from '@keplr-wallet/stores';
 import { KVStore } from '@keplr-wallet/common';
-import { computed, makeObservable, observable, runInAction } from 'mobx';
-import { ObservablePool } from '../pool';
+import { makeObservable, observable, runInAction } from 'mobx';
+import { ObservableQueryPool, QueriedPoolBase } from '../pool';
 import { ObservableQueryPoolsPagination } from './page';
-import { computedFn } from 'mobx-utils';
 
-export class ObservableQueryPools extends ObservableChainQuery<Pools> {
-	@observable.shallow
-	protected map: Map<string, ObservableQueryPoolsPagination> = new Map();
+export class ObservableQueryPools extends HasMapStore<ObservableQueryPoolsPagination> {
+	constructor(
+		protected kvStore: KVStore,
+		protected chainId: string,
+		protected chainGetter: ChainGetter,
+		protected queryGammPool: ObservableQueryPool
+	) {
+		super((key: string) => {
+			const k = key.split('/');
 
-	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-		super(kvStore, chainId, chainGetter, '/osmosis/gamm/v1beta1/pools/all');
+			return new ObservableQueryPoolsPagination(
+				this.kvStore,
+				this.chainId,
+				this.chainGetter,
+				parseInt(k[0]),
+				parseInt(k[1])
+			);
+		});
 
 		makeObservable(this);
 	}
 
 	getPoolsPagenation(itemsPerPage: number, page: number): ObservableQueryPoolsPagination {
-		const key = `${itemsPerPage}/${page}`;
-
-		if (!this.map.has(key)) {
-			const query = new ObservableQueryPoolsPagination(
-				this.kvStore,
-				this.chainId,
-				this.chainGetter,
-				itemsPerPage,
-				page
-			);
-
-			runInAction(() => {
-				this.map.set(key, query);
-			});
-		}
-
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		return this.map.get(key)!;
+		return this.get(`${itemsPerPage}/${page}`);
 	}
 
-	@computed
-	get pools(): ObservablePool[] {
-		if (!this.response) {
-			return [];
-		}
-
-		return this.response.data.pools.map(pool => {
-			return new ObservablePool(this.chainId, this.chainGetter, pool);
-		});
+	/**
+	 * Pagination으로 받아오는 값과 pool id로 직접 받아오는 pool data를 효율적으로 다루기 위해서
+	 * ObservableQueryPool을 직접 쓰지않고 ObservableQueryPools에서 공통적으로 관리한다.
+	 * 이 메소드는 ObservableQueryPool에 직접적으로 접근할 때 사용한다.
+	 * @param id
+	 */
+	getObservableQueryPool(id: string) {
+		return this.queryGammPool.getPool(id);
 	}
 
-	getPool = computedFn((id: string): ObservablePool | undefined => {
-		return this.pools.find(pool => pool.id === id);
-	});
+	getPool(id: string): QueriedPoolBase | undefined {
+		return this.queryGammPool.getPool(id).pool;
+	}
 }

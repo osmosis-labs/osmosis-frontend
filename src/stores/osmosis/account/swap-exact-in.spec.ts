@@ -132,11 +132,11 @@ describe('Test Osmosis Swap Exact Amount In Tx', () => {
 			coinDecimals: 6,
 		};
 
-		const queryPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools;
-		await queryPools.waitFreshResponse();
-		const estimated = queryPools.pools
-			.find(pool => pool.id === poolId)!
-			.estimateSwapExactAmountIn(tokenIn, tokenOutCurrency);
+		const queryPool = queriesStore
+			.get(chainStore.current.chainId)
+			.osmosis.queryGammPools.getObservableQueryPool(poolId);
+		await queryPool.waitFreshResponse();
+		const estimated = queryPool.pool!.estimateSwapExactAmountIn(tokenIn, tokenOutCurrency);
 
 		const tx = await new Promise<any>(resolve => {
 			account.osmosis.sendSwapExactAmountInMsg(poolId, tokenIn, tokenOutCurrency, '0', '', tx => {
@@ -197,11 +197,11 @@ describe('Test Osmosis Swap Exact Amount In Tx', () => {
 			coinDecimals: 6,
 		};
 
-		const queryPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools;
-		await queryPools.waitFreshResponse();
-		const estimated = queryPools.pools
-			.find(pool => pool.id === poolId)!
-			.estimateSwapExactAmountIn(tokenIn, tokenOutCurrency);
+		const queryPool = queriesStore
+			.get(chainStore.current.chainId)
+			.osmosis.queryGammPools.getObservableQueryPool(poolId);
+		await queryPool.waitFreshResponse();
+		const estimated = queryPool.pool!.estimateSwapExactAmountIn(tokenIn, tokenOutCurrency);
 
 		const doubleSlippage = new IntPretty(estimated.slippage.toDec().mul(new Dec(2)))
 			.locale(false)
@@ -269,11 +269,11 @@ describe('Test Osmosis Swap Exact Amount In Tx', () => {
 			coinDecimals: 6,
 		};
 
-		const queryPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools;
-		await queryPools.waitFreshResponse();
-		const estimated = queryPools.pools
-			.find(pool => pool.id === poolId)!
-			.estimateSwapExactAmountIn(tokenIn, tokenOutCurrency);
+		const queryPool = queriesStore
+			.get(chainStore.current.chainId)
+			.osmosis.queryGammPools.getObservableQueryPool(poolId);
+		await queryPool.waitFreshResponse();
+		const estimated = queryPool.pool!.estimateSwapExactAmountIn(tokenIn, tokenOutCurrency);
 
 		expect(estimated.slippage.toDec().gt(new Dec(0))).toBeTruthy();
 
@@ -343,11 +343,11 @@ describe('Test Osmosis Swap Exact Amount In Tx', () => {
 			coinDecimals: 6,
 		};
 
-		const queryPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools;
-		await queryPools.waitFreshResponse();
-		const estimated = queryPools.pools
-			.find(pool => pool.id === poolId)!
-			.estimateSwapExactAmountIn(tokenIn, tokenOutCurrency);
+		const queryPool = queriesStore
+			.get(chainStore.current.chainId)
+			.osmosis.queryGammPools.getObservableQueryPool(poolId);
+		await queryPool.waitFreshResponse();
+		const estimated = queryPool.pool!.estimateSwapExactAmountIn(tokenIn, tokenOutCurrency);
 
 		const added = new IntPretty(estimated.slippage.toDec().sub(new Dec('0.01'))).locale(false).maxDecimals(4);
 

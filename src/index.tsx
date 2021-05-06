@@ -9,7 +9,6 @@ import { AirdropPage } from './pages/airdrop';
 import { RouteWrapper } from './components/layouts/RouteWrapper';
 import { NotFoundPage } from './pages/NotFound';
 import { ModalContainer } from './components/containers/ModalContainer';
-import { TestPage } from './pages/test';
 
 import './styles/index.scss';
 import './styles/globals.scss';
@@ -45,11 +44,6 @@ const Router: FunctionComponent = () => {
 						<Route exact path="/airdrop">
 							<RouteWrapper>
 								<AirdropPage />
-							</RouteWrapper>
-						</Route>
-						<Route exact path="/test">
-							<RouteWrapper>
-								<TestPage />
 							</RouteWrapper>
 						</Route>
 						<Route>

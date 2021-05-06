@@ -132,11 +132,11 @@ describe('Test Osmosis Swap Exact Amount Out Tx', () => {
 			amount: '1',
 		};
 
-		const queryPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools;
-		await queryPools.waitFreshResponse();
-		const estimated = queryPools.pools
-			.find(pool => pool.id === poolId)!
-			.estimateSwapExactAmountOut(tokenInCurrency, tokenOut);
+		const queryPool = queriesStore
+			.get(chainStore.current.chainId)
+			.osmosis.queryGammPools.getObservableQueryPool(poolId);
+		await queryPool.waitFreshResponse();
+		const estimated = queryPool.pool!.estimateSwapExactAmountOut(tokenInCurrency, tokenOut);
 
 		const tx = await new Promise<any>(resolve => {
 			account.osmosis.sendSwapExactAmountOutMsg(poolId, tokenInCurrency, tokenOut, '0', '', tx => {
@@ -197,11 +197,11 @@ describe('Test Osmosis Swap Exact Amount Out Tx', () => {
 			amount: '1',
 		};
 
-		const queryPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools;
-		await queryPools.waitFreshResponse();
-		const estimated = queryPools.pools
-			.find(pool => pool.id === poolId)!
-			.estimateSwapExactAmountOut(tokenInCurrency, tokenOut);
+		const queryPool = queriesStore
+			.get(chainStore.current.chainId)
+			.osmosis.queryGammPools.getObservableQueryPool(poolId);
+		await queryPool.waitFreshResponse();
+		const estimated = queryPool.pool!.estimateSwapExactAmountOut(tokenInCurrency, tokenOut);
 
 		const doubleSlippage = new IntPretty(estimated.slippage.toDec().mul(new Dec(2)))
 			.locale(false)
@@ -276,11 +276,11 @@ describe('Test Osmosis Swap Exact Amount Out Tx', () => {
 			amount: '1',
 		};
 
-		const queryPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools;
-		await queryPools.waitFreshResponse();
-		const estimated = queryPools.pools
-			.find(pool => pool.id === poolId)!
-			.estimateSwapExactAmountOut(tokenInCurrency, tokenOut);
+		const queryPool = queriesStore
+			.get(chainStore.current.chainId)
+			.osmosis.queryGammPools.getObservableQueryPool(poolId);
+		await queryPool.waitFreshResponse();
+		const estimated = queryPool.pool!.estimateSwapExactAmountOut(tokenInCurrency, tokenOut);
 
 		expect(estimated.slippage.toDec().gt(new Dec(0))).toBeTruthy();
 
@@ -350,11 +350,11 @@ describe('Test Osmosis Swap Exact Amount Out Tx', () => {
 			amount: '1',
 		};
 
-		const queryPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools;
-		await queryPools.waitFreshResponse();
-		const estimated = queryPools.pools
-			.find(pool => pool.id === poolId)!
-			.estimateSwapExactAmountOut(tokenInCurrency, tokenOut);
+		const queryPool = queriesStore
+			.get(chainStore.current.chainId)
+			.osmosis.queryGammPools.getObservableQueryPool(poolId);
+		await queryPool.waitFreshResponse();
+		const estimated = queryPool.pool!.estimateSwapExactAmountOut(tokenInCurrency, tokenOut);
 
 		const added = new IntPretty(estimated.slippage.toDec().sub(new Dec('0.01'))).locale(false).maxDecimals(4);
 

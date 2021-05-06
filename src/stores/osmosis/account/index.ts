@@ -184,10 +184,10 @@ export class OsmosisAccount {
 		await this.base.sendMsgs(
 			'joinPool',
 			async () => {
-				const queryPools = queries.osmosis.queryGammPools;
-				await queryPools.waitFreshResponse();
+				const queryPool = queries.osmosis.queryGammPools.getObservableQueryPool(poolId);
+				await queryPool.waitFreshResponse();
 
-				const pool = queryPools.pools.find(pool => pool.id === poolId);
+				const pool = queryPool.pool;
 				if (!pool) {
 					throw new Error('Unknown pool');
 				}
@@ -264,10 +264,10 @@ export class OsmosisAccount {
 		await this.base.sendMsgs(
 			'swapExactAmountIn',
 			async () => {
-				const queryPools = queries.osmosis.queryGammPools;
-				await queryPools.waitFreshResponse();
+				const queryPool = queries.osmosis.queryGammPools.getObservableQueryPool(poolId);
+				await queryPool.waitFreshResponse();
 
-				const pool = queryPools.pools.find(pool => pool.id === poolId);
+				const pool = queryPool.pool;
 				if (!pool) {
 					throw new Error('Unknown pool');
 				}
@@ -323,10 +323,10 @@ export class OsmosisAccount {
 		await this.base.sendMsgs(
 			'swapExactAmountOut',
 			async () => {
-				const queryPools = queries.osmosis.queryGammPools;
-				await queryPools.waitFreshResponse();
+				const queryPool = queries.osmosis.queryGammPools.getObservableQueryPool(poolId);
+				await queryPool.waitFreshResponse();
 
-				const pool = queryPools.pools.find(pool => pool.id === poolId);
+				const pool = queryPool.pool;
 				if (!pool) {
 					throw new Error('Unknown pool');
 				}

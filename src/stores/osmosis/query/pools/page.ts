@@ -3,7 +3,7 @@ import { Pools } from './types';
 import { ChainGetter } from '@keplr-wallet/stores';
 import { KVStore } from '@keplr-wallet/common';
 import { computed, makeObservable } from 'mobx';
-import { ObservablePool } from '../pool';
+import { QueriedPoolBase } from '../pool';
 
 export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> {
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, itemsPerPage: number, page: number) {
@@ -18,13 +18,13 @@ export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> 
 	}
 
 	@computed
-	get pools(): ObservablePool[] {
+	get pools(): QueriedPoolBase[] {
 		if (!this.response) {
 			return [];
 		}
 
 		return this.response.data.pools.map(pool => {
-			return new ObservablePool(this.chainId, this.chainGetter, pool);
+			return new QueriedPoolBase(this.chainId, this.chainGetter, pool);
 		});
 	}
 }
