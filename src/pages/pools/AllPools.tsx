@@ -4,6 +4,7 @@ import { useStore } from '../../stores';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import * as querystring from 'querystring';
 import clsx from 'clsx';
+import { poolsPerPage } from '../../config';
 
 const widths = ['10%', '60%', '30%'];
 export const AllPools: FunctionComponent = () => {
@@ -27,7 +28,7 @@ const PoolsTable: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore, priceStore } = useStore();
 	const queries = queriesStore.get(chainStore.current.chainId);
 
-	const pools = queries.osmosis.queryGammPools.getPoolsPagenation(5, page).pools;
+	const pools = queries.osmosis.queryGammPools.getPoolsPagenation(poolsPerPage, page).pools;
 
 	return (
 		<React.Fragment>
@@ -115,10 +116,10 @@ const TablePoolElement: FunctionComponent<{
 const TablePagination: FunctionComponent<{
 	page: number;
 }> = observer(({ page: propPage }) => {
-	const { chainStore, queriesStore, priceStore } = useStore();
+	const { chainStore, queriesStore } = useStore();
 	const queries = queriesStore.get(chainStore.current.chainId);
 
-	const totalPages = queries.osmosis.queryGammTotalPools.computeTotalPages(5);
+	const totalPages = queries.osmosis.queryGammTotalPools.computeTotalPages(poolsPerPage);
 
 	const history = useHistory();
 

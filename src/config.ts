@@ -1,6 +1,8 @@
 import { ChainInfo } from '@keplr-wallet/types';
 import { Bech32Address } from '@keplr-wallet/cosmos';
 
+export const poolsPerPage = 10;
+
 export const EmbedChainInfos: ChainInfo[] = [
 	{
 		rpc: 'http://127.0.0.1:26657',
