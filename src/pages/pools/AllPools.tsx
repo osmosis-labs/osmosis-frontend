@@ -114,26 +114,34 @@ const TablePoolElement: FunctionComponent<{
 
 const TablePagination: FunctionComponent<{
 	page: number;
-}> = ({ page: propPage }) => {
-	// TODO: Total pool 갯수를 통해서 페이지네이션 하기
-	const pages = [1, 2, 3];
+}> = observer(({ page: propPage }) => {
+	const { chainStore, queriesStore, priceStore } = useStore();
+	const queries = queriesStore.get(chainStore.current.chainId);
+
+	const totalPages = queries.osmosis.queryGammTotalPools.computeTotalPages(5);
 
 	const history = useHistory();
 
+	const pageRender = [];
+
+	for (let i = 0; i < totalPages; i++) {
+		const page = i + 1;
+
+		pageRender.push(
+			<Link
+				key={page.toString()}
+				to={`/pools?page=${page}`}
+				className={clsx('flex items-center rounded-md h-9 px-3 text-sm text-secondary-200', {
+					'border border-secondary-200': page === propPage,
+				})}>
+				<p>{page}</p>
+			</Link>
+		);
+	}
+
 	return (
 		<div className="w-full p-4 flex items-center justify-center">
-			{pages.map(page => {
-				return (
-					<Link
-						key={page.toString()}
-						to={`/pools?page=${page}`}
-						className={clsx('flex items-center rounded-md h-9 px-3 text-sm text-secondary-200', {
-							'border border-secondary-200': page === propPage,
-						})}>
-						<p>{page}</p>
-					</Link>
-				);
-			})}
+			{pageRender}
 			<button
 				type="button"
 				className="flex items-center h-9 text-secondary-200"
@@ -155,4 +163,4 @@ const TablePagination: FunctionComponent<{
 			</button>
 		</div>
 	);
-};
+});
