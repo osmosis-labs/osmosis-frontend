@@ -47,6 +47,8 @@
 		"clsx": "^1.1.1",
 		"dayjs": "^1.10.4",
 		"deepmerge": "^4.2.2",
+		"highcharts": "^9.1.0",
+		"highcharts-react-official": "^3.0.0",
 		"history": "^5.0.0",
 		"is-empty": "^1.2.0",
 		"lodash-es": "^4.17.21",

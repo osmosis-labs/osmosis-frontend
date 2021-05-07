@@ -16,7 +16,6 @@ export class LayoutStore {
 	}
 
 	public updateCurrentModal(newModal: TModal) {
-		console.log('this', this);
 		this._currentModal = newModal;
 	}
 }

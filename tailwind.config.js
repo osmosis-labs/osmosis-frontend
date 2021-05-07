@@ -223,6 +223,7 @@ module.exports = {
 				100: 100,
 			},
 			variants: {
+				rotate: ['hover', 'group-hover'],
 				display: ['responsive', 'hover', 'group-hover'],
 				opacity: ['hover'],
 				borderWidth: ['hover', 'responsive'],

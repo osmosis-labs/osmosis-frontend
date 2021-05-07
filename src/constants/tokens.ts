@@ -14,8 +14,13 @@ export const TOKENS: Record<string, IToken> = {
 		LONG_NAME: 'Akash',
 		DECIMALS: 6,
 	},
+	regen: {
+		LONG_NAME: 'Regen',
+		DECIMALS: 6,
+	},
 };
 
+// object property === token currency
 export interface IToken {
 	LONG_NAME: string;
 	// GECKO_ID: string;

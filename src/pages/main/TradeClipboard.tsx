@@ -11,12 +11,14 @@ import { divide, fixed, multiply } from '../../utils/Big';
 import { isNumber } from '../../utils/scripts';
 import cn from 'clsx';
 import { TokenListDisplay } from '../../components/common/TokenListDisplay';
+import noop from 'lodash-es/noop';
+import { TokenDisplay } from '../../components/common/TokenDisplay';
 
 const defaultState = {
 	isMax: false,
 	from: {
 		token: 'eth',
-		amount: '',
+		amount: '0',
 	},
 	to: {
 		token: 'atom',
@@ -225,34 +227,6 @@ const ToBox: FunctionComponent<ITradeToBox> = ({ setToken, state, conversionRate
 		</div>
 	);
 };
-
-const TokenDisplay: FunctionComponent<ITokenDisplay> = ({ token, openSelector, setOpenSelector }) => {
-	return (
-		<div className="flex items-center">
-			<figure
-				style={{ width: '56px', height: '56px' }}
-				className="flex justify-center items-center rounded-full border-secondary-200 border mr-3">
-				<Img loadingSpin style={{ width: '44px', height: '44px' }} src={LINKS.GET_TOKEN_IMG(token)} />
-			</figure>
-			<div className="flex flex-col">
-				<div className="flex items-center">
-					<h5 className="leading-none font-semibold">{upperCase(token)}</h5>
-					<Img
-						onClick={() => setOpenSelector((v: boolean) => !v)}
-						className={cn('h-6 w-8 ml-1 p-2 cursor-pointer opacity-40 hover:opacity-100', openSelector ? 's-flip' : '')}
-						src="/public/assets/Icons/Down.svg"
-					/>
-				</div>
-				<p className="text-sm text-iconDefault">{TOKENS[token]?.LONG_NAME}</p>
-			</div>
-		</div>
-	);
-};
-interface ITokenDisplay {
-	token: string;
-	openSelector: boolean;
-	setOpenSelector: (bool: boolean | ((bool: boolean) => boolean)) => void;
-}
 
 const ClipboardClip: FunctionComponent = () => (
 	<div
