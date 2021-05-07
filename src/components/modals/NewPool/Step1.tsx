@@ -105,7 +105,12 @@ const Pool: FunctionComponent<IPool> = ({ data, setPoolPercent, setToken }) => {
 					'bg-surface rounded-b-2xl z-10 border-b border-r border-l border-white-faint',
 					openSelector ? 'absolute' : 'hidden'
 				)}>
-				<TokenListDisplay close={() => setOpenSelector(false)} onSelect={newToken => setToken(newToken)} />
+				{/* Main 페이지 작업하느라 밑의 컴포넌트 깨짐 TODO: 해결하기 */}
+				<TokenListDisplay
+					currencies={[]}
+					close={() => setOpenSelector(false)}
+					onSelect={newToken => setToken(newToken)}
+				/>
 			</div>
 		</li>
 	);

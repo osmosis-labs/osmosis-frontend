@@ -1,21 +1,18 @@
 import React, { FunctionComponent } from 'react';
-import cn from 'clsx';
-import { IToken, LINKS, TOKENS } from '../../constants';
 import { Img } from './Img';
-import { mapKeyValues } from '../../utils/scripts';
-import map from 'lodash-es/map';
-import times from 'lodash-es/times';
+import { Currency } from '@keplr-wallet/types';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
 
-const tokensArr = mapKeyValues(TOKENS, (key: string, value: IToken) => {
-	return { ...value, key, channel: 'Channel-1' };
-});
+export const TokenListDisplay: FunctionComponent<{
+	currencies: Currency[];
+	onSelect: (minimalDenom: string) => void;
+	close: () => void;
+}> = observer(({ currencies, onSelect, close }) => {
+	const { chainStore, accountStore, queriesStore } = useStore();
 
-const defaultTokenAmounts = times(tokensArr.length, i => 0.3242);
-export const TokenListDisplay: FunctionComponent<ITokenListDisplay> = ({ onSelect, close }) => {
-	// TODO : @Thunnini add channel data to each token
-	const [tokenData, setTokenData] = React.useState<ITokenData[]>(tokensArr);
-
-	const [tokenAmount, setTokenAmount] = React.useState<number[]>(defaultTokenAmounts);
+	const account = accountStore.getAccount(chainStore.current.chainId);
+	const queries = queriesStore.get(chainStore.current.chainId);
 
 	return (
 		<div className="pr-5 pl-4 pt-8 pb-8">
@@ -28,36 +25,44 @@ export const TokenListDisplay: FunctionComponent<ITokenListDisplay> = ({ onSelec
 				/>
 			</div>
 			<ul className="mt-5">
-				{map(tokenData, (obj, i) => (
-					<TokenItem
-						key={i}
-						amount={tokenAmount[i]}
-						data={obj}
-						onSelect={() => {
-							onSelect(obj.key);
-							close();
-						}}
-					/>
-				))}
+				{currencies.map(cur => {
+					const balance = queries.queryBalances
+						.getQueryBech32Address(account.bech32Address)
+						.balances.find(bal => bal.currency.coinMinimalDenom === cur.coinMinimalDenom);
+					const amount = balance?.balance?.hideDenom(true).toString() || '0';
+
+					return (
+						<TokenItem
+							key={cur.coinMinimalDenom}
+							currency={cur}
+							amount={amount}
+							onSelect={() => {
+								onSelect(cur.coinMinimalDenom);
+								close();
+							}}
+						/>
+					);
+				})}
 			</ul>
 		</div>
 	);
-};
+});
 
-interface ITokenListDisplay {
-	onSelect: (newToken: string) => void;
-	close: () => void;
-}
-
-const TokenItem: FunctionComponent<ITokenItem> = ({ data, amount, onSelect }) => {
+const TokenItem: FunctionComponent<{
+	currency: Currency;
+	amount: string;
+	onSelect: () => void;
+}> = ({ currency, amount, onSelect }) => {
 	return (
 		<li onClick={() => onSelect()} className="py-4.5 px-3 rounded-2xl hover:bg-card cursor-pointer">
 			<div className="flex items-center justify-between">
 				<div className="flex items-center">
-					<Img loadingSpin style={{ width: '36px', height: '36px' }} src={LINKS.GET_TOKEN_IMG(data.key)} />
+					{/* 현재로서는 Currency의 이미지를 가져올 방법이 없다. TODO: Currency에 imageUrl 추가 */}
+					<Img loadingSpin style={{ width: '36px', height: '36px' }} src={''} />
 					<div className="ml-3">
-						<h6 className="leading-tight">{data.key.toUpperCase()}</h6>
-						<p className="text-iconDefault text-md leading-tight">{data.channel}</p>
+						<h6 className="leading-tight">{currency.coinDenom.toUpperCase()}</h6>
+						{/* TODO: 일단 IBC 토큰은 나중에 다룬다... */}
+						<p className="text-iconDefault text-md leading-tight">Channel-1</p>
 					</div>
 				</div>
 				<p>{amount}</p>
@@ -65,14 +70,3 @@ const TokenItem: FunctionComponent<ITokenItem> = ({ data, amount, onSelect }) =>
 		</li>
 	);
 };
-
-interface ITokenItem {
-	data: ITokenData;
-	amount: number;
-	onSelect: () => void;
-}
-
-interface ITokenData extends IToken {
-	key: string;
-	channel: string;
-}

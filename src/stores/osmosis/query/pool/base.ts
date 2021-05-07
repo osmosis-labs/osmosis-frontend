@@ -22,6 +22,16 @@ export class QueriedPoolBase {
 		return this.pool.id;
 	}
 
+	calculateSpotPriceWithoutSwapFee(inMinimalDenom: string, outMinimalDenom: string): IntPretty {
+		const calculated = this.pool.calculateSpotPriceWithoutSwapFee(inMinimalDenom, outMinimalDenom);
+		// XXX: IntPretty에서 0.5같이 정수부가 0인 Dec이 들어가면 precision이 제대로 설정되지않는 버그가 있기 때문에
+		// 임시로 18를 곱하고 precision을 16으로 올려서 10^2가 곱해진 효과를 낸다.
+		return new IntPretty(calculated.mul(DecUtils.getPrecisionDec(18)))
+			.precision(16)
+			.maxDecimals(4)
+			.trim(true);
+	}
+
 	estimateJoinSwap(
 		shareOutAmount: string,
 		shareCoinDecimals: number

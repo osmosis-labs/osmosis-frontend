@@ -9,12 +9,15 @@ import { EmbedChainInfos } from '../config';
 import { QueriesWithCosmosAndOsmosis } from './osmosis/query';
 import { AccountWithCosmosAndOsmosis } from './osmosis/account';
 import { LayoutStore } from './layout';
+import { GammSwapManager } from './osmosis/swap';
 
 export class RootStore {
 	public readonly chainStore: ChainStore;
 	public readonly accountStore: AccountStore<AccountWithCosmosAndOsmosis>;
 	public readonly queriesStore: QueriesStore<QueriesWithCosmosAndOsmosis>;
 	public readonly priceStore: CoinGeckoPriceStore;
+
+	public readonly swapManager: GammSwapManager;
 
 	public readonly layoutStore: LayoutStore;
 
@@ -57,6 +60,28 @@ export class RootStore {
 				locale: 'en-US',
 			},
 		});
+
+		this.swapManager = new GammSwapManager([
+			{
+				poolId: '1',
+				coinDenom: 'OSMO',
+				coinMinimalDenom: 'uosmo',
+				coinDecimals: 6,
+			},
+			{
+				poolId: '1',
+				coinDenom: 'ATOM',
+				coinMinimalDenom: 'uatom',
+				coinDecimals: 6,
+				coinGeckoId: 'cosmos',
+			},
+			{
+				poolId: '1',
+				coinDenom: 'FOO',
+				coinMinimalDenom: 'ufoo',
+				coinDecimals: 6,
+			},
+		]);
 
 		this.layoutStore = new LayoutStore();
 	}
