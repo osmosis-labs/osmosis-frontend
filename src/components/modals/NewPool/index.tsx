@@ -25,7 +25,7 @@ const defaultState = {
 	],
 	stage: 1,
 } as IPoolState;
-export const NewPool: FunctionComponent = () => {
+export const NewPoolModal: FunctionComponent = () => {
 	const [state, setState] = React.useState<IPoolState>(defaultState);
 	const content = React.useMemo(() => {
 		if (state.stage === 1) return <NewPoolStage1 poolState={state} setPoolState={setState} />;

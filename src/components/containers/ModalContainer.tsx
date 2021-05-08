@@ -3,7 +3,8 @@ import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { TModal } from '../../interfaces';
-import { NewPool } from '../modals/NewPool';
+import { NewPoolModal } from '../modals/NewPool';
+import { ManageLiquidityModal } from '../modals/ManageLiquidity';
 
 export const ModalContainer: FunctionComponent = observer(() => {
 	const { layoutStore } = useStore();
@@ -13,7 +14,9 @@ export const ModalContainer: FunctionComponent = observer(() => {
 			case TModal.INIT:
 				return undefined;
 			case TModal.NEW_POOL:
-				return <NewPool />;
+				return <NewPoolModal />;
+			case TModal.MANAGE_LIQUIDITY:
+				return <ManageLiquidityModal />;
 		}
 	}, [layoutStore.currentModal]);
 

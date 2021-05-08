@@ -10,6 +10,10 @@ export const TOKENS: Record<string, IToken> = {
 		// GECKO_ID: 'cosmos',
 		DECIMALS: 6,
 	},
+	iris: {
+		LONG_NAME: 'IRISnet',
+		DECIMALS: 6,
+	},
 	akt: {
 		LONG_NAME: 'Akash',
 		DECIMALS: 6,

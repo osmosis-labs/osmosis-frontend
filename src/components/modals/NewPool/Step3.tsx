@@ -57,7 +57,7 @@ export const NewPoolStage3: FunctionComponent<IPools> = ({ poolState, setPoolSta
 					</div>
 					<ul className="pt-3 flex flex-col gap-4">
 						{map(poolState.pools, (pool, i) => (
-							<TokenRow data={pool} index={i} />
+							<TokenRow key={i} data={pool} index={i} />
 						))}
 					</ul>
 				</div>

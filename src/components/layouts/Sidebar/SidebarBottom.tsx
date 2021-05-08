@@ -13,6 +13,7 @@ export const SidebarBottom: FunctionComponent<TSidebarBottom> = observer(({ open
 	const buttonClick = React.useCallback(() => {
 		account.init();
 	}, []);
+
 	return (
 		<div>
 			{/* TODO: 계정이 불러와져 있으면 뭘 표시하지? (아마 주소?) and 계정 불러오는 중의 짧은 시간 동안 로딩 인디케이터 표시? */}

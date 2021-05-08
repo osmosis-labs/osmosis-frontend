@@ -4,4 +4,5 @@ export const MISC = {
 	TIME: {
 		FAST_INTERVAL: 1000,
 	},
+	GRADIENTS: ['socialLive', 'greenBeach', 'kashmir', 'frost', 'cherry', 'sunset'],
 };

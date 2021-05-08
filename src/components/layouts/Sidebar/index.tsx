@@ -3,13 +3,14 @@ import cn from 'clsx';
 import { Container } from '../../containers';
 import { TCardTypes } from '../../../interfaces';
 import map from 'lodash-es/map';
-import { LAYOUT, TSIDEBAR_ITEM } from '../../../constants';
+import { LAYOUT, TSIDEBAR_ITEM, TSIDEBAR_SELECTED_CHECK } from '../../../constants';
 import { mapKeyValues } from '../../../utils/scripts';
 import { SidebarItem } from './SidebarItem';
 import { Img } from '../../common/Img';
 import { useHistory, withRouter } from 'react-router-dom';
 import { History } from 'history';
 import { SidebarBottom } from './SidebarBottom';
+import isArray from 'lodash-es/isArray';
 
 interface ChildComponentProps {
 	history: History;
@@ -40,8 +41,8 @@ const SideBar: FunctionComponent<ChildComponentProps> = ({ history }) => {
 							<section>
 								{mapKeyValues(LAYOUT.SIDEBAR, (_: string, value: TSIDEBAR_ITEM) => (
 									<SidebarItem
-										key={value.ROUTE}
-										selected={value.ROUTE === pathname}
+										key={value.TEXT}
+										selected={pathnameCheck(pathname, value.SELECTED_CHECK)}
 										openSidebar={openSidebar}
 										sidebarItem={value}
 									/>
@@ -56,6 +57,18 @@ const SideBar: FunctionComponent<ChildComponentProps> = ({ history }) => {
 			</div>
 		</div>
 	);
+};
+const pathnameCheck = (str: string, routes: TSIDEBAR_SELECTED_CHECK) => {
+	if (isArray(routes)) {
+		for (const route of routes) {
+			if (route instanceof RegExp) {
+				if (route.test(str)) return true;
+			} else if ((route as string) === str) return true;
+		}
+	} else {
+		if (str === (routes as string)) return true;
+	}
+	return false;
 };
 
 export const Sidebar = withRouter(SideBar);

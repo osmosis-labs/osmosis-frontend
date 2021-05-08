@@ -6,7 +6,7 @@ export class LayoutStore {
 	private _currentModal: TModal;
 
 	constructor() {
-		this._currentModal = TModal.INIT;
+		this._currentModal = TModal.MANAGE_LIQUIDITY;
 		makeAutoObservable(this);
 	}
 
