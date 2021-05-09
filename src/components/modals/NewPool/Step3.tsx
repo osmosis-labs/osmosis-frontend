@@ -92,7 +92,7 @@ const generateSeries = (data: TPool[]): SeriesPieOptions[] => {
 	const serie = cloneDeep(pieSerie);
 	each(data, (pool, i) => {
 		serie.data.push({
-			name: pool.token,
+			name: pool.token.toUpperCase(),
 			y: Number(pool.ratio),
 			x: Number(pool.amount),
 			color: HIGHCHART_GRADIENTS?.[i] ? HIGHCHART_GRADIENTS?.[i] : undefined,

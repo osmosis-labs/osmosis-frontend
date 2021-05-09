@@ -56,8 +56,8 @@ export const PoolPage: FunctionComponent = observer(() => {
 					<div className="my-10 max-w-max mx-auto px-10">
 						<PoolInfoHeader id={pool.id} />
 					</div>
-					<div className="py-10 px-10 bg-surface w-full">
-						<div className="pb-10">
+					<div className="pt-10 px-10 bg-surface w-full">
+						<div className="pb-15">
 							<OsmoSynthesis pool={pool} />
 						</div>
 						<div className="max-w-max mx-auto">
@@ -150,10 +150,10 @@ const PoolCatalyst: FunctionComponent<{
 	return (
 		<React.Fragment>
 			{pool ? (
-				<section>
+				<section className="pb-10">
 					<h5 className="mb-7.5 ">Pool Catalyst</h5>
 					{/* TODO: 6개가 넘어갔을 때 어떡하지...? */}
-					<ul className="grid grid-cols-3 grid-rows-2 gap-8.75 w-full h-full">
+					<ul className="grid grid-cols-3 grid-rows-auto gap-8.75 w-full h-full">
 						{/* TODO: IntPretty에 mul과 quo도 추가하자... */}
 						{pool.poolRatios.map((poolRatio, i) => {
 							return (

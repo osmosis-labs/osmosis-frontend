@@ -18,6 +18,7 @@ import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { GammSwapManager } from '../../stores/osmosis/swap';
 import { ObservableQueryPools } from '../../stores/osmosis/query/pools';
+import { TradeTxSettings } from './TradeTxSettings';
 
 // 상태가 좀 복잡한 듯 하니 그냥 mobx로 처리한다...
 // CONTRACT: Use with `observer`
@@ -157,6 +158,11 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 		() => new TradeState(swapManager, queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools)
 	);
 
+	const [settings, setSettings] = React.useState<ITradeSettings>({
+		slippageTolerance: 0.1,
+		txDeadline: '20',
+	} as ITradeSettings);
+
 	return (
 		<Container
 			overlayClasses=""
@@ -165,13 +171,7 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 			<ClipboardClip />
 			<div className="p-2.5 h-full w-full">
 				<div className="bg-cardInner rounded-md w-full h-full p-5">
-					<section>
-						<DisplayIcon
-							className="cursor-pointer ml-auto"
-							icon="/public/assets/Icons/Setting.svg"
-							iconSelected="/public/assets/Icons/Setting_selected.svg"
-						/>
-					</section>
+					<TradeTxSettings settings={settings} setSettings={setSettings} />
 					<section className="mt-5 w-full mb-12.5">
 						<div className="relative">
 							<div className="mb-4.5">
@@ -195,6 +195,11 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 		</Container>
 	);
 });
+
+export interface ITradeSettings {
+	slippageTolerance: number;
+	txDeadline: string; // minutes
+}
 
 const SwapButton: FunctionComponent = () => {
 	const onButtonClick = () => {
@@ -292,7 +297,7 @@ const FromBox: FunctionComponent<{ tradeState: TradeState }> = observer(({ trade
 			</section>
 			<div
 				style={{ top: 'calc(100% - 16px)' }}
-				className={cn('bg-surface rounded-b-2xl z-10 left-0 w-full', openSelector ? 'absolute' : 'hidden')}>
+				className={cn('bg-surface rounded-b-2xl z-20 left-0 w-full', openSelector ? 'absolute' : 'hidden')}>
 				<TokenListDisplay
 					currencies={tradeState.swappableCurrencies.filter(
 						cur => cur.coinMinimalDenom !== tradeState.outCurrency.coinMinimalDenom

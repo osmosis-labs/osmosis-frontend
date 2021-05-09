@@ -1,10 +1,12 @@
 import React, { FunctionComponent } from 'react';
 import cn from 'clsx';
 import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
-import { multiply } from '../../utils/Big';
+import { fixed, multiply } from '../../utils/Big';
 import { formatNumber } from '../../utils/format';
 import times from 'lodash-es/times';
 import map from 'lodash-es/map';
+import { MyLockupsTable } from './MyLockupsTable';
+import { UnlockingTable } from './Unlocking';
 
 export const OsmoSynthesis: FunctionComponent<IOsmoSynthesis> = ({ pool }) => {
 	const totalShare = pool.totalShare.toString();
@@ -40,63 +42,14 @@ export const OsmoSynthesis: FunctionComponent<IOsmoSynthesis> = ({ pool }) => {
 				<LockupBox apyPercent={356} days={90} />
 			</div>
 			<div className="mt-10">
-				<LockupTable />
+				<MyLockupsTable />
+			</div>
+			<div className="mt-10">
+				<UnlockingTable />
 			</div>
 		</section>
 	);
 };
-
-// TODO : @Thunnini fetch lockup data instead
-const lockupData: ILockupRow[] = times(3, i => ({
-	num: i + 1,
-	token: 'LP-Token',
-	amount: 300,
-	dollarValue: 24350.831,
-}));
-
-const tableWidths = ['10%', '30%', '30%', '35%'];
-const LockupTable: FunctionComponent = () => {
-	return (
-		<>
-			<h6 className="mb-1">My Lockups</h6>
-			<table className="w-full">
-				<tbody className="w-full">
-					{map(lockupData, rowValue => (
-						<LockupTableRow data={rowValue} />
-					))}
-				</tbody>
-			</table>
-		</>
-	);
-};
-
-const LockupTableRow: FunctionComponent<Record<'data', ILockupRow>> = ({ data }) => {
-	let i = 0;
-	return (
-		<tr className="flex items-center w-full border-b px-8">
-			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<p className="text-white-disabled">{data.num}</p>
-			</td>
-			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<p>
-					{data.amount} {data.token}
-				</p>
-			</td>
-			<td className="flex items-center justify-end px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<p>{data.amount}</p>
-			</td>
-			<td className="flex items-center justify-end px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<p>${data.dollarValue}</p>
-			</td>
-		</tr>
-	);
-};
-interface ILockupRow {
-	num: number;
-	token: string;
-	amount: number;
-	dollarValue: number;
-}
 
 const LockupBox: FunctionComponent<ILockupBox> = ({ days, apyPercent }) => {
 	return (

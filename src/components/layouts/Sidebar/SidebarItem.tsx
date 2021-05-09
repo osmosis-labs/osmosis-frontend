@@ -40,7 +40,7 @@ interface TSidebarItem {
 	sidebarItem: TSIDEBAR_ITEM;
 }
 
-export const DisplayIcon: FunctionComponent<TDisplayIcon> = ({ icon, iconSelected, className }) => {
+export const DisplayIcon: FunctionComponent<TDisplayIcon> = ({ icon, iconSelected, className, clicked }) => {
 	const [hovering, setHovering] = React.useState(false);
 	return (
 		<div
@@ -50,7 +50,7 @@ export const DisplayIcon: FunctionComponent<TDisplayIcon> = ({ icon, iconSelecte
 			<Img
 				className="w-full h-full absolute top-0 left-0"
 				src={
-					hovering
+					hovering || clicked
 						? '/public/assets/sidebar/icon-border_selected.svg'
 						: '/public/assets/sidebar/icon-border_unselected.svg'
 				}
@@ -64,4 +64,5 @@ interface TDisplayIcon {
 	icon: string;
 	iconSelected: string;
 	className?: string;
+	clicked?: boolean;
 }

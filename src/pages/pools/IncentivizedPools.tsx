@@ -83,7 +83,7 @@ export const IncentivizedPools: FunctionComponent = () => {
 	return (
 		<section>
 			<h5 className="mb-7.5 ">Incentivized Pools</h5>
-			<ul className="grid grid-cols-3 grid-rows-2 gap-8.75 w-full h-full">
+			<ul className="grid grid-cols-3 grid-rows-auto gap-8.75 w-full h-full">
 				{map(state, pool => {
 					return <PoolCard key={pool.num} data={pool} />;
 				})}

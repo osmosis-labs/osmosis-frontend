@@ -28,7 +28,7 @@ export const NewPoolStage2: FunctionComponent<IPools> = ({ poolState, setPoolSta
 						updateAmount={(input: string) =>
 							setPoolState(prevState => {
 								prevState.pools[i].amount = input;
-								return prevState;
+								return { ...prevState };
 							})
 						}
 					/>
