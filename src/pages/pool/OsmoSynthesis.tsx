@@ -31,7 +31,9 @@ export const OsmoSynthesis: FunctionComponent<IOsmoSynthesis> = ({ pool }) => {
 				<div className="flex flex-col items-end">
 					<p className="text-white-mid mb-3">Available LP tokens</p>
 					<h5 className="text-right mb-4">${formatNumber(multiply(totalShare, price, 2))}</h5>
-					<button onClick={onStartEarnClick} className="px-8 py-2.5 bg-primary-200 rounded-lg leading-none">
+					<button
+						onClick={onStartEarnClick}
+						className="px-8 py-2.5 bg-primary-200 rounded-lg leading-none hover:opacity-75">
 						<p>Start Earning</p>
 					</button>
 				</div>

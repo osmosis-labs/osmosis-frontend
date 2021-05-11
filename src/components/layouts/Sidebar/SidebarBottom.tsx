@@ -29,11 +29,9 @@ export const SidebarBottom: FunctionComponent<TSidebarBottom> = observer(({ open
 					</p>
 				</button>
 			)}
-			<div className={cn('flex items-center transition-all justify-center')}>
-				<Img className="w-9 h-9" src={`${MISC.ASSETS_BASE}/Icons/${openSidebar ? 'Menu-in' : 'Menu'}.svg`} />
-				<div
-					className="flex items-center transition-all overflow-x-hidden"
-					style={{ maxWidth: `${openSidebar ? '62px' : '0px'}`, marginLeft: `${openSidebar ? '55px' : '0px'}` }}>
+			<div className={cn('flex items-center transition-all justify-center w-full')}>
+				{/*<Img className="w-9 h-9" src={`${MISC.ASSETS_BASE}/Icons/${openSidebar ? 'Menu-in' : 'Menu'}.svg`} />*/}
+				<div className="flex items-center transition-all overflow-x-hidden w-full">
 					<button onClick={() => window.open(LINKS.TWITTER)} className="hover:opacity-75 cursor-pointer mb-0.5 mr-1">
 						<Img style={{ minWidth: '32px' }} className="w-8 h-8" src={`${MISC.ASSETS_BASE}/Icons/Twitter.svg`} />
 					</button>

@@ -152,7 +152,6 @@ const PoolCatalyst: FunctionComponent<{
 			{pool ? (
 				<section className="pb-10">
 					<h5 className="mb-7.5 ">Pool Catalyst</h5>
-					{/* TODO: 6개가 넘어갔을 때 어떡하지...? */}
 					<ul className="grid grid-cols-3 grid-rows-auto gap-8.75 w-full h-full">
 						{/* TODO: IntPretty에 mul과 quo도 추가하자... */}
 						{pool.poolRatios.map((poolRatio, i) => {
@@ -201,8 +200,8 @@ const PoolAssetCard: FunctionComponent<{
 				<figure
 					style={{ width: '84px', height: '84px' }}
 					className="rounded-full border border-enabledGold flex justify-center items-center mr-6">
-					<figure className={cn('w-18 h-18 rounded-full flex justify-center items-center', bgArray[index])}>
-						<Img className="w-10 h-10" src={'/public/assets/Icons/OSMO.svg'} />
+					<figure className={cn('w-18 h-18 rounded-full flex justify-center items-end', bgArray[index])}>
+						<Img className="w-10 h-10 mb-1" src={'/public/assets/Icons/Bubbles.png'} />
 					</figure>
 				</figure>
 				<div className="flex flex-col justify-center">

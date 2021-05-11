@@ -9,6 +9,7 @@ import { fixed } from '../../../utils/Big';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import { TModal } from '../../../interfaces';
+import InputSlider from 'react-input-slider';
 
 enum TTABS {
 	ADD,
@@ -48,17 +49,36 @@ export const ManageLiquidityModal: FunctionComponent = () => {
 				apyPercent: 328.31,
 			},
 		],
+		removePercent: 35,
 		amount: '',
 		selected: 0,
 	});
 
 	const content = React.useMemo(() => {
-		if (stage === 1) return <ManageLiquidity addState={addState} setAddState={setAddState} tab={tab} setTab={setTab} />;
+		if (stage === 1)
+			return (
+				<>
+					<h5 className="mb-9">Manage Liquidity</h5>
+					<div className="mb-7.5">
+						<AddRemoveSelectTab setTab={setTab} tab={tab} />
+					</div>
+					{tab === TTABS.ADD ? (
+						<AddLiquidity addState={addState} setAddState={setAddState} />
+					) : (
+						<RemoveLiquidity
+							percent={lockupData.removePercent}
+							setPercent={(value: number) => setLockupData(prevData => ({ ...prevData, removePercent: value }))}
+						/>
+					)}
+				</>
+			);
 		else return <LockTokens data={lockupData} setData={setLockupData} />;
 	}, [stage, addState, setAddState, tab, setTab, lockupData]);
 
 	return (
-		<div style={{ width: '656px' }} className="bg-surface rounded-2xl pt-8 pb-7.5 px-7.5 text-white-high">
+		<div
+			style={{ width: '656px', minHeight: '542px' }}
+			className="bg-surface rounded-2xl pt-8 pb-7.5 px-7.5 text-white-high">
 			{content}
 			<NextButton
 				lockupData={lockupData}
@@ -139,15 +159,11 @@ const LockupItem: FunctionComponent<ILockupItem> = ({ days, apyPercent, selected
 	);
 };
 
-const ManageLiquidity: FunctionComponent<IManageLiquidity> = ({ addState, setAddState, tab, setTab }) => {
+const AddLiquidity: FunctionComponent<IAddLiquidity> = ({ addState, setAddState }) => {
 	// TODO : @Thunnini fetch data
 	const lpTotalBalance = 520322.1255;
 	return (
 		<>
-			<h5 className="mb-9">Manage Liquidity</h5>
-			<div className="mb-7.5">
-				<AddRemoveSelectTab setTab={setTab} tab={tab} />
-			</div>
 			<p className="text-xs text-white-disabled mb-4.5">
 				LP token balance: <span className="ml-1 text-secondary-200">{formatNumber(lpTotalBalance)} LPTOKEN</span>
 			</p>
@@ -157,7 +173,6 @@ const ManageLiquidity: FunctionComponent<IManageLiquidity> = ({ addState, setAdd
 						key={i}
 						data={data}
 						num={i}
-						tab={tab}
 						amountObj={addState[i]}
 						updateInput={(v: string) =>
 							setAddState(prevState => {
@@ -169,6 +184,59 @@ const ManageLiquidity: FunctionComponent<IManageLiquidity> = ({ addState, setAdd
 				))}
 			</ul>
 		</>
+	);
+};
+
+const RemoveLiquidity: FunctionComponent<IRemoveLiquidity> = ({ percent, setPercent }) => {
+	return (
+		<div className="mt-15 w-full flex flex-col justify-center items-center">
+			<h2>{percent}%</h2>
+			<div className="mt-5 mb-15 w-full">
+				<InputSlider
+					styles={{
+						track: {
+							width: '100%',
+							height: '4px',
+						},
+						active: {
+							backgroundColor: 'transparent',
+						},
+						thumb: {
+							width: '28px',
+							height: '28px',
+						},
+					}}
+					axis="x"
+					xstep={0.1}
+					xmin={0.1}
+					xmax={100}
+					x={percent}
+					onChange={({ x }) => setPercent(parseFloat(x.toFixed(2)))}
+				/>
+			</div>
+			<div className="grid grid-cols-4 gap-5 h-9 w-full mb-15">
+				<button
+					onClick={() => setPercent(25)}
+					className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75">
+					<p className="text-secondary-200">25%</p>
+				</button>
+				<button
+					onClick={() => setPercent(50)}
+					className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75">
+					<p className="text-secondary-200">50%</p>
+				</button>
+				<button
+					onClick={() => setPercent(75)}
+					className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75">
+					<p className="text-secondary-200">75%</p>
+				</button>
+				<button
+					onClick={() => setPercent(100)}
+					className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75">
+					<p className="text-secondary-200">100%</p>
+				</button>
+			</div>
+		</div>
 	);
 };
 
@@ -215,7 +283,7 @@ const NextButton: FunctionComponent<INextButton> = observer(({ data, incStage, s
 	);
 });
 
-const TokenLiquidityItem: FunctionComponent<ITokenLiquidityItem> = ({ data, num, updateInput, amountObj, tab }) => {
+const TokenLiquidityItem: FunctionComponent<ITokenLiquidityItem> = ({ data, num, updateInput, amountObj }) => {
 	// TODO : @Thunnini get available amounts
 	return (
 		<li className="w-full border border-white-faint rounded-2xl py-3.75 px-4">
@@ -235,15 +303,7 @@ const TokenLiquidityItem: FunctionComponent<ITokenLiquidityItem> = ({ data, num,
 				</div>
 				<div className="flex flex-col items-end">
 					<p className="text-xs">
-						{tab === TTABS.ADD ? (
-							<>
-								Available <span className="text-primary-50">{formatNumber(amountObj.available)}</span>
-							</>
-						) : (
-							<>
-								Allocated <span className="text-primary-50">{formatNumber(amountObj.currentLiquidity)}</span>
-							</>
-						)}
+						Available <span className="text-primary-50">{formatNumber(amountObj.available)}</span>
 					</p>
 					<div className="bg-background px-1.5 py-0.5 rounded-lg">
 						<input
@@ -302,6 +362,7 @@ interface ILockupData {
 	data: ILockupDataItem[];
 	amount: string;
 	selected: number;
+	removePercent: number;
 }
 
 interface ILockupDataItem {
@@ -314,7 +375,6 @@ interface ITokenLiquidityItem {
 	num: number;
 	updateInput: (input: string) => void;
 	amountObj: ILimitedAmount;
-	tab: TTABS;
 }
 
 interface INextButton {
@@ -325,11 +385,14 @@ interface INextButton {
 	tab: TTABS;
 }
 
-interface IManageLiquidity {
+interface IAddLiquidity {
 	addState: ILimitedAmount[];
 	setAddState: Dispatch<SetStateAction<ILimitedAmount[]>>;
-	tab: TTABS;
-	setTab: Dispatch<SetStateAction<TTABS>>;
+}
+
+interface IRemoveLiquidity {
+	percent: number;
+	setPercent: (value: number) => void;
 }
 
 interface ILimitedAmount {
