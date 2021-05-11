@@ -4,12 +4,26 @@ import { KVStore } from '@keplr-wallet/common';
 import { ChainGetter } from '@keplr-wallet/stores/src/common/index';
 import { makeObservable, computed } from 'mobx';
 import { QueriedPoolBase } from './base';
+import { QueryResponse } from '@keplr-wallet/stores';
 
 export class ObservableQueryPoolInner extends ObservableChainQuery<Pool> {
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, protected readonly poolId: string) {
 		super(kvStore, chainId, chainGetter, `/osmosis/gamm/v1beta1/${poolId}`);
 
 		makeObservable(this);
+	}
+
+	protected setResponse(response: Readonly<QueryResponse<Pool>>) {
+		super.setResponse(response);
+
+		const chainInfo = this.chainGetter.getChain(this.chainId);
+		const denomsInPool: string[] = [];
+		// Response에 있는 pool안의 asset의 denom들을 등록하도록 시도한다. (IBC 토큰들을 위해서)
+		for (const asset of response.data.pool.poolAssets) {
+			denomsInPool.push(asset.token.denom);
+		}
+
+		chainInfo.addUnknownCurrencies(...denomsInPool);
 	}
 
 	@computed

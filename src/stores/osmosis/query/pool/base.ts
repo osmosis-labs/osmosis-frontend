@@ -24,10 +24,8 @@ export class QueriedPoolBase {
 
 	calculateSpotPriceWithoutSwapFee(inMinimalDenom: string, outMinimalDenom: string): IntPretty {
 		const calculated = this.pool.calculateSpotPriceWithoutSwapFee(inMinimalDenom, outMinimalDenom);
-		// XXX: IntPretty에서 0.5같이 정수부가 0인 Dec이 들어가면 precision이 제대로 설정되지않는 버그가 있기 때문에
-		// 임시로 18를 곱하고 precision을 16으로 올려서 10^2가 곱해진 효과를 낸다.
-		return new IntPretty(calculated.mul(DecUtils.getPrecisionDec(18)))
-			.precision(16)
+		return new IntPretty(calculated)
+			.decreasePrecision(2)
 			.maxDecimals(4)
 			.trim(true);
 	}
@@ -43,9 +41,7 @@ export class QueriedPoolBase {
 		);
 
 		const tokenIns = estimated.tokenIns.map(primitive => {
-			const currency = this.chainGetter
-				.getChain(this.chainId)
-				.currencies.find(cur => cur.coinMinimalDenom === primitive.denom);
+			const currency = this.chainGetter.getChain(this.chainId).findCurrency(primitive.denom);
 			if (!currency) {
 				throw new Error('Unknown currency');
 			}
@@ -77,10 +73,8 @@ export class QueriedPoolBase {
 		const spotPriceBefore = new IntPretty(estimated.spotPriceBefore).maxDecimals(4).trim(true);
 		const spotPriceAfter = new IntPretty(estimated.spotPriceAfter).maxDecimals(4).trim(true);
 
-		// XXX: IntPretty에서 0.5같이 정수부가 0인 Dec이 들어가면 precision이 제대로 설정되지않는 버그가 있기 때문에
-		// 임시로 18를 곱하고 precision을 16으로 올려서 10^2가 곱해진 효과를 낸다.
-		const slippage = new IntPretty(estimated.slippage.mul(DecUtils.getPrecisionDec(18)))
-			.precision(16)
+		const slippage = new IntPretty(estimated.slippage)
+			.decreasePrecision(2)
 			.maxDecimals(4)
 			.trim(true);
 
@@ -112,10 +106,8 @@ export class QueriedPoolBase {
 		const spotPriceBefore = new IntPretty(estimated.spotPriceBefore).maxDecimals(4).trim(true);
 		const spotPriceAfter = new IntPretty(estimated.spotPriceAfter).maxDecimals(4).trim(true);
 
-		// XXX: IntPretty에서 0.5같이 정수부가 0인 Dec이 들어가면 precision이 제대로 설정되지않는 버그가 있기 때문에
-		// 임시로 18를 곱하고 precision을 16으로 올려서 10^2가 곱해진 효과를 낸다.
-		const slippage = new IntPretty(estimated.slippage.mul(DecUtils.getPrecisionDec(18)))
-			.precision(16)
+		const slippage = new IntPretty(estimated.slippage)
+			.decreasePrecision(2)
 			.maxDecimals(4)
 			.trim(true);
 
@@ -215,13 +207,8 @@ export class QueriedPoolBase {
 
 	@computed
 	get swapFee(): IntPretty {
-		let dec = this.pool.swapFee;
-		dec = dec.mul(DecUtils.getPrecisionDec(18));
-
-		// XXX: IntPretty에서 0.5같이 정수부가 0인 Dec이 들어가면 precision이 제대로 설정되지않는 버그가 있기 때문에
-		// 임시로 18를 곱하고 precision을 16으로 올려서 10^2가 곱해진 효과를 낸다.
-		return new IntPretty(dec)
-			.precision(16)
+		return new IntPretty(this.pool.swapFee)
+			.decreasePrecision(2)
 			.maxDecimals(4)
 			.trim(true);
 	}
@@ -275,9 +262,7 @@ export class QueriedPoolBase {
 
 		return primitives.map(primitive => {
 			const coinPrimitive = primitive.token;
-			const currency = this.chainGetter
-				.getChain(this.chainId)
-				.currencies.find(cur => cur.coinMinimalDenom === coinPrimitive.denom);
+			const currency = this.chainGetter.getChain(this.chainId).findCurrency(coinPrimitive.denom);
 			if (!currency) {
 				throw new Error('Unknown currency');
 			}
