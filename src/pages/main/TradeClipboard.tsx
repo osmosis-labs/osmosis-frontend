@@ -17,10 +17,11 @@ import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { GammSwapManager } from '../../stores/osmosis/swap';
 import { ObservableQueryPools } from '../../stores/osmosis/query/pools';
 import { AccountWithCosmosAndOsmosis } from '../../stores/osmosis/account';
+import { TradeTxSettings } from './TradeTxSettings';
 
 // 상태가 좀 복잡한 듯 하니 그냥 mobx로 처리한다...
 // CONTRACT: Use with `observer`
-class TradeState {
+export class TradeState {
 	@observable
 	protected inCurrencyMinimalDenom: string = '';
 	@observable
@@ -28,6 +29,9 @@ class TradeState {
 
 	@observable
 	protected _inAmount: string = '';
+
+	@observable
+	protected _slippage: string = '0.5';
 
 	// TODO: 흠... 생성자 인터페이스가 뭔가 이상해보임.
 	constructor(
@@ -69,6 +73,30 @@ class TradeState {
 			}
 		}
 		this._inAmount = amount;
+	}
+
+	@action
+	setSlippage(slippage: string) {
+		if (slippage.startsWith('.')) {
+			slippage = '0' + slippage;
+		}
+
+		if (slippage) {
+			try {
+				// 숫자가 맞는지 and 양수인지 확인...
+				if (new Dec(slippage).lt(new Dec(0))) {
+					return;
+				}
+			} catch {
+				return;
+			}
+		}
+		this._slippage = slippage;
+	}
+
+	@computed
+	get slippage(): string {
+		return this._slippage;
 	}
 
 	@computed
@@ -175,6 +203,11 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 		() => new TradeState(swapManager, account, queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools)
 	);
 
+	const [settings, setSettings] = React.useState<ITradeSettings>({
+		slippageTolerance: 0.1,
+		txDeadline: '20',
+	} as ITradeSettings);
+
 	return (
 		<Container
 			overlayClasses=""
@@ -183,13 +216,7 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 			<ClipboardClip />
 			<div className="p-2.5 h-full w-full">
 				<div className="bg-cardInner rounded-md w-full h-full p-5">
-					<section>
-						<DisplayIcon
-							className="cursor-pointer ml-auto"
-							icon="/public/assets/Icons/Setting.svg"
-							iconSelected="/public/assets/Icons/Setting_selected.svg"
-						/>
-					</section>
+					<TradeTxSettings tradeState={tradeState} />
 					<section className="mt-5 w-full mb-12.5">
 						<div className="relative">
 							<div className="mb-4.5">
@@ -214,6 +241,11 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 	);
 });
 
+export interface ITradeSettings {
+	slippageTolerance: number;
+	txDeadline: string; // minutes
+}
+
 const SwapButton: FunctionComponent<{
 	tradeState: TradeState;
 }> = observer(({ tradeState }) => {
@@ -237,7 +269,7 @@ const SwapButton: FunctionComponent<{
 					amount: tradeState.inAmountText,
 				},
 				tradeState.outCurrency,
-				'5'
+				tradeState.slippage
 			);
 		}
 	};

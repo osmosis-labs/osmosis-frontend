@@ -13,6 +13,7 @@ export const SidebarBottom: FunctionComponent<TSidebarBottom> = observer(({ open
 	const buttonClick = React.useCallback(() => {
 		account.init();
 	}, []);
+
 	return (
 		<div>
 			{/* TODO: 계정이 불러와져 있으면 뭘 표시하지? (아마 주소?) and 계정 불러오는 중의 짧은 시간 동안 로딩 인디케이터 표시? */}
@@ -28,11 +29,9 @@ export const SidebarBottom: FunctionComponent<TSidebarBottom> = observer(({ open
 					</p>
 				</button>
 			)}
-			<div className={cn('flex items-center transition-all justify-center')}>
-				<Img className="w-9 h-9" src={`${MISC.ASSETS_BASE}/Icons/${openSidebar ? 'Menu-in' : 'Menu'}.svg`} />
-				<div
-					className="flex items-center transition-all overflow-x-hidden"
-					style={{ maxWidth: `${openSidebar ? '62px' : '0px'}`, marginLeft: `${openSidebar ? '55px' : '0px'}` }}>
+			<div className={cn('flex items-center transition-all justify-center w-full')}>
+				{/*<Img className="w-9 h-9" src={`${MISC.ASSETS_BASE}/Icons/${openSidebar ? 'Menu-in' : 'Menu'}.svg`} />*/}
+				<div className="flex items-center transition-all overflow-x-hidden w-full">
 					<button onClick={() => window.open(LINKS.TWITTER)} className="hover:opacity-75 cursor-pointer mb-0.5 mr-1">
 						<Img style={{ minWidth: '32px' }} className="w-8 h-8" src={`${MISC.ASSETS_BASE}/Icons/Twitter.svg`} />
 					</button>

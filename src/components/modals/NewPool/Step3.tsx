@@ -57,7 +57,7 @@ export const NewPoolStage3: FunctionComponent<IPools> = ({ poolState, setPoolSta
 					</div>
 					<ul className="pt-3 flex flex-col gap-4">
 						{map(poolState.pools, (pool, i) => (
-							<TokenRow data={pool} index={i} />
+							<TokenRow key={i} data={pool} index={i} />
 						))}
 					</ul>
 				</div>
@@ -92,7 +92,7 @@ const generateSeries = (data: TPool[]): SeriesPieOptions[] => {
 	const serie = cloneDeep(pieSerie);
 	each(data, (pool, i) => {
 		serie.data.push({
-			name: pool.token,
+			name: pool.token.toUpperCase(),
 			y: Number(pool.ratio),
 			x: Number(pool.amount),
 			color: HIGHCHART_GRADIENTS?.[i] ? HIGHCHART_GRADIENTS?.[i] : undefined,

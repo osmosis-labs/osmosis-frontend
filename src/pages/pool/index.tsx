@@ -3,11 +3,14 @@ import cn from 'clsx';
 import { Img } from '../../components/common/Img';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import { useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import { TModal } from '../../interfaces';
 import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
 import { CoinPretty, Dec, DecUtils } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
+import { Loader } from '../../components/common/Loader';
+import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
+import { OsmoSynthesis } from './OsmoSynthesis';
 
 const bgArray = [
 	'bg-gradients-socialLive',
@@ -19,6 +22,7 @@ const bgArray = [
 ];
 
 export const PoolPage: FunctionComponent = observer(() => {
+	const history = useHistory();
 	const match = useRouteMatch<{
 		id: string;
 	}>();
@@ -26,17 +30,44 @@ export const PoolPage: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
-	const pool = queries.osmosis.queryGammPools.getPool(match.params.id);
+	const ref = React.useRef<QueriedPoolBase>();
+	ref.current = queries.osmosis.queryGammPools.getPool(match.params.id);
+	const pool = ref.current;
+
+	// TODO: 아래 TODO가 되려면 pool값이 없을 떄 별도의 에러메시지가 필요할듯.
+	// 현재로써는 짧은 시간을 기다려서 못찾았다고 표시하는 정도로 마무리 짓는 것 외엔 크게 방법이...
+	// TODO: ObservableChainQuery의 근본적이 수정이 필요. swr의 구현 방식을 참고하면 될듯.
+	React.useEffect(() => {
+		// TODO : fix in the future
+		setTimeout(() => {
+			if (!ref.current) {
+				history.push('/pools');
+				// TODO : toast message saying 'that pool was not found'
+			}
+		}, 1500);
+	}, [history]);
 
 	// TODO: 선택된 id의 풀이 없을 때 처리
+	console.log(ref.current);
 	return (
 		<div className="w-full h-full">
-			<div className="my-10 max-w-max mx-auto">
-				<div>{pool ? <PoolInfoHeader id={pool.id} /> : null}</div>
-			</div>
-			<div className="py-10 px-10 bg-surface w-full">
-				<div className="max-w-max mx-auto">{pool ? <PoolCatalyst id={pool.id} /> : null}</div>
-			</div>
+			{pool ? (
+				<>
+					<div className="my-10 max-w-max mx-auto px-10">
+						<PoolInfoHeader id={pool.id} />
+					</div>
+					<div className="pt-10 px-10 bg-surface w-full">
+						<div className="pb-15">
+							<OsmoSynthesis pool={pool} />
+						</div>
+						<div className="max-w-max mx-auto">
+							<PoolCatalyst id={pool.id} />
+						</div>
+					</div>
+				</>
+			) : (
+				<Loader className="w-50 h-50" />
+			)}
 		</div>
 	);
 });
@@ -44,7 +75,7 @@ export const PoolPage: FunctionComponent = observer(() => {
 const PoolInfoHeader: FunctionComponent<{
 	id: string;
 }> = observer(({ id }) => {
-	const { chainStore, queriesStore, priceStore, accountStore } = useStore();
+	const { chainStore, queriesStore, priceStore, accountStore, layoutStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const pool = queries.osmosis.queryGammPools.getPool(id);
@@ -55,16 +86,25 @@ const PoolInfoHeader: FunctionComponent<{
 	// `shareRatio`가 백분률로 오기 때문에 10^2를 나눠줘야한다.
 	const actualRatio = shareRatio.toDec().quo(DecUtils.getPrecisionDec(2));
 
+	const onLiquidityClick = React.useCallback(() => {
+		layoutStore.updateCurrentModal(TModal.MANAGE_LIQUIDITY);
+	}, [layoutStore]);
+
 	return (
-		<React.Fragment>
+		<>
 			{pool ? (
-				<section className="w-full">
+				<section>
 					<div className="flex items-center mb-6">
-						<h5 className="mr-0.5">Lab #{id}</h5>
+						<h5 className="mr-6">Lab #{id}</h5>
+						<button
+							onClick={onLiquidityClick}
+							className="ml-6 bg-primary-200 rounded-lg px-3.75 py-2.5 cursor-pointer hover:opacity-75">
+							<p>Add / Remove Liquidity</p>
+						</button>
 					</div>
 					<div className="flex flex-row gap-20">
 						<ul className="flex flex-col gap-6">
-							<OverviewLabelValue label="Liquidity">
+							<OverviewLabelValue label="Pool Liquidity">
 								<h4>{pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString()}</h4>
 							</OverviewLabelValue>
 							<OverviewLabelValue label="Locked">
@@ -89,7 +129,7 @@ const PoolInfoHeader: FunctionComponent<{
 					</div>
 				</section>
 			) : null}
-		</React.Fragment>
+		</>
 	);
 });
 
@@ -110,10 +150,9 @@ const PoolCatalyst: FunctionComponent<{
 	return (
 		<React.Fragment>
 			{pool ? (
-				<section>
+				<section className="pb-10">
 					<h5 className="mb-7.5 ">Pool Catalyst</h5>
-					{/* TODO: 6개가 넘어갔을 때 어떡하지...? */}
-					<ul className="grid grid-cols-3 grid-rows-2 gap-8.75 w-full h-full">
+					<ul className="grid grid-cols-3 grid-rows-auto gap-8.75 w-full h-full">
 						{/* TODO: IntPretty에 mul과 quo도 추가하자... */}
 						{pool.poolRatios.map((poolRatio, i) => {
 							return (
@@ -161,8 +200,8 @@ const PoolAssetCard: FunctionComponent<{
 				<figure
 					style={{ width: '84px', height: '84px' }}
 					className="rounded-full border border-enabledGold flex justify-center items-center mr-6">
-					<figure className={cn('w-18 h-18 rounded-full flex justify-center items-center', bgArray[index])}>
-						<Img className="w-10 h-10" src={'/public/assets/Icons/OSMO.svg'} />
+					<figure className={cn('w-18 h-18 rounded-full flex justify-center items-end', bgArray[index])}>
+						<Img className="w-10 h-10 mb-1" src={'/public/assets/Icons/Bubbles.png'} />
 					</figure>
 				</figure>
 				<div className="flex flex-col justify-center">
