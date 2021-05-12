@@ -144,10 +144,8 @@ const PoolCatalyst: FunctionComponent<{
 	const pool = queries.osmosis.queryGammPools.getPool(id);
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
+	// ShareRatio가 백분률로 온다는 것을 주의하자.
 	const shareRatio = queries.osmosis.queryGammPoolShare.getGammShareRatio(account.bech32Address, id);
-
-	// `shareRatio`가 백분률로 오기 때문에 10^2를 나눠줘야한다.
-	const actualRatio = shareRatio.toDec().quo(DecUtils.getPrecisionDec(2));
 
 	return (
 		<React.Fragment>
@@ -167,15 +165,8 @@ const PoolCatalyst: FunctionComponent<{
 										.trim(true)
 										.shrink(true)
 										.toString()}
-									myAmount={new CoinPretty(
-										poolRatio.amount.currency,
-										poolRatio.amount
-											.toDec()
-											.mul(actualRatio)
-											.mul(DecUtils.getPrecisionDec(poolRatio.amount.currency.coinDecimals))
-											.truncate()
-									)
-										.maxDecimals(2)
+									myAmount={poolRatio.amount
+										.mul(shareRatio.increasePrecision(2))
 										.trim(true)
 										.shrink(true)
 										.toString()}
