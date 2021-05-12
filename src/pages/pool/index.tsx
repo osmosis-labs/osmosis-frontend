@@ -200,7 +200,8 @@ const PoolAssetCard: FunctionComponent<{
 				<figure
 					style={{ width: '84px', height: '84px' }}
 					className="rounded-full border border-enabledGold flex justify-center items-center mr-6">
-					<figure className={cn('w-18 h-18 rounded-full flex justify-center items-end', bgArray[index])}>
+					<figure
+						className={cn('w-18 h-18 rounded-full flex justify-center items-end', bgArray[index % bgArray.length])}>
 						<Img className="w-10 h-10 mb-1" src={'/public/assets/Icons/Bubbles.png'} />
 					</figure>
 				</figure>
