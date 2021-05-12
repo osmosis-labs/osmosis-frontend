@@ -11,7 +11,7 @@ import { TModal } from '../../interfaces';
 export const LabsOverview: FunctionComponent = observer(() => {
 	const { layoutStore } = useStore();
 	return (
-		<section className="w-full">
+		<section>
 			<div className="flex items-center mb-6">
 				<h5 className="mr-0.5">Active Labs</h5>
 				<button

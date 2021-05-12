@@ -1,3 +1,5 @@
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 const spacing = {
 	0: '0px',
 	0.25: '1px',
@@ -170,10 +172,12 @@ module.exports = {
 			'gradients-pinky': 'linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)',
 		},
 		screens: {
+			...defaultTheme.screens,
 			// sm: '820px',
 			// base: '1060px',
 			// md: 'var(--screens-md)',
-			lg: 'var(--screens-lg)',
+			// XXX: 이 부분의 의미를 모르겠슴...
+			// lg: 'var(--screens-lg)',
 		},
 		spacing: {
 			...spacing,

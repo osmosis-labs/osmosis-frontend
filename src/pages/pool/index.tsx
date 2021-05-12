@@ -6,7 +6,7 @@ import { useStore } from '../../stores';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { TModal } from '../../interfaces';
 import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
-import { CoinPretty, Dec, DecUtils } from '@keplr-wallet/unit';
+import { CoinPretty, DecUtils } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { Loader } from '../../components/common/Loader';
 import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
@@ -52,11 +52,13 @@ export const PoolPage: FunctionComponent = observer(() => {
 	return (
 		<div className="w-full h-full">
 			{pool ? (
-				<>
-					<div className="my-10 max-w-max mx-auto px-10">
-						<PoolInfoHeader id={pool.id} />
+				<React.Fragment>
+					<div className="py-10 w-full px-10">
+						<div className="max-w-max mx-auto">
+							<PoolInfoHeader id={pool.id} />
+						</div>
 					</div>
-					<div className="pt-10 px-10 bg-surface w-full">
+					<div className="py-10 w-full px-10 bg-surface">
 						<div className="pb-15">
 							<OsmoSynthesis pool={pool} />
 						</div>
@@ -64,7 +66,7 @@ export const PoolPage: FunctionComponent = observer(() => {
 							<PoolCatalyst id={pool.id} />
 						</div>
 					</div>
-				</>
+				</React.Fragment>
 			) : (
 				<Loader className="w-50 h-50" />
 			)}
@@ -91,7 +93,7 @@ const PoolInfoHeader: FunctionComponent<{
 	}, [layoutStore]);
 
 	return (
-		<>
+		<React.Fragment>
 			{pool ? (
 				<section>
 					<div className="flex items-center mb-6">
@@ -129,7 +131,7 @@ const PoolInfoHeader: FunctionComponent<{
 					</div>
 				</section>
 			) : null}
-		</>
+		</React.Fragment>
 	);
 });
 
@@ -150,9 +152,9 @@ const PoolCatalyst: FunctionComponent<{
 	return (
 		<React.Fragment>
 			{pool ? (
-				<section className="pb-10">
+				<section className="pb-10 max-w-max mx-auto">
 					<h5 className="mb-7.5 ">Pool Catalyst</h5>
-					<ul className="grid grid-cols-3 grid-rows-auto gap-8.75 w-full h-full">
+					<ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8.75 w-full h-full">
 						{/* TODO: IntPretty에 mul과 quo도 추가하자... */}
 						{pool.poolRatios.map((poolRatio, i) => {
 							return (

@@ -18,7 +18,7 @@ const Router: FunctionComponent = () => {
 	return (
 		<StoreProvider>
 			<ModalContainer />
-			<div className="min-h-sidebar-minHeight min-w-screen-lg h-screen bg-background z-0">
+			<div className="min-h-sidebar-minHeight h-screen bg-background z-0">
 				<BrowserRouter>
 					<Switch>
 						<Route exact path="/">

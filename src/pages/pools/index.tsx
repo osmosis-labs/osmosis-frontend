@@ -1,21 +1,18 @@
 import React, { FunctionComponent } from 'react';
-import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
 import { LabsOverview } from './LabsOverview';
 import { IncentivizedPools, MyPools } from './IncentivizedPools';
 import { AllPools } from './AllPools';
-import { TModal } from '../../interfaces';
 
 export const PoolsPage: FunctionComponent = observer(() => {
 	return (
 		<div className="w-full h-full">
-			<div className="my-10 max-w-max mx-auto">
-				<div className="mx-15">
+			<div className="py-10 w-full px-10">
+				<div className="max-w-max mx-auto">
 					<LabsOverview />
 				</div>
 			</div>
-			<div className="py-10 bg-surface w-full pl-10 pr-20">
+			<div className="py-10 bg-surface w-full px-10">
 				<div className="max-w-max mx-auto">
 					<MyPools />
 					<div className="mt-15">

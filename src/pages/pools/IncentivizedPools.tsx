@@ -53,7 +53,7 @@ export const MyPools: FunctionComponent = observer(() => {
 	return (
 		<section>
 			<h5 className="mb-7.5 ">My Pools</h5>
-			<ul className="grid grid-cols-3 gap-8.75 w-full h-full">
+			<ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8.75 w-full h-full">
 				{state.map(pool => {
 					return <PoolCard key={pool.poolId} data={pool} />;
 				})}
@@ -91,7 +91,7 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 	return (
 		<section>
 			<h5 className="mb-7.5 ">Incentivized Pools</h5>
-			<ul className="grid grid-cols-3 grid-rows-auto gap-8.75 w-full h-full">
+			<ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8.75 w-full h-full">
 				{state.map(pool => {
 					return <PoolCard key={pool.poolId} data={pool} />;
 				})}

@@ -3,8 +3,6 @@ import cn from 'clsx';
 import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
 import { fixed, multiply } from '../../utils/Big';
 import { formatNumber } from '../../utils/format';
-import times from 'lodash-es/times';
-import map from 'lodash-es/map';
 import { MyLockupsTable } from './MyLockupsTable';
 import { UnlockingTable } from './Unlocking';
 
@@ -18,7 +16,7 @@ export const OsmoSynthesis: FunctionComponent<IOsmoSynthesis> = ({ pool }) => {
 		alert('need implementing');
 	}, []);
 	return (
-		<section>
+		<section className="max-w-max mx-auto">
 			<div className="flex justify-between items-start">
 				<div>
 					<h5 className="mb-3">OSMO Synthesis</h5>
@@ -38,7 +36,7 @@ export const OsmoSynthesis: FunctionComponent<IOsmoSynthesis> = ({ pool }) => {
 					</button>
 				</div>
 			</div>
-			<div className="mt-10 grid grid-cols-3 gap-9">
+			<div className="mt-10 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-9">
 				<LockupBox apyPercent={356} days={30} />
 				<LockupBox apyPercent={356} days={60} />
 				<LockupBox apyPercent={356} days={90} />

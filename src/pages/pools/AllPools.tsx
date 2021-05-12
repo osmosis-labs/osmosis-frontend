@@ -11,7 +11,7 @@ export const AllPools: FunctionComponent = () => {
 	return (
 		<section>
 			<h5 className="mb-7.5">All Pools</h5>
-			<section className="min-w-table">
+			<section>
 				<PoolsTable />
 			</section>
 		</section>
