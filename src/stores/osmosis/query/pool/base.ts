@@ -1,6 +1,6 @@
 import { GAMMPoolData } from '../../pool/types';
 import { GAMMPool } from '../../pool';
-import { ChainGetter, MsgOpt } from '@keplr-wallet/stores';
+import { ChainGetter, CoinPrimitive, MsgOpt } from '@keplr-wallet/stores';
 import { CoinPretty, DecUtils, IntPretty, Int, Coin, Dec } from '@keplr-wallet/unit';
 import { computed, makeObservable, observable } from 'mobx';
 import { Currency, FiatCurrency } from '@keplr-wallet/types';
@@ -53,6 +53,25 @@ export class QueriedPoolBase {
 
 		return {
 			tokenIns,
+		};
+	}
+
+	estimateExitSwap(shareInAmount: string, shareCoinDecimals: number): { tokenOuts: CoinPretty[] } {
+		const estimated = this.pool.estimateExitPool(
+			new Dec(shareInAmount).mul(DecUtils.getPrecisionDec(shareCoinDecimals)).truncate()
+		);
+
+		const tokenOuts = estimated.tokenOuts.map(primitive => {
+			const currency = this.chainGetter.getChain(this.chainId).findCurrency(primitive.denom);
+			if (!currency) {
+				throw new Error('Unknown currency');
+			}
+
+			return new CoinPretty(currency, primitive.amount);
+		});
+
+		return {
+			tokenOuts,
 		};
 	}
 

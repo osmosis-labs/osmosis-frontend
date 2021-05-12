@@ -63,6 +63,30 @@ export class GAMMPool {
 		};
 	}
 
+	estimateExitPool(
+		shareInAmount: Int
+	): {
+		tokenOuts: Coin[];
+	} {
+		const tokenOuts: Coin[] = [];
+
+		const totalShare = this.totalShare;
+		const shareRatio = new Dec(shareInAmount).quo(new Dec(totalShare));
+		if (shareRatio.lte(new Dec(0))) {
+			throw new Error('share ratio is zero or negative');
+		}
+
+		for (const poolAsset of this.data.poolAssets) {
+			const tokenOutAmount = shareRatio.mul(new Dec(poolAsset.token.amount)).truncate();
+
+			tokenOuts.push(new Coin(poolAsset.token.denom, tokenOutAmount));
+		}
+
+		return {
+			tokenOuts,
+		};
+	}
+
 	estimateSwapExactAmountIn(
 		tokenIn: Coin,
 		tokenOutDenom: string

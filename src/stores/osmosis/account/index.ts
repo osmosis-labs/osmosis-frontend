@@ -9,6 +9,7 @@ import {
 	QueriesSetBase,
 	AccountSetOpts,
 	CosmosAccount,
+	CoinPrimitive,
 } from '@keplr-wallet/stores';
 import { Dec, DecUtils } from '@keplr-wallet/unit';
 import { Currency } from '@keplr-wallet/types';
@@ -23,6 +24,9 @@ export interface HasOsmosisAccount {
 export interface OsmosisMsgOpts {
 	readonly createPool: MsgOpt;
 	readonly joinPool: MsgOpt & {
+		shareCoinDecimals: number;
+	};
+	readonly exitPool: MsgOpt & {
 		shareCoinDecimals: number;
 	};
 	readonly swapExactAmountIn: MsgOpt;
@@ -43,6 +47,11 @@ export class AccountWithCosmosAndOsmosis extends AccountSetBase<
 		},
 		joinPool: {
 			type: 'osmosis/gamm/join-pool',
+			gas: 10000000,
+			shareCoinDecimals: 6,
+		},
+		exitPool: {
+			type: 'osmosis/gamm/exit-pool',
 			gas: 10000000,
 			shareCoinDecimals: 6,
 		},
@@ -360,6 +369,81 @@ export class OsmosisAccount {
 							bal.fetch();
 						}
 					});
+				}
+
+				if (onFulfill) {
+					onFulfill(tx);
+				}
+			}
+		);
+	}
+
+	async sendExitPoolMsg(
+		poolId: string,
+		shareInAmount: string,
+		maxSlippage: string = '0',
+		memo: string = '',
+		onFulfill?: (tx: any) => void
+	) {
+		const queries = this.queries;
+
+		await this.base.sendMsgs(
+			'exitPool',
+			async () => {
+				const queryPool = queries.osmosis.queryGammPools.getObservableQueryPool(poolId);
+				await queryPool.waitFreshResponse();
+
+				const pool = queryPool.pool;
+				if (!pool) {
+					throw new Error('Unknown pool');
+				}
+
+				const estimated = pool.estimateExitSwap(shareInAmount, this.base.msgOpts.exitPool.shareCoinDecimals);
+
+				const maxSlippageDec = new Dec(maxSlippage).quo(DecUtils.getPrecisionDec(2));
+
+				const tokenOutMins = maxSlippageDec.equals(new Dec(0))
+					? null
+					: estimated.tokenOuts.map(tokenOut => {
+							return {
+								denom: tokenOut.currency.coinMinimalDenom,
+								amount: tokenOut
+									.toDec()
+									.mul(new Dec(1).sub(maxSlippageDec))
+									.mul(DecUtils.getPrecisionDec(tokenOut.currency.coinDecimals))
+									.truncate()
+									.toString(),
+							};
+					  });
+
+				return [
+					{
+						type: this.base.msgOpts.exitPool.type,
+						value: {
+							sender: this.base.bech32Address,
+							poolId: pool.id,
+							shareInAmount: new Dec(shareInAmount)
+								.mul(DecUtils.getPrecisionDec(this.base.msgOpts.exitPool.shareCoinDecimals))
+								.truncate()
+								.toString(),
+							tokenOutMins,
+						},
+					},
+				];
+			},
+			{
+				amount: [],
+				gas: this.base.msgOpts.exitPool.gas.toString(),
+			},
+			memo,
+			tx => {
+				if (tx.code == null || tx.code === 0) {
+					// Refresh the balances
+					const queries = this.queriesStore.get(this.chainId);
+					queries.queryBalances.getQueryBech32Address(this.base.bech32Address).fetch();
+
+					// Refresh the pool
+					queries.osmosis.queryGammPools.getObservableQueryPool(poolId).fetch();
 				}
 
 				if (onFulfill) {
