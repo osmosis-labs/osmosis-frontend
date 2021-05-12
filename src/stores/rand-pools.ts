@@ -9,35 +9,28 @@ const stores = createTestStore();
 	await waitAccountLoaded(account);
 
 	for (let i = 0; i < 10; i++) {
+		const numPoolAssets = 1 + Math.ceil(Math.random() * 3);
+		const loop: number[] = [];
+		if (i !== 0) {
+			for (let i = 0; i < numPoolAssets; i++) {
+				loop.push(i);
+			}
+		} else {
+			loop.push(0, 1, 2, 3);
+		}
+
+		const assets = loop.map(i => {
+			return {
+				weight: (Math.floor(Math.random() * 200) + 1).toString(),
+				token: {
+					currency: chainInfo.currencies[i],
+					amount: (Math.floor(Math.random() * 200) + 1).toString(),
+				},
+			};
+		});
+
 		await new Promise(resolve => {
-			account.osmosis.sendCreatePoolMsg(
-				Math.random().toString(),
-				[
-					{
-						weight: Math.floor(Math.random() * 200).toString(),
-						token: {
-							currency: chainInfo.currencies[0],
-							amount: Math.floor(Math.random() * 200).toString(),
-						},
-					},
-					{
-						weight: Math.floor(Math.random() * 200).toString(),
-						token: {
-							currency: chainInfo.currencies[1],
-							amount: Math.floor(Math.random() * 200).toString(),
-						},
-					},
-					{
-						weight: Math.floor(Math.random() * 200).toString(),
-						token: {
-							currency: chainInfo.currencies[2],
-							amount: Math.floor(Math.random() * 200).toString(),
-						},
-					},
-				],
-				'',
-				resolve
-			);
+			account.osmosis.sendCreatePoolMsg(Math.random().toString(), assets, '', resolve);
 		});
 	}
 })();
