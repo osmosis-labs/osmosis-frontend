@@ -1,23 +1,12 @@
 import React, { FunctionComponent } from 'react';
 import cn from 'clsx';
-import times from 'lodash-es/times';
 import map from 'lodash-es/map';
 import { Img } from '../../components/common/Img';
 import { multiply } from '../../utils/Big';
-import { applyOptionalDecimal, formatUSD } from '../../utils/format';
+import { applyOptionalDecimal } from '../../utils/format';
 import { useHistory } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-
-const defaultData = times(6, i => {
-	return {
-		num: i + 1,
-		name: 'Lab',
-		apy: 3.25,
-		liquidity: '$343234',
-		tokens: ['atom', 'iris', 'scrt'],
-	} as IPoolData;
-});
 
 const bgArray = [
 	'bg-gradients-socialLive',
@@ -28,24 +17,23 @@ const bgArray = [
 	'bg-gradients-sunset',
 ];
 
-const defaulMyData = times(3, i => {
-	return {
-		num: i + 1,
-		name: 'Lab',
-		apy: 3.25,
-		liquidity: '$343234',
-		tokens: ['atom', 'iris', 'scrt'],
-	} as IPoolData;
-});
+export interface PoolData {
+	poolId: string;
+	apy: string;
+	liquidity: string;
+	tokens: string[];
+}
+
 export const MyPools: FunctionComponent = observer(() => {
 	const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
+	const queryPoolIncentives = queries.osmosis.queryPoolIncentives;
 	const myPools = queries.osmosis.queryGammPoolShare.getOwnPools(account.bech32Address);
 
-	const state: IPoolData[] = myPools
+	const state = myPools
 		.map(poolId => {
 			const pool = queries.osmosis.queryGammPools.getPool(poolId);
 			if (!pool) {
@@ -54,45 +42,67 @@ export const MyPools: FunctionComponent = observer(() => {
 
 			// 데이터 구조를 바꿀 필요가 있다.
 			return {
-				num: parseInt(pool.id),
-				name: 'Lab',
-				// TODO: APY는 TODO
-				apy: 3.25,
+				poolId: pool.id,
+				apy: queryPoolIncentives.computeAPY(pool.id).toString(),
 				liquidity: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
 				tokens: pool.poolAssets.map(asset => asset.amount.currency.coinDenom),
 			};
 		})
-		.filter(d => d != null) as IPoolData[];
+		.filter(d => d != null) as PoolData[];
 
 	return (
 		<section>
 			<h5 className="mb-7.5 ">My Pools</h5>
 			<ul className="grid grid-cols-3 gap-8.75 w-full h-full">
-				{map(state, pool => {
-					return <PoolCard key={pool.num} data={pool} />;
+				{state.map(pool => {
+					return <PoolCard key={pool.poolId} data={pool} />;
 				})}
 			</ul>
 		</section>
 	);
 });
 
-export const IncentivizedPools: FunctionComponent = () => {
-	// TODO : @Thunnini fetch pools
-	const [state, setState] = React.useState<IPoolData[]>(defaultData);
+export const IncentivizedPools: FunctionComponent = observer(() => {
+	const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+
+	const queries = queriesStore.get(chainStore.current.chainId);
+	const account = accountStore.getAccount(chainStore.current.chainId);
+
+	const queryPoolIncentives = queries.osmosis.queryPoolIncentives;
+
+	const state = queryPoolIncentives
+		.getIncentivizedPools()
+		.map(poolId => {
+			const pool = queries.osmosis.queryGammPools.getPool(poolId);
+			if (!pool) {
+				return undefined;
+			}
+
+			// 데이터 구조를 바꿀 필요가 있다.
+			return {
+				poolId: pool.id,
+				apy: queryPoolIncentives.computeAPY(pool.id).toString(),
+				liquidity: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
+				tokens: pool.poolAssets.map(asset => asset.amount.currency.coinDenom),
+			};
+		})
+		.filter(d => d != null) as PoolData[];
 
 	return (
 		<section>
 			<h5 className="mb-7.5 ">Incentivized Pools</h5>
 			<ul className="grid grid-cols-3 grid-rows-auto gap-8.75 w-full h-full">
-				{map(state, pool => {
-					return <PoolCard key={pool.num} data={pool} />;
+				{state.map(pool => {
+					return <PoolCard key={pool.poolId} data={pool} />;
 				})}
 			</ul>
 		</section>
 	);
-};
+});
 
-const PoolCard: FunctionComponent<IPoolCard> = ({ data }) => {
+const PoolCard: FunctionComponent<{
+	data: PoolData;
+}> = ({ data }) => {
 	const history = useHistory();
 
 	return (
@@ -101,22 +111,28 @@ const PoolCard: FunctionComponent<IPoolCard> = ({ data }) => {
 			onClick={e => {
 				e.preventDefault();
 
-				history.push(`/pool/${data.num}`);
+				history.push(`/pool/${data.poolId}`);
 			}}>
 			<section className="flex mb-4">
 				<figure
 					style={{ width: '84px', height: '84px' }}
 					className="rounded-full border border-enabledGold flex justify-center items-center mr-6">
-					<figure className={cn('w-18 h-18 rounded-full flex justify-center items-center', bgArray[data.num - 1])}>
+					<figure
+						className={cn(
+							'w-18 h-18 rounded-full flex justify-center items-center',
+							bgArray[(parseInt(data.poolId) - 1) % bgArray.length]
+						)}>
 						<Img className="w-10 h-10" src={'/public/assets/Icons/OSMO.svg'} />
 					</figure>
 				</figure>
 				<div className="mt-3.75">
-					<h5>
-						{data.name} #{data.num}
-					</h5>
+					<h5>Lab #{data.poolId}</h5>
 					<p className="text-sm text-white-mid font-semibold mt-2">
-						{map(data.tokens, v => v.toUpperCase()).join(' / ')}
+						{data.tokens
+							.map(token => {
+								return token.toUpperCase();
+							})
+							.join('/')}
 					</p>
 				</div>
 			</section>
@@ -133,14 +149,3 @@ const PoolCard: FunctionComponent<IPoolCard> = ({ data }) => {
 		</li>
 	);
 };
-interface IPoolCard {
-	data: IPoolData;
-}
-
-interface IPoolData {
-	num: number;
-	name: string;
-	apy: number;
-	liquidity: string;
-	tokens: string[];
-}
