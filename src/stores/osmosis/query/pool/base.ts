@@ -22,12 +22,14 @@ export class QueriedPoolBase {
 		return this.pool.id;
 	}
 
+	calculateSpotPrice(inMinimalDenom: string, outMinimalDenom: string): IntPretty {
+		const calculated = this.pool.calculateSpotPrice(inMinimalDenom, outMinimalDenom);
+		return new IntPretty(calculated).maxDecimals(4).trim(true);
+	}
+
 	calculateSpotPriceWithoutSwapFee(inMinimalDenom: string, outMinimalDenom: string): IntPretty {
 		const calculated = this.pool.calculateSpotPriceWithoutSwapFee(inMinimalDenom, outMinimalDenom);
-		return new IntPretty(calculated)
-			.decreasePrecision(2)
-			.maxDecimals(4)
-			.trim(true);
+		return new IntPretty(calculated).maxDecimals(4).trim(true);
 	}
 
 	estimateJoinSwap(
@@ -128,7 +130,6 @@ export class QueriedPoolBase {
 		maxSlippage: string = '0'
 	): Msg {
 		const estimated = this.estimateSwapExactAmountIn(tokenIn, tokenOutCurrency);
-
 		const maxSlippageDec = new Dec(maxSlippage).quo(DecUtils.getPrecisionDec(2));
 		// TODO: Compare the computed slippage and wanted max slippage?
 

@@ -3,6 +3,7 @@ import { computed, makeObservable, observable } from 'mobx';
 import { IntPretty } from '@keplr-wallet/unit';
 import { ObservableQueryPool } from '../query/pool';
 import { ObservableQueryPools } from '../query/pools';
+import { Msg } from '@cosmjs/launchpad';
 
 export interface SwapManagerPoolCurrency extends Currency {
 	poolId: string;
@@ -37,6 +38,7 @@ export class GammSwapManager {
 		outMinimalDenom: string
 	):
 		| {
+				poolId: string;
 				spotPrice: IntPretty;
 		  }
 		| undefined {
@@ -59,7 +61,8 @@ export class GammSwapManager {
 		}
 
 		return {
-			spotPrice: pool.calculateSpotPriceWithoutSwapFee(inMinimalDenom, outMinimalDenom),
+			poolId: pool.id,
+			spotPrice: pool.calculateSpotPrice(inMinimalDenom, outMinimalDenom),
 		};
 	}
 }

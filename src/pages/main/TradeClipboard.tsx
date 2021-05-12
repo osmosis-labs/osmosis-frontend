@@ -5,8 +5,6 @@ import { TCardTypes } from '../../interfaces';
 import { DisplayIcon } from '../../components/layouts/Sidebar/SidebarItem';
 import { DisplayAmount } from '../../components/common/DIsplayAmount';
 import { Img } from '../../components/common/Img';
-import { TOKENS } from '../../constants';
-import { divide, fixed, multiply } from '../../utils/Big';
 import cn from 'clsx';
 import { TokenListDisplay } from '../../components/common/TokenListDisplay';
 import { TokenDisplay } from '../../components/common/TokenDisplay';
@@ -18,6 +16,7 @@ import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { GammSwapManager } from '../../stores/osmosis/swap';
 import { ObservableQueryPools } from '../../stores/osmosis/query/pools';
+import { AccountWithCosmosAndOsmosis } from '../../stores/osmosis/account';
 
 // 상태가 좀 복잡한 듯 하니 그냥 mobx로 처리한다...
 // CONTRACT: Use with `observer`
@@ -31,7 +30,11 @@ class TradeState {
 	protected _inAmount: string = '';
 
 	// TODO: 흠... 생성자 인터페이스가 뭔가 이상해보임.
-	constructor(protected swapManager: GammSwapManager, protected queryPools: ObservableQueryPools) {
+	constructor(
+		protected swapManager: GammSwapManager,
+		protected account: AccountWithCosmosAndOsmosis,
+		protected queryPools: ObservableQueryPools
+	) {
 		makeObservable(this);
 	}
 
@@ -124,6 +127,21 @@ class TradeState {
 	}
 
 	@computed
+	get poolId(): string | undefined {
+		const computed = this.swapManager.computeOptimizedRoues(
+			this.queryPools,
+			this.inCurrency.coinMinimalDenom,
+			this.outCurrency.coinMinimalDenom
+		);
+
+		if (!computed) {
+			return undefined;
+		}
+
+		return computed.poolId;
+	}
+
+	@computed
 	get outAmount(): CoinPretty {
 		const inAmount = this.inAmount;
 		if (inAmount.toDec().equals(new Dec(0))) {
@@ -139,7 +157,7 @@ class TradeState {
 			this.outCurrency,
 			this.inAmount
 				.toDec()
-				.mul(spotPrice.toDec())
+				.mul(new Dec(1).quo(spotPrice.toDec()))
 				.mul(DecUtils.getPrecisionDec(this.outCurrency.coinDecimals))
 				.truncate()
 		);
@@ -151,10 +169,10 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 	// TODO: 이 부분 빼야됨. 메인 페이지에서는 자동으로 최적의 라우트를 계산해주는거라 swap fee가 유동적이라 고정된 값을 보여줄 수 없음.
 	const swapPercent = 0.0003;
 
-	const { chainStore, queriesStore, swapManager } = useStore();
-	const swappableCurrencies = swapManager.swappableCurrencies;
+	const { chainStore, queriesStore, accountStore, swapManager } = useStore();
+	const account = accountStore.getAccount(chainStore.current.chainId);
 	const [tradeState] = useState(
-		() => new TradeState(swapManager, queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools)
+		() => new TradeState(swapManager, account, queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools)
 	);
 
 	return (
@@ -188,7 +206,7 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 						<FeesBox tradeState={tradeState} />
 					</section>
 					<section className="w-full">
-						<SwapButton />
+						<SwapButton tradeState={tradeState} />
 					</section>
 				</div>
 			</div>
@@ -196,25 +214,53 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 	);
 });
 
-const SwapButton: FunctionComponent = () => {
+const SwapButton: FunctionComponent<{
+	tradeState: TradeState;
+}> = observer(({ tradeState }) => {
+	const { chainStore, accountStore } = useStore();
+	const account = accountStore.getAccount(chainStore.current.chainId);
+
 	const onButtonClick = () => {
-		alert('swap button click');
+		if (account.isReadyToSendMsgs) {
+			const poolId = tradeState.poolId;
+			if (!poolId) {
+				throw new Error("Can't calculate the optimized pools");
+			}
+
+			/*
+			 TODO: 슬리피지는 일단 5%로 설정한다. 나중에 슬리피지 설정을 만들어야한다.
+			 */
+			account.osmosis.sendSwapExactAmountInMsg(
+				poolId,
+				{
+					currency: tradeState.inCurrency,
+					amount: tradeState.inAmountText,
+				},
+				tradeState.outCurrency,
+				'5'
+			);
+		}
 	};
 
+	// TODO: 버튼이 disabled일 때의 스타일링 추가하기.
+	// TODO: 트랜잭션을 보내는 중일때 버튼에 로딩 스타일링 추가하기.
 	return (
 		<button
 			onClick={onButtonClick}
-			className="bg-primary-200 h-15 flex justify-center items-center w-full rounded-lg shadow-elevation-04dp hover:opacity-75">
+			className="bg-primary-200 h-15 flex justify-center items-center w-full rounded-lg shadow-elevation-04dp hover:opacity-75"
+			disabled={!account.isReadyToSendMsgs}>
 			<p className="font-body tracking-wide">SWAP</p>
 		</button>
 	);
-};
+});
 
 const FeesBox: FunctionComponent<{
 	tradeState: TradeState;
 }> = observer(({ tradeState }) => {
-	const inSpotPrice = tradeState.spotPrice;
-	const outSpotPrice = new IntPretty(tradeState.spotPrice.toDec().quo(new Dec(1)));
+	const outSpotPrice = tradeState.spotPrice;
+	const inSpotPrice = tradeState.spotPrice.toDec().equals(new Dec(0))
+		? tradeState.spotPrice
+		: new IntPretty(new Dec(1).quo(tradeState.spotPrice.toDec()));
 
 	return (
 		<Container className="rounded-lg py-3 px-4.5 w-full border border-white-faint" type={TCardTypes.CARD}>
