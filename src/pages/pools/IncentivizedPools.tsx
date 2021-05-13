@@ -139,7 +139,7 @@ const PoolCard: FunctionComponent<{
 			<section className="flex items-center">
 				<div className="border-r border-enabledGold pr-5">
 					<p className="text-sm text-white-mid mb-2">APY</p>
-					<h6 className="text-white-emphasis">{applyOptionalDecimal(multiply(data.apy, 100, 2))}%</h6>
+					<h6 className="text-white-emphasis">{data.apy}%</h6>
 				</div>
 				<div className="ml-5">
 					<p className="text-sm text-white-mid mb-2">Liquidity</p>
