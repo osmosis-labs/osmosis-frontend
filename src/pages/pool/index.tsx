@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import cn from 'clsx';
 import { Img } from '../../components/common/Img';
 import { observer } from 'mobx-react-lite';
@@ -11,6 +11,7 @@ import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { Loader } from '../../components/common/Loader';
 import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
 import { OsmoSynthesis } from './OsmoSynthesis';
+import { ManageLiquidityDialog } from '../../dialogs';
 
 const bgArray = [
 	'bg-gradients-socialLive',
@@ -88,18 +89,22 @@ const PoolInfoHeader: FunctionComponent<{
 	// `shareRatio`가 백분률로 오기 때문에 10^2를 나눠줘야한다.
 	const actualRatio = shareRatio.toDec().quo(DecUtils.getPrecisionDec(2));
 
-	const onLiquidityClick = React.useCallback(() => {
-		layoutStore.updateCurrentModal(TModal.MANAGE_LIQUIDITY);
-	}, [layoutStore]);
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const closeDialog = () => setIsDialogOpen(false);
 
 	return (
 		<React.Fragment>
 			{pool ? (
 				<section>
+					<ManageLiquidityDialog poolId={id} isOpen={isDialogOpen} close={closeDialog} />
 					<div className="flex items-center mb-6">
 						<h5 className="mr-6">Lab #{id}</h5>
 						<button
-							onClick={onLiquidityClick}
+							onClick={e => {
+								e.preventDefault();
+
+								setIsDialogOpen(true);
+							}}
 							className="ml-6 bg-primary-200 rounded-lg px-3.75 py-2.5 cursor-pointer hover:opacity-75">
 							<p>Add / Remove Liquidity</p>
 						</button>
