@@ -275,7 +275,7 @@ export class RemoveLiquidityState extends ManageLiquidityStateBase {
 
 	@computed
 	get poolShareWithPercentage(): CoinPretty {
-		return this.poolShare.mul(new Dec(this.percentage).quo(DecUtils.getPrecisionDec(2)));
+		return this.poolShare.mul(new Dec(this.percentage.toString()).quo(DecUtils.getPrecisionDec(2)));
 	}
 }
 
