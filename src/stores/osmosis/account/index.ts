@@ -251,6 +251,8 @@ export class OsmosisAccount {
 						// TODO: Explicitly refresh the share expected to be minted and provided to the pool.
 						bal.fetch();
 					});
+
+					queries.osmosis.queryGammPools.getObservableQueryPool(poolId).fetch();
 				}
 
 				if (onFulfill) {

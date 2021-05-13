@@ -210,7 +210,7 @@ export class AddLiquidityState extends ManageLiquidityStateBase {
 			return new IntPretty(new Int(0));
 		}
 
-		return tokenInAmount.add(totalShare).quo(poolAsset.amount);
+		return tokenInAmount.mul(totalShare).quo(poolAsset.amount);
 	}
 
 	/**
