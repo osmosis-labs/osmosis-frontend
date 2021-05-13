@@ -201,17 +201,20 @@ module.exports = {
 				fit: 'fit-content',
 				...sizes,
 				...screenWidths,
+				modal: '41.25rem',
 			},
 			minWidth: {
 				...screenWidths,
 				...sidebarWidths,
 				...genericWidths,
+				modal: '41.25rem',
 			},
 			maxWidth: {
 				...sizes,
 				...screenWidths,
 				...sidebarWidths,
 				...genericWidths,
+				modal: '41.25rem',
 			},
 			borderOpacity: {
 				40: '0.4',
