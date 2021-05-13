@@ -4,9 +4,8 @@ import { Img } from '../../components/common/Img';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { TModal } from '../../interfaces';
 import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
-import { CoinPretty, DecUtils } from '@keplr-wallet/unit';
+import { DecUtils } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { Loader } from '../../components/common/Loader';
 import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
@@ -124,13 +123,20 @@ const PoolInfoHeader: FunctionComponent<{
 									{(() => {
 										const tvl = pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!);
 
-										// TODO: PricePretty에 mul과 quo도 추가하자...
-										return new PricePretty(tvl.fiatCurrency, tvl.toDec().mul(actualRatio)).toString();
+										return tvl.mul(actualRatio).toString();
 									})()}
 								</h4>
 							</OverviewLabelValue>
 							<OverviewLabelValue label="Swap Fee">
 								<h6>{pool.swapFee.toString()}%</h6>
+							</OverviewLabelValue>
+						</ul>
+						<ul className="flex flex-col gap-6">
+							<OverviewLabelValue label="&#8203;">
+								<h4>&#8203;</h4>
+							</OverviewLabelValue>
+							<OverviewLabelValue label="Exit Fee">
+								<h6>{pool.exitFee.toString()}%</h6>
 							</OverviewLabelValue>
 						</ul>
 					</div>

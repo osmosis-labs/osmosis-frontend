@@ -31,6 +31,10 @@ export class GAMMPool {
 		return new Dec(this.data.poolParams.swapFee);
 	}
 
+	get exitFee(): Dec {
+		return new Dec(this.data.poolParams.exitFee);
+	}
+
 	get totalShare(): Int {
 		return new Int(this.data.totalShare.amount);
 	}

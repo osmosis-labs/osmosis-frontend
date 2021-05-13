@@ -234,6 +234,14 @@ export class QueriedPoolBase {
 	}
 
 	@computed
+	get exitFee(): IntPretty {
+		return new IntPretty(this.pool.exitFee)
+			.decreasePrecision(2)
+			.maxDecimals(4)
+			.trim(true);
+	}
+
+	@computed
 	get totalWeight(): IntPretty {
 		return new IntPretty(this.pool.totalWeight);
 	}
