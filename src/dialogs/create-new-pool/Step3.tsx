@@ -4,12 +4,12 @@ import each from 'lodash-es/each';
 import cloneDeep from 'lodash-es/cloneDeep';
 
 import { IPools } from './Step1';
-import { HIGHCHART_GRADIENTS, PieChart, HIGHCHART_LEGEND_GRADIENTS } from '../../common/PieChart';
+import { HIGHCHART_GRADIENTS, PieChart, HIGHCHART_LEGEND_GRADIENTS } from '../../components/common/PieChart';
 import { GradientColorObject, PointOptionsObject, SeriesOptionsType, SeriesPieOptions } from 'highcharts';
 import { TPool } from './index';
-import { formatNumber } from '../../../utils/format';
-import { fixed } from '../../../utils/Big';
-import { TOKENS } from '../../../constants';
+import { formatNumber } from '../../utils/format';
+import { fixed } from '../../utils/Big';
+import { TOKENS } from '../../constants';
 
 const pieSerie = {
 	type: 'pie',

@@ -14,6 +14,13 @@ export const LAYOUT = {
 			SELECTED_CHECK: ['/pools', /\/pool\/[0-9]+/],
 			ROUTE: '/pools',
 		},
+		ASSETS: {
+			ICON: '/public/assets/Icons/Trade.svg',
+			ICON_SELECTED: '/public/assets/Icons/Trade_selected.png',
+			TEXT: 'Assets',
+			ROUTE: '/assets',
+			SELECTED_CHECK: '/assets',
+		},
 		GOVERNANCE: {
 			ICON: '/public/assets/Icons/Ticket.svg',
 			ICON_SELECTED: '/public/assets/Icons/Ticket_selected.png',

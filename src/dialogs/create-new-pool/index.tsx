@@ -1,14 +1,15 @@
 import React, { Dispatch, FunctionComponent, SetStateAction } from 'react';
 import cloneDeep from 'lodash-es/cloneDeep';
 import { NewPoolStage1 } from './Step1';
-import { sumArray } from '../../../utils/Big';
+import { sumArray } from '../../utils/Big';
 import map from 'lodash-es/map';
 import { NewPoolStage2 } from './Step2';
 import { NewPoolStage3 } from './Step3';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
-import { TModal } from '../../../interfaces';
-import { Img } from '../../common/Img';
+import { useStore } from '../../stores';
+import { TModal } from '../../interfaces';
+import { Img } from '../../components/common/Img';
+import { BaseDialog, BaseModalProps } from '../base';
 
 const defaultState = {
 	pools: [
@@ -27,7 +28,7 @@ const defaultState = {
 	],
 	stage: 1,
 } as IPoolState;
-export const NewPoolModal: FunctionComponent = () => {
+export const CreateNewPoolDialog: FunctionComponent<BaseModalProps> = observer(({ isOpen, close, style }) => {
 	const [state, setState] = React.useState<IPoolState>(cloneDeep(defaultState));
 	const content = React.useMemo(() => {
 		if (state.stage === 1) return <NewPoolStage1 poolState={state} setPoolState={setState} />;
@@ -35,16 +36,16 @@ export const NewPoolModal: FunctionComponent = () => {
 		else if (state.stage === 3) return <NewPoolStage3 poolState={state} setPoolState={setState} />;
 	}, [state]);
 	return (
-		<div style={{ width: '656px' }} className="bg-surface rounded-2xl pt-8 pb-7.5 px-7.5 text-white-high">
-			<div>{content}</div>
-			<NewPoolButton state={state} setPoolState={setState} />
-		</div>
+		<BaseDialog style={style} isOpen={isOpen} close={close}>
+			<div style={style} className="text-white-high">
+				<div>{content}</div>
+				<NewPoolButton close={close} state={state} setPoolState={setState} />
+			</div>
+		</BaseDialog>
 	);
-};
+});
 
-const NewPoolButton: FunctionComponent<INewPoolButton> = observer(({ state, setPoolState }) => {
-	const { layoutStore } = useStore();
-
+const NewPoolButton: FunctionComponent<INewPoolButton> = observer(({ state, setPoolState, close }) => {
 	const validateFunc = React.useCallback(() => {
 		if (state.stage === 1) {
 			// check ratio & sum of ratio === 100
@@ -93,12 +94,12 @@ const NewPoolButton: FunctionComponent<INewPoolButton> = observer(({ state, setP
 
 		if (state.stage === 3) {
 			alert('Generated Pools!');
-			layoutStore.updateCurrentModal(TModal.INIT);
+			close();
 			return;
 		}
 
 		setPoolState(prevState => ({ ...prevState, stage: prevState.stage + 1 }));
-	}, [layoutStore, setPoolState, state, validateFunc]);
+	}, [close, setPoolState, state, validateFunc]);
 
 	const validateRes = validateFunc();
 	return (
@@ -123,6 +124,7 @@ const NewPoolButton: FunctionComponent<INewPoolButton> = observer(({ state, setP
 interface INewPoolButton {
 	state: IPoolState;
 	setPoolState: Dispatch<SetStateAction<IPoolState>>;
+	close: () => void;
 }
 
 export interface IPoolState {

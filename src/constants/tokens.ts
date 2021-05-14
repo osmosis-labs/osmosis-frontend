@@ -22,6 +22,10 @@ export const TOKENS: Record<string, IToken> = {
 		LONG_NAME: 'Regen',
 		DECIMALS: 6,
 	},
+	scrt: {
+		LONG_NAME: 'Secret Network',
+		DECIMALS: 6,
+	},
 };
 
 // object property === token currency

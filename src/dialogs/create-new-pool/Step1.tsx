@@ -2,12 +2,12 @@ import React, { Dispatch, FunctionComponent, ReactElement, SetStateAction } from
 import cn from 'clsx';
 import { IPoolState, TPool } from './index';
 import map from 'lodash-es/map';
-import { LINKS, MISC, TOKENS } from '../../../constants';
-import { Img } from '../../common/Img';
-import { isNumber } from '../../../utils/scripts';
+import { LINKS, MISC, TOKENS } from '../../constants';
+import { Img } from '../../components/common/Img';
+import { isNumber } from '../../utils/scripts';
 import noop from 'lodash-es/noop';
 import upperCase from 'lodash-es/upperCase';
-import { TokenListDisplay } from '../../common/TokenListDisplay';
+import { TokenListDisplay } from '../../components/common/TokenListDisplay';
 
 export const NewPoolStage1: FunctionComponent<IPools> = ({ poolState, setPoolState }) => {
 	const onAddToken = () => {
@@ -103,7 +103,7 @@ const Pool: FunctionComponent<IPool> = ({ data, setPoolPercent, setToken, remova
 					{removable && (
 						<Img
 							onClick={removeSelfFunc}
-							className="w-8 h-8 mr-4 hover:opacity-75 cursor-pointer"
+							className="w-8 h-8 mr-4 hover:opacity-75 cursor-pointer s-filter-white"
 							src="/public/assets/Icons/Close.svg"
 						/>
 					)}

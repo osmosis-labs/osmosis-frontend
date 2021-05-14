@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import moment from 'dayjs';
 import { formatUSD, getDuration } from '../../utils/format';
 import { minus } from '../../utils/Big';
@@ -7,15 +7,17 @@ import { DisplayLeftTime } from '../../components/common/DisplayLeftTime';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { TModal } from '../../interfaces';
+import { CreateNewPoolDialog } from '../../dialogs/create-new-pool';
 
 export const LabsOverview: FunctionComponent = observer(() => {
-	const { layoutStore } = useStore();
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	return (
 		<section>
+			<CreateNewPoolDialog style={{ minWidth: '656px' }} isOpen={isDialogOpen} close={() => setIsDialogOpen(false)} />
 			<div className="flex items-center mb-6">
 				<h5 className="mr-0.5">Active Labs</h5>
 				<button
-					onClick={() => layoutStore.updateCurrentModal(TModal.NEW_POOL)}
+					onClick={() => setIsDialogOpen(true)}
 					className="ml-7 px-4 py-2.5 rounded-lg bg-primary-200 hover:opacity-75 cursor-pointer">
 					<p className="leading-none">Create New Pool</p>
 				</button>

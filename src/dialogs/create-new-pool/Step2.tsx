@@ -1,12 +1,12 @@
 import React, { FunctionComponent } from 'react';
 import cn from 'clsx';
 import { IPools } from './Step1';
-import { Img } from '../../common/Img';
-import { LINKS } from '../../../constants';
+import { Img } from '../../components/common/Img';
+import { LINKS } from '../../constants';
 import { TPool } from './index';
 import map from 'lodash-es/map';
 import upperCase from 'lodash-es/upperCase';
-import { isNumber } from '../../../utils/scripts';
+import { isNumber } from '../../utils/scripts';
 
 export const NewPoolStage2: FunctionComponent<IPools> = ({ poolState, setPoolState }) => {
 	return (

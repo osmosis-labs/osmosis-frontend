@@ -59,3 +59,6 @@ export const get24hrTime = (unix: TBigInput): string => {
 };
 
 export const toNormalCase = (str: string): string => capitalize(lowerCase(str));
+
+export const truncateString = (str: string, front: number, back: number) =>
+	`${str.substr(0, front)}...${str.substr(str.length - back, str.length)}`;

@@ -281,7 +281,7 @@ export class RemoveLiquidityState extends ManageLiquidityStateBase {
 
 export const ManageLiquidityDialog: FunctionComponent<BaseModalProps & {
 	poolId: string;
-}> = observer(({ isOpen, close, poolId }) => {
+}> = observer(({ isOpen, close, poolId, style }) => {
 	const [tab, setTab] = React.useState<Tabs>(Tabs.ADD);
 
 	const { chainStore, queriesStore, accountStore } = useStore();
@@ -313,8 +313,8 @@ export const ManageLiquidityDialog: FunctionComponent<BaseModalProps & {
 	removeLiquidityState.setSender(account.bech32Address);
 
 	return (
-		<BaseDialog isOpen={isOpen} close={close}>
-			<div className="text-white-high">
+		<BaseDialog style={style} isOpen={isOpen} close={close}>
+			<div className="text-white-high w-full h-full">
 				<h5 className="mb-9">Manage Liquidity</h5>
 				<div className="mb-7.5">
 					<AddRemoveSelectTab setTab={setTab} tab={tab} />

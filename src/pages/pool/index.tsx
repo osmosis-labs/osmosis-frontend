@@ -95,7 +95,12 @@ const PoolInfoHeader: FunctionComponent<{
 		<React.Fragment>
 			{pool ? (
 				<section>
-					<ManageLiquidityDialog poolId={id} isOpen={isDialogOpen} close={closeDialog} />
+					<ManageLiquidityDialog
+						style={{ width: '656px', minHeight: '533px' }}
+						poolId={id}
+						isOpen={isDialogOpen}
+						close={closeDialog}
+					/>
 					<div className="flex items-center mb-6">
 						<h5 className="mr-6">Lab #{id}</h5>
 						<button

@@ -8,17 +8,16 @@ import { GovernancePage } from './pages/governance';
 import { AirdropPage } from './pages/airdrop';
 import { RouteWrapper } from './components/layouts/RouteWrapper';
 import { NotFoundPage } from './pages/NotFound';
-import { ModalContainer } from './components/containers/ModalContainer';
 
 import './styles/index.scss';
 import './styles/globals.scss';
 import { PoolPage } from './pages/pool';
+import { AssetsPage } from './pages/assets';
 
 const Router: FunctionComponent = () => {
 	return (
 		<StoreProvider>
-			<ModalContainer />
-			<div className="min-h-sidebar-minHeight h-screen bg-background z-0">
+			<div style={{ minWidth: '1280px' }} className="min-h-sidebar-minHeight h-screen bg-background z-0">
 				<BrowserRouter>
 					<Switch>
 						<Route exact path="/">
@@ -34,6 +33,11 @@ const Router: FunctionComponent = () => {
 						<Route path="/pool/:id">
 							<RouteWrapper>
 								<PoolPage />
+							</RouteWrapper>
+						</Route>
+						<Route exact path="/assets">
+							<RouteWrapper>
+								<AssetsPage />
 							</RouteWrapper>
 						</Route>
 						<Route exact path="/governance">
