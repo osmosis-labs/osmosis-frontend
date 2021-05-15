@@ -27,7 +27,6 @@ const SideBar: FunctionComponent<ChildComponentProps> = ({ history }) => {
 			className="overflow-x-visible max-w-sidebar-open min-w-sidebar-open pointer-events-none h-full z-50">
 			<div className="fixed h-full">
 				<Container
-					settings={sidebarSettings}
 					className={cn(
 						'h-full transition-all pointer-events-auto fixed overflow-x-hidden',
 						openSidebar ? 'min-w-sidebar-open max-w-sidebar-open' : 'min-w-sidebar-closed max-w-sidebar-closed'
@@ -72,9 +71,6 @@ const pathnameCheck = (str: string, routes: TSIDEBAR_SELECTED_CHECK) => {
 };
 
 export const Sidebar = withRouter(SideBar);
-const sidebarSettings = {
-	hoverable: true,
-};
 
 const LogoArea: FunctionComponent<TLogoArea> = ({ openSidebar }) => {
 	return (

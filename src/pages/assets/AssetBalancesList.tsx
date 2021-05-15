@@ -4,40 +4,29 @@ import { formatNumber } from '../../utils/format';
 import { Img } from '../../components/common/Img';
 import { LINKS, TOKENS } from '../../constants';
 import map from 'lodash-es/map';
-import { DepositDialog } from '../../dialogs/deposit';
-import { WithdrawDialog } from '../../dialogs/Withdraw';
+import { TransferDialog } from '../../dialogs/Transfer';
 
 const tableWidths = ['50%', '25%', '12.5%', '12.5%'];
 const ROW_HEIGHT = 72;
+interface IDialogState {
+	open: boolean;
+	token: string;
+	isWithdraw: boolean;
+}
 export const AssetBalancesList: FunctionComponent<{ state: IAssetBalance[] }> = ({ state }) => {
-	const [clicked, setClicked] = React.useState<string>('atom');
+	const [dialogState, setDialogState] = React.useState<IDialogState>({ open: false, token: '', isWithdraw: false });
 
-	const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);
-	const [isDepositDialogOpen, setIsDepositDialogOpen] = useState(false);
-	const closeWithdraw = () => setIsWithdrawDialogOpen(false);
-	const closeDeposit = () => setIsDepositDialogOpen(false);
-
-	const onDepositClick = React.useCallback((token: string) => {
-		setClicked(token);
-		setIsDepositDialogOpen(true);
-	}, []);
-	const onWithdrawClick = React.useCallback((token: string) => {
-		setClicked(token);
-		setIsWithdrawDialogOpen(true);
-	}, []);
+	const onDepositClick = (token: string) => setDialogState(v => ({ ...v, open: true, token, isWithdraw: false }));
+	const onWithdrawClick = (token: string) => setDialogState(v => ({ ...v, open: true, token, isWithdraw: true }));
+	const close = () => setDialogState(v => ({ ...v, open: false }));
 	return (
 		<>
-			<DepositDialog
-				style={{ minHeight: '533px', minWidth: '656px', maxWidth: '656px' }}
-				token={clicked}
-				isOpen={isDepositDialogOpen}
-				close={closeDeposit}
-			/>
-			<WithdrawDialog
-				style={{ minHeight: '533px', minWidth: '656px', maxWidth: '656px' }}
-				token={clicked}
-				isOpen={isWithdrawDialogOpen}
-				close={closeWithdraw}
+			<TransferDialog
+				style={{ minHeight: '533px', maxHeight: '540px', minWidth: '656px', maxWidth: '656px' }}
+				token={dialogState.token}
+				isOpen={dialogState.open}
+				close={close}
+				isWithdraw={dialogState.isWithdraw}
 			/>
 			<table className="w-full">
 				<AssetBalanceTableHeader />

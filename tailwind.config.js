@@ -27,6 +27,7 @@ const spacing = {
 	15: '60px',
 	17.5: '70px',
 	20: '80px',
+	21.5: '86px',
 };
 const sizes = {
 	0: '0px',
@@ -172,12 +173,14 @@ module.exports = {
 			'gradients-pinky': 'linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)',
 		},
 		screens: {
-			...defaultTheme.screens,
-			// sm: '820px',
-			// base: '1060px',
-			// md: 'var(--screens-md)',
 			// XXX: 이 부분의 의미를 모르겠슴...
-			// lg: 'var(--screens-lg)',
+			// JJJ: 미디어 퀴리를 설정하는 부분인데, 실험적으로 css 변수로 설정을 해봤지만 스펙을 확인해보니 그렇게는 적용이 되지 않네요... 숫자로 돌려놨습니다
+			// xx: '320px',
+			// xs: '480px',
+			// sm: '820px',
+			md: '1280px',
+			lg: '1600px',
+			xl: '1920px',
 		},
 		spacing: {
 			...spacing,
@@ -219,6 +222,7 @@ module.exports = {
 			borderOpacity: {
 				40: '0.4',
 				75: '0.75',
+				80: '0.8',
 			},
 			borderColor: theme => ({
 				...theme('colors'),

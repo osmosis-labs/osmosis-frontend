@@ -11,3 +11,16 @@
 .s-filter-white {
 	filter: brightness(0%) invert(100%);
 }
+
+.s-number-input-default {
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+
+	/* Firefox */
+	&[type=number] {
+		-moz-appearance: textfield;
+	}
+}

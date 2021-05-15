@@ -25,7 +25,7 @@ export const TradeTxSettings: FunctionComponent<{
 					'right-0 top-0 bg-card border border-white-faint rounded-2xl p-7.5',
 					view ? 'absolute' : 'hidden'
 				)}
-				style={{ marginTop: '65px', width: '382px', height: '238px' }}>
+				style={{ marginTop: '65px', width: '382px', height: '160px' }}>
 				<p className="mb-2.5">Transaction Settings</p>
 				<div className="mb-3 w-full flex items-center">
 					<p className="text-white-disabled text-sm mr-2.5">Slippage tolerance</p>

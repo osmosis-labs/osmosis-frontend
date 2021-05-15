@@ -434,9 +434,9 @@ const TokenLiquidityItem: FunctionComponent<{
 					</p>
 					<div className="bg-background px-1.5 py-0.5 rounded-lg">
 						<input
+							type="text"
 							onChange={e => {
 								e.preventDefault();
-
 								addLiquidityState.setAmountOfCurrency(currency, e.target.value);
 							}}
 							value={addLiquidityState.computeCurrencyAmountText(currency)}

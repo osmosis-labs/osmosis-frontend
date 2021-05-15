@@ -12,6 +12,17 @@ const defaultOptions: Partial<Highcharts.Options> = {
 		height: 200,
 		width: 200,
 	},
+	xAxis: {
+		type: 'datetime',
+		maxPadding: 0,
+		minPadding: 0,
+		margin: 0,
+	},
+	yAxis: {
+		maxPadding: 0,
+		minPadding: 0,
+		margin: 0,
+	},
 	tooltip: {
 		pointFormatter: function() {
 			return `<p>${this.x}<span style='font-size: 10px;'>${this.name.toUpperCase()}</span> / ${this.y}%</p>`;
@@ -74,13 +85,17 @@ export const HIGHCHART_LEGEND_GRADIENTS: string[] = [
 	'linear-gradient(180deg, #00CEBA 0%, #008A7D 100%)',
 ];
 
-export const PieChart: FunctionComponent<HighchartsReact.Props> = props => {
+export const PieChart: FunctionComponent<HighchartsReact.Props & { height?: number; width?: number }> = props => {
 	const [options, setOptions] = React.useState<Partial<Highcharts.Options>>(defaultOptions);
 	React.useEffect(() => {
 		if (!props.options) return;
-		setOptions(v => ({ ...v, ...props.options }));
-	}, [props.options]);
-	console.log(options);
+		setOptions(v => {
+			if (props.height && props.width) {
+				v.chart = { ...v.chart, height: props.height, width: props.width };
+			}
+			return { ...v, ...props.options };
+		});
+	}, [props.options, props.height, props.width]);
 	return <HighchartsReact highcharts={Highcharts} options={options} />;
 };
 

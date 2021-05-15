@@ -4,7 +4,6 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { MainPage } from './pages/main';
 import { StoreProvider } from './stores';
 import { PoolsPage } from './pages/pools';
-import { GovernancePage } from './pages/governance';
 import { AirdropPage } from './pages/airdrop';
 import { RouteWrapper } from './components/layouts/RouteWrapper';
 import { NotFoundPage } from './pages/NotFound';
@@ -13,6 +12,7 @@ import './styles/index.scss';
 import './styles/globals.scss';
 import { PoolPage } from './pages/pool';
 import { AssetsPage } from './pages/assets';
+import { GovernancePage } from './pages/governance';
 
 const Router: FunctionComponent = () => {
 	return (

@@ -401,7 +401,7 @@ const TokenAmountInput: FunctionComponent<{
 				onChange={e => onInput(e.currentTarget.value)}
 				value={amountText}
 				placeholder="0"
-				className="s-tradebox-input"
+				className="s-tradebox-input s-number-input-default"
 			/>
 			<p className="font-body font-semibold text-sm truncate w-full text-right">≈ {price.toString()}</p>
 		</div>

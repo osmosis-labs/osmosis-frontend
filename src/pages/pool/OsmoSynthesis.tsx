@@ -36,7 +36,7 @@ export const OsmoSynthesis: FunctionComponent<IOsmoSynthesis> = ({ pool }) => {
 					</button>
 				</div>
 			</div>
-			<div className="mt-10 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-9">
+			<div className="mt-10 grid grid-cols-3 gap-9">
 				<LockupBox apyPercent={356} days={30} />
 				<LockupBox apyPercent={356} days={60} />
 				<LockupBox apyPercent={356} days={90} />
@@ -54,7 +54,7 @@ export const OsmoSynthesis: FunctionComponent<IOsmoSynthesis> = ({ pool }) => {
 const LockupBox: FunctionComponent<ILockupBox> = ({ days, apyPercent }) => {
 	return (
 		<div className="bg-card rounded-2xl pt-7 px-7.5 pb-10">
-			<h4 className="mb-4 font-normal">{days} days lockup</h4>
+			<h4 className="mb-4 font-normal text-xl xl:text-2xl">{days} days lockup</h4>
 			<h6 className="text-secondary-200 font-normal">APY {apyPercent}%</h6>
 		</div>
 	);

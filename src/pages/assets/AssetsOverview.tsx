@@ -10,7 +10,7 @@ export const AssetsOverview: FunctionComponent<{ state: IAssets }> = ({ state })
 			<div className="flex items-center mb-6">
 				<h4 className="mr-0.5">My IBC Assets</h4>
 			</div>
-			<div className="grid grid-cols-3">
+			<div className="flex items-center gap-21.5">
 				<OverviewLabelValue label="Total Assets">
 					<h4 className="inline">{formatUSD(state.total)}</h4>
 				</OverviewLabelValue>
