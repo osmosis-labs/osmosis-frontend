@@ -75,7 +75,7 @@ module.exports = {
 		removeDeprecatedGapUtilities: false,
 		purgeLayersByDefault: false,
 	},
-	purge: ['./components/**/*.js', './pages/**/*.js', './constants/**/*.js'],
+	purge: ['./src/**/*.tsx', './src/**/*.ts'],
 	theme: {
 		fontFamily: {
 			title: ['Poppins', 'ui-sans-serif', 'system-ui'],

@@ -1,4 +1,6 @@
 import React, { Dispatch, FunctionComponent, SetStateAction } from 'react';
+import cn from 'clsx';
+
 import cloneDeep from 'lodash-es/cloneDeep';
 import { NewPoolStage1 } from './Step1';
 import { sumArray } from '../../utils/Big';
@@ -37,9 +39,11 @@ export const CreateNewPoolDialog: FunctionComponent<BaseModalProps> = observer((
 	}, [state]);
 	return (
 		<BaseDialog style={style} isOpen={isOpen} close={close}>
-			<div style={style} className="text-white-high">
+			<div style={style} className="text-white-high w-full">
 				<div>{content}</div>
-				<NewPoolButton close={close} state={state} setPoolState={setState} />
+				<div className="flex flex-col items-center w-full">
+					<NewPoolButton close={close} state={state} setPoolState={setState} />
+				</div>
 			</div>
 		</BaseDialog>
 	);
@@ -112,11 +116,25 @@ const NewPoolButton: FunctionComponent<INewPoolButton> = observer(({ state, setP
 					</div>
 				</div>
 			)}
-			<button
-				onClick={onNextClick}
-				className="mt-7.5 w-2/3 h-15 rounded-2xl bg-primary-200 flex items-center justify-center mx-auto hover:opacity-75">
-				<h6>{state.stage < 3 ? 'Next' : 'Create Pool'}</h6>
-			</button>
+			<div className="flex items-center justify-center w-full">
+				<div className={cn('mt-7.5 h-15 gap-4 flex items-center justify-center', state.stage > 1 ? 'w-4/5' : 'w-full')}>
+					{state.stage > 1 && (
+						<button
+							onClick={() => setPoolState(prevState => ({ ...prevState, stage: prevState.stage - 1 }))}
+							className="w-1/3 h-full rounded-2xl bg-secondary-200 flex items-center justify-center mx-auto hover:opacity-75">
+							<h6>Back</h6>
+						</button>
+					)}
+					<button
+						onClick={onNextClick}
+						className={cn(
+							'h-full rounded-2xl bg-primary-200 flex items-center justify-center mx-auto hover:opacity-75',
+							state.stage > 1 ? 'w-full' : 'w-2/3'
+						)}>
+						<h6>{state.stage < 3 ? 'Next' : 'Create Pool'}</h6>
+					</button>
+				</div>
+			</div>
 		</>
 	);
 });

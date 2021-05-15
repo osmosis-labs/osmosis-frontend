@@ -6,9 +6,10 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-// const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 const isEnvAnalyzer = process.env.ANALYZER === 'true';
@@ -18,9 +19,15 @@ const commonResolve = dir => ({
 		assets: path.resolve(__dirname, dir),
 	},
 });
+
 const sassRule = {
 	test: /(\.s?css)|(\.sass)$/,
+	exclude: /node_modules/,
 	oneOf: [
+		{
+			test: /\.(s?css)|(sass)$/,
+			use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
+		},
 		// if ext includes module as prefix, it perform by css loader.
 		{
 			test: /.module(\.s?css)|(\.sass)$/,
@@ -66,6 +73,7 @@ const jsxRule = {
 };
 const fileRule = {
 	test: /\.(svg|png|jpe?g|gif|woff|woff2|eot|ttf)$/i,
+	exclude: /node_modules/,
 	use: [
 		{
 			loader: 'file-loader',
@@ -111,7 +119,14 @@ const webConfig = () => {
 			// Remove all and write anyway
 			// TODO: Optimizing build process
 			new CleanWebpackPlugin(),
+			new CopyWebpackPlugin({
+				patterns: [{ from: 'public/assets', to: 'public/assets' }],
+			}),
 			new ForkTsCheckerWebpackPlugin(),
+			new MiniCssExtractPlugin({
+				filename: 'styles.css',
+				chunkFilename: '[name].css',
+			}),
 			new HtmlWebpackPlugin({
 				template: './src/index.html',
 				filename: 'index.html',
@@ -119,9 +134,10 @@ const webConfig = () => {
 			}),
 			new WriteFilePlugin(),
 			new webpack.EnvironmentPlugin(['NODE_ENV']),
-			new BundleAnalyzerPlugin({
-				analyzerMode: isEnvAnalyzer ? 'server' : 'disabled',
-			}),
+			isEnvAnalyzer &&
+				new BundleAnalyzerPlugin({
+					analyzerMode: isEnvAnalyzer ? 'server' : 'disabled',
+				}),
 			// This makes it possible for us to safely use env vars on our code
 			new webpack.DefinePlugin({
 				'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH),
