@@ -10,6 +10,7 @@ import { QueriesWithCosmosAndOsmosis } from './osmosis/query';
 import { AccountWithCosmosAndOsmosis } from './osmosis/account';
 import { LayoutStore } from './layout';
 import { GammSwapManager } from './osmosis/swap';
+import { LPCurrencyRegistrar } from './osmosis/currency-registrar';
 
 export class RootStore {
 	public readonly chainStore: ChainStore;
@@ -18,6 +19,8 @@ export class RootStore {
 	public readonly priceStore: CoinGeckoPriceStore;
 
 	public readonly swapManager: GammSwapManager;
+
+	protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar;
 
 	public readonly layoutStore: LayoutStore;
 
@@ -82,6 +85,8 @@ export class RootStore {
 				coinDecimals: 6,
 			},
 		]);
+
+		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
 
 		this.layoutStore = new LayoutStore();
 	}

@@ -1,6 +1,5 @@
 // TODO: Keplr 본체에서 import path 수정하기
 import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balances';
-import { ObservableQueryCosmosBalances } from '@keplr-wallet/stores/build/query/cosmos/balance';
 import { CoinPretty, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
 import { Currency } from '@keplr-wallet/types';
 import { ObservableQueryPools } from '../pools';
@@ -19,20 +18,14 @@ export class ObservableQueryGammPoolShare {
 	 * 특정 주소가 소유하고 있는 모든 share들의 pool id 배열을 반환한다.
 	 */
 	readonly getOwnPools = computedFn((bech32Address: string): string[] => {
-		// 어쨋든 stakable는 모든 네이티브 토큰들을 반환하긴 한다...
-		const balances = (this.queryBalances.getQueryBech32Address(bech32Address)
-			.stakable as unknown) as ObservableQueryCosmosBalances;
-
-		if (!balances.response) {
-			return [];
-		}
+		const balances = this.queryBalances.getQueryBech32Address(bech32Address).positiveBalances;
 
 		const result: string[] = [];
 
-		for (const primitive of balances.response.data.result) {
+		for (const bal of balances) {
 			// Pool share 토큰은 `gamm/pool/${poolId}` 형태이다.
-			if (primitive.denom.startsWith('gamm/pool/')) {
-				result.push(primitive.denom.replace('gamm/pool/', ''));
+			if (bal.currency.coinMinimalDenom.startsWith('gamm/pool/')) {
+				result.push(bal.currency.coinMinimalDenom.replace('gamm/pool/', ''));
 			}
 		}
 
@@ -44,27 +37,13 @@ export class ObservableQueryGammPoolShare {
 	});
 
 	getGammShare(bech32Address: string, poolId: string): CoinPretty {
-		// 어쨋든 stakable는 모든 네이티브 토큰들을 반환하긴 한다...
-		const balances = (this.queryBalances.getQueryBech32Address(bech32Address)
-			.stakable as unknown) as ObservableQueryCosmosBalances;
-
 		const currency: Currency = {
 			coinDenom: `GAMM/${poolId}`,
 			coinMinimalDenom: `gamm/pool/${poolId}`,
 			coinDecimals: 18,
 		};
 
-		if (!balances.response) {
-			return new CoinPretty(currency, new Int(0)).ready(false);
-		}
-
-		for (const primitive of balances.response.data.result) {
-			if (primitive.denom === `gamm/pool/${poolId}`) {
-				return new CoinPretty(currency, new Int(primitive.amount));
-			}
-		}
-
-		return new CoinPretty(currency, new Int(0));
+		return this.queryBalances.getQueryBech32Address(bech32Address).getBalanceFromCurrency(currency);
 	}
 
 	getGammShareRatio(bech32Address: string, poolId: string): IntPretty {
