@@ -1,7 +1,8 @@
 import { ChainInfo } from '@keplr-wallet/types';
 import { Bech32Address } from '@keplr-wallet/cosmos';
 
-export const poolsPerPage = 10;
+export const PoolsPerPage = 10;
+export const RewardEpochIdentifier = 'daily';
 
 export const EmbedChainInfos: ChainInfo[] = [
 	{

@@ -1,13 +1,12 @@
 import React, { FunctionComponent, useState } from 'react';
-import moment from 'dayjs';
-import { formatUSD, getDuration } from '../../utils/format';
-import { minus } from '../../utils/Big';
+import { formatUSD } from '../../utils/format';
 import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
 import { DisplayLeftTime } from '../../components/common/DisplayLeftTime';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { TModal } from '../../interfaces';
 import { CreateNewPoolDialog } from '../../dialogs/create-new-pool';
+import { useStore } from '../../stores';
+import dayjs from 'dayjs';
+import { RewardEpochIdentifier } from '../../config';
 
 export const LabsOverview: FunctionComponent = observer(() => {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -30,7 +29,11 @@ export const LabsOverview: FunctionComponent = observer(() => {
 	);
 });
 
-const DispRewardPayout: FunctionComponent = () => {
+const DispRewardPayout: FunctionComponent = observer(() => {
+	const { chainStore, queriesStore } = useStore();
+
+	const queryEpoch = queriesStore.get(chainStore.current.chainId).osmosis.queryEpochs.getEpoch(RewardEpochIdentifier);
+
 	const [dummy, setRerender] = React.useState(true);
 	React.useEffect(() => {
 		const interval = setInterval(() => {
@@ -39,17 +42,13 @@ const DispRewardPayout: FunctionComponent = () => {
 		return () => clearInterval(interval);
 	}, []);
 
-	// TODO : @Thunnini retrieve payout timestamp in unix
-	const payoutTimestamp = React.useMemo(
-		() =>
-			moment()
-				.add(Math.random() * 96 + 48, 'hour')
-				.valueOf(),
-		[]
-	);
-
 	const payoutTime = React.useMemo(() => {
-		return getDuration(Number(minus(payoutTimestamp, moment().valueOf()))).format('DD-HH-mm');
+		// TODO: duration이 딱 끝나고 남은 시간이 0이나 음수가 될 때 어떻게 될 지 모르겠슴...
+		const delta = dayjs.duration(dayjs(queryEpoch.endTime).diff(dayjs(new Date()), 'second'), 'second');
+		if (delta.asSeconds() <= 0) {
+			return '00-00-00';
+		}
+		return delta.format('DD-HH-mm');
 	}, [dummy]);
 	const [day, hour, minute] = payoutTime.split('-');
 	return (
@@ -57,7 +56,7 @@ const DispRewardPayout: FunctionComponent = () => {
 			<DisplayLeftTime day={day} hour={hour} minute={minute} />
 		</OverviewLabelValue>
 	);
-};
+});
 
 const DispPrice: FunctionComponent = () => {
 	// TODO : @Thunnini retrieve osmo price
