@@ -20,7 +20,7 @@
 	}
 
 	/* Firefox */
-	&[type=number] {
+	&[type='number'] {
 		-moz-appearance: textfield;
 	}
 }

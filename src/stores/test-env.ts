@@ -120,6 +120,7 @@ export class RootStore {
 			{
 				// No need
 				addEventListener: () => {},
+				removeEventListener: () => {},
 			},
 			AccountWithCosmosAndOsmosis,
 			this.chainStore,

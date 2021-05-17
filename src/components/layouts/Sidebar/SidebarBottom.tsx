@@ -49,7 +49,8 @@ export const SidebarBottom: FunctionComponent<TSidebarBottom> = observer(({ open
 						onClick={e => {
 							e.preventDefault();
 
-							// TODO: 헐... account에 disconnect하는 메소드가 아직 없음...
+							localStorage.removeItem(KeyAccountAutoConnect);
+							account.disconnect();
 						}}
 						className="bg-transparent border border-opacity-30 border-secondary-200 h-9 w-full rounded-md py-2 px-1 flex items-center justify-center mb-8">
 						<Img className="w-5 h-5" src={`${MISC.ASSETS_BASE}/Icons/SignOutSecondary.svg`} />
