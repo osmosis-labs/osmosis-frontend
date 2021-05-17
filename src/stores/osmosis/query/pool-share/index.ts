@@ -51,7 +51,7 @@ export class ObservableQueryGammPoolShare {
 		const currency: Currency = {
 			coinDenom: `GAMM/${poolId}`,
 			coinMinimalDenom: `gamm/pool/${poolId}`,
-			coinDecimals: 6,
+			coinDecimals: 18,
 		};
 
 		if (!balances.response) {

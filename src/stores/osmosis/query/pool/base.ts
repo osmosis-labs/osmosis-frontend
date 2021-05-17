@@ -248,8 +248,8 @@ export class QueriedPoolBase {
 
 	@computed
 	get totalShare(): IntPretty {
-		// 쉐어의 decimal은 6으로 고정되어 있다
-		return new IntPretty(this.pool.totalShare).precision(6);
+		// 쉐어의 decimal은 18으로 고정되어 있다
+		return new IntPretty(this.pool.totalShare).precision(18);
 	}
 
 	@computed
