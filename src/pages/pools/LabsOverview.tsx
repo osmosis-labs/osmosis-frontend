@@ -33,6 +33,10 @@ const DispRewardPayout: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore } = useStore();
 
 	const queryEpoch = queriesStore.get(chainStore.current.chainId).osmosis.queryEpochs.getEpoch(RewardEpochIdentifier);
+	// XXX: 밑의 payoutTime이 memo를 통해서 계산되기 때문에 만약 밑의 메모에서 직접 queryEpoch.endTime을 사용한다면
+	// observed 상태가 되지 않는다. 값이 observed 상태가 되지 않으면 사용될 때마다 fetch가 되기 때문에 이 문제를 해결하기 위해서
+	// 밑의 라인을 통해서 endTime을 매 render 마다 불러오게 만든다.
+	const endTime = queryEpoch.endTime;
 
 	const [dummy, setRerender] = React.useState(true);
 	React.useEffect(() => {
@@ -44,7 +48,7 @@ const DispRewardPayout: FunctionComponent = observer(() => {
 
 	const payoutTime = React.useMemo(() => {
 		// TODO: duration이 딱 끝나고 남은 시간이 0이나 음수가 될 때 어떻게 될 지 모르겠슴...
-		const delta = dayjs.duration(dayjs(queryEpoch.endTime).diff(dayjs(new Date()), 'second'), 'second');
+		const delta = dayjs.duration(dayjs(endTime).diff(dayjs(new Date()), 'second'), 'second');
 		if (delta.asSeconds() <= 0) {
 			return '00-00-00';
 		}
