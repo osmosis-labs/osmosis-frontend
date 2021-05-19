@@ -1,3 +1,4 @@
+/*
 import React, { FunctionComponent } from 'react';
 import map from 'lodash-es/map';
 import each from 'lodash-es/each';
@@ -106,3 +107,4 @@ const generateSeries = (data: TPool[]): SeriesPieOptions[] => {
 // 		y: 61.41,
 // 	label: '100123.21',
 // },
+ */

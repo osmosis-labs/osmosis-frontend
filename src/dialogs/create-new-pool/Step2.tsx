@@ -1,3 +1,4 @@
+/*
 import React, { FunctionComponent } from 'react';
 import cn from 'clsx';
 import { IPools } from './Step1';
@@ -104,3 +105,4 @@ const TokenRatioDisplay: FunctionComponent<Record<'data', TPool>> = ({ data }) =
 		</div>
 	);
 };
+ */

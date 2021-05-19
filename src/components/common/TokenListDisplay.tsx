@@ -29,7 +29,12 @@ export const TokenListDisplay: FunctionComponent<{
 					const balance = queries.queryBalances
 						.getQueryBech32Address(account.bech32Address)
 						.balances.find(bal => bal.currency.coinMinimalDenom === cur.coinMinimalDenom);
-					const amount = balance?.balance?.hideDenom(true).toString() || '0';
+					const amount =
+						balance?.balance
+							?.hideDenom(true)
+							.trim(true)
+							.maxDecimals(6)
+							.toString() || '0';
 
 					return (
 						<TokenItem
