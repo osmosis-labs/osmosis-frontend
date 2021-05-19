@@ -1,16 +1,11 @@
-/*
-import React, { FunctionComponent } from 'react';
-import map from 'lodash-es/map';
-import each from 'lodash-es/each';
+import React, { FunctionComponent, useMemo } from 'react';
 import cloneDeep from 'lodash-es/cloneDeep';
 
-import { IPools } from './Step1';
 import { HIGHCHART_GRADIENTS, PieChart, HIGHCHART_LEGEND_GRADIENTS } from '../../components/common/PieChart';
-import { GradientColorObject, PointOptionsObject, SeriesOptionsType, SeriesPieOptions } from 'highcharts';
-import { TPool } from './index';
-import { formatNumber } from '../../utils/format';
-import { fixed } from '../../utils/Big';
-import { TOKENS } from '../../constants';
+import { PointOptionsObject, SeriesPieOptions } from 'highcharts';
+import { CreateNewPoolState } from './index';
+import { observer } from 'mobx-react-lite';
+import { AppCurrency } from '@keplr-wallet/types';
 
 const pieSerie = {
 	type: 'pie',
@@ -24,13 +19,12 @@ const pieSerie = {
 	data: [] as PointOptionsObject[],
 };
 const series = [pieSerie];
-export const NewPoolStage3: FunctionComponent<IPools> = ({ poolState, setPoolState }) => {
-	const [series, setSeries] = React.useState<SeriesPieOptions[]>([]);
-
-	React.useEffect(() => {
-		// TODO : take poolState and generate series
-		setSeries(generateSeries(poolState.pools));
-	}, []);
+export const NewPoolStage3: FunctionComponent<{
+	state: CreateNewPoolState;
+}> = observer(({ state }) => {
+	const series = useMemo(() => {
+		return generateSeries(state.assets);
+	}, [state.assets]);
 
 	return (
 		<>
@@ -57,54 +51,62 @@ export const NewPoolStage3: FunctionComponent<IPools> = ({ poolState, setPoolSta
 						<p className="text-xs text-white-disabled">Amount</p>
 					</div>
 					<ul className="pt-3 flex flex-col gap-4">
-						{map(poolState.pools, (pool, i) => (
-							<TokenRow key={i} data={pool} index={i} />
-						))}
+						{state.assets.map((asset, i) => {
+							return (
+								<TokenRow
+									key={asset.currency.coinMinimalDenom}
+									index={i}
+									currency={asset.currency}
+									amount={asset.amount}
+									percentage={asset.percentage}
+								/>
+							);
+						})}
 					</ul>
 				</div>
 			</div>
 		</>
 	);
-};
+});
 
-const TokenRow: FunctionComponent<ITokenRow> = ({ data, index }) => {
+const TokenRow: FunctionComponent<{
+	index: number;
+	currency: AppCurrency;
+	amount: string;
+	percentage: string;
+}> = observer(({ index, currency, amount, percentage }) => {
+	// 만약 IBC Currency일 경우 실제 coinDenom을 무시하고 원래 currency의 coinDenom을 표시한다.
+	const coinDenom =
+		'originCurrency' in currency && currency.originCurrency ? currency.originCurrency.coinDenom : currency.coinDenom;
+	// 만약 IBC Currency일 경우 첫번째 path의 채널 ID를 보여준다.
+	const channel = 'paths' in currency && currency.paths.length > 0 ? currency.paths[0].channelId : '';
+
 	return (
 		<li className="w-full flex items-center justify-between">
 			<div className="h-full">
 				<div className="flex items-center mb-1">
 					<figure className="rounded-full w-4 h-4 mr-3" style={{ background: HIGHCHART_LEGEND_GRADIENTS[index] }} />
-					<h6 className="font-normal">{data.token.toUpperCase()}</h6>
+					<h6 className="font-normal">{coinDenom.toUpperCase()}</h6>
 				</div>
-				<p className="text-iconDefault">{data.channel}</p>
+				{channel ? <p className="text-iconDefault">{channel}</p> : null}
 			</div>
 			<div>
-				<h6 className="mb-1 w-full text-right">{fixed(data.amount, TOKENS[data.token].DECIMALS)}</h6>
-				<p className="text-white-emphasis w-full text-right">{fixed(data.ratio, 2)}%</p>
+				<h6 className="mb-1 w-full text-right">{amount}</h6>
+				<p className="text-white-emphasis w-full text-right">{percentage}%</p>
 			</div>
 		</li>
 	);
-};
-interface ITokenRow {
-	data: TPool;
-	index: number;
-}
+});
 
-const generateSeries = (data: TPool[]): SeriesPieOptions[] => {
+const generateSeries = (data: { currency: AppCurrency; percentage: string; amount: string }[]): SeriesPieOptions[] => {
 	const serie = cloneDeep(pieSerie);
-	each(data, (pool, i) => {
+	data.forEach((d, i) => {
 		serie.data.push({
-			name: pool.token.toUpperCase(),
-			y: Number(pool.ratio),
-			x: Number(pool.amount),
+			name: d.currency.coinDenom.toUpperCase(),
+			y: Number(d.percentage),
+			x: Number(d.amount),
 			color: HIGHCHART_GRADIENTS?.[i] ? HIGHCHART_GRADIENTS?.[i] : undefined,
 		});
 	});
 	return [serie as SeriesPieOptions];
 };
-
-// {
-// 	name: 'Chrome',
-// 		y: 61.41,
-// 	label: '100123.21',
-// },
- */

@@ -1,15 +1,16 @@
-/*
 import React, { FunctionComponent } from 'react';
-import cn from 'clsx';
-import { IPools } from './Step1';
 import { Img } from '../../components/common/Img';
 import { LINKS } from '../../constants';
-import { TPool } from './index';
-import map from 'lodash-es/map';
+import { CreateNewPoolState } from './index';
 import upperCase from 'lodash-es/upperCase';
 import { isNumber } from '../../utils/scripts';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { AppCurrency } from '@keplr-wallet/types';
 
-export const NewPoolStage2: FunctionComponent<IPools> = ({ poolState, setPoolState }) => {
+export const NewPoolStage2: FunctionComponent<{
+	state: CreateNewPoolState;
+}> = observer(({ state }) => {
 	return (
 		<>
 			<div className="pl-4.5">
@@ -22,40 +23,41 @@ export const NewPoolStage2: FunctionComponent<IPools> = ({ poolState, setPoolSta
 				</div>
 			</div>
 			<ul className="mt-5 flex flex-col gap-3">
-				{map(poolState.pools, (pool, i) => (
-					<Pool
-						key={i}
-						data={pool}
-						updateAmount={(input: string) =>
-							setPoolState(prevState => {
-								prevState.pools[i].amount = input;
-								return { ...prevState };
-							})
-						}
-					/>
-				))}
+				{state.assets.map((asset, i) => {
+					return <Pool key={asset.currency.coinMinimalDenom} state={state} assetAt={i} />;
+				})}
 			</ul>
 		</>
 	);
-};
+});
 
-const Pool: FunctionComponent<IPool> = ({ data, updateAmount }) => {
-	// TODO : @Thunnini fetch user's balance for this token
-	const balance = 342.124532;
+const Pool: FunctionComponent<{
+	state: CreateNewPoolState;
+	assetAt: number;
+}> = observer(({ state, assetAt }) => {
+	const asset = state.assets[assetAt];
 
-	const [inputState, setInputState] = React.useState(data.amount);
+	const { chainStore, queriesStore, accountStore } = useStore();
+	const account = accountStore.getAccount(chainStore.current.chainId);
+	const queries = queriesStore.get(chainStore.current.chainId);
 
-	React.useEffect(() => {
-		if (!isNumber(inputState)) return;
-		updateAmount(inputState);
-	}, [data, inputState]);
+	const balance = queries.queryBalances
+		.getQueryBech32Address(account.bech32Address)
+		.getBalanceFromCurrency(asset.currency);
+
 	return (
 		<li className="pt-4.5 pb-4.5 pr-7 pl-4.5 border border-white-faint rounded-2xl relative">
 			<div className="flex items-center justify-between">
-				<TokenRatioDisplay data={data} />
+				<TokenRatioDisplay currency={asset.currency} percentage={asset.percentage} />
 				<div className="flex flex-col items-end">
 					<div className="flex items-center mb-1">
-						<p className="text-white-emphasis text-sm">Balance: {balance}</p>
+						<p className="text-white-emphasis text-sm">
+							Balance:{' '}
+							{balance
+								.trim(true)
+								.maxDecimals(6)
+								.toString()}
+						</p>
 						<button onClick={() => alert('not implemented')} className="rounded-2xl border border-enabledGold ml-2.5">
 							<p className="text-secondary-200 text-sm px-2.5">MAX</p>
 						</button>
@@ -64,45 +66,37 @@ const Pool: FunctionComponent<IPool> = ({ data, updateAmount }) => {
 						<input
 							className="w-full font-title bg-black py-1.5 h-9 rounded-lg mr-2.5 pr-1.5 border border-transparent focus:border-enabledGold text-white placeholder-white-disabled text-right text-lg leading-none"
 							onChange={e => {
-								if (
-									!isNumber(e.currentTarget.value) ||
-									Number(e.currentTarget.value) < 0 ||
-									e.currentTarget.value.length > 10
-								)
-									return;
-								setInputState(e.currentTarget.value);
+								state.setAssetAmountAt(assetAt, e.currentTarget.value);
 							}}
-							value={inputState}
+							value={asset.amount}
 						/>
 						<div className="flex items-center justify-end">
-							<h6 className="text-right">{data.token.toUpperCase()}</h6>
+							<h6 className="text-right">{asset.currency.coinDenom.toUpperCase()}</h6>
 						</div>
 					</div>
 				</div>
 			</div>
 		</li>
 	);
-};
-interface IPool {
-	data: TPool;
-	updateAmount: (input: string) => void;
-}
+});
 
-const TokenRatioDisplay: FunctionComponent<Record<'data', TPool>> = ({ data }) => {
+const TokenRatioDisplay: FunctionComponent<{
+	currency: AppCurrency;
+	percentage: string;
+}> = observer(({ currency, percentage }) => {
 	return (
 		<div className="flex items-center">
 			<figure
 				style={{ width: '56px', height: '56px' }}
 				className="flex justify-center items-center rounded-full border-secondary-200 border mr-3">
-				<Img loadingSpin style={{ width: '44px', height: '44px' }} src={LINKS.GET_TOKEN_IMG(data.token)} />
+				<Img loadingSpin style={{ width: '44px', height: '44px' }} src={LINKS.GET_TOKEN_IMG(currency.coinDenom)} />
 			</figure>
 			<div className="flex flex-col">
 				<div className="flex items-center">
-					<h5 className="leading-none font-semibold">{upperCase(data.token)}</h5>
+					<h5 className="leading-none font-semibold">{currency.coinDenom.toUpperCase()}</h5>
 				</div>
-				<p className="text-sm text-iconDefault mt-1">{data.ratio}%</p>
+				<p className="text-sm text-iconDefault mt-1">{percentage}%</p>
 			</div>
 		</div>
 	);
-};
- */
+});

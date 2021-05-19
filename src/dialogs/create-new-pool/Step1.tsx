@@ -33,7 +33,7 @@ export const NewPoolStage1: FunctionComponent<{
 						e.preventDefault();
 
 						const currency = state.remainingSelectableCurrencies[0];
-						state.addAsset(currency, '0');
+						state.addAsset(currency);
 					}}
 					className="pt-6 pb-7.5 pl-7 border border-white-faint rounded-2xl mt-2.5 hover:border-enabledGold cursor-pointer">
 					<div className="flex items-center">
@@ -82,14 +82,7 @@ const Pool: FunctionComponent<{
 					<input
 						className="bg-black font-title py-1.5 h-9 rounded-lg mr-2.5 pr-1.5 border border-transparent focus:border-enabledGold text-white placeholder-white-disabled text-right text-lg leading-none"
 						onChange={e => {
-							if (
-								!isNumber(e.currentTarget.value) ||
-								Number(e.currentTarget.value) < 0 ||
-								e.currentTarget.value.length > 10
-							)
-								return;
-
-							state.setAssetAt(assetAt, asset.currency, e.currentTarget.value);
+							state.setAssetPercentageAt(assetAt, e.currentTarget.value);
 						}}
 						value={asset.percentage}
 						style={{ maxWidth: '130px' }}
@@ -110,7 +103,7 @@ const Pool: FunctionComponent<{
 					onSelect={minimalDenom => {
 						const currency = state.remainingSelectableCurrencies.find(cur => cur.coinMinimalDenom === minimalDenom);
 						if (currency) {
-							state.setAssetAt(assetAt, currency, asset.percentage);
+							state.setAssetCurrencyAt(assetAt, currency);
 						}
 					}}
 				/>
