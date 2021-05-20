@@ -70,8 +70,7 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 
 	const queryPoolIncentives = queries.osmosis.queryPoolIncentives;
 
-	const state = queryPoolIncentives
-		.getIncentivizedPools()
+	const state = queryPoolIncentives.incentivizedPools
 		.map(poolId => {
 			const pool = queries.osmosis.queryGammPools.getPool(poolId);
 			if (!pool) {
