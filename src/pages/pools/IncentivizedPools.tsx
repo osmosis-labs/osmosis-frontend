@@ -30,7 +30,7 @@ export const MyPools: FunctionComponent = observer(() => {
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
-	const queryPoolIncentives = queries.osmosis.queryPoolIncentives;
+	const queryIncentivizedPools = queries.osmosis.queryIncentivizedPools;
 	const myPools = queries.osmosis.queryGammPoolShare.getOwnPools(account.bech32Address);
 
 	const state = myPools
@@ -43,7 +43,7 @@ export const MyPools: FunctionComponent = observer(() => {
 			// 데이터 구조를 바꿀 필요가 있다.
 			return {
 				poolId: pool.id,
-				apy: queryPoolIncentives.computeAPY(pool.id).toString(),
+				apy: queryIncentivizedPools.computeAPY(pool.id).toString(),
 				liquidity: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
 				tokens: pool.poolAssets.map(asset => asset.amount.currency.coinDenom),
 			};
@@ -68,9 +68,9 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
-	const queryPoolIncentives = queries.osmosis.queryPoolIncentives;
+	const queryIncentivizedPools = queries.osmosis.queryIncentivizedPools;
 
-	const state = queryPoolIncentives.incentivizedPools
+	const state = queryIncentivizedPools.incentivizedPools
 		.map(poolId => {
 			const pool = queries.osmosis.queryGammPools.getPool(poolId);
 			if (!pool) {
@@ -80,7 +80,7 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 			// 데이터 구조를 바꿀 필요가 있다.
 			return {
 				poolId: pool.id,
-				apy: queryPoolIncentives.computeAPY(pool.id).toString(),
+				apy: queryIncentivizedPools.computeAPY(pool.id).toString(),
 				liquidity: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
 				tokens: pool.poolAssets.map(asset => asset.amount.currency.coinDenom),
 			};
