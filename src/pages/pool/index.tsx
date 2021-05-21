@@ -53,9 +53,24 @@ export const PoolPage: FunctionComponent = observer(() => {
 		<div className="w-full h-full">
 			{pool ? (
 				<React.Fragment>
-					<div className="py-10 w-full px-10">
-						<div className="max-w-max mx-auto">
-							<PoolInfoHeader id={pool.id} />
+					<div className="relative">
+						<div className="py-10 w-full px-10 relative z-10">
+							<div className="max-w-max mx-auto">
+								<PoolInfoHeader id={pool.id} />
+							</div>
+						</div>
+						<div className="absolute right-0 top-0 overflow-hidden w-full h-full z-0">
+							<div
+								className="absolute"
+								style={{
+									right: '20px',
+									height: '410px',
+									bottom: '-110px',
+									width: '600px',
+									background: 'url("/public/assets/backgrounds/osmosis-guy-with-background.png")',
+									backgroundSize: 'cover',
+								}}
+							/>
 						</div>
 					</div>
 					<div className="py-10 w-full px-10 bg-surface">
@@ -113,7 +128,7 @@ const PoolInfoHeader: FunctionComponent<{
 							<p>Add / Remove Liquidity</p>
 						</button>
 					</div>
-					<div className="flex flex-row gap-20">
+					<div className="flex gap-20">
 						<ul className="flex flex-col gap-6">
 							<OverviewLabelValue label="Pool Liquidity">
 								<h4>{pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString()}</h4>

@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { Dispatch, FunctionComponent, SetStateAction } from 'react';
 import cn from 'clsx';
 import { CreateNewPoolState } from './index';
 import { LINKS } from '../../constants';
@@ -11,6 +11,8 @@ import { observer } from 'mobx-react-lite';
 export const NewPoolStage1: FunctionComponent<{
 	state: CreateNewPoolState;
 }> = observer(({ state }) => {
+	const [selectTokenOpen, setSelectTokenOpen] = React.useState<number>(-1);
+
 	return (
 		<React.Fragment>
 			<div className="pl-4.5">
@@ -22,9 +24,25 @@ export const NewPoolStage1: FunctionComponent<{
 					</div>
 				</div>
 			</div>
-			<ul className="mt-5 flex flex-col gap-3 overflow-y-auto" style={{ maxHeight: 'max(50vh, 430px)' }}>
-				{state.assets.map((asset, i) => {
-					return <Pool key={asset.currency.coinMinimalDenom} state={state} assetAt={i} />;
+			<ul
+				className="mt-5 flex flex-col gap-3 overflow-y-auto"
+				style={{ maxHeight: 'max(50vh, 430px)', minHeight: selectTokenOpen !== -1 ? '430px' : '0px' }}>
+				{state.assets.map((asset, i: number) => {
+					return (
+						<Pool
+							selectTokenOpen={selectTokenOpen === i}
+							toggleTokenOpen={() =>
+								setSelectTokenOpen(v => {
+									if (v === -1) return i;
+									if (v === i) return -1;
+									else return i;
+								})
+							}
+							key={asset.currency.coinMinimalDenom}
+							state={state}
+							assetAt={i}
+						/>
+					);
 				})}
 			</ul>
 			{state.assets.length < 8 && state.remainingSelectableCurrencies.length > 0 ? (
@@ -49,27 +67,27 @@ export const NewPoolStage1: FunctionComponent<{
 });
 
 const Pool: FunctionComponent<{
+	selectTokenOpen: boolean;
+	toggleTokenOpen: () => void;
 	state: CreateNewPoolState;
 	assetAt: number;
-}> = observer(({ state, assetAt }) => {
+}> = observer(({ state, assetAt, toggleTokenOpen, selectTokenOpen }) => {
 	const asset = state.assets[assetAt];
 
 	const ref = React.useRef<HTMLLIElement>(null);
 
-	const [openSelector, setOpenSelector] = React.useState(false);
-
 	React.useEffect(() => {
-		if (!openSelector || !ref.current) return;
+		if (!selectTokenOpen || !ref.current) return;
 		ref.current.scrollIntoView({ behavior: 'smooth' });
-	}, [openSelector]);
+	}, [selectTokenOpen]);
 
 	return (
 		<li ref={ref} className="pt-4.5 pb-4.5 pr-7 pl-4.5 border border-white-faint rounded-2xl relative">
 			<div className="flex items-center justify-between">
 				<TokenChannelDisplay
 					currency={asset.currency}
-					openSelector={openSelector}
-					setOpenSelector={() => setOpenSelector(v => !v)}
+					openSelector={selectTokenOpen}
+					setOpenSelector={toggleTokenOpen}
 				/>
 				<div className="flex items-center">
 					<Img
@@ -94,12 +112,11 @@ const Pool: FunctionComponent<{
 				style={{ top: 'calc(100% - 10px)', left: '-1px', width: 'calc(100% + 2px)' }}
 				className={cn(
 					'bg-surface rounded-b-2xl z-10 border-b border-r border-l border-white-faint',
-					openSelector ? 'absolute' : 'hidden'
+					selectTokenOpen ? 'absolute' : 'hidden'
 				)}>
-				{/* Main 페이지 작업하느라 밑의 컴포넌트 깨짐 TODO: 해결하기 */}
 				<TokenListDisplay
 					currencies={state.remainingSelectableCurrencies}
-					close={() => setOpenSelector(false)}
+					close={() => toggleTokenOpen()}
 					onSelect={minimalDenom => {
 						const currency = state.remainingSelectableCurrencies.find(cur => cur.coinMinimalDenom === minimalDenom);
 						if (currency) {

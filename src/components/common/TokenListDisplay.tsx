@@ -9,23 +9,31 @@ export const TokenListDisplay: FunctionComponent<{
 	onSelect: (minimalDenom: string) => void;
 	close: () => void;
 }> = observer(({ currencies, onSelect, close }) => {
+	const [input, setInput] = React.useState<string>('');
 	const { chainStore, accountStore, queriesStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
+
+	const filteredCurrencies = React.useMemo(() => {
+		return currencies.filter(cur => {
+			return cur.coinDenom.toUpperCase().includes(input.toUpperCase());
+		});
+	}, [currencies, input]);
 
 	return (
 		<div className="pr-5 pl-4 pt-8 pb-8">
 			<div className="w-full h-9 rounded-2xl bg-card pl-4.5 flex items-center">
 				<Img className="w-4.5 h-4.5" src="/public/assets/Icons/Search.svg" />
 				<input
-					onClick={() => alert('To be implemented')}
+					value={input}
+					onInput={e => setInput(e.currentTarget.value)}
 					className="pl-4 w-full pr-4"
 					placeholder="Search your token"
 				/>
 			</div>
-			<ul className="mt-5">
-				{currencies.map(cur => {
+			<ul style={{ maxHeight: '215px' }} className="mt-5 overflow-y-auto">
+				{filteredCurrencies.map(cur => {
 					const balance = queries.queryBalances
 						.getQueryBech32Address(account.bech32Address)
 						.balances.find(bal => bal.currency.coinMinimalDenom === cur.coinMinimalDenom);
