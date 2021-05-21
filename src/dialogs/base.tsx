@@ -1,7 +1,7 @@
-import React, { FunctionComponent, MutableRefObject } from 'react';
-import { Dialog, FocusTrap } from '@headlessui/react';
+import React, { FunctionComponent } from 'react';
+import { Dialog } from '@headlessui/react';
 
-export interface BaseModalProps {
+export interface BaseDialogProps {
 	style?: Record<string, string>;
 	isOpen: boolean;
 	close: () => void;
@@ -9,7 +9,7 @@ export interface BaseModalProps {
 
 // https://github.com/tailwindlabs/headlessui/issues/407
 // TODO : has issues with FocusTrap -> fork and fix maybe?
-export const BaseDialog: FunctionComponent<BaseModalProps> = ({ isOpen, close, children, style }) => {
+export const BaseDialog: FunctionComponent<BaseDialogProps> = ({ isOpen, close, children, style }) => {
 	return (
 		<React.Fragment>
 			{isOpen ? (
@@ -26,7 +26,7 @@ export const BaseDialog: FunctionComponent<BaseModalProps> = ({ isOpen, close, c
 	);
 };
 
-export const FocusedBaseDialog: FunctionComponent<BaseModalProps> = ({ isOpen, close, children, style }) => {
+export const FocusedBaseDialog: FunctionComponent<BaseDialogProps> = ({ isOpen, close, children, style }) => {
 	const ref = React.useRef<HTMLDivElement | null>(null);
 	return (
 		<Dialog initialFocus={ref} as="div" className="fixed inset-0 z-100 overflow-y-auto" open={isOpen} onClose={close}>

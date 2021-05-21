@@ -5,7 +5,7 @@ import { NewPoolStage2 } from './Step2';
 import { NewPoolStage3 } from './Step3';
 import { observer } from 'mobx-react-lite';
 import { Img } from '../../components/common/Img';
-import { BaseDialog, BaseModalProps } from '../base';
+import { BaseDialog, BaseDialogProps } from '../base';
 import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balances';
 import { AppCurrency } from '@keplr-wallet/types';
 import { action, computed, makeObservable, observable } from 'mobx';
@@ -174,7 +174,7 @@ export class CreateNewPoolState {
 	}
 }
 
-export const CreateNewPoolDialog: FunctionComponent<BaseModalProps> = observer(({ isOpen, close, style }) => {
+export const CreateNewPoolDialog: FunctionComponent<BaseDialogProps> = observer(({ isOpen, close, style }) => {
 	const { chainStore, accountStore, queriesStore } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);

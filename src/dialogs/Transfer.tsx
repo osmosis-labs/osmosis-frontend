@@ -1,12 +1,12 @@
 import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
-import { BaseDialog, BaseModalProps } from './base';
+import { BaseDialog, BaseDialogProps } from './base';
 import { Img } from '../components/common/Img';
 import { truncateString } from '../utils/format';
 import { isNumber } from '../utils/scripts';
 import { gt } from '../utils/Big';
 
-export const TransferDialog: FunctionComponent<BaseModalProps & { token: string; isWithdraw: boolean }> = observer(
+export const TransferDialog: FunctionComponent<BaseDialogProps & { token: string; isWithdraw: boolean }> = observer(
 	({ isOpen, close, style, token, isWithdraw }) => {
 		// TODO : @Thunnini fetch addresses + available
 		const targetAddr = 'cosmos1ymk637a7wljvt4w7q9lnrw95mg9sr37y4s4an9';

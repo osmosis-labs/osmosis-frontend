@@ -9,7 +9,6 @@ import {
 	QueriesSetBase,
 	AccountSetOpts,
 	CosmosAccount,
-	CoinPrimitive,
 } from '@keplr-wallet/stores';
 import { Dec, DecUtils } from '@keplr-wallet/unit';
 import { Currency } from '@keplr-wallet/types';
@@ -31,6 +30,7 @@ export interface OsmosisMsgOpts {
 	};
 	readonly swapExactAmountIn: MsgOpt;
 	readonly swapExactAmountOut: MsgOpt;
+	readonly lockTokens: MsgOpt;
 }
 
 export class AccountWithCosmosAndOsmosis extends AccountSetBase<
@@ -61,6 +61,10 @@ export class AccountWithCosmosAndOsmosis extends AccountSetBase<
 		},
 		swapExactAmountOut: {
 			type: 'osmosis/gamm/swap-exact-amount-out',
+			gas: 10000000,
+		},
+		lockTokens: {
+			type: 'osmosis/lockup/lock-tokens',
 			gas: 10000000,
 		},
 	});
@@ -447,6 +451,63 @@ export class OsmosisAccount {
 
 					// Refresh the pool
 					queries.osmosis.queryGammPools.getObservableQueryPool(poolId).fetch();
+				}
+
+				if (onFulfill) {
+					onFulfill(tx);
+				}
+			}
+		);
+	}
+
+	/**
+	 *
+	 * @param duration Duration's unit is expected to be the second.
+	 * @param tokens
+	 * @param memo
+	 * @param onFulfill
+	 */
+	async sendLockTokensMsg(
+		duration: number,
+		tokens: {
+			currency: Currency;
+			amount: string;
+		}[],
+		memo: string = '',
+		onFulfill?: (tx: any) => void
+	) {
+		const primitiveTokens = tokens.map(token => {
+			const amount = new Dec(token.amount).mul(DecUtils.getPrecisionDec(token.currency.coinDecimals)).truncate();
+
+			return {
+				amount: amount.toString(),
+				denom: token.currency.coinMinimalDenom,
+			};
+		});
+
+		const msg = {
+			type: this.base.msgOpts.lockTokens.type,
+			value: {
+				owner: this.base.bech32Address,
+				// Duration should be encodec as nana sec.
+				duration: (duration * 1000000000).toString(),
+				coins: primitiveTokens,
+			},
+		};
+
+		await this.base.sendMsgs(
+			'lockTokens',
+			[msg],
+			{
+				amount: [],
+				gas: this.base.msgOpts.lockTokens.gas.toString(),
+			},
+			memo,
+			tx => {
+				if (tx.code == null || tx.code === 0) {
+					// Refresh the balances
+					const queries = this.queriesStore.get(this.chainId);
+					queries.queryBalances.getQueryBech32Address(this.base.bech32Address).fetch();
 				}
 
 				if (onFulfill) {

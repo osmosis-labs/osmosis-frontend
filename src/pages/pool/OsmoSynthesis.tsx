@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { multiply } from '../../utils/Big';
 import { formatNumber } from '../../utils/format';
 import { MyLockupsTable } from './MyLockupsTable';
@@ -7,6 +7,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { Dec, IntPretty } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
+import { LockLpTokenDialog } from '../../dialogs';
 
 export const OsmoSynthesis: FunctionComponent<{
 	poolId: string;
@@ -25,11 +26,12 @@ export const OsmoSynthesis: FunctionComponent<{
 	const myPoolShare = queries.osmosis.queryGammPoolShare.getGammShare(account.bech32Address, poolId);
 	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
 
-	const onStartEarnClick = React.useCallback(() => {
-		alert('need implementing');
-	}, []);
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const closeDialog = () => setIsDialogOpen(false);
+
 	return (
 		<section className="max-w-max mx-auto">
+			<LockLpTokenDialog isOpen={isDialogOpen} close={closeDialog} poolId={poolId} />
 			<div className="flex justify-between items-start">
 				<div>
 					<h5 className="mb-3">OSMO Synthesis</h5>
@@ -48,7 +50,9 @@ export const OsmoSynthesis: FunctionComponent<{
 							: '$0'}
 					</h5>
 					<button
-						onClick={onStartEarnClick}
+						onClick={() => {
+							setIsDialogOpen(true);
+						}}
 						className="px-8 py-2.5 bg-primary-200 rounded-lg leading-none hover:opacity-75">
 						<p>Start Earning</p>
 					</button>

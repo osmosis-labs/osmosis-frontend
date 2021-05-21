@@ -1,5 +1,5 @@
 import React, { Dispatch, FunctionComponent, SetStateAction, useState } from 'react';
-import { BaseDialog, BaseModalProps } from './base';
+import { BaseDialog, BaseDialogProps } from './base';
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import InputSlider from 'react-input-slider';
@@ -279,7 +279,7 @@ export class RemoveLiquidityState extends ManageLiquidityStateBase {
 	}
 }
 
-export const ManageLiquidityDialog: FunctionComponent<BaseModalProps & {
+export const ManageLiquidityDialog: FunctionComponent<BaseDialogProps & {
 	poolId: string;
 }> = observer(({ isOpen, close, poolId, style }) => {
 	const [tab, setTab] = React.useState<Tabs>(Tabs.ADD);
