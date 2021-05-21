@@ -5,3 +5,7 @@ export type IncentivizedPools = {
 		pot_id: string;
 	}[];
 };
+
+export type LockableDurations = {
+	lockable_durations: string[];
+};

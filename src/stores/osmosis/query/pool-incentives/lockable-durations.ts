@@ -1,0 +1,30 @@
+import { ObservableChainQuery } from '@keplr-wallet/stores/build/query/chain-query';
+import { KVStore } from '@keplr-wallet/common';
+import { ChainGetter } from '@keplr-wallet/stores/src/common/index';
+import { LockableDurations } from './types';
+import { computed, makeObservable } from 'mobx';
+import dayjs from 'dayjs';
+import { Duration } from 'dayjs/plugin/duration';
+
+export class ObservableQueryLockableDurations extends ObservableChainQuery<LockableDurations> {
+	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
+		super(kvStore, chainId, chainGetter, '/osmosis/pool-incentives/v1beta1/lockable_durations');
+
+		makeObservable(this);
+	}
+
+	@computed
+	get lockableDurations(): Duration[] {
+		if (!this.response) {
+			return [];
+		}
+
+		return this.response.data.lockable_durations.map((durationStr: string) => {
+			// Golang의 duration은 언제나 초 단위로 온다.
+			// XXX: commonjs일때 밑의 라인이 오류가 발생해서 test:rand-pools 스크립트가 실행이 안됨...
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			return dayjs.duration(parseInt(durationStr.replace('s', '')) * 1000);
+		});
+	}
+}

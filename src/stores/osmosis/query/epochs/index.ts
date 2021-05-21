@@ -33,9 +33,7 @@ export class ObservableQueryEpochsInner {
 		// XXX: commonjs일때 밑의 라인이 오류가 발생해서 test:rand-pools 스크립트가 실행이 안됨...
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		const duration = dayjs.duration({
-			seconds: parseInt(this.epoch.duration.replace('s', '')),
-		});
+		const duration = dayjs.duration(parseInt(this.epoch.duration.replace('s', '')) * 1000);
 
 		return dayjs(startTime)
 			.add(duration)

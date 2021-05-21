@@ -5,7 +5,7 @@ import { DeepReadonly } from 'utility-types';
 import { ObservableQueryGammPoolShare } from './pool-share';
 import { ObservableQueryTotalPools } from './pools/total-pools';
 import { ObservableQueryPool } from './pool';
-import { ObservableQueryIncentivizedPools } from './pool-incentives';
+import { ObservableQueryIncentivizedPools, ObservableQueryLockableDurations } from './pool-incentives';
 import { ObservableQueryEpochs } from './epochs';
 
 export interface HasOsmosisQueries {
@@ -27,6 +27,7 @@ export class OsmosisQueries {
 	public readonly queryGammTotalPools: DeepReadonly<ObservableQueryTotalPools>;
 	public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
 	public readonly queryIncentivizedPools: DeepReadonly<ObservableQueryIncentivizedPools>;
+	public readonly queryLockableDurations: DeepReadonly<ObservableQueryLockableDurations>;
 
 	public readonly queryEpochs: DeepReadonly<ObservableQueryEpochs>;
 
@@ -37,6 +38,7 @@ export class OsmosisQueries {
 		this.queryGammTotalPools = new ObservableQueryTotalPools(kvStore, chainId, chainGetter);
 		this.queryGammPoolShare = new ObservableQueryGammPoolShare(this.queryGammPools, queries.queryBalances);
 		this.queryIncentivizedPools = new ObservableQueryIncentivizedPools(kvStore, chainId, chainGetter);
+		this.queryLockableDurations = new ObservableQueryLockableDurations(kvStore, chainId, chainGetter);
 
 		this.queryEpochs = new ObservableQueryEpochs(kvStore, chainId, chainGetter);
 	}

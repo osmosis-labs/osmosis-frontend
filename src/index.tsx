@@ -14,6 +14,12 @@ import { PoolPage } from './pages/pool';
 import { AssetsPage } from './pages/assets';
 import { GovernancePage } from './pages/governance';
 
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import duration from 'dayjs/plugin/duration';
+dayjs.extend(relativeTime);
+dayjs.extend(duration);
+
 const Router: FunctionComponent = () => {
 	return (
 		<StoreProvider>

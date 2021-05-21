@@ -1,12 +1,18 @@
 import React, { FunctionComponent } from 'react';
-import cn from 'clsx';
 import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
-import { fixed, multiply } from '../../utils/Big';
+import { multiply } from '../../utils/Big';
 import { formatNumber } from '../../utils/format';
 import { MyLockupsTable } from './MyLockupsTable';
 import { UnlockingTable } from './Unlocking';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
 
-export const OsmoSynthesis: FunctionComponent<IOsmoSynthesis> = ({ pool }) => {
+export const OsmoSynthesis: FunctionComponent<IOsmoSynthesis> = observer(({ pool }) => {
+	const { chainStore, queriesStore } = useStore();
+
+	const queries = queriesStore.get(chainStore.current.chainId);
+	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
+
 	const totalShare = pool.totalShare.toString();
 
 	// TODO : calculate / fetch price per token
@@ -37,9 +43,9 @@ export const OsmoSynthesis: FunctionComponent<IOsmoSynthesis> = ({ pool }) => {
 				</div>
 			</div>
 			<div className="mt-10 grid grid-cols-3 gap-9">
-				<LockupBox apyPercent={356} days={30} />
-				<LockupBox apyPercent={356} days={60} />
-				<LockupBox apyPercent={356} days={90} />
+				{lockableDurations.map((lockableDuration, i) => {
+					return <LockupBox key={i.toString()} apyPercent={356} duration={lockableDuration.humanize()} />;
+				})}
 			</div>
 			<div className="mt-10">
 				<MyLockupsTable />
@@ -49,20 +55,19 @@ export const OsmoSynthesis: FunctionComponent<IOsmoSynthesis> = ({ pool }) => {
 			</div>
 		</section>
 	);
-};
+});
 
-const LockupBox: FunctionComponent<ILockupBox> = ({ days, apyPercent }) => {
+const LockupBox: FunctionComponent<{
+	duration: string;
+	apyPercent: number;
+}> = ({ duration, apyPercent }) => {
 	return (
 		<div className="bg-card rounded-2xl pt-7 px-7.5 pb-10">
-			<h4 className="mb-4 font-normal text-xl xl:text-2xl">{days} days lockup</h4>
+			<h4 className="mb-4 font-normal text-xl xl:text-2xl">{duration} lockup</h4>
 			<h6 className="text-secondary-200 font-normal">APY {apyPercent}%</h6>
 		</div>
 	);
 };
-interface ILockupBox {
-	days: number;
-	apyPercent: number;
-}
 
 interface IOsmoSynthesis {
 	pool: QueriedPoolBase;
