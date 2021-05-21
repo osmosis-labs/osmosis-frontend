@@ -75,7 +75,7 @@ export const PoolPage: FunctionComponent = observer(() => {
 					</div>
 					<div className="py-10 w-full px-10 bg-surface">
 						<div className="pb-15">
-							<OsmoSynthesis pool={pool} />
+							<OsmoSynthesis poolId={pool.id} />
 						</div>
 						<div className="max-w-max mx-auto">
 							<PoolCatalyst id={pool.id} />
