@@ -1,5 +1,4 @@
 import React, { FunctionComponent, useState } from 'react';
-import { formatUSD } from '../../utils/format';
 import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
 import { DisplayLeftTime } from '../../components/common/DisplayLeftTime';
 import { observer } from 'mobx-react-lite';
@@ -7,6 +6,7 @@ import { CreateNewPoolDialog } from '../../dialogs/create-new-pool';
 import { useStore } from '../../stores';
 import dayjs from 'dayjs';
 import { RewardEpochIdentifier } from '../../config';
+import { CoinPretty, DecUtils } from '@keplr-wallet/unit';
 
 export const LabsOverview: FunctionComponent = observer(() => {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -62,12 +62,20 @@ const DispRewardPayout: FunctionComponent = observer(() => {
 	);
 });
 
-const DispPrice: FunctionComponent = () => {
-	// TODO : @Thunnini retrieve osmo price
-	const price = 2.58;
+const DispPrice: FunctionComponent = observer(() => {
+	const { chainStore, priceStore } = useStore();
+
+	const price = priceStore.calculatePrice(
+		'usd',
+		new CoinPretty(
+			chainStore.current.stakeCurrency,
+			DecUtils.getPrecisionDec(chainStore.current.stakeCurrency.coinDecimals)
+		)
+	);
+
 	return (
 		<OverviewLabelValue label="OSMO Price">
-			<h4>{formatUSD(price)}</h4>
+			<h4>{price ? price.toString() : '$0'}</h4>
 		</OverviewLabelValue>
 	);
-};
+});
