@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
-import { DecUtils } from '@keplr-wallet/unit';
+import { Dec, DecUtils } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { Loader } from '../../components/common/Loader';
 import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
@@ -98,7 +98,13 @@ const PoolInfoHeader: FunctionComponent<{
 	const pool = queries.osmosis.queryGammPools.getPool(id);
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
-	const shareRatio = queries.osmosis.queryGammPoolShare.getGammShareRatio(account.bech32Address, id);
+	const shareRatio = queries.osmosis.queryGammPoolShare.getAllGammShareRatio(account.bech32Address, id);
+
+	const locked = queries.osmosis.queryGammPoolShare
+		.getLockedGammShare(account.bech32Address, id)
+		.add(queries.osmosis.queryGammPoolShare.getUnlockingGammShare(account.bech32Address, id))
+		.add(queries.osmosis.queryGammPoolShare.getUnlockableGammShare(account.bech32Address, id));
+	const actualLockedRatio = pool ? locked.quo(pool.totalShare) : new Dec(0);
 
 	// `shareRatio`가 백분률로 오기 때문에 10^2를 나눠줘야한다.
 	const actualRatio = shareRatio.toDec().quo(DecUtils.getPrecisionDec(2));
@@ -134,7 +140,12 @@ const PoolInfoHeader: FunctionComponent<{
 								<h4>{pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString()}</h4>
 							</OverviewLabelValue>
 							<OverviewLabelValue label="Locked">
-								<h6>TODO</h6>
+								<h6>
+									{pool
+										.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!)
+										.mul(actualLockedRatio)
+										.toString()}
+								</h6>
 							</OverviewLabelValue>
 						</ul>
 						<ul className="flex flex-col gap-6">
@@ -176,7 +187,7 @@ const PoolCatalyst: FunctionComponent<{
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	// ShareRatio가 백분률로 온다는 것을 주의하자.
-	const shareRatio = queries.osmosis.queryGammPoolShare.getGammShareRatio(account.bech32Address, id);
+	const shareRatio = queries.osmosis.queryGammPoolShare.getAllGammShareRatio(account.bech32Address, id);
 
 	return (
 		<React.Fragment>

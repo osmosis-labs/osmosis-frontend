@@ -23,7 +23,7 @@ export const OsmoSynthesis: FunctionComponent<{
 			?.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!) ??
 		new PricePretty(priceStore.getFiatCurrency('usd')!, new Dec(0));
 	const totalPoolShare = queries.osmosis.queryGammPools.getPool(poolId)?.totalShare ?? new IntPretty(new Dec(0));
-	const myPoolShare = queries.osmosis.queryGammPoolShare.getGammShare(account.bech32Address, poolId);
+	const myPoolShare = queries.osmosis.queryGammPoolShare.getAvailableGammShare(account.bech32Address, poolId);
 	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false);

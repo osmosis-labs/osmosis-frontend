@@ -72,7 +72,7 @@ export class ManageLiquidityStateBase {
 	}
 
 	get poolShare(): CoinPretty {
-		return this._queryPoolShare.getGammShare(this._sender, this.poolId);
+		return this._queryPoolShare.getAvailableGammShare(this._sender, this.poolId);
 	}
 }
 

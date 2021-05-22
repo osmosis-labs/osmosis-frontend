@@ -13,7 +13,7 @@ export const LockLpTokenDialog: FunctionComponent<BaseDialogProps & {
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
-	const myPoolShare = queries.osmosis.queryGammPoolShare.getGammShare(account.bech32Address, poolId);
+	const myPoolShare = queries.osmosis.queryGammPoolShare.getAvailableGammShare(account.bech32Address, poolId);
 
 	const [amount, _setAmount] = useState('');
 	const setAmount = (value: string) => {

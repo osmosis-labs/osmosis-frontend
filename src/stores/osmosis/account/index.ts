@@ -508,6 +508,9 @@ export class OsmosisAccount {
 					// Refresh the balances
 					const queries = this.queriesStore.get(this.chainId);
 					queries.queryBalances.getQueryBech32Address(this.base.bech32Address).fetch();
+
+					// Refresh the locked coins
+					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
 				}
 
 				if (onFulfill) {

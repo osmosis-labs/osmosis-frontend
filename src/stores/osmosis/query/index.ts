@@ -43,15 +43,21 @@ export class OsmosisQueries {
 	constructor(queries: QueriesSetBase, kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
 		const queryGammPool = new ObservableQueryPool(kvStore, chainId, chainGetter);
 
-		this.queryGammPools = new ObservableQueryPools(kvStore, chainId, chainGetter, queryGammPool);
-		this.queryGammTotalPools = new ObservableQueryTotalPools(kvStore, chainId, chainGetter);
-		this.queryGammPoolShare = new ObservableQueryGammPoolShare(this.queryGammPools, queries.queryBalances);
-		this.queryIncentivizedPools = new ObservableQueryIncentivizedPools(kvStore, chainId, chainGetter);
-		this.queryLockableDurations = new ObservableQueryLockableDurations(kvStore, chainId, chainGetter);
-
 		this.queryLockedCoins = new ObservableQueryAccountLockedCoins(kvStore, chainId, chainGetter);
 		this.queryUnlockingCoins = new ObservableQueryAccountUnlockingCoins(kvStore, chainId, chainGetter);
 		this.queryUnlockableCoins = new ObservableQueryAccountUnlockableCoins(kvStore, chainId, chainGetter);
+
+		this.queryGammPools = new ObservableQueryPools(kvStore, chainId, chainGetter, queryGammPool);
+		this.queryGammTotalPools = new ObservableQueryTotalPools(kvStore, chainId, chainGetter);
+		this.queryGammPoolShare = new ObservableQueryGammPoolShare(
+			this.queryGammPools,
+			queries.queryBalances,
+			this.queryLockedCoins,
+			this.queryUnlockingCoins,
+			this.queryUnlockableCoins
+		);
+		this.queryIncentivizedPools = new ObservableQueryIncentivizedPools(kvStore, chainId, chainGetter);
+		this.queryLockableDurations = new ObservableQueryLockableDurations(kvStore, chainId, chainGetter);
 
 		this.queryEpochs = new ObservableQueryEpochs(kvStore, chainId, chainGetter);
 	}
