@@ -52,17 +52,19 @@ export class ObservableQueryGammPoolShare {
 		return result;
 	});
 
-	protected makeShareCurrency(poolId: string): Currency {
-		return {
-			coinDenom: `GAMM/${poolId}`,
-			coinMinimalDenom: `gamm/pool/${poolId}`,
-			coinDecimals: 18,
-		};
-	}
+	readonly getShareCurrency = computedFn(
+		(poolId: string): Currency => {
+			return {
+				coinDenom: `GAMM/${poolId}`,
+				coinMinimalDenom: `gamm/pool/${poolId}`,
+				coinDecimals: 18,
+			};
+		}
+	);
 
 	readonly getLockedGammShare = computedFn(
 		(bech32Address: string, poolId: string): CoinPretty => {
-			const currency = this.makeShareCurrency(poolId);
+			const currency = this.getShareCurrency(poolId);
 
 			const locked = this.queryLockedCoins
 				.get(bech32Address)
@@ -76,7 +78,7 @@ export class ObservableQueryGammPoolShare {
 
 	readonly getUnlockingGammShare = computedFn(
 		(bech32Address: string, poolId: string): CoinPretty => {
-			const currency = this.makeShareCurrency(poolId);
+			const currency = this.getShareCurrency(poolId);
 
 			const locked = this.queryUnlockingCoins
 				.get(bech32Address)
@@ -90,7 +92,7 @@ export class ObservableQueryGammPoolShare {
 
 	readonly getUnlockableGammShare = computedFn(
 		(bech32Address: string, poolId: string): CoinPretty => {
-			const currency = this.makeShareCurrency(poolId);
+			const currency = this.getShareCurrency(poolId);
 
 			const locked = this.queryUnlockableCoins
 				.get(bech32Address)
@@ -104,7 +106,7 @@ export class ObservableQueryGammPoolShare {
 
 	readonly getAvailableGammShare = computedFn(
 		(bech32Address: string, poolId: string): CoinPretty => {
-			const currency = this.makeShareCurrency(poolId);
+			const currency = this.getShareCurrency(poolId);
 
 			return this.queryBalances.getQueryBech32Address(bech32Address).getBalanceFromCurrency(currency);
 		}

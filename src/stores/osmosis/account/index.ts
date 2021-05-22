@@ -511,6 +511,7 @@ export class OsmosisAccount {
 
 					// Refresh the locked coins
 					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
+					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
 				}
 
 				if (onFulfill) {

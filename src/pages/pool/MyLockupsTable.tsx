@@ -1,33 +1,46 @@
-import times from 'lodash-es/times';
 import React, { FunctionComponent } from 'react';
-import map from 'lodash-es/map';
-import { fixed } from '../../utils/Big';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
 
-// TODO : @Thunnini fetch lockup data instead
-const lockupData: ILockupRow[] = times(3, i => ({
-	duration: (i + 1) * 30,
-	token: 'LP-Token',
-	amount: 300,
-	pendingRewards: 42.3103,
-	currentApy: 353.21,
-}));
+const tableWidths = ['25%', '25%', '25%', '25%'];
+export const MyLockupsTable: FunctionComponent<{
+	poolId: string;
+}> = observer(({ poolId }) => {
+	const { chainStore, accountStore, queriesStore } = useStore();
 
-const tableWidths = ['20%', '20%', '20%', '20%', '20%'];
-export const MyLockupsTable: FunctionComponent = () => {
+	const account = accountStore.getAccount(chainStore.current.chainId);
+	const queries = queriesStore.get(chainStore.current.chainId);
+	const poolShareCurrency = queries.osmosis.queryGammPoolShare.getShareCurrency(poolId);
+
+	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
+
 	return (
-		<>
+		<React.Fragment>
 			<h6 className="mb-1">My Lockups</h6>
 			<table className="w-full">
 				<LockupTableHeader />
 				<tbody className="w-full">
-					{map(lockupData, (rowValue, i) => (
-						<LockupTableRow key={i} data={rowValue} height={76} />
-					))}
+					{lockableDurations.map(lockableDuration => {
+						const lockedCoin = queries.osmosis.queryAccountLocked
+							.get(account.bech32Address)
+							.getLockedCoinWithDuration(poolShareCurrency, lockableDuration);
+						return (
+							<LockupTableRow
+								key={lockableDuration.humanize()}
+								duration={lockableDuration.humanize()}
+								amount={lockedCoin
+									.maxDecimals(6)
+									.trim(true)
+									.toString()}
+								apy="0%"
+							/>
+						);
+					})}
 				</tbody>
 			</table>
-		</>
+		</React.Fragment>
 	);
-};
+});
 
 const LockupTableHeader: FunctionComponent = () => {
 	let i = 0;
@@ -43,9 +56,6 @@ const LockupTableHeader: FunctionComponent = () => {
 				<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
 					<p>Amount</p>
 				</td>
-				<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-					<p>Pending Rewards</p>
-				</td>
 				<td className="flex items-center px-2 py-3 justify-end" style={{ width: tableWidths[i++] }}>
 					<p>Action</p>
 				</td>
@@ -54,23 +64,22 @@ const LockupTableHeader: FunctionComponent = () => {
 	);
 };
 
-const LockupTableRow: FunctionComponent<ILockupTableRow> = ({ data, height }) => {
+const LockupTableRow: FunctionComponent<{
+	duration: string;
+	apy: string;
+	amount: string;
+}> = ({ duration, apy, amount }) => {
 	let i = 0;
 	return (
-		<tr style={{ height: `${height}px` }} className="flex items-center w-full border-b pl-12.5 pr-15">
+		<tr style={{ height: `76px` }} className="flex items-center w-full border-b pl-12.5 pr-15">
 			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<p>{data.duration} day</p>
+				<p>{duration}</p>
 			</td>
 			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<p>{fixed(data.currentApy, 2)}%</p>
+				<p>{apy}</p>
 			</td>
 			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<p>
-					{data.amount} {data.token}
-				</p>
-			</td>
-			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<p>{data.pendingRewards} OSMO</p>
+				<p>{amount}</p>
 			</td>
 			<td className="flex items-center justify-end px-2 py-3" style={{ width: tableWidths[i++] }}>
 				<button onClick={() => alert('Unlock flow')}>
@@ -80,16 +89,3 @@ const LockupTableRow: FunctionComponent<ILockupTableRow> = ({ data, height }) =>
 		</tr>
 	);
 };
-
-interface ILockupTableRow {
-	data: ILockupRow;
-	height: number;
-}
-
-interface ILockupRow {
-	duration: number;
-	token: string;
-	amount: number;
-	currentApy: number;
-	pendingRewards: number;
-}
