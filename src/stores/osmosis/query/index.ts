@@ -7,6 +7,11 @@ import { ObservableQueryTotalPools } from './pools/total-pools';
 import { ObservableQueryPool } from './pool';
 import { ObservableQueryIncentivizedPools, ObservableQueryLockableDurations } from './pool-incentives';
 import { ObservableQueryEpochs } from './epochs';
+import {
+	ObservableQueryAccountLockedCoins,
+	ObservableQueryAccountUnlockableCoins,
+	ObservableQueryAccountUnlockingCoins,
+} from './lockup';
 
 export interface HasOsmosisQueries {
 	osmosis: OsmosisQueries;
@@ -29,6 +34,10 @@ export class OsmosisQueries {
 	public readonly queryIncentivizedPools: DeepReadonly<ObservableQueryIncentivizedPools>;
 	public readonly queryLockableDurations: DeepReadonly<ObservableQueryLockableDurations>;
 
+	public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
+	public readonly queryUnlockingCoins: DeepReadonly<ObservableQueryAccountUnlockingCoins>;
+	public readonly queryUnlockableCoins: DeepReadonly<ObservableQueryAccountUnlockableCoins>;
+
 	public readonly queryEpochs: DeepReadonly<ObservableQueryEpochs>;
 
 	constructor(queries: QueriesSetBase, kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
@@ -39,6 +48,10 @@ export class OsmosisQueries {
 		this.queryGammPoolShare = new ObservableQueryGammPoolShare(this.queryGammPools, queries.queryBalances);
 		this.queryIncentivizedPools = new ObservableQueryIncentivizedPools(kvStore, chainId, chainGetter);
 		this.queryLockableDurations = new ObservableQueryLockableDurations(kvStore, chainId, chainGetter);
+
+		this.queryLockedCoins = new ObservableQueryAccountLockedCoins(kvStore, chainId, chainGetter);
+		this.queryUnlockingCoins = new ObservableQueryAccountUnlockingCoins(kvStore, chainId, chainGetter);
+		this.queryUnlockableCoins = new ObservableQueryAccountUnlockableCoins(kvStore, chainId, chainGetter);
 
 		this.queryEpochs = new ObservableQueryEpochs(kvStore, chainId, chainGetter);
 	}
