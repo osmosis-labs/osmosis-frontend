@@ -290,10 +290,10 @@ export class QueriedPoolBase {
 
 		return primitives.map(primitive => {
 			const coinPrimitive = primitive.token;
-			const currency = this.chainGetter.getChain(this.chainId).findCurrency(coinPrimitive.denom);
-			if (!currency) {
-				throw new Error('Unknown currency');
-			}
+			// TODO: 실수로 `forceFindCurrency` 메소드를 타입에 안 넣어버림 ㅋ
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			const currency = this.chainGetter.getChain(this.chainId).forceFindCurrency(coinPrimitive.denom);
 
 			return {
 				weight: new IntPretty(new Int(primitive.weight)),

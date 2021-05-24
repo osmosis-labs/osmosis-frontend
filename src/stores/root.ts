@@ -1,4 +1,4 @@
-import { CoinGeckoPriceStore, getKeplrFromWindow, QueriesStore } from '@keplr-wallet/stores';
+import { CoinGeckoPriceStore, getKeplrFromWindow, IBCCurrencyRegsitrar, QueriesStore } from '@keplr-wallet/stores';
 import { AccountStore } from '@keplr-wallet/stores';
 import { IndexedDBKVStore } from '@keplr-wallet/common';
 import { ChainStore } from './chain';
@@ -21,6 +21,7 @@ export class RootStore {
 	public readonly swapManager: GammSwapManager;
 
 	protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar;
+	protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfo>;
 
 	public readonly layoutStore: LayoutStore;
 
@@ -87,6 +88,11 @@ export class RootStore {
 		]);
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
+		this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfo>(
+			this.chainStore,
+			this.accountStore,
+			this.queriesStore
+		);
 
 		this.layoutStore = new LayoutStore();
 	}
