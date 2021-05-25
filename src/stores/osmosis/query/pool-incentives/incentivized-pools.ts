@@ -8,7 +8,7 @@ import { computed, makeObservable } from 'mobx';
 
 export class ObservableQueryIncentivizedPools extends ObservableChainQuery<IncentivizedPools> {
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-		super(kvStore, chainId, chainGetter, '/osmosis/pool-incentives/v1beta1/incentivized-pools');
+		super(kvStore, chainId, chainGetter, '/osmosis/pool-incentives/v1beta1/incentivized_pools');
 
 		makeObservable(this);
 	}
