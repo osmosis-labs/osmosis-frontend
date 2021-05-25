@@ -1,68 +1,158 @@
-import React, { FunctionComponent, useState } from 'react';
-import { IAssetBalance } from './index';
-import { formatNumber } from '../../utils/format';
+import React, { FunctionComponent } from 'react';
 import { Img } from '../../components/common/Img';
-import { LINKS, TOKENS } from '../../constants';
-import map from 'lodash-es/map';
+import { LINKS } from '../../constants';
 import { TransferDialog } from '../../dialogs/Transfer';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { IBCAssetInfos } from '../../config';
+import { Hash } from '@keplr-wallet/crypto';
+import { Buffer } from 'buffer/';
+import { Currency, IBCCurrency } from '@keplr-wallet/types';
 
 const tableWidths = ['50%', '25%', '12.5%', '12.5%'];
-const ROW_HEIGHT = 72;
-interface IDialogState {
-	open: boolean;
-	token: string;
-	isWithdraw: boolean;
-}
-export const AssetBalancesList: FunctionComponent<{ state: IAssetBalance[] }> = ({ state }) => {
-	const [dialogState, setDialogState] = React.useState<IDialogState>({ open: false, token: '', isWithdraw: false });
+export const AssetBalancesList: FunctionComponent = observer(() => {
+	const { chainStore, queriesStore, accountStore } = useStore();
 
-	const onDepositClick = (token: string) => setDialogState(v => ({ ...v, open: true, token, isWithdraw: false }));
-	const onWithdrawClick = (token: string) => setDialogState(v => ({ ...v, open: true, token, isWithdraw: true }));
+	const account = accountStore.getAccount(chainStore.current.chainId);
+	const queries = queriesStore.get(chainStore.current.chainId);
+
+	const ibcBalances = IBCAssetInfos.map(channelInfo => {
+		const chainInfo = chainStore.getChain(channelInfo.counterpartyChainId);
+		// TODO: IBC minimal denom을 만들어주는 api를 케플러 패키지에 넣는 것도 좋을듯...
+		const ibcDenom =
+			'ibc/' +
+			Buffer.from(Hash.sha256(Buffer.from(`transfer/${channelInfo.sourceChannelId}/${channelInfo.coinMinimalDenom}`)))
+				.toString('hex')
+				.toUpperCase();
+
+		const originCurrency = chainInfo.currencies.find(
+			cur => cur.coinMinimalDenom === channelInfo.coinMinimalDenom
+		) as Currency;
+
+		if (!originCurrency) {
+			throw new Error(`Unknown currency ${channelInfo.coinMinimalDenom} for ${channelInfo.counterpartyChainId}`);
+		}
+
+		const balance = queries.queryBalances.getQueryBech32Address(account.bech32Address).getBalanceFromCurrency({
+			...originCurrency,
+			coinMinimalDenom: ibcDenom,
+			paths: [
+				{
+					portId: 'transfer',
+					channelId: channelInfo.sourceChannelId,
+				},
+			],
+			originChainId: chainInfo.chainId,
+			originCurrency,
+		});
+
+		return {
+			chainInfo: chainInfo,
+			balance,
+			sourceChannelId: channelInfo.sourceChannelId,
+			destChannelId: channelInfo.destChannelId,
+		};
+	});
+
+	const [dialogState, setDialogState] = React.useState<
+		| {
+				open: true;
+				currency: IBCCurrency;
+				counterpartyChainId: string;
+				sourceChannelId: string;
+				destChannelId: string;
+				isWithdraw: boolean;
+		  }
+		| {
+				open: false;
+		  }
+	>({ open: false });
+
 	const close = () => setDialogState(v => ({ ...v, open: false }));
 	return (
-		<>
-			<TransferDialog
-				style={{ minHeight: '533px', maxHeight: '540px', minWidth: '656px', maxWidth: '656px' }}
-				token={dialogState.token}
-				isOpen={dialogState.open}
-				close={close}
-				isWithdraw={dialogState.isWithdraw}
-			/>
+		<React.Fragment>
+			{dialogState.open ? (
+				<TransferDialog
+					style={{ minHeight: '533px', maxHeight: '540px', minWidth: '656px', maxWidth: '656px' }}
+					isOpen={dialogState.open}
+					close={close}
+					currency={dialogState.currency}
+					counterpartyChainId={dialogState.counterpartyChainId}
+					sourceChannelId={dialogState.sourceChannelId}
+					destChannelId={dialogState.destChannelId}
+					isWithdraw={dialogState.isWithdraw}
+				/>
+			) : null}
 			<table className="w-full">
 				<AssetBalanceTableHeader />
 				<tbody className="w-full">
-					{map(state, (rowValue, i) => (
-						<AssetBalanceRow
-							key={i}
-							onDeposit={() => onDepositClick(rowValue.token)}
-							onWithdraw={() => onWithdrawClick(rowValue.token)}
-							data={rowValue}
-							height={ROW_HEIGHT}
-						/>
-					))}
+					{ibcBalances.map(bal => {
+						const currency = bal.balance.currency;
+						const coinDenom = (() => {
+							if ('originCurrency' in currency && currency.originCurrency) {
+								return currency.originCurrency.coinDenom;
+							}
+
+							return currency.coinDenom;
+						})();
+
+						return (
+							<AssetBalanceRow
+								key={currency.coinMinimalDenom}
+								chainName={bal.chainInfo.chainName}
+								coinDenom={coinDenom}
+								balance={bal.balance
+									.hideDenom(true)
+									.trim(true)
+									.maxDecimals(6)
+									.toString()}
+								onDeposit={() => {
+									setDialogState({
+										open: true,
+										counterpartyChainId: bal.chainInfo.chainId,
+										currency: currency as IBCCurrency,
+										sourceChannelId: bal.sourceChannelId,
+										destChannelId: bal.destChannelId,
+										isWithdraw: false,
+									});
+								}}
+								onWithdraw={() => {
+									setDialogState({
+										open: true,
+										counterpartyChainId: bal.chainInfo.chainId,
+										currency: currency as IBCCurrency,
+										sourceChannelId: bal.sourceChannelId,
+										destChannelId: bal.destChannelId,
+										isWithdraw: true,
+									});
+								}}
+							/>
+						);
+					})}
 				</tbody>
 			</table>
-		</>
+		</React.Fragment>
 	);
-};
+});
 
 const AssetBalanceRow: FunctionComponent<{
-	data: IAssetBalance;
-	height: number;
+	chainName: string;
+	coinDenom: string;
+	balance: string;
 	onDeposit: () => void;
 	onWithdraw: () => void;
-}> = ({ data, height, onDeposit, onWithdraw }) => {
+}> = ({ chainName, coinDenom, balance, onDeposit, onWithdraw }) => {
 	let i = 0;
 	return (
-		<tr style={{ height: `${height}px` }} className="flex items-center w-full border-b pl-12.5 pr-15">
+		<tr style={{ height: '4.5rem' }} className="flex items-center w-full border-b pl-12.5 pr-15">
 			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<Img loadingSpin className="w-10 h-10" src={LINKS.GET_TOKEN_IMG(data.token)} />
+				<Img loadingSpin className="w-10 h-10" src={LINKS.GET_TOKEN_IMG(coinDenom)} />
 				<p className="ml-5">
-					{TOKENS[data.token]?.LONG_NAME} - {data.token.toUpperCase()}
+					{chainName} - {coinDenom.toUpperCase()}
 				</p>
 			</td>
 			<td className="flex items-center justify-end pl-2 pr-20 py-4" style={{ width: tableWidths[i++] }}>
-				<p>{formatNumber(data.balance)}</p>
+				<p>{balance}</p>
 			</td>
 			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
 				<button onClick={onDeposit} className="flex items-center cursor-pointer hover:opacity-75">

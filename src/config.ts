@@ -4,6 +4,20 @@ import { Bech32Address } from '@keplr-wallet/cosmos';
 export const PoolsPerPage = 10;
 export const RewardEpochIdentifier = 'daily';
 
+export const IBCAssetInfos: {
+	counterpartyChainId: string;
+	sourceChannelId: string;
+	destChannelId: string;
+	coinMinimalDenom: string;
+}[] = [
+	{
+		counterpartyChainId: 'cosmoshub-4',
+		sourceChannelId: 'channel-0',
+		destChannelId: 'channel-125',
+		coinMinimalDenom: 'uatom',
+	},
+];
+
 export const EmbedChainInfos: ChainInfo[] = [
 	{
 		rpc: 'http://127.0.0.1:26657',

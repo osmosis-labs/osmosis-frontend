@@ -36,7 +36,7 @@ export const AssetsPage: FunctionComponent = observer(() => {
 			</div>
 			<div className="px-15 py-10">
 				<div className="max-w-max mx-auto">
-					<AssetBalancesList state={assetData} />
+					<AssetBalancesList />
 				</div>
 			</div>
 		</div>
