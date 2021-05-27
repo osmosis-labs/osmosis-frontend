@@ -23,7 +23,7 @@ interface IValidator {
 }
 export const ManageStakingDialog: FunctionComponent<BaseDialogProps & { validatorIndex: number }> = observer(
 	({ isOpen, close, style, validatorIndex }) => {
-		const [stage, setStage] = React.useState<MODAL_STAGE>(MODAL_STAGE.STAKE);
+		const [stage, setStage] = React.useState<MODAL_STAGE>(MODAL_STAGE.MANAGE);
 		const closeDialog = React.useCallback(() => {
 			close();
 			setStage(MODAL_STAGE.MANAGE);

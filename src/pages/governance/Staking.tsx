@@ -10,7 +10,7 @@ import { ManageStakingDialog } from '../../dialogs';
 const ROW_HEIGHT = 72;
 const ROW_WIDTHS = ['5%', '20%', '35%', '25%', '15%'];
 export const StakingTab: FunctionComponent = () => {
-	const [isOpen, setIsOpen] = React.useState(true);
+	const [isOpen, setIsOpen] = React.useState(false);
 	const [focusedValidatorIndex, setFocusedValidatorIndex] = React.useState(0);
 	const stakingData: IStakedValidator[] = times(8, i => ({
 		index: i + 1,
