@@ -14,7 +14,7 @@ RUN git clone https://github.com/osmosis-labs/osmosis
 WORKDIR /osmosis
 
 # Change the commit hash if you want.
-RUN git fetch && git checkout 3538006acd9c80b7896a88f959f1272a09c9a69c
+RUN git fetch && git checkout 6e7c6241a806f3ac35403a768c126f45f77d9182
 
 # Build daemon.
 RUN make build
@@ -26,7 +26,7 @@ RUN ./osmosisd init localnet --chain-id localnet-1
 RUN sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' ~/.osmosisd/config/config.toml
 RUN sed -i 's/cors_allowed_origins = \[\]/cors_allowed_origins = \["*"\]/g' ~/.osmosisd/config/config.toml
 RUN sed -i 's/"stake"/"uosmo"/g' ~/.osmosisd/config/genesis.json
-RUN sed -i 's/pruning = "syncable"/pruning = "nothing"/g' ~/.osmosisd/config/app.toml
+RUN sed -i 's/pruning = "nothing"/pruning = "nothing"/g' ~/.osmosisd/config/app.toml
 RUN sed -i 's/enable = false/enable = true/g' ~/.osmosisd/config/app.toml
 RUN sed -i 's/swagger = false/swagger = true/g' ~/.osmosisd/config/app.toml
 RUN sed -i 's/enabled-unsafe-cors = false/enabled-unsafe-cors = true/g' ~/.osmosisd/config/app.toml
