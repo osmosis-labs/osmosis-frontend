@@ -26,7 +26,7 @@ export class RootStore {
 	public readonly layoutStore: LayoutStore;
 
 	constructor() {
-		this.chainStore = new ChainStore(EmbedChainInfos, 'localnet-1');
+		this.chainStore = new ChainStore(EmbedChainInfos, 'osmosis-devnet-1');
 
 		this.queriesStore = new QueriesStore(
 			new IndexedDBKVStore('store_web_queries'),
@@ -38,18 +38,11 @@ export class RootStore {
 		this.accountStore = new AccountStore(window, AccountWithCosmosAndOsmosis, this.chainStore, this.queriesStore, {
 			defaultOpts: {
 				prefetching: false,
-				suggestChain: false,
+				suggestChain: true,
 				autoInit: false,
 				getKeplr: getKeplrFromWindow,
 			},
 			chainOpts: this.chainStore.chainInfos.map((chainInfo: ChainInfo) => {
-				if (chainInfo.chainId.startsWith('localnet')) {
-					return {
-						chainId: chainInfo.chainId,
-						suggestChain: true,
-					};
-				}
-
 				return {
 					chainId: chainInfo.chainId,
 				};

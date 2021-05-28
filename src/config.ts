@@ -2,7 +2,7 @@ import { ChainInfo } from '@keplr-wallet/types';
 import { Bech32Address } from '@keplr-wallet/cosmos';
 
 export const PoolsPerPage = 10;
-export const RewardEpochIdentifier = 'daily';
+export const RewardEpochIdentifier = 'hourly';
 
 export const IBCAssetInfos: {
 	counterpartyChainId: string;
@@ -11,7 +11,7 @@ export const IBCAssetInfos: {
 	coinMinimalDenom: string;
 }[] = [
 	{
-		counterpartyChainId: 'cosmoshub-4',
+		counterpartyChainId: 'cosmoshub-devnet-1',
 		sourceChannelId: 'channel-0',
 		destChannelId: 'channel-125',
 		coinMinimalDenom: 'uatom',
@@ -20,10 +20,10 @@ export const IBCAssetInfos: {
 
 export const EmbedChainInfos: ChainInfo[] = [
 	{
-		rpc: 'http://127.0.0.1:26657',
-		rest: 'http://127.0.0.1:1317',
-		chainId: 'localnet-1',
-		chainName: 'OSMOSIS',
+		rpc: 'http://a2292001af5254574b9ba6b2de909b5c-481788144.us-east-2.elb.amazonaws.com',
+		rest: 'http://a28aae9da1a954e6bbf46b74fb5be1c2-1754577775.us-east-2.elb.amazonaws.com',
+		chainId: 'osmosis-devnet-2',
+		chainName: 'Osmosis (Dev)',
 		stakeCurrency: {
 			coinDenom: 'OSMO',
 			coinMinimalDenom: 'uosmo',
@@ -67,24 +67,16 @@ export const EmbedChainInfos: ChainInfo[] = [
 		features: ['stargate', 'ibc-transfer'],
 	},
 	{
-		rpc: 'https://rpc-cosmoshub.keplr.app',
-		rest: 'https://lcd-cosmoshub.keplr.app',
-		chainId: 'cosmoshub-4',
-		chainName: 'Cosmos',
+		rpc: 'http://a1b49e433212d46b29712fd009b81751-2133417348.us-east-2.elb.amazonaws.com',
+		rest: 'http://a64d7439bb54e425d8712d59b111453c-1520098448.us-east-2.elb.amazonaws.com',
+		chainId: 'cosmoshub-devnet-1',
+		chainName: 'Cosmos (Dev)',
 		stakeCurrency: {
 			coinDenom: 'ATOM',
 			coinMinimalDenom: 'uatom',
 			coinDecimals: 6,
 			coinGeckoId: 'cosmos',
 		},
-		walletUrl:
-			process.env.NODE_ENV === 'production'
-				? 'https://wallet.keplr.app/#/cosmoshub/stake'
-				: 'http://localhost:8081/#/cosmoshub/stake',
-		walletUrlForStaking:
-			process.env.NODE_ENV === 'production'
-				? 'https://wallet.keplr.app/#/cosmoshub/stake'
-				: 'http://localhost:8081/#/cosmoshub/stake',
 		bip44: {
 			coinType: 118,
 		},
