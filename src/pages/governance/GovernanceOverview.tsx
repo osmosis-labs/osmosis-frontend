@@ -4,6 +4,8 @@ import { formatNumber, getDuration } from '../../utils/format';
 import { minus, multiply } from '../../utils/Big';
 import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
 import moment from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+moment.extend(utc);
 import { DisplayLeftTime } from '../../components/common/DisplayLeftTime';
 import { IGovernanceState } from './index';
 

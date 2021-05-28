@@ -11,6 +11,7 @@ import { divide, multiply } from '../../utils/Big';
 import { PointOptionsObject, SeriesPieOptions, TooltipOptions } from 'highcharts';
 import cloneDeep from 'lodash-es/cloneDeep';
 import { HIGHCHART_GRADIENTS, HIGHCHART_LEGEND_GRADIENTS, PieChart } from '../../components/common/PieChart';
+import { useHistory } from 'react-router-dom';
 
 const ROW_HEIGHT = 180;
 export const GovernanceTab: FunctionComponent = () => {
@@ -41,7 +42,7 @@ export const GovernanceTab: FunctionComponent = () => {
 	);
 };
 
-type TVote = 'yes' | 'no' | 'noWithVeto' | 'abstain';
+export type TVote = 'yes' | 'no' | 'noWithVeto' | 'abstain';
 interface IProposalState {
 	index: number;
 	title: string;
@@ -59,6 +60,7 @@ const GRAPH_GRADIENT_MAP = {
 };
 
 const GovernanceRow: FunctionComponent<{ data: IProposalState; height: number }> = ({ data, height }) => {
+	const history = useHistory();
 	const [series, setSeries] = React.useState<SeriesPieOptions[]>([]);
 
 	React.useEffect(() => {
@@ -113,7 +115,7 @@ const GovernanceRow: FunctionComponent<{ data: IProposalState; height: number }>
 						</LabelValue>
 					</div>
 					<button
-						onClick={() => alert('Display details')}
+						onClick={() => history.push(`/governance/${data.index}`)}
 						className="mt-4 flex items-center hover:opacity-75 cursor-pointer">
 						<p className="text-secondary-200">Details</p>
 						<Img src={'/public/assets/Icons/Right.svg'} />

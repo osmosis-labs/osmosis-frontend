@@ -26,7 +26,7 @@ export const LAYOUT = {
 			ICON_SELECTED: '/public/assets/Icons/Ticket_selected.png',
 			TEXT: 'Governance',
 			ROUTE: '/governance',
-			SELECTED_CHECK: '/governance',
+			SELECTED_CHECK: [/\/governance[.]?/],
 		},
 		AIRDROP: {
 			ICON: '/public/assets/Icons/Airdrop.svg',

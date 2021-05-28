@@ -45,6 +45,11 @@ const defaultOptions: Partial<Highcharts.Options> = {
 	credits: {
 		enabled: false,
 	},
+	plotOptions: {
+		pie: {
+			borderColor: 'transparent',
+		},
+	},
 };
 
 export const HIGHCHART_GRADIENTS: GradientColorObject[] = [

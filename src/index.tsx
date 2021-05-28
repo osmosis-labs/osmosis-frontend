@@ -17,6 +17,7 @@ import { GovernancePage } from './pages/governance';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import duration from 'dayjs/plugin/duration';
+import { GovernanceDetailsPage } from './pages/governance/[id]/GovernanceDetailsPage';
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 
@@ -49,6 +50,11 @@ const Router: FunctionComponent = () => {
 						<Route exact path="/governance">
 							<RouteWrapper>
 								<GovernancePage />
+							</RouteWrapper>
+						</Route>
+						<Route exact path="/governance/:id">
+							<RouteWrapper>
+								<GovernanceDetailsPage />
 							</RouteWrapper>
 						</Route>
 						<Route exact path="/airdrop">
