@@ -67,7 +67,7 @@ export const OsmoSynthesis: FunctionComponent<{
 				<MyLockupsTable poolId={poolId} />
 			</div>
 			<div className="mt-10">
-				<UnlockingTable />
+				<UnlockingTable poolId={poolId} />
 			</div>
 		</section>
 	);

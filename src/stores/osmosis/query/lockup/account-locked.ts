@@ -46,7 +46,7 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
 			})
 			.filter(lock => {
 				// Filter the unlocking, unlockable locks.
-				return new Date(lock.end_time).getMilliseconds() === 0;
+				return new Date(lock.end_time).getTime() <= 0;
 			});
 
 		let coin = new CoinPretty(currency, new Dec(0));
@@ -61,6 +61,56 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
 			amount: coin,
 			lockIds: matchedLocks.map(lock => lock.ID),
 		};
+	});
+
+	readonly getUnlockingCoinWithDuration = computedFn((currency: AppCurrency, duration: Duration): {
+		amount: CoinPretty;
+		endTime: Date;
+	}[] => {
+		if (!this.response) {
+			return [];
+		}
+
+		const matchedLocks = this.response.data.locks
+			.filter(lock => {
+				return lock.duration === `${duration.asSeconds()}s`;
+			})
+			.filter(lock => {
+				// Filter the locked.
+				return new Date(lock.end_time).getTime() > 0;
+			});
+
+		// End time 별로 구분하기 위한 map. key는 end time의 getTime()의 결과이다.
+		const map: Map<
+			number,
+			{
+				amount: CoinPretty;
+				endTime: Date;
+			}
+		> = new Map();
+
+		for (const lock of matchedLocks) {
+			const matchedCoin = lock.coins.find(coin => coin.denom === currency.coinMinimalDenom);
+			if (matchedCoin) {
+				const time = new Date(lock.end_time).getTime();
+				if (!map.has(time)) {
+					map.set(time, {
+						amount: new CoinPretty(currency, new Dec(0)),
+						endTime: new Date(lock.end_time),
+					});
+				}
+
+				const value = map.get(time)!;
+				value.amount = value.amount.add(new CoinPretty(currency, new Dec(matchedCoin.amount)));
+
+				map.set(time, value);
+			}
+		}
+
+		return [...map.values()].sort((v1, v2) => {
+			// End time이 더 적은 lock을 우선한다.
+			return v1.endTime > v2.endTime ? 1 : -1;
+		});
 	});
 }
 

@@ -121,13 +121,11 @@ export class ObservableQueryGammPoolShare {
 		(bech32Address: string, poolId: string): CoinPretty => {
 			const available = this.getAvailableGammShare(bech32Address, poolId);
 			const locked = this.getLockedGammShare(bech32Address, poolId);
-			const unlocking = this.getUnlockingGammShare(bech32Address, poolId);
+			// Unlocking도 현재 유동화되어 있지 않으므로 locked에 포함된다는 걸 유의.
+			// const unlocking = this.getUnlockingGammShare(bech32Address, poolId);
 			const unlockable = this.getUnlockableGammShare(bech32Address, poolId);
 
-			return available
-				.add(locked)
-				.add(unlocking)
-				.add(unlockable);
+			return available.add(locked).add(unlockable);
 		}
 	);
 

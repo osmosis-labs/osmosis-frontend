@@ -6,7 +6,6 @@ import { useStore } from '../../stores';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
 import { Dec, DecUtils } from '@keplr-wallet/unit';
-import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { Loader } from '../../components/common/Loader';
 import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
 import { OsmoSynthesis } from './OsmoSynthesis';
@@ -92,7 +91,7 @@ export const PoolPage: FunctionComponent = observer(() => {
 const PoolInfoHeader: FunctionComponent<{
 	id: string;
 }> = observer(({ id }) => {
-	const { chainStore, queriesStore, priceStore, accountStore, layoutStore } = useStore();
+	const { chainStore, queriesStore, priceStore, accountStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const pool = queries.osmosis.queryGammPools.getPool(id);
