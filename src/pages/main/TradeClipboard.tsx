@@ -18,10 +18,14 @@ import { GammSwapManager } from '../../stores/osmosis/swap';
 import { ObservableQueryPools } from '../../stores/osmosis/query/pools';
 import { AccountWithCosmosAndOsmosis } from '../../stores/osmosis/account';
 import { TradeTxSettings } from './TradeTxSettings';
+import { ChainStore } from '@keplr-wallet/stores';
 
 // 상태가 좀 복잡한 듯 하니 그냥 mobx로 처리한다...
 // CONTRACT: Use with `observer`
 export class TradeState {
+	@observable
+	protected _chainId: string;
+
 	@observable
 	protected inCurrencyMinimalDenom: string = '';
 	@observable
@@ -35,15 +39,32 @@ export class TradeState {
 
 	// TODO: 흠... 생성자 인터페이스가 뭔가 이상해보임.
 	constructor(
+		protected readonly chainStore: ChainStore,
+		chainId: string,
 		protected swapManager: GammSwapManager,
 		protected account: AccountWithCosmosAndOsmosis,
 		protected queryPools: ObservableQueryPools
 	) {
+		this._chainId = chainId;
+
 		makeObservable(this);
 	}
 
+	get chainId(): string {
+		return this._chainId;
+	}
+
+	@action
+	setChainId(chainId: string) {
+		this._chainId = chainId;
+	}
+
+	@computed
 	get swappableCurrencies(): Currency[] {
-		return this.swapManager.swappableCurrencies;
+		const chainInfo = this.chainStore.getChain(this.chainId);
+		return this.swapManager.swappableCurrencies.map(cur => {
+			return chainInfo.forceFindCurrency(cur.coinMinimalDenom);
+		});
 	}
 
 	@action
@@ -200,8 +221,16 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore, accountStore, swapManager } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const [tradeState] = useState(
-		() => new TradeState(swapManager, account, queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools)
+		() =>
+			new TradeState(
+				chainStore,
+				chainStore.current.chainId,
+				swapManager,
+				account,
+				queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools
+			)
 	);
+	tradeState.setChainId(chainStore.current.chainId);
 
 	const [settings, setSettings] = React.useState<ITradeSettings>({
 		slippageTolerance: 0.1,

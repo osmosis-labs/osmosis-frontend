@@ -1,12 +1,10 @@
-import { Currency } from '@keplr-wallet/types';
 import { computed, makeObservable, observable } from 'mobx';
 import { IntPretty } from '@keplr-wallet/unit';
-import { ObservableQueryPool } from '../query/pool';
 import { ObservableQueryPools } from '../query/pools';
-import { Msg } from '@cosmjs/launchpad';
 
-export interface SwapManagerPoolCurrency extends Currency {
+export interface SwapManagerPoolCurrency {
 	poolId: string;
+	coinMinimalDenom: string;
 }
 
 export class GammSwapManager {
