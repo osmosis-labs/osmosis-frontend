@@ -62,6 +62,7 @@ export class TradeState {
 	/**
 	 * Swap manager에 등록된 currency를 반환한다.
 	 * 하지만 Chain info에 등록된 Currency를 우선한다.
+	 * 추가로 IBC Currency일 경우 coin denom을 원래의 currency의 coin denom으로 바꾼다.
 	 */
 	@computed
 	get swappableCurrencies(): Currency[] {
@@ -69,6 +70,15 @@ export class TradeState {
 		return this.swapManager.swappableCurrencies.map(cur => {
 			const registeredCurrency = chainInfo.findCurrency(cur.coinMinimalDenom);
 			if (registeredCurrency) {
+				if ('originCurrency' in registeredCurrency && registeredCurrency.originCurrency) {
+					return {
+						...registeredCurrency,
+						...{
+							coinDenom: registeredCurrency.originCurrency.coinDenom,
+						},
+					};
+				}
+
 				return registeredCurrency;
 			}
 			return cur;
