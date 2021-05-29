@@ -63,10 +63,15 @@ export class RootStore {
 			{
 				poolId: '1',
 				coinMinimalDenom: 'uosmo',
+				coinDenom: 'OSMO',
+				coinDecimals: 6,
 			},
 			{
 				poolId: '1',
 				coinMinimalDenom: makeIBCMinimalDenom('channel-0', 'uatom'),
+				coinDenom: 'ATOM',
+				coinDecimals: 6,
+				coinGeckoId: 'cosmos',
 			},
 		]);
 

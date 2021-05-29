@@ -59,11 +59,19 @@ export class TradeState {
 		this._chainId = chainId;
 	}
 
+	/**
+	 * Swap manager에 등록된 currency를 반환한다.
+	 * 하지만 Chain info에 등록된 Currency를 우선한다.
+	 */
 	@computed
 	get swappableCurrencies(): Currency[] {
 		const chainInfo = this.chainStore.getChain(this.chainId);
 		return this.swapManager.swappableCurrencies.map(cur => {
-			return chainInfo.forceFindCurrency(cur.coinMinimalDenom);
+			const registeredCurrency = chainInfo.findCurrency(cur.coinMinimalDenom);
+			if (registeredCurrency) {
+				return registeredCurrency;
+			}
+			return cur;
 		});
 	}
 
@@ -214,10 +222,6 @@ export class TradeState {
 }
 
 export const TradeClipboard: FunctionComponent = observer(() => {
-	// TODO : @Thunnini get swap fee
-	// TODO: 이 부분 빼야됨. 메인 페이지에서는 자동으로 최적의 라우트를 계산해주는거라 swap fee가 유동적이라 고정된 값을 보여줄 수 없음.
-	const swapPercent = 0.0003;
-
 	const { chainStore, queriesStore, accountStore, swapManager } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const [tradeState] = useState(
@@ -231,11 +235,6 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 			)
 	);
 	tradeState.setChainId(chainStore.current.chainId);
-
-	const [settings, setSettings] = React.useState<ITradeSettings>({
-		slippageTolerance: 0.1,
-		txDeadline: '20',
-	} as ITradeSettings);
 
 	return (
 		<Container
@@ -269,11 +268,6 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 		</Container>
 	);
 });
-
-export interface ITradeSettings {
-	slippageTolerance: number;
-	txDeadline: string; // minutes
-}
 
 const SwapButton: FunctionComponent<{
 	tradeState: TradeState;
@@ -386,11 +380,7 @@ const FromBox: FunctionComponent<{ tradeState: TradeState }> = observer(({ trade
 				</div>
 			</section>
 			<section className="flex justify-between items-center">
-				<TokenDisplay
-					openSelector={openSelector}
-					setOpenSelector={setOpenSelector}
-					token={tradeState.inCurrency.coinDenom}
-				/>
+				<TokenDisplay openSelector={openSelector} setOpenSelector={setOpenSelector} currency={tradeState.inCurrency} />
 				<TokenAmountInput
 					amount={tradeState.inAmount}
 					amountText={tradeState.inAmountText}
@@ -445,11 +435,7 @@ const ToBox: FunctionComponent<{ tradeState: TradeState }> = observer(({ tradeSt
 				<p>To</p>
 			</section>
 			<section className="grid grid-cols-2">
-				<TokenDisplay
-					setOpenSelector={setOpenSelector}
-					openSelector={openSelector}
-					token={tradeState.outCurrency.coinDenom}
-				/>
+				<TokenDisplay setOpenSelector={setOpenSelector} openSelector={openSelector} currency={tradeState.outCurrency} />
 				<div className="text-right flex flex-col justify-center h-full">
 					<h5
 						className={cn('text-xl font-title font-semibold truncate', {
