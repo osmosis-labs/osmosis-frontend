@@ -19,7 +19,7 @@ export class ObservableQueryEpochsInner {
 			return new Date(0);
 		}
 
-		return new Date(this.epoch.start_time);
+		return new Date(this.epoch.current_epoch_start_time);
 	}
 
 	@computed
