@@ -7,4 +7,6 @@ prod
 build
 yarn-error.log
 
+deploy
+
 src/styles/index.scss
