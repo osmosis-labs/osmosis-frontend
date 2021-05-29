@@ -42,7 +42,17 @@ const PoolsTable: FunctionComponent = observer(() => {
 								id={pool.id}
 								poolRatios={pool.poolRatios
 									.map(poolRatio => {
-										return `${poolRatio.ratio.maxDecimals(1).toString()}% ${poolRatio.amount.currency.coinDenom}`;
+										// Pools Table에서는 IBC Currency의 coinDenom을 무시하고 원래의 coinDenom을 보여준다.
+										const displayDenom = (() => {
+											const currency = poolRatio.amount.currency;
+											if ('originCurrency' in currency && currency.originCurrency) {
+												return currency.originCurrency.coinDenom;
+											}
+
+											return currency.coinDenom;
+										})().toUpperCase();
+
+										return `${poolRatio.ratio.maxDecimals(1).toString()}% ${displayDenom}`;
 									})
 									.join(', ')}
 								totalValueLocked={pool
