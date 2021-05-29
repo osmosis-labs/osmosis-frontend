@@ -29,32 +29,39 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
 		chainInfo.addUnknownCurrencies(...[...new Set(unknownCurrencies)]);
 	}
 
-	readonly getLockedCoinWithDuration = computedFn(
-		(currency: AppCurrency, duration: Duration): CoinPretty => {
-			if (!this.response) {
-				return new CoinPretty(currency, new Dec(0));
-			}
-
-			const matchedLocks = this.response.data.locks
-				.filter(lock => {
-					return lock.duration === `${duration.asSeconds()}s`;
-				})
-				.filter(lock => {
-					// Filter the unlocking, unlockable locks.
-					return new Date(lock.end_time).getMilliseconds() === 0;
-				});
-
-			let coin = new CoinPretty(currency, new Dec(0));
-			for (const lock of matchedLocks) {
-				const matchedCoin = lock.coins.find(coin => coin.denom === currency.coinMinimalDenom);
-				if (matchedCoin) {
-					coin = coin.add(new CoinPretty(currency, new Dec(matchedCoin.amount)));
-				}
-			}
-
-			return coin;
+	readonly getLockedCoinWithDuration = computedFn((currency: AppCurrency, duration: Duration): {
+		amount: CoinPretty;
+		lockIds: string[];
+	} => {
+		if (!this.response) {
+			return {
+				amount: new CoinPretty(currency, new Dec(0)),
+				lockIds: [],
+			};
 		}
-	);
+
+		const matchedLocks = this.response.data.locks
+			.filter(lock => {
+				return lock.duration === `${duration.asSeconds()}s`;
+			})
+			.filter(lock => {
+				// Filter the unlocking, unlockable locks.
+				return new Date(lock.end_time).getMilliseconds() === 0;
+			});
+
+		let coin = new CoinPretty(currency, new Dec(0));
+		for (const lock of matchedLocks) {
+			const matchedCoin = lock.coins.find(coin => coin.denom === currency.coinMinimalDenom);
+			if (matchedCoin) {
+				coin = coin.add(new CoinPretty(currency, new Dec(matchedCoin.amount)));
+			}
+		}
+
+		return {
+			amount: coin,
+			lockIds: matchedLocks.map(lock => lock.ID),
+		};
+	});
 }
 
 export class ObservableQueryAccountLocked extends ObservableChainQueryMap<AccountLockedLongerDuration> {
