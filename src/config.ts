@@ -20,8 +20,8 @@ export const IBCAssetInfos: {
 	},
 	{
 		counterpartyChainId: 'irishub-devnet-1',
-		sourceChannelId: 'channel-0',
-		destChannelId: 'channel-125',
+		sourceChannelId: 'channel-1',
+		destChannelId: 'channel-0',
 		coinMinimalDenom: 'uiris',
 	},
 ];
