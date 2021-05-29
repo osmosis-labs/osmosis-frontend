@@ -101,7 +101,6 @@ const PoolInfoHeader: FunctionComponent<{
 
 	const locked = queries.osmosis.queryGammPoolShare
 		.getLockedGammShare(account.bech32Address, id)
-		.add(queries.osmosis.queryGammPoolShare.getUnlockingGammShare(account.bech32Address, id))
 		.add(queries.osmosis.queryGammPoolShare.getUnlockableGammShare(account.bech32Address, id));
 	const actualLockedRatio = pool ? locked.quo(pool.totalShare) : new Dec(0);
 
