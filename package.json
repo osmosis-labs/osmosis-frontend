@@ -3,7 +3,8 @@
 	"version": "0.0.1",
 	"description": "",
 	"scripts": {
-		"build": "cross-env NODE_ENV=production yarn build:css && webpack",
+		"build": "yarn build:css && cross-env NODE_ENV=production webpack",
+		"serve": "http-server --proxy http://0.0.0.0:8080? ./prod",
 		"dev": "cross-env NODE_ENV=development webpack-dev-server",
 		"dev:analyzer": "cross-env NODE_ENV=development ANALYZER=true webpack",
 		"test": "sudo jest --passWithNoTests --runInBand",
@@ -50,6 +51,7 @@
 		"highcharts": "^9.1.0",
 		"highcharts-react-official": "^3.0.0",
 		"history": "^5.0.0",
+		"http-server": "^0.12.3",
 		"is-empty": "^1.2.0",
 		"lodash-es": "^4.17.21",
 		"mobx": "^6.1.7",
