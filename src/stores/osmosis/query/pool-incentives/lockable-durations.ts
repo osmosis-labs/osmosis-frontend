@@ -19,12 +19,17 @@ export class ObservableQueryLockableDurations extends ObservableChainQuery<Locka
 			return [];
 		}
 
-		return this.response.data.lockable_durations.map((durationStr: string) => {
-			// Golang의 duration은 언제나 초 단위로 온다.
-			// XXX: commonjs일때 밑의 라인이 오류가 발생해서 test:rand-pools 스크립트가 실행이 안됨...
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			return dayjs.duration(parseInt(durationStr.replace('s', '')) * 1000);
-		});
+		return this.response.data.lockable_durations
+			.map((durationStr: string) => {
+				// Golang의 duration은 언제나 초 단위로 온다.
+				// XXX: commonjs일때 밑의 라인이 오류가 발생해서 test:rand-pools 스크립트가 실행이 안됨...
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				return dayjs.duration(parseInt(durationStr.replace('s', '')) * 1000);
+			})
+			.sort((v1, v2) => {
+				// 오름차순 정렬
+				return v1.asMilliseconds() > v2.asMilliseconds() ? 1 : -1;
+			});
 	}
 }
