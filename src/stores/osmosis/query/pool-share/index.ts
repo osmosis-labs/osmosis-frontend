@@ -76,6 +76,22 @@ export class ObservableQueryGammPoolShare {
 		}
 	);
 
+	readonly getLockedGammShareRatio = computedFn(
+		(bech32Address: string, poolId: string): IntPretty => {
+			const pool = this.queryPools.getPool(poolId);
+			if (!pool) {
+				return new IntPretty(new Int(0)).ready(false);
+			}
+
+			const share = this.getLockedGammShare(bech32Address, poolId);
+
+			const totalShare = pool.totalShare;
+
+			// 백분률로 만들어주기 위해서 마지막에 10^2를 곱한다
+			return new IntPretty(share.quo(totalShare).mul(DecUtils.getPrecisionDec(2))).maxDecimals(2).trim(true);
+		}
+	);
+
 	readonly getUnlockingGammShare = computedFn(
 		(bech32Address: string, poolId: string): CoinPretty => {
 			const currency = this.getShareCurrency(poolId);

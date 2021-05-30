@@ -43,6 +43,10 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 		return [...new Set(result)];
 	}
 
+	readonly isIncentivized = computedFn((poolId: string) => {
+		return this.incentivizedPools.includes(poolId);
+	});
+
 	readonly getIncentivizedPotId = computedFn((poolId: string, duration: Duration): string | undefined => {
 		if (!this.response) {
 			return;
@@ -70,7 +74,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 			priceStore: { getPrice(coinId: string, vsCurrency: string): number | undefined },
 			fiatCurrency: FiatCurrency
 		): IntPretty => {
-			if (!this.incentivizedPools.includes(poolId)) {
+			if (!this.isIncentivized(poolId)) {
 				return new IntPretty(new Dec(0)).maxDecimals(2).trim(true);
 			}
 
@@ -98,7 +102,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 			priceStore: { getPrice(coinId: string, vsCurrency: string): number | undefined },
 			fiatCurrency: FiatCurrency
 		): IntPretty => {
-			if (!this.incentivizedPools.includes(poolId)) {
+			if (!this.isIncentivized(poolId)) {
 				return new IntPretty(new Dec(0)).maxDecimals(2).trim(true);
 			}
 
