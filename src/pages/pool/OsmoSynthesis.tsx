@@ -60,7 +60,15 @@ export const OsmoSynthesis: FunctionComponent<{
 			</div>
 			<div className="mt-10 grid grid-cols-3 gap-9">
 				{lockableDurations.map((lockableDuration, i) => {
-					return <LockupBox key={i.toString()} apyPercent={356} duration={lockableDuration.humanize()} />;
+					return (
+						<LockupBox
+							key={i.toString()}
+							apy={`${queries.osmosis.queryIncentivizedPools
+								.computeAPY(poolId, lockableDuration, priceStore, priceStore.getFiatCurrency('usd')!)
+								.toString()}%`}
+							duration={lockableDuration.humanize()}
+						/>
+					);
 				})}
 			</div>
 			<div className="mt-10">
@@ -75,12 +83,12 @@ export const OsmoSynthesis: FunctionComponent<{
 
 const LockupBox: FunctionComponent<{
 	duration: string;
-	apyPercent: number;
-}> = ({ duration, apyPercent }) => {
+	apy: string;
+}> = ({ duration, apy }) => {
 	return (
 		<div className="bg-card rounded-2xl pt-7 px-7.5 pb-10">
 			<h4 className="mb-4 font-normal text-xl xl:text-2xl">{duration} lockup</h4>
-			<h6 className="text-secondary-200 font-normal">APY {apyPercent}%</h6>
+			<h6 className="text-secondary-200 font-normal">APY {apy}</h6>
 		</div>
 	);
 };

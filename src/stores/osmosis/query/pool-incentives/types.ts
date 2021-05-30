@@ -9,3 +9,13 @@ export type IncentivizedPools = {
 export type LockableDurations = {
 	lockable_durations: string[];
 };
+
+export type DistrInfo = {
+	distr_info: {
+		total_weight: string;
+		records: {
+			pot_id: string;
+			weight: string;
+		}[];
+	};
+};

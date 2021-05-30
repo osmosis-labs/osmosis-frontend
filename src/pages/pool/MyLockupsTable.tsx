@@ -7,7 +7,7 @@ const tableWidths = ['25%', '25%', '25%', '25%'];
 export const MyLockupsTable: FunctionComponent<{
 	poolId: string;
 }> = observer(({ poolId }) => {
-	const { chainStore, accountStore, queriesStore } = useStore();
+	const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
@@ -30,7 +30,9 @@ export const MyLockupsTable: FunctionComponent<{
 								key={lockableDuration.humanize()}
 								duration={lockableDuration.humanize()}
 								lockup={lockedCoin}
-								apy="0%"
+								apy={`${queries.osmosis.queryIncentivizedPools
+									.computeAPY(poolId, lockableDuration, priceStore, priceStore.getFiatCurrency('usd')!)
+									.toString()}%`}
 							/>
 						);
 					})}

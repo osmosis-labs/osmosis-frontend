@@ -4,6 +4,7 @@ import { ChainGetter } from '@keplr-wallet/stores/src/common/index';
 import { Epochs } from './types';
 import { computed, observable } from 'mobx';
 import dayjs from 'dayjs';
+import { Duration } from 'dayjs/plugin/duration';
 
 export class ObservableQueryEpochsInner {
 	constructor(protected readonly identifier: string, protected readonly queryEpochs: ObservableQueryEpochs) {}
@@ -11,6 +12,19 @@ export class ObservableQueryEpochsInner {
 	@computed
 	get epoch(): Epochs['epochs'][0] | undefined {
 		return this.queryEpochs.response?.data.epochs.find(epoch => epoch.identifier === this.identifier);
+	}
+
+	@computed
+	get duration(): Duration | undefined {
+		if (!this.epoch) {
+			return;
+		}
+
+		// Golang Protobuf의 duration은 초단위로만 반환된다.
+		// XXX: commonjs일때 밑의 라인이 오류가 발생해서 test:rand-pools 스크립트가 실행이 안됨...
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		return dayjs.duration(parseInt(this.epoch.duration.replace('s', '')) * 1000);
 	}
 
 	@computed
@@ -25,18 +39,12 @@ export class ObservableQueryEpochsInner {
 	@computed
 	get endTime(): Date {
 		const startTime = this.startTime;
-		if (!this.epoch?.duration) {
+		if (!this.duration) {
 			return startTime;
 		}
 
-		// Golang Protobuf의 duration은 초단위로만 반환된다.
-		// XXX: commonjs일때 밑의 라인이 오류가 발생해서 test:rand-pools 스크립트가 실행이 안됨...
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const duration = dayjs.duration(parseInt(this.epoch.duration.replace('s', '')) * 1000);
-
 		return dayjs(startTime)
-			.add(duration)
+			.add(this.duration)
 			.toDate();
 	}
 }

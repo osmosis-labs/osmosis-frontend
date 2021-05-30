@@ -47,6 +47,7 @@ export const EmbedChainInfos: ChainInfo[] = [
 				coinDenom: 'OSMO',
 				coinMinimalDenom: 'uosmo',
 				coinDecimals: 6,
+				coinGeckoId: 'cosmos',
 			},
 			{
 				coinDenom: 'ATOM',
@@ -70,6 +71,7 @@ export const EmbedChainInfos: ChainInfo[] = [
 				coinDenom: 'OSMO',
 				coinMinimalDenom: 'uosmo',
 				coinDecimals: 6,
+				coinGeckoId: 'cosmos',
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],

@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { AppCurrency } from '@keplr-wallet/types';
+import dayjs from 'dayjs';
 
 const bgArray = [
 	'bg-gradients-socialLive',
@@ -34,7 +35,7 @@ export const MyPools: FunctionComponent = observer(() => {
 			// 데이터 구조를 바꿀 필요가 있다.
 			return {
 				poolId: pool.id,
-				apy: queryIncentivizedPools.computeAPY(pool.id).toString(),
+				apy: queryIncentivizedPools.computeMostAPY(pool.id, priceStore, priceStore.getFiatCurrency('usd')!).toString(),
 				liquidity: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
 				tokens: pool.poolAssets.map(asset => asset.amount.currency),
 			};
@@ -78,7 +79,7 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 			// 데이터 구조를 바꿀 필요가 있다.
 			return {
 				poolId: pool.id,
-				apy: queryIncentivizedPools.computeAPY(pool.id).toString(),
+				apy: queryIncentivizedPools.computeMostAPY(pool.id, priceStore, priceStore.getFiatCurrency('usd')!).toString(),
 				liquidity: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
 				tokens: pool.poolAssets.map(asset => asset.amount.currency),
 			};
