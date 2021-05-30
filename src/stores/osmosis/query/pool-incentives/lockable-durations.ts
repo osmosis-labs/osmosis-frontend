@@ -27,6 +27,7 @@ export class ObservableQueryLockableDurations extends ObservableChainQuery<Locka
 				// @ts-ignore
 				return dayjs.duration(parseInt(durationStr.replace('s', '')) * 1000);
 			})
+			.slice()
 			.sort((v1, v2) => {
 				// 오름차순 정렬
 				return v1.asMilliseconds() > v2.asMilliseconds() ? 1 : -1;

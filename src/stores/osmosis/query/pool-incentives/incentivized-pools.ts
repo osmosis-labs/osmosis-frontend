@@ -75,7 +75,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 			}
 
 			// 내림차순으로 정렬한다.
-			const lockableDurations = this.queryLockableDurations.lockableDurations.sort((v1, v2) => {
+			const lockableDurations = this.queryLockableDurations.lockableDurations.slice().sort((v1, v2) => {
 				return v1.asMilliseconds() > v2.asMilliseconds() ? -1 : 1;
 			});
 
@@ -103,7 +103,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 			}
 
 			// 오름차순으로 정렬한다.
-			const lockableDurations = this.queryLockableDurations.lockableDurations.sort((v1, v2) => {
+			const lockableDurations = this.queryLockableDurations.lockableDurations.slice().sort((v1, v2) => {
 				return v1.asMilliseconds() > v2.asMilliseconds() ? 1 : -1;
 			});
 
