@@ -27,15 +27,11 @@ export class ObservableQueryGammPoolShare {
 			currency: AppCurrency;
 		}[] = this.queryBalances.getQueryBech32Address(bech32Address).positiveBalances;
 		const locked = this.queryLockedCoins.get(bech32Address).lockedCoins;
-		const unlocking = this.queryUnlockingCoins.get(bech32Address).unlockingCoins;
 		const unlockable = this.queryUnlockableCoins.get(bech32Address).unlockableCoins;
 
 		let result: string[] = [];
 
-		for (const bal of balances
-			.concat(locked)
-			.concat(unlocking)
-			.concat(unlockable)) {
+		for (const bal of balances.concat(locked).concat(unlockable)) {
 			// Pool share 토큰은 `gamm/pool/${poolId}` 형태이다.
 			if (bal.currency.coinMinimalDenom.startsWith('gamm/pool/')) {
 				result.push(bal.currency.coinMinimalDenom.replace('gamm/pool/', ''));

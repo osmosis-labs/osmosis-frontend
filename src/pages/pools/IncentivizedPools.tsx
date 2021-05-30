@@ -48,8 +48,11 @@ export const MyPools: FunctionComponent = observer(() => {
 				apy: queryIncentivizedPools.isIncentivized(pool.id)
 					? queryIncentivizedPools.computeMostAPY(pool.id, priceStore, priceStore.getFiatCurrency('usd')!).toString()
 					: undefined,
+				liquidity: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
 				myLiquidity: tvl.mul(actualShareRatio).toString(),
-				myLockedAmount: tvl.mul(actualLockedShareRatio).toString(),
+				myLockedAmount: queryIncentivizedPools.isIncentivized(pool.id)
+					? tvl.mul(actualLockedShareRatio).toString()
+					: undefined,
 				tokens: pool.poolAssets.map(asset => asset.amount.currency),
 			};
 		})
@@ -65,6 +68,7 @@ export const MyPools: FunctionComponent = observer(() => {
 							key={pool.poolId}
 							poolId={pool.poolId}
 							apy={pool.apy}
+							liquidity={pool.liquidity}
 							myLiquidity={pool.myLiquidity}
 							myLockedAmount={pool.myLockedAmount}
 							tokens={pool.tokens}
@@ -123,12 +127,20 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 interface MyPoolCardProps {
 	poolId: string;
 	apy?: string;
+	liquidity: string;
 	myLiquidity: string;
 	myLockedAmount?: string;
 	tokens: AppCurrency[];
 }
 
-const MyPoolCard: FunctionComponent<MyPoolCardProps> = ({ poolId, apy, myLiquidity, myLockedAmount, tokens }) => {
+const MyPoolCard: FunctionComponent<MyPoolCardProps> = ({
+	poolId,
+	apy,
+	liquidity,
+	myLiquidity,
+	myLockedAmount,
+	tokens,
+}) => {
 	const history = useHistory();
 
 	return (
@@ -173,25 +185,31 @@ const MyPoolCard: FunctionComponent<MyPoolCardProps> = ({ poolId, apy, myLiquidi
 			</section>
 			<section className="flex items-center">
 				<div>
-					<p className="text-sm text-white-mid mb-2">My Liquidity</p>
-					<h6 className="text-white-emphasis">{myLiquidity}</h6>
-				</div>
-			</section>
-			<div
-				className="border-b border-enabledGold my-4"
-				style={{
-					maxWidth: '8.5rem',
-				}}
-			/>
-			<section className="flex items-center">
-				<div>
-					<p className="text-sm text-white-mid mb-2">My Locked Amount</p>
-					<h6 className="text-white-emphasis">{myLockedAmount}</h6>
+					<p className="text-sm text-white-mid mb-2">Pool Liquidity</p>
+					<h6 className="text-white-emphasis">{liquidity}</h6>
 				</div>
 				{apy ? (
 					<div className="ml-5">
 						<p className="text-sm text-white-mid mb-2">APY</p>
 						<h6 className="text-white-emphasis">{apy}%</h6>
+					</div>
+				) : null}
+			</section>
+			<div
+				className="border-b border-enabledGold my-4"
+				style={{
+					maxWidth: apy || myLockedAmount ? '15.5rem' : '6.5rem',
+				}}
+			/>
+			<section className="flex items-center">
+				<div>
+					<p className="text-sm text-white-mid mb-2">My Liquidity</p>
+					<h6 className="text-white-emphasis">{myLiquidity}</h6>
+				</div>
+				{myLockedAmount ? (
+					<div className="ml-5">
+						<p className="text-sm text-white-mid mb-2">My Locked Amount</p>
+						<h6 className="text-white-emphasis">{myLockedAmount}</h6>
 					</div>
 				) : null}
 			</section>
@@ -255,7 +273,7 @@ const PoolCard: FunctionComponent<PoolCardProps> = ({ poolId, apy, liquidity, to
 					<h6 className="text-white-emphasis">{apy}%</h6>
 				</div>
 				<div className="ml-5">
-					<p className="text-sm text-white-mid mb-2">Liquidity</p>
+					<p className="text-sm text-white-mid mb-2">Pool Liquidity</p>
 					<h6 className="text-white-emphasis">{liquidity}</h6>
 				</div>
 			</section>
