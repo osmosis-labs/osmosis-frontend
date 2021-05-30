@@ -73,9 +73,12 @@ export const PoolPage: FunctionComponent = observer(() => {
 						</div>
 					</div>
 					<div className="py-10 w-full px-10 bg-surface">
-						<div className="pb-15">
-							<OsmoSynthesis poolId={pool.id} />
-						</div>
+						{/* 인센티브를 받을 수 있는 풀의 경우만 Synthesis를 표시한다. */}
+						{queries.osmosis.queryIncentivizedPools.isIncentivized(pool.id) ? (
+							<div className="pb-15">
+								<OsmoSynthesis poolId={pool.id} />
+							</div>
+						) : null}
 						<div className="max-w-max mx-auto">
 							<PoolCatalyst id={pool.id} />
 						</div>

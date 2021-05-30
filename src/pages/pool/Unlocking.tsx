@@ -42,25 +42,29 @@ export const UnlockingTable: FunctionComponent<{
 
 	return (
 		<React.Fragment>
-			<h6 className="mb-1">Unlocking</h6>
-			<table className="w-full">
-				<UnlockingTableHeader />
-				<tbody className="w-full">
-					{unlockingDatas.map((unlocking, i) => {
-						return (
-							<UnlockingTableRow
-								key={i.toString()}
-								duration={unlocking.duration.humanize()}
-								amount={unlocking.amount
-									.maxDecimals(6)
-									.trim(true)
-									.toString()}
-								endTime={unlocking.endTime}
-							/>
-						);
-					})}
-				</tbody>
-			</table>
+			{unlockingDatas.length > 0 ? (
+				<React.Fragment>
+					<h6 className="mb-1">Unlocking</h6>
+					<table className="w-full">
+						<UnlockingTableHeader />
+						<tbody className="w-full">
+							{unlockingDatas.map((unlocking, i) => {
+								return (
+									<UnlockingTableRow
+										key={i.toString()}
+										duration={unlocking.duration.humanize()}
+										amount={unlocking.amount
+											.maxDecimals(6)
+											.trim(true)
+											.toString()}
+										endTime={unlocking.endTime}
+									/>
+								);
+							})}
+						</tbody>
+					</table>
+				</React.Fragment>
+			) : null}
 		</React.Fragment>
 	);
 });
