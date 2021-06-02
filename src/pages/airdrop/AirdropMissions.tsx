@@ -1,50 +1,56 @@
 import React, { FunctionComponent } from 'react';
-import times from 'lodash-es/times';
-import map from 'lodash-es/map';
 import cn from 'clsx';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
 
-const defaultData = times(7, i => {
-	return {
-		num: i + 1,
-		description: 'Vote on a Osmosis governace proposal',
-		complete: Math.random() < 0.7,
-	} as IMission;
-});
+export const ActionToDescription: { [action: string]: string } = {
+	addLiquidity: 'Add liquidity to a pool',
+	swap: 'Make a swap on Osmosis AMM',
+	vote: 'Vote on a governance proposal',
+	delegate: 'Stake OSMO',
+};
 
-export const AirdropMissions: FunctionComponent = () => {
-	// TODO : @Thunnini fetch mission data / status
-	const [data] = React.useState<IMission[]>(defaultData);
+export const AirdropMissions: FunctionComponent = observer(() => {
+	const { chainStore, queriesStore, accountStore } = useStore();
+
+	const queries = queriesStore.get(chainStore.current.chainId);
+	const account = accountStore.getAccount(chainStore.current.chainId);
+
+	const claimRecord = queries.osmosis.queryClaimRecord.get(account.bech32Address);
 
 	return (
 		<div className="w-full">
 			<h5>Missions</h5>
 			<ul className="flex flex-col gap-2.5 mt-7.5">
-				{map(data, mission => (
-					<MissionCard key={mission.num} data={mission} />
-				))}
+				{Object.entries(claimRecord.completedActions).map(([action, value]) => {
+					return (
+						<MissionCard
+							key={action}
+							num={Object.keys(claimRecord.completedActions).indexOf(action) + 1}
+							complete={value}
+							description={ActionToDescription[action] ?? 'Oops'}
+						/>
+					);
+				})}
 			</ul>
 		</div>
 	);
-};
+});
 
-const MissionCard: FunctionComponent<Record<'data', IMission>> = ({ data }) => {
+const MissionCard: FunctionComponent<{
+	num: number;
+	description: string;
+	complete: boolean;
+}> = ({ num, description, complete }) => {
 	return (
 		<li className="w-full rounded-2xl border border-white-faint py-5 px-7.5">
 			<div className="flex justify-between items-center">
 				<div>
-					<p className="mb-1.5">Mission #{data.num}</p>
-					<h6>{data.description}</h6>
+					<p className="mb-1.5">Mission #{num}</p>
+					<h6>{description}</h6>
 				</div>
-				<h6 className={cn(data.complete ? 'text-pass' : 'text-missionError')}>
-					{data.complete ? 'Complete' : 'Not Complete'}
-				</h6>
+				<h6 className={cn(complete ? 'text-pass' : 'text-missionError')}>{complete ? 'Complete' : 'Not Complete'}</h6>
 			</div>
 		</li>
 	);
 };
-
-interface IMission {
-	num: number;
-	description: string;
-	complete: boolean;
-}
