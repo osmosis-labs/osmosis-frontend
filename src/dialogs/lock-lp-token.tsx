@@ -8,7 +8,7 @@ import { Dec } from '@keplr-wallet/unit';
 export const LockLpTokenDialog: FunctionComponent<BaseDialogProps & {
 	poolId: string;
 }> = observer(({ style, isOpen, close, poolId }) => {
-	const { chainStore, queriesStore, accountStore } = useStore();
+	const { chainStore, queriesStore, accountStore, priceStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
@@ -56,6 +56,9 @@ export const LockLpTokenDialog: FunctionComponent<BaseDialogProps & {
 									setSelectedDurationIndex(i);
 								}}
 								selected={i === selectedDurationIndex}
+								apy={`${queries.osmosis.queryIncentivizedPools
+									.computeAPY(poolId, duration, priceStore, priceStore.getFiatCurrency('usd')!)
+									.toString()}%`}
 							/>
 						);
 					})}
@@ -109,7 +112,8 @@ const LockupItem: FunctionComponent<{
 	duration: string;
 	selected: boolean;
 	setSelected: () => void;
-}> = ({ duration, selected, setSelected }) => {
+	apy: string;
+}> = ({ duration, selected, setSelected, apy }) => {
 	return (
 		<li
 			onClick={setSelected}
@@ -129,8 +133,7 @@ const LockupItem: FunctionComponent<{
 				/>
 				<div className="flex flex-col">
 					<h5>{duration}</h5>
-					{/* TODO */}
-					<p className="text-secondary-200">0%</p>
+					<p className="text-secondary-200">{apy}</p>
 				</div>
 			</div>
 		</li>

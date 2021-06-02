@@ -1,11 +1,10 @@
 import React, { FunctionComponent } from 'react';
-import { observer } from 'mobx-react-lite';
 import { AirdropOverview } from './AirdropOverview';
 import { MyAirdropProgress } from './MyAirdropProgress';
 import { useAirdropData } from './useAirdropData';
 import { AirdropMissions } from './AirdropMissions';
 
-export const AirdropPage: FunctionComponent = observer(() => {
+export const AirdropPage: FunctionComponent = () => {
 	const airdropData = useAirdropData();
 	return (
 		<div className="w-full h-full">
@@ -16,7 +15,7 @@ export const AirdropPage: FunctionComponent = observer(() => {
 			</div>
 			<div className="mt-9 px-15 py-12.5 bg-surface">
 				<div className="max-w-max mx-auto">
-					<MyAirdropProgress state={airdropData} />
+					<MyAirdropProgress />
 					<div className="mt-9">
 						<AirdropMissions />
 					</div>
@@ -24,4 +23,4 @@ export const AirdropPage: FunctionComponent = observer(() => {
 			</div>
 		</div>
 	);
-});
+};
