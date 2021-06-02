@@ -6,8 +6,10 @@ import moment from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 moment.extend(utc);
 import { IProposal } from './GovernanceDetailsPage';
+import { VoteDialog } from '../../../dialogs/Vote';
 
 export const GovernanceDetailsOverview: FunctionComponent<{ proposal: IProposal }> = ({ proposal }) => {
+	const [isOpen, setOpen] = React.useState(false);
 	return (
 		<section className="w-full">
 			<div className="flex items-center justify-between">
@@ -16,11 +18,12 @@ export const GovernanceDetailsOverview: FunctionComponent<{ proposal: IProposal 
 					<h5 className="mt-3 text-white-mid">{proposal.title}</h5>
 				</div>
 				<button
-					onClick={() => alert('Vote flow')}
+					onClick={() => setOpen(true)}
 					style={{ width: '164px' }}
 					className="hover:opacity-75 bg-primary-200 rounded-lg flex items-center justify-center h-10">
 					<p>Vote</p>
 				</button>
+				<VoteDialog isOpen={isOpen} close={() => setOpen(false)} proposalIndex={proposal.id} />
 			</div>
 			<div className="flex items-center gap-21.5">
 				<OverviewLabelValue label="Status">
