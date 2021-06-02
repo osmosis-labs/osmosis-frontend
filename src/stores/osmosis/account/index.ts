@@ -31,6 +31,7 @@ export interface OsmosisMsgOpts {
 	readonly swapExactAmountIn: MsgOpt;
 	readonly swapExactAmountOut: MsgOpt;
 	readonly lockTokens: MsgOpt;
+	readonly beginUnlocking: MsgOpt;
 }
 
 export class AccountWithCosmosAndOsmosis extends AccountSetBase<
@@ -66,6 +67,11 @@ export class AccountWithCosmosAndOsmosis extends AccountSetBase<
 		lockTokens: {
 			type: 'osmosis/lockup/lock-tokens',
 			gas: 10000000,
+		},
+		beginUnlocking: {
+			type: 'osmosis/lockup/begin-unlock-period-lock',
+			// Gas per msg
+			gas: 3000000,
 		},
 	});
 
@@ -511,6 +517,45 @@ export class OsmosisAccount {
 
 					// Refresh the locked coins
 					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
+					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
+				}
+
+				if (onFulfill) {
+					onFulfill(tx);
+				}
+			}
+		);
+	}
+
+	async sendBeginUnlockingMsg(lockIds: string[], memo: string = '', onFulfill?: (tx: any) => void) {
+		const msgs = lockIds.map(lockId => {
+			return {
+				type: this.base.msgOpts.beginUnlocking.type,
+				value: {
+					owner: this.base.bech32Address,
+					// XXX: 얘는 어째서인지 소문자가 아님 ㅋ;
+					ID: lockId,
+				},
+			};
+		});
+
+		await this.base.sendMsgs(
+			'beginUnlocking',
+			msgs,
+			{
+				amount: [],
+				gas: (msgs.length * this.base.msgOpts.beginUnlocking.gas).toString(),
+			},
+			memo,
+			tx => {
+				if (tx.code == null || tx.code === 0) {
+					// Refresh the balances
+					const queries = this.queriesStore.get(this.chainId);
+					queries.queryBalances.getQueryBech32Address(this.base.bech32Address).fetch();
+
+					// Refresh the locked coins
+					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
+					queries.osmosis.queryUnlockingCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
 				}
 

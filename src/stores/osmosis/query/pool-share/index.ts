@@ -27,15 +27,11 @@ export class ObservableQueryGammPoolShare {
 			currency: AppCurrency;
 		}[] = this.queryBalances.getQueryBech32Address(bech32Address).positiveBalances;
 		const locked = this.queryLockedCoins.get(bech32Address).lockedCoins;
-		const unlocking = this.queryUnlockingCoins.get(bech32Address).unlockingCoins;
 		const unlockable = this.queryUnlockableCoins.get(bech32Address).unlockableCoins;
 
 		let result: string[] = [];
 
-		for (const bal of balances
-			.concat(locked)
-			.concat(unlocking)
-			.concat(unlockable)) {
+		for (const bal of balances.concat(locked).concat(unlockable)) {
 			// Pool share 토큰은 `gamm/pool/${poolId}` 형태이다.
 			if (bal.currency.coinMinimalDenom.startsWith('gamm/pool/')) {
 				result.push(bal.currency.coinMinimalDenom.replace('gamm/pool/', ''));
@@ -73,6 +69,22 @@ export class ObservableQueryGammPoolShare {
 				return locked;
 			}
 			return new CoinPretty(currency, new Dec(0));
+		}
+	);
+
+	readonly getLockedGammShareRatio = computedFn(
+		(bech32Address: string, poolId: string): IntPretty => {
+			const pool = this.queryPools.getPool(poolId);
+			if (!pool) {
+				return new IntPretty(new Int(0)).ready(false);
+			}
+
+			const share = this.getLockedGammShare(bech32Address, poolId);
+
+			const totalShare = pool.totalShare;
+
+			// 백분률로 만들어주기 위해서 마지막에 10^2를 곱한다
+			return new IntPretty(share.quo(totalShare).mul(DecUtils.getPrecisionDec(2))).maxDecimals(2).trim(true);
 		}
 	);
 
@@ -121,13 +133,11 @@ export class ObservableQueryGammPoolShare {
 		(bech32Address: string, poolId: string): CoinPretty => {
 			const available = this.getAvailableGammShare(bech32Address, poolId);
 			const locked = this.getLockedGammShare(bech32Address, poolId);
-			const unlocking = this.getUnlockingGammShare(bech32Address, poolId);
+			// Unlocking도 현재 유동화되어 있지 않으므로 locked에 포함된다는 걸 유의.
+			// const unlocking = this.getUnlockingGammShare(bech32Address, poolId);
 			const unlockable = this.getUnlockableGammShare(bech32Address, poolId);
 
-			return available
-				.add(locked)
-				.add(unlocking)
-				.add(unlockable);
+			return available.add(locked).add(unlockable);
 		}
 	);
 

@@ -6,7 +6,6 @@ import { useStore } from '../../stores';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
 import { Dec, DecUtils } from '@keplr-wallet/unit';
-import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { Loader } from '../../components/common/Loader';
 import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
 import { OsmoSynthesis } from './OsmoSynthesis';
@@ -74,9 +73,12 @@ export const PoolPage: FunctionComponent = observer(() => {
 						</div>
 					</div>
 					<div className="py-10 w-full px-10 bg-surface">
-						<div className="pb-15">
-							<OsmoSynthesis poolId={pool.id} />
-						</div>
+						{/* 인센티브를 받을 수 있는 풀의 경우만 Synthesis를 표시한다. */}
+						{queries.osmosis.queryIncentivizedPools.isIncentivized(pool.id) ? (
+							<div className="pb-15">
+								<OsmoSynthesis poolId={pool.id} />
+							</div>
+						) : null}
 						<div className="max-w-max mx-auto">
 							<PoolCatalyst id={pool.id} />
 						</div>
@@ -92,7 +94,7 @@ export const PoolPage: FunctionComponent = observer(() => {
 const PoolInfoHeader: FunctionComponent<{
 	id: string;
 }> = observer(({ id }) => {
-	const { chainStore, queriesStore, priceStore, accountStore, layoutStore } = useStore();
+	const { chainStore, queriesStore, priceStore, accountStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const pool = queries.osmosis.queryGammPools.getPool(id);
@@ -102,7 +104,6 @@ const PoolInfoHeader: FunctionComponent<{
 
 	const locked = queries.osmosis.queryGammPoolShare
 		.getLockedGammShare(account.bech32Address, id)
-		.add(queries.osmosis.queryGammPoolShare.getUnlockingGammShare(account.bech32Address, id))
 		.add(queries.osmosis.queryGammPoolShare.getUnlockableGammShare(account.bech32Address, id));
 	const actualLockedRatio = pool ? locked.quo(pool.totalShare) : new Dec(0);
 

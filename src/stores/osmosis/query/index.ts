@@ -13,6 +13,8 @@ import {
 	ObservableQueryAccountUnlockingCoins,
 	ObservableQueryAccountLocked,
 } from './lockup';
+import { ObservableQueryEpochProvisions, ObservableQueryMintParmas } from './mint';
+import { ObservableQueryDistrInfo } from './pool-incentives/distr-info';
 
 export interface HasOsmosisQueries {
 	osmosis: OsmosisQueries;
@@ -32,15 +34,20 @@ export class OsmosisQueries {
 	public readonly queryGammPools: DeepReadonly<ObservableQueryPools>;
 	public readonly queryGammTotalPools: DeepReadonly<ObservableQueryTotalPools>;
 	public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
-	public readonly queryIncentivizedPools: DeepReadonly<ObservableQueryIncentivizedPools>;
-	public readonly queryLockableDurations: DeepReadonly<ObservableQueryLockableDurations>;
 
 	public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
 	public readonly queryUnlockingCoins: DeepReadonly<ObservableQueryAccountUnlockingCoins>;
 	public readonly queryUnlockableCoins: DeepReadonly<ObservableQueryAccountUnlockableCoins>;
 	public readonly queryAccountLocked: DeepReadonly<ObservableQueryAccountLocked>;
 
+	public readonly queryMintParams: DeepReadonly<ObservableQueryMintParmas>;
+	public readonly queryEpochProvisions: DeepReadonly<ObservableQueryEpochProvisions>;
+
 	public readonly queryEpochs: DeepReadonly<ObservableQueryEpochs>;
+
+	public readonly queryLockableDurations: DeepReadonly<ObservableQueryLockableDurations>;
+	public readonly queryDistrInfo: DeepReadonly<ObservableQueryDistrInfo>;
+	public readonly queryIncentivizedPools: DeepReadonly<ObservableQueryIncentivizedPools>;
 
 	constructor(queries: QueriesSetBase, kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
 		const queryGammPool = new ObservableQueryPool(kvStore, chainId, chainGetter);
@@ -59,9 +66,24 @@ export class OsmosisQueries {
 			this.queryUnlockingCoins,
 			this.queryUnlockableCoins
 		);
-		this.queryIncentivizedPools = new ObservableQueryIncentivizedPools(kvStore, chainId, chainGetter);
-		this.queryLockableDurations = new ObservableQueryLockableDurations(kvStore, chainId, chainGetter);
+
+		this.queryMintParams = new ObservableQueryMintParmas(kvStore, chainId, chainGetter);
+		this.queryEpochProvisions = new ObservableQueryEpochProvisions(kvStore, chainId, chainGetter, this.queryMintParams);
 
 		this.queryEpochs = new ObservableQueryEpochs(kvStore, chainId, chainGetter);
+
+		this.queryLockableDurations = new ObservableQueryLockableDurations(kvStore, chainId, chainGetter);
+		this.queryDistrInfo = new ObservableQueryDistrInfo(kvStore, chainId, chainGetter);
+		this.queryIncentivizedPools = new ObservableQueryIncentivizedPools(
+			kvStore,
+			chainId,
+			chainGetter,
+			this.queryLockableDurations,
+			this.queryDistrInfo,
+			this.queryGammPools,
+			this.queryMintParams,
+			this.queryEpochProvisions,
+			this.queryEpochs
+		);
 	}
 }

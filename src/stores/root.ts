@@ -11,6 +11,7 @@ import { AccountWithCosmosAndOsmosis } from './osmosis/account';
 import { LayoutStore } from './layout';
 import { GammSwapManager } from './osmosis/swap';
 import { LPCurrencyRegistrar } from './osmosis/currency-registrar';
+import { makeIBCMinimalDenom } from '../utils/ibc';
 
 export class RootStore {
 	public readonly chainStore: ChainStore;
@@ -26,7 +27,7 @@ export class RootStore {
 	public readonly layoutStore: LayoutStore;
 
 	constructor() {
-		this.chainStore = new ChainStore(EmbedChainInfos, 'osmosis-devnet-1');
+		this.chainStore = new ChainStore(EmbedChainInfos, 'osmosis-devnet-2');
 
 		this.queriesStore = new QueriesStore(
 			new IndexedDBKVStore('store_web_queries'),
@@ -61,22 +62,16 @@ export class RootStore {
 		this.swapManager = new GammSwapManager([
 			{
 				poolId: '1',
-				coinDenom: 'OSMO',
 				coinMinimalDenom: 'uosmo',
+				coinDenom: 'OSMO',
 				coinDecimals: 6,
 			},
 			{
 				poolId: '1',
+				coinMinimalDenom: makeIBCMinimalDenom('channel-0', 'uatom'),
 				coinDenom: 'ATOM',
-				coinMinimalDenom: 'uatom',
 				coinDecimals: 6,
 				coinGeckoId: 'cosmos',
-			},
-			{
-				poolId: '1',
-				coinDenom: 'FOO',
-				coinMinimalDenom: 'ufoo',
-				coinDecimals: 6,
 			},
 		]);
 

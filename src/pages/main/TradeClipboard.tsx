@@ -18,10 +18,14 @@ import { GammSwapManager } from '../../stores/osmosis/swap';
 import { ObservableQueryPools } from '../../stores/osmosis/query/pools';
 import { AccountWithCosmosAndOsmosis } from '../../stores/osmosis/account';
 import { TradeTxSettings } from './TradeTxSettings';
+import { ChainStore } from '@keplr-wallet/stores';
 
 // 상태가 좀 복잡한 듯 하니 그냥 mobx로 처리한다...
 // CONTRACT: Use with `observer`
 export class TradeState {
+	@observable
+	protected _chainId: string;
+
 	@observable
 	protected inCurrencyMinimalDenom: string = '';
 	@observable
@@ -35,15 +39,50 @@ export class TradeState {
 
 	// TODO: 흠... 생성자 인터페이스가 뭔가 이상해보임.
 	constructor(
+		protected readonly chainStore: ChainStore,
+		chainId: string,
 		protected swapManager: GammSwapManager,
 		protected account: AccountWithCosmosAndOsmosis,
 		protected queryPools: ObservableQueryPools
 	) {
+		this._chainId = chainId;
+
 		makeObservable(this);
 	}
 
+	get chainId(): string {
+		return this._chainId;
+	}
+
+	@action
+	setChainId(chainId: string) {
+		this._chainId = chainId;
+	}
+
+	/**
+	 * Swap manager에 등록된 currency를 반환한다.
+	 * 하지만 Chain info에 등록된 Currency를 우선한다.
+	 * 추가로 IBC Currency일 경우 coin denom을 원래의 currency의 coin denom으로 바꾼다.
+	 */
+	@computed
 	get swappableCurrencies(): Currency[] {
-		return this.swapManager.swappableCurrencies;
+		const chainInfo = this.chainStore.getChain(this.chainId);
+		return this.swapManager.swappableCurrencies.map(cur => {
+			const registeredCurrency = chainInfo.findCurrency(cur.coinMinimalDenom);
+			if (registeredCurrency) {
+				if ('originCurrency' in registeredCurrency && registeredCurrency.originCurrency) {
+					return {
+						...registeredCurrency,
+						...{
+							coinDenom: registeredCurrency.originCurrency.coinDenom,
+						},
+					};
+				}
+
+				return registeredCurrency;
+			}
+			return cur;
+		});
 	}
 
 	@action
@@ -193,20 +232,19 @@ export class TradeState {
 }
 
 export const TradeClipboard: FunctionComponent = observer(() => {
-	// TODO : @Thunnini get swap fee
-	// TODO: 이 부분 빼야됨. 메인 페이지에서는 자동으로 최적의 라우트를 계산해주는거라 swap fee가 유동적이라 고정된 값을 보여줄 수 없음.
-	const swapPercent = 0.0003;
-
 	const { chainStore, queriesStore, accountStore, swapManager } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const [tradeState] = useState(
-		() => new TradeState(swapManager, account, queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools)
+		() =>
+			new TradeState(
+				chainStore,
+				chainStore.current.chainId,
+				swapManager,
+				account,
+				queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools
+			)
 	);
-
-	const [settings, setSettings] = React.useState<ITradeSettings>({
-		slippageTolerance: 0.1,
-		txDeadline: '20',
-	} as ITradeSettings);
+	tradeState.setChainId(chainStore.current.chainId);
 
 	return (
 		<Container
@@ -240,11 +278,6 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 		</Container>
 	);
 });
-
-export interface ITradeSettings {
-	slippageTolerance: number;
-	txDeadline: string; // minutes
-}
 
 const SwapButton: FunctionComponent<{
 	tradeState: TradeState;
@@ -357,11 +390,7 @@ const FromBox: FunctionComponent<{ tradeState: TradeState }> = observer(({ trade
 				</div>
 			</section>
 			<section className="flex justify-between items-center">
-				<TokenDisplay
-					openSelector={openSelector}
-					setOpenSelector={setOpenSelector}
-					token={tradeState.inCurrency.coinDenom}
-				/>
+				<TokenDisplay openSelector={openSelector} setOpenSelector={setOpenSelector} currency={tradeState.inCurrency} />
 				<TokenAmountInput
 					amount={tradeState.inAmount}
 					amountText={tradeState.inAmountText}
@@ -416,11 +445,7 @@ const ToBox: FunctionComponent<{ tradeState: TradeState }> = observer(({ tradeSt
 				<p>To</p>
 			</section>
 			<section className="grid grid-cols-2">
-				<TokenDisplay
-					setOpenSelector={setOpenSelector}
-					openSelector={openSelector}
-					token={tradeState.outCurrency.coinDenom}
-				/>
+				<TokenDisplay setOpenSelector={setOpenSelector} openSelector={openSelector} currency={tradeState.outCurrency} />
 				<div className="text-right flex flex-col justify-center h-full">
 					<h5
 						className={cn('text-xl font-title font-semibold truncate', {

@@ -6,22 +6,30 @@ export const RewardEpochIdentifier = 'hourly';
 
 export const IBCAssetInfos: {
 	counterpartyChainId: string;
+	// Souce channel id based on the Osmosis chain
 	sourceChannelId: string;
+	// Destination channel id from Osmosis chain
 	destChannelId: string;
 	coinMinimalDenom: string;
 }[] = [
 	{
 		counterpartyChainId: 'cosmoshub-devnet-1',
 		sourceChannelId: 'channel-0',
-		destChannelId: 'channel-125',
+		destChannelId: 'channel-0',
 		coinMinimalDenom: 'uatom',
+	},
+	{
+		counterpartyChainId: 'irishub-devnet-1',
+		sourceChannelId: 'channel-1',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'uiris',
 	},
 ];
 
 export const EmbedChainInfos: ChainInfo[] = [
 	{
-		rpc: 'http://a2292001af5254574b9ba6b2de909b5c-481788144.us-east-2.elb.amazonaws.com',
-		rest: 'http://a28aae9da1a954e6bbf46b74fb5be1c2-1754577775.us-east-2.elb.amazonaws.com',
+		rpc: 'http://a47e6b9368c824b17a6842e04f0e8611-1844060451.us-east-2.elb.amazonaws.com',
+		rest: 'http://a5458852b142c491baa62aae9faff1a0-274792033.us-east-2.elb.amazonaws.com',
 		chainId: 'osmosis-devnet-2',
 		chainName: 'Osmosis (Dev)',
 		stakeCurrency: {
@@ -39,6 +47,7 @@ export const EmbedChainInfos: ChainInfo[] = [
 				coinDenom: 'OSMO',
 				coinMinimalDenom: 'uosmo',
 				coinDecimals: 6,
+				coinGeckoId: 'cosmos',
 			},
 			{
 				coinDenom: 'ATOM',
@@ -62,6 +71,7 @@ export const EmbedChainInfos: ChainInfo[] = [
 				coinDenom: 'OSMO',
 				coinMinimalDenom: 'uosmo',
 				coinDecimals: 6,
+				coinGeckoId: 'cosmos',
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
@@ -98,6 +108,44 @@ export const EmbedChainInfos: ChainInfo[] = [
 			},
 		],
 		coinType: 118,
+		features: ['stargate', 'ibc-transfer'],
+	},
+	{
+		rpc: 'http://acf37ec0126de49baa9adbfe772c8719-1425539633.us-east-2.elb.amazonaws.com',
+		rest: 'http://a037a2456f9cc4fcb9471b3464aa1e67-1456094711.us-east-2.elb.amazonaws.com',
+		chainId: 'irishub-devnet-1',
+		chainName: 'IRISnet (Dev)',
+		stakeCurrency: {
+			coinDenom: 'IRIS',
+			coinMinimalDenom: 'uiris',
+			coinDecimals: 6,
+			coinGeckoId: 'iris-network',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		alternativeBIP44s: [
+			{
+				coinType: 566,
+			},
+		],
+		bech32Config: Bech32Address.defaultBech32Config('iaa'),
+		currencies: [
+			{
+				coinDenom: 'IRIS',
+				coinMinimalDenom: 'uiris',
+				coinDecimals: 6,
+				coinGeckoId: 'iris-network',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'IRIS',
+				coinMinimalDenom: 'uiris',
+				coinDecimals: 6,
+				coinGeckoId: 'iris-network',
+			},
+		],
 		features: ['stargate', 'ibc-transfer'],
 	},
 ];

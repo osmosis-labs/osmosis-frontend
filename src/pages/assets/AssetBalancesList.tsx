@@ -5,9 +5,8 @@ import { TransferDialog } from '../../dialogs/Transfer';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { IBCAssetInfos } from '../../config';
-import { Hash } from '@keplr-wallet/crypto';
-import { Buffer } from 'buffer/';
 import { Currency, IBCCurrency } from '@keplr-wallet/types';
+import { makeIBCMinimalDenom } from '../../utils/ibc';
 
 const tableWidths = ['50%', '25%', '12.5%', '12.5%'];
 export const AssetBalancesList: FunctionComponent = observer(() => {
@@ -18,12 +17,7 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 
 	const ibcBalances = IBCAssetInfos.map(channelInfo => {
 		const chainInfo = chainStore.getChain(channelInfo.counterpartyChainId);
-		// TODO: IBC minimal denom을 만들어주는 api를 케플러 패키지에 넣는 것도 좋을듯...
-		const ibcDenom =
-			'ibc/' +
-			Buffer.from(Hash.sha256(Buffer.from(`transfer/${channelInfo.sourceChannelId}/${channelInfo.coinMinimalDenom}`)))
-				.toString('hex')
-				.toUpperCase();
+		const ibcDenom = makeIBCMinimalDenom(channelInfo.sourceChannelId, channelInfo.coinMinimalDenom);
 
 		const originCurrency = chainInfo.currencies.find(
 			cur => cur.coinMinimalDenom === channelInfo.coinMinimalDenom

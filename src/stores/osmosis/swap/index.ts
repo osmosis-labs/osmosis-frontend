@@ -1,9 +1,7 @@
-import { Currency } from '@keplr-wallet/types';
 import { computed, makeObservable, observable } from 'mobx';
 import { IntPretty } from '@keplr-wallet/unit';
-import { ObservableQueryPool } from '../query/pool';
 import { ObservableQueryPools } from '../query/pools';
-import { Msg } from '@cosmjs/launchpad';
+import { Currency } from '@keplr-wallet/types';
 
 export interface SwapManagerPoolCurrency extends Currency {
 	poolId: string;

@@ -1,0 +1,12 @@
+.DS_Store
+.idea
+.vscode
+node_modules
+dist
+prod
+build
+yarn-error.log
+
+deploy
+
+src/styles/index.scss

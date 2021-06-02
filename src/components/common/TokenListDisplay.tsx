@@ -1,11 +1,11 @@
 import React, { FunctionComponent } from 'react';
 import { Img } from './Img';
-import { Currency } from '@keplr-wallet/types';
+import { AppCurrency } from '@keplr-wallet/types';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 
 export const TokenListDisplay: FunctionComponent<{
-	currencies: Currency[];
+	currencies: AppCurrency[];
 	onSelect: (minimalDenom: string) => void;
 	close: () => void;
 }> = observer(({ currencies, onSelect, close }) => {
@@ -62,7 +62,7 @@ export const TokenListDisplay: FunctionComponent<{
 });
 
 const TokenItem: FunctionComponent<{
-	currency: Currency;
+	currency: AppCurrency;
 	amount: string;
 	onSelect: () => void;
 }> = ({ currency, amount, onSelect }) => {
@@ -74,8 +74,9 @@ const TokenItem: FunctionComponent<{
 					<Img loadingSpin style={{ width: '36px', height: '36px' }} src={''} />
 					<div className="ml-3">
 						<h6 className="leading-tight">{currency.coinDenom.toUpperCase()}</h6>
-						{/* TODO: 일단 IBC 토큰은 나중에 다룬다... */}
-						<p className="text-iconDefault text-md leading-tight">Channel-1</p>
+						{'paths' in currency && currency.paths.length > 0 ? (
+							<p className="text-iconDefault text-md leading-tight">{currency.paths[0].channelId}</p>
+						) : null}
 					</div>
 				</div>
 				<p>{amount}</p>
