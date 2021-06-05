@@ -1,8 +1,19 @@
 import React, { FunctionComponent } from 'react';
 import { TradeClipboard } from './TradeClipboard';
 import { Img } from '../../components/common/Img';
+import { displayToast, TToastType } from '../../components/common/toasts/toast';
 
 export const MainPage: FunctionComponent = () => {
+	React.useEffect(() => {
+		displayToast(TToastType.TX_BROADCASTING);
+		displayToast(
+			TToastType.TX_SUCCESSFULL,
+			{},
+			{ customLink: 'https://medium.com/osmosis/vision-for-osmosis-e68e796ff1c2' }
+		);
+		displayToast(TToastType.TX_FAILED, {}, { message: `Error message: 'something to be descriptive` });
+	}, []);
+
 	return (
 		<div className="relative w-full h-full grid" style={{ gridTemplateColumns: '2fr 520px 1fr' }}>
 			<div />
