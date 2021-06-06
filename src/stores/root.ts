@@ -2,9 +2,7 @@ import { CoinGeckoPriceStore, getKeplrFromWindow, IBCCurrencyRegsitrar, QueriesS
 import { AccountStore } from '@keplr-wallet/stores';
 import { IndexedDBKVStore } from '@keplr-wallet/common';
 import { ChainStore } from './chain';
-
-import { ChainInfo } from '@keplr-wallet/types';
-
+import { AppCurrency, ChainInfo } from '@keplr-wallet/types';
 import { EmbedChainInfos } from '../config';
 import { QueriesWithCosmosAndOsmosis } from './osmosis/query';
 import { AccountWithCosmosAndOsmosis } from './osmosis/account';
@@ -12,6 +10,7 @@ import { LayoutStore } from './layout';
 import { GammSwapManager } from './osmosis/swap';
 import { LPCurrencyRegistrar } from './osmosis/currency-registrar';
 import { makeIBCMinimalDenom } from '../utils/ibc';
+import { ChainInfoInner } from '@keplr-wallet/stores';
 
 export class RootStore {
 	public readonly chainStore: ChainStore;
@@ -79,7 +78,23 @@ export class RootStore {
 		this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfo>(
 			this.chainStore,
 			this.accountStore,
-			this.queriesStore
+			this.queriesStore,
+			(
+				denomTrace: {
+					denom: string;
+					paths: {
+						portId: string;
+						channelId: string;
+					}[];
+				},
+				originChainInfo: ChainInfoInner | undefined,
+				counterpartyChainInfo: ChainInfoInner | undefined,
+				originCurrency: AppCurrency | undefined
+			) => {
+				return `${originCurrency ? originCurrency.coinDenom : denomTrace.denom} (${
+					denomTrace.paths.length > 0 ? denomTrace.paths[0].channelId : 'Unknown'
+				})`;
+			}
 		);
 
 		this.layoutStore = new LayoutStore();
