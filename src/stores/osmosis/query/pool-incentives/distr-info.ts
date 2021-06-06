@@ -23,12 +23,12 @@ export class ObservableQueryDistrInfo extends ObservableChainQuery<DistrInfo> {
 	}
 
 	readonly getWeight = computedFn(
-		(potId: string): Int => {
+		(gaugeId: string): Int => {
 			if (!this.response) {
 				return new Int(0);
 			}
 
-			const record = this.response.data.distr_info.records.find(record => record.pot_id === potId);
+			const record = this.response.data.distr_info.records.find(record => record.gauge_id === gaugeId);
 			if (!record) {
 				return new Int(0);
 			}

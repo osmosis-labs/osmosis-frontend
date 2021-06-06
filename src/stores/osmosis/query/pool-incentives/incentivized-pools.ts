@@ -47,7 +47,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 		return this.incentivizedPools.includes(poolId);
 	});
 
-	readonly getIncentivizedPotId = computedFn((poolId: string, duration: Duration): string | undefined => {
+	readonly getIncentivizedGaugeId = computedFn((poolId: string, duration: Duration): string | undefined => {
 		if (!this.response) {
 			return;
 		}
@@ -61,7 +61,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 		});
 
 		if (incentivized) {
-			return incentivized.pot_id;
+			return incentivized.gauge_id;
 		}
 	});
 
@@ -140,9 +140,9 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 		priceStore: { getPrice(coinId: string, vsCurrency: string): number | undefined },
 		fiatCurrency: FiatCurrency
 	): IntPretty {
-		const potId = this.getIncentivizedPotId(poolId, duration);
+		const gaugeId = this.getIncentivizedGaugeId(poolId, duration);
 
-		if (this.incentivizedPools.includes(poolId) && potId) {
+		if (this.incentivizedPools.includes(poolId) && gaugeId) {
 			const pool = this.queryPools.getPool(poolId);
 			if (pool) {
 				const mintDenom = this.queryMintParmas.mintDenom;
@@ -156,7 +156,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 
 					if (mintCurrency && mintCurrency.coinGeckoId && epoch.duration) {
 						const totalWeight = this.queryDistrInfo.totalWeight;
-						const potWeight = this.queryDistrInfo.getWeight(potId);
+						const potWeight = this.queryDistrInfo.getWeight(gaugeId);
 						const mintPrice = priceStore.getPrice(mintCurrency.coinGeckoId, fiatCurrency.currency);
 						const poolTVL = pool.computeTotalValueLocked(priceStore, fiatCurrency);
 						if (totalWeight.gt(new Int(0)) && potWeight.gt(new Int(0)) && mintPrice && poolTVL.toDec().gt(new Dec(0))) {
