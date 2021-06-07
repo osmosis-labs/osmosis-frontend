@@ -22,69 +22,72 @@ import duration from 'dayjs/plugin/duration';
 import { GovernanceDetailsPage } from './pages/governance/[id]/GovernanceDetailsPage';
 import { BootstrapPage } from './pages/bootstrap';
 import { BootstrapDetails } from './pages/bootstrap/[id]';
+import { ToastProvider } from './components/common/toasts';
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 
 const Router: FunctionComponent = () => {
 	return (
 		<StoreProvider>
-			<div style={{ minWidth: '1280px' }} className="min-h-sidebar-minHeight h-screen bg-background z-0">
-				<BrowserRouter>
-					<Switch>
-						<Route exact path="/">
-							<RouteWrapper>
-								<MainPage />
-							</RouteWrapper>
-						</Route>
-						<Route exact path="/pools">
-							<RouteWrapper>
-								<PoolsPage />
-							</RouteWrapper>
-						</Route>
-						<Route path="/pool/:id">
-							<RouteWrapper>
-								<PoolPage />
-							</RouteWrapper>
-						</Route>
-						<Route exact path="/assets">
-							<RouteWrapper>
-								<AssetsPage />
-							</RouteWrapper>
-						</Route>
-						<Route exact path="/governance">
-							<RouteWrapper>
-								<GovernancePage />
-							</RouteWrapper>
-						</Route>
-						<Route exact path="/governance/:id">
-							<RouteWrapper>
-								<GovernanceDetailsPage />
-							</RouteWrapper>
-						</Route>
-						<Route exact path="/airdrop">
-							<RouteWrapper>
-								<AirdropPage />
-							</RouteWrapper>
-						</Route>
-						<Route exact path={'/bootstrap'}>
-							<RouteWrapper>
-								<BootstrapPage />
-							</RouteWrapper>
-						</Route>
-						<Route exact path={'/bootstrap/:id'}>
-							<RouteWrapper>
-								<BootstrapDetails />
-							</RouteWrapper>
-						</Route>
-						<Route>
-							<RouteWrapper>
-								<NotFoundPage />
-							</RouteWrapper>
-						</Route>
-					</Switch>
-				</BrowserRouter>
-			</div>
-			<ToastContainer transition={Bounce} />
+			<ToastProvider>
+				<div style={{ minWidth: '1280px' }} className="min-h-sidebar-minHeight h-screen bg-background z-0">
+					<BrowserRouter>
+						<Switch>
+							<Route exact path="/">
+								<RouteWrapper>
+									<MainPage />
+								</RouteWrapper>
+							</Route>
+							<Route exact path="/pools">
+								<RouteWrapper>
+									<PoolsPage />
+								</RouteWrapper>
+							</Route>
+							<Route path="/pool/:id">
+								<RouteWrapper>
+									<PoolPage />
+								</RouteWrapper>
+							</Route>
+							<Route exact path="/assets">
+								<RouteWrapper>
+									<AssetsPage />
+								</RouteWrapper>
+							</Route>
+							<Route exact path="/governance">
+								<RouteWrapper>
+									<GovernancePage />
+								</RouteWrapper>
+							</Route>
+							<Route exact path="/governance/:id">
+								<RouteWrapper>
+									<GovernanceDetailsPage />
+								</RouteWrapper>
+							</Route>
+							<Route exact path="/airdrop">
+								<RouteWrapper>
+									<AirdropPage />
+								</RouteWrapper>
+							</Route>
+							<Route exact path={'/bootstrap'}>
+								<RouteWrapper>
+									<BootstrapPage />
+								</RouteWrapper>
+							</Route>
+							<Route exact path={'/bootstrap/:id'}>
+								<RouteWrapper>
+									<BootstrapDetails />
+								</RouteWrapper>
+							</Route>
+							<Route>
+								<RouteWrapper>
+									<NotFoundPage />
+								</RouteWrapper>
+							</Route>
+						</Switch>
+					</BrowserRouter>
+				</div>
+				<ToastContainer transition={Bounce} />
+			</ToastProvider>
 		</StoreProvider>
 	);
 };

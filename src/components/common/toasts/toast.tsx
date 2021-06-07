@@ -35,13 +35,33 @@ interface IToastExtra {
 	customLink: string;
 }
 
-export const displayToast = (type: TToastType, options?: Partial<ToastOptions>, extraData?: Partial<IToastExtra>) => {
-	const refinedOptions = options ? options : {};
+export type DisplayToastFn = ((type: TToastType.TX_BROADCASTING, options?: Partial<ToastOptions>) => void) &
+	((
+		type: TToastType.TX_SUCCESSFULL,
+		extraData?: Partial<Pick<IToastExtra, 'customLink'>>,
+		options?: Partial<ToastOptions>
+	) => void) &
+	((
+		type: TToastType.TX_FAILED,
+		extraData?: Partial<Pick<IToastExtra, 'message'>>,
+		options?: Partial<ToastOptions>
+	) => void);
+
+export interface DisplayToast {
+	displayToast: DisplayToastFn;
+}
+
+export const displayToast: DisplayToastFn = (
+	type: TToastType,
+	extraData?: Partial<IToastExtra> | Partial<ToastOptions>,
+	options?: Partial<ToastOptions>
+) => {
+	const refinedOptions = type === TToastType.TX_BROADCASTING ? extraData ?? {} : options ?? {};
 	const refinedExtraData = extraData ? extraData : {};
 	const inputExtraData = { ...defaultExtraData, ...refinedExtraData } as IToastExtra;
 	const inputOptions = { ...defaultOptions, ...refinedOptions } as ToastOptions;
 	if (type === TToastType.TX_BROADCASTING) {
-		toast(toastTxBroadcasting, inputOptions);
+		toast(<ToastTxBroadcasting />, inputOptions);
 	} else if (type === TToastType.TX_SUCCESSFULL) {
 		toast(<ToastTxSuccess link={inputExtraData.customLink} />, inputOptions);
 	} else if (type === TToastType.TX_FAILED) {
@@ -51,20 +71,7 @@ export const displayToast = (type: TToastType, options?: Partial<ToastOptions>, 
 	}
 };
 
-// const CloseWrapper: FunctionComponent = ({ children }) => {
-// 	return (
-// 		<div className="relative pointer-events-none">
-// 			<button
-// 				style={{ left: '-22px', top: '-28px' }}
-// 				className="hover:opacity-75 cursor-pointer absolute rounded-full w-6 h-6 flex items-center justify-center pointer-events-auto">
-// 				<img alt="x" className="w-full h-full" src="/public/assets/Icons/ToastClose.png" />
-// 			</button>
-// 			{children}
-// 		</div>
-// 	);
-// };
-
-const toastTxBroadcasting = (
+const ToastTxBroadcasting: FunctionComponent = () => (
 	<div className="grid gap-3.75" style={{ gridTemplateColumns: '26px 1fr' }}>
 		<img
 			alt="ldg"
