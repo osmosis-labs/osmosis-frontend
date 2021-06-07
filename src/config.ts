@@ -1,5 +1,5 @@
-import { ChainInfo } from '@keplr-wallet/types';
 import { Bech32Address } from '@keplr-wallet/cosmos';
+import { ChainInfoWithExplorer } from './stores/chain';
 
 export const PoolsPerPage = 10;
 export const RewardEpochIdentifier = 'hour';
@@ -26,7 +26,7 @@ export const IBCAssetInfos: {
 	},
 ];
 
-export const EmbedChainInfos: ChainInfo[] = [
+export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	{
 		rpc: 'http://157.245.94.36:26657',
 		rest: 'http://157.245.94.36:1317',
@@ -59,6 +59,7 @@ export const EmbedChainInfos: ChainInfo[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://noop/{txHash}',
 	},
 	{
 		rpc: 'http://a1b49e433212d46b29712fd009b81751-2133417348.us-east-2.elb.amazonaws.com',
