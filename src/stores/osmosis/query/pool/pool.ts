@@ -8,7 +8,7 @@ import { QueryResponse } from '@keplr-wallet/stores';
 
 export class ObservableQueryPoolInner extends ObservableChainQuery<Pool> {
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, protected readonly poolId: string) {
-		super(kvStore, chainId, chainGetter, `/osmosis/gamm/v1beta1/${poolId}`);
+		super(kvStore, chainId, chainGetter, `/osmosis/gamm/v1beta1/pools/${poolId}`);
 
 		makeObservable(this);
 	}

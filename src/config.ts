@@ -15,13 +15,13 @@ export const IBCAssetInfos: {
 	{
 		counterpartyChainId: 'cosmoshub-devnet-1',
 		sourceChannelId: 'channel-0',
-		destChannelId: 'channel-0',
+		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uatom',
 	},
 	{
 		counterpartyChainId: 'irishub-devnet-1',
 		sourceChannelId: 'channel-1',
-		destChannelId: 'channel-0',
+		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uiris',
 	},
 ];

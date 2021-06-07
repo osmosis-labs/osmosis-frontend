@@ -1,6 +1,6 @@
 import { CoinGeckoPriceStore, getKeplrFromWindow, IBCCurrencyRegsitrar, QueriesStore } from '@keplr-wallet/stores';
 import { AccountStore } from '@keplr-wallet/stores';
-import { IndexedDBKVStore } from '@keplr-wallet/common';
+import { DenomHelper, IndexedDBKVStore } from '@keplr-wallet/common';
 import { ChainStore } from './chain';
 import { AppCurrency, ChainInfo } from '@keplr-wallet/types';
 import { EmbedChainInfos } from '../config';
@@ -67,7 +67,7 @@ export class RootStore {
 			},
 			{
 				poolId: '1',
-				coinMinimalDenom: 'uatom',
+				coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
 				coinDenom: 'ATOM',
 				coinDecimals: 6,
 				coinGeckoId: 'cosmos',
