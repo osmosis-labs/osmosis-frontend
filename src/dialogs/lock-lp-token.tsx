@@ -9,6 +9,7 @@ import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balanc
 import { action, computed, makeObservable, observable, override } from 'mobx';
 import { AppCurrency } from '@keplr-wallet/types';
 import { ObservableQueryGammPoolShare } from '../stores/osmosis/query/pool-share';
+import { TToastType, useToast } from '../components/common/toasts';
 
 export class LockLpTokenAmountConfig extends AmountConfig {
 	@observable
@@ -81,7 +82,7 @@ export const LockLpTokenDialog: FunctionComponent<BaseDialogProps & {
 		queries.queryBalances
 	);
 
-	console.log(amountConfig.getError()?.message);
+	const toast = useToast();
 
 	const [selectedDurationIndex, setSelectedDurationIndex] = useState(0);
 
@@ -147,17 +148,37 @@ export const LockLpTokenDialog: FunctionComponent<BaseDialogProps & {
 					<button
 						className="w-2/3 h-15 bg-primary-200 rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer disabled:opacity-50"
 						disabled={!account.isReadyToSendMsgs || amountConfig.getError() != null}
-						onClick={e => {
+						onClick={async e => {
 							e.preventDefault();
 
 							if (account.isReadyToSendMsgs) {
 								const duration = lockableDurations[selectedDurationIndex];
-								account.osmosis.sendLockTokensMsg(duration.asSeconds(), [
-									{
-										currency: amountConfig.sendCurrency,
-										amount: amountConfig.amount,
-									},
-								]);
+								try {
+									await account.osmosis.sendLockTokensMsg(
+										duration.asSeconds(),
+										[
+											{
+												currency: amountConfig.sendCurrency,
+												amount: amountConfig.amount,
+											},
+										],
+										'',
+										tx => {
+											if (tx.code) {
+												toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
+											} else {
+												toast.displayToast(TToastType.TX_SUCCESSFULL, {
+													customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),
+												});
+											}
+
+											close();
+										}
+									);
+									toast.displayToast(TToastType.TX_BROADCASTING);
+								} catch (e) {
+									toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+								}
 							}
 						}}>
 						{account.isSendingMsg === 'lockTokens' ? (
