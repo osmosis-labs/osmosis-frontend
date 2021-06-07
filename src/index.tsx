@@ -8,15 +8,20 @@ import { AirdropPage } from './pages/airdrop';
 import { RouteWrapper } from './components/layouts/RouteWrapper';
 import { NotFoundPage } from './pages/NotFound';
 
+import 'react-toastify/dist/ReactToastify.css';
 import './styles/index.scss';
 import './styles/globals.scss';
 import { PoolPage } from './pages/pool';
 import { AssetsPage } from './pages/assets';
 import { GovernancePage } from './pages/governance';
+import { Bounce, ToastContainer } from 'react-toastify';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import duration from 'dayjs/plugin/duration';
+import { GovernanceDetailsPage } from './pages/governance/[id]/GovernanceDetailsPage';
+import { BootstrapPage } from './pages/bootstrap';
+import { BootstrapDetails } from './pages/bootstrap/[id]';
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 
@@ -51,9 +56,24 @@ const Router: FunctionComponent = () => {
 								<GovernancePage />
 							</RouteWrapper>
 						</Route>
+						<Route exact path="/governance/:id">
+							<RouteWrapper>
+								<GovernanceDetailsPage />
+							</RouteWrapper>
+						</Route>
 						<Route exact path="/airdrop">
 							<RouteWrapper>
 								<AirdropPage />
+							</RouteWrapper>
+						</Route>
+						<Route exact path={'/bootstrap'}>
+							<RouteWrapper>
+								<BootstrapPage />
+							</RouteWrapper>
+						</Route>
+						<Route exact path={'/bootstrap/:id'}>
+							<RouteWrapper>
+								<BootstrapDetails />
 							</RouteWrapper>
 						</Route>
 						<Route>
@@ -64,6 +84,7 @@ const Router: FunctionComponent = () => {
 					</Switch>
 				</BrowserRouter>
 			</div>
+			<ToastContainer transition={Bounce} />
 		</StoreProvider>
 	);
 };

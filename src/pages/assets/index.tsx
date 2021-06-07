@@ -5,9 +5,6 @@ import { AssetsOverview } from './AssetsOverview';
 import { AssetBalancesList } from './AssetBalancesList';
 
 export const AssetsPage: FunctionComponent = observer(() => {
-	// TODO : @Thunnini retrieve asset amounts
-	const assetAmounts = { total: 12530, available: 2896, locked: 9544 } as IAssets;
-
 	// TODO : @Thunnini retrieve user asset balances
 	const assetData = [
 		{
@@ -31,7 +28,7 @@ export const AssetsPage: FunctionComponent = observer(() => {
 		<div className="w-full h-full bg-surface">
 			<div className="px-15 bg-background">
 				<div className="py-10 max-w-max mx-auto">
-					<AssetsOverview state={assetAmounts} />
+					<AssetsOverview title="My IBC Assets" />
 				</div>
 			</div>
 			<div className="px-15 py-10">

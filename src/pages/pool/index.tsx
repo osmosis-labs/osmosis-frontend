@@ -10,15 +10,7 @@ import { Loader } from '../../components/common/Loader';
 import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
 import { OsmoSynthesis } from './OsmoSynthesis';
 import { ManageLiquidityDialog } from '../../dialogs';
-
-const bgArray = [
-	'bg-gradients-socialLive',
-	'bg-gradients-greenBeach',
-	'bg-gradients-kashmir',
-	'bg-gradients-frost',
-	'bg-gradients-cherry',
-	'bg-gradients-sunset',
-];
+import { MISC } from '../../constants';
 
 export const PoolPage: FunctionComponent = observer(() => {
 	const history = useHistory();
@@ -237,7 +229,10 @@ const PoolAssetCard: FunctionComponent<{
 					style={{ width: '84px', height: '84px' }}
 					className="rounded-full border border-enabledGold flex justify-center items-center mr-6">
 					<figure
-						className={cn('w-18 h-18 rounded-full flex justify-center items-end', bgArray[index % bgArray.length])}>
+						className={cn(
+							'w-18 h-18 rounded-full flex justify-center items-end',
+							MISC.GRADIENT_CLASS[index % MISC.GRADIENT_CLASS.length]
+						)}>
 						<Img className="w-10 h-10 mb-1" src={'/public/assets/Icons/Bubbles.png'} />
 					</figure>
 				</figure>

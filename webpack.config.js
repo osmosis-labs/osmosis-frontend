@@ -50,6 +50,12 @@ const sassRule = {
 		},
 	],
 };
+
+const cssRule = {
+	test: /\.css$/,
+	use: ['style-loader', 'css-loader'],
+};
+
 const tsRule = {
 	test: /\.tsx?$/,
 	exclude: /node_modules/,
@@ -110,7 +116,7 @@ const webConfig = () => {
 		},
 		resolve: commonResolve('src/assets'),
 		module: {
-			rules: [sassRule, tsRule, jsxRule, fileRule],
+			rules: [sassRule, cssRule, tsRule, jsxRule, fileRule],
 		},
 		optimization: {
 			usedExports: true,

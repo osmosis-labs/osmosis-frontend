@@ -11,6 +11,8 @@ import { divide, multiply } from '../../utils/Big';
 import { PointOptionsObject, SeriesPieOptions, TooltipOptions } from 'highcharts';
 import cloneDeep from 'lodash-es/cloneDeep';
 import { HIGHCHART_GRADIENTS, HIGHCHART_LEGEND_GRADIENTS, PieChart } from '../../components/common/PieChart';
+import { useHistory } from 'react-router-dom';
+import { VoteDialog } from '../../dialogs/Vote';
 
 const ROW_HEIGHT = 180;
 export const GovernanceTab: FunctionComponent = () => {
@@ -28,21 +30,39 @@ export const GovernanceTab: FunctionComponent = () => {
 			abstain: 25,
 		},
 	}));
+
+	const [isOpen, setIsOpen] = React.useState(false);
+	const [proposalIndex, setProposalIndex] = React.useState(governanceData[0].index);
+
 	return (
 		<div className="w-full flex justify-center">
 			<table style={{ maxWidth: '1280px' }} className="w-full h-full">
 				<tbody className="w-full h-full">
 					{map(governanceData, (data, i) => (
-						<GovernanceRow key={i} data={data} height={180} />
+						<GovernanceRow
+							key={i}
+							data={data}
+							height={180}
+							openModal={() => {
+								setProposalIndex(data.index);
+								setIsOpen(true);
+							}}
+						/>
 					))}
 				</tbody>
 			</table>
+			<VoteDialog
+				style={{ minWidth: '656px', padding: '32px 48px' }}
+				isOpen={isOpen}
+				close={() => setIsOpen(false)}
+				proposalIndex={proposalIndex}
+			/>
 		</div>
 	);
 };
 
-type TVote = 'yes' | 'no' | 'noWithVeto' | 'abstain';
-interface IProposalState {
+export type TVote = 'yes' | 'no' | 'noWithVeto' | 'abstain';
+export interface IProposalState {
 	index: number;
 	title: string;
 	details: string;
@@ -58,7 +78,12 @@ const GRAPH_GRADIENT_MAP = {
 	abstain: HIGHCHART_LEGEND_GRADIENTS[3],
 };
 
-const GovernanceRow: FunctionComponent<{ data: IProposalState; height: number }> = ({ data, height }) => {
+const GovernanceRow: FunctionComponent<{ data: IProposalState; height: number; openModal: () => void }> = ({
+	data,
+	height,
+	openModal,
+}) => {
+	const history = useHistory();
 	const [series, setSeries] = React.useState<SeriesPieOptions[]>([]);
 
 	React.useEffect(() => {
@@ -113,7 +138,7 @@ const GovernanceRow: FunctionComponent<{ data: IProposalState; height: number }>
 						</LabelValue>
 					</div>
 					<button
-						onClick={() => alert('Display details')}
+						onClick={() => history.push(`/governance/${data.index}`)}
 						className="mt-4 flex items-center hover:opacity-75 cursor-pointer">
 						<p className="text-secondary-200">Details</p>
 						<Img src={'/public/assets/Icons/Right.svg'} />
@@ -122,7 +147,7 @@ const GovernanceRow: FunctionComponent<{ data: IProposalState; height: number }>
 			</td>
 			<td className="flex h-full flex-col justify-end" style={{ width: '86px' }}>
 				<button
-					onClick={() => alert('Vote flow')}
+					onClick={openModal}
 					className="w-full hover:opacity-75 bg-primary-200 rounded-lg h-9 flex items-center justify-center mb-10">
 					<p>Vote</p>
 				</button>

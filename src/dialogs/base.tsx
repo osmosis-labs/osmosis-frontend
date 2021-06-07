@@ -29,13 +29,22 @@ export const BaseDialog: FunctionComponent<BaseDialogProps> = ({ isOpen, close, 
 export const FocusedBaseDialog: FunctionComponent<BaseDialogProps> = ({ isOpen, close, children, style }) => {
 	const ref = React.useRef<HTMLDivElement | null>(null);
 	return (
-		<Dialog initialFocus={ref} as="div" className="fixed inset-0 z-100 overflow-y-auto" open={isOpen} onClose={close}>
-			<div className="flex items-center justify-center min-h-screen">
-				<Dialog.Overlay className="fixed inset-0 bg-black opacity-20 z-0" />
-				<div ref={ref} style={style} className="min-w-modal p-8 bg-surface shadow-elevation-24dp rounded-2xl z-10">
-					{children}
-				</div>
-			</div>
-		</Dialog>
+		<>
+			{isOpen ? (
+				<Dialog
+					initialFocus={ref}
+					as="div"
+					className="fixed inset-0 z-100 overflow-y-auto"
+					open={isOpen}
+					onClose={close}>
+					<div className="flex items-center justify-center min-h-screen">
+						<Dialog.Overlay className="fixed inset-0 bg-black opacity-20 z-0" />
+						<div ref={ref} style={style} className="min-w-modal p-8 bg-surface shadow-elevation-24dp rounded-2xl z-10">
+							{children}
+						</div>
+					</div>
+				</Dialog>
+			) : null}
+		</>
 	);
 };

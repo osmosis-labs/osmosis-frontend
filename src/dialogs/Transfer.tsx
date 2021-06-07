@@ -64,7 +64,7 @@ export const TransferDialog: FunctionComponent<BaseDialogProps & {
 				<div className="mb-10 flex justify-between items-center w-full">
 					<h5>{isWithdraw ? 'Withdraw' : 'Deposit'} IBC Asset</h5>
 					<button onClick={close} className="hover:opacity-75 cursor-pointer">
-						<Img className="w-8 h-8" src={'/public/assets/Icons/close.svg'} />
+						<Img className="w-6 h-6" src={'/public/assets/Icons/X.svg'} />
 					</button>
 				</div>
 				<h6 className="mb-4">IBC Transfer</h6>
