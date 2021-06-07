@@ -11,6 +11,14 @@ import {
 } from '../lockup';
 
 export class ObservableQueryGammPoolShare {
+	static getShareCurrency(poolId: string): Currency {
+		return {
+			coinDenom: `GAMM/${poolId}`,
+			coinMinimalDenom: `gamm/pool/${poolId}`,
+			coinDecimals: 18,
+		};
+	}
+
 	constructor(
 		protected readonly queryPools: ObservableQueryPools,
 		protected readonly queryBalances: ObservableQueryBalances,
@@ -50,11 +58,7 @@ export class ObservableQueryGammPoolShare {
 
 	readonly getShareCurrency = computedFn(
 		(poolId: string): Currency => {
-			return {
-				coinDenom: `GAMM/${poolId}`,
-				coinMinimalDenom: `gamm/pool/${poolId}`,
-				coinDecimals: 18,
-			};
+			return ObservableQueryGammPoolShare.getShareCurrency(poolId);
 		}
 	);
 

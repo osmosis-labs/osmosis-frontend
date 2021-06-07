@@ -3,7 +3,66 @@ import { BaseDialog, BaseDialogProps } from './base';
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores';
-import { Dec } from '@keplr-wallet/unit';
+import { AmountConfig } from '@keplr-wallet/hooks';
+import { ChainGetter } from '@keplr-wallet/stores';
+import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balances';
+import { action, computed, makeObservable, observable, override } from 'mobx';
+import { AppCurrency } from '@keplr-wallet/types';
+import { ObservableQueryGammPoolShare } from '../stores/osmosis/query/pool-share';
+
+export class LockLpTokenAmountConfig extends AmountConfig {
+	@observable
+	protected _poolId: string;
+
+	constructor(
+		chainGetter: ChainGetter,
+		initialChainId: string,
+		sender: string,
+		poolId: string,
+		queryBalances: ObservableQueryBalances
+	) {
+		super(chainGetter, initialChainId, sender, undefined, queryBalances);
+
+		this._poolId = poolId;
+
+		makeObservable(this);
+	}
+
+	get poolId(): string {
+		return this._poolId;
+	}
+
+	@action
+	setPoolId(poolId: string) {
+		this._poolId = poolId;
+	}
+
+	@override
+	get sendCurrency(): AppCurrency {
+		return ObservableQueryGammPoolShare.getShareCurrency(this.poolId);
+	}
+
+	@computed
+	get sendableCurrencies(): AppCurrency[] {
+		return [this.sendCurrency];
+	}
+}
+
+export const useLockLpTokenAmountConfig = (
+	chainGetter: ChainGetter,
+	chainId: string,
+	sender: string,
+	poolId: string,
+	queryBalances: ObservableQueryBalances
+) => {
+	const [config] = useState(() => new LockLpTokenAmountConfig(chainGetter, chainId, sender, poolId, queryBalances));
+	config.setChain(chainId);
+	config.setQueryBalances(queryBalances);
+	config.setSender(sender);
+	config.setPoolId(poolId);
+
+	return config;
+};
 
 export const LockLpTokenDialog: FunctionComponent<BaseDialogProps & {
 	poolId: string;
@@ -13,29 +72,16 @@ export const LockLpTokenDialog: FunctionComponent<BaseDialogProps & {
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
-	const myPoolShare = queries.osmosis.queryGammPoolShare.getAvailableGammShare(account.bech32Address, poolId);
 
-	const [amount, _setAmount] = useState('');
-	const setAmount = (value: string) => {
-		if (value === '') {
-			value = '0';
-		}
+	const amountConfig = useLockLpTokenAmountConfig(
+		chainStore,
+		chainStore.current.chainId,
+		account.bech32Address,
+		poolId,
+		queries.queryBalances
+	);
 
-		if (value.startsWith('.')) {
-			value = '0' + value;
-		}
-
-		try {
-			const dec = new Dec(value);
-			if (dec.lt(new Dec(0))) {
-				return;
-			}
-		} catch {
-			return;
-		}
-
-		_setAmount(value);
-	};
+	console.log(amountConfig.getError()?.message);
 
 	const [selectedDurationIndex, setSelectedDurationIndex] = useState(0);
 
@@ -66,7 +112,14 @@ export const LockLpTokenDialog: FunctionComponent<BaseDialogProps & {
 				<div className="w-full pt-3 pb-3.5 pl-3 pr-2.5 border border-white-faint rounded-2xl mb-15">
 					<p className="mb-3">Amount to lock</p>
 					<p className="text-sm mb-3.5">
-						Available LP token: <span className="text-primary-50">{myPoolShare.trim(true).toString()}</span>
+						Available LP token:{' '}
+						<span className="text-primary-50">
+							{queries.queryBalances
+								.getQueryBech32Address(account.bech32Address)
+								.getBalanceFromCurrency(amountConfig.sendCurrency)
+								.trim(true)
+								.toString()}
+						</span>
 					</p>
 					<div className="w-full rounded-lg bg-background px-2.5 grid" style={{ gridTemplateColumns: '1fr 40px' }}>
 						<input
@@ -75,18 +128,25 @@ export const LockLpTokenDialog: FunctionComponent<BaseDialogProps & {
 							onChange={e => {
 								e.preventDefault();
 
-								setAmount(e.currentTarget.value);
+								amountConfig.setAmount(e.currentTarget.value);
 							}}
-							value={amount}
+							value={amountConfig.amount}
 						/>
-						<button className="flex items-center justify-center bg-primary-200 rounded-md w-full my-1.5">
+						<button
+							className="flex items-center justify-center bg-primary-200 rounded-md w-full my-1.5"
+							onClick={e => {
+								e.preventDefault();
+
+								amountConfig.toggleIsMax();
+							}}>
 							<p className="text-xs leading-none font-normal">MAX</p>
 						</button>
 					</div>
 				</div>
 				<div className="w-full flex items-center justify-center">
 					<button
-						className="w-2/3 h-15 bg-primary-200 rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer"
+						className="w-2/3 h-15 bg-primary-200 rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer disabled:opacity-50"
+						disabled={!account.isReadyToSendMsgs || amountConfig.getError() != null}
 						onClick={e => {
 							e.preventDefault();
 
@@ -94,13 +154,28 @@ export const LockLpTokenDialog: FunctionComponent<BaseDialogProps & {
 								const duration = lockableDurations[selectedDurationIndex];
 								account.osmosis.sendLockTokensMsg(duration.asSeconds(), [
 									{
-										currency: myPoolShare.currency,
-										amount,
+										currency: amountConfig.sendCurrency,
+										amount: amountConfig.amount,
 									},
 								]);
 							}
 						}}>
-						<p className="text-white-high font-semibold text-lg">Lock</p>
+						{account.isSendingMsg === 'lockTokens' ? (
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+								viewBox="0 0 24 24">
+								<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
+								<path
+									fill="currentColor"
+									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+									className="opacity-75"
+								/>
+							</svg>
+						) : (
+							<p className="text-white-high font-semibold text-lg">Lock</p>
+						)}
 					</button>
 				</div>
 			</div>
