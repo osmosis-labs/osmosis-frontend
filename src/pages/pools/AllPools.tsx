@@ -129,13 +129,13 @@ const TablePagination: FunctionComponent<{
 	const { chainStore, queriesStore } = useStore();
 	const queries = queriesStore.get(chainStore.current.chainId);
 
-	const totalPages = queries.osmosis.queryGammTotalPools.computeTotalPages(PoolsPerPage);
+	const numPages = queries.osmosis.queryGammNumPools.computeNumPages(PoolsPerPage);
 
 	const history = useHistory();
 
 	const pageRender = [];
 
-	for (let i = 0; i < totalPages; i++) {
+	for (let i = 0; i < numPages; i++) {
 		const page = i + 1;
 
 		pageRender.push(
@@ -151,7 +151,7 @@ const TablePagination: FunctionComponent<{
 	}
 
 	const isFirstPage = propPage <= 1;
-	const isLastPage = propPage >= totalPages;
+	const isLastPage = propPage >= numPages;
 
 	return (
 		<div className="w-full p-4 flex items-center justify-center">

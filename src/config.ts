@@ -2,7 +2,7 @@ import { ChainInfo } from '@keplr-wallet/types';
 import { Bech32Address } from '@keplr-wallet/cosmos';
 
 export const PoolsPerPage = 10;
-export const RewardEpochIdentifier = 'hourly';
+export const RewardEpochIdentifier = 'hour';
 
 export const IBCAssetInfos: {
 	counterpartyChainId: string;
@@ -28,9 +28,9 @@ export const IBCAssetInfos: {
 
 export const EmbedChainInfos: ChainInfo[] = [
 	{
-		rpc: 'http://a47e6b9368c824b17a6842e04f0e8611-1844060451.us-east-2.elb.amazonaws.com',
-		rest: 'http://a5458852b142c491baa62aae9faff1a0-274792033.us-east-2.elb.amazonaws.com',
-		chainId: 'osmosis-devnet-2',
+		rpc: 'http://157.245.94.36:26657',
+		rest: 'http://157.245.94.36:1317',
+		chainId: 'osmo-testnet-2',
 		chainName: 'Osmosis (Dev)',
 		stakeCurrency: {
 			coinDenom: 'OSMO',
@@ -48,22 +48,6 @@ export const EmbedChainInfos: ChainInfo[] = [
 				coinMinimalDenom: 'uosmo',
 				coinDecimals: 6,
 				coinGeckoId: 'cosmos',
-			},
-			{
-				coinDenom: 'ATOM',
-				coinMinimalDenom: 'uatom',
-				coinDecimals: 6,
-				coinGeckoId: 'cosmos',
-			},
-			{
-				coinDenom: 'FOO',
-				coinMinimalDenom: 'ufoo',
-				coinDecimals: 6,
-			},
-			{
-				coinDenom: 'BAR',
-				coinMinimalDenom: 'ubar',
-				coinDecimals: 6,
 			},
 		],
 		feeCurrencies: [

@@ -1,9 +1,8 @@
-import { ObservableQueryPools } from './pools';
+import { ObservableQueryPools, ObservableQueryNumPools } from './pools';
 import { ChainGetter, QueriesSetBase, QueriesWithCosmos } from '@keplr-wallet/stores';
 import { KVStore } from '@keplr-wallet/common';
 import { DeepReadonly } from 'utility-types';
 import { ObservableQueryGammPoolShare } from './pool-share';
-import { ObservableQueryTotalPools } from './pools/total-pools';
 import { ObservableQueryPool } from './pool';
 import { ObservableQueryIncentivizedPools, ObservableQueryLockableDurations } from './pool-incentives';
 import { ObservableQueryEpochs } from './epochs';
@@ -34,7 +33,7 @@ export class QueriesWithCosmosAndOsmosis extends QueriesWithCosmos implements Ha
 
 export class OsmosisQueries {
 	public readonly queryGammPools: DeepReadonly<ObservableQueryPools>;
-	public readonly queryGammTotalPools: DeepReadonly<ObservableQueryTotalPools>;
+	public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
 	public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
 
 	public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
@@ -63,7 +62,7 @@ export class OsmosisQueries {
 		this.queryAccountLocked = new ObservableQueryAccountLocked(kvStore, chainId, chainGetter);
 
 		this.queryGammPools = new ObservableQueryPools(kvStore, chainId, chainGetter, queryGammPool);
-		this.queryGammTotalPools = new ObservableQueryTotalPools(kvStore, chainId, chainGetter);
+		this.queryGammNumPools = new ObservableQueryNumPools(kvStore, chainId, chainGetter);
 		this.queryGammPoolShare = new ObservableQueryGammPoolShare(
 			this.queryGammPools,
 			queries.queryBalances,

@@ -4,6 +4,6 @@ export type Pools = {
 	pools: GAMMPoolData[];
 };
 
-export type TotalPools = {
-	totalPools: string;
+export type NumPools = {
+	numPools: string;
 };

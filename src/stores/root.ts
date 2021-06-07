@@ -26,7 +26,7 @@ export class RootStore {
 	public readonly layoutStore: LayoutStore;
 
 	constructor() {
-		this.chainStore = new ChainStore(EmbedChainInfos, 'osmosis-devnet-2');
+		this.chainStore = new ChainStore(EmbedChainInfos, 'osmo-testnet-2');
 
 		this.queriesStore = new QueriesStore(
 			new IndexedDBKVStore('store_web_queries'),
@@ -67,7 +67,7 @@ export class RootStore {
 			},
 			{
 				poolId: '1',
-				coinMinimalDenom: makeIBCMinimalDenom('channel-0', 'uatom'),
+				coinMinimalDenom: 'uatom',
 				coinDenom: 'ATOM',
 				coinDecimals: 6,
 				coinGeckoId: 'cosmos',

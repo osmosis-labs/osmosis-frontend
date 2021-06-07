@@ -11,7 +11,7 @@ export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> 
 			kvStore,
 			chainId,
 			chainGetter,
-			`/osmosis/gamm/v1beta1/pools/all?pagination.offset=${(page - 1) * itemsPerPage}&pagination.limit=${itemsPerPage}`
+			`/osmosis/gamm/v1beta1/pools?pagination.offset=${(page - 1) * itemsPerPage}&pagination.limit=${itemsPerPage}`
 		);
 
 		makeObservable(this);

@@ -16,11 +16,11 @@ describe('Test Osmosis Total Pools Query', () => {
 	});
 
 	test('Query total pools with 0 pool', async () => {
-		const queryTotalPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammTotalPools;
+		const queryNumPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammNumPools;
 
-		await queryTotalPools.waitFreshResponse();
+		await queryNumPools.waitFreshResponse();
 
-		expect(queryTotalPools.totalPools).toBe(0);
+		expect(queryNumPools.numPools).toBe(0);
 	});
 
 	test('Query total pools', async () => {
@@ -76,10 +76,10 @@ describe('Test Osmosis Total Pools Query', () => {
 			});
 		}
 
-		const queryTotalPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammTotalPools;
+		const queryNumPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammNumPools;
 
-		await queryTotalPools.waitFreshResponse();
+		await queryNumPools.waitFreshResponse();
 
-		expect(queryTotalPools.totalPools).toBe(3);
+		expect(queryNumPools.numPools).toBe(3);
 	});
 });
