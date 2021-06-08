@@ -1,12 +1,70 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { BaseDialog, BaseDialogProps } from './base';
 import { Img } from '../components/common/Img';
-import { IBCCurrency } from '@keplr-wallet/types';
+import { AppCurrency, IBCCurrency } from '@keplr-wallet/types';
 import { useStore } from '../stores';
 import { Bech32Address } from '@keplr-wallet/cosmos';
-import { WalletStatus } from '@keplr-wallet/stores';
-import { Dec } from '@keplr-wallet/unit';
+import { ChainGetter, WalletStatus } from '@keplr-wallet/stores';
+import { AmountConfig } from '@keplr-wallet/hooks';
+import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balances';
+import { action, computed, makeObservable, observable, override } from 'mobx';
+import { useFakeFeeConfig } from '../hooks/tx';
+import { TToastType, useToast } from '../components/common/toasts';
+
+export class IBCAssetAmountConfig extends AmountConfig {
+	@observable.ref
+	protected _currency: AppCurrency;
+
+	constructor(
+		chainGetter: ChainGetter,
+		initialChainId: string,
+		sender: string,
+		currency: AppCurrency,
+		queryBalances: ObservableQueryBalances
+	) {
+		super(chainGetter, initialChainId, sender, undefined, queryBalances);
+
+		this._currency = currency;
+
+		makeObservable(this);
+	}
+
+	get currency(): AppCurrency {
+		return this._currency;
+	}
+
+	@action
+	setCurrency(currency: AppCurrency) {
+		this._currency = currency;
+	}
+
+	@override
+	get sendCurrency(): AppCurrency {
+		return this.currency;
+	}
+
+	@computed
+	get sendableCurrencies(): AppCurrency[] {
+		return [this.sendCurrency];
+	}
+}
+
+export const useIBCAssetAmountConfig = (
+	chainGetter: ChainGetter,
+	chainId: string,
+	sender: string,
+	currency: AppCurrency,
+	queryBalances: ObservableQueryBalances
+) => {
+	const [config] = useState(() => new IBCAssetAmountConfig(chainGetter, chainId, sender, currency, queryBalances));
+	config.setChain(chainId);
+	config.setQueryBalances(queryBalances);
+	config.setSender(sender);
+	config.setCurrency(currency);
+
+	return config;
+};
 
 export const TransferDialog: FunctionComponent<BaseDialogProps & {
 	currency: IBCCurrency;
@@ -35,28 +93,25 @@ export const TransferDialog: FunctionComponent<BaseDialogProps & {
 		}
 	}, [account.bech32Address, counterpartyAccount.walletStatus]);
 
-	const [input, _setInput] = React.useState('');
+	const amountConfig = useIBCAssetAmountConfig(
+		chainStore,
+		chainStore.current.chainId,
+		pickOne(account.bech32Address, counterpartyAccount.bech32Address, isWithdraw),
+		pickOne(currency, currency.originCurrency!, isWithdraw),
+		pickOne(
+			queriesStore.get(chainStore.current.chainId).queryBalances,
+			queriesStore.get(counterpartyChainId).queryBalances,
+			isWithdraw
+		)
+	);
+	const feeConfig = useFakeFeeConfig(
+		chainStore,
+		pickOne(chainStore.current.chainId, counterpartyChainId, isWithdraw),
+		pickOne(account.msgOpts.ibcTransfer.gas, counterpartyAccount.msgOpts.ibcTransfer.gas, isWithdraw)
+	);
+	amountConfig.setFeeConfig(feeConfig);
 
-	const setInput = (value: string) => {
-		if (value === '') {
-			value = '0';
-		}
-
-		if (value.startsWith('.')) {
-			value = '0' + value;
-		}
-
-		try {
-			const dec = new Dec(value);
-			if (dec.lt(new Dec(0))) {
-				return;
-			}
-		} catch {
-			return;
-		}
-
-		_setInput(value);
-	};
+	const toast = useToast();
 
 	return (
 		<BaseDialog style={style} isOpen={isOpen} close={close}>
@@ -121,13 +176,13 @@ export const TransferDialog: FunctionComponent<BaseDialogProps & {
 							onChange={e => {
 								e.preventDefault();
 
-								setInput(e.currentTarget.value);
+								amountConfig.setAmount(e.currentTarget.value);
 							}}
-							value={input}
+							value={amountConfig.amount}
 							className="text-xl text-white-emphasis"
 						/>
 						<button
-							onClick={() => setInput(``)}
+							onClick={() => amountConfig.toggleIsMax()}
 							className="my-auto h-6 w-10 bg-primary-200 hover:opacity-75 cursor-pointer flex justify-center items-center rounded-md">
 							<p className="text-xs text-white-high leading-none">MAX</p>
 						</button>
@@ -135,51 +190,90 @@ export const TransferDialog: FunctionComponent<BaseDialogProps & {
 				</div>
 				<div className="w-full mt-9 flex items-center justify-center">
 					<button
-						onClick={e => {
+						className="w-2/3 h-15 bg-primary-200 rounded-2xl flex items-center justify-center hover:opacity-75 disabled:opacity-50"
+						disabled={
+							!account.isReadyToSendMsgs || !counterpartyAccount.isReadyToSendMsgs || amountConfig.getError() != null
+						}
+						onClick={async e => {
 							e.preventDefault();
 
-							if (isWithdraw) {
-								if (account.isReadyToSendMsgs && counterpartyAccount.bech32Address) {
-									account.cosmos.sendIBCTransferMsg(
-										{
-											portId: 'transfer',
-											channelId: sourceChannelId,
-											counterpartyChainId,
-										},
-										input,
-										currency,
-										counterpartyAccount.bech32Address,
-										undefined,
-										{
-											// TOOD: 이 부분 수정해야할듯...
-											gas: '1000000',
-											amount: [],
-										}
-									);
+							try {
+								if (isWithdraw) {
+									if (account.isReadyToSendMsgs && counterpartyAccount.bech32Address) {
+										await account.cosmos.sendIBCTransferMsg(
+											{
+												portId: 'transfer',
+												channelId: sourceChannelId,
+												counterpartyChainId,
+											},
+											amountConfig.amount,
+											amountConfig.currency,
+											counterpartyAccount.bech32Address,
+											'',
+											{},
+											tx => {
+												if (tx.code) {
+													toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
+												} else {
+													toast.displayToast(TToastType.TX_SUCCESSFULL, {
+														customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),
+													});
+												}
+
+												close();
+											}
+										);
+									}
+								} else {
+									if (counterpartyAccount.isReadyToSendMsgs && account.bech32Address) {
+										await counterpartyAccount.cosmos.sendIBCTransferMsg(
+											{
+												portId: 'transfer',
+												channelId: destChannelId,
+												counterpartyChainId: chainStore.current.chainId,
+											},
+											amountConfig.amount,
+											amountConfig.currency,
+											account.bech32Address,
+											'',
+											{},
+											tx => {
+												if (tx.code) {
+													toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
+												} else {
+													toast.displayToast(TToastType.TX_SUCCESSFULL, {
+														customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),
+													});
+												}
+
+												close();
+											}
+										);
+									}
 								}
-							} else {
-								if (counterpartyAccount.isReadyToSendMsgs && account.bech32Address) {
-									counterpartyAccount.cosmos.sendIBCTransferMsg(
-										{
-											portId: 'transfer',
-											channelId: destChannelId,
-											counterpartyChainId: chainStore.current.chainId,
-										},
-										input,
-										currency.originCurrency!,
-										account.bech32Address,
-										undefined,
-										{
-											// TOOD: 이 부분 수정해야할듯...
-											gas: '1000000',
-											amount: [],
-										}
-									);
-								}
+
+								toast.displayToast(TToastType.TX_BROADCASTING);
+							} catch (e) {
+								toast.displayToast(TToastType.TX_FAILED, { message: e.message });
 							}
-						}}
-						className="w-2/3 h-15 bg-primary-200 rounded-2xl flex items-center justify-center hover:opacity-75">
-						<h6>{isWithdraw ? 'Withdraw' : 'Deposit'}</h6>
+						}}>
+						{(isWithdraw && account.isSendingMsg === 'ibcTransfer') ||
+						(!isWithdraw && counterpartyAccount.isSendingMsg === 'ibcTransfer') ? (
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+								viewBox="0 0 24 24">
+								<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
+								<path
+									fill="currentColor"
+									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+									className="opacity-75"
+								/>
+							</svg>
+						) : (
+							<h6>{isWithdraw ? 'Withdraw' : 'Deposit'}</h6>
+						)}
 					</button>
 				</div>
 			</div>
