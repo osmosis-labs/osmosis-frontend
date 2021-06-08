@@ -2,69 +2,13 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { BaseDialog, BaseDialogProps } from './base';
 import { Img } from '../components/common/Img';
-import { AppCurrency, IBCCurrency } from '@keplr-wallet/types';
+import { IBCCurrency } from '@keplr-wallet/types';
 import { useStore } from '../stores';
 import { Bech32Address } from '@keplr-wallet/cosmos';
-import { ChainGetter, WalletStatus } from '@keplr-wallet/stores';
-import { AmountConfig } from '@keplr-wallet/hooks';
-import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balances';
-import { action, computed, makeObservable, observable, override } from 'mobx';
+import { WalletStatus } from '@keplr-wallet/stores';
 import { useFakeFeeConfig } from '../hooks/tx';
 import { TToastType, useToast } from '../components/common/toasts';
-
-export class IBCAssetAmountConfig extends AmountConfig {
-	@observable.ref
-	protected _currency: AppCurrency;
-
-	constructor(
-		chainGetter: ChainGetter,
-		initialChainId: string,
-		sender: string,
-		currency: AppCurrency,
-		queryBalances: ObservableQueryBalances
-	) {
-		super(chainGetter, initialChainId, sender, undefined, queryBalances);
-
-		this._currency = currency;
-
-		makeObservable(this);
-	}
-
-	get currency(): AppCurrency {
-		return this._currency;
-	}
-
-	@action
-	setCurrency(currency: AppCurrency) {
-		this._currency = currency;
-	}
-
-	@override
-	get sendCurrency(): AppCurrency {
-		return this.currency;
-	}
-
-	@computed
-	get sendableCurrencies(): AppCurrency[] {
-		return [this.sendCurrency];
-	}
-}
-
-export const useIBCAssetAmountConfig = (
-	chainGetter: ChainGetter,
-	chainId: string,
-	sender: string,
-	currency: AppCurrency,
-	queryBalances: ObservableQueryBalances
-) => {
-	const [config] = useState(() => new IBCAssetAmountConfig(chainGetter, chainId, sender, currency, queryBalances));
-	config.setChain(chainId);
-	config.setQueryBalances(queryBalances);
-	config.setSender(sender);
-	config.setCurrency(currency);
-
-	return config;
-};
+import { useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
 
 export const TransferDialog: FunctionComponent<BaseDialogProps & {
 	currency: IBCCurrency;
@@ -93,7 +37,7 @@ export const TransferDialog: FunctionComponent<BaseDialogProps & {
 		}
 	}, [account.bech32Address, counterpartyAccount.walletStatus]);
 
-	const amountConfig = useIBCAssetAmountConfig(
+	const amountConfig = useBasicAmountConfig(
 		chainStore,
 		chainStore.current.chainId,
 		pickOne(account.bech32Address, counterpartyAccount.bech32Address, isWithdraw),

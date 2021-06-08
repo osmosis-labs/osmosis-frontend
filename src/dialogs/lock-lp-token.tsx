@@ -3,67 +3,8 @@ import { BaseDialog, BaseDialogProps } from './base';
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores';
-import { AmountConfig } from '@keplr-wallet/hooks';
-import { ChainGetter } from '@keplr-wallet/stores';
-import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balances';
-import { action, computed, makeObservable, observable, override } from 'mobx';
-import { AppCurrency } from '@keplr-wallet/types';
-import { ObservableQueryGammPoolShare } from '../stores/osmosis/query/pool-share';
 import { TToastType, useToast } from '../components/common/toasts';
-
-export class LockLpTokenAmountConfig extends AmountConfig {
-	@observable
-	protected _poolId: string;
-
-	constructor(
-		chainGetter: ChainGetter,
-		initialChainId: string,
-		sender: string,
-		poolId: string,
-		queryBalances: ObservableQueryBalances
-	) {
-		super(chainGetter, initialChainId, sender, undefined, queryBalances);
-
-		this._poolId = poolId;
-
-		makeObservable(this);
-	}
-
-	get poolId(): string {
-		return this._poolId;
-	}
-
-	@action
-	setPoolId(poolId: string) {
-		this._poolId = poolId;
-	}
-
-	@override
-	get sendCurrency(): AppCurrency {
-		return ObservableQueryGammPoolShare.getShareCurrency(this.poolId);
-	}
-
-	@computed
-	get sendableCurrencies(): AppCurrency[] {
-		return [this.sendCurrency];
-	}
-}
-
-export const useLockLpTokenAmountConfig = (
-	chainGetter: ChainGetter,
-	chainId: string,
-	sender: string,
-	poolId: string,
-	queryBalances: ObservableQueryBalances
-) => {
-	const [config] = useState(() => new LockLpTokenAmountConfig(chainGetter, chainId, sender, poolId, queryBalances));
-	config.setChain(chainId);
-	config.setQueryBalances(queryBalances);
-	config.setSender(sender);
-	config.setPoolId(poolId);
-
-	return config;
-};
+import { useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
 
 export const LockLpTokenDialog: FunctionComponent<BaseDialogProps & {
 	poolId: string;
@@ -74,11 +15,11 @@ export const LockLpTokenDialog: FunctionComponent<BaseDialogProps & {
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
 
-	const amountConfig = useLockLpTokenAmountConfig(
+	const amountConfig = useBasicAmountConfig(
 		chainStore,
 		chainStore.current.chainId,
 		account.bech32Address,
-		poolId,
+		queries.osmosis.queryGammPoolShare.getShareCurrency(poolId),
 		queries.queryBalances
 	);
 
