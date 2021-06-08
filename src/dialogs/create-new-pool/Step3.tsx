@@ -3,9 +3,10 @@ import cloneDeep from 'lodash-es/cloneDeep';
 
 import { HIGHCHART_GRADIENTS, PieChart, HIGHCHART_LEGEND_GRADIENTS } from '../../components/common/PieChart';
 import { PointOptionsObject, SeriesPieOptions } from 'highcharts';
-import { CreateNewPoolState } from './index';
+import { CreateNewPoolConfig } from './index';
 import { observer } from 'mobx-react-lite';
 import { AppCurrency } from '@keplr-wallet/types';
+import { Img } from '../../components/common/Img';
 
 const pieSerie = {
 	type: 'pie',
@@ -20,16 +21,30 @@ const pieSerie = {
 };
 const series = [pieSerie];
 export const NewPoolStage3: FunctionComponent<{
-	state: CreateNewPoolState;
-}> = observer(({ state }) => {
+	config: CreateNewPoolConfig;
+	close: () => void;
+}> = observer(({ config, close }) => {
 	const series = useMemo(() => {
-		return generateSeries(state.assets);
-	}, [state.assets]);
+		return generateSeries(
+			config.assets.map(asset => {
+				return {
+					currency: asset.amountConfig.currency,
+					percentage: asset.percentage,
+					amount: asset.amountConfig.amount,
+				};
+			})
+		);
+	}, [config.assets]);
 
 	return (
-		<>
+		<React.Fragment>
 			<div className="pl-4.5">
-				<h5 className="mb-4.5">Create New Pool</h5>
+				<div className="mb-4.5 flex justify-between items-center w-full">
+					<h5>Create New Pool</h5>
+					<button onClick={close} className="hover:opacity-75 cursor-pointer">
+						<Img className="w-6 h-6" src={'/public/assets/Icons/X.svg'} />
+					</button>
+				</div>
 				<div className="inline w-full flex items-center">
 					<p className="text-sm mr-2.5">Step 3/3 - Confirm Pool Ratio and Token Amount</p>
 					<div className="inline-block rounded-full w-3.5 h-3.5 text-xs bg-secondary-200 flex items-center justify-center text-black">
@@ -51,13 +66,13 @@ export const NewPoolStage3: FunctionComponent<{
 						<p className="text-xs text-white-disabled">Amount</p>
 					</div>
 					<ul className="pt-3 flex flex-col gap-4">
-						{state.assets.map((asset, i) => {
+						{config.assets.map((asset, i) => {
 							return (
 								<TokenRow
-									key={asset.currency.coinMinimalDenom}
+									key={asset.amountConfig.currency.coinMinimalDenom}
 									index={i}
-									currency={asset.currency}
-									amount={asset.amount}
+									currency={asset.amountConfig.currency}
+									amount={asset.amountConfig.amount}
 									percentage={asset.percentage}
 								/>
 							);
@@ -65,7 +80,7 @@ export const NewPoolStage3: FunctionComponent<{
 					</ul>
 				</div>
 			</div>
-		</>
+		</React.Fragment>
 	);
 });
 

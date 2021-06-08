@@ -1,22 +1,26 @@
-import React, { Dispatch, FunctionComponent, SetStateAction } from 'react';
+import React, { FunctionComponent } from 'react';
 import cn from 'clsx';
-import { CreateNewPoolState } from './index';
-import { LINKS } from '../../constants';
+import { CreateNewPoolConfig } from './index';
 import { Img } from '../../components/common/Img';
-import { isNumber } from '../../utils/scripts';
 import { TokenListDisplay } from '../../components/common/TokenListDisplay';
 import { AppCurrency } from '@keplr-wallet/types';
 import { observer } from 'mobx-react-lite';
 
 export const NewPoolStage1: FunctionComponent<{
-	state: CreateNewPoolState;
-}> = observer(({ state }) => {
+	config: CreateNewPoolConfig;
+	close: () => void;
+}> = observer(({ config, close }) => {
 	const [selectTokenOpen, setSelectTokenOpen] = React.useState<number>(-1);
 
 	return (
 		<React.Fragment>
 			<div className="pl-4.5">
-				<h5 className="mb-4.5">Create New Pool</h5>
+				<div className="mb-4.5 flex justify-between items-center w-full">
+					<h5 className="">Create New Pool</h5>
+					<button onClick={close} className="hover:opacity-75 cursor-pointer">
+						<Img className="w-6 h-6" src={'/public/assets/Icons/X.svg'} />
+					</button>
+				</div>
 				<div className="w-full flex items-center">
 					<p className="text-sm mr-2.5">Step 1/3 - Set token ratio </p>
 					<div className="inline-block rounded-full w-3.5 h-3.5 text-xs bg-secondary-200 flex items-center justify-center text-black">
@@ -27,7 +31,7 @@ export const NewPoolStage1: FunctionComponent<{
 			<ul
 				className="mt-5 flex flex-col gap-3 overflow-y-auto"
 				style={{ maxHeight: 'max(50vh, 430px)', minHeight: selectTokenOpen !== -1 ? '430px' : '0px' }}>
-				{state.assets.map((asset, i: number) => {
+				{config.assets.map((asset, i: number) => {
 					return (
 						<Pool
 							selectTokenOpen={selectTokenOpen === i}
@@ -38,20 +42,20 @@ export const NewPoolStage1: FunctionComponent<{
 									else return i;
 								})
 							}
-							key={asset.currency.coinMinimalDenom}
-							state={state}
+							key={asset.amountConfig.currency.coinMinimalDenom}
+							config={config}
 							assetAt={i}
 						/>
 					);
 				})}
 			</ul>
-			{state.assets.length < 8 && state.remainingSelectableCurrencies.length > 0 ? (
+			{config.assets.length < 8 && config.remainingSelectableCurrencies.length > 0 ? (
 				<div
 					onClick={e => {
 						e.preventDefault();
 
-						const currency = state.remainingSelectableCurrencies[0];
-						state.addAsset(currency);
+						const currency = config.remainingSelectableCurrencies[0];
+						config.addAsset(currency);
 					}}
 					className="pt-6 pb-7.5 pl-7 border border-white-faint rounded-2xl mt-2.5 hover:border-enabledGold cursor-pointer">
 					<div className="flex items-center">
@@ -69,10 +73,10 @@ export const NewPoolStage1: FunctionComponent<{
 const Pool: FunctionComponent<{
 	selectTokenOpen: boolean;
 	toggleTokenOpen: () => void;
-	state: CreateNewPoolState;
+	config: CreateNewPoolConfig;
 	assetAt: number;
-}> = observer(({ state, assetAt, toggleTokenOpen, selectTokenOpen }) => {
-	const asset = state.assets[assetAt];
+}> = observer(({ config, assetAt, toggleTokenOpen, selectTokenOpen }) => {
+	const asset = config.assets[assetAt];
 
 	const ref = React.useRef<HTMLLIElement>(null);
 
@@ -85,22 +89,23 @@ const Pool: FunctionComponent<{
 		<li ref={ref} className="pt-4.5 pb-4.5 pr-7 pl-4.5 border border-white-faint rounded-2xl relative">
 			<div className="flex items-center justify-between">
 				<TokenChannelDisplay
-					currency={asset.currency}
+					currency={asset.amountConfig.currency}
 					openSelector={selectTokenOpen}
 					setOpenSelector={toggleTokenOpen}
 				/>
 				<div className="flex items-center">
 					<Img
 						onClick={() => {
-							state.removeAssetAt(assetAt);
+							config.removeAssetAt(assetAt);
 						}}
 						className="w-8 h-8 mr-4 hover:opacity-75 cursor-pointer s-filter-white"
 						src="/public/assets/Icons/Close.svg"
 					/>
 					<input
+						type="number"
 						className="bg-black font-title py-1.5 h-9 rounded-lg mr-2.5 pr-1.5 border border-transparent focus:border-enabledGold text-white placeholder-white-disabled text-right text-lg leading-none"
 						onChange={e => {
-							state.setAssetPercentageAt(assetAt, e.currentTarget.value);
+							config.setAssetPercentageAt(assetAt, e.currentTarget.value);
 						}}
 						value={asset.percentage}
 						style={{ maxWidth: '130px' }}
@@ -115,12 +120,12 @@ const Pool: FunctionComponent<{
 					selectTokenOpen ? 'absolute' : 'hidden'
 				)}>
 				<TokenListDisplay
-					currencies={state.remainingSelectableCurrencies}
+					currencies={config.remainingSelectableCurrencies}
 					close={() => toggleTokenOpen()}
 					onSelect={minimalDenom => {
-						const currency = state.remainingSelectableCurrencies.find(cur => cur.coinMinimalDenom === minimalDenom);
+						const currency = config.remainingSelectableCurrencies.find(cur => cur.coinMinimalDenom === minimalDenom);
 						if (currency) {
-							state.setAssetCurrencyAt(assetAt, currency);
+							asset.amountConfig.setCurrency(currency);
 						}
 					}}
 				/>
