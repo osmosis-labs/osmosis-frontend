@@ -99,9 +99,9 @@ const webConfig = () => {
 		mode: isEnvDevelopment ? 'development' : 'production',
 
 		// In development environment, turn on source map.
-		// devtool: isEnvDevelopment ? 'source-map' : false,
+		devtool: isEnvDevelopment ? 'source-map' : false,
 		// In development environment, webpack watch the file changes, and recompile
-		// watch: isEnvDevelopment,
+		watch: isEnvDevelopment,
 		devServer: {
 			port: 8081,
 			historyApiFallback: true,
