@@ -70,8 +70,7 @@ const TokenItem: FunctionComponent<{
 		<li onClick={() => onSelect()} className="py-4.5 px-3 rounded-2xl hover:bg-card cursor-pointer">
 			<div className="flex items-center justify-between">
 				<div className="flex items-center">
-					{/* 현재로서는 Currency의 이미지를 가져올 방법이 없다. TODO: Currency에 imageUrl 추가 */}
-					<Img loadingSpin style={{ width: '36px', height: '36px' }} src={''} />
+					<Img loadingSpin style={{ width: '36px', height: '36px' }} src={currency.coinImageUrl} />
 					<div className="ml-3">
 						<h6 className="leading-tight">{currency.coinDenom.toUpperCase()}</h6>
 						{'paths' in currency && currency.paths.length > 0 ? (

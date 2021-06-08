@@ -5,7 +5,7 @@ import { TransferDialog } from '../../dialogs/Transfer';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { IBCAssetInfos } from '../../config';
-import { Currency, IBCCurrency } from '@keplr-wallet/types';
+import { AppCurrency, Currency, IBCCurrency } from '@keplr-wallet/types';
 import { makeIBCMinimalDenom } from '../../utils/ibc';
 
 const tableWidths = ['50%', '25%', '12.5%', '12.5%'];
@@ -95,6 +95,7 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 								key={currency.coinMinimalDenom}
 								chainName={bal.chainInfo.chainName}
 								coinDenom={coinDenom}
+								currency={currency}
 								balance={bal.balance
 									.hideDenom(true)
 									.trim(true)
@@ -132,15 +133,16 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 const AssetBalanceRow: FunctionComponent<{
 	chainName: string;
 	coinDenom: string;
+	currency: AppCurrency;
 	balance: string;
 	onDeposit: () => void;
 	onWithdraw: () => void;
-}> = ({ chainName, coinDenom, balance, onDeposit, onWithdraw }) => {
+}> = ({ chainName, coinDenom, currency, balance, onDeposit, onWithdraw }) => {
 	let i = 0;
 	return (
 		<tr style={{ height: '4.5rem' }} className="flex items-center w-full border-b pl-12.5 pr-15">
 			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<Img loadingSpin className="w-10 h-10" src={LINKS.GET_TOKEN_IMG(coinDenom)} />
+				<Img loadingSpin className="w-10 h-10" src={currency.coinImageUrl} />
 				<p className="ml-5">
 					{chainName} - {coinDenom.toUpperCase()}
 				</p>

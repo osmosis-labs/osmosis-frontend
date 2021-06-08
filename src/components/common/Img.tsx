@@ -21,7 +21,7 @@ export const Img: FunctionComponent<TImg> = ({ src, style, className, onClick, l
 };
 
 interface TImg {
-	src: string;
+	src?: string;
 	style?: Record<string, any>;
 	className?: string;
 	onClick?: CallableFunction;
