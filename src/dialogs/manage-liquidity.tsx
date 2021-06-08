@@ -12,6 +12,7 @@ import { Currency } from '@keplr-wallet/types';
 import { MISC } from '../constants';
 import { ObservableQueryGammPoolShare } from '../stores/osmosis/query/pool-share';
 import { computedFn } from 'mobx-utils';
+import { TToastType, useToast } from '../components/common/toasts';
 
 //	TODO : edit how the circle renders the border to make gradients work
 const borderImages: Record<string, string> = {
@@ -324,7 +325,12 @@ export const ManageLiquidityDialog: FunctionComponent<BaseDialogProps & {
 				) : (
 					<RemoveLiquidity removeLiquidityState={removeLiquidityState} />
 				)}
-				<BottomButton tab={tab} addLiquidityState={addLiquidityState} removeLiquidityState={removeLiquidityState} />
+				<BottomButton
+					tab={tab}
+					addLiquidityState={addLiquidityState}
+					removeLiquidityState={removeLiquidityState}
+					close={close}
+				/>
 			</div>
 		</BaseDialog>
 	);
@@ -521,25 +527,50 @@ const BottomButton: FunctionComponent<{
 	tab: Tabs;
 	addLiquidityState: AddLiquidityState;
 	removeLiquidityState: RemoveLiquidityState;
-}> = observer(({ tab, addLiquidityState, removeLiquidityState }) => {
+	close: () => void;
+}> = observer(({ tab, addLiquidityState, removeLiquidityState, close }) => {
 	const { chainStore, accountStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
+	const toast = useToast();
+
 	return (
 		<div className="w-full flex items-center justify-center">
 			<button
-				className="w-2/3 h-15 bg-primary-200 rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer"
-				onClick={e => {
+				disabled={!account.isReadyToSendMsgs}
+				className="w-2/3 h-15 bg-primary-200 rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer disabled:opacity-50"
+				onClick={async e => {
 					e.preventDefault();
 
 					if (account.isReadyToSendMsgs) {
 						if (tab === Tabs.ADD) {
 							const shareOutAmount = addLiquidityState.shareOutAmount;
 
-							// XXX: 일단 이 경우 슬리피지를 2.5%로만 설정한다.
-							// TODO: 트랜잭션을 보내는 중일때 버튼에 로딩 표시(?)
-							account.osmosis.sendJoinPoolMsg(addLiquidityState.poolId, shareOutAmount.toDec().toString(), '2.5');
+							try {
+								// XXX: 일단 이 경우 슬리피지를 2.5%로만 설정한다.
+								await account.osmosis.sendJoinPoolMsg(
+									addLiquidityState.poolId,
+									shareOutAmount.toDec().toString(),
+									'2.5',
+									'',
+									tx => {
+										if (tx.code) {
+											toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
+										} else {
+											toast.displayToast(TToastType.TX_SUCCESSFULL, {
+												customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),
+											});
+										}
+
+										close();
+									}
+								);
+
+								toast.displayToast(TToastType.TX_BROADCASTING);
+							} catch (e) {
+								toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+							}
 						}
 
 						// TODO: 트랜잭션을 보낼 준비가 안됐으면 버튼을 disabled 시키기
@@ -547,12 +578,65 @@ const BottomButton: FunctionComponent<{
 							const shareIn = removeLiquidityState.poolShareWithPercentage;
 
 							// XXX: 일단 이 경우 슬리피지를 2.5%로만 설정한다.
-							// TODO: 트랜잭션을 보내는 중일때 버튼에 로딩 표시(?)
-							account.osmosis.sendExitPoolMsg(removeLiquidityState.poolId, shareIn.toDec().toString(), '2.5');
+							try {
+								await account.osmosis.sendExitPoolMsg(
+									removeLiquidityState.poolId,
+									shareIn.toDec().toString(),
+									'2.5',
+									'',
+									tx => {
+										if (tx.code) {
+											toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
+										} else {
+											toast.displayToast(TToastType.TX_SUCCESSFULL, {
+												customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),
+											});
+										}
+
+										close();
+									}
+								);
+
+								toast.displayToast(TToastType.TX_BROADCASTING);
+							} catch (e) {
+								toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+							}
 						}
 					}
 				}}>
-				<p className="text-white-high font-semibold text-lg">{`${tab === Tabs.ADD ? 'Add' : 'Remove'} Liquidity`}</p>
+				{tab === Tabs.ADD ? (
+					account.isSendingMsg === 'joinPool' ? (
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+							viewBox="0 0 24 24">
+							<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
+							<path
+								fill="currentColor"
+								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+								className="opacity-75"
+							/>
+						</svg>
+					) : (
+						<p className="text-white-high font-semibold text-lg">Add Liquidity</p>
+					)
+				) : account.isSendingMsg === 'exitPool' ? (
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+						viewBox="0 0 24 24">
+						<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
+						<path
+							fill="currentColor"
+							d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+							className="opacity-75"
+						/>
+					</svg>
+				) : (
+					<p className="text-white-high font-semibold text-lg">Remove Liquidity</p>
+				)}
 			</button>
 		</div>
 	);
