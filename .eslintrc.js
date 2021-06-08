@@ -42,6 +42,7 @@ module.exports = {
 				devDependencies: ['**/*.spec.ts', '**/*.spec.js', '**/webpack.config.js'],
 			},
 		],
+		'@typescript-eslint/no-var-requires': 'off',
 	},
 	settings: {
 		react: {
