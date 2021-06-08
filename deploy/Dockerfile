@@ -1,13 +1,9 @@
 FROM node:14.17.0-alpine3.10
 
-ADD / /frontend/
+ADD /prod /prod
 
-WORKDIR /frontend
-
-# node 이미지에 yarn이 이미 설치되어 있다고 한다.
-RUN yarn install --frozen-lockfile
-RUN yarn build
+# Yarn is also pre-installed in the node alpine image.
+RUN yarn global add http-server
 
 EXPOSE 8080
-
-CMD yarn serve
+CMD http-server --address 0.0.0.0 --port 8080 --proxy http://localhost:8080? /prod

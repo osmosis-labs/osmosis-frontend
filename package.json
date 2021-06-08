@@ -4,6 +4,7 @@
 	"description": "",
 	"scripts": {
 		"build": "yarn build:css && cross-env NODE_ENV=production webpack",
+		"build:docker": "yarn build && sh ./scripts/build-docker.sh",
 		"serve": "http-server --address 0.0.0.0 --port 8080 --proxy http://localhost:8080? ./prod",
 		"dev": "cross-env NODE_ENV=development webpack-dev-server",
 		"dev:analyzer": "cross-env NODE_ENV=development ANALYZER=true webpack",
