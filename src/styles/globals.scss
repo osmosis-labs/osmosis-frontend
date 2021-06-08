@@ -44,3 +44,8 @@ input {
 }
 
 @import './custom';
+
+.Toastify {
+	position: fixed;
+	z-index: 10000000;
+}
