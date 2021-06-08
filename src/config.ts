@@ -49,6 +49,16 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'cosmos',
 			},
+			{
+				coinDenom: 'ION',
+				coinMinimalDenom: 'ion',
+				coinDecimals: 6,
+			},
+			{
+				coinDenom: 'POOP',
+				coinMinimalDenom: 'poopcoin',
+				coinDecimals: 6,
+			},
 		],
 		feeCurrencies: [
 			{
