@@ -1,13 +1,13 @@
 import React, { FunctionComponent } from 'react';
 import cn from 'clsx';
 import { DisplayIcon } from '../../components/layouts/Sidebar/SidebarItem';
-import { TradeState } from './TradeClipboard';
+import { TradeConfig } from './TradeClipboard';
 import { observer } from 'mobx-react-lite';
 
 const SLIPPAGE_TOLERANCE_VALUES = [0.1, 0.5, 1, 0.05];
 export const TradeTxSettings: FunctionComponent<{
-	tradeState: TradeState;
-}> = observer(({ tradeState }) => {
+	config: TradeConfig;
+}> = observer(({ config }) => {
 	const [view, setView] = React.useState<boolean>(false);
 
 	return (
@@ -39,8 +39,8 @@ export const TradeTxSettings: FunctionComponent<{
 							<SlippageToleranceItem
 								key={i.toString()}
 								data={slippage}
-								setSelected={() => tradeState.setSlippage(slippage.toString())}
-								selected={slippage.toString() === tradeState.slippage}
+								setSelected={() => config.setSlippage(slippage.toString())}
+								selected={slippage.toString() === config.slippage}
 							/>
 						);
 					})}

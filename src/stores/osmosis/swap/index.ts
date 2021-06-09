@@ -38,6 +38,7 @@ export class GammSwapManager {
 		| {
 				poolId: string;
 				spotPrice: IntPretty;
+				spotPriceWithoutSwapFee: IntPretty;
 				swapFee: IntPretty;
 		  }
 		| undefined {
@@ -62,6 +63,7 @@ export class GammSwapManager {
 		return {
 			poolId: pool.id,
 			spotPrice: pool.calculateSpotPrice(inMinimalDenom, outMinimalDenom),
+			spotPriceWithoutSwapFee: pool.calculateSpotPriceWithoutSwapFee(inMinimalDenom, outMinimalDenom),
 			swapFee: pool.swapFee,
 		};
 	}

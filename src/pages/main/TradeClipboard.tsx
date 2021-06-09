@@ -9,21 +9,29 @@ import { TokenListDisplay } from '../../components/common/TokenListDisplay';
 import { TokenDisplay } from '../../components/common/TokenDisplay';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import { action, computed, makeObservable, observable } from 'mobx';
-import { Currency } from '@keplr-wallet/types';
+import { action, computed, makeObservable, observable, override } from 'mobx';
+import { AppCurrency, Currency } from '@keplr-wallet/types';
 import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { GammSwapManager } from '../../stores/osmosis/swap';
 import { ObservableQueryPools } from '../../stores/osmosis/query/pools';
-import { AccountWithCosmosAndOsmosis } from '../../stores/osmosis/account';
 import { TradeTxSettings } from './TradeTxSettings';
-import { ChainStore } from '@keplr-wallet/stores';
+import { ChainGetter } from '@keplr-wallet/stores';
+import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balances';
+import { AmountConfig } from '@keplr-wallet/hooks';
+import { TToastType, useToast } from '../../components/common/toasts';
+import { useFakeFeeConfig } from '../../hooks/tx';
 
-// 상태가 좀 복잡한 듯 하니 그냥 mobx로 처리한다...
+export enum SlippageStep {
+	Step1, // 0.1%
+	Step2, // 0.5%
+	Step3, // 1.0%
+}
+
 // CONTRACT: Use with `observer`
-export class TradeState {
-	@observable
-	protected _chainId: string;
+export class TradeConfig extends AmountConfig {
+	@observable.ref
+	protected _queryPools: ObservableQueryPools;
 
 	@observable
 	protected inCurrencyMinimalDenom: string = '';
@@ -31,31 +39,35 @@ export class TradeState {
 	protected outCurrencyMinimalDenom: string = '';
 
 	@observable
-	protected _inAmount: string = '';
+	protected _slippageStep: SlippageStep | undefined = undefined;
 
+	// If slippage step is undefiend,
+	// the slippage can be set by manually.
 	@observable
 	protected _slippage: string = '0.5';
 
-	// TODO: 흠... 생성자 인터페이스가 뭔가 이상해보임.
 	constructor(
-		protected readonly chainStore: ChainStore,
-		chainId: string,
+		chainGetter: ChainGetter,
+		initialChainId: string,
+		sender: string,
+		queryBalances: ObservableQueryBalances,
 		protected swapManager: GammSwapManager,
-		protected account: AccountWithCosmosAndOsmosis,
-		protected queryPools: ObservableQueryPools
+		queryPools: ObservableQueryPools
 	) {
-		this._chainId = chainId;
+		super(chainGetter, initialChainId, sender, undefined, queryBalances);
+
+		this._queryPools = queryPools;
 
 		makeObservable(this);
 	}
 
-	get chainId(): string {
-		return this._chainId;
+	@action
+	setQueryPools(queryPools: ObservableQueryPools) {
+		this._queryPools = queryPools;
 	}
 
-	@action
-	setChainId(chainId: string) {
-		this._chainId = chainId;
+	get queryPools(): ObservableQueryPools {
+		return this._queryPools;
 	}
 
 	/**
@@ -63,11 +75,10 @@ export class TradeState {
 	 * 하지만 Chain info에 등록된 Currency를 우선한다.
 	 * 추가로 IBC Currency일 경우 coin denom을 원래의 currency의 coin denom으로 바꾼다.
 	 */
-	@computed
-	get swappableCurrencies(): Currency[] {
-		const chainInfo = this.chainStore.getChain(this.chainId);
+	get sendableCurrencies(): AppCurrency[] {
+		const chainInfo = this.chainInfo;
 		return this.swapManager.swappableCurrencies.map(cur => {
-			const registeredCurrency = chainInfo.findCurrency(cur.coinMinimalDenom);
+			const registeredCurrency = chainInfo.currencies.find(_cur => _cur.coinMinimalDenom === cur.coinMinimalDenom);
 			if (registeredCurrency) {
 				if ('originCurrency' in registeredCurrency && registeredCurrency.originCurrency) {
 					return {
@@ -95,22 +106,35 @@ export class TradeState {
 	}
 
 	@action
-	setInAmount(amount: string) {
-		if (amount.startsWith('.')) {
-			amount = '0' + amount;
-		}
+	switchInAndOut() {
+		const inCurrency = this.sendCurrency;
+		const outCurrency = this.outCurrency;
 
-		if (amount) {
-			try {
-				// 숫자가 맞는지 and 양수인지 확인...
-				if (new Dec(amount).lt(new Dec(0))) {
-					return;
-				}
-			} catch {
-				return;
-			}
-		}
-		this._inAmount = amount;
+		const outAmount = this.outAmount;
+
+		this.setIsMax(false);
+
+		this.setInCurrency(outCurrency.coinMinimalDenom);
+		this.setOutCurrency(inCurrency.coinMinimalDenom);
+
+		this.setAmount(
+			outAmount
+				.trim(true)
+				.maxDecimals(6)
+				.shrink(true)
+				.hideDenom(true)
+				.locale(false)
+				.toString()
+		);
+	}
+
+	@action
+	setSlippageStep(step: SlippageStep) {
+		this._slippageStep = step;
+	}
+
+	get slippageStep(): SlippageStep | undefined {
+		return this._slippageStep;
 	}
 
 	@action
@@ -129,59 +153,55 @@ export class TradeState {
 				return;
 			}
 		}
+		this._slippageStep = undefined;
 		this._slippage = slippage;
 	}
 
 	@computed
 	get slippage(): string {
+		if (this.slippageStep != null) {
+			switch (this.slippageStep) {
+				case SlippageStep.Step1:
+					return '0.1';
+				case SlippageStep.Step2:
+					return '0.5';
+				case SlippageStep.Step3:
+					return '1';
+			}
+		}
+
 		return this._slippage;
 	}
 
-	@computed
-	get inCurrency(): Currency {
+	@override
+	get sendCurrency(): AppCurrency {
 		if (this.inCurrencyMinimalDenom) {
-			const find = this.swappableCurrencies.find(cur => cur.coinMinimalDenom === this.inCurrencyMinimalDenom);
+			const find = this.sendableCurrencies.find(cur => cur.coinMinimalDenom === this.inCurrencyMinimalDenom);
 			if (find) {
 				return find;
 			}
 		}
 
-		return this.swappableCurrencies[0];
+		return this.sendableCurrencies[0];
 	}
 
 	@computed
-	get outCurrency(): Currency {
+	get outCurrency(): AppCurrency {
 		if (this.outCurrencyMinimalDenom) {
-			const find = this.swappableCurrencies.find(cur => cur.coinMinimalDenom === this.outCurrencyMinimalDenom);
+			const find = this.sendableCurrencies.find(cur => cur.coinMinimalDenom === this.outCurrencyMinimalDenom);
 			if (find) {
 				return find;
 			}
 		}
 
-		return this.swappableCurrencies[1];
-	}
-
-	@computed
-	get inAmount(): CoinPretty {
-		if (!this._inAmount) {
-			return new CoinPretty(this.inCurrency, new Int('0'));
-		}
-
-		return new CoinPretty(
-			this.inCurrency,
-			new Dec(this._inAmount).mul(DecUtils.getPrecisionDec(this.inCurrency.coinDecimals))
-		);
-	}
-
-	get inAmountText(): string {
-		return this._inAmount;
+		return this.sendableCurrencies[1];
 	}
 
 	@computed
 	get spotPrice(): IntPretty {
 		const computed = this.swapManager.computeOptimizedRoues(
 			this.queryPools,
-			this.inCurrency.coinMinimalDenom,
+			this.sendCurrency.coinMinimalDenom,
 			this.outCurrency.coinMinimalDenom
 		);
 
@@ -193,10 +213,25 @@ export class TradeState {
 	}
 
 	@computed
+	get spotPriceWithoutSwapFee(): IntPretty {
+		const computed = this.swapManager.computeOptimizedRoues(
+			this.queryPools,
+			this.sendCurrency.coinMinimalDenom,
+			this.outCurrency.coinMinimalDenom
+		);
+
+		if (!computed) {
+			return new IntPretty(new Int(0));
+		}
+
+		return computed.spotPriceWithoutSwapFee;
+	}
+
+	@computed
 	get swapFee(): IntPretty {
 		const computed = this.swapManager.computeOptimizedRoues(
 			this.queryPools,
-			this.inCurrency.coinMinimalDenom,
+			this.sendCurrency.coinMinimalDenom,
 			this.outCurrency.coinMinimalDenom
 		);
 
@@ -211,7 +246,7 @@ export class TradeState {
 	get poolId(): string | undefined {
 		const computed = this.swapManager.computeOptimizedRoues(
 			this.queryPools,
-			this.inCurrency.coinMinimalDenom,
+			this.sendCurrency.coinMinimalDenom,
 			this.outCurrency.coinMinimalDenom
 		);
 
@@ -224,20 +259,26 @@ export class TradeState {
 
 	@computed
 	get outAmount(): CoinPretty {
-		const inAmount = this.inAmount;
-		if (inAmount.toDec().equals(new Dec(0))) {
+		const inAmount = this.amount;
+		try {
+			if (!inAmount || new Dec(inAmount).lte(new Dec(0))) {
+				return new CoinPretty(
+					this.outCurrency,
+					new Dec('0').mul(DecUtils.getPrecisionDec(this.outCurrency.coinDecimals))
+				);
+			}
+		} catch {
 			return new CoinPretty(
 				this.outCurrency,
 				new Dec('0').mul(DecUtils.getPrecisionDec(this.outCurrency.coinDecimals))
 			);
 		}
 
-		const spotPrice = this.spotPrice;
+		const spotPrice = this.spotPriceWithoutSwapFee;
 
 		return new CoinPretty(
 			this.outCurrency,
-			this.inAmount
-				.toDec()
+			new Dec(inAmount)
 				.mul(new Dec(1).quo(spotPrice.toDec()))
 				.mul(DecUtils.getPrecisionDec(this.outCurrency.coinDecimals))
 				.truncate()
@@ -245,20 +286,41 @@ export class TradeState {
 	}
 }
 
+export const useTradeConfig = (
+	chainGetter: ChainGetter,
+	chainId: string,
+	sender: string,
+	queryBalances: ObservableQueryBalances,
+	swapManager: GammSwapManager,
+	queryPools: ObservableQueryPools
+) => {
+	const [config] = useState(
+		() => new TradeConfig(chainGetter, chainId, sender, queryBalances, swapManager, queryPools)
+	);
+	config.setChain(chainId);
+	config.setSender(sender);
+	config.setQueryBalances(queryBalances);
+	config.setQueryPools(queryPools);
+
+	return config;
+};
+
 export const TradeClipboard: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore, accountStore, swapManager } = useStore();
+
 	const account = accountStore.getAccount(chainStore.current.chainId);
-	const [tradeState] = useState(
-		() =>
-			new TradeState(
-				chainStore,
-				chainStore.current.chainId,
-				swapManager,
-				account,
-				queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools
-			)
+	const queries = queriesStore.get(chainStore.current.chainId);
+
+	const config = useTradeConfig(
+		chainStore,
+		chainStore.current.chainId,
+		account.bech32Address,
+		queries.queryBalances,
+		swapManager,
+		queries.osmosis.queryGammPools
 	);
-	tradeState.setChainId(chainStore.current.chainId);
+	const feeConfig = useFakeFeeConfig(chainStore, chainStore.current.chainId, account.msgOpts.swapExactAmountIn.gas);
+	config.setFeeConfig(feeConfig);
 
 	return (
 		<Container
@@ -268,24 +330,30 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 			<ClipboardClip />
 			<div className="p-2.5 h-full w-full">
 				<div className="bg-cardInner rounded-md w-full h-full p-5">
-					<TradeTxSettings tradeState={tradeState} />
+					<TradeTxSettings config={config} />
 					<section className="mt-5 w-full mb-12.5">
 						<div className="relative">
 							<div className="mb-4.5">
-								<FromBox tradeState={tradeState} />
+								<FromBox config={config} />
 							</div>
 							<div className="mb-4.5">
-								<ToBox tradeState={tradeState} />
+								<ToBox config={config} />
 							</div>
-							<div className="s-position-abs-center w-12 h-12 z-0">
+							<button
+								className="s-position-abs-center w-12 h-12 z-0"
+								onClick={e => {
+									e.preventDefault();
+
+									config.switchInAndOut();
+								}}>
 								<Img className="w-12 h-12" src="/public/assets/sidebar/icon-border_unselected.svg" />
 								<Img className="s-position-abs-center w-6 h-6" src="/public/assets/Icons/Switch.svg" />
-							</div>
+							</button>
 						</div>
-						<FeesBox tradeState={tradeState} />
+						<FeesBox config={config} />
 					</section>
 					<section className="w-full">
-						<SwapButton tradeState={tradeState} />
+						<SwapButton config={config} />
 					</section>
 				</div>
 			</div>
@@ -294,52 +362,82 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 });
 
 const SwapButton: FunctionComponent<{
-	tradeState: TradeState;
-}> = observer(({ tradeState }) => {
+	config: TradeConfig;
+}> = observer(({ config }) => {
 	const { chainStore, accountStore } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
-	const onButtonClick = () => {
-		if (account.isReadyToSendMsgs) {
-			const poolId = tradeState.poolId;
-			if (!poolId) {
-				throw new Error("Can't calculate the optimized pools");
-			}
+	const toast = useToast();
 
-			/*
-			 TODO: 슬리피지는 일단 5%로 설정한다. 나중에 슬리피지 설정을 만들어야한다.
-			 */
-			account.osmosis.sendSwapExactAmountInMsg(
-				poolId,
-				{
-					currency: tradeState.inCurrency,
-					amount: tradeState.inAmountText,
-				},
-				tradeState.outCurrency,
-				tradeState.slippage
-			);
-		}
-	};
-
-	// TODO: 버튼이 disabled일 때의 스타일링 추가하기.
-	// TODO: 트랜잭션을 보내는 중일때 버튼에 로딩 스타일링 추가하기.
 	return (
 		<button
-			onClick={onButtonClick}
-			className="bg-primary-200 h-15 flex justify-center items-center w-full rounded-lg shadow-elevation-04dp hover:opacity-75"
-			disabled={!account.isReadyToSendMsgs}>
-			<p className="font-body tracking-wide">SWAP</p>
+			onClick={async e => {
+				e.preventDefault();
+
+				if (account.isReadyToSendMsgs) {
+					const poolId = config.poolId;
+					if (!poolId) {
+						throw new Error("Can't calculate the optimized pools");
+					}
+
+					try {
+						await account.osmosis.sendSwapExactAmountInMsg(
+							poolId,
+							{
+								currency: config.sendCurrency,
+								amount: config.amount,
+							},
+							config.outCurrency,
+							config.slippage,
+							'',
+							tx => {
+								if (tx.code) {
+									toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
+								} else {
+									toast.displayToast(TToastType.TX_SUCCESSFULL, {
+										customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),
+									});
+
+									config.setAmount('');
+								}
+							}
+						);
+
+						toast.displayToast(TToastType.TX_BROADCASTING);
+					} catch (e) {
+						toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+					}
+				}
+			}}
+			className="bg-primary-200 h-15 flex justify-center items-center w-full rounded-lg shadow-elevation-04dp hover:opacity-75 disabled:opacity-50"
+			disabled={!account.isReadyToSendMsgs || config.getError() != null}>
+			{account.isSendingMsg === 'swapExactAmountIn' ? (
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+					viewBox="0 0 24 24">
+					<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
+					<path
+						fill="currentColor"
+						d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+						className="opacity-75"
+					/>
+				</svg>
+			) : (
+				<p className="font-body tracking-wide">SWAP</p>
+			)}
 		</button>
 	);
 });
 
 const FeesBox: FunctionComponent<{
-	tradeState: TradeState;
-}> = observer(({ tradeState }) => {
-	const outSpotPrice = tradeState.spotPrice;
-	const inSpotPrice = tradeState.spotPrice.toDec().equals(new Dec(0))
-		? tradeState.spotPrice
-		: new IntPretty(new Dec(1).quo(tradeState.spotPrice.toDec()));
+	config: TradeConfig;
+}> = observer(({ config }) => {
+	const outSpotPrice = config.spotPriceWithoutSwapFee;
+	const inSpotPrice = outSpotPrice.toDec().equals(new Dec(0))
+		? outSpotPrice
+		: new IntPretty(new Dec(1).quo(outSpotPrice.toDec()));
 
 	return (
 		<Container className="rounded-lg py-3 px-4.5 w-full border border-white-faint" type={TCardTypes.CARD}>
@@ -347,28 +445,28 @@ const FeesBox: FunctionComponent<{
 				<div className="flex justify-between items-center">
 					<p className="text-sm text-wireframes-lightGrey">Rate</p>
 					<p className="text-sm text-wireframes-lightGrey">
-						<span className="mr-2">1 {tradeState.inCurrency.coinDenom.toUpperCase()} =</span>{' '}
+						<span className="mr-2">1 {config.sendCurrency.coinDenom.toUpperCase()} =</span>{' '}
 						{inSpotPrice
-							.maxDecimals(2)
+							.maxDecimals(3)
 							.trim(true)
 							.toString()}{' '}
-						{tradeState.outCurrency.coinDenom.toUpperCase()}
+						{config.outCurrency.coinDenom.toUpperCase()}
 					</p>
 				</div>
 				<div className="flex justify-end items-center mt-1.5 mb-2.5">
 					<p className="text-xs text-wireframes-grey">
-						<span className="mr-2">1 {tradeState.outCurrency.coinDenom.toUpperCase()} =</span>{' '}
+						<span className="mr-2">1 {config.outCurrency.coinDenom.toUpperCase()} =</span>{' '}
 						{outSpotPrice
-							.maxDecimals(2)
+							.maxDecimals(3)
 							.trim(true)
 							.toString()}{' '}
-						{tradeState.inCurrency.coinDenom.toUpperCase()}
+						{config.sendCurrency.coinDenom.toUpperCase()}
 					</p>
 				</div>
 				<div className="grid grid-cols-5">
 					<p className="text-sm text-wireframes-lightGrey">Swap Fee</p>
 					<p className="col-span-4 text-sm text-wireframes-lightGrey text-right truncate">
-						{`${tradeState.swapFee
+						{`${config.swapFee
 							.trim(true)
 							.maxDecimals(3)
 							.toString()}%`}
@@ -379,7 +477,7 @@ const FeesBox: FunctionComponent<{
 	);
 });
 
-const FromBox: FunctionComponent<{ tradeState: TradeState }> = observer(({ tradeState }) => {
+const FromBox: FunctionComponent<{ config: TradeConfig }> = observer(({ config }) => {
 	const { chainStore, accountStore, queriesStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
@@ -387,7 +485,7 @@ const FromBox: FunctionComponent<{ tradeState: TradeState }> = observer(({ trade
 
 	const balance = queries.queryBalances
 		.getQueryBech32Address(account.bech32Address)
-		.balances.find(bal => bal.currency.coinMinimalDenom === tradeState.inCurrency.coinMinimalDenom);
+		.balances.find(bal => bal.currency.coinMinimalDenom === config.sendCurrency.coinMinimalDenom);
 
 	const [openSelector, setOpenSelector] = React.useState(false);
 
@@ -400,31 +498,37 @@ const FromBox: FunctionComponent<{ tradeState: TradeState }> = observer(({ trade
 						<p className="inline-block text-sm leading-tight w-fit text-xs mr-2">Available</p>
 						<DisplayAmount
 							wrapperClass="w-fit text-primary-50"
-							amount={balance ? balance.balance : new CoinPretty(tradeState.inCurrency, new Int('0'))}
+							amount={balance ? balance.balance : new CoinPretty(config.sendCurrency, new Int('0'))}
 						/>
 					</div>
-					<button className="rounded-md py-1 px-1.5 bg-white-faint h-6 ml-1.25">
+					<button
+						className="rounded-md py-1 px-1.5 bg-white-faint h-6 ml-1.25"
+						onClick={e => {
+							e.preventDefault();
+
+							config.toggleIsMax();
+						}}>
 						<p className="text-xs">MAX</p>
 					</button>
 				</div>
 			</section>
 			<section className="flex justify-between items-center">
-				<TokenDisplay openSelector={openSelector} setOpenSelector={setOpenSelector} currency={tradeState.inCurrency} />
+				<TokenDisplay openSelector={openSelector} setOpenSelector={setOpenSelector} currency={config.sendCurrency} />
 				<TokenAmountInput
-					amount={tradeState.inAmount}
-					amountText={tradeState.inAmountText}
-					onInput={text => tradeState.setInAmount(text)}
+					amount={config.amount}
+					currency={config.sendCurrency}
+					onInput={text => config.setAmount(text)}
 				/>
 			</section>
 			<div
 				style={{ top: 'calc(100% - 16px)' }}
 				className={cn('bg-surface rounded-b-2xl z-10 left-0 w-full', openSelector ? 'absolute' : 'hidden')}>
 				<TokenListDisplay
-					currencies={tradeState.swappableCurrencies.filter(
-						cur => cur.coinMinimalDenom !== tradeState.outCurrency.coinMinimalDenom
+					currencies={config.sendableCurrencies.filter(
+						cur => cur.coinMinimalDenom !== config.outCurrency.coinMinimalDenom
 					)}
 					close={() => setOpenSelector(false)}
-					onSelect={minimalDenom => tradeState.setInCurrency(minimalDenom)}
+					onSelect={minimalDenom => config.setInCurrency(minimalDenom)}
 				/>
 			</div>
 		</div>
@@ -432,14 +536,29 @@ const FromBox: FunctionComponent<{ tradeState: TradeState }> = observer(({ trade
 });
 
 const TokenAmountInput: FunctionComponent<{
-	amount: CoinPretty;
-	amountText: string;
+	amount: string;
+	currency: Currency;
 	onInput: (input: string) => void;
-}> = observer(({ amount, amountText, onInput }) => {
+}> = observer(({ amount, currency, onInput }) => {
 	const { priceStore } = useStore();
 
+	const coinPretty = (() => {
+		if (amount) {
+			try {
+				const result = new CoinPretty(currency, new Dec(amount).mul(DecUtils.getPrecisionDec(currency.coinDecimals)));
+				if (result.toDec().gte(new Dec(0))) {
+					return result;
+				}
+			} catch {
+				return new CoinPretty(currency, new Dec(0));
+			}
+		}
+
+		return new CoinPretty(currency, new Dec(0));
+	})();
+
 	const price =
-		priceStore.calculatePrice('usd', amount) ?? new PricePretty(priceStore.getFiatCurrency('usd')!, new Int(0));
+		priceStore.calculatePrice('usd', coinPretty) ?? new PricePretty(priceStore.getFiatCurrency('usd')!, new Int(0));
 
 	return (
 		<div style={{ maxWidth: '250px' }} className="flex flex-col items-end">
@@ -447,7 +566,7 @@ const TokenAmountInput: FunctionComponent<{
 				type="number"
 				style={{ maxWidth: '250px' }}
 				onChange={e => onInput(e.currentTarget.value)}
-				value={amountText}
+				value={amount}
 				placeholder="0"
 				className="s-tradebox-input s-number-input-default"
 			/>
@@ -456,7 +575,7 @@ const TokenAmountInput: FunctionComponent<{
 	);
 });
 
-const ToBox: FunctionComponent<{ tradeState: TradeState }> = observer(({ tradeState }) => {
+const ToBox: FunctionComponent<{ config: TradeConfig }> = observer(({ config }) => {
 	const [openSelector, setOpenSelector] = React.useState(false);
 	return (
 		<div className="bg-surface rounded-2xl py-4 pr-5 pl-4 relative">
@@ -464,13 +583,13 @@ const ToBox: FunctionComponent<{ tradeState: TradeState }> = observer(({ tradeSt
 				<p>To</p>
 			</section>
 			<section className="grid grid-cols-2">
-				<TokenDisplay setOpenSelector={setOpenSelector} openSelector={openSelector} currency={tradeState.outCurrency} />
+				<TokenDisplay setOpenSelector={setOpenSelector} openSelector={openSelector} currency={config.outCurrency} />
 				<div className="text-right flex flex-col justify-center h-full">
 					<h5
 						className={cn('text-xl font-title font-semibold truncate', {
-							'opacity-40': tradeState.outAmount.toDec().equals(new Dec(0)),
+							'opacity-40': config.outAmount.toDec().equals(new Dec(0)),
 						})}>
-						{tradeState.outAmount
+						{config.outAmount
 							.trim(true)
 							.maxDecimals(6)
 							.shrink(true)
@@ -482,11 +601,11 @@ const ToBox: FunctionComponent<{ tradeState: TradeState }> = observer(({ tradeSt
 				style={{ top: 'calc(100% - 16px)' }}
 				className={cn('bg-surface rounded-b-2xl z-10 left-0 w-full', openSelector ? 'absolute' : 'hidden')}>
 				<TokenListDisplay
-					currencies={tradeState.swappableCurrencies.filter(
-						cur => cur.coinMinimalDenom !== tradeState.inCurrency.coinMinimalDenom
+					currencies={config.sendableCurrencies.filter(
+						cur => cur.coinMinimalDenom !== config.sendCurrency.coinMinimalDenom
 					)}
 					close={() => setOpenSelector(false)}
-					onSelect={minimalDenom => tradeState.setOutCurrency(minimalDenom)}
+					onSelect={minimalDenom => config.setOutCurrency(minimalDenom)}
 				/>
 			</div>
 		</div>
