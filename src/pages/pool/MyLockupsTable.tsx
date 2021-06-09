@@ -1,7 +1,8 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import { CoinPretty } from '@keplr-wallet/unit';
+import { CoinPretty, Dec } from '@keplr-wallet/unit';
+import { TToastType, useToast } from '../../components/common/toasts';
 
 const tableWidths = ['25%', '25%', '25%', '25%'];
 export const MyLockupsTable: FunctionComponent<{
@@ -76,6 +77,10 @@ const LockupTableRow: FunctionComponent<{
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
+	const [isUnlocking, setIsUnlocking] = useState(false);
+
+	const toast = useToast();
+
 	let i = 0;
 	return (
 		<tr style={{ height: `76px` }} className="flex items-center w-full border-b pl-12.5 pr-15">
@@ -95,17 +100,53 @@ const LockupTableRow: FunctionComponent<{
 			</td>
 			<td className="flex items-center justify-end px-2 py-3" style={{ width: tableWidths[i++] }}>
 				<button
-					onClick={e => {
+					className="disabled:opacity-50"
+					disabled={!account.isReadyToSendMsgs || lockup.amount.toDec().equals(new Dec(0))}
+					onClick={async e => {
 						e.preventDefault();
 
 						if (account.isReadyToSendMsgs) {
-							// 현재 lockup 모듈의 구조상의 한계로 그냥 락업된 전체 토큰을 다 언락시키도록 한다.
-							// TODO: 락이 여러번에 거쳐서 많은 수가 있다면 가스 리밋의 한계로 tx를 보내는게 불가능 할 수 있다.
-							//       그러므로 최대 메세지 숫자를 제한해야한다.
-							account.osmosis.sendBeginUnlockingMsg(lockup.lockIds);
+							try {
+								setIsUnlocking(true);
+
+								// 현재 lockup 모듈의 구조상의 한계로 그냥 락업된 전체 토큰을 다 언락시키도록 한다.
+								// TODO: 락이 여러번에 거쳐서 많은 수가 있다면 가스 리밋의 한계로 tx를 보내는게 불가능 할 수 있다.
+								//       그러므로 최대 메세지 숫자를 제한해야한다.
+								await account.osmosis.sendBeginUnlockingMsg(lockup.lockIds, '', tx => {
+									setIsUnlocking(false);
+
+									if (tx.code) {
+										toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
+									} else {
+										toast.displayToast(TToastType.TX_SUCCESSFULL, {
+											customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),
+										});
+									}
+								});
+
+								toast.displayToast(TToastType.TX_BROADCASTING);
+							} catch (e) {
+								setIsUnlocking(false);
+								toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+							}
 						}
 					}}>
-					<p className="text-enabledGold">Unlock</p>
+					{isUnlocking ? (
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+							viewBox="0 0 24 24">
+							<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
+							<path
+								fill="currentColor"
+								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+								className="opacity-75"
+							/>
+						</svg>
+					) : (
+						<p className="text-enabledGold">Unlock</p>
+					)}
 				</button>
 			</td>
 		</tr>
