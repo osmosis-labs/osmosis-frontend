@@ -259,6 +259,7 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 						.trim(true)
 						.shrink(true)
 						.maxDecimals(2)
+						.locale(false)
 						.toString()
 				);
 			}
@@ -605,7 +606,7 @@ const BottomButton: FunctionComponent<{
 			)}
 			<div className="w-full flex items-center justify-center">
 				<button
-					disabled={!account.isReadyToSendMsgs}
+					disabled={!account.isReadyToSendMsgs || error != null}
 					className="w-2/3 h-15 bg-primary-200 rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer disabled:opacity-50"
 					onClick={async e => {
 						e.preventDefault();
