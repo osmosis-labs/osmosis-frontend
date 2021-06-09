@@ -38,6 +38,7 @@ export class GammSwapManager {
 		| {
 				poolId: string;
 				spotPrice: IntPretty;
+				swapFee: IntPretty;
 		  }
 		| undefined {
 		// TODO: 아직까진 실제 라우트를 계산하지 않는다. 추후 추가...
@@ -61,6 +62,7 @@ export class GammSwapManager {
 		return {
 			poolId: pool.id,
 			spotPrice: pool.calculateSpotPrice(inMinimalDenom, outMinimalDenom),
+			swapFee: pool.swapFee,
 		};
 	}
 }

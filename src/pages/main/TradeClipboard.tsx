@@ -2,7 +2,6 @@ import * as React from 'react';
 import { FunctionComponent, useState } from 'react';
 import { Container } from '../../components/containers';
 import { TCardTypes } from '../../interfaces';
-import { DisplayIcon } from '../../components/layouts/Sidebar/SidebarItem';
 import { DisplayAmount } from '../../components/common/DIsplayAmount';
 import { Img } from '../../components/common/Img';
 import cn from 'clsx';
@@ -194,6 +193,21 @@ export class TradeState {
 	}
 
 	@computed
+	get swapFee(): IntPretty {
+		const computed = this.swapManager.computeOptimizedRoues(
+			this.queryPools,
+			this.inCurrency.coinMinimalDenom,
+			this.outCurrency.coinMinimalDenom
+		);
+
+		if (!computed) {
+			return new IntPretty(new Int(0));
+		}
+
+		return computed.swapFee;
+	}
+
+	@computed
 	get poolId(): string | undefined {
 		const computed = this.swapManager.computeOptimizedRoues(
 			this.queryPools,
@@ -353,7 +367,12 @@ const FeesBox: FunctionComponent<{
 				</div>
 				<div className="grid grid-cols-5">
 					<p className="text-sm text-wireframes-lightGrey">Swap Fee</p>
-					<p className="col-span-4 text-sm text-wireframes-lightGrey text-right truncate">논의 필요</p>
+					<p className="col-span-4 text-sm text-wireframes-lightGrey text-right truncate">
+						{`${tradeState.swapFee
+							.trim(true)
+							.maxDecimals(3)
+							.toString()}%`}
+					</p>
 				</div>
 			</section>
 		</Container>
