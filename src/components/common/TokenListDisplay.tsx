@@ -27,7 +27,7 @@ export const TokenListDisplay: FunctionComponent<{
 				<Img className="w-4.5 h-4.5" src="/public/assets/Icons/Search.svg" />
 				<input
 					value={input}
-					onInput={e => setInput(e.currentTarget.value)}
+					onChange={e => setInput(e.currentTarget.value)}
 					className="pl-4 w-full pr-4"
 					placeholder="Search your token"
 				/>
