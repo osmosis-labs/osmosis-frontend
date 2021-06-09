@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from 'react';
 import { Img } from '../../components/common/Img';
-import { LINKS } from '../../constants';
 import { TransferDialog } from '../../dialogs/Transfer';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';

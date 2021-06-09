@@ -1,8 +1,5 @@
 import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
-import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
-import { formatUSD } from '../../utils/format';
-import { IAssets } from '../assets';
 import { SynthesisList } from './SynthesisList';
 import { AssetsOverview } from '../assets/AssetsOverview';
 
