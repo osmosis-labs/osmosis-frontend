@@ -1,10 +1,9 @@
 import React, { FunctionComponent } from 'react';
 import cn from 'clsx';
 import { DisplayIcon } from '../../components/layouts/Sidebar/SidebarItem';
-import { TradeConfig } from './TradeClipboard';
+import { SlippageStep, slippageStepToPercentage, TradeConfig } from './TradeClipboard';
 import { observer } from 'mobx-react-lite';
 
-const SLIPPAGE_TOLERANCE_VALUES = [0.1, 0.5, 1, 0.05];
 export const TradeTxSettings: FunctionComponent<{
 	config: TradeConfig;
 }> = observer(({ config }) => {
@@ -34,23 +33,28 @@ export const TradeTxSettings: FunctionComponent<{
 					</div>
 				</div>
 				<ul className="grid grid-cols-4 gap-3">
-					{SLIPPAGE_TOLERANCE_VALUES.map((slippage, i) => {
+					{[SlippageStep.Step1, SlippageStep.Step2, SlippageStep.Step3].map((slippageStep, i) => {
 						return (
 							<SlippageToleranceItem
 								key={i.toString()}
-								data={slippage}
-								setSelected={() => config.setSlippage(slippage.toString())}
-								selected={slippage.toString() === config.slippage}
+								percentage={slippageStepToPercentage(slippageStep)}
+								setSelected={() => config.setSlippageStep(slippageStep)}
+								selected={config.slippageStep === slippageStep}
 							/>
 						);
 					})}
+					<SlippageToleranceEditableItem config={config} />
 				</ul>
 			</div>
 		</section>
 	);
 });
 
-const SlippageToleranceItem: FunctionComponent<ISlippageToleranceItem> = ({ data, selected, setSelected }) => {
+const SlippageToleranceItem: FunctionComponent<{
+	percentage: number;
+	selected: boolean;
+	setSelected: () => void;
+}> = ({ percentage, selected, setSelected }) => {
 	return (
 		<li
 			onClick={setSelected}
@@ -59,12 +63,44 @@ const SlippageToleranceItem: FunctionComponent<ISlippageToleranceItem> = ({ data
 				selected ? 'bg-primary-200' : 'bg-background cursor-pointer hover:opacity-75'
 			)}
 			style={{ borderRadius: '20px' }}>
-			<p className="text-white-high">{data}%</p>
+			<p className="text-white-high">{percentage}%</p>
 		</li>
 	);
 };
-interface ISlippageToleranceItem {
-	data: number;
-	selected: boolean;
-	setSelected: () => void;
-}
+
+const SlippageToleranceEditableItem: FunctionComponent<{
+	config: TradeConfig;
+}> = observer(({ config }) => {
+	const selected = config.slippageStep == null;
+
+	const error = (() => {
+		if (selected) {
+			return config.getErrorOfSlippage();
+		}
+	})();
+
+	return (
+		<li
+			className={cn(
+				'w-full flex items-center justify-center h-8',
+				selected ? (error ? 'bg-error' : 'bg-primary-200') : 'bg-background'
+			)}
+			style={{ borderRadius: '20px' }}>
+			<input
+				className={cn('text-center', selected ? 'text-white-high' : 'text-white-low')}
+				value={`${config.manualSlippageText}%`}
+				onFocus={e => {
+					e.preventDefault();
+
+					config.setSlippageStep(undefined);
+				}}
+				onChange={e => {
+					e.preventDefault();
+
+					const text = e.currentTarget.value.replace('%', '');
+					config.setSlippage(text);
+				}}
+			/>
+		</li>
+	);
+});

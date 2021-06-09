@@ -21,11 +21,23 @@ import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balanc
 import { AmountConfig } from '@keplr-wallet/hooks';
 import { TToastType, useToast } from '../../components/common/toasts';
 import { useFakeFeeConfig } from '../../hooks/tx';
+import { computedFn } from 'mobx-utils';
 
 export enum SlippageStep {
 	Step1, // 0.1%
 	Step2, // 0.5%
 	Step3, // 1.0%
+}
+
+export function slippageStepToPercentage(step: SlippageStep) {
+	switch (step) {
+		case SlippageStep.Step1:
+			return 0.1;
+		case SlippageStep.Step2:
+			return 0.5;
+		case SlippageStep.Step3:
+			return 1;
+	}
 }
 
 // CONTRACT: Use with `observer`
@@ -39,12 +51,12 @@ export class TradeConfig extends AmountConfig {
 	protected outCurrencyMinimalDenom: string = '';
 
 	@observable
-	protected _slippageStep: SlippageStep | undefined = undefined;
+	protected _slippageStep: SlippageStep | undefined = SlippageStep.Step3;
 
 	// If slippage step is undefiend,
 	// the slippage can be set by manually.
 	@observable
-	protected _slippage: string = '0.5';
+	protected _slippage: string = '0.05';
 
 	constructor(
 		chainGetter: ChainGetter,
@@ -129,7 +141,7 @@ export class TradeConfig extends AmountConfig {
 	}
 
 	@action
-	setSlippageStep(step: SlippageStep) {
+	setSlippageStep(step: SlippageStep | undefined) {
 		this._slippageStep = step;
 	}
 
@@ -143,16 +155,6 @@ export class TradeConfig extends AmountConfig {
 			slippage = '0' + slippage;
 		}
 
-		if (slippage) {
-			try {
-				// 숫자가 맞는지 and 양수인지 확인...
-				if (new Dec(slippage).lt(new Dec(0))) {
-					return;
-				}
-			} catch {
-				return;
-			}
-		}
 		this._slippageStep = undefined;
 		this._slippage = slippage;
 	}
@@ -160,16 +162,13 @@ export class TradeConfig extends AmountConfig {
 	@computed
 	get slippage(): string {
 		if (this.slippageStep != null) {
-			switch (this.slippageStep) {
-				case SlippageStep.Step1:
-					return '0.1';
-				case SlippageStep.Step2:
-					return '0.5';
-				case SlippageStep.Step3:
-					return '1';
-			}
+			return slippageStepToPercentage(this.slippageStep).toString();
 		}
 
+		return this._slippage;
+	}
+
+	get manualSlippageText(): string {
 		return this._slippage;
 	}
 
@@ -283,6 +282,31 @@ export class TradeConfig extends AmountConfig {
 				.mul(DecUtils.getPrecisionDec(this.outCurrency.coinDecimals))
 				.truncate()
 		);
+	}
+
+	readonly getErrorOfSlippage = computedFn(() => {
+		const slippage = this.slippage;
+		if (!slippage) {
+			return new Error('Slippage not set');
+		}
+
+		try {
+			const dec = new Dec(slippage);
+			if (dec.lt(new Dec(0))) {
+				return new Error('Slippage should be positive');
+			}
+		} catch {
+			return new Error('Invalid slippage number');
+		}
+	});
+
+	getError(): Error | undefined {
+		const error = super.getError();
+		if (error) {
+			return error;
+		}
+
+		return this.getErrorOfSlippage();
 	}
 }
 
