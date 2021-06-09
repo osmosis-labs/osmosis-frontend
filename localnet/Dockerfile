@@ -24,9 +24,9 @@ WORKDIR /osmosis/build
 
 RUN ./osmosisd init localnet --chain-id localnet-1
 
-# epochs 모듈에 hourly만 존재하도록 만든다.
+# epochs 모듈에 hour만 존재하도록 만든다.
 RUN yq eval 'del(.app_state.epochs.epochs.[1])' ~/.osmosisd/config/genesis.json \
-    | yq eval '.app_state.epochs.epochs.[0].identifier = "hourly"' - \
+    | yq eval '.app_state.epochs.epochs.[0].identifier = "hour"' - \
     | yq eval '.app_state.epochs.epochs.[0].epoch_counting_started = true' - \
     | yq eval '.app_state.epochs.epochs.[0].duration = "3600s"' - \
     | yq eval '.app_state.claim.module_account_balance.denom = "uosmo"' - \
@@ -44,9 +44,9 @@ RUN sed -i 's/enable = false/enable = true/g' ~/.osmosisd/config/app.toml
 RUN sed -i 's/swagger = false/swagger = true/g' ~/.osmosisd/config/app.toml
 RUN sed -i 's/enabled-unsafe-cors = false/enabled-unsafe-cors = true/g' ~/.osmosisd/config/app.toml
 
-# 데브넷 체인에서는 풀 리워드 분배가 hourly로 발생하도록 만든다.
-RUN sed -i 's/"distr_epoch_identifier": "week"/"distr_epoch_identifier": "hourly"/g' ~/.osmosisd/config/genesis.json
-RUN sed -i 's/"epoch_identifier": "week"/"epoch_identifier": "hourly"/g' ~/.osmosisd/config/genesis.json
+# 데브넷 체인에서는 풀 리워드 분배가 hour로 발생하도록 만든다.
+RUN sed -i 's/"distr_epoch_identifier": "week"/"distr_epoch_identifier": "hour"/g' ~/.osmosisd/config/genesis.json
+RUN sed -i 's/"epoch_identifier": "week"/"epoch_identifier": "hour"/g' ~/.osmosisd/config/genesis.json
 # 꽤 요상한 방식이지만 distr record를 등록하려면 gov를 통과시켜야 하지만 이걸 실행시키기 어렵기 때문에 일단 제네시스에서부터 3개의 팟을 인센티바이즈 해버린다.
 RUN sed -i 's/"distr_info": null/"distr_info": {"total_weight":"600","records":[{"gauge_id":"1","weight":"100"},{"gauge_id":"2","weight":"200"},{"gauge_id":"3","weight":"300"}]}/g' ~/.osmosisd/config/genesis.json
 
