@@ -32,6 +32,7 @@ export interface OsmosisMsgOpts {
 	readonly swapExactAmountOut: MsgOpt;
 	readonly lockTokens: MsgOpt;
 	readonly beginUnlocking: MsgOpt;
+	readonly unlockPeriodLock: MsgOpt;
 }
 
 export class AccountWithCosmosAndOsmosis extends AccountSetBase<
@@ -70,6 +71,11 @@ export class AccountWithCosmosAndOsmosis extends AccountSetBase<
 		},
 		beginUnlocking: {
 			type: 'osmosis/lockup/begin-unlock-period-lock',
+			// Gas per msg
+			gas: 3000000,
+		},
+		unlockPeriodLock: {
+			type: 'osmosis/lockup/unlock-period-lock',
 			// Gas per msg
 			gas: 3000000,
 		},
@@ -555,6 +561,45 @@ export class OsmosisAccount {
 					queries.queryBalances.getQueryBech32Address(this.base.bech32Address).fetch();
 
 					// Refresh the locked coins
+					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
+					queries.osmosis.queryUnlockingCoins.get(this.base.bech32Address).fetch();
+					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
+				}
+
+				if (onFulfill) {
+					onFulfill(tx);
+				}
+			}
+		);
+	}
+
+	async sendUnlockPeriodLockMsg(lockIds: string[], memo: string = '', onFulfill?: (tx: any) => void) {
+		const msgs = lockIds.map(lockId => {
+			return {
+				type: this.base.msgOpts.unlockPeriodLock.type,
+				value: {
+					owner: this.base.bech32Address,
+					// XXX: 얘는 어째서인지 소문자가 아님 ㅋ;
+					ID: lockId,
+				},
+			};
+		});
+
+		await this.base.sendMsgs(
+			'unlockPeriodLock',
+			msgs,
+			{
+				amount: [],
+				gas: (msgs.length * this.base.msgOpts.unlockPeriodLock.gas).toString(),
+			},
+			memo,
+			tx => {
+				if (tx.code == null || tx.code === 0) {
+					// Refresh the balances
+					const queries = this.queriesStore.get(this.chainId);
+					queries.queryBalances.getQueryBech32Address(this.base.bech32Address).fetch();
+
+					// Refresh the unlocking coins
 					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryUnlockingCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();

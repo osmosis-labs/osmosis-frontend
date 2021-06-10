@@ -71,6 +71,7 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
 
 	readonly getUnlockingCoinWithDuration = computedFn((currency: AppCurrency, duration: Duration): {
 		amount: CoinPretty;
+		lockIds: string[];
 		endTime: Date;
 	}[] => {
 		if (!this.response) {
@@ -91,6 +92,7 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
 			number,
 			{
 				amount: CoinPretty;
+				lockIds: string[];
 				endTime: Date;
 			}
 		> = new Map();
@@ -102,12 +104,14 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
 				if (!map.has(time)) {
 					map.set(time, {
 						amount: new CoinPretty(currency, new Dec(0)),
+						lockIds: [],
 						endTime: new Date(lock.end_time),
 					});
 				}
 
 				const value = map.get(time)!;
 				value.amount = value.amount.add(new CoinPretty(currency, new Dec(matchedCoin.amount)));
+				value.lockIds.push(lock.ID);
 
 				map.set(time, value);
 			}
