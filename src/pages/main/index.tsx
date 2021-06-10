@@ -16,7 +16,15 @@ export const MainPage: FunctionComponent = () => {
 			<div />
 			<div className="absolute top-0 left-0 w-full h-full z-0">
 				<div className="absolute z-20 w-full h-full left-0 bottom-0">
-					<Img className="h-full" style={{ width: '726px' }} src={'/public/assets/backgrounds/osmosis-guy.png'} />
+					<div
+						className="absolute"
+						style={{
+							width: '726px',
+							height: '100%',
+							background: 'url("/public/assets/backgrounds/osmosis-guy.png")',
+							backgroundSize: 'cover',
+						}}
+					/>
 				</div>
 				<div
 					className="absolute z-0 h-full left-0 top-0 overflow-x-hidden"
