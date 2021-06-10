@@ -493,7 +493,7 @@ const TokenLiquidityItem: FunctionComponent<{
 					</p>
 					<div className="bg-background px-1.5 py-0.5 rounded-lg">
 						<input
-							type="text"
+							type="number"
 							onChange={e => {
 								e.preventDefault();
 								addLiquidityConfig.setAmountAt(index, e.currentTarget.value);

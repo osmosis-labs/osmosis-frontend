@@ -69,6 +69,7 @@ const Pool: FunctionComponent<{
 					</div>
 					<div className="grid" style={{ gridTemplateColumns: '181px 80px' }}>
 						<input
+							type="number"
 							className="w-full font-title bg-black py-1.5 h-9 rounded-lg mr-2.5 pr-1.5 border border-transparent focus:border-enabledGold text-white placeholder-white-disabled text-right text-lg leading-none"
 							onChange={e => {
 								asset.amountConfig.setAmount(e.currentTarget.value);
