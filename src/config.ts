@@ -4,6 +4,10 @@ import { ChainInfoWithExplorer } from './stores/chain';
 export const PoolsPerPage = 10;
 export const RewardEpochIdentifier = 'hour';
 
+/**
+ * Determine the channel info per the chain.
+ * Guide users to use the same channel for convenience.
+ */
 export const IBCAssetInfos: {
 	counterpartyChainId: string;
 	// Souce channel id based on the Osmosis chain

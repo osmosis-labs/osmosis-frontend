@@ -3,7 +3,7 @@ import { AccountStore } from '@keplr-wallet/stores';
 import { DenomHelper, IndexedDBKVStore } from '@keplr-wallet/common';
 import { ChainStore } from './chain';
 import { AppCurrency, ChainInfo } from '@keplr-wallet/types';
-import { EmbedChainInfos } from '../config';
+import { EmbedChainInfos, IBCAssetInfos } from '../config';
 import { QueriesWithCosmosAndOsmosis } from './osmosis/query';
 import { AccountWithCosmosAndOsmosis } from './osmosis/account';
 import { LayoutStore } from './layout';
@@ -91,6 +91,15 @@ export class RootStore {
 				counterpartyChainInfo: ChainInfoInner | undefined,
 				originCurrency: AppCurrency | undefined
 			) => {
+				const firstPath = denomTrace.paths[0];
+
+				// If the IBC Currency's channel is known.
+				// Don't show the channel info on the coin denom.
+				const knownAssetInfo = IBCAssetInfos.find(info => info.sourceChannelId === firstPath.channelId);
+				if (knownAssetInfo && knownAssetInfo.coinMinimalDenom === denomTrace.denom) {
+					return originCurrency ? originCurrency.coinDenom : denomTrace.denom;
+				}
+
 				return `${originCurrency ? originCurrency.coinDenom : denomTrace.denom} (${
 					denomTrace.paths.length > 0 ? denomTrace.paths[0].channelId : 'Unknown'
 				})`;
