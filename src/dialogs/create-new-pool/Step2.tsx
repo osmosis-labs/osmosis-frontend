@@ -67,7 +67,7 @@ const Pool: FunctionComponent<{
 							<p className="text-secondary-200 text-sm px-2.5">MAX</p>
 						</button>
 					</div>
-					<div className="grid" style={{ gridTemplateColumns: '181px 80px' }}>
+					<div>
 						<input
 							type="number"
 							className="w-full font-title bg-black py-1.5 h-9 rounded-lg mr-2.5 pr-1.5 border border-transparent focus:border-enabledGold text-white placeholder-white-disabled text-right text-lg leading-none"
@@ -76,9 +76,6 @@ const Pool: FunctionComponent<{
 							}}
 							value={asset.amountConfig.amount}
 						/>
-						<div className="flex items-center justify-end">
-							<h6 className="text-right">{asset.amountConfig.currency.coinDenom.toUpperCase()}</h6>
-						</div>
 					</div>
 				</div>
 			</div>
