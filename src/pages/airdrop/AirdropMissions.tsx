@@ -22,6 +22,7 @@ export const AirdropMissions: FunctionComponent = observer(() => {
 		<div className="w-full">
 			<h5>Missions</h5>
 			<ul className="flex flex-col gap-2.5 mt-7.5">
+				<MissionCard num={0} complete={true} description="Hold ATOM on February 18" />
 				{Object.entries(claimRecord.completedActions).map(([action, value]) => {
 					return (
 						<MissionCard

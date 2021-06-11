@@ -16,3 +16,12 @@ export type ClaimRecord = {
 		action_completed: [boolean, boolean, boolean, boolean] | [];
 	};
 };
+
+export type ClaimParams = {
+	params: {
+		airdrop_start_time: string;
+		duration_until_decay: string;
+		duration_of_decay: string;
+		claim_denom: string;
+	};
+};

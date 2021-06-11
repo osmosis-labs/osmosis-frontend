@@ -10,7 +10,7 @@ export const AirdropPage: FunctionComponent = () => {
 		<div className="w-full h-full">
 			<div className="mx-15">
 				<div className="my-10 max-w-max mx-auto">
-					<AirdropOverview state={airdropData} />
+					<AirdropOverview />
 				</div>
 			</div>
 			<div className="mt-9 px-15 py-12.5 bg-surface">
