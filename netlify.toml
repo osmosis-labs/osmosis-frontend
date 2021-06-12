@@ -1,0 +1,5 @@
+# Redirect the routes to the index.html
+[[redirects]]
+    from = "/*"
+    to = "/index.html"
+    status = 200
