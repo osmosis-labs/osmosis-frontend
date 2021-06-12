@@ -2,11 +2,27 @@ import React, { FunctionComponent } from 'react';
 import cn from 'clsx';
 import { Img } from '../../common/Img';
 import { TSIDEBAR_ITEM } from '../../../constants';
-import { useHistory, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+
+const NavLinkFallback: FunctionComponent<{ sidebarItem: TSIDEBAR_ITEM }> = ({ sidebarItem, children }) => {
+	return (
+		<React.Fragment>
+			{sidebarItem.ROUTE ? (
+				<NavLink exact to={sidebarItem.ROUTE}>
+					{children}
+				</NavLink>
+			) : (
+				<a href={sidebarItem.LINK} target="_blank" rel="noreferrer">
+					{children}
+				</a>
+			)}
+		</React.Fragment>
+	);
+};
 
 export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, openSidebar, selected }) => {
 	return (
-		<NavLink exact to={sidebarItem.ROUTE}>
+		<NavLinkFallback sidebarItem={sidebarItem}>
 			<li
 				className={cn('h-15 flex items-center group', {
 					'opacity-75 hover:opacity-100 transition-all': !selected,
@@ -33,8 +49,9 @@ export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, open
 					)}>
 					{sidebarItem.TEXT}
 				</p>
+				{sidebarItem.LINK ? <img className="ml-2" src="/public/assets/sidebar/icon-link-deco.svg" alt="link" /> : null}
 			</li>
-		</NavLink>
+		</NavLinkFallback>
 	);
 };
 interface TSidebarItem {
