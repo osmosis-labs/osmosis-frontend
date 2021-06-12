@@ -48,6 +48,7 @@ export const LAYOUT = {
 					GOVERNANCE: {
 						ICON: '/public/assets/Icons/Ticket.svg',
 						ICON_SELECTED: '/public/assets/Icons/Ticket_selected.png',
+						TEXT: 'Governance',
 						ROUTE: '/governance',
 						SELECTED_CHECK: [/\/governance[.]?/],
 					},
