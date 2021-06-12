@@ -1,7 +1,6 @@
 #!/bin/bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-echo "$DIR"
 
 # Build the docker image first.
 sudo docker build --tag osmosis/localnet "$DIR"/../localnet

@@ -1,15 +1,21 @@
-import { computed, makeObservable, observable } from 'mobx';
+import { computed, makeAutoObservable, observable } from 'mobx';
+import { TModal } from '../../interfaces';
 
 export class LayoutStore {
 	@observable
-	private _currentModal = '';
+	private _currentModal: TModal;
 
 	constructor() {
-		makeObservable(this);
+		this._currentModal = TModal.INIT;
+		makeAutoObservable(this);
 	}
 
 	@computed
-	get currentModal(): string {
+	get currentModal(): TModal {
 		return this._currentModal;
+	}
+
+	public updateCurrentModal(newModal: TModal) {
+		this._currentModal = newModal;
 	}
 }

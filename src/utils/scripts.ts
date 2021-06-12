@@ -7,3 +7,5 @@ export const mapKeyValues = (obj: Record<string, unknown>, cb: CallableFunction)
 export const isAlphanumeric = (input: string): boolean => {
 	return /^[a-z0-9]+$/i.test(input);
 };
+
+export const isNumber = (input: string): boolean => !isNaN(Number(input));

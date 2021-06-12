@@ -1,3 +1,5 @@
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 const spacing = {
 	0: '0px',
 	0.25: '1px',
@@ -9,16 +11,23 @@ const spacing = {
 	2: '8px',
 	2.5: '10px',
 	3: '12px',
+	3.5: '14px',
 	3.75: '15px',
 	4: '16px',
+	4.5: '18px',
 	5: '20px',
 	6: '24px',
 	7: '28px',
+	7.5: '30px',
 	8: '32px',
+	8.75: '35px',
+	9: '36px',
 	10: '40px',
 	12.5: '50px',
 	15: '60px',
 	17.5: '70px',
+	20: '80px',
+	21.5: '86px',
 };
 const sizes = {
 	0: '0px',
@@ -52,17 +61,22 @@ const sizes = {
 const screenWidths = {
 	// 'screen-md': 'var(--screens-md)',
 	'screen-lg': 'var(--screens-lg)',
+	'true-screen': 'calc(100vw - var(--sidebar-open))',
 };
 const sidebarWidths = {
 	'sidebar-open': 'var(--sidebar-open)',
 	'sidebar-closed': 'var(--sidebar-closed)',
+};
+const genericWidths = {
+	table: '1000px',
+	max: '1920px',
 };
 module.exports = {
 	future: {
 		removeDeprecatedGapUtilities: false,
 		purgeLayersByDefault: false,
 	},
-	purge: ['./components/**/*.js', './pages/**/*.js', './constants/**/*.js'],
+	purge: ['./src/**/*.tsx', './src/**/*.ts'],
 	theme: {
 		fontFamily: {
 			title: ['Poppins', 'ui-sans-serif', 'system-ui'],
@@ -81,12 +95,17 @@ module.exports = {
 		},
 		boxShadow: {
 			container: '0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)',
-			elevation:
+			'elevation-08dp':
+				'0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)',
+			'elevation-24dp':
 				'0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2)',
+			'elevation-04dp':
+				'0px 4px 5px rgba(0, 0, 0, 0.14), 0px 1px 10px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.2)',
 		},
 		colors: {
 			white: {
 				high: 'rgba(255, 255, 255, 0.95)',
+				emphasis: 'rgba(255, 255, 255, 0.87)',
 				mid: 'rgba(255, 255, 255, 0.6)',
 				disabled: 'rgba(255, 255, 255, 0.38)',
 				faint: 'rgba(255, 255, 255, 0.12)',
@@ -117,12 +136,20 @@ module.exports = {
 				800: '#875903',
 				900: '#734B00',
 			},
+			wireframes: {
+				grey: '#818181',
+				lightGrey: '#B7B7B7',
+			},
 			background: '#170F34',
 			surface: '#231D4B',
 			card: '#2D2755',
 			cardInner: '#3C356D',
 			iconDefault: '#8E83AA',
 			error: '#CF6679',
+			enabledGold: '#C4A46A',
+			pass: '#34EF52',
+			missionError: '#EF3456',
+			black: '#000000',
 		},
 		backgroundColor: themes => ({
 			...themes('colors'),
@@ -131,12 +158,29 @@ module.exports = {
 				focus: 'rgba(255, 255, 255, 0.12)',
 				selected: 'rgba(255, 255, 255, 0.08)',
 			},
+			button: {
+				hover: 'rgba(196, 164, 106, 0.08)',
+			},
 		}),
+		backgroundImage: {
+			'gradients-socialLive': 'linear-gradient(180deg, #89EAFB 0%, #1377B0 100%)',
+			'gradients-greenBeach': 'linear-gradient(180deg, #00CEBA 0%, #008A7D 100%)',
+			'gradients-kashmir': 'linear-gradient(180deg, #6976FE 0%, #3339FF 100%)',
+			'gradients-frost': 'linear-gradient(180deg, #0069C4 0%, #00396A 100%)',
+			'gradients-cherry': 'linear-gradient(180deg, #FF652D 0%, #FF0000 100%)',
+			'gradients-sunset': 'linear-gradient(180deg, #FFBC00 0%, #FF8E00 100%)',
+			'gradients-orangeCoral': 'linear-gradient(180deg, #FF8200 0%, #FF2C00 100%)',
+			'gradients-pinky': 'linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)',
+		},
 		screens: {
+			// XXX: 이 부분의 의미를 모르겠슴...
+			// JJJ: 미디어 퀴리를 설정하는 부분인데, 실험적으로 css 변수로 설정을 해봤지만 스펙을 확인해보니 그렇게는 적용이 되지 않네요... 숫자로 돌려놨습니다
+			// xx: '320px',
+			// xs: '480px',
 			// sm: '820px',
-			// base: '1060px',
-			// md: 'var(--screens-md)',
-			lg: 'var(--screens-lg)',
+			md: '1280px',
+			lg: '1600px',
+			xl: '1920px',
 		},
 		spacing: {
 			...spacing,
@@ -156,22 +200,34 @@ module.exports = {
 				screen: '100vh',
 			},
 			width: {
+				screen: '100vw',
 				fit: 'fit-content',
 				...sizes,
 				...screenWidths,
+				modal: '41.25rem',
 			},
 			minWidth: {
 				...screenWidths,
 				...sidebarWidths,
+				...genericWidths,
+				modal: '41.25rem',
 			},
 			maxWidth: {
 				...sizes,
 				...screenWidths,
 				...sidebarWidths,
+				...genericWidths,
+				modal: '41.25rem',
 			},
 			borderOpacity: {
+				40: '0.4',
 				75: '0.75',
+				80: '0.8',
 			},
+			borderColor: theme => ({
+				...theme('colors'),
+				DEFAULT: 'rgba(255, 255, 255, 0.12)',
+			}),
 			zIndex: {
 				50: 50,
 				60: 60,
@@ -181,6 +237,7 @@ module.exports = {
 				100: 100,
 			},
 			variants: {
+				rotate: ['hover', 'group-hover'],
 				display: ['responsive', 'hover', 'group-hover'],
 				opacity: ['hover'],
 				borderWidth: ['hover', 'responsive'],
@@ -188,6 +245,11 @@ module.exports = {
 				fontSize: ['responsive'],
 				zIndex: ['hover'],
 			},
+		},
+	},
+	variants: {
+		extend: {
+			opacity: ['disabled'],
 		},
 	},
 	plugins: [require('tailwindcss'), require('precss'), require('autoprefixer')],

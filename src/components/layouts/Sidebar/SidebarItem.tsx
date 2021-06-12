@@ -2,15 +2,34 @@ import React, { FunctionComponent } from 'react';
 import cn from 'clsx';
 import { Img } from '../../common/Img';
 import { TSIDEBAR_ITEM } from '../../../constants';
-import { useHistory, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+
+const NavLinkFallback: FunctionComponent<{ sidebarItem: TSIDEBAR_ITEM }> = ({ sidebarItem, children }) => {
+	return (
+		<React.Fragment>
+			{sidebarItem.ROUTE ? (
+				<NavLink exact to={sidebarItem.ROUTE}>
+					{children}
+				</NavLink>
+			) : (
+				<a href={sidebarItem.LINK} target="_blank" rel="noreferrer">
+					{children}
+				</a>
+			)}
+		</React.Fragment>
+	);
+};
 
 export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, openSidebar, selected }) => {
 	return (
-		<NavLink exact to={sidebarItem.ROUTE}>
-			<li className="h-15 flex items-center">
+		<NavLinkFallback sidebarItem={sidebarItem}>
+			<li
+				className={cn('h-15 flex items-center group', {
+					'opacity-75 hover:opacity-100 transition-all': !selected,
+				})}>
 				<div className="h-11 w-11 relative">
 					<Img
-						className="w-full h-full absolute top-0 left-0"
+						className={cn('w-full h-full absolute top-0 left-0 transition-all')}
 						src={
 							selected
 								? '/public/assets/sidebar/icon-border_selected.svg'
@@ -25,13 +44,14 @@ export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, open
 				<p
 					style={{ maxWidth: openSidebar ? '100px' : '0px' }}
 					className={cn(
-						'ml-2.5 text-base overflow-x-hidden transition-all font-bold',
-						selected ? 'text-white-high' : 'text-iconDefault'
+						'ml-2.5 text-base overflow-x-hidden transition-all font-bold transition-all',
+						selected ? 'text-white-high' : 'text-iconDefault group-hover:text-white-mid'
 					)}>
 					{sidebarItem.TEXT}
 				</p>
+				{sidebarItem.LINK ? <img className="ml-2" src="/public/assets/sidebar/icon-link-deco.svg" alt="link" /> : null}
 			</li>
-		</NavLink>
+		</NavLinkFallback>
 	);
 };
 interface TSidebarItem {
@@ -40,7 +60,7 @@ interface TSidebarItem {
 	sidebarItem: TSIDEBAR_ITEM;
 }
 
-export const DisplayIcon: FunctionComponent<TDisplayIcon> = ({ icon, iconSelected, className }) => {
+export const DisplayIcon: FunctionComponent<TDisplayIcon> = ({ icon, iconSelected, className, clicked }) => {
 	const [hovering, setHovering] = React.useState(false);
 	return (
 		<div
@@ -50,7 +70,7 @@ export const DisplayIcon: FunctionComponent<TDisplayIcon> = ({ icon, iconSelecte
 			<Img
 				className="w-full h-full absolute top-0 left-0"
 				src={
-					hovering
+					hovering || clicked
 						? '/public/assets/sidebar/icon-border_selected.svg'
 						: '/public/assets/sidebar/icon-border_unselected.svg'
 				}
@@ -64,4 +84,5 @@ interface TDisplayIcon {
 	icon: string;
 	iconSelected: string;
 	className?: string;
+	clicked?: boolean;
 }

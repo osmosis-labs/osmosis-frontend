@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;600;700&display=swap');
 
 :root {
-	--screens-md: 1200px;
+	--screens-md: 1280px;
 	--screens-lg: 1600px;
 
 	--sidebar-open: 206px;
@@ -10,6 +10,10 @@
 
 	--sidebar-minHeight: 800px;
 	--sidebar-selectedIconGradient: linear-gradient(180deg, #ffbc00 0%, #ff8e00 100%);
+}
+
+#app {
+	overflow: auto;
 }
 
 html,
@@ -35,5 +39,13 @@ textarea {
 		outline: none;
 	}
 }
+input {
+	background: transparent;
+}
 
 @import './custom';
+
+.Toastify {
+	position: fixed;
+	z-index: 10000000;
+}

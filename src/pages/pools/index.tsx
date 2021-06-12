@@ -1,14 +1,28 @@
 import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import '../../styles/index.scss';
-import '../../styles/globals.scss';
+import { LabsOverview } from './LabsOverview';
+import { IncentivizedPools, MyPools } from './IncentivizedPools';
+import { AllPools } from './AllPools';
 
 export const PoolsPage: FunctionComponent = observer(() => {
-	// TODO : load data where data is needed, not here - move to relevant parts of the app
-	const { chainStore, accountStore } = useStore();
-
-	const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-
-	return <>Pools page</>;
+	return (
+		<div className="w-full h-full">
+			<div className="py-10 w-full px-10">
+				<div className="max-w-max mx-auto">
+					<LabsOverview />
+				</div>
+			</div>
+			<div className="py-10 bg-surface w-full px-10">
+				<div className="max-w-max mx-auto">
+					<MyPools />
+					<div className="mt-15">
+						<IncentivizedPools />
+					</div>
+					<div className="mt-15">
+						<AllPools />
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 });
