@@ -10,7 +10,7 @@ import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balanc
 import { AppCurrency } from '@keplr-wallet/types';
 import { action, makeObservable, observable, override } from 'mobx';
 import { useStore } from '../../stores';
-import { Dec } from '@keplr-wallet/unit';
+import { Dec, DecUtils } from '@keplr-wallet/unit';
 import { TToastType, useToast } from '../../components/common/toasts';
 import { IFeeConfig, TxChainSetter } from '@keplr-wallet/hooks';
 import { BasicAmountConfig } from '../../hooks/tx/basic-amount-config';
@@ -269,7 +269,11 @@ const NewPoolButton: FunctionComponent<{
 					config.assets.map(asset => {
 						return {
 							// Weight는 체인 상에서 알아서 더 큰 값으로 설정되기 때문에 일단은 대충 설정해서 만든다.
-							weight: asset.percentage,
+							// 소수점일 경우도 있기 때문에 10^4을 곱한다.
+							weight: new Dec(asset.percentage)
+								.mul(DecUtils.getPrecisionDec(4))
+								.truncate()
+								.toString(),
 							token: {
 								amount: asset.amountConfig.amount,
 								currency: asset.amountConfig.currency,
