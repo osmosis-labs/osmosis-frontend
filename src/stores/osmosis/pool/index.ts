@@ -24,7 +24,7 @@ export class GAMMPool {
 	}
 
 	get shareDenom(): string {
-		return this.data.totalShare.denom;
+		return this.data.totalShares.denom;
 	}
 
 	get swapFee(): Dec {
@@ -36,7 +36,7 @@ export class GAMMPool {
 	}
 
 	get totalShare(): Int {
-		return new Int(this.data.totalShare.amount);
+		return new Int(this.data.totalShares.amount);
 	}
 
 	get poolAssets(): GAMMPoolData['poolAssets'] {

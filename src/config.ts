@@ -19,13 +19,13 @@ export const IBCAssetInfos: {
 	{
 		counterpartyChainId: 'cosmoshub-devnet-1',
 		sourceChannelId: 'channel-0',
-		destChannelId: 'channel-1',
+		destChannelId: 'channel-2',
 		coinMinimalDenom: 'uatom',
 	},
 	{
 		counterpartyChainId: 'irishub-devnet-1',
 		sourceChannelId: 'channel-1',
-		destChannelId: 'channel-1',
+		destChannelId: 'channel-2',
 		coinMinimalDenom: 'uiris',
 	},
 ];
@@ -34,7 +34,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	{
 		rpc: 'https://rpc-osmosis-testnet.keplr.app',
 		rest: 'https://lcd-osmosis-testnet.keplr.app',
-		chainId: 'osmo-testnet-2',
+		chainId: 'osmo-testnet-3',
 		chainName: 'Osmosis (Dev)',
 		stakeCurrency: {
 			coinDenom: 'OSMO',
@@ -79,8 +79,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://noop/{txHash}',
 	},
 	{
-		rpc: 'http://a1b49e433212d46b29712fd009b81751-2133417348.us-east-2.elb.amazonaws.com',
-		rest: 'http://a64d7439bb54e425d8712d59b111453c-1520098448.us-east-2.elb.amazonaws.com',
+		rpc: 'https://rpc-cosmoshub-devnet.keplr.app',
+		rest: 'https://lcd-cosmoshub-devnet.keplr.app',
 		chainId: 'cosmoshub-devnet-1',
 		chainName: 'Cosmos (Dev)',
 		stakeCurrency: {
@@ -116,8 +116,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer'],
 	},
 	{
-		rpc: 'http://acf37ec0126de49baa9adbfe772c8719-1425539633.us-east-2.elb.amazonaws.com',
-		rest: 'http://a037a2456f9cc4fcb9471b3464aa1e67-1456094711.us-east-2.elb.amazonaws.com',
+		rpc: 'https://rpc-irishub-devnet.keplr.app',
+		rest: 'https://lcd-irishub-devnet.keplr.app',
 		chainId: 'irishub-devnet-1',
 		chainName: 'IRISnet (Dev)',
 		stakeCurrency: {

@@ -9,7 +9,7 @@ export interface GAMMPoolData {
 	};
 	// Int
 	totalWeight: string;
-	totalShare: {
+	totalShares: {
 		denom: string;
 		// Int
 		amount: string;

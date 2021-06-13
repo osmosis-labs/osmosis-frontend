@@ -26,7 +26,7 @@ export class RootStore {
 	public readonly layoutStore: LayoutStore;
 
 	constructor() {
-		this.chainStore = new ChainStore(EmbedChainInfos, 'osmo-testnet-2');
+		this.chainStore = new ChainStore(EmbedChainInfos, 'osmo-testnet-3');
 
 		this.queriesStore = new QueriesStore(
 			new IndexedDBKVStore('store_web_queries'),
