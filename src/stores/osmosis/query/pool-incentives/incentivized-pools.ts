@@ -2,7 +2,7 @@ import { ObservableChainQuery } from '@keplr-wallet/stores/build/query/chain-que
 import { KVStore } from '@keplr-wallet/common';
 import { ChainGetter } from '@keplr-wallet/stores/src/common/index';
 import { computedFn } from 'mobx-utils';
-import { Dec, Int, IntPretty } from '@keplr-wallet/unit';
+import { CoinPretty, Dec, Int, IntPretty } from '@keplr-wallet/unit';
 import { IncentivizedPools } from './types';
 import { computed, makeObservable } from 'mobx';
 import { FiatCurrency } from '@keplr-wallet/types';
@@ -13,6 +13,7 @@ import { ObservableQueryEpochs } from '../epochs';
 import dayjs from 'dayjs';
 import { ObservableQueryLockableDurations } from './lockable-durations';
 import { ObservableQueryDistrInfo } from './distr-info';
+import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 
 export class ObservableQueryIncentivizedPools extends ObservableChainQuery<IncentivizedPools> {
 	constructor(
@@ -71,7 +72,10 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 	readonly computeMostAPY = computedFn(
 		(
 			poolId: string,
-			priceStore: { getPrice(coinId: string, vsCurrency: string): number | undefined },
+			priceStore: {
+				getPrice(coinId: string, vsCurrency: string): number | undefined;
+				calculatePrice(vsCurrrency: string, coin: CoinPretty): PricePretty | undefined;
+			},
 			fiatCurrency: FiatCurrency
 		): IntPretty => {
 			if (!this.isIncentivized(poolId)) {
@@ -99,7 +103,10 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 		(
 			poolId: string,
 			duration: Duration,
-			priceStore: { getPrice(coinId: string, vsCurrency: string): number | undefined },
+			priceStore: {
+				getPrice(coinId: string, vsCurrency: string): number | undefined;
+				calculatePrice(vsCurrrency: string, coin: CoinPretty): PricePretty | undefined;
+			},
 			fiatCurrency: FiatCurrency
 		): IntPretty => {
 			if (!this.isIncentivized(poolId)) {
@@ -137,7 +144,10 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 	protected computeAPYForSpecificDuration(
 		poolId: string,
 		duration: Duration,
-		priceStore: { getPrice(coinId: string, vsCurrency: string): number | undefined },
+		priceStore: {
+			getPrice(coinId: string, vsCurrency: string): number | undefined;
+			calculatePrice(vsCurrrency: string, coin: CoinPretty): PricePretty | undefined;
+		},
 		fiatCurrency: FiatCurrency
 	): IntPretty {
 		const gaugeId = this.getIncentivizedGaugeId(poolId, duration);
