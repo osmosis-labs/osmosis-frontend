@@ -23,16 +23,44 @@ export const AirdropMissions: FunctionComponent = observer(() => {
 			<h5>Missions</h5>
 			<ul className="flex flex-col gap-2.5 mt-7.5">
 				<MissionCard num={0} complete={true} description="Hold ATOM on February 18" />
-				{Object.entries(claimRecord.completedActions).map(([action, value]) => {
-					return (
-						<MissionCard
-							key={action}
-							num={Object.keys(claimRecord.completedActions).indexOf(action) + 1}
-							complete={value}
-							description={ActionToDescription[action] ?? 'Oops'}
-						/>
-					);
-				})}
+				{Object.entries(claimRecord.completedActions)
+					.sort(([action1], [action2]) => {
+						/*
+						 Move "vote" action to the end.
+						 Some people could think that the actions should be executed in order.
+						 But, the "vote" action can't be executed before the "stake" action.
+						 So, to reduce the confusion of new users, Move "vote" action to after the "stake" action.
+						 */
+						if (action1 === 'vote') {
+							return 1;
+						}
+						if (action2 === 'vote') {
+							return -1;
+						}
+						return 0;
+					})
+					.map(([action, value]) => {
+						return (
+							<MissionCard
+								key={action}
+								num={
+									Object.keys(claimRecord.completedActions)
+										.sort((action1, action2) => {
+											if (action1 === 'vote') {
+												return 1;
+											}
+											if (action2 === 'vote') {
+												return -1;
+											}
+											return 0;
+										})
+										.indexOf(action) + 1
+								}
+								complete={value}
+								description={ActionToDescription[action] ?? 'Oops'}
+							/>
+						);
+					})}
 			</ul>
 		</div>
 	);
