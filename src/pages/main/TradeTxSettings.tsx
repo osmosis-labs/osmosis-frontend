@@ -1,13 +1,28 @@
-import React, { FunctionComponent } from 'react';
 import cn from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { DisplayIcon } from '../../components/layouts/Sidebar/SidebarItem';
 import { SlippageStep, slippageStepToPercentage, TradeConfig } from './TradeClipboard';
-import { observer } from 'mobx-react-lite';
 
 export const TradeTxSettings: FunctionComponent<{
 	config: TradeConfig;
 }> = observer(({ config }) => {
-	const [view, setView] = React.useState<boolean>(false);
+	const [view, setView] = useState<boolean>(false);
+
+	const closeView = useCallback(() => {
+		setView(false);
+	}, []);
+
+	useEffect(() => {
+		if (view) {
+			window.addEventListener('click', closeView);
+		} else {
+			window.removeEventListener('click', closeView);
+		}
+		return () => {
+			window.removeEventListener('click', closeView);
+		};
+	}, [closeView, view]);
 
 	return (
 		<section className="w-full flex justify-end relative z-40">
@@ -20,6 +35,7 @@ export const TradeTxSettings: FunctionComponent<{
 				/>
 			</div>
 			<div
+				onClick={e => e.stopPropagation()}
 				className={cn(
 					'right-0 top-0 bg-card border border-white-faint rounded-2xl p-7.5',
 					view ? 'absolute' : 'hidden'
