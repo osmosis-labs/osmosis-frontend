@@ -1,6 +1,5 @@
-import { ObservableChainQuery } from '@keplr-wallet/stores/build/query/chain-query';
+import { ChainGetter, QueryResponse, ObservableChainQuery } from '@keplr-wallet/stores';
 import { Pools } from './types';
-import { ChainGetter, QueryResponse } from '@keplr-wallet/stores';
 import { KVStore } from '@keplr-wallet/common';
 import { computed, makeObservable } from 'mobx';
 import { QueriedPoolBase } from '../pool';

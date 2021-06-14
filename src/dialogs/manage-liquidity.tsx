@@ -13,7 +13,7 @@ import { MISC } from '../constants';
 import { ObservableQueryGammPoolShare } from '../stores/osmosis/query/pool-share';
 import { TToastType, useToast } from '../components/common/toasts';
 import { BasicAmountConfig } from '../hooks/tx/basic-amount-config';
-import { TxChainSetter } from '@keplr-wallet/hooks/build/tx/chain';
+import { TxChainSetter } from '@keplr-wallet/hooks';
 import { computedFn } from 'mobx-utils';
 import { Img } from '../components/common/Img';
 

@@ -1,6 +1,5 @@
-import { ObservableChainQuery } from '@keplr-wallet/stores/build/query/chain-query';
+import { ChainGetter, ObservableChainQuery } from '@keplr-wallet/stores';
 import { KVStore } from '@keplr-wallet/common';
-import { ChainGetter } from '@keplr-wallet/stores/src/common/index';
 import { computedFn } from 'mobx-utils';
 import { CoinPretty, Dec, Int, IntPretty } from '@keplr-wallet/unit';
 import { IncentivizedPools } from './types';

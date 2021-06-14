@@ -1,5 +1,4 @@
-import { DefaultGasPriceStep, FeeType, IFeeConfig } from '@keplr-wallet/hooks';
-import { TxChainSetter } from '@keplr-wallet/hooks/build/tx/chain';
+import { DefaultGasPriceStep, FeeType, IFeeConfig, TxChainSetter } from '@keplr-wallet/hooks';
 import { ChainGetter, CoinPrimitive } from '@keplr-wallet/stores';
 import { CoinPretty, Dec, Int } from '@keplr-wallet/unit';
 import { StdFee } from '@cosmjs/launchpad';

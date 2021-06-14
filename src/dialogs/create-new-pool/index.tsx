@@ -6,7 +6,6 @@ import { NewPoolStage3 } from './Step3';
 import { observer } from 'mobx-react-lite';
 import { Img } from '../../components/common/Img';
 import { wrapBaseDialog } from '../base';
-import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balances';
 import { AppCurrency } from '@keplr-wallet/types';
 import { action, makeObservable, observable, override } from 'mobx';
 import { useStore } from '../../stores';
@@ -14,7 +13,7 @@ import { Dec, DecUtils } from '@keplr-wallet/unit';
 import { TToastType, useToast } from '../../components/common/toasts';
 import { IFeeConfig, TxChainSetter } from '@keplr-wallet/hooks';
 import { BasicAmountConfig } from '../../hooks/tx/basic-amount-config';
-import { ChainGetter } from '@keplr-wallet/stores';
+import { ChainGetter, ObservableQueryBalances } from '@keplr-wallet/stores';
 import { useFakeFeeConfig } from '../../hooks/tx';
 import { computedFn } from 'mobx-utils';
 
