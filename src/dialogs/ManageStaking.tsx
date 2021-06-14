@@ -1,9 +1,7 @@
 import React, { Dispatch, FunctionComponent, SetStateAction } from 'react';
-import cn from 'clsx';
-import { BaseDialog, BaseDialogProps, FocusedBaseDialog } from './base';
+import { wrapBaseDialog } from './base';
 import { observer } from 'mobx-react-lite';
 import { Img } from '../components/common/Img';
-import { LINKS } from '../constants';
 import { gt, multiply } from '../utils/Big';
 import { applyOptionalDecimal, formatNumber } from '../utils/format';
 import { isNumber } from '../utils/scripts';
@@ -21,8 +19,8 @@ interface IValidator {
 	description: string;
 	imgSrc: string;
 }
-export const ManageStakingDialog: FunctionComponent<BaseDialogProps & { validatorIndex: number }> = observer(
-	({ isOpen, close, style, validatorIndex }) => {
+export const ManageStakingDialog = wrapBaseDialog(
+	observer(({ validatorIndex }: { validatorIndex: number }) => {
 		const [stage, setStage] = React.useState<MODAL_STAGE>(MODAL_STAGE.MANAGE);
 		const closeDialog = React.useCallback(() => {
 			close();
@@ -55,27 +53,25 @@ export const ManageStakingDialog: FunctionComponent<BaseDialogProps & { validato
 				);
 		}, [stage, validator, closeDialog]);
 		return (
-			<FocusedBaseDialog isOpen={isOpen} close={closeDialog} style={style}>
-				<div className="text-white-high w-full h-full">
-					<h5 className="mb-10">Stake OSMO</h5>
-					<div className="flex items-center mb-5">
-						<figure
-							style={{ width: '80px', height: '80px' }}
-							className="flex justify-center items-center rounded-full border-secondary-200 border mr-5">
-							<Img loadingSpin style={{ width: '66px', height: '66px' }} src={validator.imgSrc} />
-						</figure>
-						<div className="h-full flex items-center">
-							<div>
-								<h5 className="mb-1">{validator.moniker}</h5>
-								<p>Commission - {applyOptionalDecimal(multiply(validator.commission, 100, 2))}%</p>
-							</div>
+			<div className="text-white-high w-full h-full">
+				<h5 className="mb-10">Stake OSMO</h5>
+				<div className="flex items-center mb-5">
+					<figure
+						style={{ width: '80px', height: '80px' }}
+						className="flex justify-center items-center rounded-full border-secondary-200 border mr-5">
+						<Img loadingSpin style={{ width: '66px', height: '66px' }} src={validator.imgSrc} />
+					</figure>
+					<div className="h-full flex items-center">
+						<div>
+							<h5 className="mb-1">{validator.moniker}</h5>
+							<p>Commission - {applyOptionalDecimal(multiply(validator.commission, 100, 2))}%</p>
 						</div>
 					</div>
-					{content}
 				</div>
-			</FocusedBaseDialog>
+				{content}
+			</div>
 		);
-	}
+	})
 );
 
 const DisplayStake: FunctionComponent<{

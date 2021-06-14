@@ -110,7 +110,7 @@ const PoolInfoHeader: FunctionComponent<{
 			{pool ? (
 				<section>
 					<ManageLiquidityDialog
-						style={{ width: '656px', minHeight: '533px' }}
+						dialogStyle={{ width: '656px', minHeight: '533px' }}
 						poolId={id}
 						isOpen={isDialogOpen}
 						close={closeDialog}

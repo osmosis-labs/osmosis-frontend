@@ -37,7 +37,7 @@ export const StakingTab: FunctionComponent = () => {
 				</tbody>
 			</table>
 			<ManageStakingDialog
-				style={{ minWidth: '656px', maxWidth: '656px', padding: '48px' }}
+				dialogStyle={{ minWidth: '656px', maxWidth: '656px', padding: '48px' }}
 				isOpen={isOpen}
 				close={() => setIsOpen(false)}
 				validatorIndex={focusedValidatorIndex}

@@ -5,7 +5,7 @@ import { NewPoolStage2 } from './Step2';
 import { NewPoolStage3 } from './Step3';
 import { observer } from 'mobx-react-lite';
 import { Img } from '../../components/common/Img';
-import { BaseDialog, BaseDialogProps } from '../base';
+import { wrapBaseDialog } from '../base';
 import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balances';
 import { AppCurrency } from '@keplr-wallet/types';
 import { action, makeObservable, observable, override } from 'mobx';
@@ -226,38 +226,38 @@ export const useCreateNewPoolConfig = (
 	return config;
 };
 
-export const CreateNewPoolDialog: FunctionComponent<BaseDialogProps> = observer(({ isOpen, close, style }) => {
-	const { chainStore, accountStore, queriesStore } = useStore();
-	const account = accountStore.getAccount(chainStore.current.chainId);
-	const queries = queriesStore.get(chainStore.current.chainId);
+export const CreateNewPoolDialog = wrapBaseDialog(
+	observer(() => {
+		const { chainStore, accountStore, queriesStore } = useStore();
+		const account = accountStore.getAccount(chainStore.current.chainId);
+		const queries = queriesStore.get(chainStore.current.chainId);
 
-	const config = useCreateNewPoolConfig(
-		chainStore,
-		chainStore.current.chainId,
-		account.bech32Address,
-		queries.queryBalances
-	);
-	const feeConfig = useFakeFeeConfig(chainStore, chainStore.current.chainId, account.msgOpts.createPool.gas);
-	config.setFeeConfig(feeConfig);
+		const config = useCreateNewPoolConfig(
+			chainStore,
+			chainStore.current.chainId,
+			account.bech32Address,
+			queries.queryBalances
+		);
+		const feeConfig = useFakeFeeConfig(chainStore, chainStore.current.chainId, account.msgOpts.createPool.gas);
+		config.setFeeConfig(feeConfig);
 
-	const [stage, setStage] = useState(1);
+		const [stage, setStage] = useState(1);
 
-	const content = (() => {
-		if (stage === 1) return <NewPoolStage1 config={config} close={close} />;
-		else if (stage === 2) return <NewPoolStage2 config={config} close={close} />;
-		else if (stage === 3) return <NewPoolStage3 config={config} close={close} />;
-	})();
-	return (
-		<BaseDialog style={style} isOpen={isOpen} close={close}>
-			<div style={style} className="text-white-high w-full">
+		const content = (() => {
+			if (stage === 1) return <NewPoolStage1 config={config} close={close} />;
+			else if (stage === 2) return <NewPoolStage2 config={config} close={close} />;
+			else if (stage === 3) return <NewPoolStage3 config={config} close={close} />;
+		})();
+		return (
+			<div className="text-white-high w-full">
 				<div>{content}</div>
 				<div className="flex flex-col items-center w-full">
 					<NewPoolButton close={close} config={config} stage={stage} setStage={setStage} />
 				</div>
 			</div>
-		</BaseDialog>
-	);
-});
+		);
+	})
+);
 
 const NewPoolButton: FunctionComponent<{
 	config: CreateNewPoolConfig;

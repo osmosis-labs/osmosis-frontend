@@ -66,7 +66,7 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 		<React.Fragment>
 			{dialogState.open ? (
 				<TransferDialog
-					style={{ minHeight: '533px', maxHeight: '540px', minWidth: '656px', maxWidth: '656px' }}
+					dialogStyle={{ minHeight: '533px', maxHeight: '540px', minWidth: '656px', maxWidth: '656px' }}
 					isOpen={dialogState.open}
 					close={close}
 					currency={dialogState.currency}
