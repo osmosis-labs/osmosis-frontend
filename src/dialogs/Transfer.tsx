@@ -18,12 +18,14 @@ export const TransferDialog = wrapBaseDialog(
 			sourceChannelId,
 			destChannelId,
 			isWithdraw,
+			close,
 		}: {
 			currency: IBCCurrency;
 			counterpartyChainId: string;
 			sourceChannelId: string;
 			destChannelId: string;
 			isWithdraw: boolean;
+			close: () => void;
 		}) => {
 			const { chainStore, accountStore, queriesStore } = useStore();
 

@@ -9,7 +9,7 @@ enum Vote {
 	NoWithVeto,
 	Abstain,
 }
-export const VoteDialog = wrapBaseDialog(({ proposalIndex }: { proposalIndex: number }) => {
+export const VoteDialog = wrapBaseDialog(({ proposalIndex, close }: { proposalIndex: number; close: () => void }) => {
 	// TODO : fetch proposal data
 	const proposal = {
 		index: proposalIndex,

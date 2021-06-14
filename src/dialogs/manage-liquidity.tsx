@@ -322,7 +322,7 @@ export class RemoveLiquidityConfig extends ManageLiquidityConfigBase {
 }
 
 export const ManageLiquidityDialog = wrapBaseDialog(
-	observer(({ poolId }: { poolId: string }) => {
+	observer(({ poolId, close }: { poolId: string; close: () => void }) => {
 		const [tab, setTab] = React.useState<Tabs>(Tabs.ADD);
 
 		const { chainStore, queriesStore, accountStore } = useStore();

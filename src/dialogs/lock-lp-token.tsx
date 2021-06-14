@@ -7,7 +7,7 @@ import { TToastType, useToast } from '../components/common/toasts';
 import { useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
 
 export const LockLpTokenDialog = wrapBaseDialog(
-	observer(({ poolId }: { poolId: string }) => {
+	observer(({ poolId, close }: { poolId: string; close: () => void }) => {
 		const { chainStore, queriesStore, accountStore, priceStore } = useStore();
 
 		const account = accountStore.getAccount(chainStore.current.chainId);

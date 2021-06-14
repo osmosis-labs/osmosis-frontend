@@ -20,7 +20,7 @@ interface IValidator {
 	imgSrc: string;
 }
 export const ManageStakingDialog = wrapBaseDialog(
-	observer(({ validatorIndex }: { validatorIndex: number }) => {
+	observer(({ validatorIndex, close }: { validatorIndex: number; close: () => void }) => {
 		const [stage, setStage] = React.useState<MODAL_STAGE>(MODAL_STAGE.MANAGE);
 		const closeDialog = React.useCallback(() => {
 			close();

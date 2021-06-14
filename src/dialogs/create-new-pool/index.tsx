@@ -226,7 +226,7 @@ export const useCreateNewPoolConfig = (
 };
 
 export const CreateNewPoolDialog = wrapBaseDialog(
-	observer(() => {
+	observer(({ close }: { close: () => void }) => {
 		const { chainStore, accountStore, queriesStore } = useStore();
 		const account = accountStore.getAccount(chainStore.current.chainId);
 		const queries = queriesStore.get(chainStore.current.chainId);
