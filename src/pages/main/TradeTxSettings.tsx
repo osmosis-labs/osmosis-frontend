@@ -104,6 +104,7 @@ const SlippageToleranceEditableItem: FunctionComponent<{
 			style={{ borderRadius: '20px' }}>
 			<input
 				className={cn('text-center', selected ? 'text-white-high' : 'text-white-low')}
+				style={{ width: '100%' }}
 				value={`${config.manualSlippageText}%`}
 				onFocus={e => {
 					e.preventDefault();
