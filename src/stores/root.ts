@@ -9,14 +9,14 @@ import { AccountWithCosmosAndOsmosis } from './osmosis/account';
 import { LayoutStore } from './layout';
 import { GammSwapManager } from './osmosis/swap';
 import { LPCurrencyRegistrar } from './osmosis/currency-registrar';
-import { makeIBCMinimalDenom } from '../utils/ibc';
 import { ChainInfoInner } from '@keplr-wallet/stores';
+import { PoolIntermediatePriceStore } from './price';
 
 export class RootStore {
 	public readonly chainStore: ChainStore;
 	public readonly accountStore: AccountStore<AccountWithCosmosAndOsmosis>;
 	public readonly queriesStore: QueriesStore<QueriesWithCosmosAndOsmosis>;
-	public readonly priceStore: CoinGeckoPriceStore;
+	public readonly priceStore: PoolIntermediatePriceStore;
 
 	public readonly swapManager: GammSwapManager;
 
@@ -26,7 +26,7 @@ export class RootStore {
 	public readonly layoutStore: LayoutStore;
 
 	constructor() {
-		this.chainStore = new ChainStore(EmbedChainInfos, 'osmo-testnet-3');
+		this.chainStore = new ChainStore(EmbedChainInfos, EmbedChainInfos[0].chainId);
 
 		this.queriesStore = new QueriesStore(
 			new IndexedDBKVStore('store_web_queries'),
@@ -49,14 +49,27 @@ export class RootStore {
 			}),
 		});
 
-		this.priceStore = new CoinGeckoPriceStore(new IndexedDBKVStore('store_web_prices'), {
-			usd: {
-				currency: 'usd',
-				symbol: '$',
-				maxDecimals: 2,
-				locale: 'en-US',
+		this.priceStore = new PoolIntermediatePriceStore(
+			new IndexedDBKVStore('store_web_prices'),
+			{
+				usd: {
+					currency: 'usd',
+					symbol: '$',
+					maxDecimals: 2,
+					locale: 'en-US',
+				},
 			},
-		});
+			this.queriesStore.get(EmbedChainInfos[0].chainId).osmosis.queryGammPools,
+			[
+				{
+					alternativeCoinId: 'pool:uosmo',
+					poolId: '1',
+					spotPriceSourceDenom: 'uosmo',
+					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+					destCoinId: 'cosmos',
+				},
+			]
+		);
 
 		this.swapManager = new GammSwapManager([
 			{
