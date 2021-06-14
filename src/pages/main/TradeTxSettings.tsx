@@ -1,6 +1,7 @@
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import AutosizeInput from 'react-input-autosize';
 import { DisplayIcon } from '../../components/layouts/Sidebar/SidebarItem';
 import { SlippageStep, slippageStepToPercentage, TradeConfig } from './TradeClipboard';
 
@@ -44,7 +45,8 @@ export const TradeTxSettings: FunctionComponent<{
 				<p className="mb-2.5">Transaction Settings</p>
 				<div className="mb-3 w-full flex items-center">
 					<p className="text-white-disabled text-sm mr-2.5">Slippage tolerance</p>
-					<div className="inline-block rounded-full w-3.5 h-3.5 text-xs bg-secondary-200 flex items-center justify-center text-black">
+					<div
+						className="inline-block rounded-full w-3.5 h-3.5 text-xs bg-secondary-200 flex items-center justify-center text-black">
 						!
 					</div>
 				</div>
@@ -97,27 +99,25 @@ const SlippageToleranceEditableItem: FunctionComponent<{
 
 	return (
 		<li
-			className={cn(
-				'w-full flex items-center justify-center h-8',
-				selected ? (error ? 'bg-error' : 'bg-primary-200') : 'bg-background'
-			)}
+			className={cn('w-full flex h-8', selected ? (error ? 'bg-error' : 'bg-primary-200') : 'bg-background')}
 			style={{ borderRadius: '20px' }}>
-			<input
-				className={cn('text-center', selected ? 'text-white-high' : 'text-white-low')}
-				style={{ width: '100%' }}
-				value={`${config.manualSlippageText}%`}
-				onFocus={e => {
-					e.preventDefault();
-
-					config.setSlippageStep(undefined);
-				}}
-				onChange={e => {
-					e.preventDefault();
-
-					const text = e.currentTarget.value.replace('%', '');
-					config.setSlippage(text);
-				}}
-			/>
+			<label style={{ display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+				<AutosizeInput
+					className={cn('text-center', selected ? 'text-white-high' : 'text-white-low')}
+					minWidth={config.manualSlippageText === config.initialManualSlippage ? 34 : undefined}
+					value={config.manualSlippageText}
+					onFocus={e => {
+						e.preventDefault();
+						config.setSlippageStep(undefined);
+					}}
+					onChange={e => {
+						e.preventDefault();
+						const text = e.currentTarget.value;
+						config.setSlippage(text);
+					}}
+				/>
+				<span>%</span>
+			</label>
 		</li>
 	);
 });

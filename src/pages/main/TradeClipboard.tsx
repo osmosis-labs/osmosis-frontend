@@ -53,10 +53,11 @@ export class TradeConfig extends AmountConfig {
 	@observable
 	protected _slippageStep: SlippageStep | undefined = SlippageStep.Step3;
 
+	readonly initialManualSlippage = '0.05';
 	// If slippage step is undefiend,
-	// the slippage can be set by manually.
+	// the slippage can be set manually.
 	@observable
-	protected _slippage: string = '0.05';
+	protected _slippage: string = this.initialManualSlippage;
 
 	constructor(
 		chainGetter: ChainGetter,
@@ -151,6 +152,7 @@ export class TradeConfig extends AmountConfig {
 
 	@action
 	setSlippage(slippage: string) {
+		slippage = slippage.replace(/[^.\d]/g, '');
 		if (slippage.startsWith('.')) {
 			slippage = '0' + slippage;
 		}
