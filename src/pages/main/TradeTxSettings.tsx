@@ -45,8 +45,7 @@ export const TradeTxSettings: FunctionComponent<{
 				<p className="mb-2.5">Transaction Settings</p>
 				<div className="mb-3 w-full flex items-center">
 					<p className="text-white-disabled text-sm mr-2.5">Slippage tolerance</p>
-					<div
-						className="inline-block rounded-full w-3.5 h-3.5 text-xs bg-secondary-200 flex items-center justify-center text-black">
+					<div className="inline-block rounded-full w-3.5 h-3.5 text-xs bg-secondary-200 flex items-center justify-center text-black">
 						!
 					</div>
 				</div>
@@ -77,8 +76,8 @@ const SlippageToleranceItem: FunctionComponent<{
 		<li
 			onClick={setSelected}
 			className={cn(
-				'w-full flex items-center justify-center h-8',
-				selected ? 'bg-primary-200' : 'bg-background cursor-pointer hover:opacity-75'
+				'w-full flex items-center justify-center h-8 cursor-pointer',
+				selected ? 'bg-primary-200' : 'bg-background hover:opacity-75'
 			)}
 			style={{ borderRadius: '20px' }}>
 			<p className="text-white-high">{percentage}%</p>
