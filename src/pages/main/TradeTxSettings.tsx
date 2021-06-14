@@ -49,10 +49,10 @@ export const TradeTxSettings: FunctionComponent<{
 					</div>
 				</div>
 				<ul className="grid grid-cols-4 gap-3">
-					{[SlippageStep.Step1, SlippageStep.Step2, SlippageStep.Step3].map((slippageStep, i) => {
+					{[SlippageStep.Step1, SlippageStep.Step2, SlippageStep.Step3].map(slippageStep => {
 						return (
 							<SlippageToleranceItem
-								key={i.toString()}
+								key={slippageStep?.toString()}
 								percentage={slippageStepToPercentage(slippageStep)}
 								setSelected={() => config.setSlippageStep(slippageStep)}
 								selected={config.slippageStep === slippageStep}
