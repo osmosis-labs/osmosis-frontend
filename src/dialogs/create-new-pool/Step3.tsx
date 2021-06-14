@@ -80,6 +80,24 @@ export const NewPoolStage3: FunctionComponent<{
 					</ul>
 				</div>
 			</div>
+			<div className="px-4.5 py-5 border border-white-faint rounded-2xl">
+				<div className="flex items-center justify-between">
+					<p className="text-lg font-semibold">Swap Fee</p>
+					<div className="flex items-center">
+						<input
+							type="number"
+							className="w-full font-title bg-black py-1.5 h-9 rounded-lg mr-2.5 pr-1.5 border border-transparent focus:border-enabledGold text-white placeholder-white-disabled text-right text-lg leading-none"
+							onChange={e => {
+								e.preventDefault();
+
+								config.setSwapFee(e.currentTarget.value);
+							}}
+							value={config.swapFee}
+						/>
+						<p className="text-lg ml-1 font-semibold">%</p>
+					</div>
+				</div>
+			</div>
 		</React.Fragment>
 	);
 });

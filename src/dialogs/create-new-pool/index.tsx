@@ -34,6 +34,9 @@ export class CreateNewPoolConfig extends TxChainSetter {
 		amountConfig: BasicAmountConfig;
 	}[] = [];
 
+	@observable
+	protected _swapFee: string = '0';
+
 	constructor(
 		chainGetter: ChainGetter,
 		initialChainId: string,
@@ -139,6 +142,15 @@ export class CreateNewPoolConfig extends TxChainSetter {
 		});
 	}
 
+	get swapFee(): string {
+		return this._swapFee;
+	}
+
+	@action
+	setSwapFee(swapFee: string): void {
+		this._swapFee = swapFee;
+	}
+
 	/**
 	 * sendableCurrencies 중에서 현재 assets에 없는 currency들을 반환한다.
 	 */
@@ -175,6 +187,18 @@ export class CreateNewPoolConfig extends TxChainSetter {
 		}
 		if (!totalPercentage.equals(new Dec(100))) {
 			return new Error('Sum of percentages is not 100%');
+		}
+
+		try {
+			const dec = new Dec(this.swapFee);
+			if (dec.lt(new Dec(0))) {
+				return new Error('Negative swap fee');
+			}
+			if (dec.gte(new Dec(100))) {
+				return new Error('Too much swap fee');
+			}
+		} catch {
+			return new Error('Invalid form of swap fee');
 		}
 	});
 
@@ -263,9 +287,8 @@ const NewPoolButton: FunctionComponent<{
 			}
 
 			try {
-				// TODO: Swap Fee 설정하는 단계 만들기. 일단은 0.5%로 만든다.
 				await account.osmosis.sendCreatePoolMsg(
-					'0.5',
+					config.swapFee,
 					config.assets.map(asset => {
 						return {
 							// Weight는 체인 상에서 알아서 더 큰 값으로 설정되기 때문에 일단은 대충 설정해서 만든다.
