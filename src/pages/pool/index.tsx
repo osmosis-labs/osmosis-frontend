@@ -155,14 +155,16 @@ const PoolInfoHeader: FunctionComponent<{
 								<h6>{pool.swapFee.toString()}%</h6>
 							</OverviewLabelValue>
 						</ul>
-						<ul className="flex flex-col gap-6">
-							<OverviewLabelValue label="&#8203;">
-								<h4>&#8203;</h4>
-							</OverviewLabelValue>
-							<OverviewLabelValue label="Exit Fee">
-								<h6>{pool.exitFee.toString()}%</h6>
-							</OverviewLabelValue>
-						</ul>
+						{pool.exitFee.toDec().equals(new Dec(0)) ? null : (
+							<ul className="flex flex-col gap-6">
+								<OverviewLabelValue label="&#8203;">
+									<h4>&#8203;</h4>
+								</OverviewLabelValue>
+								<OverviewLabelValue label="Exit Fee">
+									<h6>{pool.exitFee.toString()}%</h6>
+								</OverviewLabelValue>
+							</ul>
+						)}
 					</div>
 				</section>
 			) : null}
