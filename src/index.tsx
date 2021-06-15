@@ -19,12 +19,14 @@ import { Bounce, ToastContainer } from 'react-toastify';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import duration from 'dayjs/plugin/duration';
+import utc from 'dayjs/plugin/utc';
 import { GovernanceDetailsPage } from './pages/governance/[id]/GovernanceDetailsPage';
 import { BootstrapPage } from './pages/bootstrap';
 import { BootstrapDetails } from './pages/bootstrap/[id]';
 import { ToastProvider } from './components/common/toasts';
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
+dayjs.extend(utc);
 
 const Router: FunctionComponent = () => {
 	return (

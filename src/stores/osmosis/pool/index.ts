@@ -15,6 +15,10 @@ export class GAMMPool {
 
 	constructor(protected readonly data: GAMMPoolData) {}
 
+	get poolParamsRaw(): GAMMPoolData['poolParams'] {
+		return this.data.poolParams;
+	}
+
 	get id(): string {
 		return this.data.id;
 	}

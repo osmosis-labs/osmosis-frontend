@@ -1,12 +1,14 @@
 import { GAMMPoolData } from '../../pool/types';
 import { GAMMPool } from '../../pool';
-import { ChainGetter, CoinPrimitive, MsgOpt } from '@keplr-wallet/stores';
+import { ChainGetter, MsgOpt } from '@keplr-wallet/stores';
 import { CoinPretty, DecUtils, IntPretty, Int, Coin, Dec } from '@keplr-wallet/unit';
 import { computed, makeObservable, observable } from 'mobx';
-import { Currency, FiatCurrency } from '@keplr-wallet/types';
+import { AppCurrency, Currency, FiatCurrency } from '@keplr-wallet/types';
 import { Msg } from '@cosmjs/launchpad';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { computedFn } from 'mobx-utils';
+import { Duration } from 'dayjs/plugin/duration';
+import dayjs from 'dayjs';
 
 export class QueriedPoolBase {
 	@observable.ref
@@ -20,6 +22,69 @@ export class QueriedPoolBase {
 
 	get id(): string {
 		return this.pool.id;
+	}
+
+	@computed
+	get smoothWeightChangeParams():
+		| {
+				startTime: Date;
+				endTime: Date;
+				duration: Duration;
+				initialPoolWeights: {
+					currency: AppCurrency;
+					weight: IntPretty;
+					ratio: IntPretty;
+				}[];
+				targetPoolWeights: {
+					currency: AppCurrency;
+					weight: IntPretty;
+					ratio: IntPretty;
+				}[];
+		  }
+		| undefined {
+		if (!this.pool.poolParamsRaw.smoothWeightChangeParams) {
+			return undefined;
+		}
+
+		const params = this.pool.poolParamsRaw.smoothWeightChangeParams;
+
+		const startTime = new Date(params.start_time);
+		const duration = dayjs.duration(parseInt(params.duration.replace('s', '')) * 1000);
+		const endTime = dayjs(startTime)
+			.add(duration)
+			.toDate();
+
+		let totalInitialPoolWeight = new Dec(0);
+		for (const weight of params.initialPoolWeights) {
+			totalInitialPoolWeight = totalInitialPoolWeight.add(new Dec(weight.weight));
+		}
+		const initialPoolWeights = params.initialPoolWeights.map(weight => {
+			return {
+				currency: this.chainGetter.getChain(this.chainId).forceFindCurrency(weight.token.denom),
+				weight: new IntPretty(new Dec(weight.weight)),
+				ratio: new IntPretty(new Dec(weight.weight)).quo(totalInitialPoolWeight).decreasePrecision(2),
+			};
+		});
+
+		let totalTargetPoolWeight = new Dec(0);
+		for (const weight of params.targetPoolWeights) {
+			totalTargetPoolWeight = totalTargetPoolWeight.add(new Dec(weight.weight));
+		}
+		const targetPoolWeights = params.targetPoolWeights.map(weight => {
+			return {
+				currency: this.chainGetter.getChain(this.chainId).forceFindCurrency(weight.token.denom),
+				weight: new IntPretty(new Dec(weight.weight)),
+				ratio: new IntPretty(new Dec(weight.weight)).quo(totalTargetPoolWeight).decreasePrecision(2),
+			};
+		});
+
+		return {
+			startTime,
+			endTime,
+			duration,
+			initialPoolWeights,
+			targetPoolWeights,
+		};
 	}
 
 	calculateSpotPrice(inMinimalDenom: string, outMinimalDenom: string): IntPretty {

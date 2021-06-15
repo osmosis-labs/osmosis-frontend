@@ -11,6 +11,7 @@ import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
 import { OsmoSynthesis } from './OsmoSynthesis';
 import { ManageLiquidityDialog } from '../../dialogs';
 import { MISC } from '../../constants';
+import { LBPCatalyst } from './LBP';
 
 export const PoolPage: FunctionComponent = observer(() => {
 	const history = useHistory();
@@ -61,6 +62,9 @@ export const PoolPage: FunctionComponent = observer(() => {
 							<div className="pb-15">
 								<OsmoSynthesis poolId={pool.id} />
 							</div>
+						) : null}
+						{pool.smoothWeightChangeParams ? (
+							<LBPCatalyst pool={pool} lbpParams={pool.smoothWeightChangeParams} />
 						) : null}
 						<div className="max-w-max mx-auto">
 							<PoolCatalyst id={pool.id} />

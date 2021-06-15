@@ -6,6 +6,24 @@ export interface GAMMPoolData {
 		swapFee: string;
 		// Dec. Ex) 10% -> 0.1
 		exitFee: string;
+		smoothWeightChangeParams: {
+			start_time: string;
+			duration: string;
+			initialPoolWeights: {
+				token: {
+					denom: string;
+					amount: string;
+				};
+				weight: string;
+			}[];
+			targetPoolWeights: {
+				token: {
+					denom: string;
+					amount: string;
+				};
+				weight: string;
+			}[];
+		} | null;
 	};
 	// Int
 	totalWeight: string;
