@@ -13,7 +13,7 @@ export const LBPCatalyst: FunctionComponent<{
 			<div className="w-full h-full rounded-xl bg-card py-6 px-7.5">
 				<section className="flex mb-5">
 					<div className="mr-10">
-						<p className="text-base text-white-mid font-semibold mb-1">Current Pool Weight</p>
+						<p className="text-base text-white-mid font-normal mb-1">Current Pool Weight</p>
 						<p className="text-base font-medium">
 							{pool.poolRatios
 								.map(ratio => {
@@ -28,7 +28,7 @@ export const LBPCatalyst: FunctionComponent<{
 						</p>
 					</div>
 					<div className="mr-10">
-						<p className="text-base text-white-mid font-semibold mb-1">Initial Pool Weight</p>
+						<p className="text-base text-white-mid font-normal mb-1">Initial Pool Weight</p>
 						<p className="text-base font-medium">
 							{lbpParams.initialPoolWeights
 								.map(weight => {
@@ -43,7 +43,7 @@ export const LBPCatalyst: FunctionComponent<{
 						</p>
 					</div>
 					<div>
-						<p className="text-base text-white-mid font-semibold mb-1">Target Pool Weight</p>
+						<p className="text-base text-white-mid font-normal mb-1">Target Pool Weight</p>
 						<p className="text-base font-medium">
 							{lbpParams.targetPoolWeights
 								.map(weight => {
@@ -60,7 +60,7 @@ export const LBPCatalyst: FunctionComponent<{
 				</section>
 				<section className="flex">
 					<div className="mr-10">
-						<p className="text-base text-white-mid font-semibold mb-1">Start Time</p>
+						<p className="text-base text-white-mid font-normal mb-1">Start Time</p>
 						<p className="text-base font-medium">
 							{dayjs(lbpParams.startTime)
 								.utc()
@@ -68,7 +68,7 @@ export const LBPCatalyst: FunctionComponent<{
 						</p>
 					</div>
 					<div className="mr-10">
-						<p className="text-base text-white-mid font-semibold mb-1">End Time</p>
+						<p className="text-base text-white-mid font-normal mb-1">End Time</p>
 						<p className="text-base font-medium">
 							{dayjs(lbpParams.endTime)
 								.utc()
