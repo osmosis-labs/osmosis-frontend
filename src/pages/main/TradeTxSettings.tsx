@@ -1,13 +1,34 @@
-import React, { FunctionComponent } from 'react';
+import Tippy from '@tippyjs/react';
 import cn from 'clsx';
-import { DisplayIcon } from '../../components/layouts/Sidebar/SidebarItem';
-import { SlippageStep, slippageStepToPercentage, TradeConfig } from './TradeClipboard';
 import { observer } from 'mobx-react-lite';
+import React, { useCallback, useEffect, useState } from 'react';
+import AutosizeInput from 'react-input-autosize';
+import { DisplayIcon } from '../../components/layouts/Sidebar/SidebarItem';
+import { SlippageStep } from './models/tradeModels';
+import { TradeConfig } from './stores/trade/config';
+import { slippageStepToPercentage } from './utils/slippageStepToPercentage';
 
-export const TradeTxSettings: FunctionComponent<{
+interface Props {
 	config: TradeConfig;
-}> = observer(({ config }) => {
-	const [view, setView] = React.useState<boolean>(false);
+}
+
+export const TradeTxSettings = observer(({ config }: Props) => {
+	const [view, setView] = useState<boolean>(false);
+
+	const closeView = useCallback(() => {
+		setView(false);
+	}, []);
+
+	useEffect(() => {
+		if (view) {
+			window.addEventListener('click', closeView);
+		} else {
+			window.removeEventListener('click', closeView);
+		}
+		return () => {
+			window.removeEventListener('click', closeView);
+		};
+	}, [closeView, view]);
 
 	return (
 		<section className="w-full flex justify-end relative z-40">
@@ -20,6 +41,7 @@ export const TradeTxSettings: FunctionComponent<{
 				/>
 			</div>
 			<div
+				onClick={e => e.stopPropagation()}
 				className={cn(
 					'right-0 top-0 bg-card border border-white-faint rounded-2xl p-7.5',
 					view ? 'absolute' : 'hidden'
@@ -28,15 +50,19 @@ export const TradeTxSettings: FunctionComponent<{
 				<p className="mb-2.5">Transaction Settings</p>
 				<div className="mb-3 w-full flex items-center">
 					<p className="text-white-disabled text-sm mr-2.5">Slippage tolerance</p>
-					<div className="inline-block rounded-full w-3.5 h-3.5 text-xs bg-secondary-200 flex items-center justify-center text-black">
-						!
-					</div>
+					<Tippy
+						className="w-75"
+						content="Your transaction will revert if the price changes unfavorably by more than this percentage.">
+						<div className="inline-block rounded-full w-3.5 h-3.5 text-xs bg-secondary-200 flex items-center justify-center text-black cursor-pointer">
+							!
+						</div>
+					</Tippy>
 				</div>
 				<ul className="grid grid-cols-4 gap-3">
-					{[SlippageStep.Step1, SlippageStep.Step2, SlippageStep.Step3].map((slippageStep, i) => {
+					{[SlippageStep.Step1, SlippageStep.Step2, SlippageStep.Step3].map(slippageStep => {
 						return (
 							<SlippageToleranceItem
-								key={i.toString()}
+								key={slippageStep?.toString()}
 								percentage={slippageStepToPercentage(slippageStep)}
 								setSelected={() => config.setSlippageStep(slippageStep)}
 								selected={config.slippageStep === slippageStep}
@@ -50,17 +76,19 @@ export const TradeTxSettings: FunctionComponent<{
 	);
 });
 
-const SlippageToleranceItem: FunctionComponent<{
+interface ItemProps {
 	percentage: number;
 	selected: boolean;
 	setSelected: () => void;
-}> = ({ percentage, selected, setSelected }) => {
+}
+
+const SlippageToleranceItem = ({ percentage, selected, setSelected }: ItemProps) => {
 	return (
 		<li
 			onClick={setSelected}
 			className={cn(
-				'w-full flex items-center justify-center h-8',
-				selected ? 'bg-primary-200' : 'bg-background cursor-pointer hover:opacity-75'
+				'w-full flex items-center justify-center h-8 cursor-pointer',
+				selected ? 'bg-primary-200' : 'bg-background hover:opacity-75'
 			)}
 			style={{ borderRadius: '20px' }}>
 			<p className="text-white-high">{percentage}%</p>
@@ -68,9 +96,7 @@ const SlippageToleranceItem: FunctionComponent<{
 	);
 };
 
-const SlippageToleranceEditableItem: FunctionComponent<{
-	config: TradeConfig;
-}> = observer(({ config }) => {
+const SlippageToleranceEditableItem = observer(({ config }: Props) => {
 	const selected = config.slippageStep == null;
 
 	const error = (() => {
@@ -81,26 +107,25 @@ const SlippageToleranceEditableItem: FunctionComponent<{
 
 	return (
 		<li
-			className={cn(
-				'w-full flex items-center justify-center h-8',
-				selected ? (error ? 'bg-error' : 'bg-primary-200') : 'bg-background'
-			)}
+			className={cn('w-full flex h-8', selected ? (error ? 'bg-error' : 'bg-primary-200') : 'bg-background')}
 			style={{ borderRadius: '20px' }}>
-			<input
-				className={cn('text-center', selected ? 'text-white-high' : 'text-white-low')}
-				value={`${config.manualSlippageText}%`}
-				onFocus={e => {
-					e.preventDefault();
-
-					config.setSlippageStep(undefined);
-				}}
-				onChange={e => {
-					e.preventDefault();
-
-					const text = e.currentTarget.value.replace('%', '');
-					config.setSlippage(text);
-				}}
-			/>
+			<label style={{ display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+				<AutosizeInput
+					className={cn('text-center', selected ? 'text-white-high' : 'text-white-low')}
+					minWidth={config.manualSlippageText === config.initialManualSlippage ? 34 : undefined}
+					value={config.manualSlippageText}
+					onFocus={e => {
+						e.preventDefault();
+						config.setSlippageStep(undefined);
+					}}
+					onChange={e => {
+						e.preventDefault();
+						const text = e.currentTarget.value;
+						config.setSlippage(text);
+					}}
+				/>
+				<span>%</span>
+			</label>
 		</li>
 	);
 });
