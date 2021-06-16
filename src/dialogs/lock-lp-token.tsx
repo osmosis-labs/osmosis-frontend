@@ -28,9 +28,9 @@ export const LockLpTokenDialog = wrapBaseDialog(
 
 		return (
 			<div className="text-white-high w-full h-full">
-				<h5 className="mb-9">Lock LP tokens</h5>
+				<h5 className="mb-9">Bond LP tokens</h5>
 				<div className="mb-7.5">
-					<p>Lockup period</p>
+					<p>Bonding period</p>
 				</div>
 				<ul className="grid grid-cols-3 gap-9 mb-6">
 					{lockableDurations.map((duration, i) => {
@@ -50,7 +50,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 					})}
 				</ul>
 				<div className="w-full pt-3 pb-3.5 pl-3 pr-2.5 border border-white-faint rounded-2xl mb-15">
-					<p className="mb-3">Amount to lock</p>
+					<p className="mb-3">Amount to bond</p>
 					<p className="text-sm mb-3.5">
 						Available LP token:{' '}
 						<span className="text-primary-50">
@@ -134,7 +134,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 								/>
 							</svg>
 						) : (
-							<p className="text-white-high font-semibold text-lg">Lock</p>
+							<p className="text-white-high font-semibold text-lg">Bond</p>
 						)}
 					</button>
 				</div>

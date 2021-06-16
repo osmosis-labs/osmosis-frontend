@@ -36,7 +36,7 @@ export const OsmoSynthesis: FunctionComponent<{
 				<div>
 					<h5 className="mb-3">OSMO Synthesis</h5>
 					<p className="text-white-mid">
-						Commit to locking your LP tokens for a certain period of time to
+						Commit to bonding your LP tokens for a certain period of time to
 						<br />
 						earn OSMO tokens and participate in Pool governance
 					</p>
@@ -87,7 +87,7 @@ const LockupBox: FunctionComponent<{
 }> = ({ duration, apy }) => {
 	return (
 		<div className="bg-card rounded-2xl pt-7 px-7.5 pb-10">
-			<h4 className="mb-4 font-normal text-xl xl:text-2xl">{duration} lockup</h4>
+			<h4 className="mb-4 font-normal text-xl xl:text-2xl">{duration} bonding</h4>
 			<h6 className="text-secondary-200 font-normal">APY {apy}</h6>
 		</div>
 	);

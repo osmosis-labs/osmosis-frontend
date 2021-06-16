@@ -129,7 +129,7 @@ const PoolInfoHeader: FunctionComponent<{
 							<OverviewLabelValue label="Pool Liquidity">
 								<h4>{pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString()}</h4>
 							</OverviewLabelValue>
-							<OverviewLabelValue label="Locked">
+							<OverviewLabelValue label="Bonded">
 								<h6>
 									{pool
 										.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!)

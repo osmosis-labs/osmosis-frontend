@@ -18,7 +18,7 @@ export const MyLockupsTable: FunctionComponent<{
 
 	return (
 		<React.Fragment>
-			<h6 className="mb-1">My Lockups</h6>
+			<h6 className="mb-1">My Bondings</h6>
 			<table className="w-full">
 				<LockupTableHeader />
 				<tbody className="w-full">
@@ -49,7 +49,7 @@ const LockupTableHeader: FunctionComponent = () => {
 		<thead>
 			<tr className="flex items-center w-full border-b pl-12.5 pr-15 bg-card rounded-t-2xl mt-5 w-full text-white-mid">
 				<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-					<p>Lock Duration</p>
+					<p>Bonding Duration</p>
 				</td>
 				<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
 					<p>Current APY</p>
@@ -145,7 +145,7 @@ const LockupTableRow: FunctionComponent<{
 							/>
 						</svg>
 					) : (
-						<p className="text-enabledGold">Unlock All</p>
+						<p className="text-enabledGold">Unbond All</p>
 					)}
 				</button>
 			</td>
