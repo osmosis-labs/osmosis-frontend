@@ -56,7 +56,7 @@ const DispRewardPayout: FunctionComponent = observer(() => {
 	})();
 	const [day, hour, minute] = payoutTime.split('-');
 	return (
-		<OverviewLabelValue label="Reward Payout">
+		<OverviewLabelValue label="Reward distribution in">
 			<DisplayLeftTime day={day} hour={hour} minute={minute} />
 		</OverviewLabelValue>
 	);
