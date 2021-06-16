@@ -232,7 +232,7 @@ const PoolAssetCard: FunctionComponent<{
 							'w-18 h-18 rounded-full flex justify-center items-end',
 							MISC.GRADIENT_CLASS[index % MISC.GRADIENT_CLASS.length]
 						)}>
-						<Img className="w-10 h-10 mb-1" src={'/public/assets/Icons/Bubbles.png'} />
+						<Img className="w-10 h-10 mb-1" src={'/public/assets/Icons/Bubbles.svg'} />
 					</figure>
 				</figure>
 				<div className="flex flex-col justify-center">

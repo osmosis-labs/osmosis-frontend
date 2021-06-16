@@ -115,7 +115,7 @@ const PoolStatItem: FunctionComponent<{ data: IStatItem }> = ({ data }) => {
 							'w-18 h-18 rounded-full flex justify-center items-end',
 							MISC.GRADIENT_CLASS[data.index % MISC.GRADIENT_CLASS.length]
 						)}>
-						<Img className="w-10 h-10 mb-1" src={'/public/assets/Icons/Bubbles.png'} />
+						<Img className="w-10 h-10 mb-1" src={'/public/assets/Icons/Bubbles.svg'} />
 					</figure>
 				</figure>
 				<div style={{ height: '84px' }} className="w-full flex flex-col justify-center items-start">

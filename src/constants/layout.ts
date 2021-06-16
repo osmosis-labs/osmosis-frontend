@@ -2,29 +2,28 @@ export const LAYOUT = {
 	SIDEBAR: {
 		TRADE: {
 			ICON: '/public/assets/Icons/Trade.svg',
-			ICON_SELECTED: '/public/assets/Icons/Trade_selected.png',
+			ICON_SELECTED: '/public/assets/Icons/Trade_selected.svg',
 			TEXT: 'Trade',
 			ROUTE: '/',
 			SELECTED_CHECK: '/',
 		},
 		POOLS: {
 			ICON: '/public/assets/Icons/Pool.svg',
-			ICON_SELECTED: '/public/assets/Icons/Pool_selected.png',
+			ICON_SELECTED: '/public/assets/Icons/Pool_selected.svg',
 			TEXT: 'Pools',
 			SELECTED_CHECK: ['/pools', /\/pool\/[0-9]+/],
 			ROUTE: '/pools',
 		},
 		AIRDROP: {
 			ICON: '/public/assets/Icons/Airdrop.svg',
-			ICON_SELECTED: '/public/assets/Icons/Airdrop_selected.png',
+			ICON_SELECTED: '/public/assets/Icons/Airdrop_selected.svg',
 			TEXT: 'Airdrop',
 			ROUTE: '/airdrop',
 			SELECTED_CHECK: '/airdrop',
 		},
 		ASSETS: {
 			ICON: '/public/assets/Icons/Asset.svg',
-			// TODO: Add the selected icon af the asset page.
-			ICON_SELECTED: '/public/assets/Icons/Asset.svg',
+			ICON_SELECTED: '/public/assets/Icons/Asset_selected.svg',
 			TEXT: 'Assets',
 			ROUTE: '/assets',
 			SELECTED_CHECK: '/assets',
@@ -47,7 +46,7 @@ export const LAYOUT = {
 			: {
 					GOVERNANCE: {
 						ICON: '/public/assets/Icons/Ticket.svg',
-						ICON_SELECTED: '/public/assets/Icons/Ticket_selected.png',
+						ICON_SELECTED: '/public/assets/Icons/Ticket_selected.svg',
 						TEXT: 'Governance',
 						ROUTE: '/governance',
 						SELECTED_CHECK: [/\/governance[.]?/],
