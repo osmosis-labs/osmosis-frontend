@@ -1,3 +1,5 @@
+import { IAmountConfig } from '@keplr-wallet/hooks';
+import { AppCurrency } from '@keplr-wallet/types';
 import { CoinPretty, Int } from '@keplr-wallet/unit';
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
@@ -6,11 +8,13 @@ import { DisplayAmount } from '../../../components/common/DIsplayAmount';
 import { TokenDisplay } from '../../../components/common/TokenDisplay';
 import { TokenListDisplay } from '../../../components/common/TokenListDisplay';
 import { useStore } from '../../../stores';
-import { TradeConfig } from '../stores/trade/config';
 import { TokenAmountInput } from './TokenAmountInput';
 
 interface Props {
-	config: TradeConfig;
+	config: IAmountConfig & {
+		outCurrency: AppCurrency;
+		setInCurrency(minimalDenom: string): void;
+	};
 }
 
 export const FromBox = observer(({ config }: Props) => {

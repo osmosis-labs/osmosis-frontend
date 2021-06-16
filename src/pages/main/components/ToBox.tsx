@@ -1,18 +1,22 @@
-import { Dec } from '@keplr-wallet/unit';
+import { IAmountConfig } from '@keplr-wallet/hooks';
+import { AppCurrency } from '@keplr-wallet/types';
+import { CoinPretty, Dec } from '@keplr-wallet/unit';
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';
 import { TokenDisplay } from '../../../components/common/TokenDisplay';
 import { TokenListDisplay } from '../../../components/common/TokenListDisplay';
-import { TradeConfig } from '../stores/trade/config';
 
 interface Props {
-	config: TradeConfig;
+	config: IAmountConfig & {
+		outAmount: CoinPretty;
+		outCurrency: AppCurrency;
+		setOutCurrency(minimalDenom: string): void;
+	};
 }
 
 export const ToBox = observer(({ config }: Props) => {
 	const [openSelector, setOpenSelector] = React.useState(false);
-
 	return (
 		<div className="bg-surface rounded-2xl py-4 pr-5 pl-4 relative">
 			<section className="flex justify-between items-center mb-2">

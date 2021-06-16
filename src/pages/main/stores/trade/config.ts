@@ -1,6 +1,5 @@
 import { AmountConfig } from '@keplr-wallet/hooks';
-import { ChainGetter } from '@keplr-wallet/stores';
-import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balances';
+import { ChainGetter, ObservableQueryBalances } from '@keplr-wallet/stores';
 import { AppCurrency } from '@keplr-wallet/types';
 import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
 import { action, computed, makeObservable, observable, override } from 'mobx';
@@ -122,7 +121,6 @@ export class TradeConfig extends AmountConfig {
 
 	@action
 	setSlippage(slippage: string) {
-		slippage = slippage.replace(/[^.\d]/g, '');
 		if (slippage.startsWith('.')) {
 			slippage = '0' + slippage;
 		}
