@@ -43,6 +43,7 @@
 		"@keplr-wallet/stores": "0.9.0-alpha.8",
 		"@keplr-wallet/types": "0.9.0-alpha.8",
 		"@keplr-wallet/unit": "0.9.0-alpha.8",
+		"@tippyjs/react": "^4.2.5",
 		"autoprefixer": "^10.2.5",
 		"axios": "^0.21.1",
 		"big.js": "^6.0.3",
@@ -74,6 +75,7 @@
 		"react-toastify": "^7.0.4",
 		"swr": "^0.5.5",
 		"tailwindcss": "^2.1.1",
+		"tippy.js": "^6.3.1",
 		"utility-types": "^3.10.0"
 	},
 	"devDependencies": {

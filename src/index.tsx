@@ -8,6 +8,7 @@ import { AirdropPage } from './pages/airdrop';
 import { RouteWrapper } from './components/layouts/RouteWrapper';
 import { NotFoundPage } from './pages/NotFound';
 
+import 'tippy.js/dist/tippy.css';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/index.scss';
 import './styles/globals.scss';

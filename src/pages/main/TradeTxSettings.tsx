@@ -1,13 +1,18 @@
+import Tippy from '@tippyjs/react';
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import AutosizeInput from 'react-input-autosize';
 import { DisplayIcon } from '../../components/layouts/Sidebar/SidebarItem';
-import { SlippageStep, slippageStepToPercentage, TradeConfig } from './TradeClipboard';
+import { SlippageStep } from './models/tradeModels';
+import { TradeConfig } from './stores/trade/config';
+import { slippageStepToPercentage } from './utils/slippageStepToPercentage';
 
-export const TradeTxSettings: FunctionComponent<{
+interface Props {
 	config: TradeConfig;
-}> = observer(({ config }) => {
+}
+
+export const TradeTxSettings = observer(({ config }: Props) => {
 	const [view, setView] = useState<boolean>(false);
 
 	const closeView = useCallback(() => {
@@ -45,9 +50,13 @@ export const TradeTxSettings: FunctionComponent<{
 				<p className="mb-2.5">Transaction Settings</p>
 				<div className="mb-3 w-full flex items-center">
 					<p className="text-white-disabled text-sm mr-2.5">Slippage tolerance</p>
-					<div className="inline-block rounded-full w-3.5 h-3.5 text-xs bg-secondary-200 flex items-center justify-center text-black">
-						!
-					</div>
+					<Tippy
+						className="w-75"
+						content="Your transaction will revert if the price changes unfavorably by more than this percentage.">
+						<div className="inline-block rounded-full w-3.5 h-3.5 text-xs bg-secondary-200 flex items-center justify-center text-black cursor-pointer">
+							!
+						</div>
+					</Tippy>
 				</div>
 				<ul className="grid grid-cols-4 gap-3">
 					{[SlippageStep.Step1, SlippageStep.Step2, SlippageStep.Step3].map(slippageStep => {
@@ -67,11 +76,13 @@ export const TradeTxSettings: FunctionComponent<{
 	);
 });
 
-const SlippageToleranceItem: FunctionComponent<{
+interface ItemProps {
 	percentage: number;
 	selected: boolean;
 	setSelected: () => void;
-}> = ({ percentage, selected, setSelected }) => {
+}
+
+const SlippageToleranceItem = ({ percentage, selected, setSelected }: ItemProps) => {
 	return (
 		<li
 			onClick={setSelected}
@@ -85,9 +96,7 @@ const SlippageToleranceItem: FunctionComponent<{
 	);
 };
 
-const SlippageToleranceEditableItem: FunctionComponent<{
-	config: TradeConfig;
-}> = observer(({ config }) => {
+const SlippageToleranceEditableItem = observer(({ config }: Props) => {
 	const selected = config.slippageStep == null;
 
 	const error = (() => {
