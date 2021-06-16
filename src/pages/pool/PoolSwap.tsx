@@ -119,15 +119,19 @@ export class PoolSwapConfig extends AmountConfig {
 			return new CoinPretty(this.outCurrency, new Dec(0));
 		}
 
-		const estimated = pool.estimateSwapExactAmountIn(
-			{
-				currency: this.sendCurrency,
-				amount: this.amount,
-			},
-			this.outCurrency
-		);
+		try {
+			const estimated = pool.estimateSwapExactAmountIn(
+				{
+					currency: this.sendCurrency,
+					amount: this.amount,
+				},
+				this.outCurrency
+			);
 
-		return estimated.tokenOut;
+			return estimated.tokenOut;
+		} catch {
+			return new CoinPretty(this.outCurrency, new Dec(0));
+		}
 	}
 
 	@action
@@ -185,15 +189,19 @@ export class PoolSwapConfig extends AmountConfig {
 			return new IntPretty(new Int(0));
 		}
 
-		const estimated = pool.estimateSwapExactAmountIn(
-			{
-				currency: this.sendCurrency,
-				amount: this.amount,
-			},
-			this.outCurrency
-		);
+		try {
+			const estimated = pool.estimateSwapExactAmountIn(
+				{
+					currency: this.sendCurrency,
+					amount: this.amount,
+				},
+				this.outCurrency
+			);
 
-		return estimated.slippage;
+			return estimated.slippage;
+		} catch {
+			return new IntPretty(new Int(0));
+		}
 	}
 }
 
