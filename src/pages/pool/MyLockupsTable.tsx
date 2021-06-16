@@ -145,7 +145,7 @@ const LockupTableRow: FunctionComponent<{
 							/>
 						</svg>
 					) : (
-						<p className="text-enabledGold">Unlock</p>
+						<p className="text-enabledGold">Unlock All</p>
 					)}
 				</button>
 			</td>
