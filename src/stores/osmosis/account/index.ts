@@ -256,7 +256,7 @@ export class OsmosisAccount {
 			},
 			{
 				amount: [],
-				gas: this.base.msgOpts.swapExactAmountIn.gas.toString(),
+				gas: this.base.msgOpts.joinPool.gas.toString(),
 			},
 			memo,
 			tx => {
