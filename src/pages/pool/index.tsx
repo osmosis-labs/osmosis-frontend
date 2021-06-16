@@ -12,6 +12,7 @@ import { OsmoSynthesis } from './OsmoSynthesis';
 import { ManageLiquidityDialog } from '../../dialogs';
 import { MISC } from '../../constants';
 import { LBPCatalyst } from './LBP';
+import { PoolSwap } from './PoolSwap';
 
 export const PoolPage: FunctionComponent = observer(() => {
 	const history = useHistory();
@@ -57,6 +58,7 @@ export const PoolPage: FunctionComponent = observer(() => {
 						</div>
 					</div>
 					<div className="py-10 w-full px-10 bg-surface">
+						<PoolSwap poolId={pool.id} />
 						{/* 인센티브를 받을 수 있는 풀의 경우만 Synthesis를 표시한다. */}
 						{queries.osmosis.queryIncentivizedPools.isIncentivized(pool.id) ? (
 							<div className="pb-15">

@@ -17,7 +17,7 @@ import { GammSwapManager } from '../../stores/osmosis/swap';
 import { ObservableQueryPools } from '../../stores/osmosis/query/pools';
 import { TradeTxSettings } from './TradeTxSettings';
 import { ChainGetter, ObservableQueryBalances } from '@keplr-wallet/stores';
-import { AmountConfig } from '@keplr-wallet/hooks';
+import { AmountConfig, IAmountConfig } from '@keplr-wallet/hooks';
 import { TToastType, useToast } from '../../components/common/toasts';
 import { useFakeFeeConfig } from '../../hooks/tx';
 import { computedFn } from 'mobx-utils';
@@ -500,7 +500,12 @@ const FeesBox: FunctionComponent<{
 	);
 });
 
-const FromBox: FunctionComponent<{ config: TradeConfig }> = observer(({ config }) => {
+export const FromBox: FunctionComponent<{
+	config: IAmountConfig & {
+		outCurrency: AppCurrency;
+		setInCurrency(minimalDenom: string): void;
+	};
+}> = observer(({ config }) => {
 	const { chainStore, accountStore, queriesStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
@@ -598,7 +603,13 @@ const TokenAmountInput: FunctionComponent<{
 	);
 });
 
-const ToBox: FunctionComponent<{ config: TradeConfig }> = observer(({ config }) => {
+export const ToBox: FunctionComponent<{
+	config: IAmountConfig & {
+		outAmount: CoinPretty;
+		outCurrency: AppCurrency;
+		setOutCurrency(minimalDenom: string): void;
+	};
+}> = observer(({ config }) => {
 	const [openSelector, setOpenSelector] = React.useState(false);
 	return (
 		<div className="bg-surface rounded-2xl py-4 pr-5 pl-4 relative">
