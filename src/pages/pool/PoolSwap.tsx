@@ -245,7 +245,11 @@ export const PoolSwap: FunctionComponent<{
 	return (
 		<section className="pb-10 max-w-max mx-auto">
 			<h5 className="mb-7.5 ">Purchase Tokens</h5>
-			<div className="w-5/12 h-full rounded-xl bg-card py-6 px-7.5">
+			<div
+				className="w-5/12 h-full rounded-xl bg-card py-6 px-7.5"
+				style={{
+					minWidth: '500px',
+				}}>
 				<div className="relative">
 					<div className="mb-4.5">
 						<FromBox config={config} />
