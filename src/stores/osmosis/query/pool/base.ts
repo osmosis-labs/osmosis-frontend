@@ -89,12 +89,32 @@ export class QueriedPoolBase {
 
 	calculateSpotPrice(inMinimalDenom: string, outMinimalDenom: string): IntPretty {
 		const calculated = this.pool.calculateSpotPrice(inMinimalDenom, outMinimalDenom);
-		return new IntPretty(calculated).maxDecimals(4).trim(true);
+
+		const chainInfo = this.chainGetter.getChain(this.chainId);
+		const inCurrency = chainInfo.forceFindCurrency(inMinimalDenom);
+		const outCurrecny = chainInfo.forceFindCurrency(outMinimalDenom);
+
+		const decimalDelta = inCurrency.coinDecimals - outCurrecny.coinDecimals;
+
+		return new IntPretty(calculated)
+			.quo(DecUtils.getPrecisionDec(decimalDelta))
+			.maxDecimals(4)
+			.trim(true);
 	}
 
 	calculateSpotPriceWithoutSwapFee(inMinimalDenom: string, outMinimalDenom: string): IntPretty {
 		const calculated = this.pool.calculateSpotPriceWithoutSwapFee(inMinimalDenom, outMinimalDenom);
-		return new IntPretty(calculated).maxDecimals(4).trim(true);
+
+		const chainInfo = this.chainGetter.getChain(this.chainId);
+		const inCurrency = chainInfo.forceFindCurrency(inMinimalDenom);
+		const outCurrecny = chainInfo.forceFindCurrency(outMinimalDenom);
+
+		const decimalDelta = inCurrency.coinDecimals - outCurrecny.coinDecimals;
+
+		return new IntPretty(calculated)
+			.quo(DecUtils.getPrecisionDec(decimalDelta))
+			.maxDecimals(4)
+			.trim(true);
 	}
 
 	estimateJoinSwap(
