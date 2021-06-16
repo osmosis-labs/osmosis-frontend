@@ -1,11 +1,9 @@
-import { ObservableChainQuery } from '@keplr-wallet/stores/build/query/chain-query';
 import { ClaimParams } from './types';
 import { KVStore } from '@keplr-wallet/common';
-import { ChainGetter } from '@keplr-wallet/stores/src/common/index';
+import { ChainGetter, ObservableChainQuery } from '@keplr-wallet/stores';
 import { computed, makeObservable } from 'mobx';
 import { Duration } from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';
-import { Currency } from '@keplr-wallet/types';
 
 export class ObservableQueryClaimParams extends ObservableChainQuery<ClaimParams> {
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {

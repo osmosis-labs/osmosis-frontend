@@ -1,5 +1,5 @@
 import React, { Dispatch, FunctionComponent, SetStateAction, useState } from 'react';
-import { BaseDialog, BaseDialogProps } from './base';
+import { wrapBaseDialog } from './base';
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import InputSlider from 'react-input-slider';
@@ -13,7 +13,7 @@ import { MISC } from '../constants';
 import { ObservableQueryGammPoolShare } from '../stores/osmosis/query/pool-share';
 import { TToastType, useToast } from '../components/common/toasts';
 import { BasicAmountConfig } from '../hooks/tx/basic-amount-config';
-import { TxChainSetter } from '@keplr-wallet/hooks/build/tx/chain';
+import { TxChainSetter } from '@keplr-wallet/hooks';
 import { computedFn } from 'mobx-utils';
 import { Img } from '../components/common/Img';
 
@@ -321,53 +321,51 @@ export class RemoveLiquidityConfig extends ManageLiquidityConfigBase {
 	}
 }
 
-export const ManageLiquidityDialog: FunctionComponent<BaseDialogProps & {
-	poolId: string;
-}> = observer(({ isOpen, close, poolId, style }) => {
-	const [tab, setTab] = React.useState<Tabs>(Tabs.ADD);
+export const ManageLiquidityDialog = wrapBaseDialog(
+	observer(({ poolId, close }: { poolId: string; close: () => void }) => {
+		const [tab, setTab] = React.useState<Tabs>(Tabs.ADD);
 
-	const { chainStore, queriesStore, accountStore } = useStore();
+		const { chainStore, queriesStore, accountStore } = useStore();
 
-	const queries = queriesStore.get(chainStore.current.chainId);
-	const account = accountStore.getAccount(chainStore.current.chainId);
+		const queries = queriesStore.get(chainStore.current.chainId);
+		const account = accountStore.getAccount(chainStore.current.chainId);
 
-	const [addLiquidityConfig] = useState(
-		() =>
-			new AddLiquidityConfig(
-				chainStore,
-				chainStore.current.chainId,
-				poolId,
-				account.bech32Address,
-				queries.osmosis.queryGammPoolShare,
-				queries.osmosis.queryGammPools,
-				queries.queryBalances
-			)
-	);
-	addLiquidityConfig.setChain(chainStore.current.chainId);
-	addLiquidityConfig.setPoolId(poolId);
-	addLiquidityConfig.setQueryPoolShare(queries.osmosis.queryGammPoolShare);
-	addLiquidityConfig.setQueryPools(queries.osmosis.queryGammPools);
-	addLiquidityConfig.setQueryBalances(queries.queryBalances);
-	addLiquidityConfig.setSender(account.bech32Address);
+		const [addLiquidityConfig] = useState(
+			() =>
+				new AddLiquidityConfig(
+					chainStore,
+					chainStore.current.chainId,
+					poolId,
+					account.bech32Address,
+					queries.osmosis.queryGammPoolShare,
+					queries.osmosis.queryGammPools,
+					queries.queryBalances
+				)
+		);
+		addLiquidityConfig.setChain(chainStore.current.chainId);
+		addLiquidityConfig.setPoolId(poolId);
+		addLiquidityConfig.setQueryPoolShare(queries.osmosis.queryGammPoolShare);
+		addLiquidityConfig.setQueryPools(queries.osmosis.queryGammPools);
+		addLiquidityConfig.setQueryBalances(queries.queryBalances);
+		addLiquidityConfig.setSender(account.bech32Address);
 
-	const [removeLiquidityConfig] = useState(
-		() =>
-			new RemoveLiquidityConfig(
-				chainStore,
-				chainStore.current.chainId,
-				poolId,
-				account.bech32Address,
-				queries.osmosis.queryGammPoolShare,
-				'35'
-			)
-	);
-	removeLiquidityConfig.setChain(chainStore.current.chainId);
-	removeLiquidityConfig.setPoolId(poolId);
-	removeLiquidityConfig.setQueryPoolShare(queries.osmosis.queryGammPoolShare);
-	removeLiquidityConfig.setSender(account.bech32Address);
+		const [removeLiquidityConfig] = useState(
+			() =>
+				new RemoveLiquidityConfig(
+					chainStore,
+					chainStore.current.chainId,
+					poolId,
+					account.bech32Address,
+					queries.osmosis.queryGammPoolShare,
+					'35'
+				)
+		);
+		removeLiquidityConfig.setChain(chainStore.current.chainId);
+		removeLiquidityConfig.setPoolId(poolId);
+		removeLiquidityConfig.setQueryPoolShare(queries.osmosis.queryGammPoolShare);
+		removeLiquidityConfig.setSender(account.bech32Address);
 
-	return (
-		<BaseDialog style={style} isOpen={isOpen} close={close}>
+		return (
 			<div className="text-white-high w-full h-full">
 				<h5 className="mb-9">Manage Liquidity</h5>
 				<div className="mb-7.5">
@@ -385,9 +383,9 @@ export const ManageLiquidityDialog: FunctionComponent<BaseDialogProps & {
 					close={close}
 				/>
 			</div>
-		</BaseDialog>
-	);
-});
+		);
+	})
+);
 
 const AddRemoveSelectTab: FunctionComponent<{
 	tab: Tabs;

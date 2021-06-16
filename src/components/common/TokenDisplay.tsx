@@ -14,7 +14,7 @@ export const TokenDisplay: FunctionComponent<{
 	return (
 		<div className="flex items-center">
 			<figure
-				style={{ width: '56px', height: '56px' }}
+				style={{ minWidth: '56px', minHeight: '56px', maxWidth: '56px', maxHeight: '56px' }}
 				className="flex justify-center items-center rounded-full border-secondary-200 border mr-3">
 				<Img loadingSpin style={{ width: '44px', height: '44px' }} src={currency.coinImageUrl} />
 			</figure>

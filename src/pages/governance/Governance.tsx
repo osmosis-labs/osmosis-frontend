@@ -51,8 +51,9 @@ export const GovernanceTab: FunctionComponent = () => {
 					))}
 				</tbody>
 			</table>
+			s
 			<VoteDialog
-				style={{ minWidth: '656px', padding: '32px 48px' }}
+				dialogStyle={{ minWidth: '656px', padding: '32px 48px' }}
 				isOpen={isOpen}
 				close={() => setIsOpen(false)}
 				proposalIndex={proposalIndex}

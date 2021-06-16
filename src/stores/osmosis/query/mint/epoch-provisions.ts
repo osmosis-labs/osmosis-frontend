@@ -1,7 +1,6 @@
-import { ObservableChainQuery } from '@keplr-wallet/stores/build/query/chain-query';
+import { ChainGetter, ObservableChainQuery } from '@keplr-wallet/stores';
 import { EpochProvisions } from './types';
 import { KVStore } from '@keplr-wallet/common';
-import { ChainGetter } from '@keplr-wallet/stores/src/common/index';
 import { computed, makeObservable } from 'mobx';
 import { CoinPretty, Dec } from '@keplr-wallet/unit';
 import { ObservableQueryMintParmas } from './params';

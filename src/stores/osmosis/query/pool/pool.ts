@@ -1,10 +1,8 @@
-import { ObservableChainQuery, ObservableChainQueryMap } from '@keplr-wallet/stores/build/query/chain-query';
+import { ChainGetter, QueryResponse, ObservableChainQuery, ObservableChainQueryMap } from '@keplr-wallet/stores';
 import { Pool } from './types';
 import { KVStore } from '@keplr-wallet/common';
-import { ChainGetter } from '@keplr-wallet/stores/src/common/index';
 import { makeObservable, computed } from 'mobx';
 import { QueriedPoolBase } from './base';
-import { QueryResponse } from '@keplr-wallet/stores';
 
 export class ObservableQueryPoolInner extends ObservableChainQuery<Pool> {
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, protected readonly poolId: string) {

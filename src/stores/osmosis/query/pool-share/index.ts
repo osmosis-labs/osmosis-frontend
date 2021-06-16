@@ -1,5 +1,5 @@
 // TODO: Keplr 본체에서 import path 수정하기
-import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balances';
+import { ObservableQueryBalances } from '@keplr-wallet/stores';
 import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
 import { AppCurrency, Currency } from '@keplr-wallet/types';
 import { ObservableQueryPools } from '../pools';

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import cn from 'clsx';
 import { Img } from '../../components/common/Img';
 import { observer } from 'mobx-react-lite';
@@ -11,6 +11,8 @@ import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
 import { OsmoSynthesis } from './OsmoSynthesis';
 import { ManageLiquidityDialog } from '../../dialogs';
 import { MISC } from '../../constants';
+import { LBPCatalyst } from './LBP';
+import { PoolSwap } from './PoolSwap';
 
 export const PoolPage: FunctionComponent = observer(() => {
 	const history = useHistory();
@@ -21,25 +23,16 @@ export const PoolPage: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
-	const ref = React.useRef<QueriedPoolBase>();
-	ref.current = queries.osmosis.queryGammPools.getPool(match.params.id);
-	const pool = ref.current;
+	const observablePool = queries.osmosis.queryGammPools.getObservableQueryPool(match.params.id);
+	const pool = observablePool.pool;
 
-	// TODO: 아래 TODO가 되려면 pool값이 없을 떄 별도의 에러메시지가 필요할듯.
-	// 현재로써는 짧은 시간을 기다려서 못찾았다고 표시하는 정도로 마무리 짓는 것 외엔 크게 방법이...
-	// TODO: ObservableChainQuery의 근본적이 수정이 필요. swr의 구현 방식을 참고하면 될듯.
-	React.useEffect(() => {
-		// TODO : fix in the future
-		setTimeout(() => {
-			if (!ref.current) {
-				history.push('/pools');
-				// TODO : toast message saying 'that pool was not found'
-			}
-		}, 1500);
-	}, [history]);
+	useEffect(() => {
+		if (!observablePool.isFetching && !observablePool.pool) {
+			// Invalid request.
+			history.push('/pools');
+		}
+	}, [observablePool.isFetching, observablePool.pool]);
 
-	// TODO: 선택된 id의 풀이 없을 때 처리
-	console.log(ref.current);
 	return (
 		<div className="w-full h-full">
 			{pool ? (
@@ -65,11 +58,15 @@ export const PoolPage: FunctionComponent = observer(() => {
 						</div>
 					</div>
 					<div className="py-10 w-full px-10 bg-surface">
+						<PoolSwap poolId={pool.id} />
 						{/* 인센티브를 받을 수 있는 풀의 경우만 Synthesis를 표시한다. */}
 						{queries.osmosis.queryIncentivizedPools.isIncentivized(pool.id) ? (
 							<div className="pb-15">
 								<OsmoSynthesis poolId={pool.id} />
 							</div>
+						) : null}
+						{pool.smoothWeightChangeParams ? (
+							<LBPCatalyst pool={pool} lbpParams={pool.smoothWeightChangeParams} />
 						) : null}
 						<div className="max-w-max mx-auto">
 							<PoolCatalyst id={pool.id} />
@@ -110,7 +107,7 @@ const PoolInfoHeader: FunctionComponent<{
 			{pool ? (
 				<section>
 					<ManageLiquidityDialog
-						style={{ width: '656px', minHeight: '533px' }}
+						dialogStyle={{ width: '656px', minHeight: '533px' }}
 						poolId={id}
 						isOpen={isDialogOpen}
 						close={closeDialog}

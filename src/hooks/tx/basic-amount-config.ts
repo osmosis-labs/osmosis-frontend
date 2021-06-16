@@ -1,8 +1,7 @@
 import { AmountConfig } from '@keplr-wallet/hooks';
 import { action, computed, makeObservable, observable, override } from 'mobx';
 import { AppCurrency } from '@keplr-wallet/types';
-import { ChainGetter } from '@keplr-wallet/stores';
-import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balances';
+import { ChainGetter, ObservableQueryBalances } from '@keplr-wallet/stores';
 import { useState } from 'react';
 
 export class BasicAmountConfig extends AmountConfig {

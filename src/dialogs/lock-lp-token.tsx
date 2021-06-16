@@ -1,34 +1,32 @@
 import React, { FunctionComponent, useState } from 'react';
-import { BaseDialog, BaseDialogProps } from './base';
+import { wrapBaseDialog } from './base';
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores';
 import { TToastType, useToast } from '../components/common/toasts';
 import { useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
 
-export const LockLpTokenDialog: FunctionComponent<BaseDialogProps & {
-	poolId: string;
-}> = observer(({ style, isOpen, close, poolId }) => {
-	const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+export const LockLpTokenDialog = wrapBaseDialog(
+	observer(({ poolId, close }: { poolId: string; close: () => void }) => {
+		const { chainStore, queriesStore, accountStore, priceStore } = useStore();
 
-	const account = accountStore.getAccount(chainStore.current.chainId);
-	const queries = queriesStore.get(chainStore.current.chainId);
-	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
+		const account = accountStore.getAccount(chainStore.current.chainId);
+		const queries = queriesStore.get(chainStore.current.chainId);
+		const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
 
-	const amountConfig = useBasicAmountConfig(
-		chainStore,
-		chainStore.current.chainId,
-		account.bech32Address,
-		queries.osmosis.queryGammPoolShare.getShareCurrency(poolId),
-		queries.queryBalances
-	);
+		const amountConfig = useBasicAmountConfig(
+			chainStore,
+			chainStore.current.chainId,
+			account.bech32Address,
+			queries.osmosis.queryGammPoolShare.getShareCurrency(poolId),
+			queries.queryBalances
+		);
 
-	const toast = useToast();
+		const toast = useToast();
 
-	const [selectedDurationIndex, setSelectedDurationIndex] = useState(0);
+		const [selectedDurationIndex, setSelectedDurationIndex] = useState(0);
 
-	return (
-		<BaseDialog style={style} isOpen={isOpen} close={close}>
+		return (
 			<div className="text-white-high w-full h-full">
 				<h5 className="mb-9">Lock LP tokens</h5>
 				<div className="mb-7.5">
@@ -141,9 +139,9 @@ export const LockLpTokenDialog: FunctionComponent<BaseDialogProps & {
 					</button>
 				</div>
 			</div>
-		</BaseDialog>
-	);
-});
+		);
+	})
+);
 
 const LockupItem: FunctionComponent<{
 	duration: string;

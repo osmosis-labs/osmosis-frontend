@@ -43,6 +43,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinGeckoId: 'pool:uosmo',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 		},
+		walletUrl: 'https://dev.wallet.keplr.app/#/osmosis/stake',
+		walletUrlForStaking: 'https://dev.wallet.keplr.app/#/osmosis/stake',
 		bip44: {
 			coinType: 118,
 		},

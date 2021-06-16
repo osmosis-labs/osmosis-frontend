@@ -12,7 +12,11 @@ export const LabsOverview: FunctionComponent = observer(() => {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	return (
 		<section>
-			<CreateNewPoolDialog style={{ minWidth: '656px' }} isOpen={isDialogOpen} close={() => setIsDialogOpen(false)} />
+			<CreateNewPoolDialog
+				dialogStyle={{ minWidth: '656px' }}
+				isOpen={isDialogOpen}
+				close={() => setIsDialogOpen(false)}
+			/>
 			<div className="flex items-center mb-6">
 				<h5 className="mr-0.5">Active Labs</h5>
 				<button

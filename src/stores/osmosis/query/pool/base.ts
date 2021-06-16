@@ -1,12 +1,14 @@
 import { GAMMPoolData } from '../../pool/types';
 import { GAMMPool } from '../../pool';
-import { ChainGetter, CoinPrimitive, MsgOpt } from '@keplr-wallet/stores';
+import { ChainGetter, MsgOpt } from '@keplr-wallet/stores';
 import { CoinPretty, DecUtils, IntPretty, Int, Coin, Dec } from '@keplr-wallet/unit';
 import { computed, makeObservable, observable } from 'mobx';
-import { Currency, FiatCurrency } from '@keplr-wallet/types';
+import { AppCurrency, Currency, FiatCurrency } from '@keplr-wallet/types';
 import { Msg } from '@cosmjs/launchpad';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { computedFn } from 'mobx-utils';
+import { Duration } from 'dayjs/plugin/duration';
+import dayjs from 'dayjs';
 
 export class QueriedPoolBase {
 	@observable.ref
@@ -22,14 +24,97 @@ export class QueriedPoolBase {
 		return this.pool.id;
 	}
 
+	@computed
+	get smoothWeightChangeParams():
+		| {
+				startTime: Date;
+				endTime: Date;
+				duration: Duration;
+				initialPoolWeights: {
+					currency: AppCurrency;
+					weight: IntPretty;
+					ratio: IntPretty;
+				}[];
+				targetPoolWeights: {
+					currency: AppCurrency;
+					weight: IntPretty;
+					ratio: IntPretty;
+				}[];
+		  }
+		| undefined {
+		if (!this.pool.poolParamsRaw.smoothWeightChangeParams) {
+			return undefined;
+		}
+
+		const params = this.pool.poolParamsRaw.smoothWeightChangeParams;
+
+		const startTime = new Date(params.start_time);
+		const duration = dayjs.duration(parseInt(params.duration.replace('s', '')) * 1000);
+		const endTime = dayjs(startTime)
+			.add(duration)
+			.toDate();
+
+		let totalInitialPoolWeight = new Dec(0);
+		for (const weight of params.initialPoolWeights) {
+			totalInitialPoolWeight = totalInitialPoolWeight.add(new Dec(weight.weight));
+		}
+		const initialPoolWeights = params.initialPoolWeights.map(weight => {
+			return {
+				currency: this.chainGetter.getChain(this.chainId).forceFindCurrency(weight.token.denom),
+				weight: new IntPretty(new Dec(weight.weight)),
+				ratio: new IntPretty(new Dec(weight.weight)).quo(totalInitialPoolWeight).decreasePrecision(2),
+			};
+		});
+
+		let totalTargetPoolWeight = new Dec(0);
+		for (const weight of params.targetPoolWeights) {
+			totalTargetPoolWeight = totalTargetPoolWeight.add(new Dec(weight.weight));
+		}
+		const targetPoolWeights = params.targetPoolWeights.map(weight => {
+			return {
+				currency: this.chainGetter.getChain(this.chainId).forceFindCurrency(weight.token.denom),
+				weight: new IntPretty(new Dec(weight.weight)),
+				ratio: new IntPretty(new Dec(weight.weight)).quo(totalTargetPoolWeight).decreasePrecision(2),
+			};
+		});
+
+		return {
+			startTime,
+			endTime,
+			duration,
+			initialPoolWeights,
+			targetPoolWeights,
+		};
+	}
+
 	calculateSpotPrice(inMinimalDenom: string, outMinimalDenom: string): IntPretty {
 		const calculated = this.pool.calculateSpotPrice(inMinimalDenom, outMinimalDenom);
-		return new IntPretty(calculated).maxDecimals(4).trim(true);
+
+		const chainInfo = this.chainGetter.getChain(this.chainId);
+		const inCurrency = chainInfo.forceFindCurrency(inMinimalDenom);
+		const outCurrecny = chainInfo.forceFindCurrency(outMinimalDenom);
+
+		const decimalDelta = inCurrency.coinDecimals - outCurrecny.coinDecimals;
+
+		return new IntPretty(calculated)
+			.quo(DecUtils.getPrecisionDec(decimalDelta))
+			.maxDecimals(4)
+			.trim(true);
 	}
 
 	calculateSpotPriceWithoutSwapFee(inMinimalDenom: string, outMinimalDenom: string): IntPretty {
 		const calculated = this.pool.calculateSpotPriceWithoutSwapFee(inMinimalDenom, outMinimalDenom);
-		return new IntPretty(calculated).maxDecimals(4).trim(true);
+
+		const chainInfo = this.chainGetter.getChain(this.chainId);
+		const inCurrency = chainInfo.forceFindCurrency(inMinimalDenom);
+		const outCurrecny = chainInfo.forceFindCurrency(outMinimalDenom);
+
+		const decimalDelta = inCurrency.coinDecimals - outCurrecny.coinDecimals;
+
+		return new IntPretty(calculated)
+			.quo(DecUtils.getPrecisionDec(decimalDelta))
+			.maxDecimals(4)
+			.trim(true);
 	}
 
 	estimateJoinSwap(
@@ -303,52 +388,25 @@ export class QueriedPoolBase {
 	}
 
 	/**
-	 * 풀에 제공된 유동성의 fiat 총합을 계산한다.
-	 * 일단 풀에 제공된 유동성 중에서 fiat 가치를 알아낼 수 있는 코인을 선택하고
-	 * 그 코인의 fiat가치와 나머지 코인과의 spot price를 기반으로 총 가치를 알아낸다.
-	 * 풀의 유동성 중 어떤 코인도 fiat 가치를 알아낼 방법이 없으면 0를 반환한다.
-	 * QUESTION: 근데 유동성이 부족한 풀의 경우 이런 계산 방식은 문제가 될 수 있을듯...?
+	 * Compute the total value locked in the pool.
+	 * Only handle the known currencies that have the coingecko id.
+	 * Other currencies would be ignored.
 	 */
 	readonly computeTotalValueLocked = computedFn(
 		(
-			priceStore: { getPrice(coinId: string, vsCurrency: string): number | undefined },
+			priceStore: { calculatePrice(vsCurrrency: string, coin: CoinPretty): PricePretty | undefined },
 			fiatCurrency: FiatCurrency
 		): PricePretty => {
-			const ratios = this.poolRatios;
-			let currencyWithCoingeckoId: Currency | undefined;
+			let price = new PricePretty(fiatCurrency, new Dec(0));
 
-			// Get the first currency that has the coingecko id.
-			for (const ratio of ratios) {
-				if (ratio.amount.currency.coinGeckoId) {
-					currencyWithCoingeckoId = ratio.amount.currency;
-					break;
+			for (const poolAsset of this.poolAssets) {
+				const poolPrice = priceStore.calculatePrice(fiatCurrency.currency, poolAsset.amount);
+				if (poolPrice) {
+					price = price.add(poolPrice);
 				}
 			}
 
-			if (!currencyWithCoingeckoId) {
-				return new PricePretty(fiatCurrency, new Int(0));
-			}
-
-			const basePrice = priceStore.getPrice(currencyWithCoingeckoId.coinGeckoId!, fiatCurrency.currency) ?? 0;
-			if (!basePrice) {
-				return new PricePretty(fiatCurrency, new Int(0));
-			}
-
-			let total = new Dec(0);
-
-			for (const ratio of ratios) {
-				const spotPrice = this.pool.calculateSpotPriceWithoutSwapFee(
-					currencyWithCoingeckoId.coinMinimalDenom,
-					ratio.amount.currency.coinMinimalDenom
-				);
-
-				const price = spotPrice.mul(new Dec(basePrice.toString()));
-				const multiplied = price.mul(ratio.amount.toDec());
-
-				total = total.add(multiplied);
-			}
-
-			return new PricePretty(fiatCurrency, total);
+			return price;
 		}
 	);
 }
