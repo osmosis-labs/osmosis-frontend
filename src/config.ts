@@ -2,7 +2,7 @@ import { Bech32Address } from '@keplr-wallet/cosmos';
 import { ChainInfoWithExplorer } from './stores/chain';
 
 export const PoolsPerPage = 10;
-export const RewardEpochIdentifier = 'hour';
+export const RewardEpochIdentifier = '15min';
 
 /**
  * Determine the channel info per the chain.
