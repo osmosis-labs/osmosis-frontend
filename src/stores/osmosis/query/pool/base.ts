@@ -165,6 +165,60 @@ export class QueriedPoolBase {
 		};
 	}
 
+	static estimateMultihopSwapExactAmountIn(
+		tokenIn: { currency: Currency; amount: string },
+		routes: {
+			pool: QueriedPoolBase;
+			tokenOutCurrency: Currency;
+		}[]
+	): {
+		tokenOut: CoinPretty;
+		spotPriceBefore: IntPretty;
+		spotPriceAfter: IntPretty;
+		slippage: IntPretty;
+	} {
+		if (routes.length === 0) {
+			throw new Error('Empty route');
+		}
+
+		let spotPriceBefore = new IntPretty(new Dec(1));
+		let spotPriceAfter = new IntPretty(new Dec(1));
+
+		let originalTokenIn = { ...tokenIn };
+
+		for (const route of routes) {
+			const estimated = route.pool.estimateSwapExactAmountIn(tokenIn, route.tokenOutCurrency);
+
+			spotPriceBefore = spotPriceBefore.mul(estimated.spotPriceBefore);
+			spotPriceAfter = spotPriceAfter.mul(estimated.spotPriceAfter);
+
+			// Token out should be the token in for the next route
+			tokenIn = {
+				currency: route.tokenOutCurrency,
+				amount: estimated.tokenOut
+					.locale(false)
+					.hideDenom(true)
+					.toString(),
+			};
+		}
+
+		const effectivePrice = new Dec(originalTokenIn.amount).quo(new Dec(tokenIn.amount));
+		const slippage = effectivePrice.quo(spotPriceBefore.toDec()).sub(new Dec('1'));
+
+		return {
+			spotPriceBefore,
+			spotPriceAfter,
+			tokenOut: new CoinPretty(
+				tokenIn.currency,
+				new Dec(tokenIn.amount).mul(DecUtils.getPrecisionDec(tokenIn.currency.coinDecimals))
+			),
+			slippage: new IntPretty(slippage)
+				.decreasePrecision(2)
+				.maxDecimals(4)
+				.trim(true),
+		};
+	}
+
 	estimateSwapExactAmountIn(
 		tokenIn: { currency: Currency; amount: string },
 		tokenOutCurrency: Currency

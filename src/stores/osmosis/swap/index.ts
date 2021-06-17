@@ -73,7 +73,7 @@ export class GammSwapManager {
 	}
 
 	// XXX: Currently, only calculate the one hopping.
-	protected readonly getMultihopSwappablePoolIds = computedFn((inMinimalDenom: string, outMinimalDenom: string): {
+	protected readonly getMultihopSwappablePools = computedFn((inMinimalDenom: string, outMinimalDenom: string): {
 		poolIds: [string, string];
 		hopMinimalDenom: string;
 	}[] => {
@@ -113,40 +113,26 @@ export class GammSwapManager {
 	});
 
 	protected readonly getSwappablePoolIds = computedFn((inMinimalDenom: string, outMinimalDenom: string): string[] => {
-		const poolIdMap: Map<
-			string,
-			{
-				in: boolean;
-				out: boolean;
-			}
-		> = new Map();
+		const map = this.swapManagerPoolCurrencyMapPerMinimalDenom;
 
-		for (const currency of this.swapCurrencies) {
-			if (currency.coinMinimalDenom === inMinimalDenom) {
-				poolIdMap.set(currency.poolId, {
-					...(poolIdMap.get(currency.poolId) ?? { in: false, out: false }),
-					...{ in: true },
-				});
-			}
+		const swappables = map.get(inMinimalDenom);
+		if (!swappables) {
+			return [];
+		}
 
-			if (currency.coinMinimalDenom === outMinimalDenom) {
-				poolIdMap.set(currency.poolId, {
-					...(poolIdMap.get(currency.poolId) ?? { in: false, out: false }),
-					...{ out: true },
-				});
+		const result: string[] = [];
+
+		for (const swappable of swappables) {
+			if (swappable.currencyMap.has(outMinimalDenom)) {
+				result.push(swappable.poolId);
 			}
 		}
 
-		return Array.from(poolIdMap.entries())
-			.map(([poolId, value]) => {
-				if (value.in && value.out) {
-					return poolId;
-				}
-			})
-			.filter(Boolean) as string[];
+		return result;
 	});
 
 	computeOptimizedRoues(
+		chainInfo: { forceFindCurrency(minimalDenom: string): AppCurrency },
 		queryPool: ObservableQueryPools,
 		inAmount: string,
 		inCurrency: AppCurrency,
@@ -155,79 +141,154 @@ export class GammSwapManager {
 		| {
 				swaps: {
 					poolId: string;
-					inAmount: Dec;
-					expectedOutAmount: Dec;
-					inCurrency: AppCurrency;
 					outCurrency: AppCurrency;
 				}[];
+				multihop: boolean;
+				estimatedSlippage: IntPretty;
 				spotPrice: IntPretty;
 				spotPriceWithoutSwapFee: IntPretty;
-				swapFee: IntPretty;
+				swapFees: IntPretty[];
 		  }
 		| undefined {
 		const swappablePoolIds = this.getSwappablePoolIds(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom);
-		let pools: QueriedPoolBase[] = [];
-		for (const poolId of swappablePoolIds) {
-			const pool = queryPool.getPool(poolId);
-			if (pool) {
-				pools.push(pool);
+		if (swappablePoolIds.length === 0) {
+			// Try multihop
+			const multihopPools = this.getMultihopSwappablePools(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom);
+
+			let bestPool:
+				| (typeof multihopPools[0] & {
+						estimated: ReturnType<typeof QueriedPoolBase.estimateMultihopSwapExactAmountIn>;
+				  })
+				| undefined;
+
+			for (const multihopPool of multihopPools) {
+				const [pool1, pool2] = [queryPool.getPool(multihopPool.poolIds[0]), queryPool.getPool(multihopPool.poolIds[1])];
+
+				if (pool1 && pool2) {
+					const estimated = QueriedPoolBase.estimateMultihopSwapExactAmountIn(
+						{
+							currency: inCurrency,
+							amount: inAmount,
+						},
+						[
+							{
+								pool: pool1,
+								tokenOutCurrency: chainInfo.forceFindCurrency(multihopPool.hopMinimalDenom),
+							},
+							{
+								pool: pool2,
+								tokenOutCurrency: outCurrency,
+							},
+						]
+					);
+
+					if (!bestPool) {
+						bestPool = {
+							...multihopPool,
+							estimated,
+						};
+					} else if (bestPool.estimated.spotPriceBefore.toDec().gt(estimated.spotPriceBefore.toDec())) {
+						bestPool = {
+							...multihopPool,
+							estimated,
+						};
+					}
+				}
 			}
-		}
 
-		if (pools.length === 0) {
-			return;
-		}
-
-		if (pools.length === 1) {
-			// TODO
-		}
-
-		// Sort pool by the spot price.
-		pools.sort((pool1, pool2) => {
-			const sp1 = pool1.calculateSpotPrice(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom).toDec();
-			const sp2 = pool2.calculateSpotPrice(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom).toDec();
-			if (sp1.equals(sp2)) {
-				return 0;
+			if (!bestPool) {
+				return;
 			}
-			return sp1.gt(sp2) ? 1 : -1;
-		});
 
-		const pool = pools[0];
-		// Remove the pools that has greater slippage slope than the first pool
-		const others: {
-			pool: QueriedPoolBase;
-			spotPrice: Dec;
-			slippageSlope: Dec;
-		}[] = [];
-		for (const remaining of pools.slice(1)) {
-			const slippageSlope = remaining
-				.calculateSlippageSlope(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom)
-				.toDec();
-			if (
-				slippageSlope.lt(pool.calculateSlippageSlope(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom).toDec())
-			) {
-				others.push({
-					pool: remaining,
-					spotPrice: remaining.calculateSpotPrice(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom).toDec(),
-					slippageSlope,
-				});
+			const [pool1, pool2] = [queryPool.getPool(bestPool.poolIds[0])!, queryPool.getPool(bestPool.poolIds[1])!];
+
+			const spotPriceWithoutSwapFee = pool1
+				.calculateSpotPriceWithoutSwapFee(inCurrency.coinMinimalDenom, bestPool.hopMinimalDenom)
+				.mul(pool2.calculateSpotPriceWithoutSwapFee(bestPool.hopMinimalDenom, outCurrency.coinMinimalDenom));
+
+			return {
+				swaps: [
+					{
+						poolId: bestPool.poolIds[0],
+						outCurrency: chainInfo.forceFindCurrency(bestPool.hopMinimalDenom),
+					},
+					{
+						poolId: bestPool.poolIds[1],
+						outCurrency,
+					},
+				],
+				multihop: true,
+				estimatedSlippage: bestPool.estimated.slippage,
+				spotPrice: bestPool.estimated.spotPriceBefore,
+				spotPriceWithoutSwapFee,
+				swapFees: [pool1.swapFee, pool2.swapFee],
+			};
+		} else {
+			let pools: QueriedPoolBase[] = [];
+			for (const poolId of swappablePoolIds) {
+				const pool = queryPool.getPool(poolId);
+				if (pool) {
+					pools.push(pool);
+				}
 			}
-		}
 
-		if (others.length === 0) {
-			// TODO
-		}
+			if (pools.length === 0) {
+				return;
+			}
 
-		for (const other of others) {
-			const interestOfPrice = other.spotPrice;
+			if (pools.length === 1) {
+				// TODO
+			}
 
-			const estimatedOut = pool.estimateSwapExactAmountIn(
-				{
-					currency: inCurrency,
-					amount: inAmount,
-				},
-				outCurrency
-			);
+			// Sort pool by the spot price.
+			pools.sort((pool1, pool2) => {
+				const sp1 = pool1.calculateSpotPrice(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom).toDec();
+				const sp2 = pool2.calculateSpotPrice(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom).toDec();
+				if (sp1.equals(sp2)) {
+					return 0;
+				}
+				return sp1.gt(sp2) ? 1 : -1;
+			});
+
+			const pool = pools[0];
+			// Remove the pools that has greater slippage slope than the first pool
+			const others: {
+				pool: QueriedPoolBase;
+				spotPrice: Dec;
+				slippageSlope: Dec;
+			}[] = [];
+			for (const remaining of pools.slice(1)) {
+				const slippageSlope = remaining
+					.calculateSlippageSlope(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom)
+					.toDec();
+				if (
+					slippageSlope.lt(
+						pool.calculateSlippageSlope(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom).toDec()
+					)
+				) {
+					others.push({
+						pool: remaining,
+						spotPrice: remaining.calculateSpotPrice(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom).toDec(),
+						slippageSlope,
+					});
+				}
+			}
+
+			if (others.length === 0) {
+				// TODO
+			}
+
+			for (const other of others) {
+				const interestOfPrice = other.spotPrice;
+
+				const estimatedOut = pool.estimateSwapExactAmountIn(
+					{
+						currency: inCurrency,
+						amount: inAmount,
+					},
+					outCurrency
+				);
+			}
 		}
 	}
 }
