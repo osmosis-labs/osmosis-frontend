@@ -84,12 +84,12 @@ export class GammSwapManager {
 			hopMinimalDenom: string;
 		}[] = [];
 
-		let targets = map.get(outMinimalDenom);
+		const targets = map.get(outMinimalDenom);
 		if (!targets) {
 			return [];
 		}
 
-		let firstSwappables = map.get(inMinimalDenom);
+		const firstSwappables = map.get(inMinimalDenom);
 		if (!firstSwappables) {
 			return [];
 		}
@@ -131,7 +131,7 @@ export class GammSwapManager {
 		return result;
 	});
 
-	readonly computeOptimizedRoues = computedFn(
+	readonly computeOptimizedRoutes = computedFn(
 		(
 			currencies: AppCurrency[],
 			queryPool: ObservableQueryPools,
@@ -214,7 +214,7 @@ export class GammSwapManager {
 					swapFees: [pool1.swapFee, pool2.swapFee],
 				};
 			} else {
-				let pools: QueriedPoolBase[] = [];
+				const pools: QueriedPoolBase[] = [];
 				for (const poolId of swappablePoolIds) {
 					const pool = queryPool.getPool(poolId);
 					if (pool) {

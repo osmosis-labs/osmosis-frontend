@@ -19,38 +19,65 @@ export const SwapButton = observer(({ config }: Props) => {
 			onClick={async e => {
 				e.preventDefault();
 
-				if (account.isReadyToSendMsgs) {
+				const optimizedRoutes = config.optimizedRoutes;
+				if (account.isReadyToSendMsgs && optimizedRoutes) {
 					const poolIds = config.poolIds;
 					if (poolIds.length === 0) {
 						throw new Error("Can't calculate the optimized pools");
 					}
 
 					try {
-						/*
-						await account.osmosis.sendSwapExactAmountInMsg(
-							poolId,
-							{
-								currency: config.sendCurrency,
-								amount: config.amount,
-							},
-							config.outCurrency,
-							config.slippage,
-							'',
-							tx => {
-								if (tx.code) {
-									toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-								} else {
-									toast.displayToast(TToastType.TX_SUCCESSFULL, {
-										customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),
-									});
+						if (optimizedRoutes.multihop) {
+							await account.osmosis.sendMultihopSwapExactAmountInMsg(
+								optimizedRoutes.swaps.map(route => {
+									return {
+										poolId: route.poolId,
+										tokenOutCurrency: route.outCurrency,
+									};
+								}),
+								{
+									currency: config.sendCurrency,
+									amount: config.amount,
+								},
+								config.slippage,
+								'',
+								tx => {
+									if (tx.code) {
+										toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
+									} else {
+										toast.displayToast(TToastType.TX_SUCCESSFULL, {
+											customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),
+										});
 
-									config.setAmount('');
+										config.setAmount('');
+									}
 								}
-							}
-						);
+							);
+						} else {
+							// Currently, optimized routes not supported.
+							// Only return one pool that has lowest spot price.
+							await account.osmosis.sendSwapExactAmountInMsg(
+								optimizedRoutes.swaps[0].poolId,
+								{
+									currency: config.sendCurrency,
+									amount: config.amount,
+								},
+								config.outCurrency,
+								config.slippage,
+								'',
+								tx => {
+									if (tx.code) {
+										toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
+									} else {
+										toast.displayToast(TToastType.TX_SUCCESSFULL, {
+											customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),
+										});
 
-						 */
-
+										config.setAmount('');
+									}
+								}
+							);
+						}
 						toast.displayToast(TToastType.TX_BROADCASTING);
 					} catch (e) {
 						toast.displayToast(TToastType.TX_FAILED, { message: e.message });

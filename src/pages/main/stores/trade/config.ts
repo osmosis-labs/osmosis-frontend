@@ -3,7 +3,7 @@ import { ChainGetter, ObservableQueryBalances } from '@keplr-wallet/stores';
 import { AppCurrency } from '@keplr-wallet/types';
 import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
 import { action, computed, makeObservable, observable, override } from 'mobx';
-import { computedFn } from 'mobx-utils';
+import { computedFn, keepAlive } from 'mobx-utils';
 import { ObservableQueryPools } from '../../../../stores/osmosis/query/pools';
 import { GammSwapManager } from '../../../../stores/osmosis/swap';
 import { SlippageStep } from '../../models/tradeModels';
@@ -41,6 +41,10 @@ export class TradeConfig extends AmountConfig {
 		this._queryPools = queryPools;
 
 		makeObservable(this);
+
+		// Computing the routes needs huge resources.
+		// So, make this keep alive to reduce the consumption of resources on the non observer.
+		keepAlive(this, 'optimizedRoutes');
 	}
 
 	@action
@@ -167,14 +171,24 @@ export class TradeConfig extends AmountConfig {
 	}
 
 	@computed
+	get optimizedRoutes(): ReturnType<GammSwapManager['computeOptimizedRoutes']> | undefined {
+		try {
+			return this.swapManager.computeOptimizedRoutes(
+				this.chainInfo.currencies,
+				this.queryPools,
+				this.amount,
+				this.sendCurrency,
+				this.outCurrency
+			);
+		} catch (e) {
+			console.log(e);
+			return;
+		}
+	}
+
+	@computed
 	get spotPrice(): IntPretty {
-		const computed = this.swapManager.computeOptimizedRoues(
-			this.chainInfo.currencies,
-			this.queryPools,
-			this.amount,
-			this.sendCurrency,
-			this.outCurrency
-		);
+		const computed = this.optimizedRoutes;
 
 		if (!computed) {
 			return new IntPretty(new Int(0));
@@ -185,13 +199,7 @@ export class TradeConfig extends AmountConfig {
 
 	@computed
 	get spotPriceWithoutSwapFee(): IntPretty {
-		const computed = this.swapManager.computeOptimizedRoues(
-			this.chainInfo.currencies,
-			this.queryPools,
-			this.amount,
-			this.sendCurrency,
-			this.outCurrency
-		);
+		const computed = this.optimizedRoutes;
 
 		if (!computed) {
 			return new IntPretty(new Int(0));
@@ -202,13 +210,7 @@ export class TradeConfig extends AmountConfig {
 
 	@computed
 	get swapFees(): IntPretty[] {
-		const computed = this.swapManager.computeOptimizedRoues(
-			this.chainInfo.currencies,
-			this.queryPools,
-			this.amount,
-			this.sendCurrency,
-			this.outCurrency
-		);
+		const computed = this.optimizedRoutes;
 
 		if (!computed) {
 			return [];
@@ -219,13 +221,7 @@ export class TradeConfig extends AmountConfig {
 
 	@computed
 	get poolIds(): string[] {
-		const computed = this.swapManager.computeOptimizedRoues(
-			this.chainInfo.currencies,
-			this.queryPools,
-			this.amount,
-			this.sendCurrency,
-			this.outCurrency
-		);
+		const computed = this.optimizedRoutes;
 
 		if (!computed) {
 			return [];

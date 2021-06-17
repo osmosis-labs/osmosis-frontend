@@ -173,6 +173,7 @@ export class QueriedPoolBase {
 		}[]
 	): {
 		tokenOut: CoinPretty;
+		spotPriceBeforeRaw: Dec;
 		spotPriceBefore: IntPretty;
 		spotPriceAfter: IntPretty;
 		slippage: IntPretty;
@@ -181,14 +182,16 @@ export class QueriedPoolBase {
 			throw new Error('Empty route');
 		}
 
+		let spotPriceBeforeRaw = new Dec(1);
 		let spotPriceBefore = new IntPretty(new Dec(1));
 		let spotPriceAfter = new IntPretty(new Dec(1));
 
-		let originalTokenIn = { ...tokenIn };
+		const originalTokenIn = { ...tokenIn };
 
 		for (const route of routes) {
 			const estimated = route.pool.estimateSwapExactAmountIn(tokenIn, route.tokenOutCurrency);
 
+			spotPriceBeforeRaw = spotPriceBeforeRaw.mul(estimated.raw.spotPriceBefore);
 			spotPriceBefore = spotPriceBefore.mul(estimated.spotPriceBefore);
 			spotPriceAfter = spotPriceAfter.mul(estimated.spotPriceAfter);
 
@@ -206,6 +209,7 @@ export class QueriedPoolBase {
 		const slippage = effectivePrice.quo(spotPriceBefore.toDec()).sub(new Dec('1'));
 
 		return {
+			spotPriceBeforeRaw,
 			spotPriceBefore,
 			spotPriceAfter,
 			tokenOut: new CoinPretty(
@@ -282,6 +286,50 @@ export class QueriedPoolBase {
 			spotPriceAfter,
 			slippage,
 			raw: estimated,
+		};
+	}
+
+	static makeMultihopSwapExactAmountInMsg(
+		msgOpt: Pick<MsgOpt, 'type'>,
+		sender: string,
+		tokenIn: { currency: Currency; amount: string },
+		routes: {
+			pool: QueriedPoolBase;
+			tokenOutCurrency: Currency;
+		}[],
+		maxSlippage: string = '0'
+	) {
+		const estimated = QueriedPoolBase.estimateMultihopSwapExactAmountIn(tokenIn, routes);
+		const maxSlippageDec = new Dec(maxSlippage).quo(DecUtils.getPrecisionDec(2));
+		// TODO: Compare the computed slippage and wanted max slippage?
+
+		const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
+			? new Int(1)
+			: GAMMPool.calculateSlippageTokenIn(
+					estimated.spotPriceBeforeRaw,
+					new Dec(tokenIn.amount).mul(DecUtils.getPrecisionDec(tokenIn.currency.coinDecimals)).truncate(),
+					maxSlippageDec
+			  );
+
+		const amount = new Dec(tokenIn.amount).mul(DecUtils.getPrecisionDec(tokenIn.currency.coinDecimals)).truncate();
+		const coin = new Coin(tokenIn.currency.coinMinimalDenom, amount);
+
+		return {
+			type: msgOpt.type,
+			value: {
+				sender,
+				routes: routes.map(route => {
+					return {
+						poolId: route.pool.id,
+						tokenOutDenom: route.tokenOutCurrency.coinMinimalDenom,
+					};
+				}),
+				tokenIn: {
+					denom: coin.denom,
+					amount: coin.amount.toString(),
+				},
+				tokenOutMinAmount: tokenOutMinAmount.toString(),
+			},
 		};
 	}
 

@@ -15,6 +15,7 @@ import { Currency } from '@keplr-wallet/types';
 import { DeepReadonly } from 'utility-types';
 import { HasOsmosisQueries } from '../query';
 import deepmerge from 'deepmerge';
+import { QueriedPoolBase } from '../query/pool';
 
 export interface HasOsmosisAccount {
 	osmosis: DeepReadonly<OsmosisAccount>;
@@ -279,6 +280,82 @@ export class OsmosisAccount {
 		);
 	}
 
+	async sendMultihopSwapExactAmountInMsg(
+		routes: {
+			poolId: string;
+			tokenOutCurrency: Currency;
+		}[],
+		tokenIn: { currency: Currency; amount: string },
+		maxSlippage: string = '0',
+		memo: string = '',
+		onFulfill?: (tx: any) => void
+	) {
+		const queries = this.queries;
+
+		await this.base.sendMsgs(
+			'swapExactAmountIn',
+			async () => {
+				const pools: QueriedPoolBase[] = [];
+				for (const route of routes) {
+					const queryPool = queries.osmosis.queryGammPools.getObservableQueryPool(route.poolId);
+					await queryPool.waitFreshResponse();
+
+					const pool = queryPool.pool;
+					if (!pool) {
+						throw new Error('Unknown pool');
+					}
+
+					pools.push(pool);
+				}
+
+				return [
+					QueriedPoolBase.makeMultihopSwapExactAmountInMsg(
+						this.base.msgOpts.swapExactAmountIn,
+						this.base.bech32Address,
+						tokenIn,
+						pools.map((pool, i) => {
+							return {
+								pool,
+								tokenOutCurrency: routes[i].tokenOutCurrency,
+							};
+						}),
+						maxSlippage
+					),
+				];
+			},
+			{
+				amount: [],
+				gas: (this.base.msgOpts.swapExactAmountIn.gas * Math.max(routes.length, 1)).toString(),
+			},
+			memo,
+			tx => {
+				if (tx.code == null || tx.code === 0) {
+					// TODO: Refresh the pools list.
+
+					// Refresh the balances
+					const queries = this.queriesStore.get(this.chainId);
+					queries.queryBalances.getQueryBech32Address(this.base.bech32Address).balances.forEach(bal => {
+						if (
+							bal.currency.coinMinimalDenom === tokenIn.currency.coinMinimalDenom ||
+							routes.find(r => r.tokenOutCurrency.coinMinimalDenom === bal.currency.coinMinimalDenom)
+						) {
+							bal.fetch();
+						}
+					});
+
+					// Refresh the pools
+					for (const route of routes) {
+						queries.osmosis.queryGammPools.getObservableQueryPool(route.poolId).fetch();
+					}
+				}
+
+				if (onFulfill) {
+					onFulfill(tx);
+				}
+			}
+		);
+	}
+
 	async sendSwapExactAmountInMsg(
 		poolId: string,
 		tokenIn: { currency: Currency; amount: string },
@@ -329,6 +406,9 @@ export class OsmosisAccount {
 							bal.fetch();
 						}
 					});
+
+					// Refresh the pool
+					queries.osmosis.queryGammPools.getObservableQueryPool(poolId).fetch();
 				}
 
 				if (onFulfill) {
