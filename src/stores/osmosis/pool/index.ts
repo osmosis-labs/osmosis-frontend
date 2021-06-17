@@ -224,6 +224,18 @@ export class GAMMPool {
 		);
 	}
 
+	calculateSlippageSlope(inDenom: string, outDenom: string): Dec {
+		const inPoolAsset = this.getPoolAsset(inDenom);
+		const outPoolAsset = this.getPoolAsset(outDenom);
+
+		return Math.calcSlippageSlope(
+			new Dec(inPoolAsset.token.amount),
+			new Dec(inPoolAsset.weight),
+			new Dec(outPoolAsset.weight),
+			this.swapFee
+		);
+	}
+
 	getPoolAsset(denom: string): GAMMPoolData['poolAssets'][0] {
 		const poolAsset = this.data.poolAssets.find(poolAsset => {
 			return poolAsset.token.denom === denom;

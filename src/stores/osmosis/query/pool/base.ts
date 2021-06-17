@@ -117,6 +117,11 @@ export class QueriedPoolBase {
 			.trim(true);
 	}
 
+	calculateSlippageSlope(inMinimalDenom: string, outMinimalDenom: string): IntPretty {
+		const calculated = this.pool.calculateSlippageSlope(inMinimalDenom, outMinimalDenom);
+		return new IntPretty(calculated).maxDecimals(4).trim(true);
+	}
+
 	estimateJoinSwap(
 		shareOutAmount: string,
 		shareCoinDecimals: number

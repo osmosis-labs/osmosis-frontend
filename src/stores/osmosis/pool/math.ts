@@ -1,9 +1,17 @@
 import { Dec, Int } from '@keplr-wallet/unit';
 
 const powPrecision = new Dec('0.00000001');
-const oneDec = new Dec('1');
+const oneDec = new Dec(1);
+const twoDec = new Dec(2);
 const zeroInt = new Int(0);
 const twoInt = new Int(2);
+
+export function calcSlippageSlope(tokenBalanceIn: Dec, tokenWeightIn: Dec, tokenWeightOut: Dec, swapFee: Dec): Dec {
+	return oneDec
+		.sub(swapFee)
+		.mul(tokenWeightIn.add(tokenWeightOut))
+		.sub(twoDec.mul(tokenBalanceIn).mul(tokenWeightOut));
+}
 
 export function calcSpotPrice(
 	tokenBalanceIn: Dec,
