@@ -303,7 +303,10 @@ const SwapButton: FunctionComponent<{
 								amount: config.amount,
 							},
 							config.outCurrency,
-							config.estimatedSlippage.mul(new Dec('1.1')).toString(),
+							config.estimatedSlippage
+								.mul(new Dec('1.1'))
+								.locale(false)
+								.toString(),
 							'',
 							tx => {
 								if (tx.code) {
