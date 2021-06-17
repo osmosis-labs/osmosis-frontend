@@ -34,7 +34,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	{
 		rpc: 'https://rpc-osmosis-testnet.keplr.app',
 		rest: 'https://lcd-osmosis-testnet.keplr.app',
-		chainId: 'osmo-testnet-3',
+		chainId: 'osmo-testnet-4',
 		chainName: 'Osmosis (Dev)',
 		stakeCurrency: {
 			coinDenom: 'OSMO',
