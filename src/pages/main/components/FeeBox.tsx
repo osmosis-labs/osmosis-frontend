@@ -42,10 +42,16 @@ export const FeesBox = observer(({ config }: Props) => {
 				<div className="grid grid-cols-5">
 					<p className="text-sm text-wireframes-lightGrey">Swap Fee</p>
 					<p className="col-span-4 text-sm text-wireframes-lightGrey text-right truncate">
-						{`${config.swapFee
-							.trim(true)
-							.maxDecimals(3)
-							.toString()}%`}
+						{config.swapFees
+							.map(swapFee => {
+								return (
+									swapFee
+										.trim(true)
+										.maxDecimals(3)
+										.toString() + '%'
+								);
+							})
+							.join(' + ')}
 					</p>
 				</div>
 			</section>

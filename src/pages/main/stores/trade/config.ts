@@ -169,9 +169,11 @@ export class TradeConfig extends AmountConfig {
 	@computed
 	get spotPrice(): IntPretty {
 		const computed = this.swapManager.computeOptimizedRoues(
+			this.chainInfo.currencies,
 			this.queryPools,
-			this.sendCurrency.coinMinimalDenom,
-			this.outCurrency.coinMinimalDenom
+			this.amount,
+			this.sendCurrency,
+			this.outCurrency
 		);
 
 		if (!computed) {
@@ -184,9 +186,11 @@ export class TradeConfig extends AmountConfig {
 	@computed
 	get spotPriceWithoutSwapFee(): IntPretty {
 		const computed = this.swapManager.computeOptimizedRoues(
+			this.chainInfo.currencies,
 			this.queryPools,
-			this.sendCurrency.coinMinimalDenom,
-			this.outCurrency.coinMinimalDenom
+			this.amount,
+			this.sendCurrency,
+			this.outCurrency
 		);
 
 		if (!computed) {
@@ -197,33 +201,37 @@ export class TradeConfig extends AmountConfig {
 	}
 
 	@computed
-	get swapFee(): IntPretty {
+	get swapFees(): IntPretty[] {
 		const computed = this.swapManager.computeOptimizedRoues(
+			this.chainInfo.currencies,
 			this.queryPools,
-			this.sendCurrency.coinMinimalDenom,
-			this.outCurrency.coinMinimalDenom
+			this.amount,
+			this.sendCurrency,
+			this.outCurrency
 		);
 
 		if (!computed) {
-			return new IntPretty(new Int(0));
+			return [];
 		}
 
-		return computed.swapFee;
+		return computed.swapFees;
 	}
 
 	@computed
-	get poolId(): string | undefined {
+	get poolIds(): string[] {
 		const computed = this.swapManager.computeOptimizedRoues(
+			this.chainInfo.currencies,
 			this.queryPools,
-			this.sendCurrency.coinMinimalDenom,
-			this.outCurrency.coinMinimalDenom
+			this.amount,
+			this.sendCurrency,
+			this.outCurrency
 		);
 
 		if (!computed) {
-			return undefined;
+			return [];
 		}
 
-		return computed.poolId;
+		return computed.swaps.map(swap => swap.poolId);
 	}
 
 	@computed

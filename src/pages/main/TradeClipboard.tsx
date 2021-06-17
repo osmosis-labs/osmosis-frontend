@@ -27,7 +27,11 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 		swapManager,
 		queries.osmosis.queryGammPools
 	);
-	const feeConfig = useFakeFeeConfig(chainStore, chainStore.current.chainId, account.msgOpts.swapExactAmountIn.gas);
+	const feeConfig = useFakeFeeConfig(
+		chainStore,
+		chainStore.current.chainId,
+		account.msgOpts.swapExactAmountIn.gas * Math.max(config.poolIds.length, 1)
+	);
 	config.setFeeConfig(feeConfig);
 
 	return (

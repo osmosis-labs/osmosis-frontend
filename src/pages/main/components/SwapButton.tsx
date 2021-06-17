@@ -20,12 +20,13 @@ export const SwapButton = observer(({ config }: Props) => {
 				e.preventDefault();
 
 				if (account.isReadyToSendMsgs) {
-					const poolId = config.poolId;
-					if (!poolId) {
+					const poolIds = config.poolIds;
+					if (poolIds.length === 0) {
 						throw new Error("Can't calculate the optimized pools");
 					}
 
 					try {
+						/*
 						await account.osmosis.sendSwapExactAmountInMsg(
 							poolId,
 							{
@@ -48,6 +49,8 @@ export const SwapButton = observer(({ config }: Props) => {
 							}
 						);
 
+						 */
+
 						toast.displayToast(TToastType.TX_BROADCASTING);
 					} catch (e) {
 						toast.displayToast(TToastType.TX_FAILED, { message: e.message });
@@ -55,7 +58,7 @@ export const SwapButton = observer(({ config }: Props) => {
 				}
 			}}
 			className="bg-primary-200 h-15 flex justify-center items-center w-full rounded-lg shadow-elevation-04dp hover:opacity-75 disabled:opacity-50"
-			disabled={!account.isReadyToSendMsgs || config.getError() != null}>
+			disabled={!account.isReadyToSendMsgs || config.poolIds.length === 0 || config.getError() != null}>
 			{account.isSendingMsg === 'swapExactAmountIn' ? (
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
