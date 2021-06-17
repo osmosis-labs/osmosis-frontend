@@ -19,13 +19,13 @@ export const IBCAssetInfos: {
 	{
 		counterpartyChainId: 'cosmoshub-devnet-1',
 		sourceChannelId: 'channel-0',
-		destChannelId: 'channel-2',
+		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uatom',
 	},
 	{
 		counterpartyChainId: 'irishub-devnet-1',
 		sourceChannelId: 'channel-1',
-		destChannelId: 'channel-2',
+		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uiris',
 	},
 ];
@@ -34,7 +34,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	{
 		rpc: 'https://rpc-osmosis-testnet.keplr.app',
 		rest: 'https://lcd-osmosis-testnet.keplr.app',
-		chainId: 'osmo-testnet-4',
+		chainId: 'osmo-testnet-5',
 		chainName: 'Osmosis (Dev)',
 		stakeCurrency: {
 			coinDenom: 'OSMO',
