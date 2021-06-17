@@ -393,9 +393,10 @@ const FeesBox: FunctionComponent<{
 							.toString()}%`}
 					</p>
 				</div>
+				<hr className="w-full my-4" />
 				<div className="grid grid-cols-2">
-					<p className="text-sm text-wireframes-lightGrey">Estimated Slippage</p>
-					<p className="col-span-1 text-sm text-wireframes-lightGrey text-right truncate">
+					<p className="text-sm font-bold text-white-high">Estimated Slippage</p>
+					<p className="col-span-1 text-sm font-bold text-white-high text-right truncate">
 						{`${config.estimatedSlippage
 							.trim(true)
 							.maxDecimals(3)
