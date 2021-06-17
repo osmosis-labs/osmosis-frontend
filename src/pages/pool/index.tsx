@@ -47,12 +47,15 @@ export const PoolPage: FunctionComponent = observer(() => {
 							<div
 								className="absolute"
 								style={{
-									right: '3rem',
+									right: pool.smoothWeightChangeParams ? '0' : '3rem',
 									height: '100%',
-									width: '600px',
-									background: 'url("/public/assets/backgrounds/osmosis-guy-in-lab.png")',
+									width: pool.smoothWeightChangeParams ? '900px' : '600px',
+									background: pool.smoothWeightChangeParams
+										? 'url("/public/assets/backgrounds/pool-details-lbp.png")'
+										: 'url("/public/assets/backgrounds/osmosis-guy-in-lab.png")',
 									backgroundSize: 'contain',
 									backgroundRepeat: 'no-repeat',
+									backgroundPositionX: pool.smoothWeightChangeParams ? 'right' : undefined,
 								}}
 							/>
 						</div>
