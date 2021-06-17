@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactComponentElement, ReactElement, ReactNode } from 'react';
+import React, { FunctionComponent, ReactText } from 'react';
 import { toast, ToastOptions } from 'react-toastify';
 
 const CloseButton: FunctionComponent<{ closeToast: () => void }> = ({ closeToast }) => (
@@ -35,17 +35,20 @@ interface IToastExtra {
 	customLink: string;
 }
 
-export type DisplayToastFn = ((type: TToastType.TX_BROADCASTING, options?: Partial<ToastOptions>) => void) &
+export type DisplayToastFn = ((
+	type: TToastType.TX_BROADCASTING,
+	options?: Partial<ToastOptions>
+) => ReactText | undefined) &
 	((
 		type: TToastType.TX_SUCCESSFULL,
 		extraData?: Partial<Pick<IToastExtra, 'customLink'>>,
 		options?: Partial<ToastOptions>
-	) => void) &
+	) => ReactText | undefined) &
 	((
 		type: TToastType.TX_FAILED,
 		extraData?: Partial<Pick<IToastExtra, 'message'>>,
 		options?: Partial<ToastOptions>
-	) => void);
+	) => ReactText | undefined);
 
 export interface DisplayToast {
 	displayToast: DisplayToastFn;
@@ -61,11 +64,11 @@ export const displayToast: DisplayToastFn = (
 	const inputExtraData = { ...defaultExtraData, ...refinedExtraData } as IToastExtra;
 	const inputOptions = { ...defaultOptions, ...refinedOptions } as ToastOptions;
 	if (type === TToastType.TX_BROADCASTING) {
-		toast(<ToastTxBroadcasting />, inputOptions);
+		return toast(<ToastTxBroadcasting />, inputOptions);
 	} else if (type === TToastType.TX_SUCCESSFULL) {
-		toast(<ToastTxSuccess link={inputExtraData.customLink} />, inputOptions);
+		return toast(<ToastTxSuccess link={inputExtraData.customLink} />, inputOptions);
 	} else if (type === TToastType.TX_FAILED) {
-		toast(<ToastTxFailed message={inputExtraData.message} />, inputOptions);
+		return toast(<ToastTxFailed message={inputExtraData.message} />, inputOptions);
 	} else {
 		console.error(`Undefined toast type - ${type}`);
 	}

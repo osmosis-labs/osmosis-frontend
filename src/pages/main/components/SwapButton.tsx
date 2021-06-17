@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';
+import { toast as globToast } from 'react-toastify';
 import { TToastType, useToast } from '../../../components/common/toasts';
 import { useStore } from '../../../stores';
 import { TradeConfig } from '../stores/trade/config';
@@ -19,6 +20,7 @@ export const SwapButton = observer(({ config }: Props) => {
 			onClick={async e => {
 				e.preventDefault();
 
+				let broadCastToastId: React.ReactText;
 				if (account.isReadyToSendMsgs) {
 					const poolId = config.poolId;
 					if (!poolId) {
@@ -36,6 +38,7 @@ export const SwapButton = observer(({ config }: Props) => {
 							config.slippage,
 							'',
 							tx => {
+								globToast.dismiss(broadCastToastId);
 								if (tx.code) {
 									toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
 								} else {
@@ -48,7 +51,7 @@ export const SwapButton = observer(({ config }: Props) => {
 							}
 						);
 
-						toast.displayToast(TToastType.TX_BROADCASTING);
+						broadCastToastId = toast.displayToast(TToastType.TX_BROADCASTING) ?? '';
 					} catch (e) {
 						toast.displayToast(TToastType.TX_FAILED, { message: e.message });
 					}
