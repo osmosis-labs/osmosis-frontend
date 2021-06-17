@@ -2,7 +2,7 @@ import { Bech32Address } from '@keplr-wallet/cosmos';
 import { ChainInfoWithExplorer } from './stores/chain';
 
 export const PoolsPerPage = 10;
-export const RewardEpochIdentifier = 'hour';
+export const RewardEpochIdentifier = '15min';
 
 /**
  * Determine the channel info per the chain.
@@ -19,13 +19,13 @@ export const IBCAssetInfos: {
 	{
 		counterpartyChainId: 'cosmoshub-devnet-1',
 		sourceChannelId: 'channel-0',
-		destChannelId: 'channel-2',
+		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uatom',
 	},
 	{
 		counterpartyChainId: 'irishub-devnet-1',
 		sourceChannelId: 'channel-1',
-		destChannelId: 'channel-2',
+		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uiris',
 	},
 ];
@@ -34,7 +34,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	{
 		rpc: 'https://rpc-osmosis-testnet.keplr.app',
 		rest: 'https://lcd-osmosis-testnet.keplr.app',
-		chainId: 'osmo-testnet-3',
+		chainId: 'osmo-testnet-5',
 		chainName: 'Osmosis (Dev)',
 		stakeCurrency: {
 			coinDenom: 'OSMO',
@@ -59,13 +59,9 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 			{
 				coinDenom: 'ION',
-				coinMinimalDenom: 'ion',
+				coinMinimalDenom: 'uion',
 				coinDecimals: 6,
-			},
-			{
-				coinDenom: 'POOP',
-				coinMinimalDenom: 'poopcoin',
-				coinDecimals: 6,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ion.png',
 			},
 		],
 		feeCurrencies: [

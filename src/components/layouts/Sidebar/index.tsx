@@ -73,13 +73,19 @@ const pathnameCheck = (str: string, routes: TSIDEBAR_SELECTED_CHECK) => {
 export const Sidebar = withRouter(SideBar);
 
 const LogoArea: FunctionComponent<TLogoArea> = ({ openSidebar }) => {
+	const history = useHistory();
+
 	return (
 		<div className="flex items-center">
-			<Img className={cn('w-12 h-12')} src={`/public/assets/main/logo-single.png`} />
-			<Img
-				style={{ maxWidth: openSidebar ? '113px' : '0px' }}
-				className={'h-4.5 transition-all'}
-				src="/public/assets/main/logo-text.png"
+			<img
+				className="cursor-pointer"
+				src="/public/assets/main/osmosis-logo-main.svg"
+				alt="logo"
+				onClick={e => {
+					e.preventDefault();
+
+					history.push('/');
+				}}
 			/>
 		</div>
 	);

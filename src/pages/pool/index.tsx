@@ -47,12 +47,12 @@ export const PoolPage: FunctionComponent = observer(() => {
 							<div
 								className="absolute"
 								style={{
-									right: '20px',
-									height: '410px',
-									bottom: '-110px',
+									right: '3rem',
+									height: '100%',
 									width: '600px',
-									background: 'url("/public/assets/backgrounds/osmosis-guy-with-background.png")',
-									backgroundSize: 'cover',
+									background: 'url("/public/assets/backgrounds/osmosis-guy-in-lab.png")',
+									backgroundSize: 'contain',
+									backgroundRepeat: 'no-repeat',
 								}}
 							/>
 						</div>

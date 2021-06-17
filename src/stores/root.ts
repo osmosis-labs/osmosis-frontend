@@ -63,7 +63,7 @@ export class RootStore {
 			[
 				{
 					alternativeCoinId: 'pool:uosmo',
-					poolId: '1',
+					poolId: '4',
 					spotPriceSourceDenom: 'uosmo',
 					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
 					destCoinId: 'cosmos',
@@ -73,7 +73,22 @@ export class RootStore {
 
 		this.swapManager = new GammSwapManager([
 			{
-				poolId: '1',
+				poolId: '3',
+				currencies: [
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uion',
+						coinDenom: 'ION',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '5',
 				currencies: [
 					{
 						coinMinimalDenom: 'uosmo',
@@ -84,21 +99,10 @@ export class RootStore {
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
 						coinDenom: 'ATOM',
 						coinDecimals: 6,
-						coinGeckoId: 'cosmos',
-					},
-				],
-			},
-			{
-				poolId: '10',
-				currencies: [
-					{
-						coinMinimalDenom: 'uosmo',
-						coinDenom: 'OSMO',
-						coinDecimals: 6,
 					},
 					{
-						coinMinimalDenom: 'poopcoin',
-						coinDenom: 'POOP',
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-1' }], 'uiris'),
+						coinDenom: 'IRIS',
 						coinDecimals: 6,
 					},
 				],

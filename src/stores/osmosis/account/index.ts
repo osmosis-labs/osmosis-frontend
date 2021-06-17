@@ -45,39 +45,39 @@ export class AccountWithCosmosAndOsmosis extends AccountSetBase<
 	static readonly defaultMsgOpts: CosmosMsgOpts & OsmosisMsgOpts = deepmerge(AccountWithCosmos.defaultMsgOpts, {
 		createPool: {
 			type: 'osmosis/gamm/create-pool',
-			gas: 10000000,
+			gas: 500000,
 		},
 		joinPool: {
 			type: 'osmosis/gamm/join-pool',
-			gas: 10000000,
+			gas: 500000,
 			shareCoinDecimals: 18,
 		},
 		exitPool: {
 			type: 'osmosis/gamm/exit-pool',
-			gas: 10000000,
+			gas: 500000,
 			shareCoinDecimals: 18,
 		},
 		swapExactAmountIn: {
 			type: 'osmosis/gamm/swap-exact-amount-in',
-			gas: 10000000,
+			gas: 500000,
 		},
 		swapExactAmountOut: {
 			type: 'osmosis/gamm/swap-exact-amount-out',
-			gas: 10000000,
+			gas: 500000,
 		},
 		lockTokens: {
 			type: 'osmosis/lockup/lock-tokens',
-			gas: 10000000,
+			gas: 500000,
 		},
 		beginUnlocking: {
 			type: 'osmosis/lockup/begin-unlock-period-lock',
 			// Gas per msg
-			gas: 3000000,
+			gas: 500000,
 		},
 		unlockPeriodLock: {
 			type: 'osmosis/lockup/unlock-period-lock',
 			// Gas per msg
-			gas: 3000000,
+			gas: 500000,
 		},
 	});
 
@@ -138,7 +138,6 @@ export class OsmosisAccount {
 		const poolParams = {
 			swapFee: new Dec(swapFee).quo(DecUtils.getPrecisionDec(2)).toString(),
 			exitFee: new Dec(0).toString(),
-			start_time: '0001-01-01T00:00:00Z',
 		};
 
 		const poolAssets: {

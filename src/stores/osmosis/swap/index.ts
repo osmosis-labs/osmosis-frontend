@@ -227,7 +227,23 @@ export class GammSwapManager {
 				}
 
 				if (pools.length === 1) {
-					// TODO
+					const pool = pools[0];
+
+					return {
+						swaps: [
+							{
+								poolId: pool.id,
+								outCurrency,
+							},
+						],
+						multihop: false,
+						spotPrice: pool.calculateSpotPrice(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom),
+						spotPriceWithoutSwapFee: pool.calculateSpotPriceWithoutSwapFee(
+							inCurrency.coinMinimalDenom,
+							outCurrency.coinMinimalDenom
+						),
+						swapFees: [pool.swapFee],
+					};
 				}
 
 				// Sort pool by the spot price.
@@ -241,6 +257,9 @@ export class GammSwapManager {
 				});
 
 				const pool = pools[0];
+
+				/*
+				// TODO: Compute the optimized route.
 				// Remove the pools that has greater slippage slope than the first pool
 				const others: {
 					pool: QueriedPoolBase;
@@ -265,22 +284,23 @@ export class GammSwapManager {
 						});
 					}
 				}
+				 */
 
-				if (others.length === 0) {
-					// TODO
-				}
-
-				for (const other of others) {
-					const interestOfPrice = other.spotPrice;
-
-					const estimatedOut = pool.estimateSwapExactAmountIn(
+				return {
+					swaps: [
 						{
-							currency: inCurrency,
-							amount: inAmount,
+							poolId: pool.id,
+							outCurrency,
 						},
-						outCurrency
-					);
-				}
+					],
+					multihop: false,
+					spotPrice: pool.calculateSpotPrice(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom),
+					spotPriceWithoutSwapFee: pool.calculateSpotPriceWithoutSwapFee(
+						inCurrency.coinMinimalDenom,
+						outCurrency.coinMinimalDenom
+					),
+					swapFees: [pool.swapFee],
+				};
 			}
 		}
 	);
