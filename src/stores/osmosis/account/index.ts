@@ -138,7 +138,6 @@ export class OsmosisAccount {
 		const poolParams = {
 			swapFee: new Dec(swapFee).quo(DecUtils.getPrecisionDec(2)).toString(),
 			exitFee: new Dec(0).toString(),
-			start_time: '0001-01-01T00:00:00Z',
 		};
 
 		const poolAssets: {
