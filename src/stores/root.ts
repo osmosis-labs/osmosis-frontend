@@ -61,15 +61,13 @@ export class RootStore {
 			},
 			this.queriesStore.get(EmbedChainInfos[0].chainId).osmosis.queryGammPools,
 			[
-				/*
 				{
 					alternativeCoinId: 'pool:uosmo',
-					poolId: '1',
+					poolId: '4',
 					spotPriceSourceDenom: 'uosmo',
 					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
 					destCoinId: 'cosmos',
 				},
-				 */
 			]
 		);
 

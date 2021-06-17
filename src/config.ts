@@ -61,6 +61,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'ION',
 				coinMinimalDenom: 'uion',
 				coinDecimals: 6,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ion.png',
 			},
 		],
 		feeCurrencies: [
