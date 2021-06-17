@@ -59,12 +59,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 			{
 				coinDenom: 'ION',
-				coinMinimalDenom: 'ion',
-				coinDecimals: 6,
-			},
-			{
-				coinDenom: 'POOP',
-				coinMinimalDenom: 'poopcoin',
+				coinMinimalDenom: 'uion',
 				coinDecimals: 6,
 			},
 		],
