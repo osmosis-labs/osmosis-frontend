@@ -318,9 +318,6 @@ const SwapButton: FunctionComponent<{
 
 									config.setAmount('');
 								}
-
-								// Refresh the pool after swap
-								config.pool.fetch();
 							}
 						);
 
