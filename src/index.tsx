@@ -25,6 +25,7 @@ import { GovernanceDetailsPage } from './pages/governance/[id]/GovernanceDetails
 import { BootstrapPage } from './pages/bootstrap';
 import { BootstrapDetails } from './pages/bootstrap/[id]';
 import { ToastProvider } from './components/common/toasts';
+import { Terms } from './terms';
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 dayjs.extend(utc);
@@ -33,6 +34,7 @@ const Router: FunctionComponent = () => {
 	return (
 		<StoreProvider>
 			<ToastProvider>
+				<Terms />
 				<div style={{ minWidth: '1280px' }} className="min-h-sidebar-minHeight h-screen bg-background z-0">
 					<BrowserRouter>
 						<Switch>
