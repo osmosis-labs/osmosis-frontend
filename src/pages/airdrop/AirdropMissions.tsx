@@ -2,6 +2,7 @@ import React, { FunctionComponent } from 'react';
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
+import { Dec } from '@keplr-wallet/unit';
 
 export const ActionToDescription: { [action: string]: string } = {
 	addLiquidity: 'Add liquidity to a pool',
@@ -17,12 +18,21 @@ export const AirdropMissions: FunctionComponent = observer(() => {
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
 	const claimRecord = queries.osmosis.queryClaimRecord.get(account.bech32Address);
+	const isIneligible = claimRecord
+		.initialClaimableAmountOf(chainStore.current.stakeCurrency.coinMinimalDenom)
+		.toDec()
+		.equals(new Dec(0));
 
 	return (
 		<div className="w-full">
 			<h5>Missions</h5>
 			<ul className="flex flex-col gap-2.5 mt-7.5">
-				<MissionCard num={0} complete={true} description="Hold ATOM on February 18" />
+				<MissionCard
+					num={0}
+					complete={!isIneligible}
+					description="Hold ATOM on February 18"
+					ineligible={isIneligible}
+				/>
 				{Object.entries(claimRecord.completedActions)
 					.sort(([action1], [action2]) => {
 						/*
@@ -57,6 +67,7 @@ export const AirdropMissions: FunctionComponent = observer(() => {
 										.indexOf(action) + 1
 								}
 								complete={value}
+								ineligible={isIneligible}
 								description={ActionToDescription[action] ?? 'Oops'}
 							/>
 						);
@@ -70,7 +81,8 @@ const MissionCard: FunctionComponent<{
 	num: number;
 	description: string;
 	complete: boolean;
-}> = ({ num, description, complete }) => {
+	ineligible: boolean;
+}> = ({ num, description, complete, ineligible }) => {
 	return (
 		<li className="w-full rounded-2xl border border-white-faint py-5 px-7.5">
 			<div className="flex justify-between items-center">
@@ -78,7 +90,9 @@ const MissionCard: FunctionComponent<{
 					<p className="mb-1.5">Mission #{num}</p>
 					<h6>{description}</h6>
 				</div>
-				<h6 className={cn(complete ? 'text-pass' : 'text-missionError')}>{complete ? 'Complete' : 'Not Complete'}</h6>
+				<h6 className={cn(complete ? 'text-pass' : 'text-missionError')}>
+					{ineligible ? 'Ineligible' : complete ? 'Complete' : 'Not Complete'}
+				</h6>
 			</div>
 		</li>
 	);
