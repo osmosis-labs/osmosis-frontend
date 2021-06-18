@@ -1,5 +1,5 @@
 export enum SlippageStep {
-	Step1, // 0.1%
-	Step2, // 0.5%
-	Step3, // 1.0%
+	Step1, // 1%
+	Step2, // 3%
+	Step3, // 5%
 }

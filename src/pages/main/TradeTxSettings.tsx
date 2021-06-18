@@ -112,7 +112,7 @@ const SlippageToleranceEditableItem = observer(({ config }: Props) => {
 			<label style={{ display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
 				<AutosizeInput
 					className={cn('text-center', selected ? 'text-white-high' : 'text-white-low')}
-					minWidth={config.manualSlippageText === config.initialManualSlippage ? 34 : undefined}
+					minWidth={config.manualSlippageText === config.initialManualSlippage ? 24 : undefined}
 					value={config.manualSlippageText}
 					onFocus={e => {
 						e.preventDefault();

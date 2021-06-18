@@ -22,7 +22,7 @@ export class TradeConfig extends AmountConfig {
 	@observable
 	protected _slippageStep: SlippageStep | undefined = SlippageStep.Step3;
 
-	readonly initialManualSlippage = '0.05';
+	readonly initialManualSlippage = '2.5';
 	// If slippage step is undefiend,
 	// the slippage can be set manually.
 	@observable
