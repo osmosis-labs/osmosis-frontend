@@ -7,12 +7,11 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
 import { Dec, DecUtils } from '@keplr-wallet/unit';
 import { Loader } from '../../components/common/Loader';
-import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
 import { OsmoSynthesis } from './OsmoSynthesis';
 import { ManageLiquidityDialog } from '../../dialogs';
 import { MISC } from '../../constants';
 import { LBPCatalyst } from './LBP';
-import { PoolSwap } from './PoolSwap';
+import { PoolSwapDialog } from './PoolSwap';
 
 export const PoolPage: FunctionComponent = observer(() => {
 	const history = useHistory();
@@ -61,7 +60,6 @@ export const PoolPage: FunctionComponent = observer(() => {
 						</div>
 					</div>
 					<div className="py-10 w-full px-10 bg-surface">
-						<PoolSwap poolId={pool.id} />
 						{/* 인센티브를 받을 수 있는 풀의 경우만 Synthesis를 표시한다. */}
 						{queries.osmosis.queryIncentivizedPools.isIncentivized(pool.id) ? (
 							<div className="pb-15">
@@ -105,6 +103,9 @@ const PoolInfoHeader: FunctionComponent<{
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const closeDialog = () => setIsDialogOpen(false);
 
+	const [isSwapDialogOpen, setIsSwapDialogOpen] = useState(false);
+	const closeSwapDialog = () => setIsSwapDialogOpen(false);
+
 	return (
 		<React.Fragment>
 			{pool ? (
@@ -115,6 +116,7 @@ const PoolInfoHeader: FunctionComponent<{
 						isOpen={isDialogOpen}
 						close={closeDialog}
 					/>
+					<PoolSwapDialog poolId={pool.id} isOpen={isSwapDialogOpen} close={closeSwapDialog} />
 					<div className="flex items-center mb-6">
 						<h5 className="mr-6">Pool #{id}</h5>
 						<button
@@ -125,6 +127,15 @@ const PoolInfoHeader: FunctionComponent<{
 							}}
 							className="ml-6 bg-primary-200 rounded-lg px-3.75 py-2.5 cursor-pointer hover:opacity-75">
 							<p>Add / Remove Liquidity</p>
+						</button>
+						<button
+							onClick={e => {
+								e.preventDefault();
+
+								setIsSwapDialogOpen(true);
+							}}
+							className="ml-6 bg-primary-200 rounded-lg px-3.75 py-2.5 cursor-pointer hover:opacity-75">
+							<p>Swap Tokens</p>
 						</button>
 					</div>
 					<div className="flex gap-20">

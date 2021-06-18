@@ -16,6 +16,7 @@ import { TToastType, useToast } from '../../components/common/toasts';
 import { Container } from '../../components/containers';
 import { TCardTypes } from '../../interfaces';
 import { isSlippageError } from '../../utils/tx';
+import { wrapBaseDialog } from '../../dialogs';
 
 export class PoolSwapConfig extends AmountConfig {
 	@observable
@@ -225,61 +226,58 @@ export const usePoolSwapConfig = (
 	return config;
 };
 
-export const PoolSwap: FunctionComponent<{
-	poolId: string;
-}> = observer(({ poolId }) => {
-	const { chainStore, queriesStore, accountStore } = useStore();
+export const PoolSwapDialog = wrapBaseDialog(
+	observer(({ poolId, close }: { poolId: string; close: () => void }) => {
+		const { chainStore, queriesStore, accountStore } = useStore();
 
-	const account = accountStore.getAccount(chainStore.current.chainId);
-	const queries = queriesStore.get(chainStore.current.chainId);
+		const account = accountStore.getAccount(chainStore.current.chainId);
+		const queries = queriesStore.get(chainStore.current.chainId);
 
-	const config = usePoolSwapConfig(
-		chainStore,
-		chainStore.current.chainId,
-		account.bech32Address,
-		queries.queryBalances,
-		poolId,
-		queries.osmosis.queryGammPools
-	);
-	const feeConfig = useFakeFeeConfig(chainStore, chainStore.current.chainId, account.msgOpts.swapExactAmountIn.gas);
-	config.setFeeConfig(feeConfig);
+		const config = usePoolSwapConfig(
+			chainStore,
+			chainStore.current.chainId,
+			account.bech32Address,
+			queries.queryBalances,
+			poolId,
+			queries.osmosis.queryGammPools
+		);
+		const feeConfig = useFakeFeeConfig(chainStore, chainStore.current.chainId, account.msgOpts.swapExactAmountIn.gas);
+		config.setFeeConfig(feeConfig);
 
-	return (
-		<section className="pb-10 max-w-max mx-auto">
-			<h5 className="mb-7.5 ">Purchase Tokens</h5>
-			<div
-				className="w-5/12 h-full rounded-xl bg-card py-6 px-7.5"
-				style={{
-					minWidth: '500px',
-				}}>
-				<div className="relative">
-					<div className="mb-4.5">
-						<FromBox config={config} />
+		return (
+			<section className="w-full mx-auto text-white-high">
+				<h5 className="mb-7.5 ">Swap Tokens</h5>
+				<div className="h-full rounded-xl bg-card py-6 px-7.5">
+					<div className="relative">
+						<div className="mb-4.5">
+							<FromBox config={config} />
+						</div>
+						<div className="mb-4.5">
+							<ToBox config={config} />
+						</div>
+						<button
+							className="s-position-abs-center w-12 h-12 z-0"
+							onClick={e => {
+								e.preventDefault();
+
+								config.switchInAndOut();
+							}}>
+							<Img className="w-12 h-12" src="/public/assets/sidebar/icon-border_unselected.svg" />
+							<Img className="s-position-abs-center w-6 h-6" src="/public/assets/Icons/Switch.svg" />
+						</button>
 					</div>
-					<div className="mb-4.5">
-						<ToBox config={config} />
-					</div>
-					<button
-						className="s-position-abs-center w-12 h-12 z-0"
-						onClick={e => {
-							e.preventDefault();
-
-							config.switchInAndOut();
-						}}>
-						<Img className="w-12 h-12" src="/public/assets/sidebar/icon-border_unselected.svg" />
-						<Img className="s-position-abs-center w-6 h-6" src="/public/assets/Icons/Switch.svg" />
-					</button>
+					<FeesBox config={config} />
+					<SwapButton config={config} close={close} />
 				</div>
-				<FeesBox config={config} />
-				<SwapButton config={config} />
-			</div>
-		</section>
-	);
-});
+			</section>
+		);
+	})
+);
 
 const SwapButton: FunctionComponent<{
 	config: PoolSwapConfig;
-}> = observer(({ config }) => {
+	close: () => void;
+}> = observer(({ config, close }) => {
 	const { chainStore, accountStore } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
@@ -322,6 +320,7 @@ const SwapButton: FunctionComponent<{
 									});
 
 									config.setAmount('');
+									close();
 								}
 							}
 						);
@@ -348,7 +347,7 @@ const SwapButton: FunctionComponent<{
 					/>
 				</svg>
 			) : (
-				<p className="font-body tracking-wide">Purchase</p>
+				<p className="font-body tracking-wide">Swap</p>
 			)}
 		</button>
 	);
