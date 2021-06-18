@@ -8,6 +8,7 @@ import { ObservableQueryPools } from '../../../../stores/osmosis/query/pools';
 import { GammSwapManager } from '../../../../stores/osmosis/swap';
 import { SlippageStep } from '../../models/tradeModels';
 import { slippageStepToPercentage } from '../../utils/slippageStepToPercentage';
+import { QueriedPoolBase } from '../../../../stores/osmosis/query/pool';
 
 // CONTRACT: Use with `observer`
 export class TradeConfig extends AmountConfig {
@@ -258,6 +259,61 @@ export class TradeConfig extends AmountConfig {
 		);
 	}
 
+	@computed
+	get estimatedSlippage(): IntPretty {
+		if (this.getError() != null) {
+			return new IntPretty(new Int(0));
+		}
+
+		const computed = this.optimizedRoutes;
+
+		if (!computed) {
+			return new IntPretty(new Dec(0));
+		}
+
+		try {
+			if (computed.multihop) {
+				const pools: QueriedPoolBase[] = [];
+				for (const swap of computed.swaps) {
+					const pool = this.queryPools.getPool(swap.poolId);
+					if (!pool) {
+						return new IntPretty(new Int(0));
+					}
+					pools.push(pool);
+				}
+
+				return QueriedPoolBase.estimateMultihopSwapExactAmountIn(
+					{
+						currency: this.sendCurrency,
+						amount: this.amount,
+					},
+					pools.map((pool, i) => {
+						return {
+							pool,
+							tokenOutCurrency: computed.swaps[i].outCurrency,
+						};
+					})
+				).slippage;
+			} else {
+				// Currently, optimized routes not supported.
+				// Only return one pool that has lowest spot price.
+				const pool = this.queryPools.getPool(computed.swaps[0].poolId);
+				if (!pool) {
+					return new IntPretty(new Int(0));
+				}
+				return pool.estimateSwapExactAmountIn(
+					{
+						currency: this.sendCurrency,
+						amount: this.amount,
+					},
+					this.outCurrency
+				).slippage;
+			}
+		} catch {
+			return new IntPretty(new Int(0));
+		}
+	}
+
 	readonly getErrorOfSlippage = computedFn(() => {
 		const slippage = this.slippage;
 		if (!slippage) {
@@ -273,6 +329,22 @@ export class TradeConfig extends AmountConfig {
 			return new Error('Invalid slippage number');
 		}
 	});
+
+	@computed
+	get showWarningOfSlippage(): boolean {
+		if (this.getErrorOfSlippage() == null && !this.estimatedSlippage.toDec().equals(new Dec(0))) {
+			if (new Dec(this.slippage).lt(this.estimatedSlippage.toDec())) {
+				return true;
+			}
+
+			// Show warning anyway if the estimated slippage is greater than 10%
+			if (this.estimatedSlippage.toDec().gt(new Dec(10))) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	getError(): Error | undefined {
 		const error = super.getError();

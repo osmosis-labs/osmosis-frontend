@@ -6,7 +6,7 @@ export const MainPage: FunctionComponent = () => {
 	return (
 		<div className="relative w-full h-full grid" style={{ gridTemplateColumns: '2fr 520px 1fr' }}>
 			<div />
-			<div className="grid w-full h-full z-30" style={{ gridTemplateRows: '2fr 648px 3fr' }}>
+			<div className="grid w-full h-full z-30" style={{ gridTemplateRows: '2fr 672px 3fr' }}>
 				<div />
 				<div style={{ maxWidth: '520px' }}>
 					<TradeClipboard />

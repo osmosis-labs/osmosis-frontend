@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Container } from '../../../components/containers';
 import { TCardTypes } from '../../../interfaces';
 import { TradeConfig } from '../stores/trade/config';
+import cn from 'clsx';
 
 interface Props {
 	config: TradeConfig;
@@ -53,6 +54,17 @@ export const FeesBox = observer(({ config }: Props) => {
 							})
 							.join(' + ')}
 					</p>
+				</div>
+				<hr className="w-full my-4" />
+				<div className="grid grid-cols-2">
+					<p className="text-sm font-bold text-white-high">Estimated Slippage</p>
+					<p
+						className={cn('col-span-1 text-sm font-bold text-white-high text-right truncate', {
+							'text-missionError': config.showWarningOfSlippage,
+						})}>{`${config.estimatedSlippage
+						.trim(true)
+						.maxDecimals(3)
+						.toString()}%`}</p>
 				</div>
 			</section>
 		</Container>

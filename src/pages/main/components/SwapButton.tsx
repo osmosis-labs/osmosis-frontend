@@ -3,6 +3,7 @@ import * as React from 'react';
 import { TToastType, useToast } from '../../../components/common/toasts';
 import { useStore } from '../../../stores';
 import { TradeConfig } from '../stores/trade/config';
+import cn from 'clsx';
 
 interface Props {
 	config: TradeConfig;
@@ -84,7 +85,12 @@ export const SwapButton = observer(({ config }: Props) => {
 					}
 				}
 			}}
-			className="bg-primary-200 h-15 flex justify-center items-center w-full rounded-lg shadow-elevation-04dp hover:opacity-75 disabled:opacity-50"
+			className={cn(
+				'bg-primary-200 h-15 flex justify-center items-center w-full rounded-lg shadow-elevation-04dp hover:opacity-75 disabled:opacity-50',
+				{
+					'bg-missionError': config.showWarningOfSlippage,
+				}
+			)}
 			disabled={!account.isReadyToSendMsgs || config.poolIds.length === 0 || config.getError() != null}>
 			{account.isSendingMsg === 'swapExactAmountIn' ? (
 				<svg
@@ -100,7 +106,7 @@ export const SwapButton = observer(({ config }: Props) => {
 					/>
 				</svg>
 			) : (
-				<p className="font-body tracking-wide">SWAP</p>
+				<p className="font-body tracking-wide">{config.showWarningOfSlippage ? 'Swap Anyway' : 'Swap'}</p>
 			)}
 		</button>
 	);

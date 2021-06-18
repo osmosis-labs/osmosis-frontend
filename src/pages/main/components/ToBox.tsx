@@ -29,7 +29,6 @@ export const ToBox = observer(({ config }: Props) => {
 						className={cn('text-xl font-title font-semibold truncate', {
 							'opacity-40': config.outAmount.toDec().equals(new Dec(0)),
 						})}>
-						{config.outAmount
 						{'≈ ' +
 							config.outAmount
 								.trim(true)
