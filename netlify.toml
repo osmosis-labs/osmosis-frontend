@@ -1,3 +1,11 @@
+# block some countries
+[[redirects]]
+    from = "/*"
+    to = "/public/deny.html"
+    status = 451
+    force = true
+    conditions = {Country=["US"]}
+
 # Redirect the routes to the index.html
 [[redirects]]
     from = "/*"

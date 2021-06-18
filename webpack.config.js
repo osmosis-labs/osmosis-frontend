@@ -126,7 +126,7 @@ const webConfig = () => {
 			// TODO: Optimizing build process
 			new CleanWebpackPlugin(),
 			new CopyWebpackPlugin({
-				patterns: [{ from: 'public/assets', to: 'public/assets' }],
+				patterns: [{ from: 'public', to: 'public' }],
 			}),
 			new ForkTsCheckerWebpackPlugin(),
 			new MiniCssExtractPlugin({
