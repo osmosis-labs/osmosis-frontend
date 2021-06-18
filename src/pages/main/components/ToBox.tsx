@@ -30,10 +30,12 @@ export const ToBox = observer(({ config }: Props) => {
 							'opacity-40': config.outAmount.toDec().equals(new Dec(0)),
 						})}>
 						{config.outAmount
-							.trim(true)
-							.maxDecimals(6)
-							.shrink(true)
-							.toString()}
+						{'≈ ' +
+							config.outAmount
+								.trim(true)
+								.maxDecimals(6)
+								.shrink(true)
+								.toString()}
 					</h5>
 				</div>
 			</section>

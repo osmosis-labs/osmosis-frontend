@@ -73,7 +73,7 @@ export class RootStore {
 
 		this.swapManager = new GammSwapManager([
 			{
-				poolId: '3',
+				poolId: '2',
 				currencies: [
 					{
 						coinMinimalDenom: 'uosmo',
