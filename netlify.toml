@@ -4,7 +4,7 @@
     to = "/public/deny.html"
     status = 451
     force = true
-    conditions = {Country=["US"]}
+    conditions = {Country=["BY","CU","IR","IQ","CI","LR","KP","SD","SY","ZW"]}
 
 # Redirect the routes to the index.html
 [[redirects]]
