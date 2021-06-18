@@ -34,7 +34,7 @@ export const OsmoSynthesis: FunctionComponent<{
 			<LockLpTokenDialog isOpen={isDialogOpen} close={closeDialog} poolId={poolId} />
 			<div className="flex justify-between items-start">
 				<div>
-					<h5 className="mb-3">OSMO Synthesis</h5>
+					<h5 className="mb-3">Liquidity Mining</h5>
 					<p className="text-white-mid">
 						Commit to bonding your LP tokens for a certain period of time to
 						<br />
