@@ -168,6 +168,7 @@ export class OsmosisAccount {
 				sender: this.base.bech32Address,
 				poolParams,
 				poolAssets,
+				future_pool_governor: '24h',
 			},
 		};
 
