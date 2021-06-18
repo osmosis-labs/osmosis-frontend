@@ -15,6 +15,7 @@ import { Img } from '../../components/common/Img';
 import { TToastType, useToast } from '../../components/common/toasts';
 import { Container } from '../../components/containers';
 import { TCardTypes } from '../../interfaces';
+import { isSlippageError } from '../../utils/tx';
 
 export class PoolSwapConfig extends AmountConfig {
 	@observable
@@ -310,7 +311,11 @@ const SwapButton: FunctionComponent<{
 							'',
 							tx => {
 								if (tx.code) {
-									toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
+									toast.displayToast(TToastType.TX_FAILED, {
+										message: isSlippageError(tx)
+											? 'Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.'
+											: tx.log,
+									});
 								} else {
 									toast.displayToast(TToastType.TX_SUCCESSFULL, {
 										customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),

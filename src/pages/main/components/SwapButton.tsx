@@ -4,6 +4,7 @@ import { TToastType, useToast } from '../../../components/common/toasts';
 import { useStore } from '../../../stores';
 import { TradeConfig } from '../stores/trade/config';
 import cn from 'clsx';
+import { isSlippageError } from '../../../utils/tx';
 
 interface Props {
 	config: TradeConfig;
@@ -44,7 +45,11 @@ export const SwapButton = observer(({ config }: Props) => {
 								'',
 								tx => {
 									if (tx.code) {
-										toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
+										toast.displayToast(TToastType.TX_FAILED, {
+											message: isSlippageError(tx)
+												? 'Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.'
+												: tx.log,
+										});
 									} else {
 										toast.displayToast(TToastType.TX_SUCCESSFULL, {
 											customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),
@@ -68,7 +73,11 @@ export const SwapButton = observer(({ config }: Props) => {
 								'',
 								tx => {
 									if (tx.code) {
-										toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
+										toast.displayToast(TToastType.TX_FAILED, {
+											message: isSlippageError(tx)
+												? 'Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.'
+												: tx.log,
+										});
 									} else {
 										toast.displayToast(TToastType.TX_SUCCESSFULL, {
 											customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),
