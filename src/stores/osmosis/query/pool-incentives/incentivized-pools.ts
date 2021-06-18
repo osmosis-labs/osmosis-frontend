@@ -181,8 +181,10 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 										.asMilliseconds() / epoch.duration.asMilliseconds();
 
 								const yearProvision = epochProvision.mul(new Dec(numEpochPerYear.toString()));
-
-								const yearProvisionToPot = yearProvision.mul(new Dec(potWeight).quo(new Dec(totalWeight)));
+								const yearProvisionToPots = yearProvision.mul(
+									this.queryMintParmas.distributionProportions.poolIncentives
+								);
+								const yearProvisionToPot = yearProvisionToPots.mul(new Dec(potWeight).quo(new Dec(totalWeight)));
 
 								const yearProvisionToPotPrice = new Dec(mintPrice.toString()).mul(yearProvisionToPot.toDec());
 
