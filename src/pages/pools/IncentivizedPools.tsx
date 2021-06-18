@@ -164,7 +164,7 @@ const MyPoolCard: FunctionComponent<MyPoolCardProps> = ({
 					</figure>
 				</figure>
 				<div className="mt-3.75">
-					<h5>Lab #{poolId}</h5>
+					<h5>Pool #{poolId}</h5>
 					<p className="text-sm text-white-mid font-semibold mt-2">
 						{tokens
 							.map(token => {
@@ -208,7 +208,7 @@ const MyPoolCard: FunctionComponent<MyPoolCardProps> = ({
 				</div>
 				{myLockedAmount ? (
 					<div className="ml-5">
-						<p className="text-sm text-white-mid mb-2">My Locked Amount</p>
+						<p className="text-sm text-white-mid mb-2">My Bonded Amount</p>
 						<h6 className="text-white-emphasis">{myLockedAmount}</h6>
 					</div>
 				) : null}
@@ -248,7 +248,7 @@ const PoolCard: FunctionComponent<PoolCardProps> = ({ poolId, apy, liquidity, to
 					</figure>
 				</figure>
 				<div className="mt-3.75">
-					<h5>Lab #{poolId}</h5>
+					<h5>Pool #{poolId}</h5>
 					<p className="text-sm text-white-mid font-semibold mt-2">
 						{tokens
 							.map(token => {

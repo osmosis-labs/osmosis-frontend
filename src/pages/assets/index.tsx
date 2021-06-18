@@ -9,7 +9,7 @@ export const AssetsPage: FunctionComponent = observer(() => {
 		<div className="w-full h-full bg-surface">
 			<div className="px-15 bg-background">
 				<div className="py-10 max-w-max mx-auto">
-					<AssetsOverview title="My IBC Assets" />
+					<AssetsOverview title="My Osmosis Assets" />
 				</div>
 			</div>
 			<div className="px-15 py-10">

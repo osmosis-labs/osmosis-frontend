@@ -18,7 +18,7 @@ export const LabsOverview: FunctionComponent = observer(() => {
 				close={() => setIsDialogOpen(false)}
 			/>
 			<div className="flex items-center mb-6">
-				<h5 className="mr-0.5">Active Labs</h5>
+				<h5 className="mr-0.5">Active Pools</h5>
 				{HideCreateNewPool ? null : (
 					<button
 						onClick={() => setIsDialogOpen(true)}
