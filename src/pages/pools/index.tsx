@@ -12,10 +12,18 @@ export const PoolsPage: FunctionComponent = observer(() => {
 					<LabsOverview />
 				</div>
 			</div>
-			<div className="py-10 bg-surface w-full px-10">
+			<div
+				className="py-10 bg-surface w-full px-10"
+				style={{
+					backgroundColor: '#1C173C',
+				}}>
 				<div className="max-w-max mx-auto">
 					<MyPools />
-					<div className="mt-15">
+				</div>
+			</div>
+			<div className="py-10 bg-surface w-full px-10">
+				<div className="max-w-max mx-auto">
+					<div>
 						<IncentivizedPools />
 					</div>
 					<div className="mt-15">
