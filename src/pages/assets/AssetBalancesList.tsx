@@ -79,6 +79,27 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 			<table className="w-full">
 				<AssetBalanceTableHeader />
 				<tbody className="w-full">
+					{chainStore.current.currencies
+						.filter(cur => !cur.coinMinimalDenom.includes('/'))
+						.map(cur => {
+							const bal = queries.queryBalances
+								.getQueryBech32Address(account.bech32Address)
+								.getBalanceFromCurrency(cur);
+
+							return (
+								<AssetBalanceRow
+									key={cur.coinMinimalDenom}
+									chainName=""
+									coinDenom={cur.coinDenom}
+									currency={cur}
+									balance={bal
+										.hideDenom(true)
+										.trim(true)
+										.maxDecimals(6)
+										.toString()}
+								/>
+							);
+						})}
 					{ibcBalances.map(bal => {
 						const currency = bal.balance.currency;
 						const coinDenom = (() => {
@@ -134,32 +155,34 @@ const AssetBalanceRow: FunctionComponent<{
 	coinDenom: string;
 	currency: AppCurrency;
 	balance: string;
-	onDeposit: () => void;
-	onWithdraw: () => void;
+	onDeposit?: () => void;
+	onWithdraw?: () => void;
 }> = ({ chainName, coinDenom, currency, balance, onDeposit, onWithdraw }) => {
 	let i = 0;
 	return (
 		<tr style={{ height: '4.5rem' }} className="flex items-center w-full border-b pl-12.5 pr-15">
 			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
 				<Img loadingSpin className="w-10 h-10" src={currency.coinImageUrl} />
-				<p className="ml-5">
-					{chainName} - {coinDenom.toUpperCase()}
-				</p>
+				<p className="ml-5">{chainName ? `${chainName} - ${coinDenom.toUpperCase()}` : coinDenom.toUpperCase()}</p>
 			</td>
 			<td className="flex items-center justify-end pl-2 pr-20 py-4" style={{ width: tableWidths[i++] }}>
 				<p>{balance}</p>
 			</td>
 			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<button onClick={onDeposit} className="flex items-center cursor-pointer hover:opacity-75">
-					<p className="text-sm text-secondary-200">Deposit</p>
-					<Img src={'/public/assets/Icons/Right.svg'} />
-				</button>
+				{onDeposit ? (
+					<button onClick={onDeposit} className="flex items-center cursor-pointer hover:opacity-75">
+						<p className="text-sm text-secondary-200">Deposit</p>
+						<Img src={'/public/assets/Icons/Right.svg'} />
+					</button>
+				) : null}
 			</td>
 			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<button onClick={onWithdraw} className="flex items-center cursor-pointer hover:opacity-75">
-					<p className="text-sm text-secondary-200">Withdraw</p>
-					<Img src={'/public/assets/Icons/Right.svg'} />
-				</button>
+				{onWithdraw ? (
+					<button onClick={onWithdraw} className="flex items-center cursor-pointer hover:opacity-75">
+						<p className="text-sm text-secondary-200">Withdraw</p>
+						<Img src={'/public/assets/Icons/Right.svg'} />
+					</button>
+				) : null}
 			</td>
 		</tr>
 	);
@@ -177,10 +200,10 @@ const AssetBalanceTableHeader: FunctionComponent = () => {
 					<p className="text-sm leading-normal">Balance</p>
 				</td>
 				<td className="flex items-center px-2 py-4" style={{ width: tableWidths[i++] }}>
-					<p className="text-sm leading-normal">Deposit</p>
+					<p className="text-sm leading-normal">IBC Deposit</p>
 				</td>
 				<td className="flex items-center px-2 py-4" style={{ width: tableWidths[i++] }}>
-					<p className="text-sm leading-normal">Withdraw</p>
+					<p className="text-sm leading-normal">IBC Withdraw</p>
 				</td>
 			</tr>
 		</thead>
