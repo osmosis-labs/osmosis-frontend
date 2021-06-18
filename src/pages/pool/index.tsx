@@ -116,7 +116,7 @@ const PoolInfoHeader: FunctionComponent<{
 						close={closeDialog}
 					/>
 					<div className="flex items-center mb-6">
-						<h5 className="mr-6">Lab #{id}</h5>
+						<h5 className="mr-6">Pool #{id}</h5>
 						<button
 							onClick={e => {
 								e.preventDefault();
