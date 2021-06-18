@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { CreateNewPoolDialog } from '../../dialogs/create-new-pool';
 import { useStore } from '../../stores';
 import dayjs from 'dayjs';
-import { RewardEpochIdentifier } from '../../config';
+import { HideCreateNewPool, RewardEpochIdentifier } from '../../config';
 import { CoinPretty, DecUtils } from '@keplr-wallet/unit';
 
 export const LabsOverview: FunctionComponent = observer(() => {
@@ -19,11 +19,13 @@ export const LabsOverview: FunctionComponent = observer(() => {
 			/>
 			<div className="flex items-center mb-6">
 				<h5 className="mr-0.5">Active Labs</h5>
-				<button
-					onClick={() => setIsDialogOpen(true)}
-					className="ml-7 px-4 py-2.5 rounded-lg bg-primary-200 hover:opacity-75 cursor-pointer">
-					<p className="leading-none">Create New Pool</p>
-				</button>
+				{HideCreateNewPool ? null : (
+					<button
+						onClick={() => setIsDialogOpen(true)}
+						className="ml-7 px-4 py-2.5 rounded-lg bg-primary-200 hover:opacity-75 cursor-pointer">
+						<p className="leading-none">Create New Pool</p>
+					</button>
+				)}
 			</div>
 			<ul className="flex items-center gap-20">
 				<DispPrice />
