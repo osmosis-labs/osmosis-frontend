@@ -1,4 +1,4 @@
-import { CoinGeckoPriceStore, getKeplrFromWindow, IBCCurrencyRegsitrar, QueriesStore } from '@keplr-wallet/stores';
+import { getKeplrFromWindow, IBCCurrencyRegsitrar, QueriesStore } from '@keplr-wallet/stores';
 import { AccountStore } from '@keplr-wallet/stores';
 import { DenomHelper, IndexedDBKVStore } from '@keplr-wallet/common';
 import { ChainStore } from './chain';
@@ -11,6 +11,7 @@ import { GammSwapManager } from './osmosis/swap';
 import { LPCurrencyRegistrar } from './osmosis/currency-registrar';
 import { ChainInfoInner } from '@keplr-wallet/stores';
 import { PoolIntermediatePriceStore } from './price';
+import { Writable } from 'utility-types';
 
 export class RootStore {
 	public readonly chainStore: ChainStore;
@@ -41,6 +42,36 @@ export class RootStore {
 				suggestChain: true,
 				autoInit: false,
 				getKeplr: getKeplrFromWindow,
+				suggestChainFn: async (keplr, chainInfo) => {
+					// Fetching the price from the pool's spot price is slightly hacky.
+					// It is set on the custom coin gecko id start with "pool:"
+					// and custom price store calculates the spot price from the pool
+					// and calculates the actual price with multiplying the known price from the coingecko of the other currency.
+					// But, this logic is not supported on the Keplr extension,
+					// so, delivering this custom coingecko id doesn't work on the Keplr extension.
+					const copied = JSON.parse(JSON.stringify(chainInfo.raw)) as ChainInfo;
+					if (copied.stakeCurrency.coinGeckoId?.startsWith('pool:')) {
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						delete copied.stakeCurrency.coinGeckoId;
+					}
+					for (const currency of copied.currencies) {
+						if (currency.coinGeckoId?.startsWith('pool:')) {
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							delete currency.coinGeckoId;
+						}
+					}
+					for (const currency of copied.feeCurrencies) {
+						if (currency.coinGeckoId?.startsWith('pool:')) {
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							delete currency.coinGeckoId;
+						}
+					}
+
+					await keplr.experimentalSuggestChain(copied);
+				},
 			},
 			chainOpts: this.chainStore.chainInfos.map((chainInfo: ChainInfo) => {
 				return {
