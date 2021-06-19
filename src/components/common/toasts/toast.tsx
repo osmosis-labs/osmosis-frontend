@@ -100,7 +100,7 @@ const ToastTxSuccess: FunctionComponent<{ link: string }> = ({ link }) => (
 	<div className="grid gap-3.75" style={{ gridTemplateColumns: '32px 1fr' }}>
 		<img alt="b" style={{ width: '32px', height: '32px' }} src="/public/assets/Icons/ToastSuccess.png" />
 		<section className="text-white-high">
-			<h6 className="mb-2">Transcation Successful</h6>
+			<h6 className="mb-2">Transaction Successful</h6>
 			<a target="__blank" href={link} className="text-sm inline hover:opacity-75 cursor-pointer">
 				View explorer <img alt="link" src="/public/assets/Icons/Link.png" className="inline-block h-4 w-4 mb-0.75" />
 			</a>
