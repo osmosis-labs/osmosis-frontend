@@ -101,7 +101,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://osmosis.bigdipper.live/transactions/{txHash}',
+		explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-cosmoshub.keplr.app',
