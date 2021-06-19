@@ -6,6 +6,7 @@ import { useStore } from '../../stores';
 import { IBCAssetInfos } from '../../config';
 import { AppCurrency, Currency, IBCCurrency } from '@keplr-wallet/types';
 import { makeIBCMinimalDenom } from '../../utils/ibc';
+import cn from 'clsx';
 
 const tableWidths = ['50%', '25%', '12.5%', '12.5%'];
 export const AssetBalancesList: FunctionComponent = observer(() => {
@@ -110,6 +111,25 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 							return currency.coinDenom;
 						})();
 
+						if (bal.chainInfo.chainId.startsWith('regen-')) {
+							// Channel of Regen network would not be public yet.
+							// By the hard coding, just do not show the deposit/withdraw button for the regen network.
+							return (
+								<AssetBalanceRow
+									key={currency.coinMinimalDenom}
+									chainName={bal.chainInfo.chainName}
+									coinDenom={coinDenom}
+									currency={currency}
+									balance={bal.balance
+										.hideDenom(true)
+										.trim(true)
+										.maxDecimals(6)
+										.toString()}
+									showCommingSoon={true}
+								/>
+							);
+						}
+
 						return (
 							<AssetBalanceRow
 								key={currency.coinMinimalDenom}
@@ -157,7 +177,8 @@ const AssetBalanceRow: FunctionComponent<{
 	balance: string;
 	onDeposit?: () => void;
 	onWithdraw?: () => void;
-}> = ({ chainName, coinDenom, currency, balance, onDeposit, onWithdraw }) => {
+	showCommingSoon?: boolean;
+}> = ({ chainName, coinDenom, currency, balance, onDeposit, onWithdraw, showCommingSoon }) => {
 	let i = 0;
 	return (
 		<tr style={{ height: '4.5rem' }} className="flex items-center w-full border-b pl-12.5 pr-15">
@@ -168,16 +189,29 @@ const AssetBalanceRow: FunctionComponent<{
 			<td className="flex items-center justify-end pl-2 pr-20 py-4" style={{ width: tableWidths[i++] }}>
 				<p>{balance}</p>
 			</td>
-			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				{onDeposit ? (
+			<td
+				className={cn('flex items-center px-2 py-3', {
+					relative: showCommingSoon,
+				})}
+				style={{ width: tableWidths[i++] }}>
+				{!showCommingSoon && onDeposit ? (
 					<button onClick={onDeposit} className="flex items-center cursor-pointer hover:opacity-75">
 						<p className="text-sm text-secondary-200">Deposit</p>
 						<Img src={'/public/assets/Icons/Right.svg'} />
 					</button>
 				) : null}
+				{showCommingSoon ? (
+					<div
+						className="absolute text-secondary-200 pl-2"
+						style={{
+							width: '200px',
+						}}>
+						🌲 LBP Coming Soon 🌲
+					</div>
+				) : null}
 			</td>
 			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				{onWithdraw ? (
+				{!showCommingSoon && onWithdraw ? (
 					<button onClick={onWithdraw} className="flex items-center cursor-pointer hover:opacity-75">
 						<p className="text-sm text-secondary-200">Withdraw</p>
 						<Img src={'/public/assets/Icons/Right.svg'} />

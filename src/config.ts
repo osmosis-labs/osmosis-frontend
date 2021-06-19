@@ -31,6 +31,12 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'uakt',
 	},
 	{
+		counterpartyChainId: 'regen-1',
+		sourceChannelId: 'channel-?',
+		destChannelId: 'channel-?',
+		coinMinimalDenom: 'uregen',
+	},
+	{
 		counterpartyChainId: 'sentinelhub-2',
 		sourceChannelId: 'channel-2',
 		destChannelId: 'channel-0',
@@ -68,8 +74,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDecimals: 6,
 			coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 		},
-		walletUrl: 'https://wallet.keplr.app/#/osmosis/stake',
-		walletUrlForStaking: 'https://wallet.keplr.app/#/osmosis/stake',
 		bip44: {
 			coinType: 118,
 		},
@@ -103,7 +107,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		rpc: 'https://rpc-cosmoshub.keplr.app',
 		rest: 'https://lcd-cosmoshub.keplr.app',
 		chainId: 'cosmoshub-4',
-		chainName: 'Cosmos',
+		chainName: 'Cosmos Hub',
 		stakeCurrency: {
 			coinDenom: 'ATOM',
 			coinMinimalDenom: 'uatom',
@@ -174,6 +178,38 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		coinType: 118,
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://akash.bigdipper.live/transactions/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-regen.keplr.app',
+		rest: 'https://lcd-regen.keplr.app',
+		chainId: 'regen-1',
+		chainName: 'Regen Network',
+		stakeCurrency: {
+			coinDenom: 'regen',
+			coinMinimalDenom: 'uregen',
+			coinDecimals: 6,
+			coinImageUrl: window.location.origin + '/public/assets/tokens/regen.png',
+		},
+		bip44: { coinType: 118 },
+		bech32Config: Bech32Address.defaultBech32Config('regen'),
+		currencies: [
+			{
+				coinDenom: 'regen',
+				coinMinimalDenom: 'uregen',
+				coinDecimals: 6,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/regen.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'regen',
+				coinMinimalDenom: 'uregen',
+				coinDecimals: 6,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/regen.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://regen.aneka.io/txs/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-sentinel.keplr.app',

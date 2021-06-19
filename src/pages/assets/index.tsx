@@ -1,12 +1,15 @@
 import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
 import { AssetsOverview } from './AssetsOverview';
 import { AssetBalancesList } from './AssetBalancesList';
 
 export const AssetsPage: FunctionComponent = observer(() => {
 	return (
-		<div className="w-full h-full bg-surface">
+		<div
+			className="w-full bg-surface"
+			style={{
+				height: 'fit-content',
+			}}>
 			<div className="px-15 bg-background">
 				<div className="py-10 max-w-max mx-auto">
 					<AssetsOverview title="My Osmosis Assets" />
