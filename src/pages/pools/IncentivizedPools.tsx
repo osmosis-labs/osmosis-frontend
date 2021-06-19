@@ -107,6 +107,14 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 	return (
 		<section>
 			<h5 className="mb-7.5 ">Incentivized Pools</h5>
+			{state.length === 0 ? (
+				<div className="w-full rounded-xl bg-card py-8 flex flex-col items-center">
+					<h6 className="mb-5 font-normal">No active liquidity incentives</h6>
+					<p className="text-white-mid font-medium">
+						Liquidity mining will begin once the first update pool incentives governance proposal passes.
+					</p>
+				</div>
+			) : null}
 			<ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8.75 w-full h-full">
 				{state.map(pool => {
 					return (
