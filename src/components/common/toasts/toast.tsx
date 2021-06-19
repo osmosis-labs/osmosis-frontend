@@ -80,7 +80,7 @@ const ToastTxBroadcasting: FunctionComponent = () => (
 			src="/public/assets/Icons/Loading.png"
 		/>
 		<section className="text-white-high">
-			<h6 className="mb-2">Transcation Broadcasting</h6>
+			<h6 className="mb-2">Transaction Broadcasting</h6>
 			<p className="text-sm">Waiting for transaction to be included in the block</p>
 		</section>
 	</div>
@@ -90,7 +90,7 @@ const ToastTxFailed: FunctionComponent<{ message: string }> = ({ message }) => (
 	<div className="grid gap-3" style={{ gridTemplateColumns: '32px 1fr' }}>
 		<img alt="x" style={{ width: '32px', height: '32px' }} src="/public/assets/Icons/FailedTx.png" />
 		<section className="text-white-high">
-			<h6 className="mb-2">Transcation Failed</h6>
+			<h6 className="mb-2">Transaction Failed</h6>
 			<p className="text-sm">{message}</p>
 		</section>
 	</div>
