@@ -72,6 +72,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'OSMO',
 			coinMinimalDenom: 'uosmo',
 			coinDecimals: 6,
+			coinGeckoId: 'pool:uosmo',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 		},
 		bip44: {
@@ -83,6 +84,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'OSMO',
 				coinMinimalDenom: 'uosmo',
 				coinDecimals: 6,
+				coinGeckoId: 'pool:uosmo',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 			},
 			{
@@ -97,6 +99,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'OSMO',
 				coinMinimalDenom: 'uosmo',
 				coinDecimals: 6,
+				coinGeckoId: 'pool:uosmo',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 			},
 		],
