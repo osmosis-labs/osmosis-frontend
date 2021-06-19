@@ -1,7 +1,7 @@
 import { getKeplrFromWindow, IBCCurrencyRegsitrar, QueriesStore } from '@keplr-wallet/stores';
 import { AccountStore } from '@keplr-wallet/stores';
 import { DenomHelper, IndexedDBKVStore } from '@keplr-wallet/common';
-import { ChainStore } from './chain';
+import { ChainInfoWithExplorer, ChainStore } from './chain';
 import { AppCurrency, ChainInfo } from '@keplr-wallet/types';
 import { EmbedChainInfos, IBCAssetInfos } from '../config';
 import { QueriesWithCosmosAndOsmosis } from './osmosis/query';
@@ -21,8 +21,8 @@ export class RootStore {
 
 	public readonly swapManager: GammSwapManager;
 
-	protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar;
-	protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfo>;
+	protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
+	protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
 
 	public readonly layoutStore: LayoutStore;
 
@@ -141,7 +141,7 @@ export class RootStore {
 		]);
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
-		this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfo>(
+		this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithExplorer>(
 			this.chainStore,
 			this.accountStore,
 			this.queriesStore,

@@ -52,7 +52,7 @@ export const SwapButton = observer(({ config }: Props) => {
 										});
 									} else {
 										toast.displayToast(TToastType.TX_SUCCESSFULL, {
-											customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),
+											customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash),
 										});
 
 										config.setAmount('');
@@ -80,7 +80,7 @@ export const SwapButton = observer(({ config }: Props) => {
 										});
 									} else {
 										toast.displayToast(TToastType.TX_SUCCESSFULL, {
-											customLink: chainStore.current.explorerUrlToTx!.replace('{txHash}', tx.hash),
+											customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash),
 										});
 
 										config.setAmount('');

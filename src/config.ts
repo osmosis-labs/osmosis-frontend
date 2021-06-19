@@ -114,6 +114,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		coinType: 118,
 		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://noop-cosmos/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-irishub-devnet.keplr.app',
@@ -155,5 +156,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://noop-iris/{txHash}',
 	},
 ];

@@ -1,4 +1,4 @@
-import { ChainStore } from './chain';
+import { ChainInfoWithExplorer, ChainStore } from './chain';
 import { AccountSetBase, AccountStore, QueriesStore } from '@keplr-wallet/stores';
 import { MemoryKVStore } from '@keplr-wallet/common';
 import { autorun } from 'mobx';
@@ -10,10 +10,9 @@ import Axios from 'axios';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import WebSocket from 'ws';
 import { exec } from 'child_process';
-import { ChainInfo } from '@keplr-wallet/types';
 import { Bech32Address } from '@keplr-wallet/cosmos';
 
-export const TestChainInfos: ChainInfo[] = [
+export const TestChainInfos: ChainInfoWithExplorer[] = [
 	{
 		rpc: 'http://127.0.0.1:26657',
 		rest: 'http://127.0.0.1:1317',
@@ -58,6 +57,7 @@ export const TestChainInfos: ChainInfo[] = [
 			},
 		],
 		features: ['stargate'],
+		explorerUrlToTx: '',
 	},
 ];
 
