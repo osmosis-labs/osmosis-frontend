@@ -71,6 +71,17 @@ export const AirdropOverview: FunctionComponent = observer(() => {
 	);
 });
 
+function padTwoDigit(num: number): string {
+	// Expect that num is integer
+	if (num <= 0) {
+		return '00';
+	}
+	if (num <= 9) {
+		return '0' + num;
+	}
+	return num.toString();
+}
+
 const DisplayCliff: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore } = useStore();
 
@@ -92,7 +103,9 @@ const DisplayCliff: FunctionComponent = observer(() => {
 		if (delta.asSeconds() <= 0) {
 			return '00-00-00';
 		}
-		return delta.format('DD-HH-mm');
+		return `${padTwoDigit(delta.months() * 30 + delta.days())}-${padTwoDigit(delta.hours())}-${padTwoDigit(
+			delta.minutes()
+		)}`;
 	})();
 	const [day, hour, minute] = untilDecay.split('-');
 	return (
