@@ -628,7 +628,7 @@ const BottomButton: FunctionComponent<{
 												toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
 											} else {
 												toast.displayToast(TToastType.TX_SUCCESSFULL, {
-													customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash),
+													customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
 												});
 											}
 
@@ -658,7 +658,7 @@ const BottomButton: FunctionComponent<{
 												toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
 											} else {
 												toast.displayToast(TToastType.TX_SUCCESSFULL, {
-													customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash),
+													customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
 												});
 											}
 

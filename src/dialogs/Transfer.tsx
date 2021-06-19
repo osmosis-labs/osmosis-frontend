@@ -169,7 +169,7 @@ export const TransferDialog = wrapBaseDialog(
 														toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
 													} else {
 														toast.displayToast(TToastType.TX_SUCCESSFULL, {
-															customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash),
+															customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
 														});
 													}
 
@@ -197,7 +197,7 @@ export const TransferDialog = wrapBaseDialog(
 														toast.displayToast(TToastType.TX_SUCCESSFULL, {
 															customLink: chainStore
 																.getChain(counterpartyChainId)
-																.raw.explorerUrlToTx.replace('{txHash}', tx.hash),
+																.raw.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
 														});
 													}
 
