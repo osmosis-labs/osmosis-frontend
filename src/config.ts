@@ -144,7 +144,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		coinType: 118,
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://cosmos.bigdipper.live/transactions/{txHash}',
+		explorerUrlToTx: 'https://www.mintscan.io/cosmos/txs/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-akash.keplr.app',
@@ -182,7 +182,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		coinType: 118,
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://akash.bigdipper.live/transactions/{txHash}',
+		explorerUrlToTx: 'https://www.mintscan.io/akash/txs/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-regen.keplr.app',
@@ -248,7 +248,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/dvpn.png',
 			},
 		],
-		explorerUrlToTx: 'https://explorer.sentinel.co/transactions/{txHash}',
+		explorerUrlToTx: 'https://www.mintscan.io/sentinel/txs/{txHash}',
 		features: ['stargate', 'ibc-transfer'],
 	},
 	{
@@ -286,7 +286,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://explorer.persistence.one/transactions/{txHash}',
+		explorerUrlToTx: 'https://www.mintscan.io/persistence/txs/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-iris.keplr.app',
@@ -323,7 +323,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://iris.bigdipper.live/transactions/{txHash}',
+		explorerUrlToTx: 'https://www.mintscan.io/iris/txs/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-crypto-org.keplr.app/',
@@ -360,6 +360,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://crypto.org/explorer/tx/{txHash}',
+		explorerUrlToTx: 'https://www.mintscan.io/crypto-org/txs/{txHash}',
 	},
 ];
