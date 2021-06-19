@@ -11,7 +11,6 @@ import { GammSwapManager } from './osmosis/swap';
 import { LPCurrencyRegistrar } from './osmosis/currency-registrar';
 import { ChainInfoInner } from '@keplr-wallet/stores';
 import { PoolIntermediatePriceStore } from './price';
-import { Writable } from 'utility-types';
 
 export class RootStore {
 	public readonly chainStore: ChainStore;

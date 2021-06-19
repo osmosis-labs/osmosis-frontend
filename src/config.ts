@@ -4,7 +4,7 @@ import { ChainInfoWithExplorer } from './stores/chain';
 export const HideCreateNewPool: boolean = window.location.hostname.startsWith('app.');
 
 export const PoolsPerPage = 10;
-export const RewardEpochIdentifier = '15min';
+export const RewardEpochIdentifier = 'day';
 
 /**
  * Determine the channel info per the chain.
@@ -19,34 +19,57 @@ export const IBCAssetInfos: {
 	coinMinimalDenom: string;
 }[] = [
 	{
-		counterpartyChainId: 'cosmoshub-devnet-1',
+		counterpartyChainId: 'cosmoshub-4',
 		sourceChannelId: 'channel-0',
-		destChannelId: 'channel-3',
+		destChannelId: 'channel-141',
 		coinMinimalDenom: 'uatom',
 	},
 	{
-		counterpartyChainId: 'irishub-devnet-1',
+		counterpartyChainId: 'akashnet-2',
 		sourceChannelId: 'channel-1',
+		destChannelId: 'channel-9',
+		coinMinimalDenom: 'uakt',
+	},
+	{
+		counterpartyChainId: 'sentinelhub-2',
+		sourceChannelId: 'channel-2',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'udvpn',
+	},
+	{
+		counterpartyChainId: 'core-1',
+		sourceChannelId: 'channel-4',
+		destChannelId: 'channel-6',
+		coinMinimalDenom: 'uxprt',
+	},
+	{
+		counterpartyChainId: 'irishub-1',
+		sourceChannelId: 'channel-6',
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uiris',
+	},
+	{
+		counterpartyChainId: 'crypto-org-chain-mainnet-1',
+		sourceChannelId: 'channel-5',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'basecro',
 	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	{
-		rpc: 'https://rpc-osmosis-testnet.keplr.app',
-		rest: 'https://lcd-osmosis-testnet.keplr.app',
-		chainId: 'osmo-testnet-5',
-		chainName: 'Osmosis (Dev)',
+		rpc: 'https://rpc-osmosis.keplr.app',
+		rest: 'https://lcd-osmosis.keplr.app',
+		chainId: 'osmosis-1',
+		chainName: 'Osmosis',
 		stakeCurrency: {
 			coinDenom: 'OSMO',
 			coinMinimalDenom: 'uosmo',
 			coinDecimals: 6,
-			coinGeckoId: 'pool:uosmo',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 		},
-		walletUrl: 'https://dev.wallet.keplr.app/#/osmosis/stake',
-		walletUrlForStaking: 'https://dev.wallet.keplr.app/#/osmosis/stake',
+		walletUrl: 'https://wallet.keplr.app/#/osmosis/stake',
+		walletUrlForStaking: 'https://wallet.keplr.app/#/osmosis/stake',
 		bip44: {
 			coinType: 118,
 		},
@@ -56,7 +79,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'OSMO',
 				coinMinimalDenom: 'uosmo',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:uosmo',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 			},
 			{
@@ -71,18 +93,17 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'OSMO',
 				coinMinimalDenom: 'uosmo',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:uosmo',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://noop/{txHash}',
+		explorerUrlToTx: 'https://osmosis.bigdipper.live/transactions/{txHash}',
 	},
 	{
-		rpc: 'https://rpc-cosmoshub-devnet.keplr.app',
-		rest: 'https://lcd-cosmoshub-devnet.keplr.app',
-		chainId: 'cosmoshub-devnet-1',
-		chainName: 'Cosmos (Dev)',
+		rpc: 'https://rpc-cosmoshub.keplr.app',
+		rest: 'https://lcd-cosmoshub.keplr.app',
+		chainId: 'cosmoshub-4',
+		chainName: 'Cosmos',
 		stakeCurrency: {
 			coinDenom: 'ATOM',
 			coinMinimalDenom: 'uatom',
@@ -114,13 +135,123 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		coinType: 118,
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://noop-cosmos/{txHash}',
+		explorerUrlToTx: 'https://cosmos.bigdipper.live/transactions/{txHash}',
 	},
 	{
-		rpc: 'https://rpc-irishub-devnet.keplr.app',
-		rest: 'https://lcd-irishub-devnet.keplr.app',
-		chainId: 'irishub-devnet-1',
-		chainName: 'IRISnet (Dev)',
+		rpc: 'https://rpc-akash.keplr.app',
+		rest: 'https://lcd-akash.keplr.app',
+		chainId: 'akashnet-2',
+		chainName: 'Akash',
+		stakeCurrency: {
+			coinDenom: 'AKT',
+			coinMinimalDenom: 'uakt',
+			coinDecimals: 6,
+			coinGeckoId: 'akash-network',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/akt.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('akash'),
+		currencies: [
+			{
+				coinDenom: 'AKT',
+				coinMinimalDenom: 'uakt',
+				coinDecimals: 6,
+				coinGeckoId: 'akash-network',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/akt.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'AKT',
+				coinMinimalDenom: 'uakt',
+				coinDecimals: 6,
+				coinGeckoId: 'akash-network',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/akt.svg',
+			},
+		],
+		coinType: 118,
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://akash.bigdipper.live/transactions/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-sentinel.keplr.app',
+		rest: 'https://lcd-sentinel.keplr.app',
+		chainId: 'sentinelhub-2',
+		chainName: 'Sentinel',
+		stakeCurrency: {
+			coinDenom: 'DVPN',
+			coinMinimalDenom: 'udvpn',
+			coinDecimals: 6,
+			coinGeckoId: 'sentinel-group',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/dvpn.png',
+		},
+		bip44: { coinType: 118 },
+		bech32Config: Bech32Address.defaultBech32Config('sent'),
+		currencies: [
+			{
+				coinDenom: 'DVPN',
+				coinMinimalDenom: 'udvpn',
+				coinDecimals: 6,
+				coinGeckoId: 'sentinel-group',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dvpn.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'DVPN',
+				coinMinimalDenom: 'udvpn',
+				coinDecimals: 6,
+				coinGeckoId: 'sentinel-group',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dvpn.png',
+			},
+		],
+		explorerUrlToTx: 'https://explorer.sentinel.co/transactions/{txHash}',
+		features: ['stargate', 'ibc-transfer'],
+	},
+	{
+		rpc: 'https://rpc.core.persistence.one',
+		rest: 'https://rest.core.persistence.one',
+		chainId: 'core-1',
+		chainName: 'Persistence',
+		stakeCurrency: {
+			coinDenom: 'XPRT',
+			coinMinimalDenom: 'uxprt',
+			coinDecimals: 6,
+			coinGeckoId: 'persistence',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/xprt.png',
+		},
+		bip44: {
+			coinType: 750,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('persistence'),
+		currencies: [
+			{
+				coinDenom: 'XPRT',
+				coinMinimalDenom: 'uxprt',
+				coinDecimals: 6,
+				coinGeckoId: 'persistence',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/xprt.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'XPRT',
+				coinMinimalDenom: 'uxprt',
+				coinDecimals: 6,
+				coinGeckoId: 'persistence',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/xprt.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://explorer.persistence.one/transactions/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-iris.keplr.app',
+		rest: 'https://lcd-iris.keplr.app',
+		chainId: 'irishub-1',
+		chainName: 'IRISnet',
 		stakeCurrency: {
 			coinDenom: 'IRIS',
 			coinMinimalDenom: 'uiris',
@@ -131,11 +262,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		bip44: {
 			coinType: 118,
 		},
-		alternativeBIP44s: [
-			{
-				coinType: 566,
-			},
-		],
 		bech32Config: Bech32Address.defaultBech32Config('iaa'),
 		currencies: [
 			{
@@ -156,6 +282,43 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://noop-iris/{txHash}',
+		explorerUrlToTx: 'https://iris.bigdipper.live/transactions/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-crypto-org.keplr.app/',
+		rest: 'https://lcd-crypto-org.keplr.app/',
+		chainId: 'crypto-org-chain-mainnet-1',
+		chainName: 'Crypto.org',
+		stakeCurrency: {
+			coinDenom: 'CRO',
+			coinMinimalDenom: 'basecro',
+			coinDecimals: 8,
+			coinGeckoId: 'crypto-com-chain',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/cro.png',
+		},
+		bip44: {
+			coinType: 394,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('cro'),
+		currencies: [
+			{
+				coinDenom: 'CRO',
+				coinMinimalDenom: 'basecro',
+				coinDecimals: 8,
+				coinGeckoId: 'crypto-com-chain',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/cro.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'CRO',
+				coinMinimalDenom: 'basecro',
+				coinDecimals: 8,
+				coinGeckoId: 'crypto-com-chain',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/cro.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://crypto.org/explorer/tx/{txHash}',
 	},
 ];
