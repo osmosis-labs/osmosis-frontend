@@ -41,6 +41,13 @@ export class RootStore {
 				suggestChain: true,
 				autoInit: false,
 				getKeplr: getKeplrFromWindow,
+
+				msgOpts: {
+					ibcTransfer: {
+						gas: 150000,
+					},
+				},
+
 				suggestChainFn: async (keplr, chainInfo) => {
 					// Fetching the price from the pool's spot price is slightly hacky.
 					// It is set on the custom coin gecko id start with "pool:"
