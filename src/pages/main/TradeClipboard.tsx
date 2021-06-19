@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useEffect } from 'react';
 import { Img } from '../../components/common/Img';
 import { Container } from '../../components/containers';
 import { useFakeFeeConfig } from '../../hooks/tx';
@@ -33,6 +33,16 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 		account.msgOpts.swapExactAmountIn.gas * Math.max(config.poolIds.length, 1)
 	);
 	config.setFeeConfig(feeConfig);
+
+	useEffect(() => {
+		for (const currency of config.sendableCurrencies) {
+			// Try to get the information of all sendable currencies.
+			// The currency in the token list of selector is not registered to the chain store
+			// even if the currency is unknown.
+			// Next line ensures that the all sendable currency would be registered to the chain store if the currnecy is unknown.
+			chainStore.getChain(chainStore.current.chainId).findCurrency(currency.coinMinimalDenom);
+		}
+	}, [chainStore.current, config.sendableCurrencies]);
 
 	return (
 		<Container
