@@ -92,6 +92,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'ION',
 				coinMinimalDenom: 'uion',
 				coinDecimals: 6,
+				coinGeckoId: 'pool:uion',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ion.png',
 			},
 		],
