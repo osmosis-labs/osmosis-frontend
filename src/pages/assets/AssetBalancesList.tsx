@@ -111,7 +111,10 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 							return currency.coinDenom;
 						})();
 
-						if (bal.chainInfo.chainId.startsWith('regen-') && window.location.hostname.startsWith('app.')) {
+						if (
+							bal.chainInfo.chainId.startsWith('regen-') &&
+							(window.location.hostname.startsWith('app.') || window.location.hostname.startsWith('staging.'))
+						) {
 							// Channel of Regen network would not be public yet.
 							// By the hard coding, just do not show the deposit/withdraw button for the regen network.
 							return (

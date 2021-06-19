@@ -35,12 +35,12 @@ export const LAYOUT = {
 					STAKE: {
 						ICON: '/public/assets/Icons/Ticket.svg',
 						TEXT: 'Stake',
-						LINK: 'https://dev.wallet.keplr.app/#/osmosis/stake',
+						LINK: 'https://wallet.keplr.app/#/osmosis/stake',
 					},
 					GOVERNANCE: {
 						ICON: '/public/assets/Icons/Vote.svg',
 						TEXT: 'Vote',
-						LINK: 'https://dev.wallet.keplr.app/#/osmosis/governance',
+						LINK: 'https://wallet.keplr.app/#/osmosis/governance',
 					},
 			  }
 			: {
