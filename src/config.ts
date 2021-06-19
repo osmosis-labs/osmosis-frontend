@@ -32,8 +32,8 @@ export const IBCAssetInfos: {
 	},
 	{
 		counterpartyChainId: 'regen-1',
-		sourceChannelId: 'channel-?',
-		destChannelId: 'channel-?',
+		sourceChannelId: 'channel-8',
+		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uregen',
 	},
 	{
