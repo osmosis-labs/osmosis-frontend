@@ -161,6 +161,11 @@ export class PoolSwapConfig extends AmountConfig {
 				.toString()
 		);
 	}
+	@override
+	setAmount(amount: string) {
+		this.setIsMax(false);
+		super.setAmount(amount);
+	}
 
 	@computed
 	get spotPriceWithoutSwapFee(): IntPretty {
