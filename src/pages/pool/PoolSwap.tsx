@@ -1,22 +1,24 @@
-import React, { FunctionComponent, useState } from 'react';
 import { AmountConfig } from '@keplr-wallet/hooks';
 import { ChainGetter } from '@keplr-wallet/stores';
 import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balances';
-import { action, computed, makeObservable, observable, override } from 'mobx';
-import { ObservableQueryPools } from '../../stores/osmosis/query/pools';
 import { AppCurrency } from '@keplr-wallet/types';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { useFakeFeeConfig } from '../../hooks/tx';
-import { FromBox } from '../main/components/FormBox';
-import { ToBox } from '../main/components/ToBox';
 import { CoinPretty, Dec, Int, IntPretty } from '@keplr-wallet/unit';
+import { action, computed, makeObservable, observable, override } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useState } from 'react';
 import { Img } from '../../components/common/Img';
 import { TToastType, useToast } from '../../components/common/toasts';
+import { ConnectAccountButton } from '../../components/ConnectAccountButton';
 import { Container } from '../../components/containers';
-import { TCardTypes } from '../../interfaces';
-import { isSlippageError } from '../../utils/tx';
 import { wrapBaseDialog } from '../../dialogs';
+import { useAccountConnection } from '../../hooks/account/useAccountConnection';
+import { useFakeFeeConfig } from '../../hooks/tx';
+import { TCardTypes } from '../../interfaces';
+import { useStore } from '../../stores';
+import { ObservableQueryPools } from '../../stores/osmosis/query/pools';
+import { isSlippageError } from '../../utils/tx';
+import { FromBox } from '../main/components/FormBox';
+import { ToBox } from '../main/components/ToBox';
 
 export class PoolSwapConfig extends AmountConfig {
 	@observable
@@ -281,7 +283,20 @@ const SwapButton: FunctionComponent<{
 	const { chainStore, accountStore } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
+	const { isAccountConnected, connectAccount } = useAccountConnection();
 	const toast = useToast();
+
+	if (!isAccountConnected) {
+		return (
+			<ConnectAccountButton
+				className="h-15"
+				onClick={e => {
+					e.preventDefault();
+					connectAccount();
+				}}
+			/>
+		);
+	}
 
 	return (
 		<button
