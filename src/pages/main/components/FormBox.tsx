@@ -42,7 +42,7 @@ export const FromBox = observer(({ config }: Props) => {
 						/>
 					</div>
 					<button
-						className="rounded-md py-1 px-1.5 bg-white-faint h-6 ml-1.25"
+						className={cn('rounded-md py-1 px-1.5 bg-white-faint h-6 ml-1.25', config.isMax && 'bg-primary-200')}
 						onClick={e => {
 							e.preventDefault();
 
