@@ -1,3 +1,4 @@
+import { WalletStatus } from '@keplr-wallet/stores';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from '../../stores';
 
@@ -8,7 +9,7 @@ export function useAccountConnection() {
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
 	const shouldAutoConnectAccount = localStorage?.getItem(KeyAccountAutoConnect) != null;
-	const isAccountConnected = account.bech32Address !== '';
+	const isAccountConnected = account.walletStatus === WalletStatus.Loaded;
 
 	const disconnectAccount = useCallback(() => {
 		localStorage?.removeItem(KeyAccountAutoConnect);
@@ -22,8 +23,7 @@ export function useAccountConnection() {
 
 	useEffect(() => {
 		// 이전에 로그인한 후에 sign out을 명시적으로 하지 않았으면 자동으로 로그인한다.
-		if (shouldAutoConnectAccount && !isAccountConnected) {
-			console.log('TODO: init called');
+		if (shouldAutoConnectAccount && account.walletStatus === WalletStatus.NotInit) {
 			account.init();
 		}
 	}, [account, isAccountConnected, shouldAutoConnectAccount]);
