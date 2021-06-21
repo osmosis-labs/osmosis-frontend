@@ -26,7 +26,7 @@ export function useAccountConnection() {
 		if (shouldAutoConnectAccount && account.walletStatus === WalletStatus.NotInit) {
 			account.init();
 		}
-	}, [account, isAccountConnected, shouldAutoConnectAccount]);
+	}, [account, shouldAutoConnectAccount]);
 
 	return useMemo(() => {
 		return {
