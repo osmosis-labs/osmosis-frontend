@@ -115,6 +115,12 @@ export class TradeConfig extends AmountConfig {
 		);
 	}
 
+	@override
+	setAmount(amount: string) {
+		this.setIsMax(false);
+		super.setAmount(amount);
+	}
+
 	@action
 	setSlippageStep(step: SlippageStep | undefined) {
 		this._slippageStep = step;
