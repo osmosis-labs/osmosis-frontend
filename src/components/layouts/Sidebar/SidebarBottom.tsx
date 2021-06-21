@@ -1,32 +1,22 @@
-import React, { FunctionComponent, useEffect } from 'react';
 import cn from 'clsx';
-import { LINKS, MISC } from '../../../constants';
-import { Img } from '../../common/Img';
 import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent } from 'react';
+import { LINKS, MISC } from '../../../constants';
+import { useAccountConnection } from '../../../hooks/account/useAccountConnection';
 import { useStore } from '../../../stores';
-
-const KeyAccountAutoConnect = 'account_auto_connect';
+import { Img } from '../../common/Img';
+import { ConnectAccountButton } from '../../ConnectAccountButton';
 
 export const SidebarBottom: FunctionComponent<TSidebarBottom> = observer(({ openSidebar }) => {
 	const { chainStore, accountStore, queriesStore } = useStore();
-
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
 
-	const accountAutoConnect = localStorage.getItem(KeyAccountAutoConnect) != null;
-
-	useEffect(() => {
-		// 이전에 로그인한 후에 sign out을 명시적으로 하지 않았으면 자동으로 로그인한다.
-		if (accountAutoConnect) {
-			account.init();
-		}
-	}, []);
-
-	const accountIsConnected = account.bech32Address !== '' || accountAutoConnect;
+	const { isAccountConnected, disconnectAccount, connectAccount } = useAccountConnection();
 
 	return (
 		<div>
-			{accountIsConnected ? (
+			{isAccountConnected ? (
 				<React.Fragment>
 					<div className="flex items-center mb-2">
 						<div className="p-4">
@@ -48,9 +38,7 @@ export const SidebarBottom: FunctionComponent<TSidebarBottom> = observer(({ open
 					<button
 						onClick={e => {
 							e.preventDefault();
-
-							localStorage.removeItem(KeyAccountAutoConnect);
-							account.disconnect();
+							disconnectAccount();
 						}}
 						className="bg-transparent border border-opacity-30 border-secondary-200 h-9 w-full rounded-md py-2 px-1 flex items-center justify-center mb-8">
 						<Img className="w-5 h-5" src={`${MISC.ASSETS_BASE}/Icons/SignOutSecondary.svg`} />
@@ -62,21 +50,13 @@ export const SidebarBottom: FunctionComponent<TSidebarBottom> = observer(({ open
 					</button>
 				</React.Fragment>
 			) : (
-				<button
+				<ConnectAccountButton
+					className="h-9"
 					onClick={e => {
 						e.preventDefault();
-
-						localStorage.setItem(KeyAccountAutoConnect, 'true');
-						account.init();
+						connectAccount();
 					}}
-					className="bg-primary-200 h-9 w-full rounded-md py-2 px-1 flex items-center justify-center mb-8">
-					<Img className="w-5 h-5" src={`${MISC.ASSETS_BASE}/Icons/Wallet.svg`} />
-					<p
-						style={{ maxWidth: openSidebar ? '105px' : '0px', marginLeft: `${openSidebar ? '12px' : '0px'}` }}
-						className="text-sm text-white-high font-semibold overflow-x-hidden truncate transition-all">
-						Connect Wallet
-					</p>
-				</button>
+				/>
 			)}
 			<div className={cn('flex items-center transition-all justify-center w-full')}>
 				{/*<Img className="w-9 h-9" src={`${MISC.ASSETS_BASE}/Icons/${openSidebar ? 'Menu-in' : 'Menu'}.svg`} />*/}
@@ -94,6 +74,7 @@ export const SidebarBottom: FunctionComponent<TSidebarBottom> = observer(({ open
 		</div>
 	);
 });
+
 interface TSidebarBottom {
 	openSidebar: boolean;
 }
