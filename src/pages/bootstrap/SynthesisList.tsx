@@ -160,13 +160,6 @@ const SynthesisItem: FunctionComponent<{
 						}
 					/>
 					<LabelValue
-						label={'Start Price'}
-						value={`${new IntPretty(initialSpotPrice)
-							.trim(true)
-							.maxDecimals(4)
-							.toString()} ${destCurrency.coinDenom.toUpperCase()}`}
-					/>
-					<LabelValue
 						label={'Start Weight'}
 						value={pool.smoothWeightChangeParams.initialPoolWeights
 							.map(
@@ -188,13 +181,6 @@ const SynthesisItem: FunctionComponent<{
 									.utc()
 									.format('MMMM D, YYYY h:mm A') + ' UTC'
 							}
-						/>
-						<LabelValue
-							label={'End Price'}
-							value={`${new IntPretty(targetSpotPrice)
-								.trim(true)
-								.maxDecimals(4)
-								.toString()} ${destCurrency.coinDenom.toUpperCase()}`}
 						/>
 						<LabelValue
 							label={'End Weight'}
