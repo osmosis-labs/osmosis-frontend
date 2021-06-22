@@ -10,6 +10,8 @@ import { useFakeFeeConfig } from '../hooks/tx';
 import { TToastType, useToast } from '../components/common/toasts';
 import { useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
 import { wrapBaseDialog } from './base';
+import { useAccountConnection } from '../hooks/account/useAccountConnection';
+import { ConnectAccountButton } from '../components/ConnectAccountButton';
 
 export const TransferDialog = wrapBaseDialog(
 	observer(
@@ -67,6 +69,8 @@ export const TransferDialog = wrapBaseDialog(
 			amountConfig.setFeeConfig(feeConfig);
 
 			const toast = useToast();
+
+			const { isAccountConnected, connectAccount } = useAccountConnection();
 
 			return (
 				<div className="w-full h-full text-white-high">
@@ -146,94 +150,109 @@ export const TransferDialog = wrapBaseDialog(
 						</div>
 					</div>
 					<div className="w-full mt-9 flex items-center justify-center">
-						<button
-							className="w-2/3 h-15 bg-primary-200 rounded-2xl flex items-center justify-center hover:opacity-75 disabled:opacity-50"
-							disabled={
-								!account.isReadyToSendMsgs || !counterpartyAccount.isReadyToSendMsgs || amountConfig.getError() != null
-							}
-							onClick={async e => {
-								e.preventDefault();
-
-								try {
-									if (isWithdraw) {
-										if (account.isReadyToSendMsgs && counterpartyAccount.bech32Address) {
-											await account.cosmos.sendIBCTransferMsg(
-												{
-													portId: 'transfer',
-													channelId: sourceChannelId,
-													counterpartyChainId,
-												},
-												amountConfig.amount,
-												amountConfig.currency,
-												counterpartyAccount.bech32Address,
-												'',
-												{},
-												tx => {
-													if (tx.code) {
-														toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-													} else {
-														toast.displayToast(TToastType.TX_SUCCESSFULL, {
-															customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-														});
-													}
-
-													close();
-												}
-											);
-										}
-									} else {
-										if (counterpartyAccount.isReadyToSendMsgs && account.bech32Address) {
-											await counterpartyAccount.cosmos.sendIBCTransferMsg(
-												{
-													portId: 'transfer',
-													channelId: destChannelId,
-													counterpartyChainId: chainStore.current.chainId,
-												},
-												amountConfig.amount,
-												amountConfig.currency,
-												account.bech32Address,
-												'',
-												{},
-												tx => {
-													if (tx.code) {
-														toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-													} else {
-														toast.displayToast(TToastType.TX_SUCCESSFULL, {
-															customLink: chainStore
-																.getChain(counterpartyChainId)
-																.raw.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-														});
-													}
-
-													close();
-												}
-											);
-										}
-									}
-
-									toast.displayToast(TToastType.TX_BROADCASTING);
-								} catch (e) {
-									toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+						{!isAccountConnected ? (
+							<ConnectAccountButton
+								className="w-2/3 h-15 rounded-2xl"
+								onClick={e => {
+									e.preventDefault();
+									connectAccount();
+								}}
+							/>
+						) : (
+							<button
+								className="w-2/3 h-15 bg-primary-200 rounded-2xl flex items-center justify-center hover:opacity-75 disabled:opacity-50"
+								disabled={
+									!account.isReadyToSendMsgs ||
+									!counterpartyAccount.isReadyToSendMsgs ||
+									amountConfig.getError() != null
 								}
-							}}>
-							{(isWithdraw && account.isSendingMsg === 'ibcTransfer') ||
-							(!isWithdraw && counterpartyAccount.isSendingMsg === 'ibcTransfer') ? (
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-									viewBox="0 0 24 24">
-									<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
-									<path
-										fill="currentColor"
-										d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-										className="opacity-75"
-									/>
-								</svg>
-							) : (
-								<h6>{isWithdraw ? 'Withdraw' : 'Deposit'}</h6>
-							)}
-						</button>
+								onClick={async e => {
+									e.preventDefault();
+
+									try {
+										if (isWithdraw) {
+											if (account.isReadyToSendMsgs && counterpartyAccount.bech32Address) {
+												await account.cosmos.sendIBCTransferMsg(
+													{
+														portId: 'transfer',
+														channelId: sourceChannelId,
+														counterpartyChainId,
+													},
+													amountConfig.amount,
+													amountConfig.currency,
+													counterpartyAccount.bech32Address,
+													'',
+													{},
+													tx => {
+														if (tx.code) {
+															toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
+														} else {
+															toast.displayToast(TToastType.TX_SUCCESSFULL, {
+																customLink: chainStore.current.explorerUrlToTx.replace(
+																	'{txHash}',
+																	tx.hash.toUpperCase()
+																),
+															});
+														}
+
+														close();
+													}
+												);
+											}
+										} else {
+											if (counterpartyAccount.isReadyToSendMsgs && account.bech32Address) {
+												await counterpartyAccount.cosmos.sendIBCTransferMsg(
+													{
+														portId: 'transfer',
+														channelId: destChannelId,
+														counterpartyChainId: chainStore.current.chainId,
+													},
+													amountConfig.amount,
+													amountConfig.currency,
+													account.bech32Address,
+													'',
+													{},
+													tx => {
+														if (tx.code) {
+															toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
+														} else {
+															toast.displayToast(TToastType.TX_SUCCESSFULL, {
+																customLink: chainStore
+																	.getChain(counterpartyChainId)
+																	.raw.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
+															});
+														}
+
+														close();
+													}
+												);
+											}
+										}
+
+										toast.displayToast(TToastType.TX_BROADCASTING);
+									} catch (e) {
+										toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+									}
+								}}>
+								{(isWithdraw && account.isSendingMsg === 'ibcTransfer') ||
+								(!isWithdraw && counterpartyAccount.isSendingMsg === 'ibcTransfer') ? (
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+										viewBox="0 0 24 24">
+										<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
+										<path
+											fill="currentColor"
+											d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+											className="opacity-75"
+										/>
+									</svg>
+								) : (
+									<h6>{isWithdraw ? 'Withdraw' : 'Deposit'}</h6>
+								)}
+							</button>
+						)}
 					</div>
 				</div>
 			);
