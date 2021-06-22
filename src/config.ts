@@ -3,6 +3,25 @@ import { ChainInfoWithExplorer } from './stores/chain';
 
 export const HideCreateNewPool: boolean = window.location.hostname.startsWith('app.');
 export const HideLBPPoolFromPage: boolean = false;
+export const PromotedLBPPoolIds: {
+	poolId: string;
+	name: string;
+	baseDenom: string;
+	destDenom: string;
+}[] = [
+	{
+		poolId: '8',
+		name: 'Test',
+		baseDenom: 'uosmo',
+		destDenom: 'uion',
+	},
+	{
+		poolId: '9',
+		name: 'Regen Network',
+		baseDenom: 'uosmo',
+		destDenom: 'uion',
+	},
+];
 
 export const PoolsPerPage = 10;
 export const RewardEpochIdentifier = '15min';

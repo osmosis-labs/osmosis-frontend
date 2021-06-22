@@ -23,7 +23,6 @@ import duration from 'dayjs/plugin/duration';
 import utc from 'dayjs/plugin/utc';
 import { GovernanceDetailsPage } from './pages/governance/[id]/GovernanceDetailsPage';
 import { BootstrapPage } from './pages/bootstrap';
-import { BootstrapDetails } from './pages/bootstrap/[id]';
 import { ToastProvider } from './components/common/toasts';
 import { Terms } from './terms';
 dayjs.extend(relativeTime);
@@ -76,11 +75,6 @@ const Router: FunctionComponent = () => {
 							<Route exact path={'/bootstrap'}>
 								<RouteWrapper>
 									<BootstrapPage />
-								</RouteWrapper>
-							</Route>
-							<Route exact path={'/bootstrap/:id'}>
-								<RouteWrapper>
-									<BootstrapDetails />
 								</RouteWrapper>
 							</Route>
 							<Route>
