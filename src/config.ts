@@ -22,6 +22,11 @@ export const PromotedLBPPoolIds: {
 		destDenom: 'uion',
 	},
 ];
+export const HideAddLiquidityPoolIds: {
+	[poolId: string]: boolean;
+} = {
+	'8': true,
+};
 
 export const PoolsPerPage = 10;
 export const RewardEpochIdentifier = '15min';

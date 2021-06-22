@@ -12,6 +12,7 @@ import { ManageLiquidityDialog } from '../../dialogs';
 import { MISC } from '../../constants';
 import { LBPCatalyst } from './LBP';
 import { PoolSwapDialog } from './PoolSwap';
+import { HideAddLiquidityPoolIds } from '../../config';
 
 export const PoolPage: FunctionComponent = observer(() => {
 	const history = useHistory();
@@ -119,15 +120,17 @@ const PoolInfoHeader: FunctionComponent<{
 					<PoolSwapDialog poolId={pool.id} isOpen={isSwapDialogOpen} close={closeSwapDialog} />
 					<div className="flex items-center mb-6">
 						<h5 className="mr-6">Pool #{id}</h5>
-						<button
-							onClick={e => {
-								e.preventDefault();
+						{!HideAddLiquidityPoolIds[pool.id] ? (
+							<button
+								onClick={e => {
+									e.preventDefault();
 
-								setIsDialogOpen(true);
-							}}
-							className="ml-6 bg-primary-200 rounded-lg px-3.75 py-2.5 cursor-pointer hover:opacity-75">
-							<p>Add / Remove Liquidity</p>
-						</button>
+									setIsDialogOpen(true);
+								}}
+								className="ml-6 bg-primary-200 rounded-lg px-3.75 py-2.5 cursor-pointer hover:opacity-75">
+								<p>Add / Remove Liquidity</p>
+							</button>
+						) : null}
 						<button
 							onClick={e => {
 								e.preventDefault();
