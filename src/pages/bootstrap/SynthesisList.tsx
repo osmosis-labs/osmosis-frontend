@@ -103,7 +103,13 @@ const SynthesisItem: FunctionComponent<{
 	const baseCurrency = chainStore.current.currencies.find(cur => cur.coinMinimalDenom === baseDenom);
 	const destCurrency = chainStore.current.currencies.find(cur => cur.coinMinimalDenom === destDenom);
 	return (
-		<li className="w-full rounded-2xl p-7.5 bg-card mb-7.5">
+		<li
+			className="w-full rounded-2xl p-7.5 bg-card mb-7.5 cursor-pointer border border-transparent hover:border-enabledGold border-opacity-40"
+			onClick={e => {
+				e.preventDefault();
+
+				history.push(`/pool/${poolId}`);
+			}}>
 			<section className="flex mb-5">
 				<figure
 					style={{ minWidth: '84px', minHeight: '84px' }}
@@ -117,7 +123,11 @@ const SynthesisItem: FunctionComponent<{
 					</figure>
 				</figure>
 				<div style={{ height: '84px' }} className="w-full flex flex-col justify-center items-start">
-					<div className="w-full flex justify-between items-center mb-2">
+					<div
+						className="w-full flex justify-between items-center mb-1"
+						style={{
+							marginTop: '-4px',
+						}}>
 						<p className="text-sm font-semibold text-white-mid">
 							{pool.smoothWeightChangeParams.initialPoolWeights.map(w => w.currency.coinDenom.toUpperCase()).join('/')}{' '}
 							(Pool-{pool.id})
@@ -199,12 +209,6 @@ const SynthesisItem: FunctionComponent<{
 								.join(' : ')}
 						/>
 					</ul>
-					<button
-						onClick={() => history.push(`/pool/${poolId}`)}
-						className="flex items-center hover:opacity-75 cursor-pointer">
-						<p className="text-secondary-200">More Info</p>
-						<Img src={'/public/assets/Icons/Right.svg'} />
-					</button>
 				</div>
 			</section>
 		</li>
