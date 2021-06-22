@@ -2,6 +2,7 @@ import { Bech32Address } from '@keplr-wallet/cosmos';
 import { ChainInfoWithExplorer } from './stores/chain';
 
 export const HideCreateNewPool: boolean = window.location.hostname.startsWith('app.');
+export const HideLBPPoolFromPage: boolean = false;
 
 export const PoolsPerPage = 10;
 export const RewardEpochIdentifier = '15min';
