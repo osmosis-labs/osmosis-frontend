@@ -58,7 +58,7 @@ export class PoolIntermediatePriceStore extends CoinGeckoPriceStore {
 
 			const inSpotPrice = pool.calculateSpotPriceWithoutSwapFee(route.spotPriceSourceDenom, route.spotPriceDestDenom);
 			const spotPriceDec = inSpotPrice.toDec().equals(new Dec(0)) ? new Dec(0) : new Dec(1).quo(inSpotPrice.toDec());
-			const destCoinPrice = super.getPrice(route.destCoinId, vsCurrency);
+			const destCoinPrice = this.getPrice(route.destCoinId, vsCurrency);
 			if (destCoinPrice === undefined) {
 				return;
 			}
