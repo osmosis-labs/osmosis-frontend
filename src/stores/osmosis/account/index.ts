@@ -68,7 +68,7 @@ export class AccountWithCosmosAndOsmosis extends AccountSetBase<
 		},
 		lockTokens: {
 			type: 'osmosis/lockup/lock-tokens',
-			gas: 300000,
+			gas: 350000,
 		},
 		beginUnlocking: {
 			type: 'osmosis/lockup/begin-unlock-period-lock',
