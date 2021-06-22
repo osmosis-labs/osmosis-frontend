@@ -1,5 +1,6 @@
 import { Bech32Address } from '@keplr-wallet/cosmos';
 import { ChainInfoWithExplorer } from './stores/chain';
+import { DenomHelper } from '@keplr-wallet/common';
 
 export const HideCreateNewPool: boolean =
 	window.location.hostname.startsWith('app.') || window.location.hostname.startsWith('staging.');
@@ -20,6 +21,25 @@ export const LockupAbledPoolIds: {
 	'10': true,
 	'13': true,
 	'15': true,
+};
+
+export const PromotedLBPPoolIds: {
+	poolId: string;
+	name: string;
+	baseDenom: string;
+	destDenom: string;
+}[] = [
+	{
+		poolId: '16',
+		name: 'Regen Network',
+		baseDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-8' }], 'uregen'),
+		destDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+	},
+];
+export const HideAddLiquidityPoolIds: {
+	[poolId: string]: boolean;
+} = {
+	'16': window.location.hostname.startsWith('app.'),
 };
 
 export const PoolsPerPage = 10;
@@ -212,6 +232,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'uregen',
 			coinDecimals: 6,
 			coinImageUrl: window.location.origin + '/public/assets/tokens/regen.png',
+			coinGeckoId: 'pool:uregen',
 		},
 		bip44: { coinType: 118 },
 		bech32Config: Bech32Address.defaultBech32Config('regen'),
@@ -221,6 +242,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uregen',
 				coinDecimals: 6,
 				coinImageUrl: window.location.origin + '/public/assets/tokens/regen.png',
+				coinGeckoId: 'pool:uregen',
 			},
 		],
 		feeCurrencies: [
@@ -229,6 +251,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uregen',
 				coinDecimals: 6,
 				coinImageUrl: window.location.origin + '/public/assets/tokens/regen.png',
+				coinGeckoId: 'pool:uregen',
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],

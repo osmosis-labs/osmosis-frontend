@@ -29,4 +29,13 @@ export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
 
 		throw new Error('osmosis chain not set');
 	}
+
+	@computed
+	get currentFluent() {
+		if (this.hasChain(this.osmosisChainId)) {
+			return this.getChain(this.osmosisChainId);
+		}
+
+		throw new Error('osmosis chain not set');
+	}
 }
