@@ -1,3 +1,4 @@
+import cn from 'clsx';
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Img } from '../components/common/Img';
@@ -136,7 +137,10 @@ export const TransferDialog = wrapBaseDialog(
 							/>
 							<button
 								onClick={() => amountConfig.toggleIsMax()}
-								className="my-auto h-6 w-10 bg-primary-200 hover:opacity-75 cursor-pointer flex justify-center items-center rounded-md">
+								className={cn(
+									'my-auto h-6 w-10 bg-white-faint hover:opacity-75 cursor-pointer flex justify-center items-center rounded-md',
+									amountConfig.isMax && 'bg-primary-200'
+								)}>
 								<p className="text-xs text-white-high leading-none">MAX</p>
 							</button>
 						</div>

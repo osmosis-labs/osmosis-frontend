@@ -1,10 +1,12 @@
+import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';
 import { TToastType, useToast } from '../../../components/common/toasts';
+import { ConnectAccountButton } from '../../../components/ConnectAccountButton';
+import { useAccountConnection } from '../../../hooks/account/useAccountConnection';
 import { useStore } from '../../../stores';
-import { TradeConfig } from '../stores/trade/config';
-import cn from 'clsx';
 import { isSlippageError } from '../../../utils/tx';
+import { TradeConfig } from '../stores/trade/config';
 
 interface Props {
 	config: TradeConfig;
@@ -13,8 +15,21 @@ interface Props {
 export const SwapButton = observer(({ config }: Props) => {
 	const { chainStore, accountStore } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
+	const { isAccountConnected, connectAccount } = useAccountConnection();
 
 	const toast = useToast();
+
+	if (!isAccountConnected) {
+		return (
+			<ConnectAccountButton
+				className="h-15"
+				onClick={e => {
+					e.preventDefault();
+					connectAccount();
+				}}
+			/>
+		);
+	}
 
 	return (
 		<button

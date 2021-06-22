@@ -26,6 +26,12 @@ export class BasicAmountConfig extends AmountConfig {
 		return this._currency;
 	}
 
+	@override
+	setAmount(amount: string) {
+		this.setIsMax(false);
+		super.setAmount(amount);
+	}
+
 	@action
 	setCurrency(currency: AppCurrency) {
 		this._currency = currency;
