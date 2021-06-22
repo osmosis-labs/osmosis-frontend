@@ -3,6 +3,7 @@ import { ChainInfoWithExplorer } from './stores/chain';
 
 export const HideCreateNewPool: boolean =
 	window.location.hostname.startsWith('app.') || window.location.hostname.startsWith('staging.');
+export const HideLBPPoolFromPage: boolean = window.location.hostname.startsWith('app.');
 
 export const LockupAbledPoolIds: {
 	[poolId: string]: boolean;
