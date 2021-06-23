@@ -15,8 +15,8 @@ export const LAYOUT = {
 			ROUTE: '/pools',
 		},
 		LBP: {
-			ICON: '/public/assets/Icons/Ticket.svg',
-			ICON_SELECTED: '/public/assets/Icons/Ticket_selected.svg',
+			ICON: '/public/assets/Icons/LBP.svg',
+			ICON_SELECTED: '/public/assets/Icons/LBP_selected.svg',
 			TEXT: 'LBP',
 			ROUTE: '/bootstrap',
 			SELECTED_CHECK: '/bootstrap',
