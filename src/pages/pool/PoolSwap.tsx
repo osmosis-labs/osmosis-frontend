@@ -76,7 +76,19 @@ export class PoolSwapConfig extends AmountConfig {
 			return [];
 		}
 
-		return pool.poolAssets.map(asset => asset.amount.currency);
+		return pool.poolAssets
+			.map(asset => asset.amount.currency)
+			.sort((asset1, asset2) => {
+				// XXX: For some marketing reasons..., just sort the currencies to locate the regen token to the end.
+				//      (Initially, no users have the regen token, so anyone can sell the regen.)
+				if (asset1.coinMinimalDenom === 'ibc/1DCC8A6CB5689018431323953344A9F6CC4D0BFB261E88C9F7777372C10CD076') {
+					return 1;
+				}
+				if (asset2.coinMinimalDenom === 'ibc/1DCC8A6CB5689018431323953344A9F6CC4D0BFB261E88C9F7777372C10CD076') {
+					return -1;
+				}
+				return 0;
+			});
 	}
 
 	@action
