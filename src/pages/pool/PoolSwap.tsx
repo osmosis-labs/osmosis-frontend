@@ -320,6 +320,11 @@ const SwapButton: FunctionComponent<{
 			onClick={async e => {
 				e.preventDefault();
 
+				let slippage = config.estimatedSlippage.mul(new Dec('1.05'));
+				if (slippage.toDec().lt(new Dec(1))) {
+					slippage = new IntPretty(new Dec(1));
+				}
+
 				if (account.isReadyToSendMsgs) {
 					const poolId = config.poolId;
 					if (!poolId) {
@@ -334,9 +339,9 @@ const SwapButton: FunctionComponent<{
 								amount: config.amount,
 							},
 							config.outCurrency,
-							config.estimatedSlippage
-								.mul(new Dec('1.05'))
+							slippage
 								.locale(false)
+								.maxDecimals(18)
 								.toString(),
 							'',
 							tx => {
