@@ -209,7 +209,7 @@ const AssetBalanceRow: FunctionComponent<{
 						style={{
 							width: '200px',
 						}}>
-						🌲 LBP Coming Soon 🌲
+						🌲 LBP is live 🌲
 					</div>
 				) : null}
 			</td>
