@@ -41,6 +41,17 @@ export const HideAddLiquidityPoolIds: {
 } = {
 	'16': window.location.hostname.startsWith('app.'),
 };
+export const PreferHeaderShowTokenPricePoolIds: {
+	[poolId: string]:
+		| {
+				baseDenom: string;
+		  }
+		| undefined;
+} = {
+	'16': {
+		baseDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-8' }], 'uregen'),
+	},
+};
 
 export const PoolsPerPage = 10;
 export const RewardEpochIdentifier = 'day';

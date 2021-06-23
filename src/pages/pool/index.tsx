@@ -5,14 +5,14 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
-import { Dec, DecUtils } from '@keplr-wallet/unit';
+import { CoinPretty, Dec, DecUtils } from '@keplr-wallet/unit';
 import { Loader } from '../../components/common/Loader';
 import { OsmoSynthesis } from './OsmoSynthesis';
 import { ManageLiquidityDialog } from '../../dialogs';
 import { MISC } from '../../constants';
 import { LBPCatalyst } from './LBP';
 import { PoolSwapDialog } from './PoolSwap';
-import { LockupAbledPoolIds } from '../../config';
+import { LockupAbledPoolIds, PreferHeaderShowTokenPricePoolIds } from '../../config';
 import { HideAddLiquidityPoolIds } from '../../config';
 import { chunk } from 'lodash-es';
 
@@ -115,39 +115,73 @@ const PoolInfoHeader: FunctionComponent<{
 	}[] = [];
 
 	if (pool) {
-		overviewLabels.push({
-			label: 'Pool Liquidity',
-			content: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
-		});
-		overviewLabels.push({
-			label: 'Bonded',
-			content: pool
-				.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!)
-				.mul(actualLockedRatio)
-				.toString(),
-		});
-		overviewLabels.push({
-			label: 'My Liquidity',
-			content: (() => {
-				const tvl = pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!);
+		if (!PreferHeaderShowTokenPricePoolIds[pool.id]) {
+			overviewLabels.push({
+				label: 'Pool Liquidity',
+				content: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
+			});
+			overviewLabels.push({
+				label: 'Bonded',
+				content: pool
+					.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!)
+					.mul(actualLockedRatio)
+					.toString(),
+			});
+			overviewLabels.push({
+				label: 'My Liquidity',
+				content: (() => {
+					const tvl = pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!);
 
-				return tvl.mul(actualRatio).toString();
-			})(),
-		});
-		overviewLabels.push({
-			label: 'Swap Fee',
-			content: pool.swapFee.toString() + '%',
-		});
+					return tvl.mul(actualRatio).toString();
+				})(),
+			});
+			overviewLabels.push({
+				label: 'Swap Fee',
+				content: pool.swapFee.toString() + '%',
+			});
 
-		if (!pool.exitFee.toDec().equals(new Dec(0))) {
+			if (!pool.exitFee.toDec().equals(new Dec(0))) {
+				overviewLabels.push({
+					label: '',
+					content: '',
+				});
+				overviewLabels.push({
+					label: 'Exit Fee',
+					content: pool.exitFee.toString() + '%',
+				});
+			}
+		} else {
+			const baseDenom = PreferHeaderShowTokenPricePoolIds[pool.id]!.baseDenom;
+			const baseCurrency = chainStore.currentFluent.forceFindCurrency(baseDenom);
+			overviewLabels.push({
+				label: 'Price',
+				content:
+					priceStore
+						.calculatePrice('usd', new CoinPretty(baseCurrency, DecUtils.getPrecisionDec(baseCurrency.coinDecimals)))
+						?.toString() ?? '$0',
+			});
+			overviewLabels.push({
+				label: 'Pool Liquidity',
+				content: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
+			});
 			overviewLabels.push({
 				label: '',
 				content: '',
 			});
 			overviewLabels.push({
-				label: 'Exit Fee',
-				content: pool.exitFee.toString() + '%',
+				label: 'Swap Fee',
+				content: pool.swapFee.toString() + '%',
 			});
+			if (!pool.exitFee.toDec().equals(new Dec(0))) {
+				overviewLabels.push({
+					label: '',
+					content: '',
+				});
+				overviewLabels.push({
+					label: 'Exit Fee',
+					content: pool.exitFee.toString() + '%',
+				});
+			}
 		}
 	}
 
