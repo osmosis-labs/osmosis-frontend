@@ -12,6 +12,7 @@ import { SwapButton } from './components/SwapButton';
 import { ToBox } from './components/ToBox';
 import { useTradeConfig } from './hooks/useTradeConfig';
 import { TradeTxSettings } from './TradeTxSettings';
+import { useHistory } from 'react-router-dom';
 
 export const TradeClipboard: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore, accountStore, swapManager } = useStore();
@@ -43,6 +44,8 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 			chainStore.getChain(chainStore.current.chainId).findCurrency(currency.coinMinimalDenom);
 		}
 	}, [chainStore.current, config.sendableCurrencies]);
+
+	const history = useHistory();
 
 	return (
 		<Container
@@ -79,6 +82,21 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 					</section>
 				</div>
 			</div>
+			<img
+				src="/public/assets/lbp-banner.png"
+				alt="First LBP is live"
+				style={{
+					width: '100%',
+					borderRadius: '16px',
+					marginTop: '1.75rem',
+					cursor: 'pointer',
+				}}
+				onClick={e => {
+					e.preventDefault();
+
+					history.push('/pool/16');
+				}}
+			/>
 		</Container>
 	);
 });
