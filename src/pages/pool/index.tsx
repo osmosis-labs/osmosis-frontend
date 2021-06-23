@@ -14,6 +14,7 @@ import { LBPCatalyst } from './LBP';
 import { PoolSwapDialog } from './PoolSwap';
 import { LockupAbledPoolIds } from '../../config';
 import { HideAddLiquidityPoolIds } from '../../config';
+import { chunk } from 'lodash-es';
 
 export const PoolPage: FunctionComponent = observer(() => {
 	const history = useHistory();
@@ -108,6 +109,48 @@ const PoolInfoHeader: FunctionComponent<{
 	const [isSwapDialogOpen, setIsSwapDialogOpen] = useState(false);
 	const closeSwapDialog = () => setIsSwapDialogOpen(false);
 
+	const overviewLabels: {
+		label: string;
+		content: string;
+	}[] = [];
+
+	if (pool) {
+		overviewLabels.push({
+			label: 'Pool Liquidity',
+			content: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
+		});
+		overviewLabels.push({
+			label: 'Bonded',
+			content: pool
+				.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!)
+				.mul(actualLockedRatio)
+				.toString(),
+		});
+		overviewLabels.push({
+			label: 'My Liquidity',
+			content: (() => {
+				const tvl = pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!);
+
+				return tvl.mul(actualRatio).toString();
+			})(),
+		});
+		overviewLabels.push({
+			label: 'Swap Fee',
+			content: pool.swapFee.toString() + '%',
+		});
+
+		if (!pool.exitFee.toDec().equals(new Dec(0))) {
+			overviewLabels.push({
+				label: '',
+				content: '',
+			});
+			overviewLabels.push({
+				label: 'Exit Fee',
+				content: pool.exitFee.toString() + '%',
+			});
+		}
+	}
+
 	return (
 		<React.Fragment>
 			{pool ? (
@@ -143,43 +186,34 @@ const PoolInfoHeader: FunctionComponent<{
 						</button>
 					</div>
 					<div className="flex gap-20">
-						<ul className="flex flex-col gap-6">
-							<OverviewLabelValue label="Pool Liquidity">
-								<h4>{pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString()}</h4>
-							</OverviewLabelValue>
-							<OverviewLabelValue label="Bonded">
-								<h6>
-									{pool
-										.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!)
-										.mul(actualLockedRatio)
-										.toString()}
-								</h6>
-							</OverviewLabelValue>
-						</ul>
-						<ul className="flex flex-col gap-6">
-							<OverviewLabelValue label="My Liquidity">
-								<h4>
-									{(() => {
-										const tvl = pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!);
-
-										return tvl.mul(actualRatio).toString();
-									})()}
-								</h4>
-							</OverviewLabelValue>
-							<OverviewLabelValue label="Swap Fee">
-								<h6>{pool.swapFee.toString()}%</h6>
-							</OverviewLabelValue>
-						</ul>
-						{pool.exitFee.toDec().equals(new Dec(0)) ? null : (
-							<ul className="flex flex-col gap-6">
-								<OverviewLabelValue label="&#8203;">
-									<h4>&#8203;</h4>
-								</OverviewLabelValue>
-								<OverviewLabelValue label="Exit Fee">
-									<h6>{pool.exitFee.toString()}%</h6>
-								</OverviewLabelValue>
-							</ul>
-						)}
+						{chunk(overviewLabels, 2).map((labels, index) => {
+							return (
+								<ul className="flex flex-col gap-6" key={index.toString()}>
+									{labels[0] ? (
+										labels[0].label !== '' ? (
+											<OverviewLabelValue label={labels[0].label}>
+												{labels[0].content !== '' ? <h4>{labels[0].content}</h4> : <h4>&#8203;</h4>}
+											</OverviewLabelValue>
+										) : (
+											<OverviewLabelValue label="&#8203;">
+												{labels[0].content !== '' ? <h4>{labels[0].content}</h4> : <h4>&#8203;</h4>}
+											</OverviewLabelValue>
+										)
+									) : null}
+									{labels[1] ? (
+										labels[1].label !== '' ? (
+											<OverviewLabelValue label={labels[1].label}>
+												{labels[1].content !== '' ? <h6>{labels[1].content}</h6> : <h6>&#8203;</h6>}
+											</OverviewLabelValue>
+										) : (
+											<OverviewLabelValue label="&#8203;">
+												{labels[1].content !== '' ? <h6>{labels[1].content}</h6> : <h6>&#8203;</h6>}
+											</OverviewLabelValue>
+										)
+									) : null}
+								</ul>
+							);
+						})}
 					</div>
 				</section>
 			) : null}
