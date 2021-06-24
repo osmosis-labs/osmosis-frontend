@@ -129,9 +129,8 @@ const UnlockingTableRow: FunctionComponent<{
 								setIsWithdrawing(true);
 
 								try {
-									// TODO: 락이 여러번에 거쳐서 많은 수가 있다면 가스 리밋의 한계로 tx를 보내는게 불가능 할 수 있다.
-									//       그러므로 최대 메세지 숫자를 제한해야한다.
-									await account.osmosis.sendUnlockPeriodLockMsg(lockIds, '', tx => {
+									// XXX: Due to the block gas limit, restrict the number of lock id to included in the one tx.
+									await account.osmosis.sendUnlockPeriodLockMsg(lockIds.slice(0, 3), '', tx => {
 										setIsWithdrawing(false);
 
 										if (tx.code) {

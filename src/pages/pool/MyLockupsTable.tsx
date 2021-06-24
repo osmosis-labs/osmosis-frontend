@@ -109,10 +109,8 @@ const LockupTableRow: FunctionComponent<{
 							try {
 								setIsUnlocking(true);
 
-								// 현재 lockup 모듈의 구조상의 한계로 그냥 락업된 전체 토큰을 다 언락시키도록 한다.
-								// TODO: 락이 여러번에 거쳐서 많은 수가 있다면 가스 리밋의 한계로 tx를 보내는게 불가능 할 수 있다.
-								//       그러므로 최대 메세지 숫자를 제한해야한다.
-								await account.osmosis.sendBeginUnlockingMsg(lockup.lockIds, '', tx => {
+								// XXX: Due to the block gas limit, restrict the number of lock id to included in the one tx.
+								await account.osmosis.sendBeginUnlockingMsg(lockup.lockIds.slice(0, 3), '', tx => {
 									setIsUnlocking(false);
 
 									if (tx.code) {
