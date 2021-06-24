@@ -8,7 +8,7 @@ export const HideLBPPoolFromPage: boolean = false;
 export const HidePoolFromPage: {
 	[poolId: string]: boolean | undefined;
 } = {
-	'21': window.location.hostname.startsWith('app.'),
+	'16': window.location.hostname.startsWith('app.'),
 };
 
 export const LockupAbledPoolIds: {
@@ -35,7 +35,7 @@ export const PromotedLBPPoolIds: {
 	destDenom: string;
 }[] = [
 	{
-		poolId: '16',
+		poolId: '21',
 		name: 'Regen Network',
 		baseDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-8' }], 'uregen'),
 		destDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
@@ -44,7 +44,7 @@ export const PromotedLBPPoolIds: {
 export const HideAddLiquidityPoolIds: {
 	[poolId: string]: boolean;
 } = {
-	'16': window.location.hostname.startsWith('app.'),
+	'21': window.location.hostname.startsWith('app.'),
 };
 export const PreferHeaderShowTokenPricePoolIds: {
 	[poolId: string]:
@@ -53,7 +53,7 @@ export const PreferHeaderShowTokenPricePoolIds: {
 		  }
 		| undefined;
 } = {
-	'16': {
+	'21': {
 		baseDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-8' }], 'uregen'),
 	},
 };

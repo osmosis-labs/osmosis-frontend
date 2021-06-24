@@ -94,7 +94,7 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 				onClick={e => {
 					e.preventDefault();
 
-					history.push('/pool/16');
+					history.push('/pool/21');
 				}}
 			/>
 		</Container>
