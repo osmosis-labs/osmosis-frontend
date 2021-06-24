@@ -22,6 +22,14 @@ export const PoolPage: FunctionComponent = observer(() => {
 		id: string;
 	}>();
 
+	useEffect(() => {
+		// XXX: For some marketing reason, the 16 pool is deprecated.
+		// Redirect the pool 16 to 21
+		if (match.params.id === '16' && window.location.hostname.startsWith('app.')) {
+			history.replace('/pool/21');
+		}
+	}, [match.params.id]);
+
 	const { chainStore, queriesStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
