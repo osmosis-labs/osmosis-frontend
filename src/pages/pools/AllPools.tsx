@@ -4,7 +4,7 @@ import { useStore } from '../../stores';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import * as querystring from 'querystring';
 import clsx from 'clsx';
-import { HideLBPPoolFromPage, PoolsPerPage } from '../../config';
+import { HideLBPPoolFromPage, HidePoolFromPage, PoolsPerPage } from '../../config';
 
 const widths = ['10%', '60%', '30%'];
 export const AllPools: FunctionComponent = () => {
@@ -37,6 +37,10 @@ const PoolsTable: FunctionComponent = observer(() => {
 				<TableBody>
 					{pools.map(pool => {
 						if (HideLBPPoolFromPage && pool.smoothWeightChangeParams != null) {
+							return null;
+						}
+
+						if (HidePoolFromPage[pool.id]) {
 							return null;
 						}
 
