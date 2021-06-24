@@ -114,7 +114,7 @@ export class RootStore {
 				},
 				{
 					alternativeCoinId: 'pool:uregen',
-					poolId: '16',
+					poolId: '21',
 					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-8' }], 'uregen'),
 					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
 					destCoinId: 'cosmos',
