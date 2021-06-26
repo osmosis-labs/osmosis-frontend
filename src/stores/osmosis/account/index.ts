@@ -73,12 +73,12 @@ export class AccountWithCosmosAndOsmosis extends AccountSetBase<
 		beginUnlocking: {
 			type: 'osmosis/lockup/begin-unlock-period-lock',
 			// Gas per msg
-			gas: 3500000,
+			gas: 1500000,
 		},
 		unlockPeriodLock: {
 			type: 'osmosis/lockup/unlock-period-lock',
 			// Gas per msg
-			gas: 3500000,
+			gas: 1500000,
 		},
 	});
 
