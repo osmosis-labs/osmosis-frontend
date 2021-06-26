@@ -5,6 +5,11 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores';
 import { TToastType, useToast } from '../components/common/toasts';
 import { useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
+import dayjs from 'dayjs';
+
+function getKeyLastTimeLockUp(): string {
+	return `last_time_to_lockup`;
+}
 
 export const LockLpTokenDialog = wrapBaseDialog(
 	observer(({ poolId, close }: { poolId: string; close: () => void }) => {
@@ -25,6 +30,17 @@ export const LockLpTokenDialog = wrapBaseDialog(
 		const toast = useToast();
 
 		const [selectedDurationIndex, setSelectedDurationIndex] = useState(0);
+
+		const lastTimeLockUp = localStorage.getItem(getKeyLastTimeLockUp());
+		const canLockUp =
+			!lastTimeLockUp ||
+			dayjs(new Date()).isAfter(
+				dayjs(lastTimeLockUp).add(
+					dayjs.duration({
+						hours: 24,
+					})
+				)
+			);
 
 		return (
 			<div className="text-white-high w-full h-full">
@@ -49,7 +65,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 						);
 					})}
 				</ul>
-				<div className="w-full pt-3 pb-3.5 pl-3 pr-2.5 border border-white-faint rounded-2xl mb-15">
+				<div className="w-full pt-3 pb-3.5 pl-3 pr-2.5 border border-white-faint rounded-2xl mb-8">
 					<p className="mb-3">Amount to bond</p>
 					<p className="text-sm mb-3.5">
 						Available LP token:{' '}
@@ -83,10 +99,15 @@ export const LockLpTokenDialog = wrapBaseDialog(
 						</button>
 					</div>
 				</div>
+				<p className="w-full text-center pt-3 pb-3.5 pl-3 pr-2.5 border border-white-faint rounded-2xl mb-7">
+					Due to high network congestion, we are temporarily limiting users
+					<br />
+					to <b>1 bonding transaction per day</b> until Monday.
+				</p>
 				<div className="w-full flex items-center justify-center">
 					<button
 						className="w-2/3 h-15 bg-primary-200 rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer disabled:opacity-50"
-						disabled={!account.isReadyToSendMsgs || amountConfig.getError() != null}
+						disabled={!account.isReadyToSendMsgs || amountConfig.getError() != null || !canLockUp}
 						onClick={async e => {
 							e.preventDefault();
 
@@ -109,6 +130,8 @@ export const LockLpTokenDialog = wrapBaseDialog(
 												toast.displayToast(TToastType.TX_SUCCESSFULL, {
 													customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
 												});
+
+												localStorage.setItem(getKeyLastTimeLockUp(), new Date().toString());
 											}
 
 											close();
