@@ -21,10 +21,7 @@ export const SidebarBottom: FunctionComponent<TSidebarBottom> = observer(({ open
 				<React.Fragment>
 					<div className="flex items-center mb-2">
 						<div className="p-4">
-							<Img
-								className="w-5 h-5"
-								src={`${staticAssetsDomain}${staticAssetsDomain}${MISC.ASSETS_BASE}/Icons/Wallet.svg`}
-							/>
+							<Img className="w-5 h-5" src={`${staticAssetsDomain}${MISC.ASSETS_BASE}/Icons/Wallet.svg`} />
 						</div>
 						<div className="flex flex-col">
 							<p className="font-semibold text-white-high text-base">{account.name}</p>
