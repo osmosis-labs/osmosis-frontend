@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import CoolImg from 'react-cool-img';
+import { staticAssetsDomain } from '../../constants/urls';
 
 const retrySettings = { count: 0 };
 export const Img: FunctionComponent<TImg> = ({ src, style, className, onClick, loadingSpin = false, error }) => {
@@ -10,8 +11,12 @@ export const Img: FunctionComponent<TImg> = ({ src, style, className, onClick, l
 				style={style}
 				src={src}
 				alt={'img'}
-				placeholder={loadingSpin ? '/public/assets/common/loading-spin.svg' : '/public/assets/common/empty.svg'}
-				error={error ? error : '/public/assets/common/missing-icon.svg'}
+				placeholder={
+					loadingSpin
+						? `${staticAssetsDomain}/public/assets/common/loading-spin.svg`
+						: `${staticAssetsDomain}/public/assets/common/empty.svg`
+				}
+				error={error ? error : `${staticAssetsDomain}/public/assets/common/missing-icon.svg`}
 				className={className}
 				retry={retrySettings}
 			/>

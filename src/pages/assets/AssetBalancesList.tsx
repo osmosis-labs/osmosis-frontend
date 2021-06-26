@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { Img } from '../../components/common/Img';
+import { staticAssetsDomain } from '../../constants/urls';
 import { TransferDialog } from '../../dialogs/Transfer';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
@@ -172,7 +173,7 @@ const AssetBalanceRow: FunctionComponent<{
 				{onDeposit ? (
 					<button onClick={onDeposit} className="flex items-center cursor-pointer hover:opacity-75">
 						<p className="text-sm text-secondary-200">Deposit</p>
-						<Img src={'/public/assets/Icons/Right.svg'} />
+						<Img src={`${staticAssetsDomain}/public/assets/Icons/Right.svg`} />
 					</button>
 				) : null}
 			</td>
@@ -180,7 +181,7 @@ const AssetBalanceRow: FunctionComponent<{
 				{onWithdraw ? (
 					<button onClick={onWithdraw} className="flex items-center cursor-pointer hover:opacity-75">
 						<p className="text-sm text-secondary-200">Withdraw</p>
-						<Img src={'/public/assets/Icons/Right.svg'} />
+						<Img src={`${staticAssetsDomain}/public/assets/Icons/Right.svg`} />
 					</button>
 				) : null}
 			</td>

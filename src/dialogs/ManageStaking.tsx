@@ -1,4 +1,5 @@
 import React, { Dispatch, FunctionComponent, SetStateAction } from 'react';
+import { staticAssetsDomain } from '../constants/urls';
 import { wrapBaseDialog } from './base';
 import { observer } from 'mobx-react-lite';
 import { Img } from '../components/common/Img';
@@ -98,7 +99,7 @@ const DisplayStake: FunctionComponent<{
 	return (
 		<>
 			<div className="w-full border border-secondary-200 rounded-2xl text-secondary-200 flex p-5">
-				<Img className="w-10 h-10 mr-5" src={'/public/assets/Icons/Warning.svg'} />
+				<Img className="w-10 h-10 mr-5" src={`${staticAssetsDomain}/public/assets/Icons/Warning.svg`} />
 				<div>
 					<h6>Staking will lock your OSMO for 21 days</h6>
 					<p className="mt-2 tracking-wide">
@@ -193,7 +194,7 @@ const DisplayManage: FunctionComponent<{
 								'brightness(0%) invert(56%) sepia(48%) saturate(2872%) hue-rotate(212deg) brightness(100%) contrast(102%)',
 						}}
 						className="w-6 h-6"
-						src={'/public/assets/Icons/Right.svg'}
+						src={`${staticAssetsDomain}/public/assets/Icons/Right.svg`}
 					/>
 				</button>
 			</div>

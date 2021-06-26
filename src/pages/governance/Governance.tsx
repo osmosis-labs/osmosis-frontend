@@ -6,6 +6,7 @@ import keys from 'lodash-es/keys';
 import each from 'lodash-es/each';
 import capitalize from 'lodash-es/capitalize';
 import { Img } from '../../components/common/Img';
+import { staticAssetsDomain } from '../../constants/urls';
 import { formatNumber, applyOptionalDecimal } from '../../utils/format';
 import { divide, multiply } from '../../utils/Big';
 import { PointOptionsObject, SeriesPieOptions, TooltipOptions } from 'highcharts';
@@ -142,7 +143,7 @@ const GovernanceRow: FunctionComponent<{ data: IProposalState; height: number; o
 						onClick={() => history.push(`/governance/${data.index}`)}
 						className="mt-4 flex items-center hover:opacity-75 cursor-pointer">
 						<p className="text-secondary-200">Details</p>
-						<Img src={'/public/assets/Icons/Right.svg'} />
+						<Img src={`${staticAssetsDomain}/public/assets/Icons/Right.svg`} />
 					</button>
 				</div>
 			</td>

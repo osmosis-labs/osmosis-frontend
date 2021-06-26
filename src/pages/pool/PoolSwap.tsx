@@ -10,6 +10,7 @@ import { Img } from '../../components/common/Img';
 import { TToastType, useToast } from '../../components/common/toasts';
 import { ConnectAccountButton } from '../../components/ConnectAccountButton';
 import { Container } from '../../components/containers';
+import { staticAssetsDomain } from '../../constants/urls';
 import { wrapBaseDialog } from '../../dialogs';
 import { useAccountConnection } from '../../hooks/account/useAccountConnection';
 import { useFakeFeeConfig } from '../../hooks/tx';
@@ -269,8 +270,14 @@ export const PoolSwapDialog = wrapBaseDialog(
 
 								config.switchInAndOut();
 							}}>
-							<Img className="w-12 h-12" src="/public/assets/sidebar/icon-border_unselected.svg" />
-							<Img className="s-position-abs-center w-6 h-6" src="/public/assets/Icons/Switch.svg" />
+							<Img
+								className="w-12 h-12"
+								src={`${staticAssetsDomain}/public/assets/sidebar/icon-border_unselected.svg`}
+							/>
+							<Img
+								className="s-position-abs-center w-6 h-6"
+								src={`${staticAssetsDomain}/public/assets/Icons/Switch.svg`}
+							/>
 						</button>
 					</div>
 					<FeesBox config={config} />

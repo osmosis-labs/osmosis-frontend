@@ -4,6 +4,7 @@ import cn from 'clsx';
 import { MISC } from '../../constants';
 import { Img } from '../../components/common/Img';
 import { useHistory } from 'react-router-dom';
+import { staticAssetsDomain } from '../../constants/urls';
 import { useStore } from '../../stores';
 import { CoinPretty, Dec, DecUtils, IntPretty } from '@keplr-wallet/unit';
 import dayjs from 'dayjs';
@@ -119,7 +120,7 @@ const SynthesisItem: FunctionComponent<{
 							'w-18 h-18 rounded-full flex justify-center items-end',
 							MISC.GRADIENT_CLASS[index % MISC.GRADIENT_CLASS.length]
 						)}>
-						<Img className="w-10 h-10 mb-1" src={'/public/assets/Icons/Bubbles.svg'} />
+						<Img className="w-10 h-10 mb-1" src={`${staticAssetsDomain}/public/assets/Icons/Bubbles.svg`} />
 					</figure>
 				</figure>
 				<div style={{ height: '84px' }} className="w-full flex flex-col justify-center items-start">

@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Img } from '../components/common/Img';
 import { IBCCurrency } from '@keplr-wallet/types';
+import { staticAssetsDomain } from '../constants/urls';
 import { useStore } from '../stores';
 import { Bech32Address } from '@keplr-wallet/cosmos';
 import { WalletStatus } from '@keplr-wallet/stores';
@@ -73,7 +74,7 @@ export const TransferDialog = wrapBaseDialog(
 					<div className="mb-10 flex justify-between items-center w-full">
 						<h5>{isWithdraw ? 'Withdraw' : 'Deposit'} IBC Asset</h5>
 						<button onClick={close} className="hover:opacity-75 cursor-pointer">
-							<Img className="w-6 h-6" src={'/public/assets/Icons/X.svg'} />
+							<Img className="w-6 h-6" src={`${staticAssetsDomain}/public/assets/Icons/X.svg`} />
 						</button>
 					</div>
 					<h6 className="mb-4">IBC Transfer</h6>
@@ -89,7 +90,7 @@ export const TransferDialog = wrapBaseDialog(
 							</p>
 						</div>
 						<div className="flex justify-center items-center w-10">
-							<Img src={'/public/assets/Icons/Arrow-Right.svg'} />
+							<Img src={`${staticAssetsDomain}/public/assets/Icons/Arrow-Right.svg`} />
 						</div>
 						<div className="flex-1 p-4 border border-white-faint rounded-2xl">
 							<p className="text-white-high">To</p>

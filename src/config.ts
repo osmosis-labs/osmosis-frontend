@@ -1,4 +1,5 @@
 import { Bech32Address } from '@keplr-wallet/cosmos';
+import { staticAssetsDomain } from './constants/urls';
 import { ChainInfoWithExplorer } from './stores/chain';
 
 export const HideCreateNewPool: boolean = window.location.hostname.startsWith('app.');
@@ -68,7 +69,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'uosmo',
 			coinDecimals: 6,
 			coinGeckoId: 'pool:uosmo',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
+			coinImageUrl: staticAssetsDomain + '/public/assets/tokens/osmosis.svg',
 		},
 		walletUrl: 'https://dev.wallet.keplr.app/#/osmosis/stake',
 		walletUrlForStaking: 'https://dev.wallet.keplr.app/#/osmosis/stake',
@@ -82,13 +83,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uosmo',
 				coinDecimals: 6,
 				coinGeckoId: 'pool:uosmo',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
+				coinImageUrl: staticAssetsDomain + '/public/assets/tokens/osmosis.svg',
 			},
 			{
 				coinDenom: 'ION',
 				coinMinimalDenom: 'uion',
 				coinDecimals: 6,
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ion.png',
+				coinImageUrl: staticAssetsDomain + '/public/assets/tokens/ion.png',
 			},
 		],
 		feeCurrencies: [
@@ -97,7 +98,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uosmo',
 				coinDecimals: 6,
 				coinGeckoId: 'pool:uosmo',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
+				coinImageUrl: staticAssetsDomain + '/public/assets/tokens/osmosis.svg',
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
@@ -113,7 +114,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'uatom',
 			coinDecimals: 6,
 			coinGeckoId: 'cosmos',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/cosmos.svg',
+			coinImageUrl: staticAssetsDomain + '/public/assets/tokens/cosmos.svg',
 		},
 		bip44: {
 			coinType: 118,
@@ -125,7 +126,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uatom',
 				coinDecimals: 6,
 				coinGeckoId: 'cosmos',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/cosmos.svg',
+				coinImageUrl: staticAssetsDomain + '/public/assets/tokens/cosmos.svg',
 			},
 		],
 		feeCurrencies: [
@@ -134,7 +135,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uatom',
 				coinDecimals: 6,
 				coinGeckoId: 'cosmos',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/cosmos.svg',
+				coinImageUrl: staticAssetsDomain + '/public/assets/tokens/cosmos.svg',
 			},
 		],
 		coinType: 118,
@@ -150,7 +151,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'uiris',
 			coinDecimals: 6,
 			coinGeckoId: 'iris-network',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/iris.svg',
+			coinImageUrl: staticAssetsDomain + '/public/assets/tokens/iris.svg',
 		},
 		bip44: {
 			coinType: 118,
@@ -167,7 +168,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uiris',
 				coinDecimals: 6,
 				coinGeckoId: 'iris-network',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/iris.svg',
+				coinImageUrl: staticAssetsDomain + '/public/assets/tokens/iris.svg',
 			},
 		],
 		feeCurrencies: [
@@ -176,7 +177,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uiris',
 				coinDecimals: 6,
 				coinGeckoId: 'iris-network',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/iris.svg',
+				coinImageUrl: staticAssetsDomain + '/public/assets/tokens/iris.svg',
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],

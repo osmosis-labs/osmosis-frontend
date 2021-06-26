@@ -2,6 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import cn from 'clsx';
 import { Img } from '../../components/common/Img';
 import { observer } from 'mobx-react-lite';
+import { staticAssetsDomain } from '../../constants/urls';
 import { useStore } from '../../stores';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
@@ -51,8 +52,8 @@ export const PoolPage: FunctionComponent = observer(() => {
 									height: '100%',
 									width: pool.smoothWeightChangeParams ? '900px' : '600px',
 									background: pool.smoothWeightChangeParams
-										? 'url("/public/assets/backgrounds/pool-details-lbp.png")'
-										: 'url("/public/assets/backgrounds/osmosis-guy-in-lab.png")',
+										? `url("${staticAssetsDomain}/public/assets/backgrounds/pool-details-lbp.png")`
+										: `url("${staticAssetsDomain}/public/assets/backgrounds/osmosis-guy-in-lab.png")`,
 									backgroundSize: 'contain',
 									backgroundRepeat: 'no-repeat',
 									backgroundPositionX: pool.smoothWeightChangeParams ? 'right' : undefined,
@@ -249,7 +250,7 @@ const PoolAssetCard: FunctionComponent<{
 							'w-18 h-18 rounded-full flex justify-center items-end',
 							MISC.GRADIENT_CLASS[index % MISC.GRADIENT_CLASS.length]
 						)}>
-						<Img className="w-10 h-10 mb-1" src={'/public/assets/Icons/Bubbles.svg'} />
+						<Img className="w-10 h-10 mb-1" src={`${staticAssetsDomain}/public/assets/Icons/Bubbles.svg`} />
 					</figure>
 				</figure>
 				<div className="flex flex-col justify-center">

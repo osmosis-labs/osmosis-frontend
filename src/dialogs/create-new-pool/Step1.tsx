@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import cn from 'clsx';
+import { staticAssetsDomain } from '../../constants/urls';
 import { CreateNewPoolConfig } from './index';
 import { Img } from '../../components/common/Img';
 import { TokenListDisplay } from '../../components/common/TokenListDisplay';
@@ -18,7 +19,7 @@ export const NewPoolStage1: FunctionComponent<{
 				<div className="mb-4.5 flex justify-between items-center w-full">
 					<h5 className="">Create New Pool</h5>
 					<button onClick={close} className="hover:opacity-75 cursor-pointer">
-						<Img className="w-6 h-6" src={'/public/assets/Icons/X.svg'} />
+						<Img className="w-6 h-6" src={`${staticAssetsDomain}/public/assets/Icons/X.svg`} />
 					</button>
 				</div>
 				<div className="w-full flex items-center">
@@ -60,7 +61,7 @@ export const NewPoolStage1: FunctionComponent<{
 					className="pt-6 pb-7.5 pl-7 border border-white-faint rounded-2xl mt-2.5 hover:border-enabledGold cursor-pointer">
 					<div className="flex items-center">
 						<div className="w-9 h-9 bg-primary-200 rounded-full flex justify-center items-center mr-5">
-							<Img className="w-7 h-7 s-transition-all" src="/public/assets/Icons/Add.svg" />
+							<Img className="w-7 h-7 s-transition-all" src={`${staticAssetsDomain}/public/assets/Icons/Add.svg`} />
 						</div>
 						<h5 className="text-white-high font-normal">Add new token</h5>
 					</div>
@@ -99,7 +100,7 @@ const Pool: FunctionComponent<{
 							config.removeAssetAt(assetAt);
 						}}
 						className="w-8 h-8 mr-4 hover:opacity-75 cursor-pointer s-filter-white"
-						src="/public/assets/Icons/Close.svg"
+						src={`${staticAssetsDomain}/public/assets/Icons/Close.svg`}
 					/>
 					<input
 						type="number"
@@ -161,7 +162,7 @@ const TokenChannelDisplay: FunctionComponent<{
 							'h-6 w-8 ml-1 p-2 cursor-pointer opacity-40 hover:opacity-100',
 							openSelector ? 'rotate-180' : ''
 						)}
-						src="/public/assets/Icons/Down.svg"
+						src={`${staticAssetsDomain}/public/assets/Icons/Down.svg`}
 					/>
 				</div>
 				{channel ? <p className="text-sm text-iconDefault mt-1">{channel}</p> : null}

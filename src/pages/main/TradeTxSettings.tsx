@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useCallback, useEffect, useState } from 'react';
 import AutosizeInput from 'react-input-autosize';
 import { DisplayIcon } from '../../components/layouts/Sidebar/SidebarItem';
+import { staticAssetsDomain } from '../../constants/urls';
 import { SlippageStep } from './models/tradeModels';
 import { TradeConfig } from './stores/trade/config';
 import { slippageStepToPercentage } from './utils/slippageStepToPercentage';
@@ -36,8 +37,8 @@ export const TradeTxSettings = observer(({ config }: Props) => {
 				<DisplayIcon
 					clicked={view}
 					className="cursor-pointer"
-					icon="/public/assets/Icons/Setting.svg"
-					iconSelected="/public/assets/Icons/Setting_selected.svg"
+					icon={`${staticAssetsDomain}/public/assets/Icons/Setting.svg`}
+					iconSelected={`${staticAssetsDomain}/public/assets/Icons/Setting_selected.svg`}
 				/>
 			</div>
 			<div

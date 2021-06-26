@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import cn from 'clsx';
+import { staticAssetsDomain } from '../../../constants/urls';
 import { Container } from '../../containers';
 import { TCardTypes } from '../../../interfaces';
 import map from 'lodash-es/map';
@@ -79,7 +80,7 @@ const LogoArea: FunctionComponent<TLogoArea> = ({ openSidebar }) => {
 		<div className="flex items-center">
 			<img
 				className="cursor-pointer"
-				src="/public/assets/main/osmosis-logo-main.svg"
+				src={`${staticAssetsDomain}/public/assets/main/osmosis-logo-main.svg`}
 				alt="logo"
 				onClick={e => {
 					e.preventDefault();

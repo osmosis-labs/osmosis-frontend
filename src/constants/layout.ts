@@ -1,36 +1,38 @@
+import { staticAssetsDomain } from './urls';
+
 export const LAYOUT = {
 	SIDEBAR: {
 		TRADE: {
-			ICON: '/public/assets/Icons/Trade.svg',
-			ICON_SELECTED: '/public/assets/Icons/Trade_selected.svg',
+			ICON: `${staticAssetsDomain}/public/assets/Icons/Trade.svg`,
+			ICON_SELECTED: `${staticAssetsDomain}/public/assets/Icons/Trade_selected.svg`,
 			TEXT: 'Trade',
 			ROUTE: '/',
 			SELECTED_CHECK: '/',
 		},
 		POOLS: {
-			ICON: '/public/assets/Icons/Pool.svg',
-			ICON_SELECTED: '/public/assets/Icons/Pool_selected.svg',
+			ICON: `${staticAssetsDomain}/public/assets/Icons/Pool.svg`,
+			ICON_SELECTED: `${staticAssetsDomain}/public/assets/Icons/Pool_selected.svg`,
 			TEXT: 'Pools',
 			SELECTED_CHECK: ['/pools', /\/pool\/[0-9]+/],
 			ROUTE: '/pools',
 		},
 		LBP: {
-			ICON: '/public/assets/Icons/Ticket.svg',
-			ICON_SELECTED: '/public/assets/Icons/Ticket_selected.svg',
+			ICON: `${staticAssetsDomain}/public/assets/Icons/Ticket.svg`,
+			ICON_SELECTED: `${staticAssetsDomain}/public/assets/Icons/Ticket_selected.svg`,
 			TEXT: 'LBP',
 			ROUTE: '/bootstrap',
 			SELECTED_CHECK: '/bootstrap',
 		},
 		AIRDROP: {
-			ICON: '/public/assets/Icons/Airdrop.svg',
-			ICON_SELECTED: '/public/assets/Icons/Airdrop_selected.svg',
+			ICON: `${staticAssetsDomain}/public/assets/Icons/Airdrop.svg`,
+			ICON_SELECTED: `${staticAssetsDomain}/public/assets/Icons/Airdrop_selected.svg`,
 			TEXT: 'Airdrop',
 			ROUTE: '/airdrop',
 			SELECTED_CHECK: '/airdrop',
 		},
 		ASSETS: {
-			ICON: '/public/assets/Icons/Asset.svg',
-			ICON_SELECTED: '/public/assets/Icons/Asset_selected.svg',
+			ICON: `${staticAssetsDomain}/public/assets/Icons/Asset.svg`,
+			ICON_SELECTED: `${staticAssetsDomain}/public/assets/Icons/Asset_selected.svg`,
 			TEXT: 'Assets',
 			ROUTE: '/assets',
 			SELECTED_CHECK: '/assets',
@@ -40,20 +42,20 @@ export const LAYOUT = {
 					// Currently, the stake/governace page is not fully implemented yet.
 					// So, for now, fallback the stake/governance page to the wallet.keplr.app
 					STAKE: {
-						ICON: '/public/assets/Icons/Ticket.svg',
+						ICON: `${staticAssetsDomain}/public/assets/Icons/Ticket.svg`,
 						TEXT: 'Stake',
 						LINK: 'https://dev.wallet.keplr.app/#/osmosis/stake',
 					},
 					GOVERNANCE: {
-						ICON: '/public/assets/Icons/Vote.svg',
+						ICON: `${staticAssetsDomain}/public/assets/Icons/Vote.svg`,
 						TEXT: 'Vote',
 						LINK: 'https://dev.wallet.keplr.app/#/osmosis/governance',
 					},
 			  }
 			: {
 					GOVERNANCE: {
-						ICON: '/public/assets/Icons/Ticket.svg',
-						ICON_SELECTED: '/public/assets/Icons/Ticket_selected.svg',
+						ICON: `${staticAssetsDomain}/public/assets/Icons/Ticket.svg`,
+						ICON_SELECTED: `${staticAssetsDomain}/public/assets/Icons/Ticket_selected.svg`,
 						TEXT: 'Governance',
 						ROUTE: '/governance',
 						SELECTED_CHECK: [/\/governance[.]?/],

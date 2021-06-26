@@ -1,4 +1,5 @@
 import React, { FunctionComponent } from 'react';
+import { staticAssetsDomain } from '../../constants/urls';
 import { TradeClipboard } from './TradeClipboard';
 import { Img } from '../../components/common/Img';
 
@@ -21,7 +22,7 @@ export const MainPage: FunctionComponent = () => {
 						style={{
 							width: '726px',
 							height: '100%',
-							background: 'url("/public/assets/backgrounds/osmosis-guy.png")',
+							background: `url("${staticAssetsDomain}/public/assets/backgrounds/osmosis-guy.png")`,
 							backgroundSize: 'cover',
 						}}
 					/>
@@ -30,7 +31,7 @@ export const MainPage: FunctionComponent = () => {
 					className="absolute z-0 h-full left-0 top-0 overflow-x-hidden"
 					style={{
 						width: '62.885%',
-						background: 'url("/public/assets/backgrounds/background-1.png")',
+						background: `url("${staticAssetsDomain}/public/assets/backgrounds/background-1.png")`,
 						backgroundSize: 'cover',
 					}}
 				/>
@@ -38,7 +39,7 @@ export const MainPage: FunctionComponent = () => {
 					className="absolute z-10 h-full top-0 right-0 overflow-x-hidden"
 					style={{
 						width: '83.387%',
-						background: 'url("/public/assets/backgrounds/background-2.png")',
+						background: `url("${staticAssetsDomain}/public/assets/backgrounds/background-2.png")`,
 						backgroundSize: 'cover',
 					}}
 				/>

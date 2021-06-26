@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import cn from 'clsx';
+import { staticAssetsDomain } from '../../../constants/urls';
 import { Img } from '../../common/Img';
 import { TSIDEBAR_ITEM } from '../../../constants';
 import { NavLink } from 'react-router-dom';
@@ -32,8 +33,8 @@ export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, open
 						className={cn('w-full h-full absolute top-0 left-0 transition-all')}
 						src={
 							selected
-								? '/public/assets/sidebar/icon-border_selected.svg'
-								: '/public/assets/sidebar/icon-border_unselected.svg'
+								? `${staticAssetsDomain}/public/assets/sidebar/icon-border_selected.svg`
+								: `${staticAssetsDomain}/public/assets/sidebar/icon-border_unselected.svg`
 						}
 					/>
 					<Img
@@ -49,7 +50,9 @@ export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, open
 					)}>
 					{sidebarItem.TEXT}
 				</p>
-				{sidebarItem.LINK ? <img className="ml-2" src="/public/assets/sidebar/icon-link-deco.svg" alt="link" /> : null}
+				{sidebarItem.LINK ? (
+					<img className="ml-2" src={`${staticAssetsDomain}/public/assets/sidebar/icon-link-deco.svg`} alt="link" />
+				) : null}
 			</li>
 		</NavLinkFallback>
 	);
@@ -71,8 +74,8 @@ export const DisplayIcon: FunctionComponent<TDisplayIcon> = ({ icon, iconSelecte
 				className="w-full h-full absolute top-0 left-0"
 				src={
 					hovering || clicked
-						? '/public/assets/sidebar/icon-border_selected.svg'
-						: '/public/assets/sidebar/icon-border_unselected.svg'
+						? `${staticAssetsDomain}/public/assets/sidebar/icon-border_selected.svg`
+						: `${staticAssetsDomain}/public/assets/sidebar/icon-border_unselected.svg`
 				}
 			/>
 			<Img className="w-5 h-5 s-position-abs-center z-10" src={hovering ? iconSelected : icon} />

@@ -3,6 +3,7 @@ import cn from 'clsx';
 import times from 'lodash-es/times';
 import map from 'lodash-es/map';
 import { Img } from '../../components/common/Img';
+import { staticAssetsDomain } from '../../constants/urls';
 import { formatNumber, applyOptionalDecimal } from '../../utils/format';
 import { multiply } from '../../utils/Big';
 import { ManageStakingDialog } from '../../dialogs';
@@ -82,7 +83,7 @@ const StakingRow: FunctionComponent<{ data: IStakedValidator; height: number; op
 			<td className="pl-4 flex items-center justify-end" style={{ width: ROW_WIDTHS[i++] }}>
 				<button onClick={openModal} className="hover:opacity-75 cursor-pointer flex items-center">
 					<p className="text-secondary-200 mr-1">Manage</p>
-					<Img className="w-6 h-6 object-fill" src={'/public/assets/Icons/Right.svg'} />
+					<Img className="w-6 h-6 object-fill" src={`${staticAssetsDomain}/public/assets/Icons/Right.svg`} />
 				</button>
 			</td>
 		</tr>

@@ -3,6 +3,7 @@ import * as React from 'react';
 import { FunctionComponent } from 'react';
 import { Img } from '../../components/common/Img';
 import { Container } from '../../components/containers';
+import { staticAssetsDomain } from '../../constants/urls';
 import { useFakeFeeConfig } from '../../hooks/tx';
 import { TCardTypes } from '../../interfaces';
 import { useStore } from '../../stores';
@@ -58,8 +59,14 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 
 									config.switchInAndOut();
 								}}>
-								<Img className="w-12 h-12" src="/public/assets/sidebar/icon-border_unselected.svg" />
-								<Img className="s-position-abs-center w-6 h-6" src="/public/assets/Icons/Switch.svg" />
+								<Img
+									className="w-12 h-12"
+									src={`${staticAssetsDomain}/public/assets/sidebar/icon-border_unselected.svg`}
+								/>
+								<Img
+									className="s-position-abs-center w-6 h-6"
+									src={`${staticAssetsDomain}/public/assets/Icons/Switch.svg`}
+								/>
 							</button>
 						</div>
 						<FeesBox config={config} />

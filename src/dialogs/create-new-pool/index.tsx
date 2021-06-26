@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useState } from 'react';
 import cn from 'clsx';
+import { staticAssetsDomain } from '../../constants/urls';
 import { NewPoolStage1 } from './Step1';
 import { NewPoolStage2 } from './Step2';
 import { NewPoolStage3 } from './Step3';
@@ -332,7 +333,7 @@ const NewPoolButton: FunctionComponent<{
 			{error && (
 				<div className="mt-6 mb-7.5 w-full flex justify-center items-center">
 					<div className="py-1.5 px-3.5 rounded-lg bg-missionError flex justify-center items-center">
-						<Img className="h-5 w-5 mr-2.5" src="/public/assets/Icons/Info-Circle.svg" />
+						<Img className="h-5 w-5 mr-2.5" src={`${staticAssetsDomain}/public/assets/Icons/Info-Circle.svg`} />
 						<p>{error.message}</p>
 					</div>
 				</div>

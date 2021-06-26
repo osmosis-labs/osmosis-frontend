@@ -1,5 +1,6 @@
 import React from 'react';
 import cn from 'clsx';
+import { staticAssetsDomain } from '../constants/urls';
 import { wrapBaseDialog } from './base';
 import { Img } from '../components/common/Img';
 
@@ -22,7 +23,7 @@ export const VoteDialog = wrapBaseDialog(({ proposalIndex, close }: { proposalIn
 			<div className="w-full flex items-center justify-between mb-9">
 				<h5>Vote on governance proposal</h5>
 				<button onClick={close} className="hover:opacity-75 cursor-pointer">
-					<Img className="w-6 h-6" src={'/public/assets/Icons/X.svg'} />
+					<Img className="w-6 h-6" src={`${staticAssetsDomain}/public/assets/Icons/X.svg`} />
 				</button>
 			</div>
 			<p className="text-white-mid mb-2.5">Proposal #{proposal.index}</p>

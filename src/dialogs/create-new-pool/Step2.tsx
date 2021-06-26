@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { Img } from '../../components/common/Img';
+import { staticAssetsDomain } from '../../constants/urls';
 import { CreateNewPoolConfig } from './index';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
@@ -15,7 +16,7 @@ export const NewPoolStage2: FunctionComponent<{
 				<div className="mb-4.5 flex justify-between items-center w-full">
 					<h5>Create New Pool</h5>
 					<button onClick={close} className="hover:opacity-75 cursor-pointer">
-						<Img className="w-6 h-6" src={'/public/assets/Icons/X.svg'} />
+						<Img className="w-6 h-6" src={`${staticAssetsDomain}/public/assets/Icons/X.svg`} />
 					</button>
 				</div>
 				<div className="inline w-full flex items-center">

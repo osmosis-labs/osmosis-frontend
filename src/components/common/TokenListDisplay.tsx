@@ -1,4 +1,5 @@
 import React, { FunctionComponent } from 'react';
+import { staticAssetsDomain } from '../../constants/urls';
 import { Img } from './Img';
 import { AppCurrency } from '@keplr-wallet/types';
 import { observer } from 'mobx-react-lite';
@@ -24,7 +25,7 @@ export const TokenListDisplay: FunctionComponent<{
 	return (
 		<div className="pr-5 pl-4 pt-8 pb-8">
 			<div className="w-full h-9 rounded-2xl bg-card pl-4.5 flex items-center">
-				<Img className="w-4.5 h-4.5" src="/public/assets/Icons/Search.svg" />
+				<Img className="w-4.5 h-4.5" src={`${staticAssetsDomain}/public/assets/Icons/Search.svg`} />
 				<input
 					value={input}
 					onChange={e => setInput(e.currentTarget.value)}

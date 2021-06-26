@@ -1,5 +1,6 @@
 import { FunctionComponent } from 'react';
 import noop from 'lodash-es/noop';
+import { staticAssetsDomain } from '../../constants/urls';
 import { Img } from './Img';
 import { LINKS } from '../../constants';
 import cn from 'clsx';
@@ -27,7 +28,7 @@ export const TokenDisplay: FunctionComponent<{
 							'h-6 w-8 ml-1 p-2 cursor-pointer opacity-40 hover:opacity-100',
 							openSelector ? 'rotate-180' : ''
 						)}
-						src="/public/assets/Icons/Down.svg"
+						src={`${staticAssetsDomain}/public/assets/Icons/Down.svg`}
 					/>
 				</div>
 			</div>

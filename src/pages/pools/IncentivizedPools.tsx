@@ -3,6 +3,7 @@ import cn from 'clsx';
 import { Img } from '../../components/common/Img';
 import { useHistory } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
+import { staticAssetsDomain } from '../../constants/urls';
 import { useStore } from '../../stores';
 import { AppCurrency } from '@keplr-wallet/types';
 import { Dec } from '@keplr-wallet/unit';
@@ -160,7 +161,7 @@ const MyPoolCard: FunctionComponent<MyPoolCardProps> = ({
 							'w-18 h-18 rounded-full flex justify-center items-center',
 							bgArray[(parseInt(poolId) - 1) % bgArray.length]
 						)}>
-						<Img className="w-10 h-10" src={'/public/assets/Icons/OSMO.svg'} />
+						<Img className="w-10 h-10" src={`${staticAssetsDomain}/public/assets/Icons/OSMO.svg`} />
 					</figure>
 				</figure>
 				<div className="mt-3.75">
@@ -244,7 +245,7 @@ const PoolCard: FunctionComponent<PoolCardProps> = ({ poolId, apy, liquidity, to
 							'w-18 h-18 rounded-full flex justify-center items-center',
 							bgArray[(parseInt(poolId) - 1) % bgArray.length]
 						)}>
-						<Img className="w-10 h-10" src={'/public/assets/Icons/OSMO.svg'} />
+						<Img className="w-10 h-10" src={`${staticAssetsDomain}/public/assets/Icons/OSMO.svg`} />
 					</figure>
 				</figure>
 				<div className="mt-3.75">

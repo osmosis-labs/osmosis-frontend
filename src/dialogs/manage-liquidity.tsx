@@ -1,4 +1,5 @@
 import React, { Dispatch, FunctionComponent, SetStateAction, useState } from 'react';
+import { staticAssetsDomain } from '../constants/urls';
 import { wrapBaseDialog } from './base';
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
@@ -597,7 +598,7 @@ const BottomButton: FunctionComponent<{
 			{error && (
 				<div className="mt-6 mb-7.5 w-full flex justify-center items-center">
 					<div className="py-1.5 px-3.5 rounded-lg bg-missionError flex justify-center items-center">
-						<Img className="h-5 w-5 mr-2.5" src="/public/assets/Icons/Info-Circle.svg" />
+						<Img className="h-5 w-5 mr-2.5" src={`${staticAssetsDomain}/public/assets/Icons/Info-Circle.svg`} />
 						<p>{error.message}</p>
 					</div>
 				</div>
