@@ -102,7 +102,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 				<p className="w-full text-center pt-3 pb-3.5 pl-3 pr-2.5 border border-white-faint rounded-2xl mb-7">
 					Due to high network congestion, we are temporarily limiting users
 					<br />
-					to <b>1 bonding transaction per day</b> until Monday.
+					to <b>1 bonding transaction per day</b> until Proposal #4 passes on Monday.
 				</p>
 				<div className="w-full flex items-center justify-center">
 					<button
