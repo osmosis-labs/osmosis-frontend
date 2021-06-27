@@ -27,7 +27,9 @@ export const MyPools: FunctionComponent = observer(() => {
 
 	const state = myPools
 		.map(poolId => {
-			const pool = queries.osmosis.queryGammPools.getPool(poolId);
+			// 이 카드는 보통 All Pools 카드와 함께 있다.
+			// 따로 하나씩 pool을 쿼리하지 않고 All Pools의 페이지네이션 쿼리와 공유한다.
+			const pool = queries.osmosis.queryGammPools.getPoolFromPagination(poolId);
 			if (!pool) {
 				return undefined;
 			}
@@ -89,7 +91,9 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 
 	const state = queryIncentivizedPools.incentivizedPools
 		.map(poolId => {
-			const pool = queries.osmosis.queryGammPools.getPool(poolId);
+			// 이 카드는 보통 All Pools 카드와 함께 있다.
+			// 따로 하나씩 pool을 쿼리하지 않고 All Pools의 페이지네이션 쿼리와 공유한다.
+			const pool = queries.osmosis.queryGammPools.getPoolFromPagination(poolId);
 			if (!pool) {
 				return undefined;
 			}

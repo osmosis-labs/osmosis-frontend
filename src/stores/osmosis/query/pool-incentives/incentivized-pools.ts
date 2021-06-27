@@ -152,7 +152,12 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 		const gaugeId = this.getIncentivizedGaugeId(poolId, duration);
 
 		if (this.incentivizedPools.includes(poolId) && gaugeId) {
-			const pool = this.queryPools.getPool(poolId);
+			/*
+			 XXX: 현재로서는 이 메소드는 Incentivized Pools 카드에서 사용된다.
+			      근데 Incentivized Pools 카드는 All Pools 카드와 같은 페이지에서 보이기 때문에
+			      쿼리 수를 줄이기 위해서 pagination으로부터 풀의 정보를 받아오도록 한다.
+			 */
+			const pool = this.queryPools.getPoolFromPagination(poolId);
 			if (pool) {
 				const mintDenom = this.queryMintParmas.mintDenom;
 				const epochIdentifier = this.queryMintParmas.epochIdentifier;

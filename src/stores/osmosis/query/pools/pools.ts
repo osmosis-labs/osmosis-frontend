@@ -1,35 +1,19 @@
-import { ObservableChainQuery } from '@keplr-wallet/stores/build/query/chain-query';
-import { Pools } from './types';
-import { ChainGetter, HasMapStore } from '@keplr-wallet/stores';
+import { ChainGetter } from '@keplr-wallet/stores';
 import { KVStore } from '@keplr-wallet/common';
-import { makeObservable, observable, runInAction } from 'mobx';
+import { makeObservable } from 'mobx';
 import { ObservableQueryPool, QueriedPoolBase } from '../pool';
 import { ObservableQueryPoolsPagination } from './page';
 
-export class ObservableQueryPools extends HasMapStore<ObservableQueryPoolsPagination> {
+export class ObservableQueryPools extends ObservableQueryPoolsPagination {
 	constructor(
-		protected kvStore: KVStore,
-		protected chainId: string,
-		protected chainGetter: ChainGetter,
+		kvStore: KVStore,
+		chainId: string,
+		chainGetter: ChainGetter,
 		protected queryGammPool: ObservableQueryPool
 	) {
-		super((key: string) => {
-			const k = key.split('/');
-
-			return new ObservableQueryPoolsPagination(
-				this.kvStore,
-				this.chainId,
-				this.chainGetter,
-				parseInt(k[0]),
-				parseInt(k[1])
-			);
-		});
+		super(kvStore, chainId, chainGetter);
 
 		makeObservable(this);
-	}
-
-	getPoolsPagenation(itemsPerPage: number, page: number): ObservableQueryPoolsPagination {
-		return this.get(`${itemsPerPage}/${page}`);
 	}
 
 	/**

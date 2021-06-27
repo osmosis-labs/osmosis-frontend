@@ -28,7 +28,7 @@ const PoolsTable: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore, priceStore } = useStore();
 	const queries = queriesStore.get(chainStore.current.chainId);
 
-	const pools = queries.osmosis.queryGammPools.getPoolsPagenation(PoolsPerPage, page).pools;
+	const pools = queries.osmosis.queryGammPools.getPools(PoolsPerPage, page);
 
 	return (
 		<React.Fragment>

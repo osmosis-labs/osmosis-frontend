@@ -69,14 +69,14 @@ describe('Test Osmosis Pools Pagenation Query', () => {
 
 	test('Query 3 items at page 1', async () => {
 		const queryPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools;
+		await queryPools.waitFreshResponse();
 
-		const paginated = queryPools.getPoolsPagenation(3, 1);
-		await paginated.waitFreshResponse();
+		const pools = queryPools.getPools(3, 1);
 
-		expect(paginated.pools.length).toBe(3);
+		expect(pools.length).toBe(3);
 
-		for (let i = 0; i < paginated.pools.length; i++) {
-			const pool = paginated.pools[i];
+		for (let i = 0; i < pools.length; i++) {
+			const pool = pools[i];
 
 			expect(pool.id).toBe((i + 1).toString());
 		}
@@ -84,14 +84,14 @@ describe('Test Osmosis Pools Pagenation Query', () => {
 
 	test('Query 3 items at page 2', async () => {
 		const queryPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools;
+		await queryPools.waitFreshResponse();
 
-		const paginated = queryPools.getPoolsPagenation(3, 2);
-		await paginated.waitFreshResponse();
+		const pools = queryPools.getPools(3, 2);
 
-		expect(paginated.pools.length).toBe(3);
+		expect(pools.length).toBe(3);
 
-		for (let i = 0; i < paginated.pools.length; i++) {
-			const pool = paginated.pools[i];
+		for (let i = 0; i < pools.length; i++) {
+			const pool = pools[i];
 
 			expect(pool.id).toBe((i + 4).toString());
 		}
@@ -99,12 +99,12 @@ describe('Test Osmosis Pools Pagenation Query', () => {
 
 	test('Query 3 items at page 3, but it should have only 1 item', async () => {
 		const queryPools = queriesStore.get(chainStore.current.chainId).osmosis.queryGammPools;
+		await queryPools.waitFreshResponse();
 
-		const paginated = queryPools.getPoolsPagenation(3, 3);
-		await paginated.waitFreshResponse();
+		const pools = queryPools.getPools(3, 3);
 
-		expect(paginated.pools.length).toBe(1);
+		expect(pools.length).toBe(1);
 
-		expect(paginated.pools[0].id).toBe((7).toString());
+		expect(pools[0].id).toBe((7).toString());
 	});
 });

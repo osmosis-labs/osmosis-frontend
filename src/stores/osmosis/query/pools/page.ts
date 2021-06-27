@@ -1,16 +1,22 @@
 import { ChainGetter, QueryResponse, ObservableChainQuery } from '@keplr-wallet/stores';
 import { Pools } from './types';
 import { KVStore } from '@keplr-wallet/common';
-import { computed, makeObservable } from 'mobx';
+import { makeObservable } from 'mobx';
 import { QueriedPoolBase } from '../pool';
+import { computedFn } from 'mobx-utils';
 
 export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> {
-	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, itemsPerPage: number, page: number) {
+	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
 		super(
 			kvStore,
 			chainId,
 			chainGetter,
-			`/osmosis/gamm/v1beta1/pools?pagination.offset=${(page - 1) * itemsPerPage}&pagination.limit=${itemsPerPage}`
+			/*
+			 기본 설정에서는 limit 없이 보낼 경우 100개까지 받아올 수 있다.
+			 일단 현재로서는 풀이 100개가 넘을 때까지 오래 걸릴 것으로 보이기 때문에
+			 얘가 100개까지 다 받아올 거라고 기대하고 limit, offset 설정없이 쿼리를 보낸다.
+			 */
+			`/osmosis/gamm/v1beta1/pools`
 		);
 
 		makeObservable(this);
@@ -31,14 +37,26 @@ export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> 
 		chainInfo.addUnknownCurrencies(...denomsInPools);
 	}
 
-	@computed
-	get pools(): QueriedPoolBase[] {
+	getPools = computedFn((itemsPerPage: number, page: number): QueriedPoolBase[] => {
 		if (!this.response) {
 			return [];
 		}
 
-		return this.response.data.pools.map(pool => {
+		const offset = (page - 1) * itemsPerPage;
+		return this.response.data.pools.slice(offset, offset + itemsPerPage).map(pool => {
 			return new QueriedPoolBase(this.chainId, this.chainGetter, pool);
 		});
-	}
+	});
+
+	getPoolFromPagination = computedFn((id: string): QueriedPoolBase | undefined => {
+		if (!this.response) {
+			return undefined;
+		}
+
+		const pool = this.response.data.pools.find(pool => pool.id === id);
+		if (!pool) {
+			return undefined;
+		}
+		return new QueriedPoolBase(this.chainId, this.chainGetter, pool);
+	});
 }
