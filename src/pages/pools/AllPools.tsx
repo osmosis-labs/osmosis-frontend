@@ -28,7 +28,12 @@ const PoolsTable: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore, priceStore } = useStore();
 	const queries = queriesStore.get(chainStore.current.chainId);
 
-	const pools = queries.osmosis.queryGammPools.getPools(PoolsPerPage, page, priceStore);
+	const pools = queries.osmosis.queryGammPools.getPoolsDescendingOrderTVL(
+		priceStore,
+		priceStore.getFiatCurrency('usd')!,
+		PoolsPerPage,
+		page
+	);
 
 	return (
 		<React.Fragment>

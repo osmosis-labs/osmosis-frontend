@@ -1,10 +1,12 @@
 import { ChainGetter, QueryResponse, ObservableChainQuery } from '@keplr-wallet/stores';
-import { PoolIntermediatePriceStore } from '../../../price';
 import { Pools } from './types';
 import { KVStore } from '@keplr-wallet/common';
 import { makeObservable } from 'mobx';
 import { QueriedPoolBase } from '../pool';
 import { computedFn } from 'mobx-utils';
+import { CoinPretty } from '@keplr-wallet/unit';
+import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
+import { FiatCurrency } from '@keplr-wallet/types';
 
 export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> {
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
@@ -38,24 +40,39 @@ export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> 
 		chainInfo.addUnknownCurrencies(...denomsInPools);
 	}
 
-	getPools = computedFn(
-		(itemsPerPage: number, page: number, priceStore?: PoolIntermediatePriceStore): QueriedPoolBase[] => {
+	getPools = computedFn((itemsPerPage: number, page: number): QueriedPoolBase[] => {
+		if (!this.response) {
+			return [];
+		}
+
+		const offset = (page - 1) * itemsPerPage;
+		return this.response.data.pools.slice(offset, offset + itemsPerPage).map(pool => {
+			return new QueriedPoolBase(this.chainId, this.chainGetter, pool);
+		});
+	});
+
+	getPoolsDescendingOrderTVL = computedFn(
+		(
+			priceStore: { calculatePrice(vsCurrrency: string, coin: CoinPretty): PricePretty | undefined },
+			fiatCurrency: FiatCurrency,
+			itemsPerPage: number,
+			page: number
+		): QueriedPoolBase[] => {
 			if (!this.response) {
 				return [];
 			}
 
-			const offset = (page - 1) * itemsPerPage;
 			let pools = this.response.data.pools.map(pool => {
 				return new QueriedPoolBase(this.chainId, this.chainGetter, pool);
 			});
 
-			if (priceStore != null) {
-				pools = pools.sort((poolA: QueriedPoolBase, poolB: QueriedPoolBase) => {
-					const poolATvl = poolA.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toDec();
-					const poolBTvl = poolB.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toDec();
-					return poolATvl.gt(poolBTvl) ? -1 : 1;
-				});
-			}
+			pools = pools.sort((poolA: QueriedPoolBase, poolB: QueriedPoolBase) => {
+				const poolATvl = poolA.computeTotalValueLocked(priceStore, fiatCurrency).toDec();
+				const poolBTvl = poolB.computeTotalValueLocked(priceStore, fiatCurrency).toDec();
+				return poolATvl.gt(poolBTvl) ? -1 : 1;
+			});
+
+			const offset = (page - 1) * itemsPerPage;
 			return pools.slice(offset, offset + itemsPerPage);
 		}
 	);
