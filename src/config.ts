@@ -251,7 +251,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		chainId: 'regen-1',
 		chainName: 'Regen Network',
 		stakeCurrency: {
-			coinDenom: 'regen',
+			coinDenom: 'REGEN',
 			coinMinimalDenom: 'uregen',
 			coinDecimals: 6,
 			coinImageUrl: window.location.origin + '/public/assets/tokens/regen.png',
@@ -261,7 +261,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		bech32Config: Bech32Address.defaultBech32Config('regen'),
 		currencies: [
 			{
-				coinDenom: 'regen',
+				coinDenom: 'REGEN',
 				coinMinimalDenom: 'uregen',
 				coinDecimals: 6,
 				coinImageUrl: window.location.origin + '/public/assets/tokens/regen.png',
@@ -270,7 +270,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		feeCurrencies: [
 			{
-				coinDenom: 'regen',
+				coinDenom: 'REGEN',
 				coinMinimalDenom: 'uregen',
 				coinDecimals: 6,
 				coinImageUrl: window.location.origin + '/public/assets/tokens/regen.png',
