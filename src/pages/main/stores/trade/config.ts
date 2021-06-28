@@ -1,4 +1,4 @@
-import { AmountConfig } from '@keplr-wallet/hooks';
+import { AmountConfig, InsufficientAmountError } from '@keplr-wallet/hooks';
 import { ChainGetter, ObservableQueryBalances } from '@keplr-wallet/stores';
 import { AppCurrency } from '@keplr-wallet/types';
 import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
@@ -267,7 +267,8 @@ export class TradeConfig extends AmountConfig {
 
 	@computed
 	get estimatedSlippage(): IntPretty {
-		if (this.getError() != null) {
+		const error = this.getError();
+		if (error != null && !(error instanceof InsufficientAmountError)) {
 			return new IntPretty(new Int(0));
 		}
 
