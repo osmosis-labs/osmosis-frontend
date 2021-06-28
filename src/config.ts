@@ -1,6 +1,5 @@
 import { Bech32Address } from '@keplr-wallet/cosmos';
 import { ChainInfoWithExplorer } from './stores/chain';
-import { DenomHelper } from '@keplr-wallet/common';
 
 export const HideCreateNewPool: boolean =
 	window.location.hostname.startsWith('app.') || window.location.hostname.startsWith('staging.');
@@ -8,7 +7,9 @@ export const HideLBPPoolFromPage: boolean = false;
 export const HidePoolFromPage: {
 	[poolId: string]: boolean | undefined;
 } = {
+	/*
 	'16': window.location.hostname.startsWith('app.'),
+	 */
 };
 
 export const LockupAbledPoolIds: {
@@ -34,17 +35,21 @@ export const PromotedLBPPoolIds: {
 	baseDenom: string;
 	destDenom: string;
 }[] = [
+	/*
 	{
 		poolId: '21',
 		name: 'Regen Network',
 		baseDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-8' }], 'uregen'),
 		destDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
 	},
+	 */
 ];
 export const HideAddLiquidityPoolIds: {
 	[poolId: string]: boolean;
 } = {
+	/*
 	'21': window.location.hostname.startsWith('app.'),
+	 */
 };
 export const PreferHeaderShowTokenPricePoolIds: {
 	[poolId: string]:
@@ -53,9 +58,11 @@ export const PreferHeaderShowTokenPricePoolIds: {
 		  }
 		| undefined;
 } = {
+	/*
 	'21': {
 		baseDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-8' }], 'uregen'),
 	},
+	 */
 };
 
 export const PoolsPerPage = 10;

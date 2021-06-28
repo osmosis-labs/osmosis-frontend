@@ -111,6 +111,7 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 							return currency.coinDenom;
 						})();
 
+						/*
 						if (
 							bal.chainInfo.chainId.startsWith('regen-') &&
 							(window.location.hostname.startsWith('app.') || window.location.hostname.startsWith('staging.'))
@@ -132,6 +133,7 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 								/>
 							);
 						}
+						 */
 
 						return (
 							<AssetBalanceRow
