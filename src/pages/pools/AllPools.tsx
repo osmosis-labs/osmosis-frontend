@@ -1,12 +1,14 @@
-import React, { FunctionComponent } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { Link, useHistory, useLocation } from 'react-router-dom';
-import * as querystring from 'querystring';
 import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import * as querystring from 'querystring';
+import React, { FunctionComponent, useMemo } from 'react';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { HideLBPPoolFromPage, HidePoolFromPage, PoolsPerPage } from '../../config';
+import { usePoolFinancialData } from '../../hooks/pools/usePoolFinancialData';
+import { useStore } from '../../stores';
+import { commaizeNumber } from '../../utils/format';
 
-const widths = ['10%', '60%', '30%'];
+const widths = ['10%', '40%', '30%', '20%'];
 export const AllPools: FunctionComponent = () => {
 	return (
 		<section>
@@ -34,13 +36,21 @@ const PoolsTable: FunctionComponent = observer(() => {
 		PoolsPerPage,
 		page
 	);
+	const poolFinancialDataByPoolId = usePoolFinancialData();
+
+	const poolDataList = useMemo(() => {
+		return pools.map(pool => {
+			const volume24h = poolFinancialDataByPoolId.data?.[pool.id]?.[0]?.volume_24h;
+			return { pool, volume24h };
+		});
+	}, [pools, poolFinancialDataByPoolId]);
 
 	return (
 		<React.Fragment>
 			<table className="w-full">
 				<TableHeader />
 				<TableBody>
-					{pools.map(pool => {
+					{poolDataList.map(({ pool, volume24h }) => {
 						if (HideLBPPoolFromPage && pool.smoothWeightChangeParams != null) {
 							return null;
 						}
@@ -53,6 +63,7 @@ const PoolsTable: FunctionComponent = observer(() => {
 							<TablePoolElement
 								key={pool.id}
 								id={pool.id}
+								volume24={volume24h}
 								poolRatios={pool.poolRatios
 									.map(poolRatio => {
 										// Pools Table에서는 IBC Currency의 coinDenom을 무시하고 원래의 coinDenom을 보여준다.
@@ -82,22 +93,26 @@ const PoolsTable: FunctionComponent = observer(() => {
 });
 
 const TableHeader: FunctionComponent = () => {
-	let i = 0;
 	return (
 		<thead className="h-11 w-full pl-7.5 pr-8.75 flex items-center rounded-t-2xl bg-card">
-			<tr style={{ width: `${widths[i++]}` }} className="flex items-center">
+			<tr style={{ width: `${widths[0]}` }} className="flex items-center">
 				<th>
 					<p className="font-semibold text-white-disabled">ID</p>
 				</th>
 			</tr>
-			<tr style={{ width: `${widths[i++]}` }} className="flex items-center">
+			<tr style={{ width: `${widths[1]}` }} className="flex items-center">
 				<th>
 					<p className="font-semibold text-white-disabled">Token Info</p>
 				</th>
 			</tr>
-			<tr style={{ width: `${widths[i++]}` }} className="flex items-center">
+			<tr style={{ width: `${widths[2]}` }} className="flex items-center">
 				<th>
 					<p className="font-semibold text-white-disabled">TVL</p>
+				</th>
+			</tr>
+			<tr style={{ width: `${widths[3]}` }} className="flex items-center">
+				<th>
+					<p className="font-semibold text-white-disabled">24 Vol</p>
 				</th>
 			</tr>
 		</thead>
@@ -112,7 +127,8 @@ const TablePoolElement: FunctionComponent<{
 	id: string;
 	poolRatios: string;
 	totalValueLocked: string;
-}> = ({ id, poolRatios, totalValueLocked }) => {
+	volume24?: number;
+}> = ({ id, poolRatios, totalValueLocked, volume24 }) => {
 	const history = useHistory();
 
 	return (
@@ -131,6 +147,9 @@ const TablePoolElement: FunctionComponent<{
 			</td>
 			<td style={{ width: `${widths[2]}` }} className="flex items-center">
 				<p>{totalValueLocked}</p>
+			</td>
+			<td style={{ width: `${widths[3]}` }} className="flex items-center">
+				<p>{volume24 != null ? `$${commaizeNumber(Math.round(volume24))}` : null}</p>
 			</td>
 		</tr>
 	);
