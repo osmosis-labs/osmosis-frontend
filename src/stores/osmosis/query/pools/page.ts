@@ -1,4 +1,5 @@
 import { ChainGetter, QueryResponse, ObservableChainQuery } from '@keplr-wallet/stores';
+import { PoolIntermediatePriceStore } from '../../../price';
 import { Pools } from './types';
 import { KVStore } from '@keplr-wallet/common';
 import { makeObservable } from 'mobx';
@@ -37,16 +38,27 @@ export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> 
 		chainInfo.addUnknownCurrencies(...denomsInPools);
 	}
 
-	getPools = computedFn((itemsPerPage: number, page: number): QueriedPoolBase[] => {
-		if (!this.response) {
-			return [];
-		}
+	getPools = computedFn(
+		(itemsPerPage: number, page: number, priceStore?: PoolIntermediatePriceStore): QueriedPoolBase[] => {
+			if (!this.response) {
+				return [];
+			}
 
-		const offset = (page - 1) * itemsPerPage;
-		return this.response.data.pools.slice(offset, offset + itemsPerPage).map(pool => {
-			return new QueriedPoolBase(this.chainId, this.chainGetter, pool);
-		});
-	});
+			const offset = (page - 1) * itemsPerPage;
+			let pools = this.response.data.pools.map(pool => {
+				return new QueriedPoolBase(this.chainId, this.chainGetter, pool);
+			});
+
+			if (priceStore != null) {
+				pools = pools.sort((poolA: QueriedPoolBase, poolB: QueriedPoolBase) => {
+					const poolATvl = poolA.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toDec();
+					const poolBTvl = poolB.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toDec();
+					return poolATvl.gt(poolBTvl) ? -1 : 1;
+				});
+			}
+			return pools.slice(offset, offset + itemsPerPage);
+		}
+	);
 
 	getPoolFromPagination = computedFn((id: string): QueriedPoolBase | undefined => {
 		if (!this.response) {
