@@ -7,6 +7,7 @@ import { IBCAssetInfos } from '../../config';
 import { AppCurrency, Currency, IBCCurrency } from '@keplr-wallet/types';
 import { makeIBCMinimalDenom } from '../../utils/ibc';
 import cn from 'clsx';
+import { isProdRuntime, isStagingRuntime } from '../../utils/runtime/checkers';
 
 const tableWidths = ['50%', '25%', '12.5%', '12.5%'];
 export const AssetBalancesList: FunctionComponent = observer(() => {
@@ -111,10 +112,7 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 							return currency.coinDenom;
 						})();
 
-						if (
-							bal.chainInfo.chainId.startsWith('regen-') &&
-							(window.location.hostname.startsWith('app.') || window.location.hostname.startsWith('staging.'))
-						) {
+						if (bal.chainInfo.chainId.startsWith('regen-') && (isProdRuntime() || isStagingRuntime())) {
 							// Channel of Regen network would not be public yet.
 							// By the hard coding, just do not show the deposit/withdraw button for the regen network.
 							return (

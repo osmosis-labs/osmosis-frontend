@@ -1,14 +1,14 @@
 import { Bech32Address } from '@keplr-wallet/cosmos';
 import { ChainInfoWithExplorer } from './stores/chain';
 import { DenomHelper } from '@keplr-wallet/common';
+import { isProdRuntime, isStagingRuntime } from './utils/runtime/checkers';
 
-export const HideCreateNewPool: boolean =
-	window.location.hostname.startsWith('app.') || window.location.hostname.startsWith('staging.');
+export const HideCreateNewPool: boolean = isProdRuntime() || isStagingRuntime();
 export const HideLBPPoolFromPage: boolean = false;
 export const HidePoolFromPage: {
 	[poolId: string]: boolean | undefined;
 } = {
-	'16': window.location.hostname.startsWith('app.'),
+	'16': isProdRuntime(),
 };
 
 export const LockupAbledPoolIds: {
@@ -44,7 +44,7 @@ export const PromotedLBPPoolIds: {
 export const HideAddLiquidityPoolIds: {
 	[poolId: string]: boolean;
 } = {
-	'21': window.location.hostname.startsWith('app.'),
+	'21': isProdRuntime(),
 };
 export const PreferHeaderShowTokenPricePoolIds: {
 	[poolId: string]:

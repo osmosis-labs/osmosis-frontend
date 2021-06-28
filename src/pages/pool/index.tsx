@@ -7,6 +7,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
 import { CoinPretty, Dec, DecUtils } from '@keplr-wallet/unit';
 import { Loader } from '../../components/common/Loader';
+import { isProdRuntime } from '../../utils/runtime/checkers';
 import { OsmoSynthesis } from './OsmoSynthesis';
 import { ManageLiquidityDialog } from '../../dialogs';
 import { MISC } from '../../constants';
@@ -25,7 +26,7 @@ export const PoolPage: FunctionComponent = observer(() => {
 	useEffect(() => {
 		// XXX: For some marketing reason, the 16 pool is deprecated.
 		// Redirect the pool 16 to 21
-		if (match.params.id === '16' && window.location.hostname.startsWith('app.')) {
+		if (match.params.id === '16' && isProdRuntime()) {
 			history.replace('/pool/21');
 		}
 	}, [match.params.id]);
