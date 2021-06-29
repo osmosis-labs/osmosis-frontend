@@ -1,8 +1,7 @@
 import { Bech32Address } from '@keplr-wallet/cosmos';
 import { ChainInfoWithExplorer } from './stores/chain';
 
-export const HideCreateNewPool: boolean =
-	window.location.hostname.startsWith('app.') || window.location.hostname.startsWith('staging.');
+export const HideCreateNewPool: boolean = false;
 export const HideLBPPoolFromPage: boolean = false;
 export const HidePoolFromPage: {
 	[poolId: string]: boolean | undefined;
