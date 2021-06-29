@@ -94,7 +94,7 @@ const TableHeader: FunctionComponent = () => {
 			</tr>
 			<tr style={{ width: `${widths[3]}` }} className="flex items-center">
 				<th>
-					<p className="font-semibold text-white-disabled">24 Vol</p>
+					<p className="font-semibold text-white-disabled">24h Volume</p>
 				</th>
 			</tr>
 		</thead>
