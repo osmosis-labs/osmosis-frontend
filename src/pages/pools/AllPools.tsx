@@ -1,3 +1,5 @@
+import { Dec } from '@keplr-wallet/unit';
+import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import * as querystring from 'querystring';
@@ -6,9 +8,6 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 import { HideLBPPoolFromPage, HidePoolFromPage, PoolsPerPage } from '../../config';
 import { usePoolFinancialData } from '../../hooks/pools/usePoolFinancialData';
 import { useStore } from '../../stores';
-import { commaizeNumber } from '../../utils/format';
-import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
-import { Dec } from '@keplr-wallet/unit';
 
 const widths = ['10%', '40%', '30%', '20%'];
 export const AllPools: FunctionComponent = () => {
@@ -111,13 +110,11 @@ const TablePoolElement: FunctionComponent<{
 	id: string;
 	poolRatios: string;
 	totalValueLocked: string;
-	volume24h?: number;
+	volume24h: string;
 }> = observer(({ id, poolRatios, totalValueLocked, volume24h }) => {
 	const history = useHistory();
 
 	const { priceStore } = useStore();
-
-	console.log(volume24h);
 
 	return (
 		<tr
@@ -137,16 +134,7 @@ const TablePoolElement: FunctionComponent<{
 				<p>{totalValueLocked}</p>
 			</td>
 			<td style={{ width: `${widths[3]}` }} className="flex items-center">
-				<p>
-					{/*
-					  Sometimes, the volume24h has the decimals greater than 18.
-					  In this case, the `Dec` type can't handle such big decimals.
-					  So, must truncate the decimals with `toFixed()` method.
-					*/}
-					{volume24h != null
-						? new PricePretty(priceStore.getFiatCurrency('usd')!, new Dec(volume24h.toFixed(10))).toString()
-						: '...'}
-				</p>
+				<p>{volume24h}</p>
 			</td>
 		</tr>
 	);
@@ -251,7 +239,16 @@ function usePoolWithFinancialDataList(page: number) {
 
 	return useMemo(() => {
 		return pools.map(pool => {
-			const volume24h = poolFinancialDataByPoolId.data?.[pool.id]?.[0]?.volume_24h;
+			const volume24hRaw = poolFinancialDataByPoolId.data?.[pool.id]?.[0]?.volume_24h;
+			/**
+			 * Sometimes, the volume24h has the decimals greater than 18.
+			 * In this case, the `Dec` type can't handle such big decimals.
+			 * So, must truncate the decimals with `toFixed()` method.
+			 * */
+			const volume24h =
+				volume24hRaw != null
+					? new PricePretty(priceStore.getFiatCurrency('usd')!, new Dec(volume24hRaw.toFixed(10))).toString()
+					: '...';
 			const tvl = pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString();
 			return { pool, volume24h, tvl };
 		});

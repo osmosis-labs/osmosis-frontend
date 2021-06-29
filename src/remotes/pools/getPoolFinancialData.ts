@@ -19,7 +19,7 @@ interface PoolFinancialDataRes {
 }
 
 export async function getPoolFinancialData() {
-	const res = await axios.get<Record<string, [PoolFinancialDataRes, PoolFinancialDataRes]>>(
+	const res = await axios.get<{ [poolId: string]: [PoolFinancialDataRes, PoolFinancialDataRes] }>(
 		`${IMPERATOR_API_DOMAIN}/search/v1/pools`
 	);
 	return res.data;
