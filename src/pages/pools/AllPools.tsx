@@ -27,30 +27,14 @@ const PoolsTable: FunctionComponent = observer(() => {
 	};
 	const page = params.page && !Number.isNaN(parseInt(params.page)) ? parseInt(params.page) : 1;
 
-	const { chainStore, queriesStore, priceStore } = useStore();
-	const queries = queriesStore.get(chainStore.current.chainId);
-
-	const pools = queries.osmosis.queryGammPools.getPoolsDescendingOrderTVL(
-		priceStore,
-		priceStore.getFiatCurrency('usd')!,
-		PoolsPerPage,
-		page
-	);
-	const poolFinancialDataByPoolId = usePoolFinancialData();
-
-	const poolDataList = useMemo(() => {
-		return pools.map(pool => {
-			const volume24h = poolFinancialDataByPoolId.data?.[pool.id]?.[0]?.volume_24h;
-			return { pool, volume24h };
-		});
-	}, [pools, poolFinancialDataByPoolId]);
+	const poolDataList = usePoolWithFinancialDataList(page);
 
 	return (
 		<React.Fragment>
 			<table className="w-full">
 				<TableHeader />
 				<TableBody>
-					{poolDataList.map(({ pool, volume24h }) => {
+					{poolDataList.map(({ pool, volume24h, tvl }) => {
 						if (HideLBPPoolFromPage && pool.smoothWeightChangeParams != null) {
 							return null;
 						}
@@ -79,9 +63,7 @@ const PoolsTable: FunctionComponent = observer(() => {
 										return `${poolRatio.ratio.maxDecimals(1).toString()}% ${displayDenom}`;
 									})
 									.join(', ')}
-								totalValueLocked={pool
-									.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!)
-									.toString()}
+								totalValueLocked={tvl}
 							/>
 						);
 					})}
@@ -239,3 +221,24 @@ const TablePagination: FunctionComponent<{
 		</div>
 	);
 });
+
+function usePoolWithFinancialDataList(page: number) {
+	const { chainStore, queriesStore, priceStore } = useStore();
+	const queries = queriesStore.get(chainStore.current.chainId);
+
+	const pools = queries.osmosis.queryGammPools.getPoolsDescendingOrderTVL(
+		priceStore,
+		priceStore.getFiatCurrency('usd')!,
+		PoolsPerPage,
+		page
+	);
+	const poolFinancialDataByPoolId = usePoolFinancialData();
+
+	return useMemo(() => {
+		return pools.map(pool => {
+			const volume24h = poolFinancialDataByPoolId.data?.[pool.id]?.[0]?.volume_24h;
+			const tvl = pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString();
+			return { pool, volume24h, tvl };
+		});
+	}, [pools, poolFinancialDataByPoolId]);
+}
