@@ -1,5 +1,6 @@
 import moment from 'dayjs';
 import empty from 'is-empty';
+import { memoize } from 'lodash-es';
 import toString from 'lodash-es/toString';
 import capitalize from 'lodash-es/capitalize';
 import isString from 'lodash-es/isString';
@@ -62,3 +63,7 @@ export const toNormalCase = (str: string): string => capitalize(lowerCase(str));
 
 export const truncateString = (str: string, front: number, back: number) =>
 	`${str.substr(0, front)}...${str.substr(str.length - back, str.length)}`;
+
+export const commaizeNumber = memoize((value: string | number) => {
+	return String(value).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,');
+});

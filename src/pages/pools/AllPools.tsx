@@ -1,12 +1,16 @@
-import React, { FunctionComponent } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { Link, useHistory, useLocation } from 'react-router-dom';
-import * as querystring from 'querystring';
 import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import * as querystring from 'querystring';
+import React, { FunctionComponent, useMemo } from 'react';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { HideLBPPoolFromPage, HidePoolFromPage, PoolsPerPage } from '../../config';
+import { usePoolFinancialData } from '../../hooks/pools/usePoolFinancialData';
+import { useStore } from '../../stores';
+import { commaizeNumber } from '../../utils/format';
+import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
+import { Dec } from '@keplr-wallet/unit';
 
-const widths = ['10%', '60%', '30%'];
+const widths = ['10%', '40%', '30%', '20%'];
 export const AllPools: FunctionComponent = () => {
 	return (
 		<section>
@@ -25,22 +29,14 @@ const PoolsTable: FunctionComponent = observer(() => {
 	};
 	const page = params.page && !Number.isNaN(parseInt(params.page)) ? parseInt(params.page) : 1;
 
-	const { chainStore, queriesStore, priceStore } = useStore();
-	const queries = queriesStore.get(chainStore.current.chainId);
-
-	const pools = queries.osmosis.queryGammPools.getPoolsDescendingOrderTVL(
-		priceStore,
-		priceStore.getFiatCurrency('usd')!,
-		PoolsPerPage,
-		page
-	);
+	const poolDataList = usePoolWithFinancialDataList(page);
 
 	return (
 		<React.Fragment>
 			<table className="w-full">
 				<TableHeader />
 				<TableBody>
-					{pools.map(pool => {
+					{poolDataList.map(({ pool, volume24h, tvl }) => {
 						if (HideLBPPoolFromPage && pool.smoothWeightChangeParams != null) {
 							return null;
 						}
@@ -53,6 +49,7 @@ const PoolsTable: FunctionComponent = observer(() => {
 							<TablePoolElement
 								key={pool.id}
 								id={pool.id}
+								volume24h={volume24h}
 								poolRatios={pool.poolRatios
 									.map(poolRatio => {
 										// Pools Table에서는 IBC Currency의 coinDenom을 무시하고 원래의 coinDenom을 보여준다.
@@ -68,9 +65,7 @@ const PoolsTable: FunctionComponent = observer(() => {
 										return `${poolRatio.ratio.maxDecimals(1).toString()}% ${displayDenom}`;
 									})
 									.join(', ')}
-								totalValueLocked={pool
-									.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!)
-									.toString()}
+								totalValueLocked={tvl}
 							/>
 						);
 					})}
@@ -82,22 +77,26 @@ const PoolsTable: FunctionComponent = observer(() => {
 });
 
 const TableHeader: FunctionComponent = () => {
-	let i = 0;
 	return (
 		<thead className="h-11 w-full pl-7.5 pr-8.75 flex items-center rounded-t-2xl bg-card">
-			<tr style={{ width: `${widths[i++]}` }} className="flex items-center">
+			<tr style={{ width: `${widths[0]}` }} className="flex items-center">
 				<th>
 					<p className="font-semibold text-white-disabled">ID</p>
 				</th>
 			</tr>
-			<tr style={{ width: `${widths[i++]}` }} className="flex items-center">
+			<tr style={{ width: `${widths[1]}` }} className="flex items-center">
 				<th>
 					<p className="font-semibold text-white-disabled">Token Info</p>
 				</th>
 			</tr>
-			<tr style={{ width: `${widths[i++]}` }} className="flex items-center">
+			<tr style={{ width: `${widths[2]}` }} className="flex items-center">
 				<th>
 					<p className="font-semibold text-white-disabled">TVL</p>
+				</th>
+			</tr>
+			<tr style={{ width: `${widths[3]}` }} className="flex items-center">
+				<th>
+					<p className="font-semibold text-white-disabled">24h Volume</p>
 				</th>
 			</tr>
 		</thead>
@@ -112,8 +111,11 @@ const TablePoolElement: FunctionComponent<{
 	id: string;
 	poolRatios: string;
 	totalValueLocked: string;
-}> = ({ id, poolRatios, totalValueLocked }) => {
+	volume24h?: number;
+}> = observer(({ id, poolRatios, totalValueLocked, volume24h }) => {
 	const history = useHistory();
+
+	const { priceStore } = useStore();
 
 	return (
 		<tr
@@ -132,9 +134,16 @@ const TablePoolElement: FunctionComponent<{
 			<td style={{ width: `${widths[2]}` }} className="flex items-center">
 				<p>{totalValueLocked}</p>
 			</td>
+			<td style={{ width: `${widths[3]}` }} className="flex items-center">
+				<p>
+					{volume24h != null
+						? new PricePretty(priceStore.getFiatCurrency('usd')!, new Dec(volume24h.toString())).toString()
+						: '...'}
+				</p>
+			</td>
 		</tr>
 	);
-};
+});
 
 const TablePagination: FunctionComponent<{
 	page: number;
@@ -220,3 +229,24 @@ const TablePagination: FunctionComponent<{
 		</div>
 	);
 });
+
+function usePoolWithFinancialDataList(page: number) {
+	const { chainStore, queriesStore, priceStore } = useStore();
+	const queries = queriesStore.get(chainStore.current.chainId);
+
+	const pools = queries.osmosis.queryGammPools.getPoolsDescendingOrderTVL(
+		priceStore,
+		priceStore.getFiatCurrency('usd')!,
+		PoolsPerPage,
+		page
+	);
+	const poolFinancialDataByPoolId = usePoolFinancialData();
+
+	return useMemo(() => {
+		return pools.map(pool => {
+			const volume24h = poolFinancialDataByPoolId.data?.[pool.id]?.[0]?.volume_24h;
+			const tvl = pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString();
+			return { pool, volume24h, tvl };
+		});
+	}, [pools, poolFinancialDataByPoolId]);
+}
