@@ -63,7 +63,7 @@ const PoolsTable: FunctionComponent = observer(() => {
 							<TablePoolElement
 								key={pool.id}
 								id={pool.id}
-								volume24={volume24h}
+								volume24h={volume24h}
 								poolRatios={pool.poolRatios
 									.map(poolRatio => {
 										// Pools Table에서는 IBC Currency의 coinDenom을 무시하고 원래의 coinDenom을 보여준다.
@@ -127,8 +127,8 @@ const TablePoolElement: FunctionComponent<{
 	id: string;
 	poolRatios: string;
 	totalValueLocked: string;
-	volume24?: number;
-}> = ({ id, poolRatios, totalValueLocked, volume24 }) => {
+	volume24h?: number;
+}> = ({ id, poolRatios, totalValueLocked, volume24h }) => {
 	const history = useHistory();
 
 	return (
@@ -149,7 +149,7 @@ const TablePoolElement: FunctionComponent<{
 				<p>{totalValueLocked}</p>
 			</td>
 			<td style={{ width: `${widths[3]}` }} className="flex items-center">
-				<p>{volume24 != null ? `$${commaizeNumber(Math.round(volume24))}` : null}</p>
+				<p>{volume24h != null ? `$${commaizeNumber(Math.round(volume24h))}` : '...'}</p>
 			</td>
 		</tr>
 	);
