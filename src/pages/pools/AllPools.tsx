@@ -7,6 +7,8 @@ import { HideLBPPoolFromPage, HidePoolFromPage, PoolsPerPage } from '../../confi
 import { usePoolFinancialData } from '../../hooks/pools/usePoolFinancialData';
 import { useStore } from '../../stores';
 import { commaizeNumber } from '../../utils/format';
+import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
+import { Dec } from '@keplr-wallet/unit';
 
 const widths = ['10%', '40%', '30%', '20%'];
 export const AllPools: FunctionComponent = () => {
@@ -110,8 +112,10 @@ const TablePoolElement: FunctionComponent<{
 	poolRatios: string;
 	totalValueLocked: string;
 	volume24h?: number;
-}> = ({ id, poolRatios, totalValueLocked, volume24h }) => {
+}> = observer(({ id, poolRatios, totalValueLocked, volume24h }) => {
 	const history = useHistory();
+
+	const { priceStore } = useStore();
 
 	return (
 		<tr
@@ -131,11 +135,15 @@ const TablePoolElement: FunctionComponent<{
 				<p>{totalValueLocked}</p>
 			</td>
 			<td style={{ width: `${widths[3]}` }} className="flex items-center">
-				<p>{volume24h != null ? `$${commaizeNumber(Math.round(volume24h))}` : '...'}</p>
+				<p>
+					{volume24h != null
+						? new PricePretty(priceStore.getFiatCurrency('usd')!, new Dec(volume24h.toString())).toString()
+						: '...'}
+				</p>
 			</td>
 		</tr>
 	);
-};
+});
 
 const TablePagination: FunctionComponent<{
 	page: number;
