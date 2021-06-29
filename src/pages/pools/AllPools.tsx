@@ -117,6 +117,8 @@ const TablePoolElement: FunctionComponent<{
 
 	const { priceStore } = useStore();
 
+	console.log(volume24h);
+
 	return (
 		<tr
 			className="h-14 w-full pl-7.5 pr-8.75 flex flex-row items-center group hover:bg-container-hover cursor-pointer border-b"
@@ -136,8 +138,13 @@ const TablePoolElement: FunctionComponent<{
 			</td>
 			<td style={{ width: `${widths[3]}` }} className="flex items-center">
 				<p>
+					{/*
+					  Sometimes, the volume24h has the decimals greater than 18.
+					  In this case, the `Dec` type can't handle such big decimals.
+					  So, must truncate the decimals with `toFixed()` method.
+					*/}
 					{volume24h != null
-						? new PricePretty(priceStore.getFiatCurrency('usd')!, new Dec(volume24h.toString())).toString()
+						? new PricePretty(priceStore.getFiatCurrency('usd')!, new Dec(volume24h.toFixed(10))).toString()
 						: '...'}
 				</p>
 			</td>
