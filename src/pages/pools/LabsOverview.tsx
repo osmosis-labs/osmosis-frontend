@@ -30,6 +30,7 @@ export const LabsOverview: FunctionComponent = observer(() => {
 			<ul className="flex items-center gap-20">
 				<DispPrice />
 				<DispRewardPayout />
+				<AllTVL />
 			</ul>
 		</section>
 	);
@@ -78,6 +79,22 @@ const DispPrice: FunctionComponent = observer(() => {
 	return (
 		<OverviewLabelValue label="OSMO Price">
 			<h4>{price ? price.toString() : '$0'}</h4>
+		</OverviewLabelValue>
+	);
+});
+
+const AllTVL: FunctionComponent = observer(() => {
+	const { chainStore, queriesStore, priceStore } = useStore();
+
+	const queries = queriesStore.get(chainStore.current.chainId);
+
+	return (
+		<OverviewLabelValue label="Total Liquidity">
+			<h4>
+				{queries.osmosis.queryGammPools
+					.computeAllTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!)
+					.toString()}
+			</h4>
 		</OverviewLabelValue>
 	);
 });

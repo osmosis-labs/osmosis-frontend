@@ -4,7 +4,7 @@ import { KVStore } from '@keplr-wallet/common';
 import { makeObservable } from 'mobx';
 import { QueriedPoolBase } from '../pool';
 import { computedFn } from 'mobx-utils';
-import { CoinPretty } from '@keplr-wallet/unit';
+import { CoinPretty, Dec } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { FiatCurrency } from '@keplr-wallet/types';
 
@@ -39,6 +39,26 @@ export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> 
 
 		chainInfo.addUnknownCurrencies(...denomsInPools);
 	}
+
+	computeAllTotalValueLocked = computedFn(
+		(
+			priceStore: { calculatePrice(vsCurrrency: string, coin: CoinPretty): PricePretty | undefined },
+			fiatCurrency: FiatCurrency
+		): PricePretty => {
+			let price = new PricePretty(fiatCurrency, new Dec(0));
+			if (!this.response) {
+				return price;
+			}
+
+			this.response.data.pools.forEach(pool => {
+				price = price.add(
+					new QueriedPoolBase(this.chainId, this.chainGetter, pool).computeTotalValueLocked(priceStore, fiatCurrency)
+				);
+			});
+
+			return price;
+		}
+	);
 
 	getPools = computedFn((itemsPerPage: number, page: number): QueriedPoolBase[] => {
 		if (!this.response) {
