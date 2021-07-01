@@ -52,7 +52,7 @@ const LockupTableHeader: FunctionComponent = () => {
 					<p>Bonding Duration</p>
 				</td>
 				<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-					<p>Current APY</p>
+					<p>Current APR</p>
 				</td>
 				<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
 					<p>Amount</p>

@@ -100,7 +100,7 @@ const LockupBox: FunctionComponent<{
 	return (
 		<div className="bg-card rounded-2xl pt-7 px-7.5 pb-10">
 			<h4 className="mb-4 font-normal text-xl xl:text-2xl">{duration} bonding</h4>
-			<h6 className="text-secondary-200 font-normal">APY {apy}</h6>
+			<h6 className="text-secondary-200 font-normal">APR {apy}</h6>
 		</div>
 	);
 };

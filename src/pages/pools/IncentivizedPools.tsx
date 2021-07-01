@@ -202,7 +202,7 @@ const MyPoolCard: FunctionComponent<MyPoolCardProps> = ({
 				</div>
 				{apy ? (
 					<div className="ml-5">
-						<p className="text-sm text-white-mid mb-2">APY</p>
+						<p className="text-sm text-white-mid mb-2">APR</p>
 						<h6 className="text-white-emphasis">{apy}%</h6>
 					</div>
 				) : null}
@@ -281,7 +281,7 @@ const PoolCard: FunctionComponent<PoolCardProps> = ({ poolId, apy, liquidity, to
 			</section>
 			<section className="flex items-center">
 				<div className="border-r border-enabledGold pr-5">
-					<p className="text-sm text-white-mid mb-2">APY</p>
+					<p className="text-sm text-white-mid mb-2">APR</p>
 					<h6 className="text-white-emphasis">{apy}%</h6>
 				</div>
 				<div className="ml-5">
