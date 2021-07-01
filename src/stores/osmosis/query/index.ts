@@ -15,6 +15,7 @@ import {
 import { ObservableQueryEpochProvisions, ObservableQueryMintParmas } from './mint';
 import { ObservableQueryDistrInfo } from './pool-incentives/distr-info';
 import { ObservableQueryTotalCliamable, ObservableQueryClaimRecord, ObservableQueryClaimParams } from './claim';
+import { ObservableQueryGuage } from './incentives';
 
 export interface HasOsmosisQueries {
 	osmosis: OsmosisQueries;
@@ -48,6 +49,7 @@ export class OsmosisQueries {
 	public readonly queryLockableDurations: DeepReadonly<ObservableQueryLockableDurations>;
 	public readonly queryDistrInfo: DeepReadonly<ObservableQueryDistrInfo>;
 	public readonly queryIncentivizedPools: DeepReadonly<ObservableQueryIncentivizedPools>;
+	public readonly queryGauge: DeepReadonly<ObservableQueryGuage>;
 
 	public readonly queryTotalClaimable: DeepReadonly<ObservableQueryTotalCliamable>;
 	public readonly queryClaimRecord: DeepReadonly<ObservableQueryClaimRecord>;
@@ -89,6 +91,7 @@ export class OsmosisQueries {
 			this.queryEpochProvisions,
 			this.queryEpochs
 		);
+		this.queryGauge = new ObservableQueryGuage(kvStore, chainId, chainGetter);
 
 		this.queryTotalClaimable = new ObservableQueryTotalCliamable(kvStore, chainId, chainGetter);
 		this.queryClaimRecord = new ObservableQueryClaimRecord(kvStore, chainId, chainGetter);

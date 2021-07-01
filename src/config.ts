@@ -1,5 +1,6 @@
 import { Bech32Address } from '@keplr-wallet/cosmos';
 import { ChainInfoWithExplorer } from './stores/chain';
+import { DenomHelper } from '@keplr-wallet/common';
 
 export const HideCreateNewPool: boolean = false;
 export const HideLBPPoolFromPage: boolean = false;
@@ -62,6 +63,17 @@ export const PreferHeaderShowTokenPricePoolIds: {
 		baseDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-8' }], 'uregen'),
 	},
 	 */
+};
+export const ExtraGaugeInPool: {
+	[poolId: string]: {
+		gaugeId: string;
+		denom: string;
+	};
+} = {
+	'1': {
+		gaugeId: '244',
+		denom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+	},
 };
 
 export const PoolsPerPage = 10;
