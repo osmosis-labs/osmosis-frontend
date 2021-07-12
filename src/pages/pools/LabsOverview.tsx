@@ -30,7 +30,7 @@ export const LabsOverview: FunctionComponent = observer(() => {
 			<ul className="flex items-center gap-20">
 				<DispPrice />
 				<DispRewardPayout />
-				<AllTVL />
+				{/* <AllTVL /> */}
 			</ul>
 		</section>
 	);
