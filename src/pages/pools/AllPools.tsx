@@ -3,7 +3,7 @@ import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import * as querystring from 'querystring';
-import React, { FunctionComponent, useMemo } from 'react';
+import React, { FunctionComponent, HTMLAttributes, useMemo } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { HideLBPPoolFromPage, HidePoolFromPage, PoolsPerPage } from '../../config';
 import { usePoolFinancialData } from '../../hooks/pools/usePoolFinancialData';
@@ -35,7 +35,7 @@ const PoolsTable: FunctionComponent = observer(() => {
 			<table className="w-full">
 				<TableHeader />
 				<TableBody>
-					{poolDataList.map(({ pool, volume24h, tvl }) => {
+					{poolDataList.map(({ pool, volume24h, tvl, swapFee }) => {
 						if (HideLBPPoolFromPage && pool.smoothWeightChangeParams != null) {
 							return null;
 						}
@@ -49,6 +49,7 @@ const PoolsTable: FunctionComponent = observer(() => {
 								key={pool.id}
 								id={pool.id}
 								volume24h={volume24h}
+								swapFee={swapFee}
 								poolRatios={pool.poolRatios
 									.map(poolRatio => {
 										// Pools Table에서는 IBC Currency의 coinDenom을 무시하고 원래의 coinDenom을 보여준다.
@@ -106,15 +107,16 @@ const TableBody: FunctionComponent = ({ children }) => {
 	return <tbody className="w-full">{children}</tbody>;
 };
 
-const TablePoolElement: FunctionComponent<{
+interface TablePoolElementProps {
 	id: string;
 	poolRatios: string;
 	totalValueLocked: string;
 	volume24h: string;
-}> = observer(({ id, poolRatios, totalValueLocked, volume24h }) => {
-	const history = useHistory();
+	swapFee: string;
+}
 
-	const { priceStore } = useStore();
+function TablePoolElement({ id, poolRatios, totalValueLocked, volume24h, swapFee }: TablePoolElementProps) {
+	const history = useHistory();
 
 	return (
 		<tr
@@ -128,7 +130,10 @@ const TablePoolElement: FunctionComponent<{
 				<p>{id}</p>
 			</td>
 			<td style={{ width: `${widths[1]}` }} className="flex items-center group-hover:text-secondary-200">
-				<p>{poolRatios}</p>
+				<div style={{ display: 'flex', alignItems: 'center' }}>
+					<p style={{ flex: '1 1 auto' }}>{poolRatios}</p>
+					<Badge>{swapFee}</Badge>
+				</div>
 			</td>
 			<td style={{ width: `${widths[2]}` }} className="flex items-center">
 				<p>{totalValueLocked}</p>
@@ -138,7 +143,29 @@ const TablePoolElement: FunctionComponent<{
 			</td>
 		</tr>
 	);
-});
+}
+
+function Badge({ children, ...props }: HTMLAttributes<HTMLSpanElement>) {
+	return (
+		<span
+			style={{
+				borderRadius: '8px',
+				display: 'flex',
+				alignItems: 'center',
+				padding: '5px 8px',
+				height: '25px',
+				minWidth: '20px',
+				backgroundColor: 'rgba(45, 39, 85, var(--tw-bg-opacity))',
+				marginLeft: '8px',
+				marginRight: '8px',
+				flex: '0 0 auto',
+				fontSize: '12px',
+			}}
+			{...props}>
+			{children}
+		</span>
+	);
+}
 
 const TablePagination: FunctionComponent<{
 	page: number;
@@ -250,7 +277,8 @@ function usePoolWithFinancialDataList(page: number) {
 					? new PricePretty(priceStore.getFiatCurrency('usd')!, new Dec(volume24hRaw.toFixed(10))).toString()
 					: '...';
 			const tvl = pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString();
-			return { pool, volume24h, tvl };
+			const swapFee = `${pool.swapFee.toString()}%`;
+			return { pool, volume24h, tvl, swapFee };
 		});
 	}, [pools, poolFinancialDataByPoolId]);
 }
