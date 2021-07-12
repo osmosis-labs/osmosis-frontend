@@ -1,4 +1,4 @@
-import { CoinGeckoPriceStore } from '@keplr-wallet/stores';
+import { ChainGetter, CoinGeckoPriceStore } from '@keplr-wallet/stores';
 import { KVStore } from '@keplr-wallet/common';
 import { FiatCurrency } from '@keplr-wallet/types';
 import { computed, makeObservable, observable } from 'mobx';
@@ -22,6 +22,8 @@ export class PoolIntermediatePriceStore extends CoinGeckoPriceStore {
 	protected _intermidiateRoutes: IntermidiateRoute[] = [];
 
 	constructor(
+		protected readonly osmosisChainId: string,
+		protected readonly chainGetter: ChainGetter,
 		kvStore: KVStore,
 		supportedVsCurrencies: {
 			[vsCurrency: string]: FiatCurrency;
@@ -53,6 +55,18 @@ export class PoolIntermediatePriceStore extends CoinGeckoPriceStore {
 		if (route) {
 			const pool = this.queryPool.getPool(route.poolId);
 			if (!pool) {
+				return;
+			}
+
+			const osmosisChainInfo = this.chainGetter.getChain(this.osmosisChainId);
+			// If the currencies are unknown yet,
+			// it is assumed that the raw currency with the 0 decimals.
+			// But, using this raw currency will make improper result because it will create greater spot price than expected.
+			// So, if the currencies are unknown, block calculating the price.
+			if (
+				!osmosisChainInfo.currencies.find(cur => cur.coinMinimalDenom === route.spotPriceSourceDenom) ||
+				!osmosisChainInfo.currencies.find(cur => cur.coinMinimalDenom === route.spotPriceDestDenom)
+			) {
 				return;
 			}
 

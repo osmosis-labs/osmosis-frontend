@@ -1,5 +1,6 @@
 import { Bech32Address } from '@keplr-wallet/cosmos';
 import { ChainInfoWithExplorer } from './stores/chain';
+import { DenomHelper } from '@keplr-wallet/common';
 
 export const HideCreateNewPool: boolean = false;
 export const HideLBPPoolFromPage: boolean = false;
@@ -63,6 +64,12 @@ export const PreferHeaderShowTokenPricePoolIds: {
 	},
 	 */
 };
+export const ExtraGaugeInPool: {
+	[poolId: string]: {
+		gaugeId: string;
+		denom: string;
+	};
+} = {};
 
 export const PoolsPerPage = 10;
 export const RewardEpochIdentifier = 'day';

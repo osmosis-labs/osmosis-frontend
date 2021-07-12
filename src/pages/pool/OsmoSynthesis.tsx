@@ -8,6 +8,8 @@ import { useStore } from '../../stores';
 import { Dec, IntPretty } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { LockLpTokenDialog } from '../../dialogs';
+import { ExtraGaugeInPool } from '../../config';
+import { ExtraGauge } from './ExtraGauge';
 
 export const OsmoSynthesis: FunctionComponent<{
 	poolId: string;
@@ -58,6 +60,16 @@ export const OsmoSynthesis: FunctionComponent<{
 					</button>
 				</div>
 			</div>
+			{(() => {
+				const gauge = ExtraGaugeInPool[poolId];
+				if (gauge) {
+					const currency = chainStore.currentFluent.findCurrency(gauge.denom);
+					if (currency) {
+						return <ExtraGauge gaugeId={gauge.gaugeId} currency={currency} />;
+					}
+				}
+				return null;
+			})()}
 			<div className="mt-10 grid grid-cols-3 gap-9">
 				{lockableDurations.map((lockableDuration, i) => {
 					return (
@@ -88,7 +100,7 @@ const LockupBox: FunctionComponent<{
 	return (
 		<div className="bg-card rounded-2xl pt-7 px-7.5 pb-10">
 			<h4 className="mb-4 font-normal text-xl xl:text-2xl">{duration} bonding</h4>
-			<h6 className="text-secondary-200 font-normal">APY {apy}</h6>
+			<h6 className="text-secondary-200 font-normal">APR {apy}</h6>
 		</div>
 	);
 };

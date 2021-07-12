@@ -87,6 +87,8 @@ export class RootStore {
 		});
 
 		this.priceStore = new PoolIntermediatePriceStore(
+			EmbedChainInfos[0].chainId,
+			this.chainStore,
 			new IndexedDBKVStore('store_web_prices'),
 			{
 				usd: {
