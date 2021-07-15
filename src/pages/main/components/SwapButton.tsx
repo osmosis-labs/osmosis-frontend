@@ -40,18 +40,6 @@ export const SwapButton = observer(({ config }: Props) => {
 
 	const toast = useToast();
 
-	if (!isAccountConnected) {
-		return (
-			<ConnectAccountButton
-				className="h-15"
-				onClick={e => {
-					e.preventDefault();
-					connectAccount();
-				}}
-			/>
-		);
-	}
-
 	const currentSwapPools = useMemo(() => {
 		return config.optimizedRoutes?.swaps.map(swap => swap.poolId) ?? [];
 	}, [config.optimizedRoutes]);
@@ -78,6 +66,19 @@ export const SwapButton = observer(({ config }: Props) => {
 			}
 		});
 	});
+
+	// IMPORTANT: MAKE SURE THAT ALL HOOKS SHOULD EXIST ABOVE THIS LINE!!!
+	if (!isAccountConnected) {
+		return (
+			<ConnectAccountButton
+				className="h-15"
+				onClick={e => {
+					e.preventDefault();
+					connectAccount();
+				}}
+			/>
+		);
+	}
 
 	return (
 		<button
