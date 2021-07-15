@@ -69,7 +69,16 @@ export const ExtraGaugeInPool: {
 		gaugeId: string;
 		denom: string;
 	};
-} = {};
+} = {
+	'3': {
+		gaugeId: '450',
+		denom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-1' }], 'uakt'),
+	},
+	'4': {
+		gaugeId: '449',
+		denom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-1' }], 'uakt'),
+	},
+};
 
 export const PoolsPerPage = 10;
 export const RewardEpochIdentifier = 'day';
