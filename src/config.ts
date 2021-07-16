@@ -77,8 +77,9 @@ export const ExtraGaugeInPool: {
 		denom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-1' }], 'uakt'),
 	},
 	'4': {
-		gaugeId: '449',
+		gaugeId: '457',
 		denom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-1' }], 'uakt'),
+		extraRewardAmount: new Int('3300000000'),
 	},
 };
 
