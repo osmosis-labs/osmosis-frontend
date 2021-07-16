@@ -65,7 +65,9 @@ export const OsmoSynthesis: FunctionComponent<{
 				if (gauge) {
 					const currency = chainStore.currentFluent.findCurrency(gauge.denom);
 					if (currency) {
-						return <ExtraGauge gaugeId={gauge.gaugeId} currency={currency} />;
+						return (
+							<ExtraGauge gaugeId={gauge.gaugeId} currency={currency} extraRewardAmount={gauge.extraRewardAmount} />
+						);
 					}
 				}
 				return null;

@@ -1,6 +1,7 @@
 import { Bech32Address } from '@keplr-wallet/cosmos';
 import { ChainInfoWithExplorer } from './stores/chain';
 import { DenomHelper } from '@keplr-wallet/common';
+import { Int } from '@keplr-wallet/unit';
 
 export const HideCreateNewPool: boolean = false;
 export const HideLBPPoolFromPage: boolean = false;
@@ -68,6 +69,7 @@ export const ExtraGaugeInPool: {
 	[poolId: string]: {
 		gaugeId: string;
 		denom: string;
+		extraRewardAmount?: Int;
 	};
 } = {
 	'3': {

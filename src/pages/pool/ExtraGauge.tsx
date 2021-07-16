@@ -3,16 +3,20 @@ import { observer } from 'mobx-react-lite';
 import { AppCurrency } from '@keplr-wallet/types';
 import { useStore } from '../../stores';
 import dayjs from 'dayjs';
+import { Int } from '@keplr-wallet/unit';
 
 export const ExtraGauge: FunctionComponent<{
 	gaugeId: string;
 	currency: AppCurrency;
-}> = observer(({ gaugeId, currency }) => {
+	extraRewardAmount?: Int;
+}> = observer(({ gaugeId, currency, extraRewardAmount }) => {
 	const { chainStore, queriesStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 
 	const gauge = queries.osmosis.queryGauge.get(gaugeId);
+
+	const reward = gauge.getCoin(currency).add(extraRewardAmount ?? new Int(0));
 
 	return (
 		<React.Fragment>
@@ -24,8 +28,7 @@ export const ExtraGauge: FunctionComponent<{
 						<br />
 						incentives for {gauge.numEpochsPaidOver} epochs starting at {dayjs(gauge.startTime).format('MMM D, YYYY')}.
 					</p>
-					<h6 className="text-secondary-200 font-normal">{`Total Bonus: ${gauge
-						.getCoin(currency)
+					<h6 className="text-secondary-200 font-normal">{`Total Bonus: ${reward
 						.maxDecimals(6)
 						.trim(true)
 						.toString()}`}</h6>
