@@ -98,6 +98,12 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 	@observable.ref
 	protected _shareOutAmount: IntPretty | undefined = undefined;
 
+	protected _cacheAmountConfigs?: {
+		poolId: string;
+		sender: string;
+		configs: BasicAmountConfig[];
+	};
+
 	constructor(
 		chainGetter: ChainGetter,
 		initialChainId: string,
@@ -148,21 +154,44 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 		}
 	}
 
+	/*
+	 TODO: This getter is not flexible.
+	       Can't handle the case that the chain changes.
+	       Can't handle the case that the pool's currencies changes.
+	       Can't handle the case that the reference of chain getter or balance querier.
+	       However, above cases don't exist on the current usage.
+	       Due to the current architecture of this store, it is hard to handle above cases.
+	       Refactor this store in future.
+	 */
 	@computed
 	get poolAssetConfigs(): BasicAmountConfig[] {
 		const pool = this._queryPools.getPool(this._poolId);
 		if (!pool) {
 			return [];
 		}
-		return pool.poolAssets.map(asset => {
-			return new BasicAmountConfig(
-				this.chainGetter,
-				this.chainId,
-				this.sender,
-				asset.amount.currency,
-				this._queryBalances
-			);
-		});
+
+		if (
+			!this._cacheAmountConfigs ||
+			this._cacheAmountConfigs.poolId !== pool.id ||
+			this._cacheAmountConfigs.sender !== this.sender ||
+			this._cacheAmountConfigs.configs.length === 0
+		) {
+			this._cacheAmountConfigs = {
+				poolId: pool.id,
+				sender: this.sender,
+				configs: pool.poolAssets.map(asset => {
+					return new BasicAmountConfig(
+						this.chainGetter,
+						this.chainId,
+						this.sender,
+						asset.amount.currency,
+						this._queryBalances
+					);
+				}),
+			};
+		}
+
+		return this._cacheAmountConfigs.configs;
 	}
 
 	@computed

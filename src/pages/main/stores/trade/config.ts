@@ -256,6 +256,13 @@ export class TradeConfig extends AmountConfig {
 
 		const spotPrice = this.spotPriceWithoutSwapFee;
 
+		if (spotPrice.toDec().equals(new Dec(0))) {
+			return new CoinPretty(
+				this.outCurrency,
+				new Dec('0').mul(DecUtils.getPrecisionDec(this.outCurrency.coinDecimals))
+			);
+		}
+
 		return new CoinPretty(
 			this.outCurrency,
 			new Dec(inAmount)
