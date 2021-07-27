@@ -1,21 +1,23 @@
-import React, { Dispatch, FunctionComponent, SetStateAction, useState } from 'react';
-import { wrapBaseDialog } from './base';
-import cn from 'clsx';
-import { observer } from 'mobx-react-lite';
-import InputSlider from 'react-input-slider';
-import { useStore } from '../stores';
-import { action, computed, makeObservable, observable, override } from 'mobx';
-import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
-import { ChainGetter, ObservableQueryBalances } from '@keplr-wallet/stores';
-import { ObservableQueryPools } from '../stores/osmosis/query/pools';
-import { Currency } from '@keplr-wallet/types';
-import { MISC } from '../constants';
-import { ObservableQueryGammPoolShare } from '../stores/osmosis/query/pool-share';
-import { TToastType, useToast } from '../components/common/toasts';
-import { BasicAmountConfig } from '../hooks/tx/basic-amount-config';
 import { TxChainSetter } from '@keplr-wallet/hooks';
+import { ChainGetter, ObservableQueryBalances } from '@keplr-wallet/stores';
+import { Currency } from '@keplr-wallet/types';
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
+import cn from 'clsx';
+import { findIndex } from 'lodash-es';
+import { action, computed, makeObservable, observable, override } from 'mobx';
+import { observer } from 'mobx-react-lite';
 import { computedFn } from 'mobx-utils';
+import React, { Dispatch, FunctionComponent, SetStateAction, useState } from 'react';
+import InputSlider from 'react-input-slider';
 import { Img } from '../components/common/Img';
+import { TToastType, useToast } from '../components/common/toasts';
+import { MISC } from '../constants';
+import { OSMO_MEDIUM_TX_FEE } from '../constants/fee';
+import { BasicAmountConfig } from '../hooks/tx/basic-amount-config';
+import { useStore } from '../stores';
+import { ObservableQueryGammPoolShare } from '../stores/osmosis/query/pool-share';
+import { ObservableQueryPools } from '../stores/osmosis/query/pools';
+import { wrapBaseDialog } from './base';
 
 //	TODO : edit how the circle renders the border to make gradients work
 const borderImages: Record<string, string> = {
@@ -155,14 +157,14 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 	}
 
 	/*
-	 TODO: This getter is not flexible.
-	       Can't handle the case that the chain changes.
-	       Can't handle the case that the pool's currencies changes.
-	       Can't handle the case that the reference of chain getter or balance querier.
-	       However, above cases don't exist on the current usage.
-	       Due to the current architecture of this store, it is hard to handle above cases.
-	       Refactor this store in future.
-	 */
+   TODO: This getter is not flexible.
+         Can't handle the case that the chain changes.
+         Can't handle the case that the pool's currencies changes.
+         Can't handle the case that the reference of chain getter or balance querier.
+         However, above cases don't exist on the current usage.
+         Due to the current architecture of this store, it is hard to handle above cases.
+         Refactor this store in future.
+   */
 	@computed
 	get poolAssetConfigs(): BasicAmountConfig[] {
 		const pool = this._queryPools.getPool(this._poolId);
@@ -237,14 +239,14 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 	}
 
 	@action
-	setAmountAt(index: number, amount: string): void {
+	setAmountAt(index: number, amount: string, isMax = false): void {
 		const amountConfig = this.poolAssetConfigs[index];
 		amountConfig.setAmount(amount);
 
 		if (amountConfig.getError() == null) {
 			/*
-				share out amount = (token in amount * total share) / pool asset
-		 	*/
+        share out amount = (token in amount * total share) / pool asset
+       */
 			const tokenInAmount = new IntPretty(new Dec(amountConfig.amount));
 			const totalShare = this.totalShare;
 			const poolAsset = this.poolAssets.find(
@@ -266,8 +268,14 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 				return;
 			}
 
-			const shareOutAmount = tokenInAmount.mul(totalShare).quo(poolAsset.amount);
+			// totalShare / poolAsset.amount = totalShare per poolAssetAmount = total share per tokenInAmount
+			// tokenInAmount * (total share per tokenInAmount) = totalShare of given tokenInAmount aka shareOutAmount;
+			// tokenInAmount in terms of totalShare unit
 
+			// shareOutAmount / totalShare = totalShare proportion of tokenInAmount;
+			// totalShare proportion of tokenInAmount * otherTotalPoolAssetAmount = otherPoolAssetAmount
+
+			const shareOutAmount = tokenInAmount.mul(totalShare).quo(poolAsset.amount);
 			const otherConfigs = this.poolAssetConfigs.slice();
 			otherConfigs.splice(index, 1);
 
@@ -287,7 +295,7 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 						.quo(totalShare)
 						.trim(true)
 						.shrink(true)
-						.maxDecimals(2)
+						.maxDecimals(isMax ? 6 : 2)
 						.locale(false)
 						.toString()
 				);
@@ -297,6 +305,94 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 		} else {
 			this._shareOutAmount = undefined;
 		}
+	}
+
+	@action
+	setMax() {
+		const balancePrettyList = this.poolAssetConfigs.map(poolAssetConfig =>
+			this._queryBalances.getQueryBech32Address(this.sender).getBalanceFromCurrency(poolAssetConfig.currency)
+		);
+		if (balancePrettyList.some(balancePretty => balancePretty.toDec().equals(new Dec(0)))) {
+			return this.poolAssetConfigs.forEach(poolAssetConfig => poolAssetConfig.setAmount('0'));
+		}
+		let feasibleMaxFound = false;
+		const totalShare = this.totalShare;
+		balancePrettyList.forEach(balancePretty => {
+			if (feasibleMaxFound) {
+				return;
+			}
+			const baseBalanceInt = new IntPretty(balancePretty);
+			const basePoolAsset = this.poolAssets.find(
+				poolAsset => poolAsset.currency.coinMinimalDenom === balancePretty.currency.coinMinimalDenom
+			)!;
+			const baseShareOutAmount = baseBalanceInt.mul(totalShare).quo(basePoolAsset.amount);
+			const outAmountInfoList = this.poolAssets.map(poolAsset => {
+				const coinMinimalDenom = poolAsset.currency.coinMinimalDenom;
+				if (basePoolAsset.currency.coinMinimalDenom === coinMinimalDenom) {
+					return {
+						coinMinimalDenom,
+						outAmount: baseBalanceInt,
+					};
+				}
+				return {
+					coinMinimalDenom,
+					outAmount: baseShareOutAmount.mul(poolAsset.amount).quo(totalShare),
+				};
+			});
+			const hasInsufficientBalance = outAmountInfoList.some(outAmountInfo => {
+				const balanceInfo = balancePrettyList.find(
+					balance => balance.currency.coinMinimalDenom === outAmountInfo.coinMinimalDenom
+				)!;
+				return balanceInfo.toDec().lt(outAmountInfo.outAmount.toDec());
+			});
+			if (hasInsufficientBalance) {
+				return;
+			}
+			feasibleMaxFound = true;
+
+			const osmoIndex = findIndex(this.poolAssetConfigs, poolAssetConfig => {
+				return poolAssetConfig.currency.coinMinimalDenom === 'uosmo';
+			});
+
+			if (osmoIndex !== -1) {
+				const osmoOutAmountInfo = outAmountInfoList.find(outAmountInfo => outAmountInfo.coinMinimalDenom === 'uosmo')!;
+				const osmoBalanceInfo = balancePrettyList.find(balance => balance.currency.coinMinimalDenom === 'uosmo')!;
+				const osmoOutAmount = osmoBalanceInfo
+					.toDec()
+					.sub(new Dec(OSMO_MEDIUM_TX_FEE))
+					.lt(osmoOutAmountInfo.outAmount.toDec())
+					? osmoOutAmountInfo.outAmount.sub(new Dec(OSMO_MEDIUM_TX_FEE))
+					: osmoOutAmountInfo.outAmount;
+
+				return this.setAmountAt(
+					osmoIndex,
+					osmoOutAmount
+						.trim(true)
+						.shrink(true)
+						/** osmo is used to pay tx fees, should have some padding left for future tx? if no padding needed maxDecimals to 6 else 2*/
+						.maxDecimals(6)
+						.locale(false)
+						.toString(),
+					true
+				);
+			}
+
+			/**TODO: should use cheaper coin to setAmount for higher accuracy*/
+			const baseOutAmountInfo = outAmountInfoList.find(outAmountInfo => {
+				return outAmountInfo.coinMinimalDenom === this.poolAssetConfigs[0].currency.coinMinimalDenom;
+			})!;
+
+			this.setAmountAt(
+				0,
+				baseOutAmountInfo.outAmount
+					.trim(true)
+					.shrink(true)
+					.maxDecimals(6)
+					.locale(false)
+					.toString(),
+				true
+			);
+		});
 	}
 
 	readonly getError = computedFn(() => {
@@ -508,16 +604,25 @@ const TokenLiquidityItem: FunctionComponent<{
 					</div>
 				</div>
 				<div className="flex flex-col items-end">
-					<p className="text-xs">
-						Available{' '}
-						<span className="text-primary-50">
-							{queryBalance
-								.getBalanceFromCurrency(currency)
-								.trim(true)
-								.shrink(true)
-								.toString()}
-						</span>
-					</p>
+					<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+						<p className="text-xs">
+							Available{' '}
+							<span className="text-xs text-primary-50">
+								{queryBalance
+									.getBalanceFromCurrency(currency)
+									.trim(true)
+									.shrink(true)
+									.toString()}
+							</span>
+						</p>
+						<button
+							className={cn('rounded-md py-1 px-1.5 bg-white-faint h-6 ml-1.25')}
+							style={{ display: 'inline-block', width: '40px', marginBottom: '8px' }}
+							onClick={() => addLiquidityConfig.setMax()}>
+							<p className="text-xs">MAX</p>
+						</button>
+					</div>
+
 					<div className="bg-background px-1.5 py-0.5 rounded-lg">
 						<input
 							type="number"
