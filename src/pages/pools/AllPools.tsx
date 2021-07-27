@@ -3,39 +3,80 @@ import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import * as querystring from 'querystring';
-import React, { FunctionComponent, HTMLAttributes, useMemo } from 'react';
+import React, { FunctionComponent, HTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { HideLBPPoolFromPage, HidePoolFromPage, PoolsPerPage } from '../../config';
 import { usePoolFinancialData } from '../../hooks/pools/usePoolFinancialData';
 import { useStore } from '../../stores';
+import { commaizeNumber } from '../../utils/format';
 
 const widths = ['10%', '40%', '30%', '20%'];
+
+const FILTER_TVL_THRESHOLD = 1_000;
+
 export const AllPools: FunctionComponent = () => {
+	const history = useHistory();
+	const [allPoolsShown, setAllPoolsShown] = useState<boolean>(false);
+	const handleShowAllPoolsClicked = useCallback(() => {
+		if (allPoolsShown) {
+			history.replace('/pools?page=1');
+		}
+		setAllPoolsShown(shown => !shown);
+	}, [allPoolsShown, history]);
 	return (
 		<section>
-			<h5 className="mb-7.5">All Pools</h5>
+			<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+				<h5 className="mb-7.5">All Pools</h5>
+				<label htmlFor="show-all-pools">
+					<input
+						id="show-all-pools"
+						type="checkbox"
+						style={{ display: 'inline-block', marginTop: '6px' }}
+						checked={allPoolsShown}
+						onChange={handleShowAllPoolsClicked}
+					/>
+					<span
+						style={{
+							display: 'inline-block',
+							marginLeft: '8px',
+							userSelect: 'none',
+							cursor: 'pointer',
+						}}>
+						Show pools less than ${commaizeNumber(FILTER_TVL_THRESHOLD)} TVL
+					</span>
+				</label>
+			</div>
 			<section>
-				<PoolsTable />
+				<PoolsTable allPoolsShown={allPoolsShown} />
 			</section>
 		</section>
 	);
 };
 
-const PoolsTable: FunctionComponent = observer(() => {
+const PoolsTable = observer(({ allPoolsShown }: { allPoolsShown: boolean }) => {
 	const location = useLocation();
-	const params = querystring.parse(location.search.replace('?', '')) as {
-		page?: string;
-	};
+	const params: { page?: string } = querystring.parse(location.search.replace('?', ''));
 	const page = params.page && !Number.isNaN(parseInt(params.page)) ? parseInt(params.page) : 1;
 
-	const poolDataList = usePoolWithFinancialDataList(page);
+	const poolDataList = usePoolWithFinancialDataList();
+	const poolDataListFiltered = useMemo(() => {
+		if (allPoolsShown) {
+			return poolDataList;
+		}
+		return poolDataList.filter(poolData => {
+			const tvlPretty = poolData.tvl;
+			return tvlPretty.toDec().gte(new Dec(FILTER_TVL_THRESHOLD));
+		});
+	}, [allPoolsShown, poolDataList]);
+
+	const offset = (page - 1) * PoolsPerPage;
 
 	return (
 		<React.Fragment>
 			<table className="w-full">
 				<TableHeader />
-				<TableBody>
-					{poolDataList.map(({ pool, volume24h, tvl, swapFee }) => {
+				<tbody className="w-full">
+					{poolDataListFiltered.slice(offset, offset + PoolsPerPage).map(({ pool, volume24h, tvl, swapFee }) => {
 						if (HideLBPPoolFromPage && pool.smoothWeightChangeParams != null) {
 							return null;
 						}
@@ -69,14 +110,14 @@ const PoolsTable: FunctionComponent = observer(() => {
 							/>
 						);
 					})}
-				</TableBody>
+				</tbody>
 			</table>
-			<TablePagination page={page} />
+			<TablePagination page={page} numberOfPools={poolDataListFiltered.length} />
 		</React.Fragment>
 	);
 });
 
-const TableHeader: FunctionComponent = () => {
+function TableHeader() {
 	return (
 		<thead className="h-11 w-full pl-7.5 pr-8.75 flex items-center rounded-t-2xl bg-card">
 			<tr style={{ width: `${widths[0]}` }} className="flex items-center">
@@ -101,16 +142,12 @@ const TableHeader: FunctionComponent = () => {
 			</tr>
 		</thead>
 	);
-};
-
-const TableBody: FunctionComponent = ({ children }) => {
-	return <tbody className="w-full">{children}</tbody>;
-};
+}
 
 interface TablePoolElementProps {
 	id: string;
 	poolRatios: string;
-	totalValueLocked: string;
+	totalValueLocked: PricePretty;
 	volume24h: string;
 	swapFee: string;
 }
@@ -136,7 +173,7 @@ function TablePoolElement({ id, poolRatios, totalValueLocked, volume24h, swapFee
 				</div>
 			</td>
 			<td style={{ width: `${widths[2]}` }} className="flex items-center">
-				<p>{totalValueLocked}</p>
+				<p>{totalValueLocked.toString()}</p>
 			</td>
 			<td style={{ width: `${widths[3]}` }} className="flex items-center">
 				<p>{volume24h}</p>
@@ -167,15 +204,10 @@ function Badge({ children, ...props }: HTMLAttributes<HTMLSpanElement>) {
 	);
 }
 
-const TablePagination: FunctionComponent<{
-	page: number;
-}> = observer(({ page: propPage }) => {
-	const { chainStore, queriesStore } = useStore();
-	const queries = queriesStore.get(chainStore.current.chainId);
-
-	const numPages = queries.osmosis.queryGammNumPools.computeNumPages(PoolsPerPage);
-
+function TablePagination({ page: propPage, numberOfPools }: { page: number; numberOfPools: number }) {
 	const history = useHistory();
+
+	const numPages = Math.ceil((numberOfPools || 1) / PoolsPerPage);
 
 	const pageRender = [];
 
@@ -250,17 +282,15 @@ const TablePagination: FunctionComponent<{
 			) : null}
 		</div>
 	);
-});
+}
 
-function usePoolWithFinancialDataList(page: number) {
+function usePoolWithFinancialDataList() {
 	const { chainStore, queriesStore, priceStore } = useStore();
 	const queries = queriesStore.get(chainStore.current.chainId);
 
 	const pools = queries.osmosis.queryGammPools.getPoolsDescendingOrderTVL(
 		priceStore,
-		priceStore.getFiatCurrency('usd')!,
-		PoolsPerPage,
-		page
+		priceStore.getFiatCurrency('usd')!
 	);
 	const poolFinancialDataByPoolId = usePoolFinancialData();
 
@@ -276,9 +306,9 @@ function usePoolWithFinancialDataList(page: number) {
 				volume24hRaw != null
 					? new PricePretty(priceStore.getFiatCurrency('usd')!, new Dec(volume24hRaw.toFixed(10))).toString()
 					: '...';
-			const tvl = pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString();
+			const tvl = pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!);
 			const swapFee = `${pool.swapFee.toString()}%`;
 			return { pool, volume24h, tvl, swapFee };
 		});
-	}, [pools, poolFinancialDataByPoolId]);
+	}, [pools, poolFinancialDataByPoolId.data, priceStore]);
 }
