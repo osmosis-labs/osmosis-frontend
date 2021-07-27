@@ -42,7 +42,7 @@ export const AllPools: FunctionComponent = () => {
 							userSelect: 'none',
 							cursor: 'pointer',
 						}}>
-						Show pools less than ${commaizeNumber(FILTER_TVL_THRESHOLD)}
+						Show pools less than ${commaizeNumber(FILTER_TVL_THRESHOLD)} TVL
 					</span>
 				</label>
 			</div>
