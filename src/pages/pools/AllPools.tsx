@@ -3,7 +3,7 @@ import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import * as querystring from 'querystring';
-import React, { FunctionComponent, HTMLAttributes, useMemo, useState } from 'react';
+import React, { FunctionComponent, HTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { HideLBPPoolFromPage, HidePoolFromPage, PoolsPerPage } from '../../config';
 import { usePoolFinancialData } from '../../hooks/pools/usePoolFinancialData';
@@ -15,7 +15,14 @@ const widths = ['10%', '40%', '30%', '20%'];
 const FILTER_TVL_THRESHOLD = 1_000;
 
 export const AllPools: FunctionComponent = () => {
+	const history = useHistory();
 	const [allPoolsShown, setAllPoolsShown] = useState<boolean>(false);
+	const handleShowAllPoolsClicked = useCallback(() => {
+		if (allPoolsShown) {
+			history.replace('/pools?page=1');
+		}
+		setAllPoolsShown(shown => !shown);
+	}, [allPoolsShown, history]);
 	return (
 		<section>
 			<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -26,7 +33,7 @@ export const AllPools: FunctionComponent = () => {
 						type="checkbox"
 						style={{ display: 'inline-block', marginTop: '6px' }}
 						checked={allPoolsShown}
-						onChange={() => setAllPoolsShown(shown => !shown)}
+						onChange={handleShowAllPoolsClicked}
 					/>
 					<span
 						style={{
@@ -51,7 +58,7 @@ const PoolsTable = observer(({ allPoolsShown }: { allPoolsShown: boolean }) => {
 	const params: { page?: string } = querystring.parse(location.search.replace('?', ''));
 	const page = params.page && !Number.isNaN(parseInt(params.page)) ? parseInt(params.page) : 1;
 
-	const poolDataList = usePoolWithFinancialDataList(page);
+	const poolDataList = usePoolWithFinancialDataList();
 	const poolDataListFiltered = useMemo(() => {
 		if (allPoolsShown) {
 			return poolDataList;
@@ -62,12 +69,14 @@ const PoolsTable = observer(({ allPoolsShown }: { allPoolsShown: boolean }) => {
 		});
 	}, [allPoolsShown, poolDataList]);
 
+	const offset = (page - 1) * PoolsPerPage;
+
 	return (
 		<React.Fragment>
 			<table className="w-full">
 				<TableHeader />
 				<tbody className="w-full">
-					{poolDataListFiltered.map(({ pool, volume24h, tvl, swapFee }) => {
+					{poolDataListFiltered.slice(offset, offset + PoolsPerPage).map(({ pool, volume24h, tvl, swapFee }) => {
 						if (HideLBPPoolFromPage && pool.smoothWeightChangeParams != null) {
 							return null;
 						}
@@ -103,7 +112,7 @@ const PoolsTable = observer(({ allPoolsShown }: { allPoolsShown: boolean }) => {
 					})}
 				</tbody>
 			</table>
-			<TablePagination page={page} />
+			<TablePagination page={page} numberOfPools={poolDataListFiltered.length} />
 		</React.Fragment>
 	);
 });
@@ -195,15 +204,10 @@ function Badge({ children, ...props }: HTMLAttributes<HTMLSpanElement>) {
 	);
 }
 
-const TablePagination: FunctionComponent<{
-	page: number;
-}> = observer(({ page: propPage }) => {
-	const { chainStore, queriesStore } = useStore();
-	const queries = queriesStore.get(chainStore.current.chainId);
-
-	const numPages = queries.osmosis.queryGammNumPools.computeNumPages(PoolsPerPage);
-
+function TablePagination({ page: propPage, numberOfPools }: { page: number; numberOfPools: number }) {
 	const history = useHistory();
+
+	const numPages = (numberOfPools || 1) / PoolsPerPage;
 
 	const pageRender = [];
 
@@ -278,17 +282,15 @@ const TablePagination: FunctionComponent<{
 			) : null}
 		</div>
 	);
-});
+}
 
-function usePoolWithFinancialDataList(page: number) {
+function usePoolWithFinancialDataList() {
 	const { chainStore, queriesStore, priceStore } = useStore();
 	const queries = queriesStore.get(chainStore.current.chainId);
 
 	const pools = queries.osmosis.queryGammPools.getPoolsDescendingOrderTVL(
 		priceStore,
-		priceStore.getFiatCurrency('usd')!,
-		PoolsPerPage,
-		page
+		priceStore.getFiatCurrency('usd')!
 	);
 	const poolFinancialDataByPoolId = usePoolFinancialData();
 
@@ -308,5 +310,5 @@ function usePoolWithFinancialDataList(page: number) {
 			const swapFee = `${pool.swapFee.toString()}%`;
 			return { pool, volume24h, tvl, swapFee };
 		});
-	}, [pools, poolFinancialDataByPoolId]);
+	}, [pools, poolFinancialDataByPoolId.data, priceStore]);
 }

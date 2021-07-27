@@ -1,12 +1,12 @@
-import { ChainGetter, QueryResponse, ObservableChainQuery } from '@keplr-wallet/stores';
-import { Pools } from './types';
 import { KVStore } from '@keplr-wallet/common';
-import { makeObservable } from 'mobx';
-import { QueriedPoolBase } from '../pool';
-import { computedFn } from 'mobx-utils';
+import { ChainGetter, ObservableChainQuery, QueryResponse } from '@keplr-wallet/stores';
+import { FiatCurrency } from '@keplr-wallet/types';
 import { CoinPretty, Dec } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
-import { FiatCurrency } from '@keplr-wallet/types';
+import { makeObservable } from 'mobx';
+import { computedFn } from 'mobx-utils';
+import { QueriedPoolBase } from '../pool';
+import { Pools } from './types';
 
 export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> {
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
@@ -74,9 +74,7 @@ export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> 
 	getPoolsDescendingOrderTVL = computedFn(
 		(
 			priceStore: { calculatePrice(vsCurrrency: string, coin: CoinPretty): PricePretty | undefined },
-			fiatCurrency: FiatCurrency,
-			itemsPerPage: number,
-			page: number
+			fiatCurrency: FiatCurrency
 		): QueriedPoolBase[] => {
 			if (!this.response) {
 				return [];
@@ -92,8 +90,7 @@ export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> 
 				return poolATvl.gt(poolBTvl) ? -1 : 1;
 			});
 
-			const offset = (page - 1) * itemsPerPage;
-			return pools.slice(offset, offset + itemsPerPage);
+			return pools;
 		}
 	);
 
