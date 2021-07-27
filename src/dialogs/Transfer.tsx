@@ -12,6 +12,8 @@ import { useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
 import { wrapBaseDialog } from './base';
 import { useAccountConnection } from '../hooks/account/useAccountConnection';
 import { ConnectAccountButton } from '../components/ConnectAccountButton';
+import { Buffer } from 'buffer/';
+import { Dec } from '@keplr-wallet/unit';
 
 export const TransferDialog = wrapBaseDialog(
 	observer(
@@ -30,7 +32,7 @@ export const TransferDialog = wrapBaseDialog(
 			isWithdraw: boolean;
 			close: () => void;
 		}) => {
-			const { chainStore, accountStore, queriesStore } = useStore();
+			const { chainStore, accountStore, queriesStore, ibcTransferHistoryStore } = useStore();
 
 			const account = accountStore.getAccount(chainStore.current.chainId);
 			const counterpartyAccount = accountStore.getAccount(counterpartyChainId);
@@ -187,6 +189,47 @@ export const TransferDialog = wrapBaseDialog(
 														if (tx.code) {
 															toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
 														} else {
+															const events = tx?.events as
+																| { type: string; attributes: { key: string; value: string }[] }[]
+																| undefined;
+															if (events) {
+																for (const event of events) {
+																	if (event.type === 'send_packet') {
+																		const attributes = event.attributes;
+																		const sourceChannelAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_src_channel').toString('base64')
+																		);
+																		const sourceChannel = sourceChannelAttr
+																			? Buffer.from(sourceChannelAttr.value, 'base64').toString()
+																			: undefined;
+																		const destChannelAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_dst_channel').toString('base64')
+																		);
+																		const destChannel = destChannelAttr
+																			? Buffer.from(destChannelAttr.value, 'base64').toString()
+																			: undefined;
+																		const sequenceAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_sequence').toString('base64')
+																		);
+																		const sequence = sequenceAttr
+																			? Buffer.from(sequenceAttr.value, 'base64').toString()
+																			: undefined;
+
+																		if (sourceChannel && destChannel && sequence) {
+																			ibcTransferHistoryStore.pushPendingHistory({
+																				sourceChainId: chainStore.current.chainId,
+																				sourceChannelId: sourceChannel,
+																				destChainId: counterpartyChainId,
+																				destChannelId: destChannel,
+																				sequence,
+																				sender: account.bech32Address,
+																				amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
+																			});
+																		}
+																	}
+																}
+															}
+
 															toast.displayToast(TToastType.TX_SUCCESSFULL, {
 																customLink: chainStore.current.explorerUrlToTx.replace(
 																	'{txHash}',
@@ -216,6 +259,47 @@ export const TransferDialog = wrapBaseDialog(
 														if (tx.code) {
 															toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
 														} else {
+															const events = tx?.events as
+																| { type: string; attributes: { key: string; value: string }[] }[]
+																| undefined;
+															if (events) {
+																for (const event of events) {
+																	if (event.type === 'send_packet') {
+																		const attributes = event.attributes;
+																		const sourceChannelAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_src_channel').toString('base64')
+																		);
+																		const sourceChannel = sourceChannelAttr
+																			? Buffer.from(sourceChannelAttr.value, 'base64').toString()
+																			: undefined;
+																		const destChannelAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_dst_channel').toString('base64')
+																		);
+																		const destChannel = destChannelAttr
+																			? Buffer.from(destChannelAttr.value, 'base64').toString()
+																			: undefined;
+																		const sequenceAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_sequence').toString('base64')
+																		);
+																		const sequence = sequenceAttr
+																			? Buffer.from(sequenceAttr.value, 'base64').toString()
+																			: undefined;
+
+																		if (sourceChannel && destChannel && sequence) {
+																			ibcTransferHistoryStore.pushPendingHistory({
+																				sourceChainId: counterpartyChainId,
+																				sourceChannelId: sourceChannel,
+																				destChainId: chainStore.current.chainId,
+																				destChannelId: destChannel,
+																				sequence,
+																				sender: account.bech32Address,
+																				amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
+																			});
+																		}
+																	}
+																}
+															}
+
 															toast.displayToast(TToastType.TX_SUCCESSFULL, {
 																customLink: chainStore
 																	.getChain(counterpartyChainId)
