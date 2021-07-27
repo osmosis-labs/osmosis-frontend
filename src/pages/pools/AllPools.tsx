@@ -207,7 +207,7 @@ function Badge({ children, ...props }: HTMLAttributes<HTMLSpanElement>) {
 function TablePagination({ page: propPage, numberOfPools }: { page: number; numberOfPools: number }) {
 	const history = useHistory();
 
-	const numPages = (numberOfPools || 1) / PoolsPerPage;
+	const numPages = Math.ceil((numberOfPools || 1) / PoolsPerPage);
 
 	const pageRender = [];
 
