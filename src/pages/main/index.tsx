@@ -1,24 +1,14 @@
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import React, { FunctionComponent, ReactNode } from 'react';
 import ProgressiveImage from 'react-progressive-image';
 import { useWindowSize } from 'react-use';
 import { colorPrimary } from '../../emotionStyles/colors';
-import { onLWidth, onMWidth, onSWidth, onXlWidth, onXsWidth } from '../../emotionStyles/mediaQueries';
 import { TradeClipboard } from './TradeClipboard';
 
-const TOOL_TABLE_HEIGHT = 180;
-
-interface WindowSizeProps {
-	windowWidth?: number;
-	windowHeight?: number;
-}
-
 export const MainPage: FunctionComponent = () => {
-	const { width, height } = useWindowSize();
 	return (
 		<PageContainer>
-			<BgImageContainer windowWidth={width} windowHeight={height} />
+			<BgImageContainer />
 			<TradeWrapper>
 				<TradeClipboard />
 			</TradeWrapper>
@@ -45,6 +35,14 @@ function TradeWrapper({ children }: { children: ReactNode }) {
 	);
 }
 
+const TradeContainer = styled.div<{ windowHeight?: number }>`
+	${({ windowHeight = 0 }) => ({
+		marginBottom: windowHeight < 760 ? 0 : 130,
+	})};
+	width: 520px;
+	height: 672px;
+`;
+
 const TradePosition = styled.div`
 	display: flex;
 	flex-direction: column;
@@ -52,127 +50,91 @@ const TradePosition = styled.div`
 	align-items: center;
 	position: absolute;
 	z-index: 3;
-	left: 1200px;
 	height: 100%;
-
-	${onXlWidth} {
-		left: initial;
-		right: 80px;
-	}
-
-	${onLWidth} {
-		right: 20px;
-	}
-
-	${onSWidth} {
-		right: initial;
-		left: 180px;
-	}
-
-	${onXsWidth} {
-		left: 20px;
+	--tradePositionLeft: calc(75vh * 193 / 242 + 100px);
+	left: min(1100px, var(--tradePositionLeft));
+	@media (max-aspect-ratio: 7/4) {
+		left: min(calc(100vw - 206px - 540px), 1100px);
 	}
 `;
 
-const TradeContainer = styled.div<{ windowHeight?: number }>`
-	${({ windowHeight = 0 }) => ({
-		marginBottom: windowHeight < 760 ? 0 : 130,
-	})};
-	width: 520px;
-	height: 672px;
-
-	${onXsWidth} {
-		width: 500px;
-	}
-`;
-
-function BgImageContainer({ windowHeight, windowWidth }: WindowSizeProps) {
+function BgImageContainer() {
 	return (
-		<>
+		<ImageGroupDiv>
 			<ProgressiveImage
 				placeholder="/public/assets/backgrounds/osmosis-home-bg-low.png"
 				src="/public/assets/backgrounds/osmosis-home-bg.png">
-				{(src: string) => (
-					<ImgOsmoGuy windowHeight={windowHeight} windowWidth={windowWidth} src={src} alt="Osmosis guy" />
-				)}
+				{(src: string) => <ImgBgOsmoGuy src={src} />}
 			</ProgressiveImage>
+			<OsmoTableDiv />
 			<ProgressiveImage
 				placeholder="/public/assets/backgrounds/osmosis-home-fg-low.png"
 				src="/public/assets/backgrounds/osmosis-home-fg.png">
-				{(src: string) => <ImgScienceTools src={src} alt="Osmosis science tools" />}
+				{(src: string) => <ImgBgScienceTools src={src} />}
 			</ProgressiveImage>
-			<StyledBottomDiv />
-		</>
+		</ImageGroupDiv>
 	);
 }
 
-const osmoGuyCssWidthRules = css`
-	${onLWidth} {
-		width: 740px;
-		left: 10px;
-		bottom: ${TOOL_TABLE_HEIGHT - 30}px;
-	}
-
-	${onMWidth} {
-		width: 600px;
-		left: 10px;
-		bottom: ${TOOL_TABLE_HEIGHT - 38}px;
+const ImgBgOsmoGuy = styled.div<{ src: string }>`
+	background-image: ${({ src }) => `url(${src})`};
+	height: 80vh;
+	margin-top: -75vh;
+	max-width: 1000px;
+	background-position: left bottom;
+	background-size: contain;
+	background-repeat: no-repeat;
+	@media (max-aspect-ratio: 5/4) {
+		--widthOsmo: calc(100vw - 206px - 540px);
+		--heightOsmo: calc(var(--widthOsmo) * 242 / 193);
+		width: var(--widthOsmo);
+		height: var(--heightOsmo);
+		margin-top: calc(var(--heightOsmo) * -0.94);
 	}
 `;
-const ImgOsmoGuy = styled.img<{ windowWidth?: number; windowHeight?: number }>`
-	display: block;
+
+const ImgBgScienceTools = styled.div<{ src: string }>`
+	background-image: ${({ src }) => `url(${src})`};
 	position: absolute;
-	bottom: ${TOOL_TABLE_HEIGHT - 66}px;
-	left: 84px;
-	z-index: 0;
-	width: 860px;
-	height: auto;
-	${({ windowHeight = 0, windowWidth = 0 }) => {
-		const MAX_IMAGE_HEIGHT = 800;
-		const ASPECT_RATIO = [193, 242];
-		const MEDIUM_WINDOW_WIDTH = 1390;
-
-		if (windowWidth <= windowHeight) {
-			return osmoGuyCssWidthRules;
-		} else if (windowHeight < windowWidth) {
-			const imageHeight = Math.min(Math.floor(windowHeight * 0.8), MAX_IMAGE_HEIGHT);
-			const imageWidth = Math.floor((imageHeight * ASPECT_RATIO[0]) / ASPECT_RATIO[1]);
-
-			if (imageHeight === MAX_IMAGE_HEIGHT && windowWidth < MEDIUM_WINDOW_WIDTH) {
-				return osmoGuyCssWidthRules;
-			}
-			return css`
-				height: ${imageHeight}px;
-				width: ${imageWidth}px;
-			`;
-		}
-	}}
+	background-position: left bottom;
+	background-size: contain;
+	background-repeat: no-repeat;
+	border: 1px solid blue;
+	z-index: 3;
+	--heightScienceTools: min(25vh, 500px);
+	--widthScienceTools: calc(var(--heightScienceTools) * 1351 / 857);
+	width: var(--widthScienceTools);
+	height: var(--heightScienceTools);
+	bottom: 30%;
+	left: 5%;
+	@media (max-aspect-ratio: 5/4) {
+		--widthOsmo: calc(100vw - 206px - 540px);
+		--widthScienceTools: calc(var(--widthOsmo) * 0.7);
+		--heightScienceTools: calc(var(--widthScienceTools) * 857 / 1351);
+		width: var(--widthScienceTools);
+		height: var(--heightScienceTools);
+	}
 `;
 
-const ImgScienceTools = styled.img`
-	display: block;
+const OsmoTableDiv = styled.div`
 	position: absolute;
-	bottom: 20px;
-	left: 90px;
-	z-index: 2;
-	width: 520px;
-	height: auto;
-
-	${onMWidth} {
-		width: 480px;
-		bottom: ${TOOL_TABLE_HEIGHT - 126}px;
-	}
-	@media (max-height: 800px) {
-		width: 480px;
-	}
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #120644;
+	z-index: 1;
 `;
 
-const StyledBottomDiv = styled.div`
+const ImageGroupDiv = styled.div`
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	z-index: 1;
 	width: 100%;
-	height: ${TOOL_TABLE_HEIGHT}px;
-	background-color: #120644;
+	height: min(20vh, 180px);
+	@media (max-aspect-ratio: 5/4) {
+		--widthOsmo: calc(100vw - 206px - 540px);
+		--heightOsmo: calc(var(--widthOsmo) * 242 / 193);
+		height: calc(var(--heightOsmo) * 0.2);
+	}
 `;
