@@ -25,9 +25,8 @@ const PageContainer = styled.div`
 	overflow: scroll;
 	height: 100vh;
 	position: relative;
-	@media (max-width: 780px) {
+	@media (max-width: 800px) {
 		width: 520px;
-		overflow: hidden;
 	}
 `;
 
@@ -41,6 +40,9 @@ function TradeWrapper({ children }: { children: ReactNode }) {
 }
 
 const TradeContainer = styled.div<{ windowHeight?: number }>`
+	${({ windowHeight = 0 }) => ({
+		marginBottom: windowHeight < 760 ? 0 : 130,
+	})};
 	width: 520px;
 	height: 672px;
 `;
