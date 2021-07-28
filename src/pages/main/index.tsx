@@ -173,4 +173,7 @@ const ImageGroupDiv = styled.div`
 		--heightOsmo: calc(var(--widthOsmo) * 242 / 193);
 		height: calc(var(--heightOsmo) * 0.2);
 	}
+	@media (max-width: 800px) {
+		display: none;
+	}
 `;
