@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import React, { FunctionComponent, ReactNode } from 'react';
 import ProgressiveImage from 'react-progressive-image';
@@ -8,10 +9,16 @@ import { TradeClipboard } from './TradeClipboard';
 
 const TOOL_TABLE_HEIGHT = 180;
 
+interface WindowSizeProps {
+	windowWidth?: number;
+	windowHeight?: number;
+}
+
 export const MainPage: FunctionComponent = () => {
+	const { width, height } = useWindowSize();
 	return (
 		<PageContainer>
-			<BgImageContainer />
+			<BgImageContainer windowWidth={width} windowHeight={height} />
 			<TradeWrapper>
 				<TradeClipboard />
 			</TradeWrapper>
@@ -26,7 +33,6 @@ const PageContainer = styled.div`
 	background-repeat: repeat-x;
 	background-size: cover;
 	height: 100vh;
-	overflow: hidden;
 	position: relative;
 `;
 
@@ -70,7 +76,7 @@ const TradePosition = styled.div`
 
 const TradeContainer = styled.div<{ windowHeight?: number }>`
 	${({ windowHeight = 0 }) => ({
-		marginBottom: windowHeight < 720 ? 0 : 130,
+		marginBottom: windowHeight < 760 ? 0 : 130,
 	})};
 	width: 520px;
 	height: 672px;
@@ -80,13 +86,15 @@ const TradeContainer = styled.div<{ windowHeight?: number }>`
 	}
 `;
 
-function BgImageContainer() {
+function BgImageContainer({ windowHeight, windowWidth }: WindowSizeProps) {
 	return (
 		<>
 			<ProgressiveImage
 				placeholder="/public/assets/backgrounds/osmosis-home-bg-low.png"
 				src="/public/assets/backgrounds/osmosis-home-bg.png">
-				{(src: string) => <ImgOsmoGuy src={src} alt="Osmosis guy" />}
+				{(src: string) => (
+					<ImgOsmoGuy windowHeight={windowHeight} windowWidth={windowWidth} src={src} alt="Osmosis guy" />
+				)}
 			</ProgressiveImage>
 			<ProgressiveImage
 				placeholder="/public/assets/backgrounds/osmosis-home-fg-low.png"
@@ -98,31 +106,47 @@ function BgImageContainer() {
 	);
 }
 
-const ImgOsmoGuy = styled.img`
+const osmoGuyCssWidthRules = css`
+	${onLWidth} {
+		width: 740px;
+		left: 10px;
+		bottom: ${TOOL_TABLE_HEIGHT - 30}px;
+	}
+
+	${onMWidth} {
+		width: 600px;
+		left: 10px;
+		bottom: ${TOOL_TABLE_HEIGHT - 38}px;
+	}
+`;
+const ImgOsmoGuy = styled.img<{ windowWidth?: number; windowHeight?: number }>`
 	display: block;
 	position: absolute;
 	bottom: ${TOOL_TABLE_HEIGHT - 66}px;
 	left: 84px;
 	z-index: 0;
-	width: 820px;
+	width: 860px;
 	height: auto;
+	${({ windowHeight = 0, windowWidth = 0 }) => {
+		const MAX_IMAGE_HEIGHT = 800;
+		const ASPECT_RATIO = [193, 242];
+		const MEDIUM_WINDOW_WIDTH = 1390;
 
-	${onXlWidth} {
-		width: 640px;
-		left: 10px;
-		bottom: ${TOOL_TABLE_HEIGHT - 36}px;
-	}
+		if (windowWidth <= windowHeight) {
+			return osmoGuyCssWidthRules;
+		} else if (windowHeight < windowWidth) {
+			const imageHeight = Math.min(Math.floor(windowHeight * 0.8), MAX_IMAGE_HEIGHT);
+			const imageWidth = Math.floor((imageHeight * ASPECT_RATIO[0]) / ASPECT_RATIO[1]);
 
-	${onLWidth} {
-		width: 520px;
-		left: 10px;
-		bottom: ${TOOL_TABLE_HEIGHT - 36}px;
-	}
-
-	${onMWidth} {
-		width: 440px;
-		bottom: ${TOOL_TABLE_HEIGHT - 26}px;
-	}
+			if (imageHeight === MAX_IMAGE_HEIGHT && windowWidth < MEDIUM_WINDOW_WIDTH) {
+				return osmoGuyCssWidthRules;
+			}
+			return css`
+				height: ${imageHeight}px;
+				width: ${imageWidth}px;
+			`;
+		}
+	}}
 `;
 
 const ImgScienceTools = styled.img`
@@ -137,6 +161,9 @@ const ImgScienceTools = styled.img`
 	${onMWidth} {
 		width: 480px;
 		bottom: ${TOOL_TABLE_HEIGHT - 126}px;
+	}
+	@media (max-height: 800px) {
+		width: 480px;
 	}
 `;
 
