@@ -99,7 +99,6 @@ const ImgBgScienceTools = styled.div<{ src: string }>`
 	background-position: left bottom;
 	background-size: contain;
 	background-repeat: no-repeat;
-	border: 1px solid blue;
 	z-index: 3;
 	--heightScienceTools: min(25vh, 500px);
 	--widthScienceTools: calc(var(--heightScienceTools) * 1351 / 857);
