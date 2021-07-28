@@ -29,9 +29,9 @@ export class IBCTransferHistoryStore {
 	protected _histories: IBCTransferHistory[] = [];
 
 	constructor(protected readonly kvStore: KVStore, protected readonly chainGetter: ChainGetter) {
-		this.restore();
-
 		makeObservable(this);
+
+		this.restore();
 
 		keepAlive(this, 'historyMapByTxHash');
 	}
