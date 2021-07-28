@@ -217,6 +217,7 @@ export const TransferDialog = wrapBaseDialog(
 
 																		if (sourceChannel && destChannel && sequence) {
 																			ibcTransferHistoryStore.pushPendingHistory({
+																				txHash: tx.hash,
 																				sourceChainId: chainStore.current.chainId,
 																				sourceChannelId: sourceChannel,
 																				destChainId: counterpartyChainId,
@@ -287,6 +288,7 @@ export const TransferDialog = wrapBaseDialog(
 
 																		if (sourceChannel && destChannel && sequence) {
 																			ibcTransferHistoryStore.pushPendingHistory({
+																				txHash: tx.hash,
 																				sourceChainId: counterpartyChainId,
 																				sourceChannelId: sourceChannel,
 																				destChainId: chainStore.current.chainId,
