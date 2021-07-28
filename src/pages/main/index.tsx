@@ -108,7 +108,7 @@ const ImgBgOsmoGuy = styled.div<{ src: string }>`
 		width: calc(100vh * 0.45);
 	}
 	@media (max-aspect-ratio: 6/4) {
-		--widthOsmo: calc(92vw - 206px - 540px);
+		--widthOsmo: calc(88vw - 206px - 540px);
 		--heightOsmo: calc(var(--widthOsmo) * 242 / 193);
 		width: var(--widthOsmo);
 		height: var(--heightOsmo);
