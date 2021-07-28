@@ -155,7 +155,7 @@ const ImgScienceTools = styled.img`
 	bottom: 20px;
 	left: 90px;
 	z-index: 2;
-	width: 666px;
+	width: 520px;
 	height: auto;
 
 	${onMWidth} {
