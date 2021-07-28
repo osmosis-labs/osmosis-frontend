@@ -1,121 +1,145 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
+import styled from '@emotion/styled';
+import React, { FunctionComponent, ReactNode } from 'react';
+import ProgressiveImage from 'react-progressive-image';
+import { useWindowSize } from 'react-use';
+import { colorPrimary } from '../../emotionStyles/colors';
+import { onLWidth, onMWidth, onSWidth, onXlWidth, onXsWidth } from '../../emotionStyles/mediaQueries';
 import { TradeClipboard } from './TradeClipboard';
 
+const TOOL_TABLE_HEIGHT = 180;
+
 export const MainPage: FunctionComponent = () => {
-	const [ratio, setRatio] = useState(document.body.clientWidth / document.body.clientHeight);
-
-	useEffect(() => {
-		const calcAspectRatio = () => {
-			setRatio(document.body.clientWidth / document.body.clientHeight);
-		};
-
-		window.addEventListener('resize', calcAspectRatio);
-
-		return () => {
-			window.removeEventListener('resize', calcAspectRatio);
-		};
-	}, []);
-
-	useEffect(() => {
-		setRatio(() => document.body.clientWidth / document.body.clientHeight);
-	}, [ratio]);
-
-	const bgRef = useRef<SVGImageElement>(null);
-	const [bgLoaded, setBgLoaded] = useState(false);
-	const fgRef = useRef<SVGImageElement>(null);
-	const [fgLoaded, setFgLoaded] = useState(false);
-	useEffect(() => {
-		// At first, load the compressed images and high-res images at the same time.
-		// And if the high-res images loaded, remove the compressed images.
-		// Expectedly, because the webside loads the image from the cache on the user’s second visit to the website, the loading should be very fast.
-		if (bgRef.current) {
-			bgRef.current.addEventListener(
-				'load',
-				() => {
-					setBgLoaded(true);
-				},
-				{
-					once: true,
-				}
-			);
-		}
-
-		if (fgRef.current) {
-			fgRef.current.addEventListener(
-				'load',
-				() => {
-					setFgLoaded(true);
-				},
-				{
-					once: true,
-				}
-			);
-		}
-	}, []);
-
 	return (
-		<div className="relative w-full h-full grid" style={{ gridTemplateColumns: '2fr 520px 1fr' }}>
-			<div />
-			<div className="grid w-full h-full z-30" style={{ gridTemplateRows: '2fr 672px 3fr' }}>
-				<div />
-				<div style={{ maxWidth: '520px' }}>
-					<TradeClipboard />
-				</div>
-				<div />
-			</div>
-			<div />
-			<div className="absolute top-0 left-0 w-full h-full overflow-visible z-0">
-				<svg
-					className="w-full h-full"
-					viewBox="0 0 1300 900"
-					height="900"
-					preserveAspectRatio={ratio > 1.444 ? 'xMinYMid meet' : 'xMidYMid slice'}>
-					<g>
-						<image
-							xlinkHref="/public/assets/backgrounds/osmosis-home-bg-pattern.svg"
-							x="20"
-							y="20"
-							width="2252.2917"
-							height="809.7202"
-						/>
-						{!bgLoaded ? (
-							<image
-								xlinkHref="/public/assets/backgrounds/osmosis-home-bg-low.png"
-								x="56"
-								y="97"
-								width="578.7462"
-								height="725.6817"
-							/>
-						) : null}
-						<image
-							ref={bgRef}
-							xlinkHref="/public/assets/backgrounds/osmosis-home-bg.png"
-							x="56"
-							y="97"
-							width="578.7462"
-							height="725.6817"
-						/>
-						<rect x="-3000" y="778" width="8660" height="244" fill="#120644" />
-						{!fgLoaded ? (
-							<image
-								xlinkHref="/public/assets/backgrounds/osmosis-home-fg-low.png"
-								x="61"
-								y="602"
-								width="448.8865"
-								height="285.1699"
-							/>
-						) : null}
-						<image
-							ref={fgRef}
-							xlinkHref="/public/assets/backgrounds/osmosis-home-fg.png"
-							x="61"
-							y="602"
-							width="448.8865"
-							height="285.1699"
-						/>
-					</g>
-				</svg>
-			</div>
-		</div>
+		<PageContainer>
+			<BgImageContainer />
+			<TradeWrapper>
+				<TradeClipboard />
+			</TradeWrapper>
+		</PageContainer>
 	);
 };
+
+const PageContainer = styled.div`
+	width: 100%;
+	background-color: ${colorPrimary};
+	background-image: url('/public/assets/backgrounds/osmosis-home-bg-pattern.svg');
+	background-repeat: repeat-x;
+	background-size: cover;
+	height: 100vh;
+	overflow: hidden;
+	position: relative;
+`;
+
+function TradeWrapper({ children }: { children: ReactNode }) {
+	const { height } = useWindowSize();
+	return (
+		<TradePosition>
+			<TradeContainer windowHeight={height}>{children}</TradeContainer>
+		</TradePosition>
+	);
+}
+
+const TradePosition = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	z-index: 3;
+	left: 1200px;
+	height: 100%;
+
+	${onXlWidth} {
+		left: initial;
+		right: 80px;
+	}
+
+	${onLWidth} {
+		right: 20px;
+	}
+
+	${onSWidth} {
+		right: initial;
+		left: 180px;
+	}
+
+	${onXsWidth} {
+		left: 20px;
+	}
+`;
+
+const TradeContainer = styled.div<{ windowHeight?: number }>`
+	${({ windowHeight = 0 }) => ({
+		marginBottom: windowHeight < 672 ? 0 : 130,
+	})};
+	width: 520px;
+	height: 672px;
+
+	${onXsWidth} {
+		width: 500px;
+	}
+`;
+
+function BgImageContainer() {
+	return (
+		<>
+			<ProgressiveImage
+				placeholder="/public/assets/backgrounds/osmosis-home-bg-low.png"
+				src="/public/assets/backgrounds/osmosis-home-bg.png">
+				{(src: string) => <ImgOsmoGuy src={src} alt="Osmosis guy" />}
+			</ProgressiveImage>
+			<ProgressiveImage
+				placeholder="/public/assets/backgrounds/osmosis-home-fg-low.png"
+				src="/public/assets/backgrounds/osmosis-home-fg.png">
+				{(src: string) => <ImgScienceTools src={src} alt="Osmosis science tools" />}
+			</ProgressiveImage>
+			<StyledBottomDiv />
+		</>
+	);
+}
+
+const ImgOsmoGuy = styled.img`
+	display: block;
+	position: absolute;
+	bottom: ${TOOL_TABLE_HEIGHT - 66}px;
+	left: 84px;
+	z-index: 0;
+	width: 860px;
+	height: auto;
+
+	${onLWidth} {
+		width: 740px;
+		left: 10px;
+		bottom: ${TOOL_TABLE_HEIGHT - 36}px;
+	}
+
+	${onMWidth} {
+		width: 600px;
+		bottom: ${TOOL_TABLE_HEIGHT - 26}px;
+	}
+`;
+
+const ImgScienceTools = styled.img`
+	display: block;
+	position: absolute;
+	bottom: 20px;
+	left: 90px;
+	z-index: 2;
+	width: 666px;
+	height: auto;
+
+	${onMWidth} {
+		width: 480px;
+		bottom: ${TOOL_TABLE_HEIGHT - 126}px;
+	}
+`;
+
+const StyledBottomDiv = styled.div`
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	z-index: 1;
+	width: 100%;
+	height: ${TOOL_TABLE_HEIGHT}px;
+	background-color: #120644;
+`;
