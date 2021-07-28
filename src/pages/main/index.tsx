@@ -70,7 +70,7 @@ const TradePosition = styled.div`
 
 const TradeContainer = styled.div<{ windowHeight?: number }>`
 	${({ windowHeight = 0 }) => ({
-		marginBottom: windowHeight < 672 ? 0 : 130,
+		marginBottom: windowHeight < 720 ? 0 : 130,
 	})};
 	width: 520px;
 	height: 672px;
@@ -104,17 +104,23 @@ const ImgOsmoGuy = styled.img`
 	bottom: ${TOOL_TABLE_HEIGHT - 66}px;
 	left: 84px;
 	z-index: 0;
-	width: 860px;
+	width: 820px;
 	height: auto;
 
+	${onXlWidth} {
+		width: 640px;
+		left: 10px;
+		bottom: ${TOOL_TABLE_HEIGHT - 36}px;
+	}
+
 	${onLWidth} {
-		width: 740px;
+		width: 520px;
 		left: 10px;
 		bottom: ${TOOL_TABLE_HEIGHT - 36}px;
 	}
 
 	${onMWidth} {
-		width: 600px;
+		width: 440px;
 		bottom: ${TOOL_TABLE_HEIGHT - 26}px;
 	}
 `;
