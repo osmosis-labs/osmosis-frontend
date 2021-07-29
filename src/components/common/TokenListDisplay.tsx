@@ -1,8 +1,10 @@
-import React, { FunctionComponent } from 'react';
-import { Img } from './Img';
+import styled from '@emotion/styled';
 import { AppCurrency } from '@keplr-wallet/types';
 import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent } from 'react';
+import { colorPrimary, colorPrimaryLight } from '../../emotionStyles/colors';
 import { useStore } from '../../stores';
+import { Img } from './Img';
 
 export const TokenListDisplay: FunctionComponent<{
 	currencies: AppCurrency[];
@@ -32,11 +34,12 @@ export const TokenListDisplay: FunctionComponent<{
 					placeholder="Search your token"
 				/>
 			</div>
-			<ul style={{ maxHeight: '215px' }} className="mt-5 overflow-y-auto">
+			<TokenItemList>
 				{filteredCurrencies.map(cur => {
 					const balance = queries.queryBalances
 						.getQueryBech32Address(account.bech32Address)
 						.balances.find(bal => bal.currency.coinMinimalDenom === cur.coinMinimalDenom);
+
 					const amount =
 						balance?.balance
 							?.hideDenom(true)
@@ -56,10 +59,31 @@ export const TokenListDisplay: FunctionComponent<{
 						/>
 					);
 				})}
-			</ul>
+			</TokenItemList>
 		</div>
 	);
 });
+
+const TokenItemList = styled.ul`
+	max-height: 215px;
+	margin-top: 20px;
+	overflow-y: auto;
+
+	&::-webkit-scrollbar {
+		border: 1px solid ${colorPrimary};
+		border-radius: 4px;
+	}
+
+	&::-webkit-scrollbar-track-piece {
+		background: ${colorPrimary};
+		border-radius: 4px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: ${colorPrimaryLight};
+		border-radius: 6px;
+	}
+`;
 
 const TokenItem: FunctionComponent<{
 	currency: AppCurrency;
