@@ -6,9 +6,11 @@ export const AmountInput = styled.input`
 	font-size: ${fontXl}px;
 	color: ${colorWhiteHigh};
 	text-align: right;
-	input::-webkit-outer-spin-button,
-	input::-webkit-inner-spin-button {
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button {
 		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
 		margin: 0;
 	}
 `;
