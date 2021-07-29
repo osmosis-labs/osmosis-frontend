@@ -16,6 +16,7 @@ export interface IBCTransferHistory {
 	readonly destChannelId: string;
 	readonly sequence: string;
 	readonly sender: string;
+	readonly recipient: string;
 	readonly amount: {
 		currency: AppCurrency;
 		amount: string;
@@ -29,6 +30,8 @@ export class IBCTransferHistoryStore {
 	@observable
 	protected _histories: IBCTransferHistory[] = [];
 
+	protected onHistoryChangedHandlers: ((history: IBCTransferHistory) => void)[] = [];
+
 	// Key is chain id.
 	// No need to be observable
 	protected blockSubscriberMap: Map<string, TxTracer> = new Map();
@@ -39,6 +42,10 @@ export class IBCTransferHistoryStore {
 		this.restore();
 
 		keepAlive(this, 'historyMapByTxHash');
+	}
+
+	addHistoryChangedHandler(handler: (history: IBCTransferHistory) => void) {
+		this.onHistoryChangedHandlers.push(handler);
 	}
 
 	get histories(): IBCTransferHistory[] {
@@ -99,6 +106,11 @@ export class IBCTransferHistoryStore {
 		const status = yield* toGenerator(this.traceHistroyStatus(history));
 		if (history.status !== status) {
 			history.status = status;
+
+			for (const handler of this.onHistoryChangedHandlers) {
+				handler(history);
+			}
+
 			yield this.save();
 		}
 	}

@@ -229,6 +229,7 @@ export const TransferDialog = wrapBaseDialog(
 																				destChannelId: destChannel,
 																				sequence,
 																				sender: account.bech32Address,
+																				recipient: counterpartyAccount.bech32Address,
 																				amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
 																				timeoutHeight,
 																			});
@@ -307,6 +308,7 @@ export const TransferDialog = wrapBaseDialog(
 																				destChannelId: destChannel,
 																				sequence,
 																				sender: account.bech32Address,
+																				recipient: account.bech32Address,
 																				amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
 																				timeoutHeight,
 																			});
