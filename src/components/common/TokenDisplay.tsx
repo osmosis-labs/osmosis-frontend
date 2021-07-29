@@ -14,10 +14,7 @@ export function TokenDisplay({
 	setOpenSelector?: (bool: boolean | ((bool: boolean) => boolean)) => void;
 }) {
 	return (
-		<div
-			className="flex items-center"
-			style={{ cursor: 'pointer' }}
-			onClick={() => setOpenSelector((v: boolean) => !v)}>
+		<div className="flex items-center">
 			<figure
 				style={{ minWidth: '56px', minHeight: '56px', maxWidth: '56px', maxHeight: '56px' }}
 				className="flex justify-center items-center rounded-full border-secondary-200 border mr-3">
@@ -27,6 +24,7 @@ export function TokenDisplay({
 				<div className="flex items-center">
 					<h5 className="leading-none font-semibold">{currency.coinDenom.toUpperCase()}</h5>
 					<Img
+						onClick={() => setOpenSelector((v: boolean) => !v)}
 						className={cn(
 							'h-6 w-8 ml-1 p-2 cursor-pointer opacity-40 hover:opacity-100',
 							openSelector ? 'rotate-180' : ''
