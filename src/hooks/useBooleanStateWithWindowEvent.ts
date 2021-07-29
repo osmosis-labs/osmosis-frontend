@@ -3,7 +3,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 interface Options {
 	/** @default: click */
 	windowEventName?: string;
-	/** @description: return next boolean state*/
+	/** @description: return next boolean state.
+	 * @default: toggles boolean state on windowEvent
+	 * */
 	onWindowEvent?: (prevBool?: boolean) => boolean;
 }
 
