@@ -21,12 +21,17 @@ export interface IBCTransferHistory {
 		amount: string;
 	};
 	status: IBCTransferHistoryStatus;
+	readonly timeoutHeight?: string;
 	readonly createdAt: string;
 }
 
 export class IBCTransferHistoryStore {
 	@observable
 	protected _histories: IBCTransferHistory[] = [];
+
+	// Key is chain id.
+	// No need to be observable
+	protected blockSubscriberMap: Map<string, TxTracer> = new Map();
 
 	constructor(protected readonly kvStore: KVStore, protected readonly chainGetter: ChainGetter) {
 		makeObservable(this);
@@ -40,15 +45,25 @@ export class IBCTransferHistoryStore {
 		return this._histories;
 	}
 
+	protected getBlockSubscriber(chainId: string): TxTracer {
+		if (!this.blockSubscriberMap.has(chainId)) {
+			this.blockSubscriberMap.set(chainId, new TxTracer(this.chainGetter.getChain(chainId).rpc, '/websocket'));
+		}
+
+		return this.blockSubscriberMap.get(chainId)!;
+	}
+
 	async traceHistroyStatus(
 		history: Pick<
 			IBCTransferHistory,
 			'sourceChainId' | 'sourceChannelId' | 'destChainId' | 'destChannelId' | 'sequence' | 'status'
 		>
 	): Promise<IBCTransferHistoryStatus> {
-		if (history.status !== 'pending') {
+		if (history.status === 'complete' || history.status === 'refunded') {
 			return history.status;
 		}
+
+		const blockSubscriber = this.getBlockSubscriber(history.destChainId);
 
 		const txTracer = new TxTracer(this.chainGetter.getChain(history.destChainId).rpc, '/websocket');
 		const tx = await txTracer.traceTx({

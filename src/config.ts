@@ -335,8 +335,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer'],
 	},
 	{
-		rpc: 'https://rpc.core.persistence.one',
-		rest: 'https://rest.core.persistence.one',
+		rpc: 'https://rpc-persistence.keplr.app',
+		rest: 'https://lcd-persistence.keplr.app',
 		chainId: 'core-1',
 		chainName: 'Persistence',
 		stakeCurrency: {

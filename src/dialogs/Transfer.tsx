@@ -13,7 +13,6 @@ import { wrapBaseDialog } from './base';
 import { useAccountConnection } from '../hooks/account/useAccountConnection';
 import { ConnectAccountButton } from '../components/ConnectAccountButton';
 import { Buffer } from 'buffer/';
-import { Dec } from '@keplr-wallet/unit';
 
 export const TransferDialog = wrapBaseDialog(
 	observer(
@@ -214,6 +213,12 @@ export const TransferDialog = wrapBaseDialog(
 																		const sequence = sequenceAttr
 																			? Buffer.from(sequenceAttr.value, 'base64').toString()
 																			: undefined;
+																		const timeoutHeightAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_timeout_height').toString()
+																		);
+																		const timeoutHeight = timeoutHeightAttr
+																			? Buffer.from(timeoutHeightAttr.value, 'base64').toString()
+																			: undefined;
 
 																		if (sourceChannel && destChannel && sequence) {
 																			ibcTransferHistoryStore.pushPendingHistory({
@@ -225,6 +230,7 @@ export const TransferDialog = wrapBaseDialog(
 																				sequence,
 																				sender: account.bech32Address,
 																				amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
+																				timeoutHeight,
 																			});
 																		}
 																	}
@@ -285,6 +291,12 @@ export const TransferDialog = wrapBaseDialog(
 																		const sequence = sequenceAttr
 																			? Buffer.from(sequenceAttr.value, 'base64').toString()
 																			: undefined;
+																		const timeoutHeightAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_timeout_height').toString()
+																		);
+																		const timeoutHeight = timeoutHeightAttr
+																			? Buffer.from(timeoutHeightAttr.value, 'base64').toString()
+																			: undefined;
 
 																		if (sourceChannel && destChannel && sequence) {
 																			ibcTransferHistoryStore.pushPendingHistory({
@@ -296,6 +308,7 @@ export const TransferDialog = wrapBaseDialog(
 																				sequence,
 																				sender: account.bech32Address,
 																				amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
+																				timeoutHeight,
 																			});
 																		}
 																	}

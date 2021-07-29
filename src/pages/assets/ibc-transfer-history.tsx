@@ -24,9 +24,12 @@ export const IBCTransferHistoryTable: FunctionComponent = observer(() => {
 		<table className="w-full">
 			<IBCTransferHistoryTableHeader />
 			<tbody className="w-full">
-				{ibcTransferHistoryStore.histories.map(history => {
-					return <IBCTransferHistoryTableRow key={history.txHash} history={history} />;
-				})}
+				{ibcTransferHistoryStore.histories
+					.slice()
+					.reverse()
+					.map(history => {
+						return <IBCTransferHistoryTableRow key={history.txHash} history={history} />;
+					})}
 			</tbody>
 		</table>
 	);
