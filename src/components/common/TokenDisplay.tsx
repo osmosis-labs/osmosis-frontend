@@ -24,7 +24,10 @@ export function TokenDisplay({
 				<div className="flex items-center">
 					<h5 className="leading-none font-semibold">{currency.coinDenom.toUpperCase()}</h5>
 					<Img
-						onClick={() => setOpenSelector((v: boolean) => !v)}
+						onClick={(e: MouseEvent) => {
+							e.stopPropagation();
+							setOpenSelector((v: boolean) => !v);
+						}}
 						className={cn(
 							'h-6 w-8 ml-1 p-2 cursor-pointer opacity-40 hover:opacity-100',
 							openSelector ? 'rotate-180' : ''
