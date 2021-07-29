@@ -3,11 +3,11 @@ import { AppCurrency } from '@keplr-wallet/types';
 import { CoinPretty, Int } from '@keplr-wallet/unit';
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { useState } from 'react';
 import * as React from 'react';
 import { DisplayAmount } from '../../../components/common/DIsplayAmount';
 import { TokenDisplay } from '../../../components/common/TokenDisplay';
 import { TokenListDisplay } from '../../../components/common/TokenListDisplay';
+import { useBooleanStateWithWindowEvent } from '../../../hooks/useBooleanStateWithWindowEvent';
 import { useStore } from '../../../stores';
 import { TokenAmountInput } from './TokenAmountInput';
 
@@ -28,7 +28,7 @@ export const FromBox = observer(({ config }: Props) => {
 		.getQueryBech32Address(account.bech32Address)
 		.balances.find(bal => bal.currency.coinMinimalDenom === config.sendCurrency.coinMinimalDenom);
 
-	const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+	const [isSelectorOpen, setIsSelectorOpen] = useBooleanStateWithWindowEvent(false);
 
 	return (
 		<div className="bg-surface rounded-2xl py-4 pr-5 pl-4 relative">
