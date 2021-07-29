@@ -31,20 +31,20 @@ const PageContainer = styled.div`
 `;
 
 function TradeWrapper({ children }: { children: ReactNode }) {
-	const { height } = useWindowSize();
 	return (
 		<TradePosition>
-			<TradeContainer windowHeight={height}>{children}</TradeContainer>
+			<TradeContainer>{children}</TradeContainer>
 		</TradePosition>
 	);
 }
 
-const TradeContainer = styled.div<{ windowHeight?: number }>`
-	${({ windowHeight = 0 }) => ({
-		marginBottom: windowHeight < 760 ? 0 : 130,
-	})};
+const TradeContainer = styled.div`
 	width: 520px;
 	height: 672px;
+	margin-bottom: 130px;
+	@media (max-height: 800px) {
+		margin-bottom: initial;
+	}
 `;
 
 const TradePosition = styled.div`
