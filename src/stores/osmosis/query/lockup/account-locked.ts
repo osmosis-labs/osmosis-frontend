@@ -46,8 +46,8 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
 
 		const matchedLocks = this.response.data.locks
 			.filter(lock => {
-				// Ignore milli sec
-				return Number.parseInt(lock.duration.replace('s', '')) + 's' === `${duration.asSeconds()}s`;
+				// Accepts the lock duration with jitter (~60s)
+				return Math.abs(Number.parseInt(lock.duration.replace('s', '')) - duration.asSeconds()) <= 60;
 			})
 			.filter(lock => {
 				// Filter the unlocking, unlockable locks.
@@ -82,8 +82,8 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
 
 		const matchedLocks = this.response.data.locks
 			.filter(lock => {
-				// Ignore milli sec
-				return Number.parseInt(lock.duration.replace('s', '')) + 's' === `${duration.asSeconds()}s`;
+				// Accepts the lock duration with jitter (~60s)
+				return Math.abs(Number.parseInt(lock.duration.replace('s', '')) - duration.asSeconds()) <= 60;
 			})
 			.filter(lock => {
 				// Filter the locked.
