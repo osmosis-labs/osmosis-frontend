@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
 import React, { FunctionComponent, ReactNode } from 'react';
 import ProgressiveImage from 'react-progressive-image';
-import { useWindowSize } from 'react-use';
 import { colorPrimary } from '../../emotionStyles/colors';
 import { TradeClipboard } from './TradeClipboard';
 
@@ -9,9 +8,9 @@ export const MainPage: FunctionComponent = () => {
 	return (
 		<PageContainer>
 			<BgImageContainer />
-			<TradeWrapper>
+			<TradeClipboardWrapper>
 				<TradeClipboard />
-			</TradeWrapper>
+			</TradeClipboardWrapper>
 		</PageContainer>
 	);
 };
@@ -30,22 +29,13 @@ const PageContainer = styled.div`
 	}
 `;
 
-function TradeWrapper({ children }: { children: ReactNode }) {
+function TradeClipboardWrapper({ children }: { children: ReactNode }) {
 	return (
 		<TradePosition>
 			<TradeContainer>{children}</TradeContainer>
 		</TradePosition>
 	);
 }
-
-const TradeContainer = styled.div`
-	width: 520px;
-	height: 672px;
-	margin-bottom: 130px;
-	@media (max-height: 800px) {
-		margin-bottom: initial;
-	}
-`;
 
 const TradePosition = styled.div`
 	display: flex;
@@ -69,8 +59,17 @@ const TradePosition = styled.div`
 	@media (max-aspect-ratio: 6/4) {
 		left: min(calc(95vw - 206px - 540px), 1100px);
 	}
-	@media (max-width: 780px) {
+	@media (max-width: 800px) {
 		position: static;
+	}
+`;
+
+const TradeContainer = styled.div`
+	width: 520px;
+	height: 672px;
+	margin-bottom: 130px;
+	@media (max-height: 800px) {
+		margin-bottom: initial;
 	}
 `;
 
@@ -110,13 +109,13 @@ const ImgBgOsmoGuy = styled.div<{ src: string }>`
 		width: calc(100vh * 0.45);
 	}
 	@media (max-aspect-ratio: 6/4) {
-		--widthOsmo: calc(88vw - 206px - 540px);
+		--widthOsmo: calc(85vw - 206px - 540px);
 		--heightOsmo: calc(var(--widthOsmo) * 242 / 193);
 		width: var(--widthOsmo);
 		height: var(--heightOsmo);
 		margin-top: calc(var(--heightOsmo) * -0.94);
 	}
-	@media (max-width: 780px) {
+	@media (max-width: 800px) {
 		display: none;
 	}
 `;
