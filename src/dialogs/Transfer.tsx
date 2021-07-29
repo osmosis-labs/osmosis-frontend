@@ -1,8 +1,11 @@
+import { css } from '@emotion/react';
 import cn from 'clsx';
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Img } from '../components/common/Img';
 import { IBCCurrency } from '@keplr-wallet/types';
+import { AmountInput } from '../components/form/Inputs';
+import { colorWhiteEmphasis } from '../emotionStyles/colors';
 import { useStore } from '../stores';
 import { Bech32Address } from '@keplr-wallet/cosmos';
 import { WalletStatus } from '@keplr-wallet/stores';
@@ -129,15 +132,14 @@ export const TransferDialog = wrapBaseDialog(
 						<div
 							className="py-2 px-2.5 bg-background rounded-lg grid gap-5"
 							style={{ gridTemplateColumns: 'calc(100% - 60px) 40px' }}>
-							<input
+							<AmountInput
 								type="number"
+								style={{ color: colorWhiteEmphasis }}
 								onChange={e => {
 									e.preventDefault();
-
 									amountConfig.setAmount(e.currentTarget.value);
 								}}
 								value={amountConfig.amount}
-								className="text-xl text-white-emphasis"
 							/>
 							<button
 								onClick={() => amountConfig.toggleIsMax()}

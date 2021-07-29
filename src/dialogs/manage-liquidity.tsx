@@ -11,6 +11,7 @@ import React, { Dispatch, FunctionComponent, SetStateAction, useState } from 're
 import InputSlider from 'react-input-slider';
 import { Img } from '../components/common/Img';
 import { TToastType, useToast } from '../components/common/toasts';
+import { AmountInput } from '../components/form/Inputs';
 import { MISC } from '../constants';
 import { OSMO_MEDIUM_TX_FEE } from '../constants/fee';
 import { BasicAmountConfig } from '../hooks/tx/basic-amount-config';
@@ -624,14 +625,13 @@ const TokenLiquidityItem: FunctionComponent<{
 					</div>
 
 					<div className="bg-background px-1.5 py-0.5 rounded-lg">
-						<input
+						<AmountInput
 							type="number"
 							onChange={e => {
 								e.preventDefault();
 								addLiquidityConfig.setAmountAt(index, e.currentTarget.value);
 							}}
 							value={addLiquidityConfig.poolAssetConfigs[index].amount}
-							className="text-xl text-white-high text-right"
 						/>
 					</div>
 				</div>
