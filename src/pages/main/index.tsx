@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import React, { FunctionComponent, ReactNode } from 'react';
 import ProgressiveImage from 'react-progressive-image';
-import { colorPrimary } from '../../emotionStyles/colors';
+import { colorPrimaryDark } from '../../emotionStyles/colors';
 import { TradeClipboard } from './TradeClipboard';
 
 export const MainPage: FunctionComponent = () => {
@@ -17,7 +17,7 @@ export const MainPage: FunctionComponent = () => {
 
 const PageContainer = styled.div`
 	width: 100%;
-	background-color: ${colorPrimary};
+	background-color: ${colorPrimaryDark};
 	background-image: url('/public/assets/backgrounds/osmosis-home-bg-pattern.svg');
 	background-repeat: repeat-x;
 	background-size: cover;

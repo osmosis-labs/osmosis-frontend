@@ -1,16 +1,18 @@
-import { FunctionComponent } from 'react';
-import noop from 'lodash-es/noop';
-import { Img } from './Img';
-import { LINKS } from '../../constants';
-import cn from 'clsx';
-import * as React from 'react';
 import { AppCurrency } from '@keplr-wallet/types';
+import cn from 'clsx';
+import noop from 'lodash-es/noop';
+import React from 'react';
+import { Img } from './Img';
 
-export const TokenDisplay: FunctionComponent<{
+export function TokenDisplay({
+	currency,
+	openSelector,
+	setOpenSelector = noop,
+}: {
 	currency: AppCurrency;
 	openSelector?: boolean;
 	setOpenSelector?: (bool: boolean | ((bool: boolean) => boolean)) => void;
-}> = ({ currency, openSelector, setOpenSelector = noop }) => {
+}) {
 	return (
 		<div className="flex items-center">
 			<figure
@@ -22,7 +24,10 @@ export const TokenDisplay: FunctionComponent<{
 				<div className="flex items-center">
 					<h5 className="leading-none font-semibold">{currency.coinDenom.toUpperCase()}</h5>
 					<Img
-						onClick={() => setOpenSelector((v: boolean) => !v)}
+						onClick={(e: MouseEvent) => {
+							e.stopPropagation();
+							setOpenSelector((v: boolean) => !v);
+						}}
 						className={cn(
 							'h-6 w-8 ml-1 p-2 cursor-pointer opacity-40 hover:opacity-100',
 							openSelector ? 'rotate-180' : ''
@@ -33,4 +38,4 @@ export const TokenDisplay: FunctionComponent<{
 			</div>
 		</div>
 	);
-};
+}
