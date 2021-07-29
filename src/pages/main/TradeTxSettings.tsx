@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useCallback, useEffect, useState } from 'react';
 import AutosizeInput from 'react-input-autosize';
 import { DisplayIcon } from '../../components/layouts/Sidebar/SidebarItem';
+import { useBooleanStateWithWindowEvent } from '../../hooks/useBooleanStateWithWindowEvent';
 import { SlippageStep } from './models/tradeModels';
 import { TradeConfig } from './stores/trade/config';
 import { slippageStepToPercentage } from './utils/slippageStepToPercentage';
@@ -13,22 +14,7 @@ interface Props {
 }
 
 export const TradeTxSettings = observer(({ config }: Props) => {
-	const [view, setView] = useState<boolean>(false);
-
-	const closeView = useCallback(() => {
-		setView(false);
-	}, []);
-
-	useEffect(() => {
-		if (view) {
-			window.addEventListener('click', closeView);
-		} else {
-			window.removeEventListener('click', closeView);
-		}
-		return () => {
-			window.removeEventListener('click', closeView);
-		};
-	}, [closeView, view]);
+	const [view, setView] = useBooleanStateWithWindowEvent(false);
 
 	return (
 		<section className="w-full flex justify-end relative z-40">
