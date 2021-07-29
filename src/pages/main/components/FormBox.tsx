@@ -3,6 +3,7 @@ import { AppCurrency } from '@keplr-wallet/types';
 import { CoinPretty, Int } from '@keplr-wallet/unit';
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
 import * as React from 'react';
 import { DisplayAmount } from '../../../components/common/DIsplayAmount';
 import { TokenDisplay } from '../../../components/common/TokenDisplay';
@@ -27,7 +28,7 @@ export const FromBox = observer(({ config }: Props) => {
 		.getQueryBech32Address(account.bech32Address)
 		.balances.find(bal => bal.currency.coinMinimalDenom === config.sendCurrency.coinMinimalDenom);
 
-	const [openSelector, setOpenSelector] = React.useState(false);
+	const [isSelectorOpen, setIsSelectorOpen] = useState(false);
 
 	return (
 		<div className="bg-surface rounded-2xl py-4 pr-5 pl-4 relative">
@@ -53,7 +54,11 @@ export const FromBox = observer(({ config }: Props) => {
 				</div>
 			</section>
 			<section className="flex justify-between items-center">
-				<TokenDisplay openSelector={openSelector} setOpenSelector={setOpenSelector} currency={config.sendCurrency} />
+				<TokenDisplay
+					openSelector={isSelectorOpen}
+					setOpenSelector={setIsSelectorOpen}
+					currency={config.sendCurrency}
+				/>
 				<TokenAmountInput
 					amount={config.amount}
 					currency={config.sendCurrency}
@@ -62,12 +67,12 @@ export const FromBox = observer(({ config }: Props) => {
 			</section>
 			<div
 				style={{ top: 'calc(100% - 16px)' }}
-				className={cn('bg-surface rounded-b-2xl z-10 left-0 w-full', openSelector ? 'absolute' : 'hidden')}>
+				className={cn('bg-surface rounded-b-2xl z-10 left-0 w-full', isSelectorOpen ? 'absolute' : 'hidden')}>
 				<TokenListDisplay
 					currencies={config.sendableCurrencies.filter(
 						cur => cur.coinMinimalDenom !== config.outCurrency.coinMinimalDenom
 					)}
-					close={() => setOpenSelector(false)}
+					close={() => setIsSelectorOpen(false)}
 					onSelect={minimalDenom => config.setInCurrency(minimalDenom)}
 				/>
 			</div>
