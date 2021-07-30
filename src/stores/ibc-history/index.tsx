@@ -4,6 +4,7 @@ import { TxTracer } from '../../tx';
 import { ChainGetter } from '@keplr-wallet/stores';
 import { AppCurrency } from '@keplr-wallet/types';
 import { keepAlive } from 'mobx-utils';
+import { ChainIdHelper } from '@keplr-wallet/cosmos';
 
 export type IBCTransferHistoryStatus = 'pending' | 'complete' | 'timeout' | 'refunded';
 
@@ -22,6 +23,7 @@ export interface IBCTransferHistory {
 		amount: string;
 	};
 	status: IBCTransferHistoryStatus;
+	// timeoutHeight should be formed as the `{chain_version}-{block_height}`
 	readonly timeoutHeight?: string;
 	readonly createdAt: string;
 }
@@ -60,26 +62,85 @@ export class IBCTransferHistoryStore {
 		return this.blockSubscriberMap.get(chainId)!;
 	}
 
+	// timeoutHeight should be formed as the `{chain_version}-{block_height}`
+	protected async traceTimeoutHeight(blockSubscriber: TxTracer, timeoutHeight: string): Promise<void> {
+		const chainVersion = parseInt(timeoutHeight.split('-')[0]);
+		const timeoutBlockHeight = parseInt(timeoutHeight.split('-')[1]);
+		return new Promise(resolve => {
+			// TODO: Unsubscribe block
+			blockSubscriber.subscribeBlock(data => {
+				const chainId = data?.block?.header?.chain_id;
+				if (chainId && ChainIdHelper.parse(chainId).version > chainVersion) {
+					resolve();
+					return;
+				}
+				const blockHeight = data?.block?.header?.height;
+				if (blockHeight && parseInt(blockHeight) > timeoutBlockHeight) {
+					resolve();
+					return;
+				}
+			});
+		});
+	}
+
 	async traceHistroyStatus(
 		history: Pick<
 			IBCTransferHistory,
-			'sourceChainId' | 'sourceChannelId' | 'destChainId' | 'destChannelId' | 'sequence' | 'status'
+			'sourceChainId' | 'sourceChannelId' | 'destChainId' | 'destChannelId' | 'sequence' | 'timeoutHeight' | 'status'
 		>
 	): Promise<IBCTransferHistoryStatus> {
 		if (history.status === 'complete' || history.status === 'refunded') {
 			return history.status;
 		}
 
+		if (history.status === 'timeout') {
+			// If the packet is timeouted, wait until the packet timeout sent to the source chain.
+			const txTracer = new TxTracer(this.chainGetter.getChain(history.sourceChainId).rpc, '/websocket');
+			await txTracer.traceTx({
+				'timeout_packet.packet_src_channel': history.sourceChannelId,
+				'timeout_packet.packet_sequence': history.sequence,
+			});
+
+			return 'refunded';
+		}
+
 		const blockSubscriber = this.getBlockSubscriber(history.destChainId);
 
-		const txTracer = new TxTracer(this.chainGetter.getChain(history.destChainId).rpc, '/websocket');
-		const tx = await txTracer.traceTx({
-			'recv_packet.packet_src_channel': history.sourceChannelId,
-			'recv_packet.packet_sequence': history.sequence,
-		});
-		txTracer.close();
+		const promises: Promise<any>[] = [];
 
-		return 'complete';
+		if (history.timeoutHeight) {
+			promises.push(
+				(async () => {
+					await this.traceTimeoutHeight(blockSubscriber, history.timeoutHeight!);
+					// TODO: Unsubsribe the block.
+
+					// Even though the block is reached to the timeout height,
+					// the receiving packet event could be delivered before the block timeout if the network connection is unstable.
+					// This it not the chain issue itself, jsut the issue from the frontend, it it impossible to ensure the network status entirely.
+					// To reduce this problem, just wait 10 second more even if the block is reached to the timeout height.
+					await new Promise(resolve => {
+						setTimeout(resolve, 10000);
+					});
+				})()
+			);
+		}
+
+		const txTracer = new TxTracer(this.chainGetter.getChain(history.destChainId).rpc, '/websocket');
+		promises.push(
+			txTracer.traceTx({
+				'recv_packet.packet_src_channel': history.sourceChannelId,
+				'recv_packet.packet_sequence': history.sequence,
+			})
+		);
+
+		const result = await Promise.race(promises);
+		// If the TxTracer finds the packet received tx before the timeout height, the raced promise would return the tx itself.
+		// But, if the timeout is faster than the packet received, the raced promise would return undefined because the `traceTimeoutHeight` method returns nothing.
+		if (result) {
+			return 'complete';
+		}
+
+		return 'timeout';
 	}
 
 	@flow
@@ -112,6 +173,11 @@ export class IBCTransferHistoryStore {
 			}
 
 			yield this.save();
+
+			if (history.status === 'timeout') {
+				// If the transfer packet is timeouted, try to wait the refunded.
+				this.tryUpdateHistoryStatus(txHash);
+			}
 		}
 	}
 

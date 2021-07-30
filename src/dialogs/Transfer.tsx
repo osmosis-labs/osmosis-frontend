@@ -214,7 +214,7 @@ export const TransferDialog = wrapBaseDialog(
 																			? Buffer.from(sequenceAttr.value, 'base64').toString()
 																			: undefined;
 																		const timeoutHeightAttr = attributes.find(
-																			attr => attr.key === Buffer.from('packet_timeout_height').toString()
+																			attr => attr.key === Buffer.from('packet_timeout_height').toString('base64')
 																		);
 																		const timeoutHeight = timeoutHeightAttr
 																			? Buffer.from(timeoutHeightAttr.value, 'base64').toString()
@@ -293,7 +293,7 @@ export const TransferDialog = wrapBaseDialog(
 																			? Buffer.from(sequenceAttr.value, 'base64').toString()
 																			: undefined;
 																		const timeoutHeightAttr = attributes.find(
-																			attr => attr.key === Buffer.from('packet_timeout_height').toString()
+																			attr => attr.key === Buffer.from('packet_timeout_height').toString('base64')
 																		);
 																		const timeoutHeight = timeoutHeightAttr
 																			? Buffer.from(timeoutHeightAttr.value, 'base64').toString()

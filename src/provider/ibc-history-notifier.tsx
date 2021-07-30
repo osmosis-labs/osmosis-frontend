@@ -56,6 +56,56 @@ export const ToastIBCTransferComplete: FunctionComponent<{
 	);
 });
 
+export const ToastIBCTransferTimeout: FunctionComponent<{
+	history: IBCTransferHistory;
+}> = observer(({ history }) => {
+	const { chainStore } = useStore();
+
+	const amount = new CoinPretty(history.amount.currency, new Dec(history.amount.amount)).decreasePrecision(
+		history.amount.currency.coinDecimals
+	);
+
+	return (
+		<div className="grid gap-3" style={{ gridTemplateColumns: '32px 1fr' }}>
+			<img alt="x" style={{ width: '32px', height: '32px' }} src="/public/assets/Icons/FailedTx.png" />
+			<section className="text-white-high">
+				<h6 className="mb-2">IBC Transfer Timeout</h6>
+				{ChainIdHelper.parse(chainStore.current.chainId).identifier ===
+				ChainIdHelper.parse(history.destChainId).identifier
+					? `${amount
+							.maxDecimals(6)
+							.trim(true)
+							.shrink(true)} has been failed deposited`
+					: `${amount
+							.maxDecimals(6)
+							.trim(true)
+							.shrink(true)} has been failed withdrawn`}
+			</section>
+		</div>
+	);
+});
+
+export const ToastIBCTransferRefunded: FunctionComponent<{
+	history: IBCTransferHistory;
+}> = observer(({ history }) => {
+	const amount = new CoinPretty(history.amount.currency, new Dec(history.amount.amount)).decreasePrecision(
+		history.amount.currency.coinDecimals
+	);
+
+	return (
+		<div className="grid gap-3.75" style={{ gridTemplateColumns: '32px 1fr' }}>
+			<img alt="b" style={{ width: '32px', height: '32px' }} src="/public/assets/Icons/ToastSuccess.png" />
+			<section className="text-white-high">
+				<h6 className="mb-2">IBC Transfer Successful</h6>
+				{`${amount
+					.maxDecimals(6)
+					.trim(true)
+					.shrink(true)} has been successfully refunded`}
+			</section>
+		</div>
+	);
+});
+
 /**
  * IBCHistoryNotifier tracks the changes of the IBC Transfer history on the IBCTransferHistoryStore.
  * And, if the changes detected, this will notifiy the success or fail to the users, and update the balances.
@@ -70,12 +120,25 @@ export const IBCHistoryNotifier: FunctionComponent = observer(() => {
 				// Toast the notification should use the `useToast()` context API.
 				// But, it is not yet flexible and it is the thing to be being refactored.
 				// It just uses the "toast" libaray, so for now, just use that library directly before the `useToast()` hook refactored.
-				toast(<ToastIBCTransferComplete history={history} />, defaultOptions as ToastOptions);
+				if (history.status === 'complete') {
+					toast(<ToastIBCTransferComplete history={history} />, defaultOptions as ToastOptions);
+				} else if (history.status === 'timeout') {
+					toast(<ToastIBCTransferTimeout history={history} />, defaultOptions as ToastOptions);
+				} else if (history.status === 'refunded') {
+					toast(<ToastIBCTransferRefunded history={history} />, defaultOptions as ToastOptions);
+				}
 
-				queriesStore
-					.get(history.destChainId)
-					.queryBalances.getQueryBech32Address(history.recipient)
-					.fetch();
+				if (history.status === 'complete') {
+					queriesStore
+						.get(history.destChainId)
+						.queryBalances.getQueryBech32Address(history.recipient)
+						.fetch();
+				} else if (history.status === 'refunded') {
+					queriesStore
+						.get(history.sourceChainId)
+						.queryBalances.getQueryBech32Address(history.recipient)
+						.fetch();
+				}
 			}
 		});
 	}, [ibcTransferHistoryStore]);
