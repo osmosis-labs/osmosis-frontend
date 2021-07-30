@@ -141,6 +141,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-10',
 		coinMinimalDenom: 'basecro',
 	},
+	{
+		counterpartyChainId: 'iov-mainnet-ibc',
+		sourceChannelId: 'channel-15',
+		destChannelId: 'channel-2',
+		coinMinimalDenom: 'uiov',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -444,5 +450,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://www.mintscan.io/crypto-org/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-iov.keplr.app',
+		rest: 'https://lcd-iov.keplr.app',
+		chainId: 'iov-mainnet-ibc',
+		chainName: 'Starname',
+		stakeCurrency: {
+			coinDenom: 'IOV',
+			coinMinimalDenom: 'uiov',
+			coinDecimals: 6,
+			coinGeckoId: 'starname',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/iov.png',
+		},
+		bip44: {
+			coinType: 234,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('star'),
+		currencies: [
+			{
+				coinDenom: 'IOV',
+				coinMinimalDenom: 'uiov',
+				coinDecimals: 6,
+				coinGeckoId: 'starname',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/iov.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'IOV',
+				coinMinimalDenom: 'uiov',
+				coinDecimals: 6,
+				coinGeckoId: 'starname',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/iov.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://www.mintscan.io/starname/txs/{txHash}',
 	},
 ];
