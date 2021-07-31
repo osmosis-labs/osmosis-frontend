@@ -81,7 +81,56 @@ export const IBCTransferHistoryTableRow: FunctionComponent<{
 					.toString()}
 			</td>
 			<td className="flex items-center justify-end px-2 py-3" style={{ width: tableWidths[i++] }}>
-				{history.status}
+				{(() => {
+					switch (history.status) {
+						case 'complete':
+							return (
+								<React.Fragment>
+									<img
+										alt="ldg"
+										style={{ width: '20px', height: '20px', marginRight: '8px' }}
+										src="/public/assets/Icons/ToastSuccess.png"
+									/>
+									Success
+								</React.Fragment>
+							);
+						case 'pending':
+							return (
+								<React.Fragment>
+									<img
+										alt="ldg"
+										className="s-spin"
+										style={{ width: '20px', height: '20px', marginRight: '8px' }}
+										src="/public/assets/Icons/Loading.png"
+									/>
+									Pending
+								</React.Fragment>
+							);
+						case 'refunded':
+							return (
+								<React.Fragment>
+									<img
+										alt="ldg"
+										style={{ width: '20px', height: '20px', marginRight: '8px' }}
+										src="/public/assets/Icons/FailedTx.png"
+									/>
+									Refunded
+								</React.Fragment>
+							);
+						case 'timeout':
+							return (
+								<React.Fragment>
+									<img
+										alt="ldg"
+										className="s-spin"
+										style={{ width: '20px', height: '20px', marginRight: '8px' }}
+										src="/public/assets/Icons/Loading.png"
+									/>
+									Failed: Pending refund
+								</React.Fragment>
+							);
+					}
+				})()}
 			</td>
 		</tr>
 	);
