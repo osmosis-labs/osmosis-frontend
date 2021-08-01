@@ -5,6 +5,21 @@ import { ChainGetter } from '@keplr-wallet/stores';
 import { AppCurrency } from '@keplr-wallet/types';
 import { keepAlive } from 'mobx-utils';
 import { ChainIdHelper } from '@keplr-wallet/cosmos';
+import { Buffer } from 'buffer/';
+
+export interface UncommitedHistory {
+	// Hex encoded.
+	readonly txHash: string;
+	readonly sourceChainId: string;
+	readonly destChainId: string;
+	readonly recipient: string;
+	readonly amount: {
+		currency: AppCurrency;
+		amount: string;
+	};
+	readonly sender: string;
+	readonly createdAt: string;
+}
 
 export type IBCTransferHistoryStatus = 'pending' | 'complete' | 'timeout' | 'refunded';
 
@@ -29,6 +44,18 @@ export interface IBCTransferHistory {
 }
 
 export class IBCTransferHistoryStore {
+	/*
+	 * The tx takes more time to be commited after the tx broadcasted.
+	 * So, users could exit the site after tx broadcasting but before the tx actually commited.
+	 * Because this store manages tx history locally, it is not enough to assume that the users should wait to tx committed.
+	 * So, when the tx broadcasted, save these pending(will committed expectedly) txs seperately.
+	 * This umcommited history would be added `onBroadcasted` event, and it can be replaced with actual `IBCTransferHistory` on `onFulfill` event, if the user waits the tx commited.
+	 * So, it will not track the tx when it is added.
+	 * Alternatively, when restoring this store (user enters this site), try to track the tx by the tx hash, and replace to the `IBCTransferHistory` if the tx committed.
+	 */
+	@observable.shallow
+	protected _uncommitedHistories: UncommitedHistory[] = [];
+
 	@observable
 	protected _histories: IBCTransferHistory[] = [];
 
@@ -173,7 +200,19 @@ export class IBCTransferHistoryStore {
 	}
 
 	@flow
+	*pushUncommitedHistore(history: Omit<UncommitedHistory, 'createdAt'>) {
+		this._uncommitedHistories.push({
+			...history,
+			createdAt: new Date().toString(),
+		});
+
+		yield this.save();
+	}
+
+	@flow
 	*pushPendingHistory(history: Omit<IBCTransferHistory, 'createdAt' | 'status'>) {
+		this._uncommitedHistories = this._uncommitedHistories.filter(uncommited => uncommited.txHash !== history.txHash);
+
 		this._histories.push({
 			...history,
 			status: 'pending',
@@ -184,6 +223,68 @@ export class IBCTransferHistoryStore {
 
 		// Don't need to await (yield)
 		this.tryUpdateHistoryStatus(history.txHash);
+	}
+
+	@flow
+	protected *traceUncommitedHistoryAndUpgradeToPendingHistory(txHash: string) {
+		const uncommited = this._uncommitedHistories.find(uncommited => uncommited.txHash === txHash);
+		if (uncommited) {
+			const txTracer = new TxTracer(this.chainGetter.getChain(uncommited.sourceChainId).rpc, '/websocket');
+			const tx = yield* toGenerator(txTracer.traceTx(Buffer.from(uncommited.txHash, 'hex')));
+			txTracer.close();
+
+			const events = tx?.events as { type: string; attributes: { key: string; value: string }[] }[] | undefined;
+			if (tx && !tx.code && events) {
+				if (events) {
+					for (const event of events) {
+						if (event.type === 'send_packet') {
+							const attributes = event.attributes;
+							const sourceChannelAttr = attributes.find(
+								attr => attr.key === Buffer.from('packet_src_channel').toString('base64')
+							);
+							const sourceChannel = sourceChannelAttr
+								? Buffer.from(sourceChannelAttr.value, 'base64').toString()
+								: undefined;
+							const destChannelAttr = attributes.find(
+								attr => attr.key === Buffer.from('packet_dst_channel').toString('base64')
+							);
+							const destChannel = destChannelAttr ? Buffer.from(destChannelAttr.value, 'base64').toString() : undefined;
+							const sequenceAttr = attributes.find(
+								attr => attr.key === Buffer.from('packet_sequence').toString('base64')
+							);
+							const sequence = sequenceAttr ? Buffer.from(sequenceAttr.value, 'base64').toString() : undefined;
+							const timeoutHeightAttr = attributes.find(
+								attr => attr.key === Buffer.from('packet_timeout_height').toString('base64')
+							);
+							const timeoutHeight = timeoutHeightAttr
+								? Buffer.from(timeoutHeightAttr.value, 'base64').toString()
+								: undefined;
+
+							if (sourceChannel && destChannel && sequence) {
+								this.pushPendingHistory({
+									txHash: uncommited.txHash,
+									sourceChainId: uncommited.sourceChainId,
+									sourceChannelId: sourceChannel,
+									destChainId: uncommited.destChainId,
+									destChannelId: destChannel,
+									sequence,
+									sender: uncommited.sender,
+									recipient: uncommited.recipient,
+									amount: uncommited.amount,
+									timeoutHeight,
+								});
+							}
+						}
+					}
+				}
+			}
+
+			// This method could be executed several at the same time,
+			// So you should find the index right before removing.
+			const index = this._uncommitedHistories.findIndex(uncommited => uncommited.txHash === txHash);
+			this._uncommitedHistories.splice(index, 1);
+			yield this.save();
+		}
 	}
 
 	@flow
@@ -223,9 +324,21 @@ export class IBCTransferHistoryStore {
 
 	@flow
 	protected *restore() {
-		const saved = yield* toGenerator(this.kvStore.get<IBCTransferHistory[]>(this.key()));
-		if (saved) {
-			this._histories = saved;
+		const uncommitedHistories = yield* toGenerator(this.kvStore.get<UncommitedHistory[]>('uncommited_histories'));
+		if (uncommitedHistories) {
+			this._uncommitedHistories = uncommitedHistories;
+
+			for (const uncommited of this._uncommitedHistories) {
+				// Don't need to await (yield) this loop.
+				this.traceUncommitedHistoryAndUpgradeToPendingHistory(uncommited.txHash);
+			}
+		} else {
+			this._uncommitedHistories = [];
+		}
+
+		const histories = yield* toGenerator(this.kvStore.get<IBCTransferHistory[]>('histories'));
+		if (histories) {
+			this._histories = histories;
 
 			for (const history of this._histories) {
 				// Don't need to await (yield) this loop.
@@ -237,10 +350,7 @@ export class IBCTransferHistoryStore {
 	}
 
 	protected async save() {
-		await this.kvStore.set(this.key(), toJS(this._histories));
-	}
-
-	protected key(): string {
-		return 'histories';
+		await this.kvStore.set('histories', toJS(this._histories));
+		await this.kvStore.set('uncommited_histories', toJS(this._uncommitedHistories));
 	}
 }
