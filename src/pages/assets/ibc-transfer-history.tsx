@@ -21,16 +21,19 @@ export const IBCTransferHistoryTable: FunctionComponent = observer(() => {
 	const { ibcTransferHistoryStore, chainStore, accountStore } = useStore();
 
 	return (
-		<table className="w-full">
-			<IBCTransferHistoryTableHeader />
-			<tbody className="w-full">
-				{ibcTransferHistoryStore
-					.getHistoriesByAccount(accountStore.getAccount(chainStore.current.chainId).bech32Address)
-					.map(history => {
-						return <IBCTransferHistoryTableRow key={history.txHash} history={history} />;
-					})}
-			</tbody>
-		</table>
+		<React.Fragment>
+			<h5 className="mb-5">Pending IBC Transactions</h5>
+			<table className="w-full">
+				<IBCTransferHistoryTableHeader />
+				<tbody className="w-full">
+					{ibcTransferHistoryStore
+						.getHistoriesByAccount(accountStore.getAccount(chainStore.current.chainId).bech32Address)
+						.map(history => {
+							return <IBCTransferHistoryTableRow key={history.txHash} history={history} />;
+						})}
+				</tbody>
+			</table>
+		</React.Fragment>
 	);
 });
 
