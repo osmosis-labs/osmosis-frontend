@@ -173,7 +173,7 @@ export const TransferDialog = wrapBaseDialog(
 									try {
 										if (isWithdraw) {
 											if (account.isReadyToSendMsgs && counterpartyAccount.bech32Address) {
-												const sender = counterpartyAccount.bech32Address;
+												const sender = account.bech32Address;
 												const recipient = counterpartyAccount.bech32Address;
 
 												await account.cosmos.sendIBCTransferMsg(
@@ -184,7 +184,7 @@ export const TransferDialog = wrapBaseDialog(
 													},
 													amountConfig.amount,
 													amountConfig.currency,
-													sender,
+													recipient,
 													'',
 													{},
 													{
@@ -266,7 +266,7 @@ export const TransferDialog = wrapBaseDialog(
 											}
 										} else {
 											if (counterpartyAccount.isReadyToSendMsgs && account.bech32Address) {
-												const sender = account.bech32Address;
+												const sender = counterpartyAccount.bech32Address;
 												const recipient = account.bech32Address;
 
 												await counterpartyAccount.cosmos.sendIBCTransferMsg(
@@ -277,7 +277,7 @@ export const TransferDialog = wrapBaseDialog(
 													},
 													amountConfig.amount,
 													amountConfig.currency,
-													sender,
+													recipient,
 													'',
 													{},
 													{
