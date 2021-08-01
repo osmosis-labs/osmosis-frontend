@@ -3,7 +3,7 @@ import { KVStore, toGenerator } from '@keplr-wallet/common';
 import { TxTracer, WsReadyState } from '../../tx';
 import { ChainGetter } from '@keplr-wallet/stores';
 import { AppCurrency } from '@keplr-wallet/types';
-import { keepAlive } from 'mobx-utils';
+import { computedFn, keepAlive } from 'mobx-utils';
 import { ChainIdHelper } from '@keplr-wallet/cosmos';
 import { Buffer } from 'buffer/';
 
@@ -80,6 +80,15 @@ export class IBCTransferHistoryStore {
 	get histories(): IBCTransferHistory[] {
 		return this._histories;
 	}
+
+	getHistoriesByAccount = computedFn((address: string): IBCTransferHistory[] => {
+		return this.histories
+			.filter(history => history.sender === address || history.recipient === address)
+			.sort((history1, history2) => {
+				// Sort by created time.
+				return new Date(history1.createdAt) > new Date(history2.createdAt) ? -1 : 1;
+			});
+	});
 
 	protected getBlockSubscriber(chainId: string): TxTracer {
 		if (!this.blockSubscriberMap.has(chainId)) {
@@ -226,12 +235,29 @@ export class IBCTransferHistoryStore {
 	}
 
 	@flow
+	protected *pushPendingHistoryWithCreatedAt(history: Omit<IBCTransferHistory, 'status'>) {
+		this._uncommitedHistories = this._uncommitedHistories.filter(uncommited => uncommited.txHash !== history.txHash);
+
+		this._histories.push({
+			...history,
+			status: 'pending',
+		});
+
+		yield this.save();
+
+		// Don't need to await (yield)
+		this.tryUpdateHistoryStatus(history.txHash);
+	}
+
+	@flow
 	protected *traceUncommitedHistoryAndUpgradeToPendingHistory(txHash: string) {
 		const uncommited = this._uncommitedHistories.find(uncommited => uncommited.txHash === txHash);
 		if (uncommited) {
 			const txTracer = new TxTracer(this.chainGetter.getChain(uncommited.sourceChainId).rpc, '/websocket');
-			const tx = yield* toGenerator(txTracer.traceTx(Buffer.from(uncommited.txHash, 'hex')));
+			const result = yield* toGenerator(txTracer.traceTx(Buffer.from(uncommited.txHash, 'hex')));
 			txTracer.close();
+
+			const tx = result?.tx_result ?? result;
 
 			const events = tx?.events as { type: string; attributes: { key: string; value: string }[] }[] | undefined;
 			if (tx && !tx.code && events) {
@@ -261,7 +287,7 @@ export class IBCTransferHistoryStore {
 								: undefined;
 
 							if (sourceChannel && destChannel && sequence) {
-								this.pushPendingHistory({
+								this.pushPendingHistoryWithCreatedAt({
 									txHash: uncommited.txHash,
 									sourceChainId: uncommited.sourceChainId,
 									sourceChannelId: sourceChannel,
@@ -272,6 +298,7 @@ export class IBCTransferHistoryStore {
 									recipient: uncommited.recipient,
 									amount: uncommited.amount,
 									timeoutHeight,
+									createdAt: uncommited.createdAt,
 								});
 							}
 						}

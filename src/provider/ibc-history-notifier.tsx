@@ -112,7 +112,7 @@ export const ToastIBCTransferRefunded: FunctionComponent<{
  * XXX: `IBCHistoryNotifier` doens't render anything.
  */
 export const IBCHistoryNotifier: FunctionComponent = observer(() => {
-	const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
+	const { chainStore, queriesStore, ibcTransferHistoryStore, accountStore } = useStore();
 
 	useEffect(() => {
 		ibcTransferHistoryStore.addHistoryChangedHandler(history => {
@@ -128,16 +128,19 @@ export const IBCHistoryNotifier: FunctionComponent = observer(() => {
 					toast(<ToastIBCTransferRefunded history={history} />, defaultOptions as ToastOptions);
 				}
 
-				if (history.status === 'complete') {
-					queriesStore
-						.get(history.destChainId)
-						.queryBalances.getQueryBech32Address(history.recipient)
-						.fetch();
-				} else if (history.status === 'refunded') {
-					queriesStore
-						.get(history.sourceChainId)
-						.queryBalances.getQueryBech32Address(history.recipient)
-						.fetch();
+				const account = accountStore.getAccount(chainStore.current.chainId);
+				if (history.sender === account.bech32Address || history.recipient === account.bech32Address) {
+					if (history.status === 'complete') {
+						queriesStore
+							.get(history.destChainId)
+							.queryBalances.getQueryBech32Address(history.recipient)
+							.fetch();
+					} else if (history.status === 'refunded') {
+						queriesStore
+							.get(history.sourceChainId)
+							.queryBalances.getQueryBech32Address(history.recipient)
+							.fetch();
+					}
 				}
 			}
 		});

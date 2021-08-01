@@ -18,15 +18,14 @@ const LinkIcon: FunctionComponent<React.SVGAttributes<SVGElement> | { className:
 
 const tableWidths = ['20%', '15%', '15%', '30%', '20%'];
 export const IBCTransferHistoryTable: FunctionComponent = observer(() => {
-	const { ibcTransferHistoryStore } = useStore();
+	const { ibcTransferHistoryStore, chainStore, accountStore } = useStore();
 
 	return (
 		<table className="w-full">
 			<IBCTransferHistoryTableHeader />
 			<tbody className="w-full">
-				{ibcTransferHistoryStore.histories
-					.slice()
-					.reverse()
+				{ibcTransferHistoryStore
+					.getHistoriesByAccount(accountStore.getAccount(chainStore.current.chainId).bech32Address)
 					.map(history => {
 						return <IBCTransferHistoryTableRow key={history.txHash} history={history} />;
 					})}

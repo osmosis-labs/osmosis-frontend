@@ -6,7 +6,7 @@ import { IBCTransferHistoryTable } from './ibc-transfer-history';
 import { useStore } from '../../stores';
 
 export const AssetsPage: FunctionComponent = observer(() => {
-	const { ibcTransferHistoryStore } = useStore();
+	const { ibcTransferHistoryStore, chainStore, accountStore } = useStore();
 
 	return (
 		<div
@@ -21,7 +21,9 @@ export const AssetsPage: FunctionComponent = observer(() => {
 			</div>
 			<div className="px-15 py-10">
 				<div className="max-w-max mx-auto">
-					{ibcTransferHistoryStore.histories.length > 0 ? (
+					{ibcTransferHistoryStore.getHistoriesByAccount(
+						accountStore.getAccount(chainStore.current.chainId).bech32Address
+					).length > 0 ? (
 						<div className="mb-8">
 							<IBCTransferHistoryTable />
 						</div>
