@@ -6,6 +6,7 @@ import { AppCurrency } from '@keplr-wallet/types';
 import { computedFn, keepAlive } from 'mobx-utils';
 import { ChainIdHelper } from '@keplr-wallet/cosmos';
 import { Buffer } from 'buffer/';
+import dayjs from 'dayjs';
 
 export interface UncommitedHistory {
 	// Hex encoded.
@@ -373,6 +374,38 @@ export class IBCTransferHistoryStore {
 			}
 		} else {
 			this._histories = [];
+		}
+
+		yield this.trimObsoleteHistory();
+	}
+
+	@flow
+	protected *trimObsoleteHistory() {
+		// Only manages the histories less than 3 days old
+		const beforeUncommitedLength = this._uncommitedHistories.length;
+		this._uncommitedHistories = this._uncommitedHistories.filter(uncommited =>
+			dayjs(new Date(uncommited.createdAt))
+				.add(
+					dayjs.duration({
+						days: 3,
+					})
+				)
+				.isAfter(new Date())
+		);
+
+		const beforeLength = this._histories.length;
+		this._histories = this._histories.filter(uncommited =>
+			dayjs(new Date(uncommited.createdAt))
+				.add(
+					dayjs.duration({
+						days: 3,
+					})
+				)
+				.isAfter(new Date())
+		);
+
+		if (this._uncommitedHistories.length !== beforeUncommitedLength || this._histories.length !== beforeLength) {
+			yield this.save();
 		}
 	}
 
