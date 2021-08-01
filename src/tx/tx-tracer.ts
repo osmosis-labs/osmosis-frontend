@@ -11,7 +11,7 @@ type Listeners = {
  * Changes for some mistake on the original `TendermintTxTracer` and this would be remove if the changes are merged to the original library.
  */
 export class TxTracer {
-	protected ws: WebSocket;
+	protected ws!: WebSocket;
 
 	protected newBlockSubscribes: {
 		handler: (block: any) => void;
@@ -46,12 +46,7 @@ export class TxTracer {
 			wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
 		} = {}
 	) {
-		this.ws = this.options.wsObject
-			? new this.options.wsObject(this.getWsEndpoint())
-			: new WebSocket(this.getWsEndpoint());
-		this.ws.onopen = this.onOpen;
-		this.ws.onmessage = this.onMessage;
-		this.ws.onclose = this.onClose;
+		this.open();
 	}
 
 	protected getWsEndpoint(): string {
@@ -68,8 +63,21 @@ export class TxTracer {
 		return url;
 	}
 
+	open() {
+		this.ws = this.options.wsObject
+			? new this.options.wsObject(this.getWsEndpoint())
+			: new WebSocket(this.getWsEndpoint());
+		this.ws.onopen = this.onOpen;
+		this.ws.onmessage = this.onMessage;
+		this.ws.onclose = this.onClose;
+	}
+
 	close() {
 		this.ws.close();
+	}
+
+	get numberOfSubscriberOrPendingQuery(): number {
+		return this.newBlockSubscribes.length + this.txSubscribes.size + this.pendingQueries.size;
 	}
 
 	get readyState(): WsReadyState {
@@ -172,7 +180,13 @@ export class TxTracer {
 		}
 	};
 
-	subscribeBlock(handler: (block: any) => void) {
+	/**
+	 * SubscribeBlock receives the handler for the block.
+	 * The handelrs shares the subscription of block.
+	 * @param handler
+	 * @return unsubscriber
+	 */
+	subscribeBlock(handler: (block: any) => void): () => void {
 		this.newBlockSubscribes.push({
 			handler,
 		});
@@ -180,6 +194,10 @@ export class TxTracer {
 		if (this.newBlockSubscribes.length === 1) {
 			this.sendSubscribeBlockRpc();
 		}
+
+		return () => {
+			this.newBlockSubscribes = this.newBlockSubscribes.filter(s => s.handler !== handler);
+		};
 	}
 
 	protected sendSubscribeBlockRpc(): void {

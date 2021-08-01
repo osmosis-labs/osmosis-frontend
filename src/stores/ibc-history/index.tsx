@@ -1,6 +1,6 @@
 import { computed, flow, makeObservable, observable, toJS } from 'mobx';
 import { KVStore, toGenerator } from '@keplr-wallet/common';
-import { TxTracer } from '../../tx';
+import { TxTracer, WsReadyState } from '../../tx';
 import { ChainGetter } from '@keplr-wallet/stores';
 import { AppCurrency } from '@keplr-wallet/types';
 import { keepAlive } from 'mobx-utils';
@@ -63,24 +63,37 @@ export class IBCTransferHistoryStore {
 	}
 
 	// timeoutHeight should be formed as the `{chain_version}-{block_height}`
-	protected async traceTimeoutHeight(blockSubscriber: TxTracer, timeoutHeight: string): Promise<void> {
+	protected traceTimeoutHeight(
+		blockSubscriber: TxTracer,
+		timeoutHeight: string
+	): {
+		unsubscriber: () => void;
+		promise: Promise<void>;
+	} {
 		const chainVersion = parseInt(timeoutHeight.split('-')[0]);
 		const timeoutBlockHeight = parseInt(timeoutHeight.split('-')[1]);
-		return new Promise(resolve => {
-			// TODO: Unsubscribe block
-			blockSubscriber.subscribeBlock(data => {
-				const chainId = data?.block?.header?.chain_id;
-				if (chainId && ChainIdHelper.parse(chainId).version > chainVersion) {
-					resolve();
-					return;
-				}
-				const blockHeight = data?.block?.header?.height;
-				if (blockHeight && parseInt(blockHeight) > timeoutBlockHeight) {
-					resolve();
-					return;
-				}
-			});
+
+		let resolver: (value: PromiseLike<void> | void) => void;
+		const promise = new Promise<void>(resolve => {
+			resolver = resolve;
 		});
+		const unsubscriber = blockSubscriber.subscribeBlock(data => {
+			const chainId = data?.block?.header?.chain_id;
+			if (chainId && ChainIdHelper.parse(chainId).version > chainVersion) {
+				resolver();
+				return;
+			}
+			const blockHeight = data?.block?.header?.height;
+			if (blockHeight && parseInt(blockHeight) > timeoutBlockHeight) {
+				resolver();
+				return;
+			}
+		});
+
+		return {
+			unsubscriber,
+			promise,
+		};
 	}
 
 	async traceHistroyStatus(
@@ -105,14 +118,20 @@ export class IBCTransferHistoryStore {
 		}
 
 		const blockSubscriber = this.getBlockSubscriber(history.destChainId);
+		if (blockSubscriber.readyState === WsReadyState.CLOSED) {
+			blockSubscriber.open();
+		}
+
+		let timeoutUnsubscriber: (() => void) | undefined;
 
 		const promises: Promise<any>[] = [];
 
 		if (history.timeoutHeight) {
 			promises.push(
 				(async () => {
-					await this.traceTimeoutHeight(blockSubscriber, history.timeoutHeight!);
-					// TODO: Unsubsribe the block.
+					const { promise, unsubscriber } = this.traceTimeoutHeight(blockSubscriber, history.timeoutHeight!);
+					timeoutUnsubscriber = unsubscriber;
+					await promise;
 
 					// Even though the block is reached to the timeout height,
 					// the receiving packet event could be delivered before the block timeout if the network connection is unstable.
@@ -134,6 +153,16 @@ export class IBCTransferHistoryStore {
 		);
 
 		const result = await Promise.race(promises);
+
+		if (timeoutUnsubscriber) {
+			timeoutUnsubscriber();
+
+			if (blockSubscriber.numberOfSubscriberOrPendingQuery === 0) {
+				blockSubscriber.close();
+			}
+		}
+		txTracer.close();
+
 		// If the TxTracer finds the packet received tx before the timeout height, the raced promise would return the tx itself.
 		// But, if the timeout is faster than the packet received, the raced promise would return undefined because the `traceTimeoutHeight` method returns nothing.
 		if (result) {
