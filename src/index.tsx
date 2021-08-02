@@ -25,6 +25,7 @@ import { StoreProvider } from './stores';
 import './styles/globals.scss';
 import './styles/index.scss';
 import { Terms } from './terms';
+import { IBCHistoryNotifier } from './provider';
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
@@ -37,6 +38,7 @@ const Router: FunctionComponent = () => {
 		<QueryClientProvider client={queryClient}>
 			<StoreProvider>
 				<ToastProvider>
+					<IBCHistoryNotifier />
 					<Terms />
 					<div style={{ minWidth: '1280px' }} className="min-h-sidebar-minHeight h-screen bg-background z-0">
 						<BrowserRouter>

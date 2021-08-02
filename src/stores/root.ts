@@ -11,12 +11,15 @@ import { GammSwapManager } from './osmosis/swap';
 import { LPCurrencyRegistrar } from './osmosis/currency-registrar';
 import { ChainInfoInner } from '@keplr-wallet/stores';
 import { PoolIntermediatePriceStore } from './price';
+import { IBCTransferHistoryStore } from './ibc-history';
 
 export class RootStore {
 	public readonly chainStore: ChainStore;
 	public readonly accountStore: AccountStore<AccountWithCosmosAndOsmosis>;
 	public readonly queriesStore: QueriesStore<QueriesWithCosmosAndOsmosis>;
 	public readonly priceStore: PoolIntermediatePriceStore;
+
+	public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
 
 	public readonly swapManager: GammSwapManager;
 
@@ -122,6 +125,11 @@ export class RootStore {
 					destCoinId: 'cosmos',
 				},
 			]
+		);
+
+		this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
+			new IndexedDBKVStore('ibc_transfer_history'),
+			this.chainStore
 		);
 
 		this.swapManager = new GammSwapManager([
