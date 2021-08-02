@@ -1,9 +1,10 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { IBCTransferHistory } from '../../stores/ibc-history';
 import { useStore } from '../../stores';
 import { ChainIdHelper } from '@keplr-wallet/cosmos';
 import { CoinPretty, Dec } from '@keplr-wallet/unit';
+import clsx from 'clsx';
 
 const LinkIcon: FunctionComponent<React.SVGAttributes<SVGElement> | { className: string }> = props => {
 	return (
@@ -20,19 +21,30 @@ const tableWidths = ['20%', '15%', '15%', '30%', '20%'];
 export const IBCTransferHistoryTable: FunctionComponent = observer(() => {
 	const { ibcTransferHistoryStore, chainStore, accountStore } = useStore();
 
+	const histories = ibcTransferHistoryStore.getHistoriesByAccount(
+		accountStore.getAccount(chainStore.current.chainId).bech32Address
+	);
+
+	const itemsPerPage = 10;
+	const [page, setPage] = useState(1);
+	const numPages = Math.ceil(histories.length / itemsPerPage);
+
+	const paginatedHistories = useMemo(() => {
+		return histories.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+	}, [histories, page, itemsPerPage]);
+
 	return (
 		<React.Fragment>
 			<h5 className="mb-5">Pending IBC Transactions</h5>
 			<table className="w-full">
 				<IBCTransferHistoryTableHeader />
 				<tbody className="w-full">
-					{ibcTransferHistoryStore
-						.getHistoriesByAccount(accountStore.getAccount(chainStore.current.chainId).bech32Address)
-						.map(history => {
-							return <IBCTransferHistoryTableRow key={history.txHash} history={history} />;
-						})}
+					{paginatedHistories.map(history => {
+						return <IBCTransferHistoryTableRow key={history.txHash} history={history} />;
+					})}
 				</tbody>
 			</table>
+			{numPages > 1 || page !== 1 ? <TablePagination page={page} numPages={numPages} onPageChange={setPage} /> : null}
 		</React.Fragment>
 	);
 });
@@ -161,4 +173,33 @@ export const IBCTransferHistoryTableHeader: FunctionComponent = () => {
 			</tr>
 		</thead>
 	);
+};
+
+const TablePagination: FunctionComponent<{
+	page: number;
+	numPages: number;
+	onPageChange: (page: number) => void;
+}> = ({ page, numPages, onPageChange }) => {
+	const pageRender = [];
+
+	for (let i = 0; i < numPages; i++) {
+		const _page = i + 1;
+
+		pageRender.push(
+			<button
+				key={_page.toString()}
+				onClick={e => {
+					e.preventDefault();
+
+					onPageChange(_page);
+				}}
+				className={clsx('flex items-center rounded-md h-9 px-3 text-sm text-secondary-200', {
+					'border border-secondary-200': _page === page,
+				})}>
+				<p>{_page}</p>
+			</button>
+		);
+	}
+
+	return <div className="w-full p-4 flex items-center justify-center">{pageRender}</div>;
 };
