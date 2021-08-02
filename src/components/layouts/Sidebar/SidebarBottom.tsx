@@ -66,8 +66,20 @@ export const SidebarBottom: FunctionComponent<TSidebarBottom> = observer(({ open
 						className="opacity-75 hover:opacity-100 cursor-pointer mb-0.5 mr-1">
 						<Img style={{ minWidth: '32px' }} className="w-8 h-8" src={`${MISC.ASSETS_BASE}/Icons/Twitter.svg`} />
 					</button>
-					<button onClick={() => window.open(LINKS.MEDIUM)} className="opacity-75 hover:opacity-100 cursor-pointer">
+					<button
+						onClick={() => window.open(LINKS.MEDIUM)}
+						className="opacity-75 hover:opacity-100 cursor-pointer mr-1">
 						<Img style={{ minWidth: '36px' }} className="w-9 h-9" src={`${MISC.ASSETS_BASE}/Icons/Medium.svg`} />
+					</button>
+					<button
+						onClick={() => window.open(LINKS.DISCORD)}
+						className="opacity-75 hover:opacity-100 cursor-pointer mb-0.5">
+						<Img style={{ minWidth: '36px' }} className="w-9 h-9" src={`${MISC.ASSETS_BASE}/Icons/Discord.svg`} />
+					</button>
+					<button
+						onClick={() => window.open(LINKS.TELEGRAM)}
+						className="opacity-75 hover:opacity-100 cursor-pointer mb-0.5">
+						<Img style={{ minWidth: '36px' }} className="w-9 h-9" src={`${MISC.ASSETS_BASE}/Icons/Telegram.svg`} />
 					</button>
 				</div>
 			</div>

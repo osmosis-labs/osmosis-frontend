@@ -44,7 +44,7 @@ export const AssetsOverview: FunctionComponent<{ title: string }> = observer(({ 
 				<OverviewLabelValue label="Bonded Assets">
 					<h4 className="inline">{lockedBalancePrice.toString()}</h4>
 				</OverviewLabelValue>
-				<OverviewLabelValue label="Delegated OSMO">
+				<OverviewLabelValue label="Staked OSMO">
 					<h4 className="inline">{delegatedBalancePrice.toString()}</h4>
 				</OverviewLabelValue>
 			</div>

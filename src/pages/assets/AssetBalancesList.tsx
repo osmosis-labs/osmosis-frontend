@@ -77,6 +77,7 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 					isWithdraw={dialogState.isWithdraw}
 				/>
 			) : null}
+			<h5 className="mb-5">Osmosis Assets</h5>
 			<table className="w-full">
 				<AssetBalanceTableHeader />
 				<tbody className="w-full">
