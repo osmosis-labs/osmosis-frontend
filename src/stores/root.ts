@@ -313,37 +313,21 @@ export class RootStore {
 					},
 				],
 			},
-			/** TODO: Once IOV:OSMO, and ATOM:OSMO pools are created by starname team, add poolIds here*/
-			// {
-			// 	poolId: '181',
-			// 	currencies: [
-			// 		{
-			// 			coinMinimalDenom: 'uosmo',
-			// 			coinDenom: 'OSMO',
-			// 			coinDecimals: 6,
-			// 		},
-			// 		{
-			// 			coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-15' }], 'uiov'),
-			// 			coinDenom: 'IOV',
-			// 			coinDecimals: 6,
-			// 		},
-			// 	],
-			// },
-			// {
-			// 	poolId: '182',
-			// 	currencies: [
-			// 		{
-			// 			coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
-			// 			coinDenom: 'ATOM',
-			// 			coinDecimals: 6,
-			// 		},
-			// 		{
-			// 			coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-15' }], 'uiov'),
-			// 			coinDenom: 'IOV',
-			// 			coinDecimals: 6,
-			// 		},
-			// 	],
-			// },
+			{
+				poolId: '183',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-15' }], 'uiov'),
+						coinDenom: 'IOV',
+						coinDecimals: 6,
+					},
+				],
+			},
 		]);
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
