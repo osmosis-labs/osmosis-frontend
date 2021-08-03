@@ -7,7 +7,14 @@ import { AllPools } from './AllPools';
 export const PoolsPage: FunctionComponent = observer(() => {
 	return (
 		<div className="w-full h-full">
-			<div className="py-10 w-full px-10">
+			<div
+				className="py-10 w-full px-10"
+				style={{
+					background: 'url("/public/assets/backgrounds/osmosis-pool-machine.png")',
+					backgroundSize: 'contain',
+					backgroundRepeat: 'no-repeat',
+					backgroundPositionX: 'right',
+				}}>
 				<div className="max-w-max mx-auto">
 					<LabsOverview />
 				</div>
