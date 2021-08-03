@@ -19,7 +19,7 @@ export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> 
 			 일단 현재로서는 풀이 100개가 넘을 때까지 오래 걸릴 것으로 보이기 때문에
 			 얘가 100개까지 다 받아올 거라고 기대하고 limit, offset 설정없이 쿼리를 보낸다.
 			 */
-			`/osmosis/gamm/v1beta1/pools?pagination.limit=200`
+			`/osmosis/gamm/v1beta1/pools?pagination.limit=300`
 		);
 
 		makeObservable(this);
