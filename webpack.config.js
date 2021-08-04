@@ -10,6 +10,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 const isEnvAnalyzer = process.env.ANALYZER === 'true';
@@ -18,6 +19,7 @@ const commonResolve = dir => ({
 	alias: {
 		assets: path.resolve(__dirname, dir),
 	},
+	plugins: [new TsconfigPathsPlugin({ configFile: './tsconfig.json' })],
 });
 
 const sassRule = {
