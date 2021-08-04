@@ -21,14 +21,14 @@ export const AssetsPage: FunctionComponent = observer(() => {
 			</div>
 			<div className="px-15 py-10">
 				<div className="max-w-max mx-auto">
+					<div className="mb-8">
+						<AssetBalancesList />
+					</div>
 					{ibcTransferHistoryStore.getHistoriesAndUncommitedHistoriesByAccount(
 						accountStore.getAccount(chainStore.current.chainId).bech32Address
 					).length > 0 ? (
-						<div className="mb-8">
-							<IBCTransferHistoryTable />
-						</div>
+						<IBCTransferHistoryTable />
 					) : null}
-					<AssetBalancesList />
 				</div>
 			</div>
 		</div>
