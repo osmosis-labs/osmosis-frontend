@@ -21,3 +21,9 @@ export const CenterH = styled.div`
 	display: flex;
 	justify-content: center;
 `;
+
+export const Center = styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+`;
