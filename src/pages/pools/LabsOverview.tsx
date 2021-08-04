@@ -1,17 +1,18 @@
-import React, { FunctionComponent, useState } from 'react';
-import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
-import { DisplayLeftTime } from '../../components/common/DisplayLeftTime';
+import { CoinPretty, DecUtils } from '@keplr-wallet/unit';
+import dayjs from 'dayjs';
 import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useState } from 'react';
+import { DisplayLeftTime } from '../../components/common/DisplayLeftTime';
+import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
+import { FullWidthContainer } from '../../components/layouts/Containers';
+import { HideCreateNewPool, RewardEpochIdentifier } from '../../config';
 import { CreateNewPoolDialog } from '../../dialogs/create-new-pool';
 import { useStore } from '../../stores';
-import dayjs from 'dayjs';
-import { HideCreateNewPool, RewardEpochIdentifier } from '../../config';
-import { CoinPretty, DecUtils } from '@keplr-wallet/unit';
 
-export const LabsOverview: FunctionComponent = observer(() => {
+export const LabsOverview = observer(function LabsOverview() {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	return (
-		<section>
+		<FullWidthContainer>
 			<CreateNewPoolDialog
 				dialogStyle={{ minWidth: '656px' }}
 				isOpen={isDialogOpen}
@@ -32,7 +33,7 @@ export const LabsOverview: FunctionComponent = observer(() => {
 				<DispRewardPayout />
 				{/* <AllTVL /> */}
 			</ul>
-		</section>
+		</FullWidthContainer>
 	);
 });
 

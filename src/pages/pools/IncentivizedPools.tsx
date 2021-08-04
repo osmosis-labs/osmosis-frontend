@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react';
-import cn from 'clsx';
-import { Img } from '../../components/common/Img';
-import { useHistory } from 'react-router-dom';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
 import { AppCurrency } from '@keplr-wallet/types';
-import { Dec } from '@keplr-wallet/unit';
+import cn from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Img } from '../../components/common/Img';
+import { FullWidthContainer } from '../../components/layouts/Containers';
+import { useStore } from '../../stores';
 
 const bgArray = [
 	'bg-gradients-socialLive',
@@ -61,7 +61,7 @@ export const MyPools: FunctionComponent = observer(() => {
 		.filter(d => d != null) as MyPoolCardProps[];
 
 	return (
-		<section>
+		<FullWidthContainer>
 			<h5 className="mb-7.5 ">My Pools</h5>
 			<ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8.75 w-full h-full">
 				{state.map(pool => {
@@ -78,7 +78,7 @@ export const MyPools: FunctionComponent = observer(() => {
 					);
 				})}
 			</ul>
-		</section>
+		</FullWidthContainer>
 	);
 });
 
@@ -109,7 +109,7 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 		.filter(d => d != null) as PoolCardProps[];
 
 	return (
-		<section>
+		<FullWidthContainer>
 			<h5 className="mb-7.5 ">Incentivized Pools</h5>
 			{state.length === 0 ? (
 				<div className="w-full rounded-xl bg-card py-8 flex flex-col items-center">
@@ -132,7 +132,7 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 					);
 				})}
 			</ul>
-		</section>
+		</FullWidthContainer>
 	);
 });
 

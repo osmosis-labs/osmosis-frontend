@@ -3,8 +3,9 @@ import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import * as querystring from 'querystring';
-import React, { FunctionComponent, HTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, HTMLAttributes, useCallback, useMemo, useState } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
+import { FullWidthContainer } from '../../components/layouts/Containers';
 import { HideLBPPoolFromPage, HidePoolFromPage, PoolsPerPage } from '../../config';
 import { usePoolFinancialData } from '../../hooks/pools/usePoolFinancialData';
 import { useStore } from '../../stores';
@@ -24,7 +25,7 @@ export const AllPools: FunctionComponent = () => {
 		setAllPoolsShown(shown => !shown);
 	}, [allPoolsShown, history]);
 	return (
-		<section>
+		<FullWidthContainer>
 			<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 				<h5 className="mb-7.5">All Pools</h5>
 				<label htmlFor="show-all-pools">
@@ -49,7 +50,7 @@ export const AllPools: FunctionComponent = () => {
 			<section>
 				<PoolsTable allPoolsShown={allPoolsShown} />
 			</section>
-		</section>
+		</FullWidthContainer>
 	);
 };
 
