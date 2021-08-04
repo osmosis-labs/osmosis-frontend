@@ -137,13 +137,13 @@ export class RootStore {
 				poolId: '1',
 				currencies: [
 					{
-						coinMinimalDenom: 'uosmo',
-						coinDenom: 'OSMO',
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
 						coinDecimals: 6,
 					},
 					{
-						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
-						coinDenom: 'ATOM',
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
 						coinDecimals: 6,
 					},
 				],
