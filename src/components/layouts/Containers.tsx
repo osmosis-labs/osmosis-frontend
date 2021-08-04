@@ -11,3 +11,13 @@ export const CenterSection = styled.section`
 	align-items: flex-start;
 	padding: 40px;
 `;
+
+export const CenterV = styled.div`
+	display: flex;
+	align-items: center;
+`;
+
+export const CenterH = styled.div`
+	display: flex;
+	justify-content: center;
+`;
