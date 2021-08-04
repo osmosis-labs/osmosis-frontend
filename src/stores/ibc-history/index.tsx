@@ -91,6 +91,28 @@ export class IBCTransferHistoryStore {
 			});
 	});
 
+	getUncommitedHistoriesByAccount = computedFn((address: string): UncommitedHistory[] => {
+		return this._uncommitedHistories
+			.filter(history => history.sender === address || history.recipient === address)
+			.sort((history1, history2) => {
+				// Sort by created time.
+				return new Date(history1.createdAt) > new Date(history2.createdAt) ? -1 : 1;
+			});
+	});
+
+	getHistoriesAndUncommitedHistoriesByAccount = computedFn((address: string): (
+		| IBCTransferHistory
+		| UncommitedHistory
+	)[] => {
+		return this._uncommitedHistories
+			.concat(this.histories)
+			.filter(history => history.sender === address || history.recipient === address)
+			.sort((history1, history2) => {
+				// Sort by created time.
+				return new Date(history1.createdAt) > new Date(history2.createdAt) ? -1 : 1;
+			});
+	});
+
 	protected getBlockSubscriber(chainId: string): TxTracer {
 		if (!this.blockSubscriberMap.has(chainId)) {
 			this.blockSubscriberMap.set(chainId, new TxTracer(this.chainGetter.getChain(chainId).rpc, '/websocket'));

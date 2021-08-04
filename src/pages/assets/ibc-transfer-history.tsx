@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { IBCTransferHistory } from '../../stores/ibc-history';
+import { IBCTransferHistory, UncommitedHistory } from '../../stores/ibc-history';
 import { useStore } from '../../stores';
 import { ChainIdHelper } from '@keplr-wallet/cosmos';
 import { CoinPretty, Dec } from '@keplr-wallet/unit';
@@ -21,7 +21,7 @@ const tableWidths = ['20%', '15%', '15%', '30%', '20%'];
 export const IBCTransferHistoryTable: FunctionComponent = observer(() => {
 	const { ibcTransferHistoryStore, chainStore, accountStore } = useStore();
 
-	const histories = ibcTransferHistoryStore.getHistoriesByAccount(
+	const histories = ibcTransferHistoryStore.getHistoriesAndUncommitedHistoriesByAccount(
 		accountStore.getAccount(chainStore.current.chainId).bech32Address
 	);
 
@@ -35,7 +35,7 @@ export const IBCTransferHistoryTable: FunctionComponent = observer(() => {
 
 	return (
 		<React.Fragment>
-			<h5 className="mb-5">Pending IBC Transactions</h5>
+			<h5 className="mb-5">IBC Transaction History</h5>
 			<table className="w-full">
 				<IBCTransferHistoryTableHeader />
 				<tbody className="w-full">
@@ -50,7 +50,7 @@ export const IBCTransferHistoryTable: FunctionComponent = observer(() => {
 });
 
 export const IBCTransferHistoryTableRow: FunctionComponent<{
-	history: IBCTransferHistory;
+	history: IBCTransferHistory | UncommitedHistory;
 }> = observer(({ history }) => {
 	const { chainStore } = useStore();
 
@@ -77,7 +77,17 @@ export const IBCTransferHistoryTableRow: FunctionComponent<{
 				) : null}
 			</td>
 			<td className="flex items-center justify-start px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<p>{history.sequence}</p>
+				{/* If the history is uncommited (doesn't have sequence), show the alternative pending icon */}
+				{'sequence' in history ? (
+					<p>{history.sequence}</p>
+				) : (
+					<img
+						alt="ldg"
+						className="s-spin"
+						style={{ width: '20px', height: '20px', marginRight: '8px' }}
+						src="/public/assets/Icons/Loading.png"
+					/>
+				)}
 			</td>
 			<td className="flex items-center justify-end px-2 py-3" style={{ width: tableWidths[i++] }}>
 				<p>
@@ -96,6 +106,22 @@ export const IBCTransferHistoryTableRow: FunctionComponent<{
 			</td>
 			<td className="flex items-center justify-end px-2 py-3" style={{ width: tableWidths[i++] }}>
 				{(() => {
+					if (!('status' in history)) {
+						// If the history is the uncommited history (doesn't have status),
+						// just show the status as pending.
+						return (
+							<React.Fragment>
+								<img
+									alt="ldg"
+									className="s-spin"
+									style={{ width: '20px', height: '20px', marginRight: '8px' }}
+									src="/public/assets/Icons/Loading.png"
+								/>
+								Pending
+							</React.Fragment>
+						);
+					}
+
 					switch (history.status) {
 						case 'complete':
 							return (
