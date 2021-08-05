@@ -1,43 +1,49 @@
-import React, { FunctionComponent } from 'react';
+import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
-import { LabsOverview } from './LabsOverview';
-import { IncentivizedPools, MyPools } from './IncentivizedPools';
-import { AllPools } from './AllPools';
+import React from 'react';
+import { CenterSection } from 'src/components/layouts/Containers';
+import { IncentivizedPools } from 'src/pages/pools/components/IncentivizedPools';
+import { MyPools } from 'src/pages/pools/components/MyPools';
+import { AllPools } from './components/AllPools';
+import { LabsOverview } from './components/LabsOverview';
 
-export const PoolsPage: FunctionComponent = observer(() => {
+export const PoolsPage = observer(function PoolsPage() {
 	return (
-		<div className="w-full h-full">
-			<div
-				className="py-10 w-full px-10"
-				style={{
-					background: 'url("/public/assets/backgrounds/osmosis-pool-machine.png")',
-					backgroundSize: 'contain',
-					backgroundRepeat: 'no-repeat',
-					backgroundPositionX: 'right',
-				}}>
-				<div className="max-w-max mx-auto">
-					<LabsOverview />
-				</div>
-			</div>
-			<div
-				className="py-10 bg-surface w-full px-10"
-				style={{
-					backgroundColor: '#1C173C',
-				}}>
-				<div className="max-w-max mx-auto">
-					<MyPools />
-				</div>
-			</div>
-			<div className="py-10 bg-surface w-full px-10">
-				<div className="max-w-max mx-auto">
-					<div>
-						<IncentivizedPools />
-					</div>
-					<div className="mt-15">
-						<AllPools />
-					</div>
-				</div>
-			</div>
-		</div>
+		<PageContainer>
+			<OverviewSection>
+				<LabsOverview />
+			</OverviewSection>
+
+			<MyPoolsSection>
+				<MyPools />
+			</MyPoolsSection>
+
+			<PoolsSection>
+				<IncentivizedPools />
+			</PoolsSection>
+
+			<PoolsSection>
+				<AllPools />
+			</PoolsSection>
+		</PageContainer>
 	);
 });
+
+const PageContainer = styled.div`
+	width: 100%;
+	height: 100%;
+`;
+
+const OverviewSection = styled(CenterSection)`
+	background: url('/public/assets/backgrounds/osmosis-pool-machine.png') no-repeat;
+	background-size: contain;
+	background-position-x: right;
+`;
+
+const MyPoolsSection = styled(CenterSection)`
+	background-color: #1c173c;
+`;
+
+const PoolsSection = styled(CenterSection)`
+	background-color: rgba(35, 29, 75, 1);
+`;
