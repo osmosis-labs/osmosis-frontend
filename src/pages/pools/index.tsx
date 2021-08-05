@@ -2,9 +2,10 @@ import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { CenterSection } from 'src/components/layouts/Containers';
+import { IncentivizedPools } from 'src/pages/pools/components/IncentivizedPools';
+import { MyPools } from 'src/pages/pools/components/MyPools';
 import { AllPools } from './components/AllPools';
 import { LabsOverview } from './components/LabsOverview';
-import { IncentivizedPools, MyPools } from './IncentivizedPools';
 
 export const PoolsPage = observer(function PoolsPage() {
 	return (
