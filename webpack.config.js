@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const ReactRefreshTypeScript = require('react-refresh-typescript');
 const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -64,11 +62,7 @@ const tsRule = {
 	use: [
 		{
 			loader: require.resolve('ts-loader'),
-			options: {
-				getCustomTransformers: () => ({
-					before: isEnvDevelopment ? [ReactRefreshTypeScript()] : [],
-				}),
-			},
+			options: {},
 		},
 	],
 };
@@ -150,8 +144,6 @@ const webConfig = () => {
 			new webpack.DefinePlugin({
 				'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH),
 			}),
-			isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
-			isEnvDevelopment && new ReactRefreshWebpackPlugin(),
 		].filter(Boolean),
 	};
 };
