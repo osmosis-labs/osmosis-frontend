@@ -116,9 +116,7 @@ const PoolInfoHeaderBgWrapper = styled.div`
 
 const PoolInfoHeaderBg = styled.div<{ isLbp: boolean }>`
 	position: absolute;
-	background-size: contain;
 	height: 100%;
-	background-repeat: no-repeat;
 	${({ isLbp }) => ({
 		right: isLbp ? '0' : '3rem',
 		width: isLbp ? '900px' : '600px',
@@ -127,6 +125,8 @@ const PoolInfoHeaderBg = styled.div<{ isLbp: boolean }>`
 			: 'url("/public/assets/backgrounds/osmosis-guy-in-lab.png")',
 		backgroundPositionX: isLbp ? 'right' : undefined,
 	})}
+	background-size: contain;
+	background-repeat: no-repeat;
 `;
 
 function isLbp(
