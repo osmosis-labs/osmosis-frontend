@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import React, { HTMLAttributes } from 'react';
 import { CenterV } from 'src/components/layouts/Containers';
-import { PoolCardTokenIcon } from 'src/pages/pools/components/PoolCardList/PoolCardTokenIcon';
+import { PoolCardTokenIcon } from 'src/components/PoolCardTokenIcon';
 import { isMyPoolCardProp } from 'src/pages/pools/components/PoolCardList/utils/isMyPoolCardProp';
 import { IncentivizedPoolCardProp, MyPoolCardProp } from 'src/pages/pools/models/poolCardProps';
 import { Optional } from 'utility-types';
@@ -17,7 +17,7 @@ export function PoolCardItem(
 	return (
 		<PoolCardItemContainer onClick={onClick}>
 			<TokenInfoContainer>
-				<PoolCardTokenIcon poolId={poolId} />
+				<PoolCardTokenIcon bgIndex={poolId} src="/public/assets/Icons/OSMO.svg" />
 				<div style={{ marginTop: '15px' }}>
 					<h5>Pool #{poolId}</h5>
 					<PoolSubTitle>
