@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useState } from 'react';
-import moment from 'dayjs';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
 import { CoinPretty } from '@keplr-wallet/unit';
-import { Duration } from 'dayjs/plugin/duration';
+import moment from 'dayjs';
 import dayjs from 'dayjs';
-import { TToastType, useToast } from '../../components/common/toasts';
+import { Duration } from 'dayjs/plugin/duration';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useState } from 'react';
+import { TToastType, useToast } from 'src/components/common/toasts';
+import { useStore } from 'src/stores';
 
 const tableWidths = ['40%', '40%', '20%'];
 export const UnlockingTable: FunctionComponent<{

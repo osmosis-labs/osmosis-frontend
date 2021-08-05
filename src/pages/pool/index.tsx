@@ -10,8 +10,8 @@ import { PoolCatalyst } from 'src/pages/pool/components/PoolCatalyst';
 import { PoolInfoHeader } from 'src/pages/pool/components/PoolInfoHeader';
 import { useStore } from 'src/stores';
 import { QueriedPoolBase } from 'src/stores/osmosis/query/pool';
-import { LBPCatalyst } from './LBP';
-import { OsmoSynthesis } from './OsmoSynthesis';
+import { LbpCatalyst } from './components/LbpCatalyst';
+import { LiquidityMining } from './components/LiquidityMining';
 
 interface QueryParams {
 	/**pool id*/
@@ -61,10 +61,10 @@ export const PoolPage: FunctionComponent = observer(() => {
 				{/* 인센티브를 받을 수 있는 풀 또는 config에서 설정된 풀의 경우만 Synthesis를 표시한다. */}
 				{(queries.osmosis.queryIncentivizedPools.isIncentivized(pool.id) || LockupAbledPoolIds[pool.id]) && (
 					<div style={{ paddingBottom: 60 }}>
-						<OsmoSynthesis poolId={pool.id} />
+						<LiquidityMining poolId={pool.id} />
 					</div>
 				)}
-				{isLbp(pool.smoothWeightChangeParams) && <LBPCatalyst pool={pool} lbpParams={pool.smoothWeightChangeParams} />}
+				{isLbp(pool.smoothWeightChangeParams) && <LbpCatalyst pool={pool} lbpParams={pool.smoothWeightChangeParams} />}
 			</LiquidityMiningSection>
 
 			<PoolCatalystSection>

@@ -1,19 +1,19 @@
-import React, { FunctionComponent, useState } from 'react';
-import { multiply } from '../../utils/Big';
-import { formatNumber } from '../../utils/format';
-import { MyLockupsTable } from './MyLockupsTable';
-import { UnlockingTable } from './Unlocking';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
 import { Dec, IntPretty } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
-import { LockLpTokenDialog } from '../../dialogs';
-import { ExtraGaugeInPool } from '../../config';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useState } from 'react';
+import { ExtraGaugeInPool } from 'src/config';
+import { LockLpTokenDialog } from 'src/dialogs';
+import { useStore } from 'src/stores';
 import { ExtraGauge } from './ExtraGauge';
+import { MyLockupsTable } from './MyLockupsTable';
+import { UnlockingTable } from './Unlocking';
 
-export const OsmoSynthesis: FunctionComponent<{
+interface Props {
 	poolId: string;
-}> = observer(({ poolId }) => {
+}
+
+export const LiquidityMining = observer(function LiquidityMining({ poolId }: Props) {
 	const { chainStore, queriesStore, accountStore, priceStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);

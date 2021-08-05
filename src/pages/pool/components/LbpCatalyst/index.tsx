@@ -1,9 +1,9 @@
-import React, { FunctionComponent } from 'react';
-import { observer } from 'mobx-react-lite';
-import { QueriedPoolBase } from '../../stores/osmosis/query/pool';
 import dayjs from 'dayjs';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent } from 'react';
+import { QueriedPoolBase } from 'src/stores/osmosis/query/pool';
 
-export const LBPCatalyst: FunctionComponent<{
+export const LbpCatalyst: FunctionComponent<{
 	pool: QueriedPoolBase;
 	lbpParams: NonNullable<QueriedPoolBase['smoothWeightChangeParams']>;
 }> = observer(({ pool, lbpParams }) => {

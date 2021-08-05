@@ -6,19 +6,19 @@ import { CoinPretty, Dec, Int, IntPretty } from '@keplr-wallet/unit';
 import { action, computed, makeObservable, observable, override } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useState } from 'react';
-import { Img } from '../../components/common/Img';
-import { TToastType, useToast } from '../../components/common/toasts';
-import { ConnectAccountButton } from '../../components/ConnectAccountButton';
-import { Container } from '../../components/containers';
-import { wrapBaseDialog } from '../../dialogs';
-import { useAccountConnection } from '../../hooks/account/useAccountConnection';
-import { useFakeFeeConfig } from '../../hooks/tx';
-import { TCardTypes } from '../../interfaces';
-import { useStore } from '../../stores';
-import { ObservableQueryPools } from '../../stores/osmosis/query/pools';
-import { isSlippageError } from '../../utils/tx';
-import { FromBox } from '../main/components/FormBox';
-import { ToBox } from '../main/components/ToBox';
+import { Img } from 'src/components/common/Img';
+import { TToastType, useToast } from 'src/components/common/toasts';
+import { ConnectAccountButton } from 'src/components/ConnectAccountButton';
+import { Container } from 'src/components/containers';
+import { wrapBaseDialog } from 'src/dialogs';
+import { useAccountConnection } from 'src/hooks/account/useAccountConnection';
+import { useFakeFeeConfig } from 'src/hooks/tx';
+import { TCardTypes } from 'src/interfaces';
+import { FromBox } from 'src/pages/main/components/FormBox';
+import { ToBox } from 'src/pages/main/components/ToBox';
+import { useStore } from 'src/stores';
+import { ObservableQueryPools } from 'src/stores/osmosis/query/pools';
+import { isSlippageError } from 'src/utils/tx';
 
 export class PoolSwapConfig extends AmountConfig {
 	@observable
@@ -173,6 +173,7 @@ export class PoolSwapConfig extends AmountConfig {
 				.toString()
 		);
 	}
+
 	@override
 	setAmount(amount: string) {
 		this.setIsMax(false);

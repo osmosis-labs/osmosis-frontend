@@ -5,7 +5,7 @@ import { CenterV } from 'src/components/layouts/Containers';
 import { HideAddLiquidityPoolIds } from 'src/config';
 import { ManageLiquidityDialog } from 'src/dialogs';
 import { OverviewLabelValueGridList } from 'src/pages/pool/components/PoolInfoHeader/OverviewLabelValueGridList';
-import { PoolSwapDialog } from 'src/pages/pool/PoolSwap';
+import { PoolSwapDialog } from 'src/pages/pool/components/PoolInfoHeader/PoolSwap';
 
 interface Props {
 	poolId: string;

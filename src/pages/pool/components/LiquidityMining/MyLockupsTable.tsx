@@ -1,13 +1,16 @@
-import React, { FunctionComponent, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
 import { CoinPretty, Dec } from '@keplr-wallet/unit';
-import { TToastType, useToast } from '../../components/common/toasts';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useState } from 'react';
+import { TToastType, useToast } from 'src/components/common/toasts';
+import { useStore } from 'src/stores';
 
 const tableWidths = ['25%', '25%', '25%', '25%'];
-export const MyLockupsTable: FunctionComponent<{
+
+interface Props {
 	poolId: string;
-}> = observer(({ poolId }) => {
+}
+
+export const MyLockupsTable = observer(function MyLockupsTable({ poolId }: Props) {
 	const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
