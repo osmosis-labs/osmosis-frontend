@@ -1,15 +1,20 @@
-import React, { FunctionComponent } from 'react';
-import { observer } from 'mobx-react-lite';
+import styled from '@emotion/styled';
 import { AppCurrency } from '@keplr-wallet/types';
-import { useStore } from '../../stores';
-import dayjs from 'dayjs';
 import { Int } from '@keplr-wallet/unit';
+import dayjs from 'dayjs';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { H4, H6Secondary } from 'src/components/Texts';
+import { colorPrimary } from 'src/emotionStyles/colors';
+import { useStore } from 'src/stores';
 
-export const ExtraGauge: FunctionComponent<{
+interface Props {
 	gaugeId: string;
 	currency: AppCurrency;
 	extraRewardAmount?: Int;
-}> = observer(({ gaugeId, currency, extraRewardAmount }) => {
+}
+
+export const ExtraGauge = observer(function ExtraGauge({ gaugeId, currency, extraRewardAmount }: Props) {
 	const { chainStore, queriesStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
@@ -18,22 +23,33 @@ export const ExtraGauge: FunctionComponent<{
 
 	const reward = gauge.getCoin(currency).add(extraRewardAmount ?? new Int(0));
 
+	if (!gauge.response) {
+		return null;
+	}
+
 	return (
-		<React.Fragment>
-			{gauge.response ? (
-				<div className="bg-card rounded-2xl pt-7 px-7.5 pb-10 mt-10 border border-white-mid">
-					<h4 className="mb-4 font-normal text-xl xl:text-2xl">Bonus bonding reward</h4>
-					<p className="mb-4">
-						This pool bonding over {gauge.lockupDuration.humanize()} will earn additional bonding
-						<br />
-						incentives for {gauge.numEpochsPaidOver} epochs starting at {dayjs(gauge.startTime).format('MMM D, YYYY')}.
-					</p>
-					<h6 className="text-secondary-200 font-normal">{`Total Bonus: ${reward
-						.maxDecimals(6)
-						.trim(true)
-						.toString()}`}</h6>
-				</div>
-			) : null}
-		</React.Fragment>
+		<ExtraGaugeContainer>
+			<H4>Bonus bonding reward</H4>
+			<p style={{ marginBottom: 16 }}>
+				This pool bonding over {gauge.lockupDuration.humanize()} will earn additional bonding
+				<br />
+				incentives for {gauge.numEpochsPaidOver} epochs starting at {dayjs(gauge.startTime).format('MMM D, YYYY')}.
+			</p>
+			<H6Secondary>
+				{`Total Bonus: ${reward
+					.maxDecimals(6)
+					.trim(true)
+					.toString()}`}
+			</H6Secondary>
+		</ExtraGaugeContainer>
 	);
 });
+
+const ExtraGaugeContainer = styled.div`
+	margin-top: 40px;
+	padding: 28px 30px 40px;
+	border-radius: 1rem;
+	border-width: 1px;
+	border-color: rgba(255, 255, 255, 0.6);
+	background-color: ${colorPrimary};
+`;
