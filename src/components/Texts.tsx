@@ -1,11 +1,10 @@
 import styled from '@emotion/styled';
-import { colorSecondary } from 'src/emotionStyles/colors';
-import { onLgWidth } from 'src/emotionStyles/mediaQueries';
+import React, { HTMLAttributes } from 'react';
 
 const FontSizeBySize = {
 	'2xl': 48,
-	xl: 36,
-	lg: 24,
+	xl: 24,
+	lg: 20,
 	md: 16,
 	sm: 12,
 	xs: 10,
@@ -29,6 +28,7 @@ const FontWeightByBoldness = {
 
 const RgbByColor = {
 	white: `255, 255, 255`,
+	secondary: `196, 164, 106`,
 	/**TODO: add colors to be used in Texts */
 };
 
@@ -37,7 +37,8 @@ interface OsmosisTextProps {
 	weight?: keyof typeof FontWeightByBoldness;
 	emphasis?: keyof typeof OpacityByEmphasis;
 	color?: keyof typeof RgbByColor;
-	type?: 'Inter' | 'Poppins';
+	fontType?: 'Inter' | 'Poppins';
+	pb?: number;
 }
 
 export const Text = styled.p<OsmosisTextProps>`
@@ -49,48 +50,32 @@ function mapTextPropsToCssProps({
 	weight = 'regular',
 	emphasis = 'regular',
 	color = 'white',
-	type = 'Inter',
+	fontType,
+	pb,
 }: OsmosisTextProps) {
+	const fontTypeProps = ['2xl', 'xl', 'lg'].some(largeSize => size === largeSize)
+		? { lineHeight: 1, fontFamily: `${fontType ?? 'Poppins'}, ui-sans-serif, system-ui` }
+		: { lineHeight: undefined, fontFamily: `${fontType ?? 'Inter'}, ui-sans-serif, system-ui` };
+	const textOpacity = color === 'secondary' ? 1 : OpacityByEmphasis[emphasis];
 	return {
-		fontFamily: `${type}, ui-sans-serif, system-ui`,
+		...fontTypeProps,
 		fontSize: FontSizeBySize[size as keyof typeof FontSizeBySize] ?? size,
 		fontWeight: FontWeightByBoldness[weight],
-		color: `rgba(${RgbByColor[color]}, ${OpacityByEmphasis[emphasis]})`,
+		color: `rgba(${RgbByColor[color]}, ${textOpacity})`,
+		paddingBottom: pb != null ? pb : undefined,
 	};
 }
 
-export const SectionTitleText = styled.h5`
-	line-height: 1;
-	margin-bottom: 30px;
-	font-size: 24px;
-	font-weight: 600;
-	font-family: Poppins, ui-sans-serif, system-ui;
-	color: rgba(255, 255, 255, 0.95);
-`;
-
-export const SubTitleText = styled.h6`
-	margin-bottom: 20px;
-	font-weight: 400;
-`;
-
-/** Paragraph */
-export const MediumTextWhite = styled.p`
-	color: rgba(255, 255, 255, 0.6);
-	font-weight: 500;
-`;
-
-export const H4 = styled.h4`
-	font-weight: 400;
-	font-size: 24px;
-
-	${onLgWidth} {
-		font-size: 36px;
-	}
-
-	margin-bottom: 16px;
-`;
-
-export const H6Secondary = styled.h6`
-	font-weight: 400;
-	color: ${colorSecondary};
-`;
+export function SectionTitle({
+	size = 'xl',
+	pb = 16,
+	emphasis = 'high',
+	children,
+	...props
+}: OsmosisTextProps & HTMLAttributes<HTMLParagraphElement>) {
+	return (
+		<Text as="h4" size={size} pb={pb} emphasis={emphasis} {...props}>
+			{children}
+		</Text>
+	);
+}
