@@ -11,7 +11,7 @@ import { LockLpTokenDialog } from 'src/dialogs';
 import { useStore } from 'src/stores';
 import { ExtraGauge } from './ExtraGauge';
 import { MyBondingsTable } from './MyBondingsTable';
-import { UnlockingTable } from './Unlocking';
+import { MyUnBondingTable } from './MyUnbondingTable';
 
 interface Props {
 	poolId: string;
@@ -92,7 +92,7 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 				<MyBondingsTable poolId={poolId} />
 			</TableSection>
 			<TableSection>
-				<UnlockingTable poolId={poolId} />
+				<MyUnBondingTable poolId={poolId} />
 			</TableSection>
 		</CenterSelf>
 	);

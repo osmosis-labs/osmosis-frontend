@@ -17,8 +17,8 @@ export const TableHeadRow = styled(TableRowBaseStyled)`
 	margin-top: 20px;
 `;
 
-export const TableBodyRow = styled(TableRowBaseStyled)`
-	height: 76px;
+export const TableBodyRow = styled(TableRowBaseStyled)<{ height?: number }>`
+	${({ height = 76 }) => ({ height: height })}
 `;
 
 export const TableData = styled.td`

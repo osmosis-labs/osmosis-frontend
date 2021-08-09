@@ -3,14 +3,21 @@ import moment from 'dayjs';
 import dayjs from 'dayjs';
 import { Duration } from 'dayjs/plugin/duration';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useState } from 'react';
+import React, { useState } from 'react';
 import { TToastType, useToast } from 'src/components/common/toasts';
+import { ButtonFaint } from 'src/components/layouts/Buttons';
+import { Spinner } from 'src/components/Spinners';
+import { TableBodyRow, TableData, TableHeadRow } from 'src/components/Tables';
+import { SubTitleText, Text } from 'src/components/Texts';
 import { useStore } from 'src/stores';
 
 const tableWidths = ['40%', '40%', '20%'];
-export const UnlockingTable: FunctionComponent<{
+
+interface Props {
 	poolId: string;
-}> = observer(({ poolId }) => {
+}
+
+export const MyUnBondingTable = observer(function MyUnBondingTable({ poolId }: Props) {
 	const { chainStore, accountStore, queriesStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
@@ -43,61 +50,67 @@ export const UnlockingTable: FunctionComponent<{
 		);
 	}
 
+	if (unlockingDatas.length === 0) {
+		return null;
+	}
+
 	return (
-		<React.Fragment>
-			{unlockingDatas.length > 0 ? (
-				<React.Fragment>
-					<h6 className="mb-1">Unbondings</h6>
-					<table className="w-full">
-						<UnlockingTableHeader />
-						<tbody className="w-full">
-							{unlockingDatas.map((unlocking, i) => {
-								return (
-									<UnlockingTableRow
-										key={i.toString()}
-										duration={unlocking.duration.humanize()}
-										amount={unlocking.amount
-											.maxDecimals(6)
-											.trim(true)
-											.toString()}
-										lockIds={unlocking.lockIds}
-										endTime={unlocking.endTime}
-									/>
-								);
-							})}
-						</tbody>
-					</table>
-				</React.Fragment>
-			) : null}
-		</React.Fragment>
+		<>
+			<SubTitleText>Unbondings</SubTitleText>
+			<table style={{ width: '100%' }}>
+				<UnlockingTableHeader />
+				<tbody style={{ width: '100%' }}>
+					{unlockingDatas.map((unlocking, i) => {
+						return (
+							<UnlockingTableRow
+								key={i.toString()}
+								duration={unlocking.duration.humanize()}
+								amount={unlocking.amount
+									.maxDecimals(6)
+									.trim(true)
+									.toString()}
+								lockIds={unlocking.lockIds}
+								endTime={unlocking.endTime}
+							/>
+						);
+					})}
+				</tbody>
+			</table>
+		</>
 	);
 });
 
-const UnlockingTableHeader: FunctionComponent = () => {
-	let i = 0;
+function UnlockingTableHeader() {
 	return (
 		<thead>
-			<tr className="flex items-center w-full border-b pl-12.5 pr-15 bg-card rounded-t-2xl mt-5 w-full text-white-mid">
-				<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-					<p>Bonding Duration</p>
-				</td>
-				<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-					<p>Amount</p>
-				</td>
-				<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-					<p>Unbonding Complete</p>
-				</td>
-			</tr>
+			<TableHeadRow>
+				<TableData width={tableWidths[0]}>
+					<Text>Bonding Duration</Text>
+				</TableData>
+				<TableData width={tableWidths[1]}>
+					<Text>Amount</Text>
+				</TableData>
+				<TableData width={tableWidths[2]}>
+					<Text>Unbonding Complete</Text>
+				</TableData>
+			</TableHeadRow>
 		</thead>
 	);
-};
+}
 
-const UnlockingTableRow: FunctionComponent<{
+interface UnlockingTableRowProps {
 	duration: string;
 	amount: string;
 	lockIds: string[];
 	endTime: Date;
-}> = observer(({ duration, amount, lockIds, endTime }) => {
+}
+
+const UnlockingTableRow = observer(function UnlockingTableRow({
+	duration,
+	amount,
+	lockIds,
+	endTime,
+}: UnlockingTableRowProps) {
 	const { chainStore, accountStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
@@ -108,19 +121,17 @@ const UnlockingTableRow: FunctionComponent<{
 
 	const endTimeMoment = moment(endTime);
 
-	let i = 0;
 	return (
-		<tr style={{ height: `64px` }} className="flex items-center w-full border-b pl-12.5 pr-15">
-			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<p>{duration}</p>
-			</td>
-			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<p>{amount}</p>
-			</td>
-			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
+		<TableBodyRow height={64}>
+			<TableData width={tableWidths[0]}>
+				<Text emphasis="medium">{duration}</Text>
+			</TableData>
+			<TableData width={tableWidths[1]}>
+				<Text emphasis="medium">{amount}</Text>
+			</TableData>
+			<TableData width={tableWidths[2]}>
 				{endTimeMoment.isBefore(dayjs()) ? (
-					<button
-						className="disabled:opacity-50"
+					<ButtonFaint
 						disabled={!account.isReadyToSendMsgs}
 						onClick={async e => {
 							e.preventDefault();
@@ -149,27 +160,12 @@ const UnlockingTableRow: FunctionComponent<{
 								}
 							}
 						}}>
-						{isWithdrawing ? (
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-								viewBox="0 0 24 24">
-								<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
-								<path
-									fill="currentColor"
-									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-									className="opacity-75"
-								/>
-							</svg>
-						) : (
-							<p className="text-enabledGold">Withdraw</p>
-						)}
-					</button>
+						{isWithdrawing ? <Spinner /> : <Text color="secondary">Withdraw</Text>}
+					</ButtonFaint>
 				) : (
-					<p>{endTimeMoment.fromNow()}</p>
+					<Text>{endTimeMoment.fromNow()}</Text>
 				)}
-			</td>
-		</tr>
+			</TableData>
+		</TableBodyRow>
 	);
 });
