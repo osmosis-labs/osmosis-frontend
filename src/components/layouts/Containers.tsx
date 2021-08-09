@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { colorPrimary } from 'src/emotionStyles/colors';
 import { onLgWidth, onMdWidth } from 'src/emotionStyles/mediaQueries';
 
 export const FullScreenContainer = styled.div`
@@ -54,4 +55,11 @@ export const PoolCardListGridContainer = styled.ul`
 	${onLgWidth} {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
+`;
+
+export const WellContainer = styled.div`
+	width: 100%;
+	border-radius: 0.75rem;
+	background-color: ${colorPrimary};
+	padding: 24px 30px;
 `;
