@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { colorPrimary200 } from 'src/emotionStyles/colors';
 
 export const ButtonPrimary = styled.button`
-	padding: 10px 16px;
+	padding: 10px 20px;
 	border-radius: 0.5rem;
 	background-color: ${colorPrimary200};
 	cursor: pointer;
