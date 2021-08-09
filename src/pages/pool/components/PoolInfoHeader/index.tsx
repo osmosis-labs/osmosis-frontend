@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
 import { ButtonPrimary } from 'src/components/layouts/Buttons';
 import { CenterV } from 'src/components/layouts/Containers';
+import { TitleText, Text } from 'src/components/Texts';
 import { HideAddLiquidityPoolIds } from 'src/config';
 import { ManageLiquidityDialog } from 'src/dialogs';
 import { OverviewLabelValueGridList } from 'src/pages/pool/components/PoolInfoHeader/OverviewLabelValueGridList';
@@ -26,7 +27,9 @@ export const PoolInfoHeader = observer(function PoolInfoHeader({ poolId }: Props
 			<PoolSwapDialog poolId={poolId} isOpen={isSwapDialogOpen} close={() => setIsSwapDialogOpen(false)} />
 
 			<CenterV style={{ marginBottom: 24 }}>
-				<h5 style={{ marginRight: 24 }}>Pool #{poolId}</h5>
+				<TitleText pb={0} style={{ marginRight: 24 }}>
+					Pool #{poolId}
+				</TitleText>
 				{!HideAddLiquidityPoolIds[poolId] && (
 					<ButtonPrimary
 						type="button"
@@ -34,7 +37,7 @@ export const PoolInfoHeader = observer(function PoolInfoHeader({ poolId }: Props
 						onClick={() => {
 							setIsDialogOpen(true);
 						}}>
-						<p>Add / Remove Liquidity</p>
+						<Text emphasis="high">Add / Remove Liquidity</Text>
 					</ButtonPrimary>
 				)}
 				<ButtonPrimary
@@ -43,7 +46,7 @@ export const PoolInfoHeader = observer(function PoolInfoHeader({ poolId }: Props
 					onClick={() => {
 						setIsSwapDialogOpen(true);
 					}}>
-					<p>Swap Tokens</p>
+					<Text emphasis="high">Swap Tokens</Text>
 				</ButtonPrimary>
 			</CenterV>
 

@@ -4,12 +4,14 @@ import { chunk } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { OverviewLabelValue } from 'src/components/common/OverviewLabelValue';
+import { SubTitleText, TitleText } from 'src/components/Texts';
 import { PreferHeaderShowTokenPricePoolIds } from 'src/config';
 import { useStore } from 'src/stores';
 
 interface Props {
 	poolId: string;
 }
+
 export const OverviewLabelValueGridList = observer(function OverviewLabelGridList({ poolId }: Props) {
 	const { chainStore, queriesStore, priceStore, accountStore } = useStore();
 
@@ -113,22 +115,26 @@ export const OverviewLabelValueGridList = observer(function OverviewLabelGridLis
 						{labels[0] ? (
 							labels[0].label !== '' ? (
 								<OverviewLabelValue label={labels[0].label}>
-									{labels[0].content !== '' ? <h4>{labels[0].content}</h4> : <h4>&#8203;</h4>}
+									<TitleText size="2xl" pb={0}>
+										{labels[0].content !== '' ? labels[0].content : `&#8203;`}
+									</TitleText>
 								</OverviewLabelValue>
 							) : (
 								<OverviewLabelValue label="&#8203;">
-									{labels[0].content !== '' ? <h4>{labels[0].content}</h4> : <h4>&#8203;</h4>}
+									<TitleText size="2xl" pb={0}>
+										{labels[0].content !== '' ? labels[0].content : `&#8203;`}
+									</TitleText>
 								</OverviewLabelValue>
 							)
 						) : null}
 						{labels[1] ? (
 							labels[1].label !== '' ? (
 								<OverviewLabelValue label={labels[1].label}>
-									{labels[1].content !== '' ? <h6>{labels[1].content}</h6> : <h6>&#8203;</h6>}
+									<SubTitleText pb={0}>{labels[1].content !== '' ? labels[1].content : `&#8203`}</SubTitleText>
 								</OverviewLabelValue>
 							) : (
 								<OverviewLabelValue label="&#8203;">
-									{labels[1].content !== '' ? <h6>{labels[1].content}</h6> : <h6>&#8203;</h6>}
+									<SubTitleText pb={0}>{labels[1].content !== '' ? labels[1].content : `&#8203`}</SubTitleText>
 								</OverviewLabelValue>
 							)
 						) : null}
