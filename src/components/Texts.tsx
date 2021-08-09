@@ -2,12 +2,12 @@ import styled from '@emotion/styled';
 import React from 'react';
 
 const FontSizeBySize = {
-	'2xl': 48,
+	'2xl': 36,
 	xl: 24,
 	lg: 20,
 	md: 16,
-	sm: 12,
-	xs: 10,
+	sm: 14,
+	xs: 12,
 };
 
 const OpacityByEmphasis = {
