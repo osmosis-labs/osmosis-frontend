@@ -1,20 +1,25 @@
+import styled from '@emotion/styled';
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent } from 'react';
+import React from 'react';
+import { CenterSelf, WellContainer } from 'src/components/layouts/Containers';
+import { SectionTitleText, Text } from 'src/components/Texts';
 import { QueriedPoolBase } from 'src/stores/osmosis/query/pool';
 
-export const LbpCatalyst: FunctionComponent<{
+interface Props {
 	pool: QueriedPoolBase;
 	lbpParams: NonNullable<QueriedPoolBase['smoothWeightChangeParams']>;
-}> = observer(({ pool, lbpParams }) => {
+}
+
+export const LbpCatalyst = observer(function LbpCatalyst({ pool, lbpParams }: Props) {
 	return (
-		<section className="pb-10 max-w-max mx-auto">
-			<h5 className="mb-7.5 ">LBP Stats</h5>
-			<div className="w-full h-full rounded-xl bg-card py-6 px-7.5">
-				<section className="flex mb-5">
-					<div className="mr-10">
-						<p className="text-base text-white-mid font-normal mb-1">Current Pool Weight</p>
-						<p className="text-base font-medium">
+		<CenterSelf style={{ paddingBottom: 40 }}>
+			<SectionTitleText>LBP Stats</SectionTitleText>
+			<WellContainer>
+				<PoolWeightRow>
+					<Column>
+						<CellHead>Current Pool Weight</CellHead>
+						<CellBody>
 							{pool.poolRatios
 								.map(ratio => {
 									return (
@@ -25,11 +30,11 @@ export const LbpCatalyst: FunctionComponent<{
 									);
 								})
 								.join(' : ')}
-						</p>
-					</div>
-					<div className="mr-10">
-						<p className="text-base text-white-mid font-normal mb-1">Initial Pool Weight</p>
-						<p className="text-base font-medium">
+						</CellBody>
+					</Column>
+					<Column>
+						<CellHead>Initial Pool Weight</CellHead>
+						<CellBody>
 							{lbpParams.initialPoolWeights
 								.map(weight => {
 									return (
@@ -40,11 +45,11 @@ export const LbpCatalyst: FunctionComponent<{
 									);
 								})
 								.join(' : ')}
-						</p>
-					</div>
-					<div>
-						<p className="text-base text-white-mid font-normal mb-1">Target Pool Weight</p>
-						<p className="text-base font-medium">
+						</CellBody>
+					</Column>
+					<Column>
+						<CellHead>Target Pool Weight</CellHead>
+						<CellBody>
 							{lbpParams.targetPoolWeights
 								.map(weight => {
 									return (
@@ -55,28 +60,49 @@ export const LbpCatalyst: FunctionComponent<{
 									);
 								})
 								.join(' : ')}
-						</p>
-					</div>
-				</section>
-				<section className="flex">
-					<div className="mr-10">
-						<p className="text-base text-white-mid font-normal mb-1">Start Time</p>
-						<p className="text-base font-medium">
+						</CellBody>
+					</Column>
+				</PoolWeightRow>
+
+				<DurationRow>
+					<Column>
+						<CellHead>Start Time</CellHead>
+						<CellBody>
 							{dayjs(lbpParams.startTime)
 								.utc()
 								.format('MMMM D, YYYY h:mm A') + ' UTC'}
-						</p>
-					</div>
-					<div className="mr-10">
-						<p className="text-base text-white-mid font-normal mb-1">End Time</p>
-						<p className="text-base font-medium">
+						</CellBody>
+					</Column>
+					<Column>
+						<CellHead>End Time</CellHead>
+						<CellBody>
 							{dayjs(lbpParams.endTime)
 								.utc()
 								.format('MMMM D, YYYY h:mm A') + ' UTC'}
-						</p>
-					</div>
-				</section>
-			</div>
-		</section>
+						</CellBody>
+					</Column>
+				</DurationRow>
+			</WellContainer>
+		</CenterSelf>
 	);
 });
+
+const PoolWeightRow = styled.section`
+	display: flex;
+	margin-bottom: 20px;
+`;
+
+const DurationRow = styled.section`
+	display: flex;
+`;
+
+const Column = styled.div`
+	margin-right: 40px;
+`;
+
+const CellHead = styled(Text)`
+	margin-bottom: 4px;
+`;
+
+const CellBody = styled(Text)``;
+CellBody.defaultProps = { emphasis: 'high' };
