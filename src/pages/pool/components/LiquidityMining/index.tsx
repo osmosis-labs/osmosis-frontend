@@ -1,12 +1,16 @@
+import styled from '@emotion/styled';
 import { Dec, IntPretty } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useState } from 'react';
+import { ButtonPrimary } from 'src/components/layouts/Buttons';
+import { CenterSelf, WellContainer } from 'src/components/layouts/Containers';
+import { TitleText, Text } from 'src/components/Texts';
 import { ExtraGaugeInPool } from 'src/config';
 import { LockLpTokenDialog } from 'src/dialogs';
 import { useStore } from 'src/stores';
 import { ExtraGauge } from './ExtraGauge';
-import { MyLockupsTable } from './MyLockupsTable';
+import { MyBondingsTable } from './MyBondingsTable';
 import { UnlockingTable } from './Unlocking';
 
 interface Props {
@@ -32,34 +36,33 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 	const closeDialog = () => setIsDialogOpen(false);
 
 	return (
-		<section className="max-w-max mx-auto">
+		<CenterSelf>
 			<LockLpTokenDialog isOpen={isDialogOpen} close={closeDialog} poolId={poolId} />
-			<div className="flex justify-between items-start">
+			<LiquidityMiningSummary>
 				<div>
-					<h5 className="mb-3">Liquidity Mining</h5>
-					<p className="text-white-mid">
+					<TitleText weight="semiBold">Liquidity Mining</TitleText>
+					<Text>
 						Commit to bonding your LP tokens for a certain period of time to
 						<br />
 						earn OSMO tokens and participate in Pool governance
-					</p>
+					</Text>
 				</div>
-				<div className="flex flex-col items-end">
-					<p className="text-white-mid mb-3">Available LP tokens</p>
-					<h5 className="text-right mb-4">
+				<AvailableLpColumn>
+					<Text pb={12}>Available LP tokens</Text>
+					<Text pb={16} size="xl" emphasis="high" weight="semiBold">
 						{/* TODO: 풀의 TVL을 계산할 수 없는 경우 그냥 코인 그대로 보여줘야할듯... */}
 						{!totalPoolShare.toDec().equals(new Dec(0))
 							? poolTotalValueLocked.mul(myPoolShare.quo(totalPoolShare)).toString()
 							: '$0'}
-					</h5>
-					<button
+					</Text>
+					<ButtonPrimary
 						onClick={() => {
 							setIsDialogOpen(true);
-						}}
-						className="px-8 py-2.5 bg-primary-200 rounded-lg leading-none hover:opacity-75">
-						<p>Start Earning</p>
-					</button>
-				</div>
-			</div>
+						}}>
+						<Text emphasis="high">Start Earning</Text>
+					</ButtonPrimary>
+				</AvailableLpColumn>
+			</LiquidityMiningSummary>
 			{(() => {
 				const gauge = ExtraGaugeInPool[poolId];
 				if (gauge) {
@@ -72,7 +75,7 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 				}
 				return null;
 			})()}
-			<div className="mt-10 grid grid-cols-3 gap-9">
+			<LockDurationSection>
 				{lockableDurations.map((lockableDuration, i) => {
 					return (
 						<LockupBox
@@ -84,14 +87,14 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 						/>
 					);
 				})}
-			</div>
-			<div className="mt-10">
-				<MyLockupsTable poolId={poolId} />
-			</div>
-			<div className="mt-10">
+			</LockDurationSection>
+			<TableSection>
+				<MyBondingsTable poolId={poolId} />
+			</TableSection>
+			<TableSection>
 				<UnlockingTable poolId={poolId} />
-			</div>
-		</section>
+			</TableSection>
+		</CenterSelf>
 	);
 });
 
@@ -100,9 +103,34 @@ const LockupBox: FunctionComponent<{
 	apy: string;
 }> = ({ duration, apy }) => {
 	return (
-		<div className="bg-card rounded-2xl pt-7 px-7.5 pb-10">
-			<h4 className="mb-4 font-normal text-xl xl:text-2xl">{duration} bonding</h4>
-			<h6 className="text-secondary-200 font-normal">APR {apy}</h6>
-		</div>
+		<WellContainer>
+			<TitleText>{duration} bonding</TitleText>
+			<Text color="secondary" size="lg">
+				APR {apy}
+			</Text>
+		</WellContainer>
 	);
 };
+
+const LiquidityMiningSummary = styled.div`
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+`;
+
+const AvailableLpColumn = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+`;
+
+const LockDurationSection = styled.div`
+	margin-top: 40px;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 36px;
+`;
+
+const TableSection = styled.div`
+	margin-top: 40px;
+`;

@@ -10,7 +10,7 @@ interface Props {
 	poolId: string;
 }
 
-export const MyLockupsTable = observer(function MyLockupsTable({ poolId }: Props) {
+export const MyBondingsTable = observer(function MyBondingsTable({ poolId }: Props) {
 	const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
