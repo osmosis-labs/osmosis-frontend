@@ -11,4 +11,18 @@ export const ButtonPrimary = styled.button`
 	&:hover {
 		opacity: 0.75;
 	}
+
+	&:disabled {
+		opacity: 0.5;
+	}
+`;
+
+export const ButtonFaint = styled.button`
+	background-color: transparent;
+	border: 0;
+	padding: 0;
+
+	&:disabled {
+		opacity: 0.5;
+	}
 `;
