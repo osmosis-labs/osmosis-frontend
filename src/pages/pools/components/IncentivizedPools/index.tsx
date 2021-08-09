@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent } from 'react';
 import { FullWidthContainer } from 'src/components/layouts/Containers';
-import { SectionTitle, Text } from 'src/components/Texts';
+import { TitleText, Text } from 'src/components/Texts';
 import { PoolCardList } from 'src/pages/pools/components/PoolCardList';
 import { IncentivizedPoolCardProp } from 'src/pages/pools/models/poolCardProps';
 import { useStore } from 'src/stores';
@@ -35,7 +35,7 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 
 	return (
 		<FullWidthContainer>
-			<SectionTitle>Incentivized Pools</SectionTitle>
+			<TitleText>Incentivized Pools</TitleText>
 
 			{incentivizedPoolInfoList.length === 0 ? (
 				<NoActiveCard>

@@ -4,7 +4,7 @@ import { Int } from '@keplr-wallet/unit';
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { SectionTitle, Text } from 'src/components/Texts';
+import { TitleText, Text } from 'src/components/Texts';
 import { colorPrimary } from 'src/emotionStyles/colors';
 import { useStore } from 'src/stores';
 
@@ -29,7 +29,7 @@ export const ExtraGauge = observer(function ExtraGauge({ gaugeId, currency, extr
 
 	return (
 		<ExtraGaugeContainer>
-			<SectionTitle>Bonus bonding reward</SectionTitle>
+			<TitleText>Bonus bonding reward</TitleText>
 			<Text pb={16}>
 				This pool bonding over {gauge.lockupDuration.humanize()} will earn additional bonding
 				<br />

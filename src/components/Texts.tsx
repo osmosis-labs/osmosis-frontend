@@ -66,7 +66,7 @@ function mapTextPropsToCssProps({
 	};
 }
 
-export function SectionTitle({
+export function TitleText({
 	size = 'xl',
 	pb = 16,
 	emphasis = 'high',

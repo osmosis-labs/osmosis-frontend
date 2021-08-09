@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import { observer } from 'mobx-react-lite';
 import React, { ReactNode } from 'react';
 import { CenterSelf, WellContainer } from 'src/components/layouts/Containers';
-import { SectionTitle, Text } from 'src/components/Texts';
+import { TitleText, Text } from 'src/components/Texts';
 import { QueriedPoolBase } from 'src/stores/osmosis/query/pool';
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 export const LbpCatalyst = observer(function LbpCatalyst({ pool, lbpParams }: Props) {
 	return (
 		<CenterSelf style={{ paddingBottom: 40 }}>
-			<SectionTitle>LBP Stats</SectionTitle>
+			<TitleText>LBP Stats</TitleText>
 			<WellContainer>
 				<PoolWeightRow>
 					<CellColumn
