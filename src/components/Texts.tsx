@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import React, { HTMLAttributes } from 'react';
+import React from 'react';
 
 const FontSizeBySize = {
 	'2xl': 48,
@@ -66,16 +66,20 @@ function mapTextPropsToCssProps({
 	};
 }
 
-export function TitleText({
-	size = 'xl',
-	pb = 16,
-	emphasis = 'high',
-	children,
-	...props
-}: OsmosisTextProps & HTMLAttributes<HTMLParagraphElement>) {
-	return (
-		<Text as="h4" size={size} pb={pb} emphasis={emphasis} {...props}>
-			{children}
-		</Text>
-	);
-}
+export const TitleText = styled(Text)``;
+TitleText.defaultProps = {
+	size: 'xl',
+	emphasis: 'high',
+	weight: 'semiBold',
+	pb: 16,
+	as: 'h4',
+};
+
+export const SubTitleText = styled(Text)``;
+SubTitleText.defaultProps = {
+	size: 'lg',
+	emphasis: 'high',
+	weight: 'semiBold',
+	pb: 4,
+	as: 'h6',
+};
