@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { FullWidthContainer } from 'src/components/layouts/Containers';
-import { TitleText } from 'src/components/Texts';
+import { SectionTitleText } from 'src/components/Texts';
 import { PoolCardList } from 'src/pages/pools/components/PoolCardList';
 import { MyPoolCardProp } from 'src/pages/pools/models/poolCardProps';
 import { useStore } from 'src/stores';
@@ -52,7 +52,7 @@ export const MyPools = observer(function MyPools() {
 
 	return (
 		<FullWidthContainer>
-			<TitleText>My Pools</TitleText>
+			<SectionTitleText>My Pools</SectionTitleText>
 			<PoolCardList poolList={myPoolInfoList} />
 		</FullWidthContainer>
 	);
