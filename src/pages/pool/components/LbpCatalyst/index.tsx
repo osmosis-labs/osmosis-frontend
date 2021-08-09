@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { CenterSelf, WellContainer } from 'src/components/layouts/Containers';
-import { SectionTitleText, Text } from 'src/components/Texts';
+import { SectionTitle, Text } from 'src/components/Texts';
 import { QueriedPoolBase } from 'src/stores/osmosis/query/pool';
 
 interface Props {
@@ -14,73 +14,67 @@ interface Props {
 export const LbpCatalyst = observer(function LbpCatalyst({ pool, lbpParams }: Props) {
 	return (
 		<CenterSelf style={{ paddingBottom: 40 }}>
-			<SectionTitleText>LBP Stats</SectionTitleText>
+			<SectionTitle>LBP Stats</SectionTitle>
 			<WellContainer>
 				<PoolWeightRow>
-					<Column>
-						<CellHead>Current Pool Weight</CellHead>
-						<CellBody>
-							{pool.poolRatios
-								.map(ratio => {
-									return (
-										ratio.ratio
-											.trim(true)
-											.maxDecimals(2)
-											.toString() + '%'
-									);
-								})
-								.join(' : ')}
-						</CellBody>
-					</Column>
-					<Column>
-						<CellHead>Initial Pool Weight</CellHead>
-						<CellBody>
-							{lbpParams.initialPoolWeights
-								.map(weight => {
-									return (
-										weight.ratio
-											.trim(true)
-											.maxDecimals(2)
-											.toString() + '%'
-									);
-								})
-								.join(' : ')}
-						</CellBody>
-					</Column>
-					<Column>
-						<CellHead>Target Pool Weight</CellHead>
-						<CellBody>
-							{lbpParams.targetPoolWeights
-								.map(weight => {
-									return (
-										weight.ratio
-											.trim(true)
-											.maxDecimals(2)
-											.toString() + '%'
-									);
-								})
-								.join(' : ')}
-						</CellBody>
-					</Column>
+					<CellColumn
+						head="Current Pool Weight"
+						body={pool.poolRatios
+							.map(ratio => {
+								return (
+									ratio.ratio
+										.trim(true)
+										.maxDecimals(2)
+										.toString() + '%'
+								);
+							})
+							.join(' : ')}
+					/>
+					<CellColumn
+						head="Initial Pool Weight"
+						body={lbpParams.initialPoolWeights
+							.map(weight => {
+								return (
+									weight.ratio
+										.trim(true)
+										.maxDecimals(2)
+										.toString() + '%'
+								);
+							})
+							.join(' : ')}
+					/>
+					<CellColumn
+						head="Target Pool Weight"
+						body={lbpParams.targetPoolWeights
+							.map(weight => {
+								return (
+									weight.ratio
+										.trim(true)
+										.maxDecimals(2)
+										.toString() + '%'
+								);
+							})
+							.join(' : ')}
+					/>
 				</PoolWeightRow>
 
 				<DurationRow>
-					<Column>
-						<CellHead>Start Time</CellHead>
-						<CellBody>
-							{dayjs(lbpParams.startTime)
+					<CellColumn
+						head="Start Time"
+						body={
+							dayjs(lbpParams.startTime)
 								.utc()
-								.format('MMMM D, YYYY h:mm A') + ' UTC'}
-						</CellBody>
-					</Column>
-					<Column>
-						<CellHead>End Time</CellHead>
-						<CellBody>
-							{dayjs(lbpParams.endTime)
+								.format('MMMM D, YYYY h:mm A') + ' UTC'
+						}
+					/>
+					<CellColumn
+						head="End Time"
+						body={
+							dayjs(lbpParams.endTime)
 								.utc()
-								.format('MMMM D, YYYY h:mm A') + ' UTC'}
-						</CellBody>
-					</Column>
+								.format('MMMM D, YYYY h:mm A') + ' UTC'
+						}
+					/>
 				</DurationRow>
 			</WellContainer>
 		</CenterSelf>
@@ -96,13 +90,15 @@ const DurationRow = styled.section`
 	display: flex;
 `;
 
-const Column = styled.div`
+function CellColumn({ head, body }: { head: ReactNode; body: ReactNode }) {
+	return (
+		<CellColumnWrapper>
+			<Text pb={4}>{head}</Text>
+			<Text emphasis="high">{body}</Text>
+		</CellColumnWrapper>
+	);
+}
+
+const CellColumnWrapper = styled.div`
 	margin-right: 40px;
 `;
-
-const CellHead = styled(Text)`
-	margin-bottom: 4px;
-`;
-
-const CellBody = styled(Text)``;
-CellBody.defaultProps = { emphasis: 'high' };
