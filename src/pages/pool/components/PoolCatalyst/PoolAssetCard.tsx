@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import React from 'react';
 import { PoolCardTokenIcon } from 'src/components/PoolCardTokenIcon';
+import { SubTitleText, Text, TitleText } from 'src/components/Texts';
 import { colorPrimary } from 'src/emotionStyles/colors';
 
 interface Props {
@@ -18,19 +19,27 @@ export function PoolAssetCard({ index, ratio, denom, totalAmount, myAmount }: Pr
 				<PoolCardTokenIcon src="/public/assets/Icons/Bubbles.svg" bgIndex={index + 1} />
 
 				<PoolRatioValue>
-					<h4>{ratio}%</h4>
-					<PoolCardSmallText style={{ marginTop: 8 }}>{denom}</PoolCardSmallText>
+					<TitleText size="2xl" pb={8}>
+						{ratio}%
+					</TitleText>
+					<Text size="sm" weight="semiBold">
+						{denom}
+					</Text>
 				</PoolRatioValue>
 			</PoolRatioSection>
 
 			<AmountSection>
 				<div style={{ marginBottom: 8 }}>
-					<PoolCardSmallText style={{ marginBottom: 8 }}>Total amount</PoolCardSmallText>
-					<h6>{totalAmount}</h6>
+					<Text size="sm" weight="semiBold" pb={8}>
+						Total amount
+					</Text>
+					<SubTitleText pb={0}>{totalAmount}</SubTitleText>
 				</div>
 				<div>
-					<PoolCardSmallText style={{ marginBottom: 8 }}>My amount</PoolCardSmallText>
-					<h6>{myAmount}</h6>
+					<Text size="sm" weight="semiBold" pb={8}>
+						My amount
+					</Text>
+					<SubTitleText pb={0}>{myAmount}</SubTitleText>
 				</div>
 			</AmountSection>
 		</PoolAssetCardContainer>
@@ -57,10 +66,4 @@ const PoolRatioValue = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-`;
-
-const PoolCardSmallText = styled.p`
-	font-size: 14px;
-	color: rgba(255, 255, 255, 0.6);
-	font-weight: 600;
 `;

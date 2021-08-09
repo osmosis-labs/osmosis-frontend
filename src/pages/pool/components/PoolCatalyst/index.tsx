@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { CenterSelf, PoolCardListGridContainer } from 'src/components/layouts/Containers';
+import { TitleText } from 'src/components/Texts';
 import { PoolAssetCard } from 'src/pages/pool/components/PoolCatalyst/PoolAssetCard';
 import { useStore } from 'src/stores';
 
@@ -25,7 +26,7 @@ export const PoolCatalyst = observer(function PoolCatalyst({ poolId }: Props) {
 
 	return (
 		<PoolCatalystContainer>
-			<h5 style={{ marginBottom: 30 }}>Pool Catalyst</h5>
+			<TitleText pb={24}>Pool Catalyst</TitleText>
 			<PoolCardListGridContainer>
 				{/* TODO: IntPretty에 mul과 quo도 추가하자... */}
 				{pool.poolRatios.map((poolRatio, i) => {
