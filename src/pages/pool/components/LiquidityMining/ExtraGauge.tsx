@@ -4,7 +4,7 @@ import { Int } from '@keplr-wallet/unit';
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { H4, H6Secondary } from 'src/components/Texts';
+import { SectionTitle, Text } from 'src/components/Texts';
 import { colorPrimary } from 'src/emotionStyles/colors';
 import { useStore } from 'src/stores';
 
@@ -29,18 +29,18 @@ export const ExtraGauge = observer(function ExtraGauge({ gaugeId, currency, extr
 
 	return (
 		<ExtraGaugeContainer>
-			<H4>Bonus bonding reward</H4>
-			<p style={{ marginBottom: 16 }}>
+			<SectionTitle>Bonus bonding reward</SectionTitle>
+			<Text pb={16}>
 				This pool bonding over {gauge.lockupDuration.humanize()} will earn additional bonding
 				<br />
 				incentives for {gauge.numEpochsPaidOver} epochs starting at {dayjs(gauge.startTime).format('MMM D, YYYY')}.
-			</p>
-			<H6Secondary>
+			</Text>
+			<Text size="lg" color="secondary">
 				{`Total Bonus: ${reward
 					.maxDecimals(6)
 					.trim(true)
 					.toString()}`}
-			</H6Secondary>
+			</Text>
 		</ExtraGaugeContainer>
 	);
 });
