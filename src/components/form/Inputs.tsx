@@ -1,9 +1,8 @@
 import styled from '@emotion/styled';
-import { colorWhiteHigh } from '../../emotionStyles/colors';
-import { fontXl } from '../../emotionStyles/fonts';
+import { colorWhiteHigh } from 'src/emotionStyles/colors';
 
 export const AmountInput = styled.input`
-	font-size: ${fontXl}px;
+	font-size: 24px;
 	color: ${colorWhiteHigh};
 	text-align: right;
 	&::-webkit-outer-spin-button,

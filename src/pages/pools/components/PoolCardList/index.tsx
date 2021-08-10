@@ -1,7 +1,6 @@
-import styled from '@emotion/styled';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { onLgWidth, onMdWidth } from 'src/emotionStyles/mediaQueries';
+import { PoolCardListGridContainer } from 'src/components/layouts/Containers';
 import { PoolCardItem } from 'src/pages/pools/components/PoolCardList/PoolCardItem';
 import { isMyPoolCardProp } from 'src/pages/pools/components/PoolCardList/utils/isMyPoolCardProp';
 import { IncentivizedPoolCardProp, MyPoolCardProp } from 'src/pages/pools/models/poolCardProps';
@@ -13,7 +12,7 @@ interface Props {
 export function PoolCardList({ poolList }: Props) {
 	const history = useHistory();
 	return (
-		<PoolCardListContainer>
+		<PoolCardListGridContainer>
 			{poolList.map(pool => {
 				return (
 					<PoolCardItem
@@ -31,22 +30,6 @@ export function PoolCardList({ poolList }: Props) {
 					/>
 				);
 			})}
-		</PoolCardListContainer>
+		</PoolCardListGridContainer>
 	);
 }
-
-const PoolCardListContainer = styled.ul`
-	display: grid;
-	width: 100%;
-	height: 100%;
-	gap: 35px;
-	grid-template-columns: repeat(1, minmax(0, 1fr));
-
-	${onMdWidth} {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
-	${onLgWidth} {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-	}
-`;

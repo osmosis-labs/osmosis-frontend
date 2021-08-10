@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent } from 'react';
 import { FullWidthContainer } from 'src/components/layouts/Containers';
-import { MediumTextWhite, SubTitleText, TitleText } from 'src/components/Texts';
+import { TitleText, Text } from 'src/components/Texts';
 import { PoolCardList } from 'src/pages/pools/components/PoolCardList';
 import { IncentivizedPoolCardProp } from 'src/pages/pools/models/poolCardProps';
 import { useStore } from 'src/stores';
@@ -39,10 +39,12 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 
 			{incentivizedPoolInfoList.length === 0 ? (
 				<NoActiveCard>
-					<SubTitleText>No active liquidity incentives</SubTitleText>
-					<MediumTextWhite>
+					<Text size="lg" emphasis="high" pb={20}>
+						No active liquidity incentives
+					</Text>
+					<Text weight="medium">
 						Liquidity mining will begin once the first update pool incentives governance proposal passes.
-					</MediumTextWhite>
+					</Text>
 				</NoActiveCard>
 			) : null}
 

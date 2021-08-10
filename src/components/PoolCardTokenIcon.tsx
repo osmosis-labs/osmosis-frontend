@@ -4,11 +4,17 @@ import { memoize } from 'lodash-es';
 import React from 'react';
 import { Img } from 'src/components/common/Img';
 
-export function PoolCardTokenIcon({ poolId }: { poolId: string }) {
+interface Props {
+	/** random background linear gradient value set by index */
+	bgIndex?: string | number;
+	src: string;
+}
+
+export function PoolCardTokenIcon({ bgIndex, src }: Props) {
 	return (
 		<TokenIconBackground>
-			<TokenIconContainer poolId={poolId}>
-				<TokenIconImg src="/public/assets/Icons/OSMO.svg" />
+			<TokenIconContainer poolId={bgIndex}>
+				<TokenIconImg src={src} />
 			</TokenIconContainer>
 		</TokenIconBackground>
 	);
@@ -26,7 +32,7 @@ const TokenIconBackground = styled.figure`
 	margin-right: 24px;
 `;
 
-const TokenIconContainer = styled.figure<{ poolId: string }>`
+const TokenIconContainer = styled.figure<{ poolId?: string | number }>`
 	width: 4.5rem;
 	height: 4.5rem;
 	border-radius: 9999px;
@@ -45,7 +51,7 @@ const TokenIconImg = styled(Img)`
 	height: 2.5rem;
 `;
 
-const getLinearGradient = memoize((poolId: string) => {
+const getLinearGradient = memoize((poolId?: string | number) => {
 	const LINEAR_GRADIENT_LIST = [
 		`linear-gradient(180deg, #89eafb 0%, #1377b0 100%)`,
 		`linear-gradient(180deg, #00CEBA 0%, #008A7D 100%)`,
