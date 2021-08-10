@@ -1,3 +1,4 @@
+import styled from '@emotion/styled';
 import { AmountConfig } from '@keplr-wallet/hooks';
 import { ChainGetter } from '@keplr-wallet/stores';
 import { ObservableQueryBalances } from '@keplr-wallet/stores/build/query/balances';
@@ -6,16 +7,18 @@ import { CoinPretty, Dec, Int, IntPretty } from '@keplr-wallet/unit';
 import { action, computed, makeObservable, observable, override } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useState } from 'react';
-import { Img } from 'src/components/common/Img';
 import { TToastType, useToast } from 'src/components/common/toasts';
 import { ConnectAccountButton } from 'src/components/ConnectAccountButton';
 import { Container } from 'src/components/containers';
+import { TitleText } from 'src/components/Texts';
 import { wrapBaseDialog } from 'src/dialogs';
+import { colorPrimary } from 'src/emotionStyles/colors';
 import { useAccountConnection } from 'src/hooks/account/useAccountConnection';
 import { useFakeFeeConfig } from 'src/hooks/tx';
 import { TCardTypes } from 'src/interfaces';
 import { FromBox } from 'src/pages/main/components/FormBox';
 import { ToBox } from 'src/pages/main/components/ToBox';
+import { SwapDirectionButton } from 'src/components/SwapToken/SwapDirectionButton';
 import { useStore } from 'src/stores';
 import { ObservableQueryPools } from 'src/stores/osmosis/query/pools';
 import { isSlippageError } from 'src/utils/tx';
@@ -246,8 +249,13 @@ export const usePoolSwapConfig = (
 	return config;
 };
 
+interface PoolSwapDialogProps {
+	poolId: string;
+	close: () => void;
+}
+
 export const PoolSwapDialog = wrapBaseDialog(
-	observer(({ poolId, close }: { poolId: string; close: () => void }) => {
+	observer(function PoolSwapDialog({ poolId, close }: PoolSwapDialogProps) {
 		const { chainStore, queriesStore, accountStore } = useStore();
 
 		const account = accountStore.getAccount(chainStore.current.chainId);
@@ -265,34 +273,49 @@ export const PoolSwapDialog = wrapBaseDialog(
 		config.setFeeConfig(feeConfig);
 
 		return (
-			<section className="w-full mx-auto text-white-high">
-				<h5 className="mb-7.5 ">Swap Tokens</h5>
-				<div className="h-full rounded-xl bg-card py-6 px-7.5">
-					<div className="relative">
-						<div className="mb-4.5">
+			// TODO: Remove text-white-high class after refactoring FromBox, ToBox, etc
+			<PoolSwapDialogContainer className="text-white-high">
+				<TitleText pb={30}>Swap Tokens</TitleText>
+				<PoolSwapDialogContent>
+					<PairContainer>
+						<div style={{ marginBottom: 18 }}>
 							<FromBox config={config} />
 						</div>
-						<div className="mb-4.5">
-							<ToBox config={config} />
-						</div>
-						<button
-							className="s-position-abs-center w-12 h-12 z-0"
+						<SwapDirectionButton
 							onClick={e => {
 								e.preventDefault();
-
 								config.switchInAndOut();
-							}}>
-							<Img className="w-12 h-12" src="/public/assets/sidebar/icon-border_unselected.svg" />
-							<Img className="s-position-abs-center w-6 h-6" src="/public/assets/Icons/Switch.svg" />
-						</button>
-					</div>
+							}}
+						/>
+						<div style={{ marginBottom: 18 }}>
+							<ToBox config={config} />
+						</div>
+					</PairContainer>
+
 					<FeesBox config={config} />
+
 					<SwapButton config={config} close={close} />
-				</div>
-			</section>
+				</PoolSwapDialogContent>
+			</PoolSwapDialogContainer>
 		);
 	})
 );
+
+const PoolSwapDialogContainer = styled.section`
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+`;
+
+const PoolSwapDialogContent = styled.div`
+	border-radius: 0.75rem;
+	background-color: ${colorPrimary};
+	padding: 24px 30px;
+`;
+
+const PairContainer = styled.div`
+	position: relative;
+`;
 
 const SwapButton: FunctionComponent<{
 	config: PoolSwapConfig;
