@@ -1,8 +1,17 @@
 import styled from '@emotion/styled';
-import { colorPrimary200 } from 'src/emotionStyles/colors';
+import { colorPrimary200, colorWhiteFaint } from 'src/emotionStyles/colors';
 
-export const ButtonPrimary = styled.button`
-	padding: 10px 20px;
+const PaddingBySize = {
+	large: `12px 28px`,
+	regular: `10px 20px`,
+	small: '4px 6px',
+};
+
+interface OsmosisButtonProps {
+	size?: keyof typeof PaddingBySize;
+}
+export const ButtonPrimary = styled.button<OsmosisButtonProps>`
+	${({ size = 'regular' }) => `padding: ${PaddingBySize[size]}`};
 	border-radius: 0.5rem;
 	background-color: ${colorPrimary200};
 	cursor: pointer;
@@ -15,6 +24,14 @@ export const ButtonPrimary = styled.button`
 	&:disabled {
 		opacity: 0.5;
 	}
+`;
+
+export const ButtonToggle = styled.button<OsmosisButtonProps & { isActive: boolean }>`
+	${({ size = 'regular', isActive = false }) => ({
+		padding: PaddingBySize[size],
+		backgroundColor: isActive ? colorPrimary200 : colorWhiteFaint,
+	})};
+	border-radius: 0.375rem;
 `;
 
 export const ButtonFaint = styled.button`
