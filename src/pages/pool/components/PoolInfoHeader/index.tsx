@@ -6,7 +6,7 @@ import { TitleText, Text } from 'src/components/Texts';
 import { HideAddLiquidityPoolIds } from 'src/config';
 import { ManageLiquidityDialog } from 'src/dialogs';
 import { OverviewLabelValueGridList } from 'src/pages/pool/components/PoolInfoHeader/OverviewLabelValueGridList';
-import { PoolSwapDialog } from 'src/pages/pool/components/PoolInfoHeader/PoolSwap';
+import { PoolSwapDialog } from 'src/pages/pool/components/PoolInfoHeader/PoolSwapDialog';
 
 interface Props {
 	poolId: string;
