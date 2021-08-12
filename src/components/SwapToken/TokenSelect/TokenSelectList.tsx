@@ -67,7 +67,7 @@ const TokenSelectListContainer = styled.div`
 	left: 0;
 	transform: translateY(100%);
 	width: 100%;
-	min-width: 500px;
+	min-width: 320px;
 	padding: 32px 20px 32px 16px;
 	background-color: ${colorPrimaryDark};
 	z-index: 3;

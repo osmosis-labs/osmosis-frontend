@@ -2,21 +2,23 @@ import styled from '@emotion/styled';
 import { AppCurrency } from '@keplr-wallet/types';
 import { CoinPretty, Int } from '@keplr-wallet/unit';
 import { observer } from 'mobx-react-lite';
-import React, { useCallback, useMemo } from 'react';
+import React, { CSSProperties, useCallback, useMemo } from 'react';
 import { ButtonToggle } from 'src/components/layouts/Buttons';
 import { CenterV } from 'src/components/layouts/Containers';
 import { TokenInSwapConfig } from 'src/components/SwapToken/models';
+import { TokenBoxContainer, TokenBoxRow } from 'src/components/SwapToken/StyledTokenBox';
 import { Text } from 'src/components/Texts';
-import { colorPrimaryDark } from 'src/emotionStyles/colors';
 import { TokenAmountInput } from 'src/pages/main/components/TokenAmountInput';
 import { useStore } from 'src/stores';
 import { TokenSelect } from './TokenSelect';
 
 interface Props {
 	config: TokenInSwapConfig;
+	dropdownStyle?: CSSProperties;
+	dropdownClassName?: string;
 }
 
-export const FromBox = observer(function FromBox({ config }: Props) {
+export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdownClassName }: Props) {
 	const { chainStore, accountStore, queriesStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
@@ -54,7 +56,7 @@ export const FromBox = observer(function FromBox({ config }: Props) {
 						</Text>
 					</CenterV>
 					<MaxButton type="button" size="small" isActive={config.isMax} onClick={handleMaxButtonToggled}>
-						<Text size="xs" emphasis="medium">
+						<Text size="xs" emphasis="medium" style={{ lineHeight: 1.2 }}>
 							MAX
 						</Text>
 					</MaxButton>
@@ -68,7 +70,8 @@ export const FromBox = observer(function FromBox({ config }: Props) {
 					)}
 					value={config.sendCurrency}
 					onSelect={(appCurrency: AppCurrency) => config.setInCurrency(appCurrency.coinMinimalDenom)}
-					dropdownStyle={{ marginLeft: -16, width: 500 + 16 + 20 }}
+					dropdownStyle={dropdownStyle}
+					dropdownClassName={dropdownClassName}
 				/>
 				<TokenAmountInput
 					amount={config.amount}
@@ -79,20 +82,6 @@ export const FromBox = observer(function FromBox({ config }: Props) {
 		</TokenBoxContainer>
 	);
 });
-
-const TokenBoxContainer = styled.div`
-	position: relative;
-	border-radius: 1rem;
-	padding: 16px 20px 16px 16px;
-	background-color: ${colorPrimaryDark};
-`;
-
-const TokenBoxRow = styled.section`
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 8px;
-`;
 
 const MaxButton = styled(ButtonToggle)`
 	margin-left: 8px;
