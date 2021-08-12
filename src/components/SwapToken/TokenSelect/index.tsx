@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { AppCurrency } from '@keplr-wallet/types';
-import React, { ComponentProps, CSSProperties, HTMLAttributes, useCallback, useState } from 'react';
+import React, { ComponentProps, CSSProperties, HTMLAttributes, useCallback } from 'react';
 import { Img } from 'src/components/common/Img';
 import { CenterV } from 'src/components/layouts/Containers';
 import { TokenSelectList } from 'src/components/SwapToken/TokenSelect/TokenSelectList';
@@ -11,23 +11,22 @@ import { useBooleanStateWithWindowEvent } from 'src/hooks/useBooleanStateWithWin
 const EMPTY_CURRENCY_LIST: AppCurrency[] = [];
 
 interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> {
-	defaultSelectedCurrency: AppCurrency;
+	value: AppCurrency;
+	onSelect: (appCurrency: AppCurrency) => void;
 	options?: AppCurrency[];
-	onSelect?: (appCurrency: AppCurrency) => void;
 	dropdownStyle?: CSSProperties;
-	dropdownClassname?: string;
+	dropdownClassName?: string;
 }
 
 export function TokenSelect({
-	defaultSelectedCurrency,
+	value,
 	options = EMPTY_CURRENCY_LIST,
 	onSelect,
 	dropdownStyle,
-	dropdownClassname,
+	dropdownClassName,
 	...props
 }: Props) {
 	const [isDropdownOpen, setIsDropdownOpen] = useBooleanStateWithWindowEvent(false);
-	const [selectedCurrency, setSelectedCurrency] = useState(defaultSelectedCurrency);
 
 	const handleDropdownArrowClicked = useCallback(
 		(event: MouseEvent) => {
@@ -39,8 +38,7 @@ export function TokenSelect({
 
 	const handleTokenSelected = useCallback(
 		(appCurrency: AppCurrency) => {
-			onSelect?.(appCurrency);
-			setSelectedCurrency(appCurrency);
+			onSelect(appCurrency);
 			setIsDropdownOpen(false);
 		},
 		[onSelect, setIsDropdownOpen]
@@ -48,15 +46,15 @@ export function TokenSelect({
 
 	return (
 		<TokenSelectContainer {...props}>
-			<TokenImg style={{ marginRight: 12 }} src={selectedCurrency.coinImageUrl} />
+			<TokenImg style={{ marginRight: 12 }} src={value?.coinImageUrl} />
 			<CenterV>
-				<TitleText pb={0}>{selectedCurrency.coinDenom?.toUpperCase()}</TitleText>
+				<TitleText pb={0}>{value?.coinDenom?.toUpperCase()}</TitleText>
 				<DownArrowImg onClick={handleDropdownArrowClicked} isActive={options.length === 0 ? false : isDropdownOpen} />
 			</CenterV>
 
 			<TokenSelectList
 				style={{ ...dropdownStyle, display: !isDropdownOpen ? 'none' : undefined }}
-				className={dropdownClassname}
+				className={dropdownClassName}
 				currencies={options}
 				onSelect={handleTokenSelected}
 			/>
