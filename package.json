@@ -18,7 +18,6 @@
 		"prettify": "prettier --write './**/*.{js,jsx,ts,tsx,scss,md,json,html}' --config ./.prettierrc"
 	},
 	"pre-commit": [
-		"lint-test"
 	],
 	"repository": {
 		"type": "git",

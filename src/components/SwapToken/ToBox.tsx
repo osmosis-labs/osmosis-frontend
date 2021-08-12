@@ -12,7 +12,7 @@ interface Props {
 	dropdownClassName?: string;
 }
 
-export const ToBox = observer(({ config, dropdownClassName, dropdownStyle }: Props) => {
+export const ToBox = observer(function ToBox({ config, dropdownClassName, dropdownStyle }: Props) {
 	return (
 		<TokenBoxContainer>
 			<TokenBoxRow>
