@@ -16,7 +16,7 @@ import { colorPrimary } from 'src/emotionStyles/colors';
 import { useAccountConnection } from 'src/hooks/account/useAccountConnection';
 import { useFakeFeeConfig } from 'src/hooks/tx';
 import { TCardTypes } from 'src/interfaces';
-import { FromBox } from 'src/pages/main/components/FormBox';
+import { FromBox } from 'src/components/SwapToken/FromBox';
 import { ToBox } from 'src/pages/main/components/ToBox';
 import { SwapDirectionButton } from 'src/components/SwapToken/SwapDirectionButton';
 import { useStore } from 'src/stores';
