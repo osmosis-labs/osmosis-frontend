@@ -135,7 +135,7 @@ const LockupTableRow = observer(function LockupTableRow({ duration, apy, lockup 
 							}
 						}
 					}}>
-					{isUnlocking ? <Spinner /> : <Text color="secondary">Unbond All</Text>}
+					{isUnlocking ? <Spinner /> : <Text color="gold">Unbond All</Text>}
 				</ButtonFaint>
 			</TableData>
 		</TableBodyRow>
