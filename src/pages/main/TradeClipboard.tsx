@@ -1,15 +1,15 @@
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';
 import { FunctionComponent, useEffect } from 'react';
-import { Img } from '../../components/common/Img';
-import { Container } from '../../components/containers';
-import { useFakeFeeConfig } from '../../hooks/tx';
-import { TCardTypes } from '../../interfaces';
-import { useStore } from '../../stores';
+import { Img } from 'src/components/common/Img';
+import { Container } from 'src/components/containers';
+import { FromBox } from 'src/components/SwapToken/FromBox';
+import { ToBox } from 'src/components/SwapToken/ToBox';
+import { useFakeFeeConfig } from 'src/hooks/tx';
+import { TCardTypes } from 'src/interfaces';
+import { useStore } from 'src/stores';
 import { FeesBox } from './components/FeeBox';
-import { FromBox } from './components/FormBox';
 import { SwapButton } from './components/SwapButton';
-import { ToBox } from './components/ToBox';
 import { useTradeConfig } from './hooks/useTradeConfig';
 import { TradeTxSettings } from './TradeTxSettings';
 
@@ -56,10 +56,10 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 					<section className="mt-5 w-full mb-12.5">
 						<div className="relative">
 							<div className="mb-4.5">
-								<FromBox config={config} />
+								<FromBox config={config} dropdownStyle={{ marginLeft: -16, width: 420 + 16 + 20 }} />
 							</div>
 							<div className="mb-4.5">
-								<ToBox config={config} />
+								<ToBox config={config} dropdownStyle={{ marginLeft: -16, width: 420 + 16 + 20 }} />
 							</div>
 							<button
 								className="s-position-abs-center w-12 h-12 z-0"
