@@ -4,8 +4,8 @@ import React, { ComponentProps, CSSProperties, HTMLAttributes, useCallback } fro
 import { Img } from 'src/components/common/Img';
 import { CenterV } from 'src/components/layouts/Containers';
 import { TokenSelectList } from 'src/components/SwapToken/TokenSelect/TokenSelectList';
-import { TitleText } from 'src/components/Texts';
-import { colorGold } from 'src/emotionStyles/colors';
+import { Text, TitleText } from 'src/components/Texts';
+import { colorGold, colorTextIcon } from 'src/emotionStyles/colors';
 import { useBooleanStateWithWindowEvent } from 'src/hooks/useBooleanStateWithWindowEvent';
 
 const EMPTY_CURRENCY_LIST: AppCurrency[] = [];
@@ -13,6 +13,7 @@ const EMPTY_CURRENCY_LIST: AppCurrency[] = [];
 interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> {
 	value: AppCurrency;
 	onSelect: (appCurrency: AppCurrency) => void;
+	channelShown?: boolean;
 	options?: AppCurrency[];
 	dropdownStyle?: CSSProperties;
 	dropdownClassName?: string;
@@ -20,10 +21,11 @@ interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> {
 
 export function TokenSelect({
 	value,
-	options = EMPTY_CURRENCY_LIST,
 	onSelect,
 	dropdownStyle,
 	dropdownClassName,
+	options = EMPTY_CURRENCY_LIST,
+	channelShown = false,
 	...props
 }: Props) {
 	const [isDropdownOpen, setIsDropdownOpen] = useBooleanStateWithWindowEvent(false);
@@ -48,7 +50,11 @@ export function TokenSelect({
 		<TokenSelectContainer {...props}>
 			<TokenImg style={{ marginRight: 12 }} src={value?.coinImageUrl} />
 			<CenterV>
-				<TitleText pb={0}>{value?.coinDenom?.toUpperCase()}</TitleText>
+				<div>
+					<TitleText pb={0}>{value?.coinDenom?.toUpperCase()}</TitleText>
+					{channelShown && <ChannelText currency={value} />}
+				</div>
+
 				<DownArrowImg onClick={handleDropdownArrowClicked} isActive={options.length === 0 ? false : isDropdownOpen} />
 			</CenterV>
 
@@ -85,6 +91,19 @@ const TokenImgWrapper = styled.figure`
 	border-radius: 9999px;
 	border: 1px solid ${colorGold};
 `;
+
+function ChannelText({ currency }: { currency: AppCurrency }) {
+	const channelId = 'paths' in currency && currency?.paths?.[0]?.channelId;
+	if (!channelId) {
+		return null;
+	}
+
+	return (
+		<Text size="sm" style={{ marginTop: 4, color: colorTextIcon }}>
+			{channelId}
+		</Text>
+	);
+}
 
 const DownArrowImg = styled(Img)<{ isActive: boolean }>`
 	height: 1.5rem;
