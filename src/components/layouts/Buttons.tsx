@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { colorPrimary200, colorWhiteFaint } from 'src/emotionStyles/colors';
+import { cssRaiseButtonShadow } from 'src/emotionStyles/forms';
 
 const PaddingBySize = {
 	large: `12px 28px`,
@@ -39,6 +40,23 @@ export const ButtonFaint = styled.button`
 	border: 0;
 	padding: 0;
 
+	&:disabled {
+		opacity: 0.5;
+	}
+`;
+
+export const CtaButton = styled.button`
+	${cssRaiseButtonShadow};
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	border-radius: 1rem;
+	background-color: ${colorPrimary200};
+	height: 3.75rem;
+	&:hover {
+		opacity: 0.75;
+	}
 	&:disabled {
 		opacity: 0.5;
 	}
