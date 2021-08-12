@@ -5,15 +5,15 @@ import { observer } from 'mobx-react-lite';
 import React, { useCallback, useMemo } from 'react';
 import { ButtonToggle } from 'src/components/layouts/Buttons';
 import { CenterV } from 'src/components/layouts/Containers';
+import { TokenInSwapConfig } from 'src/components/SwapToken/models';
 import { Text } from 'src/components/Texts';
 import { colorPrimaryDark } from 'src/emotionStyles/colors';
 import { TokenAmountInput } from 'src/pages/main/components/TokenAmountInput';
 import { useStore } from 'src/stores';
-import { TokenSwapConfig } from './models';
 import { TokenSelect } from './TokenSelect';
 
 interface Props {
-	config: TokenSwapConfig;
+	config: TokenInSwapConfig;
 }
 
 export const FromBox = observer(function FromBox({ config }: Props) {
