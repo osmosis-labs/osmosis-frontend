@@ -46,16 +46,16 @@ export class AccountWithCosmosAndOsmosis extends AccountSetBase<
 	static readonly defaultMsgOpts: CosmosMsgOpts & OsmosisMsgOpts = deepmerge(AccountWithCosmos.defaultMsgOpts, {
 		createPool: {
 			type: 'osmosis/gamm/create-pool',
-			gas: 1000000,
+			gas: 2000000,
 		},
 		joinPool: {
 			type: 'osmosis/gamm/join-pool',
-			gas: 500000,
+			gas: 650000,
 			shareCoinDecimals: 18,
 		},
 		exitPool: {
 			type: 'osmosis/gamm/exit-pool',
-			gas: 500000,
+			gas: 650000,
 			shareCoinDecimals: 18,
 		},
 		swapExactAmountIn: {
