@@ -1,171 +1,202 @@
-import React, { FunctionComponent } from 'react';
-import cn from 'clsx';
-import { CreateNewPoolConfig } from './index';
-import { Img } from '../../components/common/Img';
-import { TokenListDisplay } from '../../components/common/TokenListDisplay';
-import { AppCurrency } from '@keplr-wallet/types';
+import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { Img } from 'src/components/common/Img';
+import { ButtonFaint, ButtonPrimary } from 'src/components/layouts/Buttons';
+import { CenterV } from 'src/components/layouts/Containers';
+import { TokenSelect } from 'src/components/SwapToken/TokenSelect';
+import { Text, TitleText } from 'src/components/Texts';
+import { colorBlack, colorFilterWhiteHigh, colorGold, colorWhiteFaint } from 'src/emotionStyles/colors';
+import { cssAlignRightInput, cssNumberTextInput } from 'src/emotionStyles/forms';
+import { cssFontPoppins } from 'src/emotionStyles/texts';
+import { CreateNewPoolConfig } from './index';
 
-export const NewPoolStage1: FunctionComponent<{
+interface Props {
 	config: CreateNewPoolConfig;
 	close: () => void;
-}> = observer(({ config, close }) => {
-	const [selectTokenOpen, setSelectTokenOpen] = React.useState<number>(-1);
+}
+
+export const NewPoolStage1 = observer(function NewPoolStage1({ config, close }: Props) {
+	const hasMoreTokens = config.assets.length < 8 && config.remainingSelectableCurrencies.length > 0;
+
+	const handleAddTokenClicked = () => {
+		if (!hasMoreTokens) {
+			return;
+		}
+		const currency = config.remainingSelectableCurrencies[0];
+		config.addAsset(currency);
+	};
 
 	return (
-		<React.Fragment>
-			<div className="pl-4.5">
-				<div className="mb-4.5 flex justify-between items-center w-full">
-					<h5 className="">Create New Pool</h5>
-					<button onClick={close} className="hover:opacity-75 cursor-pointer">
-						<Img className="w-6 h-6" src={'/public/assets/Icons/X.svg'} />
-					</button>
-				</div>
-				<div className="w-full flex items-center">
-					<p className="text-sm mr-2.5">Step 1/3 - Set token ratio </p>
-					<div className="inline-block rounded-full w-3.5 h-3.5 text-xs bg-secondary-200 flex items-center justify-center text-black">
-						!
-					</div>
-				</div>
-			</div>
-			<ul
-				className="mt-5 flex flex-col gap-3 overflow-y-auto"
-				style={{ maxHeight: 'max(50vh, 430px)', minHeight: selectTokenOpen !== -1 ? '430px' : '0px' }}>
-				{config.assets.map((asset, i: number) => {
-					return (
-						<Pool
-							selectTokenOpen={selectTokenOpen === i}
-							toggleTokenOpen={() =>
-								setSelectTokenOpen(v => {
-									if (v === -1) return i;
-									if (v === i) return -1;
-									else return i;
-								})
-							}
-							key={asset.amountConfig.currency.coinMinimalDenom}
-							config={config}
-							assetAt={i}
-						/>
-					);
-				})}
-			</ul>
-			{config.assets.length < 8 && config.remainingSelectableCurrencies.length > 0 ? (
-				<div
-					onClick={e => {
-						e.preventDefault();
+		<>
+			<CreateNewPoolHeadSection>
+				<HeadTitle>
+					<TitleText pb={0}>Create New Pool</TitleText>
+					<ButtonFaint onClick={close}>
+						<CloseIcon />
+					</ButtonFaint>
+				</HeadTitle>
+				<HeadSubTitle>
+					<Text size="sm" emphasis="medium">
+						Step 1/3 - Set token ratio
+					</Text>
+				</HeadSubTitle>
+			</CreateNewPoolHeadSection>
 
-						const currency = config.remainingSelectableCurrencies[0];
-						config.addAsset(currency);
-					}}
-					className="pt-6 pb-7.5 pl-7 border border-white-faint rounded-2xl mt-2.5 hover:border-enabledGold cursor-pointer">
-					<div className="flex items-center">
-						<div className="w-9 h-9 bg-primary-200 rounded-full flex justify-center items-center mr-5">
-							<Img className="w-7 h-7 s-transition-all" src="/public/assets/Icons/Add.svg" />
-						</div>
-						<h5 className="text-white-high font-normal">Add new token</h5>
-					</div>
-				</div>
-			) : null}
-		</React.Fragment>
+			<AddedTokenList shouldShowScroll={config.assets.length > 4}>
+				{config.assets.map((asset, i) => {
+					return <NewPool key={asset.amountConfig.currency.coinMinimalDenom} config={config} assetAt={i} />;
+				})}
+			</AddedTokenList>
+
+			{hasMoreTokens && (
+				<AddTokenSection onClick={handleAddTokenClicked}>
+					<CenterV>
+						<AddButton>
+							<Img
+								style={{ width: '1.75rem', height: '1.75rem', filter: `brightness(0%) invert(100%)` }}
+								src="/public/assets/Icons/Add.svg"
+							/>
+						</AddButton>
+						<TitleText pb={0}>Add new token</TitleText>
+					</CenterV>
+				</AddTokenSection>
+			)}
+		</>
 	);
 });
 
-const Pool: FunctionComponent<{
-	selectTokenOpen: boolean;
-	toggleTokenOpen: () => void;
+const CreateNewPoolHeadSection = styled.div`
+	padding-left: 18px;
+`;
+
+const HeadTitle = styled.div`
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 18px;
+`;
+
+const HeadSubTitle = styled.div`
+	display: flex;
+	align-items: center;
+	width: 100%;
+`;
+
+const CloseIcon = styled(Img)`
+	width: 1.5rem;
+	height: 1.5rem;
+`;
+CloseIcon.defaultProps = { src: '/public/assets/Icons/X.svg' };
+
+const AddedTokenList = styled.ul<{ shouldShowScroll: boolean }>`
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-top: 20px;
+	${({ shouldShowScroll }) => (shouldShowScroll ? { overflowY: 'auto', paddingBottom: 140 } : null)};
+	max-height: 430px;
+`;
+
+const AddTokenSection = styled.div`
+	padding-top: 24px;
+	padding-bottom: 30px;
+	padding-left: 28px;
+	margin-top: 10px;
+	border: 1px solid ${colorWhiteFaint};
+	border-radius: 1rem;
+	cursor: pointer;
+
+	&:hover {
+		border-color: ${colorGold};
+	}
+`;
+
+const AddButton = styled(ButtonPrimary)`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-right: 20px;
+	padding: 0;
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 50%;
+`;
+
+interface NewPoolProps {
 	config: CreateNewPoolConfig;
 	assetAt: number;
-}> = observer(({ config, assetAt, toggleTokenOpen, selectTokenOpen }) => {
+}
+
+export const NewPool = observer(function NewPool({ config, assetAt }: NewPoolProps) {
 	const asset = config.assets[assetAt];
 
-	const ref = React.useRef<HTMLLIElement>(null);
-
-	React.useEffect(() => {
-		if (!selectTokenOpen || !ref.current) return;
-		ref.current.scrollIntoView({ behavior: 'smooth' });
-	}, [selectTokenOpen]);
-
 	return (
-		<li ref={ref} className="pt-4.5 pb-4.5 pr-7 pl-4.5 border border-white-faint rounded-2xl relative">
-			<div className="flex items-center justify-between">
-				<TokenChannelDisplay
-					currency={asset.amountConfig.currency}
-					openSelector={selectTokenOpen}
-					setOpenSelector={toggleTokenOpen}
-				/>
-				<div className="flex items-center">
-					<Img
-						onClick={() => {
-							config.removeAssetAt(assetAt);
-						}}
-						className="w-8 h-8 mr-4 hover:opacity-75 cursor-pointer s-filter-white"
+		<NewPoolContainer>
+			<TokenSelect
+				channelShown={true}
+				options={config.remainingSelectableCurrencies}
+				value={asset.amountConfig.currency}
+				onSelect={appCurrency => {
+					const currency = config.remainingSelectableCurrencies.find(
+						cur => cur.coinMinimalDenom === appCurrency.coinMinimalDenom
+					);
+					if (currency) {
+						asset.amountConfig.setCurrency(currency);
+					}
+				}}
+				dropdownStyle={{ left: -20, width: 360 }}
+			/>
+			<CenterV className="flex items-center">
+				<ButtonFaint
+					onClick={() => {
+						config.removeAssetAt(assetAt);
+					}}>
+					<CloseIcon
 						src="/public/assets/Icons/Close.svg"
+						style={{ marginRight: 16, width: '2rem', height: '2rem', filter: colorFilterWhiteHigh }}
 					/>
-					<input
-						type="number"
-						className="bg-black font-title py-1.5 h-9 rounded-lg mr-2.5 pr-1.5 border border-transparent focus:border-enabledGold text-white placeholder-white-disabled text-right text-lg leading-none"
-						onChange={e => {
-							config.setAssetPercentageAt(assetAt, e.currentTarget.value);
-						}}
-						value={asset.percentage}
-						style={{ maxWidth: '130px' }}
-					/>
-					<h5>%</h5>
-				</div>
-			</div>
-			<div
-				style={{ top: 'calc(100% - 10px)', left: '-1px', width: 'calc(100% + 2px)' }}
-				className={cn(
-					'bg-surface rounded-b-2xl z-10 border-b border-r border-l border-white-faint',
-					selectTokenOpen ? 'absolute' : 'hidden'
-				)}>
-				<TokenListDisplay
-					currencies={config.remainingSelectableCurrencies}
-					close={() => toggleTokenOpen()}
-					onSelect={minimalDenom => {
-						const currency = config.remainingSelectableCurrencies.find(cur => cur.coinMinimalDenom === minimalDenom);
-						if (currency) {
-							asset.amountConfig.setCurrency(currency);
-						}
+				</ButtonFaint>
+				<PercentInput
+					type="number"
+					onChange={e => {
+						config.setAssetPercentageAt(assetAt, e.currentTarget.value);
 					}}
+					value={asset.percentage}
 				/>
-			</div>
-		</li>
+				<TitleText pb={0}>%</TitleText>
+			</CenterV>
+		</NewPoolContainer>
 	);
 });
 
-const TokenChannelDisplay: FunctionComponent<{
-	currency: AppCurrency;
-	openSelector: boolean;
-	setOpenSelector: () => void;
-}> = ({ currency, openSelector, setOpenSelector }) => {
-	// 만약 IBC Currency일 경우 실제 coinDenom을 무시하고 원래 currency의 coinDenom을 표시한다.
-	const coinDenom =
-		'originCurrency' in currency && currency.originCurrency ? currency.originCurrency.coinDenom : currency.coinDenom;
-	// 만약 IBC Currency일 경우 첫번째 path의 채널 ID를 보여준다.
-	const channel = 'paths' in currency && currency.paths.length > 0 ? currency.paths[0].channelId : '';
+const NewPoolContainer = styled.li`
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 18px 28px 18px 18px;
+	border: 1px solid ${colorWhiteFaint};
+	border-radius: 1rem;
+	position: relative;
+`;
 
-	return (
-		<div className="flex items-center">
-			<figure
-				style={{ width: '56px', height: '56px' }}
-				className="flex justify-center items-center rounded-full border-secondary-200 border mr-3">
-				<Img loadingSpin style={{ width: '44px', height: '44px' }} src={currency.coinImageUrl} />
-			</figure>
-			<div className="flex flex-col">
-				<div className="flex items-center">
-					<h5 className="leading-none font-semibold">{coinDenom.toUpperCase()}</h5>
-					<Img
-						onClick={() => setOpenSelector()}
-						className={cn(
-							'h-6 w-8 ml-1 p-2 cursor-pointer opacity-40 hover:opacity-100',
-							openSelector ? 'rotate-180' : ''
-						)}
-						src="/public/assets/Icons/Down.svg"
-					/>
-				</div>
-				{channel ? <p className="text-sm text-iconDefault mt-1">{channel}</p> : null}
-			</div>
-		</div>
-	);
-};
+const PercentInput = styled.input`
+	background-color: ${colorBlack};
+	${cssNumberTextInput};
+	${cssAlignRightInput};
+	${cssFontPoppins};
+	padding-top: 6px;
+	padding-bottom: 6px;
+	border-radius: 0.5rem;
+	height: 2.25rem;
+	margin-right: 10px;
+	padding-right: 6px;
+	border-width: 1px;
+	border-color: transparent;
+	font-size: 20px;
+	&:focus {
+		border-color: ${colorGold};
+	}
+	max-width: 130px;
+`;
