@@ -8,6 +8,7 @@ import { CenterV } from 'src/components/layouts/Containers';
 import { TokenInSwapConfig } from 'src/components/SwapToken/models';
 import { TokenBoxContainer, TokenBoxRow } from 'src/components/SwapToken/StyledTokenBox';
 import { Text } from 'src/components/Texts';
+import { useBooleanStateWithWindowEvent } from 'src/hooks/useBooleanStateWithWindowEvent';
 import { TokenAmountInput } from 'src/pages/main/components/TokenAmountInput';
 import { useStore } from 'src/stores';
 import { TokenSelect } from './TokenSelect';
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdownClassName }: Props) {
+	const [isTokenDropdownOpen, setIsTokenDropdownOpen] = useBooleanStateWithWindowEvent(false);
 	const { chainStore, accountStore, queriesStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
@@ -70,6 +72,9 @@ export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdo
 					)}
 					value={config.sendCurrency}
 					onSelect={(appCurrency: AppCurrency) => config.setInCurrency(appCurrency.coinMinimalDenom)}
+					isDropdownOpen={isTokenDropdownOpen}
+					onDropdownClose={() => setIsTokenDropdownOpen(false)}
+					onDropdownOpen={() => setIsTokenDropdownOpen(true)}
 					dropdownStyle={dropdownStyle}
 					dropdownClassName={dropdownClassName}
 				/>

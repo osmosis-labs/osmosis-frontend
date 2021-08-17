@@ -5,6 +5,7 @@ import { TokenOutSwapConfig } from 'src/components/SwapToken/models';
 import { TokenBoxContainer, TokenBoxRow } from 'src/components/SwapToken/StyledTokenBox';
 import { TokenSelect } from 'src/components/SwapToken/TokenSelect';
 import { Text, TitleText } from 'src/components/Texts';
+import { useBooleanStateWithWindowEvent } from 'src/hooks/useBooleanStateWithWindowEvent';
 
 interface Props {
 	config: TokenOutSwapConfig;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export const ToBox = observer(function ToBox({ config, dropdownClassName, dropdownStyle }: Props) {
+	const [isTokenDropdownOpen, setIsTokenDropdownOpen] = useBooleanStateWithWindowEvent(false);
 	return (
 		<TokenBoxContainer>
 			<TokenBoxRow>
@@ -25,6 +27,9 @@ export const ToBox = observer(function ToBox({ config, dropdownClassName, dropdo
 					)}
 					value={config.outCurrency}
 					onSelect={appCurrency => config.setOutCurrency(appCurrency.coinMinimalDenom)}
+					isDropdownOpen={isTokenDropdownOpen}
+					onDropdownOpen={() => setIsTokenDropdownOpen(true)}
+					onDropdownClose={() => setIsTokenDropdownOpen(false)}
 					dropdownStyle={dropdownStyle}
 					dropdownClassName={dropdownClassName}
 				/>

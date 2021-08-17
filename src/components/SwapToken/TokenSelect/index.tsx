@@ -6,17 +6,17 @@ import { CenterV } from 'src/components/layouts/Containers';
 import { TokenSelectList } from 'src/components/SwapToken/TokenSelect/TokenSelectList';
 import { Text, TitleText } from 'src/components/Texts';
 import { colorGold, colorTextIcon } from 'src/emotionStyles/colors';
-import { useBooleanStateWithWindowEvent } from 'src/hooks/useBooleanStateWithWindowEvent';
 
 const EMPTY_CURRENCY_LIST: AppCurrency[] = [];
 
 interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> {
 	value: AppCurrency;
 	onSelect: (appCurrency: AppCurrency) => void;
-	onDropdownOpen?: () => void;
-	onDropdownClose?: () => void;
-	channelShown?: boolean;
+	isDropdownOpen: boolean;
+	onDropdownOpen: () => void;
+	onDropdownClose: () => void;
 	options?: AppCurrency[];
+	channelShown?: boolean;
 	dropdownStyle?: CSSProperties;
 	dropdownClassName?: string;
 }
@@ -24,39 +24,33 @@ interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> {
 export function TokenSelect({
 	value,
 	onSelect,
+	isDropdownOpen,
+	onDropdownClose,
+	onDropdownOpen,
 	dropdownStyle,
 	dropdownClassName,
 	options = EMPTY_CURRENCY_LIST,
 	channelShown = false,
-	onDropdownOpen,
-	onDropdownClose,
 	...props
 }: Props) {
-	const [isDropdownOpen, setIsDropdownOpen] = useBooleanStateWithWindowEvent(false);
-
 	const handleDropdownArrowClicked = useCallback(
 		(event: MouseEvent) => {
 			event.stopPropagation();
-			setIsDropdownOpen(prevOpen => {
-				const curOpen = !prevOpen;
-				if (curOpen) {
-					onDropdownOpen?.();
-				} else {
-					onDropdownClose?.();
-				}
-				return curOpen;
-			});
+			if (isDropdownOpen) {
+				onDropdownClose();
+			} else {
+				onDropdownOpen();
+			}
 		},
-		[onDropdownClose, onDropdownOpen, setIsDropdownOpen]
+		[isDropdownOpen, onDropdownClose, onDropdownOpen]
 	);
 
 	const handleTokenSelected = useCallback(
 		(appCurrency: AppCurrency) => {
 			onSelect(appCurrency);
-			setIsDropdownOpen(false);
-			onDropdownClose?.();
+			onDropdownClose();
 		},
-		[onDropdownClose, onSelect, setIsDropdownOpen]
+		[onDropdownClose, onSelect]
 	);
 
 	return (
@@ -75,6 +69,7 @@ export function TokenSelect({
 				style={{ ...dropdownStyle, display: !isDropdownOpen ? 'none' : undefined }}
 				className={dropdownClassName}
 				currencies={options}
+				shouldScrollIntoView={isDropdownOpen}
 				onSelect={handleTokenSelected}
 			/>
 		</TokenSelectContainer>

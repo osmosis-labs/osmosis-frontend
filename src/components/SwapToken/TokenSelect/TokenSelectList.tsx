@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { AppCurrency } from '@keplr-wallet/types';
 import { observer } from 'mobx-react-lite';
-import React, { HTMLAttributes, useCallback, useMemo, useState } from 'react';
+import React, { HTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Img } from 'src/components/common/Img';
 import { CenterV } from 'src/components/layouts/Containers';
 import { SubTitleText, Text } from 'src/components/Texts';
@@ -10,10 +10,17 @@ import { useStore } from 'src/stores';
 
 interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> {
 	currencies: AppCurrency[];
+	shouldScrollIntoView: boolean;
 	onSelect: (appCurrency: AppCurrency) => void;
 }
 
-export const TokenSelectList = observer(function TokenSelectList({ currencies, onSelect, onClick, ...props }: Props) {
+export const TokenSelectList = observer(function TokenSelectList({
+	currencies,
+	onSelect,
+	onClick,
+	shouldScrollIntoView,
+	...props
+}: Props) {
 	const [searchedToken, setSearchedToken] = useState<string>('');
 	const { chainStore, accountStore, queriesStore } = useStore();
 
@@ -26,8 +33,15 @@ export const TokenSelectList = observer(function TokenSelectList({ currencies, o
 		});
 	}, [currencies, searchedToken]);
 
+	const listRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		listRef.current?.scrollIntoView(false);
+	}, [shouldScrollIntoView]);
+
 	return (
 		<TokenSelectListContainer
+			ref={listRef}
 			onClick={e => {
 				e.stopPropagation();
 				onClick?.(e);
