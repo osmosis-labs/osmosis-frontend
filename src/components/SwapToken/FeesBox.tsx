@@ -1,21 +1,51 @@
 import styled from '@emotion/styled';
+import { AppCurrency } from '@keplr-wallet/types';
 import { Dec, IntPretty } from '@keplr-wallet/unit';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { CenterV } from 'src/components/layouts/Containers';
 import { Text } from 'src/components/Texts';
-import { colorPrimary, colorWhiteFaint } from 'src/emotionStyles/colors';
-import { PoolSwapConfig } from './usePoolSwapConfig';
+import { colorError, colorPrimary, colorWhiteFaint } from 'src/emotionStyles/colors';
 
-interface FeesBoxProps {
-	config: PoolSwapConfig;
+interface BaseConfig {
+	spotPriceWithoutSwapFee: IntPretty;
+	sendCurrency: AppCurrency;
+	outCurrency: AppCurrency;
+	estimatedSlippage: IntPretty;
 }
 
-export const FeesBox = observer(function FeesBox({ config }: FeesBoxProps) {
+interface PoolSwapConfig extends BaseConfig {
+	swapFee: IntPretty;
+}
+
+interface TradeSwapConfig extends BaseConfig {
+	swapFees: IntPretty[];
+	showWarningOfSlippage: boolean;
+}
+
+interface Props {
+	config: PoolSwapConfig | TradeSwapConfig;
+}
+
+export const FeesBox = observer(function FeesBox({ config }: Props) {
 	const outSpotPrice = config.spotPriceWithoutSwapFee;
 	const inSpotPrice = outSpotPrice.toDec().equals(new Dec(0))
 		? outSpotPrice
 		: new IntPretty(new Dec(1).quo(outSpotPrice.toDec()));
+
+	const swapFeeText = isPoolSwapConfig(config)
+		? `${config.swapFee
+				.trim(true)
+				.maxDecimals(3)
+				.toString()}%`
+		: config.swapFees
+				.map(swapFee => {
+					return `${swapFee
+						.trim(true)
+						.maxDecimals(3)
+						.toString()}%`;
+				})
+				.join(' + ');
 
 	return (
 		<FeeBoxContainer>
@@ -40,10 +70,7 @@ export const FeesBox = observer(function FeesBox({ config }: FeesBoxProps) {
 
 			<Section>
 				<Text size="sm">Swap Fee</Text>
-				<Text size="sm">{`${config.swapFee
-					.trim(true)
-					.maxDecimals(3)
-					.toString()}%`}</Text>
+				<Text size="sm">{swapFeeText}</Text>
 			</Section>
 
 			<hr style={{ width: '100%', marginTop: 15, marginBottom: 16 }} />
@@ -52,7 +79,11 @@ export const FeesBox = observer(function FeesBox({ config }: FeesBoxProps) {
 				<Text emphasis="high" size="sm" weight="semiBold">
 					Estimated Slippage
 				</Text>
-				<Text emphasis="high" size="sm" weight="semiBold">
+				<Text
+					emphasis="high"
+					size="sm"
+					weight="semiBold"
+					style={!isPoolSwapConfig(config) && config.showWarningOfSlippage ? { color: colorError } : undefined}>
 					{`${config.estimatedSlippage
 						.trim(true)
 						.maxDecimals(3)
@@ -63,7 +94,7 @@ export const FeesBox = observer(function FeesBox({ config }: FeesBoxProps) {
 	);
 });
 
-const FeeBoxContainer = styled.div`
+export const FeeBoxContainer = styled.div`
 	width: 100%;
 	border: 1px solid ${colorWhiteFaint};
 	border-radius: 0.5rem;
@@ -81,3 +112,7 @@ const InverseRateSection = styled(CenterV)`
 	margin-top: 6px;
 	margin-bottom: 10px;
 `;
+
+function isPoolSwapConfig(config: PoolSwapConfig | TradeSwapConfig): config is PoolSwapConfig {
+	return 'swapFee' in config && config.swapFee != null;
+}

@@ -1,14 +1,13 @@
 import { observer } from 'mobx-react-lite';
-import * as React from 'react';
-import { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import { Img } from 'src/components/common/Img';
 import { Container } from 'src/components/containers';
+import { FeesBox } from 'src/components/SwapToken/FeesBox';
 import { FromBox } from 'src/components/SwapToken/FromBox';
 import { ToBox } from 'src/components/SwapToken/ToBox';
 import { useFakeFeeConfig } from 'src/hooks/tx';
 import { TCardTypes } from 'src/interfaces';
 import { useStore } from 'src/stores';
-import { FeesBox } from './components/FeeBox';
 import { SwapButton } from './components/SwapButton';
 import { useTradeConfig } from './hooks/useTradeConfig';
 import { TradeTxSettings } from './TradeTxSettings';
