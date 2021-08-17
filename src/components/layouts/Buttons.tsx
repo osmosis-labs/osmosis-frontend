@@ -40,6 +40,10 @@ export const ButtonFaint = styled.button`
 	border: 0;
 	padding: 0;
 
+	&:hover {
+		opacity: 0.5;
+	}
+
 	&:disabled {
 		opacity: 0.5;
 	}
