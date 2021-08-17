@@ -160,7 +160,7 @@ const UnlockingTableRow = observer(function UnlockingTableRow({
 								}
 							}
 						}}>
-						{isWithdrawing ? <Spinner /> : <Text color="secondary">Withdraw</Text>}
+						{isWithdrawing ? <Spinner /> : <Text color="gold">Withdraw</Text>}
 					</ButtonFaint>
 				) : (
 					<Text>{endTimeMoment.fromNow()}</Text>

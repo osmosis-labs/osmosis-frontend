@@ -35,7 +35,7 @@ export const ExtraGauge = observer(function ExtraGauge({ gaugeId, currency, extr
 				<br />
 				incentives for {gauge.numEpochsPaidOver} epochs starting at {dayjs(gauge.startTime).format('MMM D, YYYY')}.
 			</Text>
-			<Text size="lg" color="secondary">
+			<Text size="lg" color="gold">
 				{`Total Bonus: ${reward
 					.maxDecimals(6)
 					.trim(true)

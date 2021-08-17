@@ -1,19 +1,32 @@
-import cn from 'clsx';
+import styled from '@emotion/styled';
 import * as React from 'react';
-import { MISC } from '../constants';
+import { Text } from 'src/components/Texts';
+import { colorPrimary200 } from 'src/emotionStyles/colors';
 import { Img } from './common/Img';
 
-export function ConnectAccountButton({ className, ...props }: React.HTMLAttributes<HTMLButtonElement>) {
+export function ConnectAccountButton(props: React.HTMLAttributes<HTMLButtonElement>) {
 	return (
-		<button
-			className={cn('bg-primary-200 w-full rounded-md py-2 px-1 flex items-center justify-center mb-8', className)}
-			{...props}>
-			<Img className="w-5 h-5" src={`${MISC.ASSETS_BASE}/Icons/Wallet.svg`} />
-			<p
-				style={{ maxWidth: '105px', marginLeft: '12px' }}
-				className="text-sm text-white-high font-semibold overflow-x-hidden truncate transition-all">
+		<ConnectAccountButtonWrapper {...props}>
+			<WalletImg src="/public/assets/Icons/Wallet.svg" />
+			<Text size="sm" emphasis="high" weight="semiBold" style={{ maxWidth: '105px', marginLeft: '12px' }}>
 				Connect Wallet
-			</p>
-		</button>
+			</Text>
+		</ConnectAccountButtonWrapper>
 	);
 }
+
+const ConnectAccountButtonWrapper = styled.button`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 32px;
+	width: 100%;
+	padding: 8px 4px;
+	border-radius: 0.375rem;
+	background-color: ${colorPrimary200};
+`;
+
+const WalletImg = styled(Img)`
+	width: 1.25rem;
+	height: 1.25rem;
+`;
