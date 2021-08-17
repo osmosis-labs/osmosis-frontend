@@ -146,7 +146,15 @@ export const NewPool = observer(function NewPool({ config, assetAt }: NewPoolPro
 						asset.amountConfig.setCurrency(currency);
 					}
 				}}
-				dropdownStyle={{ left: -20, width: 360 }}
+				dropdownStyle={{
+					left: -19,
+					width: 592,
+					borderLeft: `1px solid ${colorWhiteFaint}`,
+					borderRight: `1px solid ${colorWhiteFaint}`,
+					borderBottom: `1px solid ${colorWhiteFaint}`,
+					borderBottomLeftRadius: '1rem',
+					borderBottomRightRadius: '1rem',
+				}}
 			/>
 			<CenterV className="flex items-center">
 				<ButtonFaint
@@ -175,7 +183,7 @@ const NewPoolContainer = styled.li`
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 18px 28px 18px 18px;
+	padding: 18px 28px 24px 18px;
 	border: 1px solid ${colorWhiteFaint};
 	border-radius: 1rem;
 	position: relative;
@@ -195,8 +203,10 @@ const PercentInput = styled.input`
 	border-width: 1px;
 	border-color: transparent;
 	font-size: 20px;
+
 	&:focus {
 		border-color: ${colorGold};
 	}
+
 	max-width: 130px;
 `;
