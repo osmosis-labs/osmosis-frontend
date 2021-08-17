@@ -17,8 +17,7 @@
 		"build:css": "postcss src/styles/tailwind.scss -o src/styles/index.scss ",
 		"prettify": "prettier --write './**/*.{js,jsx,ts,tsx,scss,md,json,html}' --config ./.prettierrc"
 	},
-	"pre-commit": [
-	],
+	"pre-commit": ["lint-test"],
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/osmosis-front/osmosis-frontend.git"
