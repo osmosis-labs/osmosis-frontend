@@ -106,7 +106,7 @@ const DisplayCliff: FunctionComponent = observer(() => {
 		}
 
 		const percentile = (elapsedFromDecay.asSeconds() / durationOfDecay.asSeconds()) * 100;
-		return new IntPretty(new Dec('100').sub(new Dec(percentile.toString())));
+		return new IntPretty(new Dec('100').sub(new Dec(percentile.toFixed(4))));
 	})();
 
 	return (
