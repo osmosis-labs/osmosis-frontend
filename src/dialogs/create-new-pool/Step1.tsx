@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { usePrevious } from 'react-use';
 import { Img } from 'src/components/common/Img';
 import { ButtonFaint, ButtonPrimary } from 'src/components/layouts/Buttons';
 import { CenterV } from 'src/components/layouts/Containers';
@@ -17,7 +18,10 @@ interface Props {
 }
 
 export const NewPoolStage1 = observer(function NewPoolStage1({ config, close }: Props) {
+	const [currentAssetAt, setCurrentAssetAt] = useState(-1);
 	const hasMoreTokens = config.assets.length < 8 && config.remainingSelectableCurrencies.length > 0;
+
+	const tokenListRef = useRef<HTMLUListElement>(null);
 
 	const handleAddTokenClicked = () => {
 		if (!hasMoreTokens) {
@@ -26,9 +30,16 @@ export const NewPoolStage1 = observer(function NewPoolStage1({ config, close }: 
 		const currency = config.remainingSelectableCurrencies[0];
 		config.addAsset(currency);
 	};
+	const previousLength = usePrevious(config.assets.length);
+
+	useEffect(() => {
+		if (config.assets.length > (previousLength ?? 0)) {
+			tokenListRef.current?.scrollBy({ top: tokenListRef.current?.scrollHeight ?? 999_999, behavior: 'smooth' });
+		}
+	}, [config.assets.length, previousLength]);
 
 	return (
-		<>
+		<div onClick={() => setCurrentAssetAt(-1)}>
 			<CreateNewPoolHeadSection>
 				<HeadTitle>
 					<TitleText pb={0}>Create New Pool</TitleText>
@@ -43,9 +54,19 @@ export const NewPoolStage1 = observer(function NewPoolStage1({ config, close }: 
 				</HeadSubTitle>
 			</CreateNewPoolHeadSection>
 
-			<AddedTokenList shouldShowScroll={config.assets.length > 4}>
-				{config.assets.map((asset, i) => {
-					return <NewPool key={asset.amountConfig.currency.coinMinimalDenom} config={config} assetAt={i} />;
+			<AddedTokenList shouldShowScroll={config.assets.length > 4} ref={tokenListRef}>
+				{config.assets.map((asset, index) => {
+					return (
+						<NewPool
+							key={asset.amountConfig.currency.coinMinimalDenom}
+							config={config}
+							assetAt={currentAssetAt}
+							index={index}
+							onAssetAtChange={newAssetAt => {
+								setCurrentAssetAt(newAssetAt);
+							}}
+						/>
+					);
 				})}
 			</AddedTokenList>
 
@@ -62,7 +83,7 @@ export const NewPoolStage1 = observer(function NewPoolStage1({ config, close }: 
 					</CenterV>
 				</AddTokenSection>
 			)}
-		</>
+		</div>
 	);
 });
 
@@ -95,7 +116,7 @@ const AddedTokenList = styled.ul<{ shouldShowScroll: boolean }>`
 	flex-direction: column;
 	gap: 12px;
 	margin-top: 20px;
-	${({ shouldShowScroll }) => (shouldShowScroll ? { overflowY: 'auto', paddingBottom: 140 } : null)};
+	${({ shouldShowScroll }) => (shouldShowScroll ? { overflowY: 'auto' } : null)};
 	max-height: 430px;
 `;
 
@@ -126,15 +147,31 @@ const AddButton = styled(ButtonPrimary)`
 
 interface NewPoolProps {
 	config: CreateNewPoolConfig;
+	index: number;
 	assetAt: number;
+	onAssetAtChange: (assetAt: number) => void;
 }
 
-export const NewPool = observer(function NewPool({ config, assetAt }: NewPoolProps) {
-	const asset = config.assets[assetAt];
+export const NewPool = observer(function NewPool({ config, index, assetAt, onAssetAtChange }: NewPoolProps) {
+	const asset = config.assets[index];
+
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+	useEffect(() => {
+		if (assetAt !== index) {
+			setIsDropdownOpen(false);
+		}
+	}, [index, assetAt]);
 
 	return (
 		<NewPoolContainer>
 			<TokenSelect
+				isDropdownOpen={isDropdownOpen}
+				onDropdownClose={() => setIsDropdownOpen(false)}
+				onDropdownOpen={() => {
+					setIsDropdownOpen(true);
+					onAssetAtChange(index);
+				}}
 				channelShown={true}
 				options={config.remainingSelectableCurrencies}
 				value={asset.amountConfig.currency}
@@ -159,7 +196,7 @@ export const NewPool = observer(function NewPool({ config, assetAt }: NewPoolPro
 			<CenterV className="flex items-center">
 				<ButtonFaint
 					onClick={() => {
-						config.removeAssetAt(assetAt);
+						config.removeAssetAt(index);
 					}}>
 					<CloseIcon
 						src="/public/assets/Icons/Close.svg"
@@ -169,7 +206,7 @@ export const NewPool = observer(function NewPool({ config, assetAt }: NewPoolPro
 				<PercentInput
 					type="number"
 					onChange={e => {
-						config.setAssetPercentageAt(assetAt, e.currentTarget.value);
+						config.setAssetPercentageAt(index, e.currentTarget.value);
 					}}
 					value={asset.percentage}
 				/>
