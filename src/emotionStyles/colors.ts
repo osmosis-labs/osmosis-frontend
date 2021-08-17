@@ -20,6 +20,8 @@ export const colorWhiteEmphasis = `rgba(255, 255, 255, 0.87)`;
 export const colorWhiteRegular = `rgba(255, 255, 255, 0.6)`;
 export const colorWhiteFaint = `rgba(255, 255, 255, 0.12)`;
 
+export const colorBlack = `#000`;
+
 export const colorTextIcon = `rgb(142, 131, 170)`;
 
 export const colorFilterWhiteHigh = `brightness(0%) invert(100%)`;
