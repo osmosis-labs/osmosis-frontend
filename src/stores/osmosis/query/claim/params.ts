@@ -28,6 +28,15 @@ export class ObservableQueryClaimParams extends ObservableChainQuery<ClaimParams
 	}
 
 	@computed
+	get timeUntilDecayEnd(): Date {
+		const airdropStartTime = dayjs(this.airdropStartTime);
+		return airdropStartTime
+			.add(this.durationUntilDecay)
+			.add(this.durationOfDecay)
+			.toDate();
+	}
+
+	@computed
 	get durationUntilDecay(): Duration {
 		if (!this.response) {
 			return dayjs.duration(0);
