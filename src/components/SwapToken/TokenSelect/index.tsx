@@ -13,6 +13,8 @@ const EMPTY_CURRENCY_LIST: AppCurrency[] = [];
 interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> {
 	value: AppCurrency;
 	onSelect: (appCurrency: AppCurrency) => void;
+	onDropdownOpen?: () => void;
+	onDropdownClose?: () => void;
 	channelShown?: boolean;
 	options?: AppCurrency[];
 	dropdownStyle?: CSSProperties;
@@ -26,6 +28,8 @@ export function TokenSelect({
 	dropdownClassName,
 	options = EMPTY_CURRENCY_LIST,
 	channelShown = false,
+	onDropdownOpen,
+	onDropdownClose,
 	...props
 }: Props) {
 	const [isDropdownOpen, setIsDropdownOpen] = useBooleanStateWithWindowEvent(false);
@@ -33,17 +37,26 @@ export function TokenSelect({
 	const handleDropdownArrowClicked = useCallback(
 		(event: MouseEvent) => {
 			event.stopPropagation();
-			setIsDropdownOpen(v => !v);
+			setIsDropdownOpen(prevOpen => {
+				const curOpen = !prevOpen;
+				if (curOpen) {
+					onDropdownOpen?.();
+				} else {
+					onDropdownClose?.();
+				}
+				return curOpen;
+			});
 		},
-		[setIsDropdownOpen]
+		[onDropdownClose, onDropdownOpen, setIsDropdownOpen]
 	);
 
 	const handleTokenSelected = useCallback(
 		(appCurrency: AppCurrency) => {
 			onSelect(appCurrency);
 			setIsDropdownOpen(false);
+			onDropdownClose?.();
 		},
-		[onSelect, setIsDropdownOpen]
+		[onDropdownClose, onSelect, setIsDropdownOpen]
 	);
 
 	return (
