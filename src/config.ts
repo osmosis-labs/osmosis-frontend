@@ -71,18 +71,7 @@ export const ExtraGaugeInPool: {
 		denom: string;
 		extraRewardAmount?: Int;
 	};
-} = {
-	'3': {
-		gaugeId: '458',
-		denom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-1' }], 'uakt'),
-		extraRewardAmount: new Int('1200000000'),
-	},
-	'4': {
-		gaugeId: '457',
-		denom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-1' }], 'uakt'),
-		extraRewardAmount: new Int('3300000000'),
-	},
-};
+} = {};
 
 export const PoolsPerPage = 10;
 export const RewardEpochIdentifier = 'day';

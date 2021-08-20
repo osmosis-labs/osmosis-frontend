@@ -141,7 +141,7 @@ const UnlockingTableRow = observer(function UnlockingTableRow({
 
 								try {
 									// XXX: Due to the block gas limit, restrict the number of lock id to included in the one tx.
-									await account.osmosis.sendUnlockPeriodLockMsg(lockIds.slice(0, 3), '', tx => {
+									await account.osmosis.sendUnlockPeriodLockMsg(lockIds.slice(0, 2), '', tx => {
 										setIsWithdrawing(false);
 
 										if (tx.code) {
