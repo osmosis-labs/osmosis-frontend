@@ -26,7 +26,7 @@ const defaultExtraData = { message: '', customLink: '' };
 
 export enum TToastType {
 	TX_BROADCASTING,
-	TX_SUCCESSFULL,
+	TX_SUCCESSFUL,
 	TX_FAILED,
 }
 
@@ -37,7 +37,7 @@ interface IToastExtra {
 
 export type DisplayToastFn = ((type: TToastType.TX_BROADCASTING, options?: Partial<ToastOptions>) => void) &
 	((
-		type: TToastType.TX_SUCCESSFULL,
+		type: TToastType.TX_SUCCESSFUL,
 		extraData?: Partial<Pick<IToastExtra, 'customLink'>>,
 		options?: Partial<ToastOptions>
 	) => void) &
@@ -62,7 +62,7 @@ export const displayToast: DisplayToastFn = (
 	const inputOptions = { ...defaultOptions, ...refinedOptions } as ToastOptions;
 	if (type === TToastType.TX_BROADCASTING) {
 		toast(<ToastTxBroadcasting />, inputOptions);
-	} else if (type === TToastType.TX_SUCCESSFULL) {
+	} else if (type === TToastType.TX_SUCCESSFUL) {
 		toast(<ToastTxSuccess link={inputExtraData.customLink} />, inputOptions);
 	} else if (type === TToastType.TX_FAILED) {
 		toast(<ToastTxFailed message={inputExtraData.message} />, inputOptions);

@@ -252,7 +252,7 @@ export const TransferDialog = wrapBaseDialog(
 																	}
 																}
 
-																toast.displayToast(TToastType.TX_SUCCESSFULL, {
+																toast.displayToast(TToastType.TX_SUCCESSFUL, {
 																	customLink: chainStore.current.explorerUrlToTx.replace(
 																		'{txHash}',
 																		tx.hash.toUpperCase()
@@ -345,7 +345,7 @@ export const TransferDialog = wrapBaseDialog(
 																	}
 																}
 
-																toast.displayToast(TToastType.TX_SUCCESSFULL, {
+																toast.displayToast(TToastType.TX_SUCCESSFUL, {
 																	customLink: chainStore
 																		.getChain(counterpartyChainId)
 																		.raw.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),

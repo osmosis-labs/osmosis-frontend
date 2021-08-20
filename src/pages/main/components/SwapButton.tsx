@@ -115,7 +115,7 @@ export const SwapButton = observer(({ config }: Props) => {
 												: tx.log,
 										});
 									} else {
-										toast.displayToast(TToastType.TX_SUCCESSFULL, {
+										toast.displayToast(TToastType.TX_SUCCESSFUL, {
 											customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
 										});
 
@@ -143,7 +143,7 @@ export const SwapButton = observer(({ config }: Props) => {
 												: tx.log,
 										});
 									} else {
-										toast.displayToast(TToastType.TX_SUCCESSFULL, {
+										toast.displayToast(TToastType.TX_SUCCESSFUL, {
 											customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
 										});
 
