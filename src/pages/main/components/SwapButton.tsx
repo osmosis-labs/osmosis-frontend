@@ -168,7 +168,7 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 				<Spinner />
 			) : (
 				<Text emphasis="high" style={{ letterSpacing: '0.025em' }}>
-					{isSwapPoolsFetching && <Spinner style={{ marginRight: 12 }} />}
+					{isSwapPoolsFetching && <Spinner style={{ marginRight: 12, display: 'inline-block' }} />}
 					{config.showWarningOfSlippage ? 'Swap Anyway' : 'Swap'}
 				</Text>
 			)}
