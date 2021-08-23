@@ -8,7 +8,7 @@ import { wrapBaseDialog } from 'src/dialogs';
 import { colorPrimary } from 'src/emotionStyles/colors';
 import { useFakeFeeConfig } from 'src/hooks/tx';
 import { ToBox } from 'src/components/SwapToken/ToBox';
-import { FeesBox } from 'src/pages/pool/components/PoolInfoHeader/FeesBox';
+import { FeesBox } from 'src/components/SwapToken/FeesBox';
 import { SwapButton } from 'src/pages/pool/components/PoolInfoHeader/SwapButton';
 import { usePoolSwapConfig } from 'src/pages/pool/components/PoolInfoHeader/usePoolSwapConfig';
 import { useStore } from 'src/stores';

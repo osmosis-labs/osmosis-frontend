@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import React, { FunctionComponent, ReactNode } from 'react';
 import ProgressiveImage from 'react-progressive-image';
 import { colorPrimaryDarker } from 'src/emotionStyles/colors';
-import { TradeClipboard } from './TradeClipboard';
+import { TradeClipboard } from './components/TradeClipboard';
 
 export const MainPage: FunctionComponent = () => {
 	return (

@@ -22,6 +22,8 @@ export const colorWhiteFaint = `rgba(255, 255, 255, 0.12)`;
 
 export const colorBlack = `#000`;
 
+export const colorError = `rgba(239, 52, 86)`;
+
 export const colorTextIcon = `rgb(142, 131, 170)`;
 
 export const colorFilterWhiteHigh = `brightness(0%) invert(100%)`;
