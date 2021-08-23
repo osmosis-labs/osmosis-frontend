@@ -1,9 +1,11 @@
-import React, { FunctionComponent } from 'react';
-import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
+import styled from '@emotion/styled';
 import { CoinPretty, Dec } from '@keplr-wallet/unit';
+import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent } from 'react';
+import { OverviewLabelValue } from 'src/components/common/OverviewLabelValue';
+import { TitleText } from 'src/components/Texts';
+import { useStore } from 'src/stores';
 
 export const AssetsOverview: FunctionComponent<{ title: string }> = observer(({ title }) => {
 	const { chainStore, accountStore, queriesStore, priceStore } = useStore();
@@ -23,33 +25,6 @@ export const AssetsOverview: FunctionComponent<{ title: string }> = observer(({ 
 		.getQueryBech32Address(account.bech32Address)
 		.delegationBalances.map(delegation => delegation.balance);
 	const delegatedBalancePrice = calcTotalFiatValue(delegatedBalance);
-
-	return (
-		<section className="w-full">
-			<div className="flex items-center mb-6">
-				<h4 className="mr-0.5">{title}</h4>
-			</div>
-			<div className="flex items-center gap-21.5">
-				<OverviewLabelValue label="Total Assets">
-					<h4 className="inline">
-						{availableBalancePrice
-							.add(lockedBalancePrice)
-							.add(delegatedBalancePrice)
-							.toString()}
-					</h4>
-				</OverviewLabelValue>
-				<OverviewLabelValue label="Available Assets">
-					<h4 className="inline">{availableBalancePrice.toString()}</h4>
-				</OverviewLabelValue>
-				<OverviewLabelValue label="Bonded Assets">
-					<h4 className="inline">{lockedBalancePrice.toString()}</h4>
-				</OverviewLabelValue>
-				<OverviewLabelValue label="Staked OSMO">
-					<h4 className="inline">{delegatedBalancePrice.toString()}</h4>
-				</OverviewLabelValue>
-			</div>
-		</section>
-	);
 
 	function calcTotalFiatValue(balanceList: CoinPretty[]) {
 		let fiatValue = new PricePretty(priceStore.getFiatCurrency('usd')!, new Dec(0));
@@ -74,4 +49,44 @@ export const AssetsOverview: FunctionComponent<{ title: string }> = observer(({ 
 		}
 		return fiatValue;
 	}
+
+	return (
+		<section>
+			<TitleText size="2xl">{title}</TitleText>
+			<AssetsList>
+				<OverviewLabelValue label="Total Assets">
+					<TitleText size="2xl" pb={0}>
+						{availableBalancePrice
+							.add(lockedBalancePrice)
+							.add(delegatedBalancePrice)
+							.toString()}
+					</TitleText>
+				</OverviewLabelValue>
+
+				<OverviewLabelValue label="Available Assets">
+					<TitleText size="2xl" pb={0}>
+						{availableBalancePrice.toString()}
+					</TitleText>
+				</OverviewLabelValue>
+
+				<OverviewLabelValue label="Bonded Assets">
+					<TitleText size="2xl" pb={0}>
+						{lockedBalancePrice.toString()}
+					</TitleText>
+				</OverviewLabelValue>
+
+				<OverviewLabelValue label="Staked OSMO">
+					<TitleText size="2xl" pb={0}>
+						{delegatedBalancePrice.toString()}
+					</TitleText>
+				</OverviewLabelValue>
+			</AssetsList>
+		</section>
+	);
 });
+
+const AssetsList = styled.div`
+	display: flex;
+	align-items: center;
+	gap: 86px;
+`;
