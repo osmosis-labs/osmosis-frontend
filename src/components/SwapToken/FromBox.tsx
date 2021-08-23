@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { AppCurrency } from '@keplr-wallet/types';
 import { CoinPretty, Int } from '@keplr-wallet/unit';
 import { observer } from 'mobx-react-lite';
-import React, { CSSProperties, useCallback, useMemo } from 'react';
+import React, { CSSProperties, HTMLAttributes, useCallback, useMemo } from 'react';
 import { ButtonToggle } from 'src/components/layouts/Buttons';
 import { CenterV } from 'src/components/layouts/Containers';
 import { TokenInSwapConfig } from 'src/components/SwapToken/models';
@@ -13,13 +13,13 @@ import { TokenAmountInput } from 'src/pages/main/components/TokenAmountInput';
 import { useStore } from 'src/stores';
 import { TokenSelect } from './TokenSelect';
 
-interface Props {
+interface Props extends HTMLAttributes<HTMLDivElement> {
 	config: TokenInSwapConfig;
 	dropdownStyle?: CSSProperties;
 	dropdownClassName?: string;
 }
 
-export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdownClassName }: Props) {
+export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdownClassName, ...props }: Props) {
 	const [isTokenDropdownOpen, setIsTokenDropdownOpen] = useBooleanStateWithWindowEvent(false);
 	const { chainStore, accountStore, queriesStore } = useStore();
 
@@ -42,7 +42,7 @@ export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdo
 	}, [config]);
 
 	return (
-		<TokenBoxContainer>
+		<TokenBoxContainer {...props}>
 			<TokenBoxRow>
 				<Text emphasis="medium">From</Text>
 				<CenterV>

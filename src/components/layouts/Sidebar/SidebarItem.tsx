@@ -1,8 +1,10 @@
-import React, { FunctionComponent } from 'react';
+import styled from '@emotion/styled';
+import React, { FunctionComponent, HTMLAttributes, useCallback, useState } from 'react';
 import cn from 'clsx';
-import { Img } from '../../common/Img';
-import { TSIDEBAR_ITEM } from '../../../constants';
+import { Img } from 'src/components/common/Img';
+import { TSIDEBAR_ITEM } from 'src/constants';
 import { NavLink } from 'react-router-dom';
+import { cssAbsoluteCenter } from 'src/emotionStyles/layout';
 
 const NavLinkFallback: FunctionComponent<{ sidebarItem: TSIDEBAR_ITEM }> = ({ sidebarItem, children }) => {
 	return (
@@ -60,29 +62,61 @@ interface TSidebarItem {
 	sidebarItem: TSIDEBAR_ITEM;
 }
 
-export const DisplayIcon: FunctionComponent<TDisplayIcon> = ({ icon, iconSelected, className, clicked }) => {
-	const [hovering, setHovering] = React.useState(false);
+interface DisplayIconProps extends HTMLAttributes<HTMLDivElement> {
+	icon: string;
+	iconSelected: string;
+	className?: string;
+	isActive?: boolean;
+}
+
+export function DisplayIcon({ icon, iconSelected, isActive, onMouseEnter, onMouseLeave, ...props }: DisplayIconProps) {
+	const [hovering, setHovering] = useState(false);
+	const handleMouseEnter = useCallback(
+		(event: React.MouseEvent<HTMLDivElement>) => {
+			setHovering(true);
+			onMouseEnter?.(event);
+		},
+		[onMouseEnter]
+	);
+	const handleMouseLeave = useCallback(
+		(event: React.MouseEvent<HTMLDivElement>) => {
+			setHovering(false);
+			onMouseLeave?.(event);
+		},
+		[onMouseLeave]
+	);
 	return (
-		<div
-			onMouseEnter={() => setHovering(true)}
-			onMouseLeave={() => setHovering(false)}
-			className={cn('h-11 w-11 relative', className)}>
-			<Img
-				className="w-full h-full absolute top-0 left-0"
+		<DisplayIconContainer onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
+			<IconBgImg
 				src={
-					hovering || clicked
+					hovering || isActive
 						? '/public/assets/sidebar/icon-border_selected.svg'
 						: '/public/assets/sidebar/icon-border_unselected.svg'
 				}
 			/>
-			<Img className="w-5 h-5 s-position-abs-center z-10" src={hovering ? iconSelected : icon} />
-		</div>
+			<IconImg src={hovering ? iconSelected : icon} />
+		</DisplayIconContainer>
 	);
-};
-
-interface TDisplayIcon {
-	icon: string;
-	iconSelected: string;
-	className?: string;
-	clicked?: boolean;
 }
+
+const DisplayIconContainer = styled.div`
+	height: 2.75rem;
+	width: 2.75rem;
+	position: relative;
+	cursor: pointer;
+`;
+
+const IconBgImg = styled(Img)`
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+`;
+
+const IconImg = styled(Img)`
+	${cssAbsoluteCenter};
+	width: 1.25rem;
+	height: 1.25rem;
+	z-index: 10;
+`;

@@ -58,7 +58,7 @@ export const SwapButton = observer(function SwapButton({ config, close }: SwapBu
 									: tx.log,
 							});
 						} else {
-							toast.displayToast(TToastType.TX_SUCCESSFULL, {
+							toast.displayToast(TToastType.TX_SUCCESSFUL, {
 								customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
 							});
 
