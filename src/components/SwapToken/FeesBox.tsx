@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { AppCurrency } from '@keplr-wallet/types';
 import { Dec, IntPretty } from '@keplr-wallet/unit';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
+import React, { HTMLAttributes } from 'react';
 import { CenterV } from 'src/components/layouts/Containers';
 import { Text } from 'src/components/Texts';
 import { colorError, colorPrimary, colorWhiteFaint } from 'src/emotionStyles/colors';
@@ -23,11 +23,11 @@ interface TradeSwapConfig extends BaseConfig {
 	showWarningOfSlippage: boolean;
 }
 
-interface Props {
+interface Props extends HTMLAttributes<HTMLDivElement> {
 	config: PoolSwapConfig | TradeSwapConfig;
 }
 
-export const FeesBox = observer(function FeesBox({ config }: Props) {
+export const FeesBox = observer(function FeesBox({ config, ...props }: Props) {
 	const outSpotPrice = config.spotPriceWithoutSwapFee;
 	const inSpotPrice = outSpotPrice.toDec().equals(new Dec(0))
 		? outSpotPrice
@@ -48,7 +48,7 @@ export const FeesBox = observer(function FeesBox({ config }: Props) {
 				.join(' + ');
 
 	return (
-		<FeeBoxContainer>
+		<FeeBoxContainer {...props}>
 			<Section>
 				<Text size="sm">Rate</Text>
 				<Text size="sm">

@@ -1,22 +1,22 @@
 import { Dec } from '@keplr-wallet/unit';
 import { observer } from 'mobx-react-lite';
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, HTMLAttributes } from 'react';
 import { TokenOutSwapConfig } from 'src/components/SwapToken/models';
 import { TokenBoxContainer, TokenBoxRow } from 'src/components/SwapToken/StyledTokenBox';
 import { TokenSelect } from 'src/components/SwapToken/TokenSelect';
 import { Text, TitleText } from 'src/components/Texts';
 import { useBooleanStateWithWindowEvent } from 'src/hooks/useBooleanStateWithWindowEvent';
 
-interface Props {
+interface Props extends HTMLAttributes<HTMLDivElement> {
 	config: TokenOutSwapConfig;
 	dropdownStyle?: CSSProperties;
 	dropdownClassName?: string;
 }
 
-export const ToBox = observer(function ToBox({ config, dropdownClassName, dropdownStyle }: Props) {
+export const ToBox = observer(function ToBox({ config, dropdownClassName, dropdownStyle, ...props }: Props) {
 	const [isTokenDropdownOpen, setIsTokenDropdownOpen] = useBooleanStateWithWindowEvent(false);
 	return (
-		<TokenBoxContainer>
+		<TokenBoxContainer {...props}>
 			<TokenBoxRow>
 				<Text emphasis="medium">To</Text>
 			</TokenBoxRow>
