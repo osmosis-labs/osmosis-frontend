@@ -1,15 +1,19 @@
-import React, { FunctionComponent } from 'react';
-import { Img } from '../../components/common/Img';
-import { TransferDialog } from '../../dialogs/Transfer';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { IBCAssetInfos } from '../../config';
+import styled from '@emotion/styled';
 import { AppCurrency, Currency, IBCCurrency } from '@keplr-wallet/types';
-import { makeIBCMinimalDenom } from '../../utils/ibc';
-import cn from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { Img } from 'src/components/common/Img';
+import { ButtonFaint } from 'src/components/layouts/Buttons';
+import { Text, TitleText } from 'src/components/Texts';
+import { IBCAssetInfos } from 'src/config';
+import { TransferDialog } from 'src/dialogs/Transfer';
+import { colorPrimary, colorWhiteRegular } from 'src/emotionStyles/colors';
+import { useStore } from 'src/stores';
+import { makeIBCMinimalDenom } from 'src/utils/ibc';
 
 const tableWidths = ['50%', '25%', '12.5%', '12.5%'];
-export const AssetBalancesList: FunctionComponent = observer(() => {
+
+export const AssetBalancesList = observer(function AssetBalancesList() {
 	const { chainStore, queriesStore, accountStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
@@ -64,7 +68,7 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 
 	const close = () => setDialogState(v => ({ ...v, open: false }));
 	return (
-		<React.Fragment>
+		<>
 			{dialogState.open ? (
 				<TransferDialog
 					dialogStyle={{ minHeight: '533px', maxHeight: '540px', minWidth: '656px', maxWidth: '656px' }}
@@ -77,10 +81,13 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 					isWithdraw={dialogState.isWithdraw}
 				/>
 			) : null}
-			<h5 className="mb-5">Osmosis Assets</h5>
-			<table className="w-full">
-				<AssetBalanceTableHeader />
-				<tbody className="w-full">
+
+			<TitleText>Osmosis Assets</TitleText>
+
+			<table style={{ width: '100%' }}>
+				<AssetBalanceHeader />
+
+				<tbody style={{ width: '100%' }}>
 					{chainStore.current.currencies
 						.filter(cur => !cur.coinMinimalDenom.includes('/'))
 						.map(cur => {
@@ -113,28 +120,28 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 						})();
 
 						/*
-						if (
-							bal.chainInfo.chainId.startsWith('regen-') &&
-							(window.location.hostname.startsWith('app.') || window.location.hostname.startsWith('staging.'))
-						) {
-							// Channel of Regen network would not be public yet.
-							// By the hard coding, just do not show the deposit/withdraw button for the regen network.
-							return (
-								<AssetBalanceRow
-									key={currency.coinMinimalDenom}
-									chainName={bal.chainInfo.chainName}
-									coinDenom={coinDenom}
-									currency={currency}
-									balance={bal.balance
-										.hideDenom(true)
-										.trim(true)
-										.maxDecimals(6)
-										.toString()}
-									showCommingSoon={true}
-								/>
-							);
-						}
-						 */
+			if (
+				bal.chainInfo.chainId.startsWith('regen-') &&
+				(window.location.hostname.startsWith('app.') || window.location.hostname.startsWith('staging.'))
+			) {
+				// Channel of Regen network would not be public yet.
+				// By the hard coding, just do not show the deposit/withdraw button for the regen network.
+				return (
+					<AssetBalanceRow
+						key={currency.coinMinimalDenom}
+						chainName={bal.chainInfo.chainName}
+						coinDenom={coinDenom}
+						currency={currency}
+						balance={bal.balance
+							.hideDenom(true)
+							.trim(true)
+							.maxDecimals(6)
+							.toString()}
+						showCommingSoon={true}
+					/>
+				);
+			}
+			 */
 
 						return (
 							<AssetBalanceRow
@@ -172,80 +179,120 @@ export const AssetBalancesList: FunctionComponent = observer(() => {
 					})}
 				</tbody>
 			</table>
-		</React.Fragment>
+		</>
 	);
 });
 
-const AssetBalanceRow: FunctionComponent<{
+function AssetBalanceHeader() {
+	return (
+		<thead>
+			<TableHeaderRow>
+				<TableData style={{ width: tableWidths[0] }}>
+					<Text size="sm">Asset / Chain</Text>
+				</TableData>
+				<TableData style={{ paddingRight: 80, width: tableWidths[1], justifyContent: 'flex-end' }}>
+					<Text size="sm">Balance</Text>
+				</TableData>
+				<TableData style={{ width: tableWidths[2] }}>
+					<Text size="sm">IBC Deposit</Text>
+				</TableData>
+				<TableData style={{ width: tableWidths[3] }}>
+					<Text size="sm">IBC Withdraw</Text>
+				</TableData>
+			</TableHeaderRow>
+		</thead>
+	);
+}
+
+const TableHeaderRow = styled.tr`
+	display: flex;
+	align-items: center;
+	width: 100%;
+	padding-left: 50px;
+	padding-right: 60px;
+	border-bottom-width: 1px;
+	background-color: ${colorPrimary};
+	border-top-left-radius: 1rem;
+	border-top-right-radius: 1rem;
+	color: ${colorWhiteRegular};
+`;
+
+interface AssetBalanceRowProps {
 	chainName: string;
 	coinDenom: string;
 	currency: AppCurrency;
 	balance: string;
 	onDeposit?: () => void;
 	onWithdraw?: () => void;
-	showCommingSoon?: boolean;
-}> = ({ chainName, coinDenom, currency, balance, onDeposit, onWithdraw, showCommingSoon }) => {
-	let i = 0;
-	return (
-		<tr style={{ height: '4.5rem' }} className="flex items-center w-full border-b pl-12.5 pr-15">
-			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				<Img loadingSpin className="w-10 h-10" src={currency.coinImageUrl} />
-				<p className="ml-5">{chainName ? `${chainName} - ${coinDenom.toUpperCase()}` : coinDenom.toUpperCase()}</p>
-			</td>
-			<td className="flex items-center justify-end pl-2 pr-20 py-4" style={{ width: tableWidths[i++] }}>
-				<p>{balance}</p>
-			</td>
-			<td
-				className={cn('flex items-center px-2 py-3', {
-					relative: showCommingSoon,
-				})}
-				style={{ width: tableWidths[i++] }}>
-				{!showCommingSoon && onDeposit ? (
-					<button onClick={onDeposit} className="flex items-center cursor-pointer hover:opacity-75">
-						<p className="text-sm text-secondary-200">Deposit</p>
-						<Img src={'/public/assets/Icons/Right.svg'} />
-					</button>
-				) : null}
-				{showCommingSoon ? (
-					<div
-						className="absolute text-secondary-200 pl-2"
-						style={{
-							width: '200px',
-						}}>
-						🌲 LBP is live 🌲
-					</div>
-				) : null}
-			</td>
-			<td className="flex items-center px-2 py-3" style={{ width: tableWidths[i++] }}>
-				{!showCommingSoon && onWithdraw ? (
-					<button onClick={onWithdraw} className="flex items-center cursor-pointer hover:opacity-75">
-						<p className="text-sm text-secondary-200">Withdraw</p>
-						<Img src={'/public/assets/Icons/Right.svg'} />
-					</button>
-				) : null}
-			</td>
-		</tr>
-	);
-};
+	showComingSoon?: boolean;
+}
 
-const AssetBalanceTableHeader: FunctionComponent = () => {
-	let i = 0;
+function AssetBalanceRow({
+	chainName,
+	coinDenom,
+	currency,
+	balance,
+	onDeposit,
+	onWithdraw,
+	showComingSoon,
+}: AssetBalanceRowProps) {
 	return (
-		<thead>
-			<tr className="flex items-center w-full border-b pl-12.5 pr-15 bg-card rounded-t-2xl w-full text-white-mid">
-				<td className="flex items-center px-2 py-4" style={{ width: tableWidths[i++] }}>
-					<p className="text-sm leading-normal">Asset / Chain</p>
-				</td>
-				<td className="flex items-center justify-end pl-2 pr-20 py-4" style={{ width: tableWidths[i++] }}>
-					<p className="text-sm leading-normal">Balance</p>
-				</td>
-				<td className="flex items-center px-2 py-4" style={{ width: tableWidths[i++] }}>
-					<p className="text-sm leading-normal">IBC Deposit</p>
-				</td>
-				<td className="flex items-center px-2 py-4" style={{ width: tableWidths[i++] }}>
-					<p className="text-sm leading-normal">IBC Withdraw</p>
-				</td>
-			</tr>
-		</thead>
+		<AssetBalanceRowContainer>
+			<TableData style={{ width: tableWidths[0] }}>
+				<Img loadingSpin style={{ width: `2.5rem`, height: `2.5rem`, marginRight: 20 }} src={currency.coinImageUrl} />
+				<Text emphasis="medium">
+					{chainName ? `${chainName} - ${coinDenom.toUpperCase()}` : coinDenom.toUpperCase()}
+				</Text>
+			</TableData>
+
+			<TableData style={{ paddingRight: 80, width: tableWidths[1], justifyContent: 'flex-end' }}>
+				<Text emphasis="medium">{balance}</Text>
+			</TableData>
+
+			<TableData style={{ width: tableWidths[2], position: showComingSoon ? 'relative' : 'initial' }}>
+				{!showComingSoon && onDeposit ? (
+					<ButtonFaint onClick={onDeposit} style={{ display: 'flex', alignItems: 'center' }}>
+						<Text size="sm" color="gold">
+							Deposit
+						</Text>
+						<Img src={'/public/assets/Icons/Right.svg'} />
+					</ButtonFaint>
+				) : null}
+				{showComingSoon ? <ComingSoonText color="gold">🌲 LBP is live 🌲</ComingSoonText> : null}
+			</TableData>
+
+			<TableData style={{ width: tableWidths[3] }}>
+				{!showComingSoon && onWithdraw ? (
+					<ButtonFaint onClick={onWithdraw} style={{ display: 'flex', alignItems: 'center' }}>
+						<Text size="sm" color="gold">
+							Withdraw
+						</Text>
+						<Img src={'/public/assets/Icons/Right.svg'} />
+					</ButtonFaint>
+				) : null}
+			</TableData>
+		</AssetBalanceRowContainer>
 	);
-};
+}
+
+const ComingSoonText = styled(Text)`
+	position: absolute;
+	padding-left: 8px;
+	width: 200px;
+`;
+
+const TableData = styled.td`
+	display: flex;
+	align-items: center;
+	padding: 16px 8px;
+`;
+
+const AssetBalanceRowContainer = styled.tr`
+	display: flex;
+	width: 100%;
+	height: 4.5rem;
+	align-items: center;
+	border-bottom-width: 1px;
+	padding-left: 50px;
+	padding-right: 60px;
+`;
