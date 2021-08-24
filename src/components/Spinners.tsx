@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import React, { SVGAttributes } from 'react';
+import { colorWhiteHigh } from 'src/emotionStyles/colors';
 
 interface Props extends SVGAttributes<SVGSVGElement> {
 	size?: number;
@@ -21,6 +22,7 @@ const SpinnerSvg = styled.svg`
 	height: 1.25rem;
 	width: 1.25rem;
 	fill: none;
+	color: ${colorWhiteHigh};
 
 	& > circle {
 		opacity: 0.25;
