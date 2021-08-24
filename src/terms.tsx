@@ -18,12 +18,12 @@ export const Terms: FunctionComponent = () => {
 				// just do nothing here
 			}}>
 			Osmosis is a decentralized peer-to-peer blockchain that people can use to create liquidity and trade IBC enabled
-			tokens. The Osmosis blockchain uses of which is made up of free, public, open-source software. Your use of Osmosis
-			involves various risks, including, but not limited to, losses while digital assets are being supplied to Osmosis
+			tokens. The Osmosis blockchain is made up of free, public, and open-source software. Your use of Osmosis
+			involves various risks, including, but not limited, to losses while digital assets are being supplied to Osmosis
 			pools and losses due to the fluctuation of prices of tokens in a trading pair or liquidity pool, including
-			Impermance Loss. Before using any pool on the Osmosis blockchain, you should review the relevant documentation to
+			Impermanence Loss. Before using any pool on the Osmosis blockchain, you should review the relevant documentation to
 			make sure you understand how Osmosis works, and the pool you use on Osmosis works. Additionally, just as you can
-			access email email protocols such as SMTP through multiple email clients, you can access pools on Osmosis through
+			access email protocols, such as SMTP, through multiple email clients, you can access pools on Osmosis through
 			several web or mobile interfaces. You are responsible for doing your own diligence on those interfaces to
 			understand the fees and risks they present.
 			<br />
@@ -33,7 +33,7 @@ export const Terms: FunctionComponent = () => {
 			the Osmosis protocol, it does not provide, own, or control the Osmosis protocol, which is run by a decentralized
 			validator set. Upgrades and modifications to the protocol are managed in a community-driven way by holders of the
 			OSMO governance token. No developer or entity involved in creating the Osmosis protocol will be liable for any
-			claims or damages whatsoever associated with your use, inability to use, or your interaction with other users of,
+			claims or damages whatsoever associated with your use, inability to use, or your interaction with other users of
 			the Osmosis protocol, including any direct, indirect, incidental, special, exemplary, punitive or consequential
 			damages, or loss of profits, cryptocurrencies, tokens, or anything else of value.
 		</TermsDialog>
