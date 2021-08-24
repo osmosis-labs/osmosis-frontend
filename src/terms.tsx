@@ -21,7 +21,7 @@ export const Terms: FunctionComponent = () => {
 			tokens. The Osmosis blockchain is made up of free, public, and open-source software. Your use of Osmosis
 			involves various risks, including, but not limited, to losses while digital assets are being supplied to Osmosis
 			pools and losses due to the fluctuation of prices of tokens in a trading pair or liquidity pool, including
-			Impermanent Loss. Before using any pool on the Osmosis blockchain, you should review the relevant documentation to
+			Impermanence Loss. Before using any pool on the Osmosis blockchain, you should review the relevant documentation to
 			make sure you understand how Osmosis works, and the pool you use on Osmosis works. Additionally, just as you can
 			access email protocols, such as SMTP, through multiple email clients, you can access pools on Osmosis through
 			several web or mobile interfaces. You are responsible for doing your own diligence on those interfaces to
