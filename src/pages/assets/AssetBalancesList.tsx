@@ -84,7 +84,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 
 			<TitleText>Osmosis Assets</TitleText>
 
-			<table style={{ width: '100%' }}>
+			<table style={{ width: '100%', paddingBottom: 32 }}>
 				<AssetBalanceHeader />
 
 				<tbody style={{ width: '100%' }}>
