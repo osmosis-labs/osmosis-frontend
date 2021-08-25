@@ -7,7 +7,7 @@ import { ButtonFaint } from 'src/components/layouts/Buttons';
 import { Text, TitleText } from 'src/components/Texts';
 import { IBCAssetInfos } from 'src/config';
 import { TransferDialog } from 'src/dialogs/Transfer';
-import { colorPrimary, colorWhiteRegular } from 'src/emotionStyles/colors';
+import { TableData, TableHeaderRow } from 'src/pages/assets/components/Table';
 import { useStore } from 'src/stores';
 import { makeIBCMinimalDenom } from 'src/utils/ibc';
 
@@ -204,19 +204,6 @@ function AssetBalanceHeader() {
 	);
 }
 
-const TableHeaderRow = styled.tr`
-	display: flex;
-	align-items: center;
-	width: 100%;
-	padding-left: 50px;
-	padding-right: 60px;
-	border-bottom-width: 1px;
-	background-color: ${colorPrimary};
-	border-top-left-radius: 1rem;
-	border-top-right-radius: 1rem;
-	color: ${colorWhiteRegular};
-`;
-
 interface AssetBalanceRowProps {
 	chainName: string;
 	coinDenom: string;
@@ -279,12 +266,6 @@ const ComingSoonText = styled(Text)`
 	position: absolute;
 	padding-left: 8px;
 	width: 200px;
-`;
-
-const TableData = styled.td`
-	display: flex;
-	align-items: center;
-	padding: 16px 8px;
 `;
 
 const AssetBalanceRowContainer = styled.tr`
