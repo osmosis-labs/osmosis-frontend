@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import React, { SVGAttributes } from 'react';
+import { cssAnimateSpin } from 'src/emotionStyles/animations';
 import { colorWhiteHigh } from 'src/emotionStyles/colors';
 
 interface Props extends SVGAttributes<SVGSVGElement> {
@@ -16,9 +17,7 @@ export function Spinner({ size = 24, ...props }: Props) {
 }
 
 const SpinnerSvg = styled.svg`
-	animation: spin 1s linear infinite;
-	margin-left: -4px;
-	margin-right: 12px;
+	${cssAnimateSpin()};
 	height: 1.25rem;
 	width: 1.25rem;
 	fill: none;
