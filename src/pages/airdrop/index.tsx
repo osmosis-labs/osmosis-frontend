@@ -1,26 +1,41 @@
+import styled from '@emotion/styled';
 import React, { FunctionComponent } from 'react';
+import { CenterSelf } from 'src/components/layouts/Containers';
+import { colorPrimaryDark } from 'src/emotionStyles/colors';
+import { AirdropMissions } from './AirdropMissions';
 import { AirdropOverview } from './AirdropOverview';
 import { MyAirdropProgress } from './MyAirdropProgress';
-import { useAirdropData } from './useAirdropData';
-import { AirdropMissions } from './AirdropMissions';
 
 export const AirdropPage: FunctionComponent = () => {
-	const airdropData = useAirdropData();
 	return (
-		<div className="w-full h-full">
-			<div className="mx-15">
-				<div className="my-10 max-w-max mx-auto">
+		<AirdropPageContainer>
+			<AirdropOverviewSection>
+				<CenterSelf>
 					<AirdropOverview />
-				</div>
-			</div>
-			<div className="mt-9 px-15 py-12.5 bg-surface">
-				<div className="max-w-max mx-auto">
+				</CenterSelf>
+			</AirdropOverviewSection>
+
+			<ProgressSection>
+				<CenterSelf>
 					<MyAirdropProgress />
-					<div className="mt-9">
-						<AirdropMissions />
-					</div>
-				</div>
-			</div>
-		</div>
+					<AirdropMissions style={{ marginTop: 48 }} />
+				</CenterSelf>
+			</ProgressSection>
+		</AirdropPageContainer>
 	);
 };
+
+const AirdropPageContainer = styled.div`
+	width: 100%;
+	height: 100%;
+`;
+
+const AirdropOverviewSection = styled.div`
+	margin: 40px 60px;
+`;
+
+const ProgressSection = styled.div`
+	margin-top: 36px;
+	padding: 50px 60px;
+	background-color: ${colorPrimaryDark};
+`;

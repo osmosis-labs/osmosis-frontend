@@ -27,12 +27,16 @@ const FontWeightByBoldness = {
 } as const;
 
 const RgbByColor = {
+	primary: `138, 134, 255`,
 	white: `255, 255, 255`,
 	gold: `196, 164, 106`,
-	primary: `138, 134, 255`,
+	green: `52, 239, 82`,
+	red: `239, 52, 86`,
 	black: `0, 0, 0`,
 	/**TODO: add colors to be used in Texts */
 };
+
+const solidColorList = ['gold', 'primary', 'black', 'green', 'red'];
 
 interface OsmosisTextProps {
 	size?: keyof typeof FontSizeBySize | number | string;
@@ -58,9 +62,7 @@ function mapTextPropsToCssProps({
 	const fontTypeProps = ['2xl', 'xl', 'lg'].some(largeSize => size === largeSize)
 		? { lineHeight: 1, fontFamily: `${fontType ?? 'Poppins'}, ui-sans-serif, system-ui` }
 		: { lineHeight: undefined, fontFamily: `${fontType ?? 'Inter'}, ui-sans-serif, system-ui` };
-	const textOpacity = ['gold', 'primary', 'black'].some(solidColor => solidColor === color)
-		? 1
-		: OpacityByEmphasis[emphasis];
+	const textOpacity = solidColorList.some(solidColor => solidColor === color) ? 1 : OpacityByEmphasis[emphasis];
 	return {
 		...fontTypeProps,
 		fontSize: FontSizeBySize[size as keyof typeof FontSizeBySize] ?? size,

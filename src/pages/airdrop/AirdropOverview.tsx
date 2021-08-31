@@ -1,12 +1,14 @@
-import React, { FunctionComponent } from 'react';
-import { OverviewLabelValue } from '../../components/common/OverviewLabelValue';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import dayjs from 'dayjs';
-import { DisplayLeftTime } from '../../components/common/DisplayLeftTime';
+import styled from '@emotion/styled';
 import { Dec, IntPretty } from '@keplr-wallet/unit';
+import dayjs from 'dayjs';
+import { observer } from 'mobx-react-lite';
+import React, { useEffect } from 'react';
+import { DisplayLeftTime } from 'src/components/common/DisplayLeftTime';
+import { OverviewLabelValue } from 'src/components/common/OverviewLabelValue';
+import { SubTitleText, TitleText } from 'src/components/Texts';
+import { useStore } from 'src/stores';
 
-export const AirdropOverview: FunctionComponent = observer(() => {
+export const AirdropOverview = observer(function AirdropOverview() {
 	const { chainStore, accountStore, queriesStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
@@ -17,47 +19,43 @@ export const AirdropOverview: FunctionComponent = observer(() => {
 		.amountOf(chainStore.current.stakeCurrency.coinMinimalDenom);
 
 	return (
-		<section className="w-full">
-			<div className="flex items-center mb-6">
-				<h4 className="mr-0.5">Claim Airdrop</h4>
-			</div>
-			<div className="grid grid-cols-3">
+		<AirdropOverviewContainer>
+			<TitleText size="2xl">Claim Airdrop</TitleText>
+			<OverviewList>
 				<OverviewLabelValue label="Unclaimed Airdrop">
-					<div className="inline">
-						<h4 className="inline">
+					<span>
+						<TitleText size="2xl" style={{ display: 'inline' }}>
 							{unclaimed
 								.trim(true)
 								.shrink(true)
 								.hideDenom(true)
 								.toString()}
-						</h4>
-						<h6 className="inline"> {unclaimed.currency.coinDenom}</h6>
-					</div>
+						</TitleText>
+						<SubTitleText style={{ display: 'inline' }}> {unclaimed.currency.coinDenom}</SubTitleText>
+					</span>
 				</OverviewLabelValue>
 				<DisplayCliff />
-			</div>
-		</section>
+			</OverviewList>
+		</AirdropOverviewContainer>
 	);
 });
 
-function padTwoDigit(num: number): string {
-	// Expect that num is integer
-	if (num <= 0) {
-		return '00';
-	}
-	if (num <= 9) {
-		return '0' + num;
-	}
-	return num.toString();
-}
+const AirdropOverviewContainer = styled.section`
+	width: 100%;
+`;
 
-const DisplayCliff: FunctionComponent = observer(() => {
+const OverviewList = styled.div`
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+`;
+
+const DisplayCliff = observer(function DisplayCliff() {
 	const { chainStore, queriesStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 
 	const [dummy, setRerender] = React.useState(true);
-	React.useEffect(() => {
+	useEffect(() => {
 		const interval = setInterval(() => {
 			setRerender(v => !v);
 		}, 1000);
@@ -70,25 +68,8 @@ const DisplayCliff: FunctionComponent = observer(() => {
 
 	const decayStarted = dayjs(timeUntilDecay).isBefore(Date.now());
 
-	const untilDecay = (() => {
-		const delta = dayjs.duration(dayjs(timeUntilDecay).diff(dayjs(new Date()), 'second'), 'second');
-		if (delta.asSeconds() <= 0) {
-			return '00-00-00';
-		}
-		return `${padTwoDigit(delta.months() * 30 + delta.days())}-${padTwoDigit(delta.hours())}-${padTwoDigit(
-			delta.minutes()
-		)}`;
-	})();
-
-	const untilDecayEnd = (() => {
-		const delta = dayjs.duration(dayjs(timeUntilDecayEnd).diff(dayjs(new Date()), 'second'), 'second');
-		if (delta.asSeconds() <= 0) {
-			return '00-00-00';
-		}
-		return `${padTwoDigit(delta.months() * 30 + delta.days())}-${padTwoDigit(delta.hours())}-${padTwoDigit(
-			delta.minutes()
-		)}`;
-	})();
+	const untilDecay = formatTimeUntil(timeUntilDecay);
+	const untilDecayEnd = formatTimeUntil(timeUntilDecayEnd);
 
 	const [day, hour, minute] = decayStarted ? untilDecayEnd.split('-') : untilDecay.split('-');
 
@@ -110,23 +91,44 @@ const DisplayCliff: FunctionComponent = observer(() => {
 	})();
 
 	return (
-		<React.Fragment>
+		<>
 			{decayStarted ? (
 				<OverviewLabelValue label="Current Decay Factor">
-					<div className="inline">
-						<h4 className="inline">
+					<span>
+						<TitleText size="2xl" style={{ display: 'inline' }}>
 							{decayingFactor
 								.maxDecimals(1)
 								.trim(true)
 								.toString()}
-						</h4>
-						<h6 className="inline">{' %'}</h6>
-					</div>
+						</TitleText>
+						<SubTitleText style={{ display: 'inline' }}> {' %'}</SubTitleText>
+					</span>
 				</OverviewLabelValue>
 			) : null}
 			<OverviewLabelValue label={decayStarted ? 'Time to Airdrop Decay Completion' : 'Time to Airdrop Decay'}>
 				<DisplayLeftTime day={day} hour={hour} minute={minute} />
 			</OverviewLabelValue>
-		</React.Fragment>
+		</>
 	);
 });
+
+function formatTimeUntil(date: Date) {
+	const delta = dayjs.duration(dayjs(date).diff(dayjs(new Date()), 'second'), 'second');
+	if (delta.asSeconds() <= 0) {
+		return '00-00-00';
+	}
+	return `${padTwoDigit(delta.months() * 30 + delta.days())}-${padTwoDigit(delta.hours())}-${padTwoDigit(
+		delta.minutes()
+	)}`;
+}
+
+function padTwoDigit(num: number): string {
+	// Expect that num is integer
+	if (num <= 0) {
+		return '00';
+	}
+	if (num <= 9) {
+		return '0' + num;
+	}
+	return num.toString();
+}

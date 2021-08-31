@@ -1,6 +1,11 @@
+import moment from 'dayjs';
 import React from 'react';
 
-import moment from 'dayjs';
+interface AirdropState {
+	claimed: number;
+	total: number;
+	cliff: number;
+}
 
 const defaultState = {
 	claimed: 153921200,
@@ -8,17 +13,11 @@ const defaultState = {
 	cliff: moment()
 		.add(Math.random() * 96 + 48, 'hour')
 		.valueOf(),
-} as TAirdopState;
+} as AirdropState;
 
-export const useAirdropData: () => TAirdopState = () => {
+export function useAirdropData() {
 	// TODO : @Thunnini fetch data
-	const [state, setState] = React.useState<TAirdopState>(defaultState);
+	const [state, setState] = React.useState<AirdropState>(defaultState);
 
 	return state;
-};
-
-export interface TAirdopState {
-	claimed: number;
-	total: number;
-	cliff: number;
 }

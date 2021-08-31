@@ -1,8 +1,10 @@
-import React, { FunctionComponent } from 'react';
-import cn from 'clsx';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
+import styled from '@emotion/styled';
 import { Dec } from '@keplr-wallet/unit';
+import { observer } from 'mobx-react-lite';
+import React, { HTMLAttributes } from 'react';
+import { SubTitleText, Text, TitleText } from 'src/components/Texts';
+import { colorWhiteFaint } from 'src/emotionStyles/colors';
+import { useStore } from 'src/stores';
 
 export const ActionToDescription: { [action: string]: string } = {
 	addLiquidity: 'Add liquidity to a pool',
@@ -11,7 +13,7 @@ export const ActionToDescription: { [action: string]: string } = {
 	delegate: 'Stake OSMO',
 };
 
-export const AirdropMissions: FunctionComponent = observer(() => {
+export const AirdropMissions = observer(function AirdropMissions(props: HTMLAttributes<HTMLDivElement>) {
 	const { chainStore, queriesStore, accountStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
@@ -24,9 +26,9 @@ export const AirdropMissions: FunctionComponent = observer(() => {
 		.equals(new Dec(0));
 
 	return (
-		<div className="w-full">
-			<h5>Missions</h5>
-			<ul className="flex flex-col gap-2.5 mt-7.5">
+		<AirdropMissionsContainer {...props}>
+			<TitleText>Missions</TitleText>
+			<MissionCardList>
 				<MissionCard
 					num={0}
 					complete={!isIneligible}
@@ -72,28 +74,50 @@ export const AirdropMissions: FunctionComponent = observer(() => {
 							/>
 						);
 					})}
-			</ul>
-		</div>
+			</MissionCardList>
+		</AirdropMissionsContainer>
 	);
 });
 
-const MissionCard: FunctionComponent<{
+const AirdropMissionsContainer = styled.div`
+	width: 100%;
+`;
+
+const MissionCardList = styled.ul`
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+`;
+
+interface MissionCardProps {
 	num: number;
 	description: string;
 	complete: boolean;
 	ineligible: boolean;
-}> = ({ num, description, complete, ineligible }) => {
+}
+
+function MissionCard({ num, description, complete, ineligible }: MissionCardProps) {
 	return (
-		<li className="w-full rounded-2xl border border-white-faint py-5 px-7.5">
-			<div className="flex justify-between items-center">
-				<div>
-					<p className="mb-1.5">Mission #{num}</p>
-					<h6>{description}</h6>
-				</div>
-				<h6 className={cn(complete ? 'text-pass' : 'text-missionError')}>
-					{ineligible ? 'Ineligible' : complete ? 'Complete' : 'Not Complete'}
-				</h6>
+		<MissionCardContainer>
+			<div>
+				<Text emphasis="high" pb={8}>
+					Mission #{num}
+				</Text>
+				<SubTitleText pb={0}>{description}</SubTitleText>
 			</div>
-		</li>
+			<SubTitleText color={complete ? 'green' : 'red'}>
+				{ineligible ? 'Ineligible' : complete ? 'Complete' : 'Not Complete'}
+			</SubTitleText>
+		</MissionCardContainer>
 	);
-};
+}
+
+const MissionCardContainer = styled.li`
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	border-radius: 1rem;
+	border: 1px solid ${colorWhiteFaint};
+	padding: 20px 30px;
+`;
