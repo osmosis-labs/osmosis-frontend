@@ -90,7 +90,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 			<div className="text-white-high w-full h-full">
 				<h5 className="mb-9">Bond LP tokens</h5>
 				<div className="mb-7.5">
-					<p>Bonding period</p>
+					<p>Unbonding period</p>
 				</div>
 				<ul className="grid grid-cols-3 gap-9 mb-6">
 					{lockableDurations.map((duration, i) => {

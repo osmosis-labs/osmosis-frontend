@@ -55,7 +55,7 @@ function LockupTableHeader() {
 		<thead>
 			<TableHeadRow>
 				<TableData width={tableWidths[0]}>
-					<Text>Bonding Duration</Text>
+					<Text>Unbonding Duration</Text>
 				</TableData>
 				<TableData width={tableWidths[1]}>
 					<Text>Current APR</Text>

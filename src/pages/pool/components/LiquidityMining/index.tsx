@@ -42,9 +42,9 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 				<div>
 					<TitleText weight="semiBold">Liquidity Mining</TitleText>
 					<Text>
-						Commit to bonding your LP tokens for a certain period of time to
+						Bond liquidity to various minimum unbonding period to earn
 						<br />
-						earn OSMO tokens and participate in Pool governance
+						OSMO liquidity reward and swap fees
 					</Text>
 				</div>
 				<AvailableLpColumn>
