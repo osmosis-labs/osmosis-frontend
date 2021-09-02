@@ -22,10 +22,9 @@ export const AssetsOverview: FunctionComponent<{ title: string }> = observer(({ 
 	const unlockableCoins = queries.osmosis.queryUnlockableCoins.get(account.bech32Address).unlockableCoins;
 	const lockedBalancePrice = calcTotalFiatValue(lockedCoins.concat(unlockableCoins));
 
-	const delegatedBalance = queries.cosmos.queryDelegations
-		.getQueryBech32Address(account.bech32Address)
-		.delegationBalances.map(delegation => delegation.balance);
-	const delegatedBalancePrice = calcTotalFiatValue(delegatedBalance);
+	const delegatedBalance = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address).total;
+	const unbondingBanace = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(account.bech32Address).total;
+	const delegatedBalancePrice = calcTotalFiatValue([delegatedBalance, unbondingBanace]);
 
 	function calcTotalFiatValue(balanceList: CoinPretty[]) {
 		let fiatValue = new PricePretty(priceStore.getFiatCurrency('usd')!, new Dec(0));
