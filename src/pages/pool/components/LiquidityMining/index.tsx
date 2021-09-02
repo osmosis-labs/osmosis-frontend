@@ -104,7 +104,7 @@ const LockupBox: FunctionComponent<{
 }> = ({ duration, apy }) => {
 	return (
 		<WellContainer>
-			<TitleText weight="medium">{duration} bonding</TitleText>
+			<TitleText weight="medium">{duration} unbonding</TitleText>
 			<Text color="gold" size="lg">
 				APR {apy}
 			</Text>
