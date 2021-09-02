@@ -84,11 +84,22 @@ export class ObservableQueryGammPoolShare {
 			}
 
 			const share = this.getLockedGammShare(bech32Address, poolId);
+			// Consider the unlockable as the locked too.
+			// Remember that the unlockings are included in the locked.
+			// So, no need to handle the unlockings here
+			const unlockableShare = this.getUnlockableGammShare(bech32Address, poolId);
 
 			const totalShare = pool.totalShare;
 
 			// 백분률로 만들어주기 위해서 마지막에 10^2를 곱한다
-			return new IntPretty(share.quo(totalShare).mul(DecUtils.getPrecisionDec(2))).maxDecimals(2).trim(true);
+			return new IntPretty(
+				share
+					.add(unlockableShare)
+					.quo(totalShare)
+					.mul(DecUtils.getPrecisionDec(2))
+			)
+				.maxDecimals(2)
+				.trim(true);
 		}
 	);
 

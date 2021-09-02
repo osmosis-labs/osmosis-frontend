@@ -19,7 +19,8 @@ export const AssetsOverview: FunctionComponent<{ title: string }> = observer(({ 
 	const availableBalancePrice = calcTotalFiatValue(availableBalanceList);
 
 	const lockedCoins = queries.osmosis.queryLockedCoins.get(account.bech32Address).lockedCoins;
-	const lockedBalancePrice = calcTotalFiatValue(lockedCoins);
+	const unlockableCoins = queries.osmosis.queryUnlockableCoins.get(account.bech32Address).unlockableCoins;
+	const lockedBalancePrice = calcTotalFiatValue(lockedCoins.concat(unlockableCoins));
 
 	const delegatedBalance = queries.cosmos.queryDelegations
 		.getQueryBech32Address(account.bech32Address)
