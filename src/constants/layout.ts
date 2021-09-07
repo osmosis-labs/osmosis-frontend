@@ -51,6 +51,11 @@ export const LAYOUT = {
 						TEXT: 'Vote',
 						LINK: 'https://wallet.keplr.app/#/osmosis/governance',
 					},
+					STATS: {
+						ICON: '/public/assets/Icons/Chart.svg',
+						TEXT: 'Stats',
+						LINK: 'https://info.osmosis.zone',
+					},
 			  }
 			: {
 					GOVERNANCE: {
@@ -59,6 +64,11 @@ export const LAYOUT = {
 						TEXT: 'Governance',
 						ROUTE: '/governance',
 						SELECTED_CHECK: [/\/governance[.]?/],
+					},
+					STATS: {
+						ICON: '/public/assets/Icons/Chart.svg',
+						TEXT: 'Stats',
+						LINK: 'https://info.osmosis.zone',
 					},
 			  }),
 	},
