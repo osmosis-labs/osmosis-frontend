@@ -116,7 +116,7 @@ const LockupTableRow = observer(function LockupTableRow({ duration, apy, lockup 
 								setIsUnlocking(true);
 
 								// XXX: Due to the block gas limit, restrict the number of lock id to included in the one tx.
-								await account.osmosis.sendBeginUnlockingMsg(lockup.lockIds.slice(0, 2), '', tx => {
+								await account.osmosis.sendBeginUnlockingMsg(lockup.lockIds.slice(0, 3), '', tx => {
 									setIsUnlocking(false);
 
 									if (tx.code) {
