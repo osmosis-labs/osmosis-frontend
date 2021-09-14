@@ -501,13 +501,13 @@ export class QueriedPoolBase {
 	 */
 	readonly computeTotalValueLocked = computedFn(
 		(
-			priceStore: { calculatePrice(vsCurrrency: string, coin: CoinPretty): PricePretty | undefined },
+			priceStore: { calculatePrice(coin: CoinPretty, vsCurrrency?: string): PricePretty | undefined },
 			fiatCurrency: FiatCurrency
 		): PricePretty => {
 			let price = new PricePretty(fiatCurrency, new Dec(0));
 
 			for (const poolAsset of this.poolAssets) {
-				const poolPrice = priceStore.calculatePrice(fiatCurrency.currency, poolAsset.amount);
+				const poolPrice = priceStore.calculatePrice(poolAsset.amount, fiatCurrency.currency);
 				if (poolPrice) {
 					price = price.add(poolPrice);
 				}

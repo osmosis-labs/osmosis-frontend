@@ -1,8 +1,8 @@
-import { getKeplrFromWindow, IBCCurrencyRegsitrar, QueriesStore } from '@keplr-wallet/stores';
+import { IBCCurrencyRegsitrar, QueriesStore } from '@keplr-wallet/stores';
 import { AccountStore } from '@keplr-wallet/stores';
 import { DenomHelper, IndexedDBKVStore } from '@keplr-wallet/common';
 import { ChainInfoWithExplorer, ChainStore } from './chain';
-import { AppCurrency, ChainInfo } from '@keplr-wallet/types';
+import { AppCurrency, ChainInfo, Keplr } from '@keplr-wallet/types';
 import { EmbedChainInfos, IBCAssetInfos } from '../config';
 import { QueriesWithCosmosAndOsmosis } from './osmosis/query';
 import { AccountWithCosmosAndOsmosis } from './osmosis/account';
@@ -12,6 +12,72 @@ import { LPCurrencyRegistrar } from './osmosis/currency-registrar';
 import { ChainInfoInner } from '@keplr-wallet/stores';
 import { PoolIntermediatePriceStore } from './price';
 import { IBCTransferHistoryStore } from './ibc-history';
+import { BroadcastMode, StdTx } from '@cosmjs/launchpad';
+import Axios from 'axios';
+import { KeplrWalletConnect } from '@keplr-wallet/wc-client';
+import QRCodeModal from '@walletconnect/qrcode-modal';
+import WalletConnect from '@walletconnect/client';
+
+let keplr: Keplr | undefined = undefined;
+let promise: Promise<Keplr> | undefined = undefined;
+
+async function sendTx(chainId: string, stdTx: StdTx, mode: BroadcastMode): Promise<Uint8Array> {
+	const params = {
+		tx: stdTx,
+		mode,
+	};
+
+	const restInstance = Axios.create({
+		baseURL: EmbedChainInfos.find(chainInfo => chainInfo.chainId === chainId)!.rest,
+	});
+
+	const result = await restInstance.post('/txs', params);
+
+	return Buffer.from(result.data.txhash, 'hex');
+}
+
+export function getWCKeplr(): Promise<Keplr> {
+	if (keplr) {
+		return Promise.resolve(keplr);
+	}
+
+	const fn = () => {
+		const connector = new WalletConnect({
+			bridge: 'https://bridge.walletconnect.org', // Required
+			qrcodeModal: QRCodeModal,
+		});
+
+		// Check if connection is already established
+		if (!connector.connected) {
+			// create new session
+			connector.createSession();
+
+			return new Promise<Keplr>((resolve, reject) => {
+				connector.on('connect', error => {
+					if (error) {
+						reject(error);
+					} else {
+						keplr = new KeplrWalletConnect(connector, {
+							sendTx,
+						});
+						resolve(keplr);
+					}
+				});
+			});
+		} else {
+			keplr = new KeplrWalletConnect(connector, {
+				sendTx,
+			});
+			return Promise.resolve(keplr);
+		}
+	};
+
+	if (!promise) {
+		promise = fn();
+	}
+
+	return promise;
+}
 
 export class RootStore {
 	public readonly chainStore: ChainStore;
@@ -34,16 +100,16 @@ export class RootStore {
 		this.queriesStore = new QueriesStore(
 			new IndexedDBKVStore('store_web_queries'),
 			this.chainStore,
-			getKeplrFromWindow,
+			getWCKeplr,
 			QueriesWithCosmosAndOsmosis
 		);
 
 		this.accountStore = new AccountStore(window, AccountWithCosmosAndOsmosis, this.chainStore, this.queriesStore, {
 			defaultOpts: {
 				prefetching: false,
-				suggestChain: true,
+				suggestChain: false,
 				autoInit: false,
-				getKeplr: getKeplrFromWindow,
+				getKeplr: getWCKeplr,
 
 				msgOpts: {
 					ibcTransfer: {
@@ -101,6 +167,7 @@ export class RootStore {
 					locale: 'en-US',
 				},
 			},
+			'usd',
 			this.queriesStore.get(EmbedChainInfos[0].chainId).osmosis.queryGammPools,
 			[
 				{

@@ -140,10 +140,7 @@ const SynthesisItem: FunctionComponent<{
 						<h5>{name}</h5>
 						<h5>
 							{priceStore
-								.calculatePrice(
-									'usd',
-									new CoinPretty(baseCurrency, DecUtils.getPrecisionDec(baseCurrency.coinDecimals))
-								)
+								.calculatePrice(new CoinPretty(baseCurrency, DecUtils.getPrecisionDec(baseCurrency.coinDecimals)))
 								?.toString() ?? '$0'}
 						</h5>
 					</div>

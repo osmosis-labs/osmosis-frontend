@@ -83,6 +83,8 @@ export class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
 			amount: [this.getFeePrimitive()!],
 		};
 	}
+
+	isManual: boolean = false;
 }
 
 export const useFakeFeeConfig = (chainGetter: ChainGetter, chainId: string, gas: number) => {

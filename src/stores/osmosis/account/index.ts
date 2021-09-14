@@ -175,11 +175,12 @@ export class OsmosisAccount {
 		await this.base.sendMsgs(
 			'createPool',
 			[msg],
+			memo,
 			{
 				amount: [],
 				gas: this.base.msgOpts.createPool.gas.toString(),
 			},
-			memo,
+			undefined,
 			tx => {
 				if (tx.code == null || tx.code === 0) {
 					// TODO: Refresh the pools list.
@@ -255,11 +256,12 @@ export class OsmosisAccount {
 					},
 				];
 			},
+			memo,
 			{
 				amount: [],
 				gas: this.base.msgOpts.joinPool.gas.toString(),
 			},
-			memo,
+			undefined,
 			tx => {
 				if (tx.code == null || tx.code === 0) {
 					// TODO: Refresh the pools list.
@@ -324,11 +326,12 @@ export class OsmosisAccount {
 					),
 				];
 			},
+			memo,
 			{
 				amount: [],
 				gas: (this.base.msgOpts.swapExactAmountIn.gas * Math.max(routes.length, 1)).toString(),
 			},
-			memo,
+			undefined,
 			tx => {
 				if (tx.code == null || tx.code === 0) {
 					// TODO: Refresh the pools list.
@@ -388,11 +391,12 @@ export class OsmosisAccount {
 					),
 				];
 			},
+			memo,
 			{
 				amount: [],
 				gas: this.base.msgOpts.swapExactAmountIn.gas.toString(),
 			},
-			memo,
+			undefined,
 			tx => {
 				if (tx.code == null || tx.code === 0) {
 					// TODO: Refresh the pools list.
@@ -450,11 +454,12 @@ export class OsmosisAccount {
 					),
 				];
 			},
+			memo,
 			{
 				amount: [],
 				gas: this.base.msgOpts.swapExactAmountIn.gas.toString(),
 			},
-			memo,
+			undefined,
 			tx => {
 				if (tx.code == null || tx.code === 0) {
 					// TODO: Refresh the pools list.
@@ -531,11 +536,12 @@ export class OsmosisAccount {
 					},
 				];
 			},
+			memo,
 			{
 				amount: [],
 				gas: this.base.msgOpts.exitPool.gas.toString(),
 			},
-			memo,
+			undefined,
 			tx => {
 				if (tx.code == null || tx.code === 0) {
 					// Refresh the balances
@@ -593,11 +599,12 @@ export class OsmosisAccount {
 		await this.base.sendMsgs(
 			'lockTokens',
 			[msg],
+			memo,
 			{
 				amount: [],
 				gas: this.base.msgOpts.lockTokens.gas.toString(),
 			},
-			memo,
+			undefined,
 			tx => {
 				if (tx.code == null || tx.code === 0) {
 					// Refresh the balances
@@ -631,11 +638,12 @@ export class OsmosisAccount {
 		await this.base.sendMsgs(
 			'beginUnlocking',
 			msgs,
+			memo,
 			{
 				amount: [],
 				gas: (msgs.length * this.base.msgOpts.beginUnlocking.gas).toString(),
 			},
-			memo,
+			undefined,
 			tx => {
 				if (tx.code == null || tx.code === 0) {
 					// Refresh the balances
@@ -670,11 +678,12 @@ export class OsmosisAccount {
 		await this.base.sendMsgs(
 			'unlockPeriodLock',
 			msgs,
+			memo,
 			{
 				amount: [],
 				gas: (msgs.length * this.base.msgOpts.unlockPeriodLock.gas).toString(),
 			},
-			memo,
+			undefined,
 			tx => {
 				if (tx.code == null || tx.code === 0) {
 					// Refresh the balances
