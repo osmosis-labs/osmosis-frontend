@@ -50,12 +50,12 @@ export class AccountWithCosmosAndOsmosis extends AccountSetBase<
 		},
 		joinPool: {
 			type: 'osmosis/gamm/join-pool',
-			gas: 750000,
+			gas: 950000,
 			shareCoinDecimals: 18,
 		},
 		exitPool: {
 			type: 'osmosis/gamm/exit-pool',
-			gas: 750000,
+			gas: 950000,
 			shareCoinDecimals: 18,
 		},
 		swapExactAmountIn: {
