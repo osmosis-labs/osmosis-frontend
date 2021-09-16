@@ -1,6 +1,6 @@
 import { getKeplrFromWindow, IBCCurrencyRegsitrar, QueriesStore } from '@keplr-wallet/stores';
 import { AccountStore } from '@keplr-wallet/stores';
-import { DenomHelper, IndexedDBKVStore } from '@keplr-wallet/common';
+import { DenomHelper, IndexedDBKVStore, LocalKVStore } from '@keplr-wallet/common';
 import { ChainInfoWithExplorer, ChainStore } from './chain';
 import { AppCurrency, ChainInfo } from '@keplr-wallet/types';
 import { EmbedChainInfos, IBCAssetInfos } from '../config';
@@ -333,7 +333,7 @@ export class RootStore {
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
 		this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithExplorer>(
-			new IndexedDBKVStore('store_ibc_currency_registrar'),
+			new LocalKVStore('store_ibc_currency_registrar'),
 			24 * 3600 * 1000, // 1 days
 			this.chainStore,
 			this.accountStore,
