@@ -42,7 +42,7 @@ export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> 
 
 	computeAllTotalValueLocked = computedFn(
 		(
-			priceStore: { calculatePrice(vsCurrrency: string, coin: CoinPretty): PricePretty | undefined },
+			priceStore: { calculatePrice(coin: CoinPretty, vsCurrrency?: string): PricePretty | undefined },
 			fiatCurrency: FiatCurrency
 		): PricePretty => {
 			let price = new PricePretty(fiatCurrency, new Dec(0));
@@ -73,7 +73,7 @@ export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> 
 
 	getPoolsDescendingOrderTVL = computedFn(
 		(
-			priceStore: { calculatePrice(vsCurrrency: string, coin: CoinPretty): PricePretty | undefined },
+			priceStore: { calculatePrice(coin: CoinPretty, vsCurrrency?: string): PricePretty | undefined },
 			fiatCurrency: FiatCurrency
 		): QueriedPoolBase[] => {
 			if (!this.response) {

@@ -28,10 +28,11 @@ export class PoolIntermediatePriceStore extends CoinGeckoPriceStore {
 		supportedVsCurrencies: {
 			[vsCurrency: string]: FiatCurrency;
 		},
+		defaultVsCurrency: string,
 		protected readonly queryPool: ObservableQueryPools,
 		intermidiateRoutes: IntermidiateRoute[]
 	) {
-		super(kvStore, supportedVsCurrencies);
+		super(kvStore, supportedVsCurrencies, defaultVsCurrency);
 
 		this._intermidiateRoutes = intermidiateRoutes;
 

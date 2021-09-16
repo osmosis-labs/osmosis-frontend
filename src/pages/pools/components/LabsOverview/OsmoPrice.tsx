@@ -8,7 +8,6 @@ export const OsmoPrice = observer(function OsmoPrice() {
 	const { chainStore, priceStore } = useStore();
 
 	const price = priceStore.calculatePrice(
-		'usd',
 		new CoinPretty(
 			chainStore.current.stakeCurrency,
 			DecUtils.getPrecisionDec(chainStore.current.stakeCurrency.coinDecimals)

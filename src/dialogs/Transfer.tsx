@@ -187,7 +187,8 @@ export const TransferDialog = wrapBaseDialog(
 													amountConfig.currency,
 													recipient,
 													'',
-													{},
+													undefined,
+													undefined,
 													{
 														onBroadcasted: (txHash: Uint8Array) =>
 															ibcTransferHistoryStore.pushUncommitedHistore({
@@ -280,7 +281,8 @@ export const TransferDialog = wrapBaseDialog(
 													amountConfig.currency,
 													recipient,
 													'',
-													{},
+													undefined,
+													undefined,
 													{
 														onBroadcasted: (txHash: Uint8Array) =>
 															ibcTransferHistoryStore.pushUncommitedHistore({

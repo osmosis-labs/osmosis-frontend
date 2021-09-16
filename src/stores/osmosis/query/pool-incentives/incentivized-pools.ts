@@ -73,7 +73,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 			poolId: string,
 			priceStore: {
 				getPrice(coinId: string, vsCurrency: string): number | undefined;
-				calculatePrice(vsCurrrency: string, coin: CoinPretty): PricePretty | undefined;
+				calculatePrice(coin: CoinPretty, vsCurrrency?: string): PricePretty | undefined;
 			},
 			fiatCurrency: FiatCurrency
 		): IntPretty => {
@@ -104,7 +104,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 			duration: Duration,
 			priceStore: {
 				getPrice(coinId: string, vsCurrency: string): number | undefined;
-				calculatePrice(vsCurrrency: string, coin: CoinPretty): PricePretty | undefined;
+				calculatePrice(coin: CoinPretty, vsCurrrency?: string): PricePretty | undefined;
 			},
 			fiatCurrency: FiatCurrency
 		): IntPretty => {
@@ -145,7 +145,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 		duration: Duration,
 		priceStore: {
 			getPrice(coinId: string, vsCurrency: string): number | undefined;
-			calculatePrice(vsCurrrency: string, coin: CoinPretty): PricePretty | undefined;
+			calculatePrice(coin: CoinPretty, vsCurrrency?: string): PricePretty | undefined;
 		},
 		fiatCurrency: FiatCurrency
 	): IntPretty {

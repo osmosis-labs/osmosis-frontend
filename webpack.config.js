@@ -99,7 +99,7 @@ const webConfig = () => {
 		// In development environment, webpack watch the file changes, and recompile
 		watch: isEnvDevelopment,
 		devServer: {
-			port: 8081,
+			port: 8080,
 			historyApiFallback: true,
 		},
 		entry: {

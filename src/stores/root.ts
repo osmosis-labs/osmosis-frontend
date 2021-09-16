@@ -101,6 +101,7 @@ export class RootStore {
 					locale: 'en-US',
 				},
 			},
+			'usd',
 			this.queriesStore.get(EmbedChainInfos[0].chainId).osmosis.queryGammPools,
 			[
 				{
@@ -332,6 +333,8 @@ export class RootStore {
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
 		this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithExplorer>(
+			new IndexedDBKVStore('store_ibc_currency_registrar'),
+			24 * 3600 * 1000, // 1 days
 			this.chainStore,
 			this.accountStore,
 			this.queriesStore,

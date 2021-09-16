@@ -35,7 +35,7 @@ export const TokenAmountInput = observer(({ amount, currency, onChange }: Props)
 	})();
 
 	const price =
-		priceStore.calculatePrice('usd', coinPretty) ?? new PricePretty(priceStore.getFiatCurrency('usd')!, new Int(0));
+		priceStore.calculatePrice(coinPretty) ?? new PricePretty(priceStore.getFiatCurrency('usd')!, new Int(0));
 
 	return (
 		<TokenAmountInputContainer>

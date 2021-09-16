@@ -41,7 +41,7 @@ export const AssetsOverview: FunctionComponent<{ title: string }> = observer(({ 
 					}
 				}
 			} else {
-				const price = priceStore.calculatePrice('usd', balance);
+				const price = priceStore.calculatePrice(balance);
 				if (price) {
 					fiatValue = fiatValue.add(price);
 				}
