@@ -334,7 +334,7 @@ export class RootStore {
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
 		this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithExplorer>(
 			new LocalKVStore('store_ibc_currency_registrar'),
-			24 * 3600 * 1000, // 1 days
+			3 * 24 * 3600 * 1000, // 3 days
 			this.chainStore,
 			this.accountStore,
 			this.queriesStore,
