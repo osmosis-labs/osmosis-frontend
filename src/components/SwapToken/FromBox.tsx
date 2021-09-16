@@ -30,12 +30,12 @@ export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdo
 		.getQueryBech32Address(account.bech32Address)
 		.balances.find(bal => bal.currency.coinMinimalDenom === config.sendCurrency.coinMinimalDenom);
 
-	const availableBalance = useMemo(() => {
+	const availableBalance = (() => {
 		if (!balance) {
 			return new CoinPretty(config.sendCurrency, new Int('0'));
 		}
 		return balance.balance;
-	}, [balance, config.sendCurrency]);
+	})();
 
 	const handleMaxButtonToggled = useCallback(() => {
 		config.toggleIsMax();
