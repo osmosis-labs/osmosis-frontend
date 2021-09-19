@@ -158,7 +158,9 @@ export class TxTracer {
 						if (this.txSubscribes.has(obj.id)) {
 							if (obj.error) {
 								// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-								this.txSubscribes.get(obj.id)!.rejector(new Error(obj.error.data || obj.error.message));
+								const errMsg = cleanErrorMessage(obj.error.data || obj.error.message);
+								// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+								this.txSubscribes.get(obj.id)!.rejector(new Error(errMsg));
 							} else {
 								// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 								this.txSubscribes.get(obj.id)!.resolver(obj.result.data.value.TxResult.result);
@@ -364,4 +366,24 @@ export class TxTracer {
 				.join('')
 		);
 	}
+}
+
+const sequenceNumberErrorMsgRe = /signature verification failed; please verify account number \([0-9]*\), sequence \(([0-9]*)\) and chain-id \(osmosis-1\): unauthorized/;
+const sequenceNumberErrorReplaceMsg =
+	"You have too many concurrent txs going on! Try resending after your prior tx lands on chain. (We couldn't send the tx with sequence number $1)";
+
+function cleanErrorMessage(s1: string): string {
+	let newErrorMsg = s1.replace(sequenceNumberErrorMsgRe, sequenceNumberErrorReplaceMsg);
+	// parsed from assetlists
+	// todo: Do a single pass operation in the future
+	newErrorMsg = newErrorMsg.replace('ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2', 'atom');
+	newErrorMsg = newErrorMsg.replace('ibc/1480B8FD20AD5FCAE81EA87584D269547DD4D436843C1D20F15E00EB64743EF4', 'akt');
+	newErrorMsg = newErrorMsg.replace('ibc/A0CC0CF735BFB30E730C70019D4218A1244FF383503FF7579C9201AB93CA9293', 'xprt');
+	newErrorMsg = newErrorMsg.replace('ibc/7C4D60AA95E5A7558B0A364860979CA34B7FF8AAF255B87AF9E879374470CEC0', 'iris');
+	newErrorMsg = newErrorMsg.replace('ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84', 'dvpn');
+	newErrorMsg = newErrorMsg.replace('ibc/E6931F78057F7CC5DA0FD6CEF82FF39373A6E0452BF1FD76910B93292CF356C1', 'cro');
+	newErrorMsg = newErrorMsg.replace('ibc/1DCC8A6CB5689018431323953344A9F6CC4D0BFB261E88C9F7777372C10CD076', 'regen');
+	newErrorMsg = newErrorMsg.replace('ibc/52B1AA623B34EB78FD767CEA69E8D7FA6C9CFE1FBF49C5406268FD325E2CC2AC', 'iov');
+	newErrorMsg = newErrorMsg.replace('ibc/CD942F878C80FBE9DEAB8F8E57F592C7252D06335F193635AF002ACBD69139CC', 'tick');
+	return newErrorMsg;
 }
