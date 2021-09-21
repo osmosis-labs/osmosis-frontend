@@ -136,6 +136,18 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-2',
 		coinMinimalDenom: 'uiov',
 	},
+	{
+		counterpartyChainId: 'emoney-3',
+		sourceChannelId: 'channel-37',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'ungm',
+	},
+	{
+		counterpartyChainId: 'emoney-3',
+		sourceChannelId: 'channel-37',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'eeur',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -476,5 +488,53 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://www.mintscan.io/starname/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-emoney.keplr.app',
+		rest: 'https://lcd-emoney.keplr.app',
+		chainId: 'emoney-3',
+		chainName: 'e-Money',
+		stakeCurrency: {
+			coinDenom: 'NGM',
+			coinMinimalDenom: 'ungm',
+			coinDecimals: 6,
+			coinGeckoId: 'e-money',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/ngm.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('emoney'),
+		currencies: [
+			{
+				coinDenom: 'NGM',
+				coinMinimalDenom: 'ungm',
+				coinDecimals: 6,
+				coinGeckoId: 'e-money',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ngm.png',
+			},
+			{
+				coinDenom: 'EEUR',
+				coinMinimalDenom: 'eeur',
+				coinDecimals: 6,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ngm.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'NGM',
+				coinMinimalDenom: 'ungm',
+				coinDecimals: 6,
+				coinGeckoId: 'e-money',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ngm.png',
+			},
+		],
+		gasPriceStep: {
+			low: 1,
+			average: 1,
+			high: 1,
+		},
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://emoney.bigdipper.live/transactions/${txHash}',
 	},
 ];
