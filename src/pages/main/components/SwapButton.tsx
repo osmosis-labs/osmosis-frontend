@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';
 import { useEffect, useMemo, useRef } from 'react';
-import { TToastType, useToast } from 'src/components/common/toasts';
 import { ConnectAccountButton } from 'src/components/ConnectAccountButton';
 import { CtaButton } from 'src/components/layouts/Buttons';
 import { Spinner } from 'src/components/Spinners';
@@ -10,7 +9,6 @@ import { colorError } from 'src/emotionStyles/colors';
 import { useAccountConnection } from 'src/hooks/account/useAccountConnection';
 import { TradeConfig } from 'src/pages/main/stores/trade/config';
 import { useStore } from 'src/stores';
-import { isSlippageError } from 'src/utils/tx';
 
 interface Props {
 	config: TradeConfig;
@@ -40,8 +38,6 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const { isAccountConnected, connectAccount } = useAccountConnection();
-
-	const toast = useToast();
 
 	const currentSwapPools = useMemo(() => {
 		return config.optimizedRoutes?.swaps.map(swap => swap.poolId) ?? [];
@@ -108,17 +104,7 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 						config.slippage,
 						'',
 						tx => {
-							if (tx.code) {
-								toast.displayToast(TToastType.TX_FAILED, {
-									message: isSlippageError(tx)
-										? 'Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.'
-										: tx.log,
-								});
-							} else {
-								toast.displayToast(TToastType.TX_SUCCESSFUL, {
-									customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-								});
-
+							if (!tx.code) {
 								config.setAmount('');
 							}
 						}
@@ -136,25 +122,14 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 						config.slippage,
 						'',
 						tx => {
-							if (tx.code) {
-								toast.displayToast(TToastType.TX_FAILED, {
-									message: isSlippageError(tx)
-										? 'Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.'
-										: tx.log,
-								});
-							} else {
-								toast.displayToast(TToastType.TX_SUCCESSFUL, {
-									customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-								});
-
+							if (!tx.code) {
 								config.setAmount('');
 							}
 						}
 					);
 				}
-				toast.displayToast(TToastType.TX_BROADCASTING);
 			} catch (e) {
-				toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+				console.log(e);
 			}
 		}
 	};

@@ -3,7 +3,6 @@ import { wrapBaseDialog } from './base';
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores';
-import { TToastType, useToast } from '../components/common/toasts';
 import { useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
 import dayjs from 'dayjs';
 
@@ -79,8 +78,6 @@ export const LockLpTokenDialog = wrapBaseDialog(
 			queries.osmosis.queryGammPoolShare.getShareCurrency(poolId),
 			queries.queryBalances
 		);
-
-		const toast = useToast();
 
 		const [selectedDurationIndex, setSelectedDurationIndex] = useState(0);
 
@@ -168,22 +165,15 @@ export const LockLpTokenDialog = wrapBaseDialog(
 										],
 										'',
 										tx => {
-											if (tx.code) {
-												toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-											} else {
-												toast.displayToast(TToastType.TX_SUCCESSFUL, {
-													customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-												});
-
+											if (!tx.code) {
 												bucket.addBucketCount();
 											}
 
 											close();
 										}
 									);
-									toast.displayToast(TToastType.TX_BROADCASTING);
 								} catch (e) {
-									toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+									console.log(e);
 								}
 							}
 						}}>

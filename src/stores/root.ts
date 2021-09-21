@@ -130,7 +130,6 @@ export class RootStore {
 									customLink: chainInfo.raw.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
 								});
 							}
-							console.log(tx);
 						},
 					},
 				};

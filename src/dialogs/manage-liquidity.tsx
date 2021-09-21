@@ -10,7 +10,6 @@ import { computedFn } from 'mobx-utils';
 import React, { Dispatch, FunctionComponent, SetStateAction, useState } from 'react';
 import InputSlider from 'react-input-slider';
 import { Img } from '../components/common/Img';
-import { TToastType, useToast } from '../components/common/toasts';
 import { AmountInput } from '../components/form/Inputs';
 import { MISC } from '../constants';
 import { OSMO_MEDIUM_TX_FEE } from '../constants/fee';
@@ -724,8 +723,6 @@ const BottomButton: FunctionComponent<{
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
-	const toast = useToast();
-
 	return (
 		<React.Fragment>
 			{error && (
@@ -757,22 +754,12 @@ const BottomButton: FunctionComponent<{
 										shareOutAmount.toDec().toString(),
 										'2.5',
 										'',
-										tx => {
-											if (tx.code) {
-												toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-											} else {
-												toast.displayToast(TToastType.TX_SUCCESSFUL, {
-													customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-												});
-											}
-
+										() => {
 											close();
 										}
 									);
-
-									toast.displayToast(TToastType.TX_BROADCASTING);
 								} catch (e) {
-									toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+									console.log(e);
 								}
 							}
 
@@ -787,22 +774,12 @@ const BottomButton: FunctionComponent<{
 										shareIn.toDec().toString(),
 										'2.5',
 										'',
-										tx => {
-											if (tx.code) {
-												toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-											} else {
-												toast.displayToast(TToastType.TX_SUCCESSFUL, {
-													customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-												});
-											}
-
+										() => {
 											close();
 										}
 									);
-
-									toast.displayToast(TToastType.TX_BROADCASTING);
 								} catch (e) {
-									toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+									console.log(e);
 								}
 							}
 						}

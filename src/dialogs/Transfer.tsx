@@ -9,7 +9,6 @@ import { useStore } from '../stores';
 import { Bech32Address } from '@keplr-wallet/cosmos';
 import { WalletStatus } from '@keplr-wallet/stores';
 import { useFakeFeeConfig } from '../hooks/tx';
-import { TToastType, useToast } from '../components/common/toasts';
 import { useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
 import { wrapBaseDialog } from './base';
 import { useAccountConnection } from '../hooks/account/useAccountConnection';
@@ -70,8 +69,6 @@ export const TransferDialog = wrapBaseDialog(
 				pickOne(account.msgOpts.ibcTransfer.gas, counterpartyAccount.msgOpts.ibcTransfer.gas, isWithdraw)
 			);
 			amountConfig.setFeeConfig(feeConfig);
-
-			const toast = useToast();
 
 			const { isAccountConnected, connectAccount } = useAccountConnection();
 
@@ -200,9 +197,7 @@ export const TransferDialog = wrapBaseDialog(
 																sender,
 															}),
 														onFulfill: tx => {
-															if (tx.code) {
-																toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-															} else {
+															if (!tx.code) {
 																const events = tx?.events as
 																	| { type: string; attributes: { key: string; value: string }[] }[]
 																	| undefined;
@@ -252,13 +247,6 @@ export const TransferDialog = wrapBaseDialog(
 																		}
 																	}
 																}
-
-																toast.displayToast(TToastType.TX_SUCCESSFUL, {
-																	customLink: chainStore.current.explorerUrlToTx.replace(
-																		'{txHash}',
-																		tx.hash.toUpperCase()
-																	),
-																});
 															}
 
 															close();
@@ -294,9 +282,7 @@ export const TransferDialog = wrapBaseDialog(
 																recipient,
 															}),
 														onFulfill: tx => {
-															if (tx.code) {
-																toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-															} else {
+															if (!tx.code) {
 																const events = tx?.events as
 																	| { type: string; attributes: { key: string; value: string }[] }[]
 																	| undefined;
@@ -346,12 +332,6 @@ export const TransferDialog = wrapBaseDialog(
 																		}
 																	}
 																}
-
-																toast.displayToast(TToastType.TX_SUCCESSFUL, {
-																	customLink: chainStore
-																		.getChain(counterpartyChainId)
-																		.raw.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-																});
 															}
 
 															close();
@@ -360,10 +340,8 @@ export const TransferDialog = wrapBaseDialog(
 												);
 											}
 										}
-
-										toast.displayToast(TToastType.TX_BROADCASTING);
 									} catch (e) {
-										toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+										console.log(e);
 									}
 								}}>
 								{(isWithdraw && account.isSendingMsg === 'ibcTransfer') ||

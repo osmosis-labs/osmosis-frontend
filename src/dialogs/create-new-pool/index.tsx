@@ -10,7 +10,6 @@ import { AppCurrency } from '@keplr-wallet/types';
 import { action, makeObservable, observable, override } from 'mobx';
 import { useStore } from '../../stores';
 import { Dec, DecUtils } from '@keplr-wallet/unit';
-import { TToastType, useToast } from '../../components/common/toasts';
 import { IFeeConfig, TxChainSetter } from '@keplr-wallet/hooks';
 import { BasicAmountConfig } from '../../hooks/tx/basic-amount-config';
 import { ChainGetter, ObservableQueryBalances } from '@keplr-wallet/stores';
@@ -274,8 +273,6 @@ const NewPoolButton: FunctionComponent<{
 		return config.getErrorOfAmount() || config.getErrorOfPercentage();
 	})();
 
-	const toast = useToast();
-
 	const onNextClick = async () => {
 		// data validation process
 		if (error) return;
@@ -303,22 +300,12 @@ const NewPoolButton: FunctionComponent<{
 						};
 					}),
 					'',
-					tx => {
-						if (tx.code) {
-							toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-						} else {
-							toast.displayToast(TToastType.TX_SUCCESSFUL, {
-								customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-							});
-						}
-
+					() => {
 						close();
 					}
 				);
-
-				toast.displayToast(TToastType.TX_BROADCASTING);
 			} catch (e) {
-				toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+				console.log(e);
 			}
 
 			return;

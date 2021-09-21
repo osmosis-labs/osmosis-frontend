@@ -1,7 +1,6 @@
 import { CoinPretty, Dec } from '@keplr-wallet/unit';
 import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
-import { TToastType, useToast } from 'src/components/common/toasts';
 import { ButtonFaint } from 'src/components/layouts/Buttons';
 import { Spinner } from 'src/components/Spinners';
 import { TableBodyRow, TableData, TableHeadRow } from 'src/components/Tables';
@@ -87,8 +86,6 @@ const LockupTableRow = observer(function LockupTableRow({ duration, apy, lockup 
 
 	const [isUnlocking, setIsUnlocking] = useState(false);
 
-	const toast = useToast();
-
 	return (
 		<TableBodyRow>
 			<TableData width={tableWidths[0]}>
@@ -116,22 +113,12 @@ const LockupTableRow = observer(function LockupTableRow({ duration, apy, lockup 
 								setIsUnlocking(true);
 
 								// XXX: Due to the block gas limit, restrict the number of lock id to included in the one tx.
-								await account.osmosis.sendBeginUnlockingMsg(lockup.lockIds.slice(0, 3), '', tx => {
+								await account.osmosis.sendBeginUnlockingMsg(lockup.lockIds.slice(0, 3), '', () => {
 									setIsUnlocking(false);
-
-									if (tx.code) {
-										toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-									} else {
-										toast.displayToast(TToastType.TX_SUCCESSFUL, {
-											customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-										});
-									}
 								});
-
-								toast.displayToast(TToastType.TX_BROADCASTING);
 							} catch (e) {
 								setIsUnlocking(false);
-								toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+								console.log(e);
 							}
 						}
 					}}>
