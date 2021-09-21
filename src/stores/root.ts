@@ -12,6 +12,9 @@ import { LPCurrencyRegistrar } from './osmosis/currency-registrar';
 import { ChainInfoInner } from '@keplr-wallet/stores';
 import { PoolIntermediatePriceStore } from './price';
 import { IBCTransferHistoryStore } from './ibc-history';
+import { displayToast, TToastType } from '../components/common/toasts';
+import { isSlippageError } from '../utils/tx';
+import { prettifyTxError } from 'src/stores/prettify-tx-error';
 
 export class RootStore {
 	public readonly chainStore: ChainStore;
@@ -82,9 +85,54 @@ export class RootStore {
 					await keplr.experimentalSuggestChain(copied);
 				},
 			},
-			chainOpts: this.chainStore.chainInfos.map((chainInfo: ChainInfo) => {
+			chainOpts: this.chainStore.chainInfos.map(chainInfo => {
 				return {
 					chainId: chainInfo.chainId,
+					preTxEvents: {
+						onBroadcastFailed: (e?: Error) => {
+							let message: string = 'Unknown error';
+							if (e instanceof Error) {
+								message = e.message;
+							} else if (typeof e === 'string') {
+								message = e;
+							}
+
+							try {
+								message = prettifyTxError(message, chainInfo.currencies);
+							} catch (e) {
+								console.log(e);
+							}
+
+							displayToast(TToastType.TX_FAILED, {
+								message,
+							});
+						},
+						onBroadcasted: (txHash: Uint8Array) => {
+							displayToast(TToastType.TX_BROADCASTING);
+						},
+						onFulfill: (tx: any) => {
+							if (tx.code) {
+								let message: string = tx.log;
+
+								if (isSlippageError(tx)) {
+									message = 'Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.';
+								} else {
+									try {
+										message = prettifyTxError(message, chainInfo.currencies);
+									} catch (e) {
+										console.log(e);
+									}
+								}
+
+								displayToast(TToastType.TX_FAILED, { message });
+							} else {
+								displayToast(TToastType.TX_SUCCESSFUL, {
+									customLink: chainInfo.raw.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
+								});
+							}
+							console.log(tx);
+						},
+					},
 				};
 			}),
 		});
