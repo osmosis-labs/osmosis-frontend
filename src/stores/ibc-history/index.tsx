@@ -206,7 +206,10 @@ export class IBCTransferHistoryStore {
 		const txTracer = new TxTracer(this.chainGetter.getChain(history.destChainId).rpc, '/websocket');
 		promises.push(
 			txTracer.traceTx({
-				'recv_packet.packet_src_channel': history.sourceChannelId,
+				// Should use the dst channel. B
+				// Because src channel is agnostic to the counterparty chain's channel sequence,
+				// it can be duplicated on the counterparty chain.
+				'recv_packet.packet_dst_channel': history.destChannelId,
 				'recv_packet.packet_sequence': history.sequence,
 			})
 		);
