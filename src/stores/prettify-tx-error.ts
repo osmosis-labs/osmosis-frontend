@@ -44,6 +44,8 @@ export function prettifyTxError(message: string, currencies: AppCurrency[]): str
 			for (let i = 0; i < mayCoinOrDenom.length; i++) {
 				const value = mayCoinOrDenom[i];
 
+				const valueHasLastColon = value.length > 0 && value.indexOf(':') === value.length - 1;
+
 				const splitAmountAndDenom = value.match(regexSplitAmountAndDenomOfCoin);
 				if (splitAmountAndDenom && splitAmountAndDenom.length === 3) {
 					const amount = splitAmountAndDenom[1];
@@ -51,10 +53,10 @@ export function prettifyTxError(message: string, currencies: AppCurrency[]): str
 					const currency = currencyMap[denom];
 					if (currency) {
 						const coinPretty = new CoinPretty(currency, new Int(amount)).separator('').trim(true);
-						mayCoinOrDenom[i] = coinPretty.toString();
+						mayCoinOrDenom[i] = coinPretty.toString() + (valueHasLastColon ? ':' : '');
 					}
 				} else if (currencyMap[value]) {
-					mayCoinOrDenom[i] = currencyMap[value].coinDenom;
+					mayCoinOrDenom[i] = currencyMap[value].coinDenom + (valueHasLastColon ? ':' : '');
 				}
 			}
 

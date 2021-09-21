@@ -30,7 +30,24 @@ describe('Test prettify tx error', () => {
 	});
 
 	test('Test coins', () => {
-		let message = `failed to execute message; message index: 0: 1091377ibc/2739,1000uosmo is smaller than 1000unknown: insufficient funds`;
+		let message = `failed to execute message; message index: 0: 1091377ibc/2739,1000unknown is smaller than 1000uosmo: insufficient funds`;
+
+		expect(
+			prettifyTxError(message, [
+				{
+					coinMinimalDenom: 'ibc/2739',
+					coinDecimals: 3,
+					coinDenom: 'BLAH',
+				},
+				{
+					coinMinimalDenom: 'uosmo',
+					coinDecimals: 6,
+					coinDenom: 'OSMO',
+				},
+			])
+		).toBe('1,091.377BLAH,1000unknown is smaller than 0.001OSMO: insufficient funds (at msg 0)');
+
+		message = `failed to execute message; message index: 0: 1091377ibc/2739,1000uosmo is smaller than 1000unknown: insufficient funds`;
 
 		expect(
 			prettifyTxError(message, [
