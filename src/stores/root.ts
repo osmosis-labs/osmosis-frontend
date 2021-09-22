@@ -14,8 +14,8 @@ import { PoolIntermediatePriceStore } from './price';
 import { IBCTransferHistoryStore } from './ibc-history';
 import { BroadcastMode, StdTx } from '@cosmjs/launchpad';
 import Axios from 'axios';
-import { KeplrWalletConnect } from '@keplr-wallet/wc-client';
-import QRCodeModal from '@walletconnect/qrcode-modal';
+import { KeplrWalletConnectV1 } from '@keplr-wallet/wc-client';
+import { KeplrQRCodeModalV1 } from '@keplr-wallet/wc-qrcode-modal';
 import WalletConnect from '@walletconnect/client';
 
 let keplr: Keplr | undefined = undefined;
@@ -43,8 +43,19 @@ export function getWCKeplr(): Promise<Keplr> {
 
 	const fn = () => {
 		const connector = new WalletConnect({
-			bridge: 'https://bridge.walletconnect.org', // Required
-			qrcodeModal: QRCodeModal,
+			bridge: 'https://bridge.walletconnect.org',
+			signingMethods: [
+				'keplr_enable_wallet_connect_v1',
+				'keplr_get_key_wallet_connect_v1',
+				'keplr_sign_amino_wallet_connect_v1',
+			],
+			qrcodeModal: new KeplrQRCodeModalV1({
+				backdrop: {
+					style: {
+						zIndex: 1000,
+					},
+				},
+			}),
 		});
 
 		// Check if connection is already established
@@ -57,7 +68,7 @@ export function getWCKeplr(): Promise<Keplr> {
 					if (error) {
 						reject(error);
 					} else {
-						keplr = new KeplrWalletConnect(connector, {
+						keplr = new KeplrWalletConnectV1(connector, {
 							sendTx,
 						});
 						resolve(keplr);
@@ -65,7 +76,7 @@ export function getWCKeplr(): Promise<Keplr> {
 				});
 			});
 		} else {
-			keplr = new KeplrWalletConnect(connector, {
+			keplr = new KeplrWalletConnectV1(connector, {
 				sendTx,
 			});
 			return Promise.resolve(keplr);
