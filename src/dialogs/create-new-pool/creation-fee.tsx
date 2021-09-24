@@ -11,7 +11,7 @@ export const PoolCreationFeeView: FunctionComponent = observer(() => {
 	return (
 		<div className="mt-5 px-4.5 py-3.5 border rounded-2xl border-enabledGold">
 			<div className="flex flex-row">
-				<div className="mr-3 inline-block rounded-full w-5 h-5 text-sm bg-secondary-200 flex items-center justify-center text-black">
+				<div className="mr-3 mt-0.5 inline-block rounded-full w-5 h-5 text-sm bg-secondary-200 flex items-center justify-center text-black">
 					i
 				</div>
 				<div className="flex flex-col">
