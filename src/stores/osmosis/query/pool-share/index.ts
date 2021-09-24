@@ -4,11 +4,7 @@ import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
 import { AppCurrency, Currency } from '@keplr-wallet/types';
 import { ObservableQueryPools } from '../pools';
 import { computedFn } from 'mobx-utils';
-import {
-	ObservableQueryAccountLockedCoins,
-	ObservableQueryAccountUnlockableCoins,
-	ObservableQueryAccountUnlockingCoins,
-} from '../lockup';
+import { ObservableQueryAccountLockedCoins, ObservableQueryAccountUnlockingCoins } from '../lockup';
 
 export class ObservableQueryGammPoolShare {
 	static getShareCurrency(poolId: string): Currency {
@@ -23,8 +19,7 @@ export class ObservableQueryGammPoolShare {
 		protected readonly queryPools: ObservableQueryPools,
 		protected readonly queryBalances: ObservableQueryBalances,
 		protected readonly queryLockedCoins: ObservableQueryAccountLockedCoins,
-		protected readonly queryUnlockingCoins: ObservableQueryAccountUnlockingCoins,
-		protected readonly queryUnlockableCoins: ObservableQueryAccountUnlockableCoins
+		protected readonly queryUnlockingCoins: ObservableQueryAccountUnlockingCoins
 	) {}
 
 	/**
@@ -35,11 +30,10 @@ export class ObservableQueryGammPoolShare {
 			currency: AppCurrency;
 		}[] = this.queryBalances.getQueryBech32Address(bech32Address).positiveBalances;
 		const locked = this.queryLockedCoins.get(bech32Address).lockedCoins;
-		const unlockable = this.queryUnlockableCoins.get(bech32Address).unlockableCoins;
 
 		let result: string[] = [];
 
-		for (const bal of balances.concat(locked).concat(unlockable)) {
+		for (const bal of balances.concat(locked)) {
 			// Pool share 토큰은 `gamm/pool/${poolId}` 형태이다.
 			if (bal.currency.coinMinimalDenom.startsWith('gamm/pool/')) {
 				result.push(bal.currency.coinMinimalDenom.replace('gamm/pool/', ''));
@@ -84,22 +78,13 @@ export class ObservableQueryGammPoolShare {
 			}
 
 			const share = this.getLockedGammShare(bech32Address, poolId);
-			// Consider the unlockable as the locked too.
 			// Remember that the unlockings are included in the locked.
 			// So, no need to handle the unlockings here
-			const unlockableShare = this.getUnlockableGammShare(bech32Address, poolId);
 
 			const totalShare = pool.totalShare;
 
 			// 백분률로 만들어주기 위해서 마지막에 10^2를 곱한다
-			return new IntPretty(
-				share
-					.add(unlockableShare)
-					.quo(totalShare)
-					.mul(DecUtils.getPrecisionDec(2))
-			)
-				.maxDecimals(2)
-				.trim(true);
+			return new IntPretty(share.quo(totalShare).mul(DecUtils.getPrecisionDec(2))).maxDecimals(2).trim(true);
 		}
 	);
 
@@ -110,20 +95,6 @@ export class ObservableQueryGammPoolShare {
 			const locked = this.queryUnlockingCoins
 				.get(bech32Address)
 				.unlockingCoins.find(coin => coin.currency.coinMinimalDenom === currency.coinMinimalDenom);
-			if (locked) {
-				return locked;
-			}
-			return new CoinPretty(currency, new Dec(0));
-		}
-	);
-
-	readonly getUnlockableGammShare = computedFn(
-		(bech32Address: string, poolId: string): CoinPretty => {
-			const currency = this.getShareCurrency(poolId);
-
-			const locked = this.queryUnlockableCoins
-				.get(bech32Address)
-				.unlockableCoins.find(coin => coin.currency.coinMinimalDenom === currency.coinMinimalDenom);
 			if (locked) {
 				return locked;
 			}
@@ -150,9 +121,8 @@ export class ObservableQueryGammPoolShare {
 			const locked = this.getLockedGammShare(bech32Address, poolId);
 			// Unlocking도 현재 유동화되어 있지 않으므로 locked에 포함된다는 걸 유의.
 			// const unlocking = this.getUnlockingGammShare(bech32Address, poolId);
-			const unlockable = this.getUnlockableGammShare(bech32Address, poolId);
 
-			return available.add(locked).add(unlockable);
+			return available.add(locked);
 		}
 	);
 

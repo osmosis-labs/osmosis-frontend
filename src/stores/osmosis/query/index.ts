@@ -8,7 +8,6 @@ import { ObservableQueryIncentivizedPools, ObservableQueryLockableDurations } fr
 import { ObservableQueryEpochs } from './epochs';
 import {
 	ObservableQueryAccountLockedCoins,
-	ObservableQueryAccountUnlockableCoins,
 	ObservableQueryAccountUnlockingCoins,
 	ObservableQueryAccountLocked,
 } from './lockup';
@@ -39,7 +38,6 @@ export class OsmosisQueries {
 
 	public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
 	public readonly queryUnlockingCoins: DeepReadonly<ObservableQueryAccountUnlockingCoins>;
-	public readonly queryUnlockableCoins: DeepReadonly<ObservableQueryAccountUnlockableCoins>;
 	public readonly queryAccountLocked: DeepReadonly<ObservableQueryAccountLocked>;
 
 	public readonly queryMintParams: DeepReadonly<ObservableQueryMintParmas>;
@@ -63,7 +61,6 @@ export class OsmosisQueries {
 
 		this.queryLockedCoins = new ObservableQueryAccountLockedCoins(kvStore, chainId, chainGetter);
 		this.queryUnlockingCoins = new ObservableQueryAccountUnlockingCoins(kvStore, chainId, chainGetter);
-		this.queryUnlockableCoins = new ObservableQueryAccountUnlockableCoins(kvStore, chainId, chainGetter);
 		this.queryAccountLocked = new ObservableQueryAccountLocked(kvStore, chainId, chainGetter);
 
 		this.queryGammPools = new ObservableQueryPools(kvStore, chainId, chainGetter, queryGammPool);
@@ -72,8 +69,7 @@ export class OsmosisQueries {
 			this.queryGammPools,
 			queries.queryBalances,
 			this.queryLockedCoins,
-			this.queryUnlockingCoins,
-			this.queryUnlockableCoins
+			this.queryUnlockingCoins
 		);
 
 		this.queryMintParams = new ObservableQueryMintParmas(kvStore, chainId, chainGetter);

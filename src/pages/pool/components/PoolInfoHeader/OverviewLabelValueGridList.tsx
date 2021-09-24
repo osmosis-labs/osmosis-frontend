@@ -21,9 +21,7 @@ export const OverviewLabelValueGridList = observer(function OverviewLabelGridLis
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const shareRatio = queries.osmosis.queryGammPoolShare.getAllGammShareRatio(account.bech32Address, poolId);
 
-	const locked = queries.osmosis.queryGammPoolShare
-		.getLockedGammShare(account.bech32Address, poolId)
-		.add(queries.osmosis.queryGammPoolShare.getUnlockableGammShare(account.bech32Address, poolId));
+	const locked = queries.osmosis.queryGammPoolShare.getLockedGammShare(account.bech32Address, poolId);
 	const actualLockedRatio = pool ? locked.quo(pool.totalShare) : new Dec(0);
 
 	// `shareRatio`가 백분률로 오기 때문에 10^2를 나눠줘야한다.
