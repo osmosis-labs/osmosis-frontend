@@ -263,8 +263,13 @@ const NewPoolButton: FunctionComponent<{
 	setStage: (value: number | ((prev: number) => number)) => void;
 	close: () => void;
 }> = observer(({ config, stage, setStage, close }) => {
-	const { chainStore, accountStore } = useStore();
+	const { chainStore, accountStore, queriesStore } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
+	const queries = queriesStore.get(chainStore.current.chainId);
+
+	const queryPoolCreationFee = queries.osmosis.queryPoolCreationFee;
+
+	const [isPoolCreationFeeChecked, setIsPoolCreationFeeChecked] = useState(false);
 
 	const error = (() => {
 		if (stage === 1) {
@@ -324,6 +329,30 @@ const NewPoolButton: FunctionComponent<{
 					</div>
 				</div>
 			)}
+			{stage === 3 ? (
+				<div className="flex flex-row justify-center items-center mt-5">
+					<input
+						className="mr-2"
+						type="checkbox"
+						checked={isPoolCreationFeeChecked}
+						onChange={() => {
+							setIsPoolCreationFeeChecked(value => !value);
+						}}
+					/>
+					<p
+						className="text-base text-white-high font-medium cursor-pointer"
+						onClick={() => {
+							setIsPoolCreationFeeChecked(value => !value);
+						}}>{`I understand that creating a new pool will cost ${queryPoolCreationFee.poolCreationFee
+						.map(fee =>
+							fee
+								.trim(true)
+								.maxDecimals(6)
+								.toString()
+						)
+						.join(',')}`}</p>
+				</div>
+			) : null}
 			<div className="flex items-center justify-center w-full">
 				<div className={cn('mt-7.5 h-15 gap-4 flex items-center justify-center', stage > 1 ? 'w-4/5' : 'w-full')}>
 					{stage > 1 && (
@@ -334,7 +363,13 @@ const NewPoolButton: FunctionComponent<{
 						</button>
 					)}
 					<button
-						disabled={!account.isReadyToSendMsgs || error != null}
+						disabled={
+							!account.isReadyToSendMsgs ||
+							error != null ||
+							!queryPoolCreationFee.response ||
+							queryPoolCreationFee.response.staled ||
+							(stage === 3 && !isPoolCreationFeeChecked)
+						}
 						onClick={onNextClick}
 						className={cn(
 							'h-full rounded-2xl bg-primary-200 flex items-center justify-center mx-auto hover:opacity-75 disabled:opacity-50',

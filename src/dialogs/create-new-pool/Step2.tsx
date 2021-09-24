@@ -4,6 +4,7 @@ import { CreateNewPoolConfig } from './index';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { AppCurrency } from '@keplr-wallet/types';
+import { PoolCreationFeeView } from 'src/dialogs/create-new-pool/creation-fee';
 
 export const NewPoolStage2: FunctionComponent<{
 	config: CreateNewPoolConfig;
@@ -25,6 +26,7 @@ export const NewPoolStage2: FunctionComponent<{
 					</div>
 				</div>
 			</div>
+			<PoolCreationFeeView />
 			<ul className="mt-5 flex flex-col gap-3">
 				{config.assets.map((asset, i) => {
 					return <Pool key={asset.amountConfig.currency.coinMinimalDenom} config={config} assetAt={i} />;

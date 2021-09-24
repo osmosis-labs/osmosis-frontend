@@ -11,6 +11,7 @@ import { colorBlack, colorFilterWhiteHigh, colorGold, colorWhiteFaint } from 'sr
 import { cssAlignRightInput, cssNumberTextInput } from 'src/emotionStyles/forms';
 import { cssFontPoppins } from 'src/emotionStyles/texts';
 import { CreateNewPoolConfig } from './index';
+import { PoolCreationFeeView } from 'src/dialogs/create-new-pool/creation-fee';
 
 interface Props {
 	config: CreateNewPoolConfig;
@@ -53,6 +54,8 @@ export const NewPoolStage1 = observer(function NewPoolStage1({ config, close }: 
 					</Text>
 				</HeadSubTitle>
 			</CreateNewPoolHeadSection>
+
+			<PoolCreationFeeView />
 
 			<AddedTokenList shouldShowScroll={config.assets.length > 4} ref={tokenListRef}>
 				{config.assets.map((asset, index) => {
