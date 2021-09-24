@@ -16,6 +16,7 @@ import { ObservableQueryEpochProvisions, ObservableQueryMintParmas } from './min
 import { ObservableQueryDistrInfo } from './pool-incentives/distr-info';
 import { ObservableQueryTotalCliamable, ObservableQueryClaimRecord, ObservableQueryClaimParams } from './claim';
 import { ObservableQueryGuage } from './incentives';
+import { ObservableQueryPoolCreationFee } from 'src/stores/osmosis/query/pool-creation-fee';
 
 export interface HasOsmosisQueries {
 	osmosis: OsmosisQueries;
@@ -54,6 +55,8 @@ export class OsmosisQueries {
 	public readonly queryTotalClaimable: DeepReadonly<ObservableQueryTotalCliamable>;
 	public readonly queryClaimRecord: DeepReadonly<ObservableQueryClaimRecord>;
 	public readonly queryClaimParams: DeepReadonly<ObservableQueryClaimParams>;
+
+	public readonly queryPoolCreationFee: DeepReadonly<ObservableQueryPoolCreationFee>;
 
 	constructor(queries: QueriesSetBase, kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
 		const queryGammPool = new ObservableQueryPool(kvStore, chainId, chainGetter);
@@ -96,5 +99,7 @@ export class OsmosisQueries {
 		this.queryTotalClaimable = new ObservableQueryTotalCliamable(kvStore, chainId, chainGetter);
 		this.queryClaimRecord = new ObservableQueryClaimRecord(kvStore, chainId, chainGetter);
 		this.queryClaimParams = new ObservableQueryClaimParams(kvStore, chainId, chainGetter);
+
+		this.queryPoolCreationFee = new ObservableQueryPoolCreationFee(kvStore, chainId, chainGetter);
 	}
 }

@@ -7,6 +7,7 @@ import { CreateNewPoolConfig } from './index';
 import { observer } from 'mobx-react-lite';
 import { AppCurrency } from '@keplr-wallet/types';
 import { Img } from '../../components/common/Img';
+import { PoolCreationFeeView } from 'src/dialogs/create-new-pool/creation-fee';
 
 const pieSerie = {
 	type: 'pie',
@@ -52,6 +53,7 @@ export const NewPoolStage3: FunctionComponent<{
 					</div>
 				</div>
 			</div>
+			<PoolCreationFeeView />
 			<div className="mt-4 flex items-center justify-between mb-10">
 				<figure style={{ height: '200px', width: '200px' }}>
 					<PieChart
