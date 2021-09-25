@@ -401,8 +401,10 @@ export class RootStore {
 
 				// If the IBC Currency's channel is known.
 				// Don't show the channel info on the coin denom.
-				const knownAssetInfo = IBCAssetInfos.find(info => info.sourceChannelId === firstPath.channelId);
-				if (knownAssetInfo && knownAssetInfo.coinMinimalDenom === denomTrace.denom) {
+				const knownAssetInfo = IBCAssetInfos.filter(info => info.sourceChannelId === firstPath.channelId).find(
+					info => info.coinMinimalDenom === denomTrace.denom
+				);
+				if (knownAssetInfo) {
 					return originCurrency ? originCurrency.coinDenom : denomTrace.denom;
 				}
 
