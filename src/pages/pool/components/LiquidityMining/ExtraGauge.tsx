@@ -31,9 +31,13 @@ export const ExtraGauge = observer(function ExtraGauge({ gaugeId, currency, extr
 		<ExtraGaugeContainer>
 			<TitleText>Bonus bonding reward</TitleText>
 			<Text pb={16}>
-				This pool bonding over {gauge.lockupDuration.humanize()} will earn additional bonding
+				{`This pool bonding over ${gauge.lockupDuration.humanize()} will earn additional bonding`}
 				<br />
-				incentives for {gauge.numEpochsPaidOver} epochs starting at {dayjs(gauge.startTime).format('MMM D, YYYY')}.
+				{`incentives for ${gauge.numEpochsPaidOver} epochs${
+					dayjs(gauge.startTime).isAfter(Date.now())
+						? ' starting at ' + dayjs(gauge.startTime).format('MMM D, YYYY')
+						: ''
+				}.`}
 			</Text>
 			<Text size="lg" color="gold">
 				{`Total Bonus: ${reward
@@ -46,6 +50,7 @@ export const ExtraGauge = observer(function ExtraGauge({ gaugeId, currency, extr
 });
 
 const ExtraGaugeContainer = styled.div`
+	flex: 1;
 	margin-top: 40px;
 	padding: 28px 30px 40px;
 	border-radius: 1rem;

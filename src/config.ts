@@ -28,6 +28,8 @@ export const LockupAbledPoolIds: {
 	'10': true,
 	'13': true,
 	'15': true,
+	'461': true,
+	'482': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -66,12 +68,47 @@ export const PreferHeaderShowTokenPricePoolIds: {
 	 */
 };
 export const ExtraGaugeInPool: {
-	[poolId: string]: {
-		gaugeId: string;
-		denom: string;
-		extraRewardAmount?: Int;
-	};
-} = {};
+	[poolId: string]:
+		| {
+				gaugeId: string;
+				denom: string;
+				extraRewardAmount?: Int;
+		  }
+		| {
+				gaugeId: string;
+				denom: string;
+				extraRewardAmount?: Int;
+		  }[];
+} = {
+	'482': [
+		{
+			gaugeId: '1468',
+			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
+		},
+		{
+			gaugeId: '1469',
+			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
+		},
+		{
+			gaugeId: '1470',
+			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
+		},
+	],
+	'461': [
+		{
+			gaugeId: '1471',
+			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
+		},
+		{
+			gaugeId: '1472',
+			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
+		},
+		{
+			gaugeId: '1473',
+			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
+		},
+	],
+};
 
 export const PoolsPerPage = 10;
 export const RewardEpochIdentifier = 'day';
