@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import cn from 'clsx';
 import { Container } from '../../containers';
 import { TCardTypes } from '../../../interfaces';
@@ -11,6 +11,7 @@ import { useHistory, withRouter } from 'react-router-dom';
 import { History } from 'history';
 import { SidebarBottom } from './SidebarBottom';
 import isArray from 'lodash-es/isArray';
+import { useWindowScroll } from 'react-use';
 
 interface ChildComponentProps {
 	history: History;
@@ -20,41 +21,51 @@ const SideBar: FunctionComponent<ChildComponentProps> = ({ history }) => {
 	const pathname = history?.location?.pathname;
 
 	const [openSidebar, setOpenSidebar] = React.useState<boolean>(true);
+
 	return (
-		<div
-			// onMouseEnter={() => setOpenSidebar(true)}
-			// onMouseLeave={() => setOpenSidebar(false)}
-			className="overflow-x-visible max-w-sidebar-open min-w-sidebar-open pointer-events-none h-full z-50">
-			<div className="fixed h-full">
-				<Container
-					className={cn(
-						'h-full transition-all pointer-events-auto fixed overflow-x-hidden',
-						openSidebar ? 'min-w-sidebar-open max-w-sidebar-open' : 'min-w-sidebar-closed max-w-sidebar-closed'
-					)}
-					type={TCardTypes.CARD}>
-					<div className="w-full h-full py-6 px-4 flex flex-col justify-between">
-						<div>
-							<section className="mb-15 px-1">
-								<LogoArea openSidebar={openSidebar} />
-							</section>
-							<section>
-								{mapKeyValues(LAYOUT.SIDEBAR, (_: string, value: TSIDEBAR_ITEM) => (
-									<SidebarItem
-										key={value.TEXT}
-										selected={pathnameCheck(pathname, value.SELECTED_CHECK)}
-										openSidebar={openSidebar}
-										sidebarItem={value}
-									/>
-								))}
-							</section>
+		<React.Fragment>
+			<div
+				className={`overflow-x-visible max-w-sidebar-open min-w-sidebar-open pointer-events-none h-full z-50 absolute md:block ${
+					openSidebar ? 'block' : 'hidden'
+				}`}>
+				<div className="fixed h-full">
+					<Container
+						className={cn('h-full transition-all pointer-events-auto fixed overflow-x-hidden')}
+						type={TCardTypes.CARD}>
+						<div className="w-full h-full py-6 px-4 flex flex-col justify-between">
+							<div>
+								<section className="mb-15 flex flex-row items-center">
+									<div className="px-1">
+										<LogoArea openSidebar={openSidebar} />
+									</div>
+									<div className="ml-2 mt-1" onClick={() => setOpenSidebar(false)}>
+										<img className="w-9" src="/public/assets/Icons/Close.svg" />
+									</div>
+								</section>
+								<section>
+									{mapKeyValues(LAYOUT.SIDEBAR, (_: string, value: TSIDEBAR_ITEM) => (
+										<SidebarItem
+											key={value.TEXT}
+											selected={pathnameCheck(pathname, value.SELECTED_CHECK)}
+											openSidebar={openSidebar}
+											sidebarItem={value}
+										/>
+									))}
+								</section>
+							</div>
+							<div>
+								<SidebarBottom openSidebar={openSidebar} />
+							</div>
 						</div>
-						<div>
-							<SidebarBottom openSidebar={openSidebar} />
-						</div>
-					</div>
-				</Container>
+					</Container>
+				</div>
 			</div>
-		</div>
+			<div
+				className="block absolute md:hidden z-10 bg-card rounded-lg px-0.25 pt-0.75 top-3.5 left-2.5 border border-white-faint"
+				onClick={() => setOpenSidebar(true)}>
+				<img className="h-15" src="/public/assets/main/logo-single.png" alt="osmosis-logo" />
+			</div>
+		</React.Fragment>
 	);
 };
 const pathnameCheck = (str: string, routes: TSIDEBAR_SELECTED_CHECK) => {
