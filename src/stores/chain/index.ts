@@ -5,6 +5,7 @@ import { ChainStore as BaseChainStore } from '@keplr-wallet/stores';
 import { ChainInfo } from '@keplr-wallet/types';
 
 export interface ChainInfoWithExplorer extends ChainInfo {
+	osmosisOnlyQueryPoolsRest?: string;
 	// Formed as "https://explorer.com/{txHash}"
 	explorerUrlToTx: string;
 }

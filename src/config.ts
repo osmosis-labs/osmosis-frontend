@@ -197,6 +197,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	{
 		rpc: 'https://rpc-osmosis.keplr.app',
 		rest: 'https://lcd-osmosis.keplr.app',
+		/*
+		 osmosisOnlyQueryPoolsRest sets the endpoint url for querying only pools.
+		 At first of launching osmosis, we thought the pools wouldn't be created that many.
+		 However, since there are close to 500 pools and it takes a lot of resources to query them,
+		 as a temporary solution, we separate the general rest and the rest for only querying pools.
+		 */
+		osmosisOnlyQueryPoolsRest: 'https://lcd-osmosis-pools.keplr.app',
 		chainId: 'osmosis-1',
 		chainName: 'Osmosis',
 		stakeCurrency: {
