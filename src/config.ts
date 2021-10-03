@@ -185,6 +185,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'eeur',
 	},
+	{
+		counterpartyChainId: 'juno-1',
+		sourceChannelId: 'channel-42',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'ujuno',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -573,5 +579,39 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://emoney.bigdipper.live/transactions/${txHash}',
+	},
+	{
+		rpc: 'https://rpc-juno.itastakers.com',
+		rest: 'https://lcd-juno.itastakers.com',
+		chainId: 'juno-1',
+		chainName: 'Juno',
+		stakeCurrency: {
+			coinDenom: 'JUNO',
+			coinMinimalDenom: 'ujuno',
+			coinDecimals: 6,
+			coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('juno'),
+		currencies: [
+			{
+				coinDenom: 'JUNO',
+				coinMinimalDenom: 'ujuno',
+				coinDecimals: 6,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'JUNO',
+				coinMinimalDenom: 'ujuno',
+				coinDecimals: 6,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'http://junoscan.com/tx/${txHash}',
 	},
 ];
