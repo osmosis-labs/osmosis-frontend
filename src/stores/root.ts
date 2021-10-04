@@ -50,7 +50,7 @@ export class RootStore {
 
 				msgOpts: {
 					ibcTransfer: {
-						gas: 850000,
+						gas: 1000000,
 					},
 				},
 
