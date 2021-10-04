@@ -596,6 +596,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'JUNO',
 			coinMinimalDenom: 'ujuno',
 			coinDecimals: 6,
+			coinGeckoId: 'pool:ujuno',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 		},
 		bip44: {
@@ -607,6 +608,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'JUNO',
 				coinMinimalDenom: 'ujuno',
 				coinDecimals: 6,
+				coinGeckoId: 'pool:ujuno',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 			},
 		],
@@ -615,6 +617,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'JUNO',
 				coinMinimalDenom: 'ujuno',
 				coinDecimals: 6,
+				coinGeckoId: 'pool:ujuno',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 			},
 		],
