@@ -6,6 +6,7 @@ import { TokenBoxContainer, TokenBoxRow } from 'src/components/SwapToken/StyledT
 import { TokenSelect } from 'src/components/SwapToken/TokenSelect';
 import { Text, TitleText } from 'src/components/Texts';
 import { useBooleanStateWithWindowEvent } from 'src/hooks/useBooleanStateWithWindowEvent';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
 	config: TokenOutSwapConfig;
@@ -15,10 +16,13 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
 export const ToBox = observer(function ToBox({ config, dropdownClassName, dropdownStyle, ...props }: Props) {
 	const [isTokenDropdownOpen, setIsTokenDropdownOpen] = useBooleanStateWithWindowEvent(false);
+	const { isMobileView } = useWindowSize();
 	return (
 		<TokenBoxContainer {...props}>
 			<TokenBoxRow>
-				<Text emphasis="medium">To</Text>
+				<Text isMobileView={isMobileView} emphasis="medium">
+					To
+				</Text>
 			</TokenBoxRow>
 			<TokenBoxRow>
 				<TokenSelect
@@ -33,7 +37,10 @@ export const ToBox = observer(function ToBox({ config, dropdownClassName, dropdo
 					dropdownStyle={dropdownStyle}
 					dropdownClassName={dropdownClassName}
 				/>
-				<TitleText pb={0} style={{ opacity: config.outAmount.toDec().equals(new Dec(0)) ? 0.4 : undefined }}>
+				<TitleText
+					isMobileView={isMobileView}
+					pb={0}
+					style={{ opacity: config.outAmount.toDec().equals(new Dec(0)) ? 0.4 : undefined, textAlign: 'right' }}>
 					{`≈ ${config.outAmount
 						.trim(true)
 						.maxDecimals(6)

@@ -150,6 +150,7 @@ module.exports = {
 			pass: '#34EF52',
 			missionError: '#EF3456',
 			black: '#000000',
+			backdrop: 'rgba(0, 0, 0, 0.3)',
 		},
 		backgroundColor: themes => ({
 			...themes('colors'),

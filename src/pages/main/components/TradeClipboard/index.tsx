@@ -14,6 +14,7 @@ import { useStore } from 'src/stores';
 import { useTradeConfig } from '../../hooks/useTradeConfig';
 import { SwapButton } from '../SwapButton';
 import { TradeTxSettings } from './TradeTxSettings';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 export const TradeClipboard: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore, accountStore, swapManager } = useStore();
@@ -36,6 +37,8 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 	);
 	config.setFeeConfig(feeConfig);
 
+	const { isMobileView } = useWindowSize();
+
 	useEffect(() => {
 		for (const currency of config.sendableCurrencies) {
 			// Try to get the information of all sendable currencies.
@@ -53,20 +56,12 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 				<TradeTxSettings config={config} />
 
 				<TradeAmountSection>
-					<FromBox
-						config={config}
-						style={{ marginBottom: 18 }}
-						dropdownStyle={{ marginLeft: -16, width: 420 + 16 + 20 }}
-					/>
+					<FromBox config={config} style={{ marginBottom: isMobileView ? 12 : 18 }} />
 					<SwitchInOutButton type="button" onClick={() => config.switchInAndOut()} />
-					<ToBox
-						config={config}
-						style={{ marginBottom: 18 }}
-						dropdownStyle={{ marginLeft: -16, width: 420 + 16 + 20 }}
-					/>
+					<ToBox config={config} style={{ marginBottom: isMobileView ? 12 : 18 }} />
 				</TradeAmountSection>
 
-				<FeesBox style={{ marginBottom: 50 }} config={config} />
+				<FeesBox style={{ marginBottom: isMobileView ? 36 : 50 }} config={config} />
 
 				<SwapButton config={config} />
 			</TradeClipboardContent>
@@ -77,12 +72,17 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 const TradeClipboardContainer = styled.div`
 	width: 100%;
 	height: 100%;
-	padding: 10px;
+	padding: 16px;
+	margin-top: 20px;
 	border-radius: 1rem;
 	position: relative;
-	border: 2px solid ${colorPrimaryLight};
-	${cssRaiseButtonShadow};
-	background-color: ${colorPrimary};
+
+	@media (min-width: 768px) {
+		padding: 10px;
+		border: 2px solid ${colorPrimaryLight};
+		${cssRaiseButtonShadow};
+		background-color: ${colorPrimary};
+	}
 `;
 
 const TradeClipboardContent = styled.div`
@@ -91,14 +91,22 @@ const TradeClipboardContent = styled.div`
 	height: 100%;
 	background-color: ${colorPrimaryLight};
 	border-radius: 0.375rem;
-	padding: 20px;
 	z-index: 0;
+	padding: 10px;
+
+	@media (min-width: 768px) {
+		padding: 20px 20px 30px;
+	}
 `;
 
 const TradeAmountSection = styled.section`
 	width: 100%;
-	margin-top: 20px;
+	margin-top: 12px;
 	position: relative;
+
+	@media (min-width: 768px) {
+		margin-top: 20px;
+	}
 `;
 
 function SwitchInOutButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {

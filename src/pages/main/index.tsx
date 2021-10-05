@@ -65,11 +65,11 @@ const TradePosition = styled.div`
 `;
 
 const TradeContainer = styled.div`
-	width: 520px;
-	height: 672px;
-	margin-bottom: 130px;
-	@media (max-height: 800px) {
-		margin-bottom: initial;
+	width: 100%;
+	max-height: 678px;
+
+	@media (min-width: 768px) {
+		margin-bottom: 130px;
 	}
 `;
 

@@ -57,11 +57,15 @@ export const CtaButton = styled.button`
 	width: 100%;
 	border-radius: 1rem;
 	background-color: ${colorPrimary200};
-	height: 3.75rem;
+	height: 3rem;
 	&:hover {
 		opacity: 0.75;
 	}
 	&:disabled {
 		opacity: 0.5;
+	}
+
+	@media (min-width: 768px) {
+		height: 3.75rem;
 	}
 `;
