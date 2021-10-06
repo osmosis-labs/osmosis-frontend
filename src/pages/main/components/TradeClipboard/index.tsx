@@ -56,9 +56,9 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 				<TradeTxSettings config={config} />
 
 				<TradeAmountSection>
-					<FromBox config={config} style={{ marginBottom: isMobileView ? 12 : 18 }} />
+					<FromBox config={config} style={{ marginBottom: isMobileView ? 14 : 18 }} />
 					<SwitchInOutButton type="button" onClick={() => config.switchInAndOut()} />
-					<ToBox config={config} style={{ marginBottom: isMobileView ? 12 : 18 }} />
+					<ToBox config={config} style={{ marginBottom: isMobileView ? 14 : 18 }} />
 				</TradeAmountSection>
 
 				<FeesBox style={{ marginBottom: isMobileView ? 36 : 50 }} config={config} />
@@ -72,7 +72,7 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 const TradeClipboardContainer = styled.div`
 	width: 100%;
 	height: 100%;
-	padding: 16px;
+	padding: 20px;
 	margin-top: 20px;
 	border-radius: 1rem;
 	position: relative;
@@ -92,7 +92,7 @@ const TradeClipboardContent = styled.div`
 	background-color: ${colorPrimaryLight};
 	border-radius: 0.375rem;
 	z-index: 0;
-	padding: 10px;
+	padding: 10px 10px 0;
 
 	@media (min-width: 768px) {
 		padding: 20px 20px 30px;

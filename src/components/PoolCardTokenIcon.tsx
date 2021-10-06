@@ -33,8 +33,8 @@ const TokenIconBackground = styled.figure`
 `;
 
 const TokenIconContainer = styled.figure<{ poolId?: string | number }>`
-	width: 4.5rem;
-	height: 4.5rem;
+	width: 4rem;
+	height: 4rem;
 	border-radius: 9999px;
 	display: flex;
 	justify-content: center;
@@ -44,6 +44,11 @@ const TokenIconContainer = styled.figure<{ poolId?: string | number }>`
 			background-image: ${getLinearGradient(poolId)};
 		`;
 	}}
+
+	@media (min-width: 768px) {
+		width: 4.5rem;
+		height: 4.5rem;
+	}
 `;
 
 const TokenIconImg = styled(Img)`

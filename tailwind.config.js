@@ -180,6 +180,7 @@ module.exports = {
 			height: {
 				...sizes,
 				screen: '100vh',
+				fit: 'fit-content',
 			},
 			minHeight: {
 				...sizes,

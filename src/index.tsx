@@ -40,7 +40,7 @@ const Router: FunctionComponent = () => {
 				<ToastProvider>
 					<IBCHistoryNotifier />
 					<Terms />
-					<div className="min-h-sidebar-minHeight h-screen bg-background z-0">
+					<div className="md:h-screen bg-background z-0">
 						<BrowserRouter>
 							<Switch>
 								<Route exact path="/">

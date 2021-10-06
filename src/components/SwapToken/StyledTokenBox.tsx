@@ -4,7 +4,7 @@ import { colorPrimaryDark } from 'src/emotionStyles/colors';
 export const TokenBoxContainer = styled.div`
 	position: relative;
 	border-radius: 0.75rem;
-	padding: 12px 12px 4px 12px;
+	padding: 12px 12px 6px 12px;
 	background-color: ${colorPrimaryDark};
 
 	@media (min-width: 768px) {

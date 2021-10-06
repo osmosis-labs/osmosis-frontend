@@ -80,7 +80,7 @@ const TokenSelectListContainer = styled.div`
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	width: calc(100vw - 52px);
+	width: calc(100vw - 60px);
 	max-width: 468px;
 	margin-left: -12px;
 	transform: translateY(100%);
