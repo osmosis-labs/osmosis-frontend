@@ -567,6 +567,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'EEUR',
 				coinMinimalDenom: 'eeur',
 				coinDecimals: 6,
+				coinGeckoId: 'e-money-eur',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ngm.png',
 			},
 		],
