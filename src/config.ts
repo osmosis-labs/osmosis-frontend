@@ -632,8 +632,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'http://junoscan.com/tx/${txHash}',
 	},
 	{
-		rpc: 'TODO',
-		rest: 'TODO',
+		rpc: 'http://45.79.207.112:26657/',
+		rest: 'http://45.79.207.112:1317/',
 		chainId: 'microtick-1',
 		chainName: 'Microtick',
 		stakeCurrency: {
