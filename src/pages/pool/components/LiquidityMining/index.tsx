@@ -8,6 +8,7 @@ import { CenterSelf, WellContainer } from 'src/components/layouts/Containers';
 import { TitleText, Text } from 'src/components/Texts';
 import { ExtraGaugeInPool } from 'src/config';
 import { LockLpTokenDialog } from 'src/dialogs';
+import useWindowSize from 'src/hooks/useWindowSize';
 import { useStore } from 'src/stores';
 import { ExtraGauge } from './ExtraGauge';
 import { MyBondingsTable } from './MyBondingsTable';
@@ -19,6 +20,8 @@ interface Props {
 
 export const LiquidityMining = observer(function LiquidityMining({ poolId }: Props) {
 	const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+
+	const { isMobileView } = useWindowSize();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
@@ -36,101 +39,138 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 	const closeDialog = () => setIsDialogOpen(false);
 
 	return (
-		<CenterSelf>
-			<LockLpTokenDialog isOpen={isDialogOpen} close={closeDialog} poolId={poolId} />
-			<LiquidityMiningSummary>
-				<div>
-					<TitleText weight="semiBold">Liquidity Mining</TitleText>
-					<Text>
-						Bond liquidity to various minimum unbonding period to earn
-						<br />
-						OSMO liquidity reward and swap fees
-					</Text>
-				</div>
-				<AvailableLpColumn>
-					<Text pb={12}>Available LP tokens</Text>
-					<Text pb={16} size="xl" emphasis="high" weight="semiBold">
-						{/* TODO: 풀의 TVL을 계산할 수 없는 경우 그냥 코인 그대로 보여줘야할듯... */}
-						{!totalPoolShare.toDec().equals(new Dec(0))
-							? poolTotalValueLocked.mul(myPoolShare.quo(totalPoolShare)).toString()
-							: '$0'}
-					</Text>
-					<ButtonPrimary
-						onClick={() => {
-							setIsDialogOpen(true);
-						}}>
-						<Text emphasis="high">Start Earning</Text>
-					</ButtonPrimary>
-				</AvailableLpColumn>
-			</LiquidityMiningSummary>
-			{(() => {
-				const gauge = ExtraGaugeInPool[poolId];
-				if (gauge) {
-					const currency = chainStore.currentFluent.findCurrency(gauge.denom);
-					if (currency) {
-						return (
-							<ExtraGauge gaugeId={gauge.gaugeId} currency={currency} extraRewardAmount={gauge.extraRewardAmount} />
-						);
+		<>
+			<LiquidityMiningContainer>
+				<LockLpTokenDialog isOpen={isDialogOpen} close={closeDialog} poolId={poolId} />
+				<LiquidityMiningSummary>
+					<div>
+						<TitleText isMobileView={isMobileView} weight="semiBold">
+							Liquidity Mining
+						</TitleText>
+						<Text isMobileView={isMobileView}>
+							Bond liquidity to various minimum unbonding period to earn
+							{!isMobileView && <br />}
+							OSMO liquidity reward and swap fees
+						</Text>
+					</div>
+					<AvailableLpColumn>
+						<Text isMobileView={isMobileView} pb={12}>
+							Available LP tokens
+						</Text>
+						<Text isMobileView={isMobileView} pb={16} size="xl" emphasis="high" weight="semiBold">
+							{/* TODO: 풀의 TVL을 계산할 수 없는 경우 그냥 코인 그대로 보여줘야할듯... */}
+							{!totalPoolShare.toDec().equals(new Dec(0))
+								? poolTotalValueLocked.mul(myPoolShare.quo(totalPoolShare)).toString()
+								: '$0'}
+						</Text>
+						<div>
+							<ButtonPrimary
+								onClick={() => {
+									setIsDialogOpen(true);
+								}}>
+								<Text isMobileView={isMobileView} emphasis="high">
+									Start Earning
+								</Text>
+							</ButtonPrimary>
+						</div>
+					</AvailableLpColumn>
+				</LiquidityMiningSummary>
+				{(() => {
+					const gauge = ExtraGaugeInPool[poolId];
+					if (gauge) {
+						const currency = chainStore.currentFluent.findCurrency(gauge.denom);
+						if (currency) {
+							return (
+								<ExtraGauge gaugeId={gauge.gaugeId} currency={currency} extraRewardAmount={gauge.extraRewardAmount} />
+							);
+						}
 					}
-				}
-				return null;
-			})()}
-			<LockDurationSection>
-				{lockableDurations.map((lockableDuration, i) => {
-					return (
-						<LockupBox
-							key={i.toString()}
-							apy={`${queries.osmosis.queryIncentivizedPools
-								.computeAPY(poolId, lockableDuration, priceStore, priceStore.getFiatCurrency('usd')!)
-								.toString()}%`}
-							duration={lockableDuration.humanize()}
-						/>
-					);
-				})}
-			</LockDurationSection>
+					return null;
+				})()}
+				<LockDurationSection>
+					{lockableDurations.map((lockableDuration, i) => {
+						return (
+							<LockupBox
+								key={i.toString()}
+								apy={`${queries.osmosis.queryIncentivizedPools
+									.computeAPY(poolId, lockableDuration, priceStore, priceStore.getFiatCurrency('usd')!)
+									.toString()}%`}
+								duration={lockableDuration.humanize()}
+								isMobileView={isMobileView}
+							/>
+						);
+					})}
+				</LockDurationSection>
+			</LiquidityMiningContainer>
 			<TableSection>
 				<MyBondingsTable poolId={poolId} />
 			</TableSection>
 			<TableSection>
 				<MyUnBondingTable poolId={poolId} />
 			</TableSection>
-		</CenterSelf>
+		</>
 	);
 });
 
 const LockupBox: FunctionComponent<{
 	duration: string;
 	apy: string;
-}> = ({ duration, apy }) => {
+	isMobileView: boolean;
+}> = ({ duration, apy, isMobileView }) => {
 	return (
 		<WellContainer>
-			<TitleText weight="medium">{duration} unbonding</TitleText>
-			<Text color="gold" size="lg">
+			<TitleText isMobileView={isMobileView} weight="medium">
+				{duration} unbonding
+			</TitleText>
+			<Text isMobileView={isMobileView} color="gold" size="lg">
 				APR {apy}
 			</Text>
 		</WellContainer>
 	);
 };
 
+const LiquidityMiningContainer = styled(CenterSelf)`
+	padding: 20px 20px 28px;
+
+	@media (min-width: 768px) {
+		padding: 40px;
+	}
+`;
+
 const LiquidityMiningSummary = styled.div`
 	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
+	flex-direction: column;
+	gap: 32px;
+
+	@media (min-width: 768px) {
+		flex-direction: row;
+		justify-content: space-between;
+		gap: 0;
+	}
 `;
 
 const AvailableLpColumn = styled.div`
 	display: flex;
 	flex-direction: column;
-	align-items: flex-end;
+	align-item: flex-start;
+
+	@media (min-width: 768px) {
+		align-items: flex-end;
+	}
 `;
 
 const LockDurationSection = styled.div`
 	margin-top: 40px;
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 36px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+
+	@media (min-width: 768px) {
+		flex-wrap: nowrap;
+		gap: 36px;
+	}
 `;
 
 const TableSection = styled.div`
-	margin-top: 40px;
+	padding-bottom: 20px;
 `;

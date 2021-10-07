@@ -24,12 +24,18 @@ const TokenIconBackground = styled.figure`
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 84px;
-	height: 84px;
+	width: 4.75rem;
+	height: 4.75rem;
 	border-radius: 9999px;
 	border-width: 1px;
 	border-color: rgba(196, 164, 106, 1);
-	margin-right: 24px;
+	margin-right: 20px;
+
+	@media (min-width: 768px) {
+		width: 5.25rem;
+		height: 5.25rem;
+		margin-right: 24px;
+	}
 `;
 
 const TokenIconContainer = styled.figure<{ poolId?: string | number }>`

@@ -6,15 +6,24 @@ const TableRowBaseStyled = styled.tr`
 	align-items: center;
 	width: 100%;
 	border-bottom-width: 1px;
-	padding-left: 50px;
-	padding-right: 60px;
+	padding-left: 20px;
+	padding-right: 20px;
+
+	@media (min-width: 768px) {
+		padding-left: 50px;
+		padding-right: 60px;
+	}
 `;
 
 export const TableHeadRow = styled(TableRowBaseStyled)`
 	background-color: ${colorPrimary};
-	border-top-left-radius: 1rem;
-	border-top-right-radius: 1rem;
-	margin-top: 20px;
+	margin-top: 10px;
+
+	@media (min-width: 768px) {
+		margin-top: 20px;
+		border-top-left-radius: 1rem;
+		border-top-right-radius: 1rem;
+	}
 `;
 
 export const TableBodyRow = styled(TableRowBaseStyled)<{ height?: number }>`
@@ -24,5 +33,9 @@ export const TableBodyRow = styled(TableRowBaseStyled)<{ height?: number }>`
 export const TableData = styled.td`
 	display: flex;
 	align-items: center;
-	padding: 12px 8px;
+	padding: 8px 0;
+
+	@media (min-width: 768px) {
+		padding: 12px 8px;
+	}
 `;

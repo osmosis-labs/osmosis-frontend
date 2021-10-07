@@ -30,6 +30,10 @@ const SideBar: FunctionComponent = () => {
 	}, []);
 
 	React.useEffect(() => {
+		setIsOpenSidebar(false);
+	}, [pathname]);
+
+	React.useEffect(() => {
 		if (isOpenSidebar) {
 			document.body.style.height = '100%';
 			document.body.style.overflow = 'hidden';
@@ -41,9 +45,9 @@ const SideBar: FunctionComponent = () => {
 
 	return (
 		<React.Fragment>
-			{isOpenSidebar && <div className="absolute z-10 w-full h-full bg-black bg-opacity-50 md:hidden" />}
+			{isOpenSidebar && <div className="fixed z-20 w-full h-full bg-black bg-opacity-75 md:hidden" />}
 			<div
-				className={`w-full overflow-x-visible max-w-sidebar-open min-w-sidebar-open pointer-events-none h-full z-50 absolute md:relative ${
+				className={`w-full overflow-x-visible max-w-sidebar-open min-w-sidebar-open pointer-events-none h-full z-100 absolute md:relative ${
 					isOpenSidebar ? 'block' : 'hidden'
 				} md:block`}>
 				<div className="fixed h-full">
@@ -81,9 +85,9 @@ const SideBar: FunctionComponent = () => {
 				</div>
 			</div>
 			<div
-				className={`fixed z-10 top-0 left-0 p-5 md:py-6 w-full flex justify-between items-center md:hidden bg-black ${
-					!isOnTop ? 'bg-opacity-75' : 'bg-opacity-0'
-				} transition-colors duration-500`}>
+				className={`fixed z-20 top-0 left-0 p-5 md:py-6 w-full flex justify-between items-center md:hidden bg-black ${
+					isOnTop || isOpenSidebar ? 'bg-opacity-0' : 'bg-opacity-75'
+				} ${!isOpenSidebar ? 'transition-colors duration-300' : ''}`}>
 				<img
 					className="h-10 md:h-12"
 					src="/public/assets/main/osmosis-logo-main.svg"

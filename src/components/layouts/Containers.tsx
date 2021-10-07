@@ -63,5 +63,9 @@ export const WellContainer = styled.div`
 	width: 100%;
 	border-radius: 0.75rem;
 	background-color: ${colorPrimary};
-	padding: 24px 30px;
+	padding: 18px 24px;
+
+	@media (min-width: 768px) {
+		padding: 24px 30px;
+	}
 `;

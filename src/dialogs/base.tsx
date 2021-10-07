@@ -14,10 +14,17 @@ export const BaseDialog: FunctionComponent<BaseDialogProps> = ({ isOpen, close, 
 		<React.Fragment>
 			{isOpen ? (
 				<Dialog as="div" className="fixed inset-0 z-100 overflow-y-auto" open={isOpen} onClose={close}>
-					<div className="flex items-center justify-center min-h-screen">
+					<div className="p-5 md:p-0 flex items-center justify-center min-h-screen">
 						<Dialog.Overlay className="fixed inset-0 bg-black opacity-20 z-0" />
-						<div style={dialogStyle} className="min-w-modal p-8 bg-surface shadow-elevation-24dp rounded-2xl z-10">
+						<div
+							style={dialogStyle}
+							className="relative w-full md:min-w-modal px-4 py-5 md:p-8 bg-surface shadow-elevation-24dp rounded-2xl z-10">
 							{children}
+							<img
+								onClick={() => close()}
+								className="absolute cursor-pointer top-4 md:top-6 right-3 md:right-5 w-8 md:w-10"
+								src="/public/assets/Icons/Close.svg"
+							/>
 						</div>
 					</div>
 				</Dialog>
