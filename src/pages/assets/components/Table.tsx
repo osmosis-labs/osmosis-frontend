@@ -5,13 +5,15 @@ export const TableHeaderRow = styled.tr`
 	display: flex;
 	align-items: center;
 	width: 100%;
-	padding-left: 20px;
-	padding-right: 20px;
+	padding-left: 14px;
+	padding-right: 14px;
 	border-bottom-width: 1px;
 	background-color: ${colorPrimary};
 	color: ${colorWhiteRegular};
 
 	@media (min-width: 768px) {
+		padding-top: 0;
+		padding-bottom: 0;
 		padding-left: 50px;
 		padding-right: 60px;
 		border-top-left-radius: 1rem;
@@ -22,11 +24,10 @@ export const TableHeaderRow = styled.tr`
 export const TableRow = styled.tr`
 	display: flex;
 	width: 100%;
-	height: 4.5rem;
 	align-items: center;
 	border-bottom-width: 1px;
-	padding-left: 20px;
-	padding-right: 20px;
+	padding-left: 14px;
+	padding-right: 14px;
 
 	@media (min-width: 768px) {
 		padding-left: 50px;
@@ -43,6 +44,10 @@ const JUSTIFY_CONTENT_BY_ALIGN = {
 export const TableData = styled.td<{ align?: 'left' | 'center' | 'right' }>`
 	display: flex;
 	align-items: center;
-	padding: 16px 8px;
 	justify-content: ${({ align = 'left' }) => JUSTIFY_CONTENT_BY_ALIGN[align]};
+	padding: 12px 6px;
+
+	@media (min-width: 768px) {
+		padding: 16px 8px;
+	}
 `;

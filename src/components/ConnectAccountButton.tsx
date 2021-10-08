@@ -19,11 +19,14 @@ const ConnectAccountButtonWrapper = styled.button`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	margin-bottom: 32px;
 	width: 100%;
 	padding: 8px 4px;
 	border-radius: 0.375rem;
 	background-color: ${colorPrimary200};
+
+	@media (min-width: 768px) {
+		margin-bottom: 32px;
+	}
 `;
 
 const WalletImg = styled(Img)`

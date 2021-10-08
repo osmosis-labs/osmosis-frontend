@@ -133,7 +133,7 @@ const MissionCardContainer = styled.li`
 	width: 100%;
 	border-radius: 1rem;
 	border: 1px solid ${colorWhiteFaint};
-	padding: 12px 10px;
+	padding: 12px;
 
 	@media (min-width: 768px) {
 		padding: 20px 30px;

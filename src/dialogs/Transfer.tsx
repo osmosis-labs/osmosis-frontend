@@ -24,6 +24,7 @@ export const TransferDialog = wrapBaseDialog(
 			destChannelId,
 			isWithdraw,
 			close,
+			isMobileView,
 		}: {
 			currency: IBCCurrency;
 			counterpartyChainId: string;
@@ -31,6 +32,7 @@ export const TransferDialog = wrapBaseDialog(
 			destChannelId: string;
 			isWithdraw: boolean;
 			close: () => void;
+			isMobileView: boolean;
 		}) => {
 			const { chainStore, accountStore, queriesStore, ibcTransferHistoryStore } = useStore();
 
@@ -74,15 +76,12 @@ export const TransferDialog = wrapBaseDialog(
 
 			return (
 				<div className="w-full h-full text-white-high">
-					<div className="mb-10 flex justify-between items-center w-full">
-						<h5>{isWithdraw ? 'Withdraw' : 'Deposit'} IBC Asset</h5>
-						<button onClick={close} className="hover:opacity-75 cursor-pointer">
-							<Img className="w-6 h-6" src={'/public/assets/Icons/X.svg'} />
-						</button>
+					<div className="mb-5 md:mb-10 flex justify-between items-center w-full">
+						<h5 className="text-lg md:text-xl">{isWithdraw ? 'Withdraw' : 'Deposit'} IBC Asset</h5>
 					</div>
-					<h6 className="mb-4">IBC Transfer</h6>
-					<section className="flex items-center">
-						<div className="flex-1 p-4 border border-white-faint rounded-2xl">
+					<h6 className="mb-3 md:mb-4 text-base md:text-lg">IBC Transfer</h6>
+					<section className="flex flex-col md:flex-row items-center">
+						<div className="w-full flex-1 p-3 md:p-4 border border-white-faint rounded-2xl">
 							<p className="text-white-high">From</p>
 							<p className="text-white-disabled truncate overflow-ellipsis">
 								{pickOne(
@@ -92,10 +91,10 @@ export const TransferDialog = wrapBaseDialog(
 								)}
 							</p>
 						</div>
-						<div className="flex justify-center items-center w-10">
-							<Img src={'/public/assets/Icons/Arrow-Right.svg'} />
+						<div className="flex justify-center items-center w-10 my-2 md:my-0">
+							<Img src={`/public/assets/Icons/Arrow-${isMobileView ? 'Down' : 'Right'}.svg`} />
 						</div>
-						<div className="flex-1 p-4 border border-white-faint rounded-2xl">
+						<div className="w-full flex-1 p-3 md:p-4 border border-white-faint rounded-2xl">
 							<p className="text-white-high">To</p>
 							<p className="text-white-disabled truncate overflow-ellipsis">
 								{pickOne(
@@ -106,9 +105,9 @@ export const TransferDialog = wrapBaseDialog(
 							</p>
 						</div>
 					</section>
-					<h6 className="mt-7">Amount To {isWithdraw ? 'Withdraw' : 'Deposit'}</h6>
-					<div className="mt-4 w-full p-5 border border-secondary-50 border-opacity-60 rounded-2xl">
-						<p className="mb-2">
+					<h6 className="text-base md:text-lg mt-7">Amount To {isWithdraw ? 'Withdraw' : 'Deposit'}</h6>
+					<div className="mt-3 md:mt-4 w-full p-0 md:p-5 border-0 md:border border-secondary-50 border-opacity-60 rounded-2xl">
+						<p className="text-sm md:text-base mb-2">
 							Available balance:{' '}
 							<span className="text-primary-50">
 								{pickOne(
@@ -127,7 +126,7 @@ export const TransferDialog = wrapBaseDialog(
 							</span>
 						</p>
 						<div
-							className="py-2 px-2.5 bg-background rounded-lg grid gap-5"
+							className="py-2 px-2.5 bg-background rounded-lg flex gap-5 relative"
 							style={{ gridTemplateColumns: 'calc(100% - 60px) 40px' }}>
 							<AmountInput
 								type="number"
@@ -141,17 +140,17 @@ export const TransferDialog = wrapBaseDialog(
 							<button
 								onClick={() => amountConfig.toggleIsMax()}
 								className={cn(
-									'my-auto h-6 w-10 bg-white-faint hover:opacity-75 cursor-pointer flex justify-center items-center rounded-md',
+									'my-auto p-1.5 bg-white-faint hover:opacity-75 cursor-pointer flex justify-center items-center rounded-md absolute top-2 right-2 md:static',
 									amountConfig.isMax && 'bg-primary-200'
 								)}>
 								<p className="text-xs text-white-high leading-none">MAX</p>
 							</button>
 						</div>
 					</div>
-					<div className="w-full mt-9 flex items-center justify-center">
+					<div className="w-full mt-6 md:mt-9 flex items-center justify-center">
 						{!isAccountConnected ? (
 							<ConnectAccountButton
-								className="w-2/3 h-15 rounded-2xl"
+								className="w-full md:w-2/3 p-4 md:p-6 rounded-2xl"
 								onClick={e => {
 									e.preventDefault();
 									connectAccount();
@@ -159,7 +158,7 @@ export const TransferDialog = wrapBaseDialog(
 							/>
 						) : (
 							<button
-								className="w-2/3 h-15 bg-primary-200 rounded-2xl flex items-center justify-center hover:opacity-75 disabled:opacity-50"
+								className="w-full md:w-2/3 p-4 md:p-6 bg-primary-200 rounded-2xl flex items-center justify-center hover:opacity-75 disabled:opacity-50"
 								disabled={
 									!account.isReadyToSendMsgs ||
 									!counterpartyAccount.isReadyToSendMsgs ||
@@ -359,7 +358,7 @@ export const TransferDialog = wrapBaseDialog(
 										/>
 									</svg>
 								) : (
-									<h6>{isWithdraw ? 'Withdraw' : 'Deposit'}</h6>
+									<h6 className="text-base md:text-lg">{isWithdraw ? 'Withdraw' : 'Deposit'}</h6>
 								)}
 							</button>
 						)}
