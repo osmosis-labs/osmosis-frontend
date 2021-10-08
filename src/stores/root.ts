@@ -505,8 +505,9 @@ export class RootStore {
 					return originCurrency ? originCurrency.coinDenom : denomTrace.denom;
 				}
 
-				return `${originCurrency ? originCurrency.coinDenom : denomTrace.denom} (${denomTrace.paths.length > 0 ? denomTrace.paths[0].channelId : 'Unknown'
-					})`;
+				return `${originCurrency ? originCurrency.coinDenom : denomTrace.denom} (${
+					denomTrace.paths.length > 0 ? denomTrace.paths[0].channelId : 'Unknown'
+				})`;
 			}
 		);
 
