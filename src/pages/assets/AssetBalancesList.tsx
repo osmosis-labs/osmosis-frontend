@@ -275,25 +275,25 @@ function AssetBalanceRow({
 					{!isMobileView && (
 						<TableData style={{ width: tableWidths[2], position: showComingSoon ? 'relative' : 'initial' }}>
 							{!showComingSoon && onDeposit ? (
-								<ButtonFaint onClick={onDeposit} style={{ display: 'flex', alignItems: 'center' }}>
-									<Text size="sm" color="gold">
-										Deposit
-									</Text>
-								</ButtonFaint>
+								<>
+									<ButtonFaint onClick={onDeposit} style={{ display: 'flex', alignItems: 'center' }}>
+										<p className="text-sm text-secondary-200 leading-none">Deposit</p>
+										<Img src={'/public/assets/Icons/Right.svg'} />
+									</ButtonFaint>
+								</>
 							) : null}
-							<Img src={'/public/assets/Icons/Right.svg'} />
 							{showComingSoon ? <ComingSoonText color="gold">🌲 LBP is live 🌲</ComingSoonText> : null}
 						</TableData>
 					)}
 					{!isMobileView && (
 						<TableData style={{ width: tableWidths[3] }}>
 							{!showComingSoon && onWithdraw ? (
-								<ButtonFaint onClick={onWithdraw} style={{ display: 'flex', alignItems: 'center' }}>
-									<Text size="sm" color="gold">
-										Withdraw
-									</Text>
-									<Img src={'/public/assets/Icons/Right.svg'} />
-								</ButtonFaint>
+								<>
+									<ButtonFaint onClick={onWithdraw} style={{ display: 'flex', alignItems: 'center' }}>
+										<p className="text-sm text-secondary-200 leading-none">Withdraw</p>
+										<Img src={'/public/assets/Icons/Right.svg'} />
+									</ButtonFaint>
+								</>
 							) : null}
 						</TableData>
 					)}
