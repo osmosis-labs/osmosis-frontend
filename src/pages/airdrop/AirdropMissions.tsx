@@ -5,6 +5,7 @@ import React, { HTMLAttributes } from 'react';
 import { SubTitleText, Text, TitleText } from 'src/components/Texts';
 import { colorWhiteFaint } from 'src/emotionStyles/colors';
 import { useStore } from 'src/stores';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 export const ActionToDescription: { [action: string]: string } = {
 	addLiquidity: 'Add liquidity to a pool',
@@ -15,6 +16,7 @@ export const ActionToDescription: { [action: string]: string } = {
 
 export const AirdropMissions = observer(function AirdropMissions(props: HTMLAttributes<HTMLDivElement>) {
 	const { chainStore, queriesStore, accountStore } = useStore();
+	const { isMobileView } = useWindowSize();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const account = accountStore.getAccount(chainStore.current.chainId);
@@ -27,13 +29,16 @@ export const AirdropMissions = observer(function AirdropMissions(props: HTMLAttr
 
 	return (
 		<AirdropMissionsContainer {...props}>
-			<TitleText>Missions</TitleText>
+			<TitleText isMobileView={isMobileView} pb={isMobileView ? 10 : 16}>
+				Missions
+			</TitleText>
 			<MissionCardList>
 				<MissionCard
 					num={0}
 					complete={!isIneligible}
 					description="Hold ATOM on February 18"
 					ineligible={isIneligible}
+					isMobileView={isMobileView}
 				/>
 				{Object.entries(claimRecord.completedActions)
 					.sort(([action1], [action2]) => {
@@ -71,6 +76,7 @@ export const AirdropMissions = observer(function AirdropMissions(props: HTMLAttr
 								complete={value}
 								ineligible={isIneligible}
 								description={ActionToDescription[action] ?? 'Oops'}
+								isMobileView={isMobileView}
 							/>
 						);
 					})}
@@ -81,6 +87,11 @@ export const AirdropMissions = observer(function AirdropMissions(props: HTMLAttr
 
 const AirdropMissionsContainer = styled.div`
 	width: 100%;
+	margin-top: 24px;
+
+	@media (min-width: 768px) {
+		margin-top: 48px;
+	}
 `;
 
 const MissionCardList = styled.ul`
@@ -94,18 +105,21 @@ interface MissionCardProps {
 	description: string;
 	complete: boolean;
 	ineligible: boolean;
+	isMobileView: boolean;
 }
 
-function MissionCard({ num, description, complete, ineligible }: MissionCardProps) {
+function MissionCard({ num, description, complete, ineligible, isMobileView }: MissionCardProps) {
 	return (
 		<MissionCardContainer>
 			<div>
-				<Text emphasis="high" pb={8}>
+				<Text emphasis="high" pb={8} isMobileView={isMobileView}>
 					Mission #{num}
 				</Text>
-				<SubTitleText pb={0}>{description}</SubTitleText>
+				<SubTitleText pb={0} isMobileView={isMobileView}>
+					{description}
+				</SubTitleText>
 			</div>
-			<SubTitleText color={complete ? 'green' : 'red'}>
+			<SubTitleText color={complete ? 'green' : 'red'} isMobileView={isMobileView}>
 				{ineligible ? 'Ineligible' : complete ? 'Complete' : 'Not Complete'}
 			</SubTitleText>
 		</MissionCardContainer>
@@ -119,5 +133,9 @@ const MissionCardContainer = styled.li`
 	width: 100%;
 	border-radius: 1rem;
 	border: 1px solid ${colorWhiteFaint};
-	padding: 20px 30px;
+	padding: 12px 10px;
+
+	@media (min-width: 768px) {
+		padding: 20px 30px;
+	}
 `;
