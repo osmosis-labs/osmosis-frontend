@@ -632,8 +632,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'http://junoscan.com/tx/${txHash}',
 	},
 	{
-		rpc: 'http://45.79.207.112:26657/',
-		rest: 'http://45.79.207.112:1317/',
+		rpc: 'https://rpc-microtick.keplr.app',
+		rest: 'https://lcd-microtick.keplr.app',
 		chainId: 'microtick-1',
 		chainName: 'Microtick',
 		stakeCurrency: {
