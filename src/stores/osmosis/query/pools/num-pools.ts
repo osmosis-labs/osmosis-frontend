@@ -3,28 +3,12 @@ import { NumPools } from './types';
 import { KVStore } from '@keplr-wallet/common';
 import { computed, makeObservable } from 'mobx';
 import { computedFn } from 'mobx-utils';
-import Axios, { AxiosInstance } from 'axios';
 
 export class ObservableQueryNumPools extends ObservableChainQuery<NumPools> {
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
 		super(kvStore, chainId, chainGetter, '/osmosis/gamm/v1beta1/num_pools');
 
 		makeObservable(this);
-	}
-
-	protected get instance(): AxiosInstance {
-		const chainInfo = this.chainGetter.getChain(this.chainId);
-
-		const raw = chainInfo.raw as {
-			osmosisOnlyQueryPoolsRest?: string;
-		};
-		if (raw.osmosisOnlyQueryPoolsRest) {
-			return Axios.create({
-				baseURL: raw.osmosisOnlyQueryPoolsRest,
-			});
-		}
-
-		return super.instance;
 	}
 
 	@computed

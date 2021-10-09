@@ -7,28 +7,12 @@ import { makeObservable } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import { QueriedPoolBase } from '../pool';
 import { Pools } from './types';
-import Axios, { AxiosInstance } from 'axios';
 
 export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> {
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
 		super(kvStore, chainId, chainGetter, `/osmosis/gamm/v1beta1/pools?pagination.limit=750`);
 
 		makeObservable(this);
-	}
-
-	protected get instance(): AxiosInstance {
-		const chainInfo = this.chainGetter.getChain(this.chainId);
-
-		const raw = chainInfo.raw as {
-			osmosisOnlyQueryPoolsRest?: string;
-		};
-		if (raw.osmosisOnlyQueryPoolsRest) {
-			return Axios.create({
-				baseURL: raw.osmosisOnlyQueryPoolsRest,
-			});
-		}
-
-		return super.instance;
 	}
 
 	protected setResponse(response: Readonly<QueryResponse<Pools>>) {
