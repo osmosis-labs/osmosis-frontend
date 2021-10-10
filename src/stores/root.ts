@@ -195,7 +195,7 @@ export class RootStore {
 					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-39' }], 'utick'),
 					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
 					destCoinId: 'cosmos',
-				},
+				}
 			]
 		);
 
@@ -537,9 +537,8 @@ export class RootStore {
 					return originCurrency ? originCurrency.coinDenom : denomTrace.denom;
 				}
 
-				return `${originCurrency ? originCurrency.coinDenom : denomTrace.denom} (${
-					denomTrace.paths.length > 0 ? denomTrace.paths[0].channelId : 'Unknown'
-				})`;
+				return `${originCurrency ? originCurrency.coinDenom : denomTrace.denom} (${denomTrace.paths.length > 0 ? denomTrace.paths[0].channelId : 'Unknown'
+					})`;
 			}
 		);
 
