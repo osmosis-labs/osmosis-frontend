@@ -749,7 +749,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'IXO',
 			coinMinimalDenom: 'uixo',
 			coinDecimals: 6,
-			coinGeckoId: 'pool:uixo',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/ixo.svg',
 		},
 		bip44: {
@@ -761,7 +760,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'IXO',
 				coinMinimalDenom: 'uixo',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:uixo',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ixo.png',
 			},
 		],
@@ -770,7 +768,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'IXO',
 				coinMinimalDenom: 'uixo',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:uixo',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ixo.png',
 			},
 		],
