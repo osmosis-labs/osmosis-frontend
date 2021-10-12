@@ -20,6 +20,7 @@ export const LabsOverview = observer(function LabsOverview() {
 				dialogStyle={{ minWidth: '656px' }}
 				isOpen={isDialogOpen}
 				close={() => setIsDialogOpen(false)}
+				isHideCloseButton
 			/>
 			<OverviewTitle>
 				<h5 className="flex-shrink-0">Active Pools</h5>
