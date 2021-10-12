@@ -7,11 +7,11 @@ export const TermsDialog = wrapBaseDialog(
 
 		return (
 			<div className="max-w-modal">
-				<h4 className="text-white-high mb-6">{title}</h4>
-				<div className="bg-background rounded-2xl p-5 text-white-mid text-sm mb-6">{children}</div>
-				<div className="flex justify-center items-center text-white-high text-base mb-6">
+				<h4 className="text-white-high mb-6 text-lg md:text-2xl">{title}</h4>
+				<div className="bg-background rounded-2xl p-5 text-white-mid text-xs md:text-sm mb-6">{children}</div>
+				<div className="flex justify-center items-center text-white-high text-sm md:text-base mb-6">
 					<input
-						className="mr-1"
+						className="mr-5 md:mr-1"
 						type="checkbox"
 						checked={isChecked}
 						onChange={() => {
@@ -36,7 +36,7 @@ export const TermsDialog = wrapBaseDialog(
 							onAgree();
 						}}
 						disabled={!isChecked}
-						className="bg-primary-200 px-12.5 py-4 text-lg text-white-high flex justify-center items-center rounded-lg hover:opacity-75 disabled:opacity-50">
+						className="bg-primary-200 px-8 md:px-12.5 py-4 text-base md:text-lg text-white-high flex justify-center items-center rounded-lg hover:opacity-75 disabled:opacity-50">
 						Proceed
 					</button>
 				</div>

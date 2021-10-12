@@ -18,7 +18,7 @@ export const BaseDialog: FunctionComponent<BaseDialogProps> = ({ isOpen, close, 
 						<Dialog.Overlay className="fixed inset-0 bg-black opacity-20 z-0" />
 						<div
 							style={dialogStyle}
-							className="relative w-full md:min-w-modal px-4 py-5 md:p-8 bg-surface shadow-elevation-24dp rounded-2xl z-10">
+							className="relative w-full md:min-w-modal md:max-w-modal px-4 py-5 md:p-8 bg-surface shadow-elevation-24dp rounded-2xl z-10">
 							{children}
 							<img
 								onClick={() => close()}
