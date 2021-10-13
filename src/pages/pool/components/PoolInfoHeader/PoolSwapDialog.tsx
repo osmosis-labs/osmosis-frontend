@@ -12,6 +12,7 @@ import { FeesBox } from 'src/components/SwapToken/FeesBox';
 import { SwapButton } from 'src/pages/pool/components/PoolInfoHeader/SwapButton';
 import { usePoolSwapConfig } from 'src/pages/pool/components/PoolInfoHeader/usePoolSwapConfig';
 import { useStore } from 'src/stores';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 interface PoolSwapDialogProps {
 	poolId: string;
@@ -21,6 +22,7 @@ interface PoolSwapDialogProps {
 export const PoolSwapDialog = wrapBaseDialog(
 	observer(function PoolSwapDialog({ poolId, close }: PoolSwapDialogProps) {
 		const { chainStore, queriesStore, accountStore } = useStore();
+		const { isMobileView } = useWindowSize();
 
 		const account = accountStore.getAccount(chainStore.current.chainId);
 		const queries = queriesStore.get(chainStore.current.chainId);
@@ -38,11 +40,13 @@ export const PoolSwapDialog = wrapBaseDialog(
 
 		return (
 			<PoolSwapDialogContainer>
-				<TitleText pb={30}>Swap Tokens</TitleText>
+				<TitleText isMobileView={isMobileView} pb={isMobileView ? 16 : 30}>
+					Swap Tokens
+				</TitleText>
 				<PoolSwapDialogContent>
 					<PairContainer>
-						<div style={{ marginBottom: 18 }}>
-							<FromBox config={config} dropdownStyle={{ marginLeft: -16, width: 500 + 16 + 20 }} />
+						<div style={{ marginBottom: isMobileView ? 12 : 18 }}>
+							<FromBox config={config} dropdownStyle={isMobileView ? { width: 'calc(100vw - 72px)' } : {}} />
 						</div>
 						<SwapDirectionButton
 							onClick={e => {
@@ -50,8 +54,8 @@ export const PoolSwapDialog = wrapBaseDialog(
 								config.switchInAndOut();
 							}}
 						/>
-						<div style={{ marginBottom: 18 }}>
-							<ToBox config={config} dropdownStyle={{ marginLeft: -16, width: 500 + 16 + 20 }} />
+						<div style={{ marginBottom: isMobileView ? 12 : 18 }}>
+							<ToBox config={config} dropdownStyle={isMobileView ? { width: 'calc(100vw - 72px)' } : {}} />
 						</div>
 					</PairContainer>
 
@@ -71,9 +75,11 @@ const PoolSwapDialogContainer = styled.section`
 `;
 
 const PoolSwapDialogContent = styled.div`
-	border-radius: 0.75rem;
-	background-color: ${colorPrimary};
-	padding: 24px 30px;
+	@media (min-width: 768px) {
+		border-radius: 0.75rem;
+		background-color: ${colorPrimary};
+		padding: 24px 30px;
+	}
 `;
 
 const PairContainer = styled.div`

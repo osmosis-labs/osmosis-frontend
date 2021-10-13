@@ -5,9 +5,12 @@ import React from 'react';
 import { TitleText } from 'src/components/Texts';
 import { colorPrimaryDarker } from 'src/emotionStyles/colors';
 import { useStore } from 'src/stores';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 export const MyAirdropProgress = observer(function MyAirdropProgress() {
 	const { chainStore, queriesStore, accountStore } = useStore();
+
+	const { isMobileView } = useWindowSize();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const account = accountStore.getAccount(chainStore.current.chainId);
@@ -36,9 +39,11 @@ export const MyAirdropProgress = observer(function MyAirdropProgress() {
 
 	return (
 		<>
-			<TitleText pb={4}>My Progress</TitleText>
+			<TitleText pb={4} isMobileView={isMobileView}>
+				My Progress
+			</TitleText>
 			<ProgressBarSection>
-				<TitleText size="2xl" pb={0} style={{ textAlign: 'right' }}>
+				<TitleText size="2xl" pb={0} isMobileView={isMobileView} style={{ textAlign: 'right' }}>
 					{percent.maxDecimals(0).toString()}%
 				</TitleText>
 				<ProgressBar>
@@ -51,7 +56,6 @@ export const MyAirdropProgress = observer(function MyAirdropProgress() {
 
 const ProgressBarSection = styled.div`
 	width: 100%;
-	margin-bottom: 18px;
 `;
 
 const ProgressBar = styled.div`

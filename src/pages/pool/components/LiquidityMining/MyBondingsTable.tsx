@@ -1,14 +1,15 @@
 import { CoinPretty, Dec } from '@keplr-wallet/unit';
 import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
-import { TToastType, useToast } from 'src/components/common/toasts';
 import { ButtonFaint } from 'src/components/layouts/Buttons';
 import { Spinner } from 'src/components/Spinners';
 import { TableBodyRow, TableData, TableHeadRow } from 'src/components/Tables';
 import { SubTitleText, Text } from 'src/components/Texts';
+import useWindowSize from 'src/hooks/useWindowSize';
 import { useStore } from 'src/stores';
 
 const tableWidths = ['25%', '25%', '25%', '25%'];
+const tableWidthsOnMobileView = ['30%', '40%', '30%'];
 
 interface Props {
 	poolId: string;
@@ -17,6 +18,8 @@ interface Props {
 export const MyBondingsTable = observer(function MyBondingsTable({ poolId }: Props) {
 	const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
+	const { isMobileView } = useWindowSize();
+
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const poolShareCurrency = queries.osmosis.queryGammPoolShare.getShareCurrency(poolId);
@@ -24,11 +27,13 @@ export const MyBondingsTable = observer(function MyBondingsTable({ poolId }: Pro
 	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
 
 	return (
-		<>
-			<SubTitleText>My Bondings</SubTitleText>
-			<table style={{ width: '100%' }}>
-				<LockupTableHeader />
-				<tbody style={{ width: '100%' }}>
+		<div className="md:px-10">
+			<div className="px-5 md:px-0">
+				<SubTitleText isMobileView={isMobileView}>My Bondings</SubTitleText>
+			</div>
+			<table className="w-full">
+				<LockupTableHeader isMobileView={isMobileView} />
+				<tbody className="w-full">
 					{lockableDurations.map(lockableDuration => {
 						const lockedCoin = queries.osmosis.queryAccountLocked
 							.get(account.bech32Address)
@@ -41,35 +46,42 @@ export const MyBondingsTable = observer(function MyBondingsTable({ poolId }: Pro
 								apy={`${queries.osmosis.queryIncentivizedPools
 									.computeAPY(poolId, lockableDuration, priceStore, priceStore.getFiatCurrency('usd')!)
 									.toString()}%`}
+								isMobileView={isMobileView}
 							/>
 						);
 					})}
 				</tbody>
 			</table>
-		</>
+		</div>
 	);
 });
 
-function LockupTableHeader() {
+interface LockupTableHeaderProps {
+	isMobileView: boolean;
+}
+
+const LockupTableHeader = observer(({ isMobileView }: LockupTableHeaderProps) => {
 	return (
 		<thead>
 			<TableHeadRow>
-				<TableData width={tableWidths[0]}>
-					<Text>Unbonding Duration</Text>
+				<TableData width={isMobileView ? tableWidthsOnMobileView[0] : tableWidths[0]}>
+					<Text isMobileView={isMobileView}>Unbonding Duration</Text>
 				</TableData>
-				<TableData width={tableWidths[1]}>
-					<Text>Current APR</Text>
+				{!isMobileView && (
+					<TableData width={tableWidths[1]}>
+						<Text isMobileView={isMobileView}>Current APR</Text>
+					</TableData>
+				)}
+				<TableData width={isMobileView ? tableWidthsOnMobileView[1] : tableWidths[2]}>
+					<Text isMobileView={isMobileView}>Amount</Text>
 				</TableData>
-				<TableData width={tableWidths[2]}>
-					<Text>Amount</Text>
-				</TableData>
-				<TableData width={tableWidths[3]}>
-					<Text>Action</Text>
+				<TableData width={isMobileView ? tableWidthsOnMobileView[2] : tableWidths[3]}>
+					<Text isMobileView={isMobileView}>Action</Text>
 				</TableData>
 			</TableHeadRow>
 		</thead>
 	);
-}
+});
 
 interface LockupTableRowProps {
 	duration: string;
@@ -78,34 +90,39 @@ interface LockupTableRowProps {
 		amount: CoinPretty;
 		lockIds: string[];
 	};
+	isMobileView: boolean;
 }
 
-const LockupTableRow = observer(function LockupTableRow({ duration, apy, lockup }: LockupTableRowProps) {
+const LockupTableRow = observer(function LockupTableRow({ duration, apy, lockup, isMobileView }: LockupTableRowProps) {
 	const { chainStore, accountStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
 	const [isUnlocking, setIsUnlocking] = useState(false);
 
-	const toast = useToast();
-
 	return (
 		<TableBodyRow>
-			<TableData width={tableWidths[0]}>
-				<Text emphasis="medium">{duration}</Text>
+			<TableData width={isMobileView ? tableWidthsOnMobileView[0] : tableWidths[0]}>
+				<Text emphasis="medium" isMobileView={isMobileView}>
+					{duration}
+				</Text>
 			</TableData>
-			<TableData width={tableWidths[1]}>
-				<Text emphasis="medium">{apy}</Text>
-			</TableData>
-			<TableData width={tableWidths[2]}>
-				<Text emphasis="medium">
+			{!isMobileView && (
+				<TableData width={tableWidths[1]}>
+					<Text emphasis="medium" isMobileView={isMobileView}>
+						{apy}
+					</Text>
+				</TableData>
+			)}
+			<TableData width={isMobileView ? tableWidthsOnMobileView[1] : tableWidths[2]}>
+				<Text emphasis="medium" isMobileView={isMobileView}>
 					{lockup.amount
 						.maxDecimals(6)
 						.trim(true)
 						.toString()}
 				</Text>
 			</TableData>
-			<TableData width={tableWidths[3]}>
+			<TableData width={isMobileView ? tableWidthsOnMobileView[2] : tableWidths[3]}>
 				<ButtonFaint
 					disabled={!account.isReadyToSendMsgs || lockup.amount.toDec().equals(new Dec(0))}
 					onClick={async e => {
@@ -116,26 +133,22 @@ const LockupTableRow = observer(function LockupTableRow({ duration, apy, lockup 
 								setIsUnlocking(true);
 
 								// XXX: Due to the block gas limit, restrict the number of lock id to included in the one tx.
-								await account.osmosis.sendBeginUnlockingMsg(lockup.lockIds.slice(0, 3), '', tx => {
+								await account.osmosis.sendBeginUnlockingMsg(lockup.lockIds.slice(0, 10), '', () => {
 									setIsUnlocking(false);
-
-									if (tx.code) {
-										toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-									} else {
-										toast.displayToast(TToastType.TX_SUCCESSFUL, {
-											customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-										});
-									}
 								});
-
-								toast.displayToast(TToastType.TX_BROADCASTING);
 							} catch (e) {
 								setIsUnlocking(false);
-								toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+								console.log(e);
 							}
 						}
 					}}>
-					{isUnlocking ? <Spinner /> : <Text color="gold">Unbond All</Text>}
+					{isUnlocking ? (
+						<Spinner />
+					) : (
+						<Text color="gold" isMobileView={isMobileView}>
+							Unbond All
+						</Text>
+					)}
 				</ButtonFaint>
 			</TableData>
 		</TableBodyRow>

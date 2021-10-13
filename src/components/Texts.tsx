@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import React from 'react';
 
 const FontSizeBySize = {
 	'2xl': 36,
@@ -8,6 +7,15 @@ const FontSizeBySize = {
 	md: 16,
 	sm: 14,
 	xs: 12,
+};
+
+const FontSizeBySizeInMobileView = {
+	'2xl': 30,
+	xl: 20,
+	lg: 18,
+	md: 14,
+	sm: 12,
+	xs: 10,
 };
 
 const OpacityByEmphasis = {
@@ -45,6 +53,7 @@ interface OsmosisTextProps {
 	color?: keyof typeof RgbByColor;
 	fontType?: 'Inter' | 'Poppins';
 	pb?: number;
+	isMobileView?: boolean;
 }
 
 export const Text = styled.p<OsmosisTextProps>`
@@ -58,6 +67,7 @@ function mapTextPropsToCssProps({
 	color = 'white',
 	fontType,
 	pb,
+	isMobileView = false,
 }: OsmosisTextProps) {
 	const fontTypeProps = ['2xl', 'xl', 'lg'].some(largeSize => size === largeSize)
 		? { lineHeight: 1, fontFamily: `${fontType ?? 'Poppins'}, ui-sans-serif, system-ui` }
@@ -65,7 +75,9 @@ function mapTextPropsToCssProps({
 	const textOpacity = solidColorList.some(solidColor => solidColor === color) ? 1 : OpacityByEmphasis[emphasis];
 	return {
 		...fontTypeProps,
-		fontSize: FontSizeBySize[size as keyof typeof FontSizeBySize] ?? size,
+		fontSize: isMobileView
+			? FontSizeBySizeInMobileView[size as keyof typeof FontSizeBySizeInMobileView]
+			: FontSizeBySize[size as keyof typeof FontSizeBySize] ?? size,
 		fontWeight: FontWeightByBoldness[weight],
 		color: `rgba(${RgbByColor[color]}, ${textOpacity})`,
 		paddingBottom: pb != null ? pb : undefined,

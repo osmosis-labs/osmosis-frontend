@@ -150,6 +150,7 @@ module.exports = {
 			pass: '#34EF52',
 			missionError: '#EF3456',
 			black: '#000000',
+			backdrop: 'rgba(0, 0, 0, 0.3)',
 		},
 		backgroundColor: themes => ({
 			...themes('colors'),
@@ -172,16 +173,6 @@ module.exports = {
 			'gradients-orangeCoral': 'linear-gradient(180deg, #FF8200 0%, #FF2C00 100%)',
 			'gradients-pinky': 'linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)',
 		},
-		screens: {
-			// XXX: 이 부분의 의미를 모르겠슴...
-			// JJJ: 미디어 퀴리를 설정하는 부분인데, 실험적으로 css 변수로 설정을 해봤지만 스펙을 확인해보니 그렇게는 적용이 되지 않네요... 숫자로 돌려놨습니다
-			// xx: '320px',
-			// xs: '480px',
-			// sm: '820px',
-			md: '1280px',
-			lg: '1600px',
-			xl: '1920px',
-		},
 		spacing: {
 			...spacing,
 		},
@@ -189,6 +180,7 @@ module.exports = {
 			height: {
 				...sizes,
 				screen: '100vh',
+				fit: 'fit-content',
 			},
 			minHeight: {
 				...sizes,

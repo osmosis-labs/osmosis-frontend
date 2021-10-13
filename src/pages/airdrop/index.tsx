@@ -18,7 +18,7 @@ export const AirdropPage: FunctionComponent = () => {
 			<ProgressSection>
 				<CenterSelf>
 					<MyAirdropProgress />
-					<AirdropMissions style={{ marginTop: 48 }} />
+					<AirdropMissions />
 				</CenterSelf>
 			</ProgressSection>
 		</AirdropPageContainer>
@@ -31,11 +31,18 @@ const AirdropPageContainer = styled.div`
 `;
 
 const AirdropOverviewSection = styled.div`
-	margin: 40px 60px;
+	padding: 84px 20px 20px;
+
+	@media (min-width: 768px) {
+		padding: 40px 60px;
+	}
 `;
 
 const ProgressSection = styled.div`
-	margin-top: 36px;
-	padding: 50px 60px;
+	padding: 20px;
 	background-color: ${colorPrimaryDark};
+
+	@media (min-width: 768px) {
+		padding: 50px 60px;
+	}
 `;

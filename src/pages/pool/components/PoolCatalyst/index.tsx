@@ -5,6 +5,7 @@ import { CenterSelf, PoolCardListGridContainer } from 'src/components/layouts/Co
 import { TitleText } from 'src/components/Texts';
 import { PoolAssetCard } from 'src/pages/pool/components/PoolCatalyst/PoolAssetCard';
 import { useStore } from 'src/stores';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 interface Props {
 	poolId: string;
@@ -12,6 +13,8 @@ interface Props {
 
 export const PoolCatalyst = observer(function PoolCatalyst({ poolId }: Props) {
 	const { chainStore, queriesStore, accountStore } = useStore();
+
+	const { isMobileView } = useWindowSize();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const pool = queries.osmosis.queryGammPools.getPool(poolId);
@@ -26,7 +29,9 @@ export const PoolCatalyst = observer(function PoolCatalyst({ poolId }: Props) {
 
 	return (
 		<PoolCatalystContainer>
-			<TitleText pb={24}>Pool Catalyst</TitleText>
+			<TitleText isMobileView={isMobileView} pb={isMobileView ? 10 : 24}>
+				Pool Catalyst
+			</TitleText>
 			<PoolCardListGridContainer>
 				{/* TODO: IntPretty에 mul과 quo도 추가하자... */}
 				{pool.poolRatios.map((poolRatio, i) => {
@@ -45,6 +50,7 @@ export const PoolCatalyst = observer(function PoolCatalyst({ poolId }: Props) {
 								.trim(true)
 								.shrink(true)
 								.toString()}
+							isMobileView={isMobileView}
 						/>
 					);
 				})}

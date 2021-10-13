@@ -11,10 +11,13 @@ import { LinkIcon } from 'src/pages/assets/components/LinkIcon';
 import { TableData, TableHeaderRow, TableRow } from 'src/pages/assets/components/Table';
 import { useStore } from 'src/stores';
 import { IBCTransferHistory, IBCTransferHistoryStatus, UncommitedHistory } from '../../stores/ibc-history';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 const tableWidths = ['20%', '15%', '15%', '30%', '20%'];
 export const IbcTransferHistoryList = observer(function IbcTransferHistoryList() {
 	const { ibcTransferHistoryStore, chainStore, accountStore } = useStore();
+
+	const { isMobileView } = useWindowSize();
 
 	const histories = ibcTransferHistoryStore.getHistoriesAndUncommitedHistoriesByAccount(
 		accountStore.getAccount(chainStore.current.chainId).bech32Address
@@ -30,17 +33,23 @@ export const IbcTransferHistoryList = observer(function IbcTransferHistoryList()
 
 	return (
 		<>
-			<TitleText style={{ paddingTop: 40 }}>IBC Transaction History</TitleText>
-			<table style={{ width: '100%' }}>
-				<IbcTransferHistoryHeader />
+			<div className="px-5 md:px-0">
+				<TitleText style={{ paddingTop: isMobileView ? 16 : 40 }} isMobileView={isMobileView}>
+					IBC Transaction History
+				</TitleText>
+			</div>
+			<div className="w-full overflow-scroll">
+				<table style={{ width: '100%' }}>
+					<IbcTransferHistoryHeader />
 
-				<tbody style={{ width: '100%' }}>
-					{paginatedHistories.map(history => {
-						return <IbcTransferHistoryRow key={history.txHash} history={history} />;
-					})}
-				</tbody>
-			</table>
-			{numPages > 1 || page !== 1 ? <TablePagination page={page} numPages={numPages} onPageChange={setPage} /> : null}
+					<tbody style={{ width: '100%' }}>
+						{paginatedHistories.map(history => {
+							return <IbcTransferHistoryRow key={history.txHash} history={history} />;
+						})}
+					</tbody>
+				</table>
+				{numPages > 1 || page !== 1 ? <TablePagination page={page} numPages={numPages} onPageChange={setPage} /> : null}
+			</div>
 		</>
 	);
 });

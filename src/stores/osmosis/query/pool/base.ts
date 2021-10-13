@@ -192,8 +192,12 @@ export class QueriedPoolBase {
 			const estimated = route.pool.estimateSwapExactAmountIn(tokenIn, route.tokenOutCurrency);
 
 			spotPriceBeforeRaw = spotPriceBeforeRaw.mul(estimated.raw.spotPriceBefore);
-			spotPriceBefore = spotPriceBefore.mul(estimated.spotPriceBefore);
-			spotPriceAfter = spotPriceAfter.mul(estimated.spotPriceAfter);
+			spotPriceBefore = spotPriceBefore
+				.mul(estimated.spotPriceBefore)
+				.quo(DecUtils.getPrecisionDec(tokenIn.currency.coinDecimals - route.tokenOutCurrency.coinDecimals));
+			spotPriceAfter = spotPriceAfter
+				.mul(estimated.spotPriceAfter)
+				.quo(DecUtils.getPrecisionDec(tokenIn.currency.coinDecimals - route.tokenOutCurrency.coinDecimals));
 
 			// Token out should be the token in for the next route
 			tokenIn = {

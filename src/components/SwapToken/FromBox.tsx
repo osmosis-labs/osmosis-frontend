@@ -12,6 +12,7 @@ import { useBooleanStateWithWindowEvent } from 'src/hooks/useBooleanStateWithWin
 import { TokenAmountInput } from 'src/pages/main/components/TokenAmountInput';
 import { useStore } from 'src/stores';
 import { TokenSelect } from './TokenSelect';
+import useWindowSize from '../../hooks/useWindowSize';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
 	config: TokenInSwapConfig;
@@ -30,12 +31,14 @@ export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdo
 		.getQueryBech32Address(account.bech32Address)
 		.balances.find(bal => bal.currency.coinMinimalDenom === config.sendCurrency.coinMinimalDenom);
 
-	const availableBalance = useMemo(() => {
+	const availableBalance = (() => {
 		if (!balance) {
 			return new CoinPretty(config.sendCurrency, new Int('0'));
 		}
 		return balance.balance;
-	}, [balance, config.sendCurrency]);
+	})();
+
+	const { isMobileView } = useWindowSize();
 
 	const handleMaxButtonToggled = useCallback(() => {
 		config.toggleIsMax();
@@ -44,13 +47,15 @@ export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdo
 	return (
 		<TokenBoxContainer {...props}>
 			<TokenBoxRow>
-				<Text emphasis="medium">From</Text>
+				<Text emphasis="medium" isMobileView={isMobileView}>
+					From
+				</Text>
 				<CenterV>
 					<CenterV>
-						<Text emphasis="medium" size="sm" style={{ marginRight: 8 }}>
+						<Text emphasis="medium" size="sm" style={{ marginRight: 8 }} isMobileView={isMobileView}>
 							Available
 						</Text>
-						<Text color="primary">
+						<Text color="primary" isMobileView={isMobileView}>
 							{availableBalance
 								.trim(true)
 								.maxDecimals(6)
@@ -58,7 +63,7 @@ export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdo
 						</Text>
 					</CenterV>
 					<MaxButton type="button" size="small" isActive={config.isMax} onClick={handleMaxButtonToggled}>
-						<Text size="xs" emphasis="medium" style={{ lineHeight: 1.2 }}>
+						<Text size="xs" emphasis="medium" style={{ lineHeight: 1.2 }} isMobileView={isMobileView}>
 							MAX
 						</Text>
 					</MaxButton>

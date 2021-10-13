@@ -10,7 +10,6 @@ import { AppCurrency } from '@keplr-wallet/types';
 import { action, makeObservable, observable, override } from 'mobx';
 import { useStore } from '../../stores';
 import { Dec, DecUtils } from '@keplr-wallet/unit';
-import { TToastType, useToast } from '../../components/common/toasts';
 import { IFeeConfig, TxChainSetter } from '@keplr-wallet/hooks';
 import { BasicAmountConfig } from '../../hooks/tx/basic-amount-config';
 import { ChainGetter, ObservableQueryBalances } from '@keplr-wallet/stores';
@@ -264,8 +263,13 @@ const NewPoolButton: FunctionComponent<{
 	setStage: (value: number | ((prev: number) => number)) => void;
 	close: () => void;
 }> = observer(({ config, stage, setStage, close }) => {
-	const { chainStore, accountStore } = useStore();
+	const { chainStore, accountStore, queriesStore } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
+	const queries = queriesStore.get(chainStore.current.chainId);
+
+	const queryPoolCreationFee = queries.osmosis.queryPoolCreationFee;
+
+	const [isPoolCreationFeeChecked, setIsPoolCreationFeeChecked] = useState(false);
 
 	const error = (() => {
 		if (stage === 1) {
@@ -273,8 +277,6 @@ const NewPoolButton: FunctionComponent<{
 		}
 		return config.getErrorOfAmount() || config.getErrorOfPercentage();
 	})();
-
-	const toast = useToast();
 
 	const onNextClick = async () => {
 		// data validation process
@@ -303,22 +305,12 @@ const NewPoolButton: FunctionComponent<{
 						};
 					}),
 					'',
-					tx => {
-						if (tx.code) {
-							toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-						} else {
-							toast.displayToast(TToastType.TX_SUCCESSFUL, {
-								customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-							});
-						}
-
+					() => {
 						close();
 					}
 				);
-
-				toast.displayToast(TToastType.TX_BROADCASTING);
 			} catch (e) {
-				toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+				console.log(e);
 			}
 
 			return;
@@ -337,6 +329,30 @@ const NewPoolButton: FunctionComponent<{
 					</div>
 				</div>
 			)}
+			{stage === 3 ? (
+				<div className="flex flex-row justify-center items-center mt-5">
+					<input
+						className="mr-2"
+						type="checkbox"
+						checked={isPoolCreationFeeChecked}
+						onChange={() => {
+							setIsPoolCreationFeeChecked(value => !value);
+						}}
+					/>
+					<p
+						className="text-base text-white-high font-medium cursor-pointer"
+						onClick={() => {
+							setIsPoolCreationFeeChecked(value => !value);
+						}}>{`I understand that creating a new pool will cost ${queryPoolCreationFee.poolCreationFee
+						.map(fee =>
+							fee
+								.trim(true)
+								.maxDecimals(6)
+								.toString()
+						)
+						.join(',')}`}</p>
+				</div>
+			) : null}
 			<div className="flex items-center justify-center w-full">
 				<div className={cn('mt-7.5 h-15 gap-4 flex items-center justify-center', stage > 1 ? 'w-4/5' : 'w-full')}>
 					{stage > 1 && (
@@ -347,7 +363,13 @@ const NewPoolButton: FunctionComponent<{
 						</button>
 					)}
 					<button
-						disabled={!account.isReadyToSendMsgs || error != null}
+						disabled={
+							!account.isReadyToSendMsgs ||
+							error != null ||
+							!queryPoolCreationFee.response ||
+							queryPoolCreationFee.response.staled ||
+							(stage === 3 && !isPoolCreationFeeChecked)
+						}
 						onClick={onNextClick}
 						className={cn(
 							'h-full rounded-2xl bg-primary-200 flex items-center justify-center mx-auto hover:opacity-75 disabled:opacity-50',

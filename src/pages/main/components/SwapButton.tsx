@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';
 import { useEffect, useMemo, useRef } from 'react';
-import { TToastType, useToast } from 'src/components/common/toasts';
+import useWindowSize from 'src/hooks/useWindowSize';
 import { ConnectAccountButton } from 'src/components/ConnectAccountButton';
 import { CtaButton } from 'src/components/layouts/Buttons';
 import { Spinner } from 'src/components/Spinners';
@@ -10,7 +10,6 @@ import { colorError } from 'src/emotionStyles/colors';
 import { useAccountConnection } from 'src/hooks/account/useAccountConnection';
 import { TradeConfig } from 'src/pages/main/stores/trade/config';
 import { useStore } from 'src/stores';
-import { isSlippageError } from 'src/utils/tx';
 
 interface Props {
 	config: TradeConfig;
@@ -41,8 +40,6 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const { isAccountConnected, connectAccount } = useAccountConnection();
 
-	const toast = useToast();
-
 	const currentSwapPools = useMemo(() => {
 		return config.optimizedRoutes?.swaps.map(swap => swap.poolId) ?? [];
 	}, [config.optimizedRoutes]);
@@ -51,6 +48,8 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 		currentSwapPools.find(poolId => {
 			return queries.osmosis.queryGammPools.getObservableQueryPool(poolId).isFetching;
 		}) != null;
+
+	const { isMobileView } = useWindowSize();
 
 	useEffect(() => {
 		currentSwapPools.forEach(poolId => {
@@ -108,17 +107,7 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 						config.slippage,
 						'',
 						tx => {
-							if (tx.code) {
-								toast.displayToast(TToastType.TX_FAILED, {
-									message: isSlippageError(tx)
-										? 'Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.'
-										: tx.log,
-								});
-							} else {
-								toast.displayToast(TToastType.TX_SUCCESSFUL, {
-									customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-								});
-
+							if (!tx.code) {
 								config.setAmount('');
 							}
 						}
@@ -136,25 +125,14 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 						config.slippage,
 						'',
 						tx => {
-							if (tx.code) {
-								toast.displayToast(TToastType.TX_FAILED, {
-									message: isSlippageError(tx)
-										? 'Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.'
-										: tx.log,
-								});
-							} else {
-								toast.displayToast(TToastType.TX_SUCCESSFUL, {
-									customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-								});
-
+							if (!tx.code) {
 								config.setAmount('');
 							}
 						}
 					);
 				}
-				toast.displayToast(TToastType.TX_BROADCASTING);
 			} catch (e) {
-				toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+				console.log(e);
 			}
 		}
 	};
@@ -167,7 +145,7 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 			{account.isSendingMsg === 'swapExactAmountIn' ? (
 				<Spinner />
 			) : (
-				<Text emphasis="high" style={{ letterSpacing: '0.025em' }}>
+				<Text emphasis="high" isMobileView={isMobileView} style={{ letterSpacing: '0.025em' }}>
 					{isSwapPoolsFetching && <Spinner style={{ marginRight: 12, display: 'inline-block' }} />}
 					{config.showWarningOfSlippage ? 'Swap Anyway' : 'Swap'}
 				</Text>

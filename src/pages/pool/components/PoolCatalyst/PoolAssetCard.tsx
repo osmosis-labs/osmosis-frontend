@@ -10,16 +10,17 @@ interface Props {
 	denom: string;
 	totalAmount: string;
 	myAmount: string;
+	isMobileView: boolean;
 }
 
-export function PoolAssetCard({ index, ratio, denom, totalAmount, myAmount }: Props) {
+export function PoolAssetCard({ index, ratio, denom, totalAmount, myAmount, isMobileView }: Props) {
 	return (
 		<PoolAssetCardContainer>
 			<PoolRatioSection>
 				<PoolCardTokenIcon src="/public/assets/Icons/Bubbles.svg" bgIndex={index + 1} />
 
 				<PoolRatioValue>
-					<TitleText size="2xl" pb={8}>
+					<TitleText size="2xl" pb={isMobileView ? 2 : 8} isMobileView={isMobileView}>
 						{ratio}%
 					</TitleText>
 					<Text size="sm" weight="semiBold">
@@ -49,7 +50,11 @@ export function PoolAssetCard({ index, ratio, denom, totalAmount, myAmount }: Pr
 const PoolAssetCardContainer = styled.li`
 	border-radius: 0.75rem;
 	background-color: ${colorPrimary};
-	padding: 24px 30px;
+	padding: 20px;
+
+	@media (min-width: 768px) {
+		padding: 24px 30px;
+	}
 `;
 
 const PoolRatioSection = styled.section`

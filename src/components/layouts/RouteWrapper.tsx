@@ -3,9 +3,9 @@ import { Sidebar } from './Sidebar';
 
 export const RouteWrapper: FunctionComponent = ({ children }) => {
 	return (
-		<div className="h-full w-full min-h-sidebar-minHeight flex text-white-high">
+		<div className="h-fit md:h-full w-full flex">
 			<Sidebar />
-			{children}
+			<div className="h-fit md:h-full w-full flex justify-center text-white-high">{children}</div>
 		</div>
 	);
 };

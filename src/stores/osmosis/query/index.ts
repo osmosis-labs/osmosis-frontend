@@ -8,7 +8,6 @@ import { ObservableQueryIncentivizedPools, ObservableQueryLockableDurations } fr
 import { ObservableQueryEpochs } from './epochs';
 import {
 	ObservableQueryAccountLockedCoins,
-	ObservableQueryAccountUnlockableCoins,
 	ObservableQueryAccountUnlockingCoins,
 	ObservableQueryAccountLocked,
 } from './lockup';
@@ -16,6 +15,7 @@ import { ObservableQueryEpochProvisions, ObservableQueryMintParmas } from './min
 import { ObservableQueryDistrInfo } from './pool-incentives/distr-info';
 import { ObservableQueryTotalCliamable, ObservableQueryClaimRecord, ObservableQueryClaimParams } from './claim';
 import { ObservableQueryGuage } from './incentives';
+import { ObservableQueryPoolCreationFee } from 'src/stores/osmosis/query/pool-creation-fee';
 
 export interface HasOsmosisQueries {
 	osmosis: OsmosisQueries;
@@ -38,7 +38,6 @@ export class OsmosisQueries {
 
 	public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
 	public readonly queryUnlockingCoins: DeepReadonly<ObservableQueryAccountUnlockingCoins>;
-	public readonly queryUnlockableCoins: DeepReadonly<ObservableQueryAccountUnlockableCoins>;
 	public readonly queryAccountLocked: DeepReadonly<ObservableQueryAccountLocked>;
 
 	public readonly queryMintParams: DeepReadonly<ObservableQueryMintParmas>;
@@ -55,12 +54,13 @@ export class OsmosisQueries {
 	public readonly queryClaimRecord: DeepReadonly<ObservableQueryClaimRecord>;
 	public readonly queryClaimParams: DeepReadonly<ObservableQueryClaimParams>;
 
+	public readonly queryPoolCreationFee: DeepReadonly<ObservableQueryPoolCreationFee>;
+
 	constructor(queries: QueriesSetBase, kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
 		const queryGammPool = new ObservableQueryPool(kvStore, chainId, chainGetter);
 
 		this.queryLockedCoins = new ObservableQueryAccountLockedCoins(kvStore, chainId, chainGetter);
 		this.queryUnlockingCoins = new ObservableQueryAccountUnlockingCoins(kvStore, chainId, chainGetter);
-		this.queryUnlockableCoins = new ObservableQueryAccountUnlockableCoins(kvStore, chainId, chainGetter);
 		this.queryAccountLocked = new ObservableQueryAccountLocked(kvStore, chainId, chainGetter);
 
 		this.queryGammPools = new ObservableQueryPools(kvStore, chainId, chainGetter, queryGammPool);
@@ -69,8 +69,7 @@ export class OsmosisQueries {
 			this.queryGammPools,
 			queries.queryBalances,
 			this.queryLockedCoins,
-			this.queryUnlockingCoins,
-			this.queryUnlockableCoins
+			this.queryUnlockingCoins
 		);
 
 		this.queryMintParams = new ObservableQueryMintParmas(kvStore, chainId, chainGetter);
@@ -96,5 +95,7 @@ export class OsmosisQueries {
 		this.queryTotalClaimable = new ObservableQueryTotalCliamable(kvStore, chainId, chainGetter);
 		this.queryClaimRecord = new ObservableQueryClaimRecord(kvStore, chainId, chainGetter);
 		this.queryClaimParams = new ObservableQueryClaimParams(kvStore, chainId, chainGetter);
+
+		this.queryPoolCreationFee = new ObservableQueryPoolCreationFee(kvStore, chainId, chainGetter);
 	}
 }

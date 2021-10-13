@@ -16,7 +16,7 @@ export const OsmoPrice = observer(function OsmoPrice() {
 
 	return (
 		<OverviewLabelValue label="OSMO Price">
-			<h4>{price ? price.toString() : '$0'}</h4>
+			<h4 className="text-xl md:text-2xl leading-7 md:leading-none">{price ? price.toString() : '$0'}</h4>
 		</OverviewLabelValue>
 	);
 });

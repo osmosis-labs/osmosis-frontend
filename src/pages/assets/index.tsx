@@ -40,10 +40,18 @@ const AssetsPageContainer = styled.div`
 `;
 
 const AssetsOverviewSection = styled.div`
-	padding: 40px 60px;
+	padding: 84px 20px 20px;
 	background-color: ${colorPrimaryDarker};
+
+	@media (min-width: 768px) {
+		padding: 40px 60px;
+	}
 `;
 
 const BalanceAndHistorySection = styled.div`
-	padding: 40px 60px;
+	padding: 20px 0;
+
+	@media (min-width: 768px) {
+		padding: 40px 60px;
+	}
 `;

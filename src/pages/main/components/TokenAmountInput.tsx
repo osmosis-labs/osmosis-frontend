@@ -9,6 +9,7 @@ import { colorWhiteHigh } from 'src/emotionStyles/colors';
 import { cssAlignRightInput, cssNumberTextInput } from 'src/emotionStyles/forms';
 import { cssFontPoppins } from 'src/emotionStyles/texts';
 import { useStore } from 'src/stores';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 interface Props {
 	amount: string;
@@ -18,6 +19,7 @@ interface Props {
 
 export const TokenAmountInput = observer(({ amount, currency, onChange }: Props) => {
 	const { priceStore } = useStore();
+	const { isMobileView } = useWindowSize();
 
 	const coinPretty = (() => {
 		if (amount) {
@@ -40,7 +42,7 @@ export const TokenAmountInput = observer(({ amount, currency, onChange }: Props)
 	return (
 		<TokenAmountInputContainer>
 			<AmountInput type="number" onChange={e => onChange(e.currentTarget.value)} value={amount} placeholder="0" />
-			<Text weight="semiBold" size="sm" emphasis={!amount ? 'low' : 'high'}>
+			<Text weight="semiBold" size="sm" isMobileView={isMobileView} emphasis={!amount ? 'low' : 'high'}>
 				≈ {price.toString()}
 			</Text>
 		</TokenAmountInputContainer>
@@ -58,8 +60,13 @@ const AmountInput = styled.input`
 	${cssFontPoppins};
 	${cssAlignRightInput};
 	${cssNumberTextInput};
-	max-width: 250px;
-	font-size: 24px;
+	width: 100%;
+	font-size: 20px;
 	color: ${colorWhiteHigh};
 	font-weight: 600;
+	line-height: 1.3;
+
+	@media (min-width: 768px) {
+		font-size: 24px;
+	}
 `;

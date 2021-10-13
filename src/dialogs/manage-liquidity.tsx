@@ -10,7 +10,6 @@ import { computedFn } from 'mobx-utils';
 import React, { Dispatch, FunctionComponent, SetStateAction, useState } from 'react';
 import InputSlider from 'react-input-slider';
 import { Img } from '../components/common/Img';
-import { TToastType, useToast } from '../components/common/toasts';
 import { AmountInput } from '../components/form/Inputs';
 import { MISC } from '../constants';
 import { OSMO_MEDIUM_TX_FEE } from '../constants/fee';
@@ -19,6 +18,7 @@ import { useStore } from '../stores';
 import { ObservableQueryGammPoolShare } from '../stores/osmosis/query/pool-share';
 import { ObservableQueryPools } from '../stores/osmosis/query/pools';
 import { wrapBaseDialog } from './base';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 //	TODO : edit how the circle renders the border to make gradients work
 const borderImages: Record<string, string> = {
@@ -453,6 +453,8 @@ export const ManageLiquidityDialog = wrapBaseDialog(
 
 		const { chainStore, queriesStore, accountStore } = useStore();
 
+		const { isMobileView } = useWindowSize();
+
 		const queries = queriesStore.get(chainStore.current.chainId);
 		const account = accountStore.getAccount(chainStore.current.chainId);
 
@@ -493,14 +495,14 @@ export const ManageLiquidityDialog = wrapBaseDialog(
 
 		return (
 			<div className="text-white-high w-full h-full">
-				<h5 className="mb-9">Manage Liquidity</h5>
-				<div className="mb-7.5">
+				<h5 className="text-lg md:text-xl mb-5 md:mb-9">Manage Liquidity</h5>
+				<div className="mb-3 md:mb-7.5">
 					<AddRemoveSelectTab setTab={setTab} tab={tab} />
 				</div>
 				{tab === Tabs.ADD ? (
 					<AddLiquidity addLiquidityConfig={addLiquidityConfig} />
 				) : (
-					<RemoveLiquidity removeLiquidityConfig={removeLiquidityConfig} />
+					<RemoveLiquidity removeLiquidityConfig={removeLiquidityConfig} isMobileView={isMobileView} />
 				)}
 				<BottomButton
 					tab={tab}
@@ -525,7 +527,12 @@ const AddRemoveSelectTab: FunctionComponent<{
 					'w-full h-full flex justify-center items-center border-secondary-200 group cursor-pointer',
 					tab === Tabs.ADD ? 'border-b-2' : 'border-b border-opacity-30 hover:border-opacity-100'
 				)}>
-				<p className={cn('text-secondary-200', tab === Tabs.ADD ? 'pt-0.25' : 'opacity-40 group-hover:opacity-75')}>
+				<p
+					className={cn(
+						'text-secondary-200',
+						tab === Tabs.ADD ? 'pt-0.25' : 'opacity-40 group-hover:opacity-75',
+						'text-sm md:text-base'
+					)}>
 					Add Liquidity
 				</p>
 			</li>
@@ -535,7 +542,12 @@ const AddRemoveSelectTab: FunctionComponent<{
 					'w-full h-full flex justify-center items-center border-secondary-200 group cursor-pointer',
 					tab === Tabs.REMOVE ? 'border-b-2' : 'border-b border-opacity-30 hover:border-opacity-100'
 				)}>
-				<p className={cn('text-secondary-200', tab === Tabs.REMOVE ? 'pt-0.25' : 'opacity-40 group-hover:opacity-75')}>
+				<p
+					className={cn(
+						'text-secondary-200',
+						tab === Tabs.REMOVE ? 'pt-0.25' : 'opacity-40 group-hover:opacity-75',
+						'text-sm md:text-base'
+					)}>
 					Remove Liquidity
 				</p>
 			</li>
@@ -550,7 +562,7 @@ const AddLiquidity: FunctionComponent<{
 
 	return (
 		<React.Fragment>
-			<p className="text-xs text-white-disabled mb-4.5">
+			<p className="text-xs text-white-disabled mb-3 md:mb-4.5">
 				LP token balance:{' '}
 				<span className="ml-1 text-secondary-200">
 					{poolShare
@@ -559,7 +571,7 @@ const AddLiquidity: FunctionComponent<{
 						.toString()}
 				</span>
 			</p>
-			<ul className="flex flex-col gap-4.5 mb-15">
+			<ul className="flex flex-col gap-3 md:gap-4.5 mb-5 md:mb-6 md:mb-15">
 				{addLiquidityConfig.poolAssets.map((asset, i) => (
 					<TokenLiquidityItem key={asset.currency.coinMinimalDenom} index={i} addLiquidityConfig={addLiquidityConfig} />
 				))}
@@ -573,6 +585,7 @@ const TokenLiquidityItem: FunctionComponent<{
 	index: number;
 }> = observer(({ addLiquidityConfig, index }) => {
 	const { chainStore, queriesStore } = useStore();
+	const { isMobileView } = useWindowSize();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const queryBalance = queries.queryBalances.getQueryBech32Address(addLiquidityConfig.sender);
@@ -582,13 +595,13 @@ const TokenLiquidityItem: FunctionComponent<{
 	const percentage = poolAsset.weight.quo(addLiquidityConfig.totalWeight).decreasePrecision(2);
 
 	return (
-		<li className="w-full border border-white-faint rounded-2xl py-3.75 px-4">
+		<li className="w-full border border-white-faint rounded-2xl px-2 py-2.5 md:py-3.75 md:px-4">
 			<section className="flex items-center justify-between">
 				<div className="flex items-center">
 					<figure
-						style={{ fontSize: '60px' }}
+						style={{ fontSize: isMobileView ? 48 : 60 }}
 						className={cn(
-							'c100 dark mr-5',
+							'c100 dark mr-2.5 md:mr-5',
 							`p${percentage
 								.maxDecimals(0)
 								.locale(false)
@@ -601,12 +614,12 @@ const TokenLiquidityItem: FunctionComponent<{
 						</div>
 					</figure>
 					<div className="flex flex-col">
-						<h5>{currency.coinDenom.toUpperCase()}</h5>
+						<h5 className="text-base md:text-xl">{currency.coinDenom.toUpperCase()}</h5>
 					</div>
 				</div>
-				<div className="flex flex-col items-end">
+				<div className="flex flex-col items-end ml-6 md:ml-0 relative">
 					<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-						<p className="text-xs">
+						<p className="text-xs mb-0.5 md:mb-0">
 							Available{' '}
 							<span className="text-xs text-primary-50">
 								{queryBalance
@@ -617,14 +630,16 @@ const TokenLiquidityItem: FunctionComponent<{
 							</span>
 						</p>
 						<button
-							className={cn('rounded-md py-1 px-1.5 bg-white-faint h-6 ml-1.25')}
-							style={{ display: 'inline-block', width: '40px', marginBottom: '8px' }}
+							className={cn(
+								'rounded-md py-1 px-1.5 bg-white-faint h-6 ml-1.25 absolute bottom-0.5 right-0.5 md:static'
+							)}
+							style={{ display: 'inline-block', marginBottom: isMobileView ? '0' : '8px' }}
 							onClick={() => addLiquidityConfig.setMax()}>
 							<p className="text-xs">MAX</p>
 						</button>
 					</div>
 
-					<div className="bg-background px-1.5 py-0.5 rounded-lg">
+					<div className="bg-background px-1.5 py-0.5 rounded-lg w-full">
 						<AmountInput
 							type="number"
 							onChange={e => {
@@ -642,10 +657,11 @@ const TokenLiquidityItem: FunctionComponent<{
 
 const RemoveLiquidity: FunctionComponent<{
 	removeLiquidityConfig: RemoveLiquidityConfig;
-}> = observer(({ removeLiquidityConfig }) => {
+	isMobileView: boolean;
+}> = observer(({ removeLiquidityConfig, isMobileView }) => {
 	return (
-		<div className="mt-15 w-full flex flex-col justify-center items-center">
-			<h2>
+		<div className="mt-6 md:mt-15 w-full flex flex-col justify-center items-center">
+			<h2 className="text-2xl md:text-4xl">
 				<input
 					value={removeLiquidityConfig.percentage}
 					size={removeLiquidityConfig.percentage.toString().length}
@@ -655,11 +671,11 @@ const RemoveLiquidity: FunctionComponent<{
 						removeLiquidityConfig.setPercentage(e.target.value);
 					}}
 				/>
-				<div className="inline-block" style={{ marginLeft: '-1rem' }}>
+				<div className="inline-block" style={{ marginLeft: isMobileView ? '-0.5rem' : '-1rem' }}>
 					%
 				</div>
 			</h2>
-			<div className="mt-5 mb-15 w-full">
+			<div className="mt-4 md:mt-5 mb-7 md:mb-15 w-full">
 				<InputSlider
 					styles={{
 						track: {
@@ -682,7 +698,7 @@ const RemoveLiquidity: FunctionComponent<{
 					onChange={({ x }) => removeLiquidityConfig.setPercentage(parseFloat(x.toFixed(2)).toString())}
 				/>
 			</div>
-			<div className="grid grid-cols-4 gap-5 h-9 w-full mb-15">
+			<div className="grid grid-cols-4 gap-5 h-9 w-full mb-6 md:mb-15">
 				<button
 					onClick={() => removeLiquidityConfig.setPercentage('25')}
 					className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75">
@@ -724,22 +740,20 @@ const BottomButton: FunctionComponent<{
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
-	const toast = useToast();
-
 	return (
 		<React.Fragment>
 			{error && (
-				<div className="mt-6 mb-7.5 w-full flex justify-center items-center">
-					<div className="py-1.5 px-3.5 rounded-lg bg-missionError flex justify-center items-center">
+				<div className="mb-3.5 md:mt-6 md:mb-7.5 w-full flex justify-center items-center">
+					<div className="py-1.5 px-2.5 md:px-3.5 rounded-lg bg-missionError flex justify-center items-center">
 						<Img className="h-5 w-5 mr-2.5" src="/public/assets/Icons/Info-Circle.svg" />
 						<p>{error.message}</p>
 					</div>
 				</div>
 			)}
-			<div className="w-full flex items-center justify-center">
+			<div className="mt-8 w-full flex items-center justify-center">
 				<button
 					disabled={!account.isReadyToSendMsgs || error != null}
-					className="w-2/3 h-15 bg-primary-200 rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer disabled:opacity-50"
+					className="w-full md:w-2/3 h-12 md:h-15 bg-primary-200 rounded-xl md:rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer disabled:opacity-50"
 					onClick={async e => {
 						e.preventDefault();
 
@@ -757,22 +771,12 @@ const BottomButton: FunctionComponent<{
 										shareOutAmount.toDec().toString(),
 										'2.5',
 										'',
-										tx => {
-											if (tx.code) {
-												toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-											} else {
-												toast.displayToast(TToastType.TX_SUCCESSFUL, {
-													customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-												});
-											}
-
+										() => {
 											close();
 										}
 									);
-
-									toast.displayToast(TToastType.TX_BROADCASTING);
 								} catch (e) {
-									toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+									console.log(e);
 								}
 							}
 
@@ -787,22 +791,12 @@ const BottomButton: FunctionComponent<{
 										shareIn.toDec().toString(),
 										'2.5',
 										'',
-										tx => {
-											if (tx.code) {
-												toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-											} else {
-												toast.displayToast(TToastType.TX_SUCCESSFUL, {
-													customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-												});
-											}
-
+										() => {
 											close();
 										}
 									);
-
-									toast.displayToast(TToastType.TX_BROADCASTING);
 								} catch (e) {
-									toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+									console.log(e);
 								}
 							}
 						}
@@ -822,7 +816,7 @@ const BottomButton: FunctionComponent<{
 								/>
 							</svg>
 						) : (
-							<p className="text-white-high font-semibold text-lg">Add Liquidity</p>
+							<p className="text-white-high font-semibold text-base md:text-lg">Add Liquidity</p>
 						)
 					) : account.isSendingMsg === 'exitPool' ? (
 						<svg
@@ -838,7 +832,7 @@ const BottomButton: FunctionComponent<{
 							/>
 						</svg>
 					) : (
-						<p className="text-white-high font-semibold text-lg">Remove Liquidity</p>
+						<p className="text-white-high font-semibold text-base md:text-lg">Remove Liquidity</p>
 					)}
 				</button>
 			</div>

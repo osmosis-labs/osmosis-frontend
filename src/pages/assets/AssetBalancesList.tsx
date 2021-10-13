@@ -3,18 +3,22 @@ import { AppCurrency, Currency, IBCCurrency } from '@keplr-wallet/types';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { Img } from 'src/components/common/Img';
-import { ButtonFaint } from 'src/components/layouts/Buttons';
+import { ButtonFaint, ButtonPrimary, ButtonSecondary } from 'src/components/layouts/Buttons';
 import { Text, TitleText } from 'src/components/Texts';
 import { IBCAssetInfos } from 'src/config';
 import { TransferDialog } from 'src/dialogs/Transfer';
 import { TableData, TableHeaderRow } from 'src/pages/assets/components/Table';
 import { useStore } from 'src/stores';
 import { makeIBCMinimalDenom } from 'src/utils/ibc';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 const tableWidths = ['50%', '25%', '12.5%', '12.5%'];
+const tableWidthsOnMobileView = ['70%', '30%'];
 
 export const AssetBalancesList = observer(function AssetBalancesList() {
 	const { chainStore, queriesStore, accountStore } = useStore();
+
+	const { isMobileView } = useWindowSize();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
@@ -71,7 +75,9 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 		<>
 			{dialogState.open ? (
 				<TransferDialog
-					dialogStyle={{ minHeight: '533px', maxHeight: '540px', minWidth: '656px', maxWidth: '656px' }}
+					dialogStyle={
+						isMobileView ? {} : { minHeight: '533px', maxHeight: '540px', minWidth: '656px', maxWidth: '656px' }
+					}
 					isOpen={dialogState.open}
 					close={close}
 					currency={dialogState.currency}
@@ -79,13 +85,14 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 					sourceChannelId={dialogState.sourceChannelId}
 					destChannelId={dialogState.destChannelId}
 					isWithdraw={dialogState.isWithdraw}
+					isMobileView={isMobileView}
 				/>
 			) : null}
-
-			<TitleText>Osmosis Assets</TitleText>
-
+			<div className="px-5 md:px-0">
+				<TitleText isMobileView={isMobileView}>Osmosis Assets</TitleText>
+			</div>
 			<table style={{ width: '100%', paddingBottom: 32 }}>
-				<AssetBalanceHeader />
+				<AssetBalanceHeader isMobileView={isMobileView} />
 
 				<tbody style={{ width: '100%' }}>
 					{chainStore.current.currencies
@@ -106,6 +113,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 										.trim(true)
 										.maxDecimals(6)
 										.toString()}
+									isMobileView={isMobileView}
 								/>
 							);
 						})}
@@ -174,6 +182,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 										isWithdraw: true,
 									});
 								}}
+								isMobileView={isMobileView}
 							/>
 						);
 					})}
@@ -183,22 +192,36 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 	);
 });
 
-function AssetBalanceHeader() {
+interface AssetBalanceHeaderProps {
+	isMobileView: boolean;
+}
+
+function AssetBalanceHeader({ isMobileView }: AssetBalanceHeaderProps) {
 	return (
 		<thead>
 			<TableHeaderRow>
-				<TableData style={{ width: tableWidths[0] }}>
+				<TableData style={{ width: isMobileView ? tableWidthsOnMobileView[0] : tableWidths[0] }}>
 					<Text size="sm">Asset / Chain</Text>
 				</TableData>
-				<TableData style={{ paddingRight: 80, width: tableWidths[1], justifyContent: 'flex-end' }}>
+				<TableData
+					style={{
+						paddingRight: isMobileView ? 0 : 80,
+						width: isMobileView ? tableWidthsOnMobileView[1] : tableWidths[1],
+						justifyContent: 'flex-end',
+					}}>
 					<Text size="sm">Balance</Text>
 				</TableData>
-				<TableData style={{ width: tableWidths[2] }}>
-					<Text size="sm">IBC Deposit</Text>
-				</TableData>
-				<TableData style={{ width: tableWidths[3] }}>
-					<Text size="sm">IBC Withdraw</Text>
-				</TableData>
+
+				{!isMobileView && (
+					<TableData style={{ width: tableWidths[2] }}>
+						<Text size="sm">IBC Deposit</Text>
+					</TableData>
+				)}
+				{!isMobileView && (
+					<TableData style={{ width: tableWidths[3] }}>
+						<Text size="sm">IBC Withdraw</Text>
+					</TableData>
+				)}
 			</TableHeaderRow>
 		</thead>
 	);
@@ -212,6 +235,7 @@ interface AssetBalanceRowProps {
 	onDeposit?: () => void;
 	onWithdraw?: () => void;
 	showComingSoon?: boolean;
+	isMobileView: boolean;
 }
 
 function AssetBalanceRow({
@@ -222,43 +246,75 @@ function AssetBalanceRow({
 	onDeposit,
 	onWithdraw,
 	showComingSoon,
+	isMobileView,
 }: AssetBalanceRowProps) {
 	return (
-		<AssetBalanceRowContainer>
-			<TableData style={{ width: tableWidths[0] }}>
-				<Img loadingSpin style={{ width: `2.5rem`, height: `2.5rem`, marginRight: 20 }} src={currency.coinImageUrl} />
-				<Text emphasis="medium">
-					{chainName ? `${chainName} - ${coinDenom.toUpperCase()}` : coinDenom.toUpperCase()}
-				</Text>
-			</TableData>
-
-			<TableData style={{ paddingRight: 80, width: tableWidths[1], justifyContent: 'flex-end' }}>
-				<Text emphasis="medium">{balance}</Text>
-			</TableData>
-
-			<TableData style={{ width: tableWidths[2], position: showComingSoon ? 'relative' : 'initial' }}>
-				{!showComingSoon && onDeposit ? (
-					<ButtonFaint onClick={onDeposit} style={{ display: 'flex', alignItems: 'center' }}>
-						<Text size="sm" color="gold">
-							Deposit
+		<>
+			<AssetBalanceRowContainer>
+				<AssetBalanceTableRow>
+					<TableData style={{ width: isMobileView ? tableWidthsOnMobileView[0] : tableWidths[0] }}>
+						<Img
+							loadingSpin
+							style={{ width: `2.5rem`, height: `2.5rem`, marginRight: isMobileView ? 10 : 20 }}
+							src={currency.coinImageUrl}
+						/>
+						<Text emphasis="medium" isMobileView={isMobileView}>
+							{chainName ? `${chainName} - ${coinDenom.toUpperCase()}` : coinDenom.toUpperCase()}
 						</Text>
-						<Img src={'/public/assets/Icons/Right.svg'} />
-					</ButtonFaint>
-				) : null}
-				{showComingSoon ? <ComingSoonText color="gold">🌲 LBP is live 🌲</ComingSoonText> : null}
-			</TableData>
-
-			<TableData style={{ width: tableWidths[3] }}>
-				{!showComingSoon && onWithdraw ? (
-					<ButtonFaint onClick={onWithdraw} style={{ display: 'flex', alignItems: 'center' }}>
-						<Text size="sm" color="gold">
-							Withdraw
+					</TableData>
+					<TableData
+						style={{
+							paddingRight: isMobileView ? 6 : 80,
+							width: isMobileView ? tableWidthsOnMobileView[1] : tableWidths[1],
+							justifyContent: 'flex-end',
+						}}>
+						<Text emphasis="medium" isMobileView={isMobileView}>
+							{balance}
 						</Text>
-						<Img src={'/public/assets/Icons/Right.svg'} />
-					</ButtonFaint>
-				) : null}
-			</TableData>
-		</AssetBalanceRowContainer>
+					</TableData>
+					{!isMobileView && (
+						<TableData style={{ width: tableWidths[2], position: showComingSoon ? 'relative' : 'initial' }}>
+							{!showComingSoon && onDeposit ? (
+								<>
+									<ButtonFaint onClick={onDeposit} style={{ display: 'flex', alignItems: 'center' }}>
+										<p className="text-sm text-secondary-200 leading-none">Deposit</p>
+										<Img src={'/public/assets/Icons/Right.svg'} />
+									</ButtonFaint>
+								</>
+							) : null}
+							{showComingSoon ? <ComingSoonText color="gold">🌲 LBP is live 🌲</ComingSoonText> : null}
+						</TableData>
+					)}
+					{!isMobileView && (
+						<TableData style={{ width: tableWidths[3] }}>
+							{!showComingSoon && onWithdraw ? (
+								<>
+									<ButtonFaint onClick={onWithdraw} style={{ display: 'flex', alignItems: 'center' }}>
+										<p className="text-sm text-secondary-200 leading-none">Withdraw</p>
+										<Img src={'/public/assets/Icons/Right.svg'} />
+									</ButtonFaint>
+								</>
+							) : null}
+						</TableData>
+					)}
+				</AssetBalanceTableRow>
+
+				{!showComingSoon && isMobileView && (onWithdraw || onDeposit) && (
+					<IBCTransferButtonsOnMobileView>
+						{onWithdraw ? (
+							<ButtonSecondary isOutlined onClick={onWithdraw} style={{ width: '100%' }}>
+								<p className="text-sm text-secondary-200">Withdraw</p>
+							</ButtonSecondary>
+						) : null}
+						{onDeposit ? (
+							<ButtonSecondary onClick={onDeposit} style={{ width: '100%' }}>
+								<p className="text-sm">Deposit</p>
+							</ButtonSecondary>
+						) : null}
+					</IBCTransferButtonsOnMobileView>
+				)}
+			</AssetBalanceRowContainer>
+		</>
 	);
 }
 
@@ -269,11 +325,24 @@ const ComingSoonText = styled(Text)`
 `;
 
 const AssetBalanceRowContainer = styled.tr`
+	border-bottom-width: 1px;
+`;
+
+const AssetBalanceTableRow = styled.tr`
 	display: flex;
 	width: 100%;
-	height: 4.5rem;
 	align-items: center;
-	border-bottom-width: 1px;
-	padding-left: 50px;
-	padding-right: 60px;
+	padding-left: 14px;
+	padding-right: 14px;
+
+	@media (min-width: 768px) {
+		padding-left: 50px;
+		padding-right: 60px;
+	}
+`;
+
+const IBCTransferButtonsOnMobileView = styled.div`
+	display: flex;
+	gap: 20px;
+	padding: 10px 20px 20px;
 `;

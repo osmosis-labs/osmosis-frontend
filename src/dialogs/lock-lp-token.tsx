@@ -3,66 +3,7 @@ import { wrapBaseDialog } from './base';
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores';
-import { TToastType, useToast } from '../components/common/toasts';
 import { useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
-import dayjs from 'dayjs';
-
-interface LockUpCountBucket {
-	time: string;
-	count: number;
-}
-
-const getLockUpCountBucketKey = (poolId: string) => {
-	return `lockup-count-bucket-key-${poolId}`;
-};
-
-const useLockUpCountBucket = (poolId: string, refreshDurationSec: number, maxCount: number) => {
-	const [_, forceRerender] = useState(false);
-
-	const bucket = (() => {
-		const item = localStorage.getItem(getLockUpCountBucketKey(poolId));
-		if (!item) {
-			return {
-				time: new Date().toString(),
-				count: 0,
-			};
-		}
-		return JSON.parse(item) as LockUpCountBucket;
-	})();
-
-	const bucketNeedRefreshing = dayjs(new Date()).isAfter(
-		dayjs(new Date(bucket.time)).add(
-			dayjs.duration({
-				seconds: refreshDurationSec,
-			})
-		)
-	);
-	const hasBucketSpace = bucketNeedRefreshing || bucket.count < maxCount;
-
-	const addBucketCount = () => {
-		if (bucketNeedRefreshing) {
-			localStorage.setItem(
-				getLockUpCountBucketKey(poolId),
-				JSON.stringify({
-					time: new Date().toString(),
-					count: 1,
-				})
-			);
-		} else {
-			localStorage.setItem(
-				getLockUpCountBucketKey(poolId),
-				JSON.stringify({
-					...bucket,
-					count: bucket.count + 1,
-				})
-			);
-		}
-
-		forceRerender(value => !value);
-	};
-
-	return { bucket, hasBucketSpace, addBucketCount };
-};
 
 export const LockLpTokenDialog = wrapBaseDialog(
 	observer(({ poolId, close }: { poolId: string; close: () => void }) => {
@@ -80,11 +21,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 			queries.queryBalances
 		);
 
-		const toast = useToast();
-
 		const [selectedDurationIndex, setSelectedDurationIndex] = useState(0);
-
-		const bucket = useLockUpCountBucket(poolId, 3600 * 24, 2);
 
 		return (
 			<div className="text-white-high w-full h-full">
@@ -143,15 +80,10 @@ export const LockLpTokenDialog = wrapBaseDialog(
 						</button>
 					</div>
 				</div>
-				<p className="w-full text-center pt-3 pb-3.5 pl-3 pr-2.5 border border-white-faint rounded-2xl mb-7">
-					Due to high network congestion, we are temporarily limiting users
-					<br />
-					to <b>2 bonding transactions per day</b>
-				</p>
 				<div className="w-full flex items-center justify-center">
 					<button
 						className="w-2/3 h-15 bg-primary-200 rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer disabled:opacity-50"
-						disabled={!account.isReadyToSendMsgs || amountConfig.getError() != null || !bucket.hasBucketSpace}
+						disabled={!account.isReadyToSendMsgs || amountConfig.getError() != null}
 						onClick={async e => {
 							e.preventDefault();
 
@@ -167,23 +99,12 @@ export const LockLpTokenDialog = wrapBaseDialog(
 											},
 										],
 										'',
-										tx => {
-											if (tx.code) {
-												toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-											} else {
-												toast.displayToast(TToastType.TX_SUCCESSFUL, {
-													customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-												});
-
-												bucket.addBucketCount();
-											}
-
+										() => {
 											close();
 										}
 									);
-									toast.displayToast(TToastType.TX_BROADCASTING);
 								} catch (e) {
-									toast.displayToast(TToastType.TX_FAILED, { message: e.message });
+									console.log(e);
 								}
 							}
 						}}>

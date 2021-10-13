@@ -10,17 +10,7 @@ import { Pools } from './types';
 
 export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> {
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-		super(
-			kvStore,
-			chainId,
-			chainGetter,
-			/*
-			 기본 설정에서는 limit 없이 보낼 경우 100개까지 받아올 수 있다.
-			 일단 현재로서는 풀이 100개가 넘을 때까지 오래 걸릴 것으로 보이기 때문에
-			 얘가 100개까지 다 받아올 거라고 기대하고 limit, offset 설정없이 쿼리를 보낸다.
-			 */
-			`/osmosis/gamm/v1beta1/pools?pagination.limit=400`
-		);
+		super(kvStore, chainId, chainGetter, `/osmosis/gamm/v1beta1/pools?pagination.limit=500`);
 
 		makeObservable(this);
 	}

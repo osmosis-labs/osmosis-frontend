@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import { Duration } from 'dayjs/plugin/duration';
 import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
-import { TToastType, useToast } from 'src/components/common/toasts';
 import { ButtonFaint } from 'src/components/layouts/Buttons';
 import { Spinner } from 'src/components/Spinners';
 import { TableBodyRow, TableData, TableHeadRow } from 'src/components/Tables';
@@ -115,8 +114,6 @@ const UnlockingTableRow = observer(function UnlockingTableRow({
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
-	const toast = useToast();
-
 	const [isWithdrawing, setIsWithdrawing] = useState(false);
 
 	const endTimeMoment = moment(endTime);
@@ -141,22 +138,11 @@ const UnlockingTableRow = observer(function UnlockingTableRow({
 
 								try {
 									// XXX: Due to the block gas limit, restrict the number of lock id to included in the one tx.
-									await account.osmosis.sendUnlockPeriodLockMsg(lockIds.slice(0, 3), '', tx => {
+									await account.osmosis.sendUnlockPeriodLockMsg(lockIds.slice(0, 3), '', () => {
 										setIsWithdrawing(false);
-
-										if (tx.code) {
-											toast.displayToast(TToastType.TX_FAILED, { message: tx.log });
-										} else {
-											toast.displayToast(TToastType.TX_SUCCESSFUL, {
-												customLink: chainStore.current.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
-											});
-										}
 									});
-
-									toast.displayToast(TToastType.TX_BROADCASTING);
 								} catch (e) {
 									setIsWithdrawing(false);
-									toast.displayToast(TToastType.TX_FAILED, { message: e.message });
 								}
 							}
 						}}>

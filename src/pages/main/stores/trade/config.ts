@@ -21,7 +21,7 @@ export class TradeConfig extends AmountConfig {
 	protected outCurrencyMinimalDenom: string = '';
 
 	@observable
-	protected _slippageStep: SlippageStep | undefined = SlippageStep.Step3;
+	protected _slippageStep: SlippageStep | undefined = SlippageStep.Step1;
 
 	readonly initialManualSlippage = '2.5';
 	// If slippage step is undefiend,

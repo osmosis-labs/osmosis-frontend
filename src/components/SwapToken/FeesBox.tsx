@@ -6,6 +6,7 @@ import React, { HTMLAttributes } from 'react';
 import { CenterV } from 'src/components/layouts/Containers';
 import { Text } from 'src/components/Texts';
 import { colorError, colorPrimary, colorWhiteFaint } from 'src/emotionStyles/colors';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 interface BaseConfig {
 	spotPriceWithoutSwapFee: IntPretty;
@@ -47,11 +48,15 @@ export const FeesBox = observer(function FeesBox({ config, ...props }: Props) {
 				})
 				.join(' + ');
 
+	const { isMobileView } = useWindowSize();
+
 	return (
 		<FeeBoxContainer {...props}>
 			<Section>
-				<Text size="sm">Rate</Text>
-				<Text size="sm">
+				<Text size="sm" isMobileView={isMobileView}>
+					Rate
+				</Text>
+				<Text size="sm" isMobileView={isMobileView}>
 					{`1 ${config.sendCurrency.coinDenom.toUpperCase()} = ${inSpotPrice
 						.maxDecimals(3)
 						.trim(true)
@@ -60,7 +65,7 @@ export const FeesBox = observer(function FeesBox({ config, ...props }: Props) {
 			</Section>
 
 			<InverseRateSection>
-				<Text size="xs" emphasis="low">
+				<Text size="xs" isMobileView={isMobileView} emphasis="low">
 					{`1 ${config.outCurrency.coinDenom.toUpperCase()} = ${outSpotPrice
 						.maxDecimals(3)
 						.trim(true)
@@ -69,17 +74,22 @@ export const FeesBox = observer(function FeesBox({ config, ...props }: Props) {
 			</InverseRateSection>
 
 			<Section>
-				<Text size="sm">Swap Fee</Text>
-				<Text size="sm">{swapFeeText}</Text>
+				<Text size="sm" isMobileView={isMobileView}>
+					Swap Fee
+				</Text>
+				<Text size="sm" isMobileView={isMobileView}>
+					{swapFeeText}
+				</Text>
 			</Section>
 
-			<hr style={{ width: '100%', marginTop: 15, marginBottom: 16 }} />
+			<hr style={{ width: '100%', marginTop: isMobileView ? 12 : 15, marginBottom: isMobileView ? 12 : 16 }} />
 
 			<Section>
-				<Text emphasis="high" size="sm" weight="semiBold">
+				<Text isMobileView={isMobileView} emphasis="high" size="sm" weight="semiBold">
 					Estimated Slippage
 				</Text>
 				<Text
+					isMobileView={isMobileView}
 					emphasis="high"
 					size="sm"
 					weight="semiBold"
@@ -98,9 +108,13 @@ export const FeeBoxContainer = styled.div`
 	width: 100%;
 	border: 1px solid ${colorWhiteFaint};
 	border-radius: 0.5rem;
-	padding: 12px 18px;
+	padding: 12px;
 	margin-bottom: 18px;
 	background-color: ${colorPrimary};
+
+	@media (min-width: 768px) {
+		padding: 12px 18px;
+	}
 `;
 
 const Section = styled(CenterV)`

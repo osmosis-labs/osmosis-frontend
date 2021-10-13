@@ -4,20 +4,36 @@ import { Dialog } from '@headlessui/react';
 export interface BaseDialogProps {
 	dialogStyle?: Record<string, string>;
 	isOpen: boolean;
-	close: () => void;
+	close?: () => void;
+	isHideCloseButton?: boolean;
 }
 
 // https://github.com/tailwindlabs/headlessui/issues/407
 // TODO : has issues with FocusTrap -> fork and fix maybe?
-export const BaseDialog: FunctionComponent<BaseDialogProps> = ({ isOpen, close, children, dialogStyle }) => {
+export const BaseDialog: FunctionComponent<BaseDialogProps> = ({
+	isOpen,
+	close = () => {},
+	children,
+	dialogStyle,
+	isHideCloseButton,
+}) => {
 	return (
 		<React.Fragment>
 			{isOpen ? (
 				<Dialog as="div" className="fixed inset-0 z-100 overflow-y-auto" open={isOpen} onClose={close}>
-					<div className="flex items-center justify-center min-h-screen">
+					<div className="p-5 flex items-center justify-center min-h-screen">
 						<Dialog.Overlay className="fixed inset-0 bg-black opacity-20 z-0" />
-						<div style={dialogStyle} className="min-w-modal p-8 bg-surface shadow-elevation-24dp rounded-2xl z-10">
+						<div
+							style={dialogStyle}
+							className="relative w-full md:min-w-modal md:max-w-modal px-4 py-5 md:p-8 bg-surface shadow-elevation-24dp rounded-2xl z-10">
 							{children}
+							{!isHideCloseButton && (
+								<img
+									onClick={() => close()}
+									className="absolute cursor-pointer top-4 md:top-6 right-3 md:right-5 w-8 md:w-10"
+									src="/public/assets/Icons/Close.svg"
+								/>
+							)}
 						</div>
 					</div>
 				</Dialog>
@@ -32,7 +48,11 @@ export function wrapBaseDialog<C extends React.ElementType>(
 	// eslint-disable-next-line react/display-name
 	return props => {
 		return (
-			<BaseDialog isOpen={props.isOpen} dialogStyle={props.dialogStyle} close={props.close}>
+			<BaseDialog
+				isOpen={props.isOpen}
+				dialogStyle={props.dialogStyle}
+				close={props.close}
+				isHideCloseButton={props.isHideCloseButton}>
 				{props.isOpen ? React.createElement(element, props) : null}
 			</BaseDialog>
 		);

@@ -22,7 +22,7 @@ const NavLinkFallback: FunctionComponent<{ sidebarItem: TSIDEBAR_ITEM }> = ({ si
 	);
 };
 
-export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, openSidebar, selected }) => {
+export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, selected }) => {
 	return (
 		<NavLinkFallback sidebarItem={sidebarItem}>
 			<li
@@ -44,9 +44,8 @@ export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, open
 					/>
 				</div>
 				<p
-					style={{ maxWidth: openSidebar ? '100px' : '0px' }}
 					className={cn(
-						'ml-2.5 text-base overflow-x-hidden transition-all font-bold transition-all',
+						'ml-2.5 text-base overflow-x-hidden transition-all  font-bold transition-all max-w-24',
 						selected ? 'text-white-high' : 'text-iconDefault group-hover:text-white-mid'
 					)}>
 					{sidebarItem.TEXT}
@@ -58,7 +57,6 @@ export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, open
 };
 interface TSidebarItem {
 	selected?: boolean;
-	openSidebar: boolean;
 	sidebarItem: TSIDEBAR_ITEM;
 }
 
@@ -69,7 +67,16 @@ interface DisplayIconProps extends HTMLAttributes<HTMLDivElement> {
 	isActive?: boolean;
 }
 
-export function DisplayIcon({ icon, iconSelected, isActive, onMouseEnter, onMouseLeave, ...props }: DisplayIconProps) {
+export function DisplayIcon({
+	icon,
+	iconSelected,
+	isActive,
+	onMouseEnter,
+	onMouseLeave,
+	onTouchStart,
+	onTouchEnd,
+	...props
+}: DisplayIconProps) {
 	const [hovering, setHovering] = useState(false);
 	const handleMouseEnter = useCallback(
 		(event: React.MouseEvent<HTMLDivElement>) => {
@@ -78,6 +85,13 @@ export function DisplayIcon({ icon, iconSelected, isActive, onMouseEnter, onMous
 		},
 		[onMouseEnter]
 	);
+	const handleTouchStart = useCallback(
+		(event: React.TouchEvent<HTMLDivElement>) => {
+			setHovering(true);
+			onTouchStart?.(event);
+		},
+		[onTouchStart]
+	);
 	const handleMouseLeave = useCallback(
 		(event: React.MouseEvent<HTMLDivElement>) => {
 			setHovering(false);
@@ -85,25 +99,43 @@ export function DisplayIcon({ icon, iconSelected, isActive, onMouseEnter, onMous
 		},
 		[onMouseLeave]
 	);
+
+	const handleTouchEnd = useCallback(
+		(event: React.TouchEvent<HTMLDivElement>) => {
+			setHovering(false);
+			onTouchEnd?.(event);
+		},
+		[onTouchEnd]
+	);
 	return (
-		<DisplayIconContainer onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
+		<DisplayIconContainer
+			onMouseEnter={handleMouseEnter}
+			onMouseLeave={handleMouseLeave}
+			onTouchStart={handleTouchStart}
+			onTouchEnd={handleTouchEnd}
+			{...props}>
 			<IconBgImg
 				src={
-					hovering || isActive
+					isActive || hovering
 						? '/public/assets/sidebar/icon-border_selected.svg'
 						: '/public/assets/sidebar/icon-border_unselected.svg'
 				}
 			/>
-			<IconImg src={hovering ? iconSelected : icon} />
+			<IconImg src={isActive || hovering ? iconSelected : icon} />
 		</DisplayIconContainer>
 	);
 }
 
 const DisplayIconContainer = styled.div`
-	height: 2.75rem;
-	width: 2.75rem;
+	height: 2.25rem;
+	width: 2.5rem;
 	position: relative;
 	cursor: pointer;
+
+	@media (min-width: 768px) {
+		height: 2.75rem;
+		width: 2.75rem;
+	}
 `;
 
 const IconBgImg = styled(Img)`
@@ -116,7 +148,12 @@ const IconBgImg = styled(Img)`
 
 const IconImg = styled(Img)`
 	${cssAbsoluteCenter};
-	width: 1.25rem;
-	height: 1.25rem;
+	width: 1.125rem;
+	height: 1.125rem;
 	z-index: 10;
+
+	@media (min-width: 768px) {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
 `;

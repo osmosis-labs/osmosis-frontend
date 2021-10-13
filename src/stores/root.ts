@@ -12,6 +12,9 @@ import { LPCurrencyRegistrar } from './osmosis/currency-registrar';
 import { ChainInfoInner } from '@keplr-wallet/stores';
 import { PoolIntermediatePriceStore } from './price';
 import { IBCTransferHistoryStore } from './ibc-history';
+import { displayToast, TToastType } from '../components/common/toasts';
+import { isSlippageError } from '../utils/tx';
+import { prettifyTxError } from 'src/stores/prettify-tx-error';
 import { BroadcastMode, StdTx } from '@cosmjs/launchpad';
 import Axios from 'axios';
 import { KeplrWalletConnectV1 } from '@keplr-wallet/wc-client';
@@ -124,7 +127,7 @@ export class RootStore {
 
 				msgOpts: {
 					ibcTransfer: {
-						gas: 650000,
+						gas: 850000,
 					},
 				},
 
@@ -159,9 +162,53 @@ export class RootStore {
 					await keplr.experimentalSuggestChain(copied);
 				},
 			},
-			chainOpts: this.chainStore.chainInfos.map((chainInfo: ChainInfo) => {
+			chainOpts: this.chainStore.chainInfos.map(chainInfo => {
 				return {
 					chainId: chainInfo.chainId,
+					preTxEvents: {
+						onBroadcastFailed: (e?: Error) => {
+							let message: string = 'Unknown error';
+							if (e instanceof Error) {
+								message = e.message;
+							} else if (typeof e === 'string') {
+								message = e;
+							}
+
+							try {
+								message = prettifyTxError(message, chainInfo.currencies);
+							} catch (e) {
+								console.log(e);
+							}
+
+							displayToast(TToastType.TX_FAILED, {
+								message,
+							});
+						},
+						onBroadcasted: (txHash: Uint8Array) => {
+							displayToast(TToastType.TX_BROADCASTING);
+						},
+						onFulfill: (tx: any) => {
+							if (tx.code) {
+								let message: string = tx.log;
+
+								if (isSlippageError(tx)) {
+									message = 'Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.';
+								} else {
+									try {
+										message = prettifyTxError(message, chainInfo.currencies);
+									} catch (e) {
+										console.log(e);
+									}
+								}
+
+								displayToast(TToastType.TX_FAILED, { message });
+							} else {
+								displayToast(TToastType.TX_SUCCESSFUL, {
+									customLink: chainInfo.raw.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
+								});
+							}
+						},
+					},
 				};
 			}),
 		});
@@ -406,6 +453,51 @@ export class RootStore {
 					},
 				],
 			},
+			{
+				poolId: '461',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-37' }], 'ungm'),
+						coinDenom: 'NGM',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-37' }], 'eeur'),
+						coinDenom: 'EEUR',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '481',
+				currencies: [
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-37' }], 'eeur'),
+						coinDenom: 'EEUR',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '482',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-37' }], 'eeur'),
+						coinDenom: 'EEUR',
+						coinDecimals: 6,
+					},
+				],
+			},
 		]);
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
@@ -431,8 +523,10 @@ export class RootStore {
 
 				// If the IBC Currency's channel is known.
 				// Don't show the channel info on the coin denom.
-				const knownAssetInfo = IBCAssetInfos.find(info => info.sourceChannelId === firstPath.channelId);
-				if (knownAssetInfo && knownAssetInfo.coinMinimalDenom === denomTrace.denom) {
+				const knownAssetInfo = IBCAssetInfos.filter(info => info.sourceChannelId === firstPath.channelId).find(
+					info => info.coinMinimalDenom === denomTrace.denom
+				);
+				if (knownAssetInfo) {
 					return originCurrency ? originCurrency.coinDenom : denomTrace.denom;
 				}
 
