@@ -20,78 +20,7 @@ import Axios from 'axios';
 import { KeplrWalletConnectV1 } from '@keplr-wallet/wc-client';
 import { KeplrQRCodeModalV1 } from '@keplr-wallet/wc-qrcode-modal';
 import WalletConnect from '@walletconnect/client';
-
-let keplr: Keplr | undefined = undefined;
-let promise: Promise<Keplr> | undefined = undefined;
-
-async function sendTx(chainId: string, stdTx: StdTx, mode: BroadcastMode): Promise<Uint8Array> {
-	const params = {
-		tx: stdTx,
-		mode,
-	};
-
-	const restInstance = Axios.create({
-		baseURL: EmbedChainInfos.find(chainInfo => chainInfo.chainId === chainId)!.rest,
-	});
-
-	const result = await restInstance.post('/txs', params);
-
-	return Buffer.from(result.data.txhash, 'hex');
-}
-
-export function getWCKeplr(): Promise<Keplr> {
-	if (keplr) {
-		return Promise.resolve(keplr);
-	}
-
-	const fn = () => {
-		const connector = new WalletConnect({
-			bridge: 'https://bridge.walletconnect.org',
-			signingMethods: [
-				'keplr_enable_wallet_connect_v1',
-				'keplr_get_key_wallet_connect_v1',
-				'keplr_sign_amino_wallet_connect_v1',
-			],
-			qrcodeModal: new KeplrQRCodeModalV1({
-				backdrop: {
-					style: {
-						zIndex: 1000,
-					},
-				},
-			}),
-		});
-
-		// Check if connection is already established
-		if (!connector.connected) {
-			// create new session
-			connector.createSession();
-
-			return new Promise<Keplr>((resolve, reject) => {
-				connector.on('connect', error => {
-					if (error) {
-						reject(error);
-					} else {
-						keplr = new KeplrWalletConnectV1(connector, {
-							sendTx,
-						});
-						resolve(keplr);
-					}
-				});
-			});
-		} else {
-			keplr = new KeplrWalletConnectV1(connector, {
-				sendTx,
-			});
-			return Promise.resolve(keplr);
-		}
-	};
-
-	if (!promise) {
-		promise = fn();
-	}
-
-	return promise;
-}
+import { ConnectWalletManager } from 'src/dialogs/connect-wallet';
 
 export class RootStore {
 	public readonly chainStore: ChainStore;
@@ -102,6 +31,7 @@ export class RootStore {
 	public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
 
 	public readonly swapManager: GammSwapManager;
+	public readonly connectWalletManager: ConnectWalletManager;
 
 	protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
 	protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
@@ -110,11 +40,12 @@ export class RootStore {
 
 	constructor() {
 		this.chainStore = new ChainStore(EmbedChainInfos, EmbedChainInfos[0].chainId);
+		this.connectWalletManager = new ConnectWalletManager();
 
 		this.queriesStore = new QueriesStore(
 			new IndexedDBKVStore('store_web_queries'),
 			this.chainStore,
-			getWCKeplr,
+			this.connectWalletManager.getKeplr,
 			QueriesWithCosmosAndOsmosis
 		);
 
@@ -123,7 +54,7 @@ export class RootStore {
 				prefetching: false,
 				suggestChain: false,
 				autoInit: false,
-				getKeplr: getWCKeplr,
+				getKeplr: this.connectWalletManager.getKeplr,
 
 				msgOpts: {
 					ibcTransfer: {

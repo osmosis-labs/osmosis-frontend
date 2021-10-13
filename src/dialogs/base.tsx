@@ -6,6 +6,7 @@ export interface BaseDialogProps {
 	isOpen: boolean;
 	close?: () => void;
 	isHideCloseButton?: boolean;
+	initialFocus?: React.MutableRefObject<HTMLElement | null>;
 }
 
 // https://github.com/tailwindlabs/headlessui/issues/407
@@ -16,11 +17,17 @@ export const BaseDialog: FunctionComponent<BaseDialogProps> = ({
 	children,
 	dialogStyle,
 	isHideCloseButton,
+	initialFocus,
 }) => {
 	return (
 		<React.Fragment>
 			{isOpen ? (
-				<Dialog as="div" className="fixed inset-0 z-100 overflow-y-auto" open={isOpen} onClose={close}>
+				<Dialog
+					as="div"
+					className="fixed inset-0 z-100 overflow-y-auto"
+					open={isOpen}
+					onClose={close}
+					initialFocus={initialFocus}>
 					<div className="p-5 flex items-center justify-center min-h-screen">
 						<Dialog.Overlay className="fixed inset-0 bg-black opacity-20 z-0" />
 						<div
@@ -30,7 +37,7 @@ export const BaseDialog: FunctionComponent<BaseDialogProps> = ({
 							{!isHideCloseButton && (
 								<img
 									onClick={() => close()}
-									className="absolute cursor-pointer top-4 md:top-6 right-3 md:right-5 w-8 md:w-10"
+									className="absolute cursor-pointer top-3 md:top-5 right-3 md:right-5 w-8 md:w-10"
 									src="/public/assets/Icons/Close.svg"
 								/>
 							)}
@@ -52,7 +59,8 @@ export function wrapBaseDialog<C extends React.ElementType>(
 				isOpen={props.isOpen}
 				dialogStyle={props.dialogStyle}
 				close={props.close}
-				isHideCloseButton={props.isHideCloseButton}>
+				isHideCloseButton={props.isHideCloseButton}
+				initialFocus={props.initialFocus}>
 				{props.isOpen ? React.createElement(element, props) : null}
 			</BaseDialog>
 		);

@@ -1,21 +1,32 @@
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useState, useRef } from 'react';
 import { LINKS, MISC } from '../../../constants';
 import { useAccountConnection } from '../../../hooks/account/useAccountConnection';
 import { useStore } from '../../../stores';
 import { Img } from '../../common/Img';
 import { ConnectAccountButton } from '../../ConnectAccountButton';
+import { ConnectWalletDialog } from 'src/dialogs';
 
 export const SidebarBottom: FunctionComponent = observer(() => {
 	const { chainStore, accountStore, queriesStore } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
+	// temp code
+	const ref = useRef(null);
 
-	const { isAccountConnected, disconnectAccount, connectAccount } = useAccountConnection();
+	const {
+		isOpenDialog: isOpenConnectWalletDialog,
+		closeDialog: closeConnectWalletDialog,
+		openDialog: openConnectWalletDialog,
+		isAccountConnected,
+		disconnectAccount,
+		connectAccount,
+	} = useAccountConnection();
 
 	return (
 		<div>
+			<ConnectWalletDialog initialFocus={ref} isOpen={isOpenConnectWalletDialog} close={closeConnectWalletDialog} />
 			{isAccountConnected ? (
 				<React.Fragment>
 					<div className="flex items-center mb-2">
@@ -52,7 +63,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
 					className="h-9"
 					onClick={e => {
 						e.preventDefault();
-						connectAccount();
+						openConnectWalletDialog();
 					}}
 				/>
 			)}

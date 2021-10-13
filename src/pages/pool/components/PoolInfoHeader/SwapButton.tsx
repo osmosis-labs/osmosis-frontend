@@ -18,7 +18,7 @@ export const SwapButton = observer(function SwapButton({ config, close }: SwapBu
 	const { chainStore, accountStore } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
-	const { isAccountConnected, connectAccount } = useAccountConnection();
+	const { isAccountConnected, openDialog: openConnectWalletDialog } = useAccountConnection();
 
 	const handleSwapButtonClicked = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		event.preventDefault();
@@ -66,7 +66,7 @@ export const SwapButton = observer(function SwapButton({ config, close }: SwapBu
 				style={{ height: '3.75rem' }}
 				onClick={e => {
 					e.preventDefault();
-					connectAccount();
+					openConnectWalletDialog();
 				}}
 			/>
 		);

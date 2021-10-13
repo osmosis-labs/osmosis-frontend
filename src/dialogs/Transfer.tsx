@@ -72,7 +72,7 @@ export const TransferDialog = wrapBaseDialog(
 			);
 			amountConfig.setFeeConfig(feeConfig);
 
-			const { isAccountConnected, connectAccount } = useAccountConnection();
+			const { isAccountConnected, openDialog: openConnectWalletDialog } = useAccountConnection();
 
 			return (
 				<div className="w-full h-full text-white-high">
@@ -153,7 +153,7 @@ export const TransferDialog = wrapBaseDialog(
 								className="w-full md:w-2/3 p-4 md:p-6 rounded-2xl"
 								onClick={e => {
 									e.preventDefault();
-									connectAccount();
+									openConnectWalletDialog();
 								}}
 							/>
 						) : (
