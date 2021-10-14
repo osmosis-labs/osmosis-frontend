@@ -52,80 +52,6 @@ async function sendTx(chainId: string, stdTx: StdTx, mode: BroadcastMode): Promi
 	return Buffer.from(result.data.txhash, 'hex');
 }
 
-export const WalletConnectQRCodeModal: FunctionComponent<{
-	uri: string;
-	close: () => void;
-}> = ({ uri, close }) => {
-	const [isMobile] = useState(() => checkIsMobile());
-	const [isAndroid] = useState(() => checkIsAndroid());
-
-	const navigateToAppURL = useMemo(() => {
-		if (isMobile) {
-			if (isAndroid) {
-				// Save the mobile link.
-				saveMobileLinkInfo({
-					name: 'Keplr',
-					href: 'intent://wcV1#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;',
-				});
-
-				return `intent://wcV1?${uri}#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;`;
-			} else {
-				// Save the mobile link.
-				saveMobileLinkInfo({
-					name: 'Keplr',
-					href: 'keplrwallet://wcV1',
-				});
-
-				return `keplrwallet://wcV1?${uri}`;
-			}
-		}
-	}, [isMobile, isAndroid, uri]);
-
-	useEffect(() => {
-		if (navigateToAppURL) {
-			window.location.href = navigateToAppURL;
-		}
-	}, [navigateToAppURL]);
-
-	if (isMobile) {
-		return null;
-	}
-
-	return (
-		<div className="fixed inset-0 z-100 overflow-y-auto">
-			<div className="p-5 flex items-center justify-center min-h-screen">
-				<div
-					className="fixed inset-0 bg-black opacity-20 flex justify-center items-center"
-					onClick={e => {
-						e.preventDefault();
-						e.stopPropagation();
-
-						close();
-					}}
-				/>
-
-				<div
-					className="relative md:max-w-modal px-4 py-5 md:p-8 bg-surface shadow-elevation-24dp rounded-2xl z-10"
-					onClick={e => {
-						e.preventDefault();
-						e.stopPropagation();
-					}}>
-					<h4 className="text-lg md:text-xl mb-3 md:mb-5 text-white-high">Scan QR Code</h4>
-					<div className="p-3.5 bg-background">
-						<QRCode size={500} value={uri} />
-					</div>
-
-					<img
-						onClick={() => close()}
-						className="absolute cursor-pointer top-3 md:top-5 right-3 md:right-5 w-8 md:w-10"
-						src="/public/assets/Icons/Close.svg"
-					/>
-				</div>
-			</div>
-		</div>
-	);
-};
-
 class WalletConnectQRCodeModalV1Renderer {
 	constructor() {}
 
@@ -274,3 +200,77 @@ export const ConnectWalletDialog = wrapBaseDialog(
 		);
 	})
 );
+
+export const WalletConnectQRCodeModal: FunctionComponent<{
+	uri: string;
+	close: () => void;
+}> = ({ uri, close }) => {
+	const [isMobile] = useState(() => checkIsMobile());
+	const [isAndroid] = useState(() => checkIsAndroid());
+
+	const navigateToAppURL = useMemo(() => {
+		if (isMobile) {
+			if (isAndroid) {
+				// Save the mobile link.
+				saveMobileLinkInfo({
+					name: 'Keplr',
+					href: 'intent://wcV1#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;',
+				});
+
+				return `intent://wcV1?${uri}#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;`;
+			} else {
+				// Save the mobile link.
+				saveMobileLinkInfo({
+					name: 'Keplr',
+					href: 'keplrwallet://wcV1',
+				});
+
+				return `keplrwallet://wcV1?${uri}`;
+			}
+		}
+	}, [isMobile, isAndroid, uri]);
+
+	useEffect(() => {
+		if (navigateToAppURL) {
+			window.location.href = navigateToAppURL;
+		}
+	}, [navigateToAppURL]);
+
+	if (isMobile) {
+		return null;
+	}
+
+	return (
+		<div className="fixed inset-0 z-100 overflow-y-auto">
+			<div className="p-5 flex items-center justify-center min-h-screen">
+				<div
+					className="fixed inset-0 bg-black opacity-20 flex justify-center items-center"
+					onClick={e => {
+						e.preventDefault();
+						e.stopPropagation();
+
+						close();
+					}}
+				/>
+
+				<div
+					className="relative md:max-w-modal px-4 py-5 md:p-8 bg-surface shadow-elevation-24dp rounded-2xl z-10"
+					onClick={e => {
+						e.preventDefault();
+						e.stopPropagation();
+					}}>
+					<h4 className="text-lg md:text-xl mb-3 md:mb-5 text-white-high">Scan QR Code</h4>
+					<div className="p-3.5 bg-white-high">
+						<QRCode size={500} value={uri} />
+					</div>
+
+					<img
+						onClick={() => close()}
+						className="absolute cursor-pointer top-3 md:top-5 right-3 md:right-5 w-8 md:w-10"
+						src="/public/assets/Icons/Close.svg"
+					/>
+				</div>
+			</div>
+		</div>
+	);
+};
