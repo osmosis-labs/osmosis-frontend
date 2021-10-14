@@ -174,27 +174,27 @@ export class ConnectWalletManager {
 			console.log(error);
 		} else {
 			this.disableAutoConnect();
-
-			if (this.accountStore) {
-				for (const chainInfo of this.chainStore.chainInfos) {
-					const account = this.accountStore.getAccount(chainInfo.chainId);
-					// Clear all loaded account.
-					if (account.walletStatus === WalletStatus.Loaded) {
-						account.disconnect();
-					}
-				}
-			}
-
-			if (this.walletConnector) {
-				this.walletConnector = undefined;
-			}
+			this.disconnect();
 		}
 	};
 
-	@action
-	disconnectWalletConnect() {
+	/**
+	 * Disconnect the wallet regardless of wallet type (extension, wallet connect)
+	 */
+	disconnect() {
 		if (this.walletConnector) {
 			this.walletConnector.killSession();
+			this.walletConnector = undefined;
+		}
+
+		if (this.accountStore) {
+			for (const chainInfo of this.chainStore.chainInfos) {
+				const account = this.accountStore.getAccount(chainInfo.chainId);
+				// Clear all loaded account.
+				if (account.walletStatus === WalletStatus.Loaded) {
+					account.disconnect();
+				}
+			}
 		}
 	}
 

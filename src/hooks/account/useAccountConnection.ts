@@ -17,9 +17,8 @@ export function useAccountConnection() {
 		account.walletStatus === WalletStatus.Loaded || connectWalletManager.autoConnectingWalletType;
 
 	const disconnectAccount = useCallback(async () => {
-		account.disconnect();
 		connectWalletManager.disableAutoConnect();
-		connectWalletManager.disconnectWalletConnect();
+		connectWalletManager.disconnect();
 	}, [account, connectWalletManager]);
 
 	const connectAccount = useCallback(() => {
@@ -33,11 +32,6 @@ export function useAccountConnection() {
 		// 이전에 로그인한 후에 sign out을 명시적으로 하지 않았으면 자동으로 로그인한다.
 		if (!!connectWalletManager.autoConnectingWalletType && account.walletStatus === WalletStatus.NotInit) {
 			account.init();
-		}
-
-		// 다른 앱에서 WalletConnect를 disconnect했으면 자동으로 로그아웃한다.
-		if (account.walletStatus === WalletStatus.Loaded && !connectWalletManager.autoConnectingWalletType) {
-			account.disconnect();
 		}
 	}, [account, connectWalletManager.autoConnectingWalletType]);
 
