@@ -82,9 +82,9 @@ class WalletConnectQRCodeModalV1Renderer {
 	}
 }
 
-type WalletType = 'true' | 'extension' | 'wallet-connect' | null;
-const KeyConnectingWalletType = 'connecting_wallet_type';
-const KeyAutoConnectingWalletType = 'account_auto_connect';
+export type WalletType = 'true' | 'extension' | 'wallet-connect' | null;
+export const KeyConnectingWalletType = 'connecting_wallet_type';
+export const KeyAutoConnectingWalletType = 'account_auto_connect';
 
 export class ConnectWalletManager {
 	// We should set the wallet connector when the `getKeplr()` method should return the `Keplr` for wallet connect.

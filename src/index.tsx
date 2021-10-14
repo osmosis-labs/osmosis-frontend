@@ -26,6 +26,7 @@ import './styles/globals.scss';
 import './styles/index.scss';
 import { Terms } from './terms';
 import { IBCHistoryNotifier } from './provider';
+import { AccountConnectionProvider } from 'src/hooks/account/context';
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
@@ -38,60 +39,62 @@ const Router: FunctionComponent = () => {
 		<QueryClientProvider client={queryClient}>
 			<StoreProvider>
 				<ToastProvider>
-					<IBCHistoryNotifier />
-					<Terms />
-					<div className="md:h-screen bg-background z-0">
-						<BrowserRouter>
-							<Switch>
-								<Route exact path="/">
-									<RouteWrapper>
-										<MainPage />
-									</RouteWrapper>
-								</Route>
-								<Route exact path="/pools">
-									<RouteWrapper>
-										<PoolsPage />
-									</RouteWrapper>
-								</Route>
-								<Route path="/pool/:id">
-									<RouteWrapper>
-										<PoolPage />
-									</RouteWrapper>
-								</Route>
-								<Route exact path="/assets">
-									<RouteWrapper>
-										<AssetsPage />
-									</RouteWrapper>
-								</Route>
-								<Route exact path="/governance">
-									<RouteWrapper>
-										<GovernancePage />
-									</RouteWrapper>
-								</Route>
-								<Route exact path="/governance/:id">
-									<RouteWrapper>
-										<GovernanceDetailsPage />
-									</RouteWrapper>
-								</Route>
-								<Route exact path="/airdrop">
-									<RouteWrapper>
-										<AirdropPage />
-									</RouteWrapper>
-								</Route>
-								<Route exact path={'/bootstrap'}>
-									<RouteWrapper>
-										<BootstrapPage />
-									</RouteWrapper>
-								</Route>
-								<Route>
-									<RouteWrapper>
-										<NotFoundPage />
-									</RouteWrapper>
-								</Route>
-							</Switch>
-						</BrowserRouter>
-					</div>
-					<ToastContainer transition={Bounce} />
+					<AccountConnectionProvider>
+						<IBCHistoryNotifier />
+						<Terms />
+						<div className="md:h-screen bg-background z-0">
+							<BrowserRouter>
+								<Switch>
+									<Route exact path="/">
+										<RouteWrapper>
+											<MainPage />
+										</RouteWrapper>
+									</Route>
+									<Route exact path="/pools">
+										<RouteWrapper>
+											<PoolsPage />
+										</RouteWrapper>
+									</Route>
+									<Route path="/pool/:id">
+										<RouteWrapper>
+											<PoolPage />
+										</RouteWrapper>
+									</Route>
+									<Route exact path="/assets">
+										<RouteWrapper>
+											<AssetsPage />
+										</RouteWrapper>
+									</Route>
+									<Route exact path="/governance">
+										<RouteWrapper>
+											<GovernancePage />
+										</RouteWrapper>
+									</Route>
+									<Route exact path="/governance/:id">
+										<RouteWrapper>
+											<GovernanceDetailsPage />
+										</RouteWrapper>
+									</Route>
+									<Route exact path="/airdrop">
+										<RouteWrapper>
+											<AirdropPage />
+										</RouteWrapper>
+									</Route>
+									<Route exact path={'/bootstrap'}>
+										<RouteWrapper>
+											<BootstrapPage />
+										</RouteWrapper>
+									</Route>
+									<Route>
+										<RouteWrapper>
+											<NotFoundPage />
+										</RouteWrapper>
+									</Route>
+								</Switch>
+							</BrowserRouter>
+						</div>
+						<ToastContainer transition={Bounce} />
+					</AccountConnectionProvider>
 				</ToastProvider>
 			</StoreProvider>
 		</QueryClientProvider>

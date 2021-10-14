@@ -6,27 +6,16 @@ import { useAccountConnection } from '../../../hooks/account/useAccountConnectio
 import { useStore } from '../../../stores';
 import { Img } from '../../common/Img';
 import { ConnectAccountButton } from '../../ConnectAccountButton';
-import { ConnectWalletDialog } from 'src/dialogs';
 
 export const SidebarBottom: FunctionComponent = observer(() => {
 	const { chainStore, accountStore, queriesStore } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
-	// temp code
-	const ref = useRef(null);
 
-	const {
-		isOpenDialog: isOpenConnectWalletDialog,
-		closeDialog: closeConnectWalletDialog,
-		openDialog: openConnectWalletDialog,
-		isAccountConnected,
-		disconnectAccount,
-		connectAccount,
-	} = useAccountConnection();
+	const { isAccountConnected, connectAccount, disconnectAccount } = useAccountConnection();
 
 	return (
 		<div>
-			<ConnectWalletDialog initialFocus={ref} isOpen={isOpenConnectWalletDialog} close={closeConnectWalletDialog} />
 			{isAccountConnected ? (
 				<React.Fragment>
 					<div className="flex items-center mb-2">
@@ -63,7 +52,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
 					className="h-9"
 					onClick={e => {
 						e.preventDefault();
-						openConnectWalletDialog();
+						connectAccount();
 					}}
 				/>
 			)}
