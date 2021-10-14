@@ -40,7 +40,7 @@ export class RootStore {
 
 	constructor() {
 		this.chainStore = new ChainStore(EmbedChainInfos, EmbedChainInfos[0].chainId);
-		this.connectWalletManager = new ConnectWalletManager();
+		this.connectWalletManager = new ConnectWalletManager(this.chainStore);
 
 		this.queriesStore = new QueriesStore(
 			new IndexedDBKVStore('store_web_queries'),
@@ -143,6 +143,7 @@ export class RootStore {
 				};
 			}),
 		});
+		this.connectWalletManager.setAccountStore(this.accountStore);
 
 		this.priceStore = new PoolIntermediatePriceStore(
 			EmbedChainInfos[0].chainId,

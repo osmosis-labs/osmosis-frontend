@@ -1,26 +1,28 @@
-import React, { CSSProperties, FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import QRCode from 'qrcode.react';
 import {
-	isMobile as checkIsMobile,
 	isAndroid as checkIsAndroid,
+	isMobile as checkIsMobile,
 	saveMobileLinkInfo,
 } from '@walletconnect/browser-utils';
 
 import { observer } from 'mobx-react-lite';
-import { makeObservable, observable, flow, action } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 import { Keplr } from '@keplr-wallet/types';
 import { KeplrWalletConnectV1 } from '@keplr-wallet/wc-client';
 import WalletConnect from '@walletconnect/client';
 import { BroadcastMode, StdTx } from '@cosmjs/launchpad';
-import { EmbedChainInfos, IBCAssetInfos } from 'src/config';
+import { EmbedChainInfos } from 'src/config';
 import Axios from 'axios';
 import { useAccountConnection } from 'src/hooks/account/useAccountConnection';
 
 import { wrapBaseDialog } from './base';
-import { getKeplrFromWindow } from '@keplr-wallet/stores';
+import { AccountStore, getKeplrFromWindow, WalletStatus } from '@keplr-wallet/stores';
+import { ChainStore } from 'src/stores/chain';
+import { AccountWithCosmosAndOsmosis } from 'src/stores/osmosis/account';
 
 const walletList = [
 	{
@@ -85,34 +87,53 @@ const KeyConnectingWalletType = 'connecting_wallet_type';
 const KeyAutoConnectingWalletType = 'account_auto_connect';
 
 export class ConnectWalletManager {
-	protected walletConnector: WalletConnect;
+	// We should set the wallet connector when the `getKeplr()` method should return the `Keplr` for wallet connect.
+	// But, account store request the `getKeplr()` method whenever that needs the `Keplr` api.
+	// Thus, we should return the `Keplr` api persistently if the wallet connect is connected.
+	// And, when the wallet is disconnected, we should clear this field.
+	// In fact, `WalletConnect` itself is persistent.
+	// But, in some cases, it acts inproperly.
+	// So, handle that in the store logic too.
+	protected walletConnector: WalletConnect | undefined;
 
 	@observable
 	autoConnectingWalletType: WalletType;
 
-	constructor() {
-		this.walletConnector = new WalletConnect({
-			bridge: 'https://bridge.walletconnect.org',
-			signingMethods: [
-				'keplr_enable_wallet_connect_v1',
-				'keplr_get_key_wallet_connect_v1',
-				'keplr_sign_amino_wallet_connect_v1',
-			],
-			qrcodeModal: new WalletConnectQRCodeModalV1Renderer(),
-		});
+	constructor(
+		protected readonly chainStore: ChainStore,
+		protected accountStore?: AccountStore<AccountWithCosmosAndOsmosis>
+	) {
 		this.autoConnectingWalletType = localStorage?.getItem(KeyAutoConnectingWalletType) as WalletType;
 		makeObservable(this);
+	}
+
+	// The account store needs to reference the `getKeplr()` method this on the constructor.
+	// But, this store also needs to reference the account store.
+	// To solve this problem, just set the account store field lazily.
+	setAccountStore(accountStore: AccountStore<AccountWithCosmosAndOsmosis>) {
+		this.accountStore = accountStore;
 	}
 
 	getKeplr = (): Promise<Keplr | undefined> => {
 		const connectingWalletType =
 			localStorage?.getItem(KeyAutoConnectingWalletType) || localStorage?.getItem(KeyConnectingWalletType);
+
 		if (connectingWalletType === 'wallet-connect') {
+			if (!this.walletConnector) {
+				this.walletConnector = new WalletConnect({
+					bridge: 'https://bridge.walletconnect.org',
+					signingMethods: ['keplr_enable_wallet_connect_v1', 'keplr_sign_amino_wallet_connect_v1'],
+					qrcodeModal: new WalletConnectQRCodeModalV1Renderer(),
+				});
+
+				this.walletConnector!.on('disconnect', this.onWalletConnectDisconnected);
+			}
+
 			if (!this.walletConnector.connected) {
 				this.walletConnector.createSession();
 
 				return new Promise<Keplr>((resolve, reject) => {
-					this.walletConnector.on('connect', error => {
+					this.walletConnector!.on('connect', error => {
 						if (error) {
 							reject(error);
 						} else {
@@ -121,17 +142,11 @@ export class ConnectWalletManager {
 							this.autoConnectingWalletType = 'wallet-connect';
 
 							resolve(
-								new KeplrWalletConnectV1(this.walletConnector, {
+								new KeplrWalletConnectV1(this.walletConnector!, {
 									sendTx,
 								})
 							);
 						}
-					});
-					this.walletConnector.on('disconnect', error => {
-						if (error) {
-							reject(error);
-						}
-						this.disableAutoConnect();
 					});
 				});
 			} else {
@@ -154,15 +169,40 @@ export class ConnectWalletManager {
 		}
 	};
 
-	disconnectWalletConnect = () => {
-		this.walletConnector.killSession();
+	onWalletConnectDisconnected = (error: Error | null) => {
+		if (error) {
+			console.log(error);
+		} else {
+			this.disableAutoConnect();
+
+			if (this.accountStore) {
+				for (const chainInfo of this.chainStore.chainInfos) {
+					const account = this.accountStore.getAccount(chainInfo.chainId);
+					// Clear all loaded account.
+					if (account.walletStatus === WalletStatus.Loaded) {
+						account.disconnect();
+					}
+				}
+			}
+
+			if (this.walletConnector) {
+				this.walletConnector = undefined;
+			}
+		}
 	};
 
 	@action
-	disableAutoConnect = () => {
+	disconnectWalletConnect() {
+		if (this.walletConnector) {
+			this.walletConnector.killSession();
+		}
+	}
+
+	@action
+	disableAutoConnect() {
 		localStorage?.removeItem(KeyAutoConnectingWalletType);
 		this.autoConnectingWalletType = null;
-	};
+	}
 }
 
 export const ConnectWalletDialog = wrapBaseDialog(

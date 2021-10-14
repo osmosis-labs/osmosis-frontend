@@ -19,7 +19,7 @@ export function useAccountConnection() {
 	const disconnectAccount = useCallback(async () => {
 		account.disconnect();
 		connectWalletManager.disableAutoConnect();
-		await connectWalletManager.disconnectWalletConnect();
+		connectWalletManager.disconnectWalletConnect();
 	}, [account, connectWalletManager]);
 
 	const connectAccount = useCallback(() => {
