@@ -72,7 +72,6 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 	if (!isAccountConnected) {
 		return (
 			<ConnectAccountButton
-				style={{ height: `3.75rem` }}
 				onClick={e => {
 					e.preventDefault();
 					connectAccount();

@@ -151,6 +151,7 @@ export const TransferDialog = wrapBaseDialog(
 						{!isAccountConnected ? (
 							<ConnectAccountButton
 								className="w-full md:w-2/3 p-4 md:p-6 rounded-2xl"
+								style={{ marginTop: isMobileView ? '16px' : '32px' }}
 								onClick={e => {
 									e.preventDefault();
 									connectAccount();

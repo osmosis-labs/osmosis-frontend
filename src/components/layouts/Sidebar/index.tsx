@@ -48,7 +48,12 @@ const SideBar: FunctionComponent = () => {
 
 	return (
 		<React.Fragment>
-			{isOpenSidebar && <div className="fixed z-20 w-full h-full bg-black bg-opacity-75 md:hidden" />}
+			{isOpenSidebar && (
+				<div
+					className="fixed z-20 w-full h-full bg-black bg-opacity-75 md:hidden"
+					onClick={() => setIsOpenSidebar(false)}
+				/>
+			)}
 			<div
 				className={`w-full overflow-x-visible max-w-sidebar-open min-w-sidebar-open pointer-events-none h-full z-100 absolute md:relative ${
 					isOpenSidebar ? 'block' : 'hidden'

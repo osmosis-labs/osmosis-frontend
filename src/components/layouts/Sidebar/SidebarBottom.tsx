@@ -49,7 +49,9 @@ export const SidebarBottom: FunctionComponent = observer(() => {
 				</React.Fragment>
 			) : (
 				<ConnectAccountButton
+					style={{ marginBottom: '32px' }}
 					className="h-9"
+					textStyle={{ fontSize: '14px' }}
 					onClick={e => {
 						e.preventDefault();
 						connectAccount();

@@ -298,7 +298,6 @@ function AssetBalanceRow({
 						</TableData>
 					)}
 				</AssetBalanceTableRow>
-
 				{!showComingSoon && isMobileView && (onWithdraw || onDeposit) && (
 					<IBCTransferButtonsOnMobileView>
 						{onWithdraw ? (
@@ -338,6 +337,7 @@ const AssetBalanceTableRow = styled.tr`
 	@media (min-width: 768px) {
 		padding-left: 50px;
 		padding-right: 60px;
+		max-height: 72px;
 	}
 `;
 
