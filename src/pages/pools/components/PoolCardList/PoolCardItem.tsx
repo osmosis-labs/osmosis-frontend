@@ -104,6 +104,7 @@ const TokenInfoContainer = styled.section`
 const PoolTextBase = styled.p`
 	font-size: 14px;
 	color: rgba(255, 255, 255, 0.6);
+	word-break: break-all;
 `;
 
 const PoolSubTitle = styled(PoolTextBase)`

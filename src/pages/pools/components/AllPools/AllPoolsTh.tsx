@@ -4,7 +4,7 @@ import { CenterV } from 'src/components/layouts/Containers';
 
 export function AllPoolsTh({ widths }: { widths: string[] }) {
 	return (
-		<PoolsTableHeader as="th">
+		<PoolsTableHeader as="tr">
 			<PoolsTableRow style={{ width: `${widths[0]}` }}>ID</PoolsTableRow>
 			<PoolsTableRow style={{ width: `${widths[1]}` }}>Token Info</PoolsTableRow>
 			<PoolsTableRow style={{ width: `${widths[2]}` }}>TVL</PoolsTableRow>

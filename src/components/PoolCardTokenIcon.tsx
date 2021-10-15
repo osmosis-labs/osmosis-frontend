@@ -22,6 +22,7 @@ export function PoolCardTokenIcon({ bgIndex, src }: Props) {
 
 const TokenIconBackground = styled.figure`
 	display: flex;
+	flex-shrink: 0;
 	justify-content: center;
 	align-items: center;
 	width: 4.75rem;

@@ -148,8 +148,13 @@ const PoolCatalystSection = styled.div`
 `;
 
 const LoaderStyled = styled(Loader)`
-	width: 12.5rem;
-	height: 12.5rem;
+	width: 6rem;
+	height: 6rem;
+
+	@media (min-width: 768px) {
+		width: 12.5rem;
+		height: 12.5rem;
+	}
 `;
 
 function isLbp(

@@ -324,7 +324,7 @@ const ComingSoonText = styled(Text)`
 	width: 200px;
 `;
 
-const AssetBalanceRowContainer = styled.tr`
+const AssetBalanceRowContainer = styled.div`
 	border-bottom-width: 1px;
 `;
 
