@@ -8,9 +8,6 @@ export interface AccountConnection {
 	isAccountConnected: true | WalletType;
 	disconnectAccount: () => Promise<void>;
 	connectAccount: () => void;
-	isOpenDialog: boolean;
-	openDialog: () => void;
-	closeDialog: () => void;
 }
 
 export const AccountConnectionContext = React.createContext<AccountConnection | null>(null);
@@ -32,12 +29,12 @@ export const AccountConnectionProvider: FunctionComponent = observer(({ children
 		connectWalletManager.disconnect();
 	}, [account, connectWalletManager]);
 
-	const connectAccount = useCallback(() => {
-		account.init();
-	}, [account]);
+	const openDialog = useCallback(() => setIsOpenDialog(true), []);
+	const closeDialog = useCallback(() => setIsOpenDialog(false), []);
 
-	const openDialog = useCallback(() => setIsOpenDialog(true), [setIsOpenDialog]);
-	const closeDialog = useCallback(() => setIsOpenDialog(false), [setIsOpenDialog]);
+	const connectAccount = useCallback(() => {
+		openDialog();
+	}, [openDialog]);
 
 	useEffect(() => {
 		// 이전에 로그인한 후에 sign out을 명시적으로 하지 않았으면 자동으로 로그인한다.
@@ -45,6 +42,26 @@ export const AccountConnectionProvider: FunctionComponent = observer(({ children
 			account.init();
 		}
 	}, [account, connectWalletManager.autoConnectingWalletType]);
+
+	/*
+	    Disconnect the accounts if the wallet doesn't exist or the connection rejected.
+	    Belows look somewhat strange in React philosophy.
+	    But, is is hard to use the `useEffect` hook because the references of the chain store and account store is persistent.
+	    Even though belows will be executed on rerendering of this component,
+	    it is likely this component will not be rerendered frequently becaouse this component only handle the connection of account.
+	    If the some account's wallet status changed, the observer makes this component be rerendered.
+	 */
+	for (const chainInfo of chainStore.chainInfos) {
+		const account = accountStore.getAccount(chainInfo.chainId);
+		if (account.walletStatus === WalletStatus.NotExist || account.walletStatus === WalletStatus.Rejected) {
+			if (chainInfo.chainId === chainStore.current.chainId) {
+				connectWalletManager.disableAutoConnect();
+				connectWalletManager.disconnect();
+			} else {
+				account.disconnect();
+			}
+		}
+	}
 
 	// temp code
 	const ref = useRef(null);
@@ -56,11 +73,8 @@ export const AccountConnectionProvider: FunctionComponent = observer(({ children
 					isAccountConnected,
 					disconnectAccount,
 					connectAccount,
-					isOpenDialog,
-					openDialog,
-					closeDialog,
 				};
-			}, [connectAccount, disconnectAccount, isAccountConnected, isOpenDialog, openDialog, closeDialog])}>
+			}, [connectAccount, disconnectAccount, isAccountConnected])}>
 			{children}
 			<ConnectWalletDialog initialFocus={ref} isOpen={isOpenDialog} close={closeDialog} />
 		</AccountConnectionContext.Provider>

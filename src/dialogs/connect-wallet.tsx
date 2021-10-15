@@ -23,6 +23,7 @@ import { wrapBaseDialog } from './base';
 import { AccountStore, getKeplrFromWindow, WalletStatus } from '@keplr-wallet/stores';
 import { ChainStore } from 'src/stores/chain';
 import { AccountWithCosmosAndOsmosis } from 'src/stores/osmosis/account';
+import { useStore } from 'src/stores';
 
 const walletList = [
 	{
@@ -207,7 +208,7 @@ export class ConnectWalletManager {
 
 export const ConnectWalletDialog = wrapBaseDialog(
 	observer(({ initialFocus, close }: { initialFocus: React.RefObject<HTMLDivElement>; close: () => void }) => {
-		const { connectAccount } = useAccountConnection();
+		const { chainStore, accountStore } = useStore();
 		const [isMobile] = useState(() => checkIsMobile());
 
 		return (
@@ -226,7 +227,7 @@ export const ConnectWalletDialog = wrapBaseDialog(
 							className="w-full text-left p-3 md:p-5 rounded-2xl bg-background flex items-center mt-4 md:mt-5"
 							onClick={() => {
 								localStorage.setItem(KeyConnectingWalletType, wallet.type);
-								connectAccount();
+								accountStore.getAccount(chainStore.current.chainId).init();
 								close();
 							}}>
 							<img src={wallet.logoUrl} className="w-12 mr-3 md:w-16 md:mr-5" />

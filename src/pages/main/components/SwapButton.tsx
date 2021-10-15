@@ -38,7 +38,7 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 	const { chainStore, accountStore, queriesStore } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
-	const { isAccountConnected, openDialog: openConnectWalletDialog } = useAccountConnection();
+	const { isAccountConnected, connectAccount } = useAccountConnection();
 
 	const currentSwapPools = useMemo(() => {
 		return config.optimizedRoutes?.swaps.map(swap => swap.poolId) ?? [];
@@ -75,7 +75,7 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 				style={{ height: `3.75rem` }}
 				onClick={e => {
 					e.preventDefault();
-					openConnectWalletDialog();
+					connectAccount();
 				}}
 			/>
 		);
