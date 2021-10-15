@@ -23,6 +23,7 @@ const ConnectAccountButtonWrapper = styled.button`
 	padding: 8px 4px;
 	border-radius: 0.375rem;
 	background-color: ${colorPrimary200};
+	margin-bottom: 20px;
 
 	@media (min-width: 768px) {
 		margin-bottom: 32px;

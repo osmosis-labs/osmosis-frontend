@@ -133,7 +133,7 @@ const LiquidityMiningContainer = styled(CenterSelf)`
 	padding: 20px 20px 28px;
 
 	@media (min-width: 768px) {
-		padding: 40px;
+		padding: 40px 0;
 	}
 `;
 

@@ -60,7 +60,9 @@ export const PoolPage: FunctionComponent = observer(() => {
 			<LiquidityMiningSection>
 				{/* 인센티브를 받을 수 있는 풀 또는 config에서 설정된 풀의 경우만 Synthesis를 표시한다. */}
 				{(queries.osmosis.queryIncentivizedPools.isIncentivized(pool.id) || LockupAbledPoolIds[pool.id]) && (
-					<LiquidityMining poolId={pool.id} />
+					<CenterSelf>
+						<LiquidityMining poolId={pool.id} />
+					</CenterSelf>
 				)}
 				{isLbp(pool.smoothWeightChangeParams) && <LbpCatalyst pool={pool} lbpParams={pool.smoothWeightChangeParams} />}
 			</LiquidityMiningSection>
@@ -129,6 +131,10 @@ const PoolInfoHeaderBg = styled.div<{ isLbp: boolean }>`
 const LiquidityMiningSection = styled.div`
 	background-color: ${colorPrimaryDark};
 	width: 100%;
+
+	@media (min-width: 768px) {
+		padding: 0 40px;
+	}
 `;
 
 const PoolCatalystSection = styled.div`
@@ -137,7 +143,7 @@ const PoolCatalystSection = styled.div`
 	padding: 20px;
 
 	@media (min-width: 768px) {
-		padding: 0 40px 40px;
+		padding: 20px 40px 40px;
 	}
 `;
 
