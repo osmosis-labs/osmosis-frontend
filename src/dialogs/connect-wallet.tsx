@@ -191,8 +191,8 @@ export class ConnectWalletManager {
 		if (this.accountStore) {
 			for (const chainInfo of this.chainStore.chainInfos) {
 				const account = this.accountStore.getAccount(chainInfo.chainId);
-				// Clear all loaded account.
-				if (account.walletStatus === WalletStatus.Loaded) {
+				// Clear all account.
+				if (account.walletStatus !== WalletStatus.NotInit) {
 					account.disconnect();
 				}
 			}
