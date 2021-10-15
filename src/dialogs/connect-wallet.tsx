@@ -131,13 +131,9 @@ export class ConnectWalletManager {
 			}
 
 			if (!this.walletConnector.connected) {
-				this.walletConnector.createSession();
-
-				return new Promise<Keplr>((resolve, reject) => {
-					this.walletConnector!.on('connect', error => {
-						if (error) {
-							reject(error);
-						} else {
+				return new Promise<Keplr | undefined>((resolve, reject) => {
+					this.walletConnector!.connect()
+						.then(() => {
 							localStorage?.removeItem(KeyConnectingWalletType);
 							localStorage?.setItem(KeyAutoConnectingWalletType, 'wallet-connect');
 							this.autoConnectingWalletType = 'wallet-connect';
@@ -147,8 +143,15 @@ export class ConnectWalletManager {
 									sendTx,
 								})
 							);
-						}
-					});
+						})
+						.catch(e => {
+							console.log(e);
+							// XXX: Due to the limitation of cureent account store implementation.
+							//      We shouldn't throw an error (reject) on the `getKeplr()` method.
+							//      So return the `undefined` temporarily.
+							//      In this case, the wallet will be considered as `NotExist`
+							resolve(undefined);
+						});
 				});
 			} else {
 				localStorage?.removeItem(KeyConnectingWalletType);
@@ -184,7 +187,9 @@ export class ConnectWalletManager {
 	 */
 	disconnect() {
 		if (this.walletConnector) {
-			this.walletConnector.killSession();
+			if (this.walletConnector.connected) {
+				this.walletConnector.killSession();
+			}
 			this.walletConnector = undefined;
 		}
 
