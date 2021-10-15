@@ -17,13 +17,13 @@ import WalletConnect from '@walletconnect/client';
 import { BroadcastMode, StdTx } from '@cosmjs/launchpad';
 import { EmbedChainInfos } from 'src/config';
 import Axios from 'axios';
-import { useAccountConnection } from 'src/hooks/account/useAccountConnection';
 
 import { wrapBaseDialog } from './base';
 import { AccountStore, getKeplrFromWindow, WalletStatus } from '@keplr-wallet/stores';
 import { ChainStore } from 'src/stores/chain';
 import { AccountWithCosmosAndOsmosis } from 'src/stores/osmosis/account';
 import { useStore } from 'src/stores';
+import { IJsonRpcRequest, IRequestOptions } from '@walletconnect/types';
 
 const walletList = [
 	{
@@ -115,6 +115,35 @@ export class ConnectWalletManager {
 		this.accountStore = accountStore;
 	}
 
+	protected onBeforeSendRequest = (request: Partial<IJsonRpcRequest>): Promise<void> => {
+		if (!checkIsMobile()) {
+			return Promise.resolve();
+		}
+
+		const deepLink = checkIsAndroid()
+			? 'intent://wcV1#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;'
+			: 'keplrwallet://wcV1';
+
+		switch (request.method) {
+			case 'keplr_enable_wallet_connect_v1':
+				// Keplr mobile requests another per-chain permission for each wallet connect session.
+				// By the current logic, `enable()` is requested immediately after wallet connect is connected.
+				// However, in this case, two requests are made consecutively.
+				// So in ios, the deep link modal pops up twice and confuses the user.
+				// To solve this problem, enable on the osmosis chain does not open deep links.
+				if (request.params && request.params.length === 1 && request.params[0] === this.chainStore.current.chainId) {
+					break;
+				}
+				window.location.href = deepLink;
+				break;
+			case 'keplr_sign_amino_wallet_connect_v1':
+				window.location.href = deepLink;
+				break;
+		}
+
+		return Promise.resolve();
+	};
+
 	getKeplr = (): Promise<Keplr | undefined> => {
 		const connectingWalletType =
 			localStorage?.getItem(KeyAutoConnectingWalletType) || localStorage?.getItem(KeyConnectingWalletType);
@@ -123,7 +152,7 @@ export class ConnectWalletManager {
 			if (!this.walletConnector) {
 				this.walletConnector = new WalletConnect({
 					bridge: 'https://bridge.walletconnect.org',
-					signingMethods: ['keplr_enable_wallet_connect_v1', 'keplr_sign_amino_wallet_connect_v1'],
+					signingMethods: [],
 					qrcodeModal: new WalletConnectQRCodeModalV1Renderer(),
 				});
 
@@ -141,6 +170,7 @@ export class ConnectWalletManager {
 							resolve(
 								new KeplrWalletConnectV1(this.walletConnector!, {
 									sendTx,
+									onBeforeSendRequest: this.onBeforeSendRequest,
 								})
 							);
 						})
@@ -161,6 +191,7 @@ export class ConnectWalletManager {
 				return Promise.resolve(
 					new KeplrWalletConnectV1(this.walletConnector, {
 						sendTx,
+						onBeforeSendRequest: this.onBeforeSendRequest,
 					})
 				);
 			}
