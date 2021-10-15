@@ -8,6 +8,7 @@ import { SidebarItem } from './SidebarItem';
 import { useHistory, withRouter } from 'react-router-dom';
 import { SidebarBottom } from './SidebarBottom';
 import isArray from 'lodash-es/isArray';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 const SideBar: FunctionComponent = () => {
 	const history = useHistory();
@@ -16,6 +17,8 @@ const SideBar: FunctionComponent = () => {
 	const [isOpenSidebar, setIsOpenSidebar] = React.useState<boolean>(false);
 
 	const [isOnTop, setIsOnTop] = React.useState<boolean>(true);
+
+	const { isMobileView } = useWindowSize();
 
 	React.useEffect(() => {
 		const checkAndSetWindowIsOnTop = () => {
@@ -68,13 +71,20 @@ const SideBar: FunctionComponent = () => {
 									</div>
 								</section>
 								<section>
-									{mapKeyValues(LAYOUT.SIDEBAR, (_: string, value: TSIDEBAR_ITEM) => (
-										<SidebarItem
-											key={value.TEXT}
-											selected={pathnameCheck(pathname, value.SELECTED_CHECK)}
-											sidebarItem={value}
-										/>
-									))}
+									{mapKeyValues(LAYOUT.SIDEBAR, (_: string, sidebarItem: TSIDEBAR_ITEM) => sidebarItem)
+										.filter(sidebarItem => {
+											if (isMobileView && (sidebarItem.TEXT === 'Stake' || sidebarItem.TEXT === 'Vote')) {
+												return false;
+											}
+											return true;
+										})
+										.map(sidebarItem => (
+											<SidebarItem
+												key={sidebarItem.TEXT}
+												selected={pathnameCheck(pathname, sidebarItem.SELECTED_CHECK)}
+												sidebarItem={sidebarItem}
+											/>
+										))}
 								</section>
 							</div>
 							<div>
