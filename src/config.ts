@@ -619,6 +619,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://junoscan.com/transactions/{txHash}',
+		explorerUrlToTx: 'https://www.mintscan.io/juno/txs/{txHash}',
 	},
 ];
