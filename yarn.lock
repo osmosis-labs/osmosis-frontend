@@ -2005,10 +2005,10 @@
     big-integer "^1.6.48"
     utility-types "^3.10.0"
 
-"@keplr-wallet/wc-client@0.9.2":
-  version "0.9.2"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/wc-client/-/wc-client-0.9.2.tgz#16b161d69f0a805ab7f0e1e436cbc0c7b076d08d"
-  integrity sha512-e+9uCSeDuDfOJmv6iZGgmErqoMhx8DLNHqhx9hs/Zb2oXCcc/tlSUCn5+aCWxw0KOpXGA4b/cWomAABK4T3yBQ==
+"@keplr-wallet/wc-client@0.9.3":
+  version "0.9.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/wc-client/-/wc-client-0.9.3.tgz#71dd3d4f66ac3e298e118cbf9afce3e170821ba4"
+  integrity sha512-VSl6/pY/2OKTkpUeUwGPexhlUO72BUQgeX2MR/MOhkhaNIUxxbXvf8R4ZhqsC7jk7RWt6rK9V2KYdDlGcOMivA==
   dependencies:
     "@cosmjs/launchpad" "^0.24.0-alpha.25"
     "@cosmjs/proto-signing" "^0.24.0-alpha.25"

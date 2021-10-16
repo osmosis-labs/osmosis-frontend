@@ -46,7 +46,7 @@
 		"@keplr-wallet/stores": "0.9.0",
 		"@keplr-wallet/types": "0.9.0",
 		"@keplr-wallet/unit": "0.9.0",
-		"@keplr-wallet/wc-client": "0.9.2",
+		"@keplr-wallet/wc-client": "0.9.3",
 		"@keplr-wallet/wc-qrcode-modal": "0.9.0",
 		"@tippyjs/react": "^4.2.5",
 		"@walletconnect/client": "^1.6.5",
