@@ -17,7 +17,7 @@ import WalletConnect from '@walletconnect/client';
 import { BroadcastMode, StdTx } from '@cosmjs/launchpad';
 import { EmbedChainInfos } from 'src/config';
 import Axios from 'axios';
-
+import { Buffer } from 'buffer/';
 import { wrapBaseDialog } from './base';
 import { AccountStore, getKeplrFromWindow, WalletStatus } from '@keplr-wallet/stores';
 import { ChainStore } from 'src/stores/chain';
