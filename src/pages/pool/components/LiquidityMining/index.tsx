@@ -76,14 +76,32 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 					</AvailableLpColumn>
 				</LiquidityMiningSummary>
 				{(() => {
-					const gauge = ExtraGaugeInPool[poolId];
+					let gauge = ExtraGaugeInPool[poolId];
 					if (gauge) {
-						const currency = chainStore.currentFluent.findCurrency(gauge.denom);
-						if (currency) {
-							return (
-								<ExtraGauge gaugeId={gauge.gaugeId} currency={currency} extraRewardAmount={gauge.extraRewardAmount} />
-							);
+						if (!Array.isArray(gauge)) {
+							gauge = [gauge];
 						}
+
+						return (
+							<div
+								style={{
+									display: 'flex',
+									gap: '36px',
+								}}>
+								{gauge.map(gauge => {
+									const currency = chainStore.currentFluent.findCurrency(gauge.denom);
+									if (currency) {
+										return (
+											<ExtraGauge
+												gaugeId={gauge.gaugeId}
+												currency={currency}
+												extraRewardAmount={gauge.extraRewardAmount}
+											/>
+										);
+									}
+								})}
+							</div>
+						);
 					}
 					return null;
 				})()}

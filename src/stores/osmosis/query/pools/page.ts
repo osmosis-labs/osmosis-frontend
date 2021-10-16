@@ -10,7 +10,7 @@ import { Pools } from './types';
 
 export class ObservableQueryPoolsPagination extends ObservableChainQuery<Pools> {
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-		super(kvStore, chainId, chainGetter, `/osmosis/gamm/v1beta1/pools?pagination.limit=500`);
+		super(kvStore, chainId, chainGetter, `/osmosis/gamm/v1beta1/pools?pagination.limit=750`);
 
 		makeObservable(this);
 	}
