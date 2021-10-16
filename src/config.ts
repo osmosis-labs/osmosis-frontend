@@ -30,6 +30,8 @@ export const LockupAbledPoolIds: {
 	'15': true,
 	'461': true,
 	'482': true,
+	'497': true,
+	'498': true
 };
 
 export const PromotedLBPPoolIds: {
@@ -108,6 +110,34 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
 		},
 	],
+	'497': [
+		{
+			gaugeId: '1679',
+			denom: 'ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED',
+		},
+		{
+			gaugeId: '1680',
+			denom: 'ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED',
+		},
+		{
+			gaugeId: '1681',
+			denom: 'ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED',
+		},
+	],
+	'498': [
+		{
+			gaugeId: '1682',
+			denom: 'ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED',
+		},
+		{
+			gaugeId: '1683',
+			denom: 'ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED',
+		},
+		{
+			gaugeId: '1684',
+			denom: 'ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED',
+		},
+	]
 };
 
 export const PoolsPerPage = 10;
