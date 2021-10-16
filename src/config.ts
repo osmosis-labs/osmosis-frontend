@@ -622,7 +622,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'http://junoscan.com/tx/${txHash}',
+		explorerUrlToTx: 'https://www.mintscan.io/juno/txs/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-microtick.keplr.app',
