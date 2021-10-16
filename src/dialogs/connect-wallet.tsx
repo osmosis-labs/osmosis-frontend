@@ -115,9 +115,9 @@ export class ConnectWalletManager {
 		this.accountStore = accountStore;
 	}
 
-	protected onBeforeSendRequest = (request: Partial<IJsonRpcRequest>): Promise<void> => {
+	protected onBeforeSendRequest = (request: Partial<IJsonRpcRequest>): void => {
 		if (!checkIsMobile()) {
-			return Promise.resolve();
+			return;
 		}
 
 		const deepLink = checkIsAndroid()
@@ -141,7 +141,7 @@ export class ConnectWalletManager {
 				break;
 		}
 
-		return Promise.resolve();
+		return;
 	};
 
 	getKeplr = (): Promise<Keplr | undefined> => {
