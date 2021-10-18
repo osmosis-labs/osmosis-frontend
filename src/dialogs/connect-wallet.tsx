@@ -313,8 +313,91 @@ export const WalletConnectQRCodeModal: FunctionComponent<{
 		}
 	}, [navigateToAppURL]);
 
+	const [isTimeout, setIsTimeout] = useState(false);
+	useEffect(() => {
+		const timeoutId = setTimeout(() => {
+			setIsTimeout(true);
+		}, 2000);
+
+		return () => {
+			clearTimeout(timeoutId);
+		};
+	}, []);
+
+	// Perhaps there is no way to know whether the app is installed or launched in the web browser.
+	// For now, if users are still looking at the screen after 2 seconds, assume that the app isn't installed.
 	if (isMobile) {
-		return null;
+		if (isTimeout) {
+			return (
+				<div className="fixed inset-0 z-100 overflow-y-auto">
+					<div className="p-5 flex items-center justify-center min-h-screen">
+						<div
+							className="fixed inset-0 bg-black opacity-20 flex justify-center items-center"
+							onClick={e => {
+								e.preventDefault();
+								e.stopPropagation();
+
+								close();
+							}}
+						/>
+						<div
+							className="relative md:max-w-modal px-4 py-5 md:p-8 bg-surface shadow-elevation-24dp rounded-2xl z-10"
+							onClick={e => {
+								e.preventDefault();
+								e.stopPropagation();
+							}}>
+							{isAndroid ? (
+								<button
+									className="px-6 py-2.5 rounded-xl bg-primary-400 flex items-center justify-center mx-auto hover:opacity-75"
+									onClick={e => {
+										e.preventDefault();
+										e.stopPropagation();
+
+										window.location.href = navigateToAppURL!;
+									}}>
+									<h6 className="text-white-high">Open Keplr</h6>
+								</button>
+							) : (
+								<button
+									className="px-6 py-2.5 rounded-xl bg-primary-400 flex items-center justify-center mx-auto hover:opacity-75"
+									onClick={e => {
+										e.preventDefault();
+										e.stopPropagation();
+
+										window.location.href = 'itms-apps://itunes.apple.com/app/1567851089';
+									}}>
+									<h6 className="text-white-high">Install Keplr</h6>
+								</button>
+							)}
+						</div>
+					</div>
+				</div>
+			);
+		} else {
+			return (
+				<div className="fixed inset-0 z-100 overflow-y-auto">
+					<div className="p-5 flex items-center justify-center min-h-screen">
+						<div
+							className="fixed inset-0 bg-black opacity-20 flex justify-center items-center"
+							onClick={e => {
+								e.preventDefault();
+								e.stopPropagation();
+
+								close();
+							}}
+						/>
+						<div
+							className="relative md:max-w-modal px-4 py-5 md:p-8 bg-surface shadow-elevation-24dp rounded-2xl z-10"
+							onClick={e => {
+								e.preventDefault();
+								e.stopPropagation();
+							}}>
+							<img alt="ldg" className="s-spin w-7 h-7" src="/public/assets/Icons/Loading.png" />
+						</div>
+					</div>
+				</div>
+			);
+		}
 	}
 
 	return (
