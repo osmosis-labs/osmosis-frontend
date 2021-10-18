@@ -155,15 +155,18 @@ export class ConnectWalletManager {
 			if (!this.walletConnector) {
 				this.walletConnector = new WalletConnect({
 					bridge: 'https://bridge.walletconnect.org',
-					clientMeta: {
-						name: 'Osmosis',
-						description: 'Osmosis is the first IBC-native Cosmos interchain AMM',
-						url: 'https://app.osmosis.zone',
-						icons: [window.location.origin + '/public/assets/osmosis-wallet-connect.png'],
-					},
 					signingMethods: [],
 					qrcodeModal: new WalletConnectQRCodeModalV1Renderer(),
 				});
+				// XXX: I don't know why they designed that the client meta options in the constructor should be always ingored...
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				this.walletConnector._clientMeta = {
+					name: 'Osmosis',
+					description: 'Osmosis is the first IBC-native Cosmos interchain AMM',
+					url: 'https://app.osmosis.zone',
+					icons: [window.location.origin + '/public/assets/osmosis-wallet-connect.png'],
+				};
 
 				this.walletConnector!.on('disconnect', this.onWalletConnectDisconnected);
 			}
