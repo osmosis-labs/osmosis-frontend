@@ -86,7 +86,8 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 							<div
 								style={{
 									display: 'flex',
-									gap: '36px',
+									flexDirection: isMobileView ? 'column' : 'row',
+									gap: isMobileView ? '0px' : '36px',
 								}}>
 								{gauge.map(gauge => {
 									const currency = chainStore.currentFluent.findCurrency(gauge.denom);
