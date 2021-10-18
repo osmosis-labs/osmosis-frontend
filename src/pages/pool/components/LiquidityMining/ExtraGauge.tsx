@@ -23,7 +23,7 @@ export const ExtraGauge = observer(function ExtraGauge({ gaugeId, currency, extr
 
 	const reward = gauge.getCoin(currency).add(extraRewardAmount ?? new Int(0));
 
-	if (!gauge.response) {
+	if (!gauge.response || gauge.remainingEpoch <= 0) {
 		return null;
 	}
 
@@ -33,7 +33,7 @@ export const ExtraGauge = observer(function ExtraGauge({ gaugeId, currency, extr
 			<Text pb={16}>
 				{`This pool bonding over ${gauge.lockupDuration.humanize()} will earn additional bonding`}
 				<br />
-				{`incentives for ${gauge.numEpochsPaidOver} epochs${
+				{`incentives for ${gauge.remainingEpoch} epochs${
 					dayjs(gauge.startTime).isAfter(Date.now())
 						? ' starting at ' + dayjs(gauge.startTime).format('MMM D, YYYY')
 						: ''
