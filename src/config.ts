@@ -227,6 +227,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-16',
 		coinMinimalDenom: 'utick',
 	},
+	{
+		counterpartyChainId: 'likecoin-mainnet-2',
+		sourceChannelId: 'channel-53',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'nanolike',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -690,5 +696,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://explorer.microtick.zone/transactions/${txHash}',
+	},
+	{
+		rpc: 'https://mainnet-node.like.co/rpc',
+		rest: 'https://mainnet-node.like.co',
+		chainId: 'likecoin-mainnet-2',
+		chainName: 'Likecoin',
+		stakeCurrency: {
+			coinDenom: 'LIKE',
+			coinMinimalDenom: 'nanolike',
+			coinDecimals: 9,
+			coinGeckoId: 'likecoin',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/likecoin.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('cosmos'),
+		currencies: [
+			{
+				coinDenom: 'LIKE',
+				coinMinimalDenom: 'nanolike',
+				coinDecimals: 9,
+				coinGeckoId: 'likecoin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/likecoin.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'LIKE',
+				coinMinimalDenom: 'nanolike',
+				coinDecimals: 9,
+				coinGeckoId: 'likecoin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/likecoin.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://likecoin.bigdipper.live/transactions/${txHash}',
 	},
 ];
