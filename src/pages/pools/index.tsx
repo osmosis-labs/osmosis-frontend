@@ -18,32 +18,58 @@ export const PoolsPage = observer(function PoolsPage() {
 				<MyPools />
 			</MyPoolsSection>
 
-			<PoolsSection>
+			<IncentivizedPoolsSection>
 				<IncentivizedPools />
-			</PoolsSection>
+			</IncentivizedPoolsSection>
 
-			<PoolsSection>
+			<AllPoolsSection>
 				<AllPools />
-			</PoolsSection>
+			</AllPoolsSection>
 		</PageContainer>
 	);
 });
 
 const PageContainer = styled.div`
 	width: 100%;
-	height: 100%;
+	height: fit-content;
 `;
 
 const OverviewSection = styled(CenterSection)`
-	background: url('/public/assets/backgrounds/osmosis-pool-machine.png') no-repeat;
-	background-size: contain;
+	background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
+		url('/public/assets/backgrounds/osmosis-pool-machine.png') no-repeat;
+	background-size: cover;
 	background-position-x: right;
+	padding: 84px 20px 20px;
+
+	@media (min-width: 768px) {
+		background: url('/public/assets/backgrounds/osmosis-pool-machine.png') no-repeat;
+		background-size: contain;
+		background-position-x: right;
+		padding: 40px;
+	}
 `;
 
 const MyPoolsSection = styled(CenterSection)`
 	background-color: #1c173c;
+	padding: 24px 20px;
+
+	@media (min-width: 768px) {
+		padding: 40px;
+	}
 `;
 
-const PoolsSection = styled(CenterSection)`
+const IncentivizedPoolsSection = styled(CenterSection)`
 	background-color: rgba(35, 29, 75, 1);
+	padding: 24px 20px;
+
+	@media (min-width: 768px) {
+		padding: 40px;
+`;
+
+const AllPoolsSection = styled(CenterSection)`
+	background-color: #1c173c;
+	padding: 24px 0;
+
+	@media (min-width: 768px) {
+		padding: 40px;
 `;

@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';
 import { useEffect, useMemo, useRef } from 'react';
+import useWindowSize from 'src/hooks/useWindowSize';
 import { ConnectAccountButton } from 'src/components/ConnectAccountButton';
 import { CtaButton } from 'src/components/layouts/Buttons';
 import { Spinner } from 'src/components/Spinners';
@@ -48,6 +49,8 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 			return queries.osmosis.queryGammPools.getObservableQueryPool(poolId).isFetching;
 		}) != null;
 
+	const { isMobileView } = useWindowSize();
+
 	useEffect(() => {
 		currentSwapPools.forEach(poolId => {
 			const pool = queries.osmosis.queryGammPools.getObservableQueryPool(poolId);
@@ -69,7 +72,6 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 	if (!isAccountConnected) {
 		return (
 			<ConnectAccountButton
-				style={{ height: `3.75rem` }}
 				onClick={e => {
 					e.preventDefault();
 					connectAccount();
@@ -142,7 +144,7 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 			{account.isSendingMsg === 'swapExactAmountIn' ? (
 				<Spinner />
 			) : (
-				<Text emphasis="high" style={{ letterSpacing: '0.025em' }}>
+				<Text emphasis="high" isMobileView={isMobileView} style={{ letterSpacing: '0.025em' }}>
 					{isSwapPoolsFetching && <Spinner style={{ marginRight: 12, display: 'inline-block' }} />}
 					{config.showWarningOfSlippage ? 'Swap Anyway' : 'Swap'}
 				</Text>

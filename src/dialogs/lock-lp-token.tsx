@@ -25,11 +25,11 @@ export const LockLpTokenDialog = wrapBaseDialog(
 
 		return (
 			<div className="text-white-high w-full h-full">
-				<h5 className="mb-9">Bond LP tokens</h5>
-				<div className="mb-7.5">
+				<h5 className="text-lg md:text-xl mb-5 md:mb-9">Bond LP tokens</h5>
+				<div className="mb-2.5 md:mb-7.5">
 					<p>Unbonding period</p>
 				</div>
-				<ul className="grid grid-cols-3 gap-9 mb-6">
+				<ul className="flex flex-col gap-2.5 mb-5 md:flex-row md:gap-9 md:mb-6">
 					{lockableDurations.map((duration, i) => {
 						return (
 							<LockupItem
@@ -58,10 +58,10 @@ export const LockLpTokenDialog = wrapBaseDialog(
 								.toString()}
 						</span>
 					</p>
-					<div className="w-full rounded-lg bg-background px-2.5 grid" style={{ gridTemplateColumns: '1fr 40px' }}>
+					<div className="relative w-full rounded-lg bg-background">
 						<input
 							type="number"
-							className="text-white-high text-xl text-left font-title"
+							className="text-white-high text-left font-title p-2 pr-12.5 w-full"
 							onChange={e => {
 								e.preventDefault();
 
@@ -70,7 +70,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 							value={amountConfig.amount}
 						/>
 						<button
-							className="flex items-center justify-center bg-primary-200 rounded-md w-full my-1.5"
+							className="flex items-center justify-center bg-primary-200 rounded-md absolute top-2 right-2 py-1.5 px-1"
 							onClick={e => {
 								e.preventDefault();
 
@@ -82,7 +82,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 				</div>
 				<div className="w-full flex items-center justify-center">
 					<button
-						className="w-2/3 h-15 bg-primary-200 rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer disabled:opacity-50"
+						className="w-full md:w-2/3 h-12 md:h-15 bg-primary-200 rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer disabled:opacity-50"
 						disabled={!account.isReadyToSendMsgs || amountConfig.getError() != null}
 						onClick={async e => {
 							e.preventDefault();
@@ -122,7 +122,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 								/>
 							</svg>
 						) : (
-							<p className="text-white-high font-semibold text-lg">Bond</p>
+							<p className="text-white-high font-semibold text-base md:text-lg">Bond</p>
 						)}
 					</button>
 				</div>
@@ -144,19 +144,19 @@ const LockupItem: FunctionComponent<{
 				{
 					'shadow-elevation-08dp': selected,
 				},
-				'rounded-2xl border py-5 px-4.5 border-opacity-30',
+				'rounded-2xl border px-5 py-3.5 md:py-5 md:px-4.5 border-opacity-30 w-full',
 				selected ? 'border-enabledGold' : 'border-white-faint cursor-pointer hover:opacity-75'
 			)}>
 			<div className="flex items-center">
 				<figure
 					className={cn(
-						'rounded-full w-4 h-4 mr-4',
+						'rounded-full w-4 h-4 mr-5 md:mr-4 flex-shrink-0',
 						selected ? 'border-secondary-200 border-4 bg-white-high' : 'border-iconDefault border'
 					)}
 				/>
-				<div className="flex flex-col">
-					<h5>{duration}</h5>
-					<p className="text-secondary-200">{apy}</p>
+				<div className="w-full flex items-center justify-between md:flex-col md:items-baseline">
+					<h5 className="text-base md:text-xl">{duration}</h5>
+					<p className="text-secondary-200 text-sm md:text-base">{apy}</p>
 				</div>
 			</div>
 		</li>

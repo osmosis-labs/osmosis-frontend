@@ -7,9 +7,11 @@ import { DisplayLeftTime } from 'src/components/common/DisplayLeftTime';
 import { OverviewLabelValue } from 'src/components/common/OverviewLabelValue';
 import { SubTitleText, TitleText } from 'src/components/Texts';
 import { useStore } from 'src/stores';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 export const AirdropOverview = observer(function AirdropOverview() {
 	const { chainStore, accountStore, queriesStore } = useStore();
+	const { isMobileView } = useWindowSize();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
@@ -20,18 +22,23 @@ export const AirdropOverview = observer(function AirdropOverview() {
 
 	return (
 		<AirdropOverviewContainer>
-			<TitleText size="2xl">Claim Airdrop</TitleText>
+			<TitleText size="2xl" isMobileView={isMobileView}>
+				Claim Airdrop
+			</TitleText>
 			<OverviewList>
 				<OverviewLabelValue label="Unclaimed Airdrop">
 					<span>
-						<TitleText size="2xl" style={{ display: 'inline' }}>
+						<TitleText size="2xl" isMobileView={isMobileView} style={{ display: 'inline' }}>
 							{unclaimed
 								.trim(true)
 								.shrink(true)
 								.hideDenom(true)
 								.toString()}
 						</TitleText>
-						<SubTitleText style={{ display: 'inline' }}> {unclaimed.currency.coinDenom}</SubTitleText>
+						<SubTitleText isMobileView={isMobileView} style={{ display: 'inline' }}>
+							{' '}
+							{unclaimed.currency.coinDenom}
+						</SubTitleText>
 					</span>
 				</OverviewLabelValue>
 				<DisplayCliff />
@@ -45,12 +52,19 @@ const AirdropOverviewContainer = styled.section`
 `;
 
 const OverviewList = styled.div`
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+
+	@media (min-width: 768px) {
+		flex-direction: row;
+		gap: 80px;
+	}
 `;
 
 const DisplayCliff = observer(function DisplayCliff() {
 	const { chainStore, queriesStore } = useStore();
+	const { isMobileView } = useWindowSize();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -95,13 +109,16 @@ const DisplayCliff = observer(function DisplayCliff() {
 			{decayStarted ? (
 				<OverviewLabelValue label="Current Decay Factor">
 					<span>
-						<TitleText size="2xl" style={{ display: 'inline' }}>
+						<TitleText size="2xl" isMobileView={isMobileView} style={{ display: 'inline' }}>
 							{decayingFactor
 								.maxDecimals(1)
 								.trim(true)
 								.toString()}
 						</TitleText>
-						<SubTitleText style={{ display: 'inline' }}> {' %'}</SubTitleText>
+						<SubTitleText isMobileView={isMobileView} style={{ display: 'inline' }}>
+							{' '}
+							{' %'}
+						</SubTitleText>
 					</span>
 				</OverviewLabelValue>
 			) : null}

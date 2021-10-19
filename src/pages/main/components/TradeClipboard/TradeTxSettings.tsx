@@ -92,10 +92,15 @@ const TradeTxSettingsContent = styled.div`
 	border-width: 1px;
 	color: ${colorWhiteFaint};
 	border-radius: 1rem;
-	padding: 30px;
-	margin-top: 64px;
-	width: 382px;
-	height: 160px;
+	padding: 20px;
+	margin-top: 46px;
+	width: 100%;
+	max-width: 382px;
+
+	@media (min-width: 768px) {
+		padding: 30px;
+		margin-top: 64px;
+	}
 `;
 
 const TxSettingsInfoSection = styled.div`

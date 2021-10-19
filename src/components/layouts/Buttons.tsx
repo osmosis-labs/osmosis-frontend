@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { colorPrimary200, colorWhiteFaint } from 'src/emotionStyles/colors';
+import { colorPrimary200, colorWhiteFaint, colorGold } from 'src/emotionStyles/colors';
 import { cssRaiseButtonShadow } from 'src/emotionStyles/forms';
 
 const PaddingBySize = {
@@ -10,11 +10,34 @@ const PaddingBySize = {
 
 interface OsmosisButtonProps {
 	size?: keyof typeof PaddingBySize;
+	isOutlined?: boolean;
 }
 export const ButtonPrimary = styled.button<OsmosisButtonProps>`
-	${({ size = 'regular' }) => `padding: ${PaddingBySize[size]}`};
+	${({ size = 'regular', isOutlined = false }) => ({
+		padding: PaddingBySize[size],
+		backgroundColor: isOutlined ? 'transparent' : colorPrimary200,
+		border: isOutlined ? `1px solid ${colorPrimary200}` : 'none',
+	})};
 	border-radius: 0.5rem;
-	background-color: ${colorPrimary200};
+	cursor: pointer;
+	line-height: 1;
+
+	&:hover {
+		opacity: 0.75;
+	}
+
+	&:disabled {
+		opacity: 0.5;
+	}
+`;
+
+export const ButtonSecondary = styled.button<OsmosisButtonProps>`
+	${({ size = 'regular', isOutlined = false }) => ({
+		padding: PaddingBySize[size],
+		backgroundColor: isOutlined ? 'transparent' : colorGold,
+		border: isOutlined ? `1px solid ${colorGold}` : 'none',
+	})};
+	border-radius: 0.5rem;
 	cursor: pointer;
 	line-height: 1;
 
@@ -57,11 +80,15 @@ export const CtaButton = styled.button`
 	width: 100%;
 	border-radius: 1rem;
 	background-color: ${colorPrimary200};
-	height: 3.75rem;
+	height: 3rem;
 	&:hover {
 		opacity: 0.75;
 	}
 	&:disabled {
 		opacity: 0.5;
+	}
+
+	@media (min-width: 768px) {
+		height: 3.75rem;
 	}
 `;

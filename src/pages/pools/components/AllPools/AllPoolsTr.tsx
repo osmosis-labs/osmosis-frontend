@@ -44,37 +44,34 @@ export const AllPoolsTr = observer(function AllPoolsTr({
 
 	return (
 		<TrStyled
+			as="tr"
 			onClick={e => {
 				e.preventDefault();
 				history.push(`/pool/${id}`);
 			}}>
-			<CenterV as="td" style={{ width: `${widths[0]}`, color: 'rgba(255, 255, 255, 0.38)' }}>
-				<p>{id}</p>
-			</CenterV>
+			<TdStyled as="td" style={{ width: `${widths[0]}`, color: 'rgba(255, 255, 255, 0.38)' }}>
+				{id}
+			</TdStyled>
 
-			<CenterV as="td" style={{ width: `${widths[1]}` }}>
-				<CenterV>
-					<TextPoolRatio>{poolRatioText}</TextPoolRatio>
-					<Badge>{swapFee}</Badge>
-				</CenterV>
-			</CenterV>
+			<TdStyled as="td" style={{ width: `${widths[1]}` }}>
+				<TextPoolRatio>{poolRatioText}</TextPoolRatio>
+				<Badge>{swapFee}</Badge>
+			</TdStyled>
 
-			<CenterV as="td" style={{ width: `${widths[2]}` }}>
-				<p>{totalValueLocked.toString()}</p>
-			</CenterV>
+			<TdStyled as="td" style={{ width: `${widths[2]}` }}>
+				{totalValueLocked.toString()}
+			</TdStyled>
 
-			<CenterV as="td" style={{ width: `${widths[3]}` }}>
-				<p>{volume24h}</p>
-			</CenterV>
+			<TdStyled as="td" style={{ width: `${widths[3]}` }}>
+				{volume24h}
+			</TdStyled>
 		</TrStyled>
 	);
 });
 
 const TrStyled = styled.tr`
 	width: 100%;
-	height: 3.5rem;
-	padding-left: 30px;
-	padding-right: 35px;
+	padding: 12px 20px;
 	display: flex;
 	align-items: center;
 	cursor: pointer;
@@ -86,15 +83,38 @@ const TrStyled = styled.tr`
 		}
 	}
 	border-bottom-width: 1px;
+
+	@media (min-width: 768px) {
+		padding-left: 30px;
+		padding-right: 35px;
+		border-top-left-radius: 1rem;
+		border-top-right-radius: 1rem;
+	}
+`;
+
+const TdStyled = styled(CenterV)`
+	font-size: 14px;
+
+	@media (min-width: 768px) {
+		font-size: 16px;
+	}
 `;
 
 const TextPoolRatio = styled.p`
-	flex: 1 1 auto;
+	font-size: 14px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+
+	@media (min-width: 768px) {
+		font-size: 16px;
+	}
 `;
 
 const Badge = styled.span`
 	border-radius: 8px;
-	display: flex;
+	display: none;
 	align-items: center;
 	padding: 5px 8px;
 	height: 25px;
@@ -102,4 +122,9 @@ const Badge = styled.span`
 	background-color: rgba(45, 39, 85, 1);
 	margin-left: 8px;
 	margin-right: 8px;
+	flex-shrink: 0;
+
+	@media (min-width: 768px) {
+		display: flex;
+	}
 `;

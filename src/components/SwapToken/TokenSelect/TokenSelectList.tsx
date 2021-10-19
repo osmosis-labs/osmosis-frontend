@@ -7,6 +7,7 @@ import { CenterV } from 'src/components/layouts/Containers';
 import { SubTitleText, Text } from 'src/components/Texts';
 import { colorPrimary, colorPrimaryDark, colorPrimaryLight, colorWhiteHigh } from 'src/emotionStyles/colors';
 import { useStore } from 'src/stores';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> {
 	currencies: AppCurrency[];
@@ -79,36 +80,56 @@ const TokenSelectListContainer = styled.div`
 	position: absolute;
 	bottom: 0;
 	left: 0;
+	width: calc(100vw - 60px);
+	max-width: 468px;
+	margin-left: -12px;
 	transform: translateY(100%);
-	width: 100%;
-	min-width: 320px;
-	padding: 32px 20px 32px 16px;
+	padding: 24px 15px 24px 12px;
 	background-color: ${colorPrimaryDark};
 	z-index: 3;
 	border-bottom-right-radius: 1rem;
 	border-bottom-left-radius: 1rem;
+
+	@media (min-width: 768px) {
+		width: 100%;
+		min-width: 455px;
+		margin-left: -16px;
+		padding: 32px 20px 32px 16px;
+	}
 `;
 
 const TokenSearchSection = styled.div`
 	display: flex;
 	align-items: center;
 	width: 100%;
-	height: 2.25rem;
+	height: 2rem;
 	border-radius: 1rem;
 	background-color: ${colorPrimary};
-	padding-left: 18px;
+	padding-left: 12px;
+
+	@media (min-width: 768px) {
+		height: 2.25rem;
+		padding-left: 18px;
+	}
 `;
 
 const SearchTokenInput = styled.input`
-	padding-left: 16px;
-	padding-right: 16px;
+	padding-left: 10px;
+	padding-right: 10px;
+	font-size: 14px;
 	width: 100%;
 	color: ${colorWhiteHigh};
+
+	@media (min-width: 768px) {
+		padding-left: 16px;
+		padding-right: 16px;
+		font-size: 16px;
+	}
 `;
 
 const TokenItemList = styled.ul`
 	max-height: 215px;
-	margin-top: 20px;
+	margin-top: 14px;
 	overflow-y: auto;
 
 	&::-webkit-scrollbar {
@@ -125,6 +146,10 @@ const TokenItemList = styled.ul`
 		background: ${colorPrimaryLight};
 		border-radius: 6px;
 	}
+
+	@media (min-width: 768px) {
+		margin-top: 20px;
+	}
 `;
 
 interface TokenItemProps extends Omit<HTMLAttributes<HTMLLIElement>, 'onClick'> {
@@ -137,14 +162,17 @@ function TokenItem({ currency, amount, onClick, ...props }: TokenItemProps) {
 	const handleItemClicked = useCallback(() => {
 		onClick(currency);
 	}, [currency, onClick]);
+	const { isMobileView } = useWindowSize();
 
 	return (
 		<TokenItemContainer onClick={handleItemClicked} {...props}>
 			<CenterV>
 				<Img loadingSpin style={{ width: '36px', height: '36px' }} src={currency.coinImageUrl} />
 				<div style={{ marginLeft: 12 }}>
-					<SubTitleText>{currency.coinDenom.toUpperCase()}</SubTitleText>
-					{'paths' in currency && currency.paths.length > 0 ? <Text>{currency.paths[0].channelId}</Text> : null}
+					<SubTitleText isMobileView={isMobileView}>{currency.coinDenom.toUpperCase()}</SubTitleText>
+					{'paths' in currency && currency.paths.length > 0 ? (
+						<Text isMobileView={isMobileView}>{currency.paths[0].channelId}</Text>
+					) : null}
 				</div>
 			</CenterV>
 			<Text emphasis="high">{amount}</Text>
@@ -157,11 +185,15 @@ const TokenItemContainer = styled.li`
 	align-items: center;
 	justify-content: space-between;
 	border-radius: 1rem;
-	padding: 18px 12px;
+	padding: 14px 12px 14px 4px;
 
 	&:hover {
 		background-color: ${colorPrimary};
 	}
 
 	cursor: pointer;
+
+	@media (min-width: 768px) {
+		padding: 18px 12px;
+	}
 `;

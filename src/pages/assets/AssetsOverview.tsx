@@ -6,9 +6,12 @@ import React, { FunctionComponent } from 'react';
 import { OverviewLabelValue } from 'src/components/common/OverviewLabelValue';
 import { TitleText } from 'src/components/Texts';
 import { useStore } from 'src/stores';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 export const AssetsOverview: FunctionComponent<{ title: string }> = observer(({ title }) => {
 	const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+
+	const { isMobileView } = useWindowSize();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
@@ -51,34 +54,40 @@ export const AssetsOverview: FunctionComponent<{ title: string }> = observer(({ 
 
 	return (
 		<section>
-			<TitleText size="2xl">{title}</TitleText>
+			<TitleText size="2xl" isMobileView={isMobileView}>
+				{title}
+			</TitleText>
 			<AssetsList>
-				<OverviewLabelValue label="Total Assets">
-					<TitleText size="2xl" pb={0}>
-						{availableBalancePrice
-							.add(lockedBalancePrice)
-							.add(delegatedBalancePrice)
-							.toString()}
-					</TitleText>
-				</OverviewLabelValue>
+				<AssetsListRow>
+					<OverviewLabelValue label="Total Assets">
+						<TitleText size="2xl" pb={0} isMobileView={isMobileView}>
+							{availableBalancePrice
+								.add(lockedBalancePrice)
+								.add(delegatedBalancePrice)
+								.toString()}
+						</TitleText>
+					</OverviewLabelValue>
 
-				<OverviewLabelValue label="Available Assets">
-					<TitleText size="2xl" pb={0}>
-						{availableBalancePrice.toString()}
-					</TitleText>
-				</OverviewLabelValue>
+					<OverviewLabelValue label="Available Assets">
+						<TitleText size="2xl" pb={0} isMobileView={isMobileView}>
+							{availableBalancePrice.toString()}
+						</TitleText>
+					</OverviewLabelValue>
+				</AssetsListRow>
 
-				<OverviewLabelValue label="Bonded Assets">
-					<TitleText size="2xl" pb={0}>
-						{lockedBalancePrice.toString()}
-					</TitleText>
-				</OverviewLabelValue>
+				<AssetsListRow>
+					<OverviewLabelValue label="Bonded Assets">
+						<TitleText size="2xl" pb={0} isMobileView={isMobileView}>
+							{lockedBalancePrice.toString()}
+						</TitleText>
+					</OverviewLabelValue>
 
-				<OverviewLabelValue label="Staked OSMO">
-					<TitleText size="2xl" pb={0}>
-						{delegatedBalancePrice.toString()}
-					</TitleText>
-				</OverviewLabelValue>
+					<OverviewLabelValue label="Staked OSMO">
+						<TitleText size="2xl" pb={0} isMobileView={isMobileView}>
+							{delegatedBalancePrice.toString()}
+						</TitleText>
+					</OverviewLabelValue>
+				</AssetsListRow>
 			</AssetsList>
 		</section>
 	);
@@ -86,6 +95,21 @@ export const AssetsOverview: FunctionComponent<{ title: string }> = observer(({ 
 
 const AssetsList = styled.div`
 	display: flex;
-	align-items: center;
-	gap: 86px;
+	flex-direction: column;
+	gap: 12px;
+
+	@media (min-width: 768px) {
+		flex-direction: row;
+		gap: 86px;
+		align-items: center;
+	}
+`;
+
+const AssetsListRow = styled.div`
+	display: flex;
+	gap: 36px;
+
+	@media (min-width: 768px) {
+		gap: 86px;
+	}
 `;

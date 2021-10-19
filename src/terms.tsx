@@ -12,11 +12,7 @@ export const Terms: FunctionComponent = () => {
 				setIsOpen(false);
 				localStorage.setItem('terms_agreement', 'true');
 			}}
-			close={() => {
-				// noop
-				// By dumb way, to prevent closing by clicking the backdrop
-				// just do nothing here
-			}}>
+			isHideCloseButton={true}>
 			Osmosis is a decentralized peer-to-peer blockchain that people can use to create liquidity and trade IBC enabled
 			tokens. The Osmosis blockchain is made up of free, public, and open-source software. Your use of Osmosis involves
 			various risks, including, but not limited, to losses while digital assets are being supplied to Osmosis pools and

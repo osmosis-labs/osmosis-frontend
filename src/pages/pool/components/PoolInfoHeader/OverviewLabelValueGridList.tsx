@@ -6,6 +6,7 @@ import React from 'react';
 import { OverviewLabelValue } from 'src/components/common/OverviewLabelValue';
 import { SubTitleText, TitleText } from 'src/components/Texts';
 import { PreferHeaderShowTokenPricePoolIds } from 'src/config';
+import useWindowSize from 'src/hooks/useWindowSize';
 import { useStore } from 'src/stores';
 
 interface Props {
@@ -14,6 +15,8 @@ interface Props {
 
 export const OverviewLabelValueGridList = observer(function OverviewLabelGridList({ poolId }: Props) {
 	const { chainStore, queriesStore, priceStore, accountStore } = useStore();
+
+	const { isMobileView } = useWindowSize();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const pool = queries.osmosis.queryGammPools.getPool(poolId);
@@ -27,7 +30,11 @@ export const OverviewLabelValueGridList = observer(function OverviewLabelGridLis
 	// `shareRatio`가 백분률로 오기 때문에 10^2를 나눠줘야한다.
 	const actualRatio = shareRatio.toDec().quo(DecUtils.getPrecisionDec(2));
 
-	const overviewLabels: {
+	const firstOverviews: {
+		label: string;
+		content: string;
+	}[] = [];
+	const secondOverviews: {
 		label: string;
 		content: string;
 	}[] = [];
@@ -37,18 +44,11 @@ export const OverviewLabelValueGridList = observer(function OverviewLabelGridLis
 	}
 
 	if (!PreferHeaderShowTokenPricePoolIds[pool.id]) {
-		overviewLabels.push({
+		firstOverviews.push({
 			label: 'Pool Liquidity',
 			content: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
 		});
-		overviewLabels.push({
-			label: 'Bonded',
-			content: pool
-				.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!)
-				.mul(actualLockedRatio)
-				.toString(),
-		});
-		overviewLabels.push({
+		firstOverviews.push({
 			label: 'My Liquidity',
 			content: (() => {
 				const tvl = pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!);
@@ -56,17 +56,21 @@ export const OverviewLabelValueGridList = observer(function OverviewLabelGridLis
 				return tvl.mul(actualRatio).toString();
 			})(),
 		});
-		overviewLabels.push({
+
+		secondOverviews.push({
+			label: 'Bonded',
+			content: pool
+				.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!)
+				.mul(actualLockedRatio)
+				.toString(),
+		});
+		secondOverviews.push({
 			label: 'Swap Fee',
 			content: pool.swapFee.toString() + '%',
 		});
 
 		if (!pool.exitFee.toDec().equals(new Dec(0))) {
-			overviewLabels.push({
-				label: '',
-				content: '',
-			});
-			overviewLabels.push({
+			secondOverviews.push({
 				label: 'Exit Fee',
 				content: pool.exitFee.toString() + '%',
 			});
@@ -74,31 +78,25 @@ export const OverviewLabelValueGridList = observer(function OverviewLabelGridLis
 	} else {
 		const baseDenom = PreferHeaderShowTokenPricePoolIds[pool.id]!.baseDenom;
 		const baseCurrency = chainStore.currentFluent.forceFindCurrency(baseDenom);
-		overviewLabels.push({
+		firstOverviews.push({
 			label: 'Price',
 			content:
 				priceStore
 					.calculatePrice(new CoinPretty(baseCurrency, DecUtils.getPrecisionDec(baseCurrency.coinDecimals)))
 					?.toString() ?? '$0',
 		});
-		overviewLabels.push({
+
+		secondOverviews.push({
 			label: 'Pool Liquidity',
 			content: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
 		});
-		overviewLabels.push({
-			label: '',
-			content: '',
-		});
-		overviewLabels.push({
+		secondOverviews.push({
 			label: 'Swap Fee',
 			content: pool.swapFee.toString() + '%',
 		});
+
 		if (!pool.exitFee.toDec().equals(new Dec(0))) {
-			overviewLabels.push({
-				label: '',
-				content: '',
-			});
-			overviewLabels.push({
+			secondOverviews.push({
 				label: 'Exit Fee',
 				content: pool.exitFee.toString() + '%',
 			});
@@ -107,49 +105,62 @@ export const OverviewLabelValueGridList = observer(function OverviewLabelGridLis
 
 	return (
 		<OverviewLabelValueGridListContainer>
-			{chunk(overviewLabels, 2).map((labels, index) => {
-				return (
-					<GridCol key={index.toString()}>
-						{labels[0] ? (
-							labels[0].label !== '' ? (
-								<OverviewLabelValue label={labels[0].label}>
-									<TitleText size="2xl" pb={0}>
-										{labels[0].content !== '' ? labels[0].content : `&#8203;`}
-									</TitleText>
-								</OverviewLabelValue>
-							) : (
-								<OverviewLabelValue label="&#8203;">
-									<TitleText size="2xl" pb={0}>
-										{labels[0].content !== '' ? labels[0].content : `&#8203;`}
-									</TitleText>
-								</OverviewLabelValue>
-							)
-						) : null}
-						{labels[1] ? (
-							labels[1].label !== '' ? (
-								<OverviewLabelValue label={labels[1].label}>
-									<SubTitleText pb={0}>{labels[1].content !== '' ? labels[1].content : `&#8203`}</SubTitleText>
-								</OverviewLabelValue>
-							) : (
-								<OverviewLabelValue label="&#8203;">
-									<SubTitleText pb={0}>{labels[1].content !== '' ? labels[1].content : `&#8203`}</SubTitleText>
-								</OverviewLabelValue>
-							)
-						) : null}
-					</GridCol>
-				);
-			})}
+			<FirstOverviews>
+				{firstOverviews.map(overview => (
+					<Overview key={overview.label}>
+						<OverviewLabelValue label={overview.label}>
+							<TitleText isMobileView={isMobileView} size="2xl" pb={0}>
+								{overview.content !== '' ? overview.content : `&#8203`}
+							</TitleText>
+						</OverviewLabelValue>
+					</Overview>
+				))}
+			</FirstOverviews>
+			<SecondOverviews>
+				{secondOverviews.map(overview => (
+					<Overview key={overview.label}>
+						<OverviewLabelValue label={overview.label}>
+							<SubTitleText isMobileView={isMobileView} pb={0}>
+								{overview.content !== '' ? overview.content : `&#8203;`}
+							</SubTitleText>
+						</OverviewLabelValue>
+					</Overview>
+				))}
+			</SecondOverviews>
 		</OverviewLabelValueGridListContainer>
 	);
 });
 
 const OverviewLabelValueGridListContainer = styled.div`
 	display: flex;
-	gap: 80px;
+	flex-direction: column;
+	gap: 12px;
+
+	@media (min-width: 768px) {
+		gap: 24px;
+	}
 `;
 
-const GridCol = styled.ul`
+const FirstOverviews = styled.ul`
 	display: flex;
 	flex-direction: column;
-	gap: 24px;
+	gap: 12px;
+
+	@media (min-width: 768px) {
+		flex-direction: row;
+		gap: 80px;
+	}
+`;
+
+const SecondOverviews = styled.ul`
+	display: flex;
+	gap: 20px;
+
+	@media (min-width: 768px) {
+		gap: 80px;
+	}
+`;
+
+const Overview = styled.li`
+	display: flex;
 `;

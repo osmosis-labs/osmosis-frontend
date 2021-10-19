@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { colorPrimary } from 'src/emotionStyles/colors';
-import { onLgWidth, onMdWidth } from 'src/emotionStyles/mediaQueries';
+import { onLgWidth, on2XlWidth } from 'src/emotionStyles/mediaQueries';
 
 export const FullScreenContainer = styled.div`
 	width: 100%;
@@ -45,15 +45,17 @@ export const PoolCardListGridContainer = styled.ul`
 	display: grid;
 	width: 100%;
 	height: 100%;
-	gap: 35px;
+	gap: 16px;
 	grid-template-columns: repeat(1, minmax(0, 1fr));
 
-	${onMdWidth} {
+	${onLgWidth} {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 35px;
 	}
 
-	${onLgWidth} {
+	${on2XlWidth} {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 35px;
 	}
 `;
 
@@ -61,5 +63,9 @@ export const WellContainer = styled.div`
 	width: 100%;
 	border-radius: 0.75rem;
 	background-color: ${colorPrimary};
-	padding: 24px 30px;
+	padding: 18px 24px;
+
+	@media (min-width: 768px) {
+		padding: 24px 30px;
+	}
 `;

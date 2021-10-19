@@ -60,9 +60,9 @@ export const PoolPage: FunctionComponent = observer(() => {
 			<LiquidityMiningSection>
 				{/* 인센티브를 받을 수 있는 풀 또는 config에서 설정된 풀의 경우만 Synthesis를 표시한다. */}
 				{(queries.osmosis.queryIncentivizedPools.isIncentivized(pool.id) || LockupAbledPoolIds[pool.id]) && (
-					<div style={{ paddingBottom: 60 }}>
+					<CenterSelf>
 						<LiquidityMining poolId={pool.id} />
-					</div>
+					</CenterSelf>
 				)}
 				{isLbp(pool.smoothWeightChangeParams) && <LbpCatalyst pool={pool} lbpParams={pool.smoothWeightChangeParams} />}
 			</LiquidityMiningSection>
@@ -76,32 +76,19 @@ export const PoolPage: FunctionComponent = observer(() => {
 	);
 });
 
-const LiquidityMiningSection = styled.div`
-	background-color: ${colorPrimaryDark};
-	width: 100%;
-	padding: 40px 40px 0;
-`;
-
-const PoolCatalystSection = styled.div`
-	background-color: ${colorPrimaryDark};
-	width: 100%;
-	padding: 0 40px 40px;
-`;
-
 const PoolInfoHeaderSection = styled.div`
 	position: relative;
 `;
 
-const LoaderStyled = styled(Loader)`
-	width: 12.5rem;
-	height: 12.5rem;
-`;
-
 const PoolInfoHeaderWrapper = styled.div`
-	padding: 40px;
+	padding: 84px 20px 20px;
 	width: 100%;
 	position: relative;
 	z-index: 10;
+
+	@media (min-width: 768px) {
+		padding: 40px;
+	}
 `;
 
 const PoolInfoHeaderBgWrapper = styled.div`
@@ -118,15 +105,56 @@ const PoolInfoHeaderBg = styled.div<{ isLbp: boolean }>`
 	position: absolute;
 	height: 100%;
 	${({ isLbp }) => ({
-		right: isLbp ? '0' : '3rem',
-		width: isLbp ? '900px' : '600px',
+		width: isLbp ? '900px' : '100%',
 		background: isLbp
 			? 'url("/public/assets/backgrounds/pool-details-lbp.png")'
-			: 'url("/public/assets/backgrounds/osmosis-guy-in-lab.png")',
-		backgroundPositionX: isLbp ? 'right' : undefined,
+			: 'linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url("/public/assets/backgrounds/osmosis-guy-in-lab.png")',
 	})}
-	background-size: contain;
+	background-position-x: right;
+	background-position-y: bottom;
 	background-repeat: no-repeat;
+	background-size: contain;
+
+	@media (min-width: 768px) {
+		${({ isLbp }) => ({
+			width: isLbp ? '900px' : '100%',
+			background: isLbp
+				? 'url("/public/assets/backgrounds/pool-details-lbp.png")'
+				: 'url("/public/assets/backgrounds/osmosis-guy-in-lab.png")',
+		})}
+		background-position-x: right;
+		background-size: contain;
+		background-repeat: no-repeat;
+	}
+`;
+
+const LiquidityMiningSection = styled.div`
+	background-color: ${colorPrimaryDark};
+	width: 100%;
+
+	@media (min-width: 768px) {
+		padding: 0 40px;
+	}
+`;
+
+const PoolCatalystSection = styled.div`
+	background-color: ${colorPrimaryDark};
+	width: 100%;
+	padding: 20px;
+
+	@media (min-width: 768px) {
+		padding: 20px 40px 40px;
+	}
+`;
+
+const LoaderStyled = styled(Loader)`
+	width: 6rem;
+	height: 6rem;
+
+	@media (min-width: 768px) {
+		width: 12.5rem;
+		height: 12.5rem;
+	}
 `;
 
 function isLbp(

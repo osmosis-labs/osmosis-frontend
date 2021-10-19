@@ -82,13 +82,17 @@ export function PoolCardItem(
 const PoolCardItemContainer = styled.li`
 	border-width: 1px;
 	cursor: pointer;
-	padding: 24px 30px;
+	padding: 20px;
 	background-color: rgba(45, 39, 85, 1);
 	border-radius: 0.75rem;
 	border-color: transparent;
 
 	&:hover {
 		border-color: rgba(196, 164, 106, 1);
+	}
+
+	@media (min-width: 768px) {
+		padding: 24px 30px;
 	}
 `;
 
@@ -100,6 +104,7 @@ const TokenInfoContainer = styled.section`
 const PoolTextBase = styled.p`
 	font-size: 14px;
 	color: rgba(255, 255, 255, 0.6);
+	word-break: break-all;
 `;
 
 const PoolSubTitle = styled(PoolTextBase)`

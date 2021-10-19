@@ -1,8 +1,8 @@
-import { getKeplrFromWindow, IBCCurrencyRegsitrar, QueriesStore } from '@keplr-wallet/stores';
+import { IBCCurrencyRegsitrar, QueriesStore } from '@keplr-wallet/stores';
 import { AccountStore } from '@keplr-wallet/stores';
 import { DenomHelper, IndexedDBKVStore, LocalKVStore } from '@keplr-wallet/common';
 import { ChainInfoWithExplorer, ChainStore } from './chain';
-import { AppCurrency, ChainInfo } from '@keplr-wallet/types';
+import { AppCurrency, ChainInfo, Keplr } from '@keplr-wallet/types';
 import { EmbedChainInfos, IBCAssetInfos } from '../config';
 import { QueriesWithCosmosAndOsmosis } from './osmosis/query';
 import { AccountWithCosmosAndOsmosis } from './osmosis/account';
@@ -15,6 +15,12 @@ import { IBCTransferHistoryStore } from './ibc-history';
 import { displayToast, TToastType } from '../components/common/toasts';
 import { isSlippageError } from '../utils/tx';
 import { prettifyTxError } from 'src/stores/prettify-tx-error';
+import { BroadcastMode, StdTx } from '@cosmjs/launchpad';
+import Axios from 'axios';
+import { KeplrWalletConnectV1 } from '@keplr-wallet/wc-client';
+import { KeplrQRCodeModalV1 } from '@keplr-wallet/wc-qrcode-modal';
+import WalletConnect from '@walletconnect/client';
+import { ConnectWalletManager } from 'src/dialogs/connect-wallet';
 
 export class RootStore {
 	public readonly chainStore: ChainStore;
@@ -25,6 +31,7 @@ export class RootStore {
 	public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
 
 	public readonly swapManager: GammSwapManager;
+	public readonly connectWalletManager: ConnectWalletManager;
 
 	protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
 	protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
@@ -33,20 +40,21 @@ export class RootStore {
 
 	constructor() {
 		this.chainStore = new ChainStore(EmbedChainInfos, EmbedChainInfos[0].chainId);
+		this.connectWalletManager = new ConnectWalletManager(this.chainStore);
 
 		this.queriesStore = new QueriesStore(
 			new IndexedDBKVStore('store_web_queries'),
 			this.chainStore,
-			getKeplrFromWindow,
+			this.connectWalletManager.getKeplr,
 			QueriesWithCosmosAndOsmosis
 		);
 
 		this.accountStore = new AccountStore(window, AccountWithCosmosAndOsmosis, this.chainStore, this.queriesStore, {
 			defaultOpts: {
 				prefetching: false,
-				suggestChain: true,
+				suggestChain: false,
 				autoInit: false,
-				getKeplr: getKeplrFromWindow,
+				getKeplr: this.connectWalletManager.getKeplr,
 
 				msgOpts: {
 					ibcTransfer: {
@@ -135,6 +143,7 @@ export class RootStore {
 				};
 			}),
 		});
+		this.connectWalletManager.setAccountStore(this.accountStore);
 
 		this.priceStore = new PoolIntermediatePriceStore(
 			EmbedChainInfos[0].chainId,
