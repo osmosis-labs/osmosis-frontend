@@ -259,6 +259,17 @@ export const ConnectWalletDialog = wrapBaseDialog(
 		const { chainStore, accountStore } = useStore();
 		const [isMobile] = useState(() => checkIsMobile());
 
+		useEffect(() => {
+			if (isMobile) {
+				// Skip the selection of wallet type if mobile
+				const wallet = walletList[1];
+
+				localStorage.setItem(KeyConnectingWalletType, wallet.type);
+				accountStore.getAccount(chainStore.current.chainId).init();
+				close();
+			}
+		}, [isMobile]);
+
 		return (
 			<div ref={initialFocus}>
 				<h4 className="text-lg md:text-xl text-white-high">Connect Wallet</h4>
