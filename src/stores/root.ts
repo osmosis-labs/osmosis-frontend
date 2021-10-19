@@ -496,7 +496,7 @@ export class RootStore {
 				],
 			},
 			{
-				poolId: '554',
+				poolId: '555',
 				currencies: [
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-53' }], 'nanolike'),
