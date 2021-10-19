@@ -41,13 +41,13 @@ export const PromotedLBPPoolIds: {
 	destDenom: string;
 }[] = [
 	/*
-			{
-				poolId: '21',
-				name: 'Regen Network',
-				baseDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-8' }], 'uregen'),
-				destDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
-			},
-			 */
+		{
+			poolId: '21',
+			name: 'Regen Network',
+			baseDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-8' }], 'uregen'),
+			destDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+		},
+			*/
 ];
 export const HideAddLiquidityPoolIds: {
 	[poolId: string]: boolean;
