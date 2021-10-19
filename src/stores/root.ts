@@ -52,7 +52,7 @@ export class RootStore {
 		this.accountStore = new AccountStore(window, AccountWithCosmosAndOsmosis, this.chainStore, this.queriesStore, {
 			defaultOpts: {
 				prefetching: false,
-				suggestChain: false,
+				suggestChain: true,
 				autoInit: false,
 				getKeplr: this.connectWalletManager.getKeplr,
 
