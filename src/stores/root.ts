@@ -21,6 +21,7 @@ import { KeplrWalletConnectV1 } from '@keplr-wallet/wc-client';
 import { KeplrQRCodeModalV1 } from '@keplr-wallet/wc-qrcode-modal';
 import WalletConnect from '@walletconnect/client';
 import { ConnectWalletManager } from 'src/dialogs/connect-wallet';
+import { KeplrWalletConnectV1 } from '@keplr-wallet/wc-client';
 
 export class RootStore {
 	public readonly chainStore: ChainStore;
@@ -63,6 +64,11 @@ export class RootStore {
 				},
 
 				suggestChainFn: async (keplr, chainInfo) => {
+					if (keplr instanceof KeplrWalletConnectV1) {
+						// Can't suggest the chain using wallet connect.
+						return;
+					}
+
 					// Fetching the price from the pool's spot price is slightly hacky.
 					// It is set on the custom coin gecko id start with "pool:"
 					// and custom price store calculates the spot price from the pool
