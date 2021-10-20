@@ -15,13 +15,8 @@ import { IBCTransferHistoryStore } from './ibc-history';
 import { displayToast, TToastType } from '../components/common/toasts';
 import { isSlippageError } from '../utils/tx';
 import { prettifyTxError } from 'src/stores/prettify-tx-error';
-import { BroadcastMode, StdTx } from '@cosmjs/launchpad';
-import Axios from 'axios';
 import { KeplrWalletConnectV1 } from '@keplr-wallet/wc-client';
-import { KeplrQRCodeModalV1 } from '@keplr-wallet/wc-qrcode-modal';
-import WalletConnect from '@walletconnect/client';
 import { ConnectWalletManager } from 'src/dialogs/connect-wallet';
-import { KeplrWalletConnectV1 } from '@keplr-wallet/wc-client';
 
 export class RootStore {
 	public readonly chainStore: ChainStore;
