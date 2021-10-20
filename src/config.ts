@@ -233,6 +233,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'nanolike',
 	},
+	{
+		counterpartyChainId: 'impacthub-3',
+		sourceChannelId: 'channel-38',
+		destChannelId: 'channel-4',
+		coinMinimalDenom: 'uixo',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -733,5 +739,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://likecoin.bigdipper.live/transactions/${txHash}',
+	},
+	{
+		rpc: 'https://rpc-impacthub.keplr.app',
+		rest: 'https://lcd-impacthub.keplr.app',
+		chainId: 'impacthub-3',
+		chainName: 'IXO',
+		stakeCurrency: {
+			coinDenom: 'IXO',
+			coinMinimalDenom: 'uixo',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:uixo',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/ixo.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('ixo'),
+		currencies: [
+			{
+				coinDenom: 'IXO',
+				coinMinimalDenom: 'uixo',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:uixo',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ixo.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'IXO',
+				coinMinimalDenom: 'uixo',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:uixo',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ixo.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://blockscan.ixo.world/transactions/${txHash}',
 	},
 ];
