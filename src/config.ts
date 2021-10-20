@@ -43,11 +43,7 @@ export const PromotedLBPPoolIds: {
 	baseDenom: string;
 	destDenom: string;
 }[] = [
-<<<<<<< HEAD
 	/*
-=======
-		/*
->>>>>>> add bitcanna logo
 		{
 			poolId: '21',
 			name: 'Regen Network',
@@ -55,11 +51,7 @@ export const PromotedLBPPoolIds: {
 			destDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
 		},
 		 */
-<<<<<<< HEAD
 ];
-=======
-	];
->>>>>>> add bitcanna logo
 export const HideAddLiquidityPoolIds: {
 	[poolId: string]: boolean;
 } = {
@@ -69,10 +61,10 @@ export const HideAddLiquidityPoolIds: {
 };
 export const PreferHeaderShowTokenPricePoolIds: {
 	[poolId: string]:
-	| {
-		baseDenom: string;
-	}
-	| undefined;
+		| {
+				baseDenom: string;
+		  }
+		| undefined;
 } = {
 	/*
 	'21': {
@@ -82,16 +74,16 @@ export const PreferHeaderShowTokenPricePoolIds: {
 };
 export const ExtraGaugeInPool: {
 	[poolId: string]:
-	| {
-		gaugeId: string;
-		denom: string;
-		extraRewardAmount?: Int;
-	}
-	| {
-		gaugeId: string;
-		denom: string;
-		extraRewardAmount?: Int;
-	}[];
+		| {
+				gaugeId: string;
+				denom: string;
+				extraRewardAmount?: Int;
+		  }
+		| {
+				gaugeId: string;
+				denom: string;
+				extraRewardAmount?: Int;
+		  }[];
 } = {
 	'461': [
 		{
@@ -192,7 +184,6 @@ export const IBCAssetInfos: {
 	destChannelId: string;
 	coinMinimalDenom: string;
 }[] = [
-<<<<<<< HEAD
 	{
 		counterpartyChainId: 'cosmoshub-4',
 		sourceChannelId: 'channel-0',
@@ -290,75 +281,6 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'uusd',
 	},
 ];
-=======
-		{
-			counterpartyChainId: 'cosmoshub-4',
-			sourceChannelId: 'channel-0',
-			destChannelId: 'channel-141',
-			coinMinimalDenom: 'uatom',
-		},
-		{
-			counterpartyChainId: 'akashnet-2',
-			sourceChannelId: 'channel-1',
-			destChannelId: 'channel-9',
-			coinMinimalDenom: 'uakt',
-		},
-		{
-			counterpartyChainId: 'regen-1',
-			sourceChannelId: 'channel-8',
-			destChannelId: 'channel-1',
-			coinMinimalDenom: 'uregen',
-		},
-		{
-			counterpartyChainId: 'sentinelhub-2',
-			sourceChannelId: 'channel-2',
-			destChannelId: 'channel-0',
-			coinMinimalDenom: 'udvpn',
-		},
-		{
-			counterpartyChainId: 'core-1',
-			sourceChannelId: 'channel-4',
-			destChannelId: 'channel-6',
-			coinMinimalDenom: 'uxprt',
-		},
-		{
-			counterpartyChainId: 'irishub-1',
-			sourceChannelId: 'channel-6',
-			destChannelId: 'channel-3',
-			coinMinimalDenom: 'uiris',
-		},
-		{
-			counterpartyChainId: 'crypto-org-chain-mainnet-1',
-			sourceChannelId: 'channel-5',
-			destChannelId: 'channel-10',
-			coinMinimalDenom: 'basecro',
-		},
-		{
-			counterpartyChainId: 'iov-mainnet-ibc',
-			sourceChannelId: 'channel-15',
-			destChannelId: 'channel-2',
-			coinMinimalDenom: 'uiov',
-		},
-		{
-			counterpartyChainId: 'emoney-3',
-			sourceChannelId: 'channel-37',
-			destChannelId: 'channel-0',
-			coinMinimalDenom: 'ungm',
-		},
-		{
-			counterpartyChainId: 'emoney-3',
-			sourceChannelId: 'channel-37',
-			destChannelId: 'channel-0',
-			coinMinimalDenom: 'eeur',
-		},
-		{
-			counterpartyChainId: 'juno-1',
-			sourceChannelId: 'channel-42',
-			destChannelId: 'channel-0',
-			coinMinimalDenom: 'ujuno',
-		},
-	];
->>>>>>> add bitcanna logo
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	{
