@@ -55,30 +55,29 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 
 	return (
 		<React.Fragment>
-			{!isMobileView ? (
-				<img
-					src={require('../../../../../public/assets/terra-banner.png').default}
-					alt={'Terra added'}
-					className="cursor-pointer"
-					style={{
-						maxWidth: '519.453px',
-						borderRadius: '8px',
-					}}
-					onClick={e => {
-						e.preventDefault();
+			<img
+				src={require('../../../../../public/assets/terra-banner.png').default}
+				alt={'Terra added'}
+				className="cursor-pointer"
+				style={{
+					width: '100%',
+					maxWidth: '519.453px',
+					borderRadius: '8px',
+				}}
+				onClick={e => {
+					e.preventDefault();
 
-						const terraCccount = accountStore.getAccount('columbus');
-						if (terraCccount.walletStatus === WalletStatus.NotInit) {
-							terraCccount.init();
-						}
+					const terraCccount = accountStore.getAccount('columbus');
+					if (terraCccount.walletStatus === WalletStatus.NotInit) {
+						terraCccount.init();
+					}
 
-						history.push('/assets?terra=true');
-					}}
-				/>
-			) : null}
+					history.push('/assets?terra=true');
+				}}
+			/>
 			<TradeClipboardContainer>
 				<Clip />
-				<TradeClipboardContent>
+				<TradeClipboardContent style={isMobileView ? { maxHeight: '524px' } : undefined}>
 					<TradeTxSettings config={config} />
 
 					<TradeAmountSection>

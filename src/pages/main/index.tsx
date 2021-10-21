@@ -3,6 +3,7 @@ import React, { FunctionComponent, ReactNode } from 'react';
 import ProgressiveImage from 'react-progressive-image';
 import { colorPrimaryDarker } from 'src/emotionStyles/colors';
 import { TradeClipboard } from './components/TradeClipboard';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 export const MainPage: FunctionComponent = () => {
 	return (
@@ -30,8 +31,18 @@ const PageContainer = styled.div`
 `;
 
 function TradeClipboardWrapper({ children }: { children: ReactNode }) {
+	const { isMobileView } = useWindowSize();
+
 	return (
-		<TradePosition>
+		<TradePosition
+			style={
+				isMobileView
+					? {
+							justifyContent: 'flex-start',
+							paddingTop: '80px',
+					  }
+					: undefined
+			}>
 			<TradeContainer>{children}</TradeContainer>
 		</TradePosition>
 	);
