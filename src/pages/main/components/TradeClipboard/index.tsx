@@ -16,6 +16,7 @@ import { SwapButton } from '../SwapButton';
 import { TradeTxSettings } from './TradeTxSettings';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { WalletStatus } from '@keplr-wallet/stores';
+import { useHistory } from 'react-router-dom';
 
 export const TradeClipboard: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore, accountStore, swapManager } = useStore();
@@ -50,6 +51,8 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 		}
 	}, [chainStore.current, config.sendableCurrencies]);
 
+	const history = useHistory();
+
 	return (
 		<React.Fragment>
 			<img
@@ -67,6 +70,8 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 					if (terraCccount.walletStatus === WalletStatus.NotInit) {
 						terraCccount.init();
 					}
+
+					history.push('/assets?terra=true');
 				}}
 			/>
 			<TradeClipboardContainer>
