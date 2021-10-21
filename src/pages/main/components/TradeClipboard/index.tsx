@@ -15,6 +15,8 @@ import { useTradeConfig } from '../../hooks/useTradeConfig';
 import { SwapButton } from '../SwapButton';
 import { TradeTxSettings } from './TradeTxSettings';
 import useWindowSize from 'src/hooks/useWindowSize';
+import { WalletStatus } from '@keplr-wallet/stores';
+import { useHistory } from 'react-router-dom';
 
 export const TradeClipboard: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore, accountStore, swapManager } = useStore();
@@ -49,23 +51,46 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 		}
 	}, [chainStore.current, config.sendableCurrencies]);
 
+	const history = useHistory();
+
 	return (
-		<TradeClipboardContainer>
-			<Clip />
-			<TradeClipboardContent>
-				<TradeTxSettings config={config} />
+		<React.Fragment>
+			<img
+				src={require('../../../../../public/assets/terra-banner.png').default}
+				alt={'Terra added'}
+				className="cursor-pointer"
+				style={{
+					maxWidth: '519.453px',
+					borderRadius: '8px',
+				}}
+				onClick={e => {
+					e.preventDefault();
 
-				<TradeAmountSection>
-					<FromBox config={config} style={{ marginBottom: isMobileView ? 14 : 18 }} />
-					<SwitchInOutButton type="button" onClick={() => config.switchInAndOut()} />
-					<ToBox config={config} style={{ marginBottom: isMobileView ? 14 : 18 }} />
-				</TradeAmountSection>
+					const terraCccount = accountStore.getAccount('columbus');
+					if (terraCccount.walletStatus === WalletStatus.NotInit) {
+						terraCccount.init();
+					}
 
-				<FeesBox style={{ marginBottom: isMobileView ? 36 : 50 }} config={config} />
+					history.push('/assets?terra=true');
+				}}
+			/>
+			<TradeClipboardContainer>
+				<Clip />
+				<TradeClipboardContent>
+					<TradeTxSettings config={config} />
 
-				<SwapButton config={config} />
-			</TradeClipboardContent>
-		</TradeClipboardContainer>
+					<TradeAmountSection>
+						<FromBox config={config} style={{ marginBottom: isMobileView ? 14 : 18 }} />
+						<SwitchInOutButton type="button" onClick={() => config.switchInAndOut()} />
+						<ToBox config={config} style={{ marginBottom: isMobileView ? 14 : 18 }} />
+					</TradeAmountSection>
+
+					<FeesBox style={{ marginBottom: isMobileView ? 36 : 50 }} config={config} />
+
+					<SwapButton config={config} />
+				</TradeClipboardContent>
+			</TradeClipboardContainer>
+		</React.Fragment>
 	);
 });
 

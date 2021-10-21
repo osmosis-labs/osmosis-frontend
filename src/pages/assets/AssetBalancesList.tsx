@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
 import { AppCurrency, Currency, IBCCurrency } from '@keplr-wallet/types';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Img } from 'src/components/common/Img';
-import { ButtonFaint, ButtonPrimary, ButtonSecondary } from 'src/components/layouts/Buttons';
+import { ButtonFaint, ButtonSecondary } from 'src/components/layouts/Buttons';
 import { Text, TitleText } from 'src/components/Texts';
 import { IBCAssetInfos } from 'src/config';
 import { TransferDialog } from 'src/dialogs/Transfer';
@@ -11,6 +11,7 @@ import { TableData, TableHeaderRow } from 'src/pages/assets/components/Table';
 import { useStore } from 'src/stores';
 import { makeIBCMinimalDenom } from 'src/utils/ibc';
 import useWindowSize from 'src/hooks/useWindowSize';
+import { useLocation } from 'react-router-dom';
 
 const tableWidths = ['50%', '25%', '12.5%', '12.5%'];
 const tableWidthsOnMobileView = ['70%', '30%'];
@@ -71,8 +72,31 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 	>({ open: false });
 
 	const close = () => setDialogState(v => ({ ...v, open: false }));
+
+	const location = useLocation();
+	useEffect(() => {
+		if (location.search === '?terra=true') {
+			const luna = ibcBalances.find(
+				bal =>
+					bal.balance.currency.coinMinimalDenom ===
+					'ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0'
+			);
+
+			if (luna && 'paths' in luna.balance.currency) {
+				setDialogState({
+					open: true,
+					currency: luna.balance.currency,
+					counterpartyChainId: luna.chainInfo.chainId,
+					sourceChannelId: luna.sourceChannelId,
+					destChannelId: luna.destChannelId,
+					isWithdraw: false,
+				});
+			}
+		}
+	}, []);
+
 	return (
-		<>
+		<React.Fragment>
 			{dialogState.open ? (
 				<TransferDialog
 					dialogStyle={
@@ -188,7 +212,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 					})}
 				</tbody>
 			</table>
-		</>
+		</React.Fragment>
 	);
 });
 
