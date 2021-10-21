@@ -43,19 +43,43 @@ const walletList = [
 	},
 ];
 
-async function sendTx(chainId: string, stdTx: StdTx, mode: BroadcastMode): Promise<Uint8Array> {
-	const params = {
-		tx: stdTx,
-		mode,
-	};
-
+async function sendTx(chainId: string, tx: StdTx | Uint8Array, mode: BroadcastMode): Promise<Uint8Array> {
 	const restInstance = Axios.create({
 		baseURL: EmbedChainInfos.find(chainInfo => chainInfo.chainId === chainId)!.rest,
 	});
 
-	const result = await restInstance.post('/txs', params);
+	const isProtoTx = Buffer.isBuffer(tx) || tx instanceof Uint8Array;
 
-	return Buffer.from(result.data.txhash, 'hex');
+	const params = isProtoTx
+		? {
+				tx_bytes: Buffer.from(tx as any).toString('base64'),
+				mode: (() => {
+					switch (mode) {
+						case 'async':
+							return 'BROADCAST_MODE_ASYNC';
+						case 'block':
+							return 'BROADCAST_MODE_BLOCK';
+						case 'sync':
+							return 'BROADCAST_MODE_SYNC';
+						default:
+							return 'BROADCAST_MODE_UNSPECIFIED';
+					}
+				})(),
+		  }
+		: {
+				tx,
+				mode: mode,
+		  };
+
+	const result = await restInstance.post(isProtoTx ? '/cosmos/tx/v1beta1/txs' : '/txs', params);
+
+	const txResponse = isProtoTx ? result.data['tx_response'] : result.data;
+
+	if (txResponse.code != null && txResponse.code !== 0) {
+		throw new Error(txResponse['raw_log']);
+	}
+
+	return Buffer.from(txResponse.txhash, 'hex');
 }
 
 class WalletConnectQRCodeModalV1Renderer {
