@@ -653,7 +653,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			high: 1,
 		},
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://emoney.bigdipper.live/transactions/${txHash}',
+		explorerUrlToTx: 'https://emoney.bigdipper.live/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-juno.itastakers.com',
@@ -727,7 +727,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://explorer.microtick.zone/transactions/${txHash}',
+		explorerUrlToTx: 'https://explorer.microtick.zone/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://mainnet-node.like.co/rpc',
@@ -764,7 +764,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://likecoin.bigdipper.live/transactions/${txHash}',
+		explorerUrlToTx: 'https://likecoin.bigdipper.live/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-impacthub.keplr.app',
@@ -801,7 +801,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://blockscan.ixo.world/transactions/${txHash}',
+		explorerUrlToTx: 'https://blockscan.ixo.world/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-columbus.keplr.app',
