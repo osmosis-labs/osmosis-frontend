@@ -857,6 +857,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			high: 0.015,
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
-		explorerUrlToTx: 'https://finder.terra.money/columbus-5/tx/${txHash}',
+		explorerUrlToTx: 'https://finder.terra.money/columbus-5/tx/{txHash}',
 	},
 ];
