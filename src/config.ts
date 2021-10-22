@@ -33,7 +33,7 @@ export const LockupAbledPoolIds: {
 	'497': true,
 	'498': true,
 	'557': true,
-	'558':true,
+	'558': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -664,7 +664,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'JUNO',
 			coinMinimalDenom: 'ujuno',
 			coinDecimals: 6,
-			coinGeckoId: 'pool:ujuno',
+			coinGeckoId: 'juno-network',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 		},
 		bip44: {
@@ -676,7 +676,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'JUNO',
 				coinMinimalDenom: 'ujuno',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:ujuno',
+				coinGeckoId: 'juno-network',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 			},
 		],
@@ -685,7 +685,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'JUNO',
 				coinMinimalDenom: 'ujuno',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:ujuno',
+				coinGeckoId: 'juno-network',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 			},
 		],
