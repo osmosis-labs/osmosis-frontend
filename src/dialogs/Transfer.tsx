@@ -1,7 +1,6 @@
 import cn from 'clsx';
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Img } from '../components/common/Img';
 import { IBCCurrency } from '@keplr-wallet/types';
 import { AmountInput } from '../components/form/Inputs';
 import { colorWhiteEmphasis } from '../emotionStyles/colors';
@@ -92,7 +91,7 @@ export const TransferDialog = wrapBaseDialog(
 							</p>
 						</div>
 						<div className="flex justify-center items-center w-10 my-2 md:my-0">
-							<Img src={`/public/assets/Icons/Arrow-${isMobileView ? 'Down' : 'Right'}.svg`} />
+							<img src={`/public/assets/Icons/Arrow-${isMobileView ? 'Down' : 'Right'}.svg`} />
 						</div>
 						<div className="w-full flex-1 p-3 md:p-4 border border-white-faint rounded-2xl">
 							<p className="text-white-high">To</p>

@@ -2,7 +2,6 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { memoize } from 'lodash-es';
 import React from 'react';
-import { Img } from 'src/components/common/Img';
 
 interface Props {
 	/** random background linear gradient value set by index */
@@ -58,7 +57,7 @@ const TokenIconContainer = styled.figure<{ poolId?: string | number }>`
 	}
 `;
 
-const TokenIconImg = styled(Img)`
+const TokenIconImg = styled.img`
 	width: 2.5rem;
 	height: 2.5rem;
 `;

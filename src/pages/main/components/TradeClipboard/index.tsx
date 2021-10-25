@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import React, { ButtonHTMLAttributes, FunctionComponent, useEffect } from 'react';
-import { Img } from 'src/components/common/Img';
 import { FeesBox } from 'src/components/SwapToken/FeesBox';
 import { FromBox } from 'src/components/SwapToken/FromBox';
 import { ToBox } from 'src/components/SwapToken/ToBox';
@@ -138,7 +137,11 @@ const TradeAmountSection = styled.section`
 function SwitchInOutButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {
 	return (
 		<SwitchInOutButtonContainer {...props}>
-			<Img style={{ width: '3rem', height: '3rem' }} src="/public/assets/sidebar/icon-border_unselected.svg" />
+			<img
+				alt="switch-in-out"
+				style={{ width: '3rem', height: '3rem' }}
+				src="/public/assets/sidebar/icon-border_unselected.svg"
+			/>
 			<SwitchIcon src="/public/assets/Icons/Switch.svg" />
 		</SwitchInOutButtonContainer>
 	);
@@ -151,7 +154,7 @@ const SwitchInOutButtonContainer = styled.button`
 	z-index: 1;
 `;
 
-const SwitchIcon = styled(Img)`
+const SwitchIcon = styled.img`
 	${cssAbsoluteCenter};
 	width: 1.6rem;
 	height: 1.6rem;

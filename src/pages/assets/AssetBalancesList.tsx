@@ -302,7 +302,7 @@ function AssetBalanceRow({
 								<>
 									<ButtonFaint onClick={onDeposit} style={{ display: 'flex', alignItems: 'center' }}>
 										<p className="text-sm text-secondary-200 leading-none">Deposit</p>
-										<Img src={'/public/assets/Icons/Right.svg'} />
+										<img alt="right" src={'/public/assets/Icons/Right.svg'} />
 									</ButtonFaint>
 								</>
 							) : null}
@@ -315,7 +315,7 @@ function AssetBalanceRow({
 								<>
 									<ButtonFaint onClick={onWithdraw} style={{ display: 'flex', alignItems: 'center' }}>
 										<p className="text-sm text-secondary-200 leading-none">Withdraw</p>
-										<Img src={'/public/assets/Icons/Right.svg'} />
+										<img alt="right" src={'/public/assets/Icons/Right.svg'} />
 									</ButtonFaint>
 								</>
 							) : null}

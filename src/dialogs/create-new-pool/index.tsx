@@ -4,7 +4,6 @@ import { NewPoolStage1 } from './Step1';
 import { NewPoolStage2 } from './Step2';
 import { NewPoolStage3 } from './Step3';
 import { observer } from 'mobx-react-lite';
-import { Img } from '../../components/common/Img';
 import { wrapBaseDialog } from '../base';
 import { AppCurrency } from '@keplr-wallet/types';
 import { action, makeObservable, observable, override } from 'mobx';
@@ -324,7 +323,7 @@ const NewPoolButton: FunctionComponent<{
 			{error && (
 				<div className="mt-6 mb-7.5 w-full flex justify-center items-center">
 					<div className="py-1.5 px-3.5 rounded-lg bg-missionError flex justify-center items-center">
-						<Img className="h-5 w-5 mr-2.5" src="/public/assets/Icons/Info-Circle.svg" />
+						<img className="h-5 w-5 mr-2.5" src="/public/assets/Icons/Info-Circle.svg" />
 						<p>{error.message}</p>
 					</div>
 				</div>

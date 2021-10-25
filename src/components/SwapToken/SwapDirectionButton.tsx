@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
 import React, { HTMLAttributes } from 'react';
-import { Img } from 'src/components/common/Img';
 import { cssAbsoluteCenter } from 'src/emotionStyles/layout';
 
 export function SwapDirectionButton(props: HTMLAttributes<HTMLButtonElement>) {
@@ -19,12 +18,12 @@ const SwapDirectionButtonContainer = styled.button`
 	z-index: 1;
 `;
 
-const DirectionBgImg = styled(Img)`
+const DirectionBgImg = styled.img`
 	width: 3rem;
 	height: 3rem;
 `;
 
-const SwitchImg = styled(Img)`
+const SwitchImg = styled.img`
 	${cssAbsoluteCenter};
 	width: 1.5rem;
 	height: 1.5rem;

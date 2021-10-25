@@ -2,7 +2,6 @@ import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useRef, useState } from 'react';
 import { usePrevious } from 'react-use';
-import { Img } from 'src/components/common/Img';
 import { ButtonFaint, ButtonPrimary } from 'src/components/layouts/Buttons';
 import { CenterV } from 'src/components/layouts/Containers';
 import { TokenSelect } from 'src/components/SwapToken/TokenSelect';
@@ -77,7 +76,7 @@ export const NewPoolStage1 = observer(function NewPoolStage1({ config, close }: 
 				<AddTokenSection onClick={handleAddTokenClicked}>
 					<CenterV>
 						<AddButton>
-							<Img
+							<img
 								style={{ width: '1.75rem', height: '1.75rem', filter: `brightness(0%) invert(100%)` }}
 								src="/public/assets/Icons/Add.svg"
 							/>
@@ -108,7 +107,7 @@ const HeadSubTitle = styled.div`
 	width: 100%;
 `;
 
-const CloseIcon = styled(Img)`
+const CloseIcon = styled.img`
 	width: 1.5rem;
 	height: 1.5rem;
 `;
