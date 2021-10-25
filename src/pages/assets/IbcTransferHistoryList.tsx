@@ -69,7 +69,9 @@ const IbcTransferHistoryRow = observer(function IbcTransferHistoryRow({ history 
 				</Text>
 				{chainStore.getChain(history.sourceChainId).raw.explorerUrlToTx ? (
 					<a
-						href={chainStore.getChain(history.sourceChainId).raw.explorerUrlToTx.replace('{txHash}', history.txHash)}
+						href={chainStore
+							.getChain(history.sourceChainId)
+							.raw.explorerUrlToTx.replace('{txHash}', history.txHash.toUpperCase())}
 						target="_blank"
 						rel="noopener noreferrer">
 						<LinkIcon style={{ color: colorGold, marginLeft: 4 }} size={17} />
