@@ -80,6 +80,28 @@ export class ObservableQueryGuageById extends ObservableChainQuery<GaugeById> {
 			return new CoinPretty(currency, new Dec(primitive.amount));
 		}
 	);
+
+	readonly getDistributedCoin = computedFn(
+		(currency: AppCurrency): CoinPretty => {
+			if (!this.response) {
+				return new CoinPretty(currency, new Dec(0));
+			}
+
+			const primitive = this.response.data.gauge.distributed_coins.find(
+				coin => coin.denom === currency.coinMinimalDenom
+			);
+			if (!primitive) {
+				return new CoinPretty(currency, new Dec(0));
+			}
+			return new CoinPretty(currency, new Dec(primitive.amount));
+		}
+	);
+
+	readonly getRemainingCoin = computedFn(
+		(currency: AppCurrency): CoinPretty => {
+			return this.getCoin(currency).sub(this.getDistributedCoin(currency));
+		}
+	);
 }
 
 export class ObservableQueryGuage extends ObservableChainQueryMap<GaugeById> {
