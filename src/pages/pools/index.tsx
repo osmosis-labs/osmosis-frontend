@@ -6,6 +6,7 @@ import { IncentivizedPools } from 'src/pages/pools/components/IncentivizedPools'
 import { MyPools } from 'src/pages/pools/components/MyPools';
 import { AllPools } from './components/AllPools';
 import { LabsOverview } from './components/LabsOverview';
+import { ExtraIncentivizedPools } from 'src/pages/pools/components/ExtraIncentives';
 
 export const PoolsPage = observer(function PoolsPage() {
 	return (
@@ -20,6 +21,10 @@ export const PoolsPage = observer(function PoolsPage() {
 
 			<IncentivizedPoolsSection>
 				<IncentivizedPools />
+			</IncentivizedPoolsSection>
+
+			<IncentivizedPoolsSection>
+				<ExtraIncentivizedPools />
 			</IncentivizedPoolsSection>
 
 			<AllPoolsSection>
