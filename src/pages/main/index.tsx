@@ -33,18 +33,15 @@ const Background: FunctionComponent = () => {
 						? `translate(${((left - tradeMinLeft) * 2590) / windowSize.height})`
 						: ''
 				}>
-				{/*
-					TODO: 
-					<image
-						xlinkHref={require('../../../public/assets/halloween-web.png').default}
-						x="0"
-						y="0"
-						width="3923"
-						height="2127"
-					/>
-					 */}
 				{!isMobileView && ratio > 1.1336 ? (
 					<React.Fragment>
+						<image
+							xlinkHref={require('../../../public/assets/halloween-web.png').default}
+							x="0"
+							y="0"
+							width="3923"
+							height="2127"
+						/>
 						<rect x="-3000" y="2127" width="8660" height="463" fill="#120644" />
 						<image
 							xlinkHref={require('../../../public/assets/wosmongton-halloween.png').default}
