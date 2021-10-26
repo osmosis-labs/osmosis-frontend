@@ -915,6 +915,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
-		explorerUrlToTx: 'https://www.mintscan.io/bitcanna/txs/${txHash}',
+		explorerUrlToTx: 'https://www.mintscan.io/bitcanna/txs/{txHash}',
 	},
 ];
