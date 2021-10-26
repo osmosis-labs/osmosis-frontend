@@ -20,7 +20,6 @@ const Background: FunctionComponent = () => {
 	const tradeMinLeft = (920 * windowSize.height) / 1080;
 	const tradePositionLeft = (windowSize.width - 206) * 0.8 - 520;
 	const left = Math.min(tradeMinLeft, tradePositionLeft);
-	console.log(left, ratio, 2590 / windowSize.height);
 
 	return (
 		<svg
@@ -78,7 +77,7 @@ const PageContainer = styled.div`
 	background-image: url('/public/assets/backgrounds/osmosis-home-bg-pattern.svg');
 	background-repeat: repeat-x;
 	background-size: cover;
-	overflow: scroll;
+	overflow: auto;
 	height: 100vh;
 	position: relative;
 	@media (max-width: 800px) {
