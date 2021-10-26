@@ -30,7 +30,7 @@ const Background: FunctionComponent = () => {
 			<g
 				transform={
 					!isMobileView && windowSize.width > 1280 && left < tradeMinLeft
-						? `translate(${(left - tradeMinLeft) * (ratio > 1.1336 ? 2590 / windowSize.height : 1)})`
+						? `translate(${((left - tradeMinLeft) * 2590) / windowSize.height})`
 						: ''
 				}>
 				{/*
@@ -43,7 +43,7 @@ const Background: FunctionComponent = () => {
 						height="2127"
 					/>
 					 */}
-				{!isMobileView ? (
+				{!isMobileView && ratio > 1.1336 ? (
 					<React.Fragment>
 						<rect x="-3000" y="2127" width="8660" height="463" fill="#120644" />
 						<image
