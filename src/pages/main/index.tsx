@@ -1,41 +1,26 @@
 import styled from '@emotion/styled';
-import React, { FunctionComponent, ReactNode, useEffect, useState } from 'react';
+import React, { FunctionComponent, ReactNode } from 'react';
 import { colorPrimaryDarker } from 'src/emotionStyles/colors';
 import { TradeClipboard } from './components/TradeClipboard';
 import useWindowSize from 'src/hooks/useWindowSize';
 
 const Background: FunctionComponent = () => {
 	const sidebarWidth = 206;
-	const [screenHeight, setScreenHeight] = useState(0);
-	const [componentWidth, setComponentWidth] = useState(0);
-	const [ratio, setRatio] = useState((document.body.clientWidth - sidebarWidth) / document.body.clientHeight);
 
-	useEffect(() => {
-		const calcAspectRatio = () => {
-			setScreenHeight(document.body.clientHeight);
-			setComponentWidth(document.body.clientWidth - sidebarWidth);
-			setRatio((document.body.clientWidth - sidebarWidth) / document.body.clientHeight);
-		};
+	const { windowSize, isMobileView } = useWindowSize();
 
-		window.addEventListener('resize', calcAspectRatio);
+	const componentWidth = windowSize.width - sidebarWidth;
+	const ratio = componentWidth / windowSize.height;
 
-		return () => {
-			window.removeEventListener('resize', calcAspectRatio);
-		};
-	}, []);
-
-	useEffect(() => {
-		// To prevent the Inifinity on initialization
-		setScreenHeight(document.body.clientHeight);
-		setComponentWidth(document.body.clientWidth - sidebarWidth);
-		setRatio(() => document.body.clientWidth / document.body.clientHeight);
-	}, [ratio]);
-
-	const screenWidth = componentWidth + sidebarWidth;
-	const expectedClipboardLeft = Math.min(1020, componentWidth * 0.8 - 520);
-
-	const { isMobileView } = useWindowSize();
-	console.log(expectedClipboardLeft);
+	/*
+	--tradeMinLeft: calc(920 * (100vh / 1080));
+	--tradePositionLeft: calc((100vw - 206px) * 0.8 - 520px);
+	left: min(var(--tradeMinLeft), var(--tradePositionLeft));
+	 */
+	const tradeMinLeft = (920 * windowSize.height) / 1080;
+	const tradePositionLeft = (windowSize.width - 206) * 0.8 - 520;
+	const left = Math.min(tradeMinLeft, tradePositionLeft);
+	console.log(left, ratio, 2590 / windowSize.height);
 
 	return (
 		<svg
@@ -45,8 +30,8 @@ const Background: FunctionComponent = () => {
 			preserveAspectRatio={ratio > 1.1336 ? 'xMinYMid meet' : 'xMidYMid slice'}>
 			<g
 				transform={
-					screenWidth > 1280 && expectedClipboardLeft < 800 && screenHeight > 0
-						? `translate(${(expectedClipboardLeft - 800) * (2590 / screenHeight)})`
+					!isMobileView && windowSize.width > 1280 && left < tradeMinLeft
+						? `translate(${(left - tradeMinLeft) * (ratio > 1.1336 ? 2590 / windowSize.height : 1)})`
 						: ''
 				}>
 				{/*
@@ -127,8 +112,9 @@ const TradePosition = styled.div`
 	position: absolute;
 	z-index: 3;
 	height: 100%;
+	--tradeMinLeft: calc(920 * (100vh / 1080));
 	--tradePositionLeft: calc((100vw - 206px) * 0.8 - 520px);
-	left: min(1020px, var(--tradePositionLeft));
+	left: min(var(--tradeMinLeft), var(--tradePositionLeft));
 	@media (max-width: 1280px) {
 		left: calc((100vw - 520px) / 2);
 	}
