@@ -6,10 +6,14 @@ import useWindowSize from 'src/hooks/useWindowSize';
 
 const Background: FunctionComponent = () => {
 	const sidebarWidth = 206;
+	const [screenHeight, setScreenHeight] = useState(0);
+	const [componentWidth, setComponentWidth] = useState(0);
 	const [ratio, setRatio] = useState((document.body.clientWidth - sidebarWidth) / document.body.clientHeight);
 
 	useEffect(() => {
 		const calcAspectRatio = () => {
+			setScreenHeight(document.body.clientHeight);
+			setComponentWidth(document.body.clientWidth - sidebarWidth);
 			setRatio((document.body.clientWidth - sidebarWidth) / document.body.clientHeight);
 		};
 
@@ -20,7 +24,18 @@ const Background: FunctionComponent = () => {
 		};
 	}, []);
 
+	useEffect(() => {
+		// To prevent the Inifinity on initialization
+		setScreenHeight(document.body.clientHeight);
+		setComponentWidth(document.body.clientWidth - sidebarWidth);
+		setRatio(() => document.body.clientWidth / document.body.clientHeight);
+	}, [ratio]);
+
+	const screenWidth = componentWidth + sidebarWidth;
+	const expectedClipboardLeft = Math.min(1020, componentWidth * 0.8 - 520);
+
 	const { isMobileView } = useWindowSize();
+	console.log(expectedClipboardLeft);
 
 	return (
 		<svg
@@ -28,7 +43,12 @@ const Background: FunctionComponent = () => {
 			viewBox="0 0 2936 2590"
 			height="2590"
 			preserveAspectRatio={ratio > 1.1336 ? 'xMinYMid meet' : 'xMidYMid slice'}>
-			<g>
+			<g
+				transform={
+					screenWidth > 1280 && expectedClipboardLeft < 800 && screenHeight > 0
+						? `translate(${(expectedClipboardLeft - 800) * (2590 / screenHeight)})`
+						: ''
+				}>
 				{/*
 					TODO: 
 					<image
