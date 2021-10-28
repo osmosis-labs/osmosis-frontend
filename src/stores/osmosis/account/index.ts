@@ -9,6 +9,7 @@ import {
 	QueriesSetBase,
 	AccountSetOpts,
 	CosmosAccount,
+	HasCosmosAccount,
 } from '@keplr-wallet/stores';
 import { Dec, DecUtils } from '@keplr-wallet/unit';
 import { Currency } from '@keplr-wallet/types';
@@ -36,10 +37,9 @@ export interface OsmosisMsgOpts {
 	readonly unlockPeriodLock: MsgOpt;
 }
 
-export class AccountWithCosmosAndOsmosis extends AccountSetBase<
-	CosmosMsgOpts & OsmosisMsgOpts,
-	HasCosmosQueries & HasOsmosisQueries
-> {
+export class AccountWithCosmosAndOsmosis
+	extends AccountSetBase<CosmosMsgOpts & OsmosisMsgOpts, HasCosmosQueries & HasOsmosisQueries>
+	implements HasCosmosAccount, HasOsmosisAccount {
 	public readonly cosmos: DeepReadonly<CosmosAccount>;
 	public readonly osmosis: DeepReadonly<OsmosisAccount>;
 
