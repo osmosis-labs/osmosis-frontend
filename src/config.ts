@@ -32,9 +32,11 @@ export const LockupAbledPoolIds: {
 	'482': true,
 	'497': true,
 	'498': true,
+	'548': true,
 	'557': true,
 	'558': true,
-	'548': true,
+	'571': true,
+	'572': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -167,6 +169,34 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/F3FF7A84A73B62921538642F9797C423D2B4C4ACB3C7FCFFCE7F12AA69909C4B',
 		},
 	],
+	'571': [
+		{
+			gaugeId: '1759',
+			denom: 'ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5',
+		},
+		{
+			gaugeId: '1760',
+			denom: 'ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5',
+		},
+		{
+			gaugeId: '1761',
+			denom: 'ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5',
+		},
+	],
+	'572': [
+		{
+			gaugeId: '1762',
+			denom: 'ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5',
+		},
+		{
+			gaugeId: '1763',
+			denom: 'ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5',
+		},
+		{
+			gaugeId: '1764',
+			denom: 'ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5',
+		},
+	],
 };
 
 export const PoolsPerPage = 10;
@@ -279,6 +309,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-72',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uusd',
+	},
+	{
+		counterpartyChainId: 'bitcanna-1',
+		sourceChannelId: 'channel-51',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'ubcna',
 	},
 ];
 
@@ -873,5 +909,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://finder.terra.money/columbus-5/tx/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.bitcanna.io',
+		rest: 'https://lcd.bitcanna.io',
+		chainId: 'bitcanna-1',
+		chainName: 'BitCanna',
+		stakeCurrency: {
+			coinDenom: 'BCNA',
+			coinMinimalDenom: 'ubcna',
+			coinDecimals: 6,
+			coinGeckoId: 'bitcanna',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/bcna.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('bcna'),
+		currencies: [
+			{
+				coinDenom: 'BCNA',
+				coinMinimalDenom: 'ubcna',
+				coinDecimals: 6,
+				coinGeckoId: 'bitcanna',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/bcna.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'BCNA',
+				coinMinimalDenom: 'ubcna',
+				coinDecimals: 6,
+				coinGeckoId: 'bitcanna',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/bcna.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://www.mintscan.io/bitcanna/txs/{txHash}',
 	},
 ];
