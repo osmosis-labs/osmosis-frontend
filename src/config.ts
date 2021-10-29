@@ -317,7 +317,7 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'ubcna',
 	},
 	{
-		counterpartyChainId: '',
+		counterpartyChainId: 'bitsong-2b',
 		sourceChannelId: 'channel-73',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'ubtsg',
