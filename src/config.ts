@@ -32,9 +32,11 @@ export const LockupAbledPoolIds: {
 	'482': true,
 	'497': true,
 	'498': true,
+	'548': true,
 	'557': true,
 	'558': true,
-	'548': true,
+	'571': true,
+	'572': true,
 };
 
 export const PromotedLBPPoolIds: {
