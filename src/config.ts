@@ -954,8 +954,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://www.mintscan.io/bitcanna/txs/{txHash}',
 	},
 	{
-		rpc: 'https://rpc-bitsong.itastakers.com',
-		rest: 'https://lcd-bitsong.itastakers.com',
+		rpc: 'https://rpc.explorebitsong.com',
+		rest: 'https://lcd.explorebitsong.com',
 		chainId: 'bitsong-2b',
 		chainName: 'BitSong',
 		stakeCurrency: {
