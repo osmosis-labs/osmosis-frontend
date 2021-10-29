@@ -316,6 +316,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'ubcna',
 	},
+	{
+		counterpartyChainId: 'bitsong-2b',
+		sourceChannelId: 'channel-73',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'ubtsg',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -946,5 +952,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://www.mintscan.io/bitcanna/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.explorebitsong.com',
+		rest: 'https://lcd.explorebitsong.com',
+		chainId: 'bitsong-2b',
+		chainName: 'BitSong',
+		stakeCurrency: {
+			coinDenom: 'BTSG',
+			coinMinimalDenom: 'ubtsg',
+			coinDecimals: 6,
+			coinGeckoId: 'bitsong',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/btsg.svg',
+		},
+		bip44: {
+			coinType: 639,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('bitsong'),
+		currencies: [
+			{
+				coinDenom: 'BTSG',
+				coinMinimalDenom: 'ubtsg',
+				coinDecimals: 6,
+				coinGeckoId: 'bitsong',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/btsg.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'BTSG',
+				coinMinimalDenom: 'ubtsg',
+				coinDecimals: 6,
+				coinGeckoId: 'bitsong',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/btsg.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://explorebitsong.com/transactions/{txHash}',
 	},
 ];
