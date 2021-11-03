@@ -9,7 +9,6 @@ import { observer } from 'mobx-react-lite';
 import { computedFn } from 'mobx-utils';
 import React, { Dispatch, FunctionComponent, SetStateAction, useState } from 'react';
 import InputSlider from 'react-input-slider';
-import { Img } from '../components/common/Img';
 import { AmountInput } from '../components/form/Inputs';
 import { MISC } from '../constants';
 import { OSMO_MEDIUM_TX_FEE } from '../constants/fee';
@@ -745,7 +744,7 @@ const BottomButton: FunctionComponent<{
 			{error && (
 				<div className="mb-3.5 md:mt-6 md:mb-7.5 w-full flex justify-center items-center">
 					<div className="py-1.5 px-2.5 md:px-3.5 rounded-lg bg-missionError flex justify-center items-center">
-						<Img className="h-5 w-5 mr-2.5" src="/public/assets/Icons/Info-Circle.svg" />
+						<img className="h-5 w-5 mr-2.5" src="/public/assets/Icons/Info-Circle.svg" />
 						<p>{error.message}</p>
 					</div>
 				</div>

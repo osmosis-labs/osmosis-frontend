@@ -2,7 +2,6 @@ import styled from '@emotion/styled';
 import * as React from 'react';
 import { Text } from 'src/components/Texts';
 import { colorPrimary200 } from 'src/emotionStyles/colors';
-import { Img } from './common/Img';
 import useWindowSize from 'src/hooks/useWindowSize';
 
 interface ConnectAccountButtonProps {
@@ -43,7 +42,7 @@ const ConnectAccountButtonWrapper = styled.button`
 	}
 `;
 
-const WalletImg = styled(Img)`
+const WalletImg = styled.img`
 	width: 1.25rem;
 	height: 1.25rem;
 `;

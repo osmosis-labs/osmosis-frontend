@@ -32,20 +32,6 @@ const SideBar: FunctionComponent = () => {
 		return () => window.removeEventListener('scroll', checkAndSetWindowIsOnTop);
 	}, []);
 
-	React.useEffect(() => {
-		setIsOpenSidebar(false);
-	}, [pathname]);
-
-	React.useEffect(() => {
-		if (isOpenSidebar) {
-			document.body.style.height = '100%';
-			document.body.style.overflow = 'hidden';
-		} else {
-			document.body.style.height = '';
-			document.body.style.overflow = 'scroll';
-		}
-	}, [isOpenSidebar]);
-
 	return (
 		<React.Fragment>
 			{isOpenSidebar && (

@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
 import React, { FunctionComponent, HTMLAttributes, useCallback, useState } from 'react';
 import cn from 'clsx';
-import { Img } from 'src/components/common/Img';
 import { TSIDEBAR_ITEM } from 'src/constants';
 import { NavLink } from 'react-router-dom';
 import { cssAbsoluteCenter } from 'src/emotionStyles/layout';
@@ -30,7 +29,7 @@ export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, sele
 					'opacity-75 hover:opacity-100 transition-all': !selected,
 				})}>
 				<div className="h-11 w-11 relative">
-					<Img
+					<img
 						className={cn('w-full h-full absolute top-0 left-0 transition-all')}
 						src={
 							selected
@@ -38,7 +37,7 @@ export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, sele
 								: '/public/assets/sidebar/icon-border_unselected.svg'
 						}
 					/>
-					<Img
+					<img
 						className="w-5 h-5 s-position-abs-center z-10"
 						src={selected ? sidebarItem.ICON_SELECTED : sidebarItem.ICON}
 					/>
@@ -138,7 +137,7 @@ const DisplayIconContainer = styled.div`
 	}
 `;
 
-const IconBgImg = styled(Img)`
+const IconBgImg = styled.img`
 	width: 100%;
 	height: 100%;
 	position: absolute;
@@ -146,7 +145,7 @@ const IconBgImg = styled(Img)`
 	left: 0;
 `;
 
-const IconImg = styled(Img)`
+const IconImg = styled.img`
 	${cssAbsoluteCenter};
 	width: 1.125rem;
 	height: 1.125rem;

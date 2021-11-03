@@ -45,105 +45,109 @@ export class RootStore {
 			QueriesWithCosmosAndOsmosis
 		);
 
-		this.accountStore = new AccountStore(window, AccountWithCosmosAndOsmosis, this.chainStore, this.queriesStore, {
-			defaultOpts: {
-				prefetching: false,
-				suggestChain: true,
-				autoInit: false,
-				getKeplr: this.connectWalletManager.getKeplr,
+		this.accountStore = new AccountStore<AccountWithCosmosAndOsmosis>(
+			window,
+			AccountWithCosmosAndOsmosis,
+			this.chainStore,
+			this.queriesStore,
+			{
+				defaultOpts: {
+					prefetching: false,
+					suggestChain: true,
+					autoInit: false,
+					getKeplr: this.connectWalletManager.getKeplr,
+					suggestChainFn: async (keplr, chainInfo) => {
+						if (keplr instanceof KeplrWalletConnectV1) {
+							// Can't suggest the chain using wallet connect.
+							return;
+						}
 
-				msgOpts: {
-					ibcTransfer: {
-						gas: 1000000,
+						// Fetching the price from the pool's spot price is slightly hacky.
+						// It is set on the custom coin gecko id start with "pool:"
+						// and custom price store calculates the spot price from the pool
+						// and calculates the actual price with multiplying the known price from the coingecko of the other currency.
+						// But, this logic is not supported on the Keplr extension,
+						// so, delivering this custom coingecko id doesn't work on the Keplr extension.
+						const copied = JSON.parse(JSON.stringify(chainInfo.raw)) as ChainInfo;
+						if (copied.stakeCurrency.coinGeckoId?.startsWith('pool:')) {
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							delete copied.stakeCurrency.coinGeckoId;
+						}
+						for (const currency of copied.currencies) {
+							if (currency.coinGeckoId?.startsWith('pool:')) {
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								delete currency.coinGeckoId;
+							}
+						}
+						for (const currency of copied.feeCurrencies) {
+							if (currency.coinGeckoId?.startsWith('pool:')) {
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								delete currency.coinGeckoId;
+							}
+						}
+
+						await keplr.experimentalSuggestChain(copied);
 					},
 				},
-
-				suggestChainFn: async (keplr, chainInfo) => {
-					if (keplr instanceof KeplrWalletConnectV1) {
-						// Can't suggest the chain using wallet connect.
-						return;
-					}
-
-					// Fetching the price from the pool's spot price is slightly hacky.
-					// It is set on the custom coin gecko id start with "pool:"
-					// and custom price store calculates the spot price from the pool
-					// and calculates the actual price with multiplying the known price from the coingecko of the other currency.
-					// But, this logic is not supported on the Keplr extension,
-					// so, delivering this custom coingecko id doesn't work on the Keplr extension.
-					const copied = JSON.parse(JSON.stringify(chainInfo.raw)) as ChainInfo;
-					if (copied.stakeCurrency.coinGeckoId?.startsWith('pool:')) {
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						delete copied.stakeCurrency.coinGeckoId;
-					}
-					for (const currency of copied.currencies) {
-						if (currency.coinGeckoId?.startsWith('pool:')) {
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							delete currency.coinGeckoId;
-						}
-					}
-					for (const currency of copied.feeCurrencies) {
-						if (currency.coinGeckoId?.startsWith('pool:')) {
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							delete currency.coinGeckoId;
-						}
-					}
-
-					await keplr.experimentalSuggestChain(copied);
-				},
-			},
-			chainOpts: this.chainStore.chainInfos.map(chainInfo => {
-				return {
-					chainId: chainInfo.chainId,
-					preTxEvents: {
-						onBroadcastFailed: (e?: Error) => {
-							let message: string = 'Unknown error';
-							if (e instanceof Error) {
-								message = e.message;
-							} else if (typeof e === 'string') {
-								message = e;
-							}
-
-							try {
-								message = prettifyTxError(message, chainInfo.currencies);
-							} catch (e) {
-								console.log(e);
-							}
-
-							displayToast(TToastType.TX_FAILED, {
-								message,
-							});
+				chainOpts: this.chainStore.chainInfos.map(chainInfo => {
+					return {
+						chainId: chainInfo.chainId,
+						msgOpts: {
+							ibcTransfer: {
+								gas: chainInfo.chainId.startsWith('osmosis-1') ? 1350000 : 500000,
+							},
 						},
-						onBroadcasted: (txHash: Uint8Array) => {
-							displayToast(TToastType.TX_BROADCASTING);
-						},
-						onFulfill: (tx: any) => {
-							if (tx.code) {
-								let message: string = tx.log;
-
-								if (isSlippageError(tx)) {
-									message = 'Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.';
-								} else {
-									try {
-										message = prettifyTxError(message, chainInfo.currencies);
-									} catch (e) {
-										console.log(e);
-									}
+						preTxEvents: {
+							onBroadcastFailed: (e?: Error) => {
+								let message: string = 'Unknown error';
+								if (e instanceof Error) {
+									message = e.message;
+								} else if (typeof e === 'string') {
+									message = e;
 								}
 
-								displayToast(TToastType.TX_FAILED, { message });
-							} else {
-								displayToast(TToastType.TX_SUCCESSFUL, {
-									customLink: chainInfo.raw.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
+								try {
+									message = prettifyTxError(message, chainInfo.currencies);
+								} catch (e) {
+									console.log(e);
+								}
+
+								displayToast(TToastType.TX_FAILED, {
+									message,
 								});
-							}
+							},
+							onBroadcasted: (txHash: Uint8Array) => {
+								displayToast(TToastType.TX_BROADCASTING);
+							},
+							onFulfill: (tx: any) => {
+								if (tx.code) {
+									let message: string = tx.log;
+
+									if (isSlippageError(tx)) {
+										message = 'Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.';
+									} else {
+										try {
+											message = prettifyTxError(message, chainInfo.currencies);
+										} catch (e) {
+											console.log(e);
+										}
+									}
+
+									displayToast(TToastType.TX_FAILED, { message });
+								} else {
+									displayToast(TToastType.TX_SUCCESSFUL, {
+										customLink: chainInfo.raw.explorerUrlToTx.replace('{txHash}', tx.hash.toUpperCase()),
+									});
+								}
+							},
 						},
-					},
-				};
-			}),
-		});
+					};
+				}),
+			}
+		);
 		this.connectWalletManager.setAccountStore(this.accountStore);
 
 		this.priceStore = new PoolIntermediatePriceStore(
@@ -200,6 +204,13 @@ export class RootStore {
 					alternativeCoinId: 'pool:uixo',
 					poolId: '558',
 					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-38' }], 'uixo'),
+					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+					destCoinId: 'cosmos',
+				},
+				{
+					alternativeCoinId: 'pool:ubtsg',
+					poolId: '574',
+					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-73' }], 'ubtsg'),
 					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
 					destCoinId: 'cosmos',
 				},
@@ -533,6 +544,111 @@ export class RootStore {
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-38' }], 'uixo'),
 						coinDenom: 'IXO',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '560',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
+						coinDenom: 'UST',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '561',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uluna'),
+						coinDenom: 'LUNA',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '562',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uluna'),
+						coinDenom: 'LUNA',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
+						coinDenom: 'UST',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '571',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-51' }], 'ubcna'),
+						coinDenom: 'BCNA',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '572',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-51' }], 'ubcna'),
+						coinDenom: 'BCNA',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '573',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-73' }], 'ubtsg'),
+						coinDenom: 'BTSG',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '574',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-73' }], 'ubtsg'),
+						coinDenom: 'BTSG',
 						coinDecimals: 6,
 					},
 					{

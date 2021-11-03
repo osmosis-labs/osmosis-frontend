@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import React, { ButtonHTMLAttributes, FunctionComponent, useEffect } from 'react';
-import { Img } from 'src/components/common/Img';
 import { FeesBox } from 'src/components/SwapToken/FeesBox';
 import { FromBox } from 'src/components/SwapToken/FromBox';
 import { ToBox } from 'src/components/SwapToken/ToBox';
@@ -15,6 +14,8 @@ import { useTradeConfig } from '../../hooks/useTradeConfig';
 import { SwapButton } from '../SwapButton';
 import { TradeTxSettings } from './TradeTxSettings';
 import useWindowSize from 'src/hooks/useWindowSize';
+import { WalletStatus } from '@keplr-wallet/stores';
+import { useHistory } from 'react-router-dom';
 
 export const TradeClipboard: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore, accountStore, swapManager } = useStore();
@@ -49,23 +50,47 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 		}
 	}, [chainStore.current, config.sendableCurrencies]);
 
+	const history = useHistory();
+
 	return (
-		<TradeClipboardContainer>
-			<Clip />
-			<TradeClipboardContent>
-				<TradeTxSettings config={config} />
+		<React.Fragment>
+			<img
+				src={require('../../../../../public/assets/terra-banner.png').default}
+				alt={'Terra added'}
+				className="cursor-pointer"
+				style={{
+					width: '100%',
+					maxWidth: '519.453px',
+					borderRadius: '8px',
+				}}
+				onClick={e => {
+					e.preventDefault();
 
-				<TradeAmountSection>
-					<FromBox config={config} style={{ marginBottom: isMobileView ? 14 : 18 }} />
-					<SwitchInOutButton type="button" onClick={() => config.switchInAndOut()} />
-					<ToBox config={config} style={{ marginBottom: isMobileView ? 14 : 18 }} />
-				</TradeAmountSection>
+					const terraCccount = accountStore.getAccount('columbus');
+					if (terraCccount.walletStatus === WalletStatus.NotInit) {
+						terraCccount.init();
+					}
 
-				<FeesBox style={{ marginBottom: isMobileView ? 36 : 50 }} config={config} />
+					history.push('/assets?terra=true');
+				}}
+			/>
+			<TradeClipboardContainer>
+				<Clip />
+				<TradeClipboardContent style={isMobileView ? { maxHeight: '524px' } : undefined}>
+					<TradeTxSettings config={config} />
 
-				<SwapButton config={config} />
-			</TradeClipboardContent>
-		</TradeClipboardContainer>
+					<TradeAmountSection>
+						<FromBox config={config} style={{ marginBottom: isMobileView ? 14 : 18 }} />
+						<SwitchInOutButton type="button" onClick={() => config.switchInAndOut()} />
+						<ToBox config={config} style={{ marginBottom: isMobileView ? 14 : 18 }} />
+					</TradeAmountSection>
+
+					<FeesBox style={{ marginBottom: isMobileView ? 36 : 50 }} config={config} />
+
+					<SwapButton config={config} />
+				</TradeClipboardContent>
+			</TradeClipboardContainer>
+		</React.Fragment>
 	);
 });
 
@@ -112,7 +137,11 @@ const TradeAmountSection = styled.section`
 function SwitchInOutButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {
 	return (
 		<SwitchInOutButtonContainer {...props}>
-			<Img style={{ width: '3rem', height: '3rem' }} src="/public/assets/sidebar/icon-border_unselected.svg" />
+			<img
+				alt="switch-in-out"
+				style={{ width: '3rem', height: '3rem' }}
+				src="/public/assets/sidebar/icon-border_unselected.svg"
+			/>
 			<SwitchIcon src="/public/assets/Icons/Switch.svg" />
 		</SwitchInOutButtonContainer>
 	);
@@ -125,7 +154,7 @@ const SwitchInOutButtonContainer = styled.button`
 	z-index: 1;
 `;
 
-const SwitchIcon = styled(Img)`
+const SwitchIcon = styled.img`
 	${cssAbsoluteCenter};
 	width: 1.6rem;
 	height: 1.6rem;

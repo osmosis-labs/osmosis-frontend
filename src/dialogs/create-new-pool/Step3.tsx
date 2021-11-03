@@ -6,7 +6,6 @@ import { PointOptionsObject, SeriesPieOptions } from 'highcharts';
 import { CreateNewPoolConfig } from './index';
 import { observer } from 'mobx-react-lite';
 import { AppCurrency } from '@keplr-wallet/types';
-import { Img } from '../../components/common/Img';
 import { PoolCreationFeeView } from 'src/dialogs/create-new-pool/creation-fee';
 
 const pieSerie = {
@@ -43,7 +42,7 @@ export const NewPoolStage3: FunctionComponent<{
 				<div className="mb-4.5 flex justify-between items-center w-full">
 					<h5>Create New Pool</h5>
 					<button onClick={close} className="hover:opacity-75 cursor-pointer">
-						<Img className="w-6 h-6" src={'/public/assets/Icons/X.svg'} />
+						<img className="w-6 h-6" src={'/public/assets/Icons/X.svg'} />
 					</button>
 				</div>
 				<div className="inline w-full flex items-center">

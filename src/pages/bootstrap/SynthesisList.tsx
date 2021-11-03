@@ -2,14 +2,11 @@ import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
 import cn from 'clsx';
 import { MISC } from '../../constants';
-import { Img } from '../../components/common/Img';
 import { useHistory } from 'react-router-dom';
 import { useStore } from '../../stores';
-import { CoinPretty, Dec, DecUtils, IntPretty } from '@keplr-wallet/unit';
+import { CoinPretty, DecUtils } from '@keplr-wallet/unit';
 import dayjs from 'dayjs';
 import { PromotedLBPPoolIds } from '../../config';
-import { calcSpotPrice } from '../../stores/osmosis/pool/math';
-import { toJS } from 'mobx';
 
 export const SynthesisList: FunctionComponent = () => {
 	return (
@@ -49,60 +46,7 @@ const SynthesisItem: FunctionComponent<{
 		return <React.Fragment />;
 	}
 
-	const initialSpotPrice: Dec = (() => {
-		if (!pool.smoothWeightChangeParams) {
-			return new Dec(0);
-		}
-
-		const baseAsset = pool.poolAssets.find(asset => asset.amount.currency.coinMinimalDenom === baseDenom);
-		const baseWeight = pool.smoothWeightChangeParams.initialPoolWeights.find(
-			w => w.currency.coinMinimalDenom === baseDenom
-		);
-		const destAsset = pool.poolAssets.find(asset => asset.amount.currency.coinMinimalDenom === destDenom);
-		const destWeight = pool.smoothWeightChangeParams.initialPoolWeights.find(
-			w => w.currency.coinMinimalDenom === destDenom
-		);
-		if (!baseAsset || !baseWeight || !destAsset || !destWeight) {
-			return new Dec(0);
-		}
-
-		return calcSpotPrice(
-			destAsset.amount.toDec(),
-			destWeight.weight.toDec(),
-			baseAsset.amount.toDec(),
-			baseWeight.weight.toDec(),
-			new Dec(0)
-		);
-	})();
-
-	const targetSpotPrice: Dec = (() => {
-		if (!pool.smoothWeightChangeParams) {
-			return new Dec(0);
-		}
-
-		const baseAsset = pool.poolAssets.find(asset => asset.amount.currency.coinMinimalDenom === baseDenom);
-		const baseWeight = pool.smoothWeightChangeParams.targetPoolWeights.find(
-			w => w.currency.coinMinimalDenom === baseDenom
-		);
-		const destAsset = pool.poolAssets.find(asset => asset.amount.currency.coinMinimalDenom === destDenom);
-		const destWeight = pool.smoothWeightChangeParams.targetPoolWeights.find(
-			w => w.currency.coinMinimalDenom === destDenom
-		);
-		if (!baseAsset || !baseWeight || !destAsset || !destWeight) {
-			return new Dec(0);
-		}
-
-		return calcSpotPrice(
-			destAsset.amount.toDec(),
-			destWeight.weight.toDec(),
-			baseAsset.amount.toDec(),
-			baseWeight.weight.toDec(),
-			new Dec(0)
-		);
-	})();
-
 	const baseCurrency = chainStore.currentFluent.forceFindCurrency(baseDenom);
-	const destCurrency = chainStore.currentFluent.forceFindCurrency(destDenom);
 
 	return (
 		<li
@@ -121,7 +65,7 @@ const SynthesisItem: FunctionComponent<{
 							'w-18 h-18 rounded-full flex justify-center items-end',
 							MISC.GRADIENT_CLASS[index % MISC.GRADIENT_CLASS.length]
 						)}>
-						<Img className="w-10 h-10 mb-1" src={'/public/assets/Icons/Bubbles.svg'} />
+						<img alt="bubbles" className="w-10 h-10 mb-1" src={'/public/assets/Icons/Bubbles.svg'} />
 					</figure>
 				</figure>
 				<div style={{ height: '84px' }} className="w-full flex flex-col justify-center items-start">

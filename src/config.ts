@@ -32,6 +32,11 @@ export const LockupAbledPoolIds: {
 	'482': true,
 	'497': true,
 	'498': true,
+	'548': true,
+	'557': true,
+	'558': true,
+	'571': true,
+	'572': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -82,31 +87,31 @@ export const ExtraGaugeInPool: {
 				extraRewardAmount?: Int;
 		  }[];
 } = {
-	'482': [
+	'461': [
 		{
-			gaugeId: '1468',
+			gaugeId: '1774',
 			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
 		},
 		{
-			gaugeId: '1469',
+			gaugeId: '1775',
 			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
 		},
 		{
-			gaugeId: '1470',
+			gaugeId: '1776',
 			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
 		},
 	],
-	'461': [
+	'482': [
 		{
-			gaugeId: '1471',
+			gaugeId: '1771',
 			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
 		},
 		{
-			gaugeId: '1472',
+			gaugeId: '1772',
 			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
 		},
 		{
-			gaugeId: '1473',
+			gaugeId: '1773',
 			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
 		},
 	],
@@ -136,6 +141,60 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '1684',
 			denom: 'ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED',
+		},
+	],
+	'548': [
+		{
+			gaugeId: '1676',
+			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
+		},
+		{
+			gaugeId: '1677',
+			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
+		},
+		{
+			gaugeId: '1678',
+			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
+		},
+	],
+	'557': [
+		{
+			gaugeId: '1736',
+			denom: 'ibc/F3FF7A84A73B62921538642F9797C423D2B4C4ACB3C7FCFFCE7F12AA69909C4B',
+		},
+	],
+	'558': [
+		{
+			gaugeId: '1737',
+			denom: 'ibc/F3FF7A84A73B62921538642F9797C423D2B4C4ACB3C7FCFFCE7F12AA69909C4B',
+		},
+	],
+	'571': [
+		{
+			gaugeId: '1759',
+			denom: 'ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5',
+		},
+		{
+			gaugeId: '1760',
+			denom: 'ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5',
+		},
+		{
+			gaugeId: '1761',
+			denom: 'ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5',
+		},
+	],
+	'572': [
+		{
+			gaugeId: '1762',
+			denom: 'ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5',
+		},
+		{
+			gaugeId: '1763',
+			denom: 'ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5',
+		},
+		{
+			gaugeId: '1764',
+			denom: 'ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5',
 		},
 	],
 };
@@ -238,6 +297,30 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-38',
 		destChannelId: 'channel-4',
 		coinMinimalDenom: 'uixo',
+	},
+	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uluna',
+	},
+	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uusd',
+	},
+	{
+		counterpartyChainId: 'bitcanna-1',
+		sourceChannelId: 'channel-51',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'ubcna',
+	},
+	{
+		counterpartyChainId: 'bitsong-2b',
+		sourceChannelId: 'channel-73',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'ubtsg',
 	},
 ];
 
@@ -627,7 +710,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			high: 1,
 		},
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://emoney.bigdipper.live/transactions/${txHash}',
+		explorerUrlToTx: 'https://emoney.bigdipper.live/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-juno.itastakers.com',
@@ -638,7 +721,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'JUNO',
 			coinMinimalDenom: 'ujuno',
 			coinDecimals: 6,
-			coinGeckoId: 'pool:ujuno',
+			coinGeckoId: 'juno-network',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 		},
 		bip44: {
@@ -650,7 +733,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'JUNO',
 				coinMinimalDenom: 'ujuno',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:ujuno',
+				coinGeckoId: 'juno-network',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 			},
 		],
@@ -659,7 +742,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'JUNO',
 				coinMinimalDenom: 'ujuno',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:ujuno',
+				coinGeckoId: 'juno-network',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 			},
 		],
@@ -701,7 +784,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://explorer.microtick.zone/transactions/${txHash}',
+		explorerUrlToTx: 'https://explorer.microtick.zone/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://mainnet-node.like.co/rpc',
@@ -738,7 +821,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://likecoin.bigdipper.live/transactions/${txHash}',
+		explorerUrlToTx: 'https://likecoin.bigdipper.live/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-impacthub.keplr.app',
@@ -775,6 +858,136 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://blockscan.ixo.world/transactions/${txHash}',
+		explorerUrlToTx: 'https://blockscan.ixo.world/transactions/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-columbus.keplr.app',
+		rest: 'https://lcd-columbus.keplr.app',
+		chainId: 'columbus-5',
+		chainName: 'Terra',
+		stakeCurrency: {
+			coinDenom: 'LUNA',
+			coinMinimalDenom: 'uluna',
+			coinDecimals: 6,
+			coinGeckoId: 'terra-luna',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+		},
+		bip44: {
+			coinType: 330,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('terra'),
+		currencies: [
+			{
+				coinDenom: 'LUNA',
+				coinMinimalDenom: 'uluna',
+				coinDecimals: 6,
+				coinGeckoId: 'terra-luna',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+			},
+			{
+				coinDenom: 'UST',
+				coinMinimalDenom: 'uusd',
+				coinDecimals: 6,
+				coinGeckoId: 'terrausd',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'LUNA',
+				coinMinimalDenom: 'uluna',
+				coinDecimals: 6,
+				coinGeckoId: 'terra-luna',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+			},
+			{
+				coinDenom: 'UST',
+				coinMinimalDenom: 'uusd',
+				coinDecimals: 6,
+				coinGeckoId: 'terrausd',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
+			},
+		],
+		gasPriceStep: {
+			low: 0.015,
+			average: 0.015,
+			high: 0.015,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://finder.terra.money/columbus-5/tx/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.bitcanna.io',
+		rest: 'https://lcd.bitcanna.io',
+		chainId: 'bitcanna-1',
+		chainName: 'BitCanna',
+		stakeCurrency: {
+			coinDenom: 'BCNA',
+			coinMinimalDenom: 'ubcna',
+			coinDecimals: 6,
+			coinGeckoId: 'bitcanna',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/bcna.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('bcna'),
+		currencies: [
+			{
+				coinDenom: 'BCNA',
+				coinMinimalDenom: 'ubcna',
+				coinDecimals: 6,
+				coinGeckoId: 'bitcanna',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/bcna.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'BCNA',
+				coinMinimalDenom: 'ubcna',
+				coinDecimals: 6,
+				coinGeckoId: 'bitcanna',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/bcna.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://www.mintscan.io/bitcanna/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.explorebitsong.com',
+		rest: 'https://lcd.explorebitsong.com',
+		chainId: 'bitsong-2b',
+		chainName: 'BitSong',
+		stakeCurrency: {
+			coinDenom: 'BTSG',
+			coinMinimalDenom: 'ubtsg',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:ubtsg',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/btsg.svg',
+		},
+		bip44: {
+			coinType: 639,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('bitsong'),
+		currencies: [
+			{
+				coinDenom: 'BTSG',
+				coinMinimalDenom: 'ubtsg',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:ubtsg',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/btsg.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'BTSG',
+				coinMinimalDenom: 'ubtsg',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:ubtsg',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/btsg.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://explorebitsong.com/transactions/{txHash}',
 	},
 ];

@@ -49,7 +49,7 @@ export const TokenSelectList = observer(function TokenSelectList({
 			}}
 			{...props}>
 			<TokenSearchSection>
-				<Img style={{ width: `1.125rem`, height: `1.125rem` }} src="/public/assets/Icons/Search.svg" />
+				<img alt="search" style={{ width: `1.125rem`, height: `1.125rem` }} src="/public/assets/Icons/Search.svg" />
 				<SearchTokenInput
 					value={searchedToken}
 					onChange={e => setSearchedToken(e.currentTarget.value)}

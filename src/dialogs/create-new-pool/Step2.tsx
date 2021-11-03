@@ -16,7 +16,7 @@ export const NewPoolStage2: FunctionComponent<{
 				<div className="mb-4.5 flex justify-between items-center w-full">
 					<h5>Create New Pool</h5>
 					<button onClick={close} className="hover:opacity-75 cursor-pointer">
-						<Img className="w-6 h-6" src={'/public/assets/Icons/X.svg'} />
+						<img className="w-6 h-6" src={'/public/assets/Icons/X.svg'} />
 					</button>
 				</div>
 				<div className="inline w-full flex items-center">
