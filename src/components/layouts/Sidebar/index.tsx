@@ -26,6 +26,7 @@ const SideBar: FunctionComponent = () => {
 		const checkAndSetWindowIsOnTop = () => {
 			const newIsOnTop = window.scrollY === 0;
 			setIsOnTop(newIsOnTop);
+			console.log('here');
 		};
 
 		window.addEventListener('scroll', checkAndSetWindowIsOnTop);

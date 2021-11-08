@@ -23,7 +23,7 @@ const Background: FunctionComponent = () => {
 
 	return (
 		<svg
-			className="absolute w-full h-full"
+			className="fixed w-full h-full"
 			viewBox="0 0 2936 2590"
 			height="2590"
 			preserveAspectRatio={ratio > 1.1336 ? 'xMinYMid meet' : 'xMidYMid slice'}>
@@ -75,8 +75,8 @@ const PageContainer = styled.div`
 	background-repeat: repeat-x;
 	background-size: cover;
 	overflow: auto;
-	height: 100vh;
 	position: relative;
+
 	@media (max-width: 800px) {
 		width: 520px;
 	}
@@ -122,8 +122,4 @@ const TradePosition = styled.div`
 const TradeContainer = styled.div`
 	width: 100%;
 	max-height: 678px;
-
-	@media (min-width: 768px) {
-		margin-bottom: 130px;
-	}
 `;

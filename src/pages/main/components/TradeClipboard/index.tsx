@@ -54,29 +54,30 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 
 	return (
 		<React.Fragment>
-			<img
-				src={require('../../../../../public/assets/terra-banner.png').default}
-				alt={'Terra added'}
-				className="cursor-pointer"
+			<div
+				className="px-5 w-full md:px-0"
 				style={{
-					width: '100%',
 					maxWidth: '519.453px',
-					borderRadius: '8px',
-				}}
-				onClick={e => {
-					e.preventDefault();
+				}}>
+				<img
+					src={require('../../../../../public/assets/terra-banner.png').default}
+					alt={'Terra added'}
+					className="cursor-pointer w-full rounded-lg"
+					onClick={e => {
+						e.preventDefault();
 
-					const terraCccount = accountStore.getAccount('columbus');
-					if (terraCccount.walletStatus === WalletStatus.NotInit) {
-						terraCccount.init();
-					}
+						const terraCccount = accountStore.getAccount('columbus');
+						if (terraCccount.walletStatus === WalletStatus.NotInit) {
+							terraCccount.init();
+						}
 
-					history.push('/assets?terra=true');
-				}}
-			/>
+						history.push('/assets?terra=true');
+					}}
+				/>
+			</div>
 			<TradeClipboardContainer>
 				<Clip />
-				<TradeClipboardContent style={isMobileView ? { maxHeight: '524px' } : undefined}>
+				<TradeClipboardContent>
 					<TradeTxSettings config={config} />
 
 					<TradeAmountSection>
@@ -96,7 +97,6 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 
 const TradeClipboardContainer = styled.div`
 	width: 100%;
-	height: 100%;
 	padding: 20px;
 	margin-top: 20px;
 	border-radius: 1rem;
@@ -117,7 +117,7 @@ const TradeClipboardContent = styled.div`
 	background-color: ${colorPrimaryLight};
 	border-radius: 0.375rem;
 	z-index: 0;
-	padding: 10px 10px 0;
+	padding: 10px 10px 20px;
 
 	@media (min-width: 768px) {
 		padding: 20px 20px 30px;
