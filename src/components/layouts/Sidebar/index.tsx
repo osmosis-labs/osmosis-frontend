@@ -20,6 +20,8 @@ const SideBar: FunctionComponent = () => {
 
 	const { isMobileView } = useWindowSize();
 
+	const closeSidebar = () => setIsOpenSidebar(false);
+
 	React.useEffect(() => {
 		const checkAndSetWindowIsOnTop = () => {
 			const newIsOnTop = window.scrollY === 0;
@@ -35,10 +37,7 @@ const SideBar: FunctionComponent = () => {
 	return (
 		<React.Fragment>
 			{isOpenSidebar && (
-				<div
-					className="fixed z-20 w-full h-full bg-black bg-opacity-75 md:hidden"
-					onClick={() => setIsOpenSidebar(false)}
-				/>
+				<div className="fixed z-20 w-full h-full bg-black bg-opacity-75 md:hidden" onClick={closeSidebar} />
 			)}
 			<div
 				className={`w-full overflow-x-visible max-w-sidebar-open min-w-sidebar-open pointer-events-none h-full z-100 absolute md:relative ${
@@ -74,6 +73,7 @@ const SideBar: FunctionComponent = () => {
 												key={sidebarItem.TEXT}
 												selected={pathnameCheck(pathname, sidebarItem.SELECTED_CHECK)}
 												sidebarItem={sidebarItem}
+												closeSidebar={closeSidebar}
 											/>
 										))}
 								</section>
