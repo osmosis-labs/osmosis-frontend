@@ -326,7 +326,7 @@ export const IBCAssetInfos: {
 		counterpartyChainId: 'kichain-2',
 		sourceChannelId: 'channel-77',
 		destChannelId: 'channel-0',
-		coinMinimalDenom: 'ubtsg',
+		coinMinimalDenom: 'uxki',
 	},
 ];
 
