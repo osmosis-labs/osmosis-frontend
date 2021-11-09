@@ -322,6 +322,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'ubtsg',
 	},
+	{
+		counterpartyChainId: 'kichain-2',
+		sourceChannelId: 'channel-77',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'ubtsg',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -989,5 +995,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://explorebitsong.com/transactions/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-mainnet.blockchain.ki',
+		rest: 'https://api-mainnet.blockchain.ki',
+		chainId: 'kichain-2',
+		chainName: 'Ki',
+		stakeCurrency: {
+			coinDenom: 'XKI',
+			coinMinimalDenom: 'uxki',
+			coinDecimals: 6,
+			// coinGeckoId: 'pool:ubtsg',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/ki.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('ki'),
+		currencies: [
+			{
+				coinDenom: 'XKI',
+				coinMinimalDenom: 'uxki',
+				coinDecimals: 6,
+				// coinGeckoId: 'pool:ubtsg',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ki.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'XKI',
+				coinMinimalDenom: 'uxki',
+				coinDecimals: 6,
+				// coinGeckoId: 'pool:ubtsg',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ki.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://www.mintscan.io/ki-chain/txs/{txHash}',
 	},
 ];
