@@ -23,7 +23,7 @@ const Background: FunctionComponent = () => {
 
 	return (
 		<svg
-			className="fixed w-full h-full"
+			className="fixed w-full h-full hidden xl:block"
 			viewBox="0 0 2936 2590"
 			height="2590"
 			preserveAspectRatio={ratio > 1.1336 ? 'xMinYMid meet' : 'xMidYMid slice'}>
@@ -101,25 +101,32 @@ function TradeClipboardWrapper({ children }: { children: ReactNode }) {
 }
 
 const TradePosition = styled.div`
+	padding-top: 20px;
+	padding-bottom: 20px;
+	width: 100%;
+	max-width: 519.453px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	position: absolute;
 	z-index: 3;
-	height: 100%;
 	--tradeMinLeft: calc(920 * (100vh / 1080));
 	--tradePositionLeft: calc((100vw - 206px) * 0.8 - 520px);
 	left: min(var(--tradeMinLeft), var(--tradePositionLeft));
+
 	@media (max-width: 1280px) {
-		left: calc((100vw - 520px) / 2);
+		left: 50%;
+		transform: translate(-50%);
 	}
-	@media (max-width: 800px) {
+
+	@media (max-width: 767px) {
 		position: static;
+		transform: none;
 	}
 `;
 
 const TradeContainer = styled.div`
 	width: 100%;
-	max-height: 678px;
+	height: 100%;
 `;
