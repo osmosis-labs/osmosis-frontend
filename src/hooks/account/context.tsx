@@ -8,6 +8,7 @@ export interface AccountConnection {
 	isAccountConnected: boolean | WalletType;
 	disconnectAccount: () => Promise<void>;
 	connectAccount: () => void;
+	isMobileWeb: boolean;
 }
 
 export const AccountConnectionContext = React.createContext<AccountConnection | null>(null);
@@ -88,6 +89,7 @@ export const AccountConnectionProvider: FunctionComponent = observer(({ children
 					isAccountConnected,
 					disconnectAccount,
 					connectAccount,
+					isMobileWeb,
 				};
 			}, [connectAccount, disconnectAccount, isAccountConnected])}>
 			{children}
