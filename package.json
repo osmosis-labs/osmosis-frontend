@@ -43,6 +43,7 @@
 		"@keplr-wallet/crypto": "0.9.6",
 		"@keplr-wallet/hooks": "0.9.6",
 		"@keplr-wallet/provider": "0.9.6",
+		"@keplr-wallet/provider-mock": "0.9.6",
 		"@keplr-wallet/stores": "0.9.6",
 		"@keplr-wallet/types": "0.9.6",
 		"@keplr-wallet/unit": "0.9.6",

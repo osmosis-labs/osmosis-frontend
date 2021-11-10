@@ -4,7 +4,7 @@ import { MemoryKVStore } from '@keplr-wallet/common';
 import { autorun } from 'mobx';
 import { AccountWithCosmosAndOsmosis } from './osmosis/account';
 import { QueriesWithCosmosAndOsmosis } from './osmosis/query';
-import { MockKeplr } from '@keplr-wallet/provider';
+import { MockKeplr } from '@keplr-wallet/provider-mock';
 import { StdTx } from '@cosmjs/launchpad';
 import Axios from 'axios';
 // eslint-disable-next-line import/no-extraneous-dependencies
