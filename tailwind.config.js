@@ -173,9 +173,6 @@ module.exports = {
 			'gradients-orangeCoral': 'linear-gradient(180deg, #FF8200 0%, #FF2C00 100%)',
 			'gradients-pinky': 'linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)',
 		},
-		screens: {
-			md: '1280px',
-		},
 		spacing: {
 			...spacing,
 		},
