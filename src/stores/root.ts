@@ -57,6 +57,11 @@ export class RootStore {
 					autoInit: false,
 					getKeplr: this.connectWalletManager.getKeplr,
 					suggestChainFn: async (keplr, chainInfo) => {
+						if (keplr.mode === 'mobile-web') {
+							// Can't suggest the chain on mobile web.
+							return;
+						}
+
 						if (keplr instanceof KeplrWalletConnectV1) {
 							// Can't suggest the chain using wallet connect.
 							return;
