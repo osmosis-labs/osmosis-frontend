@@ -10,6 +10,7 @@ import { PoolSwapDialog } from 'src/pages/pool/components/PoolInfoHeader/PoolSwa
 import { colorPrimary } from 'src/emotionStyles/colors';
 import styled from '@emotion/styled';
 import useWindowSize from 'src/hooks/useWindowSize';
+import { useStore } from 'src/stores';
 
 interface Props {
 	poolId: string;
@@ -19,6 +20,17 @@ export const PoolInfoHeader = observer(function PoolInfoHeader({ poolId }: Props
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [isSwapDialogOpen, setIsSwapDialogOpen] = useState(false);
 	const { isMobileView } = useWindowSize();
+	const { chainStore, queriesStore } = useStore();
+	const queries = queriesStore.get(chainStore.current.chainId);
+	const pool = queries.osmosis.queryGammPools.getPool(poolId);
+
+	const composition = pool?.poolRatios.reduce((str, poolRatio, i, poolRatios) => {
+		if (i === 0 || i === poolRatios.length) {
+			return `${str} ${poolRatio.amount.currency.coinDenom}`;
+		} else {
+			return `${str} / ${poolRatio.amount.currency.coinDenom}`;
+		}
+	}, ': ');
 
 	return (
 		<section>
@@ -37,7 +49,9 @@ export const PoolInfoHeader = observer(function PoolInfoHeader({ poolId }: Props
 
 			<PoolHeader>
 				<div className="mb-2.5 md:mb-0 md:mr-6">
-					<h5>Pool #{poolId}</h5>
+					<h5>
+						Pool #{poolId} {composition}
+					</h5>
 				</div>
 				<div className="flex mb-2.5 md:mb-0">
 					{!HideAddLiquidityPoolIds[poolId] && (
