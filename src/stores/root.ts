@@ -216,7 +216,7 @@ export class RootStore {
 				},
 				{
 					alternativeCoinId: 'pool:uxki',
-					poolId: '578',
+					poolId: '577',
 					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-77' }], 'uxki'),
 					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'pool:uosmo',
