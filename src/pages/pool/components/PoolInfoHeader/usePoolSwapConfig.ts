@@ -144,7 +144,7 @@ export class PoolSwapConfig extends AmountConfig {
 	}
 
 	@computed
-	get hasFractionDenominator(): boolean {
+	get hasAmountQuotient(): boolean {
 		return this._amountQuotient !== null;
 	}
 

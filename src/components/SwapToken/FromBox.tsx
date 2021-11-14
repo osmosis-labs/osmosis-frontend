@@ -71,11 +71,7 @@ export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdo
 							MAX
 						</Text>
 					</MaxButton>
-					<HalfButton
-						type="button"
-						size="small"
-						isActive={config.hasFractionDenominator}
-						onClick={handleHalfButtonToggled}>
+					<HalfButton type="button" size="small" isActive={config.hasAmountQuotient} onClick={handleHalfButtonToggled}>
 						<Text size="xs" emphasis="medium" style={{ lineHeight: 1.2 }} isMobileView={isMobileView}>
 							HALF
 						</Text>

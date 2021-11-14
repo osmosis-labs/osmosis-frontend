@@ -126,7 +126,7 @@ export class TradeConfig extends AmountConfig {
 		// invariants:
 		//	 _thisMax && !_amountQuotient
 		//   !_thisMax && _amountQuotient
-		if (this.isMax && this.hasFractionDenominator) {
+		if (this.isMax && this.hasAmountQuotient) {
 			return '0';
 		}
 
@@ -179,7 +179,7 @@ export class TradeConfig extends AmountConfig {
 	}
 
 	@computed
-	get hasFractionDenominator(): boolean {
+	get hasAmountQuotient(): boolean {
 		return this._amountQuotient !== null;
 	}
 

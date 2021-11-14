@@ -8,7 +8,7 @@ interface TokenSwapConfigBase extends IAmountConfig {
 
 export interface TokenInSwapConfig extends TokenSwapConfigBase {
 	setInCurrency: (minimalDenom: string) => void;
-	hasFractionDenominator: boolean;
+	hasAmountQuotient: boolean;
 	toggleSetAmountQuotient(denominator: number): void;
 }
 
