@@ -169,6 +169,34 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/F3FF7A84A73B62921538642F9797C423D2B4C4ACB3C7FCFFCE7F12AA69909C4B',
 		},
 	],
+	'560': [
+		{
+			gaugeId: '1790',
+			denom: 'ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0',
+		},
+		{
+			gaugeId: '1792',
+			denom: 'ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0',
+		},
+		{
+			gaugeId: '1793',
+			denom: 'ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0',
+		},
+	],
+	'562': [
+		{
+			gaugeId: '1789',
+			denom: 'ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0',
+		},
+		{
+			gaugeId: '1791',
+			denom: 'ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0',
+		},
+		{
+			gaugeId: '1794',
+			denom: 'ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0',
+		},
+	],
 	'571': [
 		{
 			gaugeId: '1759',
@@ -321,6 +349,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-73',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'ubtsg',
+	},
+	{
+		counterpartyChainId: 'kichain-2',
+		sourceChannelId: 'channel-77',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'uxki',
 	},
 ];
 
@@ -989,5 +1023,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://explorebitsong.com/transactions/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-mainnet.blockchain.ki',
+		rest: 'https://api-mainnet.blockchain.ki',
+		chainId: 'kichain-2',
+		chainName: 'Ki',
+		stakeCurrency: {
+			coinDenom: 'XKI',
+			coinMinimalDenom: 'uxki',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:uxki',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/ki.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('ki'),
+		currencies: [
+			{
+				coinDenom: 'XKI',
+				coinMinimalDenom: 'uxki',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:uxki',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ki.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'XKI',
+				coinMinimalDenom: 'uxki',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:uxki',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ki.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://www.mintscan.io/ki-chain/txs/{txHash}',
 	},
 ];
