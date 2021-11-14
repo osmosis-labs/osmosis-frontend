@@ -16,6 +16,12 @@ export class PoolSwapConfig extends AmountConfig {
 	@observable
 	protected outCurrencyMinimalDenom: string = '';
 
+	/**
+	 * Divides balance when getting amount.
+	 * Operates in conjunction with super._isMax. */
+	@observable
+	protected _amountQuotient: number | null = null;
+
 	constructor(
 		chainGetter: ChainGetter,
 		initialChainId: string,
@@ -78,6 +84,68 @@ export class PoolSwapConfig extends AmountConfig {
 		}
 
 		return this.sendableCurrencies[0];
+	}
+
+	@override
+	get amount(): string {
+		// invariants:
+		//	 _thisMax && !_amountQuotient
+		//   !_thisMax && _amountQuotient
+		if (this.isMax && this._amountQuotient) {
+			return '0';
+		}
+
+		if (this._amountQuotient) {
+			const balance = this.queryBalances.getQueryBech32Address(this.sender).getBalanceFromCurrency(this.sendCurrency);
+
+			const result = this.feeConfig?.fee ? balance.sub(this.feeConfig.fee) : balance;
+			if (result.toDec().lte(new Dec(0))) {
+				return '0';
+			}
+
+			return result
+				.quo(new Dec(this._amountQuotient))
+				.trim(true)
+				.locale(false)
+				.hideDenom(true)
+				.toString();
+		}
+
+		return super.amount;
+	}
+
+	@override
+	setIsMax(isMax: boolean): void {
+		if (isMax) this._amountQuotient = null;
+		super.setIsMax(isMax);
+	}
+
+	@override
+	toggleIsMax(): void {
+		if (!this.isMax) this._amountQuotient = null;
+		super.toggleIsMax();
+	}
+
+	/**
+	 * @param denominator
+	 * 	* Same number - toggle.
+	 *  * New number - change.
+	 *  * Nothing - remove.
+	 */
+	@action
+	toggleSetAmountQuotient(denominator?: number): void {
+		this.setIsMax(false);
+
+		if (denominator === this._amountQuotient) {
+			this._amountQuotient = null;
+		} else {
+			this._amountQuotient = denominator ?? null;
+		}
+	}
+
+	@computed
+	get hasFractionDenominator(): boolean {
+		return this._amountQuotient !== null;
 	}
 
 	@computed
@@ -211,6 +279,7 @@ export class PoolSwapConfig extends AmountConfig {
 	@override
 	setAmount(amount: string) {
 		this.setIsMax(false);
+		this.toggleSetAmountQuotient();
 		super.setAmount(amount);
 	}
 }

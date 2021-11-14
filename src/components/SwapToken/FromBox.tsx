@@ -44,6 +44,10 @@ export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdo
 		config.toggleIsMax();
 	}, [config]);
 
+	const handleHalfButtonToggled = useCallback(() => {
+		config.toggleSetAmountQuotient(2);
+	}, [config]);
+
 	return (
 		<TokenBoxContainer {...props}>
 			<TokenBoxRow>
@@ -67,6 +71,15 @@ export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdo
 							MAX
 						</Text>
 					</MaxButton>
+					<HalfButton
+						type="button"
+						size="small"
+						isActive={config.hasFractionDenominator}
+						onClick={handleHalfButtonToggled}>
+						<Text size="xs" emphasis="medium" style={{ lineHeight: 1.2 }} isMobileView={isMobileView}>
+							HALF
+						</Text>
+					</HalfButton>
 				</CenterV>
 			</TokenBoxRow>
 
@@ -96,3 +109,5 @@ export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdo
 const MaxButton = styled(ButtonToggle)`
 	margin-left: 8px;
 `;
+
+const HalfButton = styled(MaxButton)``;
