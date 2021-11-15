@@ -252,13 +252,31 @@ export const IBCAssetInfos: {
 		counterpartyChainId: 'columbus-5',
 		sourceChannelId: 'channel-72',
 		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uusd',
+		coinMinimalDenom: 'uluna',
+	},
+	{
+		counterpartyChainId: 'crypto-org-chain-mainnet-1',
+		sourceChannelId: 'channel-5',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'basecro',
 	},
 	{
 		counterpartyChainId: 'columbus-5',
 		sourceChannelId: 'channel-72',
 		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uluna',
+		coinMinimalDenom: 'uusd',
+	},
+	{
+		counterpartyChainId: 'juno-1',
+		sourceChannelId: 'channel-42',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'ujuno',
+	},
+	{
+		counterpartyChainId: 'core-1',
+		sourceChannelId: 'channel-4',
+		destChannelId: 'channel-6',
+		coinMinimalDenom: 'uxprt',
 	},
 	{
 		counterpartyChainId: 'akashnet-2',
@@ -279,22 +297,10 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'udvpn',
 	},
 	{
-		counterpartyChainId: 'core-1',
-		sourceChannelId: 'channel-4',
-		destChannelId: 'channel-6',
-		coinMinimalDenom: 'uxprt',
-	},
-	{
 		counterpartyChainId: 'irishub-1',
 		sourceChannelId: 'channel-6',
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uiris',
-	},
-	{
-		counterpartyChainId: 'crypto-org-chain-mainnet-1',
-		sourceChannelId: 'channel-5',
-		destChannelId: 'channel-10',
-		coinMinimalDenom: 'basecro',
 	},
 	{
 		counterpartyChainId: 'iov-mainnet-ibc',
@@ -313,12 +319,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-37',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'eeur',
-	},
-	{
-		counterpartyChainId: 'juno-1',
-		sourceChannelId: 'channel-42',
-		destChannelId: 'channel-0',
-		coinMinimalDenom: 'ujuno',
 	},
 	{
 		counterpartyChainId: 'microtick-1',
