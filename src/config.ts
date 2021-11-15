@@ -373,6 +373,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'uxki',
 	},
+	{
+		counterpartyChainId: 'panacea-3',
+		sourceChannelId: 'channel-74',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'umed',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
