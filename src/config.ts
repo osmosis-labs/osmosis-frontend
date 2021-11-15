@@ -249,6 +249,18 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'uatom',
 	},
 	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uusd',
+	},
+	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uluna',
+	},
+	{
 		counterpartyChainId: 'akashnet-2',
 		sourceChannelId: 'channel-1',
 		destChannelId: 'channel-9',
@@ -325,18 +337,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-38',
 		destChannelId: 'channel-4',
 		coinMinimalDenom: 'uixo',
-	},
-	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uluna',
-	},
-	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uusd',
 	},
 	{
 		counterpartyChainId: 'bitcanna-1',
@@ -440,6 +440,62 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		coinType: 118,
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://www.mintscan.io/cosmos/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-columbus.keplr.app',
+		rest: 'https://lcd-columbus.keplr.app',
+		chainId: 'columbus-5',
+		chainName: 'Terra',
+		stakeCurrency: {
+			coinDenom: 'LUNA',
+			coinMinimalDenom: 'uluna',
+			coinDecimals: 6,
+			coinGeckoId: 'terra-luna',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+		},
+		bip44: {
+			coinType: 330,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('terra'),
+		currencies: [
+			{
+				coinDenom: 'LUNA',
+				coinMinimalDenom: 'uluna',
+				coinDecimals: 6,
+				coinGeckoId: 'terra-luna',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+			},
+			{
+				coinDenom: 'UST',
+				coinMinimalDenom: 'uusd',
+				coinDecimals: 6,
+				coinGeckoId: 'terrausd',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'LUNA',
+				coinMinimalDenom: 'uluna',
+				coinDecimals: 6,
+				coinGeckoId: 'terra-luna',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+			},
+			{
+				coinDenom: 'UST',
+				coinMinimalDenom: 'uusd',
+				coinDecimals: 6,
+				coinGeckoId: 'terrausd',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
+			},
+		],
+		gasPriceStep: {
+			low: 0.015,
+			average: 0.015,
+			high: 0.015,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://finder.terra.money/columbus-5/tx/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-akash.keplr.app',
@@ -893,62 +949,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://blockscan.ixo.world/transactions/{txHash}',
-	},
-	{
-		rpc: 'https://rpc-columbus.keplr.app',
-		rest: 'https://lcd-columbus.keplr.app',
-		chainId: 'columbus-5',
-		chainName: 'Terra',
-		stakeCurrency: {
-			coinDenom: 'LUNA',
-			coinMinimalDenom: 'uluna',
-			coinDecimals: 6,
-			coinGeckoId: 'terra-luna',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
-		},
-		bip44: {
-			coinType: 330,
-		},
-		bech32Config: Bech32Address.defaultBech32Config('terra'),
-		currencies: [
-			{
-				coinDenom: 'LUNA',
-				coinMinimalDenom: 'uluna',
-				coinDecimals: 6,
-				coinGeckoId: 'terra-luna',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
-			},
-			{
-				coinDenom: 'UST',
-				coinMinimalDenom: 'uusd',
-				coinDecimals: 6,
-				coinGeckoId: 'terrausd',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
-			},
-		],
-		feeCurrencies: [
-			{
-				coinDenom: 'LUNA',
-				coinMinimalDenom: 'uluna',
-				coinDecimals: 6,
-				coinGeckoId: 'terra-luna',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
-			},
-			{
-				coinDenom: 'UST',
-				coinMinimalDenom: 'uusd',
-				coinDecimals: 6,
-				coinGeckoId: 'terrausd',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
-			},
-		],
-		gasPriceStep: {
-			low: 0.015,
-			average: 0.015,
-			high: 0.015,
-		},
-		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
-		explorerUrlToTx: 'https://finder.terra.money/columbus-5/tx/{txHash}',
 	},
 	{
 		rpc: 'https://rpc.bitcanna.io',
