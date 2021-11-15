@@ -1123,4 +1123,41 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://www.mintscan.io/ki-chain/txs/{txHash}',
 	},
+	{
+		rpc: 'https://rpc.gopanacea.org',
+		rest: 'https://api.gopanacea.org',
+		chainId: 'panacea-3',
+		chainName: 'Panacea',
+		stakeCurrency: {
+			coinDenom: 'MED',
+			coinMinimalDenom: 'umed',
+			coinDecimals: 6,
+			coinGeckoId: 'medibloc',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/med.png',
+		},
+		bip44: {
+			coinType: 371,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('panacea'),
+		currencies: [
+			{
+				coinDenom: 'MED',
+				coinMinimalDenom: 'umed',
+				coinDecimals: 6,
+				coinGeckoId: 'medibloc',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/med.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'MED',
+				coinMinimalDenom: 'umed',
+				coinDecimals: 6,
+				coinGeckoId: 'medibloc',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/med.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://www.mintscan.io/medibloc/txs/{txHash}',
+	},
 ];
