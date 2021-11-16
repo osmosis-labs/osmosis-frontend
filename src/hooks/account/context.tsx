@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ConnectWalletDialog, WalletType } from 'src/dialogs';
+import { ConnectWalletDialog, KeyAutoConnectingWalletType, KeyConnectingWalletType, WalletType } from 'src/dialogs';
 import { useStore } from 'src/stores';
 import { getKeplrFromWindow, WalletStatus } from '@keplr-wallet/stores';
 import { observer } from 'mobx-react-lite';
@@ -23,6 +23,8 @@ export const AccountConnectionProvider: FunctionComponent = observer(({ children
 	useEffect(() => {
 		getKeplrFromWindow().then(keplr => {
 			if (keplr && keplr.mode === 'mobile-web') {
+				localStorage?.removeItem(KeyConnectingWalletType);
+				localStorage?.removeItem(KeyAutoConnectingWalletType);
 				setIsMobileWeb(true);
 			}
 		});
