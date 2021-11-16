@@ -104,6 +104,7 @@ const TradePosition = styled.div`
 	padding-top: 20px;
 	padding-bottom: 20px;
 	width: 100%;
+	height: 100%;
 	max-width: 519.453px;
 	display: flex;
 	flex-direction: column;
@@ -128,5 +129,4 @@ const TradePosition = styled.div`
 
 const TradeContainer = styled.div`
 	width: 100%;
-	height: 100%;
 `;
