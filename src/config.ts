@@ -279,6 +279,12 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'uxprt',
 	},
 	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'ukrw',
+	},
+	{
 		counterpartyChainId: 'akashnet-2',
 		sourceChannelId: 'channel-1',
 		destChannelId: 'channel-9',
@@ -471,6 +477,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'terrausd',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
+			},
+			{
+				coinDenom: 'KRT',
+				coinMinimalDenom: 'ukrw',
+				coinDecimals: 6,
+				coinGeckoId: 'terrakrw',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
 			},
 		],
 		feeCurrencies: [
