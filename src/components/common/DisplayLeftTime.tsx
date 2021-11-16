@@ -1,13 +1,17 @@
 import React, { FunctionComponent } from 'react';
-import cn from 'clsx';
 
 export const DisplayLeftTime: FunctionComponent<IDisplayLeftTime> = ({ day, hour, minute }) => {
 	return (
 		<h4 className="text-xl md:text-2xl flex items-center">
-			{day}
-			<div className="inline-block py-1 px-2 md:px-3 h-full rounded-lg bg-card mx-1">
-				<h5 className="text-lg md:text-xl">D</h5>
-			</div>
+			{day && (
+				<React.Fragment>
+					{day}
+					<div className="inline-block py-1 px-2 md:px-3 h-full rounded-lg bg-card mx-1">
+						<h5 className="text-lg md:text-xl">D</h5>
+					</div>
+				</React.Fragment>
+			)}
+
 			{hour}
 			<div className="inline-block py-1 px-2 md:px-3 h-full rounded-lg bg-card mx-1">
 				<h5 className="text-lg md:text-xl">H</h5>
@@ -21,7 +25,7 @@ export const DisplayLeftTime: FunctionComponent<IDisplayLeftTime> = ({ day, hour
 };
 
 interface IDisplayLeftTime {
-	day: string;
+	day?: string;
 	hour: string;
 	minute: string;
 }

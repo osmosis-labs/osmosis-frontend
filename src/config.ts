@@ -169,6 +169,34 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/F3FF7A84A73B62921538642F9797C423D2B4C4ACB3C7FCFFCE7F12AA69909C4B',
 		},
 	],
+	'560': [
+		{
+			gaugeId: '1790',
+			denom: 'ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0',
+		},
+		{
+			gaugeId: '1792',
+			denom: 'ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0',
+		},
+		{
+			gaugeId: '1793',
+			denom: 'ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0',
+		},
+	],
+	'562': [
+		{
+			gaugeId: '1789',
+			denom: 'ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0',
+		},
+		{
+			gaugeId: '1791',
+			denom: 'ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0',
+		},
+		{
+			gaugeId: '1794',
+			denom: 'ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0',
+		},
+	],
 	'571': [
 		{
 			gaugeId: '1759',
@@ -221,6 +249,42 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'uatom',
 	},
 	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uluna',
+	},
+	{
+		counterpartyChainId: 'crypto-org-chain-mainnet-1',
+		sourceChannelId: 'channel-5',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'basecro',
+	},
+	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uusd',
+	},
+	{
+		counterpartyChainId: 'juno-1',
+		sourceChannelId: 'channel-42',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'ujuno',
+	},
+	{
+		counterpartyChainId: 'core-1',
+		sourceChannelId: 'channel-4',
+		destChannelId: 'channel-6',
+		coinMinimalDenom: 'uxprt',
+	},
+	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'ukrw',
+	},
+	{
 		counterpartyChainId: 'akashnet-2',
 		sourceChannelId: 'channel-1',
 		destChannelId: 'channel-9',
@@ -239,22 +303,10 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'udvpn',
 	},
 	{
-		counterpartyChainId: 'core-1',
-		sourceChannelId: 'channel-4',
-		destChannelId: 'channel-6',
-		coinMinimalDenom: 'uxprt',
-	},
-	{
 		counterpartyChainId: 'irishub-1',
 		sourceChannelId: 'channel-6',
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uiris',
-	},
-	{
-		counterpartyChainId: 'crypto-org-chain-mainnet-1',
-		sourceChannelId: 'channel-5',
-		destChannelId: 'channel-10',
-		coinMinimalDenom: 'basecro',
 	},
 	{
 		counterpartyChainId: 'iov-mainnet-ibc',
@@ -275,12 +327,6 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'eeur',
 	},
 	{
-		counterpartyChainId: 'juno-1',
-		sourceChannelId: 'channel-42',
-		destChannelId: 'channel-0',
-		coinMinimalDenom: 'ujuno',
-	},
-	{
 		counterpartyChainId: 'microtick-1',
 		sourceChannelId: 'channel-39',
 		destChannelId: 'channel-16',
@@ -299,18 +345,6 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'uixo',
 	},
 	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uluna',
-	},
-	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uusd',
-	},
-	{
 		counterpartyChainId: 'bitcanna-1',
 		sourceChannelId: 'channel-51',
 		destChannelId: 'channel-1',
@@ -321,6 +355,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-73',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'ubtsg',
+	},
+	{
+		counterpartyChainId: 'kichain-2',
+		sourceChannelId: 'channel-77',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'uxki',
 	},
 ];
 
@@ -406,6 +446,69 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		coinType: 118,
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://www.mintscan.io/cosmos/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-columbus.keplr.app',
+		rest: 'https://lcd-columbus.keplr.app',
+		chainId: 'columbus-5',
+		chainName: 'Terra',
+		stakeCurrency: {
+			coinDenom: 'LUNA',
+			coinMinimalDenom: 'uluna',
+			coinDecimals: 6,
+			coinGeckoId: 'terra-luna',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+		},
+		bip44: {
+			coinType: 330,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('terra'),
+		currencies: [
+			{
+				coinDenom: 'LUNA',
+				coinMinimalDenom: 'uluna',
+				coinDecimals: 6,
+				coinGeckoId: 'terra-luna',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+			},
+			{
+				coinDenom: 'UST',
+				coinMinimalDenom: 'uusd',
+				coinDecimals: 6,
+				coinGeckoId: 'terrausd',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
+			},
+			{
+				coinDenom: 'KRT',
+				coinMinimalDenom: 'ukrw',
+				coinDecimals: 6,
+				coinGeckoId: 'terrakrw',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'LUNA',
+				coinMinimalDenom: 'uluna',
+				coinDecimals: 6,
+				coinGeckoId: 'terra-luna',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+			},
+			{
+				coinDenom: 'UST',
+				coinMinimalDenom: 'uusd',
+				coinDecimals: 6,
+				coinGeckoId: 'terrausd',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
+			},
+		],
+		gasPriceStep: {
+			low: 0.015,
+			average: 0.015,
+			high: 0.015,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://finder.terra.money/columbus-5/tx/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-akash.keplr.app',
@@ -586,7 +689,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/iris.svg',
 			},
 		],
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://www.mintscan.io/iris/txs/{txHash}',
 	},
 	{
@@ -861,62 +964,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://blockscan.ixo.world/transactions/{txHash}',
 	},
 	{
-		rpc: 'https://rpc-columbus.keplr.app',
-		rest: 'https://lcd-columbus.keplr.app',
-		chainId: 'columbus-5',
-		chainName: 'Terra',
-		stakeCurrency: {
-			coinDenom: 'LUNA',
-			coinMinimalDenom: 'uluna',
-			coinDecimals: 6,
-			coinGeckoId: 'terra-luna',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
-		},
-		bip44: {
-			coinType: 330,
-		},
-		bech32Config: Bech32Address.defaultBech32Config('terra'),
-		currencies: [
-			{
-				coinDenom: 'LUNA',
-				coinMinimalDenom: 'uluna',
-				coinDecimals: 6,
-				coinGeckoId: 'terra-luna',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
-			},
-			{
-				coinDenom: 'UST',
-				coinMinimalDenom: 'uusd',
-				coinDecimals: 6,
-				coinGeckoId: 'terrausd',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
-			},
-		],
-		feeCurrencies: [
-			{
-				coinDenom: 'LUNA',
-				coinMinimalDenom: 'uluna',
-				coinDecimals: 6,
-				coinGeckoId: 'terra-luna',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
-			},
-			{
-				coinDenom: 'UST',
-				coinMinimalDenom: 'uusd',
-				coinDecimals: 6,
-				coinGeckoId: 'terrausd',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
-			},
-		],
-		gasPriceStep: {
-			low: 0.015,
-			average: 0.015,
-			high: 0.015,
-		},
-		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
-		explorerUrlToTx: 'https://finder.terra.money/columbus-5/tx/{txHash}',
-	},
-	{
 		rpc: 'https://rpc.bitcanna.io',
 		rest: 'https://lcd.bitcanna.io',
 		chainId: 'bitcanna-1',
@@ -989,5 +1036,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://explorebitsong.com/transactions/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-mainnet.blockchain.ki',
+		rest: 'https://api-mainnet.blockchain.ki',
+		chainId: 'kichain-2',
+		chainName: 'Ki',
+		stakeCurrency: {
+			coinDenom: 'XKI',
+			coinMinimalDenom: 'uxki',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:uxki',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/ki.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('ki'),
+		currencies: [
+			{
+				coinDenom: 'XKI',
+				coinMinimalDenom: 'uxki',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:uxki',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ki.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'XKI',
+				coinMinimalDenom: 'uxki',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:uxki',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ki.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://www.mintscan.io/ki-chain/txs/{txHash}',
 	},
 ];
