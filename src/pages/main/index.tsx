@@ -60,8 +60,7 @@ const Background: FunctionComponent = () => {
 						height="809.7202"
 					/>
 				) : null}
-				{/* If the width is too small, it is not shown. "1.1" is a value determined by sense. */}
-				{!isMobileView && ratio > 1.1 ? (
+				{windowSize.width > 1350 ? (
 					<React.Fragment>
 						<ProgressiveSVGImage
 							lowResXlinkHref="/public/assets/backgrounds/osmosis-home-bg-low.png"
@@ -151,8 +150,10 @@ const TradePosition = styled.div`
 	--tradeMinLeft: calc(920 * (100vh / 1080));
 	--tradePositionLeft: calc((100vw - 206px) * 0.8 - 520px);
 	left: min(var(--tradeMinLeft), var(--tradePositionLeft));
-	@media (max-width: 1280px) {
-		left: calc((100vw - 520px) / 2);
+	@media (max-width: 1350px) and (min-width: 768.01px) {
+		width: 519.453px;
+		left: 50%;
+		transform: translateX(-50%);
 	}
 	@media (max-width: 768px) {
 		position: static;
