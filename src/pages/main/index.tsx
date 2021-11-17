@@ -108,6 +108,9 @@ const PageContainer = styled.div`
 	@media (max-width: 800px) {
 		width: 520px;
 	}
+	@media (max-width: 768px) {
+		background-image: url('/public/assets/backgrounds/osmosis-home-bg-pattern.svg');
+	}
 `;
 
 function TradeClipboardWrapper({ children }: { children: ReactNode }) {
