@@ -893,7 +893,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		rpc: 'https://mainnet-node.like.co/rpc',
 		rest: 'https://mainnet-node.like.co',
 		chainId: 'likecoin-mainnet-2',
-		chainName: 'Likecoin',
+		chainName: 'LikeCoin',
 		stakeCurrency: {
 			coinDenom: 'LIKE',
 			coinMinimalDenom: 'nanolike',
