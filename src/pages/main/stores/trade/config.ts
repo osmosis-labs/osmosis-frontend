@@ -30,10 +30,12 @@ export class TradeConfig extends AmountConfig {
 	protected _slippage: string = this.initialManualSlippage;
 
 	/**
-	 * Divides balance when getting amount.
-	 * Operates in conjunction with super._isMax. */
+	 * Multiply balance when getting amount.
+	 * If the ratio is 1, it is handled as the `isMax` turned on.
+	 * Ratio should be <= 1 and > 0.
+	 */
 	@observable
-	protected _amountQuotient: number | null = null;
+	protected _ratio: number | undefined = undefined;
 
 	constructor(
 		chainGetter: ChainGetter,
@@ -88,6 +90,27 @@ export class TradeConfig extends AmountConfig {
 		});
 	}
 
+	get ratio(): number | undefined {
+		return this._ratio;
+	}
+
+	@action
+	setRatio(ratio: number | undefined) {
+		if (ratio != null) {
+			if (ratio > 1) {
+				console.log('Warning: amount ratio should be lesser than or equal to 1');
+				return;
+			}
+
+			if (ratio <= 0) {
+				console.log('Warning: amount ratio should be greater than 0');
+				return;
+			}
+		}
+
+		this._ratio = ratio;
+	}
+
 	@action
 	setInCurrency(minimalDenom: string) {
 		this.inCurrencyMinimalDenom = minimalDenom;
@@ -105,7 +128,7 @@ export class TradeConfig extends AmountConfig {
 
 		const outAmount = this.outAmount;
 
-		this.setIsMax(false);
+		this.setRatio(undefined);
 
 		this.setInCurrency(outCurrency.coinMinimalDenom);
 		this.setOutCurrency(inCurrency.coinMinimalDenom);
@@ -123,71 +146,50 @@ export class TradeConfig extends AmountConfig {
 
 	@override
 	get amount(): string {
-		// invariants:
-		//	 _thisMax && !_amountQuotient
-		//   !_thisMax && _amountQuotient
-		if (this.isMax && this.hasAmountQuotient) {
-			return '0';
-		}
-
-		if (this._amountQuotient) {
-			const balance = this.queryBalances.getQueryBech32Address(this.sender).getBalanceFromCurrency(this.sendCurrency);
+		if (this.ratio != null) {
+			const balance = this.queryBalances
+				.getQueryBech32Address(this.sender)
+				.getBalanceFromCurrency(this.sendCurrency)
+				.mul(new Dec(this.ratio.toString()));
 
 			const result = this.feeConfig?.fee ? balance.sub(this.feeConfig.fee) : balance;
 			if (result.toDec().lte(new Dec(0))) {
 				return '0';
 			}
 
+			// Remember that the `CoinPretty`'s sub method do nothing if the currencies are different.
 			return result
-				.quo(new Dec(this._amountQuotient))
 				.trim(true)
 				.locale(false)
 				.hideDenom(true)
 				.toString();
 		}
 
-		return super.amount;
-	}
-
-	@override
-	setIsMax(isMax: boolean): void {
-		if (isMax) this._amountQuotient = null;
-		super.setIsMax(isMax);
-	}
-
-	@override
-	toggleIsMax(): void {
-		if (!this.isMax) this._amountQuotient = null;
-		super.toggleIsMax();
-	}
-
-	/**
-	 * @param denominator
-	 * 	* Same number - toggle.
-	 *  * New number - change.
-	 *  * Nothing - remove.
-	 */
-	@action
-	toggleSetAmountQuotient(denominator?: number): void {
-		this.setIsMax(false);
-
-		if (denominator === this._amountQuotient) {
-			this._amountQuotient = null;
-		} else {
-			this._amountQuotient = denominator ?? null;
-		}
-	}
-
-	@computed
-	get hasAmountQuotient(): boolean {
-		return this._amountQuotient !== null;
+		return this._amount;
 	}
 
 	@override
 	setAmount(amount: string) {
-		this.setIsMax(false);
-		this.toggleSetAmountQuotient();
+		this.setRatio(undefined);
 		super.setAmount(amount);
+	}
+
+	get isMax(): boolean {
+		return this._ratio === 1;
+	}
+
+	@override
+	setIsMax(isMax: boolean): void {
+		if (isMax) {
+			this.setRatio(1);
+		} else {
+			this.setRatio(undefined);
+		}
+	}
+
+	@override
+	toggleIsMax(): void {
+		this.setIsMax(!this.isMax);
 	}
 
 	@action
