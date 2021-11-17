@@ -89,10 +89,12 @@ const Background: FunctionComponent = () => {
 export const MainPage: FunctionComponent = () => {
 	return (
 		<PageContainer>
-			<Background />
-			<TradeClipboardWrapper>
-				<TradeClipboard />
-			</TradeClipboardWrapper>
+			<TradeClipboardContainer>
+				<Background />
+				<TradeClipboardWrapper>
+					<TradeClipboard />
+				</TradeClipboardWrapper>
+			</TradeClipboardContainer>
 		</PageContainer>
 	);
 };
@@ -100,16 +102,22 @@ export const MainPage: FunctionComponent = () => {
 const PageContainer = styled.div`
 	width: 100%;
 	background-color: ${colorPrimaryDarker};
-	background-repeat: repeat-x;
-	background-size: cover;
 	overflow: auto;
 	height: 100vh;
 	position: relative;
-	@media (max-width: 800px) {
-		width: 520px;
-	}
 	@media (max-width: 768px) {
 		background-image: url('/public/assets/backgrounds/osmosis-home-bg-pattern.svg');
+		background-repeat: repeat-x;
+		background-size: cover;
+	}
+`;
+
+const TradeClipboardContainer = styled.div`
+	width: 100%;
+	height: 100%;
+	@media (max-width: 768px) {
+		margin: 0 auto;
+		max-width: 520px;
 	}
 `;
 
@@ -145,8 +153,9 @@ const TradePosition = styled.div`
 	@media (max-width: 1280px) {
 		left: calc((100vw - 520px) / 2);
 	}
-	@media (max-width: 800px) {
+	@media (max-width: 768px) {
 		position: static;
+		padding: 0 20px;
 	}
 `;
 
