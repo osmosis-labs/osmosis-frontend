@@ -50,13 +50,15 @@ const Background: FunctionComponent = () => {
 			height="900"
 			preserveAspectRatio={ratio > 1.444 ? 'xMinYMid meet' : 'xMidYMid slice'}>
 			<g>
-				<image
-					xlinkHref="/public/assets/backgrounds/osmosis-home-bg-pattern.svg"
-					x="20"
-					y="20"
-					width="2252.2917"
-					height="809.7202"
-				/>
+				{!isMobileView ? (
+					<image
+						xlinkHref="/public/assets/backgrounds/osmosis-home-bg-pattern.svg"
+						x="20"
+						y="20"
+						width="2252.2917"
+						height="809.7202"
+					/>
+				) : null}
 				{/* If the width is too small, it is not shown. "1.1" is a value determined by sense. */}
 				{!isMobileView && ratio > 1.1 ? (
 					<React.Fragment>
