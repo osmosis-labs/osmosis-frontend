@@ -58,6 +58,7 @@ const SideBar: FunctionComponent = () => {
 											className="cursor-pointer h-10 md:h-12 mr-4"
 											src="/public/assets/main/osmosis-logo-main.svg"
 											alt="osmosis logo"
+											onClick={() => history.push('/')}
 										/>
 									</div>
 								</section>
