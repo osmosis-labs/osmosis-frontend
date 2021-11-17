@@ -6,7 +6,7 @@ import useWindowSize from 'src/hooks/useWindowSize';
 
 const ProgressiveSVGImage: FunctionComponent<React.SVGProps<SVGImageElement> & {
 	lowResXlinkHref: string;
-}> = props => {
+}> = ({ lowResXlinkHref, ...props }) => {
 	const ref = useRef<SVGImageElement | null>(null);
 	const [isLoaded, setIsLoaded] = useState(false);
 
@@ -29,8 +29,8 @@ const ProgressiveSVGImage: FunctionComponent<React.SVGProps<SVGImageElement> & {
 
 	return (
 		<React.Fragment>
-			{!isLoaded ? <image {...props} xlinkHref={props.lowResXlinkHref} /> : null}
-			<image {...props} />
+			{!isLoaded ? <image {...props} xlinkHref={lowResXlinkHref} /> : null}
+			<image {...props} ref={ref} />
 		</React.Fragment>
 	);
 };
