@@ -76,10 +76,10 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 					</AvailableLpColumn>
 				</LiquidityMiningSummary>
 				{(() => {
-					let gauge = ExtraGaugeInPool[poolId];
-					if (gauge) {
-						if (!Array.isArray(gauge)) {
-							gauge = [gauge];
+					let gauges = ExtraGaugeInPool[poolId];
+					if (gauges) {
+						if (!Array.isArray(gauges)) {
+							gauges = [gauges];
 						}
 
 						return (
@@ -89,15 +89,20 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 									flexDirection: isMobileView ? 'column' : 'row',
 									gap: isMobileView ? '0px' : '36px',
 								}}>
-								{gauge.map(gauge => {
+								{gauges.map(gauge => {
 									const currency = chainStore.currentFluent.findCurrency(gauge.denom);
+									const gaugeIds = [gauge.gaugeId];
+									if (Array.isArray(gauges)) {
+										for (const other of gauges) {
+											if (other.gaugeId !== gauge.gaugeId) {
+												gaugeIds.push(other.gaugeId);
+											}
+										}
+									}
+
 									if (currency) {
 										return (
-											<ExtraGauge
-												gaugeId={gauge.gaugeId}
-												currency={currency}
-												extraRewardAmount={gauge.extraRewardAmount}
-											/>
+											<ExtraGauge gaugeIds={gaugeIds} currency={currency} extraRewardAmount={gauge.extraRewardAmount} />
 										);
 									}
 								})}
