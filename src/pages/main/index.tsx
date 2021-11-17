@@ -1,8 +1,39 @@
 import styled from '@emotion/styled';
-import React, { FunctionComponent, ReactNode } from 'react';
+import React, { FunctionComponent, ReactNode, useEffect, useRef, useState } from 'react';
 import { colorPrimaryDarker } from 'src/emotionStyles/colors';
 import { TradeClipboard } from './components/TradeClipboard';
 import useWindowSize from 'src/hooks/useWindowSize';
+
+const ProgressiveSVGImage: FunctionComponent<React.SVGProps<SVGImageElement> & {
+	lowResXlinkHref: string;
+}> = ({ lowResXlinkHref, ...props }) => {
+	const ref = useRef<SVGImageElement | null>(null);
+	const [isLoaded, setIsLoaded] = useState(false);
+
+	useEffect(() => {
+		// At first, load the low-res image and high-res image at the same time.
+		// And if the high-res image loaded, remove the low-res image.
+		// Expectedly, because the webside loads the image from the cache on the user’s second visit to the website, the loading should be very fast.
+		if (ref.current) {
+			ref.current.addEventListener(
+				'load',
+				() => {
+					setIsLoaded(true);
+				},
+				{
+					once: true,
+				}
+			);
+		}
+	}, []);
+
+	return (
+		<React.Fragment>
+			{!isLoaded ? <image {...props} xlinkHref={lowResXlinkHref} /> : null}
+			<image {...props} ref={ref} />
+		</React.Fragment>
+	);
+};
 
 const Background: FunctionComponent = () => {
 	const sidebarWidth = 206;
@@ -12,43 +43,42 @@ const Background: FunctionComponent = () => {
 	const componentWidth = windowSize.width - sidebarWidth;
 	const ratio = componentWidth / windowSize.height;
 
-	/*
-	--tradeMinLeft: calc(920 * (100vh / 1080));
-	--tradePositionLeft: calc((100vw - 206px) * 0.8 - 520px);
-	left: min(var(--tradeMinLeft), var(--tradePositionLeft));
-	 */
-	const tradeMinLeft = (920 * windowSize.height) / 1080;
-	const tradePositionLeft = (windowSize.width - 206) * 0.8 - 520;
-	const left = Math.min(tradeMinLeft, tradePositionLeft);
-
 	return (
 		<svg
-			className="fixed w-full h-full hidden xl:block"
-			viewBox="0 0 2936 2590"
-			height="2590"
-			preserveAspectRatio={ratio > 1.1336 ? 'xMinYMid meet' : 'xMidYMid slice'}>
-			<g
-				transform={
-					!isMobileView && windowSize.width > 1280 && left < tradeMinLeft
-						? `translate(${((left - tradeMinLeft) * 2590) / windowSize.height})`
-						: ''
-				}>
-				{!isMobileView && ratio > 1.1336 ? (
+			className="absolute w-full h-full"
+			pointerEvents="none"
+			viewBox="0 0 1300 900"
+			height="900"
+			preserveAspectRatio={ratio > 1.444 ? 'xMinYMid meet' : 'xMidYMid slice'}>
+			<g>
+				{!isMobileView ? (
+					<image
+						xlinkHref="/public/assets/backgrounds/osmosis-home-bg-pattern.svg"
+						x="20"
+						y="20"
+						width="2252.2917"
+						height="809.7202"
+					/>
+				) : null}
+				{/* If the width is too small, it is not shown. "1.1" is a value determined by sense. */}
+				{!isMobileView && ratio > 1.1 ? (
 					<React.Fragment>
-						<image
-							xlinkHref={require('../../../public/assets/halloween-web.png').default}
-							x="0"
-							y="0"
-							width="3923"
-							height="2127"
+						<ProgressiveSVGImage
+							lowResXlinkHref="/public/assets/backgrounds/osmosis-home-bg-low.png"
+							xlinkHref="/public/assets/backgrounds/osmosis-home-bg.png"
+							x="56"
+							y="97"
+							width="578.7462"
+							height="725.6817"
 						/>
-						<rect x="-3000" y="2127" width="8660" height="463" fill="#120644" />
-						<image
-							xlinkHref={require('../../../public/assets/wosmongton-halloween.png').default}
-							x="0"
-							y="0"
-							width="2936"
-							height="2590"
+						<rect x="-3000" y="778" width="8660" height="244" fill="#120644" />
+						<ProgressiveSVGImage
+							lowResXlinkHref="/public/assets/backgrounds/osmosis-home-fg-low.png"
+							xlinkHref="/public/assets/backgrounds/osmosis-home-fg.png"
+							x="61"
+							y="602"
+							width="448.8865"
+							height="285.1699"
 						/>
 					</React.Fragment>
 				) : null}
@@ -60,10 +90,12 @@ const Background: FunctionComponent = () => {
 export const MainPage: FunctionComponent = () => {
 	return (
 		<PageContainer>
-			<Background />
-			<TradeClipboardWrapper>
-				<TradeClipboard />
-			</TradeClipboardWrapper>
+			<TradeClipboardContainer>
+				<Background />
+				<TradeClipboardWrapper>
+					<TradeClipboard />
+				</TradeClipboardWrapper>
+			</TradeClipboardContainer>
 		</PageContainer>
 	);
 };
@@ -71,14 +103,22 @@ export const MainPage: FunctionComponent = () => {
 const PageContainer = styled.div`
 	width: 100%;
 	background-color: ${colorPrimaryDarker};
-	background-image: url('/public/assets/backgrounds/osmosis-home-bg-pattern.svg');
-	background-repeat: repeat-x;
-	background-size: cover;
 	overflow: auto;
+	height: 100vh;
 	position: relative;
+	@media (max-width: 768px) {
+		background-image: url('/public/assets/backgrounds/osmosis-home-bg-pattern.svg');
+		background-repeat: repeat-x;
+		background-size: cover;
+	}
+`;
 
-	@media (max-width: 800px) {
-		width: 520px;
+const TradeClipboardContainer = styled.div`
+	width: 100%;
+	height: 100%;
+	@media (max-width: 768px) {
+		margin: 0 auto;
+		max-width: 520px;
 	}
 `;
 
@@ -101,32 +141,30 @@ function TradeClipboardWrapper({ children }: { children: ReactNode }) {
 }
 
 const TradePosition = styled.div`
-	padding-top: 20px;
-	padding-bottom: 20px;
-	width: 100%;
-	height: 100%;
-	max-width: 519.453px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	position: absolute;
 	z-index: 3;
+	height: 100%;
 	--tradeMinLeft: calc(920 * (100vh / 1080));
 	--tradePositionLeft: calc((100vw - 206px) * 0.8 - 520px);
 	left: min(var(--tradeMinLeft), var(--tradePositionLeft));
-
 	@media (max-width: 1280px) {
-		left: 50%;
-		transform: translate(-50%);
+		left: calc((100vw - 520px) / 2);
 	}
-
-	@media (max-width: 767px) {
+	@media (max-width: 768px) {
 		position: static;
-		transform: none;
+		padding: 0 20px;
 	}
 `;
 
 const TradeContainer = styled.div`
 	width: 100%;
+	max-height: 678px;
+
+	@media (min-width: 768px) {
+		margin-bottom: 130px;
+	}
 `;

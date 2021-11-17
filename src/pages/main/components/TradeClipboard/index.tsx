@@ -54,30 +54,29 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 
 	return (
 		<React.Fragment>
-			<div
-				className="px-5 w-full md:px-0"
+			<img
+				src={require('../../../../../public/assets/terra-banner.png').default}
+				alt={'Terra added'}
+				className="cursor-pointer"
 				style={{
+					width: '100%',
 					maxWidth: '519.453px',
-				}}>
-				<img
-					src={require('../../../../../public/assets/terra-banner.png').default}
-					alt={'Terra added'}
-					className="cursor-pointer w-full rounded-lg"
-					onClick={e => {
-						e.preventDefault();
+					borderRadius: '8px',
+				}}
+				onClick={e => {
+					e.preventDefault();
 
-						const terraCccount = accountStore.getAccount('columbus');
-						if (terraCccount.walletStatus === WalletStatus.NotInit) {
-							terraCccount.init();
-						}
+					const terraCccount = accountStore.getAccount('columbus');
+					if (terraCccount.walletStatus === WalletStatus.NotInit) {
+						terraCccount.init();
+					}
 
-						history.push('/assets?terra=true');
-					}}
-				/>
-			</div>
+					history.push('/assets?terra=true');
+				}}
+			/>
 			<TradeClipboardContainer>
 				<Clip />
-				<TradeClipboardContent>
+				<TradeClipboardContent style={isMobileView ? { maxHeight: '524px' } : undefined}>
 					<TradeTxSettings config={config} />
 
 					<TradeAmountSection>
@@ -86,7 +85,9 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 						<ToBox config={config} style={{ marginBottom: isMobileView ? 14 : 18 }} />
 					</TradeAmountSection>
 
-					<FeesBox style={{ marginBottom: isMobileView ? 36 : 50 }} config={config} />
+					<FeesBox config={config} />
+
+					<div style={{ flex: 1 }} />
 
 					<SwapButton config={config} />
 				</TradeClipboardContent>
@@ -97,7 +98,7 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 
 const TradeClipboardContainer = styled.div`
 	width: 100%;
-	padding: 20px;
+	height: 100%;
 	margin-top: 20px;
 	border-radius: 1rem;
 	position: relative;
@@ -117,7 +118,10 @@ const TradeClipboardContent = styled.div`
 	background-color: ${colorPrimaryLight};
 	border-radius: 0.375rem;
 	z-index: 0;
-	padding: 10px 10px 20px;
+	padding: 10px 10px 14px;
+
+	display: flex;
+	flex-direction: column;
 
 	@media (min-width: 768px) {
 		padding: 20px 20px 30px;
