@@ -46,6 +46,7 @@ const Background: FunctionComponent = () => {
 	return (
 		<svg
 			className="absolute w-full h-full"
+			pointerEvents="none"
 			viewBox="0 0 1300 900"
 			height="900"
 			preserveAspectRatio={ratio > 1.444 ? 'xMinYMid meet' : 'xMidYMid slice'}>
