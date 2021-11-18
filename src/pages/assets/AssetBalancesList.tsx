@@ -13,7 +13,7 @@ import { makeIBCMinimalDenom } from 'src/utils/ibc';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { useLocation } from 'react-router-dom';
 
-const tableWidths = ['50%', '25%', '12.5%', '12.5%'];
+const tableWidths = ['45%', '25%', '15%', '15%'];
 const tableWidthsOnMobileView = ['70%', '30%'];
 
 export const AssetBalancesList = observer(function AssetBalancesList() {
@@ -115,10 +115,10 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 			<div className="px-5 md:px-0">
 				<TitleText isMobileView={isMobileView}>Osmosis Assets</TitleText>
 			</div>
-			<table style={{ width: '100%', paddingBottom: 32 }}>
+			<table className="w-full pb-8">
 				<AssetBalanceHeader isMobileView={isMobileView} />
 
-				<tbody style={{ width: '100%' }}>
+				<tbody className="w-full">
 					{chainStore.current.currencies
 						.filter(cur => !cur.coinMinimalDenom.includes('/'))
 						.map(cur => {
@@ -228,10 +228,9 @@ function AssetBalanceHeader({ isMobileView }: AssetBalanceHeaderProps) {
 					<Text size="sm">Asset / Chain</Text>
 				</TableData>
 				<TableData
+					className="md:!pr-4 lg:!pr-20 !justify-end"
 					style={{
-						paddingRight: isMobileView ? 0 : 80,
 						width: isMobileView ? tableWidthsOnMobileView[1] : tableWidths[1],
-						justifyContent: 'flex-end',
 					}}>
 					<Text size="sm">Balance</Text>
 				</TableData>
@@ -287,10 +286,9 @@ function AssetBalanceRow({
 						</Text>
 					</TableData>
 					<TableData
+						className="md:!pr-3 lg:!pr-20 !justify-end"
 						style={{
-							paddingRight: isMobileView ? 6 : 80,
 							width: isMobileView ? tableWidthsOnMobileView[1] : tableWidths[1],
-							justifyContent: 'flex-end',
 						}}>
 						<Text emphasis="medium" isMobileView={isMobileView}>
 							{balance}
@@ -359,8 +357,8 @@ const AssetBalanceTableRow = styled.tr`
 	padding-right: 14px;
 
 	@media (min-width: 768px) {
-		padding-left: 50px;
-		padding-right: 60px;
+		padding-left: 30px;
+		padding-right: 30px;
 		max-height: 72px;
 	}
 `;
