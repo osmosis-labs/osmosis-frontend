@@ -1163,6 +1163,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/med.png',
 			},
 		],
+		gasPriceStep: {
+			low: 5,
+			average: 7,
+			high: 9,
+		},
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://www.mintscan.io/medibloc/txs/{txHash}',
 	},
