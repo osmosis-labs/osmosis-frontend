@@ -5,6 +5,7 @@ import { CenterV } from 'src/components/layouts/Containers';
 import { PoolCardTokenIcon } from 'src/components/PoolCardTokenIcon';
 import { isMyPoolCardProp } from 'src/pages/pools/components/PoolCardList/utils/isMyPoolCardProp';
 import { IncentivizedPoolCardProp, MyPoolCardProp } from 'src/pages/pools/models/poolCardProps';
+import { applyOptionalDecimal } from 'src/utils/format';
 import { Optional } from 'utility-types';
 
 export function PoolCardItem(
@@ -38,27 +39,29 @@ export function PoolCardItem(
 					<CenterV as="section">
 						<div>
 							<PoolHeaderText>Pool Liquidity</PoolHeaderText>
-							<PoolValueText>{liquidity}</PoolValueText>
+							<PoolValueText>{liquidity.value}</PoolValueText>
 						</div>
 						{apr && (
 							<div style={{ marginLeft: '20px' }}>
 								<PoolHeaderText>APR</PoolHeaderText>
-								<PoolValueText>{apr}%</PoolValueText>
+								<PoolValueText>{apr.isLoading ? 'Loading..' : apr.value}%</PoolValueText>
 							</div>
 						)}
 					</CenterV>
 
-					<Hr apr={apr} myLockedAmount={props.myLockedAmount} />
+					<Hr apr={apr?.isLoading ? 'Loading..' : apr?.value} myLockedAmount={props.myLockedAmount?.value} />
 
 					<CenterV>
 						<div>
 							<PoolHeaderText>My Liquidity</PoolHeaderText>
-							<PoolValueText>{props.myLiquidity}</PoolValueText>
+							<PoolValueText>{props.myLiquidity.isLoading ? 'Loading...' : props.myLiquidity.value}</PoolValueText>
 						</div>
 						{props.myLockedAmount && (
 							<div style={{ marginLeft: '20px' }}>
 								<PoolHeaderText>My Bonded Amount</PoolHeaderText>
-								<PoolValueText>{props.myLockedAmount}</PoolValueText>
+								<PoolValueText>
+									{props.myLockedAmount.isLoading ? 'Loading...' : props.myLockedAmount.value}
+								</PoolValueText>
 							</div>
 						)}
 					</CenterV>
@@ -67,11 +70,11 @@ export function PoolCardItem(
 				<CenterV>
 					<AprCol>
 						<PoolHeaderText>APR</PoolHeaderText>
-						<PoolValueText>{apr}%</PoolValueText>
+						<PoolValueText>{apr?.isLoading ? 'Loading..' : apr?.value}%</PoolValueText>
 					</AprCol>
 					<div style={{ marginLeft: '20px' }}>
 						<PoolHeaderText>Pool Liquidity</PoolHeaderText>
-						<PoolValueText>{liquidity}</PoolValueText>
+						<PoolValueText>{liquidity.value}</PoolValueText>
 					</div>
 				</CenterV>
 			)}

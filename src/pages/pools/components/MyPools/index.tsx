@@ -37,14 +37,25 @@ export const MyPools = observer(function MyPools() {
 			// 데이터 구조를 바꿀 필요가 있다.
 			return {
 				poolId: pool.id,
-				apr: queryIncentivizedPools.isIncentivized(pool.id)
-					? queryIncentivizedPools.computeMostAPY(pool.id, priceStore, priceStore.getFiatCurrency('usd')!).toString()
-					: undefined,
-				liquidity: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
-				myLiquidity: tvl.mul(actualShareRatio).toString(),
-				myLockedAmount: queryIncentivizedPools.isIncentivized(pool.id)
-					? tvl.mul(actualLockedShareRatio).toString()
-					: undefined,
+				apr: {
+					value: queryIncentivizedPools.isIncentivized(pool.id)
+						? queryIncentivizedPools.computeMostAPY(pool.id, priceStore, priceStore.getFiatCurrency('usd')!).toString()
+						: undefined,
+					isLoading: queryIncentivizedPools.isAprFetching,
+				},
+				liquidity: {
+					value: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
+				},
+				myLiquidity: {
+					value: tvl.mul(actualShareRatio).toString(),
+					isLoading: queries.osmosis.queryGammPoolShare.isFetchingShareRatio,
+				},
+				myLockedAmount: {
+					value: queryIncentivizedPools.isIncentivized(pool.id)
+						? tvl.mul(actualLockedShareRatio).toString()
+						: undefined,
+					isLoading: queries.osmosis.queryGammPoolShare.isFetchingLockedShareRatio,
+				},
 				tokens: pool.poolAssets.map(asset => asset.amount.currency),
 			} as MyPoolCardProp;
 		})

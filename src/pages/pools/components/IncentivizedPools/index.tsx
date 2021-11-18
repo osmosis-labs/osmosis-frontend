@@ -26,8 +26,15 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 			// 데이터 구조를 바꿀 필요가 있다.
 			return {
 				poolId: pool.id,
-				apr: queryIncentivizedPools.computeMostAPY(pool.id, priceStore, priceStore.getFiatCurrency('usd')!).toString(),
-				liquidity: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
+				apr: {
+					value: queryIncentivizedPools.isIncentivized(pool.id)
+						? queryIncentivizedPools.computeMostAPY(pool.id, priceStore, priceStore.getFiatCurrency('usd')!).toString()
+						: undefined,
+					isLoading: queryIncentivizedPools.isAprFetching,
+				},
+				liquidity: {
+					value: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
+				},
 				tokens: pool.poolAssets.map(asset => asset.amount.currency),
 			} as IncentivizedPoolCardProp;
 		})

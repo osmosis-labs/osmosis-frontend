@@ -1,5 +1,5 @@
 // TODO: Keplr 본체에서 import path 수정하기
-import { ObservableQueryBalances } from '@keplr-wallet/stores';
+import { ObservableQueryBalanceNative, ObservableQueryBalances } from '@keplr-wallet/stores';
 import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
 import { AppCurrency, Currency } from '@keplr-wallet/types';
 import { ObservableQueryPools } from '../pools';
@@ -14,6 +14,8 @@ export class ObservableQueryGammPoolShare {
 			coinDecimals: 18,
 		};
 	}
+	protected _isFetchingShareRatio: boolean = false;
+	protected _isFetchingLockedShareRatio: boolean = false;
 
 	constructor(
 		protected readonly queryPools: ObservableQueryPools,
@@ -72,6 +74,7 @@ export class ObservableQueryGammPoolShare {
 
 	readonly getLockedGammShareRatio = computedFn(
 		(bech32Address: string, poolId: string): IntPretty => {
+			this._isFetchingLockedShareRatio = true;
 			const pool = this.queryPools.getPool(poolId);
 			if (!pool) {
 				return new IntPretty(new Int(0)).ready(false);
@@ -83,6 +86,7 @@ export class ObservableQueryGammPoolShare {
 
 			const totalShare = pool.totalShare;
 
+			this._isFetchingLockedShareRatio = false;
 			// 백분률로 만들어주기 위해서 마지막에 10^2를 곱한다
 			return new IntPretty(share.quo(totalShare).mul(DecUtils.getPrecisionDec(2))).maxDecimals(2).trim(true);
 		}
@@ -128,6 +132,7 @@ export class ObservableQueryGammPoolShare {
 
 	readonly getAllGammShareRatio = computedFn(
 		(bech32Address: string, poolId: string): IntPretty => {
+			this._isFetchingShareRatio = true;
 			const pool = this.queryPools.getPool(poolId);
 			if (!pool) {
 				return new IntPretty(new Int(0)).ready(false);
@@ -137,8 +142,17 @@ export class ObservableQueryGammPoolShare {
 
 			const totalShare = pool.totalShare;
 
+			this._isFetchingShareRatio = false;
 			// 백분률로 만들어주기 위해서 마지막에 10^2를 곱한다
 			return new IntPretty(share.quo(totalShare).mul(DecUtils.getPrecisionDec(2))).maxDecimals(2).trim(true);
 		}
 	);
+
+	get isFetchingShareRatio(): boolean {
+		return this._isFetchingShareRatio;
+	}
+
+	get isFetchingLockedShareRatio(): boolean {
+		return this._isFetchingLockedShareRatio;
+	}
 }
