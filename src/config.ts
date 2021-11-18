@@ -580,7 +580,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'regen',
 			},
 		],
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://regen.aneka.io/txs/{txHash}',
 	},
 	{
