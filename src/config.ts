@@ -241,6 +241,9 @@ export const IBCAssetInfos: {
 	// Destination channel id from Osmosis chain
 	destChannelId: string;
 	coinMinimalDenom: string;
+	// In some reasons, ibc channel is in unstable status.
+	// Disable the deposit, withdraw button and show the tooltip.
+	isUnstable?: boolean;
 }[] = [
 	{
 		counterpartyChainId: 'cosmoshub-4',
@@ -295,6 +298,7 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-8',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uregen',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'sentinelhub-2',
@@ -307,6 +311,7 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-6',
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uiris',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'iov-mainnet-ibc',

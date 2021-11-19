@@ -54,6 +54,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 			balance,
 			sourceChannelId: channelInfo.sourceChannelId,
 			destChannelId: channelInfo.destChannelId,
+			isUnstable: channelInfo.isUnstable,
 		};
 	});
 
@@ -151,30 +152,6 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 							return currency.coinDenom;
 						})();
 
-						/*
-			if (
-				bal.chainInfo.chainId.startsWith('regen-') &&
-				(window.location.hostname.startsWith('app.') || window.location.hostname.startsWith('staging.'))
-			) {
-				// Channel of Regen network would not be public yet.
-				// By the hard coding, just do not show the deposit/withdraw button for the regen network.
-				return (
-					<AssetBalanceRow
-						key={currency.coinMinimalDenom}
-						chainName={bal.chainInfo.chainName}
-						coinDenom={coinDenom}
-						currency={currency}
-						balance={bal.balance
-							.hideDenom(true)
-							.trim(true)
-							.maxDecimals(6)
-							.toString()}
-						showCommingSoon={true}
-					/>
-				);
-			}
-			 */
-
 						return (
 							<AssetBalanceRow
 								key={currency.coinMinimalDenom}
@@ -206,6 +183,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 										isWithdraw: true,
 									});
 								}}
+								isUnstable={bal.isUnstable}
 								isMobileView={isMobileView}
 							/>
 						);
@@ -257,6 +235,7 @@ interface AssetBalanceRowProps {
 	balance: string;
 	onDeposit?: () => void;
 	onWithdraw?: () => void;
+	isUnstable?: boolean;
 	showComingSoon?: boolean;
 	isMobileView: boolean;
 }
@@ -268,7 +247,7 @@ function AssetBalanceRow({
 	balance,
 	onDeposit,
 	onWithdraw,
-	showComingSoon,
+	isUnstable,
 	isMobileView,
 }: AssetBalanceRowProps) {
 	return (
@@ -295,40 +274,73 @@ function AssetBalanceRow({
 						</Text>
 					</TableData>
 					{!isMobileView && (
-						<TableData style={{ width: tableWidths[2], position: showComingSoon ? 'relative' : 'initial' }}>
-							{!showComingSoon && onDeposit ? (
-								<>
-									<ButtonFaint onClick={onDeposit} style={{ display: 'flex', alignItems: 'center' }}>
-										<p className="text-sm text-secondary-200 leading-none">Deposit</p>
-										<img alt="right" src={'/public/assets/Icons/Right.svg'} />
-									</ButtonFaint>
-								</>
+						<TableData style={{ width: tableWidths[2] }}>
+							{onDeposit ? (
+								<React.Fragment>
+									<div className="relative group">
+										<ButtonFaint
+											onClick={onDeposit}
+											style={{ display: 'flex', alignItems: 'center' }}
+											disabled={isUnstable === true}>
+											<p className="text-sm text-secondary-200 leading-none">Deposit</p>
+											<img alt="right" src={'/public/assets/Icons/Right.svg'} />
+										</ButtonFaint>
+										{isUnstable ? (
+											<div
+												className="absolute invisible group-hover:visible bg-black text-white-high text-center opacity-80 px-3 py-2 rounded-xl"
+												style={{
+													left: '50%',
+													transform: 'translateX(-50%)',
+													minWidth: '200px',
+													bottom: '30px',
+												}}>
+												<span>IBC deposit/withdrawal is temporarily disabled</span>
+											</div>
+										) : null}
+									</div>
+								</React.Fragment>
 							) : null}
-							{showComingSoon ? <ComingSoonText color="gold">🌲 LBP is live 🌲</ComingSoonText> : null}
 						</TableData>
 					)}
 					{!isMobileView && (
 						<TableData style={{ width: tableWidths[3] }}>
-							{!showComingSoon && onWithdraw ? (
-								<>
-									<ButtonFaint onClick={onWithdraw} style={{ display: 'flex', alignItems: 'center' }}>
-										<p className="text-sm text-secondary-200 leading-none">Withdraw</p>
-										<img alt="right" src={'/public/assets/Icons/Right.svg'} />
-									</ButtonFaint>
-								</>
+							{onWithdraw ? (
+								<React.Fragment>
+									<div className="relative group">
+										<ButtonFaint
+											onClick={onWithdraw}
+											style={{ display: 'flex', alignItems: 'center' }}
+											disabled={isUnstable === true}>
+											<p className="text-sm text-secondary-200 leading-none">Withdraw</p>
+											<img alt="right" src={'/public/assets/Icons/Right.svg'} />
+										</ButtonFaint>
+										{isUnstable ? (
+											<div
+												className="absolute invisible group-hover:visible bg-black text-white-high text-center opacity-80 px-3 py-2 rounded-xl"
+												style={{
+													left: '50%',
+													transform: 'translateX(-50%)',
+													minWidth: '200px',
+													bottom: '30px',
+												}}>
+												<span>IBC deposit/withdrawal is temporarily disabled</span>
+											</div>
+										) : null}
+									</div>
+								</React.Fragment>
 							) : null}
 						</TableData>
 					)}
 				</AssetBalanceTableRow>
-				{!showComingSoon && isMobileView && (onWithdraw || onDeposit) && (
+				{isMobileView && (onWithdraw || onDeposit) && (
 					<IBCTransferButtonsOnMobileView>
 						{onWithdraw ? (
-							<ButtonSecondary isOutlined onClick={onWithdraw} style={{ width: '100%' }}>
+							<ButtonSecondary isOutlined onClick={onWithdraw} style={{ width: '100%' }} disabled={isUnstable === true}>
 								<p className="text-sm text-secondary-200">Withdraw</p>
 							</ButtonSecondary>
 						) : null}
 						{onDeposit ? (
-							<ButtonSecondary onClick={onDeposit} style={{ width: '100%' }}>
+							<ButtonSecondary onClick={onDeposit} style={{ width: '100%' }} disabled={isUnstable === true}>
 								<p className="text-sm">Deposit</p>
 							</ButtonSecondary>
 						) : null}
@@ -338,12 +350,6 @@ function AssetBalanceRow({
 		</>
 	);
 }
-
-const ComingSoonText = styled(Text)`
-	position: absolute;
-	padding-left: 8px;
-	width: 200px;
-`;
 
 const AssetBalanceRowContainer = styled.div`
 	border-bottom-width: 1px;

@@ -243,6 +243,7 @@ module.exports = {
 	variants: {
 		extend: {
 			opacity: ['disabled'],
+			visibility: ['hover', 'group-hover'],
 		},
 	},
 	plugins: [require('tailwindcss'), require('precss'), require('autoprefixer')],
