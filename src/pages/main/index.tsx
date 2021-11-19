@@ -38,7 +38,7 @@ const ProgressiveSVGImage: FunctionComponent<React.SVGProps<SVGImageElement> & {
 const Background: FunctionComponent = () => {
 	const sidebarWidth = 206;
 
-	const { windowSize, isMobileView } = useWindowSize();
+	const { windowSize } = useWindowSize();
 
 	const componentWidth = windowSize.width - sidebarWidth;
 	const ratio = componentWidth / windowSize.height;
@@ -51,15 +51,6 @@ const Background: FunctionComponent = () => {
 			height="900"
 			preserveAspectRatio={ratio > 1.444 ? 'xMinYMid meet' : 'xMidYMid slice'}>
 			<g>
-				{!isMobileView ? (
-					<image
-						xlinkHref="/public/assets/backgrounds/osmosis-home-bg-pattern.svg"
-						x="20"
-						y="20"
-						width="2252.2917"
-						height="809.7202"
-					/>
-				) : null}
 				{windowSize.width >= 1350 ? (
 					<React.Fragment>
 						<ProgressiveSVGImage
