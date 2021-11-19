@@ -45,7 +45,7 @@ const Background: FunctionComponent = () => {
 
 	return (
 		<svg
-			className="absolute w-full h-full"
+			className="absolute w-full h-full hidden md:block"
 			pointerEvents="none"
 			viewBox="0 0 1300 900"
 			height="900"
@@ -60,7 +60,7 @@ const Background: FunctionComponent = () => {
 						height="809.7202"
 					/>
 				) : null}
-				{windowSize.width > 1350 ? (
+				{windowSize.width >= 1350 ? (
 					<React.Fragment>
 						<ProgressiveSVGImage
 							lowResXlinkHref="/public/assets/backgrounds/osmosis-home-bg-low.png"
@@ -101,63 +101,57 @@ export const MainPage: FunctionComponent = () => {
 
 const PageContainer = styled.div`
 	width: 100%;
-	background-color: ${colorPrimaryDarker};
+	background-image: url('/public/assets/backgrounds/osmosis-home-bg-pattern.svg');
+	background-repeat: repeat-x;
+	background-size: cover;
 	overflow: auto;
-	height: 100vh;
 	position: relative;
-	@media (max-width: 768px) {
-		background-image: url('/public/assets/backgrounds/osmosis-home-bg-pattern.svg');
-		background-repeat: repeat-x;
-		background-size: cover;
+
+	@media (min-width: 768px) {
+		background-color: ${colorPrimaryDarker};
 	}
 `;
 
 const TradeClipboardContainer = styled.div`
+	margin: 0 auto;
+	max-width: 520px;
 	width: 100%;
 	height: 100%;
-	@media (max-width: 768px) {
-		margin: 0 auto;
-		max-width: 520px;
+	display: flex;
+	align-items: center;
+
+	@media (min-width: 768px) {
+		margin: 0;
+		max-width: unset;
 	}
 `;
 
 function TradeClipboardWrapper({ children }: { children: ReactNode }) {
-	const { isMobileView } = useWindowSize();
-
 	return (
-		<TradePosition
-			style={
-				isMobileView
-					? {
-							justifyContent: 'flex-start',
-							paddingTop: '80px',
-					  }
-					: undefined
-			}>
+		<TradePosition>
 			<TradeContainer>{children}</TradeContainer>
 		</TradePosition>
 	);
 }
 
 const TradePosition = styled.div`
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	position: absolute;
+	position: static;
+	padding: 96px 20px 64px;
 	z-index: 3;
-	height: 100%;
-	--tradeMinLeft: calc(920 * (100vh / 1080));
-	--tradePositionLeft: calc((100vw - 206px) * 0.8 - 520px);
-	left: min(var(--tradeMinLeft), var(--tradePositionLeft));
-	@media (max-width: 1350px) and (min-width: 768.01px) {
+
+	@media (min-width: 768px) {
+		position: absolute;
+		padding: 0;
 		width: 519.453px;
 		left: 50%;
 		transform: translateX(-50%);
 	}
-	@media (max-width: 768px) {
-		position: static;
-		padding: 0 20px;
+
+	@media (min-width: 1350px) {
+		--tradeMinLeft: calc(920 * (100vh / 1080));
+		--tradePositionLeft: calc((100vw - 206px) * 0.8 - 520px);
+		left: min(var(--tradeMinLeft), var(--tradePositionLeft));
+		transform: unset;
 	}
 `;
 
