@@ -12,12 +12,14 @@ import { useStore } from 'src/stores';
 import { makeIBCMinimalDenom } from 'src/utils/ibc';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { useLocation } from 'react-router-dom';
+import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
+import { Dec } from '@keplr-wallet/unit';
 
 const tableWidths = ['45%', '25%', '15%', '15%'];
 const tableWidthsOnMobileView = ['70%', '30%'];
 
 export const AssetBalancesList = observer(function AssetBalancesList() {
-	const { chainStore, queriesStore, accountStore } = useStore();
+	const { chainStore, queriesStore, accountStore, priceStore } = useStore();
 
 	const { isMobileView } = useWindowSize();
 
@@ -127,6 +129,8 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 								.getQueryBech32Address(account.bech32Address)
 								.getBalanceFromCurrency(cur);
 
+							const totalFiatValue = priceStore.calculatePrice(bal, 'usd');
+
 							return (
 								<AssetBalanceRow
 									key={cur.coinMinimalDenom}
@@ -138,6 +142,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 										.trim(true)
 										.maxDecimals(6)
 										.toString()}
+									totalFiatValue={totalFiatValue}
 									isMobileView={isMobileView}
 								/>
 							);
@@ -152,6 +157,8 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 							return currency.coinDenom;
 						})();
 
+						const totalFiatValue = priceStore.calculatePrice(bal.balance, 'usd');
+
 						return (
 							<AssetBalanceRow
 								key={currency.coinMinimalDenom}
@@ -163,6 +170,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 									.trim(true)
 									.maxDecimals(6)
 									.toString()}
+								totalFiatValue={totalFiatValue}
 								onDeposit={() => {
 									setDialogState({
 										open: true,
@@ -233,6 +241,7 @@ interface AssetBalanceRowProps {
 	coinDenom: string;
 	currency: AppCurrency;
 	balance: string;
+	totalFiatValue?: PricePretty;
 	onDeposit?: () => void;
 	onWithdraw?: () => void;
 	isUnstable?: boolean;
@@ -245,6 +254,7 @@ function AssetBalanceRow({
 	coinDenom,
 	currency,
 	balance,
+	totalFiatValue,
 	onDeposit,
 	onWithdraw,
 	isUnstable,
@@ -269,9 +279,14 @@ function AssetBalanceRow({
 						style={{
 							width: isMobileView ? tableWidthsOnMobileView[1] : tableWidths[1],
 						}}>
-						<Text emphasis="medium" isMobileView={isMobileView}>
-							{balance}
-						</Text>
+						<div className="flex flex-col items-end">
+							<Text emphasis="medium" isMobileView={isMobileView}>
+								{balance}
+							</Text>
+							{totalFiatValue && totalFiatValue.toDec().gt(new Dec(0)) ? (
+								<Text size="sm">{totalFiatValue.toString()}</Text>
+							) : null}
+						</div>
 					</TableData>
 					{!isMobileView && (
 						<TableData style={{ width: tableWidths[2] }}>
