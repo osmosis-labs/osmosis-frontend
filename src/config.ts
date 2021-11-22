@@ -482,7 +482,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'KRT',
 				coinMinimalDenom: 'ukrw',
 				coinDecimals: 6,
-				coinGeckoId: 'terrakrw',
+				coinGeckoId: 'terra-krw',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
 			},
 		],

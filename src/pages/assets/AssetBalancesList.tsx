@@ -12,7 +12,8 @@ import { useStore } from 'src/stores';
 import { makeIBCMinimalDenom } from 'src/utils/ibc';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { useLocation } from 'react-router-dom';
-import { Balance } from '@keplr-wallet/stores';
+import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
+import { Dec } from '@keplr-wallet/unit';
 
 const tableWidths = ['50%', '25%', '12.5%', '12.5%'];
 const tableWidthsOnMobileView = ['70%', '30%'];
@@ -127,19 +128,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 								.getQueryBech32Address(account.bech32Address)
 								.getBalanceFromCurrency(cur);
 
-							const fiatCurrency = priceStore.getFiatCurrency('usd')!;
-							const fiatValuePerBalanceOne = cur.coinGeckoId
-								? priceStore.getPrice(cur.coinGeckoId, fiatCurrency.currency) || 0
-								: 0;
-							const totalFiatValue =
-								fiatValuePerBalanceOne *
-								Number(
-									bal
-										.hideDenom(true)
-										.trim(true)
-										.maxDecimals(6)
-										.toString()
-								);
+							const totalFiatValue = priceStore.calculatePrice(bal, 'usd');
 
 							return (
 								<AssetBalanceRow
@@ -152,13 +141,12 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 										.trim(true)
 										.maxDecimals(6)
 										.toString()}
-									totalFiatValue={parseFloat(totalFiatValue.toFixed(2))}
+									totalFiatValue={totalFiatValue}
 									isMobileView={isMobileView}
 								/>
 							);
 						})}
 					{ibcBalances.map(bal => {
-						bal.balance.currency.coinGeckoId;
 						const currency = bal.balance.currency;
 						const coinDenom = (() => {
 							if ('originCurrency' in currency && currency.originCurrency) {
@@ -167,43 +155,8 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 
 							return currency.coinDenom;
 						})();
-						const fiatCurrency = priceStore.getFiatCurrency('usd')!;
-						const fiatValuePerBalanceOne = bal.balance.currency.coinGeckoId
-							? priceStore.getPrice(bal.balance.currency.coinGeckoId, fiatCurrency.currency) || 0
-							: 0;
-						const totalFiatValue =
-							fiatValuePerBalanceOne *
-							Number(
-								bal.balance
-									.hideDenom(true)
-									.trim(true)
-									.maxDecimals(6)
-									.toString()
-							);
 
-						/*
-			if (
-				bal.chainInfo.chainId.startsWith('regen-') &&
-				(window.location.hostname.startsWith('app.') || window.location.hostname.startsWith('staging.'))
-			) {
-				// Channel of Regen network would not be public yet.
-				// By the hard coding, just do not show the deposit/withdraw button for the regen network.
-				return (
-					<AssetBalanceRow
-						key={currency.coinMinimalDenom}
-						chainName={bal.chainInfo.chainName}
-						coinDenom={coinDenom}
-						currency={currency}
-						balance={bal.balance
-							.hideDenom(true)
-							.trim(true)
-							.maxDecimals(6)
-							.toString()}
-						showCommingSoon={true}
-					/>
-				);
-			}
-			 */
+						const totalFiatValue = priceStore.calculatePrice(bal.balance, 'usd');
 
 						return (
 							<AssetBalanceRow
@@ -216,7 +169,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 									.trim(true)
 									.maxDecimals(6)
 									.toString()}
-								totalFiatValue={parseFloat(totalFiatValue.toFixed(2))}
+								totalFiatValue={totalFiatValue}
 								onDeposit={() => {
 									setDialogState({
 										open: true,
@@ -287,7 +240,7 @@ interface AssetBalanceRowProps {
 	coinDenom: string;
 	currency: AppCurrency;
 	balance: string;
-	totalFiatValue: number;
+	totalFiatValue?: PricePretty;
 	onDeposit?: () => void;
 	onWithdraw?: () => void;
 	showComingSoon?: boolean;
@@ -329,7 +282,9 @@ function AssetBalanceRow({
 							<Text emphasis="medium" isMobileView={isMobileView}>
 								{balance}
 							</Text>
-							{totalFiatValue > 0 && <Text size="sm">${totalFiatValue}</Text>}
+							{totalFiatValue && totalFiatValue.toDec().gt(new Dec(0)) ? (
+								<Text size="sm">{totalFiatValue.toString()}</Text>
+							) : null}
 						</div>
 					</TableData>
 					{!isMobileView && (
