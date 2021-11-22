@@ -12,12 +12,13 @@ import { useStore } from 'src/stores';
 import { makeIBCMinimalDenom } from 'src/utils/ibc';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { useLocation } from 'react-router-dom';
+import { Balance } from '@keplr-wallet/stores';
 
 const tableWidths = ['50%', '25%', '12.5%', '12.5%'];
 const tableWidthsOnMobileView = ['70%', '30%'];
 
 export const AssetBalancesList = observer(function AssetBalancesList() {
-	const { chainStore, queriesStore, accountStore } = useStore();
+	const { chainStore, queriesStore, accountStore, priceStore } = useStore();
 
 	const { isMobileView } = useWindowSize();
 
@@ -126,6 +127,20 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 								.getQueryBech32Address(account.bech32Address)
 								.getBalanceFromCurrency(cur);
 
+							const fiatCurrency = priceStore.getFiatCurrency('usd')!;
+							const fiatValuePerBalanceOne = cur.coinGeckoId
+								? priceStore.getPrice(cur.coinGeckoId, fiatCurrency.currency) || 0
+								: 0;
+							const totalFiatValue =
+								fiatValuePerBalanceOne *
+								Number(
+									bal
+										.hideDenom(true)
+										.trim(true)
+										.maxDecimals(6)
+										.toString()
+								);
+
 							return (
 								<AssetBalanceRow
 									key={cur.coinMinimalDenom}
@@ -137,11 +152,13 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 										.trim(true)
 										.maxDecimals(6)
 										.toString()}
+									totalFiatValue={parseFloat(totalFiatValue.toFixed(2))}
 									isMobileView={isMobileView}
 								/>
 							);
 						})}
 					{ibcBalances.map(bal => {
+						bal.balance.currency.coinGeckoId;
 						const currency = bal.balance.currency;
 						const coinDenom = (() => {
 							if ('originCurrency' in currency && currency.originCurrency) {
@@ -150,6 +167,19 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 
 							return currency.coinDenom;
 						})();
+						const fiatCurrency = priceStore.getFiatCurrency('usd')!;
+						const fiatValuePerBalanceOne = bal.balance.currency.coinGeckoId
+							? priceStore.getPrice(bal.balance.currency.coinGeckoId, fiatCurrency.currency) || 0
+							: 0;
+						const totalFiatValue =
+							fiatValuePerBalanceOne *
+							Number(
+								bal.balance
+									.hideDenom(true)
+									.trim(true)
+									.maxDecimals(6)
+									.toString()
+							);
 
 						/*
 			if (
@@ -186,6 +216,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 									.trim(true)
 									.maxDecimals(6)
 									.toString()}
+								totalFiatValue={parseFloat(totalFiatValue.toFixed(2))}
 								onDeposit={() => {
 									setDialogState({
 										open: true,
@@ -256,6 +287,7 @@ interface AssetBalanceRowProps {
 	coinDenom: string;
 	currency: AppCurrency;
 	balance: string;
+	totalFiatValue: number;
 	onDeposit?: () => void;
 	onWithdraw?: () => void;
 	showComingSoon?: boolean;
@@ -267,6 +299,7 @@ function AssetBalanceRow({
 	coinDenom,
 	currency,
 	balance,
+	totalFiatValue,
 	onDeposit,
 	onWithdraw,
 	showComingSoon,
@@ -292,9 +325,12 @@ function AssetBalanceRow({
 							width: isMobileView ? tableWidthsOnMobileView[1] : tableWidths[1],
 							justifyContent: 'flex-end',
 						}}>
-						<Text emphasis="medium" isMobileView={isMobileView}>
-							{balance}
-						</Text>
+						<div className="flex flex-col items-end">
+							<Text emphasis="medium" isMobileView={isMobileView}>
+								{balance}
+							</Text>
+							{totalFiatValue > 0 && <Text size="sm">${totalFiatValue}</Text>}
+						</div>
 					</TableData>
 					{!isMobileView && (
 						<TableData style={{ width: tableWidths[2], position: showComingSoon ? 'relative' : 'initial' }}>
