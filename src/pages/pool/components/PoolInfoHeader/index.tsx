@@ -24,11 +24,16 @@ export const PoolInfoHeader = observer(function PoolInfoHeader({ poolId }: Props
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const pool = queries.osmosis.queryGammPools.getPool(poolId);
 
-	const composition = pool?.poolRatios.reduce((str, poolRatio, i, poolRatios) => {
-		if (i === 0 || i === poolRatios.length) {
-			return `${str} ${poolRatio.amount.currency.coinDenom}`;
+	const composition = pool?.poolAssets.reduce((str, poolAsset, i) => {
+		let denom = poolAsset.amount.currency.coinDenom;
+		if (denom.length >= 7) {
+			denom = denom.slice(0, 7) + '...';
+		}
+
+		if (i === 0) {
+			return `${str} ${denom}`;
 		} else {
-			return `${str} / ${poolRatio.amount.currency.coinDenom}`;
+			return `${str} / ${denom}`;
 		}
 	}, ': ');
 
