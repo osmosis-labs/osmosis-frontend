@@ -375,8 +375,8 @@ export const IBCAssetInfos: {
 	},
 	{
 		counterpartyChainId: 'panacea-3',
-		sourceChannelId: 'channel-74',
-		destChannelId: 'channel-0',
+		sourceChannelId: 'channel-82',
+		destChannelId: 'channel-1',
 		coinMinimalDenom: 'umed',
 	},
 ];
