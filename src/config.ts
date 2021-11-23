@@ -241,6 +241,9 @@ export const IBCAssetInfos: {
 	// Destination channel id from Osmosis chain
 	destChannelId: string;
 	coinMinimalDenom: string;
+	// In some reasons, ibc channel is in unstable status.
+	// Disable the deposit, withdraw button and show the tooltip.
+	isUnstable?: boolean;
 }[] = [
 	{
 		counterpartyChainId: 'cosmoshub-4',
@@ -265,6 +268,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-72',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uusd',
+	},
+	{
+		counterpartyChainId: 'secret-4',
+		sourceChannelId: 'channel-88',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uscrt',
 	},
 	{
 		counterpartyChainId: 'juno-1',
@@ -295,6 +304,7 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-8',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uregen',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'sentinelhub-2',
@@ -307,6 +317,7 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-6',
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uiris',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'iov-mainnet-ibc',
@@ -361,6 +372,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-77',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'uxki',
+	},
+	{
+		counterpartyChainId: 'panacea-3',
+		sourceChannelId: 'channel-82',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'umed',
 	},
 ];
 
@@ -482,7 +499,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'KRT',
 				coinMinimalDenom: 'ukrw',
 				coinDecimals: 6,
-				coinGeckoId: 'terrakrw',
+				coinGeckoId: 'terra-krw',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
 			},
 		],
@@ -509,6 +526,44 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://finder.terra.money/columbus-5/tx/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-secret.keplr.app',
+		rest: 'https://lcd-secret.keplr.app',
+		chainId: 'secret-4',
+		chainName: 'Secret Network',
+		stakeCurrency: {
+			coinDenom: 'SCRT',
+			coinMinimalDenom: 'uscrt',
+			coinDecimals: 6,
+			coinGeckoId: 'secret',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/scrt.svg',
+		},
+		bip44: {
+			coinType: 529,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('secret'),
+		currencies: [
+			{
+				coinDenom: 'SCRT',
+				coinMinimalDenom: 'uscrt',
+				coinDecimals: 6,
+				coinGeckoId: 'secret',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/scrt.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'SCRT',
+				coinMinimalDenom: 'uscrt',
+				coinDecimals: 6,
+				coinGeckoId: 'secret',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/scrt.svg',
+			},
+		],
+		coinType: 118,
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://secretnodes.com/secret/chains/secret-4/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-akash.keplr.app',
@@ -580,7 +635,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'regen',
 			},
 		],
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://regen.aneka.io/txs/{txHash}',
 	},
 	{
@@ -893,7 +948,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		rpc: 'https://mainnet-node.like.co/rpc',
 		rest: 'https://mainnet-node.like.co',
 		chainId: 'likecoin-mainnet-2',
-		chainName: 'Likecoin',
+		chainName: 'LikeCoin',
 		stakeCurrency: {
 			coinDenom: 'LIKE',
 			coinMinimalDenom: 'nanolike',
@@ -1073,5 +1128,47 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://www.mintscan.io/ki-chain/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.gopanacea.org',
+		rest: 'https://api.gopanacea.org',
+		chainId: 'panacea-3',
+		chainName: 'Panacea',
+		stakeCurrency: {
+			coinDenom: 'MED',
+			coinMinimalDenom: 'umed',
+			coinDecimals: 6,
+			coinGeckoId: 'medibloc',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/med.png',
+		},
+		bip44: {
+			coinType: 371,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('panacea'),
+		currencies: [
+			{
+				coinDenom: 'MED',
+				coinMinimalDenom: 'umed',
+				coinDecimals: 6,
+				coinGeckoId: 'medibloc',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/med.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'MED',
+				coinMinimalDenom: 'umed',
+				coinDecimals: 6,
+				coinGeckoId: 'medibloc',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/med.png',
+			},
+		],
+		gasPriceStep: {
+			low: 5,
+			average: 7,
+			high: 9,
+		},
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://www.mintscan.io/medibloc/txs/{txHash}',
 	},
 ];
