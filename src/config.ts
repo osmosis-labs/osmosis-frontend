@@ -317,7 +317,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-6',
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uiris',
-		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'iov-mainnet-ibc',
