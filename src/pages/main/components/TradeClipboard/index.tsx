@@ -15,6 +15,7 @@ import { SwapButton } from '../SwapButton';
 import { TradeTxSettings } from './TradeTxSettings';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { WalletStatus } from '@keplr-wallet/stores';
+import { useTradeUrlQueryParams } from 'src/pages/main/hooks/useTradeUrlQueryParams';
 import { useHistory } from 'react-router-dom';
 
 export const TradeClipboard: FunctionComponent = observer(() => {
@@ -37,6 +38,8 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 		account.msgOpts.swapExactAmountIn.gas * Math.max(config.poolIds.length, 1)
 	);
 	config.setFeeConfig(feeConfig);
+
+	useTradeUrlQueryParams(config);
 
 	const { isMobileView } = useWindowSize();
 

@@ -111,12 +111,12 @@ export class TradeConfig extends AmountConfig {
 		this._ratio = ratio;
 	}
 
-	@action
+	@action.bound
 	setInCurrency(minimalDenom: string) {
 		this.inCurrencyMinimalDenom = minimalDenom;
 	}
 
-	@action
+	@action.bound
 	setOutCurrency(minimalDenom: string) {
 		this.outCurrencyMinimalDenom = minimalDenom;
 	}
