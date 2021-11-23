@@ -98,13 +98,18 @@ export class RootStore {
 					},
 				},
 				chainOpts: this.chainStore.chainInfos.map(chainInfo => {
+					let gas = 500_000;
+					if (chainInfo.chainId.startsWith('osmosis-')) {
+						gas = 1_350_000;
+					} else if (chainInfo.chainId.startsWith('secret-')) {
+						gas = 20_000;
+					} else if (chainInfo.chainId.startsWith('columbus-') || chainInfo.chainId.startsWith('cosmoshub-')) {
+						gas = 100_000;
+					}
+
 					return {
 						chainId: chainInfo.chainId,
-						msgOpts: {
-							ibcTransfer: {
-								gas: chainInfo.chainId.startsWith('osmosis-1') ? 1350000 : 500000,
-							},
-						},
+						msgOpts: { ibcTransfer: { gas } },
 						preTxEvents: {
 							onBroadcastFailed: (e?: Error) => {
 								let message: string = 'Unknown error';
