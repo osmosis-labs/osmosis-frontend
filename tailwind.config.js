@@ -76,7 +76,8 @@ module.exports = {
 		removeDeprecatedGapUtilities: false,
 		purgeLayersByDefault: false,
 	},
-	purge: ['./src/**/*.tsx', './src/**/*.ts'],
+	mode: 'jit',
+	purge: ['./src/**/*.{ts,tsx}', './src/index.html'],
 	theme: {
 		fontFamily: {
 			title: ['Poppins', 'ui-sans-serif', 'system-ui'],
@@ -173,9 +174,6 @@ module.exports = {
 			'gradients-orangeCoral': 'linear-gradient(180deg, #FF8200 0%, #FF2C00 100%)',
 			'gradients-pinky': 'linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)',
 		},
-		screens: {
-			md: '1280px',
-		},
 		spacing: {
 			...spacing,
 		},
@@ -245,6 +243,7 @@ module.exports = {
 	variants: {
 		extend: {
 			opacity: ['disabled'],
+			visibility: ['hover', 'group-hover'],
 		},
 	},
 	plugins: [require('tailwindcss'), require('precss'), require('autoprefixer')],

@@ -14,7 +14,7 @@ const ClipContainer = styled.div`
 	background: linear-gradient(180deg, #3a3369 0%, #231d4b 100%);
 	position: absolute;
 	left: 50%;
-	top: 8px;
+	top: -8px;
 	transform: translate(-50%, 0);
 	box-shadow: 0 2px 2px rgba(11, 16, 38, 0.48);
 	overflow: hidden;
@@ -24,7 +24,6 @@ const ClipContainer = styled.div`
 	width: 117px;
 
 	@media (min-width: 768px) {
-		top: -8px;
 		height: 60px;
 		width: 160px;
 	}

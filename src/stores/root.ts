@@ -57,6 +57,11 @@ export class RootStore {
 					autoInit: false,
 					getKeplr: this.connectWalletManager.getKeplr,
 					suggestChainFn: async (keplr, chainInfo) => {
+						if (keplr.mode === 'mobile-web') {
+							// Can't suggest the chain on mobile web.
+							return;
+						}
+
 						if (keplr instanceof KeplrWalletConnectV1) {
 							// Can't suggest the chain using wallet connect.
 							return;
@@ -686,6 +691,21 @@ export class RootStore {
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-77' }], 'uxki'),
 						coinDenom: 'XKI',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
+						coinDenom: 'UST',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '582',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'ukrw'),
+						coinDenom: 'KRT',
 						coinDecimals: 6,
 					},
 					{

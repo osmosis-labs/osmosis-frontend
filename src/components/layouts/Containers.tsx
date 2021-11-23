@@ -9,7 +9,7 @@ export const FullScreenContainer = styled.div`
 
 export const FullWidthContainer = styled.div`
 	width: 100%;
-	max-width: 1920px;
+	max-width: 1440px;
 `;
 
 export const CenterSection = styled.section`
@@ -36,7 +36,7 @@ export const Center = styled.div`
 `;
 
 export const CenterSelf = styled.div`
-	max-width: 1920px;
+	max-width: 1440px;
 	margin-left: auto;
 	margin-right: auto;
 `;

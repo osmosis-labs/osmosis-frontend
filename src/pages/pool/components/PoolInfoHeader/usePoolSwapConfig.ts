@@ -16,6 +16,14 @@ export class PoolSwapConfig extends AmountConfig {
 	@observable
 	protected outCurrencyMinimalDenom: string = '';
 
+	/**
+	 * Multiply balance when getting amount.
+	 * If the ratio is 1, it is handled as the `isMax` turned on.
+	 * Ratio should be <= 1 and > 0.
+	 */
+	@observable
+	protected _ratio: number | undefined = undefined;
+
 	constructor(
 		chainGetter: ChainGetter,
 		initialChainId: string,
@@ -68,6 +76,27 @@ export class PoolSwapConfig extends AmountConfig {
 			});
 	}
 
+	get ratio(): number | undefined {
+		return this._ratio;
+	}
+
+	@action
+	setRatio(ratio: number | undefined) {
+		if (ratio != null) {
+			if (ratio > 1) {
+				console.log('Warning: amount ratio should be lesser than or equal to 1');
+				return;
+			}
+
+			if (ratio <= 0) {
+				console.log('Warning: amount ratio should be greater than 0');
+				return;
+			}
+		}
+
+		this._ratio = ratio;
+	}
+
 	@override
 	get sendCurrency(): AppCurrency {
 		if (this.inCurrencyMinimalDenom) {
@@ -78,6 +107,54 @@ export class PoolSwapConfig extends AmountConfig {
 		}
 
 		return this.sendableCurrencies[0];
+	}
+
+	@override
+	get amount(): string {
+		if (this.ratio != null) {
+			const balance = this.queryBalances
+				.getQueryBech32Address(this.sender)
+				.getBalanceFromCurrency(this.sendCurrency)
+				.mul(new Dec(this.ratio.toString()));
+
+			const result = this.feeConfig?.fee ? balance.sub(this.feeConfig.fee) : balance;
+			if (result.toDec().lte(new Dec(0))) {
+				return '0';
+			}
+
+			// Remember that the `CoinPretty`'s sub method do nothing if the currencies are different.
+			return result
+				.trim(true)
+				.locale(false)
+				.hideDenom(true)
+				.toString();
+		}
+
+		return this._amount;
+	}
+
+	@override
+	setAmount(amount: string) {
+		this.setRatio(undefined);
+		super.setAmount(amount);
+	}
+
+	get isMax(): boolean {
+		return this._ratio === 1;
+	}
+
+	@override
+	setIsMax(isMax: boolean): void {
+		if (isMax) {
+			this.setRatio(1);
+		} else {
+			this.setRatio(undefined);
+		}
+	}
+
+	@override
+	toggleIsMax(): void {
+		this.setIsMax(!this.isMax);
 	}
 
 	@computed
@@ -206,12 +283,6 @@ export class PoolSwapConfig extends AmountConfig {
 				.locale(false)
 				.toString()
 		);
-	}
-
-	@override
-	setAmount(amount: string) {
-		this.setIsMax(false);
-		super.setAmount(amount);
 	}
 }
 

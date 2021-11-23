@@ -99,6 +99,10 @@ const AssetsList = styled.div`
 	gap: 12px;
 
 	@media (min-width: 768px) {
+		gap: 24px;
+	}
+
+	@media (min-width: 1024px) {
 		flex-direction: row;
 		gap: 86px;
 		align-items: center;
@@ -110,6 +114,10 @@ const AssetsListRow = styled.div`
 	gap: 36px;
 
 	@media (min-width: 768px) {
+		gap: 64px;
+	}
+
+	@media (min-width: 1024px) {
 		gap: 86px;
 	}
 `;

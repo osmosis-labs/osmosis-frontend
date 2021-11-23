@@ -241,6 +241,9 @@ export const IBCAssetInfos: {
 	// Destination channel id from Osmosis chain
 	destChannelId: string;
 	coinMinimalDenom: string;
+	// In some reasons, ibc channel is in unstable status.
+	// Disable the deposit, withdraw button and show the tooltip.
+	isUnstable?: boolean;
 }[] = [
 	{
 		counterpartyChainId: 'cosmoshub-4',
@@ -295,6 +298,7 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-8',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uregen',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'sentinelhub-2',
@@ -307,6 +311,7 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-6',
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uiris',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'iov-mainnet-ibc',
@@ -482,7 +487,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'KRT',
 				coinMinimalDenom: 'ukrw',
 				coinDecimals: 6,
-				coinGeckoId: 'terrakrw',
+				coinGeckoId: 'terra-krw',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
 			},
 		],
@@ -580,7 +585,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'regen',
 			},
 		],
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://regen.aneka.io/txs/{txHash}',
 	},
 	{
@@ -893,7 +898,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		rpc: 'https://mainnet-node.like.co/rpc',
 		rest: 'https://mainnet-node.like.co',
 		chainId: 'likecoin-mainnet-2',
-		chainName: 'Likecoin',
+		chainName: 'LikeCoin',
 		stakeCurrency: {
 			coinDenom: 'LIKE',
 			coinMinimalDenom: 'nanolike',
