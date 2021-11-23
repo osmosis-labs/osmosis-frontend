@@ -270,6 +270,12 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'uusd',
 	},
 	{
+		counterpartyChainId: 'secret-4',
+		sourceChannelId: 'channel-88',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uscrt',
+	},
+	{
 		counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-42',
 		destChannelId: 'channel-0',
@@ -514,6 +520,44 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://finder.terra.money/columbus-5/tx/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-secret.keplr.app',
+		rest: 'https://lcd-secret.keplr.app',
+		chainId: 'secret-4',
+		chainName: 'Secret Network',
+		stakeCurrency: {
+			coinDenom: 'SCRT',
+			coinMinimalDenom: 'uscrt',
+			coinDecimals: 6,
+			coinGeckoId: 'secret',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/scrt.svg',
+		},
+		bip44: {
+			coinType: 529,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('secret'),
+		currencies: [
+			{
+				coinDenom: 'SCRT',
+				coinMinimalDenom: 'uscrt',
+				coinDecimals: 6,
+				coinGeckoId: 'secret',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/scrt.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'SCRT',
+				coinMinimalDenom: 'uscrt',
+				coinDecimals: 6,
+				coinGeckoId: 'secret',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/scrt.svg',
+			},
+		],
+		coinType: 118,
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://secretnodes.com/secret/chains/secret-4/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-akash.keplr.app',
