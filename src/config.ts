@@ -378,6 +378,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'umed',
 	},
+	{
+		counterpartyChainId: 'bostrom',
+		sourceChannelId: 'channel-79',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'uboot',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1169,5 +1175,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://www.mintscan.io/medibloc/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.bostrom.cybernode.ai',
+		rest: 'https://lcd.bostrom.cybernode.ai',
+		chainId: 'bostrom',
+		chainName: 'Bostrom',
+		stakeCurrency: {
+			coinDenom: 'BOOT',
+			coinMinimalDenom: 'uboot',
+			coinDecimals: 6,
+			// coinGeckoId: 'medibloc',
+			// coinImageUrl: window.location.origin + '/public/assets/tokens/med.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('bostrom'),
+		currencies: [
+			{
+				coinDenom: 'BOOT',
+				coinMinimalDenom: 'uboot',
+				coinDecimals: 6,
+				// coinGeckoId: 'medibloc',
+				// coinImageUrl: window.location.origin + '/public/assets/tokens/med.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'BOOT',
+				coinMinimalDenom: 'uboot',
+				coinDecimals: 6,
+				// coinGeckoId: 'medibloc',
+				// coinImageUrl: window.location.origin + '/public/assets/tokens/med.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://cyb.ai/network/bostrom/tx/{txHash}',
 	},
 ];
