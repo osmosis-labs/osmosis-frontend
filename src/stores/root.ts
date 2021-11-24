@@ -102,7 +102,7 @@ export class RootStore {
 					if (chainInfo.chainId.startsWith('osmosis-')) {
 						gas = 1_350_000;
 					} else if (chainInfo.chainId.startsWith('secret-')) {
-						gas = 20_000;
+						gas = 25_000;
 					} else if (chainInfo.chainId.startsWith('columbus-') || chainInfo.chainId.startsWith('cosmoshub-')) {
 						gas = 100_000;
 					}
