@@ -13,3 +13,47 @@
 		transform: rotate(360deg);
 	}
 }
+
+.loading-animation {
+	position: absolute;
+	left: 0;
+	transform: translateX(-150%);
+	height: 100%;
+	width: 50%;
+	background-image: linear-gradient(
+		to left,
+		rgba(251, 251, 251, 0.1),
+		rgba(251, 251, 251, 0.2),
+		rgba(251, 251, 251, 0.3),
+		rgba(251, 251, 251, 0.2),
+		rgba(251, 251, 251, 0.1)
+	);
+	background-image: -moz-linear-gradient(
+		to left,
+		rgba(251, 251, 251, 0.1),
+		rgba(251, 251, 251, 0.2),
+		rgba(251, 251, 251, 0.4),
+		rgba(251, 251, 251, 0.2),
+		rgba(251, 251, 251, 0.1)
+	);
+	background-image: -webkit-linear-gradient(
+		to left,
+		rgba(251, 251, 251, 0.1),
+		rgba(251, 251, 251, 0.2),
+		rgba(251, 251, 251, 0.3),
+		rgba(251, 251, 251, 0.2),
+		rgba(251, 251, 251, 0.1)
+	);
+	animation: loading 1s infinite;
+	animation-timing-function: ease-in-out;
+	z-index: 2;
+}
+
+@keyframes loading {
+	0% {
+		transform: translateX(-150%);
+	}
+	100% {
+		transform: translateX(200%);
+	}
+}

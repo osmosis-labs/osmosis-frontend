@@ -7,6 +7,7 @@ import { isMyPoolCardProp } from 'src/pages/pools/components/PoolCardList/utils/
 import { IncentivizedPoolCardProp, MyPoolCardProp } from 'src/pages/pools/models/poolCardProps';
 import { applyOptionalDecimal } from 'src/utils/format';
 import { Optional } from 'utility-types';
+import { CardInfoPlaceholder } from 'src/components/common/CardInfoPlaceholder';
 
 export function PoolCardItem(
 	props: (IncentivizedPoolCardProp | Optional<MyPoolCardProp, 'myLiquidity'>) & {
@@ -44,24 +45,35 @@ export function PoolCardItem(
 						{apr && (
 							<div style={{ marginLeft: '20px' }}>
 								<PoolHeaderText>APR</PoolHeaderText>
-								<PoolValueText>{apr.isLoading ? 'Loading..' : apr.value}%</PoolValueText>
+								{apr.isLoading ? (
+									<CardInfoPlaceholder className="w-18 h-4 bg-cardInfoPlaceholder" />
+								) : (
+									<PoolValueText>{apr.value}%</PoolValueText>
+								)}
 							</div>
 						)}
 					</CenterV>
 
-					<Hr apr={apr?.isLoading ? 'Loading..' : apr?.value} myLockedAmount={props.myLockedAmount?.value} />
+					<Hr apr={apr?.value} myLockedAmount={props.myLockedAmount?.value} />
 
 					<CenterV>
 						<div>
 							<PoolHeaderText>My Liquidity</PoolHeaderText>
-							<PoolValueText>{props.myLiquidity.isLoading ? 'Loading...' : props.myLiquidity.value}</PoolValueText>
+							{props.myLiquidity.isLoading ? (
+								<CardInfoPlaceholder className="w-23 h-4 bg-cardInfoPlaceholder" />
+							) : (
+								<PoolValueText>{props.myLiquidity.value}</PoolValueText>
+							)}
 						</div>
 						{props.myLockedAmount && (
 							<div style={{ marginLeft: '20px' }}>
 								<PoolHeaderText>My Bonded Amount</PoolHeaderText>
-								<PoolValueText>
-									{props.myLockedAmount.isLoading ? 'Loading...' : props.myLockedAmount.value}
-								</PoolValueText>
+
+								{props.myLockedAmount.isLoading ? (
+									<CardInfoPlaceholder className="w-23 h-4 bg-cardInfoPlaceholder" />
+								) : (
+									<PoolValueText>{props.myLockedAmount.value}</PoolValueText>
+								)}
 							</div>
 						)}
 					</CenterV>
@@ -70,7 +82,11 @@ export function PoolCardItem(
 				<CenterV>
 					<AprCol>
 						<PoolHeaderText>APR</PoolHeaderText>
-						<PoolValueText>{apr?.isLoading ? 'Loading..' : apr?.value}%</PoolValueText>
+						{apr?.isLoading ? (
+							<CardInfoPlaceholder className="w-18 h-4 bg-cardInfoPlaceholder" />
+						) : (
+							<PoolValueText>{apr?.value}%</PoolValueText>
+						)}
 					</AprCol>
 					<div style={{ marginLeft: '20px' }}>
 						<PoolHeaderText>Pool Liquidity</PoolHeaderText>
