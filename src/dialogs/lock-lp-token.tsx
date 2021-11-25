@@ -131,7 +131,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 	})
 );
 
-const LockupItem: FunctionComponent<{
+export const LockupItem: FunctionComponent<{
 	duration: string;
 	selected: boolean;
 	setSelected: () => void;

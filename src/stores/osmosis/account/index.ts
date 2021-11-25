@@ -17,6 +17,7 @@ import { DeepReadonly } from 'utility-types';
 import { HasOsmosisQueries } from '../query';
 import deepmerge from 'deepmerge';
 import { QueriedPoolBase } from '../query/pool';
+import { patchOnTxEventsHandler } from 'src/utils/tx';
 
 export interface HasOsmosisAccount {
 	osmosis: DeepReadonly<OsmosisAccount>;
@@ -206,7 +207,7 @@ export class OsmosisAccount {
 		shareOutAmount: string,
 		maxSlippage: string = '0',
 		memo: string = '',
-		onFulfill?: (tx: any) => void
+		onTxEvents?: Parameters<OsmosisAccount['base']['sendMsgs']>[5]
 	) {
 		const queries = this.queries;
 
@@ -262,7 +263,11 @@ export class OsmosisAccount {
 				gas: this.base.msgOpts.joinPool.gas.toString(),
 			},
 			undefined,
-			tx => {
+			// I need to be able to pass onBroadcastFailed.
+			// but the original code only was able to handle onFulfill
+			// so... it's... a HACKathon, isn't it?
+			// this patches an onFulfill handler onto a backwards-compatible arg
+			patchOnTxEventsHandler(onTxEvents, (tx: any) => {
 				if (tx.code == null || tx.code === 0) {
 					// TODO: Refresh the pools list.
 
@@ -275,11 +280,7 @@ export class OsmosisAccount {
 
 					queries.osmosis.queryGammPools.getObservableQueryPool(poolId).fetch();
 				}
-
-				if (onFulfill) {
-					onFulfill(tx);
-				}
-			}
+			})
 		);
 	}
 
@@ -366,7 +367,7 @@ export class OsmosisAccount {
 		tokenOutCurrency: Currency,
 		maxSlippage: string = '0',
 		memo: string = '',
-		onFulfill?: (tx: any) => void
+		onTxEvents?: Parameters<OsmosisAccount['base']['sendMsgs']>[5]
 	) {
 		const queries = this.queries;
 
@@ -397,7 +398,11 @@ export class OsmosisAccount {
 				gas: this.base.msgOpts.swapExactAmountIn.gas.toString(),
 			},
 			undefined,
-			tx => {
+			// I need to be able to pass onBroadcastFailed.
+			// but the original code only was able to handle onFulfill
+			// so... it's... a HACKathon, isn't it?
+			// this patches an onFulfill handler onto a backwards-compatible arg
+			patchOnTxEventsHandler(onTxEvents, (tx: any) => {
 				if (tx.code == null || tx.code === 0) {
 					// TODO: Refresh the pools list.
 
@@ -415,11 +420,7 @@ export class OsmosisAccount {
 					// Refresh the pool
 					queries.osmosis.queryGammPools.getObservableQueryPool(poolId).fetch();
 				}
-
-				if (onFulfill) {
-					onFulfill(tx);
-				}
-			}
+			})
 		);
 	}
 
@@ -573,7 +574,7 @@ export class OsmosisAccount {
 			amount: string;
 		}[],
 		memo: string = '',
-		onFulfill?: (tx: any) => void
+		onTxEvents?: Parameters<OsmosisAccount['base']['sendMsgs']>[5]
 	) {
 		const primitiveTokens = tokens.map(token => {
 			const amount = new Dec(token.amount).mul(DecUtils.getPrecisionDec(token.currency.coinDecimals)).truncate();
@@ -605,7 +606,7 @@ export class OsmosisAccount {
 				gas: this.base.msgOpts.lockTokens.gas.toString(),
 			},
 			undefined,
-			tx => {
+			patchOnTxEventsHandler(onTxEvents, (tx: any) => {
 				if (tx.code == null || tx.code === 0) {
 					// Refresh the balances
 					const queries = this.queriesStore.get(this.chainId);
@@ -615,11 +616,7 @@ export class OsmosisAccount {
 					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
 				}
-
-				if (onFulfill) {
-					onFulfill(tx);
-				}
-			}
+			})
 		);
 	}
 

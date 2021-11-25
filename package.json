@@ -65,6 +65,7 @@
 		"history": "^5.0.0",
 		"http-server": "^0.12.3",
 		"is-empty": "^1.2.0",
+		"lodash": "^4.17.21",
 		"lodash-es": "^4.17.21",
 		"mobx": "^6.1.7",
 		"mobx-react-lite": "^3.2.0",

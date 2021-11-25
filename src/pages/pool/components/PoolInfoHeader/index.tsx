@@ -10,6 +10,7 @@ import { PoolSwapDialog } from 'src/pages/pool/components/PoolInfoHeader/PoolSwa
 import { colorPrimary } from 'src/emotionStyles/colors';
 import styled from '@emotion/styled';
 import useWindowSize from 'src/hooks/useWindowSize';
+import { AutoBondDialog } from 'src/dialogs/auto-bond';
 import { useStore } from 'src/stores';
 
 interface Props {
@@ -19,6 +20,7 @@ interface Props {
 export const PoolInfoHeader = observer(function PoolInfoHeader({ poolId }: Props) {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [isSwapDialogOpen, setIsSwapDialogOpen] = useState(false);
+	const [isAutoBondDialogOpen, setIsAutoBondDialogOpen] = useState(false);
 	const { isMobileView } = useWindowSize();
 	const { chainStore, queriesStore } = useStore();
 	const queries = queriesStore.get(chainStore.current.chainId);
@@ -51,6 +53,12 @@ export const PoolInfoHeader = observer(function PoolInfoHeader({ poolId }: Props
 				isOpen={isSwapDialogOpen}
 				close={() => setIsSwapDialogOpen(false)}
 			/>
+			<AutoBondDialog
+				dialogStyle={isMobileView ? { backgroundColor: colorPrimary } : { width: '656px', minHeight: '533px' }}
+				poolId={poolId}
+				isOpen={isAutoBondDialogOpen}
+				close={() => setIsAutoBondDialogOpen(false)}
+			/>
 
 			<PoolHeader>
 				<div className="mb-2.5 md:mb-0 md:mr-6">
@@ -80,6 +88,17 @@ export const PoolInfoHeader = observer(function PoolInfoHeader({ poolId }: Props
 							}}>
 							<Text emphasis="high" isMobileView={isMobileView}>
 								Swap Tokens
+							</Text>
+						</ButtonPrimary>
+					</div>
+					<div className="md:ml-6">
+						<ButtonPrimary
+							type="button"
+							onClick={() => {
+								setIsAutoBondDialogOpen(true);
+							}}>
+							<Text emphasis="high" isMobileView={isMobileView}>
+								AutoBond
 							</Text>
 						</ButtonPrimary>
 					</div>
