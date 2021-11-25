@@ -103,8 +103,6 @@ export class RootStore {
 						gas = 1_350_000;
 					} else if (chainInfo.chainId.startsWith('secret-')) {
 						gas = 25_000;
-					} else if (chainInfo.chainId.startsWith('columbus-') || chainInfo.chainId.startsWith('cosmoshub-')) {
-						gas = 100_000;
 					}
 
 					return {
