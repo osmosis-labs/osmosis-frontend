@@ -71,7 +71,6 @@
 		"mobx-utils": "^6.0.3",
 		"precss": "^4.0.0",
 		"qrcode.react": "^1.0.1",
-		"query-string": "^7.0.1",
 		"querystring": "^0.2.1",
 		"react": "^16.14.0",
 		"react-cool-img": "^1.2.9",
