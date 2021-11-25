@@ -67,7 +67,7 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 
 			const search = queryString.stringify(query);
 
-			history.push({
+			history.replace({
 				search,
 			});
 		} else {
