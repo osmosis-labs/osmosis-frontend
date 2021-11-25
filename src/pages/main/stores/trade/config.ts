@@ -70,6 +70,7 @@ export class TradeConfig extends AmountConfig {
 	 * 하지만 Chain info에 등록된 Currency를 우선한다.
 	 * 추가로 IBC Currency일 경우 coin denom을 원래의 currency의 coin denom으로 바꾼다.
 	 */
+	@computed
 	get sendableCurrencies(): AppCurrency[] {
 		const chainInfo = this.chainInfo;
 		return this.swapManager.swappableCurrencies.map(cur => {
