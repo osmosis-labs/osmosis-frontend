@@ -26,6 +26,8 @@ import { AddLiquidityConfig, LockupItem } from '.';
 import { Process, useProcess } from 'src/hooks/process';
 import { AccountWithCosmosAndOsmosis } from 'src/stores/osmosis/account';
 import { Loader } from 'src/components/common/Loader';
+import { DeepReadonly } from 'utility-types';
+import { QueriesWithCosmosAndOsmosis } from 'src/stores/osmosis/query';
 
 export const AutoBondDialog = wrapBaseDialog(
 	observer(({ poolId, close }: { poolId: string; close: () => void }) => {
@@ -99,8 +101,9 @@ export const AutoBondDialog = wrapBaseDialog(
 										console.log('AutoBond process start', { ready: account.isReadyToSendMsgs, error });
 										if (!account.isReadyToSendMsgs || error != null) return;
 										performProcess(
-											account,
 											process,
+											account,
+											queries,
 											swapForLiquidityConfig,
 											addLiquidityConfig,
 											amountConfig,
@@ -219,8 +222,9 @@ const BottomButton: FunctionComponent<{
 });
 
 async function performProcess(
-	account: AccountWithCosmosAndOsmosis,
 	process: Process,
+	account: AccountWithCosmosAndOsmosis,
+	queries: DeepReadonly<QueriesWithCosmosAndOsmosis>,
 	swapForLiquidityConfig: PoolSwapConfig,
 	addLiquidityConfig: AddLiquidityConfig,
 	amountConfig: BasicAmountConfig,
@@ -291,72 +295,125 @@ async function performProcess(
 				});
 			}
 		);
+		// const swapInAmount = swapForLiquidityConfig.amount;
+		const swapOutAmount = swapForLiquidityConfig.outAmount.toDec();
 
 		// Add liquidity to Pool //
-		const firstAmount = swapForLiquidityConfig.amount;
-		const secondAmount = swapForLiquidityConfig.outAmount.toDec().toString();
-		addLiquidityConfig.setAmountAt(0, firstAmount); //TODO: max(<this>, balance)
-		addLiquidityConfig.setAmountAt(1, secondAmount);
-		const shareOutAmount = addLiquidityConfig.shareOutAmount;
-		console.log('Set amounts for pool join:', {
-			firstAmount,
-			secondAmount,
-			shareOut: shareOutAmount,
-		});
-		if (!shareOutAmount) throw new Error('Invalid shareOutAmount:' + shareOutAmount);
-		await process.trackStep(
-			{
-				type: 'join',
-				status: 'prompt',
-				info:
-					`Adding to pool:\n• ${firstAmount} ${swapForLiquidityConfig.sendCurrency.coinDenom}` +
-					`\n• ${swapForLiquidityConfig.outAmount.trim(true).toString()}`,
-			},
-			async updateStep => {
-				console.log('Joining pool:', poolId, 'with', addLiquidityConfig.shareOutAmount?.toString(), 'shares');
-				await new Promise<void>(async (resolve, reject) => {
-					// from: manage-liquidity.tsx
-					const result = await account.osmosis.sendJoinPoolMsg(
-						addLiquidityConfig.poolId,
-						addLiquidityConfig.shareOutAmount!.toDec().toString(),
-						'2.5',
-						'',
-						{
-							onBroadcastFailed: (e: Error | undefined) => {
-								console.error('broadcast error', e);
-								reject(e);
-							},
-							onBroadcasted: (txHash: Uint8Array) => {
-								console.log('broadcasted:', txHash);
-							},
-							onFulfill: (tx: any) => {
-								console.debug('[sendJoinPoolMsg] onFullfil', tx);
-								console.log('fulfilled:', tx);
-								resolve();
-							},
-						}
-					);
-					console.debug('[sendJoinPoolMsg] result', result);
-					updateStep({ status: 'wait' });
-				});
+		let finalShareAmount: IntPretty = (null as unknown) as IntPretty; // https://stackoverflow.com/a/61598241
+		await process.trackStep({ type: 'join', status: 'prompt', info: 'Waiting for balances' }, async updateStep => {
+			const indexOfIn = findIndex(addLiquidityConfig.poolAssetConfigs, poolAssetConfig => {
+				return poolAssetConfig.currency.coinDenom === swapForLiquidityConfig.sendCurrency.coinDenom;
+			});
+			const indexOfOut = findIndex(addLiquidityConfig.poolAssetConfigs, poolAssetConfig => {
+				return poolAssetConfig.currency.coinDenom === swapForLiquidityConfig.outCurrency.coinDenom;
+			});
+
+			console.debug('Refreshing balances');
+			let tries = 0;
+			while (true) {
+				// I didn't figure out how to wait for new balances, so I did this loop check
+				await queries.queryBalances.getQueryBech32Address(account.bech32Address).fetch();
+				const balanceQuery = queries.queryBalances.getQueryBech32Address(account.bech32Address);
+				const balances = [swapForLiquidityConfig.sendCurrency, swapForLiquidityConfig.outCurrency].map(c =>
+					balanceQuery.getBalanceFromCurrency(c)
+				);
+				console.debug(
+					'New balances:',
+					balances.map(b => b.toString())
+				);
+
+				if (balances[1].toDec().gte(swapOutAmount)) {
+					break;
+				}
+				tries++;
+				if (tries > 20) throw new Error('Timeout while waiting for balances');
+				await new Promise(resolve => setTimeout(resolve, 500));
 			}
-		);
+
+			// console.log('Calculated max amount for pool join:', {
+			// 	swapInAmount,
+			// 	indexOfIn,
+			// 	shareOut: addLiquidityConfig.shareOutAmount?.toDec()?.toString(),
+			// 	swapForLiquidityConfig,
+			// 	addLiquidityConfig,
+			// });
+			// addLiquidityConfig.setAmountAt(indexOfIn, swapInAmount);
+			// Setting max amount and then checking if what the user selected to swap was lower (this way we avoid using an amount that's higher than the max)
+			addLiquidityConfig.setMax();
+			const calculatedMaxOut = addLiquidityConfig.poolAssetConfigs[indexOfOut].amount;
+			console.log('Calculated max amount for pool join:', {
+				swapOutAmount: swapOutAmount.toString(),
+				calculatedMaxOut,
+				shareOut: addLiquidityConfig.shareOutAmount?.toDec()?.toString(),
+			});
+			if (new Dec(calculatedMaxOut).gt(swapOutAmount)) {
+				console.debug(
+					'Max amount would be bigger than what we swapped, so we use out amount:',
+					swapOutAmount.toString()
+				);
+				addLiquidityConfig.setAmountAt(indexOfOut, swapOutAmount.toString());
+			}
+			const shareOutAmount = addLiquidityConfig.shareOutAmount;
+			const calculatedInAmount = addLiquidityConfig.poolAssetConfigs[indexOfIn].amount;
+			const calculatedOutAmount = addLiquidityConfig.poolAssetConfigs[indexOfOut].amount;
+			console.log('Final shareOutAmount for pool join:', shareOutAmount?.toDec()?.toString());
+			if (!shareOutAmount) throw new Error('Invalid shareOutAmount:' + shareOutAmount);
+
+			// Perform add to pool //
+			updateStep({
+				status: 'wait',
+				info:
+					`Adding to pool:\n• ${calculatedInAmount} ${swapForLiquidityConfig.sendCurrency.coinDenom}` +
+					`\n• ${calculatedOutAmount} ${swapForLiquidityConfig.outCurrency.coinDenom}`,
+			});
+
+			console.log('Joining pool:', poolId, 'with', addLiquidityConfig.shareOutAmount?.toString(), 'shares');
+			await new Promise<void>(async (resolve, reject) => {
+				// from: manage-liquidity.tsx
+				const result = await account.osmosis.sendJoinPoolMsg(
+					addLiquidityConfig.poolId,
+					shareOutAmount.toDec().toString(),
+					'2.5',
+					'',
+					{
+						onBroadcastFailed: (e: Error | undefined) => {
+							console.error('broadcast error', e);
+							reject(e);
+						},
+						onBroadcasted: (txHash: Uint8Array) => {
+							console.log('broadcasted:', txHash);
+						},
+						onFulfill: (tx: any) => {
+							console.debug('[sendJoinPoolMsg] onFullfil', tx);
+							console.log('fulfilled:', tx);
+							resolve();
+						},
+					}
+				);
+				console.debug('[sendJoinPoolMsg] result', result);
+				updateStep({ status: 'wait' });
+			});
+
+			finalShareAmount = shareOutAmount;
+		});
 
 		// Bond liquidity to Earn //
-		console.log('Amounts for locking:', {
-			shareOut: shareOutAmount, //TODO: max(<this>, balance)
-		});
-		amountConfig.setAmount(shareOutAmount.toString());
 		await process.trackStep(
-			{ type: 'bond', status: 'prompt', info: `Bonding ${shareOutAmount.toString()} LP tokens` },
+			{
+				type: 'bond',
+				status: 'prompt',
+				info: `Bonding ${finalShareAmount
+					.maxDecimals(6)
+					.toDec()
+					.toString()} LP tokens`,
+			},
 			async updateStep => {
-				console.log(
-					'Bonding tokens:',
-					addLiquidityConfig.shareOutAmount?.toString(),
-					'for',
-					lockDuration.asDays(),
-					'days'
-				);
+				if (!finalShareAmount) throw new Error('Invalid finalShareAmount:' + finalShareAmount);
+				console.log('Amounts for locking:', {
+					shareOut: finalShareAmount.toDec().toString(), //TODO: max(<this>, balance)
+				});
+				amountConfig.setAmount(finalShareAmount.toDec().toString());
+				console.log('Bonding tokens:', finalShareAmount.toDec().toString(), 'for', lockDuration.asDays(), 'days');
 				await new Promise<void>(async (resolve, reject) => {
 					// from: lock-lp-token.tsx
 					const result = await account.osmosis.sendLockTokensMsg(
@@ -386,6 +443,9 @@ async function performProcess(
 	}
 }
 
+///////////////
+// Auto-calc //
+///////////////
 function useAutoCalc(swapForLiquidityConfig: PoolSwapConfig) {
 	const { chainStore, queriesStore, accountStore } = useStore();
 	const { isMobileView } = useWindowSize();

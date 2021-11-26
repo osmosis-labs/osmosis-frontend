@@ -43,13 +43,12 @@ export const ProcessTracker: React.FunctionComponent<{ process: Process; classNa
 			return <div className="flex flex-row items-center">in progress{/* <HourglassEmpty /> */}</div>;
 		}
 		if (step.status === 'success') return '✓';
-		// // if (step.status === 'wallet-error') return <SmsFailedOutlined /> -- currently not detected specifically
-		// if (step.status === 'error') {
-		// 	if (isCancelled(step)) {
-		// 		return <Cancel />;
-		// 	}
-		// 	return <WarningOutlined />;
-		// }
+		if (step.status === 'error') {
+			// if (isCancelled(step)) {
+			// 	return <Cancel />;
+			// }
+			return 'error'; //<WarningOutlined />;
+		}
 		return '?'; //<Help />;
 	};
 
@@ -61,7 +60,7 @@ export const ProcessTracker: React.FunctionComponent<{ process: Process; classNa
 				{process.steps.map((step: Step) => {
 					const finished = step.status === 'success' || step.status.endsWith('error');
 
-					let classes = 'flex justify-between mb-2';
+					let classes = 'flex items-center justify-between mb-2';
 					classes += !finished
 						? ' animate-pulse duration-500'
 						: step.status.endsWith('error')
@@ -80,7 +79,7 @@ export const ProcessTracker: React.FunctionComponent<{ process: Process; classNa
 							title={tooltip ?? '' /* will not show for empty string * /}> */
 					return (
 						<li className={classes} key={`${step.type}|${step.status}|${step.hash ?? 'no-trx'}`}>
-							<span className="mr-4 whitespace-pre leading-tight">{step.info}</span>
+							<span className="mr-6 whitespace-pre leading-tight">{step.info}</span>
 							<div className="flex flex-row items-center">
 								{step.hash ? (
 									<a

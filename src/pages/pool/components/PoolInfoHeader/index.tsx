@@ -80,7 +80,7 @@ export const PoolInfoHeader = observer(function PoolInfoHeader({ poolId }: Props
 							</ButtonPrimary>
 						</div>
 					)}
-					<div className="md:ml-6">
+					<div className="md:ml-6 mr-1.5">
 						<ButtonPrimary
 							type="button"
 							onClick={() => {
