@@ -304,7 +304,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-8',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uregen',
-		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'sentinelhub-2',
