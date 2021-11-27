@@ -1,33 +1,21 @@
-import { TxChainSetter } from '@keplr-wallet/hooks';
-import { ChainGetter, ObservableQueryBalances } from '@keplr-wallet/stores';
-import { Currency } from '@keplr-wallet/types';
-import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
+import { CoinPretty, Dec, IntPretty } from '@keplr-wallet/unit';
 import cn from 'clsx';
 import { findIndex } from 'lodash-es';
-import { action, computed, makeObservable, observable, override } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { computedFn } from 'mobx-utils';
-import React, { Dispatch, FunctionComponent, SetStateAction, useEffect, useState } from 'react';
-import InputSlider from 'react-input-slider';
-import { AmountInput } from '../components/form/Inputs';
-import { ProcessTracker } from '../components/common/ProcessTracker';
-import { MISC } from '../constants';
-import { OSMO_MEDIUM_TX_FEE } from '../constants/fee';
-import { BasicAmountConfig, useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
-import { useStore } from '../stores';
-import { ObservableQueryGammPoolShare } from '../stores/osmosis/query/pool-share';
-import { ObservableQueryPools } from '../stores/osmosis/query/pools';
-import { wrapBaseDialog } from './base';
+import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
+import { AutoBondFromBox } from 'src/components/SwapToken/AutoBondFromBox';
+import { Process, useProcess } from 'src/hooks/process';
+import { useFakeFeeConfig } from 'src/hooks/tx';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { PoolSwapConfig, usePoolSwapConfig } from 'src/pages/pool/components/PoolInfoHeader/usePoolSwapConfig';
-import { useFakeFeeConfig } from 'src/hooks/tx';
-import { FromBox } from 'src/components/SwapToken/FromBox';
-import { AddLiquidityConfig, LockupItem } from '.';
-import { Process, useProcess } from 'src/hooks/process';
 import { AccountWithCosmosAndOsmosis } from 'src/stores/osmosis/account';
-import { Loader } from 'src/components/common/Loader';
-import { DeepReadonly } from 'utility-types';
 import { QueriesWithCosmosAndOsmosis } from 'src/stores/osmosis/query';
+import { DeepReadonly } from 'utility-types';
+import { AddLiquidityConfig, LockupItem } from '.';
+import { ProcessTracker } from '../components/common/ProcessTracker';
+import { BasicAmountConfig, useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
+import { useStore } from '../stores';
+import { wrapBaseDialog } from './base';
 
 export const AutoBondDialog = wrapBaseDialog(
 	observer(({ poolId, close }: { poolId: string; close: () => void }) => {
@@ -38,7 +26,7 @@ export const AutoBondDialog = wrapBaseDialog(
 		const account = accountStore.getAccount(chainStore.current.chainId);
 
 		// Swap config
-		const swapForLiquidityConfig = usePoolSwapConfig(
+		const swapConfig = usePoolSwapConfig(
 			chainStore,
 			chainStore.current.chainId,
 			account.bech32Address,
@@ -47,10 +35,10 @@ export const AutoBondDialog = wrapBaseDialog(
 			queries.osmosis.queryGammPools
 		);
 		const feeConfig = useFakeFeeConfig(chainStore, chainStore.current.chainId, account.msgOpts.swapExactAmountIn.gas);
-		swapForLiquidityConfig.setFeeConfig(feeConfig);
+		swapConfig.setFeeConfig(feeConfig);
 
 		// Auto swap currency & amount
-		const [didAutoCalc, reset] = useAutoCalc(swapForLiquidityConfig);
+		const [autoCalcResult, redoAutoCalc] = useAutoCalc(swapConfig);
 
 		// Join pool Config
 		const [addLiquidityConfig] = useState(
@@ -83,7 +71,7 @@ export const AutoBondDialog = wrapBaseDialog(
 			queries.queryBalances
 		);
 
-		const error = swapForLiquidityConfig.getError();
+		const error = swapConfig.getError();
 		return (
 			<div className="text-white-high w-full h-full">
 				<h5 className="text-lg md:text-xl mb-5 md:mb-9">AutoBond</h5>
@@ -91,10 +79,10 @@ export const AutoBondDialog = wrapBaseDialog(
 					<div className="bg-card rounded-2xl p-6 max-w-max">
 						{!process.active && !process.steps.length ? (
 							<>
-								<SwapForLiquidity config={swapForLiquidityConfig} />
+								<SwapForLiquidity config={swapConfig} handleMax={redoAutoCalc} autoCalcResult={autoCalcResult} />
 								<LockupSelect {...{ poolId, selectedDurationIndex, setSelectedDurationIndex }} />
 								<BottomButton
-									swapForLiquidityConfig={swapForLiquidityConfig}
+									swapConfig={swapConfig}
 									addLiquidityConfig={addLiquidityConfig}
 									startProcess={() => {
 										if (process.active) return;
@@ -104,7 +92,7 @@ export const AutoBondDialog = wrapBaseDialog(
 											process,
 											account,
 											queries,
-											swapForLiquidityConfig,
+											swapConfig,
 											addLiquidityConfig,
 											amountConfig,
 											lockableDurations[selectedDurationIndex]
@@ -136,18 +124,30 @@ export const AutoBondDialog = wrapBaseDialog(
 
 const SwapForLiquidity: FunctionComponent<{
 	config: PoolSwapConfig;
-}> = observer(({ config }) => {
+	handleMax: () => any;
+	autoCalcResult: AutoCalcResult | null;
+}> = observer(({ config, handleMax, autoCalcResult }) => {
 	const { isMobileView } = useWindowSize();
+
+	let subText: string;
+	if (autoCalcResult == 'all_in')
+		subText = `Swap ${config.sendCurrency.coinDenom} to ${config.outCurrency.coinDenom} to go all-in:`;
+	else if (autoCalcResult == 'lower_in')
+		subText = `Auto-Match ${config.sendCurrency.coinDenom} with ${config.outCurrency.coinDenom}:`;
+	else subText = 'Calculating...';
 
 	return (
 		<React.Fragment>
 			<p style={{ marginBottom: isMobileView ? 12 : 18 }}>
-				1. Swap {config.sendCurrency.coinDenom} to {config.outCurrency.coinDenom}
+				1. Establish balanced liquidity
 				<br />
-				<span className="text-sm">Auto-calculated to go all-in on both sides</span>
+				<span className="text-sm">{subText}</span>
 			</p>
 			<div style={{ marginBottom: isMobileView ? 12 : 18 }}>
-				<FromBox config={config} dropdownStyle={isMobileView ? { width: 'calc(100vw - 72px)' } : {}} />
+				<AutoBondFromBox
+					{...{ config, handleMax }}
+					dropdownStyle={isMobileView ? { width: 'calc(100vw - 72px)' } : {}}
+				/>
 			</div>
 		</React.Fragment>
 	);
@@ -188,11 +188,11 @@ const LockupSelect: FunctionComponent<{
 });
 
 const BottomButton: FunctionComponent<{
-	swapForLiquidityConfig: PoolSwapConfig;
+	swapConfig: PoolSwapConfig;
 	addLiquidityConfig: AddLiquidityConfig;
 	startProcess: () => void;
 	error: Error | undefined;
-}> = observer(({ swapForLiquidityConfig, addLiquidityConfig, startProcess, error }) => {
+}> = observer(({ swapConfig, addLiquidityConfig, startProcess, error }) => {
 	const { chainStore, accountStore } = useStore();
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
@@ -225,12 +225,12 @@ async function performProcess(
 	process: Process,
 	account: AccountWithCosmosAndOsmosis,
 	queries: DeepReadonly<QueriesWithCosmosAndOsmosis>,
-	swapForLiquidityConfig: PoolSwapConfig,
+	swapConfig: PoolSwapConfig,
 	addLiquidityConfig: AddLiquidityConfig,
 	amountConfig: BasicAmountConfig,
 	lockDuration: plugin.Duration
 ) {
-	const poolId = swapForLiquidityConfig.poolId;
+	const poolId = swapConfig.poolId;
 	if (!poolId) {
 		throw new Error("Can't calculate the optimized pools");
 	}
@@ -243,15 +243,15 @@ async function performProcess(
 			{
 				type: 'swap',
 				status: 'prompt',
-				info: `Swapping ${swapForLiquidityConfig.amount.toString()} ${swapForLiquidityConfig.sendCurrency.coinDenom}`,
+				info: `Swapping ${swapConfig.amount.toString()} ${swapConfig.sendCurrency.coinDenom}`,
 			},
 			async updateStep => {
-				let slippage = swapForLiquidityConfig.estimatedSlippage.mul(new Dec('1.05'));
+				let slippage = swapConfig.estimatedSlippage.mul(new Dec('1.05'));
 				if (slippage.toDec().lt(new Dec(1))) {
 					slippage = new IntPretty(new Dec(1));
 				}
 
-				const poolId = swapForLiquidityConfig.poolId;
+				const poolId = swapConfig.poolId;
 				if (!poolId) {
 					throw new Error("Can't calculate the optimized pools");
 				}
@@ -261,10 +261,10 @@ async function performProcess(
 					const result = await account.osmosis.sendSwapExactAmountInMsg(
 						poolId,
 						{
-							currency: swapForLiquidityConfig.sendCurrency,
-							amount: swapForLiquidityConfig.amount,
+							currency: swapConfig.sendCurrency,
+							amount: swapConfig.amount,
 						},
-						swapForLiquidityConfig.outCurrency,
+						swapConfig.outCurrency,
 						slippage
 							.locale(false)
 							.maxDecimals(18)
@@ -295,17 +295,17 @@ async function performProcess(
 				});
 			}
 		);
-		// const swapInAmount = swapForLiquidityConfig.amount;
-		const swapOutAmount = swapForLiquidityConfig.outAmount.toDec();
+		// const swapInAmount = swapConfig.amount;
+		const swapOutAmount = swapConfig.outAmount.toDec();
 
 		// Add liquidity to Pool //
 		let finalShareAmount: IntPretty = (null as unknown) as IntPretty; // https://stackoverflow.com/a/61598241
 		await process.trackStep({ type: 'join', status: 'prompt', info: 'Waiting for balances' }, async updateStep => {
 			const indexOfIn = findIndex(addLiquidityConfig.poolAssetConfigs, poolAssetConfig => {
-				return poolAssetConfig.currency.coinDenom === swapForLiquidityConfig.sendCurrency.coinDenom;
+				return poolAssetConfig.currency.coinDenom === swapConfig.sendCurrency.coinDenom;
 			});
 			const indexOfOut = findIndex(addLiquidityConfig.poolAssetConfigs, poolAssetConfig => {
-				return poolAssetConfig.currency.coinDenom === swapForLiquidityConfig.outCurrency.coinDenom;
+				return poolAssetConfig.currency.coinDenom === swapConfig.outCurrency.coinDenom;
 			});
 
 			console.debug('Refreshing balances');
@@ -314,7 +314,7 @@ async function performProcess(
 				// I didn't figure out how to wait for new balances, so I did this loop check
 				await queries.queryBalances.getQueryBech32Address(account.bech32Address).fetch();
 				const balanceQuery = queries.queryBalances.getQueryBech32Address(account.bech32Address);
-				const balances = [swapForLiquidityConfig.sendCurrency, swapForLiquidityConfig.outCurrency].map(c =>
+				const balances = [swapConfig.sendCurrency, swapConfig.outCurrency].map(c =>
 					balanceQuery.getBalanceFromCurrency(c)
 				);
 				console.debug(
@@ -334,7 +334,7 @@ async function performProcess(
 			// 	swapInAmount,
 			// 	indexOfIn,
 			// 	shareOut: addLiquidityConfig.shareOutAmount?.toDec()?.toString(),
-			// 	swapForLiquidityConfig,
+			// 	swapConfig,
 			// 	addLiquidityConfig,
 			// });
 			// addLiquidityConfig.setAmountAt(indexOfIn, swapInAmount);
@@ -363,8 +363,8 @@ async function performProcess(
 			updateStep({
 				status: 'wait',
 				info:
-					`Adding to pool:\n• ${calculatedInAmount} ${swapForLiquidityConfig.sendCurrency.coinDenom}` +
-					`\n• ${calculatedOutAmount} ${swapForLiquidityConfig.outCurrency.coinDenom}`,
+					`Adding to pool:\n• ${calculatedInAmount} ${swapConfig.sendCurrency.coinDenom}` +
+					`\n• ${calculatedOutAmount} ${swapConfig.outCurrency.coinDenom}`,
 			});
 
 			console.log('Joining pool:', poolId, 'with', addLiquidityConfig.shareOutAmount?.toString(), 'shares');
@@ -446,24 +446,27 @@ async function performProcess(
 ///////////////
 // Auto-calc //
 ///////////////
-function useAutoCalc(swapForLiquidityConfig: PoolSwapConfig) {
+type AutoCalcResult = 'all_in' | 'lower_in';
+function useAutoCalc(swapConfig: PoolSwapConfig): [AutoCalcResult | null, () => void] {
 	const { chainStore, queriesStore, accountStore } = useStore();
 	const { isMobileView } = useWindowSize();
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const account = accountStore.getAccount(chainStore.current.chainId);
 
-	const [didAutoCalc, setDidAutoCalc] = useState(false);
+	const [autoCalcResult, setAutoCalcResult] = useState<AutoCalcResult | null>(null);
+	const [autoCalcInvalidator, setAutoCalcInvalidator] = useState(0); // whenever this changes, the effect is re-run
+	const invalidateAutoCalc = useCallback(() => setAutoCalcInvalidator(autoCalcInvalidator + 1), [autoCalcInvalidator]);
+	const firstAutoCalc = useRef(true); // will be set to false after first successful calc
+	console.log('firstAutoCalc?', firstAutoCalc.current);
 
 	useEffect(() => {
-		// if (didAutoCalc) return;
-
 		// get balances
 		let inBalance = queries.queryBalances
 			.getQueryBech32Address(account.bech32Address)
-			.getBalanceFromCurrency(swapForLiquidityConfig.sendCurrency);
+			.getBalanceFromCurrency(swapConfig.sendCurrency);
 		let outBalance = queries.queryBalances
 			.getQueryBech32Address(account.bech32Address)
-			.getBalanceFromCurrency(swapForLiquidityConfig.outCurrency);
+			.getBalanceFromCurrency(swapConfig.outCurrency);
 		console.debug('Balances:', [inBalance.toString(), outBalance.toString()]);
 
 		// if one (or both) are 0, handle that smartly
@@ -473,7 +476,7 @@ function useAutoCalc(swapForLiquidityConfig: PoolSwapConfig) {
 				return;
 			}
 			console.log('in balance is 0, out is not - flipping');
-			swapForLiquidityConfig.switchInAndOut();
+			swapConfig.switchInAndOut();
 			const inB = inBalance;
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 			inBalance = outBalance;
@@ -482,12 +485,12 @@ function useAutoCalc(swapForLiquidityConfig: PoolSwapConfig) {
 		}
 
 		// Estimate how much the current 'in' balance would be worth in 'out'
-		const estimatedOut = swapForLiquidityConfig.pool.pool?.estimateSwapExactAmountIn(
+		const estimatedOut = swapConfig.pool.pool?.estimateSwapExactAmountIn(
 			{
-				currency: swapForLiquidityConfig.sendCurrency,
+				currency: swapConfig.sendCurrency,
 				amount: inBalance.toDec().toString(),
 			},
-			swapForLiquidityConfig.outCurrency
+			swapConfig.outCurrency
 		);
 		if (!estimatedOut) {
 			console.error('swap estimation failed:', estimatedOut);
@@ -498,12 +501,20 @@ function useAutoCalc(swapForLiquidityConfig: PoolSwapConfig) {
 		let swapAmount: CoinPretty;
 		if (estimatedOut.tokenOut.toDec().lt(outBalance.toDec())) {
 			// Swapping A->B would be worth less than our B balance
-			console.debug('estimate out:', estimatedOut.tokenOut.toString(), '<', outBalance.toString(), '=> flipping');
-			swapForLiquidityConfig.switchInAndOut();
-			// spreadsheet showing formula: https://cryptpad.fr/sheet/#/2/sheet/view/9v8XedWF8B9Ljm13UGJ-lgtW1PzfcueL+-lf2AkvTSc/embed/
-			const difference = outBalance.sub(estimatedOut.tokenOut);
-			swapAmount = difference //
-				.mul(new Dec('0.5')); // we want to exchange half of the difference
+			console.debug('estimate out:', estimatedOut.tokenOut.toString(), '<', outBalance.toString());
+			if (firstAutoCalc.current) {
+				console.debug('first update => flipping');
+				swapConfig.switchInAndOut();
+				// spreadsheet showing formula: https://cryptpad.fr/sheet/#/2/sheet/view/9v8XedWF8B9Ljm13UGJ-lgtW1PzfcueL+-lf2AkvTSc/embed/
+				const difference = outBalance.sub(estimatedOut.tokenOut);
+				swapAmount = difference //
+					.mul(new Dec('0.5')); // we want to exchange half of the difference
+				setAutoCalcResult('all_in');
+			} else {
+				console.debug('User wants to swap less than possible, but we did autoFlip already, so let him do that');
+				swapAmount = inBalance;
+				setAutoCalcResult('lower_in');
+			}
 		} else {
 			// Swapping A->B would be worth more than our B balance
 			const difference = outBalance.sub(estimatedOut.tokenOut);
@@ -519,6 +530,7 @@ function useAutoCalc(swapForLiquidityConfig: PoolSwapConfig) {
 			swapAmount = difference
 				.mul(price) // we need to convert difference to B
 				.mul(new Dec('-0.5')); // we want to fill up half of the difference
+			setAutoCalcResult('all_in');
 		}
 		const finalSwapAmount = swapAmount
 			.trim(true)
@@ -527,13 +539,22 @@ function useAutoCalc(swapForLiquidityConfig: PoolSwapConfig) {
 			.hideDenom(true)
 			.locale(false)
 			.toString();
-		if (swapForLiquidityConfig.amount == finalSwapAmount) {
+
+		firstAutoCalc.current = false;
+		if (swapConfig.amount == finalSwapAmount) {
 			console.debug("finalSwapAmount didn't change:", finalSwapAmount.toString());
+			return;
 		}
 		console.debug('Updating swap amount:', finalSwapAmount.toString());
-		swapForLiquidityConfig.setAmount(finalSwapAmount);
-		setDidAutoCalc(true);
-	}, [swapForLiquidityConfig, didAutoCalc, setDidAutoCalc, queries.queryBalances, account.bech32Address]);
+		swapConfig.setAmount(finalSwapAmount);
+	}, [
+		autoCalcInvalidator,
+		swapConfig,
+		swapConfig.sendCurrency,
+		swapConfig.outCurrency,
+		queries.queryBalances,
+		account.bech32Address,
+	]);
 
-	return [didAutoCalc, () => setDidAutoCalc(false)];
+	return [autoCalcResult, invalidateAutoCalc];
 }
