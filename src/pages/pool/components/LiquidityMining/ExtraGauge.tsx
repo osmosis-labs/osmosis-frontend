@@ -1,29 +1,50 @@
 import styled from '@emotion/styled';
 import { AppCurrency } from '@keplr-wallet/types';
-import { Int } from '@keplr-wallet/unit';
+import { CoinPretty, Int } from '@keplr-wallet/unit';
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TitleText, Text } from 'src/components/Texts';
 import { colorPrimary } from 'src/emotionStyles/colors';
 import { useStore } from 'src/stores';
 
 interface Props {
-	gaugeId: string;
+	/**
+	 * The main gauge and other gauges with a shorter duration than the main gauge.
+	 * The first gauge is treated as the main gauge.
+	 */
+	gaugeIds: string[];
 	currency: AppCurrency;
 	extraRewardAmount?: Int;
 }
 
-export const ExtraGauge = observer(function ExtraGauge({ gaugeId, currency, extraRewardAmount }: Props) {
+export const ExtraGauge = observer(function ExtraGauge({ gaugeIds, currency, extraRewardAmount }: Props) {
 	const { chainStore, queriesStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 
-	const gauge = queries.osmosis.queryGauge.get(gaugeId);
+	const gauges = useMemo(() => {
+		let gauges = gaugeIds.map(gaugeId => queries.osmosis.queryGauge.get(gaugeId));
 
-	const reward = gauge.getCoin(currency).add(extraRewardAmount ?? new Int(0));
+		if (gauges.length > 0) {
+			const main = gauges[0];
+			gauges = gauges.filter((gauge, i) => {
+				if (i === 0) {
+					return true;
+				}
 
-	if (!gauge.response || gauge.remainingEpoch <= 0) {
+				return main.lockupDuration.asMilliseconds() > gauge.lockupDuration.asMilliseconds();
+			});
+		}
+
+		return gauges;
+	}, [gaugeIds]);
+
+	const reward = gauges.reduce<CoinPretty>((prev, gauge) => {
+		return prev.add(gauge.getCoin(currency));
+	}, new CoinPretty(currency, extraRewardAmount ?? new Int(0)));
+
+	if (gaugeIds.length === 0 || gauges.length === 0 || !gauges[0].response || gauges[0].remainingEpoch <= 0) {
 		return null;
 	}
 
@@ -31,11 +52,11 @@ export const ExtraGauge = observer(function ExtraGauge({ gaugeId, currency, extr
 		<ExtraGaugeContainer>
 			<TitleText>Bonus bonding reward</TitleText>
 			<Text pb={16}>
-				{`This pool bonding over ${gauge.lockupDuration.humanize()} will earn additional bonding`}
+				{`This pool bonding over ${gauges[0].lockupDuration.humanize()} will earn additional bonding`}
 				<br />
-				{`incentives for ${gauge.remainingEpoch} epochs${
-					dayjs(gauge.startTime).isAfter(Date.now())
-						? ' starting at ' + dayjs(gauge.startTime).format('MMM D, YYYY')
+				{`incentives for ${gauges[0].remainingEpoch} epochs${
+					dayjs(gauges[0].startTime).isAfter(Date.now())
+						? ' starting at ' + dayjs(gauges[0].startTime).format('MMM D, YYYY')
 						: ''
 				}.`}
 			</Text>
