@@ -1131,7 +1131,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		rpc: 'https://rpc.gopanacea.org',
 		rest: 'https://api.gopanacea.org',
 		chainId: 'panacea-3',
-		chainName: 'Panacea',
+		chainName: 'MediBloc',
 		stakeCurrency: {
 			coinDenom: 'MED',
 			coinMinimalDenom: 'umed',
