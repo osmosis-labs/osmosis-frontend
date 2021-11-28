@@ -1177,8 +1177,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	},
 
 	{
-		rpc: 'https://rpc.comdex.one:443',
-		rest: 'https://rest.comdex.one',
+		rpc: 'https://api.comdex.audit.one/rpc',
+		rest: 'https://api.comdex.audit.one/rest',
 		chainId: 'comdex-1',
 		chainName: 'Comdex',
 		stakeCurrency: {
