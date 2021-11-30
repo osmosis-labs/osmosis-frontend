@@ -452,6 +452,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'umed',
 	},
+	{
+		counterpartyChainId: 'bostrom',
+		sourceChannelId: 'channel-95',
+		destChannelId: 'channel-2',
+		coinMinimalDenom: 'boot',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1243,5 +1249,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://www.mintscan.io/medibloc/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.bostrom.cybernode.ai',
+		rest: 'https://lcd.bostrom.cybernode.ai',
+		chainId: 'bostrom',
+		chainName: 'Bostrom',
+		stakeCurrency: {
+			coinDenom: 'BOOT',
+			coinMinimalDenom: 'boot',
+			coinDecimals: 0,
+			// coinGeckoId: 'pool:boot',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/boot.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('bostrom'),
+		currencies: [
+			{
+				coinDenom: 'BOOT',
+				coinMinimalDenom: 'boot',
+				coinDecimals: 0,
+				// coinGeckoId: 'pool:boot',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/boot.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'BOOT',
+				coinMinimalDenom: 'boot',
+				coinDecimals: 0,
+				// coinGeckoId: 'pool:boot',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/boot.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://cyb.ai/network/bostrom/tx/{txHash}',
 	},
 ];
