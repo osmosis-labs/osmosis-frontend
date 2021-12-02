@@ -53,7 +53,7 @@ export const PoolPage: FunctionComponent = observer(() => {
 				</PoolInfoHeaderWrapper>
 
 				<PoolInfoHeaderBgWrapper>
-					<PoolInfoHeaderBg isLbp={isLbp(pool.smoothWeightChangeParams)} />
+					<PoolInfoHeaderBg />
 				</PoolInfoHeaderBgWrapper>
 			</PoolInfoHeaderSection>
 
@@ -101,27 +101,19 @@ const PoolInfoHeaderBgWrapper = styled.div`
 	z-index: 0;
 `;
 
-const PoolInfoHeaderBg = styled.div<{ isLbp: boolean }>`
+const PoolInfoHeaderBg = styled.div`
 	position: absolute;
 	height: 100%;
-	${({ isLbp }) => ({
-		width: isLbp ? '900px' : '100%',
-		background: isLbp
-			? 'url("/public/assets/backgrounds/pool-details-lbp.png")'
-			: 'linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url("/public/assets/backgrounds/osmosis-guy-in-lab.png")',
-	})}
+	width: 100%;
+	background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
+		url('/public/assets/backgrounds/osmosis-guy-in-lab.png');
 	background-position-x: right;
 	background-position-y: bottom;
 	background-repeat: no-repeat;
 	background-size: contain;
 
 	@media (min-width: 768px) {
-		${({ isLbp }) => ({
-			width: isLbp ? '900px' : '100%',
-			background: isLbp
-				? 'url("/public/assets/backgrounds/pool-details-lbp.png")'
-				: 'url("/public/assets/backgrounds/osmosis-guy-in-lab.png")',
-		})}
+		background: url('/public/assets/backgrounds/osmosis-guy-in-lab.png');
 		background-position-x: right;
 		background-size: contain;
 		background-repeat: no-repeat;
