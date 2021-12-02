@@ -25,19 +25,23 @@ export const LBPOverview: FunctionComponent<{ title: string; poolIds: string[] }
 
 	return (
 		<section className="w-full">
-			<div className="flex items-center mb-6">
-				<h4 className="mr-0.5">{title}</h4>
+			<div className="flex items-center mb-4 md:mb-6">
+				<h5 className="md:text-2xl text-xl leading-snug">{title}</h5>
 			</div>
-			<div className="flex items-center gap-21.5">
-				<OverviewLabelValue label="Active Pools">
-					<h4 className="inline">{activePools.length}</h4>
-				</OverviewLabelValue>
-				<OverviewLabelValue label="Total Pools">
-					<h4 className="inline">{poolIds.length}</h4>
-				</OverviewLabelValue>
-				<OverviewLabelValue label="Total Pool Value">
-					<h4 className="inline">{totalPoolValue.toString()}</h4>
-				</OverviewLabelValue>
+			<div className="flex flex-col md:flex-row md:gap-21.5">
+				<div className="flex items-center gap-10 md:gap-21.5 mb-2.5 md:mb-0">
+					<OverviewLabelValue label="Active Pools">
+						<h5 className="inline md:text-2xl text-xl">{activePools.length}</h5>
+					</OverviewLabelValue>
+					<OverviewLabelValue label="Total Pools">
+						<h5 className="inline md:text-2xl text-xl">{poolIds.length}</h5>
+					</OverviewLabelValue>
+				</div>
+				<div>
+					<OverviewLabelValue label="Total Pool Value">
+						<h5 className="inline md:text-2xl text-xl">{totalPoolValue.toString()}</h5>
+					</OverviewLabelValue>
+				</div>
 			</div>
 		</section>
 	);
