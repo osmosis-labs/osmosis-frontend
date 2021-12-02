@@ -7,13 +7,13 @@ import { PromotedLBPPoolIds } from '../../config';
 export const BootstrapPage: FunctionComponent = observer(() => {
 	return (
 		<div className="w-full h-full">
-			<div className="py-10 w-full px-10">
-				<div className="max-w-max mx-auto">
+			<div className="pt-21 px-5 pb-5 md:p-10">
+				<div className="max-w-page mx-auto">
 					<LBPOverview title="Liquidity Bootstrapping Pools" poolIds={PromotedLBPPoolIds.map(p => p.poolId)} />
 				</div>
 			</div>
-			<div className="py-5 bg-surface w-full px-10">
-				<div className="max-w-max mx-auto">
+			<div className="bg-surface p-5 md:p-10">
+				<div className="max-w-page mx-auto">
 					<SynthesisList />
 				</div>
 			</div>

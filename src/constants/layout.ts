@@ -14,7 +14,6 @@ export const LAYOUT = {
 			SELECTED_CHECK: ['/pools', /\/pool\/[0-9]+/],
 			ROUTE: '/pools',
 		},
-		/*
 		LBP: {
 			ICON: '/public/assets/Icons/LBP.svg',
 			ICON_SELECTED: '/public/assets/Icons/LBP_selected.svg',
@@ -22,7 +21,6 @@ export const LAYOUT = {
 			ROUTE: '/bootstrap',
 			SELECTED_CHECK: '/bootstrap',
 		},
-		 */
 		AIRDROP: {
 			ICON: '/public/assets/Icons/Airdrop.svg',
 			ICON_SELECTED: '/public/assets/Icons/Airdrop_selected.svg',
