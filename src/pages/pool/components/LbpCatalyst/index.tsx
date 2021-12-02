@@ -16,11 +16,11 @@ export const LbpCatalyst = observer(function LbpCatalyst({ pool, lbpParams }: Pr
 	const { isMobileView } = useWindowSize();
 
 	return (
-		<CenterSelf style={{ paddingBottom: 40 }}>
+		<CenterSelf className="pb-10 pt-5 px-5 md:px-0">
 			<TitleText isMobileView={isMobileView} pb={isMobileView ? 10 : 24}>
 				LBP Stats
 			</TitleText>
-			<WellContainer>
+			<StatsContainer>
 				<PoolWeightRow>
 					<CellColumn
 						head="Current Pool Weight"
@@ -81,29 +81,49 @@ export const LbpCatalyst = observer(function LbpCatalyst({ pool, lbpParams }: Pr
 						}
 					/>
 				</DurationRow>
-			</WellContainer>
+			</StatsContainer>
 		</CenterSelf>
 	);
 });
 
+const StatsContainer = styled.div`
+	width: 100%;
+	border-radius: 0.75rem;
+	background-color: #2d2755;
+	padding: 20px;
+`;
+
 const PoolWeightRow = styled.section`
 	display: flex;
-	margin-bottom: 20px;
+	gap: 20px;
+	margin-bottom: 16px;
+
+	@media (min-width: 768px) {
+		margin-bottom: 20px;
+		gap: 40px;
+	}
 `;
 
 const DurationRow = styled.section`
 	display: flex;
+	gap: 20px;
+
+	@media (min-width: 768px) {
+		gap: 40px;
+	}
 `;
 
 function CellColumn({ head, body }: { head: ReactNode; body: ReactNode }) {
+	const { isMobileView } = useWindowSize();
+
 	return (
-		<CellColumnWrapper>
-			<Text pb={4}>{head}</Text>
-			<Text emphasis="high">{body}</Text>
-		</CellColumnWrapper>
+		<div>
+			<Text pb={4} isMobileView={isMobileView}>
+				{head}
+			</Text>
+			<Text emphasis="high" isMobileView={isMobileView}>
+				{body}
+			</Text>
+		</div>
 	);
 }
-
-const CellColumnWrapper = styled.div`
-	margin-right: 40px;
-`;

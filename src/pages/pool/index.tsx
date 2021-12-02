@@ -112,10 +112,14 @@ export const LBPInPageSwapClipboard: FunctionComponent<{
 
 	return (
 		<PoolSwapClipboardContainer>
-			<TitleText isMobileView={isMobileView} pb={isMobileView ? 10 : 24}>
-				Purchase Tokens
-			</TitleText>
-			<PoolSwapClipboardContent config={config} />
+			<div className="px-5 md:px-0">
+				<TitleText isMobileView={isMobileView} pb={isMobileView ? 10 : 24}>
+					Purchase Tokens
+				</TitleText>
+			</div>
+			<div className="bg-card p-5 md:p-0 md:bg-transparent">
+				<PoolSwapClipboardContent config={config} />
+			</div>
 		</PoolSwapClipboardContainer>
 	);
 };
