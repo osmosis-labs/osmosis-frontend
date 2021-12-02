@@ -14,9 +14,10 @@ import { useStore } from 'src/stores';
 
 interface Props {
 	poolId: string;
+	isLBP?: boolean;
 }
 
-export const PoolInfoHeader = observer(function PoolInfoHeader({ poolId }: Props) {
+export const PoolInfoHeader = observer(function PoolInfoHeader({ poolId, isLBP }: Props) {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [isSwapDialogOpen, setIsSwapDialogOpen] = useState(false);
 	const { isMobileView } = useWindowSize();
@@ -72,17 +73,19 @@ export const PoolInfoHeader = observer(function PoolInfoHeader({ poolId }: Props
 							</ButtonPrimary>
 						</div>
 					)}
-					<div className="md:ml-6">
-						<ButtonPrimary
-							type="button"
-							onClick={() => {
-								setIsSwapDialogOpen(true);
-							}}>
-							<Text emphasis="high" isMobileView={isMobileView}>
-								Swap Tokens
-							</Text>
-						</ButtonPrimary>
-					</div>
+					{!isLBP ? (
+						<div className="md:ml-6">
+							<ButtonPrimary
+								type="button"
+								onClick={() => {
+									setIsSwapDialogOpen(true);
+								}}>
+								<Text emphasis="high" isMobileView={isMobileView}>
+									Swap Tokens
+								</Text>
+							</ButtonPrimary>
+						</div>
+					) : null}
 				</div>
 			</PoolHeader>
 
