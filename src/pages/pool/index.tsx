@@ -12,6 +12,11 @@ import { useStore } from 'src/stores';
 import { QueriedPoolBase } from 'src/stores/osmosis/query/pool';
 import { LbpCatalyst } from './components/LbpCatalyst';
 import { LiquidityMining } from './components/LiquidityMining';
+import { usePoolSwapConfig } from 'src/pages/pool/components/PoolInfoHeader/usePoolSwapConfig';
+import { useFakeFeeConfig } from 'src/hooks/tx';
+import { PoolSwapClipboardContent } from 'src/pages/pool/components/PoolInfoHeader/PoolSwapDialog';
+import { TitleText } from 'src/components/Texts';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 interface QueryParams {
 	/**pool id*/
@@ -48,7 +53,7 @@ export const PoolPage: FunctionComponent = observer(() => {
 			<PoolInfoHeaderSection>
 				<PoolInfoHeaderWrapper>
 					<CenterSelf>
-						<PoolInfoHeader poolId={pool.id} />
+						<PoolInfoHeader poolId={pool.id} isLBP={isLbp(pool.smoothWeightChangeParams)} />
 					</CenterSelf>
 				</PoolInfoHeaderWrapper>
 
@@ -56,6 +61,14 @@ export const PoolPage: FunctionComponent = observer(() => {
 					<PoolInfoHeaderBg />
 				</PoolInfoHeaderBgWrapper>
 			</PoolInfoHeaderSection>
+
+			{isLbp(pool.smoothWeightChangeParams) ? (
+				<LBPInPageSwapClipboardSection>
+					<CenterSelf style={{ paddingTop: 40, paddingBottom: 40 }}>
+						<LBPInPageSwapClipboard poolId={pool.id} />
+					</CenterSelf>
+				</LBPInPageSwapClipboardSection>
+			) : null}
 
 			<LiquidityMiningSection>
 				{/* 인센티브를 받을 수 있는 풀 또는 config에서 설정된 풀의 경우만 Synthesis를 표시한다. */}
@@ -75,6 +88,37 @@ export const PoolPage: FunctionComponent = observer(() => {
 		</FullScreenContainer>
 	);
 });
+
+export const LBPInPageSwapClipboard: FunctionComponent<{
+	poolId: string;
+}> = ({ poolId }) => {
+	const { chainStore, queriesStore, accountStore } = useStore();
+
+	const account = accountStore.getAccount(chainStore.current.chainId);
+	const queries = queriesStore.get(chainStore.current.chainId);
+
+	const config = usePoolSwapConfig(
+		chainStore,
+		chainStore.current.chainId,
+		account.bech32Address,
+		queries.queryBalances,
+		poolId,
+		queries.osmosis.queryGammPools
+	);
+	const feeConfig = useFakeFeeConfig(chainStore, chainStore.current.chainId, account.msgOpts.swapExactAmountIn.gas);
+	config.setFeeConfig(feeConfig);
+
+	const { isMobileView } = useWindowSize();
+
+	return (
+		<PoolSwapClipboardContainer>
+			<TitleText isMobileView={isMobileView} pb={isMobileView ? 10 : 24}>
+				Purchase Tokens
+			</TitleText>
+			<PoolSwapClipboardContent config={config} />
+		</PoolSwapClipboardContainer>
+	);
+};
 
 const PoolInfoHeaderSection = styled.div`
 	position: relative;
@@ -117,6 +161,23 @@ const PoolInfoHeaderBg = styled.div`
 		background-position-x: right;
 		background-size: contain;
 		background-repeat: no-repeat;
+	}
+`;
+
+const LBPInPageSwapClipboardSection = styled.div`
+	background-color: ${colorPrimaryDark};
+	width: 100%;
+
+	@media (min-width: 768px) {
+		padding: 0 40px;
+	}
+`;
+
+const PoolSwapClipboardContainer = styled.div`
+	width: 100%;
+
+	@media (min-width: 768px) {
+		max-width: 600px;
 	}
 `;
 

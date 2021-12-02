@@ -5,6 +5,7 @@ import React, { ReactNode } from 'react';
 import { CenterSelf, WellContainer } from 'src/components/layouts/Containers';
 import { TitleText, Text } from 'src/components/Texts';
 import { QueriedPoolBase } from 'src/stores/osmosis/query/pool';
+import useWindowSize from 'src/hooks/useWindowSize';
 
 interface Props {
 	pool: QueriedPoolBase;
@@ -12,9 +13,13 @@ interface Props {
 }
 
 export const LbpCatalyst = observer(function LbpCatalyst({ pool, lbpParams }: Props) {
+	const { isMobileView } = useWindowSize();
+
 	return (
 		<CenterSelf style={{ paddingBottom: 40 }}>
-			<TitleText>LBP Stats</TitleText>
+			<TitleText isMobileView={isMobileView} pb={isMobileView ? 10 : 24}>
+				LBP Stats
+			</TitleText>
 			<WellContainer>
 				<PoolWeightRow>
 					<CellColumn
