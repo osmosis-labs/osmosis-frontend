@@ -50,9 +50,9 @@ export const PromotedLBPPoolIds: {
 	baseDenom: string;
 }[] = [
 	{
-		poolId: '598',
-		name: 'Regen Network',
-		baseDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-8' }], 'uregen'),
+		poolId: '600',
+		name: 'Comdex',
+		baseDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-87' }], 'ucmdx'),
 	},
 ];
 export const HideAddLiquidityPoolIds: {
@@ -453,6 +453,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-95',
 		destChannelId: 'channel-2',
 		coinMinimalDenom: 'boot',
+	},
+	{
+		counterpartyChainId: 'comdex-1',
+		sourceChannelId: 'channel-87',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'ucmdx',
 	},
 ];
 
@@ -1282,5 +1288,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://cyb.ai/network/bostrom/tx/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.comdex.one',
+		rest: 'https://rest.comdex.one',
+		chainId: 'comdex-1',
+		chainName: 'Comdex',
+		stakeCurrency: {
+			coinDenom: 'CMDX',
+			coinMinimalDenom: 'ucmdx',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:ucmdx',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/cmdx.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('comdex'),
+		currencies: [
+			{
+				coinDenom: 'CMDX',
+				coinMinimalDenom: 'ucmdx',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:ucmdx',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/cmdx.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'CMDX',
+				coinMinimalDenom: 'ucmdx',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:ucmdx',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/cmdx.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://www.mintscan.io/comdex/txs/{txHash}',
 	},
 ];
