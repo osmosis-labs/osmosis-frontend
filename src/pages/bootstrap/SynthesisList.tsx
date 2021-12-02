@@ -19,7 +19,6 @@ export const SynthesisList: FunctionComponent = () => {
 						poolId={pool.poolId}
 						name={pool.name}
 						baseDenom={pool.baseDenom}
-						destDenom={pool.destDenom}
 					/>
 				);
 			})}
@@ -32,8 +31,7 @@ const SynthesisItem: FunctionComponent<{
 	poolId: string;
 	name: string;
 	baseDenom: string;
-	destDenom: string;
-}> = observer(({ index, poolId, name, baseDenom, destDenom }) => {
+}> = observer(({ index, poolId, name, baseDenom }) => {
 	const { chainStore, queriesStore, priceStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
