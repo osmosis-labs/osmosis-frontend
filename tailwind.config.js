@@ -216,6 +216,7 @@ module.exports = {
 				...sidebarWidths,
 				...genericWidths,
 				modal: '41.25rem',
+				page: '1440px',
 			},
 			borderOpacity: {
 				40: '0.4',
