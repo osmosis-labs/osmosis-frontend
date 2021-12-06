@@ -49,7 +49,7 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 						</TitleText>
 						<Text isMobileView={isMobileView}>
 							Bond liquidity to various minimum unbonding period to earn
-							{!isMobileView && <br />}
+							{!isMobileView ? <br /> : ' '}
 							OSMO liquidity reward and swap fees
 						</Text>
 					</div>
