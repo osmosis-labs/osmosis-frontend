@@ -29,6 +29,14 @@ export class TradeConfig extends AmountConfig {
 	@observable
 	protected _slippage: string = this.initialManualSlippage;
 
+	/**
+	 * Multiply balance when getting amount.
+	 * If the ratio is 1, it is handled as the `isMax` turned on.
+	 * Ratio should be <= 1 and > 0.
+	 */
+	@observable
+	protected _ratio: number | undefined = undefined;
+
 	constructor(
 		chainGetter: ChainGetter,
 		initialChainId: string,
@@ -62,6 +70,7 @@ export class TradeConfig extends AmountConfig {
 	 * 하지만 Chain info에 등록된 Currency를 우선한다.
 	 * 추가로 IBC Currency일 경우 coin denom을 원래의 currency의 coin denom으로 바꾼다.
 	 */
+	@computed
 	get sendableCurrencies(): AppCurrency[] {
 		const chainInfo = this.chainInfo;
 		return this.swapManager.swappableCurrencies.map(cur => {
@@ -82,6 +91,27 @@ export class TradeConfig extends AmountConfig {
 		});
 	}
 
+	get ratio(): number | undefined {
+		return this._ratio;
+	}
+
+	@action
+	setRatio(ratio: number | undefined) {
+		if (ratio != null) {
+			if (ratio > 1) {
+				console.log('Warning: amount ratio should be lesser than or equal to 1');
+				return;
+			}
+
+			if (ratio <= 0) {
+				console.log('Warning: amount ratio should be greater than 0');
+				return;
+			}
+		}
+
+		this._ratio = ratio;
+	}
+
 	@action
 	setInCurrency(minimalDenom: string) {
 		this.inCurrencyMinimalDenom = minimalDenom;
@@ -99,7 +129,7 @@ export class TradeConfig extends AmountConfig {
 
 		const outAmount = this.outAmount;
 
-		this.setIsMax(false);
+		this.setRatio(undefined);
 
 		this.setInCurrency(outCurrency.coinMinimalDenom);
 		this.setOutCurrency(inCurrency.coinMinimalDenom);
@@ -116,9 +146,51 @@ export class TradeConfig extends AmountConfig {
 	}
 
 	@override
+	get amount(): string {
+		if (this.ratio != null) {
+			const balance = this.queryBalances
+				.getQueryBech32Address(this.sender)
+				.getBalanceFromCurrency(this.sendCurrency)
+				.mul(new Dec(this.ratio.toString()));
+
+			const result = this.feeConfig?.fee ? balance.sub(this.feeConfig.fee) : balance;
+			if (result.toDec().lte(new Dec(0))) {
+				return '0';
+			}
+
+			// Remember that the `CoinPretty`'s sub method do nothing if the currencies are different.
+			return result
+				.trim(true)
+				.locale(false)
+				.hideDenom(true)
+				.toString();
+		}
+
+		return this._amount;
+	}
+
+	@override
 	setAmount(amount: string) {
-		this.setIsMax(false);
+		this.setRatio(undefined);
 		super.setAmount(amount);
+	}
+
+	get isMax(): boolean {
+		return this._ratio === 1;
+	}
+
+	@override
+	setIsMax(isMax: boolean): void {
+		if (isMax) {
+			this.setRatio(1);
+		} else {
+			this.setRatio(undefined);
+		}
+	}
+
+	@override
+	toggleIsMax(): void {
+		this.setIsMax(!this.isMax);
 	}
 
 	@action

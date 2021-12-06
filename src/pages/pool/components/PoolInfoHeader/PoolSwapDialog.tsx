@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { FromBox } from 'src/components/SwapToken/FromBox';
 import { SwapDirectionButton } from 'src/components/SwapToken/SwapDirectionButton';
 import { TitleText } from 'src/components/Texts';
@@ -10,7 +10,7 @@ import { useFakeFeeConfig } from 'src/hooks/tx';
 import { ToBox } from 'src/components/SwapToken/ToBox';
 import { FeesBox } from 'src/components/SwapToken/FeesBox';
 import { SwapButton } from 'src/pages/pool/components/PoolInfoHeader/SwapButton';
-import { usePoolSwapConfig } from 'src/pages/pool/components/PoolInfoHeader/usePoolSwapConfig';
+import { PoolSwapConfig, usePoolSwapConfig } from 'src/pages/pool/components/PoolInfoHeader/usePoolSwapConfig';
 import { useStore } from 'src/stores';
 import useWindowSize from 'src/hooks/useWindowSize';
 
@@ -43,30 +43,40 @@ export const PoolSwapDialog = wrapBaseDialog(
 				<TitleText isMobileView={isMobileView} pb={isMobileView ? 16 : 30}>
 					Swap Tokens
 				</TitleText>
-				<PoolSwapDialogContent>
-					<PairContainer>
-						<div style={{ marginBottom: isMobileView ? 12 : 18 }}>
-							<FromBox config={config} dropdownStyle={isMobileView ? { width: 'calc(100vw - 72px)' } : {}} />
-						</div>
-						<SwapDirectionButton
-							onClick={e => {
-								e.preventDefault();
-								config.switchInAndOut();
-							}}
-						/>
-						<div style={{ marginBottom: isMobileView ? 12 : 18 }}>
-							<ToBox config={config} dropdownStyle={isMobileView ? { width: 'calc(100vw - 72px)' } : {}} />
-						</div>
-					</PairContainer>
-
-					<FeesBox config={config} />
-
-					<SwapButton config={config} close={close} />
-				</PoolSwapDialogContent>
+				<PoolSwapClipboardContent config={config} />
 			</PoolSwapDialogContainer>
 		);
 	})
 );
+
+export const PoolSwapClipboardContent: FunctionComponent<{
+	config: PoolSwapConfig;
+}> = observer(({ config }) => {
+	const { isMobileView } = useWindowSize();
+
+	return (
+		<PoolSwapDialogContent>
+			<PairContainer>
+				<div style={{ marginBottom: isMobileView ? 12 : 18 }}>
+					<FromBox config={config} dropdownStyle={isMobileView ? { width: 'calc(100vw - 72px)' } : {}} />
+				</div>
+				<SwapDirectionButton
+					onClick={e => {
+						e.preventDefault();
+						config.switchInAndOut();
+					}}
+				/>
+				<div style={{ marginBottom: isMobileView ? 12 : 18 }}>
+					<ToBox config={config} dropdownStyle={isMobileView ? { width: 'calc(100vw - 72px)' } : {}} />
+				</div>
+			</PairContainer>
+
+			<FeesBox config={config} />
+
+			<SwapButton config={config} close={close} />
+		</PoolSwapDialogContent>
+	);
+});
 
 const PoolSwapDialogContainer = styled.section`
 	width: 100%;

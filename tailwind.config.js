@@ -27,6 +27,7 @@ const spacing = {
 	15: '60px',
 	17.5: '70px',
 	20: '80px',
+	21: '84px',
 	21.5: '86px',
 };
 const sizes = {
@@ -48,7 +49,10 @@ const sizes = {
 	15: '3.75rem',
 	16: '4rem',
 	18: '4.5rem',
+	19: '4.75rem',
 	20: '5rem',
+	21: '5.25rem',
+	23: '5.75rem',
 	24: '6rem',
 	28: '7rem',
 	30: '7.5rem',
@@ -76,7 +80,8 @@ module.exports = {
 		removeDeprecatedGapUtilities: false,
 		purgeLayersByDefault: false,
 	},
-	purge: ['./src/**/*.tsx', './src/**/*.ts'],
+	mode: 'jit',
+	purge: ['./src/**/*.{ts,tsx}', './src/index.html'],
 	theme: {
 		fontFamily: {
 			title: ['Poppins', 'ui-sans-serif', 'system-ui'],
@@ -144,6 +149,7 @@ module.exports = {
 			surface: '#231D4B',
 			card: '#2D2755',
 			cardInner: '#3C356D',
+			cardInfoPlaceholder: '#3E3866',
 			iconDefault: '#8E83AA',
 			error: '#CF6679',
 			enabledGold: '#C4A46A',
@@ -172,9 +178,6 @@ module.exports = {
 			'gradients-sunset': 'linear-gradient(180deg, #FFBC00 0%, #FF8E00 100%)',
 			'gradients-orangeCoral': 'linear-gradient(180deg, #FF8200 0%, #FF2C00 100%)',
 			'gradients-pinky': 'linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)',
-		},
-		screens: {
-			md: '1280px',
 		},
 		spacing: {
 			...spacing,
@@ -213,6 +216,7 @@ module.exports = {
 				...sidebarWidths,
 				...genericWidths,
 				modal: '41.25rem',
+				page: '1440px',
 			},
 			borderOpacity: {
 				40: '0.4',
@@ -245,6 +249,7 @@ module.exports = {
 	variants: {
 		extend: {
 			opacity: ['disabled'],
+			visibility: ['hover', 'group-hover'],
 		},
 	},
 	plugins: [require('tailwindcss'), require('precss'), require('autoprefixer')],

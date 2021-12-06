@@ -37,22 +37,23 @@ export const LockupAbledPoolIds: {
 	'558': true,
 	'571': true,
 	'572': true,
+	'573': true,
+	'574': true,
+	'584': true,
+	'585': true,
+	'592': true,
 };
 
 export const PromotedLBPPoolIds: {
 	poolId: string;
 	name: string;
 	baseDenom: string;
-	destDenom: string;
 }[] = [
-	/*
-		{
-			poolId: '21',
-			name: 'Regen Network',
-			baseDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-8' }], 'uregen'),
-			destDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
-		},
-		 */
+	{
+		poolId: '600',
+		name: 'Comdex',
+		baseDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-87' }], 'ucmdx'),
+	},
 ];
 export const HideAddLiquidityPoolIds: {
 	[poolId: string]: boolean;
@@ -225,6 +226,76 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5',
 		},
 	],
+	'573': [
+		{
+			gaugeId: '1852',
+			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
+		},
+		{
+			gaugeId: '1853',
+			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
+		},
+		{
+			gaugeId: '1854',
+			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
+		},
+	],
+	'574': [
+		{
+			gaugeId: '1855',
+			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
+		},
+		{
+			gaugeId: '1856',
+			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
+		},
+		{
+			gaugeId: '1857',
+			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
+		},
+	],
+	'584': [
+		{
+			gaugeId: '1861',
+			denom: 'ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A',
+		},
+		{
+			gaugeId: '1862',
+			denom: 'ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A',
+		},
+		{
+			gaugeId: '1863',
+			denom: 'ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A',
+		},
+	],
+	'585': [
+		{
+			gaugeId: '1864',
+			denom: 'ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A',
+		},
+		{
+			gaugeId: '1865',
+			denom: 'ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A',
+		},
+		{
+			gaugeId: '1866',
+			denom: 'ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A',
+		},
+	],
+	'592': [
+		{
+			gaugeId: '1858',
+			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
+		},
+		{
+			gaugeId: '1859',
+			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
+		},
+		{
+			gaugeId: '1860',
+			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
+		},
+	],
 };
 
 export const PoolsPerPage = 10;
@@ -241,6 +312,9 @@ export const IBCAssetInfos: {
 	// Destination channel id from Osmosis chain
 	destChannelId: string;
 	coinMinimalDenom: string;
+	// In some reasons, ibc channel is in unstable status.
+	// Disable the deposit, withdraw button and show the tooltip.
+	isUnstable?: boolean;
 }[] = [
 	{
 		counterpartyChainId: 'cosmoshub-4',
@@ -265,6 +339,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-72',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uusd',
+	},
+	{
+		counterpartyChainId: 'secret-4',
+		sourceChannelId: 'channel-88',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uscrt',
 	},
 	{
 		counterpartyChainId: 'juno-1',
@@ -361,6 +441,24 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-77',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'uxki',
+	},
+	{
+		counterpartyChainId: 'panacea-3',
+		sourceChannelId: 'channel-82',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'umed',
+	},
+	{
+		counterpartyChainId: 'bostrom',
+		sourceChannelId: 'channel-95',
+		destChannelId: 'channel-2',
+		coinMinimalDenom: 'boot',
+	},
+	{
+		counterpartyChainId: 'comdex-1',
+		sourceChannelId: 'channel-87',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'ucmdx',
 	},
 ];
 
@@ -482,7 +580,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'KRT',
 				coinMinimalDenom: 'ukrw',
 				coinDecimals: 6,
-				coinGeckoId: 'terrakrw',
+				coinGeckoId: 'terra-krw',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
 			},
 		],
@@ -509,6 +607,44 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://finder.terra.money/columbus-5/tx/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-secret.keplr.app',
+		rest: 'https://lcd-secret.keplr.app',
+		chainId: 'secret-4',
+		chainName: 'Secret Network',
+		stakeCurrency: {
+			coinDenom: 'SCRT',
+			coinMinimalDenom: 'uscrt',
+			coinDecimals: 6,
+			coinGeckoId: 'secret',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/scrt.svg',
+		},
+		bip44: {
+			coinType: 529,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('secret'),
+		currencies: [
+			{
+				coinDenom: 'SCRT',
+				coinMinimalDenom: 'uscrt',
+				coinDecimals: 6,
+				coinGeckoId: 'secret',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/scrt.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'SCRT',
+				coinMinimalDenom: 'uscrt',
+				coinDecimals: 6,
+				coinGeckoId: 'secret',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/scrt.svg',
+			},
+		],
+		coinType: 118,
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://secretnodes.com/secret/chains/secret-4/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-akash.keplr.app',
@@ -580,7 +716,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'regen',
 			},
 		],
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://regen.aneka.io/txs/{txHash}',
 	},
 	{
@@ -893,7 +1029,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		rpc: 'https://mainnet-node.like.co/rpc',
 		rest: 'https://mainnet-node.like.co',
 		chainId: 'likecoin-mainnet-2',
-		chainName: 'Likecoin',
+		chainName: 'LikeCoin',
 		stakeCurrency: {
 			coinDenom: 'LIKE',
 			coinMinimalDenom: 'nanolike',
@@ -1073,5 +1209,121 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://www.mintscan.io/ki-chain/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.gopanacea.org',
+		rest: 'https://api.gopanacea.org',
+		chainId: 'panacea-3',
+		chainName: 'MediBloc',
+		stakeCurrency: {
+			coinDenom: 'MED',
+			coinMinimalDenom: 'umed',
+			coinDecimals: 6,
+			coinGeckoId: 'medibloc',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/med.png',
+		},
+		bip44: {
+			coinType: 371,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('panacea'),
+		currencies: [
+			{
+				coinDenom: 'MED',
+				coinMinimalDenom: 'umed',
+				coinDecimals: 6,
+				coinGeckoId: 'medibloc',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/med.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'MED',
+				coinMinimalDenom: 'umed',
+				coinDecimals: 6,
+				coinGeckoId: 'medibloc',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/med.png',
+			},
+		],
+		gasPriceStep: {
+			low: 5,
+			average: 7,
+			high: 9,
+		},
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://www.mintscan.io/medibloc/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.bostrom.cybernode.ai',
+		rest: 'https://lcd.bostrom.cybernode.ai',
+		chainId: 'bostrom',
+		chainName: 'Bostrom',
+		stakeCurrency: {
+			coinDenom: 'BOOT',
+			coinMinimalDenom: 'boot',
+			coinDecimals: 0,
+			// coinGeckoId: 'pool:boot',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/boot.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('bostrom'),
+		currencies: [
+			{
+				coinDenom: 'BOOT',
+				coinMinimalDenom: 'boot',
+				coinDecimals: 0,
+				// coinGeckoId: 'pool:boot',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/boot.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'BOOT',
+				coinMinimalDenom: 'boot',
+				coinDecimals: 0,
+				// coinGeckoId: 'pool:boot',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/boot.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://cyb.ai/network/bostrom/tx/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.comdex.one',
+		rest: 'https://rest.comdex.one',
+		chainId: 'comdex-1',
+		chainName: 'Comdex',
+		stakeCurrency: {
+			coinDenom: 'CMDX',
+			coinMinimalDenom: 'ucmdx',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:ucmdx',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/cmdx.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('comdex'),
+		currencies: [
+			{
+				coinDenom: 'CMDX',
+				coinMinimalDenom: 'ucmdx',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:ucmdx',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/cmdx.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'CMDX',
+				coinMinimalDenom: 'ucmdx',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:ucmdx',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/cmdx.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://www.mintscan.io/comdex/txs/{txHash}',
 	},
 ];

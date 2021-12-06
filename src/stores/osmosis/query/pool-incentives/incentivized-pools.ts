@@ -207,4 +207,18 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 
 		return new IntPretty(new Dec(0)).maxDecimals(2).trim(true);
 	}
+
+	@computed
+	get isAprFetching(): boolean {
+		if (
+			(!this.queryPools.response && !this.queryPools.error) ||
+			(!this.queryMintParmas.response && !this.queryPools.error) ||
+			(!this.queryEpochs.response && !this.queryEpochs.error) ||
+			(!this.queryDistrInfo.response && !this.queryDistrInfo.error) ||
+			(!this.queryEpochProvision.response && !this.queryEpochProvision.error)
+		) {
+			return true;
+		}
+		return false;
+	}
 }

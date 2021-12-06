@@ -5,11 +5,15 @@ import { TSIDEBAR_ITEM } from 'src/constants';
 import { NavLink } from 'react-router-dom';
 import { cssAbsoluteCenter } from 'src/emotionStyles/layout';
 
-const NavLinkFallback: FunctionComponent<{ sidebarItem: TSIDEBAR_ITEM }> = ({ sidebarItem, children }) => {
+const NavLinkFallback: FunctionComponent<{ sidebarItem: TSIDEBAR_ITEM; closeSidebar: () => void }> = ({
+	sidebarItem,
+	closeSidebar,
+	children,
+}) => {
 	return (
 		<React.Fragment>
 			{sidebarItem.ROUTE ? (
-				<NavLink exact to={sidebarItem.ROUTE}>
+				<NavLink exact to={sidebarItem.ROUTE} onClick={closeSidebar}>
 					{children}
 				</NavLink>
 			) : (
@@ -21,9 +25,9 @@ const NavLinkFallback: FunctionComponent<{ sidebarItem: TSIDEBAR_ITEM }> = ({ si
 	);
 };
 
-export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, selected }) => {
+export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, selected, closeSidebar }) => {
 	return (
-		<NavLinkFallback sidebarItem={sidebarItem}>
+		<NavLinkFallback sidebarItem={sidebarItem} closeSidebar={closeSidebar}>
 			<li
 				className={cn('h-15 flex items-center group', {
 					'opacity-75 hover:opacity-100 transition-all': !selected,
@@ -54,9 +58,11 @@ export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, sele
 		</NavLinkFallback>
 	);
 };
+
 interface TSidebarItem {
 	selected?: boolean;
 	sidebarItem: TSIDEBAR_ITEM;
+	closeSidebar: () => void;
 }
 
 interface DisplayIconProps extends HTMLAttributes<HTMLDivElement> {

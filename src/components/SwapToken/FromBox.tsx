@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { AppCurrency } from '@keplr-wallet/types';
 import { CoinPretty, Int } from '@keplr-wallet/unit';
 import { observer } from 'mobx-react-lite';
-import React, { CSSProperties, HTMLAttributes, useCallback, useMemo } from 'react';
+import React, { CSSProperties, HTMLAttributes, useCallback } from 'react';
 import { ButtonToggle } from 'src/components/layouts/Buttons';
 import { CenterV } from 'src/components/layouts/Containers';
 import { TokenInSwapConfig } from 'src/components/SwapToken/models';
@@ -44,6 +44,14 @@ export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdo
 		config.toggleIsMax();
 	}, [config]);
 
+	const handleHalfButtonToggled = useCallback(() => {
+		if (config.ratio === 0.5) {
+			config.setRatio(undefined);
+		} else {
+			config.setRatio(0.5);
+		}
+	}, [config]);
+
 	return (
 		<TokenBoxContainer {...props}>
 			<TokenBoxRow>
@@ -67,6 +75,11 @@ export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdo
 							MAX
 						</Text>
 					</MaxButton>
+					<HalfButton type="button" size="small" isActive={config.ratio === 0.5} onClick={handleHalfButtonToggled}>
+						<Text size="xs" emphasis="medium" style={{ lineHeight: 1.2 }} isMobileView={isMobileView}>
+							HALF
+						</Text>
+					</HalfButton>
 				</CenterV>
 			</TokenBoxRow>
 
@@ -96,3 +109,5 @@ export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdo
 const MaxButton = styled(ButtonToggle)`
 	margin-left: 8px;
 `;
+
+const HalfButton = styled(MaxButton)``;

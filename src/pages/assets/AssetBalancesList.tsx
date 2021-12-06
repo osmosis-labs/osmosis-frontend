@@ -12,12 +12,14 @@ import { useStore } from 'src/stores';
 import { makeIBCMinimalDenom } from 'src/utils/ibc';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { useLocation } from 'react-router-dom';
+import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
+import { Dec } from '@keplr-wallet/unit';
 
-const tableWidths = ['50%', '25%', '12.5%', '12.5%'];
+const tableWidths = ['45%', '25%', '15%', '15%'];
 const tableWidthsOnMobileView = ['70%', '30%'];
 
 export const AssetBalancesList = observer(function AssetBalancesList() {
-	const { chainStore, queriesStore, accountStore } = useStore();
+	const { chainStore, queriesStore, accountStore, priceStore } = useStore();
 
 	const { isMobileView } = useWindowSize();
 
@@ -54,6 +56,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 			balance,
 			sourceChannelId: channelInfo.sourceChannelId,
 			destChannelId: channelInfo.destChannelId,
+			isUnstable: channelInfo.isUnstable,
 		};
 	});
 
@@ -115,16 +118,18 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 			<div className="px-5 md:px-0">
 				<TitleText isMobileView={isMobileView}>Osmosis Assets</TitleText>
 			</div>
-			<table style={{ width: '100%', paddingBottom: 32 }}>
+			<table className="w-full pb-8">
 				<AssetBalanceHeader isMobileView={isMobileView} />
 
-				<tbody style={{ width: '100%' }}>
+				<tbody className="w-full">
 					{chainStore.current.currencies
 						.filter(cur => !cur.coinMinimalDenom.includes('/'))
 						.map(cur => {
 							const bal = queries.queryBalances
 								.getQueryBech32Address(account.bech32Address)
 								.getBalanceFromCurrency(cur);
+
+							const totalFiatValue = priceStore.calculatePrice(bal, 'usd');
 
 							return (
 								<AssetBalanceRow
@@ -137,6 +142,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 										.trim(true)
 										.maxDecimals(6)
 										.toString()}
+									totalFiatValue={totalFiatValue}
 									isMobileView={isMobileView}
 								/>
 							);
@@ -151,29 +157,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 							return currency.coinDenom;
 						})();
 
-						/*
-			if (
-				bal.chainInfo.chainId.startsWith('regen-') &&
-				(window.location.hostname.startsWith('app.') || window.location.hostname.startsWith('staging.'))
-			) {
-				// Channel of Regen network would not be public yet.
-				// By the hard coding, just do not show the deposit/withdraw button for the regen network.
-				return (
-					<AssetBalanceRow
-						key={currency.coinMinimalDenom}
-						chainName={bal.chainInfo.chainName}
-						coinDenom={coinDenom}
-						currency={currency}
-						balance={bal.balance
-							.hideDenom(true)
-							.trim(true)
-							.maxDecimals(6)
-							.toString()}
-						showCommingSoon={true}
-					/>
-				);
-			}
-			 */
+						const totalFiatValue = priceStore.calculatePrice(bal.balance, 'usd');
 
 						return (
 							<AssetBalanceRow
@@ -186,6 +170,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 									.trim(true)
 									.maxDecimals(6)
 									.toString()}
+								totalFiatValue={totalFiatValue}
 								onDeposit={() => {
 									setDialogState({
 										open: true,
@@ -206,6 +191,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 										isWithdraw: true,
 									});
 								}}
+								isUnstable={bal.isUnstable}
 								isMobileView={isMobileView}
 							/>
 						);
@@ -228,10 +214,9 @@ function AssetBalanceHeader({ isMobileView }: AssetBalanceHeaderProps) {
 					<Text size="sm">Asset / Chain</Text>
 				</TableData>
 				<TableData
+					className="md:!pr-4 lg:!pr-20 !justify-end"
 					style={{
-						paddingRight: isMobileView ? 0 : 80,
 						width: isMobileView ? tableWidthsOnMobileView[1] : tableWidths[1],
-						justifyContent: 'flex-end',
 					}}>
 					<Text size="sm">Balance</Text>
 				</TableData>
@@ -256,8 +241,10 @@ interface AssetBalanceRowProps {
 	coinDenom: string;
 	currency: AppCurrency;
 	balance: string;
+	totalFiatValue?: PricePretty;
 	onDeposit?: () => void;
 	onWithdraw?: () => void;
+	isUnstable?: boolean;
 	showComingSoon?: boolean;
 	isMobileView: boolean;
 }
@@ -267,9 +254,10 @@ function AssetBalanceRow({
 	coinDenom,
 	currency,
 	balance,
+	totalFiatValue,
 	onDeposit,
 	onWithdraw,
-	showComingSoon,
+	isUnstable,
 	isMobileView,
 }: AssetBalanceRowProps) {
 	return (
@@ -287,50 +275,87 @@ function AssetBalanceRow({
 						</Text>
 					</TableData>
 					<TableData
+						className="md:!pr-3 lg:!pr-20 !justify-end"
 						style={{
-							paddingRight: isMobileView ? 6 : 80,
 							width: isMobileView ? tableWidthsOnMobileView[1] : tableWidths[1],
-							justifyContent: 'flex-end',
 						}}>
-						<Text emphasis="medium" isMobileView={isMobileView}>
-							{balance}
-						</Text>
+						<div className="flex flex-col items-end">
+							<Text emphasis="medium" isMobileView={isMobileView}>
+								{balance}
+							</Text>
+							{totalFiatValue && totalFiatValue.toDec().gt(new Dec(0)) ? (
+								<Text size="sm">{totalFiatValue.toString()}</Text>
+							) : null}
+						</div>
 					</TableData>
 					{!isMobileView && (
-						<TableData style={{ width: tableWidths[2], position: showComingSoon ? 'relative' : 'initial' }}>
-							{!showComingSoon && onDeposit ? (
-								<>
-									<ButtonFaint onClick={onDeposit} style={{ display: 'flex', alignItems: 'center' }}>
-										<p className="text-sm text-secondary-200 leading-none">Deposit</p>
-										<img alt="right" src={'/public/assets/Icons/Right.svg'} />
-									</ButtonFaint>
-								</>
+						<TableData style={{ width: tableWidths[2] }}>
+							{onDeposit ? (
+								<React.Fragment>
+									<div className="relative group">
+										<ButtonFaint
+											onClick={onDeposit}
+											style={{ display: 'flex', alignItems: 'center' }}
+											disabled={isUnstable === true}>
+											<p className="text-sm text-secondary-200 leading-none">Deposit</p>
+											<img alt="right" src={'/public/assets/Icons/Right.svg'} />
+										</ButtonFaint>
+										{isUnstable ? (
+											<div
+												className="absolute invisible group-hover:visible bg-black text-white-high text-center opacity-80 px-3 py-2 rounded-xl"
+												style={{
+													left: '50%',
+													transform: 'translateX(-50%)',
+													minWidth: '200px',
+													bottom: '30px',
+												}}>
+												<span>IBC deposit/withdrawal is temporarily disabled</span>
+											</div>
+										) : null}
+									</div>
+								</React.Fragment>
 							) : null}
-							{showComingSoon ? <ComingSoonText color="gold">🌲 LBP is live 🌲</ComingSoonText> : null}
 						</TableData>
 					)}
 					{!isMobileView && (
 						<TableData style={{ width: tableWidths[3] }}>
-							{!showComingSoon && onWithdraw ? (
-								<>
-									<ButtonFaint onClick={onWithdraw} style={{ display: 'flex', alignItems: 'center' }}>
-										<p className="text-sm text-secondary-200 leading-none">Withdraw</p>
-										<img alt="right" src={'/public/assets/Icons/Right.svg'} />
-									</ButtonFaint>
-								</>
+							{onWithdraw ? (
+								<React.Fragment>
+									<div className="relative group">
+										<ButtonFaint
+											onClick={onWithdraw}
+											style={{ display: 'flex', alignItems: 'center' }}
+											disabled={isUnstable === true}>
+											<p className="text-sm text-secondary-200 leading-none">Withdraw</p>
+											<img alt="right" src={'/public/assets/Icons/Right.svg'} />
+										</ButtonFaint>
+										{isUnstable ? (
+											<div
+												className="absolute invisible group-hover:visible bg-black text-white-high text-center opacity-80 px-3 py-2 rounded-xl"
+												style={{
+													left: '50%',
+													transform: 'translateX(-50%)',
+													minWidth: '200px',
+													bottom: '30px',
+												}}>
+												<span>IBC deposit/withdrawal is temporarily disabled</span>
+											</div>
+										) : null}
+									</div>
+								</React.Fragment>
 							) : null}
 						</TableData>
 					)}
 				</AssetBalanceTableRow>
-				{!showComingSoon && isMobileView && (onWithdraw || onDeposit) && (
+				{isMobileView && (onWithdraw || onDeposit) && (
 					<IBCTransferButtonsOnMobileView>
 						{onWithdraw ? (
-							<ButtonSecondary isOutlined onClick={onWithdraw} style={{ width: '100%' }}>
+							<ButtonSecondary isOutlined onClick={onWithdraw} style={{ width: '100%' }} disabled={isUnstable === true}>
 								<p className="text-sm text-secondary-200">Withdraw</p>
 							</ButtonSecondary>
 						) : null}
 						{onDeposit ? (
-							<ButtonSecondary onClick={onDeposit} style={{ width: '100%' }}>
+							<ButtonSecondary onClick={onDeposit} style={{ width: '100%' }} disabled={isUnstable === true}>
 								<p className="text-sm">Deposit</p>
 							</ButtonSecondary>
 						) : null}
@@ -340,12 +365,6 @@ function AssetBalanceRow({
 		</>
 	);
 }
-
-const ComingSoonText = styled(Text)`
-	position: absolute;
-	padding-left: 8px;
-	width: 200px;
-`;
 
 const AssetBalanceRowContainer = styled.div`
 	border-bottom-width: 1px;
@@ -359,8 +378,8 @@ const AssetBalanceTableRow = styled.tr`
 	padding-right: 14px;
 
 	@media (min-width: 768px) {
-		padding-left: 50px;
-		padding-right: 60px;
+		padding-left: 30px;
+		padding-right: 30px;
 		max-height: 72px;
 	}
 `;

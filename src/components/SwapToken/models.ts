@@ -8,6 +8,8 @@ interface TokenSwapConfigBase extends IAmountConfig {
 
 export interface TokenInSwapConfig extends TokenSwapConfigBase {
 	setInCurrency: (minimalDenom: string) => void;
+	ratio: number | undefined;
+	setRatio(ratio: number | undefined): void;
 }
 
 export interface TokenOutSwapConfig extends TokenSwapConfigBase {

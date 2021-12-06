@@ -38,11 +38,10 @@ export const IbcTransferHistoryList = observer(function IbcTransferHistoryList()
 					IBC Transaction History
 				</TitleText>
 			</div>
-			<div className="w-full overflow-scroll">
-				<table style={{ width: '100%' }}>
+			<div className="overflow-x-scroll">
+				<table className="w-full md:table-fixed">
 					<IbcTransferHistoryHeader />
-
-					<tbody style={{ width: '100%' }}>
+					<tbody>
 						{paginatedHistories.map(history => {
 							return <IbcTransferHistoryRow key={history.txHash} history={history} />;
 						})}

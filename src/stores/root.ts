@@ -57,6 +57,11 @@ export class RootStore {
 					autoInit: false,
 					getKeplr: this.connectWalletManager.getKeplr,
 					suggestChainFn: async (keplr, chainInfo) => {
+						if (keplr.mode === 'mobile-web') {
+							// Can't suggest the chain on mobile web.
+							return;
+						}
+
 						if (keplr instanceof KeplrWalletConnectV1) {
 							// Can't suggest the chain using wallet connect.
 							return;
@@ -93,13 +98,16 @@ export class RootStore {
 					},
 				},
 				chainOpts: this.chainStore.chainInfos.map(chainInfo => {
+					let gas = 500_000;
+					if (chainInfo.chainId.startsWith('osmosis-')) {
+						gas = 1_350_000;
+					} else if (chainInfo.chainId.startsWith('secret-')) {
+						gas = 30_000;
+					}
+
 					return {
 						chainId: chainInfo.chainId,
-						msgOpts: {
-							ibcTransfer: {
-								gas: chainInfo.chainId.startsWith('osmosis-1') ? 1350000 : 500000,
-							},
-						},
+						msgOpts: { ibcTransfer: { gas } },
 						preTxEvents: {
 							onBroadcastFailed: (e?: Error) => {
 								let message: string = 'Unknown error';
@@ -220,6 +228,13 @@ export class RootStore {
 					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-77' }], 'uxki'),
 					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'pool:uosmo',
+				},
+				{
+					alternativeCoinId: 'pool:ucmdx',
+					poolId: '600',
+					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-87' }], 'ucmdx'),
+					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+					destCoinId: 'cosmos',
 				},
 			]
 		);
@@ -691,6 +706,111 @@ export class RootStore {
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
 						coinDenom: 'UST',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '582',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'ukrw'),
+						coinDenom: 'KRT',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
+						coinDenom: 'UST',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '584',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-88' }], 'uscrt'),
+						coinDenom: 'SCRT',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '585',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-88' }], 'uscrt'),
+						coinDenom: 'SCRT',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '586',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-82' }], 'umed'),
+						coinDenom: 'MED',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '587',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-82' }], 'umed'),
+						coinDenom: 'MED',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '596',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-95' }], 'boot'),
+						coinDenom: 'BOOT',
+						coinDecimals: 0,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '597',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-95' }], 'boot'),
+						coinDenom: 'BOOT',
+						coinDecimals: 0,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
 						coinDecimals: 6,
 					},
 				],

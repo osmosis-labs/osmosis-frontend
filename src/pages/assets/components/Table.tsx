@@ -14,8 +14,8 @@ export const TableHeaderRow = styled.tr`
 	@media (min-width: 768px) {
 		padding-top: 0;
 		padding-bottom: 0;
-		padding-left: 50px;
-		padding-right: 60px;
+		padding-left: 30px;
+		padding-right: 30px;
 		border-top-left-radius: 1rem;
 		border-top-right-radius: 1rem;
 	}
@@ -30,8 +30,8 @@ export const TableRow = styled.tr`
 	padding-right: 14px;
 
 	@media (min-width: 768px) {
-		padding-left: 50px;
-		padding-right: 60px;
+		padding-left: 30px;
+		padding-right: 30px;
 	}
 `;
 
