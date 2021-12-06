@@ -711,36 +711,6 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'ncheq',
 	},
-	{
-		counterpartyChainId: 'lum-network-1',
-		sourceChannelId: 'channel-115',
-		destChannelId: 'channel-3',
-		coinMinimalDenom: 'ulum',
-	},
-	{
-		counterpartyChainId: 'vidulum-1',
-		sourceChannelId: 'channel-124',
-		destChannelId: 'channel-0',
-		coinMinimalDenom: 'uvdl',
-	},
-	{
-		counterpartyChainId: 'desmos-mainnet',
-		sourceChannelId: 'channel-135',
-		destChannelId: 'channel-2',
-		coinMinimalDenom: 'udsm',
-	},
-	{
-		counterpartyChainId: 'dig-1',
-		sourceChannelId: 'channel-128',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'udig',
-	},
-	{
-		counterpartyChainId: 'sommelier-3',
-		sourceChannelId: 'channel-165',
-		destChannelId: 'channel-0',
-		coinMinimalDenom: 'usomm',
-	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
