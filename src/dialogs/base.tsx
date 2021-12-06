@@ -29,7 +29,7 @@ export const BaseDialog: FunctionComponent<BaseDialogProps> = ({
 					onClose={close}
 					initialFocus={initialFocus}>
 					<div className="p-5 flex items-center justify-center min-h-screen">
-						<Dialog.Overlay className="fixed inset-0 bg-black opacity-20 z-0" />
+						<Dialog.Overlay className="fixed inset-0 bg-black opacity-50 z-0" />
 						<div
 							style={dialogStyle}
 							className="relative w-full md:min-w-modal md:max-w-modal px-4 py-5 md:p-8 bg-surface shadow-elevation-24dp rounded-2xl z-10">
