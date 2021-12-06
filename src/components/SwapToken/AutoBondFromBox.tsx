@@ -57,7 +57,7 @@ export const AutoBondFromBox = observer(function AutoBondFromBox({
 		<TokenBoxContainer {...props}>
 			<TokenBoxRow>
 				<Text emphasis="medium" isMobileView={isMobileView}>
-					From
+					Input
 				</Text>
 				<CenterV>
 					<CenterV>

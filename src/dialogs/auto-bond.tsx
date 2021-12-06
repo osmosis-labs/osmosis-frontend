@@ -1,8 +1,8 @@
-import { CoinPretty, Dec, IntPretty } from '@keplr-wallet/unit';
+import { CoinPretty, Dec, DecUtils, IntPretty } from '@keplr-wallet/unit';
 import cn from 'clsx';
 import { findIndex } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
+import React, { Dispatch, FunctionComponent, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 import { AutoBondFromBox } from 'src/components/SwapToken/AutoBondFromBox';
 import { Process, useProcess } from 'src/hooks/process';
 import { useFakeFeeConfig } from 'src/hooks/tx';
@@ -21,11 +21,12 @@ export const AutoBondDialog = wrapBaseDialog(
 	observer(({ poolId, close }: { poolId: string; close: () => void }) => {
 		const process = useProcess();
 		const { chainStore, queriesStore, accountStore } = useStore();
+		const { isMobileView } = useWindowSize();
 
 		const queries = queriesStore.get(chainStore.current.chainId);
 		const account = accountStore.getAccount(chainStore.current.chainId);
 
-		// Swap config
+		// Input amount config
 		const swapConfig = usePoolSwapConfig(
 			chainStore,
 			chainStore.current.chainId,
@@ -38,6 +39,7 @@ export const AutoBondDialog = wrapBaseDialog(
 		swapConfig.setFeeConfig(feeConfig);
 
 		// Auto swap currency & amount
+		const [matchWithOther, setMatchWithOther] = useState(false);
 		const [autoCalcResult, redoAutoCalc] = useAutoCalc(swapConfig);
 
 		// Join pool Config
@@ -76,10 +78,17 @@ export const AutoBondDialog = wrapBaseDialog(
 			<div className="text-white-high w-full h-full">
 				<h5 className="text-lg md:text-xl mb-5 md:mb-9">AutoBond</h5>
 				<div className="flex justify-center">
-					<div className="bg-card rounded-2xl p-6 max-w-max">
+					<div className="w-full">
 						{!process.active && !process.steps.length ? (
 							<>
-								<SwapForLiquidity config={swapConfig} handleMax={redoAutoCalc} autoCalcResult={autoCalcResult} />
+								<AmountSelect
+									config={swapConfig}
+									handleMax={redoAutoCalc}
+									{...{ autoCalcResult, matchWithOther, setMatchWithOther }}
+								/>
+								{/* <div className="bg-card rounded-2xl p-4 mb-4">
+									<p>2. Auto-add max. available liquidity to pool</p>
+								</div> */}
 								<LockupSelect {...{ poolId, selectedDurationIndex, setSelectedDurationIndex }} />
 								<BottomButton
 									swapConfig={swapConfig}
@@ -122,34 +131,53 @@ export const AutoBondDialog = wrapBaseDialog(
 	})
 );
 
-const SwapForLiquidity: FunctionComponent<{
+const AmountSelect: FunctionComponent<{
 	config: PoolSwapConfig;
 	handleMax: () => any;
 	autoCalcResult: AutoCalcResult | null;
-}> = observer(({ config, handleMax, autoCalcResult }) => {
+	matchWithOther: boolean;
+	setMatchWithOther: Dispatch<SetStateAction<boolean>>;
+}> = observer(({ config, handleMax, autoCalcResult, matchWithOther, setMatchWithOther }) => {
 	const { isMobileView } = useWindowSize();
 
 	let subText: string;
-	if (autoCalcResult == 'all_in')
-		subText = `Swap ${config.sendCurrency.coinDenom} to ${config.outCurrency.coinDenom} to go all-in:`;
-	else if (autoCalcResult == 'lower_in')
-		subText = `Auto-Match ${config.sendCurrency.coinDenom} with ${config.outCurrency.coinDenom}:`;
-	else subText = 'Calculating...';
-
+	if (!autoCalcResult) {
+		subText = 'Calculating...';
+	} else if (autoCalcResult?.which == 'higher' && new Dec(config.amount).gte(autoCalcResult.swapThreshold!.toDec())) {
+		subText = `Auto-Swapped to ${config.outCurrency.coinDenom}`;
+	} else {
+		subText = `Auto-Matched with equal share of ${config.outCurrency.coinDenom}`;
+	}
+	console.log('autocalc:', autoCalcResult?.which, autoCalcResult?.swapThreshold?.toString());
+	const showMatchWithOther = autoCalcResult?.which == 'higher';
 	return (
-		<React.Fragment>
+		<div className="bg-card rounded-2xl p-4 mb-4">
 			<p style={{ marginBottom: isMobileView ? 12 : 18 }}>
-				1. Establish balanced liquidity
+				1. Select input
 				<br />
 				<span className="text-sm">{subText}</span>
 			</p>
-			<div style={{ marginBottom: isMobileView ? 12 : 18 }}>
+			<div style={{ marginBottom: !showMatchWithOther ? 0 : isMobileView ? 12 : 18 }}>
 				<AutoBondFromBox
 					{...{ config, handleMax }}
 					dropdownStyle={isMobileView ? { width: 'calc(100vw - 72px)' } : {}}
 				/>
 			</div>
-		</React.Fragment>
+			{showMatchWithOther ? (
+				<div>
+					<label className="flex items-start">
+						<input
+							type="checkbox"
+							id="match-with-other"
+							className="m-2"
+							checked={matchWithOther}
+							onChange={() => setMatchWithOther(!matchWithOther)}
+						/>
+						use available {config.outCurrency.coinDenom} (less swapping, but resulting bond might double in total value)
+					</label>
+				</div>
+			) : null}
+		</div>
 	);
 });
 
@@ -164,9 +192,9 @@ const LockupSelect: FunctionComponent<{
 	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
 
 	return (
-		<>
+		<div className="bg-card rounded-2xl p-4">
 			<p style={{ marginBottom: isMobileView ? 12 : 18 }}>2. Select Lockup period</p>
-			<ul className="flex flex-col gap-2.5 mb-5 md:flex-row md:gap-9 md:mb-6">
+			<ul className="flex flex-col gap-2.5 md:flex-row md:gap-9">
 				{lockableDurations.map((duration, i) => {
 					return (
 						<LockupItem
@@ -183,7 +211,7 @@ const LockupSelect: FunctionComponent<{
 					);
 				})}
 			</ul>
-		</>
+		</div>
 	);
 });
 
@@ -446,7 +474,12 @@ async function performProcess(
 ///////////////
 // Auto-calc //
 ///////////////
-type AutoCalcResult = 'all_in' | 'lower_in';
+interface AutoCalcResult {
+	/** did the user select the currency with higher balance or lower? */
+	which: 'higher' | 'lower';
+	/** what's the threshold above which we need to swap (only set if which=higher) */
+	swapThreshold: CoinPretty | null;
+}
 function useAutoCalc(swapConfig: PoolSwapConfig): [AutoCalcResult | null, () => void] {
 	const { chainStore, queriesStore, accountStore } = useStore();
 	const { isMobileView } = useWindowSize();
@@ -499,24 +532,24 @@ function useAutoCalc(swapConfig: PoolSwapConfig): [AutoCalcResult | null, () => 
 		console.debug('Estimated swap output:', estimatedOut);
 
 		let swapAmount: CoinPretty;
+		// spreadsheet showing formulas: https://cryptpad.fr/sheet/#/2/sheet/view/9v8XedWF8B9Ljm13UGJ-lgtW1PzfcueL+-lf2AkvTSc/embed/
 		if (estimatedOut.tokenOut.toDec().lt(outBalance.toDec())) {
-			// Swapping A->B would be worth less than our B balance
+			// Swapping IN->OUT would be worth less than our OUT balance, i.e. we have more OUT in terms of value
 			console.debug('estimate out:', estimatedOut.tokenOut.toString(), '<', outBalance.toString());
 			if (firstAutoCalc.current) {
 				console.debug('first update => flipping');
-				swapConfig.switchInAndOut();
-				// spreadsheet showing formula: https://cryptpad.fr/sheet/#/2/sheet/view/9v8XedWF8B9Ljm13UGJ-lgtW1PzfcueL+-lf2AkvTSc/embed/
+				swapConfig.switchInAndOut(); // Flip IN and OUT (will only affect swapConfig, not our variables)
 				const difference = outBalance.sub(estimatedOut.tokenOut);
-				swapAmount = difference //
-					.mul(new Dec('0.5')); // we want to exchange half of the difference
-				setAutoCalcResult('all_in');
+				swapAmount = difference.mul(new Dec('0.5')); // we want to exchange half of the difference
+				const priceOutToIn = inBalance.quo(estimatedOut.tokenOut);
+				setAutoCalcResult({ which: 'higher', swapThreshold: estimatedOut.tokenOut });
 			} else {
-				console.debug('User wants to swap less than possible, but we did autoFlip already, so let him do that');
+				console.debug('User selected currency with lower balance (we did autoFlip already) so let him do that');
 				swapAmount = inBalance;
-				setAutoCalcResult('lower_in');
+				setAutoCalcResult({ which: 'lower', swapThreshold: null });
 			}
 		} else {
-			// Swapping A->B would be worth more than our B balance
+			// Swapping IN->OUT would be worth more than our OUT balance, i.e. we have more IN in terms of value
 			const difference = outBalance.sub(estimatedOut.tokenOut);
 			console.debug(
 				'estimate out:',
@@ -526,11 +559,20 @@ function useAutoCalc(swapConfig: PoolSwapConfig): [AutoCalcResult | null, () => 
 				', difference:',
 				difference.toString()
 			);
-			const price = inBalance.quo(estimatedOut.tokenOut);
+			const priceOutToIn = inBalance.toDec().quo(estimatedOut.tokenOut.toDec());
 			swapAmount = difference
-				.mul(price) // we need to convert difference to B
-				.mul(new Dec('-0.5')); // we want to fill up half of the difference
-			setAutoCalcResult('all_in');
+				.mul(priceOutToIn) // we need to convert difference to IN
+				.mul(new Dec('-0.5')); // we want to fill up half of the difference (so that we meet in the middle for balanced liquidity) - TODO: pools that are not 50-50
+			setAutoCalcResult({
+				which: 'higher',
+				swapThreshold: new CoinPretty(
+					inBalance.currency,
+					outBalance
+						.toDec()
+						.mul(priceOutToIn)
+						.mul(DecUtils.getPrecisionDec(inBalance.currency.coinDecimals))
+				),
+			});
 		}
 		const finalSwapAmount = swapAmount
 			.trim(true)
