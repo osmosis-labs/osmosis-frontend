@@ -470,6 +470,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'ucmdx',
 	},
+	{
+		counterpartyChainId: 'cheqd-mainnet-1',
+		sourceChannelId: 'channel-108',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'ncheq',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1335,5 +1341,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://www.mintscan.io/comdex/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.cheqd.net',
+		rest: 'https://api.cheqd.net',
+		chainId: 'cheqd-mainnet-1',
+		chainName: 'cheqd',
+		stakeCurrency: {
+			coinDenom: 'CHEQ',
+			coinMinimalDenom: 'ncheq',
+			coinDecimals: 9,
+			coinGeckoId: 'cheqd-network',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/cheq.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('cheqd'),
+		currencies: [
+			{
+				coinDenom: 'CHEQ',
+				coinMinimalDenom: 'ncheq',
+				coinDecimals: 9,
+				coinGeckoId: 'cheqd-network',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/cheq.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'CHEQ',
+				coinMinimalDenom: 'ncheq',
+				coinDecimals: 9,
+				coinGeckoId: 'cheqd-network',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/cheq.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://cheqd.didx.co.za/transactions/{txHash}',
 	},
 ];
