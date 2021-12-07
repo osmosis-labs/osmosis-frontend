@@ -19,12 +19,11 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 	config: PoolSwapConfig;
 	dropdownStyle?: CSSProperties;
 	dropdownClassName?: string;
-	handleMax: () => any;
 }
 
+/** Copied from: FromBox.tsx */
 export const AutoBondFromBox = observer(function AutoBondFromBox({
 	config,
-	handleMax,
 	dropdownStyle,
 	dropdownClassName,
 	...props
@@ -49,9 +48,16 @@ export const AutoBondFromBox = observer(function AutoBondFromBox({
 	const { isMobileView } = useWindowSize();
 
 	const handleMaxButtonToggled = useCallback(() => {
-		if (config.isMax) config.toggleIsMax();
-		else handleMax();
-	}, [config, handleMax]);
+		config.toggleIsMax();
+	}, [config]);
+
+	const handleHalfButtonToggled = useCallback(() => {
+		if (config.ratio === 0.5) {
+			config.setRatio(undefined);
+		} else {
+			config.setRatio(0.5);
+		}
+	}, [config]);
 
 	return (
 		<TokenBoxContainer {...props}>
@@ -76,6 +82,11 @@ export const AutoBondFromBox = observer(function AutoBondFromBox({
 							MAX
 						</Text>
 					</MaxButton>
+					<HalfButton type="button" size="small" isActive={config.ratio === 0.5} onClick={handleHalfButtonToggled}>
+						<Text size="xs" emphasis="medium" style={{ lineHeight: 1.2 }} isMobileView={isMobileView}>
+							HALF
+						</Text>
+					</HalfButton>
 				</CenterV>
 			</TokenBoxRow>
 

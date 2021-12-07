@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ButtonPrimary } from 'src/components/layouts/Buttons';
 import { CenterV } from 'src/components/layouts/Containers';
 import { Text } from 'src/components/Texts';
@@ -54,7 +54,7 @@ export const PoolInfoHeader = observer(function PoolInfoHeader({ poolId }: Props
 				close={() => setIsSwapDialogOpen(false)}
 			/>
 			<AutoBondDialog
-				dialogStyle={isMobileView ? { backgroundColor: colorPrimary } : { width: '656px', minHeight: '533px' }}
+				dialogStyle={isMobileView ? { backgroundColor: colorPrimary } : { width: '656px', minHeight: '433px' }}
 				poolId={poolId}
 				isOpen={isAutoBondDialogOpen}
 				close={() => setIsAutoBondDialogOpen(false)}

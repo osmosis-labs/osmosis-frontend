@@ -60,7 +60,7 @@ export const ProcessTracker: React.FunctionComponent<{ process: Process; classNa
 				{process.steps.map((step: Step) => {
 					const finished = step.status === 'success' || step.status.endsWith('error');
 
-					let classes = 'flex items-center justify-between mb-2';
+					let classes = 'flex items-center justify-between mb-2 flex-wrap';
 					classes += !finished
 						? ' animate-pulse duration-500'
 						: step.status.endsWith('error')
@@ -89,7 +89,7 @@ export const ProcessTracker: React.FunctionComponent<{ process: Process; classNa
 										TRX
 									</a>
 								) : null}
-								{icon(step)}
+								<strong>{icon(step)}</strong>
 							</div>
 						</li>
 					);
