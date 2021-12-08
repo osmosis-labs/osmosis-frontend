@@ -36,8 +36,6 @@ const ProgressiveSVGImage: FunctionComponent<React.SVGProps<SVGImageElement> & {
 };
 
 const Background: FunctionComponent = () => {
-	const sidebarWidth = 206;
-
 	const { windowSize } = useWindowSize();
 
 	return (
@@ -48,7 +46,7 @@ const Background: FunctionComponent = () => {
 			height="1013"
 			preserveAspectRatio="xMidYMid slice">
 			<g>
-				{windowSize.width >= 1350 ? (
+				{windowSize.width >= 1050 ? (
 					<React.Fragment>
 						<ProgressiveSVGImage
 							lowResXlinkHref="/public/assets/backgrounds/clausmongton-low.png"
