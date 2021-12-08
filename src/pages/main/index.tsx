@@ -42,8 +42,8 @@ const Background: FunctionComponent = () => {
 		<svg
 			className="absolute w-full h-full hidden md:block"
 			pointerEvents="none"
-			viewBox="0 0 1920 1013"
-			height="1013"
+			viewBox="0 0 2560 1351"
+			height="1351"
 			preserveAspectRatio="xMidYMid slice">
 			<g>
 				{windowSize.width >= 1050 ? (
@@ -53,8 +53,8 @@ const Background: FunctionComponent = () => {
 							xlinkHref="/public/assets/backgrounds/clausmongton.png"
 							x="0"
 							y="0"
-							width="1920"
-							height="1013"
+							width="2560"
+							height="1351"
 						/>
 					</React.Fragment>
 				) : null}
@@ -126,7 +126,7 @@ const TradePosition = styled.div`
 
 	@media (min-width: 1350px) {
 		--tradeMinLeft: calc(1020 * (100vh / 1080));
-		--tradePositionLeft: calc((100vw - 206px) * 0.75 - 520px);
+		--tradePositionLeft: calc((100vw - 206px) * 0.85 - 520px);
 		left: min(var(--tradeMinLeft), var(--tradePositionLeft));
 		transform: unset;
 	}
