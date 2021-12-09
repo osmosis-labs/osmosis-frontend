@@ -3,12 +3,14 @@ FROM ubuntu:20.04
 RUN apt-get update && apt-get install -y git build-essential wget
 RUN wget https://github.com/mikefarah/yq/releases/download/v4.9.3/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
 
-RUN wget https://dl.google.com/go/go1.15.10.linux-amd64.tar.gz
-RUN tar -xvf go1.15.10.linux-amd64.tar.gz
-RUN mv go /usr/local
+COPY install-golang.sh install-golang.sh
+
+RUN sh install-golang.sh
 
 ENV GOROOT /usr/local/go
-ENV PATH $GOPATH/bin:$GOROOT/bin:$PATH
+ENV GOPATH /go
+ENV GOBIN /go/bin
+ENV PATH $GOBIN:$GOROOT/bin:$PATH
 
 RUN git clone https://github.com/osmosis-labs/osmosis
 
