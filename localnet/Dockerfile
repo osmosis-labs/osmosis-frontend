@@ -40,6 +40,7 @@ RUN mv ~/.osmosisd/config/genesis.tmp.json ~/.osmosisd/config/genesis.json
 
 RUN sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' ~/.osmosisd/config/config.toml
 RUN sed -i 's/cors_allowed_origins = \[\]/cors_allowed_origins = \["*"\]/g' ~/.osmosisd/config/config.toml
+RUN sed -i 's/timeout_commit = "5s"/timeout_commit = "1s"/g' ~/.osmosisd/config/config.toml
 RUN sed -i 's/"stake"/"uosmo"/g' ~/.osmosisd/config/genesis.json
 RUN sed -i 's/pruning = "default"/pruning = "nothing"/g' ~/.osmosisd/config/app.toml
 RUN sed -i 's/enable = false/enable = true/g' ~/.osmosisd/config/app.toml
