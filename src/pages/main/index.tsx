@@ -36,39 +36,25 @@ const ProgressiveSVGImage: FunctionComponent<React.SVGProps<SVGImageElement> & {
 };
 
 const Background: FunctionComponent = () => {
-	const sidebarWidth = 206;
-
 	const { windowSize } = useWindowSize();
-
-	const componentWidth = windowSize.width - sidebarWidth;
-	const ratio = componentWidth / windowSize.height;
 
 	return (
 		<svg
 			className="absolute w-full h-full hidden md:block"
 			pointerEvents="none"
-			viewBox="0 0 1300 900"
-			height="900"
-			preserveAspectRatio={ratio > 1.444 ? 'xMinYMid meet' : 'xMidYMid slice'}>
+			viewBox="0 0 2560 1351"
+			height="1351"
+			preserveAspectRatio="xMidYMid slice">
 			<g>
-				{windowSize.width >= 1350 ? (
+				{windowSize.width >= 1050 ? (
 					<React.Fragment>
 						<ProgressiveSVGImage
-							lowResXlinkHref="/public/assets/backgrounds/osmosis-home-bg-low.png"
-							xlinkHref="/public/assets/backgrounds/osmosis-home-bg.png"
-							x="56"
-							y="97"
-							width="578.7462"
-							height="725.6817"
-						/>
-						<rect x="-3000" y="778" width="8660" height="244" fill="#120644" />
-						<ProgressiveSVGImage
-							lowResXlinkHref="/public/assets/backgrounds/osmosis-home-fg-low.png"
-							xlinkHref="/public/assets/backgrounds/osmosis-home-fg.png"
-							x="61"
-							y="602"
-							width="448.8865"
-							height="285.1699"
+							lowResXlinkHref="/public/assets/backgrounds/clausmongton-low.png"
+							xlinkHref="/public/assets/backgrounds/clausmongton.png"
+							x="0"
+							y="0"
+							width="2560"
+							height="1351"
 						/>
 					</React.Fragment>
 				) : null}
@@ -139,8 +125,8 @@ const TradePosition = styled.div`
 	}
 
 	@media (min-width: 1350px) {
-		--tradeMinLeft: calc(920 * (100vh / 1080));
-		--tradePositionLeft: calc((100vw - 206px) * 0.8 - 520px);
+		--tradeMinLeft: calc(1020 * (100vh / 1080));
+		--tradePositionLeft: calc((100vw - 206px) * 0.85 - 520px);
 		left: min(var(--tradeMinLeft), var(--tradePositionLeft));
 		transform: unset;
 	}
