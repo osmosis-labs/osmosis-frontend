@@ -1,42 +1,28 @@
-import { Switch } from '@headlessui/react';
-import { CoinPretty, Dec, DecUtils, IntPretty } from '@keplr-wallet/unit';
-import clsx from 'clsx';
+import { AppCurrency } from '@keplr-wallet/types';
+import { CoinPretty } from '@keplr-wallet/unit';
 import _ from 'lodash';
-import { findIndex } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
-import React, {
-	Dispatch,
-	FunctionComponent,
-	SetStateAction,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react';
-import { useLocalStorage } from 'react-use';
+import React, { Dispatch, FunctionComponent, SetStateAction, useEffect, useState } from 'react';
 import { SimpleSwitch } from 'src/components/form/Inputs';
+import { OsmosisSpinner } from 'src/components/Spinners';
 import { AutoBondFromBox } from 'src/components/SwapToken/AutoBondFromBox';
-import { Process, useProcess } from 'src/hooks/process';
+import { useIbcBalances } from 'src/hooks/account/ibs';
+import { Process, Step, StepUpdate, useProcess } from 'src/hooks/process';
 import { useFakeFeeConfig } from 'src/hooks/tx';
 import useWindowSize from 'src/hooks/useWindowSize';
-import { useLocalStoragePersistence, PersistenceData } from 'src/hooks/utils/local-persistence';
+import { PersistenceData, useLocalStoragePersistence } from 'src/hooks/utils/local-persistence';
 import { PoolSwapConfig, usePoolSwapConfig } from 'src/pages/pool/components/PoolInfoHeader/usePoolSwapConfig';
-import { ChainStore } from 'src/stores/chain';
-import { AccountWithCosmosAndOsmosis } from 'src/stores/osmosis/account';
-import { QueriesWithCosmosAndOsmosis } from 'src/stores/osmosis/query';
-import { DeepReadonly } from 'utility-types';
+import { StateRef } from 'src/types/react';
 import { AddLiquidityConfig, LockupItem } from '.';
 import { ProcessTracker } from '../components/common/ProcessTracker';
-import { BasicAmountConfig, useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
 import { useStore } from '../stores';
-import { performAutoBondProcess } from './auto-bond/perform';
+import { depositIbc, performAutoBondProcess } from './auto-bond/perform';
 import { wrapBaseDialog } from './base';
 
 export const AutoBondDialog = wrapBaseDialog(
 	observer(({ poolId, close }: { poolId: string; close: () => void }) => {
 		const process = useProcess();
-		const { chainStore, queriesStore, accountStore } = useStore();
+		const { chainStore, queriesStore, accountStore, ibcTransferHistoryStore } = useStore();
 		const { isMobileView } = useWindowSize();
 		const { localStorage, setLocalStorage, useLocalStorageState } = useLocalStoragePersistence('auto-bond');
 
@@ -46,6 +32,19 @@ export const AutoBondDialog = wrapBaseDialog(
 		// 	() => queries.osmosis.queryGammPools.getObservableQueryPool(poolId), //
 		// 	[poolId, queries.osmosis.queryGammPools]
 		// );
+
+		// IBC Config
+		const [ibcSelection, setIbcSelection] = useLocalStorageState([poolId, 'ibc'], [] as AppCurrency[], {
+			serialize: list => {
+				console.debug(
+					'ser',
+					list.map(c => c.coinDenom)
+				);
+				return list.map(c => c.coinDenom);
+			},
+			deserialize: (list: string[]) =>
+				list && list.map((denom: string) => chainStore.getChain(chainStore.current.chainId).forceFindCurrency(denom)),
+		});
 
 		// Auto swap Config
 		const swapConfig = usePoolSwapConfig(
@@ -62,7 +61,9 @@ export const AutoBondDialog = wrapBaseDialog(
 			account.msgOpts.swapExactAmountIn.gas
 		);
 		swapConfig.setFeeConfig(swapFeeConfig);
-		useEffect(() => swapConfig.setIsMax(true), [swapConfig]); // in the beginning, set to max
+		useEffect(() => {
+			/* swapConfig.setInCurrency(); */ swapConfig.setIsMax(true);
+		}, [swapConfig]); // in the beginning, set to max
 		usePersistCurrencyChoice(swapConfig, poolId, localStorage, setLocalStorage);
 
 		// Auto-calculation hooks
@@ -106,9 +107,18 @@ export const AutoBondDialog = wrapBaseDialog(
 					<div className="w-full">
 						{!process.active && !process.steps.length ? (
 							<>
+								<IbcSelect currencies={swapConfig.sendableCurrencies} selection={[ibcSelection, setIbcSelection]} />
 								<AmountSelect
-									config={swapConfig}
-									{...{ matchWithOther, setMatchWithOther, allIn, setAllIn, balanceOut }}
+									{...{
+										config: swapConfig,
+										matchWithOther,
+										setMatchWithOther,
+										allIn,
+										setAllIn,
+										balanceOut,
+										ibcSelection,
+										setIbcSelection,
+									}}
 								/>
 								<LockupSelect {...{ poolId, selectedDurationIndex, setSelectedDurationIndex }} />
 								<BottomButton
@@ -120,9 +130,11 @@ export const AutoBondDialog = wrapBaseDialog(
 										if (!account.isReadyToSendMsgs || error != null) return;
 										performAutoBondProcess(
 											process,
-											account,
-											queries,
+											accountStore,
+											queriesStore,
 											chainStore,
+											ibcTransferHistoryStore,
+											ibcSelection,
 											swapConfig,
 											swapFeeConfig,
 											addLiquidityConfig,
@@ -138,13 +150,7 @@ export const AutoBondDialog = wrapBaseDialog(
 							<>
 								<div className="flex flex-col items-center">
 									<div className="bg-card rounded-2xl p-4 flex flex-col items-center">
-										{process.active ? (
-											<img
-												alt="logo"
-												className={clsx('s-spin', 'w-5 h-5 md:w-10 md:h-10 mb-4')}
-												src={'/public/assets/main/logo-single.png'}
-											/>
-										) : null}
+										{process.active ? <OsmosisSpinner /> : null}
 										<ProcessTracker process={process} />
 									</div>
 								</div>
@@ -157,6 +163,73 @@ export const AutoBondDialog = wrapBaseDialog(
 	})
 );
 
+const IbcSelect: FunctionComponent<{
+	currencies: AppCurrency[] | undefined;
+	selection: StateRef<AppCurrency[]>;
+}> = observer(({ currencies, ...state }) => {
+	const [selection, setSelection] = state.selection;
+	const [interactedWith, setInteractedWith] = useState<AppCurrency[]>([]); // if a user touched it, don't just remove it from display
+
+	if (!currencies) return null;
+	const ibcBalances = useIbcBalances(currencies);
+	const positiveOrTouchedBalances = ibcBalances.filter(
+		balance =>
+			!balance?.accInitialized ||
+			interactedWith.includes(balance.balance.currency) || // if a user touched it, keep it in display
+			balance.balance.toDec().isPositive()
+	);
+	console.log(
+		'ibcBalances',
+		_.fromPairs(ibcBalances.map(bal => [bal?.balance.toString(), bal?.balance.toDec().isPositive()]))
+	);
+	// remove from selection when without balance - has UX artifacts inbetween accInitialised=true & new balance
+	// useEffect(() =>
+	// 	selection.forEach(currency => {
+	// 		const balance = _.find(ibcBalances, c => c.balance.denom == currency.coinDenom);
+	// 		if (balance?.accInitialized && !balance.balance.toDec().isPositive()) {
+	// 			console.debug('removing because empty:', currency.coinDenom);
+	// 			setSelection(_.without(selection, currency));
+	// 		}
+	// 	})
+	// );
+
+	if (!positiveOrTouchedBalances.length) return null;
+	return (
+		<div className="bg-card rounded-2xl p-4 mb-4">
+			<p>0. Deposit via IBC (optional):</p>
+			<div className="mt-2 flex">
+				{positiveOrTouchedBalances.map(balance => {
+					const currency = balance.balance.currency;
+					const disabled = balance?.accInitialized && !balance.balance.toDec().isPositive();
+					return (
+						<SimpleSwitch
+							key={balance.balance.denom}
+							className={'text-sm -mb-2'}
+							checked={!disabled && !!_.find(selection, c => c.coinDenom == balance.balance.denom)}
+							onChecked={flag => {
+								if (disabled) return;
+								if (!balance?.accInitialized) balance?.initAcc();
+								setInteractedWith(list => _.union(list, [currency])); // if a user touched it, don't just remove it from display
+								console.log('toggle:', flag, _.map(selection, 'coinDenom'), balance.balance.denom);
+								setSelection(
+									flag ? _.union(selection, [currency]) : _.filter(selection, c => c.coinDenom != balance.balance.denom)
+								);
+							}}
+							disabled={disabled}>
+							{balance?.accInitialized ? (
+								balance?.balance.toString()
+							) : (
+								<span className="cursor-help underline" onClick={balance.initAcc}>
+									?{balance?.balance.denom}
+								</span>
+							)}
+						</SimpleSwitch>
+					);
+				})}
+			</div>
+		</div>
+	);
+});
 const AmountSelect: FunctionComponent<{
 	config: PoolSwapConfig;
 	matchWithOther: boolean;
@@ -164,36 +237,60 @@ const AmountSelect: FunctionComponent<{
 	allIn: boolean;
 	setAllIn: Dispatch<SetStateAction<boolean>>;
 	balanceOut: CoinPretty | undefined;
-}> = observer(({ config, matchWithOther, setMatchWithOther, allIn, setAllIn, balanceOut }) => {
-	const { isMobileView } = useWindowSize();
+	ibcSelection: AppCurrency[];
+	setIbcSelection: Dispatch<SetStateAction<string[]>>;
+}> = observer(
+	({ config, matchWithOther, setMatchWithOther, allIn, setAllIn, balanceOut, ibcSelection, setIbcSelection }) => {
+		const { isMobileView } = useWindowSize();
+		const { chainStore, queriesStore, accountStore, priceStore, ibcTransferHistoryStore } = useStore();
 
-	const showMatchWithOther = balanceOut?.toDec().isPositive();
+		const showMatchWithOther = balanceOut?.toDec().isPositive();
 
-	return (
-		<div className="bg-card rounded-2xl p-4 mb-4">
-			<p>1. Choose input mode:</p>
-			<SimpleSwitch checked={allIn} onChecked={setAllIn}>
-				All-in with both currencies
-			</SimpleSwitch>
+		return (
+			<div className="bg-card rounded-2xl p-4 mb-4">
+				<p>1. Choose input:</p>
+				<SimpleSwitch checked={allIn} onChecked={setAllIn}>
+					All-in with both currencies
+				</SimpleSwitch>
 
-			{allIn ? null : (
-				<>
-					<div className="mt-2">
-						<AutoBondFromBox {...{ config }} dropdownStyle={isMobileView ? { width: 'calc(100vw - 72px)' } : {}} />
-					</div>
-					{showMatchWithOther ? (
-						<SimpleSwitch className="text-sm -mb-2" checked={matchWithOther} onChecked={setMatchWithOther}>
-							use available {config.outCurrency.coinDenom} (less swapping, but resulting bond might double in total
-							value)
-						</SimpleSwitch>
-					) : balanceOut?.toDec().isPositive() ? (
-						<p className="pt-2">partially auto-swapped to {config.outCurrency.coinDenom}</p>
-					) : null}
-				</>
-			)}
-		</div>
-	);
-});
+				{allIn ? null : ibcSelection.length ? (
+					<button
+						className="p-1 px-3 rounded-md bg-primary-200 font-semibold"
+						onClick={async () => {
+							await depositIbc(
+								{
+									trackStep: (step: Step, func: (updateStep: (update: StepUpdate) => void) => Promise<void>) =>
+										func(() => {}),
+								} as Process, // fake process
+								ibcSelection,
+								accountStore,
+								queriesStore,
+								ibcTransferHistoryStore,
+								chainStore
+							);
+							setIbcSelection([]);
+						}}>
+						perform IBC now (to get balances)
+					</button>
+				) : (
+					<>
+						<div className="mt-2">
+							<AutoBondFromBox {...{ config }} dropdownStyle={isMobileView ? { width: 'calc(100vw - 72px)' } : {}} />
+						</div>
+						{showMatchWithOther ? (
+							<SimpleSwitch className="text-sm -mb-2" checked={matchWithOther} onChecked={setMatchWithOther}>
+								use available {config.outCurrency.coinDenom} (less swapping, but resulting bond might double in total
+								value)
+							</SimpleSwitch>
+						) : balanceOut?.toDec().isPositive() ? (
+							<p className="pt-2">partially auto-swapped to {config.outCurrency.coinDenom}</p>
+						) : null}
+					</>
+				)}
+			</div>
+		);
+	}
+);
 
 const LockupSelect: FunctionComponent<{
 	poolId: string;

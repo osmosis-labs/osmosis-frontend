@@ -1,25 +1,31 @@
-import { Duration } from 'dayjs/plugin/duration';
 import { IFeeConfig } from '@keplr-wallet/hooks';
-import { CoinPretty, Dec, IntPretty, DecUtils } from '@keplr-wallet/unit';
+import { AccountStore, ObservableQueryBalancesInner, QueriesStore } from '@keplr-wallet/stores';
+import { Currency } from '@keplr-wallet/types';
+import { CoinPretty, Dec, IntPretty } from '@keplr-wallet/unit';
+import { Duration } from 'dayjs/plugin/duration';
+import _ from 'lodash';
 import { findIndex } from 'lodash-es';
-import { Process } from 'src/hooks/process';
+import { doIbcDeposit } from 'src/dialogs/Transfer';
+import { Process, StepUpdate } from 'src/hooks/process';
+import { FakeFeeConfig } from 'src/hooks/tx';
 import { PoolSwapConfig } from 'src/pages/pool/components/PoolInfoHeader/usePoolSwapConfig';
 import { ChainStore } from 'src/stores/chain';
+import { IBCTransferHistoryStore } from 'src/stores/ibc-history';
 import { AccountWithCosmosAndOsmosis } from 'src/stores/osmosis/account';
 import { QueriesWithCosmosAndOsmosis } from 'src/stores/osmosis/query';
-import { DeepReadonly } from 'utility-types';
-import { AddLiquidityConfig } from '../manage-liquidity';
-import { BasicAmountConfig } from '../../hooks/tx/basic-amount-config';
-import { ObservableQueryBalancesInner } from '@keplr-wallet/stores';
-import _ from 'lodash';
-import { Currency } from '@keplr-wallet/types';
 import { coinDisplay, toCoinPretty } from 'src/utils/currency';
+import { getIbcBalances } from 'src/utils/ibc';
+import { DeepReadonly } from 'utility-types';
+import { BasicAmountConfig } from '../../hooks/tx/basic-amount-config';
+import { AddLiquidityConfig } from '../manage-liquidity';
 
 export async function performAutoBondProcess(
 	process: Process,
-	account: AccountWithCosmosAndOsmosis,
-	queries: DeepReadonly<QueriesWithCosmosAndOsmosis>,
+	accountStore: AccountStore<AccountWithCosmosAndOsmosis>,
+	queriesStore: QueriesStore<QueriesWithCosmosAndOsmosis>,
 	chainStore: ChainStore,
+	ibcTransferHistoryStore: IBCTransferHistoryStore,
+	ibcSelection: Currency[],
 	swapConfig: PoolSwapConfig,
 	swapFeeConfig: IFeeConfig,
 	addLiquidityConfig: AddLiquidityConfig,
@@ -31,14 +37,20 @@ export async function performAutoBondProcess(
 	if (!poolId) {
 		throw new Error("Can't calculate the optimized pools");
 	}
+	const queries = queriesStore.get(chainStore.current.chainId);
+	const account = accountStore.getAccount(chainStore.current.chainId);
 	if (!account.isReadyToSendMsgs) throw new Error('Account not ready');
 	const balanceQuery = queries.queryBalances.getQueryBech32Address(account.bech32Address);
 	process.start();
-
-	const { swapAmount, bondAmount } = calculateSwap(swapConfig, swapFeeConfig, allIn, matchWithOther, balanceQuery);
-	if (swapAmount) swapConfig.setAmount(swapAmount.toDec().toString());
-
 	try {
+		// IBC transfer //
+		if (ibcSelection.length) {
+			await depositIbc(process, ibcSelection, accountStore, queriesStore, ibcTransferHistoryStore, chainStore);
+		}
+
+		const { swapAmount, bondAmount } = calculateSwap(swapConfig, swapFeeConfig, allIn, matchWithOther, balanceQuery);
+		if (swapAmount) swapConfig.setAmount(swapAmount.toDec().toString());
+
 		// Swap for liquidity //
 		if (swapAmount) {
 			await performSwap(process, swapConfig, account, balanceQuery);
@@ -62,6 +74,10 @@ export async function performAutoBondProcess(
 		process.setInactive();
 	}
 }
+
+///////////////
+// CALCULATE //
+///////////////
 
 function calculateSwap(
 	swapConfig: PoolSwapConfig,
@@ -165,6 +181,83 @@ function calculateSwap(
 	return { swapAmount, bondAmount };
 }
 
+/////////////
+// PERFORM //
+/////////////
+
+export async function depositIbc(
+	process: Process,
+	ibcSelection: Currency[],
+	accountStore: AccountStore<AccountWithCosmosAndOsmosis>,
+	queriesStore: QueriesStore<QueriesWithCosmosAndOsmosis>,
+	ibcTransferHistoryStore: IBCTransferHistoryStore,
+	chainStore: ChainStore
+) {
+	const queries = queriesStore.get(chainStore.current.chainId);
+	const account = accountStore.getAccount(chainStore.current.chainId);
+	const balanceQuery = queries.queryBalances.getQueryBech32Address(account.bech32Address);
+
+	let balances = getIbcBalances(ibcSelection, chainStore, accountStore, queriesStore);
+	// Maybe, selected currencies where from LocalStorage and their accounts are not initialised yet.
+	const uninitialised = balances.filter(b => !b?.accInitialized);
+	if (uninitialised.length) {
+		await Promise.all(uninitialised.map(async b => await b?.initAcc()));
+		balances = getIbcBalances(ibcSelection, chainStore, accountStore, queriesStore); // refresh after
+	}
+	await Promise.all(
+		ibcSelection.map(async currency => {
+			const balance = _.find(balances, c => c.balance.denom == currency.coinDenom);
+			if (!balance) throw new Error('No IBC balance for ' + currency.coinDenom);
+
+			const fakeFee = new FakeFeeConfig(
+				chainStore,
+				balance.channelInfo.counterpartyChainId,
+				account.msgOpts.swapExactAmountIn.gas
+			);
+			const amount = balance.balance
+				.mul(new Dec('0.95')) // leave some crumbs for future fees
+				.sub(fakeFee.fee!.toDec()); // subtract fake fee
+			console.log(balance.balance.toString(), '-', fakeFee.fee?.toString(), '=', amount.toString());
+
+			if (!amount.toDec().isPositive()) return null;
+			const amountConfig = new BasicAmountConfig(
+				chainStore,
+				chainStore.current.chainId,
+				account.bech32Address,
+				balance.balance.currency,
+				queries.queryBalances
+			);
+			amountConfig.setAmount(amount.toDec().toString());
+			await process.trackStep(
+				{
+					type: 'swap',
+					status: 'prompt',
+					info: `IBC: ${amount.toString()}`,
+				},
+				async updateStep => {
+					await new Promise((resolve, reject) => {
+						doIbcDeposit(
+							accountStore.getAccount(balance.channelInfo.counterpartyChainId),
+							balance.channelInfo.destChannelId,
+							chainStore,
+							amountConfig,
+							account.bech32Address,
+							ibcTransferHistoryStore,
+							balance.channelInfo.counterpartyChainId,
+							accountStore.getAccount(balance.channelInfo.counterpartyChainId).bech32Address,
+							resolve // onFullfilled
+						)
+							.then(() => updateStep({ status: 'wait' })) // onBroadcasted
+							.catch(reject);
+					});
+					await waitForBalanceUpdate(balanceQuery, amount.toDec(), amount.currency);
+				}
+			);
+			return amount;
+		})
+	);
+}
+
 async function performSwap(
 	process: Process,
 	swapConfig: PoolSwapConfig,
@@ -227,32 +320,8 @@ async function performSwap(
 			});
 			const swapOutAmount = swapConfig.outAmount.toDec();
 
-			console.debug('Refreshing balances');
 			updateStep({ status: 'wait' });
-			let tries = 0;
-			while (true) {
-				// I didn't figure out how to wait for new balances, so I did this loop check
-				await balanceQuery.fetch();
-				const balances = [swapConfig.sendCurrency, swapConfig.outCurrency].map(c =>
-					balanceQuery.getBalanceFromCurrency(c)
-				);
-				console.debug(
-					'New balances:',
-					balances.map(b => b.toString())
-				);
-
-				if (
-					balances[1]
-						.toDec()
-						.mul(new Dec('0.95')) // allow for slippage or whatever
-						.gte(swapOutAmount)
-				) {
-					break;
-				}
-				tries++;
-				if (tries > 20) throw new Error('Timeout while waiting for balances');
-				await new Promise(resolve => setTimeout(resolve, 500));
-			}
+			await waitForBalanceUpdate(balanceQuery, swapOutAmount, swapConfig.outCurrency);
 		}
 	);
 }
@@ -395,4 +464,27 @@ async function performBond(
 			});
 		}
 	);
+}
+
+async function waitForBalanceUpdate(balanceQuery: ObservableQueryBalancesInner, amount: Dec, currency: Currency) {
+	console.debug('Refreshing balances');
+	let tries = 0;
+	while (true) {
+		// I didn't figure out how to wait for new balances, so I did this loop check
+		await balanceQuery.fetch();
+		const balance = balanceQuery.getBalanceFromCurrency(currency);
+		console.debug('New balance:', balance.toString());
+
+		if (
+			balance
+				.toDec()
+				.mul(new Dec('0.95')) // allow for slippage or whatever
+				.gte(amount)
+		) {
+			break;
+		}
+		tries++;
+		if (tries > 50) throw new Error('Timeout while waiting for balances');
+		await new Promise(resolve => setTimeout(resolve, 1000));
+	}
 }

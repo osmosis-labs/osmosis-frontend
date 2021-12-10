@@ -5,15 +5,14 @@ import { observer } from 'mobx-react-lite';
 import React, { CSSProperties, HTMLAttributes, useCallback } from 'react';
 import { ButtonToggle } from 'src/components/layouts/Buttons';
 import { CenterV } from 'src/components/layouts/Containers';
-import { TokenInSwapConfig } from 'src/components/SwapToken/models';
 import { TokenBoxContainer, TokenBoxRow } from 'src/components/SwapToken/StyledTokenBox';
 import { Text } from 'src/components/Texts';
 import { useBooleanStateWithWindowEvent } from 'src/hooks/useBooleanStateWithWindowEvent';
 import { TokenAmountInput } from 'src/pages/main/components/TokenAmountInput';
-import { useStore } from 'src/stores';
-import { TokenSelect } from './TokenSelect';
-import useWindowSize from '../../hooks/useWindowSize';
 import { PoolSwapConfig } from 'src/pages/pool/components/PoolInfoHeader/usePoolSwapConfig';
+import { useStore } from 'src/stores';
+import useWindowSize from '../../hooks/useWindowSize';
+import { TokenSelect } from './TokenSelect';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
 	config: PoolSwapConfig;
