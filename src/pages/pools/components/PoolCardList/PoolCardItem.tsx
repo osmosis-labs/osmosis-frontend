@@ -42,7 +42,7 @@ export function PoolCardItem(
 							<PoolHeaderText>Pool Liquidity</PoolHeaderText>
 							<PoolValueText>{liquidity.value}</PoolValueText>
 						</div>
-						{apr && (
+						{apr?.value && (
 							<div style={{ marginLeft: '20px' }}>
 								<PoolHeaderText>APR</PoolHeaderText>
 								{apr.isLoading ? (
@@ -65,7 +65,7 @@ export function PoolCardItem(
 								<PoolValueText>{props.myLiquidity.value}</PoolValueText>
 							)}
 						</div>
-						{props.myLockedAmount && (
+						{props.myLockedAmount?.value && (
 							<div style={{ marginLeft: '20px' }}>
 								<PoolHeaderText>My Bonded Amount</PoolHeaderText>
 
