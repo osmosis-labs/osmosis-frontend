@@ -9,6 +9,12 @@ import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { computedFn } from 'mobx-utils';
 import { Duration } from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';
+import { PoolSwapFeeData } from 'src/remotes/pool/getPoolSwapFeeData';
+import * as Math from 'src/stores/osmosis/pool/math';
+
+interface PriceCalculator {
+	calculatePrice(coin: CoinPretty, vsCurrrency?: string): PricePretty | undefined;
+}
 
 export class QueriedPoolBase {
 	@observable.ref
@@ -445,6 +451,7 @@ export class QueriedPoolBase {
 	@computed
 	get totalShare(): IntPretty {
 		// 쉐어의 decimal은 18으로 고정되어 있다
+		// The DECIMAL of SHAR is fixed to 18
 		return new IntPretty(this.pool.totalShare).precision(18);
 	}
 
@@ -498,16 +505,38 @@ export class QueriedPoolBase {
 		});
 	}
 
+	readonly computeFeeApy = computedFn((data: PoolSwapFeeData, priceStore: PriceCalculator, fiatCurrency: FiatCurrency):
+		| IntPretty
+		| undefined => {
+		if (fiatCurrency.currency !== 'usd') {
+			// TODO: support other currencies.
+			return undefined;
+		}
+
+		const avgDayFeeRevenue = new Dec(data.fees_spent_7d.toString(), 6).quo(new Dec(7));
+		const poolTVL = this.computeTotalValueLocked(priceStore, fiatCurrency).toDec();
+
+		if (poolTVL.equals(new Dec(0))) {
+			return undefined;
+		}
+		const percentRevenue = avgDayFeeRevenue.quo(poolTVL);
+		const dailyRate = new Dec(1).add(percentRevenue);
+		const rate = Math.pow(dailyRate, new Dec(365));
+
+		return new IntPretty(rate)
+			.sub(new Dec(1))
+			.decreasePrecision(2)
+			.maxDecimals(2)
+			.trim(true);
+	});
+
 	/**
 	 * Compute the total value locked in the pool.
 	 * Only handle the known currencies that have the coingecko id.
 	 * Other currencies would be ignored.
 	 */
 	readonly computeTotalValueLocked = computedFn(
-		(
-			priceStore: { calculatePrice(coin: CoinPretty, vsCurrrency?: string): PricePretty | undefined },
-			fiatCurrency: FiatCurrency
-		): PricePretty => {
+		(priceStore: PriceCalculator, fiatCurrency: FiatCurrency): PricePretty => {
 			let price = new PricePretty(fiatCurrency, new Dec(0));
 
 			for (const poolAsset of this.poolAssets) {

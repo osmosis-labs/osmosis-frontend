@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
-import { CoinPretty, Dec, DecUtils } from '@keplr-wallet/unit';
-import { chunk } from 'lodash-es';
+import { CoinPretty, Dec, DecUtils, IntPretty } from '@keplr-wallet/unit';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { OverviewLabelValue } from 'src/components/common/OverviewLabelValue';
 import { SubTitleText, TitleText } from 'src/components/Texts';
 import { PreferHeaderShowTokenPricePoolIds } from 'src/config';
+import { usePoolSwapFeeData } from 'src/hooks/pool/usePoolSwapFeeData';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { useStore } from 'src/stores';
 
@@ -27,6 +27,10 @@ export const OverviewLabelValueGridList = observer(function OverviewLabelGridLis
 	const locked = queries.osmosis.queryGammPoolShare.getLockedGammShare(account.bech32Address, poolId);
 	const actualLockedRatio = pool ? locked.quo(pool.totalShare) : new Dec(0);
 
+	const swapFeeData = usePoolSwapFeeData(poolId);
+	const fiat = priceStore.getFiatCurrency('usd');
+	let feeApy: IntPretty | undefined = undefined;
+
 	// `shareRatio`가 백분률로 오기 때문에 10^2를 나눠줘야한다.
 	const actualRatio = shareRatio.toDec().quo(DecUtils.getPrecisionDec(2));
 
@@ -39,19 +43,23 @@ export const OverviewLabelValueGridList = observer(function OverviewLabelGridLis
 		content: string;
 	}[] = [];
 
-	if (!pool) {
+	if (!pool || !fiat) {
 		return null;
+	}
+
+	if (swapFeeData.data) {
+		feeApy = pool.computeFeeApy(swapFeeData.data.data[0], priceStore, fiat);
 	}
 
 	if (!PreferHeaderShowTokenPricePoolIds[pool.id]) {
 		firstOverviews.push({
 			label: 'Pool Liquidity',
-			content: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
+			content: pool.computeTotalValueLocked(priceStore, fiat).toString(),
 		});
 		firstOverviews.push({
 			label: 'My Liquidity',
 			content: (() => {
-				const tvl = pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!);
+				const tvl = pool.computeTotalValueLocked(priceStore, fiat);
 
 				return tvl.mul(actualRatio).toString();
 			})(),
@@ -60,7 +68,7 @@ export const OverviewLabelValueGridList = observer(function OverviewLabelGridLis
 		secondOverviews.push({
 			label: 'Bonded',
 			content: pool
-				.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!)
+				.computeTotalValueLocked(priceStore, fiat)
 				.mul(actualLockedRatio)
 				.toString(),
 		});
@@ -88,7 +96,7 @@ export const OverviewLabelValueGridList = observer(function OverviewLabelGridLis
 
 		secondOverviews.push({
 			label: 'Pool Liquidity',
-			content: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
+			content: pool.computeTotalValueLocked(priceStore, fiat).toString(),
 		});
 		secondOverviews.push({
 			label: 'Swap Fee',
@@ -103,6 +111,13 @@ export const OverviewLabelValueGridList = observer(function OverviewLabelGridLis
 		}
 	}
 
+	if (feeApy) {
+		secondOverviews.push({
+			label: 'Fee APY',
+			content: feeApy.toString() + '%',
+		});
+	}
+
 	return (
 		<OverviewLabelValueGridListContainer>
 			<FirstOverviews>
@@ -110,7 +125,7 @@ export const OverviewLabelValueGridList = observer(function OverviewLabelGridLis
 					<Overview key={overview.label}>
 						<OverviewLabelValue label={overview.label}>
 							<TitleText isMobileView={isMobileView} size="2xl" pb={0}>
-								{overview.content !== '' ? overview.content : `&#8203`}
+								{overview.content !== '' ? overview.content : `&#8203;`}
 							</TitleText>
 						</OverviewLabelValue>
 					</Overview>

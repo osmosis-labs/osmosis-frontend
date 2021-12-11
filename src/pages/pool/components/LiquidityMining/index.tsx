@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { Dec, IntPretty } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useCallback, useState } from 'react';
 import { ButtonPrimary } from 'src/components/layouts/Buttons';
 import { CenterSelf, WellContainer } from 'src/components/layouts/Containers';
 import { TitleText, Text } from 'src/components/Texts';
@@ -36,7 +36,7 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
-	const closeDialog = () => setIsDialogOpen(false);
+	const closeDialog = useCallback(() => setIsDialogOpen(false), [isDialogOpen, setIsDialogOpen]);
 
 	return (
 		<>
@@ -64,10 +64,7 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 								: '$0'}
 						</Text>
 						<div>
-							<ButtonPrimary
-								onClick={() => {
-									setIsDialogOpen(true);
-								}}>
+							<ButtonPrimary onClick={() => setIsDialogOpen(true)}>
 								<Text isMobileView={isMobileView} emphasis="high">
 									Start Earning
 								</Text>
@@ -89,7 +86,7 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 									flexDirection: isMobileView ? 'column' : 'row',
 									gap: isMobileView ? '0px' : '36px',
 								}}>
-								{gauges.map(gauge => {
+								{gauges.map((gauge, i) => {
 									const currency = chainStore.currentFluent.findCurrency(gauge.denom);
 									const gaugeIds = [gauge.gaugeId];
 									if (Array.isArray(gauges)) {
@@ -102,7 +99,12 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 
 									if (currency) {
 										return (
-											<ExtraGauge gaugeIds={gaugeIds} currency={currency} extraRewardAmount={gauge.extraRewardAmount} />
+											<ExtraGauge
+												key={i}
+												gaugeIds={gaugeIds}
+												currency={currency}
+												extraRewardAmount={gauge.extraRewardAmount}
+											/>
 										);
 									}
 								})}
