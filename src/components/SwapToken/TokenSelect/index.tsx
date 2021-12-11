@@ -35,7 +35,7 @@ export function TokenSelect({
 	...props
 }: Props) {
 	const handleDropdownArrowClicked = useCallback(
-		(event: MouseEvent) => {
+		(event: { stopPropagation: () => void }) => {
 			event.stopPropagation();
 			if (isDropdownOpen) {
 				onDropdownClose();
@@ -57,7 +57,7 @@ export function TokenSelect({
 	const { isMobileView } = useWindowSize();
 
 	return (
-		<TokenSelectContainer {...props}>
+		<TokenSelectContainer onClick={handleDropdownArrowClicked} {...props}>
 			<TokenImg src={value?.coinImageUrl} />
 			<CenterV>
 				<div>
@@ -67,7 +67,7 @@ export function TokenSelect({
 					{channelShown && <ChannelText isMobileView={isMobileView} currency={value} />}
 				</div>
 
-				<DownArrowImg onClick={handleDropdownArrowClicked} isActive={options.length === 0 ? false : isDropdownOpen} />
+				<DownArrowImg isActive={options.length === 0 ? false : isDropdownOpen} />
 			</CenterV>
 
 			<TokenSelectList
@@ -85,6 +85,7 @@ const TokenSelectContainer = styled.div`
 	display: flex;
 	align-items: center;
 	position: relative;
+	cursor: pointer;
 `;
 
 function TokenImg({ style, className, ...props }: ComponentProps<typeof Img>) {
@@ -132,7 +133,6 @@ const DownArrowImg = styled(Img)<{ isActive: boolean }>`
 	height: 7px;
 	width: 16px;
 	margin-left: 8px;
-	cursor: pointer;
 	opacity: 0.4;
 	transition: transform 0.1s;
 
