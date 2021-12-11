@@ -77,7 +77,7 @@ export function TokenSelect({
 				<TokenSelectList
 					style={{ ...dropdownStyle, display: !isDropdownOpen ? 'none' : undefined }}
 					className={dropdownClassName}
-					currencies={options}
+					currencies={options.filter(currency => currency.coinDenom !== value.coinDenom)}
 					shouldScrollIntoView={isDropdownOpen}
 					onSelect={handleTokenSelected}
 				/>
