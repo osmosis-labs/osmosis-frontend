@@ -55,6 +55,7 @@ export function TokenSelect({
 	);
 
 	const { isMobileView } = useWindowSize();
+	const isSingleToken = options.length === 1;
 
 	return (
 		<TokenSelectContainer {...props}>
@@ -67,16 +68,20 @@ export function TokenSelect({
 					{channelShown && <ChannelText isMobileView={isMobileView} currency={value} />}
 				</div>
 
-				<DownArrowImg onClick={handleDropdownArrowClicked} isActive={options.length === 0 ? false : isDropdownOpen} />
+				{!isSingleToken && (
+					<DownArrowImg onClick={handleDropdownArrowClicked} isActive={options.length === 0 ? false : isDropdownOpen} />
+				)}
 			</CenterV>
 
-			<TokenSelectList
-				style={{ ...dropdownStyle, display: !isDropdownOpen ? 'none' : undefined }}
-				className={dropdownClassName}
-				currencies={options}
-				shouldScrollIntoView={isDropdownOpen}
-				onSelect={handleTokenSelected}
-			/>
+			{!isSingleToken && (
+				<TokenSelectList
+					style={{ ...dropdownStyle, display: !isDropdownOpen ? 'none' : undefined }}
+					className={dropdownClassName}
+					currencies={options}
+					shouldScrollIntoView={isDropdownOpen}
+					onSelect={handleTokenSelected}
+				/>
+			)}
 		</TokenSelectContainer>
 	);
 }
