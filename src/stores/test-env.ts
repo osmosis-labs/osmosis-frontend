@@ -95,7 +95,7 @@ export class RootStore {
 					return Buffer.from(result.data.txhash, 'hex');
 				} finally {
 					// Sending the other tx right after the response is fetched makes the other tx be failed sometimes,
-					// because actually the increased account number is commited after the block is fully processed.
+					// because actually the increased sequence is commited after the block is fully processed.
 					// So, to prevent this problem, just wait more time after the response is fetched.
 					await new Promise(resolve => {
 						setTimeout(resolve, 500);
@@ -141,7 +141,7 @@ export class RootStore {
 }
 
 export function getEventFromTx(tx: any, type: string): any {
-	return JSON.parse(tx.tx_result.log)[0].events.find((e: any) => e.type === type);
+	return JSON.parse(tx.log)[0].events.find((e: any) => e.type === type);
 }
 
 function deepContainedObj(obj1: any, obj2: any): boolean {
@@ -238,7 +238,12 @@ export async function initLocalnet(): Promise<void> {
 	while (true) {
 		await delay(500);
 		try {
-			await instance.get('/blocks/latest');
+			const result = await instance.get<{
+				block: any;
+			}>('/blocks/latest');
+			if (!result?.data?.block) {
+				throw new Error('Chain started, but not yet initialized');
+			}
 		} catch {
 			continue;
 		}

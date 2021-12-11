@@ -3,12 +3,14 @@ FROM ubuntu:20.04
 RUN apt-get update && apt-get install -y git build-essential wget
 RUN wget https://github.com/mikefarah/yq/releases/download/v4.9.3/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
 
-RUN wget https://dl.google.com/go/go1.15.10.linux-amd64.tar.gz
-RUN tar -xvf go1.15.10.linux-amd64.tar.gz
-RUN mv go /usr/local
+COPY install-golang.sh install-golang.sh
+
+RUN sh install-golang.sh
 
 ENV GOROOT /usr/local/go
-ENV PATH $GOPATH/bin:$GOROOT/bin:$PATH
+ENV GOPATH /go
+ENV GOBIN /go/bin
+ENV PATH $GOBIN:$GOROOT/bin:$PATH
 
 RUN git clone https://github.com/osmosis-labs/osmosis
 
@@ -38,6 +40,7 @@ RUN mv ~/.osmosisd/config/genesis.tmp.json ~/.osmosisd/config/genesis.json
 
 RUN sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' ~/.osmosisd/config/config.toml
 RUN sed -i 's/cors_allowed_origins = \[\]/cors_allowed_origins = \["*"\]/g' ~/.osmosisd/config/config.toml
+RUN sed -i 's/timeout_commit = "5s"/timeout_commit = "1s"/g' ~/.osmosisd/config/config.toml
 RUN sed -i 's/"stake"/"uosmo"/g' ~/.osmosisd/config/genesis.json
 RUN sed -i 's/pruning = "default"/pruning = "nothing"/g' ~/.osmosisd/config/app.toml
 RUN sed -i 's/enable = false/enable = true/g' ~/.osmosisd/config/app.toml
@@ -66,4 +69,4 @@ RUN ./osmosisd collect-gentxs
 EXPOSE 26657
 EXPOSE 1317
 EXPOSE 9090
-CMD ./osmosisd start
+CMD ./osmosisd start --trace
