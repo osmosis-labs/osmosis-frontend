@@ -11,6 +11,7 @@ import Axios from 'axios';
 import WebSocket from 'ws';
 import { exec } from 'child_process';
 import { Bech32Address } from '@keplr-wallet/cosmos';
+import { Buffer } from 'buffer/';
 
 export const TestChainInfos: ChainInfoWithExplorer[] = [
 	{
@@ -56,7 +57,7 @@ export const TestChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 			},
 		],
-		features: ['stargate'],
+		features: ['stargate', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: '',
 	},
 ];
@@ -68,7 +69,7 @@ export class RootStore {
 
 	constructor() {
 		const mockKeplr = new MockKeplr(
-			async (chainId: string, tx: StdTx) => {
+			async (chainId: string, tx: StdTx | Uint8Array) => {
 				const chainInfo = TestChainInfos.find(info => info.chainId === chainId);
 				if (!chainInfo) {
 					throw new Error('Unknown chain info');
@@ -80,19 +81,28 @@ export class RootStore {
 					},
 				});
 
-				const params = {
-					tx,
-					// Force to send as "block" mode
-					mode: 'block',
-				};
+				const isProtoTx = Buffer.isBuffer(tx) || tx instanceof Uint8Array;
+
+				const params = isProtoTx
+					? {
+							tx_bytes: Buffer.from(tx as any).toString('base64'),
+							mode: 'BROADCAST_MODE_BLOCK',
+					  }
+					: {
+							tx,
+							mode: 'block',
+					  };
 
 				try {
-					const result = await restInstance.post('/txs', params);
-					if (result.data.code != null && result.data.code !== 0) {
-						throw new Error(result.data['raw_log']);
+					const result = await restInstance.post(isProtoTx ? '/cosmos/tx/v1beta1/txs' : '/txs', params);
+
+					const txResponse = isProtoTx ? result.data['tx_response'] : result.data;
+
+					if (txResponse.code != null && txResponse.code !== 0) {
+						throw new Error(txResponse['raw_log']);
 					}
 
-					return Buffer.from(result.data.txhash, 'hex');
+					return Buffer.from(txResponse.txhash, 'hex');
 				} finally {
 					// Sending the other tx right after the response is fetched makes the other tx be failed sometimes,
 					// because actually the increased sequence is commited after the block is fully processed.
