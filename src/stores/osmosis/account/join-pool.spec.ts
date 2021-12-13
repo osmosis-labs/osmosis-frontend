@@ -90,7 +90,7 @@ describe('Test Osmosis Join Pool Tx', () => {
 			{
 				type: 'message',
 				attributes: [
-					{ key: 'action', value: 'join_pool' },
+					{ key: 'action', value: '/osmosis.gamm.v1beta1.MsgJoinPool' },
 					{ key: 'module', value: 'gamm' },
 					{
 						key: 'sender',
@@ -154,7 +154,7 @@ describe('Test Osmosis Join Pool Tx', () => {
 			{
 				type: 'message',
 				attributes: [
-					{ key: 'action', value: 'join_pool' },
+					{ key: 'action', value: '/osmosis.gamm.v1beta1.MsgJoinPool' },
 					{ key: 'module', value: 'gamm' },
 					{
 						key: 'sender',

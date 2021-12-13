@@ -148,7 +148,7 @@ describe('Test Osmosis Swap Exact Amount Out Tx', () => {
 			{
 				type: 'message',
 				attributes: [
-					{ key: 'action', value: 'swap_exact_amount_out' },
+					{ key: 'action', value: '/osmosis.gamm.v1beta1.MsgSwapExactAmountOut' },
 					{ key: 'module', value: 'gamm' },
 					{
 						key: 'sender',
@@ -227,7 +227,7 @@ describe('Test Osmosis Swap Exact Amount Out Tx', () => {
 			{
 				type: 'message',
 				attributes: [
-					{ key: 'action', value: 'swap_exact_amount_out' },
+					{ key: 'action', value: '/osmosis.gamm.v1beta1.MsgSwapExactAmountOut' },
 					{ key: 'module', value: 'gamm' },
 					{
 						key: 'sender',
@@ -301,7 +301,7 @@ describe('Test Osmosis Swap Exact Amount Out Tx', () => {
 			{
 				type: 'message',
 				attributes: [
-					{ key: 'action', value: 'swap_exact_amount_out' },
+					{ key: 'action', value: '/osmosis.gamm.v1beta1.MsgSwapExactAmountOut' },
 					{ key: 'module', value: 'gamm' },
 					{
 						key: 'sender',
