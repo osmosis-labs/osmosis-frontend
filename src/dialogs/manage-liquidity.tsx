@@ -1,6 +1,6 @@
 import { TxChainSetter } from '@keplr-wallet/hooks';
 import { ChainGetter, ObservableQueryBalances } from '@keplr-wallet/stores';
-import { Currency } from '@keplr-wallet/types';
+import { AppCurrency, Currency } from '@keplr-wallet/types';
 import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
 import cn from 'clsx';
 import { findIndex } from 'lodash-es';
@@ -18,6 +18,9 @@ import { ObservableQueryGammPoolShare } from '../stores/osmosis/query/pool-share
 import { ObservableQueryPools } from '../stores/osmosis/query/pools';
 import { wrapBaseDialog } from './base';
 import useWindowSize from 'src/hooks/useWindowSize';
+import { TokenSelect } from 'src/components/SwapToken/TokenSelect';
+import { useBooleanStateWithWindowEvent } from 'src/hooks/useBooleanStateWithWindowEvent';
+import { IconExternalLink, IconCheckBox } from 'src/icons';
 
 //	TODO : edit how the circle renders the border to make gradients work
 const borderImages: Record<string, string> = {
@@ -558,6 +561,9 @@ const AddLiquidity: FunctionComponent<{
 	addLiquidityConfig: AddLiquidityConfig;
 }> = observer(({ addLiquidityConfig }) => {
 	const poolShare = addLiquidityConfig.poolShare;
+	const [isAutoSwap, setIsAutoSwap] = useState(false);
+	const [isMouseOverInfoIcon, setIsMouseOverInfoIcon] = useState(false);
+	const [isMouseOverToolTip, setIsMouseOverTooltip] = useState(false);
 
 	return (
 		<React.Fragment>
@@ -570,11 +576,68 @@ const AddLiquidity: FunctionComponent<{
 						.toString()}
 				</span>
 			</p>
-			<ul className="flex flex-col gap-3 md:gap-4.5 mb-5 md:mb-6 md:mb-15">
-				{addLiquidityConfig.poolAssets.map((asset, i) => (
-					<TokenLiquidityItem key={asset.currency.coinMinimalDenom} index={i} addLiquidityConfig={addLiquidityConfig} />
-				))}
-			</ul>
+			{isAutoSwap ? (
+				<ul className="flex flex-col">
+					<TokenLiquidityItem index={0} addLiquidityConfig={addLiquidityConfig} isAutoSwap={isAutoSwap} />
+				</ul>
+			) : (
+				<ul className="flex flex-col gap-3 md:gap-4.5">
+					{addLiquidityConfig.poolAssets.map((asset, i) => (
+						<TokenLiquidityItem
+							key={asset.currency.coinMinimalDenom}
+							index={i}
+							addLiquidityConfig={addLiquidityConfig}
+						/>
+					))}
+				</ul>
+			)}
+			<div className="relative flex items-center justify-end mt-5">
+				<label
+					htmlFor="checkbox"
+					className="text-sm md:text-base flex justify-end items-center mr-2 cursor-pointer font-semibold"
+					onClick={() => setIsAutoSwap(!isAutoSwap)}>
+					{isAutoSwap ? (
+						<div className="mr-2.5">
+							<IconCheckBox />
+						</div>
+					) : (
+						<div className="w-6 h-6 border-2 border-white-high mr-2.5 rounded" />
+					)}
+					Auto-Swap LP
+				</label>
+				<img
+					className="h-5 w-5 cursor-pointer"
+					src="/public/assets/Icons/Information.svg"
+					onMouseEnter={() => setIsMouseOverInfoIcon(true)}
+					onMouseLeave={() => {
+						const timeoutId = window.setTimeout(() => {
+							setIsMouseOverInfoIcon(false);
+							window.clearTimeout(timeoutId);
+						}, 100);
+					}}
+				/>
+
+				{(isMouseOverInfoIcon || isMouseOverToolTip) && (
+					<div
+						style={{ maxWidth: '297px' }}
+						className="absolute z-10 -right-0.5 md:-right-2 bottom-7 bg-wireframes-darkGrey border border-white-faint p-2 rounded-lg"
+						onMouseEnter={() => setIsMouseOverTooltip(true)}
+						onMouseLeave={() => setIsMouseOverTooltip(false)}>
+						<div className="text-white-high text-sm mb-1 leading-tight">
+							Auto-Swap automatically swaps your chosen assets to an equivalent dollar amount of the pool’s opposing
+							asset-pair.
+						</div>
+						<a
+							href="https://osmosis.zone"
+							className="flex items-center cursor-pointer"
+							target="_blank"
+							rel="noreferrer">
+							<span className="text-white-high text-sm mr-1.5">Learn More</span>
+							<IconExternalLink />
+						</a>
+					</div>
+				)}
+			</div>
 		</React.Fragment>
 	);
 });
@@ -582,47 +645,90 @@ const AddLiquidity: FunctionComponent<{
 const TokenLiquidityItem: FunctionComponent<{
 	addLiquidityConfig: AddLiquidityConfig;
 	index: number;
-}> = observer(({ addLiquidityConfig, index }) => {
+	isAutoSwap?: boolean;
+}> = observer(({ addLiquidityConfig, index, isAutoSwap }) => {
 	const { chainStore, queriesStore } = useStore();
 	const { isMobileView } = useWindowSize();
+	const [currentCurrency, setCurrentCurrency] = useState(addLiquidityConfig.poolAssets[index].currency);
+	const [isTokenDropdownOpen, setIsTokenDropdownOpen] = useBooleanStateWithWindowEvent(false);
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const queryBalance = queries.queryBalances.getQueryBech32Address(addLiquidityConfig.sender);
 
-	const poolAsset = addLiquidityConfig.poolAssets[index];
-	const currency = poolAsset.currency;
-	const percentage = poolAsset.weight.quo(addLiquidityConfig.totalWeight).decreasePrecision(2);
+	const percentage = addLiquidityConfig.poolAssets[index].weight
+		.quo(addLiquidityConfig.totalWeight)
+		.decreasePrecision(2);
 
 	return (
-		<li className="w-full border border-white-faint rounded-2xl px-2 py-2.5 md:py-3.75 md:px-4">
+		<li
+			style={isTokenDropdownOpen ? { borderBottomLeftRadius: 0 } : undefined}
+			className="w-full border border-white-faint rounded-2xl px-2 py-2.5 md:py-3.75 md:px-4">
 			<section className="flex items-center justify-between">
 				<div className="flex items-center">
-					<figure
-						style={{ fontSize: isMobileView ? 48 : 60 }}
-						className={cn(
-							'c100 dark mr-2.5 md:mr-5',
-							`p${percentage
-								.maxDecimals(0)
-								.locale(false)
-								.toString()}`
-						)}>
-						<span>{percentage.maxDecimals(0).toString()}%</span>
-						<div className="slice">
-							<div style={{ background: `${borderImages[MISC.GRADIENTS[index]]}` }} className="bar" />
-							<div className="fill" />
-						</div>
-					</figure>
-					<div className="flex flex-col">
-						<h5 className="text-base md:text-xl">{currency.coinDenom.toUpperCase()}</h5>
-					</div>
+					{isAutoSwap ? (
+						<TokenSelect
+							options={addLiquidityConfig.poolAssets
+								.filter(poolAsset => poolAsset.currency.coinDenom !== currentCurrency.coinDenom)
+								.map(poolAsset => poolAsset.currency)}
+							value={currentCurrency}
+							onSelect={(appCurrency: AppCurrency) => {
+								const newPoolAsset =
+									addLiquidityConfig.poolAssets.find(
+										poolAsset => poolAsset.currency.coinDenom === appCurrency.coinDenom
+									) || addLiquidityConfig.poolAssets[index];
+								setCurrentCurrency(newPoolAsset.currency);
+							}}
+							isDropdownOpen={isTokenDropdownOpen}
+							onDropdownClose={() => setIsTokenDropdownOpen(false)}
+							onDropdownOpen={() => setIsTokenDropdownOpen(true)}
+							dropdownClassName="border border-white-faint"
+							dropdownStyle={{
+								paddingTop: isMobileView ? 10 : 16,
+								paddingBottom: isMobileView ? 10 : 16,
+								paddingLeft: isMobileView ? 4 : 6,
+								paddingRight: isMobileView ? 20 : 64,
+								left: isMobileView ? 3 : -1,
+								bottom: isMobileView ? -10 : -21,
+								borderTopStyle: 'dashed',
+								width: 'unset',
+								minWidth: 'unset',
+							}}
+							extraAssetInfos={addLiquidityConfig.poolAssets.map((poolAsset, index) => ({
+								index,
+								coinDenom: poolAsset.currency.coinDenom,
+								liquidityWeightPercentage: poolAsset.weight.quo(addLiquidityConfig.totalWeight).decreasePrecision(2),
+							}))}
+							isSearchDisable
+							isNoAmountOnList
+						/>
+					) : (
+						<>
+							<figure
+								style={{ fontSize: isMobileView ? 48 : 60 }}
+								className={cn(
+									'c100 dark mr-2.5 md:mr-5',
+									`p${percentage
+										.maxDecimals(0)
+										.locale(false)
+										.toString()}`
+								)}>
+								<span>{percentage.maxDecimals(0).toString()}%</span>
+								<div className="slice">
+									<div style={{ background: `${borderImages[MISC.GRADIENTS[index]]}` }} className="bar" />
+									<div className="fill" />
+								</div>
+							</figure>
+							<h5 className="text-base md:text-xl">{currentCurrency.coinDenom.toUpperCase()}</h5>
+						</>
+					)}
 				</div>
 				<div className="flex flex-col items-end ml-6 md:ml-0 relative">
-					<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-						<p className="text-xs mb-0.5 md:mb-0">
+					<div className="flex items-center justify-center md:mb-2">
+						<p className={`hidden md:block text-xs md:text-sm mb-0.5 md:mb-0`}>
 							Available{' '}
-							<span className="text-xs text-primary-50">
+							<span className={`text-xs md:text-sm text-primary-50`}>
 								{queryBalance
-									.getBalanceFromCurrency(currency)
+									.getBalanceFromCurrency(currentCurrency)
 									.trim(true)
 									.shrink(true)
 									.toString()}
@@ -630,9 +736,8 @@ const TokenLiquidityItem: FunctionComponent<{
 						</p>
 						<button
 							className={cn(
-								'rounded-md py-1 px-1.5 bg-white-faint h-6 ml-1.25 absolute bottom-0.5 right-0.5 md:static'
+								'inline-block rounded-md py-1 px-1.5 bg-white-faint h-6 ml-1.25 absolute bottom-0.5 right-0.5 md:static'
 							)}
-							style={{ display: 'inline-block', marginBottom: isMobileView ? '0' : '8px' }}
 							onClick={() => addLiquidityConfig.setMax()}>
 							<p className="text-xs">MAX</p>
 						</button>
@@ -742,7 +847,7 @@ const BottomButton: FunctionComponent<{
 	return (
 		<React.Fragment>
 			{error && (
-				<div className="mb-3.5 md:mt-6 md:mb-7.5 w-full flex justify-center items-center">
+				<div className="mt-4 md:mt-6 w-full flex justify-center items-center">
 					<div className="py-1.5 px-2.5 md:px-3.5 rounded-lg bg-missionError flex justify-center items-center">
 						<img className="h-5 w-5 mr-2.5" src="/public/assets/Icons/Info-Circle.svg" />
 						<p>{error.message}</p>

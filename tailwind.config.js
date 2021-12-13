@@ -142,6 +142,7 @@ module.exports = {
 				900: '#734B00',
 			},
 			wireframes: {
+				darkGrey: '#282828',
 				grey: '#818181',
 				lightGrey: '#B7B7B7',
 			},

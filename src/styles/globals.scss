@@ -49,3 +49,29 @@ input {
 	position: fixed;
 	z-index: 10000000;
 }
+
+input[type='checkbox'] {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	/* create custom checkbox appearance */
+	display: inline-block;
+	width: 25px;
+	height: 25px;
+	padding: 6px;
+	/* background-color only for content */
+	background-clip: content-box;
+	border: 1.5px solid #bbbbbb;
+	border-radius: 6px;
+	background-color: #e7e6e7;
+	margin-left: 15px;
+	margin-right: 15px;
+
+	&:checked {
+		background-color: #ff0000;
+	}
+
+	&:focus {
+		outline: none !important;
+	}
+}
