@@ -1449,6 +1449,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/cheq.svg',
 			},
 		],
+		gasPriceStep: {
+			low: 25,
+			average: 30,
+			high: 50,
+		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://cheqd.didx.co.za/transactions/{txHash}',
 	},
