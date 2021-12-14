@@ -80,6 +80,13 @@ describe('Test Osmosis Total Pools Query', () => {
 
 		await queryNumPools.waitFreshResponse();
 
+		// XXX: This line is needed due to the bug that the canceling fetching sometimes make the `isFetching` false.
+		await new Promise(resolve => {
+			setTimeout(resolve, 3000);
+		});
+
+		await queryNumPools.waitFreshResponse();
+
 		expect(queryNumPools.numPools).toBe(3);
 	});
 });
