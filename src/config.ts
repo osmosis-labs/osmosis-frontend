@@ -415,7 +415,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-0',
 		destChannelId: 'channel-141',
 		coinMinimalDenom: 'uatom',
-		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'columbus-5',
@@ -643,7 +642,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		coinType: 118,
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/cosmos/txs/{txHash}',
 	},
 	{
