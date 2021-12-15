@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { AppCurrency } from '@keplr-wallet/types';
-import React, { ComponentProps, CSSProperties, HTMLAttributes, useCallback } from 'react';
+import React, { ComponentProps, CSSProperties, HTMLAttributes, useCallback, useState } from 'react';
 import { Img } from 'src/components/common/Img';
 import { CenterV } from 'src/components/layouts/Containers';
 import { TokenSelectList } from 'src/components/SwapToken/TokenSelect/TokenSelectList';
@@ -35,7 +35,7 @@ export function TokenSelect({
 	...props
 }: Props) {
 	const handleDropdownArrowClicked = useCallback(
-		(event: MouseEvent) => {
+		(event: { stopPropagation: () => void }) => {
 			event.stopPropagation();
 			if (isDropdownOpen) {
 				onDropdownClose();
@@ -55,12 +55,16 @@ export function TokenSelect({
 	);
 
 	const { isMobileView } = useWindowSize();
+	const [isHoveringTokenSelect, setHoveringTokenSelect] = useState(false);
 	const isSingleToken = options.length === 1;
 
 	return (
 		<TokenSelectContainer {...props}>
-			<TokenImg src={value?.coinImageUrl} />
-			<CenterV>
+			<ClickBox
+				onClick={handleDropdownArrowClicked}
+				onMouseEnter={() => setHoveringTokenSelect(true)}
+				onMouseLeave={() => setHoveringTokenSelect(false)}>
+				<TokenImg src={value?.coinImageUrl} />
 				<div>
 					<TitleText isMobileView={isMobileView} pb={0}>
 						{value?.coinDenom?.toUpperCase()}
@@ -69,9 +73,13 @@ export function TokenSelect({
 				</div>
 
 				{!isSingleToken && (
-					<DownArrowImg onClick={handleDropdownArrowClicked} isActive={options.length === 0 ? false : isDropdownOpen} />
+					<DownArrowImg
+						onClick={handleDropdownArrowClicked}
+						isActive={options.length === 0 ? false : isDropdownOpen}
+						isHovering={isHoveringTokenSelect}
+					/>
 				)}
-			</CenterV>
+			</ClickBox>
 
 			{!isSingleToken && (
 				<TokenSelectList
@@ -99,6 +107,10 @@ function TokenImg({ style, className, ...props }: ComponentProps<typeof Img>) {
 		</TokenImgWrapper>
 	);
 }
+
+const ClickBox = styled(CenterV)`
+	cursor: pointer;
+`;
 
 const TokenImgWrapper = styled.figure`
 	width: 36px;
@@ -133,19 +145,15 @@ function ChannelText({ currency, isMobileView }: { currency: AppCurrency; isMobi
 	);
 }
 
-const DownArrowImg = styled(Img)<{ isActive: boolean }>`
+const DownArrowImg = styled(Img)<{ isActive: boolean; isHovering: boolean }>`
 	height: 7px;
 	width: 16px;
 	margin-left: 8px;
-	cursor: pointer;
-	opacity: 0.4;
 	transition: transform 0.1s;
 
 	${({ isActive }) => ({ transform: isActive ? `rotate(180deg)` : `rotate(0deg)` })}
-	&:hover {
-		opacity: 1;
-	}
-
+	${({ isHovering }) => ({ opacity: isHovering ? 1 : 0.4 })}
+	
 	@media (min-width: 768px) {
 		margin-left: 12px;
 		height: 8px;
