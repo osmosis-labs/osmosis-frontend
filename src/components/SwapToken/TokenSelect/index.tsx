@@ -73,9 +73,11 @@ export function TokenSelect({
 				</div>
 
 				{!isSingleToken && (
-					<DownArrowImg onClick={handleDropdownArrowClicked}
-            isActive={options.length === 0 ? false : isDropdownOpen}
-            isHovering={isHoveringTokenSelect} />
+					<DownArrowImg
+						onClick={handleDropdownArrowClicked}
+						isActive={options.length === 0 ? false : isDropdownOpen}
+						isHovering={isHoveringTokenSelect}
+					/>
 				)}
 			</ClickBox>
 
