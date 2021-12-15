@@ -56,6 +56,7 @@ export function TokenSelect({
 
 	const { isMobileView } = useWindowSize();
 	const [isHoveringTokenSelect, setHoveringTokenSelect] = useState(false);
+	const isSingleToken = options.length === 1;
 
 	return (
 		<TokenSelectContainer {...props}>
@@ -71,16 +72,22 @@ export function TokenSelect({
 					{channelShown && <ChannelText isMobileView={isMobileView} currency={value} />}
 				</div>
 
-				<DownArrowImg isActive={options.length === 0 ? false : isDropdownOpen} isHovering={isHoveringTokenSelect} />
+				{!isSingleToken && (
+					<DownArrowImg onClick={handleDropdownArrowClicked}
+            isActive={options.length === 0 ? false : isDropdownOpen}
+            isHovering={isHoveringTokenSelect} />
+				)}
 			</ClickBox>
 
-			<TokenSelectList
-				style={{ ...dropdownStyle, display: !isDropdownOpen ? 'none' : undefined }}
-				className={dropdownClassName}
-				currencies={options}
-				shouldScrollIntoView={isDropdownOpen}
-				onSelect={handleTokenSelected}
-			/>
+			{!isSingleToken && (
+				<TokenSelectList
+					style={{ ...dropdownStyle, display: !isDropdownOpen ? 'none' : undefined }}
+					className={dropdownClassName}
+					currencies={options.filter(currency => currency.coinDenom !== value.coinDenom)}
+					shouldScrollIntoView={isDropdownOpen}
+					onSelect={handleTokenSelected}
+				/>
+			)}
 		</TokenSelectContainer>
 	);
 }
