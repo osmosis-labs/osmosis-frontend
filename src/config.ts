@@ -415,6 +415,7 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-0',
 		destChannelId: 'channel-141',
 		coinMinimalDenom: 'uatom',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'columbus-5',
