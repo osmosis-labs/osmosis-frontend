@@ -638,6 +638,22 @@ const AddLiquidity: FunctionComponent<{
 					</div>
 				)}
 			</div>
+
+			{isAutoSwap && (
+				<div className="p-3 md:p-4 rounded-lg bg-card border border-white-faint flex flex-col mt-5">
+					<div className="flex justify-between mb-2.5">
+						<div className="text-sm leading-6 text-white-mid">Estimated slippage</div>
+						<div className="text-sm leading-6 text-white-high">0.38%</div>
+					</div>
+					<div className="flex justify-between">
+						<div className="text-sm leading-6 text-white-mid">Auto swap</div>
+						<div className="text-sm leading-6 text-white-high">
+							<div className="text-sm text-white-high">12.5 ATOM to 2812.5 IRIS</div>
+							<div className="text-sm text-white-high text-right">($0.12 per IRIS)</div>
+						</div>
+					</div>
+				</div>
+			)}
 		</React.Fragment>
 	);
 });
