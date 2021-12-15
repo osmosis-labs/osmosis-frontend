@@ -70,7 +70,7 @@ export class AccountWithCosmosAndOsmosis
 		},
 		lockTokens: {
 			type: 'osmosis/lockup/lock-tokens',
-			gas: 140000,
+			gas: 400000,
 		},
 		beginUnlocking: {
 			type: 'osmosis/lockup/begin-unlock-period-lock',
