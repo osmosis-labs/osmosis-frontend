@@ -71,6 +71,27 @@ export class GAMMPool {
 		};
 	}
 
+	estimateJoinSwapExternAmountIn(
+		tokenIn: Coin
+	): {
+		shareOutAmount: Int;
+	} {
+		const poolAsset = this.getPoolAsset(tokenIn.denom);
+
+		const shareOutAmount = Math.calcPoolOutGivenSingleIn(
+			new Dec(poolAsset.token.amount),
+			new Dec(poolAsset.weight),
+			new Dec(this.totalShare),
+			new Dec(this.totalWeight),
+			tokenIn.amount.toDec(),
+			this.swapFee
+		).truncate();
+
+		return {
+			shareOutAmount,
+		};
+	}
+
 	estimateExitPool(
 		shareInAmount: Int
 	): {

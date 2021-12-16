@@ -146,6 +146,27 @@ export class QueriedPoolBase {
 		};
 	}
 
+	estimateJoinSwapExternAmountIn(
+		tokenIn: {
+			currency: Currency;
+			amount: string;
+		},
+		shareCoinDecimals: number
+	): {
+		shareOutAmount: IntPretty;
+		shareOutAmountRaw: Int;
+	} {
+		const amount = new Dec(tokenIn.amount).mul(DecUtils.getPrecisionDec(tokenIn.currency.coinDecimals)).truncate();
+		const coin = new Coin(tokenIn.currency.coinMinimalDenom, amount);
+
+		const estimated = this.pool.estimateJoinSwapExternAmountIn(coin);
+
+		return {
+			shareOutAmount: new IntPretty(estimated.shareOutAmount).increasePrecision(shareCoinDecimals),
+			shareOutAmountRaw: estimated.shareOutAmount,
+		};
+	}
+
 	estimateExitSwap(shareInAmount: string, shareCoinDecimals: number): { tokenOuts: CoinPretty[] } {
 		const estimated = this.pool.estimateExitPool(
 			new Dec(shareInAmount).mul(DecUtils.getPrecisionDec(shareCoinDecimals)).truncate()

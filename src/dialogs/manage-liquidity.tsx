@@ -49,6 +49,9 @@ export class ManageLiquidityConfigBase extends TxChainSetter {
 	@observable
 	protected _queryPoolShare: ObservableQueryGammPoolShare;
 
+	@observable
+	protected _isSingleAmountIn: boolean = false;
+
 	constructor(
 		chainGetter: ChainGetter,
 		initialChainId: string,
@@ -67,6 +70,15 @@ export class ManageLiquidityConfigBase extends TxChainSetter {
 
 	get poolId(): string {
 		return this._poolId;
+	}
+
+	get isSingleAmountIn(): boolean {
+		return this._isSingleAmountIn;
+	}
+
+	@action
+	setIsSingleAmountIn(value: boolean) {
+		this._isSingleAmountIn = value;
 	}
 
 	@action
@@ -399,10 +411,22 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 	}
 
 	readonly getError = computedFn(() => {
-		for (const config of this.poolAssetConfigs) {
+		if (this.poolAssetConfigs.length === 0) {
+			return new Error('Not initialized yet');
+		}
+
+		if (this.isSingleAmountIn) {
+			const config = this.poolAssetConfigs[0];
 			const error = config.getError();
 			if (error != null) {
 				return error;
+			}
+		} else {
+			for (const config of this.poolAssetConfigs) {
+				const error = config.getError();
+				if (error != null) {
+					return error;
+				}
 			}
 		}
 
@@ -561,7 +585,6 @@ const AddLiquidity: FunctionComponent<{
 	addLiquidityConfig: AddLiquidityConfig;
 }> = observer(({ addLiquidityConfig }) => {
 	const poolShare = addLiquidityConfig.poolShare;
-	const [isAutoSwap, setIsAutoSwap] = useState(false);
 	const [isMouseOverInfoIcon, setIsMouseOverInfoIcon] = useState(false);
 	const [isMouseOverToolTip, setIsMouseOverTooltip] = useState(false);
 
@@ -576,9 +599,13 @@ const AddLiquidity: FunctionComponent<{
 						.toString()}
 				</span>
 			</p>
-			{isAutoSwap ? (
+			{addLiquidityConfig.isSingleAmountIn ? (
 				<ul className="flex flex-col">
-					<TokenLiquidityItem index={0} addLiquidityConfig={addLiquidityConfig} isAutoSwap={isAutoSwap} />
+					<TokenLiquidityItem
+						index={0}
+						addLiquidityConfig={addLiquidityConfig}
+						isAutoSwap={addLiquidityConfig.isSingleAmountIn}
+					/>
 				</ul>
 			) : (
 				<ul className="flex flex-col gap-3 md:gap-4.5">
@@ -595,8 +622,8 @@ const AddLiquidity: FunctionComponent<{
 				<label
 					htmlFor="checkbox"
 					className="text-sm md:text-base flex justify-end items-center mr-2 cursor-pointer font-semibold"
-					onClick={() => setIsAutoSwap(!isAutoSwap)}>
-					{isAutoSwap ? (
+					onClick={() => addLiquidityConfig.setIsSingleAmountIn(!addLiquidityConfig.isSingleAmountIn)}>
+					{addLiquidityConfig.isSingleAmountIn ? (
 						<div className="mr-2.5">
 							<IconCheckBox />
 						</div>
@@ -639,7 +666,7 @@ const AddLiquidity: FunctionComponent<{
 				)}
 			</div>
 
-			{isAutoSwap && (
+			{addLiquidityConfig.isSingleAmountIn && (
 				<div className="p-3 md:p-4 rounded-lg bg-card border border-white-faint flex flex-col mt-5">
 					<div className="flex justify-between mb-2.5">
 						<div className="text-sm leading-6 text-white-mid">Estimated slippage</div>
@@ -879,24 +906,44 @@ const BottomButton: FunctionComponent<{
 
 						if (account.isReadyToSendMsgs) {
 							if (tab === Tabs.ADD) {
-								const shareOutAmount = addLiquidityConfig.shareOutAmount;
-								if (!shareOutAmount) {
-									return;
-								}
+								if (addLiquidityConfig.isSingleAmountIn) {
+									try {
+										// XXX: 일단 이 경우 슬리피지를 2.5%로만 설정한다.
+										await account.osmosis.sendJoinSwapExternAmountInMsg(
+											addLiquidityConfig.poolId,
+											{
+												amount: addLiquidityConfig.poolAssetConfigs[0].amount,
+												currency: addLiquidityConfig.poolAssetConfigs[0].currency,
+											},
+											'2.5',
+											'',
+											() => {
+												close();
+											}
+										);
+									} catch (e) {
+										console.log(e);
+									}
+								} else {
+									const shareOutAmount = addLiquidityConfig.shareOutAmount;
+									if (!shareOutAmount) {
+										return;
+									}
 
-								try {
-									// XXX: 일단 이 경우 슬리피지를 2.5%로만 설정한다.
-									await account.osmosis.sendJoinPoolMsg(
-										addLiquidityConfig.poolId,
-										shareOutAmount.toDec().toString(),
-										'2.5',
-										'',
-										() => {
-											close();
-										}
-									);
-								} catch (e) {
-									console.log(e);
+									try {
+										// XXX: 일단 이 경우 슬리피지를 2.5%로만 설정한다.
+										await account.osmosis.sendJoinPoolMsg(
+											addLiquidityConfig.poolId,
+											shareOutAmount.toDec().toString(),
+											'2.5',
+											'',
+											() => {
+												close();
+											}
+										);
+									} catch (e) {
+										console.log(e);
+									}
 								}
 							}
 
