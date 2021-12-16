@@ -106,6 +106,12 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 	@observable
 	protected _isSingleAmountIn: boolean = false;
 
+	/*
+	 Used to get the amount config if the mode is single amount in.
+	 */
+	@observable
+	protected _singleAmountInConfigIndex: number = 0;
+
 	protected _cacheAmountConfigs?: {
 		poolId: string;
 		sender: string;
@@ -166,9 +172,40 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 		return this._isSingleAmountIn;
 	}
 
+	get singleAmountInConfigIndex(): number {
+		return this._singleAmountInConfigIndex;
+	}
+
+	/*
+	 Return the `BasicAmountConfig` of selected single amount in.
+	 Return undefined if the mode is no single amount in
+	 or `singleAmountInConfigIndex` is out of range in poolAssetConfigs.
+	 */
+	@computed
+	get singleAmountInConfig(): BasicAmountConfig | undefined {
+		if (!this.isSingleAmountIn) {
+			return;
+		}
+
+		if (this.poolAssetConfigs.length === 0) {
+			return;
+		}
+
+		if (this.poolAssetConfigs.length <= this.singleAmountInConfigIndex) {
+			return;
+		}
+
+		return this.poolAssetConfigs[this.singleAmountInConfigIndex];
+	}
+
 	@action
 	setIsSingleAmountIn(value: boolean) {
 		this._isSingleAmountIn = value;
+	}
+
+	@action
+	setSingleAmountInConfigIndex(index: number) {
+		this._singleAmountInConfigIndex = index;
 	}
 
 	@computed
@@ -178,11 +215,11 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 		}
 
 		try {
-			if (this.poolAssetConfigs.length === 0) {
+			const config = this.singleAmountInConfig;
+			if (!config) {
 				return;
 			}
 
-			const config = this.poolAssetConfigs[0];
 			const poolAsset = this.poolAssets.find(
 				asset => asset.currency.coinMinimalDenom === config.currency.coinMinimalDenom
 			);
@@ -373,6 +410,14 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 
 	@action
 	setMax() {
+		if (this.isSingleAmountIn && this.singleAmountInConfig) {
+			const config = this.singleAmountInConfig;
+			config.setIsMax(true);
+			this.setAmountAt(this.singleAmountInConfigIndex, config.amount);
+			config.setIsMax(false);
+			return;
+		}
+
 		const balancePrettyList = this.poolAssetConfigs.map(poolAssetConfig =>
 			this._queryBalances.getQueryBech32Address(this.sender).getBalanceFromCurrency(poolAssetConfig.currency)
 		);
@@ -464,12 +509,14 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 			return new Error('Not initialized yet');
 		}
 
-		if (this.isSingleAmountIn) {
-			const config = this.poolAssetConfigs[0];
+		if (this.isSingleAmountIn && this.singleAmountInConfig) {
+			const config = this.singleAmountInConfig;
 			const error = config.getError();
 			if (error != null) {
 				return error;
 			}
+
+			return;
 		} else {
 			for (const config of this.poolAssetConfigs) {
 				const error = config.getError();
@@ -651,9 +698,9 @@ const AddLiquidity: FunctionComponent<{
 			{addLiquidityConfig.isSingleAmountIn ? (
 				<ul className="flex flex-col">
 					<TokenLiquidityItem
-						index={0}
+						index={addLiquidityConfig.singleAmountInConfigIndex}
 						addLiquidityConfig={addLiquidityConfig}
-						isAutoSwap={addLiquidityConfig.isSingleAmountIn}
+						isSingleAmountIn={addLiquidityConfig.isSingleAmountIn}
 					/>
 				</ul>
 			) : (
@@ -749,12 +796,13 @@ const AddLiquidity: FunctionComponent<{
 const TokenLiquidityItem: FunctionComponent<{
 	addLiquidityConfig: AddLiquidityConfig;
 	index: number;
-	isAutoSwap?: boolean;
-}> = observer(({ addLiquidityConfig, index, isAutoSwap }) => {
+	isSingleAmountIn?: boolean;
+}> = observer(({ addLiquidityConfig, index, isSingleAmountIn: isSingleAmountIn }) => {
 	const { chainStore, queriesStore } = useStore();
 	const { isMobileView } = useWindowSize();
-	const [currentCurrency, setCurrentCurrency] = useState(addLiquidityConfig.poolAssets[index].currency);
 	const [isTokenDropdownOpen, setIsTokenDropdownOpen] = useBooleanStateWithWindowEvent(false);
+
+	const currentCurrency = addLiquidityConfig.poolAssets[index].currency;
 
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const queryBalance = queries.queryBalances.getQueryBech32Address(addLiquidityConfig.sender);
@@ -769,18 +817,20 @@ const TokenLiquidityItem: FunctionComponent<{
 			className="w-full border border-white-faint rounded-2xl px-2 py-2.5 md:py-3.75 md:px-4">
 			<section className="flex items-center justify-between">
 				<div className="flex items-center">
-					{isAutoSwap ? (
+					{isSingleAmountIn ? (
 						<TokenSelect
 							options={addLiquidityConfig.poolAssets
 								.filter(poolAsset => poolAsset.currency.coinDenom !== currentCurrency.coinDenom)
 								.map(poolAsset => poolAsset.currency)}
 							value={currentCurrency}
 							onSelect={(appCurrency: AppCurrency) => {
-								const newPoolAsset =
-									addLiquidityConfig.poolAssets.find(
-										poolAsset => poolAsset.currency.coinDenom === appCurrency.coinDenom
-									) || addLiquidityConfig.poolAssets[index];
-								setCurrentCurrency(newPoolAsset.currency);
+								const index = addLiquidityConfig.poolAssets.findIndex(
+									poolAsset => poolAsset.currency.coinDenom === appCurrency.coinDenom
+								);
+
+								if (index >= 0) {
+									addLiquidityConfig.setSingleAmountInConfigIndex(index);
+								}
 							}}
 							isDropdownOpen={isTokenDropdownOpen}
 							onDropdownClose={() => setIsTokenDropdownOpen(false)}
@@ -967,14 +1017,14 @@ const BottomButton: FunctionComponent<{
 
 						if (account.isReadyToSendMsgs) {
 							if (tab === Tabs.ADD) {
-								if (addLiquidityConfig.isSingleAmountIn) {
+								if (addLiquidityConfig.isSingleAmountIn && addLiquidityConfig.singleAmountInConfig) {
 									try {
 										// XXX: 일단 이 경우 슬리피지를 2.5%로만 설정한다.
 										await account.osmosis.sendJoinSwapExternAmountInMsg(
 											addLiquidityConfig.poolId,
 											{
-												amount: addLiquidityConfig.poolAssetConfigs[0].amount,
-												currency: addLiquidityConfig.poolAssetConfigs[0].currency,
+												amount: addLiquidityConfig.singleAmountInConfig.amount,
+												currency: addLiquidityConfig.singleAmountInConfig.currency,
 											},
 											'2.5',
 											'',
