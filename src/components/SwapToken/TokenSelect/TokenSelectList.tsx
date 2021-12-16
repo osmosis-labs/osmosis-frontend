@@ -205,7 +205,7 @@ function TokenItem({ currency, amount, onClick, extraAssetInfo, isNoAmount, ...p
 	const { isMobileView } = useWindowSize();
 
 	return (
-		<TokenItemContainer onClick={handleItemClicked} {...props} className="!pr-5 md:!pr-15">
+		<TokenItemContainer onClick={handleItemClicked} {...props} className={extraAssetInfo ? '!pr-5 md:!pr-15' : ''}>
 			<CenterV>
 				{extraAssetInfo ? (
 					<figure

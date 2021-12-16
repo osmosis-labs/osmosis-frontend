@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
 import { AppCurrency } from '@keplr-wallet/types';
 import { IntPretty } from '@keplr-wallet/unit';
-import React, { ComponentProps, CSSProperties, HTMLAttributes, useCallback } from 'react';
+import React, { ComponentProps, CSSProperties, HTMLAttributes, MouseEvent, useCallback, useState } from 'react';
 import { Img } from 'src/components/common/Img';
 import { CenterV } from 'src/components/layouts/Containers';
 import { TokenSelectList } from 'src/components/SwapToken/TokenSelect/TokenSelectList';
-import { Text, TitleText } from 'src/components/Texts';
+import { Text } from 'src/components/Texts';
 import { colorGold, colorTextIcon } from 'src/emotionStyles/colors';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { MISC } from 'src/constants';
@@ -82,6 +82,8 @@ export function TokenSelect({
 	);
 
 	const { isMobileView } = useWindowSize();
+	const [isHoveringTokenSelect, setHoveringTokenSelect] = useState(false);
+	const isSingleToken = options.length === 1 && options[0].coinDenom === value.coinDenom;
 
 	const extraAssetInfo = extraAssetInfos
 		? extraAssetInfos.find(extraAssetInfo => extraAssetInfo.coinDenom === value.coinDenom)
@@ -89,32 +91,57 @@ export function TokenSelect({
 	return (
 		<TokenSelectContainer {...props}>
 			{extraAssetInfo ? (
-				<figure
-					style={{ fontSize: isMobileView ? 48 : 60 }}
-					className={cn(
-						'c100 dark mr-2.5 md:mr-5 flex-shrink-0',
-						`p${extraAssetInfo.liquidityWeightPercentage
-							.maxDecimals(0)
-							.locale(false)
-							.toString()}`
-					)}>
-					<span>{extraAssetInfo.liquidityWeightPercentage.maxDecimals(0).toString()}%</span>
-					<div className="slice">
-						<div style={{ background: `${borderImages[MISC.GRADIENTS[extraAssetInfo.index]]}` }} className="bar" />
-						<div className="fill" />
-					</div>
-				</figure>
-			) : (
-				<TokenImg src={value?.coinImageUrl} />
-			)}
-			<CenterV>
-				<div>
-					<h5 className="text-base md:text-xl text-white-high">{value?.coinDenom?.toUpperCase()}</h5>
-					{channelShown && <ChannelText isMobileView={isMobileView} currency={value} />}
-				</div>
+				<>
+					<figure
+						style={{ fontSize: isMobileView ? 48 : 60 }}
+						className={cn(
+							'c100 dark mr-2.5 md:mr-5 flex-shrink-0',
+							`p${extraAssetInfo.liquidityWeightPercentage
+								.maxDecimals(0)
+								.locale(false)
+								.toString()}`
+						)}>
+						<span>{extraAssetInfo.liquidityWeightPercentage.maxDecimals(0).toString()}%</span>
+						<div className="slice">
+							<div style={{ background: `${borderImages[MISC.GRADIENTS[extraAssetInfo.index]]}` }} className="bar" />
+							<div className="fill" />
+						</div>
+					</figure>
 
-				<DownArrowImg onClick={handleDropdownArrowClicked} isActive={options.length === 0 ? false : isDropdownOpen} />
-			</CenterV>
+					<CenterV>
+						<div>
+							<h5 className="text-base md:text-xl text-white-high">{value?.coinDenom?.toUpperCase()}</h5>
+							{channelShown && <ChannelText isMobileView={isMobileView} currency={value} />}
+						</div>
+
+						{!isSingleToken && (
+							<DownArrowImg
+								onClick={handleDropdownArrowClicked}
+								isActive={options.length === 0 ? false : isDropdownOpen}
+								isHovering={isHoveringTokenSelect}
+							/>
+						)}
+					</CenterV>
+				</>
+			) : (
+				<ClickBox
+					onClick={handleDropdownArrowClicked}
+					onMouseEnter={() => setHoveringTokenSelect(true)}
+					onMouseLeave={() => setHoveringTokenSelect(false)}>
+					<TokenImg src={value?.coinImageUrl} />
+					<div>
+						<h5 className="text-base md:text-xl text-white-high">{value?.coinDenom?.toUpperCase()}</h5>
+					</div>
+
+					{!isSingleToken && (
+						<DownArrowImg
+							onClick={handleDropdownArrowClicked}
+							isActive={options.length === 0 ? false : isDropdownOpen}
+							isHovering={isHoveringTokenSelect}
+						/>
+					)}
+				</ClickBox>
+			)}
 
 			<TokenSelectList
 				style={{ ...dropdownStyle, display: !isDropdownOpen ? 'none' : undefined }}
@@ -143,6 +170,10 @@ function TokenImg({ style, className, ...props }: ComponentProps<typeof Img>) {
 		</TokenImgWrapper>
 	);
 }
+
+const ClickBox = styled(CenterV)`
+	cursor: pointer;
+`;
 
 const TokenImgWrapper = styled.figure`
 	width: 36px;
@@ -177,7 +208,7 @@ function ChannelText({ currency, isMobileView }: { currency: AppCurrency; isMobi
 	);
 }
 
-const DownArrowImg = styled(Img)<{ isActive: boolean }>`
+const DownArrowImg = styled(Img)<{ isActive: boolean; isHovering: boolean }>`
 	height: 7px;
 	width: 16px;
 	margin-left: 8px;
@@ -186,9 +217,7 @@ const DownArrowImg = styled(Img)<{ isActive: boolean }>`
 	transition: transform 0.1s;
 
 	${({ isActive }) => ({ transform: isActive ? `rotate(180deg)` : `rotate(0deg)` })}
-	&:hover {
-		opacity: 1;
-	}
+	${({ isHovering }) => ({ opacity: isHovering ? 1 : 0.4 })}
 
 	@media (min-width: 768px) {
 		margin-left: 12px;
