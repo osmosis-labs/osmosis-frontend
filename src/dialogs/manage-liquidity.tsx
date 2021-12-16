@@ -726,7 +726,7 @@ const AddLiquidity: FunctionComponent<{
 					) : (
 						<div className="w-6 h-6 border-2 border-white-high mr-2.5 rounded" />
 					)}
-					Auto-Swap LP
+					Single Asset LP
 				</label>
 				<img
 					className="h-5 w-5 cursor-pointer"
@@ -747,17 +747,9 @@ const AddLiquidity: FunctionComponent<{
 						onMouseEnter={() => setIsMouseOverTooltip(true)}
 						onMouseLeave={() => setIsMouseOverTooltip(false)}>
 						<div className="text-white-high text-sm mb-1 leading-tight">
-							Auto-Swap automatically swaps your chosen assets to an equivalent dollar amount of the pool’s opposing
-							asset-pair.
+							Single Asset LP allows you to provide liquidity using one asset. However, this will impact the pool price
+							of the asset you’re providing liquidity with.
 						</div>
-						<a
-							href="https://osmosis.zone"
-							className="flex items-center cursor-pointer"
-							target="_blank"
-							rel="noreferrer">
-							<span className="text-white-high text-sm mr-1.5">Learn More</span>
-							<IconExternalLink />
-						</a>
 					</div>
 				)}
 			</div>
