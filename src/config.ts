@@ -41,9 +41,12 @@ export const LockupAbledPoolIds: {
 	'574': true,
 	'584': true,
 	'585': true,
+	'586': true,
+	'587': true,
 	'592': true,
 	'600': true,
 	'601': true,
+	'602': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -279,6 +282,34 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A',
 		},
 	],
+	'586': [
+		{
+			gaugeId: '1885',
+			denom: 'ibc/3BCCC93AD5DF58D11A6F8A05FA8BC801CBA0BA61A981F57E91B8B598BF8061CB',
+		},
+		{
+			gaugeId: '1886',
+			denom: 'ibc/3BCCC93AD5DF58D11A6F8A05FA8BC801CBA0BA61A981F57E91B8B598BF8061CB',
+		},
+		{
+			gaugeId: '1887',
+			denom: 'ibc/3BCCC93AD5DF58D11A6F8A05FA8BC801CBA0BA61A981F57E91B8B598BF8061CB',
+		},
+	],
+	'587': [
+		{
+			gaugeId: '1888',
+			denom: 'ibc/3BCCC93AD5DF58D11A6F8A05FA8BC801CBA0BA61A981F57E91B8B598BF8061CB',
+		},
+		{
+			gaugeId: '1889',
+			denom: 'ibc/3BCCC93AD5DF58D11A6F8A05FA8BC801CBA0BA61A981F57E91B8B598BF8061CB',
+		},
+		{
+			gaugeId: '1890',
+			denom: 'ibc/3BCCC93AD5DF58D11A6F8A05FA8BC801CBA0BA61A981F57E91B8B598BF8061CB',
+		},
+	],
 	'592': [
 		{
 			gaugeId: '1858',
@@ -319,6 +350,44 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '1884',
 			denom: 'ibc/EA3E1640F9B1532AB129A571203A0B9F789A7F14BB66E350DCBFA18E1A1931F0',
+		},
+	],
+	'5': [
+		{
+			gaugeId: '1900',
+			denom: 'ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84',
+		},
+		{
+			gaugeId: '1901',
+			denom: 'ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84',
+		},
+		{
+			gaugeId: '1902',
+			denom: 'ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84',
+		},
+	],
+	'6': [
+		{
+			gaugeId: '1903',
+			denom: 'ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84',
+		},
+		{
+			gaugeId: '1904',
+			denom: 'ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84',
+		},
+		{
+			gaugeId: '1905',
+			denom: 'ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84',
+		},
+	],
+	'602': [
+		{
+			gaugeId: '1909',
+			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
+		},
+		{
+			gaugeId: '1910',
+			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
 		},
 	],
 };
@@ -485,6 +554,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'ucmdx',
 	},
+	{
+		counterpartyChainId: 'cheqd-mainnet-1',
+		sourceChannelId: 'channel-108',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'ncheq',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -529,7 +604,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 			},
 		],
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
 	},
 	{
@@ -567,7 +642,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		coinType: 118,
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/cosmos/txs/{txHash}',
 	},
 	{
@@ -956,7 +1031,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'eeur',
 				coinDecimals: 6,
 				coinGeckoId: 'e-money-eur',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ngm.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/eeur.png',
 			},
 		],
 		feeCurrencies: [
@@ -1350,5 +1425,47 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://www.mintscan.io/comdex/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.cheqd.net',
+		rest: 'https://api.cheqd.net',
+		chainId: 'cheqd-mainnet-1',
+		chainName: 'cheqd',
+		stakeCurrency: {
+			coinDenom: 'CHEQ',
+			coinMinimalDenom: 'ncheq',
+			coinDecimals: 9,
+			coinGeckoId: 'cheqd-network',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/cheq.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('cheqd'),
+		currencies: [
+			{
+				coinDenom: 'CHEQ',
+				coinMinimalDenom: 'ncheq',
+				coinDecimals: 9,
+				coinGeckoId: 'cheqd-network',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/cheq.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'CHEQ',
+				coinMinimalDenom: 'ncheq',
+				coinDecimals: 9,
+				coinGeckoId: 'cheqd-network',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/cheq.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 25,
+			average: 30,
+			high: 50,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://cheqd.didx.co.za/transactions/{txHash}',
 	},
 ];

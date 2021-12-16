@@ -3,19 +3,21 @@ FROM ubuntu:20.04
 RUN apt-get update && apt-get install -y git build-essential wget
 RUN wget https://github.com/mikefarah/yq/releases/download/v4.9.3/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
 
-RUN wget https://dl.google.com/go/go1.15.10.linux-amd64.tar.gz
-RUN tar -xvf go1.15.10.linux-amd64.tar.gz
-RUN mv go /usr/local
+COPY install-golang.sh install-golang.sh
+
+RUN sh install-golang.sh
 
 ENV GOROOT /usr/local/go
-ENV PATH $GOPATH/bin:$GOROOT/bin:$PATH
+ENV GOPATH /go
+ENV GOBIN /go/bin
+ENV PATH $GOBIN:$GOROOT/bin:$PATH
 
 RUN git clone https://github.com/osmosis-labs/osmosis
 
 WORKDIR /osmosis
 
 # Change the commit hash if you want.
-RUN git fetch && git checkout v1.0.0
+RUN git fetch && git checkout v5.0.0
 
 # Build daemon.
 RUN make build
@@ -29,6 +31,8 @@ RUN yq eval 'del(.app_state.epochs.epochs.[1])' ~/.osmosisd/config/genesis.json 
     | yq eval '.app_state.epochs.epochs.[0].identifier = "hour"' - \
     | yq eval '.app_state.epochs.epochs.[0].epoch_counting_started = true' - \
     | yq eval '.app_state.epochs.epochs.[0].duration = "3600s"' - \
+    | yq eval '.app_state.poolincentives.distr_info.total_weight = "0"' - \
+    | yq eval '.app_state.poolincentives.distr_info.records = []' - \
     | yq eval '.app_state.claim.module_account_balance.denom = "uosmo"' - \
     | yq eval '.app_state.claim.module_account_balance.amount = "100000000"' - \
     | yq eval '.app_state.claim.claim_records += {"address":"osmo1ymk637a7wljvt4w7q9lnrw95mg9sr37yatxd9h", "initial_claimable_amount": [{"denom":"uosmo","amount":"100000000"}], "action_completed": [false,false,false,false]}' - \
@@ -38,6 +42,8 @@ RUN mv ~/.osmosisd/config/genesis.tmp.json ~/.osmosisd/config/genesis.json
 
 RUN sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' ~/.osmosisd/config/config.toml
 RUN sed -i 's/cors_allowed_origins = \[\]/cors_allowed_origins = \["*"\]/g' ~/.osmosisd/config/config.toml
+RUN sed -i 's/timeout_commit = "5s"/timeout_commit = "1s"/g' ~/.osmosisd/config/config.toml
+RUN sed -i 's/seeds = ".*"/seeds = ""/g' ~/.osmosisd/config/config.toml
 RUN sed -i 's/"stake"/"uosmo"/g' ~/.osmosisd/config/genesis.json
 RUN sed -i 's/pruning = "default"/pruning = "nothing"/g' ~/.osmosisd/config/app.toml
 RUN sed -i 's/enable = false/enable = true/g' ~/.osmosisd/config/app.toml
@@ -48,7 +54,7 @@ RUN sed -i 's/enabled-unsafe-cors = false/enabled-unsafe-cors = true/g' ~/.osmos
 RUN sed -i 's/"distr_epoch_identifier": "week"/"distr_epoch_identifier": "hour"/g' ~/.osmosisd/config/genesis.json
 RUN sed -i 's/"epoch_identifier": "week"/"epoch_identifier": "hour"/g' ~/.osmosisd/config/genesis.json
 # 꽤 요상한 방식이지만 distr record를 등록하려면 gov를 통과시켜야 하지만 이걸 실행시키기 어렵기 때문에 일단 제네시스에서부터 3개의 팟을 인센티바이즈 해버린다.
-RUN sed -i 's/"distr_info": null/"distr_info": {"total_weight":"600","records":[{"gauge_id":"1","weight":"100"},{"gauge_id":"2","weight":"200"},{"gauge_id":"3","weight":"300"}]}/g' ~/.osmosisd/config/genesis.json
+# RUN sed -i 's/"distr_info": null/"distr_info": {"total_weight":"600","records":[{"gauge_id":"1","weight":"100"},{"gauge_id":"2","weight":"200"},{"gauge_id":"3","weight":"300"}]}/g' ~/.osmosisd/config/genesis.json
 
 RUN echo "high gain deposit chuckle hundred regular exist approve peanut enjoy comfort ride" | ./osmosisd keys add val --recover --keyring-backend test
 RUN echo "health nest provide snow total tissue intact loyal cargo must credit wrist" | ./osmosisd keys add local1 --recover --keyring-backend test
@@ -66,4 +72,4 @@ RUN ./osmosisd collect-gentxs
 EXPOSE 26657
 EXPOSE 1317
 EXPOSE 9090
-CMD ./osmosisd start
+CMD ./osmosisd start --trace

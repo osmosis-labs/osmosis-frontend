@@ -17,6 +17,8 @@ import { DeepReadonly } from 'utility-types';
 import { HasOsmosisQueries } from '../query';
 import deepmerge from 'deepmerge';
 import { QueriedPoolBase } from '../query/pool';
+import { cosmos, google, osmosis } from '../../../proto';
+import Long from 'long';
 
 export interface HasOsmosisAccount {
 	osmosis: DeepReadonly<OsmosisAccount>;
@@ -68,7 +70,7 @@ export class AccountWithCosmosAndOsmosis
 		},
 		lockTokens: {
 			type: 'osmosis/lockup/lock-tokens',
-			gas: 140000,
+			gas: 400000,
 		},
 		beginUnlocking: {
 			type: 'osmosis/lockup/begin-unlock-period-lock',
@@ -116,6 +118,15 @@ export class OsmosisAccount {
 		protected readonly chainId: string,
 		protected readonly queriesStore: QueriesStore<QueriesSetBase & HasOsmosisQueries>
 	) {}
+
+	protected changeDecStringToProtoBz(decStr: string): string {
+		let r = decStr;
+		while (r.length >= 2 && (r.startsWith('.') || r.startsWith('0'))) {
+			r = r.slice(1);
+		}
+
+		return r;
+	}
 
 	/**
 	 *
@@ -174,7 +185,23 @@ export class OsmosisAccount {
 
 		await this.base.sendMsgs(
 			'createPool',
-			[msg],
+			{
+				aminoMsgs: [msg],
+				protoMsgs: [
+					{
+						type_url: '/osmosis.gamm.v1beta1.MsgCreatePool',
+						value: osmosis.gamm.v1beta1.MsgCreatePool.encode({
+							sender: msg.value.sender,
+							poolParams: {
+								swapFee: this.changeDecStringToProtoBz(msg.value.poolParams.swapFee),
+								exitFee: this.changeDecStringToProtoBz(msg.value.poolParams.exitFee),
+							},
+							poolAssets: msg.value.poolAssets,
+							futurePoolGovernor: msg.value.future_pool_governor,
+						}).finish(),
+					},
+				],
+			},
 			memo,
 			{
 				amount: [],
@@ -241,20 +268,33 @@ export class OsmosisAccount {
 							};
 					  });
 
-				return [
-					{
-						type: this.base.msgOpts.joinPool.type,
-						value: {
-							sender: this.base.bech32Address,
-							poolId,
-							shareOutAmount: new Dec(shareOutAmount)
-								.mul(DecUtils.getPrecisionDec(this.base.msgOpts.joinPool.shareCoinDecimals))
-								.truncate()
-								.toString(),
-							tokenInMaxs,
-						},
+				const msg = {
+					type: this.base.msgOpts.joinPool.type,
+					value: {
+						sender: this.base.bech32Address,
+						poolId,
+						shareOutAmount: new Dec(shareOutAmount)
+							.mul(DecUtils.getPrecisionDec(this.base.msgOpts.joinPool.shareCoinDecimals))
+							.truncate()
+							.toString(),
+						tokenInMaxs,
 					},
-				];
+				};
+
+				return {
+					aminoMsgs: [msg],
+					protoMsgs: [
+						{
+							type_url: '/osmosis.gamm.v1beta1.MsgJoinPool',
+							value: osmosis.gamm.v1beta1.MsgJoinPool.encode({
+								sender: msg.value.sender,
+								poolId: Long.fromString(msg.value.poolId),
+								shareOutAmount: msg.value.shareOutAmount,
+								tokenInMaxs: msg.value.tokenInMaxs,
+							}).finish(),
+						},
+					],
+				};
 			},
 			memo,
 			{
@@ -311,20 +351,38 @@ export class OsmosisAccount {
 					pools.push(pool);
 				}
 
-				return [
-					QueriedPoolBase.makeMultihopSwapExactAmountInMsg(
-						this.base.msgOpts.swapExactAmountIn,
-						this.base.bech32Address,
-						tokenIn,
-						pools.map((pool, i) => {
-							return {
-								pool,
-								tokenOutCurrency: routes[i].tokenOutCurrency,
-							};
-						}),
-						maxSlippage
-					),
-				];
+				const msg = QueriedPoolBase.makeMultihopSwapExactAmountInMsg(
+					this.base.msgOpts.swapExactAmountIn,
+					this.base.bech32Address,
+					tokenIn,
+					pools.map((pool, i) => {
+						return {
+							pool,
+							tokenOutCurrency: routes[i].tokenOutCurrency,
+						};
+					}),
+					maxSlippage
+				);
+
+				return {
+					aminoMsgs: [msg],
+					protoMsgs: [
+						{
+							type_url: '/osmosis.gamm.v1beta1.MsgSwapExactAmountIn',
+							value: osmosis.gamm.v1beta1.MsgSwapExactAmountIn.encode({
+								sender: msg.value.sender,
+								routes: msg.value.routes.map(route => {
+									return {
+										poolId: Long.fromString(route.poolId),
+										tokenOutDenom: route.tokenOutDenom,
+									};
+								}),
+								tokenIn: msg.value.tokenIn,
+								tokenOutMinAmount: msg.value.tokenOutMinAmount,
+							}).finish(),
+						},
+					],
+				};
 			},
 			memo,
 			{
@@ -381,15 +439,33 @@ export class OsmosisAccount {
 					throw new Error('Unknown pool');
 				}
 
-				return [
-					pool.makeSwapExactAmountInMsg(
-						this.base.msgOpts.swapExactAmountIn,
-						this.base.bech32Address,
-						tokenIn,
-						tokenOutCurrency,
-						maxSlippage
-					),
-				];
+				const msg = pool.makeSwapExactAmountInMsg(
+					this.base.msgOpts.swapExactAmountIn,
+					this.base.bech32Address,
+					tokenIn,
+					tokenOutCurrency,
+					maxSlippage
+				);
+
+				return {
+					aminoMsgs: [msg],
+					protoMsgs: [
+						{
+							type_url: '/osmosis.gamm.v1beta1.MsgSwapExactAmountIn',
+							value: osmosis.gamm.v1beta1.MsgSwapExactAmountIn.encode({
+								sender: msg.value.sender,
+								routes: msg.value.routes.map((route: { poolId: string; tokenOutDenom: string }) => {
+									return {
+										poolId: Long.fromString(route.poolId),
+										tokenOutDenom: route.tokenOutDenom,
+									};
+								}),
+								tokenIn: msg.value.tokenIn,
+								tokenOutMinAmount: msg.value.tokenOutMinAmount,
+							}).finish(),
+						},
+					],
+				};
 			},
 			memo,
 			{
@@ -444,15 +520,33 @@ export class OsmosisAccount {
 					throw new Error('Unknown pool');
 				}
 
-				return [
-					pool.makeSwapExactAmountOutMsg(
-						this.base.msgOpts.swapExactAmountOut,
-						this.base.bech32Address,
-						tokenInCurrency,
-						tokenOut,
-						maxSlippage
-					),
-				];
+				const msg = pool.makeSwapExactAmountOutMsg(
+					this.base.msgOpts.swapExactAmountOut,
+					this.base.bech32Address,
+					tokenInCurrency,
+					tokenOut,
+					maxSlippage
+				);
+
+				return {
+					aminoMsgs: [msg],
+					protoMsgs: [
+						{
+							type_url: '/osmosis.gamm.v1beta1.MsgSwapExactAmountOut',
+							value: osmosis.gamm.v1beta1.MsgSwapExactAmountOut.encode({
+								sender: msg.value.sender,
+								routes: msg.value.routes.map((route: { poolId: string; tokenInDenom: string }) => {
+									return {
+										poolId: Long.fromString(route.poolId),
+										tokenInDenom: route.tokenInDenom,
+									};
+								}),
+								tokenOut: msg.value.tokenOut,
+								tokenInMaxAmount: msg.value.tokenInMaxAmount,
+							}).finish(),
+						},
+					],
+				};
 			},
 			memo,
 			{
@@ -521,20 +615,33 @@ export class OsmosisAccount {
 							};
 					  });
 
-				return [
-					{
-						type: this.base.msgOpts.exitPool.type,
-						value: {
-							sender: this.base.bech32Address,
-							poolId: pool.id,
-							shareInAmount: new Dec(shareInAmount)
-								.mul(DecUtils.getPrecisionDec(this.base.msgOpts.exitPool.shareCoinDecimals))
-								.truncate()
-								.toString(),
-							tokenOutMins,
-						},
+				const msg = {
+					type: this.base.msgOpts.exitPool.type,
+					value: {
+						sender: this.base.bech32Address,
+						poolId: pool.id,
+						shareInAmount: new Dec(shareInAmount)
+							.mul(DecUtils.getPrecisionDec(this.base.msgOpts.exitPool.shareCoinDecimals))
+							.truncate()
+							.toString(),
+						tokenOutMins,
 					},
-				];
+				};
+
+				return {
+					aminoMsgs: [msg],
+					protoMsgs: [
+						{
+							type_url: '/osmosis.gamm.v1beta1.MsgExitPool',
+							value: osmosis.gamm.v1beta1.MsgExitPool.encode({
+								sender: msg.value.sender,
+								poolId: Long.fromString(msg.value.poolId),
+								shareInAmount: msg.value.shareInAmount,
+								tokenOutMins: msg.value.tokenOutMins,
+							}).finish(),
+						},
+					],
+				};
 			},
 			memo,
 			{
@@ -591,14 +698,29 @@ export class OsmosisAccount {
 				// Duration should be encodec as nana sec.
 				// XXX: Due to the bug on the lockup module that the gas would be increased if the locks with same lock duration accumulated.
 				//      To reduce this problem, add very small extra lock duration as jitter.
-				duration: (duration * 1000000000 + Math.floor(Math.random() * 10000)).toString(),
+				duration: (duration * 1_000_000_000 + Math.floor(Math.random() * 10000)).toString(),
 				coins: primitiveTokens,
 			},
 		};
 
 		await this.base.sendMsgs(
 			'lockTokens',
-			[msg],
+			{
+				aminoMsgs: [msg],
+				protoMsgs: [
+					{
+						type_url: '/osmosis.lockup.MsgLockTokens',
+						value: osmosis.lockup.MsgLockTokens.encode({
+							owner: msg.value.owner,
+							duration: {
+								seconds: Long.fromNumber(Math.floor(parseInt(msg.value.duration) / 1_000_000_000)),
+								nanos: parseInt(msg.value.duration) % 1_000_000_000,
+							},
+							coins: msg.value.coins,
+						}).finish(),
+					},
+				],
+			},
 			memo,
 			{
 				amount: [],
@@ -635,9 +757,22 @@ export class OsmosisAccount {
 			};
 		});
 
+		const protoMsgs = msgs.map(msg => {
+			return {
+				type_url: '/osmosis.lockup.MsgBeginUnlocking',
+				value: osmosis.lockup.MsgBeginUnlocking.encode({
+					owner: msg.value.owner,
+					ID: Long.fromString(msg.value.ID),
+				}).finish(),
+			};
+		});
+
 		await this.base.sendMsgs(
 			'beginUnlocking',
-			msgs,
+			{
+				aminoMsgs: msgs,
+				protoMsgs,
+			},
 			memo,
 			{
 				amount: [],
@@ -663,6 +798,12 @@ export class OsmosisAccount {
 		);
 	}
 
+	/**
+	 * @deprecated
+	 * @param lockIds
+	 * @param memo
+	 * @param onFulfill
+	 */
 	async sendUnlockPeriodLockMsg(lockIds: string[], memo: string = '', onFulfill?: (tx: any) => void) {
 		const msgs = lockIds.map(lockId => {
 			return {
