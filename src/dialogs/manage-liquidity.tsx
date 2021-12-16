@@ -49,9 +49,6 @@ export class ManageLiquidityConfigBase extends TxChainSetter {
 	@observable
 	protected _queryPoolShare: ObservableQueryGammPoolShare;
 
-	@observable
-	protected _isSingleAmountIn: boolean = false;
-
 	constructor(
 		chainGetter: ChainGetter,
 		initialChainId: string,
@@ -70,15 +67,6 @@ export class ManageLiquidityConfigBase extends TxChainSetter {
 
 	get poolId(): string {
 		return this._poolId;
-	}
-
-	get isSingleAmountIn(): boolean {
-		return this._isSingleAmountIn;
-	}
-
-	@action
-	setIsSingleAmountIn(value: boolean) {
-		this._isSingleAmountIn = value;
 	}
 
 	@action
@@ -114,6 +102,9 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 
 	@observable.ref
 	protected _shareOutAmount: IntPretty | undefined = undefined;
+
+	@observable
+	protected _isSingleAmountIn: boolean = false;
 
 	protected _cacheAmountConfigs?: {
 		poolId: string;
@@ -168,6 +159,64 @@ export class AddLiquidityConfig extends ManageLiquidityConfigBase {
 
 		for (const asset of this.poolAssetConfigs) {
 			asset.setQueryBalances(queryBalances);
+		}
+	}
+
+	get isSingleAmountIn(): boolean {
+		return this._isSingleAmountIn;
+	}
+
+	@action
+	setIsSingleAmountIn(value: boolean) {
+		this._isSingleAmountIn = value;
+	}
+
+	@computed
+	get singleAmountInPriceImpact(): IntPretty | undefined {
+		if (!this.isSingleAmountIn) {
+			return;
+		}
+
+		try {
+			if (this.poolAssetConfigs.length === 0) {
+				return;
+			}
+
+			const config = this.poolAssetConfigs[0];
+			const poolAsset = this.poolAssets.find(
+				asset => asset.currency.coinMinimalDenom === config.currency.coinMinimalDenom
+			);
+			if (!poolAsset) {
+				return;
+			}
+
+			/*
+			 The spot price is ( Bi / Wi ) / (Bo / Wo).
+			 And "single amount in" only changes the Bi or Bo.
+			 Others can be handles as constant.
+			 So, we can calculate the price impact by just consider the added amount of one asset.
+			 */
+			return new IntPretty(
+				new Dec(1)
+					.sub(
+						poolAsset.amount
+							.toDec()
+							.quo(
+								poolAsset.amount
+									.toDec()
+									.add(
+										new CoinPretty(
+											config.currency,
+											new Dec(config.amount).mul(DecUtils.getPrecisionDec(config.currency.coinDecimals))
+										).toDec()
+									)
+							)
+					)
+					.mul(new Dec(100))
+			);
+		} catch (e) {
+			console.log(e);
+			return;
 		}
 	}
 
@@ -668,15 +717,27 @@ const AddLiquidity: FunctionComponent<{
 
 			{addLiquidityConfig.isSingleAmountIn && (
 				<div className="p-3 md:p-4 rounded-lg bg-card border border-white-faint flex flex-col mt-5">
-					<div className="flex justify-between mb-2.5">
-						<div className="text-sm leading-6 text-white-mid">Estimated slippage</div>
-						<div className="text-sm leading-6 text-white-high">0.38%</div>
-					</div>
 					<div className="flex justify-between">
-						<div className="text-sm leading-6 text-white-mid">Auto swap</div>
+						<div className="text-sm leading-6 text-white-mid">Price impact</div>
 						<div className="text-sm leading-6 text-white-high">
-							<div className="text-sm text-white-high">12.5 ATOM to 2812.5 IRIS</div>
-							<div className="text-sm text-white-high text-right">($0.12 per IRIS)</div>
+							{(() => {
+								const value = addLiquidityConfig.singleAmountInPriceImpact;
+								if (!value) {
+									return '-';
+								}
+
+								if (value.toDec().lt(new Dec('0.001'))) {
+									return `< 0.001%`;
+								}
+
+								if (value)
+									return (
+										value
+											.maxDecimals(3)
+											.trim(true)
+											.toString() + '%'
+									);
+							})()}
 						</div>
 					</div>
 				</div>
