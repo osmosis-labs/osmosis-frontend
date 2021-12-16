@@ -205,7 +205,7 @@ function TokenItem({ currency, amount, onClick, extraAssetInfo, isNoAmount, ...p
 	const { isMobileView } = useWindowSize();
 
 	return (
-		<TokenItemContainer onClick={handleItemClicked} {...props}>
+		<TokenItemContainer onClick={handleItemClicked} {...props} className="!pr-5 md:!pr-15">
 			<CenterV>
 				{extraAssetInfo ? (
 					<figure
@@ -227,7 +227,9 @@ function TokenItem({ currency, amount, onClick, extraAssetInfo, isNoAmount, ...p
 					<Img loadingSpin style={{ width: '36px', height: '36px' }} src={currency.coinImageUrl} />
 				)}
 				<div className={`${extraAssetInfo ? '' : 'ml-3'} flex-shrink-0`}>
-					<h5 className="text-base md:text-xl text-white-high">{currency.coinDenom.toUpperCase()}</h5>
+					<h5 className={`text-base ${extraAssetInfo ? 'md:text-xl' : 'md:text-lg'} text-white-high`}>
+						{currency.coinDenom.toUpperCase()}
+					</h5>
 					{'paths' in currency && currency.paths.length > 0 ? (
 						<p className="text-white-mid text-xs md:text-base font-normal">{currency.paths[0].channelId}</p>
 					) : null}

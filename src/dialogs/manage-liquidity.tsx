@@ -728,8 +728,8 @@ const TokenLiquidityItem: FunctionComponent<{
 							dropdownStyle={{
 								paddingTop: isMobileView ? 10 : 16,
 								paddingBottom: isMobileView ? 10 : 16,
-								paddingLeft: isMobileView ? 4 : 6,
-								paddingRight: isMobileView ? 20 : 64,
+								paddingLeft: isMobileView ? 6 : 12,
+								paddingRight: isMobileView ? 6 : 12,
 								left: isMobileView ? 3 : -1,
 								bottom: isMobileView ? -10 : -21,
 								borderTopStyle: 'dashed',
