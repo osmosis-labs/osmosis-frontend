@@ -560,6 +560,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'ncheq',
 	},
+	{
+		counterpartyChainId: 'stargaze-1',
+		sourceChannelId: 'channel-75',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'ustars',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1467,5 +1473,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://cheqd.didx.co.za/transactions/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.stargaze.publicawesome.dev',
+		rest: 'https://rest.stargaze.publicawesome.dev',
+		chainId: 'stargaze-1',
+		chainName: 'Stargaze',
+		stakeCurrency: {
+			coinDenom: 'STARS',
+			coinMinimalDenom: 'ustars',
+			coinDecimals: 6,
+			// coinGeckoId: 'cheqd-network',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/stars.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('stars'),
+		currencies: [
+			{
+				coinDenom: 'STARS',
+				coinMinimalDenom: 'ustars',
+				coinDecimals: 6,
+				// coinGeckoId: 'cheqd-network',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/stars.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'STARS',
+				coinMinimalDenom: 'ustars',
+				coinDecimals: 6,
+				// coinGeckoId: 'cheqd-network',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/stars.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://www.mintscan.io/stargaze/txs/{txHash}',
 	},
 ];
