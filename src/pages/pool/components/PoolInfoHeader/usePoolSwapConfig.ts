@@ -24,6 +24,17 @@ export class PoolSwapConfig extends AmountConfig {
 	@observable
 	protected _ratio: number | undefined = undefined;
 
+	/**
+	 * By default, the order of currency follows the order of pool assets in the pool.
+	 * And the basic assumption is to buy the second currency with the first currency.
+	 * However, in the case of a pool such as LBP,
+	 * it may be given priority to have users buy a specific denom.
+	 * The denom set in this field is set as the second currency.
+	 * @protected
+	 */
+	@observable
+	protected _userBuyPrioritaryDenom: string | undefined = undefined;
+
 	constructor(
 		chainGetter: ChainGetter,
 		initialChainId: string,
@@ -55,25 +66,36 @@ export class PoolSwapConfig extends AmountConfig {
 		return this.queryPools.getObservableQueryPool(this.poolId);
 	}
 
+	@action
+	setUserBuyPrioritaryDenom(denom: string | undefined) {
+		this._userBuyPrioritaryDenom = denom;
+	}
+
+	get userBuyPrioritaryDenom(): string | undefined {
+		return this._userBuyPrioritaryDenom;
+	}
+
+	@computed
 	get sendableCurrencies(): AppCurrency[] {
 		const pool = this.pool.pool;
 		if (!pool) {
 			return [];
 		}
 
-		return pool.poolAssets
-			.map(asset => asset.amount.currency)
-			.sort((asset1, asset2) => {
-				// XXX: For some marketing reasons..., just sort the currencies to locate the regen token to the end.
-				//      (Initially, no users have the regen token, so anyone can sell the regen.)
-				if (asset1.coinMinimalDenom === 'ibc/1DCC8A6CB5689018431323953344A9F6CC4D0BFB261E88C9F7777372C10CD076') {
-					return 1;
-				}
-				if (asset2.coinMinimalDenom === 'ibc/1DCC8A6CB5689018431323953344A9F6CC4D0BFB261E88C9F7777372C10CD076') {
-					return -1;
-				}
-				return 0;
-			});
+		const currencies = pool.poolAssets.map(asset => asset.amount.currency);
+
+		if (this.userBuyPrioritaryDenom) {
+			const buyPrioritaryCurrencyIndex = currencies.findIndex(
+				cur => cur.coinMinimalDenom === this.userBuyPrioritaryDenom
+			);
+			if (buyPrioritaryCurrencyIndex >= 0 && currencies.length >= 2) {
+				const buyPrioritaryCurrency = currencies[buyPrioritaryCurrencyIndex];
+				currencies.splice(buyPrioritaryCurrencyIndex, 1);
+				currencies.splice(1, 0, buyPrioritaryCurrency);
+			}
+		}
+
+		return currencies;
 	}
 
 	get ratio(): number | undefined {
