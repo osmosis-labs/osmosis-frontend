@@ -1554,7 +1554,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'LUM',
 				coinMinimalDenom: 'ulum',
 				coinDecimals: 6,
-				coinGeckoId: 'lum',
+				coinGeckoId: 'lum-network',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/lum.svg',
 			},
 		],
