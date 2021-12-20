@@ -1538,7 +1538,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		bip44: {
 			coinType: 118,
 		},
-		bech32Config: Bech32Address.defaultBech32Config('stars'),
+		bech32Config: Bech32Address.defaultBech32Config('chihuahua'),
 		currencies: [
 			{
 				coinDenom: 'HUAHUA',
