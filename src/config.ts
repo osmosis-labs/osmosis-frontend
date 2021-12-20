@@ -1525,8 +1525,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://www.mintscan.io/stargaze/txs/{txHash}',
 	},
 	{
-		rpc: 'https://node0.testnet.lum.network/rpc',
-		rest: 'https://node0.testnet.lum.network/rest',
+		rpc: 'https://node0.mainnet.lum.network/rpc',
+		rest: 'https://node0.mainnet.lum.network/rest',
 		chainId: 'lum-network-1',
 		chainName: 'Lum Network',
 		stakeCurrency: {
