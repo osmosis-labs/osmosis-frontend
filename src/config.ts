@@ -572,6 +572,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'ustars',
 	},
+	{
+		counterpartyChainId: 'chihuahua-1',
+		sourceChannelId: 'channel-113',
+		destChannelId: 'channel-7',
+		coinMinimalDenom: 'uhuahua',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1516,5 +1522,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://www.mintscan.io/stargaze/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.chihuahua.wtf',
+		rest: 'https://api.chihuahua.wtf',
+		chainId: 'chihuahua-1',
+		chainName: 'Chihuahua',
+		stakeCurrency: {
+			coinDenom: 'HUAHUA',
+			coinMinimalDenom: 'uhuahua',
+			coinDecimals: 6,
+			// coinGeckoId: 'pool:uhuahua',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/huahua.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('stars'),
+		currencies: [
+			{
+				coinDenom: 'HUAHUA',
+				coinMinimalDenom: 'uhuahua',
+				coinDecimals: 6,
+				// coinGeckoId: 'pool:uhuahua',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/huahua.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'HUAHUA',
+				coinMinimalDenom: 'uhuahua',
+				coinDecimals: 6,
+				// coinGeckoId: 'pool:uhuahua',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/huahua.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://ping.pub/chihuahua/tx/{txHash}',
 	},
 ];
