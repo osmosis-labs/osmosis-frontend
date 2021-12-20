@@ -572,6 +572,13 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'ustars',
 	},
+	{
+		counterpartyChainId: 'lum-network-1',
+		sourceChannelId: 'channel-115',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'ulum',
+		isUnstable: true, // Until Dec. 24 17:00 UTC
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1516,5 +1523,43 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://www.mintscan.io/stargaze/txs/{txHash}',
+	},
+	{
+		rpc: 'https://node0.testnet.lum.network/rpc',
+		rest: 'https://node0.testnet.lum.network/rest',
+		chainId: 'lum-network-1',
+		chainName: 'Lum Network',
+		stakeCurrency: {
+			coinDenom: 'LUM',
+			coinMinimalDenom: 'ulum',
+			coinDecimals: 6,
+			coinGeckoId: 'lum-network',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/lum.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('lum'),
+		currencies: [
+			{
+				coinDenom: 'LUM',
+				coinMinimalDenom: 'ulum',
+				coinDecimals: 6,
+				coinGeckoId: 'lum-network',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/lum.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'LUM',
+				coinMinimalDenom: 'ulum',
+				coinDecimals: 6,
+				coinGeckoId: 'lum',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/lum.svg',
+			},
+		],
+		coinType: 118,
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/lum/txs/{txHash}',
 	},
 ];
