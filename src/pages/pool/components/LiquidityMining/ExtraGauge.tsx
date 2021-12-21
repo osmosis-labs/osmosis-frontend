@@ -62,7 +62,7 @@ export const ExtraGauge = observer(function ExtraGauge({ gaugeIds, currency, ext
 			</Text>
 			<Text size="lg" color="gold">
 				{`Total Bonus: ${reward
-					.maxDecimals(6)
+					.maxDecimals(0)
 					.trim(true)
 					.toString()}`}
 			</Text>
