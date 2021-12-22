@@ -1,0 +1,8 @@
+.prettierignore
+.gitignore
+/.next
+
+*.ico
+*.svg
+
+yarn.lock
