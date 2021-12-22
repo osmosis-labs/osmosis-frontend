@@ -1,0 +1,23 @@
+{
+  "name": "osmosis-frontend",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/osmosis-labs/osmosis-frontend.git"
+  },
+  "author": "osmosis-labs",
+  "bugs": {
+    "url": "https://github.com/osmosis-labs/osmosis-frontend/issues"
+  },
+  "homepage": "https://github.com/osmosis-labs/osmosis-frontend#readme",
+  "devDependencies": {
+    "lerna": "^4.0.0",
+    "eslint": "8.5.0",
+    "typescript": "4.5.4"
+  }
+}
