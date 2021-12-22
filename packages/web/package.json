@@ -5,8 +5,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "prettier --write \"**/*\" && next lint --fix"
+    "lint": "prettier --check \"**/*\" && next lint",
+    "lint:fix": "prettier --write \"**/*\" && next lint --fix",
+    "pre-commit": "lint-staged"
   },
   "dependencies": {
     "next": "12.0.7",
