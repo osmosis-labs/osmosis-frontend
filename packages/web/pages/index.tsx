@@ -1,8 +1,20 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../stores";
+import { useEffect } from "react";
 
-const Home: NextPage = () => {
+const Home: NextPage = observer(() => {
+  const { chainStore, accountStore } = useStore();
+
+  const current = chainStore.chainInfos[0];
+  const account = accountStore.getAccount(current.chainId);
+
+  useEffect(() => {
+    account.init();
+  }, [account]);
+
   return (
     <div className="">
       <Head>
@@ -12,9 +24,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="">
-        <h1 className="">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+        <h1 className="">{account.bech32Address}</h1>
 
         <p className="">
           Get started by editing <code className="">pages/index.tsx</code>
@@ -65,6 +75,6 @@ const Home: NextPage = () => {
       </footer>
     </div>
   );
-};
+});
 
 export default Home;
