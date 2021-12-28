@@ -39,6 +39,7 @@ export const LockupAbledPoolIds: {
 	'572': true,
 	'573': true,
 	'574': true,
+	'579': true,
 	'584': true,
 	'585': true,
 	'586': true,
