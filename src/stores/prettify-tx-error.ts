@@ -1,16 +1,27 @@
 import { AppCurrency } from '@keplr-wallet/types';
 import { CoinPretty, Int } from '@keplr-wallet/unit';
 
-const regexSignatureVerificationFailed = /^signature verification failed; please verify account number \(\d*\), sequence \((\d*)\) and chain-id \(osmosis-1\): unauthorized/;
+const regexLegacySignatureVerificationFailed = /^signature verification failed; please verify account number \(\d*\), sequence \((\d*)\) and chain-id \(.*\): unauthorized/;
+const regexSignatureVerificationFailed = /^account sequence mismatch, expected (\d*), got (\d*): incorrect account sequence/;
 const regexFailedToExecuteMessageAt = /^failed to execute message; message index: (\d+): (.+)/;
 const regexCoinsOrDenoms = /(\d*)([a-zA-Z][a-zA-Z0-9/]{2,127})(,*)/g;
 const regexSplitAmountAndDenomOfCoin = /(\d+)([a-zA-Z][a-zA-Z0-9/]{2,127})/;
 
 export function prettifyTxError(message: string, currencies: AppCurrency[]): string {
+	const matchLegacySignatureVerificationFailed = message.match(regexLegacySignatureVerificationFailed);
+	if (matchLegacySignatureVerificationFailed) {
+		if (matchLegacySignatureVerificationFailed.length >= 2) {
+			const sequence = matchLegacySignatureVerificationFailed[1];
+			if (!Number.isNaN(parseInt(sequence))) {
+				return `You have too many concurrent txs going on! Try resending after your prior tx lands on chain. (We couldn't send the tx with sequence number ${sequence})`;
+			}
+		}
+	}
+
 	const matchSignatureVerificationFailed = message.match(regexSignatureVerificationFailed);
 	if (matchSignatureVerificationFailed) {
-		if (matchSignatureVerificationFailed.length >= 2) {
-			const sequence = matchSignatureVerificationFailed[1];
+		if (matchSignatureVerificationFailed.length >= 3) {
+			const sequence = matchSignatureVerificationFailed[2];
 			if (!Number.isNaN(parseInt(sequence))) {
 				return `You have too many concurrent txs going on! Try resending after your prior tx lands on chain. (We couldn't send the tx with sequence number ${sequence})`;
 			}
