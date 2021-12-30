@@ -98,16 +98,9 @@ export class RootStore {
 					},
 				},
 				chainOpts: this.chainStore.chainInfos.map(chainInfo => {
-					let gas = 500_000;
-					if (chainInfo.chainId.startsWith('osmosis-')) {
-						gas = 1_350_000;
-					} else if (chainInfo.chainId.startsWith('secret-')) {
-						gas = 30_000;
-					}
-
 					return {
 						chainId: chainInfo.chainId,
-						msgOpts: { ibcTransfer: { gas } },
+						msgOpts: { ibcTransfer: { gas: 130000 } },
 						preTxEvents: {
 							onBroadcastFailed: (e?: Error) => {
 								let message: string = 'Unknown error';
