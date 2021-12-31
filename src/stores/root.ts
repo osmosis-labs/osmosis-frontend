@@ -223,13 +223,6 @@ export class RootStore {
 					destCoinId: 'pool:uosmo',
 				},
 				{
-					alternativeCoinId: 'pool:ucmdx',
-					poolId: '600',
-					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-87' }], 'ucmdx'),
-					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
-					destCoinId: 'cosmos',
-				},
-				{
 					alternativeCoinId: 'pool:ustars',
 					poolId: '604',
 					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-75' }], 'ustars'),
