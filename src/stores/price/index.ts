@@ -51,36 +51,41 @@ export class PoolIntermediatePriceStore extends CoinGeckoPriceStore {
 	}
 
 	getPrice(coinId: string, vsCurrency: string): number | undefined {
-		const routes = this.intermidiateRoutesMap;
-		const route = routes.get(coinId);
-		if (route) {
-			const pool = this.queryPool.getPool(route.poolId);
-			if (!pool) {
-				return;
+		try {
+			const routes = this.intermidiateRoutesMap;
+			const route = routes.get(coinId);
+			if (route) {
+				const pool = this.queryPool.getPool(route.poolId);
+				if (!pool) {
+					return;
+				}
+
+				const osmosisChainInfo = this.chainGetter.getChain(this.osmosisChainId);
+				// If the currencies are unknown yet,
+				// it is assumed that the raw currency with the 0 decimals.
+				// But, using this raw currency will make improper result because it will create greater spot price than expected.
+				// So, if the currencies are unknown, block calculating the price.
+				if (
+					!osmosisChainInfo.currencies.find(cur => cur.coinMinimalDenom === route.spotPriceSourceDenom) ||
+					!osmosisChainInfo.currencies.find(cur => cur.coinMinimalDenom === route.spotPriceDestDenom)
+				) {
+					return;
+				}
+
+				const inSpotPrice = pool.calculateSpotPriceWithoutSwapFee(route.spotPriceSourceDenom, route.spotPriceDestDenom);
+				const spotPriceDec = inSpotPrice.toDec().equals(new Dec(0)) ? new Dec(0) : new Dec(1).quo(inSpotPrice.toDec());
+				const destCoinPrice = this.getPrice(route.destCoinId, vsCurrency);
+				if (destCoinPrice === undefined) {
+					return;
+				}
+
+				return parseFloat(spotPriceDec.toString()) * destCoinPrice;
 			}
 
-			const osmosisChainInfo = this.chainGetter.getChain(this.osmosisChainId);
-			// If the currencies are unknown yet,
-			// it is assumed that the raw currency with the 0 decimals.
-			// But, using this raw currency will make improper result because it will create greater spot price than expected.
-			// So, if the currencies are unknown, block calculating the price.
-			if (
-				!osmosisChainInfo.currencies.find(cur => cur.coinMinimalDenom === route.spotPriceSourceDenom) ||
-				!osmosisChainInfo.currencies.find(cur => cur.coinMinimalDenom === route.spotPriceDestDenom)
-			) {
-				return;
-			}
-
-			const inSpotPrice = pool.calculateSpotPriceWithoutSwapFee(route.spotPriceSourceDenom, route.spotPriceDestDenom);
-			const spotPriceDec = inSpotPrice.toDec().equals(new Dec(0)) ? new Dec(0) : new Dec(1).quo(inSpotPrice.toDec());
-			const destCoinPrice = this.getPrice(route.destCoinId, vsCurrency);
-			if (destCoinPrice === undefined) {
-				return;
-			}
-
-			return parseFloat(spotPriceDec.toString()) * destCoinPrice;
+			return super.getPrice(coinId, vsCurrency);
+		} catch (e) {
+			console.log(`Failed to calculate price of (${coinId}, ${vsCurrency}): ${e?.message}`);
+			return undefined;
 		}
-
-		return super.getPrice(coinId, vsCurrency);
 	}
 }
