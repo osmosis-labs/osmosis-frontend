@@ -37,8 +37,8 @@ export const PoolCatalyst = observer(function PoolCatalyst({ poolId }: Props) {
 				{pool.poolRatios.map((poolRatio, i) => {
 					return (
 						<PoolAssetCard
+							iconPath={pool.poolAssets[i].amount.currency.coinImageUrl}
 							key={poolRatio.amount.currency.coinMinimalDenom}
-							index={i}
 							ratio={poolRatio.ratio.toString()}
 							denom={poolRatio.amount.currency.coinDenom}
 							totalAmount={poolRatio.amount

@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
 import React from 'react';
-import { PoolCardTokenIcon } from 'src/components/PoolCardTokenIcon';
+import { TokenIcon } from 'src/components/TokenIcons';
 import { SubTitleText, Text, TitleText } from 'src/components/Texts';
 import { colorPrimary } from 'src/emotionStyles/colors';
 
 interface Props {
-	index: number;
+	iconPath: string | undefined;
 	ratio: string;
 	denom: string;
 	totalAmount: string;
@@ -13,11 +13,11 @@ interface Props {
 	isMobileView: boolean;
 }
 
-export function PoolAssetCard({ index, ratio, denom, totalAmount, myAmount, isMobileView }: Props) {
+export function PoolAssetCard({ iconPath, ratio, denom, totalAmount, myAmount, isMobileView }: Props) {
 	return (
 		<PoolAssetCardContainer>
 			<PoolRatioSection>
-				<PoolCardTokenIcon src="/public/assets/Icons/Bubbles.svg" bgIndex={index + 1} />
+				<AssetIcon src={iconPath} />
 
 				<PoolRatioValue>
 					<TitleText size="2xl" pb={isMobileView ? 2 : 8} isMobileView={isMobileView}>
@@ -71,4 +71,15 @@ const PoolRatioValue = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
+`;
+
+const AssetIcon = styled(TokenIcon)`
+	height: 40px;
+	width: 40px;
+	margin: auto 20px auto 5px;
+
+	@media (min-width: 768px) {
+		height: 60px;
+		width: 60px;
+	}
 `;

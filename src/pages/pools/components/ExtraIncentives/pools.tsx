@@ -1,7 +1,7 @@
 import React, { HTMLAttributes } from 'react';
 import { useHistory } from 'react-router-dom';
 import { CenterV, PoolCardListGridContainer } from 'src/components/layouts/Containers';
-import { PoolCardTokenIcon } from 'src/components/PoolCardTokenIcon';
+import { TokenIcons } from 'src/components/TokenIcons';
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import { AppCurrency } from '@keplr-wallet/types';
@@ -74,7 +74,7 @@ export const PoolCardItem = observer(
 		return (
 			<PoolCardItemContainer onClick={onClick}>
 				<TokenInfoContainer>
-					<PoolCardTokenIcon bgIndex={poolId} src="/public/assets/Icons/OSMO.svg" />
+					<TokenIcons svgUrls={currencies.map(currency => currency.coinImageUrl)} />
 					<div style={{ marginTop: '15px' }}>
 						<h5>Pool #{poolId}</h5>
 						<PoolSubTitle>
