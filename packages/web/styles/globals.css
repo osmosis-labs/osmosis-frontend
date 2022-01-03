@@ -1,3 +1,45 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  h1 {
+    @apply text-h1 font-h1;
+  }
+  h2 {
+    @apply text-h2 font-h2;
+  }
+  h3 {
+    @apply text-h3 font-h3;
+  }
+  h4 {
+    @apply text-h4 font-h4;
+  }
+  h5 {
+    @apply text-h5 font-h5;
+  }
+  h6 {
+    @apply text-h6 font-h6;
+  }
+  .subtitle1 {
+    @apply text-subtitle1 font-subtitle1;
+  }
+  .subtitle2 {
+    @apply text-subtitle2 font-subtitle2;
+  }
+  .body1 {
+    @apply text-body1 font-body1;
+  }
+  .body2 {
+    @apply text-body2 font-body2;
+  }
+  button {
+    @apply text-button font-button;
+  }
+  .caption {
+    @apply text-caption font-caption;
+  }
+  .overline {
+    @apply text-overline font-overline;
+  }
+}

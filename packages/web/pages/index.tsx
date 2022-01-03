@@ -15,13 +15,14 @@ const Home: NextPage = observer(function () {
 
   return (
     <main className="max-w-container mx-auto">
-      <h1 className="">{account.bech32Address}</h1>
+      <h1>{account.bech32Address}</h1>
+      <button>button</button>
 
-      <p className="">
+      <p className="subtitle1">
         Get started by editing <code className="">pages/index.tsx</code>
       </p>
 
-      <div className="">
+      <div className="body">
         <a href="https://nextjs.org/docs" className="">
           <h2>Documentation &rarr;</h2>
           <p>Find in-depth information about Next.js features and API.</p>
