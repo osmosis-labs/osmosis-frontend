@@ -578,7 +578,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-115',
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'ulum',
-		isUnstable: true, // Until Dec. 24 17:00 UTC
 	},
 ];
 
