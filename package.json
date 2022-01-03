@@ -1,8 +1,13 @@
 {
   "name": "osmosis-frontend",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "pre-commit": "lerna run pre-commit"
