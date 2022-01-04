@@ -1,0 +1,27 @@
+{
+  "name": "@osmosis-labs/stores",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "author": "osmosis-labs",
+  "license": "Apache-2.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
+    "dev": "tsc -w",
+    "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
+    "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*": [
+      "eslint",
+      "prettier --check"
+    ]
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}
