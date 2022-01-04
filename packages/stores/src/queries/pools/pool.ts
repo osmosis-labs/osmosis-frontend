@@ -42,13 +42,13 @@ export class ObservablePool {
   }
 
   @computed
-  get swapFee(): IntPretty {
-    return new IntPretty(this.pool.swapFee);
+  get swapFee(): RatePretty {
+    return new RatePretty(this.pool.swapFee);
   }
 
   @computed
-  get exitFee(): IntPretty {
-    return new IntPretty(this.pool.exitFee);
+  get exitFee(): RatePretty {
+    return new RatePretty(this.pool.exitFee);
   }
 
   @computed
