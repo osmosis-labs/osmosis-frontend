@@ -79,7 +79,16 @@ export class PoolIntermediatePriceStore extends CoinGeckoPriceStore {
 					return;
 				}
 
-				return parseFloat(spotPriceDec.toString()) * destCoinPrice;
+				const res = parseFloat(spotPriceDec.toString()) * destCoinPrice;
+				if (Number.isNaN(res)) {
+					return;
+				}
+				// CoinGeckoPriceStore uses the `Dec` to calculate the price of assets.
+				// However, `Dec` requires that the decimals must not exceed 18.
+				// Since the spot price is `Dec`, it can have 18 decimals,
+				// and if the `destCoinPrice` has the fraction, the multiplication can make the more than 18 decimals.
+				// To prevent this problem, shorthand the fraction part.
+				return parseFloat(res.toFixed(10));
 			}
 
 			return super.getPrice(coinId, vsCurrency);
