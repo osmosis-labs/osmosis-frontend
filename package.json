@@ -9,7 +9,15 @@
     ]
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "bootstrap": "lerna bootstrap",
+    "dev": "lerna run dev --parallel",
+    "clean": "lerna run clean; rm -rf node_modules",
+    "build": "lerna run build",
+    "build:libs": "lerna run build --ignore @osmosis-labs/web",
+    "test": "lerna run test --parallel",
+    "build:clean": "yarn clean && yarn install --frozen-lockfile && lerna run build",
+    "lint": "lerna run lint",
+    "lint:fix": "lerna run lint:fix",
     "pre-commit": "lerna run pre-commit"
   },
   "pre-commit": [
