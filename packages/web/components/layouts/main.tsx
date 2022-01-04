@@ -40,7 +40,7 @@ export function MainLayout({ children, menus }: MainLayoutProps) {
 
         <div className="h-full flex flex-col justify-between">
           <ul className="mt-16">
-            {menus.map((menu, i) => {
+            {menus.map((menu) => {
               const selected = menu.selectionTest
                 ? menu.selectionTest.test(router.pathname)
                 : false;
@@ -70,7 +70,11 @@ export function MainLayout({ children, menus }: MainLayoutProps) {
                         />
                         <div className="w-5 h-5 absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
                           <Image
-                            src={selected ? menu.iconSelected : menu.icon}
+                            src={
+                              selected
+                                ? menu.iconSelected ?? menu.icon
+                                : menu.icon
+                            }
                             width={20}
                             height={20}
                             alt="menu icon"
