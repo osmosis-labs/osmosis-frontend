@@ -3,6 +3,8 @@ import { Dec, Int } from "@keplr-wallet/unit";
 export interface Pool {
   get id(): string;
 
+  get totalWeight(): Int;
+
   get totalShare(): Int;
   get shareDenom(): string;
 
@@ -12,10 +14,12 @@ export interface Pool {
   get poolAssets(): {
     denom: string;
     amount: Int;
+    weight: Int;
   }[];
   getPoolAsset(denom: string): {
     denom: string;
     amount: Int;
+    weight: Int;
   };
 
   getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec;
