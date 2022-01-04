@@ -63,7 +63,7 @@ export class WeightedPool implements Pool {
   }
 
   get id(): string {
-    return "";
+    return this.raw.id;
   }
 
   get poolAssets(): { denom: string; amount: Int; weight: Int }[] {
