@@ -6,3 +6,4 @@
 *.svg
 
 yarn.lock
+.DS_Store

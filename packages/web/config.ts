@@ -1,47 +1,52 @@
 import { ChainInfo } from "@keplr-wallet/types";
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { ChainInfoWithExplorer } from "./stores/chain";
 
-export const EmbedChainInfos: ChainInfo[] = [
+export const EmbedChainInfos: ChainInfoWithExplorer[] = [
   {
-    rpc: "https://rpc-cosmoshub.keplr.app",
-    rest: "https://lcd-cosmoshub.keplr.app",
-    chainId: "cosmoshub-4",
-    chainName: "Cosmos",
+    rpc: "https://rpc-osmosis.keplr.app",
+    rest: "https://lcd-osmosis.keplr.app",
+    chainId: "osmosis-1",
+    chainName: "Osmosis",
     stakeCurrency: {
-      coinDenom: "ATOM",
-      coinMinimalDenom: "uatom",
+      coinDenom: "OSMO",
+      coinMinimalDenom: "uosmo",
       coinDecimals: 6,
-      coinGeckoId: "cosmos",
+      coinGeckoId: "osmosis",
+      coinImageUrl: "https://app.osmosis.zone/public/assets/tokens/osmosis.svg",
     },
-    walletUrl:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/#/cosmoshub/stake"
-        : "http://localhost:8080/#/cosmoshub/stake",
-    walletUrlForStaking:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/#/cosmoshub/stake"
-        : "http://localhost:8080/#/cosmoshub/stake",
     bip44: {
       coinType: 118,
     },
-    bech32Config: Bech32Address.defaultBech32Config("cosmos"),
+    bech32Config: Bech32Address.defaultBech32Config("osmo"),
     currencies: [
       {
-        coinDenom: "ATOM",
-        coinMinimalDenom: "uatom",
+        coinDenom: "OSMO",
+        coinMinimalDenom: "uosmo",
         coinDecimals: 6,
-        coinGeckoId: "cosmos",
+        coinGeckoId: "osmosis",
+        coinImageUrl:
+          "https://app.osmosis.zone/public/assets/tokens/osmosis.svg",
+      },
+      {
+        coinDenom: "ION",
+        coinMinimalDenom: "uion",
+        coinDecimals: 6,
+        coinGeckoId: "ion",
+        coinImageUrl: "https://app.osmosis.zone/public/assets/tokens/ion.png",
       },
     ],
     feeCurrencies: [
       {
-        coinDenom: "ATOM",
-        coinMinimalDenom: "uatom",
+        coinDenom: "OSMO",
+        coinMinimalDenom: "uosmo",
         coinDecimals: 6,
-        coinGeckoId: "cosmos",
+        coinGeckoId: "osmosis",
+        coinImageUrl:
+          "https://app.osmosis.zone/public/assets/tokens/osmosis.svg",
       },
     ],
-    coinType: 118,
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/osmosis/txs/{txHash}",
   },
 ];

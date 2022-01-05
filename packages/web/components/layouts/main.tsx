@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import classNames from "classnames";
+import { useAccountConnection } from "../../hooks";
+import { useStore } from "../../stores";
 
 export type MainLayoutMenu = {
   label: string;
@@ -20,10 +22,17 @@ export function MainLayout({ children, menus }: MainLayoutProps) {
   const router = useRouter();
   const [isOpenSidebar, setIsOpenSidebar] = useState<boolean>(false);
 
+  const { chainStore, accountStore, queriesStore } = useStore();
+  const account = accountStore.getAccount(chainStore.current.chainId);
+  const queries = queriesStore.get(chainStore.current.chainId);
+
+  const { isAccountConnected, connectAccount, disconnectAccount, isMobileWeb } =
+    useAccountConnection();
+
   const closeSidebar = () => setIsOpenSidebar(false);
 
   return (
-    <React.Fragment>
+    <>
       {isOpenSidebar && (
         <div
           className="fixed z-20 w-full h-full bg-black bg-opacity-75 md:hidden"
@@ -109,17 +118,73 @@ export function MainLayout({ children, menus }: MainLayoutProps) {
           </ul>
 
           <div>
-            <button className="flex items-center justify-center w-full h-9 py-3.5 rounded-md bg-primary-200 mb-8">
-              <Image
-                src="/icons/wallet.svg"
-                alt="connect wallet icon"
-                width={20}
-                height={20}
-              />
-              <span className="ml-2.5 text-white-high font-semibold">
-                Connect Wallet
-              </span>
-            </button>
+            <div className="w-full">
+              {isAccountConnected ? (
+                <div>
+                  <div className="flex items-center mb-2">
+                    <div className="p-4">
+                      <Image
+                        src="/icons/wallet.svg"
+                        alt="wallet"
+                        width={20}
+                        height={20}
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <p className="font-semibold text-white-high text-base">
+                        {account.name}
+                      </p>
+                      <p className="opacity-50 text-white-emphasis text-sm">
+                        {queries.queryBalances
+                          .getQueryBech32Address(account.bech32Address)
+                          .stakable.balance.trim(true)
+                          .maxDecimals(2)
+                          .shrink(true)
+                          .upperCase(true)
+                          .toString()}
+                      </p>
+                    </div>
+                  </div>
+                  {!isMobileWeb && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        disconnectAccount();
+                      }}
+                      className="bg-transparent border border-opacity-30 border-secondary-200 h-9 w-full rounded-md py-2 px-1 flex items-center justify-center mb-8"
+                    >
+                      <Image
+                        src="/icons/sign-out-secondary.svg"
+                        alt="sign-out"
+                        width={20}
+                        height={20}
+                      />
+                      <p className="text-sm max-w-24 ml-3 text-secondary-200 font-semibold overflow-x-hidden truncate transition-all">
+                        Sign Out
+                      </p>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <button
+                  className="flex items-center justify-center w-full h-9 py-3.5 rounded-md bg-primary-200 mb-8"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    connectAccount();
+                  }}
+                >
+                  <Image
+                    src="/icons/wallet.svg"
+                    alt="connect wallet icon"
+                    width={20}
+                    height={20}
+                  />
+                  <span className="ml-2.5 text-white-high font-semibold">
+                    Connect Wallet
+                  </span>
+                </button>
+              )}
+            </div>
 
             <div className="flex items-center transition-all overflow-x-hidden w-full">
               <a
@@ -180,6 +245,6 @@ export function MainLayout({ children, menus }: MainLayoutProps) {
         </div>
       </div>
       <div className="ml-sidebar">{children}</div>
-    </React.Fragment>
+    </>
   );
 }

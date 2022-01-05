@@ -9,10 +9,6 @@ const Home: NextPage = observer(function () {
   const current = chainStore.chainInfos[0];
   const account = accountStore.getAccount(current.chainId);
 
-  useEffect(() => {
-    account.init();
-  }, [account]);
-
   return (
     <main className="max-w-container mx-auto">
       <h1>{account.bech32Address}</h1>
