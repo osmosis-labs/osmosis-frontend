@@ -197,6 +197,8 @@ export class ObservablePool {
     amount: CoinPretty;
     afterSpotPriceInOverOut: IntPretty;
     afterSpotPriceOutOverIn: IntPretty;
+    effectivePriceInOverOut: IntPretty;
+    effectivePriceOutOverIn: IntPretty;
     slippage: RatePretty;
   } {
     return this.getTokenOutByTokenInComputedFn(
@@ -219,6 +221,8 @@ export class ObservablePool {
     amount: CoinPretty;
     afterSpotPriceInOverOut: IntPretty;
     afterSpotPriceOutOverIn: IntPretty;
+    effectivePriceInOverOut: IntPretty;
+    effectivePriceOutOverIn: IntPretty;
     slippage: RatePretty;
   } = computedFn(
     (tokenInDenom: string, tokenInAmount: string, tokenOutDenom: string) => {
@@ -246,6 +250,12 @@ export class ObservablePool {
         afterSpotPriceOutOverIn: new IntPretty(
           result.afterSpotPriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
         ),
+        effectivePriceInOverOut: new IntPretty(
+          result.effectivePriceInOverOut.mulTruncate(spotPriceInOverOutMul)
+        ),
+        effectivePriceOutOverIn: new IntPretty(
+          result.effectivePriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
+        ),
         slippage: new RatePretty(result.slippage),
       };
     }
@@ -261,6 +271,8 @@ export class ObservablePool {
     amount: CoinPretty;
     afterSpotPriceInOverOut: IntPretty;
     afterSpotPriceOutOverIn: IntPretty;
+    effectivePriceInOverOut: IntPretty;
+    effectivePriceOutOverIn: IntPretty;
     slippage: RatePretty;
   } {
     return this.getTokenInByTokenOutComputedFn(
@@ -283,6 +295,8 @@ export class ObservablePool {
     amount: CoinPretty;
     afterSpotPriceInOverOut: IntPretty;
     afterSpotPriceOutOverIn: IntPretty;
+    effectivePriceInOverOut: IntPretty;
+    effectivePriceOutOverIn: IntPretty;
     slippage: RatePretty;
   } = computedFn(
     (tokenOutDenom: string, tokenOutAmount: string, tokenInDenom: string) => {
@@ -311,6 +325,12 @@ export class ObservablePool {
         ),
         afterSpotPriceOutOverIn: new IntPretty(
           result.afterSpotPriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
+        ),
+        effectivePriceInOverOut: new IntPretty(
+          result.effectivePriceInOverOut.mulTruncate(spotPriceInOverOutMul)
+        ),
+        effectivePriceOutOverIn: new IntPretty(
+          result.effectivePriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
         ),
         slippage: new RatePretty(result.slippage),
       };
