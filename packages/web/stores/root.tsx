@@ -9,11 +9,14 @@ import {
 import { EmbedChainInfos } from "../config";
 import { IndexedDBKVStore } from "@keplr-wallet/common";
 import EventEmitter from "eventemitter3";
+import { QueriesOsmosisStore } from "@osmosis-labs/stores";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
 
   public readonly queriesStore: QueriesStore<QueriesWithCosmos>;
+  public readonly queriesOsmosisStore: QueriesOsmosisStore;
+
   public readonly accountStore: AccountStore<AccountWithCosmos>;
 
   constructor() {
@@ -44,6 +47,12 @@ export class RootStore {
       getKeplrFromWindow,
       QueriesWithCosmos
     );
+    this.queriesOsmosisStore = new QueriesOsmosisStore(
+      (chainId: string) => this.queriesStore.get(chainId),
+      new IndexedDBKVStore("store_web_queries"),
+      this.chainStore
+    );
+
     this.accountStore = new AccountStore<AccountWithCosmos>(
       eventListener,
       AccountWithCosmos,
