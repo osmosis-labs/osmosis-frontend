@@ -6,6 +6,7 @@ module.exports = {
   theme: {
     colors: {
       white: {
+        full: "#FFFFFF",
         high: "rgba(255, 255, 255, 0.95)",
         emphasis: "rgba(255, 255, 255, 0.87)",
         mid: "rgba(255, 255, 255, 0.6)",
@@ -94,6 +95,19 @@ module.exports = {
       button: ["Inter", "ui-sans-serif", "system-ui"],
       caption: ["Poppins", "ui-sans-serif", "system-ui"],
       overline: ["Poppins", "ui-sans-serif", "system-ui"],
+    },
+    backgroundImage: {
+      "gradients-socialLive":
+        "linear-gradient(180deg, #89EAFB 0%, #1377B0 100%)",
+      "gradients-greenBeach":
+        "linear-gradient(180deg, #00CEBA 0%, #008A7D 100%)",
+      "gradients-kashmir": "linear-gradient(180deg, #6976FE 0%, #3339FF 100%)",
+      "gradients-frost": "linear-gradient(180deg, #0069C4 0%, #00396A 100%)",
+      "gradients-cherry": "linear-gradient(180deg, #FF652D 0%, #FF0000 100%)",
+      "gradients-sunset": "linear-gradient(180deg, #FFBC00 0%, #FF8E00 100%)",
+      "gradients-orangeCoral":
+        "linear-gradient(180deg, #FF8200 0%, #FF2C00 100%)",
+      "gradients-pinky": "linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)",
     },
     extend: {
       spacing: {

@@ -1,15 +1,19 @@
 import {
   AccountStore,
   AccountWithCosmos,
+  ChainInfoInner,
+  CoinGeckoPriceStore,
+  IBCCurrencyRegsitrar,
   QueriesStore,
   QueriesWithCosmos,
 } from "@keplr-wallet/stores";
-import { EmbedChainInfos } from "../config";
-import { IndexedDBKVStore } from "@keplr-wallet/common";
+import { EmbedChainInfos, IBCAssetInfos } from "../config";
+import { IndexedDBKVStore, LocalKVStore } from "@keplr-wallet/common";
 import EventEmitter from "eventemitter3";
 import { ConnectWalletStore } from "./connect-wallet";
 import { ChainStore } from "./chain";
 import { QueriesOsmosisStore } from "@osmosis-labs/stores";
+import { AppCurrency } from "@keplr-wallet/types";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -19,6 +23,10 @@ export class RootStore {
 
   public readonly accountStore: AccountStore<AccountWithCosmos>;
   public readonly connectWalletStore: ConnectWalletStore;
+
+  public readonly priceStore: CoinGeckoPriceStore;
+
+  protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar;
 
   constructor() {
     this.chainStore = new ChainStore(
@@ -73,5 +81,58 @@ export class RootStore {
       }
     );
     this.connectWalletStore.setAccountStore(this.accountStore);
+
+    this.priceStore = new CoinGeckoPriceStore(
+      new IndexedDBKVStore("store_web_prices"),
+      {
+        usd: {
+          currency: "usd",
+          symbol: "$",
+          maxDecimals: 2,
+          locale: "en-US",
+        },
+      },
+      "usd"
+    );
+
+    this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar(
+      new LocalKVStore("store_ibc_currency_registrar"),
+      3 * 24 * 3600 * 1000, // 3 days
+      this.chainStore,
+      this.accountStore,
+      this.queriesStore,
+      (
+        denomTrace: {
+          denom: string;
+          paths: {
+            portId: string;
+            channelId: string;
+          }[];
+        },
+        originChainInfo: ChainInfoInner | undefined,
+        counterpartyChainInfo: ChainInfoInner | undefined,
+        originCurrency: AppCurrency | undefined
+      ) => {
+        const firstPath = denomTrace.paths[0];
+
+        // If the IBC Currency's channel is known.
+        // Don't show the channel info on the coin denom.
+        const knownAssetInfo = IBCAssetInfos.filter(
+          (info) => info.sourceChannelId === firstPath.channelId
+        ).find((info) => info.coinMinimalDenom === denomTrace.denom);
+        if (knownAssetInfo) {
+          return originCurrency ? originCurrency.coinDenom : denomTrace.denom;
+        }
+
+        return `${
+          originCurrency ? originCurrency.coinDenom : denomTrace.denom
+        } (${
+          denomTrace.paths.length > 0
+            ? denomTrace.paths[0].channelId
+            : "Unknown"
+        })`;
+      }
+    );
+>>>>>>> 3b37612 (Add the initial pool card base and incentivized pool card)
   }
 }
