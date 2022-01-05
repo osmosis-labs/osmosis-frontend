@@ -133,6 +133,5 @@ export class RootStore {
         })`;
       }
     );
->>>>>>> 3b37612 (Add the initial pool card base and incentivized pool card)
   }
 }
