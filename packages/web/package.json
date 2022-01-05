@@ -11,15 +11,16 @@
     "pre-commit": "lint-staged"
   },
   "dependencies": {
-    "@headlessui/react": "^1.4.2",
+    "@osmosis-labs/stores": "0.0.1",
     "@keplr-wallet/common": "^0.9.10",
     "@keplr-wallet/cosmos": "^0.9.10",
-    "@keplr-wallet/stores": "^0.9.10",
+    "@keplr-wallet/stores": "^0.9.11-rc.1",
     "@keplr-wallet/types": "^0.9.10",
     "@keplr-wallet/wc-client": "^0.9.10",
     "@walletconnect/browser-utils": "^1.7.0",
     "@walletconnect/client": "^1.7.0",
     "@walletconnect/types": "^1.7.0",
+    "@headlessui/react": "^1.4.2",
     "classnames": "^2.3.1",
     "eventemitter3": "^4.0.7",
     "mobx-react-lite": "^3.2.2",
