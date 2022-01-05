@@ -36,6 +36,10 @@ export class QueriesOsmosisStore extends HasMapStore<QueriesOsmosis> {
       );
     });
   }
+
+  get(chainId: string): QueriesOsmosis {
+    return super.get(chainId);
+  }
 }
 
 export class QueriesOsmosis {
