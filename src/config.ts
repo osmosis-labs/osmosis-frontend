@@ -579,6 +579,12 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'ulum',
 		isUnstable: true, // Until Dec. 24 17:00 UTC
 	},
+	{
+		counterpartyChainId: 'injective-1',
+		sourceChannelId: 'channel-122',
+		destChannelId: 'channel-8',
+		coinMinimalDenom: 'inj',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1638,6 +1644,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/inj.svg',
 			},
 		],
+		gasPriceStep: {
+			low: 0.0005,
+			average: 0.0007,
+			high: 0.0009,
+		},
 		coinType: 60,
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://explorer.injective.network/transaction/{txHash}',
