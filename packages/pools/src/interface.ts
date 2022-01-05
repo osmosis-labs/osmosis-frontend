@@ -40,10 +40,11 @@ export interface Pool {
     },
     tokenOutDenom: string
   ): {
-    denom: string;
     amount: Int;
     afterSpotPriceInOverOut: Dec;
     afterSpotPriceOutOverIn: Dec;
+    effectivePriceInOverOut: Dec;
+    effectivePriceOutOverIn: Dec;
     slippage: Dec;
   };
   getTokenInByTokenOut(
@@ -53,10 +54,11 @@ export interface Pool {
     },
     tokenInDenom: string
   ): {
-    denom: string;
     amount: Int;
     afterSpotPriceInOverOut: Dec;
     afterSpotPriceOutOverIn: Dec;
+    effectivePriceInOverOut: Dec;
+    effectivePriceOutOverIn: Dec;
     slippage: Dec;
   };
 }

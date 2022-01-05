@@ -151,10 +151,11 @@ export class WeightedPool implements Pool {
     tokenOut: { denom: string; amount: Int },
     tokenInDenom: string
   ): {
-    denom: string;
     amount: Int;
     afterSpotPriceInOverOut: Dec;
     afterSpotPriceOutOverIn: Dec;
+    effectivePriceInOverOut: Dec;
+    effectivePriceOutOverIn: Dec;
     slippage: Dec;
   } {
     const inPoolAsset = this.getPoolAsset(tokenInDenom);
@@ -195,10 +196,11 @@ export class WeightedPool implements Pool {
       .sub(new Dec("1"));
 
     return {
-      denom: inPoolAsset.denom,
       amount: tokenInAmount,
       afterSpotPriceInOverOut: afterSpotPriceInOverOut,
       afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
+      effectivePriceInOverOut: effectivePrice,
+      effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePrice),
       slippage: slippage,
     };
   }
@@ -207,10 +209,11 @@ export class WeightedPool implements Pool {
     tokenIn: { denom: string; amount: Int },
     tokenOutDenom: string
   ): {
-    denom: string;
     amount: Int;
     afterSpotPriceInOverOut: Dec;
     afterSpotPriceOutOverIn: Dec;
+    effectivePriceInOverOut: Dec;
+    effectivePriceOutOverIn: Dec;
     slippage: Dec;
   } {
     const inPoolAsset = this.getPoolAsset(tokenIn.denom);
@@ -251,10 +254,11 @@ export class WeightedPool implements Pool {
       .sub(new Dec("1"));
 
     return {
-      denom: outPoolAsset.denom,
       amount: tokenOutAmount,
       afterSpotPriceInOverOut,
       afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
+      effectivePriceInOverOut: effectivePrice,
+      effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePrice),
       slippage: slippage,
     };
   }
