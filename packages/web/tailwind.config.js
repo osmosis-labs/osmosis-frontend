@@ -1,3 +1,5 @@
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
@@ -95,6 +97,22 @@ module.exports = {
       button: ["Inter", "ui-sans-serif", "system-ui"],
       caption: ["Poppins", "ui-sans-serif", "system-ui"],
       overline: ["Poppins", "ui-sans-serif", "system-ui"],
+    },
+    fontWeight: {
+      ...defaultTheme.fontWeight,
+      h1: 600,
+      h2: 600,
+      h3: 600,
+      h4: 600,
+      h5: 600,
+      h6: 600,
+      subtitle1: 600,
+      subtitle2: 600,
+      body1: 500,
+      body2: 500,
+      button: 500,
+      caption: 400,
+      overline: 400,
     },
     backgroundImage: {
       "gradients-socialLive":
