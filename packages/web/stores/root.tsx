@@ -10,10 +10,9 @@ import {
 import { EmbedChainInfos, IBCAssetInfos } from "../config";
 import { IndexedDBKVStore, LocalKVStore } from "@keplr-wallet/common";
 import EventEmitter from "eventemitter3";
-import { ConnectWalletStore } from "./connect-wallet";
 import { ChainStore } from "./chain";
 import { QueriesOsmosisStore } from "@osmosis-labs/stores";
-import { AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency, Keplr } from "@keplr-wallet/types";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -22,18 +21,13 @@ export class RootStore {
   public readonly queriesOsmosisStore: QueriesOsmosisStore;
 
   public readonly accountStore: AccountStore<AccountWithCosmos>;
-  public readonly connectWalletStore: ConnectWalletStore;
 
   public readonly priceStore: CoinGeckoPriceStore;
 
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar;
 
-  constructor() {
-    this.chainStore = new ChainStore(
-      EmbedChainInfos,
-      EmbedChainInfos[0].chainId
-    );
-    this.connectWalletStore = new ConnectWalletStore(this.chainStore);
+  constructor(getKeplr: () => Promise<Keplr | undefined>) {
+    this.chainStore = new ChainStore(EmbedChainInfos, "osmosis");
 
     const eventListener = (() => {
       // On client-side (web browser), use the global window object.
@@ -57,7 +51,7 @@ export class RootStore {
     this.queriesStore = new QueriesStore<QueriesWithCosmos>(
       new IndexedDBKVStore("store_web_queries"),
       this.chainStore,
-      this.connectWalletStore.getKeplr,
+      getKeplr,
       QueriesWithCosmos
     );
     this.queriesOsmosisStore = new QueriesOsmosisStore(
@@ -74,13 +68,12 @@ export class RootStore {
       {
         defaultOpts: {
           prefetching: false,
-          suggestChain: false,
+          suggestChain: true,
           autoInit: false,
-          getKeplr: this.connectWalletStore.getKeplr,
+          getKeplr,
         },
       }
     );
-    this.connectWalletStore.setAccountStore(this.accountStore);
 
     this.priceStore = new CoinGeckoPriceStore(
       new IndexedDBKVStore("store_web_prices"),
