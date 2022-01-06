@@ -6,7 +6,7 @@ import { IncentivizedPoolCard } from "../components/cards";
 const Home: NextPage = observer(function () {
   const { chainStore, accountStore, queriesOsmosisStore } = useStore();
 
-  const chainInfo = chainStore.getChain("osmosis");
+  const chainInfo = chainStore.osmosis;
   const account = accountStore.getAccount(chainInfo.chainId);
 
   const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);

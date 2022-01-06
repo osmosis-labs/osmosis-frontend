@@ -13,7 +13,7 @@ export const IncentivizedPoolCard: FunctionComponent<{
 }> = observer(({ pool }) => {
   const { chainStore, queriesOsmosisStore, priceStore } = useStore();
 
-  const chainInfo = chainStore.getChain("osmosis");
+  const chainInfo = chainStore.osmosis;
   const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
 
   const router = useRouter();
