@@ -26,6 +26,6 @@
   "devDependencies": {},
   "dependencies": {
     "@osmosis-labs/math": "0.0.1",
-    "@keplr-wallet/unit": "^0.9.11-rc.1"
+    "@keplr-wallet/unit": "^0.9.11-rc.2"
   }
 }
