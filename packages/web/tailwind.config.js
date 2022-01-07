@@ -2,6 +2,7 @@ module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
+    "./modals/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     colors: {
@@ -45,6 +46,7 @@ module.exports = {
         lightGrey: "#B7B7B7",
       },
       background: "#170F34",
+      modalOverlay: "rgba(23, 15, 52, 0.8)",
       surface: "#231D4B",
       card: "#2D2755",
       cardInner: "#3C356D",

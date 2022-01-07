@@ -13,6 +13,7 @@ import EventEmitter from "eventemitter3";
 import { ChainStore } from "./chain";
 import { QueriesOsmosisStore } from "@osmosis-labs/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
+import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -71,6 +72,19 @@ export class RootStore {
           suggestChain: true,
           autoInit: false,
           getKeplr,
+          suggestChainFn: async (keplr, chainInfo) => {
+            if (keplr.mode === "mobile-web") {
+              // Can't suggest the chain on mobile web.
+              return;
+            }
+
+            if (keplr instanceof KeplrWalletConnectV1) {
+              // Can't suggest the chain using wallet connect.
+              return;
+            }
+
+            await keplr.experimentalSuggestChain(chainInfo.raw);
+          },
         },
       }
     );
