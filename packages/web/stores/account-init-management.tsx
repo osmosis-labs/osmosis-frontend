@@ -1,11 +1,11 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../stores";
+import { useStore } from "./index";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { useKeplr } from "../hooks";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 
-export const AccountInitManagementProvider: FunctionComponent = observer(
+export const AccountInitManagement: FunctionComponent = observer(
   ({ children }) => {
     const { chainStore, accountStore } = useStore();
 
