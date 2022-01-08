@@ -579,6 +579,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'ulum',
 	},
+	{
+		counterpartyChainId: 'vidulum-1',
+		sourceChannelId: 'channel-124',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'uvdl',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1603,5 +1609,43 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		coinType: 118,
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/lum/txs/{txHash}',
+	},
+	{
+		rpc: 'https://mainnet-rpc.vidulum.app',
+		rest: 'https://mainnet-lcd.vidulum.app',
+		chainId: 'vidulum-1',
+		chainName: 'Vidulum',
+		stakeCurrency: {
+			coinDenom: 'VDL',
+			coinMinimalDenom: 'uvdl',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:uvdl',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/vdl.png',
+		},
+		bip44: {
+			coinType: 370,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('vdl'),
+		currencies: [
+			{
+				coinDenom: 'VDL',
+				coinMinimalDenom: 'uvdl',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:uvdl',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/vdl.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'VDL',
+				coinMinimalDenom: 'uvdl',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:uvdl',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/vdl.png',
+			},
+		],
+		coinType: 370,
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://explorers.vidulum.app/vidulum/tx/{txHash}',
 	},
 ];
