@@ -1620,7 +1620,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'uvdl',
 			coinDecimals: 6,
 			coinGeckoId: 'vidulum',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/vdl.png',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/vdl.svg',
 		},
 		bip44: {
 			coinType: 370,
@@ -1632,7 +1632,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uvdl',
 				coinDecimals: 6,
 				coinGeckoId: 'vidulum',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/vdl.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/vdl.svg',
 			},
 		],
 		feeCurrencies: [
@@ -1641,7 +1641,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uvdl',
 				coinDecimals: 6,
 				coinGeckoId: 'vidulum',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/vdl.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/vdl.svg',
 			},
 		],
 		coinType: 370,
