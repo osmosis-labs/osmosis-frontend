@@ -416,7 +416,7 @@ export const ExtraGaugeInPool: {
 		},
 		{
 			gaugeId: '1965',
-			denom: 'ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228'
+			denom: 'ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228',
 		},
 	],
 };
@@ -474,6 +474,18 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-42',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'ujuno',
+	},
+	{
+		counterpartyChainId: 'stargaze-1',
+		sourceChannelId: 'channel-75',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'ustars',
+	},
+	{
+		counterpartyChainId: 'chihuahua-1',
+		sourceChannelId: 'channel-113',
+		destChannelId: 'channel-7',
+		coinMinimalDenom: 'uhuahua',
 	},
 	{
 		counterpartyChainId: 'core-1',
@@ -588,18 +600,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-108',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'ncheq',
-	},
-	{
-		counterpartyChainId: 'stargaze-1',
-		sourceChannelId: 'channel-75',
-		destChannelId: 'channel-0',
-		coinMinimalDenom: 'ustars',
-	},
-	{
-		counterpartyChainId: 'chihuahua-1',
-		sourceChannelId: 'channel-113',
-		destChannelId: 'channel-7',
-		coinMinimalDenom: 'uhuahua',
 	},
 	{
 		counterpartyChainId: 'lum-network-1',
