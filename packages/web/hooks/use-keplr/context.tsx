@@ -136,21 +136,31 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
     return new Promise((resolve, reject) => {
       setIsModalOpen(true);
 
-      eventListener.once("modal_close", () => {
+      const cleanUp = () => {
+        eventListener.off("modal_close");
+        eventListener.off("select_extension");
+        eventListener.off("select_wallet_connect");
+        eventListener.off("wc_modal_close");
+        eventListener.off("connect");
+      };
+
+      eventListener.on("modal_close", () => {
         setIsModalOpen(false);
         reject();
+        cleanUp();
       });
 
-      eventListener.once("select_extension", () => {
+      eventListener.on("select_extension", () => {
         setIsModalOpen(false);
         getKeplrFromWindow().then((keplr) => {
           lastUsedKeplrRef.current = keplr;
           setConnectionType("extension");
           resolve(keplr);
+          cleanUp();
         });
       });
 
-      eventListener.once("select_wallet_connect", () => {
+      eventListener.on("select_wallet_connect", () => {
         const connector = new WalletConnect({
           bridge: "https://bridge.walletconnect.org", // Required
           signingMethods: [
@@ -166,7 +176,7 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
           },
         });
 
-        eventListener.once("wc_modal_close", () => {
+        eventListener.on("wc_modal_close", () => {
           setWCUri("");
           if (callbackClosed) {
             callbackClosed();
@@ -179,6 +189,7 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
           connector.createSession();
 
           connector.on("connect", (error) => {
+            cleanUp();
             if (error) {
               reject(error);
             } else {
@@ -199,6 +210,7 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
           lastUsedKeplrRef.current = keplr;
           setConnectionType("wallet-connect");
           resolve(keplr);
+          cleanUp();
         }
       });
     });
