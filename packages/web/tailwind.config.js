@@ -126,6 +126,9 @@ module.exports = {
       "gradients-orangeCoral":
         "linear-gradient(180deg, #FF8200 0%, #FF2C00 100%)",
       "gradients-pinky": "linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)",
+      "gradients-clip": "linear-gradient(180deg, #3A3369 0%, #231D4B 100%)",
+      "gradients-clipInner":
+        "linear-gradient(180deg, #332C61 0%, #312A5D 10.94%, #2D2755 100%)",
     },
     extend: {
       spacing: {
@@ -133,6 +136,7 @@ module.exports = {
       },
       maxWidth: {
         container: "90rem",
+        clipboard: "32.5rem",
       },
     },
   },

@@ -24,7 +24,7 @@ export class ConnectWalletStore {
   protected walletConnector: WalletConnect | undefined;
 
   @observable
-  autoConnectingWalletType: WalletType;
+  autoConnectingWalletType: WalletType | undefined;
 
   constructor(
     protected readonly chainStore: ChainStore,

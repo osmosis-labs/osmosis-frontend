@@ -69,11 +69,9 @@ export function MainLayout({ children, menus }: MainLayoutProps) {
                       <div className="h-11 w-11 relative">
                         <Image
                           className="absolute top-0 left-0 transition-all"
-                          src={
-                            selected
-                              ? "/icons/border-selected.svg"
-                              : "/icons/border-unselected.svg"
-                          }
+                          src={`/icons/hexagon-border${
+                            selected ? "-selected" : ""
+                          }.svg`}
                           layout="fill"
                           alt="menu icon border"
                         />

@@ -49,4 +49,28 @@ html {
   .overline {
     @apply text-overline font-overline;
   }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input:focus-visible {
+    outline: none;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  .token-item-list::-webkit-scrollbar {
+    @apply border border-card rounded;
+  }
+
+  .token-item-list::-webkit-scrollbar-track-piece {
+    @apply bg-card rounded;
+  }
+
+  .token-item-list::-webkit-scrollbar-thumb {
+    @apply bg-cardInner rounded-md;
+  }
 }
