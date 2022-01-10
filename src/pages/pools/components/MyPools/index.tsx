@@ -7,7 +7,7 @@ import { MyPoolCardProp } from 'src/pages/pools/models/poolCardProps';
 import { useStore } from 'src/stores';
 import { LockupAbledPoolIds } from 'src/config';
 
-export const MyPools = observer(function MyPools() {
+export const MyPools = observer(function MyPools({ filterByToken }: { filterByToken: string }) {
 	const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
@@ -61,7 +61,13 @@ export const MyPools = observer(function MyPools() {
 				tokens: pool.poolAssets.map(asset => asset.amount.currency),
 			} as MyPoolCardProp;
 		})
-		.filter((d): d is MyPoolCardProp => d != null);
+		.filter((d): d is MyPoolCardProp => d != null)
+		.filter((d: MyPoolCardProp) => {
+			if (filterByToken) {
+				return d.tokens.some(token => token.coinDenom.toLowerCase().includes(filterByToken.toLowerCase()));
+			}
+			return true;
+		});
 
 	return (
 		<FullWidthContainer>

@@ -55,6 +55,11 @@ const Router: FunctionComponent = () => {
 											<PoolsPage />
 										</RouteWrapper>
 									</Route>
+									<Route exact path="/pools/:token">
+										<RouteWrapper>
+											<PoolsPage />
+										</RouteWrapper>
+									</Route>
 									<Route path="/pool/:id">
 										<RouteWrapper>
 											<PoolPage />

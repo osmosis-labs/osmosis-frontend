@@ -8,9 +8,19 @@ import { AllPools } from './components/AllPools';
 import { LabsOverview } from './components/LabsOverview';
 import { ExtraIncentivizedPools } from 'src/pages/pools/components/ExtraIncentives';
 import { useFilteredExtraIncentivePools } from 'src/pages/pools/components/ExtraIncentives/hook';
+import { useRouteMatch } from 'react-router';
+
+interface QueryParams {
+	/**pool token*/
+	token: string;
+}
 
 export const PoolsPage = observer(function PoolsPage() {
-	const extraIncentivePools = useFilteredExtraIncentivePools();
+	const match = useRouteMatch<QueryParams>();
+
+	const filterByToken = (match.params.token || '').toLowerCase();
+
+	const extraIncentivePools = useFilteredExtraIncentivePools({ filterByToken });
 
 	return (
 		<PageContainer>
@@ -19,21 +29,21 @@ export const PoolsPage = observer(function PoolsPage() {
 			</OverviewSection>
 
 			<MyPoolsSection>
-				<MyPools />
+				<MyPools filterByToken={filterByToken} />
 			</MyPoolsSection>
 
 			<IncentivizedPoolsSection>
-				<IncentivizedPools />
+				<IncentivizedPools filterByToken={filterByToken} />
 			</IncentivizedPoolsSection>
 
 			{extraIncentivePools.length > 0 ? (
 				<IncentivizedPoolsSection>
-					<ExtraIncentivizedPools />
+					<ExtraIncentivizedPools filterByToken={filterByToken} />
 				</IncentivizedPoolsSection>
 			) : null}
 
 			<AllPoolsSection>
-				<AllPools />
+				<AllPools filterByToken={filterByToken} />
 			</AllPoolsSection>
 		</PageContainer>
 	);

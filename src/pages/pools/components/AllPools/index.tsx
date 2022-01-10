@@ -15,7 +15,7 @@ import { commaizeNumber } from 'src/utils/format';
 const FILTER_TVL_THRESHOLD = 1_000;
 const TABLE_WIDTHS = ['10%', '40%', '30%', '20%'];
 
-export const AllPools = observer(function AllPools() {
+export const AllPools = observer(function AllPools({ filterByToken }: { filterByToken: string }) {
 	const location = useLocation();
 	const history = useHistory();
 
@@ -37,10 +37,19 @@ export const AllPools = observer(function AllPools() {
 		if (allPoolsShown) {
 			return poolDataList;
 		}
-		return poolDataList.filter(poolData => {
-			const tvlPretty = poolData.tvl;
-			return tvlPretty.toDec().gte(new Dec(FILTER_TVL_THRESHOLD));
-		});
+		return poolDataList
+			.filter(poolData => {
+				const tvlPretty = poolData.tvl;
+				return tvlPretty.toDec().gte(new Dec(FILTER_TVL_THRESHOLD));
+			})
+			.filter(poolData => {
+				if (filterByToken) {
+					return poolData.pool.poolRatios.some(
+						poolRatio => poolRatio.amount.currency.coinDenom.toLowerCase() === filterByToken.toLowerCase()
+					);
+				}
+				return true;
+			});
 	}, [allPoolsShown, poolDataList]);
 
 	const offset = (page - 1) * PoolsPerPage;

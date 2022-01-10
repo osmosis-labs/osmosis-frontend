@@ -7,58 +7,68 @@ import { PoolCardList } from 'src/pages/pools/components/PoolCardList';
 import { IncentivizedPoolCardProp } from 'src/pages/pools/models/poolCardProps';
 import { useStore } from 'src/stores';
 
-export const IncentivizedPools: FunctionComponent = observer(() => {
-	const { chainStore, queriesStore, priceStore } = useStore();
+export const IncentivizedPools: FunctionComponent<{ filterByToken: string }> = observer(
+	({ filterByToken }: { filterByToken: string }) => {
+		const { chainStore, queriesStore, priceStore } = useStore();
 
-	const queries = queriesStore.get(chainStore.current.chainId);
+		const queries = queriesStore.get(chainStore.current.chainId);
 
-	const queryIncentivizedPools = queries.osmosis.queryIncentivizedPools;
+		const queryIncentivizedPools = queries.osmosis.queryIncentivizedPools;
 
-	const incentivizedPoolInfoList = queryIncentivizedPools.incentivizedPools
-		.map(poolId => {
-			// 이 카드는 보통 All Pools 카드와 함께 있다.
-			// 따로 하나씩 pool을 쿼리하지 않고 All Pools의 페이지네이션 쿼리와 공유한다.
-			const pool = queries.osmosis.queryGammPools.getPoolFromPagination(poolId);
-			if (!pool) {
-				return undefined;
-			}
+		const incentivizedPoolInfoList = queryIncentivizedPools.incentivizedPools
+			.map(poolId => {
+				// 이 카드는 보통 All Pools 카드와 함께 있다.
+				// 따로 하나씩 pool을 쿼리하지 않고 All Pools의 페이지네이션 쿼리와 공유한다.
+				const pool = queries.osmosis.queryGammPools.getPoolFromPagination(poolId);
+				if (!pool) {
+					return undefined;
+				}
 
-			// 데이터 구조를 바꿀 필요가 있다.
-			return {
-				poolId: pool.id,
-				apr: {
-					value: queryIncentivizedPools.isIncentivized(pool.id)
-						? queryIncentivizedPools.computeMostAPY(pool.id, priceStore, priceStore.getFiatCurrency('usd')!).toString()
-						: undefined,
-					isLoading: queryIncentivizedPools.isAprFetching,
-				},
-				liquidity: {
-					value: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
-				},
-				tokens: pool.poolAssets.map(asset => asset.amount.currency),
-			} as IncentivizedPoolCardProp;
-		})
-		.filter((d): d is IncentivizedPoolCardProp => d != null);
+				// 데이터 구조를 바꿀 필요가 있다.
+				return {
+					poolId: pool.id,
+					apr: {
+						value: queryIncentivizedPools.isIncentivized(pool.id)
+							? queryIncentivizedPools
+									.computeMostAPY(pool.id, priceStore, priceStore.getFiatCurrency('usd')!)
+									.toString()
+							: undefined,
+						isLoading: queryIncentivizedPools.isAprFetching,
+					},
+					liquidity: {
+						value: pool.computeTotalValueLocked(priceStore, priceStore.getFiatCurrency('usd')!).toString(),
+					},
+					tokens: pool.poolAssets.map(asset => asset.amount.currency),
+				} as IncentivizedPoolCardProp;
+			})
+			.filter((d): d is IncentivizedPoolCardProp => d != null)
+			.filter((d: IncentivizedPoolCardProp) => {
+				if (filterByToken) {
+					return d.tokens.some(token => token.coinDenom.toLowerCase().includes(filterByToken.toLowerCase()));
+				}
+				return true;
+			});
 
-	return (
-		<FullWidthContainer>
-			<TitleText>Incentivized Pools</TitleText>
+		return (
+			<FullWidthContainer>
+				<TitleText>Incentivized Pools</TitleText>
 
-			{incentivizedPoolInfoList.length === 0 ? (
-				<NoActiveCard>
-					<Text size="lg" emphasis="high" pb={20}>
-						No active liquidity incentives
-					</Text>
-					<Text weight="medium">
-						Liquidity mining will begin once the first update pool incentives governance proposal passes.
-					</Text>
-				</NoActiveCard>
-			) : null}
+				{incentivizedPoolInfoList.length === 0 ? (
+					<NoActiveCard>
+						<Text size="lg" emphasis="high" pb={20}>
+							No active liquidity incentives
+						</Text>
+						<Text weight="medium">
+							Liquidity mining will begin once the first update pool incentives governance proposal passes.
+						</Text>
+					</NoActiveCard>
+				) : null}
 
-			<PoolCardList poolList={incentivizedPoolInfoList} />
-		</FullWidthContainer>
-	);
-});
+				<PoolCardList poolList={incentivizedPoolInfoList} />
+			</FullWidthContainer>
+		);
+	}
+);
 
 const NoActiveCard = styled.div`
 	width: 100%;

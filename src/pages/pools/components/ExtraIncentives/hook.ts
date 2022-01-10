@@ -2,7 +2,7 @@
 import { useStore } from 'src/stores';
 import { ExtraGaugeInPool } from 'src/config';
 
-export const useFilteredExtraIncentivePools = () => {
+export const useFilteredExtraIncentivePools = ({ filterByToken }: { filterByToken: string }) => {
 	const { chainStore, queriesStore } = useStore();
 
 	const queries = queriesStore.get(chainStore.current.chainId);
@@ -28,6 +28,14 @@ export const useFilteredExtraIncentivePools = () => {
 			for (const gauge of gauges) {
 				if (maxRemainingEpoch < gauge.remainingEpoch) {
 					maxRemainingEpoch = gauge.remainingEpoch;
+				}
+			}
+
+			if (filterByToken) {
+				if (
+					!pool.poolAssets.some(asset => asset.amount.currency.coinDenom.toLowerCase() === filterByToken.toLowerCase())
+				) {
+					return false;
 				}
 			}
 
