@@ -135,8 +135,4 @@ const TradePosition = styled.div`
 const TradeContainer = styled.div`
 	width: 100%;
 	max-height: 678px;
-
-	@media (min-width: 768px) {
-		margin-bottom: 130px;
-	}
 `;
