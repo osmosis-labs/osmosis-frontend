@@ -3,12 +3,15 @@ import Tippy from "@tippyjs/react";
 import { TokenSelect } from "../components/token-select";
 import { useBooleanWithWindowEvent } from "../hooks";
 
-export const TradeClipboard: FunctionComponent<{}> = () => {
+export const TradeClipboard: FunctionComponent<{
+  className?: string;
+}> = ({ className }) => {
   const [isSettingOpen, setIsSettingOpen] = useBooleanWithWindowEvent(false);
-  console.log(isSettingOpen);
 
   return (
-    <div className="absolute rounded-2xl bg-card max-w-clipboard border-2 border-cardInner p-2.5">
+    <div
+      className={`rounded-2xl bg-card max-w-clipboard border-2 border-cardInner p-2.5 ${className}`}
+    >
       <div className="rounded-xl bg-cardInner px-5 pt-5 pb-8">
         <div className="absolute -top-2 inset-x-1/2 -translate-x-1/2 w-[10rem] h-[3.75rem] z-10 bg-gradients-clip rounded-md">
           <div className="absolute bottom-0 rounded-b-md w-full h-5 bg-gradients-clipInner" />
@@ -37,7 +40,10 @@ export const TradeClipboard: FunctionComponent<{}> = () => {
             />
           </button>
           {isSettingOpen && (
-            <div className="absolute bottom-0 right-0 translate-y-full bg-card border border-white-faint rounded-2xl p-[1.875rem] z-10 w-full max-w-[23.875rem]">
+            <div
+              className="absolute bottom-0 right-0 translate-y-full bg-card border border-white-faint rounded-2xl p-[1.875rem] z-20 w-full max-w-[23.875rem]"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="subtitle1 text-white-emphasis">
                 Transaction Settings
               </div>
@@ -79,7 +85,7 @@ export const TradeClipboard: FunctionComponent<{}> = () => {
         </div>
 
         <div className="relative">
-          <div className="bg-surface rounded-2xl px-3 pt-3 pb-4">
+          <div className="bg-surface rounded-2xl px-4 pt-3 pb-4">
             <div className="flex justify-between items-center">
               <span className="subtitle1 text-white-full">From</span>
               <div className="flex items-center">
@@ -102,7 +108,7 @@ export const TradeClipboard: FunctionComponent<{}> = () => {
               <div className="flex flex-col items-end -ml-3">
                 <input
                   type="number"
-                  className="font-h5 text-h5 text-white-full bg-transparent text-right focus:outline-none"
+                  className="font-h5 text-h5 text-white-full bg-transparent text-right focus:outline-none w-full"
                   placeholder="0"
                 />
                 <div className="subtitle2 text-white-full">≈ $146.35</div>
@@ -123,18 +129,44 @@ export const TradeClipboard: FunctionComponent<{}> = () => {
             />
           </button>
 
-          <div className="bg-surface rounded-2xl px-3 pt-3 pb-4 mt-[1.125rem]">
+          <div className="bg-surface rounded-2xl px-4 pt-3 pb-4 mt-[1.125rem]">
             <div className="flex justify-between items-center">
               <span className="subtitle1 text-white-full">To</span>
             </div>
             <div className="flex items-center justify-between mt-3">
               <TokenSelect />
               <div className="flex flex-col items-end -ml-3">
-                <h5 className="text-white-full">≈ $146.35</h5>
+                <h5 className="text-white-full text-right">≈ 100 OSMO</h5>
               </div>
             </div>
           </div>
         </div>
+
+        <div className="mt-[1.125rem] border border-white-faint rounded-lg bg-card py-3 px-4">
+          <div className="flex justify-between">
+            <div className="subtitle2 text-wireframes-lightGrey">Rate</div>
+            <div className="flex flex-col gap-y-1.5 text-right">
+              <div className="subtitle2 text-wireframes-lightGrey">
+                1 ATOM = 4.32 OSMO
+              </div>
+              <div className="caption text-wireframes-grey">
+                1 OSMO = 0.231 ATOM
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-between mt-2.5">
+            <div className="subtitle2 text-wireframes-lightGrey">Swap Fee</div>
+            <div className="subtitle2 text-wireframes-lightGrey">0.3%</div>
+          </div>
+          <div className="flex justify-between pt-4 mt-4 border-t border-white-faint">
+            <div className="subtitle2 text-white-high">Estimated Slippage</div>
+            <div className="subtitle2 text-white-high">0%</div>
+          </div>
+        </div>
+
+        <button className="mt-[1.125rem] flex justify-center items-center w-full h-[3.75rem] rounded-lg bg-primary-200 text-white-full text-base font-medium shadow-md">
+          Swap
+        </button>
       </div>
     </div>
   );

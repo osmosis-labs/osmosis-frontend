@@ -129,6 +129,7 @@ module.exports = {
       "gradients-clip": "linear-gradient(180deg, #3A3369 0%, #231D4B 100%)",
       "gradients-clipInner":
         "linear-gradient(180deg, #332C61 0%, #312A5D 10.94%, #2D2755 100%)",
+      "home-bg-pattern": "url('/images/osmosis-home-bg-pattern.svg')",
     },
     extend: {
       spacing: {
