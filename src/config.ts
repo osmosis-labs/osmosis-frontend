@@ -614,11 +614,17 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'uvdl',
 	},
 	{
+		counterpartyChainId: 'desmos-mainnet',
+		sourceChannelId: 'channel-135',
+		destChannelId: 'channel-2',
+		coinMinimalDenom: 'udsm',
+	},
+  { 
 		counterpartyChainId: 'gravity-bridge-2',
 		sourceChannelId: 'channel-129',
 		destChannelId: 'channel-2',
 		coinMinimalDenom: 'ugraviton',
-	},
+  },
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1683,6 +1689,43 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://explorers.vidulum.app/vidulum/tx/{txHash}',
 	},
 	{
+		rpc: 'https://rpc.mainnet.desmos.network',
+		rest: 'https://api.mainnet.desmos.network',
+		chainId: 'desmos-mainnet',
+		chainName: 'Desmos',
+		stakeCurrency: {
+			coinDenom: 'DSM',
+			coinMinimalDenom: 'udsm',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:udsm',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/dsm.svg',
+		},
+		bip44: {
+			coinType: 852,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('desmos'),
+		currencies: [
+			{
+				coinDenom: 'DSM',
+				coinMinimalDenom: 'udsm',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:udsm',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dsm.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'DSM',
+				coinMinimalDenom: 'udsm',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:udsm',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dsm.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://explorer.desmos.network/transactions/{txHash}',
+	},
+  {
 		rpc: 'https://gravitychain.io:26657',
 		rest: 'https://gravitychain.io:1317',
 		chainId: 'gravity-bridge-2',

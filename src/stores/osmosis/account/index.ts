@@ -790,9 +790,7 @@ export class OsmosisAccount {
 			value: {
 				owner: this.base.bech32Address,
 				// Duration should be encodec as nana sec.
-				// XXX: Due to the bug on the lockup module that the gas would be increased if the locks with same lock duration accumulated.
-				//      To reduce this problem, add very small extra lock duration as jitter.
-				duration: (duration * 1_000_000_000 + Math.floor(Math.random() * 10000)).toString(),
+				duration: (duration * 1_000_000_000).toString(),
 				coins: primitiveTokens,
 			},
 		};
