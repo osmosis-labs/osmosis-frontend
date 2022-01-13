@@ -1689,7 +1689,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		chainName: 'Gravity Bridge',
 		stakeCurrency: {
 			coinDenom: 'GRAV',
-			coinMinimalDenom: 'ugrav',
+			coinMinimalDenom: 'ugraviton',
 			coinDecimals: 6,
 			// coinGeckoId: 'vidulum',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
@@ -1701,7 +1701,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		currencies: [
 			{
 				coinDenom: 'GRAV',
-				coinMinimalDenom: 'ugrav',
+				coinMinimalDenom: 'ugraviton',
 				coinDecimals: 6,
 				// coinGeckoId: 'vidulum',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
@@ -1710,7 +1710,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		feeCurrencies: [
 			{
 				coinDenom: 'GRAV',
-				coinMinimalDenom: 'ugrav',
+				coinMinimalDenom: 'ugraviton',
 				coinDecimals: 6,
 				// coinGeckoId: 'vidulum',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
