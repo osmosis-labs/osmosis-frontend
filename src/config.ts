@@ -613,6 +613,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'uvdl',
 	},
+	{
+		counterpartyChainId: 'gravity-bridge-2',
+		sourceChannelId: 'channel-129',
+		destChannelId: 'channel-2',
+		coinMinimalDenom: 'ugraviton',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
