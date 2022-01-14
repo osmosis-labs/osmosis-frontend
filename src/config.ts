@@ -48,6 +48,8 @@ export const LockupAbledPoolIds: {
 	'600': true,
 	'601': true,
 	'602': true,
+	'604': true,
+	'611': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -391,6 +393,20 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
 		},
 	],
+	'604': [
+		{
+			gaugeId: '1995',
+			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
+		},
+		{
+			gaugeId: '1996',
+			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
+		},
+		{
+			gaugeId: '1997',
+			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
+		},
+	],
 	'605': [
 		{
 			gaugeId: '1960',
@@ -417,6 +433,20 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '1965',
 			denom: 'ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228',
+		},
+	],
+	'611': [
+		{
+			gaugeId: '1998',
+			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
+		},
+		{
+			gaugeId: '1999',
+			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
+		},
+		{
+			gaugeId: '2000',
+			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
 		},
 	],
 };
