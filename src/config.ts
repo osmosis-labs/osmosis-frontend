@@ -1740,7 +1740,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		bip44: {
 			coinType: 118,
 		},
-		bech32Config: Bech32Address.defaultBech32Config('desmos'),
+		bech32Config: Bech32Address.defaultBech32Config('dig'),
 		currencies: [
 			{
 				coinDenom: 'DIG',
@@ -1764,7 +1764,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			average: 0.03,
 			high: 0.035,
 		},
-		features: ['stargate', 'no-legacy-stdTx', 'ibc-go'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://ping.pub/dig/tx/{txHash}',
 	}
 ];
