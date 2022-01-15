@@ -1755,7 +1755,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'DIG',
 				coinMinimalDenom: 'udig',
 				coinDecimals: 6,
-				// coinGeckoId: 'pool:udig',
+				coinGeckoId: 'pool:udig',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/dig.png',
 			},
 		],
