@@ -679,6 +679,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-2',
 		coinMinimalDenom: 'udsm',
 	},
+	{
+		counterpartyChainId: 'dig-1',
+		sourceChannelId: 'channel-128',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'udig',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1778,5 +1784,47 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://explorer.desmos.network/transactions/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-1-dig.notional.ventures',
+		rest: 'https://api-1-dig.notional.ventures',
+		chainId: 'dig-1',
+		chainName: 'Dig',
+		stakeCurrency: {
+			coinDenom: 'DIG',
+			coinMinimalDenom: 'udig',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:udig',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/dig.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('dig'),
+		currencies: [
+			{
+				coinDenom: 'DIG',
+				coinMinimalDenom: 'udig',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:udig',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dig.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'DIG',
+				coinMinimalDenom: 'udig',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:udig',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dig.png',
+			},
+		],
+		gasPriceStep: {
+			low: 0.025,
+			average: 0.03,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://ping.pub/dig/tx/{txHash}',
 	},
 ];
