@@ -1594,8 +1594,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://cheqd.didx.co.za/transactions/{txHash}',
 	},
 	{
-		rpc: 'https://rpc.stargaze.publicawesome.dev',
-		rest: 'https://rest.stargaze.publicawesome.dev',
+		rpc: 'https://rpc.stargaze-apis.com',
+		rest: 'https://rest.stargaze-apis.com',
 		chainId: 'stargaze-1',
 		chainName: 'Stargaze',
 		stakeCurrency: {
