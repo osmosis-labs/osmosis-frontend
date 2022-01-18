@@ -5,11 +5,12 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  font-family: Inter, ui-sans-serif, system-ui;
-}
-
 @layer components {
+  html {
+    font-family: Inter, ui-sans-serif, system-ui;
+    @apply text-white-full;
+  }
+
   h1 {
     @apply text-h1 font-h1;
   }
@@ -72,5 +73,37 @@ html {
 
   .token-item-list::-webkit-scrollbar-thumb {
     @apply bg-cardInner rounded-md;
+  }
+
+  table {
+    @apply table-auto border-collapse text-left;
+  }
+
+  thead > tr {
+    @apply bg-card text-white-disabled;
+  }
+
+  thead > tr > th:first-child {
+    @apply rounded-tl-2xl pl-8 pr-3 py-3;
+  }
+
+  thead > tr > th {
+    @apply p-3;
+  }
+
+  thead > tr > th:last-child {
+    @apply rounded-tr-2xl pl-3 pr-8 py-3;
+  }
+
+  tbody > tr > td:first-child {
+    @apply pl-8 pr-3 py-3;
+  }
+
+  tbody > tr > td {
+    @apply p-3;
+  }
+
+  tbody > tr > td:last-child {
+    @apply pl-3 pr-8 py-2;
   }
 }
