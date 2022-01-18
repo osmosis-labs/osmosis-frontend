@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
@@ -98,6 +101,22 @@ module.exports = {
       caption: ["Poppins", "ui-sans-serif", "system-ui"],
       overline: ["Poppins", "ui-sans-serif", "system-ui"],
     },
+    fontWeight: {
+      ...defaultTheme.fontWeight,
+      h1: 600,
+      h2: 600,
+      h3: 600,
+      h4: 600,
+      h5: 600,
+      h6: 600,
+      subtitle1: 600,
+      subtitle2: 600,
+      body1: 500,
+      body2: 500,
+      button: 500,
+      caption: 400,
+      overline: 400,
+    },
     backgroundImage: {
       "gradients-socialLive":
         "linear-gradient(180deg, #89EAFB 0%, #1377B0 100%)",
@@ -110,6 +129,10 @@ module.exports = {
       "gradients-orangeCoral":
         "linear-gradient(180deg, #FF8200 0%, #FF2C00 100%)",
       "gradients-pinky": "linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)",
+      "gradients-clip": "linear-gradient(180deg, #3A3369 0%, #231D4B 100%)",
+      "gradients-clipInner":
+        "linear-gradient(180deg, #332C61 0%, #312A5D 10.94%, #2D2755 100%)",
+      "home-bg-pattern": "url('/images/osmosis-home-bg-pattern.svg')",
     },
     extend: {
       spacing: {
@@ -117,6 +140,7 @@ module.exports = {
       },
       maxWidth: {
         container: "90rem",
+        clipboard: "32.5rem",
       },
     },
   },

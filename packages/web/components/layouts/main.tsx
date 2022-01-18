@@ -43,7 +43,6 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                 const selected = menu.selectionTest
                   ? menu.selectionTest.test(router.pathname)
                   : false;
-
                 return (
                   <li key={menu.label} className="h-16 flex items-center">
                     <Link href={menu.link} passHref>
@@ -59,11 +58,9 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                         <div className="h-11 w-11 relative">
                           <Image
                             className="absolute top-0 left-0 transition-all"
-                            src={
-                              selected
-                                ? "/icons/border-selected.svg"
-                                : "/icons/border-unselected.svg"
-                            }
+                            src={`/icons/hexagon-border${
+                              selected ? "-selected" : ""
+                            }.svg`}
                             layout="fill"
                             alt="menu icon border"
                           />
