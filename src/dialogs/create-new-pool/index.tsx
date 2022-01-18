@@ -162,10 +162,10 @@ export class CreateNewPoolConfig extends TxChainSetter {
 
 	readonly getErrorOfPercentage = computedFn(() => {
 		if (this.assets.length < 2) {
-			return new Error('Mininum of 2 assets required');
+			return new Error('Minimum of 2 assets required');
 		}
 		if (this.assets.length > 8) {
-			return new Error('Too many asset');
+			return new Error('Too many assets');
 		}
 
 		let totalPercentage = new Dec(0);
