@@ -3,8 +3,9 @@ import { FunctionComponent } from "react";
 import classNames from "classnames";
 
 interface Props {
+  onClick: () => void;
   color?: "primary" | "secondary";
-  size?: "xs" | "md" | "lg";
+  size?: "sm" | "md" | "lg";
   type?: "block" | "arrow" | "border";
   className?: string;
   disabled?: boolean;
@@ -15,12 +16,13 @@ const colorToClassName = (location: "bg" | "border") => ({
   secondary: `${location}-secondary-200`,
 });
 const sizeToClassName = {
-  xs: "px-3 py-2",
+  sm: "px-3 py-2",
   md: "px-4 py-3",
   lg: "px-5 py-4",
 };
 
 export const Button: FunctionComponent<Props> = ({
+  onClick,
   color = "primary",
   size = "md",
   type: style = "block",
@@ -42,6 +44,7 @@ export const Button: FunctionComponent<Props> = ({
       className
     )}
     disabled={disabled}
+    onClick={onClick}
   >
     {children}
     {style === "arrow" && (
