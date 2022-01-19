@@ -2,13 +2,13 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 
-type IconPath = string;
+type IconName = string;
 
 interface Props {
   onClick: () => void;
   color?: "primary" | "secondary";
   size?: "sm";
-  type?: "chevron-right" | "chevron-down" | IconPath;
+  type?: "chevron-right" | "chevron-down" | IconName;
   disabled?: boolean;
 }
 
