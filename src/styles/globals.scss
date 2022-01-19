@@ -49,3 +49,18 @@ input {
 	position: fixed;
 	z-index: 10000000;
 }
+
+	::-webkit-scrollbar {
+		width: 12px;
+	}
+	::-webkit-scrollbar-track {
+		background: #231d4b00;
+	}
+	::-webkit-scrollbar-thumb {
+		background: #777;
+		border-radius: 18px;
+	}
+	::-webkit-scrollbar-thumb:hover {
+		background: #666;
+	}
+	
