@@ -5,8 +5,9 @@ import classNames from "classnames";
 interface Props {
   color?: "primary" | "secondary";
   size?: "xs" | "md" | "lg";
-  style?: "block" | "arrow" | "border";
+  type?: "block" | "arrow" | "border";
   className?: string;
+  disabled?: boolean;
 }
 
 const colorToClassName = (location: "bg" | "border") => ({
@@ -22,13 +23,15 @@ const sizeToClassName = {
 export const Button: FunctionComponent<Props> = ({
   color = "primary",
   size = "md",
-  style = "block",
+  type: style = "block",
   className,
+  disabled = false,
   children,
 }) => (
   <button
     className={classNames(
       "flex justify-center items-center rounded-lg text-base",
+      disabled ? "opacity-50" : null,
       style === "arrow" ? "text-secondary-200" : "text-white-full",
       style === "block"
         ? colorToClassName("bg")[color]
@@ -38,6 +41,7 @@ export const Button: FunctionComponent<Props> = ({
       sizeToClassName[size],
       className
     )}
+    disabled={disabled}
   >
     {children}
     {style === "arrow" && (
