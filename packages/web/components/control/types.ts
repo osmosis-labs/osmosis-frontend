@@ -6,3 +6,7 @@ export interface ToggleProps {
 export interface Disableable {
   disabled?: boolean;
 }
+
+export interface CustomClasses {
+  className?: string;
+}

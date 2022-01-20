@@ -1,12 +1,10 @@
 import { FunctionComponent } from "react";
 import classNames from "classnames";
-import { ToggleProps, Disableable } from "./types";
+import { ToggleProps, Disableable, CustomClasses } from "./types";
 
-export const Switch: FunctionComponent<ToggleProps & Disableable> = ({
-  isOn,
-  onChange,
-  disabled = false,
-}) => (
+export const Switch: FunctionComponent<
+  ToggleProps & Disableable & CustomClasses
+> = ({ isOn, onChange, disabled = false, className }) => (
   <label htmlFor="toggle-switch">
     <input
       type="checkbox"
@@ -17,7 +15,8 @@ export const Switch: FunctionComponent<ToggleProps & Disableable> = ({
         "checked:after:transform checked:after:scale-110 checked:after:translate-x-4", // dot on transform
         disabled
           ? "opacity-50 cursor-default bg-iconDefault"
-          : "checked:bg-primary-200"
+          : "checked:bg-primary-200",
+        className
       )}
       checked={isOn}
       disabled={disabled}

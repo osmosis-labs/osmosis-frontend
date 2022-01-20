@@ -1,13 +1,11 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
-import { ToggleProps, Disableable } from "./types";
+import { ToggleProps, Disableable, CustomClasses } from "./types";
 
-export const CheckBox: FunctionComponent<ToggleProps & Disableable> = ({
-  isOn,
-  onChange,
-  disabled = false,
-}) => (
+export const CheckBox: FunctionComponent<
+  ToggleProps & Disableable & CustomClasses
+> = ({ isOn, onChange, disabled = false, className }) => (
   <label htmlFor="toggle-checkbox">
     {isOn && (
       <div
@@ -23,7 +21,7 @@ export const CheckBox: FunctionComponent<ToggleProps & Disableable> = ({
       type="checkbox"
       id="toggle-checkbox"
       className={classNames(
-        "relative cursor-pointer h-5 w-5 rounded-sm appearance-none",
+        "relative cursor-pointer h-5 w-5 appearance-none",
         "after:absolute after:h-5 after:w-5 after:rounded z-10", // box
         disabled
           ? isOn
@@ -31,7 +29,8 @@ export const CheckBox: FunctionComponent<ToggleProps & Disableable> = ({
             : "opacity-50 cursor-default after:border-2 after:border-iconDefault"
           : isOn
           ? "after:bg-primary-200" // not disabled AND on
-          : "after:border-2 after:border-primary-200"
+          : "after:border-2 after:border-primary-200",
+        className
       )}
       checked={isOn}
       disabled={disabled}
