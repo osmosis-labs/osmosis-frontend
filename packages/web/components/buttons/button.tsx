@@ -6,20 +6,10 @@ interface Props {
   onClick: () => void;
   color?: "primary" | "secondary";
   size?: "sm" | "md" | "lg";
-  type?: "block" | "arrow" | "border";
+  type?: "block" | "arrow" | "outline";
   className?: string;
   disabled?: boolean;
 }
-
-const colorToClassName = (location: "bg" | "border") => ({
-  primary: `${location}-primary-200`,
-  secondary: `${location}-secondary-200`,
-});
-const sizeToClassName = {
-  sm: "px-3 py-2",
-  md: "px-4 py-3",
-  lg: "px-5 py-4",
-};
 
 export const Button: FunctionComponent<Props> = ({
   onClick,
@@ -33,20 +23,22 @@ export const Button: FunctionComponent<Props> = ({
   <button
     className={classNames(
       "flex justify-center items-center rounded-lg text-base",
-      disabled ? "opacity-50" : null,
-      style === "arrow" ? "text-secondary-200" : "text-white-full",
-      style === "block"
-        ? colorToClassName("bg")[color]
-        : style === "border"
-        ? `border-solid border-2 ${colorToClassName("border")[color]}`
-        : null,
-      sizeToClassName[size],
+      {
+        "opacity-50": disabled,
+        "text-secondary-200": style === "arrow",
+        "text-white-full": style !== "arrow",
+        "bg-primary-200": style === "block",
+        "border-solid border-2 border-primary-200": style === "outline",
+        "px-3 py-2": size === "sm",
+        "px-4 py-3": size === "md",
+        "px-5 py-4": size === "lg",
+      },
       className
     )}
     disabled={disabled}
     onClick={onClick}
   >
-    {children}
+    <div className="px-3 select-none">{children}</div>
     {style === "arrow" && (
       <Image alt="" src="/icons/chevron-right.svg" height={32} width={32} />
     )}
