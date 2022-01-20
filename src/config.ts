@@ -48,6 +48,11 @@ export const LockupAbledPoolIds: {
 	'600': true,
 	'601': true,
 	'602': true,
+	'604': true,
+	'611': true,
+	'613': true,
+	'618': true,
+	'619': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -391,6 +396,20 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
 		},
 	],
+	'604': [
+		{
+			gaugeId: '1995',
+			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
+		},
+		{
+			gaugeId: '1996',
+			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
+		},
+		{
+			gaugeId: '1997',
+			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
+		},
+	],
 	'605': [
 		{
 			gaugeId: '1960',
@@ -417,6 +436,62 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '1965',
 			denom: 'ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228',
+		},
+	],
+	'611': [
+		{
+			gaugeId: '1998',
+			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
+		},
+		{
+			gaugeId: '1999',
+			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
+		},
+		{
+			gaugeId: '2000',
+			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
+		},
+	],
+	'618': [
+		{
+			gaugeId: '2004',
+			denom: 'ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C',
+		},
+		{
+			gaugeId: '2005',
+			denom: 'ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C',
+		},
+		{
+			gaugeId: '2006',
+			denom: 'ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C',
+		},
+	],
+	'619': [
+		{
+			gaugeId: '2007',
+			denom: 'ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C',
+		},
+		{
+			gaugeId: '2008',
+			denom: 'ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C',
+		},
+		{
+			gaugeId: '2009',
+			denom: 'ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C',
+		},
+	],
+	'613': [
+		{
+			gaugeId: '1982',
+			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
+		},
+		{
+			gaugeId: '2013',
+			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
+		},
+		{
+			gaugeId: '2014',
+			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 	],
 };
@@ -618,6 +693,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-135',
 		destChannelId: 'channel-2',
 		coinMinimalDenom: 'udsm',
+	},
+	{
+		counterpartyChainId: 'dig-1',
+		sourceChannelId: 'channel-128',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'udig',
 	},
   { 
 		counterpartyChainId: 'gravity-bridge-2',
@@ -1534,8 +1615,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://cheqd.didx.co.za/transactions/{txHash}',
 	},
 	{
-		rpc: 'https://rpc.stargaze.publicawesome.dev',
-		rest: 'https://rest.stargaze.publicawesome.dev',
+		rpc: 'https://rpc.stargaze-apis.com',
+		rest: 'https://rest.stargaze-apis.com',
 		chainId: 'stargaze-1',
 		chainName: 'Stargaze',
 		stakeCurrency: {
@@ -1725,6 +1806,48 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://explorer.desmos.network/transactions/{txHash}',
 	},
+	{
+		rpc: 'https://rpc-1-dig.notional.ventures',
+		rest: 'https://api-1-dig.notional.ventures',
+		chainId: 'dig-1',
+		chainName: 'Dig',
+		stakeCurrency: {
+			coinDenom: 'DIG',
+			coinMinimalDenom: 'udig',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:udig',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/dig.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('dig'),
+		currencies: [
+			{
+				coinDenom: 'DIG',
+				coinMinimalDenom: 'udig',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:udig',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dig.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'DIG',
+				coinMinimalDenom: 'udig',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:udig',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dig.png',
+			},
+		],
+		gasPriceStep: {
+			low: 0.025,
+			average: 0.03,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://ping.pub/dig/tx/{txHash}',
+	},
   {
 		rpc: 'https://gravitychain.io:26657',
 		rest: 'https://gravitychain.io:1317',
@@ -1762,5 +1885,4 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		coinType: 118,
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/gravity-bridge/{txHash}',
-	},
 ];
