@@ -8,7 +8,7 @@ import { useDeterministicIntegerFromString } from "../../hooks";
 import { StatLabelValue } from "./stat-label-value";
 import { useRouter } from "next/router";
 
-export const MyPools: FunctionComponent<{
+export const MyPoolCard: FunctionComponent<{
   pool: ObservablePool;
 }> = observer(({ pool }) => {
   const { chainStore, queriesOsmosisStore, priceStore, accountStore } =

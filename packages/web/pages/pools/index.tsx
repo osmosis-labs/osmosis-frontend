@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { IncentivizedPoolCard, MyPools } from "../../components/cards";
+import { IncentivizedPoolCard, MyPoolCard } from "../../components/cards";
 import { OverviewLabelValue } from "../../components/overview-label-value";
 import { LeftTime } from "../../components/left-time";
 import { Button } from "../../components/buttons/button";
@@ -17,6 +17,7 @@ const Pools: NextPage = observer(function () {
   const myPools = queryOsmosis.queryGammPoolShare.getOwnPools(
     account.bech32Address
   );
+
   const incentivizedPools =
     queryOsmosis.queryIncentivizedPools.incentivizedPools;
   // const allPools = queryOsmosis.queryGammPools.getPoolsDescendingOrderTVL();
@@ -49,7 +50,7 @@ const Pools: NextPage = observer(function () {
             {myPools.map((poolId) => {
               const pool = queryOsmosis.queryGammPools.getPool(poolId);
               if (pool) {
-                return <IncentivizedPoolCard pool={pool} key={pool.id} />;
+                return <MyPoolCard pool={pool} key={pool.id} />;
               }
             })}
           </div>
@@ -62,7 +63,7 @@ const Pools: NextPage = observer(function () {
             {incentivizedPools.map((poolId) => {
               const pool = queryOsmosis.queryGammPools.getPool(poolId);
               if (pool) {
-                return <MyPools pool={pool} key={pool.id} />;
+                return <IncentivizedPoolCard pool={pool} key={pool.id} />;
               }
             })}
           </div>
