@@ -15,7 +15,7 @@ export const Button: FunctionComponent<Props> = ({
   onClick,
   color = "primary",
   size = "md",
-  type: style = "block",
+  type = "block",
   className,
   disabled = false,
   children,
@@ -25,10 +25,11 @@ export const Button: FunctionComponent<Props> = ({
       "flex justify-center items-center rounded-lg text-base",
       {
         "opacity-50": disabled,
-        "text-secondary-200": style === "arrow",
-        "text-white-full": style !== "arrow",
-        "bg-primary-200": style === "block",
-        "border-solid border-2 border-primary-200": style === "outline",
+        "text-secondary-200": type === "arrow",
+        "text-white-full": type !== "arrow",
+        "bg-primary-200": color === "primary" && type === "block",
+        "bg-secondary-200": color === "secondary" && type === "block",
+        "border-solid border-2 border-primary-200": type === "outline",
         "px-3 py-2": size === "sm",
         "px-4 py-3": size === "md",
         "px-5 py-4": size === "lg",
@@ -39,7 +40,7 @@ export const Button: FunctionComponent<Props> = ({
     onClick={onClick}
   >
     <div className="px-3 select-none">{children}</div>
-    {style === "arrow" && (
+    {type === "arrow" && (
       <Image alt="" src="/icons/chevron-right.svg" height={32} width={32} />
     )}
   </button>
