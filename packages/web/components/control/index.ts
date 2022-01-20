@@ -1,1 +1,2 @@
-export { Switch } from "./switch";
+export * from "./checkbox";
+export * from "./switch";
