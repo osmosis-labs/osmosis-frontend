@@ -700,12 +700,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'udig',
 	},
-  { 
+	{
 		counterpartyChainId: 'gravity-bridge-2',
 		sourceChannelId: 'channel-129',
 		destChannelId: 'channel-2',
 		coinMinimalDenom: 'ugraviton',
-  },
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1848,7 +1848,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://ping.pub/dig/tx/{txHash}',
 	},
-  {
+	{
 		rpc: 'https://gravitychain.io:26657',
 		rest: 'https://gravitychain.io:1317',
 		chainId: 'gravity-bridge-2',
@@ -1885,4 +1885,5 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		coinType: 118,
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/gravity-bridge/{txHash}',
+	},
 ];
