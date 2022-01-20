@@ -52,7 +52,6 @@ export const Radio: FunctionComponent<Props> = ({
       )}
       <input
         type="radio"
-        id="toggle-radio"
         className={classNames(
           "relative cursor-pointer h-5 w-5 appearance-none",
           "after:absolute after:h-5 after:w-5 after:rounded-full", // box
