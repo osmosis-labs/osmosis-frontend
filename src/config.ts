@@ -701,7 +701,7 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'udig',
 	},
 	{
-		counterpartyChainId: 'gravity-bridge-2',
+		counterpartyChainId: 'gravity-bridge-3',
 		sourceChannelId: 'channel-129',
 		destChannelId: 'channel-2',
 		coinMinimalDenom: 'ugraviton',
