@@ -1851,7 +1851,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	{
 		rpc: 'https://gravitychain.io:26657',
 		rest: 'https://gravitychain.io:1317',
-		chainId: 'gravity-bridge-2',
+		chainId: 'gravity-bridge-3',
 		chainName: 'Gravity Bridge',
 		stakeCurrency: {
 			coinDenom: 'GRAV',
