@@ -432,6 +432,21 @@ export class RootStore {
 				],
 			},
 			{
+				poolId: '15',
+				currencies: [
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-4' }], 'uxprt'),
+						coinDenom: 'XPRT',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
 				poolId: '22',
 				currencies: [
 					{
