@@ -1,0 +1,68 @@
+.slider {
+  -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+  width: 100%; /* Specific width is required for Firefox. */
+  background: transparent; /* Otherwise white in Chrome */
+}
+
+/** Slider Thumb **/
+
+/* WebKit (Chrome, Safari) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 32px;
+  width: 32px;
+  border-radius: 9999px;
+  background: #ffffff;
+  cursor: pointer;
+  margin-top: -13px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+}
+
+/* Firefox */
+.slider::-moz-range-thumb {
+  height: 32px;
+  width: 32px;
+  border-radius: 99999px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+/* IE */
+.slider::-ms-thumb {
+  height: 32px;
+  width: 32px;
+  border-radius: 99999px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+/* Track */
+
+/* WebKit (Chrome, Safari) */
+.slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8.4px;
+  cursor: pointer;
+}
+
+/* Firefox */
+.slider::-moz-range-track {
+  width: 100%;
+  height: 2px;
+  cursor: pointer;
+}
+
+/* IE */
+.slider::-ms-track {
+  width: 100%;
+  height: 2px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+.slider::-ms-fill-lower {
+  background: #c4a46a;
+}
+.slider::-ms-fill-upper {
+  background: rgba(196, 164, 106, 0.3);
+}
