@@ -50,6 +50,7 @@ export const TokenSelectList = observer(function TokenSelectList({
 }: Props) {
 	const [searchedToken, setSearchedToken] = useState<string>('');
 	const { chainStore, accountStore, queriesStore } = useStore();
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
@@ -66,6 +67,10 @@ export const TokenSelectList = observer(function TokenSelectList({
 		listRef.current?.scrollIntoView(false);
 	}, [shouldScrollIntoView]);
 
+	useEffect(() => {
+		inputRef.current?.focus();
+	}, [])
+
 	return (
 		<TokenSelectListContainer
 			ref={listRef}
@@ -78,6 +83,7 @@ export const TokenSelectList = observer(function TokenSelectList({
 				<TokenSearchSection>
 					<img alt="search" style={{ width: `1.125rem`, height: `1.125rem` }} src="/public/assets/Icons/Search.svg" />
 					<SearchTokenInput
+						ref={inputRef}
 						value={searchedToken}
 						onChange={e => setSearchedToken(e.currentTarget.value)}
 						placeholder="Search your token"
