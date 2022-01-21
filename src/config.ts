@@ -153,15 +153,15 @@ export const ExtraGaugeInPool: {
 	],
     '547': [
 		{
-			gaugeId: '1657',
+			gaugeId: '2021',
 			denom: 'ibc/655BCEF3CDEBE32863FF281DBBE3B06160339E9897DC9C9C9821932A5F8BA6F8',
 		},
 		{
-			gaugeId: '1658',
+			gaugeId: '2022',
 			denom: 'ibc/655BCEF3CDEBE32863FF281DBBE3B06160339E9897DC9C9C9821932A5F8BA6F8',
 		},
 		{
-			gaugeId: '1659',
+			gaugeId: '2023',
 			denom: 'ibc/655BCEF3CDEBE32863FF281DBBE3B06160339E9897DC9C9C9821932A5F8BA6F8',
 		},
 	],
