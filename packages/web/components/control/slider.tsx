@@ -1,13 +1,9 @@
 import { FunctionComponent } from "react";
 import classNames from "classnames";
-import { CustomClasses } from "./types";
+import { CustomClasses, NumberSelectProps } from "./types";
 import style from "./slider.module.css";
 
-interface Props extends CustomClasses {
-  currentValue: number;
-  onChange: (value: number) => void;
-  min?: number;
-  max?: number;
+interface Props extends NumberSelectProps, CustomClasses {
   step?: number;
 }
 
@@ -22,7 +18,6 @@ export const Slider: FunctionComponent<Props> = ({
   const percent = ((currentValue - min) * 100) / (max - min);
   return (
     <input
-      id="slider"
       type="range"
       className={classNames(style.slider, className)}
       style={{
