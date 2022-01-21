@@ -143,16 +143,18 @@ export function TokenSelect({
 				</ClickBox>
 			)}
 
-			<TokenSelectList
-				style={{ ...dropdownStyle, display: !isDropdownOpen ? 'none' : undefined }}
-				className={dropdownClassName}
-				currencies={options}
-				shouldScrollIntoView={isDropdownOpen}
-				onSelect={handleTokenSelected}
-				extraAssetInfos={extraAssetInfos}
-				isSearchDisable={isSearchDisable}
-				isNoAmount={isNoAmountOnList}
-			/>
+			{isDropdownOpen && (
+				<TokenSelectList
+					style={{ ...dropdownStyle, display: !isDropdownOpen ? 'none' : undefined }}
+					className={dropdownClassName}
+					currencies={options}
+					shouldScrollIntoView={isDropdownOpen}
+					onSelect={handleTokenSelected}
+					extraAssetInfos={extraAssetInfos}
+					isSearchDisable={isSearchDisable}
+					isNoAmount={isNoAmountOnList}
+				/>
+			)}
 		</TokenSelectContainer>
 	);
 }
