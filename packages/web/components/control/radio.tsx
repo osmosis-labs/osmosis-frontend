@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
-import { ToggleProps, Disableable, CustomClasses } from "./types";
+import { Disableable, CustomClasses } from "./types";
 
 interface Props extends Disableable, CustomClasses {
   /**

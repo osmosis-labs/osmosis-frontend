@@ -11,7 +11,7 @@
   content: "";
   position: absolute;
   top: -20px;
-  height: 44px; /* WCAG min hit box */
+  height: 44px; /* WCAG min hit box size */
   width: 100%;
 }
 

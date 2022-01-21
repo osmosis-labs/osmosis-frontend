@@ -1,7 +1,6 @@
-import { FunctionComponent } from "react";
+import React, { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CustomClasses } from "./types";
-import React from "react";
 
 export interface MenuOption {
   id: string;

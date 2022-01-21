@@ -39,6 +39,6 @@ export const IconButton: FunctionComponent<Props> = ({
     disabled={disabled}
     onClick={onClick}
   >
-    <Image alt="" src={`/icons/${type}.svg`} height={32} width={32} />
+    <Image alt="" src={`/icons/${type}.svg`} height={20} width={20} />
   </button>
 );

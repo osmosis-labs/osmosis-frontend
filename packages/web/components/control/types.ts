@@ -10,3 +10,10 @@ export interface Disableable {
 export interface CustomClasses {
   className?: string;
 }
+
+export interface NumberSelectProps {
+  currentValue: number;
+  onChange: (value: number) => void;
+  min?: number;
+  max?: number;
+}
