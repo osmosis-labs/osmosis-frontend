@@ -1,6 +1,7 @@
 import { FunctionComponent } from "react";
 import classNames from "classnames";
-import { ToggleProps, Disableable, CustomClasses } from "./types";
+import { Disableable, CustomClasses } from "../types";
+import { ToggleProps } from "./types";
 
 export const Toggle: FunctionComponent<
   ToggleProps & Disableable & CustomClasses

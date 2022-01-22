@@ -1,6 +1,7 @@
 import { FunctionComponent } from "react";
 import classNames from "classnames";
-import { CustomClasses, NumberSelectProps } from "./types";
+import { CustomClasses } from "../types";
+import { NumberSelectProps } from "./types";
 import style from "./slider.module.css";
 
 interface Props extends NumberSelectProps, CustomClasses {

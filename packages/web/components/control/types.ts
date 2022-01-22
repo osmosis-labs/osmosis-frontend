@@ -1,19 +1,11 @@
+import { InputProps } from "../types";
+
 export interface ToggleProps {
   isOn: boolean;
   onChange: (value: boolean) => void;
 }
 
-export interface Disableable {
-  disabled?: boolean;
-}
-
-export interface CustomClasses {
-  className?: string;
-}
-
-export interface NumberSelectProps {
-  currentValue: number;
-  onChange: (value: number) => void;
+export interface NumberSelectProps extends InputProps<number> {
   min?: number;
   max?: number;
 }

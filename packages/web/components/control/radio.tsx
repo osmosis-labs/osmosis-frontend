@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
-import { Disableable, CustomClasses } from "./types";
+import { Disableable, CustomClasses } from "../types";
 
 interface Props extends Disableable, CustomClasses {
   /**
@@ -23,9 +23,9 @@ interface Props extends Disableable, CustomClasses {
  * Example:
  * ```
  * const [r, setR] = useState("a");
- * <Radio value="a" onChange={setR} groupValue={r} disabled={disabled} />
- * <Radio value="b" onChange={setR} groupValue={r} disabled={disabled} />
- * <Radio value="c" onChange={setR} groupValue={r} disabled={disabled} />
+ * <Radio value="a" onChange={setR} groupValue={r} disabled />
+ * <Radio value="b" onChange={setR} groupValue={r}  />
+ * <Radio value="c" onChange={setR} groupValue={r}  />
  * ```
  */
 export const Radio: FunctionComponent<Props> = ({

@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { NumberSelectProps } from "./types";
 
 interface Props extends Required<NumberSelectProps> {
-  /** Allow user to edit page number directly. */
+  /** Allow user to edit page number directly. Off by default. */
   editField?: boolean;
 }
 
@@ -62,6 +62,7 @@ export const PageList: FunctionComponent<Props> = ({
           type="text"
           size={4}
           value={currentValue}
+          inputMode="decimal"
           onBlur={() => {
             setIsEditing(false);
             setDidBlur(true);
