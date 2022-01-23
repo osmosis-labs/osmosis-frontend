@@ -17,7 +17,7 @@ import { isSlippageError } from '../utils/tx';
 import { prettifyTxError } from 'src/stores/prettify-tx-error';
 import { KeplrWalletConnectV1 } from '@keplr-wallet/wc-client';
 import { ConnectWalletManager } from 'src/dialogs/connect-wallet';
-
+ 
 export class RootStore {
 	public readonly chainStore: ChainStore;
 	public readonly accountStore: AccountStore<AccountWithCosmosAndOsmosis>;
