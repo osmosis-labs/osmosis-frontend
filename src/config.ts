@@ -700,6 +700,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'udig',
 	},
+	{
+		counterpartyChainId: 'shentu-2.2',
+		sourceChannelId: 'channel-146',
+		destChannelId: 'channel-8',
+		coinMinimalDenom: 'uctk',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1841,5 +1847,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://ping.pub/dig/tx/{txHash}',
+	},
+	{
+		rpc: '//',
+		rest: 'https://azuredragon.noopsbycertik.com',
+		chainId: 'shentu-2.2',
+		chainName: 'Shentu',
+		stakeCurrency: {
+			coinDenom: 'CTK',
+			coinMinimalDenom: 'uctk',
+			coinDecimals: 6,
+			coinGeckoId: 'certik',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('certik'),
+		currencies: [
+			{
+				coinDenom: 'CTK',
+				coinMinimalDenom: 'uctk',
+				coinDecimals: 6,
+				coinGeckoId: 'certik',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'CTK',
+				coinMinimalDenom: 'uctk',
+				coinDecimals: 6,
+				coinGeckoId: 'certik',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/certik/txs/{txHash}',
 	},
 ];
