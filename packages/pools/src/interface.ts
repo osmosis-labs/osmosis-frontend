@@ -51,18 +51,6 @@ export interface Pool {
     effectivePriceOutOverIn: Dec;
     slippage: Dec;
   };
-  getMinTokenOutByTokenInWithSlippage(
-    tokenIn: {
-      denom: string;
-      amount: Int;
-    },
-    tokenOutDenom: string,
-    slippage: Dec
-  ): {
-    beforeSpotPriceInOverOut: Dec;
-    beforeSpotPriceOutOverIn: Dec;
-    minOutAmount: Int;
-  };
   getTokenInByTokenOut(
     tokenOut: {
       denom: string;
@@ -78,18 +66,6 @@ export interface Pool {
     effectivePriceInOverOut: Dec;
     effectivePriceOutOverIn: Dec;
     slippage: Dec;
-  };
-  getMaxTokenInByTokenOutWithSlippage(
-    tokenOut: {
-      denom: string;
-      amount: Int;
-    },
-    tokenInDenom: string,
-    slippage: Dec
-  ): {
-    beforeSpotPriceInOverOut: Dec;
-    beforeSpotPriceOutOverIn: Dec;
-    maxInAmount: Int;
   };
 
   getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;
