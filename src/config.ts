@@ -32,7 +32,7 @@ export const LockupAbledPoolIds: {
 	'482': true,
 	'497': true,
 	'498': true,
-    '547': true,
+	'547': true,
 	'548': true,
 	'557': true,
 	'558': true,
@@ -151,7 +151,7 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED',
 		},
 	],
-    '547': [
+	'547': [
 		{
 			gaugeId: '2021',
 			denom: 'ibc/655BCEF3CDEBE32863FF281DBBE3B06160339E9897DC9C9C9821932A5F8BA6F8',
