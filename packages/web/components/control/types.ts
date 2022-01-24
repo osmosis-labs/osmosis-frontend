@@ -6,6 +6,6 @@ export interface ToggleProps {
 }
 
 export interface NumberSelectProps extends InputProps<number> {
-  min?: number;
-  max?: number;
+  min: number;
+  max: number;
 }

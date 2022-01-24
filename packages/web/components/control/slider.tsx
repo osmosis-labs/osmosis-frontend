@@ -4,15 +4,15 @@ import { CustomClasses } from "../types";
 import { NumberSelectProps } from "./types";
 import style from "./slider.module.css";
 
-interface Props extends NumberSelectProps, CustomClasses {
+interface Props extends Omit<NumberSelectProps, "placeholder">, CustomClasses {
   step?: number;
 }
 
 export const Slider: FunctionComponent<Props> = ({
   currentValue,
   onChange,
-  min = 0,
-  max = 100,
+  min,
+  max,
   step = 1,
   className,
 }) => {

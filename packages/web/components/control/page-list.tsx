@@ -3,7 +3,7 @@ import React, { FunctionComponent, useState, useRef, useEffect } from "react";
 import classNames from "classnames";
 import { NumberSelectProps } from "./types";
 
-interface Props extends Omit<Required<NumberSelectProps>, "placeholder"> {
+interface Props extends Omit<NumberSelectProps, "placeholder"> {
   /** Allow user to edit page number directly. Off by default. */
   editField?: boolean;
 }
@@ -92,12 +92,13 @@ export const PageList: FunctionComponent<Props> = ({
           "select-none",
           currentValue === max && !textEditing
             ? "cursor-default opacity-50"
-            : "cursor-pointer"
+            : null
         )}
       >
         <div className={textEditing ? "pt-2 pl-2" : undefined}>
           {textEditing ? (
             <Image
+              className="cursor-pointer"
               alt="accept"
               src="/icons/checkmark-circle.svg"
               height={22}
@@ -106,6 +107,7 @@ export const PageList: FunctionComponent<Props> = ({
             />
           ) : (
             <Image
+              className="cursor-pointer"
               alt="right"
               src="/icons/chevron-right.svg"
               height={18}
