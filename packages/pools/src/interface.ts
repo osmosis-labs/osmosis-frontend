@@ -16,11 +16,13 @@ export interface Pool {
     amount: Int;
     weight: Int;
   }[];
+  get poolAssetDenoms(): string[];
   getPoolAsset(denom: string): {
     denom: string;
     amount: Int;
     weight: Int;
   };
+  hasPoolAsset(denom: string): boolean;
 
   getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec;
   getSpotPriceOutOverIn(tokenInDenom: string, tokenOutDenom: string): Dec;
@@ -41,6 +43,8 @@ export interface Pool {
     tokenOutDenom: string
   ): {
     amount: Int;
+    beforeSpotPriceInOverOut: Dec;
+    beforeSpotPriceOutOverIn: Dec;
     afterSpotPriceInOverOut: Dec;
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
@@ -67,6 +71,8 @@ export interface Pool {
     tokenInDenom: string
   ): {
     amount: Int;
+    beforeSpotPriceInOverOut: Dec;
+    beforeSpotPriceOutOverIn: Dec;
     afterSpotPriceInOverOut: Dec;
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
@@ -85,4 +91,7 @@ export interface Pool {
     beforeSpotPriceOutOverIn: Dec;
     maxInAmount: Int;
   };
+
+  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;
+  getLimitAmountByTokenIn(denom: string): Int;
 }

@@ -76,6 +76,10 @@ export class WeightedPool implements Pool {
     });
   }
 
+  get poolAssetDenoms(): string[] {
+    return this.raw.poolAssets.map((asset) => asset.token.denom);
+  }
+
   get shareDenom(): string {
     return this.raw.totalShares.denom;
   }
@@ -97,6 +101,11 @@ export class WeightedPool implements Pool {
     }
 
     return poolAsset;
+  }
+
+  hasPoolAsset(denom: string): boolean {
+    const poolAsset = this.poolAssets.find((asset) => asset.denom === denom);
+    return poolAsset != null;
   }
 
   get totalWeight(): Int {
@@ -152,6 +161,8 @@ export class WeightedPool implements Pool {
     tokenInDenom: string
   ): {
     amount: Int;
+    beforeSpotPriceInOverOut: Dec;
+    beforeSpotPriceOutOverIn: Dec;
     afterSpotPriceInOverOut: Dec;
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
@@ -197,7 +208,11 @@ export class WeightedPool implements Pool {
 
     return {
       amount: tokenInAmount,
-      afterSpotPriceInOverOut: afterSpotPriceInOverOut,
+      beforeSpotPriceInOverOut,
+      beforeSpotPriceOutOverIn: new Dec(1).quoTruncate(
+        beforeSpotPriceInOverOut
+      ),
+      afterSpotPriceInOverOut,
       afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
       effectivePriceInOverOut: effectivePrice,
       effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePrice),
@@ -210,6 +225,8 @@ export class WeightedPool implements Pool {
     tokenOutDenom: string
   ): {
     amount: Int;
+    beforeSpotPriceInOverOut: Dec;
+    beforeSpotPriceOutOverIn: Dec;
     afterSpotPriceInOverOut: Dec;
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
@@ -255,6 +272,10 @@ export class WeightedPool implements Pool {
 
     return {
       amount: tokenOutAmount,
+      beforeSpotPriceInOverOut,
+      beforeSpotPriceOutOverIn: new Dec(1).quoTruncate(
+        beforeSpotPriceInOverOut
+      ),
       afterSpotPriceInOverOut,
       afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
       effectivePriceInOverOut: effectivePrice,
@@ -331,5 +352,22 @@ export class WeightedPool implements Pool {
         .mulTruncate(tokenIn.amount.toDec())
         .truncate(),
     };
+  }
+
+  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec {
+    const tokenIn = this.getPoolAsset(tokenInDenom);
+    const tokenOut = this.getPoolAsset(tokenOutDenom);
+
+    return tokenOut.amount
+      .toDec()
+      .mul(tokenIn.weight.toDec())
+      .quo(tokenIn.weight.toDec().add(tokenOut.weight.toDec()));
+  }
+
+  getLimitAmountByTokenIn(denom: string): Int {
+    return this.getPoolAsset(denom)
+      .amount.toDec()
+      .mul(new Dec("0.3"))
+      .truncate();
   }
 }
