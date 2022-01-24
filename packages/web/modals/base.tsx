@@ -1,11 +1,17 @@
-import React, { FunctionComponent } from "react";
+import React, {
+  FunctionComponent,
+  ReactElement,
+  VoidFunctionComponent,
+} from "react";
 import ReactModal from "react-modal";
 import classNames from "classnames";
+import Image from "next/image";
 
 export interface ModalBaseProps {
   isOpen: boolean;
   onRequestClose: () => void;
 
+  title?: ReactElement;
   className?: string;
   bodyOpenClassName?: string;
   overlayClassName?: string;
@@ -14,6 +20,7 @@ export interface ModalBaseProps {
 export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   isOpen,
   onRequestClose,
+  title,
   className,
   bodyOpenClassName,
   overlayClassName,
@@ -32,10 +39,17 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         overlayClassName
       )}
       className={classNames(
-        "absolute outline-none w-full px-4 py-5 bg-surface rounded-2xl z-10",
+        "absolute outline-none w-full px-4 py-5 bg-surface rounded-2xl z-10 flex flex-col",
         className
       )}
     >
+      <div
+        className="absolute top-5 right-5 cursor-pointer"
+        onClick={() => onRequestClose()}
+      >
+        <Image src="/icons/close.svg" alt="close icon" width={32} height={32} />
+      </div>
+      {title}
       {children}
     </ReactModal>
   );
