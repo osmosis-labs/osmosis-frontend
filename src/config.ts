@@ -1192,8 +1192,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://emoney.bigdipper.live/transactions/{txHash}',
 	},
 	{
-		rpc: 'https://rpc-juno.itastakers.com',
-		rest: 'https://lcd-juno.itastakers.com',
+		rpc: 'https://rpc-juno.keplr.app',
+		rest: 'https://lcd-juno.keplr.app',
 		chainId: 'juno-1',
 		chainName: 'Juno',
 		stakeCurrency: {
