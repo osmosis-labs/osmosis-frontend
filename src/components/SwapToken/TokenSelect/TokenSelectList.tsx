@@ -69,7 +69,7 @@ export const TokenSelectList = observer(function TokenSelectList({
 
 	useEffect(() => {
 		inputRef.current?.focus();
-	}, [])
+	}, []);
 
 	return (
 		<TokenSelectListContainer
