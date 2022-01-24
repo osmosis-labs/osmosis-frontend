@@ -13,7 +13,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       className="max-w-[30.625rem]"
-      title={<h6 className="mt-2 mb-4">Connect Wallet</h6>}
+      title={<h6 className="mt-1 mb-4">Connect Wallet</h6>}
     >
       <button
         className="bg-background rounded-2xl p-5 flex items-center"

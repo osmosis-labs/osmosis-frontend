@@ -169,6 +169,7 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
           ],
           qrcodeModal: {
             open: (uri: string, cb: any) => {
+              setIsModalOpen(false);
               setWCUri(uri);
               callbackClosed = cb;
             },
