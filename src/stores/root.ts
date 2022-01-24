@@ -462,11 +462,41 @@ export class RootStore {
 				],
 			},
 			{
+				poolId: '42',
+				currencies: [
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-8' }], 'uregen'),
+						coinDenom: 'REGEN',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
 				poolId: '183',
 				currencies: [
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
 						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-15' }], 'uiov'),
+						coinDenom: 'IOV',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '197',
+				currencies: [
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
 						coinDecimals: 6,
 					},
 					{
@@ -487,6 +517,21 @@ export class RootStore {
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-37' }], 'eeur'),
 						coinDenom: 'EEUR',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '463',
+				currencies: [
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-37' }], 'ungm'),
+						coinDenom: 'NGM',
 						coinDecimals: 6,
 					},
 				],
@@ -1039,7 +1084,7 @@ export class RootStore {
 			) => {
 				const firstPath = denomTrace.paths[0];
 
-				// If the IBC Currency's channel is known.
+				// If the IBC Currency's channel is known,
 				// Don't show the channel info on the coin denom.
 				const knownAssetInfo = IBCAssetInfos.filter(info => info.sourceChannelId === firstPath.channelId).find(
 					info => info.coinMinimalDenom === denomTrace.denom
