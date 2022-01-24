@@ -1849,7 +1849,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://ping.pub/dig/tx/{txHash}',
 	},
 	{
-		rpc: '//',
+		rpc: 'https://shenturpc.certikpowered.info',
 		rest: 'https://azuredragon.noopsbycertik.com',
 		chainId: 'shentu-2.2',
 		chainName: 'Shentu',
