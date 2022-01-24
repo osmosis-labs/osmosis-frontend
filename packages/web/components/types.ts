@@ -1,7 +1,7 @@
 export interface InputProps<T> {
   currentValue: T;
   onChange: (value: T) => void;
-  placeholder?: T;
+  placeholder: T;
 }
 
 export interface Disableable {

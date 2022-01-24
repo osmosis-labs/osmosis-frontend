@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
+import { ButtonProps } from "./types";
 
-interface Props {
-  onClick: () => void;
+interface Props extends ButtonProps {
   color?: "primary" | "secondary";
   size?: "sm" | "md" | "lg";
   type?: "block" | "arrow" | "outline";

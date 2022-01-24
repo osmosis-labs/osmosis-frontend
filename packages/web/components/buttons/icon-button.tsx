@@ -1,11 +1,11 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
+import { ButtonProps } from "./types";
 
 type IconName = string;
 
-interface Props {
-  onClick: () => void;
+interface Props extends ButtonProps {
   color?: "primary" | "secondary";
   size?: "sm";
   type?: "chevron-right" | "chevron-down" | IconName;
