@@ -275,6 +275,7 @@ export class OptimizedRoutes {
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
     effectivePriceOutOverIn: Dec;
+    swapFee: Dec;
     slippage: Dec;
   } {
     if (paths.length === 0) {
@@ -285,6 +286,7 @@ export class OptimizedRoutes {
     let totalBeforeSpotPriceInOverOut: Dec = new Dec(0);
     let totalAfterSpotPriceInOverOut: Dec = new Dec(0);
     let totalEffectivePriceInOverOut: Dec = new Dec(0);
+    let totalSwapFee: Dec = new Dec(0);
 
     let sumAmount = new Int(0);
     for (const path of paths) {
@@ -319,6 +321,7 @@ export class OptimizedRoutes {
         let beforeSpotPriceInOverOut: Dec = new Dec(1);
         let afterSpotPriceInOverOut: Dec = new Dec(1);
         let effectivePriceInOverOut: Dec = new Dec(1);
+        let swapFee: Dec = new Dec(1);
 
         const tokenOut = pool.getTokenOutByTokenIn(
           { denom: previousInDenom, amount: previousInAmount },
@@ -334,6 +337,7 @@ export class OptimizedRoutes {
         effectivePriceInOverOut = effectivePriceInOverOut.mulTruncate(
           tokenOut.effectivePriceInOverOut
         );
+        swapFee = swapFee.mulTruncate(pool.swapFee);
 
         if (i === path.pools.length - 1) {
           totalOutAmount = totalOutAmount.add(tokenOut.amount);
@@ -347,6 +351,7 @@ export class OptimizedRoutes {
           totalEffectivePriceInOverOut = totalEffectivePriceInOverOut.add(
             effectivePriceInOverOut.mulTruncate(amountFraction)
           );
+          totalSwapFee = totalSwapFee.add(swapFee.mulTruncate(amountFraction));
         } else {
           previousInDenom = outDenom;
           previousInAmount = tokenOut.amount;
@@ -372,6 +377,7 @@ export class OptimizedRoutes {
       effectivePriceOutOverIn: new Dec(1).quoTruncate(
         totalEffectivePriceInOverOut
       ),
+      swapFee: totalSwapFee,
       slippage,
     };
   }

@@ -7,7 +7,7 @@ import {
 import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
-import { autorun, makeObservable } from "mobx";
+import { autorun } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Pools } from "./types";
 import { ObservableQueryNumPools } from "./num-pools";
@@ -27,8 +27,6 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
       "/osmosis/gamm/v1beta1/pools?pagination.limit=1000"
     );
     let limit = 1000;
-
-    makeObservable(this);
 
     autorun(() => {
       const numPools = queryNumPools.numPools;
