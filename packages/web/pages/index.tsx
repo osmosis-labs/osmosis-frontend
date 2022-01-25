@@ -9,7 +9,7 @@ const Home: NextPage = observer(function () {
   const { chainStore, queriesOsmosisStore } = useStore();
 
   const containerRef = useRef<HTMLElement | null>(null);
-  const clipboardRef = useRef<HTMLElement | null>(null);
+  const clipboardRef = useRef<HTMLDivElement | null>(null);
   const [containerSize, setContainerSize] = useState<
     | {
         width: number;
@@ -17,15 +17,11 @@ const Home: NextPage = observer(function () {
       }
     | undefined
   >(undefined);
+  const [clipboardWidth, setClipboardWidth] = useState<number | undefined>(
+    undefined
+  );
 
   useEffect(() => {
-    if (containerRef.current) {
-      setContainerSize({
-        width: containerRef.current.clientWidth,
-        height: containerRef.current.clientHeight,
-      });
-    }
-
     // There seems to be no resize event for each element.
     // Instead, the container size is calculated each time the window is resized.
     // In other words, the operation of the container is guaranteed only when the container is not changed except for window resize.
@@ -36,7 +32,12 @@ const Home: NextPage = observer(function () {
           height: containerRef.current.clientHeight,
         });
       }
+      if (clipboardRef.current) {
+        setClipboardWidth(clipboardRef.current.clientWidth);
+      }
     };
+
+    onResize();
 
     window.addEventListener("resize", onResize);
 
@@ -56,7 +57,12 @@ const Home: NextPage = observer(function () {
 
   const imageRatio = 1300 / 900;
 
-  const defaultDesktopSidebarWidth = "206px";
+  const defaultDesktopSidebarWidthPx = 206;
+  const defaultClipboardWidthPx = 516;
+
+  // Set this based on the screen height 1080px.
+  const clipboardMinLeftPx = 920;
+  const clipboardPositionLeft = 0.8;
 
   return (
     <main className="relative bg-background h-screen" ref={containerRef}>
@@ -66,12 +72,21 @@ const Home: NextPage = observer(function () {
           pointerEvents="none"
           viewBox="0 0 1300 900"
           height="900"
-          preserveAspectRatio={
-            !containerSize ||
-            containerSize.width / containerSize.height <= imageRatio
-              ? "xMidYMid slice"
-              : "xMinYMid meet"
-          }
+          preserveAspectRatio={(() => {
+            let ratio = imageRatio;
+
+            if (!containerSize) {
+              if (typeof window !== "undefined") {
+                ratio =
+                  (window.innerWidth - defaultDesktopSidebarWidthPx) /
+                  window.innerHeight;
+              }
+            } else {
+              ratio = containerSize.width / containerSize.height;
+            }
+
+            return ratio > imageRatio ? "xMinYMid meet" : "xMidYMid slice";
+          })()}
         >
           <g>
             <ProgressiveSvgImage
@@ -96,15 +111,18 @@ const Home: NextPage = observer(function () {
       </div>
       <div className="absolute w-full h-full flex items-center overflow-x-hidden overflow-y-auto">
         <TradeClipboard
+          ref={clipboardRef}
           containerClassName="w-full max-w-[32.5rem]"
           containerStyle={{
-            ["--tradeMinLeft" as any]: "calc(920 * (100vh / 1080))",
-            ["--tradePositionLeft" as any]: `calc((${
+            ["--clipboardMinLeft" as any]: `calc(${clipboardMinLeftPx} * (100vh / 1080))`,
+            ["--clipboardPositionLeft" as any]: `calc((${
               containerSize
                 ? containerSize.width + "px"
-                : `100vw - ${defaultDesktopSidebarWidth}`
-            }) * 0.8 - 520px)`,
-            left: "min(var(--tradeMinLeft), var(--tradePositionLeft))",
+                : `100vw - ${defaultDesktopSidebarWidthPx}px`
+            }) * ${clipboardPositionLeft} - ${
+              clipboardWidth ? clipboardWidth : defaultClipboardWidthPx
+            }px)`,
+            left: "min(var(--clipboardMinLeft), var(--clipboardPositionLeft))",
           }}
           pools={pools}
         />
