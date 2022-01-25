@@ -19,6 +19,7 @@ import {
 } from "@keplr-wallet/unit";
 
 export class TradeTokenInConfig extends AmountConfig {
+  @observable.ref
   protected _pools: Pool[];
 
   @observable
@@ -30,7 +31,7 @@ export class TradeTokenInConfig extends AmountConfig {
     chainGetter: ChainGetter,
     chainId: string,
     sender: string,
-    feeConfig: IFeeConfig,
+    feeConfig: IFeeConfig | undefined,
     queryBalances: ObservableQueryBalances,
     pools: Pool[]
   ) {
@@ -41,6 +42,7 @@ export class TradeTokenInConfig extends AmountConfig {
     makeObservable(this);
   }
 
+  @action
   setPools(pools: Pool[]) {
     this._pools = pools;
   }
@@ -71,7 +73,7 @@ export class TradeTokenInConfig extends AmountConfig {
   get sendCurrency(): AppCurrency {
     if (this.sendableCurrencies.length === 0) {
       return {
-        coinMinimalDenom: "unknown",
+        coinMinimalDenom: "_unknown",
         coinDenom: "Unknown",
         coinDecimals: 0,
       };
@@ -91,7 +93,7 @@ export class TradeTokenInConfig extends AmountConfig {
   get outCurrency(): AppCurrency {
     if (this.sendableCurrencies.length <= 1) {
       return {
-        coinMinimalDenom: "unknown",
+        coinMinimalDenom: "_unknown",
         coinDenom: "Unknown",
         coinDecimals: 0,
       };
@@ -120,6 +122,10 @@ export class TradeTokenInConfig extends AmountConfig {
 
   @computed
   get sendableCurrencies(): AppCurrency[] {
+    if (this.pools.length === 0) {
+      return [];
+    }
+
     const chainInfo = this.chainInfo;
 
     // Get all coin denom in the pools.
@@ -155,7 +161,8 @@ export class TradeTokenInConfig extends AmountConfig {
     if (
       !amount.amount ||
       new Int(amount.amount).lte(new Int(0)) ||
-      amount.denom === "unknown"
+      amount.denom === "_unknown" ||
+      this.outCurrency.coinMinimalDenom === "_unknown"
     ) {
       return [];
     }
@@ -175,6 +182,8 @@ export class TradeTokenInConfig extends AmountConfig {
   @computed
   get expectedSwapResult(): {
     amount: CoinPretty;
+    beforeSpotPriceWithoutSwapFeeInOverOut: IntPretty;
+    beforeSpotPriceWithoutSwapFeeOutOverIn: IntPretty;
     beforeSpotPriceInOverOut: IntPretty;
     beforeSpotPriceOutOverIn: IntPretty;
     afterSpotPriceInOverOut: IntPretty;
@@ -188,6 +197,8 @@ export class TradeTokenInConfig extends AmountConfig {
     if (paths.length === 0) {
       return {
         amount: new CoinPretty(this.outCurrency, new Dec(0)),
+        beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(0),
+        beforeSpotPriceWithoutSwapFeeOutOverIn: new IntPretty(0),
         beforeSpotPriceInOverOut: new IntPretty(0),
         beforeSpotPriceOutOverIn: new IntPretty(0),
         afterSpotPriceInOverOut: new IntPretty(0),
@@ -207,8 +218,23 @@ export class TradeTokenInConfig extends AmountConfig {
       paths
     );
 
+    const beforeSpotPriceWithoutSwapFeeInOverOutDec =
+      result.beforeSpotPriceInOverOut.mulTruncate(
+        new Dec(1).sub(result.swapFee)
+      );
+
     return {
       amount: new CoinPretty(this.outCurrency, result.amount),
+      beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(
+        beforeSpotPriceWithoutSwapFeeInOverOutDec.mulTruncate(
+          multiplicationInOverOut
+        )
+      ),
+      beforeSpotPriceWithoutSwapFeeOutOverIn: new IntPretty(
+        new Dec(1)
+          .quoTruncate(beforeSpotPriceWithoutSwapFeeInOverOutDec)
+          .quoTruncate(multiplicationInOverOut)
+      ),
       beforeSpotPriceInOverOut: new IntPretty(
         result.beforeSpotPriceInOverOut.mulTruncate(multiplicationInOverOut)
       ),
@@ -241,7 +267,7 @@ export const useTradeTokenInConfig = (
   chainGetter: ChainGetter,
   chainId: string,
   sender: string,
-  feeConfig: IFeeConfig,
+  feeConfig: IFeeConfig | undefined,
   queryBalances: ObservableQueryBalances,
   pools: Pool[]
 ) => {
@@ -258,7 +284,6 @@ export const useTradeTokenInConfig = (
   );
   config.setChain(chainId);
   config.setSender(sender);
-  config.setFeeConfig(feeConfig);
   config.setQueryBalances(queryBalances);
   config.setPools(pools);
 

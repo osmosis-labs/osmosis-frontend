@@ -3,24 +3,73 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../stores";
 import { TradeClipboard } from "../components/trade-clipboard";
 import { ProgressiveSvgImage } from "../components/progressive-svg-image";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const Home: NextPage = observer(function () {
   const { chainStore, accountStore, queriesOsmosisStore } = useStore();
+
+  const containerRef = useRef<HTMLElement | null>(null);
+  const [containerSize, setContainerSize] = useState<{
+    width: number;
+    height: number;
+  }>({
+    // Set 1 initially to prevent problems with mul and quo.
+    width: 1,
+    height: 1,
+  });
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setContainerSize({
+        width: containerRef.current.clientWidth,
+        height: containerRef.current.clientHeight,
+      });
+    }
+
+    // There seems to be no resize event for each element.
+    // Instead, the container size is calculated each time the window is resized.
+    // In other words, the operation of the container is guaranteed only when the container is not changed except for window resize.
+    const onResize = () => {
+      if (containerRef.current) {
+        setContainerSize({
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight,
+        });
+      }
+    };
+
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
 
   const chainInfo = chainStore.osmosis;
   const account = accountStore.getAccount(chainInfo.chainId);
 
   const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
+  const queryPools = queryOsmosis.queryGammPools;
+
+  const pools = useMemo(() => {
+    return queryPools.pools.map((pool) => pool.pool);
+  }, [queryPools.pools]);
+
+  const imageRatio = 1300 / 900;
 
   return (
-    <main className="relative bg-background h-screen">
-      <div className="h-full bg-home-bg-pattern bg-repeat-x bg-cover overflow-auto flex justify-center items-center">
+    <main className="relative bg-background h-screen" ref={containerRef}>
+      <div className="absolute w-full h-full bg-home-bg-pattern bg-repeat-x bg-cover">
         <svg
-          className="absolute w-full h-full hidden md:block"
+          className="w-full h-full"
           pointerEvents="none"
           viewBox="0 0 1300 900"
           height="900"
-          preserveAspectRatio="xMidYMid slice"
+          preserveAspectRatio={
+            containerSize.width / containerSize.height > imageRatio
+              ? "xMinYMid meet"
+              : "xMidYMid slice"
+          }
         >
           <g>
             <ProgressiveSvgImage
@@ -42,7 +91,9 @@ const Home: NextPage = observer(function () {
             />
           </g>
         </svg>
-        <TradeClipboard className="absolute left-[min(calc(920*(100vh/1080)),calc((100vw_-_206px)*0.8_-_520px))]" />
+      </div>
+      <div className="absolute w-full h-full flex items-center overflow-y-auto">
+        <TradeClipboard pools={pools} />
       </div>
     </main>
   );

@@ -146,8 +146,8 @@ export class OptimizedRoutes {
             for (const pool of hasOnlyOutIntermediates) {
               if (!usedSecondPoolMap.get(pool.id)) {
                 const normalizedLiquidity = pool.getNormalizedLiquidity(
-                  tokenInDenom,
-                  intermediateDenom
+                  intermediateDenom,
+                  tokenOutDenom
                 );
 
                 if (normalizedLiquidity.gte(highestNormalizedLiquiditySecond)) {
