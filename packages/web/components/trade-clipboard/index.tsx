@@ -245,7 +245,15 @@ export const TradeClipboard = observer<
               </div>
             </div>
 
-            <button className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 z-[1]">
+            <button
+              type="button"
+              className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 z-[1]"
+              onClick={(e) => {
+                e.preventDefault();
+
+                tradeTokenInConfig.switchInAndOut();
+              }}
+            >
               <img
                 className="w-12 h-12"
                 src="/icons/hexagon-border.svg"

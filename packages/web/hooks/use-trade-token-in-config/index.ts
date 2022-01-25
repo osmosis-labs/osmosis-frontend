@@ -155,6 +155,30 @@ export class TradeTokenInConfig extends AmountConfig {
       });
   }
 
+  @action
+  switchInAndOut() {
+    const outAmount = this.expectedSwapResult.amount;
+    if (outAmount.toDec().isZero()) {
+      this.setAmount("");
+    } else {
+      this.setAmount(
+        outAmount
+          .shrink(true)
+          .maxDecimals(6)
+          .trim(true)
+          .hideDenom(true)
+          .toString()
+      );
+    }
+
+    // Since changing in and out affects each other, it is important to use the stored value.
+    const prevInCurrency = this.sendCurrency.coinMinimalDenom;
+    const prevOutCurrency = this.outCurrency.coinMinimalDenom;
+
+    this._inCurrencyMinimalDenom = prevOutCurrency;
+    this._outCurrencyMinimalDenom = prevInCurrency;
+  }
+
   @computed
   protected get optimizedRoutes(): OptimizedRoutes {
     return new OptimizedRoutes(this.pools);
