@@ -6,17 +6,17 @@ import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const Home: NextPage = observer(function () {
-  const { chainStore, accountStore, queriesOsmosisStore } = useStore();
+  const { chainStore, queriesOsmosisStore } = useStore();
 
   const containerRef = useRef<HTMLElement | null>(null);
-  const [containerSize, setContainerSize] = useState<{
-    width: number;
-    height: number;
-  }>({
-    // Set 1 initially to prevent problems with mul and quo.
-    width: 1,
-    height: 1,
-  });
+  const clipboardRef = useRef<HTMLElement | null>(null);
+  const [containerSize, setContainerSize] = useState<
+    | {
+        width: number;
+        height: number;
+      }
+    | undefined
+  >(undefined);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -46,7 +46,6 @@ const Home: NextPage = observer(function () {
   }, []);
 
   const chainInfo = chainStore.osmosis;
-  const account = accountStore.getAccount(chainInfo.chainId);
 
   const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
   const queryPools = queryOsmosis.queryGammPools;
@@ -57,6 +56,8 @@ const Home: NextPage = observer(function () {
 
   const imageRatio = 1300 / 900;
 
+  const defaultDesktopSidebarWidth = "206px";
+
   return (
     <main className="relative bg-background h-screen" ref={containerRef}>
       <div className="absolute w-full h-full bg-home-bg-pattern bg-repeat-x bg-cover">
@@ -66,9 +67,10 @@ const Home: NextPage = observer(function () {
           viewBox="0 0 1300 900"
           height="900"
           preserveAspectRatio={
-            containerSize.width / containerSize.height > imageRatio
-              ? "xMinYMid meet"
-              : "xMidYMid slice"
+            !containerSize ||
+            containerSize.width / containerSize.height <= imageRatio
+              ? "xMidYMid slice"
+              : "xMinYMid meet"
           }
         >
           <g>
@@ -92,8 +94,20 @@ const Home: NextPage = observer(function () {
           </g>
         </svg>
       </div>
-      <div className="absolute w-full h-full flex items-center overflow-y-auto">
-        <TradeClipboard pools={pools} />
+      <div className="absolute w-full h-full flex items-center overflow-x-hidden overflow-y-auto">
+        <TradeClipboard
+          containerClassName="w-full max-w-[32.5rem]"
+          containerStyle={{
+            ["--tradeMinLeft" as any]: "calc(920 * (100vh / 1080))",
+            ["--tradePositionLeft" as any]: `calc((${
+              containerSize
+                ? containerSize.width + "px"
+                : `100vw - ${defaultDesktopSidebarWidth}`
+            }) * 0.8 - 520px)`,
+            left: "min(var(--tradeMinLeft), var(--tradePositionLeft))",
+          }}
+          pools={pools}
+        />
       </div>
     </main>
   );

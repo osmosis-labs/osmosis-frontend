@@ -1,9 +1,16 @@
-import React, { FunctionComponent, useMemo, useState } from "react";
+import React, {
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import { AppCurrency } from "@keplr-wallet/types";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../stores";
 import classNames from "classnames";
+import { useBooleanWithWindowEvent } from "../hooks";
 
 /**
  * TokenSelect's dropdown is attached to the nearest "relative" element.
@@ -32,8 +39,37 @@ export const TokenSelect: FunctionComponent<{
     const account = accountStore.getAccount(chainStore.osmosis.chainId);
     const queries = queriesStore.get(chainStore.osmosis.chainId);
 
-    const [isSelectOpen, setIsSelectOpen] = useState(false);
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
+    const [isSelectOpen, setIsSelectOpen] = useBooleanWithWindowEvent(false, {
+      windowEventName: "click",
+      onWindowEvent: (e: MouseEvent, prev) => {
+        // Close the dropdown when a click event occurs in the window.
+        // Dropdown itself can easily stop event bubbling with stopPropagation().
+        // However, in the case of the container itself,
+        // if using the stopPropagation(), the click event of another token select cannot be detected when there are multiple token selects at the same screen.
+        // Basically, it is a problem because there are two token selects in the trade clipboard.
+        // To solve this problem, when a click occurs, if it is an event related to this token select, it is not processed.
+        if (containerRef.current && e.target && e.target instanceof Element) {
+          let el = e.target;
+          while (el.parentElement != null) {
+            if (el === containerRef.current) {
+              return prev;
+            }
+            el = el.parentElement;
+          }
+        }
+        return !prev;
+      },
+    });
     const [searchText, setSearchText] = useState("");
+
+    useEffect(() => {
+      if (!isSelectOpen) {
+        // Clear the search text whenever the dropdown closed.
+        setSearchText("");
+      }
+    }, [isSelectOpen]);
 
     const sortedCurrencies = useMemo(() => {
       return currencies.sort((cur1, cur2) => {
@@ -50,6 +86,24 @@ export const TokenSelect: FunctionComponent<{
           return 1;
         }
 
+        const hasBalanceCur1 = queries.queryBalances
+          .getQueryBech32Address(account.bech32Address)
+          .getBalanceFromCurrency(cur1)
+          .toDec()
+          .isPositive();
+        const hasBalanceCur2 = queries.queryBalances
+          .getQueryBech32Address(account.bech32Address)
+          .getBalanceFromCurrency(cur2)
+          .toDec()
+          .isPositive();
+
+        if (!hasBalanceCur1 && hasBalanceCur2) {
+          return 1;
+        }
+        if (hasBalanceCur1 && !hasBalanceCur2) {
+          return -1;
+        }
+
         const cur1IsIBCToken = "paths" in cur1;
         const cur2IsIBCToken = "paths" in cur2;
 
@@ -59,7 +113,12 @@ export const TokenSelect: FunctionComponent<{
 
         return cur1.coinDenom > cur2.coinDenom ? 1 : -1;
       });
-    }, [chainStore.osmosis.stakeCurrency.coinMinimalDenom, currencies]);
+    }, [
+      account.bech32Address,
+      chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+      currencies,
+      queries.queryBalances,
+    ]);
 
     const finalCurrencies = sortedCurrencies.filter((cur) => {
       if (cur.coinMinimalDenom === currency.coinMinimalDenom) {
@@ -85,6 +144,7 @@ export const TokenSelect: FunctionComponent<{
           "flex justify-center items-center",
           containerClassName
         )}
+        ref={containerRef}
       >
         <div
           className={classNames("flex items-center group", {
@@ -92,9 +152,6 @@ export const TokenSelect: FunctionComponent<{
           })}
           onClick={() => {
             if (finalCurrencies.length > 0) {
-              if (isSelectOpen) {
-                setSearchText("");
-              }
               setIsSelectOpen((value) => !value);
             }
           }}
@@ -136,6 +193,7 @@ export const TokenSelect: FunctionComponent<{
               "absolute bottom-0 translate-y-full p-3.5 bg-surface rounded-b-2xl z-10 w-full left-0",
               dropdownContainerClassName
             )}
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center h-9 pl-4 mb-3 rounded-2xl bg-card">
               <div className="w-[1.125rem] h-[1.125rem]">
@@ -168,7 +226,6 @@ export const TokenSelect: FunctionComponent<{
                     onClick={(e) => {
                       e.preventDefault();
 
-                      setSearchText("");
                       setIsSelectOpen(false);
                       onSelect(currency);
                     }}

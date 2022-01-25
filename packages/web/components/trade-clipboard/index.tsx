@@ -9,10 +9,11 @@ import { useStore } from "../../stores";
 
 export const TradeClipboard: FunctionComponent<{
   containerClassName?: string;
+  containerStyle?: React.CSSProperties;
 
   // Should be memorized
   pools: Pool[];
-}> = observer(({ containerClassName, pools }) => {
+}> = observer(({ containerClassName, containerStyle, pools }) => {
   const { chainStore, accountStore, queriesStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
@@ -75,6 +76,7 @@ export const TradeClipboard: FunctionComponent<{
         "relative rounded-2xl bg-card border-2 border-cardInner p-2.5",
         containerClassName
       )}
+      style={containerStyle}
     >
       <div className="rounded-xl bg-cardInner px-5 pt-5 pb-8">
         <div className="absolute -top-2 inset-x-1/2 -translate-x-1/2 w-[10rem] h-[3.75rem] z-10 bg-gradients-clip rounded-md">
