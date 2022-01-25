@@ -156,6 +156,11 @@ export class TradeTokenInConfig extends AmountConfig {
   }
 
   @computed
+  protected get optimizedRoutes(): OptimizedRoutes {
+    return new OptimizedRoutes(this.pools);
+  }
+
+  @computed
   get optimizedRoutePaths(): RoutePathWithAmount[] {
     const amount = this.getAmountPrimitive();
     if (
@@ -167,9 +172,7 @@ export class TradeTokenInConfig extends AmountConfig {
       return [];
     }
 
-    const routes = new OptimizedRoutes(this.pools);
-
-    return routes.getOptimizedRoutesByTokenIn(
+    return this.optimizedRoutes.getOptimizedRoutesByTokenIn(
       {
         denom: amount.denom,
         amount: new Int(amount.amount),
@@ -214,9 +217,7 @@ export class TradeTokenInConfig extends AmountConfig {
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
 
-    const result = new OptimizedRoutes(this.pools).calculateTokenOutByTokenIn(
-      paths
-    );
+    const result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
 
     const beforeSpotPriceWithoutSwapFeeInOverOutDec =
       result.beforeSpotPriceInOverOut.mulTruncate(
