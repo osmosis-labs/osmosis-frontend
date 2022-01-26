@@ -128,7 +128,7 @@ export const TradeClipboard = observer<
             </button>
             {isSettingOpen && (
               <div
-                className="absolute bottom-0 right-0 translate-y-full bg-card border border-white-faint rounded-2xl p-[1.875rem] z-20 w-full max-w-[23.875rem]"
+                className="absolute bottom-[-0.5rem] right-0 translate-y-full bg-card border border-white-faint rounded-2xl p-[1.875rem] z-20 w-full max-w-[23.875rem]"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="subtitle1 text-white-emphasis">
