@@ -4,6 +4,7 @@ import { LINKS, MISC } from '../../../constants';
 import { useAccountConnection } from '../../../hooks/account/useAccountConnection';
 import { useStore } from '../../../stores';
 import { ConnectAccountButton } from '../../ConnectAccountButton';
+import { Img } from 'src/components/common/Img';
 
 export const SidebarBottom: FunctionComponent = observer(() => {
 	const { chainStore, accountStore, queriesStore } = useStore();
@@ -62,6 +63,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
 				Price Data by
 				<a href="https://www.coingecko.com" target="_blank" rel="noreferrer">
 					{' CoinGecko'}
+					<Img src="/public/assets/other-logos/coingecko-grayscale.png" style={{ height: 28 }} loadingSpin />
 				</a>
 			</p>
 			<div className={'flex items-center transition-all w-full'}>
