@@ -5,6 +5,7 @@ import { TitleText } from 'src/components/Texts';
 import { PoolCardList } from 'src/pages/pools/components/PoolCardList';
 import { MyPoolCardProp } from 'src/pages/pools/models/poolCardProps';
 import { useStore } from 'src/stores';
+import { LockupAbledPoolIds } from 'src/config';
 
 export const MyPools = observer(function MyPools() {
 	const { chainStore, accountStore, queriesStore, priceStore } = useStore();
@@ -51,9 +52,10 @@ export const MyPools = observer(function MyPools() {
 					isLoading: queries.osmosis.queryGammPoolShare.isFetchingShareRatio,
 				},
 				myLockedAmount: {
-					value: queryIncentivizedPools.isIncentivized(pool.id)
-						? tvl.mul(actualLockedShareRatio).toString()
-						: undefined,
+					value:
+						queryIncentivizedPools.isIncentivized(pool.id) || LockupAbledPoolIds[pool.id]
+							? tvl.mul(actualLockedShareRatio).toString()
+							: undefined,
 					isLoading: queries.osmosis.queryGammPoolShare.isFetchingLockedShareRatio,
 				},
 				tokens: pool.poolAssets.map(asset => asset.amount.currency),

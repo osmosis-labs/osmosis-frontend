@@ -9,12 +9,20 @@ describe('Test prettify tx error', () => {
 		expect(prettifyTxError(message, [])).toBe(message);
 	});
 
-	test('Test signature verification error', () => {
+	test('Test legacy signature verification error', () => {
 		const message =
 			'signature verification failed; please verify account number (4287), sequence (193) and chain-id (osmosis-1): unauthorized';
 
 		expect(prettifyTxError(message, [])).toBe(
 			"You have too many concurrent txs going on! Try resending after your prior tx lands on chain. (We couldn't send the tx with sequence number 193)"
+		);
+	});
+
+	test('Test signature verification error', () => {
+		const message = 'account sequence mismatch, expected 443, got 442: incorrect account sequence';
+
+		expect(prettifyTxError(message, [])).toBe(
+			"You have too many concurrent txs going on! Try resending after your prior tx lands on chain. (We couldn't send the tx with sequence number 442)"
 		);
 	});
 

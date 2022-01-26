@@ -57,7 +57,7 @@ export const PoolSwapClipboardContent: FunctionComponent<{
 	return (
 		<PoolSwapDialogContent>
 			<PairContainer>
-				<div style={{ marginBottom: isMobileView ? 12 : 18 }}>
+				<div>
 					<FromBox config={config} dropdownStyle={isMobileView ? { width: 'calc(100vw - 72px)' } : {}} />
 				</div>
 				<SwapDirectionButton
@@ -66,12 +66,14 @@ export const PoolSwapClipboardContent: FunctionComponent<{
 						config.switchInAndOut();
 					}}
 				/>
-				<div style={{ marginBottom: isMobileView ? 12 : 18 }}>
+				<div className="mt-3 md:mt-4.5">
 					<ToBox config={config} dropdownStyle={isMobileView ? { width: 'calc(100vw - 72px)' } : {}} />
 				</div>
 			</PairContainer>
 
-			<FeesBox config={config} />
+			<div className="mt-3 md:mt-4.5">
+				<FeesBox config={config} />
+			</div>
 
 			<SwapButton config={config} close={close} />
 		</PoolSwapDialogContent>

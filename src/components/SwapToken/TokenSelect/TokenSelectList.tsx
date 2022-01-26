@@ -8,11 +8,34 @@ import { SubTitleText, Text } from 'src/components/Texts';
 import { colorPrimary, colorPrimaryDark, colorPrimaryLight, colorWhiteHigh } from 'src/emotionStyles/colors';
 import { useStore } from 'src/stores';
 import useWindowSize from 'src/hooks/useWindowSize';
+import { IntPretty } from '@keplr-wallet/unit';
+import { MISC } from 'src/constants';
+import cn from 'clsx';
+
+const borderImages: Record<string, string> = {
+	socialLive: '#89EAFB',
+	greenBeach: '#00CEBA',
+	kashmir: '#6976FE',
+	frost: '#0069C4',
+	cherry: '#FF652D',
+	sunset: '#FFBC00',
+	orangeCoral: '#FF8200',
+	pinky: '#FF7A45',
+};
+
+interface ExtraAssetInfo {
+	index: number;
+	coinDenom: string;
+	liquidityWeightPercentage: IntPretty;
+}
 
 interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> {
 	currencies: AppCurrency[];
 	shouldScrollIntoView: boolean;
 	onSelect: (appCurrency: AppCurrency) => void;
+	extraAssetInfos?: ExtraAssetInfo[];
+	isSearchDisable?: boolean;
+	isNoAmount?: boolean;
 }
 
 export const TokenSelectList = observer(function TokenSelectList({
@@ -20,10 +43,14 @@ export const TokenSelectList = observer(function TokenSelectList({
 	onSelect,
 	onClick,
 	shouldScrollIntoView,
+	extraAssetInfos,
+	isSearchDisable,
+	isNoAmount,
 	...props
 }: Props) {
 	const [searchedToken, setSearchedToken] = useState<string>('');
 	const { chainStore, accountStore, queriesStore } = useStore();
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
@@ -40,6 +67,10 @@ export const TokenSelectList = observer(function TokenSelectList({
 		listRef.current?.scrollIntoView(false);
 	}, [shouldScrollIntoView]);
 
+	useEffect(() => {
+		inputRef.current?.focus();
+	}, []);
+
 	return (
 		<TokenSelectListContainer
 			ref={listRef}
@@ -48,14 +79,17 @@ export const TokenSelectList = observer(function TokenSelectList({
 				onClick?.(e);
 			}}
 			{...props}>
-			<TokenSearchSection>
-				<img alt="search" style={{ width: `1.125rem`, height: `1.125rem` }} src="/public/assets/Icons/Search.svg" />
-				<SearchTokenInput
-					value={searchedToken}
-					onChange={e => setSearchedToken(e.currentTarget.value)}
-					placeholder="Search your token"
-				/>
-			</TokenSearchSection>
+			{!isSearchDisable && (
+				<TokenSearchSection>
+					<img alt="search" style={{ width: `1.125rem`, height: `1.125rem` }} src="/public/assets/Icons/Search.svg" />
+					<SearchTokenInput
+						ref={inputRef}
+						value={searchedToken}
+						onChange={e => setSearchedToken(e.currentTarget.value)}
+						placeholder="Search your token"
+					/>
+				</TokenSearchSection>
+			)}
 			<TokenItemList>
 				{filteredCurrencies.map(cur => {
 					const balance = queries.queryBalances
@@ -69,7 +103,20 @@ export const TokenSelectList = observer(function TokenSelectList({
 							.maxDecimals(6)
 							.toString() || '0';
 
-					return <TokenItem key={cur.coinMinimalDenom} currency={cur} amount={amount} onClick={onSelect} />;
+					const extraAssetInfo = extraAssetInfos
+						? extraAssetInfos.find(extraAssetInfo => extraAssetInfo.coinDenom === cur.coinDenom)
+						: undefined;
+
+					return (
+						<TokenItem
+							key={cur.coinMinimalDenom}
+							currency={cur}
+							amount={amount}
+							onClick={onSelect}
+							extraAssetInfo={extraAssetInfo}
+							isNoAmount={isNoAmount}
+						/>
+					);
 				})}
 			</TokenItemList>
 		</TokenSelectListContainer>
@@ -84,7 +131,7 @@ const TokenSelectListContainer = styled.div`
 	max-width: 468px;
 	margin-left: -12px;
 	transform: translateY(100%);
-	padding: 24px 15px 24px 12px;
+	padding: 12px 10px;
 	background-color: ${colorPrimaryDark};
 	z-index: 3;
 	border-bottom-right-radius: 1rem;
@@ -94,7 +141,7 @@ const TokenSelectListContainer = styled.div`
 		width: 100%;
 		min-width: 455px;
 		margin-left: -16px;
-		padding: 32px 20px 32px 16px;
+		padding: 28px 14px;
 	}
 `;
 
@@ -106,10 +153,12 @@ const TokenSearchSection = styled.div`
 	border-radius: 1rem;
 	background-color: ${colorPrimary};
 	padding-left: 12px;
+	margin-bottom: 14px;
 
 	@media (min-width: 768px) {
 		height: 2.25rem;
 		padding-left: 18px;
+		margin-bottom: 18px;
 	}
 `;
 
@@ -129,7 +178,6 @@ const SearchTokenInput = styled.input`
 
 const TokenItemList = styled.ul`
 	max-height: 215px;
-	margin-top: 14px;
 	overflow-y: auto;
 
 	&::-webkit-scrollbar {
@@ -146,36 +194,54 @@ const TokenItemList = styled.ul`
 		background: ${colorPrimaryLight};
 		border-radius: 6px;
 	}
-
-	@media (min-width: 768px) {
-		margin-top: 20px;
-	}
 `;
 
 interface TokenItemProps extends Omit<HTMLAttributes<HTMLLIElement>, 'onClick'> {
 	currency: AppCurrency;
 	amount: string;
 	onClick: (appCurrency: AppCurrency) => void;
+	extraAssetInfo?: ExtraAssetInfo;
+	isNoAmount?: boolean;
 }
 
-function TokenItem({ currency, amount, onClick, ...props }: TokenItemProps) {
+function TokenItem({ currency, amount, onClick, extraAssetInfo, isNoAmount, ...props }: TokenItemProps) {
 	const handleItemClicked = useCallback(() => {
 		onClick(currency);
 	}, [currency, onClick]);
 	const { isMobileView } = useWindowSize();
 
 	return (
-		<TokenItemContainer onClick={handleItemClicked} {...props}>
+		<TokenItemContainer onClick={handleItemClicked} {...props} className={extraAssetInfo ? '!pr-5 md:!pr-15' : ''}>
 			<CenterV>
-				<Img loadingSpin style={{ width: '36px', height: '36px' }} src={currency.coinImageUrl} />
-				<div style={{ marginLeft: 12 }}>
-					<SubTitleText isMobileView={isMobileView}>{currency.coinDenom.toUpperCase()}</SubTitleText>
+				{extraAssetInfo ? (
+					<figure
+						style={{ fontSize: isMobileView ? 48 : 60 }}
+						className={cn(
+							'c100 dark mr-2.5 md:mr-5 flex-shrink-0',
+							`p${extraAssetInfo.liquidityWeightPercentage
+								.maxDecimals(0)
+								.locale(false)
+								.toString()}`
+						)}>
+						<span>{extraAssetInfo.liquidityWeightPercentage.maxDecimals(0).toString()}%</span>
+						<div className="slice">
+							<div style={{ background: `${borderImages[MISC.GRADIENTS[extraAssetInfo.index]]}` }} className="bar" />
+							<div className="fill" />
+						</div>
+					</figure>
+				) : (
+					<Img loadingSpin style={{ width: '36px', height: '36px' }} src={currency.coinImageUrl} />
+				)}
+				<div className={`${extraAssetInfo ? '' : 'ml-3'} flex-shrink-0`}>
+					<h5 className={`text-base ${extraAssetInfo ? 'md:text-xl' : 'md:text-lg'} text-white-high`}>
+						{currency.coinDenom.toUpperCase()}
+					</h5>
 					{'paths' in currency && currency.paths.length > 0 ? (
-						<Text isMobileView={isMobileView}>{currency.paths[0].channelId}</Text>
+						<p className="text-white-mid text-xs md:text-base font-normal">{currency.paths[0].channelId}</p>
 					) : null}
 				</div>
 			</CenterV>
-			<Text emphasis="high">{amount}</Text>
+			{!isNoAmount && <Text emphasis="high">{amount}</Text>}
 		</TokenItemContainer>
 	);
 }
@@ -185,15 +251,25 @@ const TokenItemContainer = styled.li`
 	align-items: center;
 	justify-content: space-between;
 	border-radius: 1rem;
-	padding: 14px 12px 14px 4px;
+	padding: 6px 12px 8px 4px;
+	margin: 6px 0;
 
 	&:hover {
 		background-color: ${colorPrimary};
 	}
 
+	&:first-child {
+		margin-top: 0;
+	}
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+
 	cursor: pointer;
 
 	@media (min-width: 768px) {
-		padding: 18px 12px;
+		padding: 10px 12px;
+		margin: 8px 0;
 	}
 `;

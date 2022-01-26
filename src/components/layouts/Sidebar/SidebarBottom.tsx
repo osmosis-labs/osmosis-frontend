@@ -1,4 +1,3 @@
-import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent } from 'react';
 import { LINKS, MISC } from '../../../constants';
@@ -59,9 +58,17 @@ export const SidebarBottom: FunctionComponent = observer(() => {
 					}}
 				/>
 			)}
-			<div className={cn('flex items-center transition-all justify-center w-full')}>
+			<p className="py-2 text-xs text-white-high text-center opacity-30">
+				Price Data by
+				<a href="https://www.coingecko.com" target="_blank" rel="noreferrer">
+					{' CoinGecko'}
+				</a>
+			</p>
+			<div className={'flex items-center transition-all w-full'}>
 				{/*<Img className="w-9 h-9" src={`${MISC.ASSETS_BASE}/Icons/${openSidebar ? 'Menu-in' : 'Menu'}.svg`} />*/}
-				<div className="flex items-center transition-all overflow-x-hidden w-full">
+				<div
+					className="flex items-center transition-all overflow-x-hidden w-full"
+					style={{ justifyContent: 'space-around' }}>
 					<button
 						onClick={() => window.open(LINKS.TWITTER)}
 						className="opacity-75 hover:opacity-100 cursor-pointer mb-0.5 mr-1">

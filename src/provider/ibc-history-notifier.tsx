@@ -108,8 +108,8 @@ export const ToastIBCTransferRefunded: FunctionComponent<{
 
 /**
  * IBCHistoryNotifier tracks the changes of the IBC Transfer history on the IBCTransferHistoryStore.
- * And, if the changes detected, this will notifiy the success or fail to the users, and update the balances.
- * XXX: `IBCHistoryNotifier` doens't render anything.
+ * And, if the changes are detected, this will notify the success or failure to the users, and update the balances.
+ * XXX: `IBCHistoryNotifier` doesn't render anything.
  */
 export const IBCHistoryNotifier: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore, ibcTransferHistoryStore, accountStore } = useStore();

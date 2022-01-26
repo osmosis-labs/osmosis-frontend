@@ -15,7 +15,7 @@ import { ObservableQueryEpochProvisions, ObservableQueryMintParmas } from './min
 import { ObservableQueryDistrInfo } from './pool-incentives/distr-info';
 import { ObservableQueryTotalCliamable, ObservableQueryClaimRecord, ObservableQueryClaimParams } from './claim';
 import { ObservableQueryGuage } from './incentives';
-import { ObservableQueryPoolCreationFee } from 'src/stores/osmosis/query/pool-creation-fee';
+import { ObservableQueryPoolCreationFee } from './pool-creation-fee';
 
 export interface HasOsmosisQueries {
 	osmosis: OsmosisQueries;

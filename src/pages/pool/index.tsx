@@ -4,7 +4,7 @@ import React, { FunctionComponent, useEffect } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { Loader } from 'src/components/common/Loader';
 import { CenterSelf, FullScreenContainer } from 'src/components/layouts/Containers';
-import { LockupAbledPoolIds } from 'src/config';
+import { LockupAbledPoolIds, PromotedLBPPoolIds } from 'src/config';
 import { colorPrimaryDark } from 'src/emotionStyles/colors';
 import { PoolCatalyst } from 'src/pages/pool/components/PoolCatalyst';
 import { PoolInfoHeader } from 'src/pages/pool/components/PoolInfoHeader';
@@ -107,6 +107,13 @@ export const LBPInPageSwapClipboard: FunctionComponent<{
 	);
 	const feeConfig = useFakeFeeConfig(chainStore, chainStore.current.chainId, account.msgOpts.swapExactAmountIn.gas);
 	config.setFeeConfig(feeConfig);
+
+	useEffect(() => {
+		const lbpConfig = PromotedLBPPoolIds.find(c => c.poolId === poolId);
+		if (lbpConfig) {
+			config.setUserBuyPrioritaryDenom(lbpConfig.baseDenom);
+		}
+	}, [config, poolId]);
 
 	const { isMobileView } = useWindowSize();
 

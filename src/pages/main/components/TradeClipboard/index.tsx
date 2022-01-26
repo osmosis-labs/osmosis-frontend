@@ -17,6 +17,7 @@ import useWindowSize from 'src/hooks/useWindowSize';
 import { WalletStatus } from '@keplr-wallet/stores';
 import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'querystring';
+import { SwapDirectionButton } from 'src/components/SwapToken/SwapDirectionButton';
 
 export const TradeClipboard: FunctionComponent = observer(() => {
 	const { chainStore, queriesStore, accountStore, swapManager } = useStore();
@@ -107,40 +108,29 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 
 	return (
 		<React.Fragment>
-			<img
-				src={require('../../../../../public/assets/terra-banner.png').default}
-				alt={'Terra added'}
-				className="cursor-pointer"
-				style={{
-					width: '100%',
-					maxWidth: '519.453px',
-					borderRadius: '8px',
-				}}
-				onClick={e => {
-					e.preventDefault();
-
-					const terraCccount = accountStore.getAccount('columbus');
-					if (terraCccount.walletStatus === WalletStatus.NotInit) {
-						terraCccount.init();
-					}
-
-					history.push('/assets?terra=true');
-				}}
-			/>
 			<TradeClipboardContainer>
 				<Clip />
 				<TradeClipboardContent style={isMobileView ? { maxHeight: '524px' } : undefined}>
 					<TradeTxSettings config={config} />
 
 					<TradeAmountSection>
-						<FromBox config={config} style={{ marginBottom: isMobileView ? 14 : 18 }} />
-						<SwitchInOutButton type="button" onClick={() => config.switchInAndOut()} />
-						<ToBox config={config} style={{ marginBottom: isMobileView ? 14 : 18 }} />
+						<div>
+							<FromBox config={config} />
+						</div>
+						<SwapDirectionButton
+							onClick={e => {
+								e.preventDefault();
+								config.switchInAndOut();
+							}}
+						/>
+						<div className="mt-3 md:mt-4.5">
+							<ToBox config={config} />
+						</div>
 					</TradeAmountSection>
 
-					<FeesBox config={config} />
-
-					<div style={{ flex: 1 }} />
+					<div className="mt-3 md:mt-4.5">
+						<FeesBox config={config} />
+					</div>
 
 					<SwapButton config={config} />
 				</TradeClipboardContent>
@@ -182,37 +172,11 @@ const TradeClipboardContent = styled.div`
 `;
 
 const TradeAmountSection = styled.section`
+	position: relative;
 	width: 100%;
 	margin-top: 12px;
-	position: relative;
 
 	@media (min-width: 768px) {
-		margin-top: 20px;
+		margin-top: 18px;
 	}
-`;
-
-function SwitchInOutButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {
-	return (
-		<SwitchInOutButtonContainer {...props}>
-			<img
-				alt="switch-in-out"
-				style={{ width: '3rem', height: '3rem' }}
-				src="/public/assets/sidebar/icon-border_unselected.svg"
-			/>
-			<SwitchIcon src="/public/assets/Icons/Switch.svg" />
-		</SwitchInOutButtonContainer>
-	);
-}
-
-const SwitchInOutButtonContainer = styled.button`
-	${cssAbsoluteCenter};
-	width: 3rem;
-	height: 3rem;
-	z-index: 1;
-`;
-
-const SwitchIcon = styled.img`
-	${cssAbsoluteCenter};
-	width: 1.6rem;
-	height: 1.6rem;
 `;

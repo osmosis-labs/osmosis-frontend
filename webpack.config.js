@@ -26,7 +26,17 @@ const sassRule = {
 	oneOf: [
 		{
 			test: /\.(s?css)|(sass)$/,
-			use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
+			use: [
+				MiniCssExtractPlugin.loader,
+				'css-loader',
+				'postcss-loader',
+				{
+					loader: 'sass-loader',
+					options: {
+						implementation: require('sass'),
+					},
+				},
+			],
 		},
 		// if ext includes module as prefix, it perform by css loader.
 		{
@@ -42,11 +52,25 @@ const sassRule = {
 						localsConvention: 'camelCase',
 					},
 				},
-				'sass-loader',
+				{
+					loader: 'sass-loader',
+					options: {
+						implementation: require('sass'),
+					},
+				},
 			],
 		},
 		{
-			use: ['style-loader', { loader: 'css-loader', options: { modules: false } }, 'sass-loader'],
+			use: [
+				'style-loader',
+				{ loader: 'css-loader', options: { modules: false } },
+				{
+					loader: 'sass-loader',
+					options: {
+						implementation: require('sass'),
+					},
+				},
+			],
 		},
 	],
 };

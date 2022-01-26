@@ -63,11 +63,11 @@ export const AccountConnectionProvider: FunctionComponent = observer(({ children
 
 	/*
 	    Disconnect the accounts if the wallet doesn't exist or the connection rejected.
-	    Belows look somewhat strange in React philosophy.
-	    But, is is hard to use the `useEffect` hook because the references of the chain store and account store is persistent.
+	    Below looks somewhat strange in React philosophy.
+	    But, it is hard to use the `useEffect` hook because the references of the chain store and account store is persistent.
 	    Even though belows will be executed on rerendering of this component,
-	    it is likely this component will not be rerendered frequently becaouse this component only handle the connection of account.
-	    If the some account's wallet status changed, the observer makes this component be rerendered.
+	    it is likely this component will not be rerendered frequently because this component only handle the connection of account.
+	    If some account's wallet status changed, the observer makes this component be rerendered.
 	 */
 	for (const chainInfo of chainStore.chainInfos) {
 		const account = accountStore.getAccount(chainInfo.chainId);

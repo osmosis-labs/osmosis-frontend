@@ -60,9 +60,11 @@ export const FromBox = observer(function FromBox({ config, dropdownStyle, dropdo
 				</Text>
 				<CenterV>
 					<CenterV>
-						<Text emphasis="medium" size="sm" style={{ marginRight: 8 }} isMobileView={isMobileView}>
-							Available
-						</Text>
+						{!isMobileView && (
+							<Text emphasis="medium" size="sm" style={{ marginRight: 8 }} isMobileView={isMobileView}>
+								Available
+							</Text>
+						)}
 						<Text color="primary" isMobileView={isMobileView}>
 							{availableBalance
 								.trim(true)

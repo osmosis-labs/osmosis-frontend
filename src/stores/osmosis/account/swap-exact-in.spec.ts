@@ -148,7 +148,7 @@ describe('Test Osmosis Swap Exact Amount In Tx', () => {
 			{
 				type: 'message',
 				attributes: [
-					{ key: 'action', value: 'swap_exact_amount_in' },
+					{ key: 'action', value: '/osmosis.gamm.v1beta1.MsgSwapExactAmountIn' },
 					{ key: 'module', value: 'gamm' },
 					{
 						key: 'sender',
@@ -220,7 +220,7 @@ describe('Test Osmosis Swap Exact Amount In Tx', () => {
 			{
 				type: 'message',
 				attributes: [
-					{ key: 'action', value: 'swap_exact_amount_in' },
+					{ key: 'action', value: '/osmosis.gamm.v1beta1.MsgSwapExactAmountIn' },
 					{ key: 'module', value: 'gamm' },
 					{
 						key: 'sender',
@@ -294,7 +294,7 @@ describe('Test Osmosis Swap Exact Amount In Tx', () => {
 			{
 				type: 'message',
 				attributes: [
-					{ key: 'action', value: 'swap_exact_amount_in' },
+					{ key: 'action', value: '/osmosis.gamm.v1beta1.MsgSwapExactAmountIn' },
 					{ key: 'module', value: 'gamm' },
 					{
 						key: 'sender',
