@@ -281,7 +281,16 @@ export const TradeClipboard = observer<
                 />
                 <div className="flex-1" />
                 <div className="flex flex-col items-end">
-                  <h5 className="text-white-full text-right">{`≈ ${tradeTokenInConfig.expectedSwapResult.amount
+                  <h5
+                    className={classNames(
+                      "text-right",
+                      tradeTokenInConfig.expectedSwapResult.amount
+                        .toDec()
+                        .isPositive()
+                        ? "text-white-full"
+                        : "text-white-disabled"
+                    )}
+                  >{`≈ ${tradeTokenInConfig.expectedSwapResult.amount
                     .trim(true)
                     .shrink(true)
                     .maxDecimals(6)
