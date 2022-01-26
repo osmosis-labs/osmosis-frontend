@@ -1,11 +1,16 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import Tippy from "@tippyjs/react";
 import { TokenSelect } from "../token-select";
-import { useBooleanWithWindowEvent, useTradeTokenInConfig } from "../../hooks";
+import {
+  useBooleanWithWindowEvent,
+  useSlippageConfig,
+  useTradeTokenInConfig,
+} from "../../hooks";
 import classNames from "classnames";
 import { Pool } from "@osmosis-labs/pools";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
+import AutosizeInput from "react-input-autosize";
 
 export const TradeClipboard = observer<
   {
@@ -22,6 +27,8 @@ export const TradeClipboard = observer<
 
     const account = accountStore.getAccount(chainStore.osmosis.chainId);
     const queries = queriesStore.get(chainStore.osmosis.chainId);
+
+    const slippageConfig = useSlippageConfig();
 
     const tradeTokenInConfig = useTradeTokenInConfig(
       chainStore,
@@ -80,6 +87,8 @@ export const TradeClipboard = observer<
       tokenSelectCurrencies,
       tradeTokenInConfig.sendCurrency.coinMinimalDenom,
     ]);
+
+    const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
 
     return (
       <div
@@ -140,20 +149,61 @@ export const TradeClipboard = observer<
                 </div>
 
                 <ul className="flex gap-x-3 w-full mt-3">
-                  <li className="flex items-center justify-center w-full h-8 cursor-pointer rounded-full bg-background text-white-high">
-                    1%
-                  </li>
-                  <li className="flex items-center justify-center w-full h-8 cursor-pointer rounded-full bg-background text-white-high">
-                    3%
-                  </li>
-                  <li className="flex items-center justify-center w-full h-8 cursor-pointer rounded-full bg-background text-white-high">
-                    5%
-                  </li>
-                  <li className="flex items-center justify-center w-full h-8 cursor-pointer rounded-full bg-background text-white-high">
-                    <input
-                      type="number"
-                      className="text-white-full bg-transparent text-right focus:outline-none w-[1.625rem]"
-                      placeholder="2.5"
+                  {slippageConfig.selectableSlippages.map((slippage) => {
+                    return (
+                      <li
+                        key={slippage.index}
+                        className={classNames(
+                          "flex items-center justify-center w-full h-8 cursor-pointer rounded-full text-white-high",
+                          slippage.selected ? "bg-primary-200" : "bg-background"
+                        )}
+                        onClick={(e) => {
+                          e.preventDefault();
+
+                          slippageConfig.select(slippage.index);
+                        }}
+                      >
+                        {slippage.slippage.toString()}
+                      </li>
+                    );
+                  })}
+                  <li
+                    className={classNames(
+                      "flex items-center justify-center w-full h-8 cursor-pointer rounded-full",
+                      slippageConfig.isManualSlippage
+                        ? "text-white-high"
+                        : "text-white-faint",
+                      slippageConfig.isManualSlippage
+                        ? slippageConfig.getManualSlippageError()
+                          ? "bg-missionError"
+                          : "bg-primary-200"
+                        : "bg-background"
+                    )}
+                    onClick={(e) => {
+                      e.preventDefault();
+
+                      if (manualSlippageInputRef.current) {
+                        manualSlippageInputRef.current.focus();
+                      }
+                    }}
+                  >
+                    <AutosizeInput
+                      inputRef={(ref) => {
+                        manualSlippageInputRef.current = ref;
+                      }}
+                      inputClassName="bg-transparent text-center"
+                      minWidth={0}
+                      value={slippageConfig.manualSlippageStr}
+                      onChange={(e) => {
+                        e.preventDefault();
+
+                        slippageConfig.setManualSlippage(e.target.value);
+                      }}
+                      onFocus={(e) => {
+                        e.preventDefault();
+
+                        slippageConfig.setIsManualSlippage(true);
+                      }}
                     />
                     <span className="shrink-0">%</span>
                   </li>
