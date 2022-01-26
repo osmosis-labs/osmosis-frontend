@@ -171,7 +171,11 @@ export const TokenSelect: FunctionComponent<{
               />
             </div>
           </div>
-          <h5 className="text-white-full">{currency.coinDenom}</h5>
+          <h5 className="text-white-full">
+            {currency.coinMinimalDenom === "_unknown"
+              ? " "
+              : currency.coinDenom}
+          </h5>
           {finalCurrencies.length > 0 ? (
             <div className="w-5 ml-3 pb-1">
               <Image

@@ -72,6 +72,8 @@ export class TradeTokenInConfig extends AmountConfig {
   @override
   get sendCurrency(): AppCurrency {
     if (this.sendableCurrencies.length === 0) {
+      // For the case before pools are initially fetched,
+      // it temporarily returns unknown currency rather than handling the case of undefined.
       return {
         coinMinimalDenom: "_unknown",
         coinDenom: "Unknown",
@@ -92,6 +94,8 @@ export class TradeTokenInConfig extends AmountConfig {
   @computed
   get outCurrency(): AppCurrency {
     if (this.sendableCurrencies.length <= 1) {
+      // For the case before pools are initially fetched,
+      // it temporarily returns unknown currency rather than handling the case of undefined.
       return {
         coinMinimalDenom: "_unknown",
         coinDenom: "Unknown",
