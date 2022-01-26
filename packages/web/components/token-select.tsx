@@ -40,6 +40,7 @@ export const TokenSelect: FunctionComponent<{
     const queries = queriesStore.get(chainStore.osmosis.chainId);
 
     const containerRef = useRef<HTMLDivElement | null>(null);
+    const inputRef = useRef<HTMLInputElement | null>(null);
 
     const [isSelectOpen, setIsSelectOpen] = useBooleanWithWindowEvent(false, {
       windowEventName: "click",
@@ -68,6 +69,9 @@ export const TokenSelect: FunctionComponent<{
       if (!isSelectOpen) {
         // Clear the search text whenever the dropdown closed.
         setSearchText("");
+      } else {
+        // Give a focus to the input whenever dropdown opened.
+        inputRef.current?.focus();
       }
     }, [isSelectOpen]);
 
@@ -209,6 +213,7 @@ export const TokenSelect: FunctionComponent<{
                 />
               </div>
               <input
+                ref={inputRef}
                 type="text"
                 className="flex-1 px-4 subtitle2 text-white-full bg-transparent font-normal"
                 placeholder="Search your token"
