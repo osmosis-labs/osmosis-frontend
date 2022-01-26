@@ -314,14 +314,15 @@ export class OptimizedRoutes {
 
       let previousInDenom = path.tokenInDenom;
       let previousInAmount = path.amount;
+
+      let beforeSpotPriceInOverOut: Dec = new Dec(1);
+      let afterSpotPriceInOverOut: Dec = new Dec(1);
+      let effectivePriceInOverOut: Dec = new Dec(1);
+      let swapFee: Dec = new Dec(0);
+
       for (let i = 0; i < path.pools.length; i++) {
         const pool = path.pools[i];
         const outDenom = path.tokenOutDenoms[i];
-
-        let beforeSpotPriceInOverOut: Dec = new Dec(1);
-        let afterSpotPriceInOverOut: Dec = new Dec(1);
-        let effectivePriceInOverOut: Dec = new Dec(1);
-        let swapFee: Dec = new Dec(1);
 
         const tokenOut = pool.getTokenOutByTokenIn(
           { denom: previousInDenom, amount: previousInAmount },
@@ -337,7 +338,9 @@ export class OptimizedRoutes {
         effectivePriceInOverOut = effectivePriceInOverOut.mulTruncate(
           tokenOut.effectivePriceInOverOut
         );
-        swapFee = swapFee.mulTruncate(pool.swapFee);
+        swapFee = swapFee.add(
+          new Dec(1).sub(swapFee).mulTruncate(pool.swapFee)
+        );
 
         if (i === path.pools.length - 1) {
           totalOutAmount = totalOutAmount.add(tokenOut.amount);
