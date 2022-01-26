@@ -64,6 +64,10 @@ export class SlippageConfig {
 
   @action
   setManualSlippage(str: string) {
+    if (str.startsWith(".")) {
+      str = "0" + str;
+    }
+
     this._isManualSlippage = true;
     this._manualSlippage = str;
   }
@@ -80,9 +84,15 @@ export class SlippageConfig {
     }
 
     try {
-      return new RatePretty(
+      const r = new RatePretty(
         new Dec(this._manualSlippage).quo(DecUtils.getTenExponentN(2))
       );
+
+      if (r.toDec().isNegative()) {
+        return new RatePretty(new Dec(0));
+      }
+
+      return r;
     } catch {
       return new RatePretty(new Dec(0));
     }
@@ -115,9 +125,12 @@ export class SlippageConfig {
   getManualSlippageError = computedFn((): Error | undefined => {
     if (this._isManualSlippage) {
       try {
-        new RatePretty(
+        const r = new RatePretty(
           new Dec(this._manualSlippage).quo(DecUtils.getTenExponentN(2))
         );
+        if (r.toDec().isNegative()) {
+          return new Error("Slippage can not be negative");
+        }
       } catch {
         return new Error("Invalid slippage");
       }

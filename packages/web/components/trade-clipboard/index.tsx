@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import Tippy from "@tippyjs/react";
 import { TokenSelect } from "../token-select";
 import {
@@ -89,6 +89,14 @@ export const TradeClipboard = observer<
     ]);
 
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
+
+    useEffect(() => {
+      if (isSettingOpen && slippageConfig.isManualSlippage) {
+        // Whenever the setting opened, give a focus to the input if the manual slippage setting mode is on.
+        manualSlippageInputRef.current?.focus();
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isSettingOpen]);
 
     return (
       <div
