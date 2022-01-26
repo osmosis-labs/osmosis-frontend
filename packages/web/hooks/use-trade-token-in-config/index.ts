@@ -76,7 +76,7 @@ export class TradeTokenInConfig extends AmountConfig {
       // it temporarily returns unknown currency rather than handling the case of undefined.
       return {
         coinMinimalDenom: "_unknown",
-        coinDenom: "Unknown",
+        coinDenom: "UNKNOWN",
         coinDecimals: 0,
       };
     }
@@ -98,7 +98,7 @@ export class TradeTokenInConfig extends AmountConfig {
       // it temporarily returns unknown currency rather than handling the case of undefined.
       return {
         coinMinimalDenom: "_unknown",
-        coinDenom: "Unknown",
+        coinDenom: "UNKNOWN",
         coinDecimals: 0,
       };
     }
