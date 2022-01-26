@@ -20,7 +20,7 @@ export const SearchBox: FunctionComponent<Props> = ({
       "flex flex-nowrap gap-3 justify-between w-max h-8 rounded-xl pr-1 pl-2 text-white-high border text-sm border-secondary-200",
       {
         "border-missionError": state === "error",
-        "cursor-default bg-[#C4A46A14] border-white-disabled": disabled,
+        "opacity-50": disabled,
       },
       className
     )}
@@ -36,9 +36,7 @@ export const SearchBox: FunctionComponent<Props> = ({
     <label className="grow shrink h-full" htmlFor="text-search">
       <input
         id="text-search"
-        className={classNames("h-full appearance-none bg-transparent", {
-          "text-white-disabled": disabled,
-        })}
+        className="h-full appearance-none bg-transparent"
         value={currentValue}
         placeholder={placeholder}
         autoComplete="off"

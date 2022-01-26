@@ -39,7 +39,7 @@ export const Button: FunctionComponent<Props> = ({
     disabled={disabled}
     onClick={onClick}
   >
-    <div className="px-3 select-none">{children}</div>
+    <div className="px-3 select-none font-button">{children}</div>
     {type === "arrow" && (
       <Image alt="" src="/icons/chevron-right.svg" height={32} width={32} />
     )}

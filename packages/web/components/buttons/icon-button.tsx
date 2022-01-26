@@ -8,17 +8,9 @@ type IconName = string;
 interface Props extends ButtonProps {
   color?: "primary" | "secondary";
   size?: "sm";
-  type?: "chevron-right" | "chevron-down" | IconName;
+  type?: "chevron-right" | "chevron-down-green" | IconName;
   disabled?: boolean;
 }
-
-const colorToClassName = {
-  primary: "bg-primary-200",
-  secondary: "bg-secondary-200",
-};
-const sizeToClassName = {
-  sm: "px-2 py-2",
-};
 
 export const IconButton: FunctionComponent<Props> = ({
   onClick,
@@ -30,10 +22,17 @@ export const IconButton: FunctionComponent<Props> = ({
   <button
     className={classNames(
       "flex justify-center items-center rounded-lg text-base",
-      disabled ? "opacity-50" : null,
-      sizeToClassName[size],
-      type !== "chevron-right" && type !== "chevron-down"
-        ? `rounded-full ${colorToClassName[color]}`
+      {
+        "opacity-50": disabled,
+        "px-2 py-2": size === "sm",
+        "rounded-full":
+          type !== "chevron-right" && type !== "chevron-down-green",
+      },
+      type !== "chevron-right" && type !== "chevron-down-green"
+        ? {
+            "bg-primary-200": color === "primary",
+            "bg-secondary-200": color === "secondary",
+          }
         : null
     )}
     disabled={disabled}
