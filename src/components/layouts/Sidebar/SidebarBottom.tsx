@@ -107,7 +107,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
 				</div>
 			</div>
 			<div className="flex" style={{ justifyContent: 'space-evenly' }}>
-				<p className="mt-1 text-xs text-white-high">Prices by</p>
+				<p className="mt-1 text-xs text-white-mid">Prices by</p>
 				<a href="https://www.coingecko.com" target="_blank" rel="noreferrer">
 					<Img src="/public/assets/other-logos/coingecko.png" style={{ height: 28 }} loadingSpin />
 				</a>
