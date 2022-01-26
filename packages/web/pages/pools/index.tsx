@@ -28,7 +28,12 @@ const Pools: NextPage = observer(function () {
           <div className="bg-[url('/images/osmosis-pool-machine.png')] bg-right bg-contain bg-no-repeat p-10">
             <div className="flex items-center">
               <h5 className="text-white-full">Active Pools</h5>
-              <Button color="primary" size="sm" className="ml-6">
+              <Button
+                color="primary"
+                size="sm"
+                className="ml-6"
+                onClick={console.log}
+              >
                 Create New Pool
               </Button>
             </div>

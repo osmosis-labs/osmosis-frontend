@@ -1,8 +1,19 @@
 import { InputProps } from "../types";
 
-export interface ToggleProps {
+export interface ToggleProps<T = boolean> {
   isOn: boolean;
-  onChange: (value: boolean) => void;
+  onChange: (value: T) => void;
+}
+
+export interface MenuOption {
+  id: string;
+  display: string;
+}
+
+export interface MenuSelectProps {
+  options: MenuOption[];
+  selectedOptionId: string;
+  onSelect: (optionId: string) => void;
 }
 
 export interface NumberSelectProps extends InputProps<number> {

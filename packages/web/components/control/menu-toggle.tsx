@@ -1,11 +1,7 @@
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CustomClasses } from "../types";
-
-export interface MenuOption {
-  id: string;
-  display: string;
-}
+import { MenuOption } from "./types";
 
 interface Props extends CustomClasses {
   options: MenuOption[];
