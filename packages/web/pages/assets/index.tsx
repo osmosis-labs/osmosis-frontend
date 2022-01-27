@@ -95,8 +95,8 @@ const Assets: NextPage = function () {
             { id: "b", display: "Babelasdfasdfasdfasdf" },
             { id: "c", display: "Bear" },
           ]}
-          currentOptionId={iV}
-          onChange={setIV}
+          selectedOptionId={iV}
+          onSelect={setIV}
           disabled={disabled}
         />
       </div>
