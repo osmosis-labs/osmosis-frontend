@@ -727,8 +727,8 @@ export const IBCAssetInfos: {
 	},
 	{
 		counterpartyChainId: 'laozi-mainnet',
-		sourceChannelId: 'channel-81',
-		destChannelId: 'channel-6',
+		sourceChannelId: 'channel-148',
+		destChannelId: 'channel-83',
 		coinMinimalDenom: 'uband',
 	},
 ];
