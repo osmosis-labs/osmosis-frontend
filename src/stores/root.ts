@@ -939,7 +939,7 @@ export class RootStore {
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-108' }], 'ncheq'),
 						coinDenom: 'CHEQ',
-						coinDecimals: 6,
+						coinDecimals: 9,
 					},
 					{
 						coinMinimalDenom: 'uosmo',
@@ -1034,6 +1034,21 @@ export class RootStore {
 					{
 						coinMinimalDenom: 'uosmo',
 						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '617',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-108' }], 'ncheq'),
+						coinDenom: 'CHEQ',
+						coinDecimals: 9,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
 						coinDecimals: 6,
 					},
 				],
