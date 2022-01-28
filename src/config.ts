@@ -403,11 +403,11 @@ export const ExtraGaugeInPool: {
 	],
 	'602': [
 		{
-			gaugeId: '1909',
+			gaugeId: '2041',
 			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
 		},
 		{
-			gaugeId: '1910',
+			gaugeId: '2042',
 			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
 		},
 	],
