@@ -75,8 +75,14 @@ const Assets: NextPage = function () {
           onSelect={(v) => setR(assign(v) ?? "sm")}
         />
       </div>
-      <div className="flex bg-background py-20 justify-center items-center w-1/3">
-        <Slider currentValue={s} onChange={(v) => setS(v)} min={0} max={100} />
+      <div className="flex bg-background py-20 justify-center items-center w-full">
+        <Slider
+          type="entrybox"
+          currentValue={s}
+          onChange={(v) => setS(v)}
+          min={0}
+          max={100}
+        />
       </div>
       <div className="bg-background py-8 justify-center items-center">
         <span className="m-10">{s}</span>

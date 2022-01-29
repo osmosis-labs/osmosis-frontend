@@ -1,18 +1,10 @@
 .slider {
   -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
-  width: 100%; /* Specific width is required for Firefox. */
+  width: 200px; /* Specific width is required for Firefox. */
   background: transparent; /* Otherwise white in Chrome */
   cursor: pointer;
-  position: relative;
-}
-
-/* increase hitbox size */
-.slider::before {
-  content: "";
-  position: absolute;
-  top: -20px;
-  height: 44px; /* WCAG min hit box size */
-  width: 100%;
+  margin-top: 5px;
+  border-radius: 30px;
 }
 
 /** Slider Thumb **/
@@ -20,27 +12,37 @@
 /* WebKit (Chrome, Safari) */
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  height: 24px;
-  width: 24px;
+  height: 20px;
+  width: 20px;
   border-radius: 9999px;
+  border: solid #c4a46a 1px;
   background: #ffffff;
-  margin-top: -10px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+  position: relative;
 }
 
 /* Firefox */
 .slider::-moz-range-thumb {
-  height: 24px;
-  width: 24px;
-  border-radius: 99999px;
+  height: 18.7px;
+  width: 18.7px;
+  border: solid #c4a46a 1px;
+  margin-top: 1px;
+  border-radius: 9999px;
   background: #ffffff;
 }
 
 /* IE */
 .slider::-ms-thumb {
-  height: 24px;
-  width: 24px;
-  border-radius: 99999px;
+  height: 20px;
+  width: 20px;
+  border-radius: 9999px;
   background: #ffffff;
+}
+
+.slider::-webkit-slider-thumb:hover::after {
+  content: " ";
+  height: 30px;
+  width: 30px;
+  color: red;
 }
 
 /* Track */
@@ -48,7 +50,7 @@
 /* WebKit (Chrome, Safari) */
 .slider::-webkit-slider-runnable-track {
   width: 100%;
-  height: 3px;
+  height: 20px;
 }
 
 /* Firefox */
@@ -70,4 +72,20 @@
 }
 .slider::-ms-fill-upper {
   background: rgba(196, 164, 106, 0.3);
+}
+
+/* Tooltip */
+.tooltip span {
+  width: 30px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  background: #231d4b;
+  color: #fff;
+  font-size: 12px;
+  display: block;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0);
+  border-radius: 8px;
 }
