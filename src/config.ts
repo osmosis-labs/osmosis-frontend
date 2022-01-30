@@ -721,12 +721,6 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-47',
 		coinMinimalDenom: 'rowan',
 	},
-	{
-		counterpartyChainId: 'sifchain-1',
-		sourceChannelId: 'channel-17',
-		destChannelId: 'channel-47',
-		coinMinimalDenom: 'ceth',
-	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1892,13 +1886,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 18,
 				coinGeckoId: 'sifchain',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/rowan.svg',
-			},
-			{
-				coinDenom: 'ETH',
-				coinMinimalDenom: 'ceth',
-				coinDecimals: 18,
-				coinGeckoId: 'ethereum',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/eth.svg',
 			},
 		],
 		feeCurrencies: [
