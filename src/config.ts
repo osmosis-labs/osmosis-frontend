@@ -725,6 +725,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'udig',
 	},
+	{
+		counterpartyChainId: 'sommelier-3',
+		sourceChannelId: 'channel-165',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'usomm',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1866,5 +1872,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://ping.pub/dig/tx/{txHash}',
+	},
+	{
+		rpc: 'https://sommelier.technofractal.com',
+		rest: 'https://sommelier.technofractal.com:1317',
+		chainId: 'sommelier-3',
+		chainName: 'Sommelier',
+		stakeCurrency: {
+			coinDenom: 'SOMM',
+			coinMinimalDenom: 'usomm',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:usomm',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/somm.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('somm'),
+		currencies: [
+			{
+				coinDenom: 'SOMM',
+				coinMinimalDenom: 'usomm',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:usomm',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/somm.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'SOMM',
+				coinMinimalDenom: 'usomm',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:usomm',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/somm.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://sommscan.io',
 	},
 ];
