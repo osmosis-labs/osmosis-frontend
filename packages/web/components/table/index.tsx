@@ -84,7 +84,7 @@ export const Table = <CellT extends BaseCell>({
                 </div>
                 {colDef.infoTooltip && (
                   <Tippy
-                    className="bg-wireframes-darkGrey border border-white-faint p-2 rounded-lg text-caption text-sm"
+                    className="bg-surface border border-secondary-200/30 p-2 rounded-lg text-body2"
                     content={colDef.infoTooltip}
                     trigger="click"
                   >
