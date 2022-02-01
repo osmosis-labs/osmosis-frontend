@@ -32,6 +32,7 @@ export const LockupAbledPoolIds: {
 	'482': true,
 	'497': true,
 	'498': true,
+	'547': true,
 	'548': true,
 	'557': true,
 	'558': true,
@@ -150,6 +151,20 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED',
 		},
 	],
+	'547': [
+		{
+			gaugeId: '2021',
+			denom: 'ibc/655BCEF3CDEBE32863FF281DBBE3B06160339E9897DC9C9C9821932A5F8BA6F8',
+		},
+		{
+			gaugeId: '2022',
+			denom: 'ibc/655BCEF3CDEBE32863FF281DBBE3B06160339E9897DC9C9C9821932A5F8BA6F8',
+		},
+		{
+			gaugeId: '2023',
+			denom: 'ibc/655BCEF3CDEBE32863FF281DBBE3B06160339E9897DC9C9C9821932A5F8BA6F8',
+		},
+	],
 	'548': [
 		{
 			gaugeId: '1676',
@@ -234,29 +249,29 @@ export const ExtraGaugeInPool: {
 	],
 	'573': [
 		{
-			gaugeId: '1927',
+			gaugeId: '2030',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '1928',
+			gaugeId: '2031',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '1929',
+			gaugeId: '2032',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 	],
 	'574': [
 		{
-			gaugeId: '1930',
+			gaugeId: '2033',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '1931',
+			gaugeId: '2034',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '1932',
+			gaugeId: '2035',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 	],
@@ -318,15 +333,15 @@ export const ExtraGaugeInPool: {
 	],
 	'592': [
 		{
-			gaugeId: '1933',
+			gaugeId: '2036',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '1934',
+			gaugeId: '2037',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '1935',
+			gaugeId: '2038',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 	],
@@ -450,6 +465,16 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '2000',
 			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
+		},
+	],
+	'617': [
+		{
+			gaugeId: '2039',
+			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
+		},
+		{
+			gaugeId: '2040',
+			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
 		},
 	],
 	'618': [
@@ -701,9 +726,15 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'udig',
 	},
 	{
+		counterpartyChainId: 'sommelier-3',
+		sourceChannelId: 'channel-165',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'usomm',
+	},
+	{
 		counterpartyChainId: 'gravity-bridge-3',
-		sourceChannelId: 'channel-129',
-		destChannelId: 'channel-2',
+		sourceChannelId: 'channel-144',
+		destChannelId: 'channel-10',
 		coinMinimalDenom: 'ugraviton',
 	},
 ];
@@ -1198,8 +1229,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://emoney.bigdipper.live/transactions/{txHash}',
 	},
 	{
-		rpc: 'https://rpc-juno.itastakers.com',
-		rest: 'https://lcd-juno.itastakers.com',
+		rpc: 'https://rpc-juno.keplr.app',
+		rest: 'https://lcd-juno.keplr.app',
 		chainId: 'juno-1',
 		chainName: 'Juno',
 		stakeCurrency: {
@@ -1612,7 +1643,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			high: 50,
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
-		explorerUrlToTx: 'https://cheqd.didx.co.za/transactions/{txHash}',
+		explorerUrlToTx: 'https://explorer.cheqd.io/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://rpc.stargaze-apis.com',
@@ -1847,6 +1878,43 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://ping.pub/dig/tx/{txHash}',
+	},
+	{
+		rpc: 'https://sommelier.technofractal.com',
+		rest: 'https://sommelier.technofractal.com:1317',
+		chainId: 'sommelier-3',
+		chainName: 'Sommelier',
+		stakeCurrency: {
+			coinDenom: 'SOMM',
+			coinMinimalDenom: 'usomm',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:usomm',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/somm.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('somm'),
+		currencies: [
+			{
+				coinDenom: 'SOMM',
+				coinMinimalDenom: 'usomm',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:usomm',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/somm.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'SOMM',
+				coinMinimalDenom: 'usomm',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:usomm',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/somm.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://sommscan.io',
 	},
 	{
 		rpc: 'https://gravitychain.io:26657',

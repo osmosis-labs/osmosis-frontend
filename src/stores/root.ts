@@ -257,6 +257,13 @@ export class RootStore {
 					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'osmosis',
 				},
+				{
+					alternativeCoinId: 'pool:usomm',
+					poolId: '627',
+					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-165' }], 'usomm'),
+					spotPriceDestDenom: 'uosmo',
+					destCoinId: 'osmosis',
+				},
 			]
 		);
 
@@ -432,11 +439,41 @@ export class RootStore {
 				],
 			},
 			{
+				poolId: '15',
+				currencies: [
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-4' }], 'uxprt'),
+						coinDenom: 'XPRT',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
 				poolId: '22',
 				currencies: [
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
 						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-8' }], 'uregen'),
+						coinDenom: 'REGEN',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '42',
+				currencies: [
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
 						coinDecimals: 6,
 					},
 					{
@@ -462,6 +499,21 @@ export class RootStore {
 				],
 			},
 			{
+				poolId: '197',
+				currencies: [
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-15' }], 'uiov'),
+						coinDenom: 'IOV',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
 				poolId: '461',
 				currencies: [
 					{
@@ -472,6 +524,21 @@ export class RootStore {
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-37' }], 'eeur'),
 						coinDenom: 'EEUR',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '463',
+				currencies: [
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-37' }], 'ungm'),
+						coinDenom: 'NGM',
 						coinDecimals: 6,
 					},
 				],
@@ -627,7 +694,7 @@ export class RootStore {
 				],
 			},
 			{
-				poolId: '562',
+				poolId: '565',
 				currencies: [
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uluna'),
@@ -635,8 +702,8 @@ export class RootStore {
 						coinDecimals: 6,
 					},
 					{
-						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
-						coinDenom: 'UST',
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
 						coinDecimals: 6,
 					},
 				],
@@ -942,6 +1009,21 @@ export class RootStore {
 				],
 			},
 			{
+				poolId: '611',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-75' }], 'ustars'),
+						coinDenom: 'STARS',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
 				poolId: '613',
 				currencies: [
 					{
@@ -1001,6 +1083,21 @@ export class RootStore {
 					},
 				],
 			},
+			{
+				poolId: '627',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-165' }], 'usomm'),
+						coinDenom: 'SOMM',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
 		]);
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
@@ -1024,7 +1121,7 @@ export class RootStore {
 			) => {
 				const firstPath = denomTrace.paths[0];
 
-				// If the IBC Currency's channel is known.
+				// If the IBC Currency's channel is known,
 				// Don't show the channel info on the coin denom.
 				const knownAssetInfo = IBCAssetInfos.filter(info => info.sourceChannelId === firstPath.channelId).find(
 					info => info.coinMinimalDenom === denomTrace.denom
