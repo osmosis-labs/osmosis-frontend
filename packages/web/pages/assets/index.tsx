@@ -175,11 +175,12 @@ const Assets: NextPage = function () {
       </div>
       <div className="flex bg-background py-20 justify-center items-center w-full">
         <Slider
-          type="entrybox"
+          type="tooltip"
           currentValue={s}
           onChange={(v) => setS(v)}
           min={0}
           max={100}
+          disabled={disabled}
         />
       </div>
       <div className="bg-surface py-8 justify-center items-center">

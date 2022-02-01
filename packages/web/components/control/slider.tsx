@@ -1,10 +1,13 @@
 import { FunctionComponent, useState, useRef, useEffect } from "react";
 import classNames from "classnames";
-import { CustomClasses } from "../types";
+import { CustomClasses, Disableable } from "../types";
 import { NumberSelectProps } from "./types";
 import style from "./slider.module.css";
 
-interface Props extends Omit<NumberSelectProps, "placeholder">, CustomClasses {
+interface Props
+  extends Omit<NumberSelectProps, "placeholder">,
+    Disableable,
+    CustomClasses {
   /** * `plain`: no number displayed.
    *  * `tooltip`: number above slider thumb.
    *  * `entrybox`: number as text box to right of slider. */
@@ -19,6 +22,7 @@ export const Slider: FunctionComponent<Props> = ({
   max,
   type = "entrybox",
   step = 1,
+  disabled,
   className,
 }) => {
   const [showDetail, setShowDetail] = useState(false);
@@ -58,7 +62,7 @@ export const Slider: FunctionComponent<Props> = ({
       onMouseOut={() => setShowDetail(false)}
     >
       <div className={classNames(type === "tooltip" ? "absolute" : undefined)}>
-        {type === "tooltip" && (
+        {type === "tooltip" && !disabled && (
           <div
             ref={tooltipRef}
             style={{
@@ -72,13 +76,27 @@ export const Slider: FunctionComponent<Props> = ({
         <input
           ref={rangeRef}
           type="range"
-          className={classNames(style.slider, className)}
+          className={classNames(
+            style.slider,
+            {
+              [style.showDetail]: showDetail,
+              [style.disabled]: disabled,
+            },
+            className
+          )}
           style={{
             // calculate style of track-(thumb)-track
-            background: `padding-box linear-gradient(to right, #C4A46A 0%, #C4A46A ${percent}%, rgba(196, 164, 106, 0.3) ${percent}%, rgba(196, 164, 106, 0.3) 100%)`,
-            border: "1px solid rgba(196, 164, 106, 0.3)",
+            background: `padding-box linear-gradient(to right, ${
+              disabled ? "#ffffff61" : showDetail ? "#F4CC82" : "#C4A46A"
+            } 0%, ${
+              disabled ? "#ffffff61" : showDetail ? "#F4CC82" : "#C4A46A"
+            } ${percent}%, ${
+              disabled ? "#ffffff1f" : "#c4a46a4d"
+            } ${percent}%, ${disabled ? "#ffffff1f" : "#c4a46a4d"} 100%)`,
+            border: `1px solid ${disabled ? "#ffffff1f" : "#c4a46a4d"}`,
           }}
           value={currentValue}
+          disabled={disabled}
           min={min}
           max={max}
           step={step}
@@ -94,6 +112,7 @@ export const Slider: FunctionComponent<Props> = ({
           size={Math.min(currentValue.toString().length, 3)}
           value={currentValue}
           inputMode="decimal"
+          disabled={disabled}
           onInput={(e: any) => {
             const num = Number(e.target.value);
             if (num >= min && num <= max) {
