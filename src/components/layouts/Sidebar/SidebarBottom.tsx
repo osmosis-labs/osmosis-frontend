@@ -4,7 +4,6 @@ import { LINKS, MISC } from '../../../constants';
 import { useAccountConnection } from '../../../hooks/account/useAccountConnection';
 import { useStore } from '../../../stores';
 import { ConnectAccountButton } from '../../ConnectAccountButton';
-import { Img } from 'src/components/common/Img';
 
 export const SidebarBottom: FunctionComponent = observer(() => {
 	const { chainStore, accountStore, queriesStore } = useStore();
@@ -59,6 +58,12 @@ export const SidebarBottom: FunctionComponent = observer(() => {
 					}}
 				/>
 			)}
+			<p className="py-2 text-xs text-white-high text-center opacity-30">
+				Price Data by
+				<a href="https://www.coingecko.com" target="_blank" rel="noreferrer">
+					{' CoinGecko'}
+				</a>
+			</p>
 			<div className={'flex items-center transition-all w-full'}>
 				{/*<Img className="w-9 h-9" src={`${MISC.ASSETS_BASE}/Icons/${openSidebar ? 'Menu-in' : 'Menu'}.svg`} />*/}
 				<div
@@ -105,12 +110,6 @@ export const SidebarBottom: FunctionComponent = observer(() => {
 						/>
 					</button>
 				</div>
-			</div>
-			<div className="flex" style={{ justifyContent: 'space-evenly' }}>
-				<p className="mt-1 text-xs text-white-high">Prices by</p>
-				<a href="https://www.coingecko.com" target="_blank" rel="noreferrer">
-					<Img src="/public/assets/other-logos/coingecko.png" style={{ height: 28 }} loadingSpin />
-				</a>
 			</div>
 		</div>
 	);
