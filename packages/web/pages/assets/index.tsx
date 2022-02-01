@@ -1,5 +1,7 @@
 import type { NextPage } from "next";
 import { useState } from "react";
+import { Table, BaseCell, ColumnDef, RowDef } from "../../components/table";
+import { PoolCompositionCell } from "../../components/table/cells";
 import {
   Switch,
   CheckBox,
@@ -22,6 +24,82 @@ const Assets: NextPage = function () {
   const [p, setP] = useState(50);
 
   const [iV, setIV] = useState("");
+
+  const tableCols: ColumnDef<BaseCell & PoolCompositionCell>[] = [
+    {},
+    {
+      header: "Pool Name",
+      displayCell: PoolCompositionCell,
+    },
+    {
+      header: "Liquidity",
+      infoTooltip: "This is liquidity",
+    },
+    {
+      header: "APR (Annualized)",
+    },
+    {
+      header: "My Liquidity",
+    },
+  ];
+
+  const baseRow: RowDef = {
+    makeHoverClass: () => "text-secondary-200",
+  };
+
+  const tableRows: RowDef[] = [
+    { ...baseRow, onClick: (i) => console.log(i) },
+    { ...baseRow, onClick: (i) => console.log(i) },
+    { ...baseRow, onClick: (i) => console.log(i) },
+    { ...baseRow, onClick: (i) => console.log(i) },
+    { ...baseRow, onClick: (i) => console.log(i) },
+    { ...baseRow, onClick: (i) => console.log(i) },
+  ];
+
+  const tableData: Partial<BaseCell & PoolCompositionCell>[][] = [
+    [
+      { value: "A" },
+      { value: "A", poolId: 1, tokenDenoms: ["ATOM", "OSMO"] },
+      { value: "asf" },
+      { value: "fff" },
+      { value: "fjd" },
+    ],
+    [
+      { value: "A" },
+      { value: "A", poolId: 2, tokenDenoms: ["ATOM", "OSMO"] },
+      { value: "asf" },
+      { value: "fff" },
+      { value: "fjd" },
+    ],
+    [
+      { value: "A" },
+      { value: "A", poolId: 3, tokenDenoms: ["ATOM", "OSMO"] },
+      { value: "asf" },
+      { value: "fff" },
+      { value: "fjd" },
+    ],
+    [
+      { value: "A" },
+      { value: "A", poolId: 4, tokenDenoms: ["ATOM", "OSMO"] },
+      { value: "asf" },
+      { value: "fff" },
+      { value: "fjd" },
+    ],
+    [
+      { value: "A" },
+      { value: "A", poolId: 5, tokenDenoms: ["ATOM", "OSMO"] },
+      { value: "asf" },
+      { value: "fff" },
+      { value: "fjd" },
+    ],
+    [
+      { value: "A" },
+      { value: "A", poolId: 6, tokenDenoms: ["ATOM", "OSMO"] },
+      { value: "asf" },
+      { value: "fff" },
+      { value: "fjd" },
+    ],
+  ];
 
   return (
     <main className="max-w-container mx-auto">
@@ -82,6 +160,13 @@ const Assets: NextPage = function () {
           onChange={(v) => setS(v)}
           min={0}
           max={100}
+        />
+      </div>
+      <div className="bg-background py-8 justify-center items-center">
+        <Table<BaseCell & PoolCompositionCell>
+          columnDefs={tableCols}
+          rowDefs={tableRows}
+          data={tableData}
         />
       </div>
       <div className="bg-background py-8 justify-center items-center">

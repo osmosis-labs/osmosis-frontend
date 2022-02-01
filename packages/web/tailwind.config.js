@@ -142,6 +142,9 @@ module.exports = {
         container: "90rem",
         clipboard: "32.5rem",
       },
+      boxShadow: {
+        separator: "0px -1px 0px 0px rgba(255, 255, 255, 0.12)",
+      },
     },
   },
   plugins: [],
