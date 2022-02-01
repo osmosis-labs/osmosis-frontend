@@ -15,6 +15,7 @@ import {
 } from "../../components/control";
 import { InputBox, SearchBox } from "../../components/input";
 import { Button, IconButton } from "../../components/buttons";
+import { Error, Info } from "../../components/alert";
 
 const Assets: NextPage = function () {
   const [isChecked, setChecked] = useState(true);
@@ -208,6 +209,14 @@ const Assets: NextPage = function () {
           selectedOptionId={iV}
           onSelect={setIV}
           disabled={disabled}
+        />
+      </div>
+      <div className="bg-background py-8 justify-center items-center">
+        <Error message="Ratio doesn't match, total amount should be 100%." />
+        <Info
+          message="Pool Creation Fee"
+          caption="Transferred to the Osmosis community pool"
+          data="100 OSMO"
         />
       </div>
       <div className="bg-surface py-8 justify-center items-center">
