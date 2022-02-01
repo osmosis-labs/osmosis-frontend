@@ -16,31 +16,15 @@ export const HidePoolFromPage: {
 export const LockupAbledPoolIds: {
 	[poolId: string]: boolean | undefined;
 } = {
-	'1': true,
-	'2': true,
-	'3': true,
-	'4': true,
-	'5': true,
-	'6': true,
-	'7': true,
-	'8': true,
-	'9': true,
-	'10': true,
-	'13': true,
-	'15': true,
-	'461': true,
-	'482': true,
 	'497': true,
 	'498': true,
 	'547': true,
-	'548': true,
-	'557': true,
-	'558': true,
+	'560': true,
+	'562': true,
 	'571': true,
 	'572': true,
 	'573': true,
 	'574': true,
-	'579': true,
 	'584': true,
 	'585': true,
 	'586': true,
@@ -50,8 +34,11 @@ export const LockupAbledPoolIds: {
 	'601': true,
 	'602': true,
 	'604': true,
+	'605': true,
+	'606': true,
 	'611': true,
 	'613': true,
+	'617': true,
 	'618': true,
 	'619': true,
 };
@@ -95,34 +82,6 @@ export const ExtraGaugeInPool: {
 				extraRewardAmount?: Int;
 		  }[];
 } = {
-	'461': [
-		{
-			gaugeId: '1774',
-			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
-		},
-		{
-			gaugeId: '1775',
-			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
-		},
-		{
-			gaugeId: '1776',
-			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
-		},
-	],
-	'482': [
-		{
-			gaugeId: '1771',
-			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
-		},
-		{
-			gaugeId: '1772',
-			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
-		},
-		{
-			gaugeId: '1773',
-			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
-		},
-	],
 	'497': [
 		{
 			gaugeId: '1679',
@@ -163,32 +122,6 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '2023',
 			denom: 'ibc/655BCEF3CDEBE32863FF281DBBE3B06160339E9897DC9C9C9821932A5F8BA6F8',
-		},
-	],
-	'548': [
-		{
-			gaugeId: '1676',
-			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
-		},
-		{
-			gaugeId: '1677',
-			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
-		},
-		{
-			gaugeId: '1678',
-			denom: 'ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59',
-		},
-	],
-	'557': [
-		{
-			gaugeId: '1736',
-			denom: 'ibc/F3FF7A84A73B62921538642F9797C423D2B4C4ACB3C7FCFFCE7F12AA69909C4B',
-		},
-	],
-	'558': [
-		{
-			gaugeId: '1737',
-			denom: 'ibc/F3FF7A84A73B62921538642F9797C423D2B4C4ACB3C7FCFFCE7F12AA69909C4B',
 		},
 	],
 	'560': [
@@ -373,41 +306,13 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/EA3E1640F9B1532AB129A571203A0B9F789A7F14BB66E350DCBFA18E1A1931F0',
 		},
 	],
-	'5': [
-		{
-			gaugeId: '1900',
-			denom: 'ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84',
-		},
-		{
-			gaugeId: '1901',
-			denom: 'ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84',
-		},
-		{
-			gaugeId: '1902',
-			denom: 'ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84',
-		},
-	],
-	'6': [
-		{
-			gaugeId: '1903',
-			denom: 'ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84',
-		},
-		{
-			gaugeId: '1904',
-			denom: 'ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84',
-		},
-		{
-			gaugeId: '1905',
-			denom: 'ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84',
-		},
-	],
 	'602': [
 		{
-			gaugeId: '1909',
+			gaugeId: '2041',
 			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
 		},
 		{
-			gaugeId: '1910',
+			gaugeId: '2042',
 			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
 		},
 	],
@@ -467,6 +372,20 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
 		},
 	],
+	'613': [
+		{
+			gaugeId: '1982',
+			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
+		},
+		{
+			gaugeId: '2013',
+			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
+		},
+		{
+			gaugeId: '2014',
+			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
+		},
+	],
 	'617': [
 		{
 			gaugeId: '2039',
@@ -503,20 +422,6 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '2009',
 			denom: 'ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C',
-		},
-	],
-	'613': [
-		{
-			gaugeId: '1982',
-			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
-		},
-		{
-			gaugeId: '2013',
-			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
-		},
-		{
-			gaugeId: '2014',
-			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 	],
 };
