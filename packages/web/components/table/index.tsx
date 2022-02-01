@@ -11,8 +11,8 @@ export interface BaseCell {
 }
 
 export interface ColumnSortDef {
-  currentDirection: SortDirection;
-  onClickHeader: (colIndex: number, newDirection: SortDirection) => void;
+  currentDirection?: SortDirection;
+  onClickHeader: (colIndex: number) => void;
 }
 
 export interface ColumnDef<CellT extends BaseCell> {
@@ -52,20 +52,43 @@ export const Table = <CellT extends BaseCell>({
     setRowsHovered(replaceAt(value, rowsHovered, rowIndex));
 
   return (
-    <table className="w-full">
+    <table className="">
       <thead>
         <tr className="h-20">
-          {columnDefs.map((colDef, headerIndex) => (
-            <th key={headerIndex}>
+          {columnDefs.map((colDef, colIndex) => (
+            <th
+              key={colIndex}
+              className={classNames({
+                "cursor-pointer select-none": colDef?.sort?.onClickHeader,
+              })}
+              onClick={() => colDef?.sort?.onClickHeader(colIndex)}
+            >
               <span>
-                {colDef?.header ?? ""}{" "}
+                {colDef?.header ?? ""}
+                <div className="inline pl-1 align-middle">
+                  {colDef?.sort?.currentDirection === "ascending" ? (
+                    <Image
+                      alt="ascending"
+                      src="/icons/arrow-down.svg"
+                      height={16}
+                      width={16}
+                    />
+                  ) : colDef?.sort?.currentDirection === "descending" ? (
+                    <Image
+                      alt="descending"
+                      src="/icons/arrow-up.svg"
+                      height={16}
+                      width={16}
+                    />
+                  ) : undefined}
+                </div>
                 {colDef.infoTooltip && (
                   <Tippy
                     className="bg-wireframes-darkGrey border border-white-faint p-2 rounded-lg text-caption text-sm"
                     content={colDef.infoTooltip}
                     trigger="click"
                   >
-                    <div className="cursor-pointer inline pl-1.5 align-middle">
+                    <div className="inline cursor-pointer pl-2 align-middle">
                       <Image
                         alt="info"
                         src="/icons/info.svg"

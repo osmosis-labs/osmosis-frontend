@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import { useState } from "react";
 import { Table, BaseCell, ColumnDef, RowDef } from "../../components/table";
 import { PoolCompositionCell } from "../../components/table/cells";
+import { SortDirection } from "../../components/types";
 import {
   Switch,
   CheckBox,
@@ -25,15 +26,33 @@ const Assets: NextPage = function () {
 
   const [iV, setIV] = useState("");
 
+  const [sortDirection, setSortDirection] = useState<SortDirection | undefined>(
+    undefined
+  );
+
   const tableCols: ColumnDef<BaseCell & PoolCompositionCell>[] = [
     {},
     {
       header: "Pool Name",
+      sort: {
+        currentDirection: sortDirection,
+        onClickHeader: () =>
+          setSortDirection(
+            sortDirection === "ascending" ? "descending" : "ascending"
+          ),
+      },
       displayCell: PoolCompositionCell,
     },
     {
       header: "Liquidity",
       infoTooltip: "This is liquidity",
+      sort: {
+        currentDirection: sortDirection,
+        onClickHeader: () =>
+          setSortDirection(
+            sortDirection === "ascending" ? "descending" : "ascending"
+          ),
+      },
     },
     {
       header: "APR (Annualized)",
@@ -162,7 +181,7 @@ const Assets: NextPage = function () {
           max={100}
         />
       </div>
-      <div className="bg-background py-8 justify-center items-center">
+      <div className="bg-surface py-8 justify-center items-center">
         <Table<BaseCell & PoolCompositionCell>
           columnDefs={tableCols}
           rowDefs={tableRows}
