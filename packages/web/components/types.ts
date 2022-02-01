@@ -11,3 +11,5 @@ export interface Disableable {
 export interface CustomClasses {
   className?: string;
 }
+
+export type SortDirection = "ascending" | "descending";

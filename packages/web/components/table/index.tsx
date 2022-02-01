@@ -2,6 +2,7 @@ import Image from "next/image";
 import React, { PropsWithoutRef, useState } from "react";
 import classNames from "classnames";
 import Tippy from "@tippyjs/react";
+import { SortDirection } from "../types";
 import { replaceAt } from "../utils";
 
 export interface BaseCell {
@@ -9,9 +10,14 @@ export interface BaseCell {
   rowHovered: boolean;
 }
 
+export interface ColumnSortDef {
+  currentDirection: SortDirection;
+  onClickHeader: (colIndex: number, newDirection: SortDirection) => void;
+}
+
 export interface ColumnDef<CellT extends BaseCell> {
   header?: string;
-  sort?: "ascending" | "descending";
+  sort?: ColumnSortDef;
   infoTooltip?: string;
   /** If provided, will be used to render the cell for each row in this column.
    *
@@ -46,7 +52,7 @@ export const Table = <CellT extends BaseCell>({
     setRowsHovered(replaceAt(value, rowsHovered, rowIndex));
 
   return (
-    <table className="table-auto w-full text-center">
+    <table className="w-full">
       <thead>
         <tr className="h-20">
           {columnDefs.map((colDef, headerIndex) => (
@@ -55,7 +61,7 @@ export const Table = <CellT extends BaseCell>({
                 {colDef?.header ?? ""}{" "}
                 {colDef.infoTooltip && (
                   <Tippy
-                    className="bg-wireframes-darkGrey border border-white-faint p-2 rounded-lg text-white-high text-sm"
+                    className="bg-wireframes-darkGrey border border-white-faint p-2 rounded-lg text-caption text-sm"
                     content={colDef.infoTooltip}
                     trigger="click"
                   >
@@ -83,13 +89,14 @@ export const Table = <CellT extends BaseCell>({
             <tr
               key={rowIndex}
               className={classNames(
-                "h-20 shadow-separator",
-                rowIndex % 2 === 0 ? "bg-card" : "bg-surface",
+                "h-20 shadow-separator bg-surface",
                 rowDef?.makeClass?.(rowIndex),
                 {
                   "cursor-pointer select-none": rowDef?.onClick !== undefined,
                 },
-                rowHovered ? rowDef?.makeHoverClass?.(rowIndex) : undefined
+                rowHovered
+                  ? `${rowDef?.makeHoverClass?.(rowIndex)} bg-card`
+                  : undefined
               )}
               onClick={() => rowDef?.onClick?.(rowIndex)}
               onMouseEnter={() => setRowHovered(rowIndex, true)}
