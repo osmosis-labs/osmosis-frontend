@@ -80,7 +80,7 @@
   }
 
   thead > tr {
-    @apply bg-card text-white-disabled;
+    @apply bg-card text-iconDefault;
   }
 
   thead > tr > th:first-child {

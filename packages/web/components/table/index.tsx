@@ -88,7 +88,7 @@ export const Table = <CellT extends BaseCell>({
                     content={colDef.infoTooltip}
                     trigger="click"
                   >
-                    <div className="inline cursor-pointer pl-2 align-middle">
+                    <div className="inline cursor-pointer pl-1 align-middle">
                       <Image
                         alt="info"
                         src="/icons/info.svg"
