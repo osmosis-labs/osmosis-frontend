@@ -34,8 +34,8 @@ export const Slider: FunctionComponent<Props> = ({
       const tooltip = tooltipRef.current as any;
       var setValue = () => {
         const newValue = Number(
-          ((range.value - range.min) * 100) / (range.max - range.min)
-        ),
+            ((range.value - range.min) * 100) / (range.max - range.min)
+          ),
           newPosition = 10 - newValue * 0.2;
         tooltip.innerHTML = `<span>${range.value}</span>`;
         tooltip.style.left = `calc(${newValue}% + (${newPosition}px))`;
@@ -47,7 +47,7 @@ export const Slider: FunctionComponent<Props> = ({
         range.removeEventListener("input", setValue);
       };
     }
-  }, [percent, rangeRef, tooltipRef]);
+  }, [type, percent, rangeRef, tooltipRef]);
 
   return (
     <div
