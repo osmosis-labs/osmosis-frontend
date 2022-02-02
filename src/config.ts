@@ -733,8 +733,8 @@ export const IBCAssetInfos: {
 	},
 	{
 		counterpartyChainId: 'sifchain-1',
-		sourceChannelId: 'channel-17',
-		destChannelId: 'channel-47',
+		sourceChannelId: 'channel-47',
+		destChannelId: 'channel-17',
 		coinMinimalDenom: 'rowan',
 	},
 ];
