@@ -1951,6 +1951,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://www.mintscan.io/sifchain/txs/${txHash}',
+		explorerUrlToTx: 'https://www.mintscan.io/sifchain/txs/{txHash}',
 	},
 ];
