@@ -12,7 +12,7 @@ export interface MenuOption {
 
 export interface MenuSelectProps {
   options: MenuOption[];
-  selectedOptionId: string;
+  selectedOptionId?: string;
   onSelect: (optionId: string) => void;
 }
 

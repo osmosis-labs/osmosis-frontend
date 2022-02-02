@@ -2,7 +2,7 @@ import Image from "next/image";
 import React, { PropsWithoutRef, useState } from "react";
 import classNames from "classnames";
 import Tippy from "@tippyjs/react";
-import { SortDirection } from "../types";
+import { SortDirection, CustomClasses } from "../types";
 import { replaceAt } from "../utils";
 
 export interface BaseCell {
@@ -32,7 +32,7 @@ export interface RowDef {
   onClick?: (rowIndex: number) => void;
 }
 
-export interface Props<CellT extends BaseCell> {
+export interface Props<CellT extends BaseCell> extends CustomClasses {
   columnDefs: ColumnDef<CellT>[];
   rowDefs?: RowDef[];
   data: Partial<CellT>[][];
@@ -45,6 +45,7 @@ export const Table = <CellT extends BaseCell>({
   columnDefs,
   rowDefs,
   data,
+  className,
 }: PropsWithoutRef<Props<CellT>>) => {
   const [rowsHovered, setRowsHovered] = useState(data.map(() => false));
 
@@ -52,7 +53,7 @@ export const Table = <CellT extends BaseCell>({
     setRowsHovered(replaceAt(value, rowsHovered, rowIndex));
 
   return (
-    <table className="">
+    <table className={className}>
       <thead>
         <tr className="h-20">
           {columnDefs.map((colDef, colIndex) => (

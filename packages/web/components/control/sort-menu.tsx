@@ -11,11 +11,15 @@ export const SortMenu: FunctionComponent<
 > = ({ options, selectedOptionId, onSelect, disabled, className }) => {
   const [dropdownOpen, setDropdownOpen] = useBooleanWithWindowEvent(false);
 
+  const selectedOption = options.find(
+    (option) => option.id === selectedOptionId
+  );
+
   return (
     <React.Fragment>
       <div
         className={classNames(
-          "absolute flex w-32 cursor-pointer",
+          "absolute flex w-fit cursor-pointer",
           {
             "opacity-50 cursor-default": disabled,
           },
@@ -34,8 +38,8 @@ export const SortMenu: FunctionComponent<
           height={18}
           width={18}
         />
-        <span className="m-auto leading-loose text-secondary-200 select-none">
-          SORT BY
+        <span className="m-auto mx-2 leading-loose text-secondary-200 select-none min-w-[60px] max-w-[100px] text-center text-ellipsis overflow-hidden">
+          {selectedOption ? selectedOption.display : "SORT BY"}
         </span>
         <Image
           alt="open"
