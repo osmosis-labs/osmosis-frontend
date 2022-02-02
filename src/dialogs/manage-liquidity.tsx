@@ -747,8 +747,7 @@ const AddLiquidity: FunctionComponent<{
 						onMouseEnter={() => setIsMouseOverTooltip(true)}
 						onMouseLeave={() => setIsMouseOverTooltip(false)}>
 						<div className="text-white-high text-sm mb-1 leading-tight">
-							Single Asset LP allows you to provide liquidity using one asset. However, this will impact the pool price
-							of the asset you’re providing liquidity with.
+							Single Asset LP allows you to provide liquidity using one asset. This works by automatically trading the correct % for the other asset which will impact the pool price
 						</div>
 					</div>
 				)}
