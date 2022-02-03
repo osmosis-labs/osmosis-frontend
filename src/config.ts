@@ -1874,8 +1874,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://ping.pub/dig/tx/{txHash}',
 	},
 	{
-		rpc: 'https://sommelier.technofractal.com',
-		rest: 'https://sommelier.technofractal.com:1317',
+		rpc: 'https://rpc-sommelier.keplr.app',
+		rest: 'https://lcd-sommelier.keplr.app',
 		chainId: 'sommelier-3',
 		chainName: 'Sommelier',
 		stakeCurrency: {
