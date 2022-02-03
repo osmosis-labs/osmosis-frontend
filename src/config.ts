@@ -54,6 +54,7 @@ export const LockupAbledPoolIds: {
 	'613': true,
 	'618': true,
 	'619': true,
+	'629': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -519,6 +520,7 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 	],
+	'629': []
 };
 
 export const PoolsPerPage = 10;
