@@ -735,9 +735,9 @@ export const IBCAssetInfos: {
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	{
-		rpc: 'https://rpc-osmosis.keplr.app',
-		rest: 'https://lcd-osmosis.keplr.app',
-		chainId: 'osmosis-1',
+		rpc: 'https://osmosistest-rpc.quickapi.com/',
+		rest: 'https://osmosistest-lcd.quickapi.com/',
+		chainId: 'osmo-testnet-1',
 		chainName: 'Osmosis',
 		stakeCurrency: {
 			coinDenom: 'OSMO',
