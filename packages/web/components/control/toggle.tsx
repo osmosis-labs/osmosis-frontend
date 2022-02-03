@@ -1,39 +1,53 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 import classNames from "classnames";
 import { Disableable, CustomClasses } from "../types";
 import { ToggleProps } from "./types";
 
 export const Toggle: FunctionComponent<
   ToggleProps & Disableable & CustomClasses
-> = ({ isOn, onChange, disabled = false, className, children }) => (
-  <label htmlFor="toggle">
-    <div className="relative cursor-pointer">
-      <input
-        type="checkbox"
-        id="toggle"
-        className={classNames(
-          "absolute h-8 w-full rounded-lg appearance-none",
-          {
-            "opacity-50 bg-iconDefault": disabled && isOn,
-            "opacity-20 bg-iconDefault": disabled && !isOn,
-            "bg-primary-200": !disabled && isOn,
-            "bg-surface": !disabled && !isOn,
-          },
-          className
-        )}
-        checked={isOn}
-        disabled={disabled}
-        onChange={(e) => onChange(e.target.checked)}
-      />
-      <div
-        className={classNames("relative top-1 px-2 select-none", {
-          "cursor-default": disabled,
-          "opacity-50": disabled && isOn,
-          "opacity-20": disabled && !isOn,
-        })}
-      >
-        {children}
+> = ({ isOn, onToggle, disabled = false, className, children }) => {
+  const [isHovered, setHovered] = useState(false);
+
+  return (
+    <label
+      onMouseOver={() => setHovered(true)}
+      onMouseOut={() => setHovered(false)}
+      htmlFor="toggle"
+    >
+      <div className="relative">
+        <input
+          type="checkbox"
+          id="toggle"
+          className={classNames(
+            "absolute h-[24px] w-full rounded-lg appearance-none",
+            {
+              "opacity-50 bg-iconDefault": disabled && isOn,
+              "opacity-20 bg-iconDefault": disabled && !isOn,
+              "bg-primary-200": !disabled && isOn,
+              "cursor-pointer": isHovered && !disabled,
+              "bg-primary-100": isHovered && !disabled && isOn,
+              "bg-surface": !disabled && !isOn,
+            },
+            className
+          )}
+          checked={isOn}
+          disabled={disabled}
+          onChange={(e) => onToggle(e.target.checked)}
+        />
+        <div
+          className={classNames(
+            "relative top-[5px] px-2 select-none text-caption",
+            {
+              "cursor-default": disabled,
+              "cursor-pointer": isHovered && !disabled,
+              "opacity-50": disabled && isOn,
+              "opacity-20": disabled && !isOn,
+            }
+          )}
+        >
+          {children}
+        </div>
       </div>
-    </div>
-  </label>
-);
+    </label>
+  );
+};

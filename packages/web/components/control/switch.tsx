@@ -5,7 +5,7 @@ import { ToggleProps } from "./types";
 
 export const Switch: FunctionComponent<
   ToggleProps & Disableable & CustomClasses
-> = ({ isOn, onChange, disabled = false, className }) => (
+> = ({ isOn, onToggle, disabled = false, className }) => (
   <label htmlFor="toggle-switch">
     <input
       type="checkbox"
@@ -21,7 +21,7 @@ export const Switch: FunctionComponent<
       )}
       checked={isOn}
       disabled={disabled}
-      onChange={(e) => onChange(e.target.checked)}
+      onChange={(e) => onToggle(e.target.checked)}
     />
   </label>
 );

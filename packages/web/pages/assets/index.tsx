@@ -124,42 +124,43 @@ const Assets: NextPage = function () {
   return (
     <main className="max-w-container mx-auto">
       <div className="bg-background py-20 flex justify-center items-center">
-        <Switch isOn={isChecked} onChange={setChecked} disabled={disabled} />
+        <Switch isOn={isChecked} onToggle={setChecked} disabled={disabled} />
         Disable:
-        <Switch isOn={disabled} onChange={setDisabled} />
+        <Switch isOn={disabled} onToggle={setDisabled} />
         <Button
           size={r}
           onClick={() => console.log("click")}
           disabled={disabled}
+          loading={isChecked}
         >
           <div>Hello</div>
         </Button>
         <IconButton onClick={() => console.log("click")} />
-        <CheckBox onChange={setChecked} isOn={isChecked} disabled={disabled} />
-        <CheckBox onChange={setChecked} isOn={isChecked} disabled={disabled} />
-        <CheckBox onChange={setChecked} isOn={isChecked} disabled={disabled} />
+        <CheckBox onToggle={setChecked} isOn={isChecked} disabled={disabled} />
+        <CheckBox onToggle={setChecked} isOn={isChecked} disabled={disabled} />
+        <CheckBox onToggle={setChecked} isOn={isChecked} disabled={disabled} />
         Sm
         <Radio
           value="sm"
-          onChange={(v) => setR(assign(v) ?? "sm")}
+          onSelectRadio={(v) => setR(assign(v) ?? "sm")}
           groupValue={r}
           disabled={disabled}
         />
         Md
         <Radio
           value="md"
-          onChange={(v) => setR(assign(v) ?? "sm")}
+          onSelectRadio={(v) => setR(assign(v) ?? "sm")}
           groupValue={r}
           disabled={disabled}
         />
         Lg
         <Radio
           value="lg"
-          onChange={(v) => setR(assign(v) ?? "sm")}
+          onSelectRadio={(v) => setR(assign(v) ?? "sm")}
           groupValue={r}
           disabled={disabled}
         />
-        <Toggle onChange={setChecked} isOn={isChecked} disabled={disabled}>
+        <Toggle onToggle={setChecked} isOn={isChecked} disabled={disabled}>
           test
         </Toggle>
       </div>
@@ -177,7 +178,7 @@ const Assets: NextPage = function () {
         <Slider
           type="tooltip"
           currentValue={s}
-          onChange={(v) => setS(v)}
+          onInput={(v) => setS(v)}
           min={0}
           max={100}
           disabled={disabled}
@@ -194,7 +195,7 @@ const Assets: NextPage = function () {
         <span className="m-10">{s}</span>
         <PageList
           currentValue={p}
-          onChange={(v) => setP(v)}
+          onInput={(v) => setP(v)}
           min={0}
           max={100}
           editField
@@ -224,7 +225,7 @@ const Assets: NextPage = function () {
         <InputBox
           currentValue={iV}
           placeholder={"50"}
-          onChange={setIV}
+          onInput={setIV}
           labelButtons={[
             { label: "MAX", onClick: () => setIV("MAX!") },
             // { label: "HALF", onClick: () => console.log("label button 2") },
@@ -237,7 +238,7 @@ const Assets: NextPage = function () {
         <SearchBox
           currentValue={iV}
           placeholder="Filter by symbol"
-          onChange={setIV}
+          onInput={setIV}
           disabled={disabled}
         />
       </div>

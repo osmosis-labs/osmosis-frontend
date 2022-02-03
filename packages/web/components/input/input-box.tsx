@@ -24,7 +24,7 @@ interface Props extends InputProps<string>, Disableable, CustomClasses {
 
 export const InputBox: FunctionComponent<Props> = ({
   currentValue,
-  onChange,
+  onInput,
   placeholder,
   state = "enabled",
   rightEntry = false,
@@ -64,7 +64,7 @@ export const InputBox: FunctionComponent<Props> = ({
           autoComplete="off"
           onBlur={() => setInputFocused(false)}
           onFocus={() => setInputFocused(true)}
-          onInput={(e: any) => onChange(e.target.value)}
+          onInput={(e: any) => onInput(e.target.value)}
           onClick={(e: any) => e.target.select()}
           disabled={disabled}
         />
@@ -74,7 +74,7 @@ export const InputBox: FunctionComponent<Props> = ({
           (clearButton && currentValue !== "" ? (
             <CloseButton
               className="my-2.5 mr-1.5"
-              onClick={() => onChange("")}
+              onClick={() => onInput("")}
               disabled={disabled}
             />
           ) : (

@@ -8,7 +8,7 @@ interface Props extends Disableable, CustomClasses {
    * The value that will be emitted by this radio button.
    */
   value: string;
-  onChange: (value: string) => void;
+  onSelectRadio: (value: string) => void;
   /**
    * Current value of the broader radio group.
    */
@@ -30,7 +30,7 @@ interface Props extends Disableable, CustomClasses {
  */
 export const Radio: FunctionComponent<Props> = ({
   value,
-  onChange,
+  onSelectRadio,
   disabled = false,
   groupValue,
   groupName = "radio",
@@ -68,7 +68,7 @@ export const Radio: FunctionComponent<Props> = ({
         disabled={disabled}
         name={groupName}
         value={value}
-        onChange={(e) => onChange((e.target as unknown as any).value)}
+        onChange={(e) => onSelectRadio((e.target as unknown as any).value)}
       />
     </label>
   );

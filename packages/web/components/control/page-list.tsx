@@ -10,7 +10,7 @@ interface Props extends Omit<NumberSelectProps, "placeholder"> {
 
 export const PageList: FunctionComponent<Props> = ({
   currentValue,
-  onChange,
+  onInput,
   min,
   max,
   editField = false,
@@ -28,7 +28,7 @@ export const PageList: FunctionComponent<Props> = ({
   const processInputValue = (e: any) => {
     const newValue = Number(e.target.value);
     if (newValue >= min && newValue <= max) {
-      onChange(newValue);
+      onInput(newValue);
     }
   };
 
@@ -47,7 +47,7 @@ export const PageList: FunctionComponent<Props> = ({
             height={18}
             width={18}
             onClick={() =>
-              onChange(currentValue > min ? currentValue - 1 : currentValue)
+              onInput(currentValue > min ? currentValue - 1 : currentValue)
             }
           />
         </div>
@@ -113,7 +113,7 @@ export const PageList: FunctionComponent<Props> = ({
               height={18}
               width={18}
               onClick={() =>
-                onChange(currentValue < max ? currentValue + 1 : currentValue)
+                onInput(currentValue < max ? currentValue + 1 : currentValue)
               }
             />
           )}

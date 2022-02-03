@@ -2,7 +2,7 @@ import { InputProps } from "../types";
 
 export interface ToggleProps<T = boolean> {
   isOn: boolean;
-  onChange: (value: T) => void;
+  onToggle: (value: T) => void;
 }
 
 export interface MenuOption {

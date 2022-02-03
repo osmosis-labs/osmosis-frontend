@@ -2,7 +2,6 @@ import { FunctionComponent, useState, useRef, useEffect } from "react";
 import classNames from "classnames";
 import { CustomClasses, Disableable } from "../types";
 import { NumberSelectProps } from "./types";
-import style from "./slider.module.css";
 
 interface Props
   extends Omit<NumberSelectProps, "placeholder">,
@@ -17,7 +16,7 @@ interface Props
 
 export const Slider: FunctionComponent<Props> = ({
   currentValue,
-  onChange,
+  onInput,
   min,
   max,
   type = "entrybox",
@@ -70,17 +69,16 @@ export const Slider: FunctionComponent<Props> = ({
               top: "-80%",
               visibility: showDetail ? "visible" : "hidden",
             }}
-            className={style.tooltip}
+            className="sliderTooltip"
           ></div>
         )}
         <input
           ref={rangeRef}
           type="range"
           className={classNames(
-            style.slider,
             {
-              [style.showDetail]: showDetail,
-              [style.disabled]: disabled,
+              showDetail: showDetail,
+              disabled: disabled,
             },
             className
           )}
@@ -101,7 +99,7 @@ export const Slider: FunctionComponent<Props> = ({
           max={max}
           step={step}
           onChange={(e) =>
-            onChange((e.target as unknown as any).value as number)
+            onInput((e.target as unknown as any).value as number)
           }
         />
       </div>
@@ -116,7 +114,7 @@ export const Slider: FunctionComponent<Props> = ({
           onInput={(e: any) => {
             const num = Number(e.target.value);
             if (num >= min && num <= max) {
-              onChange(num);
+              onInput(num);
             }
           }}
         />

@@ -1,6 +1,6 @@
 export interface InputProps<T> {
   currentValue: T;
-  onChange: (value: T) => void;
+  onInput: (value: T) => void;
   placeholder: T;
 }
 
