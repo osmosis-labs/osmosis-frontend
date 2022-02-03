@@ -538,6 +538,9 @@ export const IBCAssetInfos: {
 	// In some reasons, ibc channel is in unstable status.
 	// Disable the deposit, withdraw button and show the tooltip.
 	isUnstable?: boolean;
+
+	// If the asset is from ics20-cw20
+	ics20ContractAddress?: string;
 }[] = [
 	{
 		counterpartyChainId: 'cosmoshub-4',
@@ -730,6 +733,13 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-165',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'usomm',
+	},
+	{
+		counterpartyChainId: 'juno-1',
+		sourceChannelId: 'channel-169',
+		destChannelId: 'channel-47',
+		coinMinimalDenom: 'cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr',
+		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 ];
 
@@ -1245,6 +1255,14 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'juno-network',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
+			},
+			{
+				type: 'cw20',
+				contractAddress: 'juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr',
+				coinDenom: 'NETA',
+				coinMinimalDenom: 'cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr:NETA',
+				coinDecimals: 6,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/neta.svg',
 			},
 		],
 		feeCurrencies: [
