@@ -249,8 +249,11 @@ function AssetBalanceRow({
 	isUnstable,
 	isMobileView,
 }: AssetBalanceRowProps) {
+	const isCW20 =
+		'originCurrency' in currency && currency.originCurrency && 'contractAddress' in currency.originCurrency;
+
 	return (
-		<>
+		<React.Fragment>
 			<AssetBalanceRowContainer>
 				<AssetBalanceTableRow>
 					<TableData style={{ width: isMobileView ? tableWidthsOnMobileView[0] : tableWidths[0] }}>
@@ -262,6 +265,7 @@ function AssetBalanceRow({
 						<Text emphasis="medium" isMobileView={isMobileView}>
 							{chainName ? `${chainName} - ${coinDenom.toUpperCase()}` : coinDenom.toUpperCase()}
 						</Text>
+						{isCW20 ? <div className="ml-2 px-2 py-1 rounded-full font-title text-xs bg-primary-200">CW20</div> : null}
 					</TableData>
 					<TableData
 						className="md:!pr-3 lg:!pr-20 !justify-end"
@@ -351,7 +355,7 @@ function AssetBalanceRow({
 					</IBCTransferButtonsOnMobileView>
 				)}
 			</AssetBalanceRowContainer>
-		</>
+		</React.Fragment>
 	);
 }
 
