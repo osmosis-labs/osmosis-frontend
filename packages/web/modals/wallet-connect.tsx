@@ -8,9 +8,14 @@ export const KeplrWalletConnectQRModal: FunctionComponent<
   }
 > = ({ isOpen, onRequestClose, uri }) => {
   return (
-    <ModalBase isOpen={isOpen} onRequestClose={onRequestClose}>
+    <ModalBase
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      className="max-w-[35.5rem]"
+      title={<h5 className="mb-4">Scan QR Code</h5>}
+    >
       {uri ? (
-        <div className="bg-white-high p-2">
+        <div className="bg-white-high p-3.5">
           <QRCode size={500} value={uri} />
         </div>
       ) : undefined}

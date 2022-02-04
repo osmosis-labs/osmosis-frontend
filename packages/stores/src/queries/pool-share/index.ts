@@ -35,7 +35,6 @@ export class ObservableQueryGammPoolShare {
     }[] =
       this.queryBalances.getQueryBech32Address(bech32Address).positiveBalances;
     const locked = this.queryLockedCoins.get(bech32Address).lockedCoins;
-
     let result: string[] = [];
 
     for (const bal of balances.concat(locked)) {
