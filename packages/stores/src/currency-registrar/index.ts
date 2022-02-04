@@ -1,5 +1,6 @@
-import { ChainInfo } from "@keplr-wallet/types";
+import { ChainInfo, AppCurrency } from "@keplr-wallet/types";
 import { ChainStore } from "@keplr-wallet/stores";
+
 
 export class LPCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
   constructor(protected readonly chainStore: ChainStore<C>) {
@@ -8,9 +9,9 @@ export class LPCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
     });
   }
 
-  protected readonly registerLPCurrency = (coinMinimalDenom: string) => {
+  protected readonly registerLPCurrency = (coinMinimalDenom: string): AppCurrency | [AppCurrency | undefined, boolean] | undefined  => {
     if (coinMinimalDenom.startsWith("gamm/pool/")) {
-      // GAMM 토큰의 경우 bank metadata를 쿼리하지 않고 그냥 바로 currency를 등록한다.
+      // In the case of GAMM tokens, not query the bank metadata, register as currency immediately.
       const poolId = coinMinimalDenom.replace("gamm/pool/", "");
       return {
         coinMinimalDenom,
