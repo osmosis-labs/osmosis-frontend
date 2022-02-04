@@ -14,7 +14,7 @@ export const MenuDropdown: FunctionComponent<Props> = ({
 }) => (
   <div
     className={classNames(
-      "absolute flex flex-col w-36 bg-card rounded-[9px] border border-white-faint select-none",
+      "absolute flex flex-col w-36 bg-card rounded-lg border border-white-faint select-none",
       {
         hidden: !isOpen,
       }
@@ -27,8 +27,8 @@ export const MenuDropdown: FunctionComponent<Props> = ({
           {
             "bg-white-faint text-white-full": id === selectedOptionId,
             "text-iconDefault": id !== selectedOptionId,
-            "rounded-t-[8px]": index === 0,
-            "rounded-b-[8px]": index === options.length - 1,
+            "rounded-t-lginset": index === 0,
+            "rounded-b-lginset": index === options.length - 1,
           }
         )}
         key={index}
