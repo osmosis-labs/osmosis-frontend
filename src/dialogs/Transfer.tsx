@@ -6,7 +6,7 @@ import { AmountInput } from '../components/form/Inputs';
 import { colorWhiteEmphasis } from '../emotionStyles/colors';
 import { useStore } from '../stores';
 import { Bech32Address } from '@keplr-wallet/cosmos';
-import { WalletStatus } from '@keplr-wallet/stores';
+import { getKeplrFromWindow, WalletStatus } from '@keplr-wallet/stores';
 import { useFakeFeeConfig } from '../hooks/tx';
 import { useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
 import { wrapBaseDialog } from './base';
@@ -24,6 +24,8 @@ export const TransferDialog = wrapBaseDialog(
 			isWithdraw,
 			close,
 			isMobileView,
+
+			ics20ContractAddress,
 		}: {
 			currency: IBCCurrency;
 			counterpartyChainId: string;
@@ -32,6 +34,8 @@ export const TransferDialog = wrapBaseDialog(
 			isWithdraw: boolean;
 			close: () => void;
 			isMobileView: boolean;
+
+			ics20ContractAddress?: string;
 		}) => {
 			const { chainStore, accountStore, queriesStore, ibcTransferHistoryStore } = useStore();
 
@@ -72,6 +76,27 @@ export const TransferDialog = wrapBaseDialog(
 			amountConfig.setFeeConfig(feeConfig);
 
 			const { isAccountConnected, connectAccount } = useAccountConnection();
+
+			useEffect(() => {
+				if (isAccountConnected && currency.originCurrency) {
+					if ('contractAddress' in currency.originCurrency) {
+						getKeplrFromWindow()
+							.then(keplr => {
+								// If the keplr is from extension and the ibc token is from cw20,
+								// suggest the token to the keplr.
+								if (keplr && keplr.mode === 'extension') {
+									if (currency.originChainId && currency.originCurrency && 'contractAddress' in currency.originCurrency)
+										keplr.suggestToken(currency.originChainId, currency.originCurrency.contractAddress).catch(e => {
+											console.log(e);
+										});
+								}
+							})
+							.catch(e => {
+								console.log(e);
+							});
+					}
+				}
+			}, [isAccountConnected, currency.originCurrency, currency.originChainId]);
 
 			return (
 				<div className="w-full h-full text-white-high">
@@ -228,6 +253,12 @@ export const TransferDialog = wrapBaseDialog(
 																			const timeoutHeight = timeoutHeightAttr
 																				? Buffer.from(timeoutHeightAttr.value, 'base64').toString()
 																				: undefined;
+																			const timeoutTimestampAttr = attributes.find(
+																				attr => attr.key === Buffer.from('packet_timeout_timestamp').toString('base64')
+																			);
+																			const timeoutTimestamp = timeoutTimestampAttr
+																				? Buffer.from(timeoutTimestampAttr.value, 'base64').toString()
+																				: undefined;
 
 																			if (sourceChannel && destChannel && sequence) {
 																				ibcTransferHistoryStore.pushPendingHistory({
@@ -241,6 +272,7 @@ export const TransferDialog = wrapBaseDialog(
 																					recipient,
 																					amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
 																					timeoutHeight,
+																					timeoutTimestamp,
 																				});
 																			}
 																		}
@@ -258,85 +290,128 @@ export const TransferDialog = wrapBaseDialog(
 												const sender = counterpartyAccount.bech32Address;
 												const recipient = account.bech32Address;
 
-												await counterpartyAccount.cosmos.sendIBCTransferMsg(
-													{
-														portId: 'transfer',
-														channelId: destChannelId,
-														counterpartyChainId: chainStore.current.chainId,
-													},
-													amountConfig.amount,
-													amountConfig.currency,
-													recipient,
-													'',
-													undefined,
-													undefined,
-													{
-														onBroadcasted: (txHash: Uint8Array) =>
-															ibcTransferHistoryStore.pushUncommitedHistore({
-																txHash: Buffer.from(txHash).toString('hex'),
-																sourceChainId: counterpartyChainId,
-																destChainId: chainStore.current.chainId,
-																amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
-																sender,
-																recipient,
-															}),
-														onFulfill: tx => {
-															if (!tx.code) {
-																const events = tx?.events as
-																	| { type: string; attributes: { key: string; value: string }[] }[]
-																	| undefined;
-																if (events) {
-																	for (const event of events) {
-																		if (event.type === 'send_packet') {
-																			const attributes = event.attributes;
-																			const sourceChannelAttr = attributes.find(
-																				attr => attr.key === Buffer.from('packet_src_channel').toString('base64')
-																			);
-																			const sourceChannel = sourceChannelAttr
-																				? Buffer.from(sourceChannelAttr.value, 'base64').toString()
-																				: undefined;
-																			const destChannelAttr = attributes.find(
-																				attr => attr.key === Buffer.from('packet_dst_channel').toString('base64')
-																			);
-																			const destChannel = destChannelAttr
-																				? Buffer.from(destChannelAttr.value, 'base64').toString()
-																				: undefined;
-																			const sequenceAttr = attributes.find(
-																				attr => attr.key === Buffer.from('packet_sequence').toString('base64')
-																			);
-																			const sequence = sequenceAttr
-																				? Buffer.from(sequenceAttr.value, 'base64').toString()
-																				: undefined;
-																			const timeoutHeightAttr = attributes.find(
-																				attr => attr.key === Buffer.from('packet_timeout_height').toString('base64')
-																			);
-																			const timeoutHeight = timeoutHeightAttr
-																				? Buffer.from(timeoutHeightAttr.value, 'base64').toString()
-																				: undefined;
+												const txEvents = {
+													onBroadcasted: (txHash: Uint8Array) =>
+														ibcTransferHistoryStore.pushUncommitedHistore({
+															txHash: Buffer.from(txHash).toString('hex'),
+															sourceChainId: counterpartyChainId,
+															destChainId: chainStore.current.chainId,
+															amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
+															sender,
+															recipient,
+														}),
+													onFulfill: (tx: any) => {
+														if (!tx.code) {
+															const events = tx?.events as
+																| { type: string; attributes: { key: string; value: string }[] }[]
+																| undefined;
+															if (events) {
+																for (const event of events) {
+																	if (event.type === 'send_packet') {
+																		const attributes = event.attributes;
+																		const sourceChannelAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_src_channel').toString('base64')
+																		);
+																		const sourceChannel = sourceChannelAttr
+																			? Buffer.from(sourceChannelAttr.value, 'base64').toString()
+																			: undefined;
+																		const destChannelAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_dst_channel').toString('base64')
+																		);
+																		const destChannel = destChannelAttr
+																			? Buffer.from(destChannelAttr.value, 'base64').toString()
+																			: undefined;
+																		const sequenceAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_sequence').toString('base64')
+																		);
+																		const sequence = sequenceAttr
+																			? Buffer.from(sequenceAttr.value, 'base64').toString()
+																			: undefined;
+																		const timeoutHeightAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_timeout_height').toString('base64')
+																		);
+																		const timeoutHeight = timeoutHeightAttr
+																			? Buffer.from(timeoutHeightAttr.value, 'base64').toString()
+																			: undefined;
+																		const timeoutTimestampAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_timeout_timestamp').toString('base64')
+																		);
+																		const timeoutTimestamp = timeoutTimestampAttr
+																			? Buffer.from(timeoutTimestampAttr.value, 'base64').toString()
+																			: undefined;
 
-																			if (sourceChannel && destChannel && sequence) {
-																				ibcTransferHistoryStore.pushPendingHistory({
-																					txHash: tx.hash,
-																					sourceChainId: counterpartyChainId,
-																					sourceChannelId: sourceChannel,
-																					destChainId: chainStore.current.chainId,
-																					destChannelId: destChannel,
-																					sequence,
-																					sender,
-																					recipient,
-																					amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
-																					timeoutHeight,
-																				});
-																			}
+																		if (sourceChannel && destChannel && sequence) {
+																			ibcTransferHistoryStore.pushPendingHistory({
+																				txHash: tx.hash,
+																				sourceChainId: counterpartyChainId,
+																				sourceChannelId: sourceChannel,
+																				destChainId: chainStore.current.chainId,
+																				destChannelId: destChannel,
+																				sequence,
+																				sender,
+																				recipient,
+																				amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
+																				timeoutHeight,
+																				timeoutTimestamp,
+																			});
 																		}
 																	}
 																}
 															}
+														}
 
-															close();
-														},
+														close();
+													},
+												};
+
+												if (ics20ContractAddress) {
+													if (!currency.originCurrency || !('contractAddress' in currency.originCurrency)) {
+														throw new Error(
+															'IBC is requested to be used via cosmwam, but the provided currency does not have a contract address'
+														);
 													}
-												);
+
+													const msg = {
+														channel: destChannelId,
+														remote_address: recipient,
+														// 15 min
+														timeout: 900,
+													};
+
+													await counterpartyAccount.cosmwasm.sendExecuteContractMsg(
+														'ibcTransfer' as any,
+														currency.originCurrency.contractAddress,
+														{
+															send: {
+																contract: ics20ContractAddress,
+																amount: amountConfig.getAmountPrimitive().amount,
+																msg: Buffer.from(JSON.stringify(msg)).toString('base64'),
+															},
+														},
+														[],
+														'',
+														{
+															gas: '350000',
+														},
+														undefined,
+														txEvents
+													);
+												} else {
+													await counterpartyAccount.cosmos.sendIBCTransferMsg(
+														{
+															portId: 'transfer',
+															channelId: destChannelId,
+															counterpartyChainId: chainStore.current.chainId,
+														},
+														amountConfig.amount,
+														amountConfig.currency,
+														recipient,
+														'',
+														undefined,
+														undefined,
+														txEvents
+													);
+												}
 											}
 										}
 									} catch (e) {
