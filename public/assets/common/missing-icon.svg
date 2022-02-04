@@ -1,13 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
-    <g id="symbol_none" transform="translate(-517 -753)">
-        <g id="타원_233" data-name="타원 233" transform="translate(517 753)" fill="#fff" stroke="#e6e6e6" stroke-width="1">
-            <circle cx="14" cy="14" r="14" stroke="none"/>
-            <circle cx="14" cy="14" r="13.5" fill="none"/>
-        </g>
-        <g id="question-mark_1_" data-name="question-mark (1)" transform="translate(520.66 759.258)">
-            <path id="패스_2173" data-name="패스 2173"
-                  d="M10.114,0C12.726,0,15.3,1.2,15.3,4.08c0,2.653-3.04,3.674-3.693,4.632-.49.713-.326,1.715-1.673,1.715A1.3,1.3,0,0,1,8.625,9.061c0-2.43,3.57-2.98,3.57-4.981,0-1.1-.733-1.754-1.958-1.754-2.612,0-1.592,2.693-3.57,2.693A1.221,1.221,0,0,1,5.34,3.775C5.34,1.774,7.624,0,10.114,0Zm-.1,11.753a1.674,1.674,0,1,1-1.674,1.674A1.681,1.681,0,0,1,10.013,11.753Z"
-                  fill="#b2b6bc"/>
-        </g>
-    </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><g id="symbol_none" transform="translate(-517 -753)"><g id="타원_233" fill="#fff" stroke="#e6e6e6" stroke-width="1" data-name="타원 233" transform="translate(517 753)"><circle cx="14" cy="14" r="14" stroke="none"/><circle cx="14" cy="14" r="13.5" fill="none"/></g><g id="question-mark_1_" data-name="question-mark (1)" transform="translate(520.66 759.258)"><path id="패스_2173" fill="#b2b6bc" d="M10.114,0C12.726,0,15.3,1.2,15.3,4.08c0,2.653-3.04,3.674-3.693,4.632-.49.713-.326,1.715-1.673,1.715A1.3,1.3,0,0,1,8.625,9.061c0-2.43,3.57-2.98,3.57-4.981,0-1.1-.733-1.754-1.958-1.754-2.612,0-1.592,2.693-3.57,2.693A1.221,1.221,0,0,1,5.34,3.775C5.34,1.774,7.624,0,10.114,0Zm-.1,11.753a1.674,1.674,0,1,1-1.674,1.674A1.681,1.681,0,0,1,10.013,11.753Z" data-name="패스 2173"/></g></g></svg>
