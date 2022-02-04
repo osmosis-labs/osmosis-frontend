@@ -16,7 +16,7 @@ interface Props {
    */
   titleButtons?: LabelButton[];
   /** First row of overview labels, with more prominent value text size.
-   *  Accepts at most 2.
+   *  Accepts at most 2. 4 if there is no background image.
    */
   primaryOverviewLabels: OverviewLabel[];
   /** Second row of overview labels, with slightly less prominent value text size.
@@ -53,9 +53,11 @@ export const Overview: FunctionComponent<Props> = ({
           ))}
         </div>
         <div className="mt-6 flex items-center gap-20">
-          {primaryOverviewLabels.slice(0, 2).map((label, index) => (
-            <OverviewLabelValue key={index} {...label} />
-          ))}
+          {primaryOverviewLabels
+            .slice(0, bgImageUrl ? 2 : 4)
+            .map((label, index) => (
+              <OverviewLabelValue key={index} {...label} />
+            ))}
         </div>
         <div className="mt-6 flex items-center gap-20">
           {secondaryOverviewLabels?.slice(0, 3).map((label, index) => (
