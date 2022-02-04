@@ -54,6 +54,7 @@ export const LockupAbledPoolIds: {
 	'613': true,
 	'618': true,
 	'619': true,
+	'629': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -519,6 +520,7 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 	],
+	'629': []
 };
 
 export const PoolsPerPage = 10;
@@ -740,6 +742,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-165',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'usomm',
+	},
+	{
+		counterpartyChainId: 'sifchain-1',
+		sourceChannelId: 'channel-47',
+		destChannelId: 'channel-17',
+		coinMinimalDenom: 'rowan',
 	},
 ];
 
@@ -1927,5 +1935,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://sommscan.io',
+	},
+	{
+		rpc: 'https://rpc.sifchain.finance',
+		rest: 'https://api-int.sifchain.finance',
+		chainId: 'sifchain-1',
+		chainName: 'Sifchain',
+		stakeCurrency: {
+			coinDenom: 'ROWAN',
+			coinMinimalDenom: 'rowan',
+			coinDecimals: 18,
+			coinGeckoId: 'sifchain',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/rowan.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('sif'),
+		currencies: [
+			{
+				coinDenom: 'ROWAN',
+				coinMinimalDenom: 'rowan',
+				coinDecimals: 18,
+				coinGeckoId: 'sifchain',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/rowan.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'ROWAN',
+				coinMinimalDenom: 'rowan',
+				coinDecimals: 18,
+				coinGeckoId: 'sifchain',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/rowan.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://www.mintscan.io/sifchain/txs/{txHash}',
 	},
 ];
