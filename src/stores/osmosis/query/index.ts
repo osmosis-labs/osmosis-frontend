@@ -1,5 +1,11 @@
 import { ObservableQueryPools, ObservableQueryNumPools } from './pools';
-import { ChainGetter, QueriesSetBase, QueriesWithCosmos } from '@keplr-wallet/stores';
+import {
+	ChainGetter,
+	CosmwasmQueries,
+	HasCosmwasmQueries,
+	QueriesSetBase,
+	QueriesWithCosmos,
+} from '@keplr-wallet/stores';
 import { KVStore } from '@keplr-wallet/common';
 import { DeepReadonly } from 'utility-types';
 import { ObservableQueryGammPoolShare } from './pool-share';
@@ -21,13 +27,15 @@ export interface HasOsmosisQueries {
 	osmosis: OsmosisQueries;
 }
 
-export class QueriesWithCosmosAndOsmosis extends QueriesWithCosmos implements HasOsmosisQueries {
+export class QueriesWithCosmosAndOsmosis extends QueriesWithCosmos implements HasOsmosisQueries, HasCosmwasmQueries {
 	public readonly osmosis: DeepReadonly<OsmosisQueries>;
+	public readonly cosmwasm: DeepReadonly<CosmwasmQueries>;
 
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
 		super(kvStore, chainId, chainGetter);
 
 		this.osmosis = new OsmosisQueries(this, kvStore, chainId, chainGetter);
+		this.cosmwasm = new CosmwasmQueries(this, kvStore, chainId, chainGetter);
 	}
 }
 

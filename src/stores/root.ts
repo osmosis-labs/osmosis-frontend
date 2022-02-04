@@ -1107,6 +1107,7 @@ export class RootStore {
 			this.chainStore,
 			this.accountStore,
 			this.queriesStore,
+			this.queriesStore,
 			(
 				denomTrace: {
 					denom: string;

@@ -41,6 +41,7 @@ export interface IBCTransferHistory {
 	status: IBCTransferHistoryStatus;
 	// timeoutHeight should be formed as the `{chain_version}-{block_height}`
 	readonly timeoutHeight?: string;
+	readonly timeoutTimestamp?: string;
 	readonly createdAt: string;
 }
 
@@ -155,10 +156,42 @@ export class IBCTransferHistoryStore {
 		};
 	}
 
+	protected traceTimeoutTimestamp(
+		blockSubscriber: TxTracer,
+		timeoutTimestamp: string
+	): {
+		unsubscriber: () => void;
+		promise: Promise<void>;
+	} {
+		let resolver: (value: PromiseLike<void> | void) => void;
+		const promise = new Promise<void>(resolve => {
+			resolver = resolve;
+		});
+		const unsubscriber = blockSubscriber.subscribeBlock(data => {
+			const blockTime = data?.block?.header?.time;
+			if (blockTime && new Date(blockTime).getTime() > Math.floor(parseInt(timeoutTimestamp) / 1000000)) {
+				resolver();
+				return;
+			}
+		});
+
+		return {
+			unsubscriber,
+			promise,
+		};
+	}
+
 	async traceHistroyStatus(
 		history: Pick<
 			IBCTransferHistory,
-			'sourceChainId' | 'sourceChannelId' | 'destChainId' | 'destChannelId' | 'sequence' | 'timeoutHeight' | 'status'
+			| 'sourceChainId'
+			| 'sourceChannelId'
+			| 'destChainId'
+			| 'destChannelId'
+			| 'sequence'
+			| 'timeoutHeight'
+			| 'timeoutTimestamp'
+			| 'status'
 		>
 	): Promise<IBCTransferHistoryStatus> {
 		if (history.status === 'complete' || history.status === 'refunded') {
@@ -185,10 +218,26 @@ export class IBCTransferHistoryStore {
 
 		const promises: Promise<any>[] = [];
 
-		if (history.timeoutHeight) {
+		if (history.timeoutHeight && !history.timeoutHeight.endsWith('-0')) {
 			promises.push(
 				(async () => {
 					const { promise, unsubscriber } = this.traceTimeoutHeight(blockSubscriber, history.timeoutHeight!);
+					timeoutUnsubscriber = unsubscriber;
+					await promise;
+
+					// Even though the block is reached to the timeout height,
+					// the receiving packet event could be delivered before the block timeout if the network connection is unstable.
+					// This it not the chain issue itself, jsut the issue from the frontend, it it impossible to ensure the network status entirely.
+					// To reduce this problem, just wait 10 second more even if the block is reached to the timeout height.
+					await new Promise(resolve => {
+						setTimeout(resolve, 10000);
+					});
+				})()
+			);
+		} else if (history.timeoutTimestamp && history.timeoutTimestamp !== '0') {
+			promises.push(
+				(async () => {
+					const { promise, unsubscriber } = this.traceTimeoutTimestamp(blockSubscriber, history.timeoutTimestamp!);
 					timeoutUnsubscriber = unsubscriber;
 					await promise;
 
@@ -311,6 +360,12 @@ export class IBCTransferHistoryStore {
 							const timeoutHeight = timeoutHeightAttr
 								? Buffer.from(timeoutHeightAttr.value, 'base64').toString()
 								: undefined;
+							const timeoutTimestampAttr = attributes.find(
+								attr => attr.key === Buffer.from('packet_timeout_timestamp').toString('base64')
+							);
+							const timeoutTimestamp = timeoutTimestampAttr
+								? Buffer.from(timeoutTimestampAttr.value, 'base64').toString()
+								: undefined;
 
 							if (sourceChannel && destChannel && sequence) {
 								this.pushPendingHistoryWithCreatedAt({
@@ -324,6 +379,7 @@ export class IBCTransferHistoryStore {
 									recipient: uncommited.recipient,
 									amount: uncommited.amount,
 									timeoutHeight,
+									timeoutTimestamp,
 									createdAt: uncommited.createdAt,
 								});
 							}

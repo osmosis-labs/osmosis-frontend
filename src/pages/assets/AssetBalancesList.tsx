@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
-import { AppCurrency, Currency, IBCCurrency } from '@keplr-wallet/types';
+import { AppCurrency, IBCCurrency } from '@keplr-wallet/types';
 import { observer } from 'mobx-react-lite';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Img } from 'src/components/common/Img';
 import { ButtonFaint, ButtonSecondary } from 'src/components/layouts/Buttons';
 import { Text, TitleText } from 'src/components/Texts';
@@ -11,7 +11,6 @@ import { TableData, TableHeaderRow } from 'src/pages/assets/components/Table';
 import { useStore } from 'src/stores';
 import { makeIBCMinimalDenom } from 'src/utils/ibc';
 import useWindowSize from 'src/hooks/useWindowSize';
-import { useLocation } from 'react-router-dom';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { Dec } from '@keplr-wallet/unit';
 
@@ -30,16 +29,23 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 		const chainInfo = chainStore.getChain(channelInfo.counterpartyChainId);
 		const ibcDenom = makeIBCMinimalDenom(channelInfo.sourceChannelId, channelInfo.coinMinimalDenom);
 
-		const originCurrency = chainInfo.currencies.find(
-			cur => cur.coinMinimalDenom === channelInfo.coinMinimalDenom
-		) as Currency;
+		const originCurrency = chainInfo.currencies.find(cur => {
+			if (channelInfo.coinMinimalDenom.startsWith('cw20:')) {
+				return cur.coinMinimalDenom.startsWith(channelInfo.coinMinimalDenom);
+			}
+
+			return cur.coinMinimalDenom === channelInfo.coinMinimalDenom;
+		});
 
 		if (!originCurrency) {
 			throw new Error(`Unknown currency ${channelInfo.coinMinimalDenom} for ${channelInfo.counterpartyChainId}`);
 		}
 
 		const balance = queries.queryBalances.getQueryBech32Address(account.bech32Address).getBalanceFromCurrency({
-			...originCurrency,
+			coinDecimals: originCurrency.coinDecimals,
+			coinGeckoId: originCurrency.coinGeckoId,
+			coinImageUrl: originCurrency.coinImageUrl,
+			coinDenom: originCurrency.coinDenom,
 			coinMinimalDenom: ibcDenom,
 			paths: [
 				{
@@ -57,6 +63,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 			sourceChannelId: channelInfo.sourceChannelId,
 			destChannelId: channelInfo.destChannelId,
 			isUnstable: channelInfo.isUnstable,
+			ics20ContractAddress: channelInfo.ics20ContractAddress,
 		};
 	});
 
@@ -68,6 +75,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 				sourceChannelId: string;
 				destChannelId: string;
 				isWithdraw: boolean;
+				ics20ContractAddress?: string;
 		  }
 		| {
 				open: false;
@@ -75,28 +83,6 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 	>({ open: false });
 
 	const close = () => setDialogState(v => ({ ...v, open: false }));
-
-	const location = useLocation();
-	useEffect(() => {
-		if (location.search === '?terra=true') {
-			const luna = ibcBalances.find(
-				bal =>
-					bal.balance.currency.coinMinimalDenom ===
-					'ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0'
-			);
-
-			if (luna && 'paths' in luna.balance.currency) {
-				setDialogState({
-					open: true,
-					currency: luna.balance.currency,
-					counterpartyChainId: luna.chainInfo.chainId,
-					sourceChannelId: luna.sourceChannelId,
-					destChannelId: luna.destChannelId,
-					isWithdraw: false,
-				});
-			}
-		}
-	}, []);
 
 	return (
 		<React.Fragment>
@@ -113,6 +99,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 					destChannelId={dialogState.destChannelId}
 					isWithdraw={dialogState.isWithdraw}
 					isMobileView={isMobileView}
+					ics20ContractAddress={dialogState.ics20ContractAddress}
 				/>
 			) : null}
 			<div className="px-5 md:px-0">
@@ -179,6 +166,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 										sourceChannelId: bal.sourceChannelId,
 										destChannelId: bal.destChannelId,
 										isWithdraw: false,
+										ics20ContractAddress: bal.ics20ContractAddress,
 									});
 								}}
 								onWithdraw={() => {
@@ -189,6 +177,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 										sourceChannelId: bal.sourceChannelId,
 										destChannelId: bal.destChannelId,
 										isWithdraw: true,
+										ics20ContractAddress: bal.ics20ContractAddress,
 									});
 								}}
 								isUnstable={bal.isUnstable}
@@ -260,8 +249,11 @@ function AssetBalanceRow({
 	isUnstable,
 	isMobileView,
 }: AssetBalanceRowProps) {
+	const isCW20 =
+		'originCurrency' in currency && currency.originCurrency && 'contractAddress' in currency.originCurrency;
+
 	return (
-		<>
+		<React.Fragment>
 			<AssetBalanceRowContainer>
 				<AssetBalanceTableRow>
 					<TableData style={{ width: isMobileView ? tableWidthsOnMobileView[0] : tableWidths[0] }}>
@@ -273,6 +265,7 @@ function AssetBalanceRow({
 						<Text emphasis="medium" isMobileView={isMobileView}>
 							{chainName ? `${chainName} - ${coinDenom.toUpperCase()}` : coinDenom.toUpperCase()}
 						</Text>
+						{isCW20 ? <div className="ml-2 px-2 py-1 rounded-full font-title text-xs bg-primary-200">CW20</div> : null}
 					</TableData>
 					<TableData
 						className="md:!pr-3 lg:!pr-20 !justify-end"
@@ -362,7 +355,7 @@ function AssetBalanceRow({
 					</IBCTransferButtonsOnMobileView>
 				)}
 			</AssetBalanceRowContainer>
-		</>
+		</React.Fragment>
 	);
 }
 
