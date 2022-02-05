@@ -275,6 +275,7 @@ export class IBCTransferHistoryStore {
 				'timeout_packet.packet_sequence': history.sequence,
 			});
 
+			txTracer.close();
 			return 'refunded';
 		}
 
