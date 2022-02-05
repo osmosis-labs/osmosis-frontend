@@ -21,7 +21,9 @@ const Assets: NextPage = function () {
   const [isChecked, setChecked] = useState(true);
   const [disabled, setDisabled] = useState(false);
 
-  const [r, setR] = useState<"sm" | "md" | "lg">("sm");
+  const [r, setR] = useState<"xs" | "sm" | "lg">("sm");
+  const [t, setType] = useState<"block" | "arrow" | "outline">("block");
+  const [c, setC] = useState<"primary" | "secondary">("primary");
   const [s, setS] = useState(50);
   const [p, setP] = useState(50);
 
@@ -123,32 +125,37 @@ const Assets: NextPage = function () {
 
   return (
     <main className="max-w-container mx-auto">
-      <div className="bg-background py-20 flex justify-center items-center">
+      <div className="bg-background py-20 flex flex-col justify-center items-center">
+        <span className="p-5">Switch:</span>
         <Switch isOn={isChecked} onToggle={setChecked} disabled={disabled} />
-        Disable:
+        <span className="p-5">Disable:</span>
         <Switch isOn={disabled} onToggle={setDisabled} />
+      </div>
+      <div className="bg-background py-20 flex justify-center items-center">
+        <span className="p-5">Button:</span>
         <Button
           size={r}
+          type={t}
+          color={c}
           onClick={() => console.log("click")}
           disabled={disabled}
           loading={isChecked}
         >
           <div>Hello</div>
         </Button>
-        <IconButton onClick={() => console.log("click")} />
-        <CheckBox onToggle={setChecked} isOn={isChecked} disabled={disabled} />
-        <CheckBox onToggle={setChecked} isOn={isChecked} disabled={disabled} />
-        <CheckBox onToggle={setChecked} isOn={isChecked} disabled={disabled} />
-        Sm
+      </div>
+      <div className="bg-background py-20 flex justify-center items-center">
+        <span className="p-5">Radios:</span>
+        Xs
         <Radio
-          value="sm"
+          value="xs"
           onSelectRadio={(v) => setR(assign(v) ?? "sm")}
           groupValue={r}
           disabled={disabled}
         />
-        Md
+        Sm
         <Radio
-          value="md"
+          value="sm"
           onSelectRadio={(v) => setR(assign(v) ?? "sm")}
           groupValue={r}
           disabled={disabled}
@@ -160,21 +167,69 @@ const Assets: NextPage = function () {
           groupValue={r}
           disabled={disabled}
         />
+        Block
+        <Radio
+          value="block"
+          onSelectRadio={(v) => setType(assignType(v) ?? "block")}
+          groupValue={t}
+          disabled={disabled}
+        />
+        Arrow
+        <Radio
+          value="arrow"
+          onSelectRadio={(v) => setType(assignType(v) ?? "arrow")}
+          groupValue={t}
+          disabled={disabled}
+        />
+        Outline
+        <Radio
+          value="outline"
+          onSelectRadio={(v) => setType(assignType(v) ?? "outline")}
+          groupValue={t}
+          disabled={disabled}
+        />
+        Primary
+        <Radio
+          value="primary"
+          onSelectRadio={(v) => setC(assignC(v) ?? "primary")}
+          groupValue={c}
+          disabled={disabled}
+        />
+        Secondary
+        <Radio
+          value="secondary"
+          onSelectRadio={(v) => setC(assignC(v) ?? "secondary")}
+          groupValue={c}
+          disabled={disabled}
+        />
+      </div>
+      <div className="bg-background py-20 flex justify-center items-center">
+        <span className="p-5">Toggle:</span>
         <Toggle onToggle={setChecked} isOn={isChecked} disabled={disabled}>
           test
         </Toggle>
       </div>
       <div className="bg-background py-20 flex justify-center items-center">
+        <span className="p-5">Checkbox:</span>
+        <CheckBox onToggle={setChecked} isOn={isChecked} disabled={disabled} />
+      </div>
+      <div className="bg-background py-20 flex justify-center items-center">
+        <span className="p-5">Icon button:</span>
+        <IconButton onClick={() => console.log("click")} />
+      </div>
+      <div className="bg-background py-20 flex justify-center items-center">
+        <span className="p-5">Menu toggle:</span>
         <MenuToggle
           options={[
-            { id: "sm", display: "small" },
-            { id: "md", display: "medium" },
+            { id: "xs", display: "Extra small" },
+            { id: "sm", display: "Small" },
           ]}
           selectedOptionId={r}
           onSelect={(v) => setR(assign(v) ?? "sm")}
         />
       </div>
-      <div className="flex bg-background py-20 justify-center items-center w-full">
+      <div className="flex flex-col bg-background py-20 justify-center items-center w-full">
+        <span className="p-5">Slider:</span>
         <Slider
           type="tooltip"
           currentValue={s}
@@ -183,16 +238,18 @@ const Assets: NextPage = function () {
           max={100}
           disabled={disabled}
         />
+        <span className="m-10">{s}</span>
       </div>
-      <div className="bg-surface py-8 justify-center items-center">
+      <div className="flex flex-col bg-surface py-8 justify-center items-center">
+        <span className="p-5">Table:</span>
         <Table<BaseCell & PoolCompositionCell>
           columnDefs={tableCols}
           rowDefs={tableRows}
           data={tableData}
         />
       </div>
-      <div className="bg-background py-8 justify-center items-center">
-        <span className="m-10">{s}</span>
+      <div className="flex flex-col bg-background py-8 justify-center items-center">
+        <span className="p-5">Page list:</span>
         <PageList
           currentValue={p}
           onInput={(v) => setP(v)}
@@ -201,7 +258,8 @@ const Assets: NextPage = function () {
           editField
         />
       </div>
-      <div className="bg-background py-8 justify-center items-center">
+      <div className="flex flex-col bg-background py-8 justify-center items-center">
+        <span className="p-5">Sort menu:</span>
         <SortMenu
           options={[
             { id: "a", display: "Apple" },
@@ -213,7 +271,8 @@ const Assets: NextPage = function () {
           disabled={disabled}
         />
       </div>
-      <div className="bg-background py-8 justify-center items-center">
+      <div className="flex flex-col bg-background py-8 justify-center items-center">
+        <span className="p-5">Alerts:</span>
         <Error message="Ratio doesn't match, total amount should be 100%." />
         <Info
           message="Pool Creation Fee"
@@ -221,7 +280,8 @@ const Assets: NextPage = function () {
           data="100 OSMO"
         />
       </div>
-      <div className="bg-surface py-8 justify-center items-center">
+      <div className="flex flex-col bg-surface py-8 justify-center items-center">
+        <span className="p-5">Input box:</span>
         <InputBox
           currentValue={iV}
           placeholder={"50"}
@@ -234,7 +294,8 @@ const Assets: NextPage = function () {
           clearButton
         />
       </div>
-      <div className="bg-background py-8 justify-center items-center">
+      <div className="flex flex-col bg-background py-8 justify-center items-center">
+        <span className="p-5">Search box:</span>
         <SearchBox
           currentValue={iV}
           placeholder="Filter by symbol"
@@ -247,7 +308,19 @@ const Assets: NextPage = function () {
 };
 
 function assign(val: string) {
-  if (val === "sm" || val === "md" || val === "lg") {
+  if (val === "xs" || val === "sm" || val === "lg") {
+    return val;
+  }
+  return undefined;
+}
+function assignType(val: string) {
+  if (val === "block" || val === "arrow" || val === "outline") {
+    return val;
+  }
+  return undefined;
+}
+function assignC(val: string) {
+  if (val === "primary" || val === "secondary") {
     return val;
   }
   return undefined;

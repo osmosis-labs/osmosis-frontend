@@ -19,7 +19,7 @@ export const Toggle: FunctionComponent<
           type="checkbox"
           id="toggle"
           className={classNames(
-            "absolute h-[24px] w-full rounded-lg appearance-none",
+            "absolute h-6 w-full rounded-lg appearance-none",
             {
               "opacity-50 bg-iconDefault": disabled && isOn,
               "opacity-20 bg-iconDefault": disabled && !isOn,
@@ -36,7 +36,7 @@ export const Toggle: FunctionComponent<
         />
         <div
           className={classNames(
-            "relative top-[5px] px-2 select-none text-caption",
+            "relative top-1.5 px-2 select-none text-caption",
             {
               "cursor-default": disabled,
               "cursor-pointer": isHovered && !disabled,
