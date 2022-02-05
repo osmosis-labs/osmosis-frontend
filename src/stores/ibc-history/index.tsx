@@ -1,12 +1,13 @@
 import { computed, flow, makeObservable, observable, toJS } from 'mobx';
 import { KVStore, toGenerator } from '@keplr-wallet/common';
-import { TxTracer, WsReadyState } from '../../tx';
+import { TxTracer } from '../../tx';
 import { ChainGetter } from '@keplr-wallet/stores';
 import { AppCurrency } from '@keplr-wallet/types';
 import { computedFn, keepAlive } from 'mobx-utils';
 import { ChainIdHelper } from '@keplr-wallet/cosmos';
 import { Buffer } from 'buffer/';
 import dayjs from 'dayjs';
+import Axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 export interface UncommitedHistory {
 	// Hex encoded.
@@ -45,6 +46,73 @@ export interface IBCTransferHistory {
 	readonly createdAt: string;
 }
 
+export class PollingStatusSubscription {
+	protected readonly rpcInstance: AxiosInstance;
+
+	protected _subscriptionCount: number = 0;
+
+	protected _handlers: ((data: any) => void)[] = [];
+
+	constructor(protected readonly rpc: string, protected readonly rpcConfig?: AxiosRequestConfig) {
+		this.rpcInstance = Axios.create({
+			...{
+				baseURL: rpc,
+			},
+			...rpcConfig,
+		});
+	}
+
+	get subscriptionCount(): number {
+		return this._subscriptionCount;
+	}
+
+	/**
+	 * @param handler
+	 * @return unsubscriber
+	 */
+	subscribe(handler: (data: any) => void): () => void {
+		this._handlers.push(handler);
+
+		this.increaseSubscriptionCount();
+
+		return () => {
+			this._handlers = this._handlers.filter(h => h !== handler);
+			this.decreaseSubscriptionCount();
+		};
+	}
+
+	protected async startSubscription() {
+		while (this._subscriptionCount > 0) {
+			await new Promise(resolve => {
+				// 7.5 sec.
+				setTimeout(resolve, 7500);
+			});
+
+			try {
+				const response = await this.rpcInstance.get('/status');
+				if (response.status === 200) {
+					this._handlers.forEach(handler => handler(response.data));
+				}
+			} catch (e) {
+				console.log(`Failed to fetch /status: ${e?.toString()}`);
+			}
+		}
+	}
+
+	protected increaseSubscriptionCount() {
+		this._subscriptionCount++;
+
+		if (this._subscriptionCount === 1) {
+			// No need to await
+			this.startSubscription();
+		}
+	}
+
+	protected decreaseSubscriptionCount() {
+		this._subscriptionCount--;
+	}
+}
+
 export class IBCTransferHistoryStore {
 	/*
 	 * The tx takes more time to be commited after the tx broadcasted.
@@ -65,7 +133,7 @@ export class IBCTransferHistoryStore {
 
 	// Key is chain id.
 	// No need to be observable
-	protected blockSubscriberMap: Map<string, TxTracer> = new Map();
+	protected blockSubscriberMap: Map<string, PollingStatusSubscription> = new Map();
 
 	constructor(protected readonly kvStore: KVStore, protected readonly chainGetter: ChainGetter) {
 		makeObservable(this);
@@ -114,9 +182,10 @@ export class IBCTransferHistoryStore {
 			});
 	});
 
-	protected getBlockSubscriber(chainId: string): TxTracer {
+	protected getBlockSubscriber(chainId: string): PollingStatusSubscription {
 		if (!this.blockSubscriberMap.has(chainId)) {
-			this.blockSubscriberMap.set(chainId, new TxTracer(this.chainGetter.getChain(chainId).rpc, '/websocket'));
+			const chainInfo = this.chainGetter.getChain(chainId);
+			this.blockSubscriberMap.set(chainId, new PollingStatusSubscription(chainInfo.rpc, chainInfo.rpcConfig));
 		}
 
 		return this.blockSubscriberMap.get(chainId)!;
@@ -124,7 +193,7 @@ export class IBCTransferHistoryStore {
 
 	// timeoutHeight should be formed as the `{chain_version}-{block_height}`
 	protected traceTimeoutHeight(
-		blockSubscriber: TxTracer,
+		statusSubscriber: PollingStatusSubscription,
 		timeoutHeight: string
 	): {
 		unsubscriber: () => void;
@@ -137,13 +206,13 @@ export class IBCTransferHistoryStore {
 		const promise = new Promise<void>(resolve => {
 			resolver = resolve;
 		});
-		const unsubscriber = blockSubscriber.subscribeBlock(data => {
-			const chainId = data?.block?.header?.chain_id;
+		const unsubscriber = statusSubscriber.subscribe(data => {
+			const chainId = data?.result?.node_info?.network;
 			if (chainId && ChainIdHelper.parse(chainId).version > chainVersion) {
 				resolver();
 				return;
 			}
-			const blockHeight = data?.block?.header?.height;
+			const blockHeight = data?.result?.sync_info?.latest_block_height;
 			if (blockHeight && parseInt(blockHeight) > timeoutBlockHeight) {
 				resolver();
 				return;
@@ -157,7 +226,7 @@ export class IBCTransferHistoryStore {
 	}
 
 	protected traceTimeoutTimestamp(
-		blockSubscriber: TxTracer,
+		statusSubscriber: PollingStatusSubscription,
 		timeoutTimestamp: string
 	): {
 		unsubscriber: () => void;
@@ -167,8 +236,8 @@ export class IBCTransferHistoryStore {
 		const promise = new Promise<void>(resolve => {
 			resolver = resolve;
 		});
-		const unsubscriber = blockSubscriber.subscribeBlock(data => {
-			const blockTime = data?.block?.header?.time;
+		const unsubscriber = statusSubscriber.subscribe(data => {
+			const blockTime = data?.result?.sync_info?.latest_block_time;
 			if (blockTime && new Date(blockTime).getTime() > Math.floor(parseInt(timeoutTimestamp) / 1000000)) {
 				resolver();
 				return;
@@ -210,9 +279,6 @@ export class IBCTransferHistoryStore {
 		}
 
 		const blockSubscriber = this.getBlockSubscriber(history.destChainId);
-		if (blockSubscriber.readyState === WsReadyState.CLOSED) {
-			blockSubscriber.open();
-		}
 
 		let timeoutUnsubscriber: (() => void) | undefined;
 
@@ -267,10 +333,6 @@ export class IBCTransferHistoryStore {
 
 		if (timeoutUnsubscriber) {
 			timeoutUnsubscriber();
-
-			if (blockSubscriber.numberOfSubscriberOrPendingQuery === 0) {
-				blockSubscriber.close();
-			}
 		}
 		txTracer.close();
 
