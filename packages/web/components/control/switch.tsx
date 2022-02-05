@@ -15,7 +15,7 @@ export const Switch: FunctionComponent<
         "after:h-6 after:w-6 after:rounded-full after:bg-white-high after:absolute after:left-1 after:top-1 after:transform after:scale-110 after:transition after:duration-200", // dot
         "checked:after:transform checked:after:scale-110 checked:after:translate-x-4", // dot on transform
         disabled
-          ? "opacity-50 cursor-default bg-iconDefault"
+          ? "opacity-30 cursor-default bg-iconDefault"
           : "checked:bg-primary-200",
         className
       )}

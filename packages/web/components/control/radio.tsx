@@ -39,37 +39,39 @@ export const Radio: FunctionComponent<Props> = ({
   const isOn = value === groupValue;
 
   return (
-    <label htmlFor="toggle-radio">
-      {isOn && (
-        <div
-          className={classNames(
-            "cursor-pointer absolute z-50",
-            disabled ? "cursor-default opacity-50" : null
-          )}
-        >
-          <Image alt="" src="/icons/dot.svg" height={20} width={20} />
-        </div>
-      )}
-      <input
-        type="radio"
-        className={classNames(
-          "relative cursor-pointer h-5 w-5 appearance-none",
-          "after:absolute after:h-5 after:w-5 after:rounded-full", // box
-          disabled
-            ? isOn
-              ? "opacity-50 cursor-default checked:after:bg-iconDefault" // disabled AND on
-              : "opacity-50 cursor-default after:border-2 after:border-iconDefault"
-            : isOn
-            ? "after:bg-primary-200" // not disabled AND on
-            : "after:border-2 after:border-primary-200",
-          className
+    <label htmlFor="relative toggle-radio">
+      <div>
+        {isOn && (
+          <div
+            className={classNames(
+              "cursor-pointer absolute z-10",
+              disabled ? "cursor-default opacity-38" : null
+            )}
+          >
+            <Image alt="" src="/icons/dot.svg" height={20} width={20} />
+          </div>
         )}
-        checked={isOn}
-        disabled={disabled}
-        name={groupName}
-        value={value}
-        onChange={(e) => onSelectRadio((e.target as unknown as any).value)}
-      />
+        <input
+          type="radio"
+          className={classNames(
+            "cursor-pointer h-5 w-5 appearance-none",
+            "after:absolute after:h-5 after:w-5 after:rounded-full", // box
+            disabled
+              ? isOn
+                ? "opacity-30 cursor-default checked:after:bg-iconDefault" // disabled AND on
+                : "opacity-30 cursor-default after:border-2 after:border-iconDefault"
+              : isOn
+              ? "after:bg-primary-200" // not disabled AND on
+              : "after:border-2 after:border-primary-200",
+            className
+          )}
+          checked={isOn}
+          disabled={disabled}
+          name={groupName}
+          value={value}
+          onChange={(e) => onSelectRadio((e.target as unknown as any).value)}
+        />
+      </div>
     </label>
   );
 };

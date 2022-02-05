@@ -146,62 +146,68 @@ const Assets: NextPage = function () {
       </div>
       <div className="bg-background py-20 flex justify-center items-center">
         <span className="p-5">Radios:</span>
-        Xs
-        <Radio
-          value="xs"
-          onSelectRadio={(v) => setR(assign(v) ?? "sm")}
-          groupValue={r}
-          disabled={disabled}
-        />
-        Sm
-        <Radio
-          value="sm"
-          onSelectRadio={(v) => setR(assign(v) ?? "sm")}
-          groupValue={r}
-          disabled={disabled}
-        />
-        Lg
-        <Radio
-          value="lg"
-          onSelectRadio={(v) => setR(assign(v) ?? "sm")}
-          groupValue={r}
-          disabled={disabled}
-        />
-        Block
-        <Radio
-          value="block"
-          onSelectRadio={(v) => setType(assignType(v) ?? "block")}
-          groupValue={t}
-          disabled={disabled}
-        />
-        Arrow
-        <Radio
-          value="arrow"
-          onSelectRadio={(v) => setType(assignType(v) ?? "arrow")}
-          groupValue={t}
-          disabled={disabled}
-        />
-        Outline
-        <Radio
-          value="outline"
-          onSelectRadio={(v) => setType(assignType(v) ?? "outline")}
-          groupValue={t}
-          disabled={disabled}
-        />
-        Primary
-        <Radio
-          value="primary"
-          onSelectRadio={(v) => setC(assignC(v) ?? "primary")}
-          groupValue={c}
-          disabled={disabled}
-        />
-        Secondary
-        <Radio
-          value="secondary"
-          onSelectRadio={(v) => setC(assignC(v) ?? "secondary")}
-          groupValue={c}
-          disabled={disabled}
-        />
+        <div className="flex">
+          Xs
+          <Radio
+            value="xs"
+            onSelectRadio={(v) => setR(assign(v) ?? "sm")}
+            groupValue={r}
+            disabled={disabled}
+          />
+          Sm
+          <Radio
+            value="sm"
+            onSelectRadio={(v) => setR(assign(v) ?? "sm")}
+            groupValue={r}
+            disabled={disabled}
+          />
+          Lg
+          <Radio
+            value="lg"
+            onSelectRadio={(v) => setR(assign(v) ?? "sm")}
+            groupValue={r}
+            disabled={disabled}
+          />
+        </div>
+        <div className="flex">
+          Block
+          <Radio
+            value="block"
+            onSelectRadio={(v) => setType(assignType(v) ?? "block")}
+            groupValue={t}
+            disabled={disabled}
+          />
+          Arrow
+          <Radio
+            value="arrow"
+            onSelectRadio={(v) => setType(assignType(v) ?? "arrow")}
+            groupValue={t}
+            disabled={disabled}
+          />
+          Outline
+          <Radio
+            value="outline"
+            onSelectRadio={(v) => setType(assignType(v) ?? "outline")}
+            groupValue={t}
+            disabled={disabled}
+          />
+        </div>
+        <div className="flex">
+          Primary
+          <Radio
+            value="primary"
+            onSelectRadio={(v) => setC(assignC(v) ?? "primary")}
+            groupValue={c}
+            disabled={disabled}
+          />
+          Secondary
+          <Radio
+            value="secondary"
+            onSelectRadio={(v) => setC(assignC(v) ?? "secondary")}
+            groupValue={c}
+            disabled={disabled}
+          />
+        </div>
       </div>
       <div className="bg-background py-20 flex justify-center items-center">
         <span className="p-5">Toggle:</span>

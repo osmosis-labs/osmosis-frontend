@@ -16,10 +16,10 @@ export const SortMenu: FunctionComponent<
   );
 
   return (
-    <React.Fragment>
+    <div>
       <div
         className={classNames(
-          "absolute flex w-fit cursor-pointer",
+          "relative flex w-fit cursor-pointer",
           {
             "opacity-50 cursor-default": disabled,
           },
@@ -54,6 +54,6 @@ export const SortMenu: FunctionComponent<
         onSelect={onSelect}
         isOpen={dropdownOpen}
       />
-    </React.Fragment>
+    </div>
   );
 };

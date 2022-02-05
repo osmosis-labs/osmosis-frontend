@@ -21,8 +21,8 @@ export const Toggle: FunctionComponent<
           className={classNames(
             "absolute h-6 w-full rounded-lg appearance-none",
             {
-              "opacity-50 bg-iconDefault": disabled && isOn,
-              "opacity-20 bg-iconDefault": disabled && !isOn,
+              "opacity-30 bg-iconDefault": disabled && isOn,
+              "opacity-10 bg-iconDefault": disabled && !isOn,
               "bg-primary-200": !disabled && isOn,
               "cursor-pointer": isHovered && !disabled,
               "bg-primary-100": isHovered && !disabled && isOn,
@@ -40,8 +40,8 @@ export const Toggle: FunctionComponent<
             {
               "cursor-default": disabled,
               "cursor-pointer": isHovered && !disabled,
-              "opacity-50": disabled && isOn,
-              "opacity-20": disabled && !isOn,
+              "opacity-30": disabled && isOn,
+              "opacity-10": disabled && !isOn,
             }
           )}
         >

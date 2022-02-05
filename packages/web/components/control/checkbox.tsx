@@ -26,8 +26,8 @@ export const CheckBox: FunctionComponent<
         "after:absolute after:h-5 after:w-5 after:rounded z-10", // box
         disabled
           ? isOn
-            ? "opacity-50 cursor-default checked:after:bg-iconDefault" // disabled AND on
-            : "opacity-50 cursor-default after:border-2 after:border-iconDefault"
+            ? "opacity-30 cursor-default checked:after:bg-iconDefault" // disabled AND on
+            : "opacity-30 cursor-default after:border-2 after:border-iconDefault"
           : isOn
           ? "after:bg-primary-200" // not disabled AND on
           : "after:border-2 after:border-primary-200",
