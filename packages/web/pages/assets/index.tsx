@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import { useMemo } from "react";
 import { useFilteredData } from "../../hooks/data";
 
 type Fruit = {
@@ -7,32 +8,35 @@ type Fruit = {
 };
 
 const Assets: NextPage = () => {
-  const data: Fruit[] = [
-    {
-      name: "Orange",
-      attributes: {
-        color: "orange",
-        shape: "round",
-        size: 42,
+  const data = useMemo<Fruit[]>(
+    () => [
+      {
+        name: "Orange",
+        attributes: {
+          color: "orange",
+          shape: "round",
+          size: 42,
+        },
       },
-    },
-    {
-      name: "Pineapple",
-      attributes: {
-        color: "orange",
-        shape: "oval",
-        size: 44,
+      {
+        name: "Pineapple",
+        attributes: {
+          color: "orange",
+          shape: "oval",
+          size: 44,
+        },
       },
-    },
-    {
-      name: "Kiwi",
-      attributes: {
-        color: "green",
-        shape: "round",
-        size: 999,
+      {
+        name: "Kiwi",
+        attributes: {
+          color: "green",
+          shape: "round",
+          size: 999,
+        },
       },
-    },
-  ];
+    ],
+    []
+  );
 
   const [query, setQuery, filteredData] = useFilteredData(data, [
     "name",
