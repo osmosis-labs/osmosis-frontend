@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Fuse from "fuse.js";
 
 /**
@@ -16,13 +16,16 @@ export function useFilteredData<T>(
 ): [string, (terms: string) => void, T[]] {
   const [query, setQuery] = useState("");
 
+  const fuse = useMemo(
+    () => new Fuse(data, { keys: keys, findAllMatches: true }),
+    [data, keys]
+  );
+
   return [
     query,
     setQuery,
     query === ""
       ? data
-      : new Fuse(data, { keys: keys, findAllMatches: true })
-          .search(query)
-          .map((result) => result.item),
+      : fuse?.search(query).map((result) => result.item) ?? data,
   ];
 }
