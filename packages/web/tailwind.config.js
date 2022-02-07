@@ -153,6 +153,12 @@ module.exports = {
       animation: {
         loading: "loading 1s ease-in-out infinite",
       },
+      boxShadow: {
+        separator: "0px -1px 0px 0px rgba(255, 255, 255, 0.12)",
+      },
+      borderRadius: {
+        lginset: "0.438rem", // 1px smaller than rounded-lg
+      },
     },
   },
   plugins: [],
