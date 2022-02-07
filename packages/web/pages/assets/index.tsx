@@ -1,7 +1,6 @@
 import type { NextPage } from "next";
 import { useMemo } from "react";
-import { useFilteredData } from "../../hooks/data";
-import { useSortedData } from "../../hooks/data/use-sorted-data";
+import { useFilteredData, useSortedData } from "../../hooks/data";
 import { useState } from "react";
 import { Table, BaseCell, ColumnDef, RowDef } from "../../components/table";
 import { PoolCompositionCell } from "../../components/table/cells";
@@ -15,13 +14,16 @@ import {
   Slider,
   PageList,
   SortMenu,
+  MenuOption,
 } from "../../components/control";
 import { InputBox, SearchBox } from "../../components/input";
 import { Button, IconButton } from "../../components/buttons";
 import { Error, Info } from "../../components/alert";
+import { makeMenuControlledColumnDefs } from "../../components/table/prop-factory";
 
 type Fruit = {
   name: string;
+  nationality: string;
   attributes: { color: string; shape: string; size: number };
 };
 
@@ -30,6 +32,7 @@ const Assets: NextPage = () => {
     () => [
       {
         name: "Orange",
+        nationality: "C",
         attributes: {
           color: "orange",
           shape: "round",
@@ -38,6 +41,7 @@ const Assets: NextPage = () => {
       },
       {
         name: "Pineapple",
+        nationality: "B",
         attributes: {
           color: "orange",
           shape: "oval",
@@ -46,6 +50,7 @@ const Assets: NextPage = () => {
       },
       {
         name: "Kiwi",
+        nationality: "A",
         attributes: {
           color: "green",
           shape: "round",
@@ -55,8 +60,10 @@ const Assets: NextPage = () => {
     ],
     []
   );
-  const [isChecked, setChecked] = useState(true);
-  const [disabled, setDisabled] = useState(false);
+
+  const [sortDirection, setSortDirection] = useState<SortDirection | undefined>(
+    undefined
+  );
 
   const [query, setQuery, filteredData] = useFilteredData(data, [
     "name",
@@ -64,8 +71,14 @@ const Assets: NextPage = () => {
     "attributes.shape",
     "attributes.size",
   ]);
+  const [path, setPath, filteredSortedData] = useSortedData(
+    filteredData,
+    sortDirection
+  );
 
-  const [path, setPath, sortedData] = useSortedData(data);
+  const [isChecked, setChecked] = useState(true);
+  const [disabled, setDisabled] = useState(false);
+
   const [r, setR] = useState<"xs" | "sm" | "lg">("sm");
   const [t, setType] = useState<"block" | "arrow" | "outline">("block");
   const [c, setC] = useState<"primary" | "secondary">("primary");
@@ -74,14 +87,10 @@ const Assets: NextPage = () => {
 
   const [iV, setIV] = useState("");
 
-  const [sortDirection, setSortDirection] = useState<SortDirection | undefined>(
-    undefined
-  );
-
   const tableCols: ColumnDef<BaseCell & PoolCompositionCell>[] = [
-    {},
+    { display: "" },
     {
-      header: "Pool Name",
+      display: "Pool Name",
       sort: {
         currentDirection: sortDirection,
         onClickHeader: () =>
@@ -92,7 +101,7 @@ const Assets: NextPage = () => {
       displayCell: PoolCompositionCell,
     },
     {
-      header: "Liquidity",
+      display: "Liquidity",
       infoTooltip: "This is liquidity",
       sort: {
         currentDirection: sortDirection,
@@ -103,10 +112,10 @@ const Assets: NextPage = () => {
       },
     },
     {
-      header: "APR (Annualized)",
+      display: "APR (Annualized)",
     },
     {
-      header: "My Liquidity",
+      display: "My Liquidity",
     },
   ];
 
@@ -168,8 +177,69 @@ const Assets: NextPage = () => {
     ],
   ];
 
+  const fruitTableCols = makeMenuControlledColumnDefs(
+    [
+      {
+        id: "name",
+        display: "Name",
+      },
+      {
+        id: "attributes.color",
+        display: "Color",
+      },
+      {
+        id: "attributes.shape",
+        display: "Shape",
+      },
+      {
+        id: "attributes.size",
+        display: "Size",
+      },
+    ],
+    path,
+    setPath,
+    sortDirection ?? "ascending",
+    setSortDirection
+  );
+
+  const sortCols = [...fruitTableCols];
+
+  // sort by nationality even though it's not a column in the table
+  sortCols.push({ id: "nationality", display: "Nationality" });
+
   return (
     <main className="max-w-container mx-auto">
+      <section className="bg-surface">
+        <div className="flex place-content-between">
+          <h3>Fruits</h3>
+          <div className="flex gap-10">
+            <SearchBox
+              currentValue={query}
+              onInput={setQuery}
+              placeholder="Search"
+              disabled={disabled}
+            />
+            <SortMenu
+              options={sortCols}
+              selectedOptionId={path}
+              onSelect={(id) => (id === path ? setPath("") : setPath(id))}
+              disabled={disabled}
+            />
+          </div>
+        </div>
+        <Table
+          className="m-24 w-full"
+          columnDefs={fruitTableCols}
+          data={filteredSortedData.map(
+            ({ name, attributes: { color, shape, size } }) => [
+              { value: name },
+              { value: color },
+              { value: shape },
+              { value: size.toString() },
+            ]
+          )}
+        />
+      </section>
       <div className="bg-background py-20 flex flex-col justify-center items-center">
         <span className="p-5">Switch:</span>
         <Switch isOn={isChecked} onToggle={setChecked} disabled={disabled} />
@@ -354,50 +424,6 @@ const Assets: NextPage = () => {
           disabled={disabled}
         />
       </div>
-      <section>
-        <input
-          className="border border-black p-2"
-          type="text"
-          placeholder="Search"
-          value={query}
-          onInput={(e: any) => setQuery(e.target.value)}
-        />
-        <ol>
-          {filteredData.map((data, i) => {
-            const { color, shape, size } = data.attributes;
-            return (
-              <li className="flex flex-col" key={i}>
-                {data.name}
-                <span className="pl-10">Color: {color}</span>
-                <span className="pl-10">Shape: {shape}</span>
-                <span className="pl-10">Size: {size}</span>
-              </li>
-            );
-          })}
-        </ol>
-      </section>
-      <section className="pt-10">
-        <input
-          className="border border-black p-2"
-          type="text"
-          placeholder="Sort i.e. 'attributes.size'"
-          value={path}
-          onInput={(e: any) => setPath(e.target.value)}
-        />
-        <ol>
-          {sortedData.map((data, i) => {
-            const { color, shape, size } = data.attributes;
-            return (
-              <li className="flex flex-col" key={i}>
-                name: {data.name}
-                <span className="pl-10">attributes.color: {color}</span>
-                <span className="pl-10">attributes.shape: {shape}</span>
-                <span className="pl-10">attributes.size: {size}</span>
-              </li>
-            );
-          })}
-        </ol>
-      </section>
     </main>
   );
 };

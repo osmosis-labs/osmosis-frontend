@@ -16,7 +16,7 @@ export interface ColumnSortDef {
 }
 
 export interface ColumnDef<CellT extends BaseCell> {
-  header?: string;
+  display: string;
   sort?: ColumnSortDef;
   infoTooltip?: string;
   /** If provided, will be used to render the cell for each row in this column.
@@ -41,7 +41,7 @@ export interface Props<CellT extends BaseCell> extends CustomClasses {
 /** Generic table that accepts a 2d array of any type of data cell,
  *  as well as row and column definitions that dictate header and cell appearance & behavior.
  */
-export const Table = <CellT extends BaseCell>({
+export const Table = <CellT extends BaseCell = BaseCell>({
   columnDefs,
   rowDefs,
   data,
@@ -65,19 +65,19 @@ export const Table = <CellT extends BaseCell>({
               onClick={() => colDef?.sort?.onClickHeader(colIndex)}
             >
               <span>
-                {colDef?.header ?? ""}
+                {colDef?.display ?? ""}
                 <div className="inline pl-1 align-middle">
                   {colDef?.sort?.currentDirection === "ascending" ? (
                     <Image
                       alt="ascending"
-                      src="/icons/arrow-down.svg"
+                      src="/icons/arrow-up.svg"
                       height={16}
                       width={16}
                     />
                   ) : colDef?.sort?.currentDirection === "descending" ? (
                     <Image
                       alt="descending"
-                      src="/icons/arrow-up.svg"
+                      src="/icons/arrow-down.svg"
                       height={16}
                       width={16}
                     />

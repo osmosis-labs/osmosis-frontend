@@ -1,7 +1,7 @@
 import { DataProcessor } from "./types";
 import get from "./utils";
 
-/** Sorts a copy of an arbitrary list of objects via key paths. Key path example: `"attributes.color"` */
+/** Sorts ascending a copy of an arbitrary list of objects via key paths. Key path example: `"attributes.color"` */
 export class DataSorter<TData> implements DataProcessor<TData[]> {
   readonly _data: TData[];
 
