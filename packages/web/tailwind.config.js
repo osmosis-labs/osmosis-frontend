@@ -133,6 +133,8 @@ module.exports = {
       "gradients-clipInner":
         "linear-gradient(180deg, #332C61 0%, #312A5D 10.94%, #2D2755 100%)",
       "home-bg-pattern": "url('/images/osmosis-home-bg-pattern.svg')",
+      "loading-bar":
+        "linear-gradient(to left,rgba(251, 251, 251, 0.1),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.3),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.1))",
     },
     extend: {
       spacing: {
@@ -141,6 +143,15 @@ module.exports = {
       maxWidth: {
         container: "90rem",
         clipboard: "32.5rem",
+      },
+      keyframes: {
+        loading: {
+          "0%": { transform: "translateX(-150%)" },
+          "100%": { transform: "translateX(200%)" },
+        },
+      },
+      animation: {
+        loading: "loading 1s ease-in-out infinite",
       },
     },
   },

@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { IncentivizedPoolCard, MyPoolCard } from "../../components/cards";
+import { IncentivizedPoolCard, PoolCard } from "../../components/cards";
 import { Overview } from "../../components/overview";
 import { LeftTime } from "../../components/left-time";
 
@@ -49,7 +49,7 @@ const Pools: NextPage = observer(function () {
             {myPools.map((poolId) => {
               const pool = queryOsmosis.queryGammPools.getPool(poolId);
               if (pool) {
-                return <MyPoolCard pool={pool} key={pool.id} />;
+                return <PoolCard />;
               }
             })}
           </div>
