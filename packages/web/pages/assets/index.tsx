@@ -187,6 +187,7 @@ const Assets: NextPage = () => {
       {
         id: "attributes.color",
         display: "Color",
+        infoTooltip: "Fruit color!",
       },
       {
         id: "attributes.shape",
