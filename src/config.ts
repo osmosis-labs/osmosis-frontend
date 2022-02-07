@@ -747,6 +747,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-17',
 		coinMinimalDenom: 'rowan',
 	},
+	{
+		counterpartyChainId: 'laozi-mainnet',
+		sourceChannelId: 'channel-148',
+		destChannelId: 'channel-83',
+		coinMinimalDenom: 'uband',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1970,5 +1976,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer'],
 		explorerUrlToTx: 'https://www.mintscan.io/sifchain/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.laozi3.bandchain.org',
+		rest: 'https://laozi1.bandchain.org/api',
+		chainId: 'laozi-mainnet',
+		chainName: 'BandChain',
+		stakeCurrency: {
+			coinDenom: 'BAND',
+			coinMinimalDenom: 'uband',
+			coinDecimals: 6,
+			coinGeckoId: 'band-protocol',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/band.svg',
+		},
+		bip44: {
+			coinType: 494,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('band'),
+		currencies: [
+			{
+				coinDenom: 'BAND',
+				coinMinimalDenom: 'uband',
+				coinDecimals: 6,
+				coinGeckoId: 'band-protocol',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/band.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'BAND',
+				coinMinimalDenom: 'uband',
+				coinDecimals: 6,
+				coinGeckoId: 'band-protocol',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/band.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://cosmoscan.io/tx/{txHash}',
 	},
 ];
