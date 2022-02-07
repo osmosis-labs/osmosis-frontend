@@ -4,11 +4,19 @@ import { ChainStore as BaseChainStore } from "@keplr-wallet/stores";
 
 import { ChainInfo } from "@keplr-wallet/types";
 
-export class ChainStore extends BaseChainStore {
+export interface ChainInfoWithExplorer extends ChainInfo {
+  // Formed as "https://explorer.com/{txHash}"
+  explorerUrlToTx: string;
+}
+
+export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
   @observable
   protected readonly osmosisChainId: string;
 
-  constructor(embedChainInfos: ChainInfo[], osmosisChainId: string) {
+  constructor(
+    embedChainInfos: ChainInfoWithExplorer[],
+    osmosisChainId: string
+  ) {
     super(embedChainInfos);
 
     this.osmosisChainId = osmosisChainId;
@@ -17,7 +25,7 @@ export class ChainStore extends BaseChainStore {
   }
 
   @computed
-  get osmosis(): ChainInfo {
+  get osmosis(): ChainInfoWithExplorer {
     if (this.hasChain(this.osmosisChainId)) {
       return this.getChain(this.osmosisChainId).raw;
     }
