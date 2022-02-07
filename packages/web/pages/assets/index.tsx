@@ -67,6 +67,7 @@ const Assets: NextPage = () => {
 
   const [query, setQuery, filteredData] = useFilteredData(data, [
     "name",
+    "nationality",
     "attributes.color",
     "attributes.shape",
     "attributes.size",
