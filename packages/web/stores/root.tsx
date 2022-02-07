@@ -11,7 +11,7 @@ import { EmbedChainInfos, IBCAssetInfos } from "../config";
 import { IndexedDBKVStore, LocalKVStore } from "@keplr-wallet/common";
 import EventEmitter from "eventemitter3";
 import { ChainStore } from "./chain";
-import { QueriesOsmosisStore } from "@osmosis-labs/stores";
+import { QueriesOsmosisStore, LPCurrencyRegistrar } from "@osmosis-labs/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 
@@ -25,6 +25,7 @@ export class RootStore {
 
   public readonly priceStore: CoinGeckoPriceStore;
 
+  protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar;
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar;
 
   constructor(getKeplr: () => Promise<Keplr | undefined>) {
@@ -102,6 +103,7 @@ export class RootStore {
       "usd"
     );
 
+    this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
     this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar(
       new LocalKVStore("store_ibc_currency_registrar"),
       3 * 24 * 3600 * 1000, // 3 days

@@ -1,10 +1,9 @@
 import type { NextPage } from "next";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { IncentivizedPoolCard, MyPools } from "../../components/cards";
-import { OverviewLabelValue } from "../../components/overview-label-value";
+import { IncentivizedPoolCard, MyPoolCard } from "../../components/cards";
+import { Overview } from "../../components/overview";
 import { LeftTime } from "../../components/left-time";
-import { Button } from "../../components/buttons/button";
 
 const Pools: NextPage = observer(function () {
   const { chainStore, accountStore, queriesOsmosisStore } = useStore();
@@ -17,36 +16,32 @@ const Pools: NextPage = observer(function () {
   const myPools = queryOsmosis.queryGammPoolShare.getOwnPools(
     account.bech32Address
   );
+
   const incentivizedPools =
     queryOsmosis.queryIncentivizedPools.incentivizedPools;
   // const allPools = queryOsmosis.queryGammPools.getPoolsDescendingOrderTVL();
 
   return (
     <main>
-      <section className="bg-background">
-        <div className="max-w-container mx-auto">
-          <div className="bg-[url('/images/osmosis-pool-machine.png')] bg-right bg-contain bg-no-repeat p-10">
-            <div className="flex items-center">
-              <h5 className="text-white-full">Active Pools</h5>
-              <Button
-                color="primary"
-                size="sm"
-                className="ml-6"
-                onClick={console.log}
-              >
-                Create New Pool
-              </Button>
-            </div>
-            <div className="mt-6 flex items-center gap-20">
-              <OverviewLabelValue label="OSMO Price" value="$10" />
-              <OverviewLabelValue
-                label="Reward distribution in"
-                value={<LeftTime hour="08" minute="20" />}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+      <Overview
+        title="Active Pools"
+        titleButtons={[{ label: "Create New Pool", onClick: console.log }]}
+        primaryOverviewLabels={[
+          { label: "OSMO Price", value: "$10" },
+          {
+            label: "Reward distribution in",
+            value: <LeftTime hour="08" minute="20" />,
+          },
+        ]}
+        secondaryOverviewLabels={[
+          { label: "Bonded", value: "$10" },
+          {
+            label: "Swap fee",
+            value: "0.3%",
+          },
+        ]}
+        bgImageUrl="/images/osmosis-pool-machine.png"
+      />
       <section className="bg-surface">
         <div className="max-w-container mx-auto p-10">
           <h5>My Pools</h5>
@@ -54,7 +49,7 @@ const Pools: NextPage = observer(function () {
             {myPools.map((poolId) => {
               const pool = queryOsmosis.queryGammPools.getPool(poolId);
               if (pool) {
-                return <IncentivizedPoolCard pool={pool} key={pool.id} />;
+                return <MyPoolCard pool={pool} key={pool.id} />;
               }
             })}
           </div>
@@ -67,7 +62,7 @@ const Pools: NextPage = observer(function () {
             {incentivizedPools.map((poolId) => {
               const pool = queryOsmosis.queryGammPools.getPool(poolId);
               if (pool) {
-                return <MyPools pool={pool} key={pool.id} />;
+                return <IncentivizedPoolCard pool={pool} key={pool.id} />;
               }
             })}
           </div>
