@@ -15,7 +15,7 @@ export interface ColumnSortDef {
   onClickHeader: (colIndex: number) => void;
 }
 
-export interface ColumnDef<CellT extends BaseCell> {
+export interface ColumnDef<TCell extends BaseCell> {
   display: string;
   sort?: ColumnSortDef;
   infoTooltip?: string;
@@ -23,7 +23,7 @@ export interface ColumnDef<CellT extends BaseCell> {
    *
    * Note: components must accept optionals for all cell data and check for the data they need.
    */
-  displayCell?: React.FunctionComponent<Partial<CellT>>;
+  displayCell?: React.FunctionComponent<Partial<TCell>>;
 }
 
 export interface RowDef {
@@ -32,21 +32,21 @@ export interface RowDef {
   onClick?: (rowIndex: number) => void;
 }
 
-export interface Props<CellT extends BaseCell> extends CustomClasses {
-  columnDefs: ColumnDef<CellT>[];
+export interface Props<TCell extends BaseCell> extends CustomClasses {
+  columnDefs: ColumnDef<TCell>[];
   rowDefs?: RowDef[];
-  data: Partial<CellT>[][];
+  data: Partial<TCell>[][];
 }
 
 /** Generic table that accepts a 2d array of any type of data cell,
  *  as well as row and column definitions that dictate header and cell appearance & behavior.
  */
-export const Table = <CellT extends BaseCell = BaseCell>({
+export const Table = <TCell extends BaseCell = BaseCell>({
   columnDefs,
   rowDefs,
   data,
   className,
-}: PropsWithoutRef<Props<CellT>>) => {
+}: PropsWithoutRef<Props<TCell>>) => {
   const [rowsHovered, setRowsHovered] = useState(data.map(() => false));
 
   const setRowHovered = (rowIndex: number, value: boolean) =>

@@ -178,31 +178,85 @@ const Assets: NextPage = () => {
     ],
   ];
 
-  const fruitTableCols = makeMenuControlledColumnDefs(
-    [
-      {
-        id: "name",
-        display: "Name",
-      },
-      {
-        id: "attributes.color",
-        display: "Color",
-        infoTooltip: "Fruit color!",
-      },
-      {
-        id: "attributes.shape",
-        display: "Shape",
-      },
-      {
-        id: "attributes.size",
-        display: "Size",
-      },
-    ],
-    path,
-    setPath,
-    sortDirection ?? "ascending",
-    setSortDirection
-  );
+  const fruitTableCols: (ColumnDef<BaseCell> & MenuOption)[] = [
+    {
+      id: "name",
+      display: "Name",
+      sort:
+        path === "name"
+          ? {
+              currentDirection: sortDirection,
+              onClickHeader: () =>
+                setSortDirection(
+                  sortDirection === "ascending" ? "descending" : "ascending"
+                ),
+            }
+          : {
+              onClickHeader: () => {
+                setPath("name");
+                setSortDirection("ascending");
+              },
+            },
+    },
+    {
+      id: "attributes.color",
+      display: "Color",
+      sort:
+        path === "attributes.color"
+          ? {
+              currentDirection: sortDirection,
+              onClickHeader: () =>
+                setSortDirection(
+                  sortDirection === "ascending" ? "descending" : "ascending"
+                ),
+            }
+          : {
+              onClickHeader: () => {
+                setPath("attributes.color");
+                setSortDirection("ascending");
+              },
+            },
+      infoTooltip: "Fruit color!",
+    },
+    {
+      id: "attributes.shape",
+      display: "Shape",
+      sort:
+        path === "attributes.shape"
+          ? {
+              currentDirection: sortDirection,
+              onClickHeader: () =>
+                setSortDirection(
+                  sortDirection === "ascending" ? "descending" : "ascending"
+                ),
+            }
+          : {
+              onClickHeader: () => {
+                setPath("attributes.shape");
+                setSortDirection("ascending");
+              },
+            },
+    },
+    {
+      id: "attributes.size",
+      display: "Size",
+      sort:
+        path === "attributes.size"
+          ? {
+              currentDirection: sortDirection,
+              onClickHeader: () =>
+                setSortDirection(
+                  sortDirection === "ascending" ? "descending" : "ascending"
+                ),
+            }
+          : {
+              onClickHeader: () => {
+                setPath("attributes.size");
+                setSortDirection("ascending");
+              },
+            },
+    },
+  ];
 
   const sortCols = [...fruitTableCols];
 
@@ -211,9 +265,9 @@ const Assets: NextPage = () => {
 
   return (
     <main className="max-w-container mx-auto">
-      <section className="bg-surface">
-        <div className="flex place-content-between">
-          <h3>Fruits</h3>
+      <section className="bg-surface w-full px-10">
+        <div className="flex place-content-between py-4">
+          <h5>Fruits</h5>
           <div className="flex gap-10">
             <SearchBox
               currentValue={query}
@@ -230,7 +284,7 @@ const Assets: NextPage = () => {
           </div>
         </div>
         <Table
-          className="m-24 w-full"
+          className="w-full"
           columnDefs={fruitTableCols}
           data={filteredSortedData.map(
             ({ name, attributes: { color, shape, size } }) => [
@@ -411,7 +465,7 @@ const Assets: NextPage = () => {
           onInput={setIV}
           labelButtons={[
             { label: "MAX", onClick: () => setIV("MAX!") },
-            // { label: "HALF", onClick: () => console.log("label button 2") },
+            { label: "HALF", onClick: () => console.log("label button 2") },
           ]}
           disabled={disabled}
           clearButton
