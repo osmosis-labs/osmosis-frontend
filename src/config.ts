@@ -1978,7 +1978,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://www.mintscan.io/sifchain/txs/{txHash}',
 	},
 	{
-		rpc: 'http://rpc.laozi1.bandchain.org:80',
+		rpc: 'https://rpc.laozi3.bandchain.org',
 		rest: 'https://laozi1.bandchain.org/api',
 		chainId: 'laozi-mainnet',
 		chainName: 'BandChain',
