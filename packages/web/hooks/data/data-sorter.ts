@@ -20,7 +20,7 @@ export class DataSorter<TData> implements DataProcessor<TData[]> {
         const aDataNumerical = parseFloat(aData);
         const bDataNumerical = parseFloat(bData);
 
-        if (aDataNumerical !== NaN && bDataNumerical !== NaN) {
+        if (!Number.isNaN(aDataNumerical) && !Number.isNaN(bDataNumerical)) {
           aData = aDataNumerical;
           bData = bDataNumerical;
         }

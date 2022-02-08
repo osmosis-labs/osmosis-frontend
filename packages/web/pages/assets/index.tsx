@@ -303,6 +303,11 @@ const Assets: NextPage = () => {
                 id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id)
               }
               disabled={disabled}
+              onToggleSortDirection={() =>
+                setSortDirection(
+                  sortDirection === "ascending" ? "descending" : "ascending"
+                )
+              }
             />
           </div>
         </div>
@@ -320,7 +325,6 @@ const Assets: NextPage = () => {
         />
         <div className="flex place-content-around">
           <PageList
-            className="m-3"
             currentValue={page}
             max={numPages}
             min={minPage}
