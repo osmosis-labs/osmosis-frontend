@@ -35,22 +35,20 @@ export const SortMenu: FunctionComponent<Props> = ({
           className
         )}
       >
-        <div>
-          <Image
-            alt="sort"
-            src="/icons/up-down-arrow.svg"
-            height={18}
-            width={18}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (onToggleSortDirection && selectedOption) {
-                onToggleSortDirection();
-              } else if (!disabled) {
-                setDropdownOpen(!dropdownOpen);
-              }
-            }}
-          />
-        </div>
+        <Image
+          alt="sort"
+          src="/icons/up-down-arrow.svg"
+          height={18}
+          width={18}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onToggleSortDirection && selectedOption) {
+              onToggleSortDirection();
+            } else if (!disabled) {
+              setDropdownOpen(!dropdownOpen);
+            }
+          }}
+        />
         <div
           className="flex"
           onClick={(e) => {
@@ -63,14 +61,12 @@ export const SortMenu: FunctionComponent<Props> = ({
           <span className="block m-auto mx-2 leading-loose text-secondary-200 min-w-[60px] max-w-[100px] select-none text-center text-ellipsis overflow-hidden">
             {selectedOption ? selectedOption.display : "SORT BY"}
           </span>
-          <div>
-            <Image
-              alt="open"
-              src="/icons/chevron-down-green.svg"
-              height={15}
-              width={15}
-            />
-          </div>
+          <Image
+            alt="open"
+            src="/icons/chevron-down-green.svg"
+            height={15}
+            width={15}
+          />
         </div>
       </div>
       <MenuDropdown
