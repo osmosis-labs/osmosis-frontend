@@ -25,7 +25,6 @@ export class DataSorter<TData> implements DataProcessor<TData[]> {
           bData = bDataNumerical;
         }
       }
-      console.log({ aData, bData });
 
       if (aData < bData) return -1;
       if (aData > bData) return 1;
