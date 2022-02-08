@@ -19,7 +19,7 @@ import {
 import { InputBox, SearchBox } from "../../components/input";
 import { Button, IconButton } from "../../components/buttons";
 import { Error, Info } from "../../components/alert";
-import { makeMenuControlledColumnDefs } from "../../components/table/prop-factory";
+import { usePaginatedData } from "../../hooks/data/use-paginated-data";
 
 type Fruit = {
   name: string;
@@ -28,7 +28,7 @@ type Fruit = {
 };
 
 const Assets: NextPage = () => {
-  const data = useMemo<Fruit[]>(
+  const fruits = useMemo<Fruit[]>(
     () => [
       {
         name: "Orange",
@@ -57,6 +57,24 @@ const Assets: NextPage = () => {
           size: 999,
         },
       },
+      {
+        name: "Watermelon",
+        nationality: "D",
+        attributes: {
+          color: "striped",
+          shape: "oval",
+          size: 99922,
+        },
+      },
+      {
+        name: "Mango",
+        nationality: "G",
+        attributes: {
+          color: "orange",
+          shape: "rounded",
+          size: 2244,
+        },
+      },
     ],
     []
   );
@@ -65,16 +83,20 @@ const Assets: NextPage = () => {
     undefined
   );
 
-  const [query, setQuery, filteredData] = useFilteredData(data, [
+  const [query, setQuery, filteredFruits] = useFilteredData(fruits, [
     "name",
     "nationality",
     "attributes.color",
     "attributes.shape",
     "attributes.size",
   ]);
-  const [path, setPath, filteredSortedData] = useSortedData(
-    filteredData,
+  const [sortKeyPath, setSortKeyPath, sortedFruits] = useSortedData(
+    filteredFruits,
     sortDirection
+  );
+  const [page, setPage, minPage, numPages, fruitsPage] = usePaginatedData(
+    sortedFruits,
+    2
   );
 
   const [isChecked, setChecked] = useState(true);
@@ -183,7 +205,7 @@ const Assets: NextPage = () => {
       id: "name",
       display: "Name",
       sort:
-        path === "name"
+        sortKeyPath === "name"
           ? {
               currentDirection: sortDirection,
               onClickHeader: () =>
@@ -193,7 +215,7 @@ const Assets: NextPage = () => {
             }
           : {
               onClickHeader: () => {
-                setPath("name");
+                setSortKeyPath("name");
                 setSortDirection("ascending");
               },
             },
@@ -202,7 +224,7 @@ const Assets: NextPage = () => {
       id: "attributes.color",
       display: "Color",
       sort:
-        path === "attributes.color"
+        sortKeyPath === "attributes.color"
           ? {
               currentDirection: sortDirection,
               onClickHeader: () =>
@@ -212,7 +234,7 @@ const Assets: NextPage = () => {
             }
           : {
               onClickHeader: () => {
-                setPath("attributes.color");
+                setSortKeyPath("attributes.color");
                 setSortDirection("ascending");
               },
             },
@@ -222,7 +244,7 @@ const Assets: NextPage = () => {
       id: "attributes.shape",
       display: "Shape",
       sort:
-        path === "attributes.shape"
+        sortKeyPath === "attributes.shape"
           ? {
               currentDirection: sortDirection,
               onClickHeader: () =>
@@ -232,7 +254,7 @@ const Assets: NextPage = () => {
             }
           : {
               onClickHeader: () => {
-                setPath("attributes.shape");
+                setSortKeyPath("attributes.shape");
                 setSortDirection("ascending");
               },
             },
@@ -241,7 +263,7 @@ const Assets: NextPage = () => {
       id: "attributes.size",
       display: "Size",
       sort:
-        path === "attributes.size"
+        sortKeyPath === "attributes.size"
           ? {
               currentDirection: sortDirection,
               onClickHeader: () =>
@@ -251,7 +273,7 @@ const Assets: NextPage = () => {
             }
           : {
               onClickHeader: () => {
-                setPath("attributes.size");
+                setSortKeyPath("attributes.size");
                 setSortDirection("ascending");
               },
             },
@@ -259,7 +281,6 @@ const Assets: NextPage = () => {
   ];
 
   const sortCols = [...fruitTableCols];
-
   // sort by nationality even though it's not a column in the table
   sortCols.push({ id: "nationality", display: "Nationality" });
 
@@ -277,8 +298,10 @@ const Assets: NextPage = () => {
             />
             <SortMenu
               options={sortCols}
-              selectedOptionId={path}
-              onSelect={(id) => (id === path ? setPath("") : setPath(id))}
+              selectedOptionId={sortKeyPath}
+              onSelect={(id) =>
+                id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id)
+              }
               disabled={disabled}
             />
           </div>
@@ -286,7 +309,7 @@ const Assets: NextPage = () => {
         <Table
           className="w-full"
           columnDefs={fruitTableCols}
-          data={filteredSortedData.map(
+          data={fruitsPage.map(
             ({ name, attributes: { color, shape, size } }) => [
               { value: name },
               { value: color },
@@ -295,6 +318,16 @@ const Assets: NextPage = () => {
             ]
           )}
         />
+        <div className="flex place-content-around">
+          <PageList
+            className="m-3"
+            currentValue={page}
+            max={numPages}
+            min={minPage}
+            onInput={setPage}
+            editField
+          />
+        </div>
       </section>
       <div className="bg-background py-20 flex flex-col justify-center items-center">
         <span className="p-5">Switch:</span>
