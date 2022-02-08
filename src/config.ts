@@ -768,6 +768,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-83',
 		coinMinimalDenom: 'uband',
 	},
+	{
+		counterpartyChainId: 'darchub',
+		sourceChannelId: 'channel-171',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'udarc',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -2028,5 +2034,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://cosmoscan.io/tx/{txHash}',
+	},
+	{
+		rpc: 'https://node1.konstellation.tech:26657',
+		rest: 'https://node1.konstellation.tech:1318',
+		chainId: 'darchub',
+		chainName: 'Konstellation',
+		stakeCurrency: {
+			coinDenom: 'DARC',
+			coinMinimalDenom: 'udarc',
+			coinDecimals: 6,
+			// coinGeckoId: '',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/darc.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('darc'),
+		currencies: [
+			{
+				coinDenom: 'DARC',
+				coinMinimalDenom: 'udarc',
+				coinDecimals: 6,
+				// coinGeckoId: '',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/darc.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'DARC',
+				coinMinimalDenom: 'udarc',
+				coinDecimals: 6,
+				// coinGeckoId: '',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/darc.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://explorer.konstellation.tech/tx/{txHash}',
 	},
 ];
