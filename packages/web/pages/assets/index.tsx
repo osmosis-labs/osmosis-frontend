@@ -268,7 +268,7 @@ const Assets: NextPage = () => {
       <section className="bg-surface w-full px-10">
         <div className="flex place-content-between py-4">
           <h5>Fruits</h5>
-          <div className="flex gap-10">
+          <div className="flex gap-8">
             <SearchBox
               currentValue={query}
               onInput={setQuery}
