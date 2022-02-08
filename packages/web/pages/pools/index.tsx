@@ -6,7 +6,8 @@ import { Overview } from "../../components/overview";
 import { LeftTime } from "../../components/left-time";
 
 const Pools: NextPage = observer(function () {
-  const { chainStore, accountStore, queriesOsmosisStore } = useStore();
+  const { chainStore, accountStore, queriesOsmosisStore, priceStore } =
+    useStore();
 
   const chainInfo = chainStore.getChain("osmosis");
 
@@ -17,9 +18,12 @@ const Pools: NextPage = observer(function () {
     account.bech32Address
   );
 
-  const incentivizedPools =
-    queryOsmosis.queryIncentivizedPools.incentivizedPools;
-  // const allPools = queryOsmosis.queryGammPools.getPoolsDescendingOrderTVL();
+  const top3Pools = queryOsmosis.queryGammPools.getPoolsDescendingOrderTVL(
+    priceStore,
+    priceStore.getFiatCurrency("usd"),
+    3,
+    1
+  );
 
   return (
     <main>
@@ -49,7 +53,7 @@ const Pools: NextPage = observer(function () {
             {myPools.map((poolId) => {
               const pool = queryOsmosis.queryGammPools.getPool(poolId);
               if (pool) {
-                return <PoolCard pool={pool} />;
+                return <PoolCard key={pool.id} pool={pool} />;
               }
             })}
           </div>
@@ -57,8 +61,12 @@ const Pools: NextPage = observer(function () {
       </section>
       <section className="bg-background">
         <div className="max-w-container mx-auto p-10">
-          <h5>Incentivized Pools</h5>
-          <div className="mt-4 grid grid-cols-3 gap-4"></div>
+          <h5>Top Pools</h5>
+          <div className="mt-4 grid grid-cols-3 gap-4">
+            {top3Pools.map((pool) => (
+              <PoolCard key={pool.id} pool={pool} />
+            ))}
+          </div>
         </div>
       </section>
       <section className="bg-surface">

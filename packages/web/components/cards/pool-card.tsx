@@ -32,28 +32,15 @@ const PoolCardIconBackgroundColors: (keyof typeof poolCardIconBackgroundColorsTo
 
 export const PoolCard: FunctionComponent<{
   pool: ObservablePool;
-}> = observer(({ pool }) => {
+  isMyPool: boolean;
+}> = observer(({ pool, isMyPool }) => {
   const { chainStore, queriesOsmosisStore, priceStore, accountStore } =
     useStore();
-
+  const router = useRouter();
+  const deterministicInteger = useDeterministicIntegerFromString(pool.id);
   const chainInfo = chainStore.osmosis;
   const accountInfo = accountStore.getAccount(chainStore.osmosis.chainId);
   const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
-
-  const router = useRouter();
-
-  const lockedShareRatio =
-    queryOsmosis.queryGammPoolShare.getLockedGammShareRatio(
-      accountInfo.bech32Address,
-      pool.id
-    );
-
-  const actualLockedShareRatio = lockedShareRatio.moveDecimalPointLeft(2);
-
-  const poolTVL = pool.computeTotalValueLocked(
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
-  );
 
   const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
     pool.id,
@@ -61,7 +48,19 @@ export const PoolCard: FunctionComponent<{
     priceStore.getFiatCurrency("usd")!
   );
 
-  const deterministicInteger = useDeterministicIntegerFromString(pool.id);
+  const poolLiquidity = pool.computeTotalValueLocked(
+    priceStore,
+    priceStore.getFiatCurrency("usd")!
+  );
+
+  const bondedShareRatio =
+    queryOsmosis.queryGammPoolShare.getLockedGammShareRatio(
+      accountInfo.bech32Address,
+      pool.id
+    );
+  const bonded = poolLiquidity
+    .mul(bondedShareRatio.moveDecimalPointLeft(2))
+    .toString();
 
   return (
     <div
@@ -138,25 +137,33 @@ export const PoolCard: FunctionComponent<{
         </div>
         <div className="flex flex-col">
           <div className="subtitle2 text-white-disabled">Pool Liquidity</div>
-          {poolTVL.toDec().isZero() ? (
+          {poolLiquidity.toDec().isZero() ? (
             <div className="relative overflow-hidden rounded-sm w-[6.5rem] h-4 bg-white-faint mt-[0.4375rem]">
               <div className="absolute left-0 -translate-x-[calc(-150%)] h-full w-1/2 bg-loading-bar animate-loading" />
             </div>
           ) : (
             <div className="mt-0.5 subtitle1 text-white-high">
-              {poolTVL.toString()}
+              {poolLiquidity.toString()}
             </div>
           )}
         </div>
         <div className="flex flex-col">
-          <div className="subtitle2 text-white-disabled">Bonded</div>
-          {poolTVL.toDec().isZero() ? (
-            <div className="relative overflow-hidden rounded-sm w-[3.75rem] h-4 bg-white-faint mt-[0.4375rem]">
-              <div className="absolute left-0 -translate-x-[calc(-150%)] h-full w-1/2 bg-loading-bar animate-loading" />
-            </div>
+          <div className="subtitle2 text-white-disabled">
+            {isMyPool ? "Bonded" : "Fees"}
+          </div>
+          {isMyPool ? (
+            poolLiquidity.toDec().isZero() ? (
+              <div className="relative overflow-hidden rounded-sm w-[3.75rem] h-4 bg-white-faint mt-[0.4375rem]">
+                <div className="absolute left-0 -translate-x-[calc(-150%)] h-full w-1/2 bg-loading-bar animate-loading" />
+              </div>
+            ) : (
+              <div className="mt-0.5 subtitle1 text-white-high">
+                {bonded.toString()}
+              </div>
+            )
           ) : (
             <div className="mt-0.5 subtitle1 text-white-high">
-              {poolTVL.mul(actualLockedShareRatio).toString()}
+              {pool.swapFee.toString()}
             </div>
           )}
         </div>
