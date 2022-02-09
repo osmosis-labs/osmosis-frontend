@@ -59,11 +59,17 @@ export const Overview: FunctionComponent<Props> = ({
               <OverviewLabelValue key={index} {...label} />
             ))}
         </div>
-        <div className="mt-6 flex items-center gap-20">
-          {secondaryOverviewLabels?.slice(0, 3).map((label, index) => (
-            <OverviewLabelValue prominence="secondary" key={index} {...label} />
-          ))}
-        </div>
+        {secondaryOverviewLabels && (
+          <div className="mt-6 flex items-center gap-20">
+            {secondaryOverviewLabels.slice(0, 3).map((label, index) => (
+              <OverviewLabelValue
+                prominence="secondary"
+                key={index}
+                {...label}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   </section>

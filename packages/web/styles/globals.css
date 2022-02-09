@@ -96,7 +96,7 @@
   }
 
   tbody > tr > td:first-child {
-    @apply pl-8 pr-3 py-3;
+    @apply pl-4 pr-3 py-3;
   }
 
   tbody > tr > td {

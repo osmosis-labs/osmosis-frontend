@@ -17,6 +17,7 @@ export interface ColumnSortDef {
 
 export interface ColumnDef<CellT extends BaseCell> {
   header?: string;
+  headerClassName?: string;
   sort?: ColumnSortDef;
   infoTooltip?: string;
   /** If provided, will be used to render the cell for each row in this column.
@@ -59,9 +60,12 @@ export const Table = <CellT extends BaseCell>({
           {columnDefs.map((colDef, colIndex) => (
             <th
               key={colIndex}
-              className={classNames({
-                "cursor-pointer select-none": colDef?.sort?.onClickHeader,
-              })}
+              className={classNames(
+                {
+                  "cursor-pointer select-none": colDef?.sort?.onClickHeader,
+                },
+                colDef?.headerClassName
+              )}
               onClick={() => colDef?.sort?.onClickHeader(colIndex)}
             >
               <span>
