@@ -38,6 +38,11 @@ const SwitchImg = styled.img`
 	width: 1.3rem;
 	height: 1.3rem;
 
+	:hover {
+		width: 1.7rem;
+		height: 1.7rem;
+	}
+
 	@media (min-width: 768px) {
 		width: 1.5rem;
 		height: 1.5rem;

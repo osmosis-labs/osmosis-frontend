@@ -3,6 +3,7 @@ import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Center } from 'src/components/layouts/Containers';
 import { PoolsPerPage } from 'src/config';
+import { ARROW_HOVER_SCALE } from 'src/constants';
 
 interface Props {
 	page: number;
@@ -21,6 +22,8 @@ export function AllPoolsPagination({ page: propPage, numberOfPools }: Props) {
 	return (
 		<PaginationContainer>
 			<ButtonArrow
+				isFirst={isFirstPage}
+				isLast={false}
 				type="button"
 				onClick={e => {
 					if (!isFirstPage) {
@@ -39,6 +42,8 @@ export function AllPoolsPagination({ page: propPage, numberOfPools }: Props) {
 			</ButtonArrow>
 			<PageCounts>{pageRender}</PageCounts>
 			<ButtonArrow
+				isFirst={false}
+				isLast={isLastPage}
 				type="button"
 				onClick={e => {
 					if (!isLastPage) {
@@ -58,12 +63,22 @@ export function AllPoolsPagination({ page: propPage, numberOfPools }: Props) {
 		</PaginationContainer>
 	);
 }
+type ButtonProps = {
+	isFirst: boolean;
+	isLast: boolean;
+};
 
-const ButtonArrow = styled.button`
+const ButtonArrow = styled.button<ButtonProps>`
+//	border: ${props => (props.isFirst || props.isLast ? '1px solid gold' : '1px solid hotpink')};
 	display: flex;
 	align-items: center;
 	color: rgba(196, 164, 106, 1);
 	height: 2.25rem;
+	:hover {
+	color: ${props => (props.isFirst || props.isLast ? '' : 'white')};
+		transform: ${props => (props.isFirst || props.isLast ? `scale(1)` : `scale(${ARROW_HOVER_SCALE})`)};
+		transition: transform 30ms ease-in;
+	}
 `;
 
 const PageCounts = styled.div`

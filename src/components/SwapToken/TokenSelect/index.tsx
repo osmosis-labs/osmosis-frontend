@@ -10,6 +10,7 @@ import { colorGold, colorTextIcon } from 'src/emotionStyles/colors';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { MISC } from 'src/constants';
 import cn from 'clsx';
+import { ARROW_HOVER_SCALE } from 'src/constants';
 
 const EMPTY_CURRENCY_LIST: AppCurrency[] = [];
 
@@ -219,7 +220,10 @@ const DownArrowImg = styled(Img)<{ isActive: boolean; isHovering: boolean }>`
 	transition: transform 0.1s;
 
 	${({ isActive }) => ({ transform: isActive ? `rotate(180deg)` : `rotate(0deg)` })}
-	${({ isHovering }) => ({ opacity: isHovering ? 1 : 0.4 })}
+	${({ isHovering }) => ({
+		opacity: isHovering ? 1 : 0.4,
+		transform: isHovering ? `scale(${ARROW_HOVER_SCALE})` : `scale(1)`,
+	})}
 
 	@media (min-width: 768px) {
 		margin-left: 12px;

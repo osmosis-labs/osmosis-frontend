@@ -87,4 +87,6 @@ export type TSIDEBAR_ITEM = {
 	LINK: string;
 };
 
+export const ARROW_HOVER_SCALE = 1.3;
+
 export type TSIDEBAR_SELECTED_CHECK = string | (string | RegExp)[];
