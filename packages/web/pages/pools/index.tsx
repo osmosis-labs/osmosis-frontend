@@ -53,7 +53,7 @@ const Pools: NextPage = observer(function () {
             {myPools.map((poolId) => {
               const pool = queryOsmosis.queryGammPools.getPool(poolId);
               if (pool) {
-                return <PoolCard key={pool.id} pool={pool} />;
+                return <PoolCard key={pool.id} pool={pool} isMyPool />;
               }
             })}
           </div>

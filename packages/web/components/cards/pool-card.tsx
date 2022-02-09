@@ -105,20 +105,44 @@ export const PoolCard: FunctionComponent<{
             "ml-10 mr-6 w-[4.125rem] h-[4.125rem] rounded-full border-[1px] border-enabledGold shrink-0 flex items-center justify-center"
           }
         >
-          {pool.poolAssets[1].amount.currency.coinImageUrl && (
+          {pool.poolAssets.length >= 3 ? (
+            <div className="body1 text-white-mid ml-2.5">{`+${
+              pool.poolAssets.length - 1
+            }`}</div>
+          ) : pool.poolAssets[1].amount.currency.coinImageUrl ? (
             <Image
               src={pool.poolAssets[1].amount.currency.coinImageUrl}
               alt={pool.poolAssets[1].amount.currency.coinDenom}
               width={52}
               height={52}
             />
+          ) : (
+            <div
+              className={classNames(
+                "w-[54px] h-[54px] bg-blue rounded-full flex items-center justify-center",
+                poolCardIconBackgroundColorsToTailwindBgImage[
+                  PoolCardIconBackgroundColors[
+                    deterministicInteger % PoolCardIconBackgroundColors.length
+                  ]
+                ]
+              )}
+            >
+              <Image
+                src="/icons/OSMO.svg"
+                alt="no token icon"
+                width={40}
+                height={40}
+              />
+            </div>
           )}
         </div>
         <div className="flex flex-col">
           <h5>
-            {pool.poolAssets
-              .map((asset) => asset.amount.currency.coinDenom)
-              .join(" / ")}
+            {pool.poolAssets.length >= 3
+              ? `${pool.poolAssets.length} Token Pool`
+              : pool.poolAssets
+                  .map((asset) => asset.amount.currency.coinDenom)
+                  .join(" / ")}
           </h5>
           <div className="subtitle2 text-white-mid">{`Pool #${pool.id}`}</div>
         </div>
