@@ -20,7 +20,7 @@ const Pools: NextPage = observer(function () {
 
   const top3Pools = queryOsmosis.queryGammPools.getPoolsDescendingOrderTVL(
     priceStore,
-    priceStore.getFiatCurrency("usd"),
+    priceStore.getFiatCurrency("usd")!,
     3,
     1
   );
@@ -62,14 +62,13 @@ const Pools: NextPage = observer(function () {
                   priceStore,
                   priceStore.getFiatCurrency("usd")!
                 );
-                const bondedShareRatio =
-                  queryOsmosis.queryGammPoolShare.getLockedGammShareRatio(
+                const bonded =
+                  queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
                     account.bech32Address,
-                    pool.id
+                    pool.id,
+                    poolLiquidity,
+                    priceStore.getFiatCurrency("usd")!
                   );
-                const bonded = poolLiquidity
-                  .mul(bondedShareRatio.moveDecimalPointLeft(2))
-                  .toString();
 
                 return (
                   <PoolCard
@@ -78,7 +77,7 @@ const Pools: NextPage = observer(function () {
                     poolMetrics={[
                       {
                         label: "APR",
-                        value: apr.toString(),
+                        value: `${apr.toString()}%`,
                         isLoading:
                           queryOsmosis.queryIncentivizedPools.isAprFetching,
                       },
@@ -111,10 +110,20 @@ const Pools: NextPage = observer(function () {
                   priceStore,
                   priceStore.getFiatCurrency("usd")!
                 );
+
                 const poolLiquidity = pool.computeTotalValueLocked(
                   priceStore,
                   priceStore.getFiatCurrency("usd")!
                 );
+
+                const bondedShareRatio =
+                  queryOsmosis.queryGammPoolShare.getLockedGammShareRatio(
+                    account.bech32Address,
+                    pool.id
+                  );
+                const bonded = poolLiquidity
+                  .mul(bondedShareRatio.moveDecimalPointLeft(2))
+                  .toString();
                 return (
                   <PoolCard
                     key={pool.id}
