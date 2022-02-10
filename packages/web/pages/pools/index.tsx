@@ -53,7 +53,48 @@ const Pools: NextPage = observer(function () {
             {myPools.map((poolId) => {
               const pool = queryOsmosis.queryGammPools.getPool(poolId);
               if (pool) {
-                return <PoolCard key={pool.id} pool={pool} isMyPool />;
+                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
+                  pool.id,
+                  priceStore,
+                  priceStore.getFiatCurrency("usd")!
+                );
+                const poolLiquidity = pool.computeTotalValueLocked(
+                  priceStore,
+                  priceStore.getFiatCurrency("usd")!
+                );
+                const bondedShareRatio =
+                  queryOsmosis.queryGammPoolShare.getLockedGammShareRatio(
+                    account.bech32Address,
+                    pool.id
+                  );
+                const bonded = poolLiquidity
+                  .mul(bondedShareRatio.moveDecimalPointLeft(2))
+                  .toString();
+
+                return (
+                  <PoolCard
+                    key={pool.id}
+                    pool={pool}
+                    poolMetrics={[
+                      {
+                        label: "APR",
+                        value: apr.toString(),
+                        isLoading:
+                          queryOsmosis.queryIncentivizedPools.isAprFetching,
+                      },
+                      {
+                        label: "Pool Liquidity",
+                        value: poolLiquidity.toString(),
+                        isLoading: poolLiquidity.toDec().isZero(),
+                      },
+                      {
+                        label: "Bonded",
+                        value: bonded.toString(),
+                        isLoading: poolLiquidity.toDec().isZero(),
+                      },
+                    ]}
+                  />
+                );
               }
             })}
           </div>
@@ -63,9 +104,42 @@ const Pools: NextPage = observer(function () {
         <div className="max-w-container mx-auto p-10">
           <h5>Top Pools</h5>
           <div className="mt-4 grid grid-cols-3 gap-4">
-            {top3Pools.map((pool) => (
-              <PoolCard key={pool.id} pool={pool} />
-            ))}
+            {top3Pools.map((pool) => {
+              if (pool) {
+                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
+                  pool.id,
+                  priceStore,
+                  priceStore.getFiatCurrency("usd")!
+                );
+                const poolLiquidity = pool.computeTotalValueLocked(
+                  priceStore,
+                  priceStore.getFiatCurrency("usd")!
+                );
+                return (
+                  <PoolCard
+                    key={pool.id}
+                    pool={pool}
+                    poolMetrics={[
+                      {
+                        label: "APR",
+                        value: apr.toString(),
+                        isLoading:
+                          queryOsmosis.queryIncentivizedPools.isAprFetching,
+                      },
+                      {
+                        label: "Pool Liquidity",
+                        value: poolLiquidity.toString(),
+                        isLoading: poolLiquidity.toDec().isZero(),
+                      },
+                      {
+                        label: "Fees",
+                        value: pool.swapFee.toString(),
+                      },
+                    ]}
+                  />
+                );
+              }
+            })}
           </div>
         </div>
       </section>

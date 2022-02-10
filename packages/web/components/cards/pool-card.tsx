@@ -1,42 +1,16 @@
 import { ObservablePool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
-import { useStore } from "../../stores";
 import { PoolAssetsIcon } from "../assets";
 import { MetricLoader } from "../loaders";
+import { PoolMetric } from "./types";
 
 export const PoolCard: FunctionComponent<{
   pool: ObservablePool;
-  isMyPool: boolean;
-}> = observer(({ pool, isMyPool }) => {
-  const { chainStore, queriesOsmosisStore, priceStore, accountStore } =
-    useStore();
+  poolMetrics: PoolMetric[];
+}> = observer(({ pool, poolMetrics }) => {
   const router = useRouter();
-  const chainInfo = chainStore.osmosis;
-  const accountInfo = accountStore.getAccount(chainStore.osmosis.chainId);
-  const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
-
-  const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
-    pool.id,
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
-  );
-
-  const poolLiquidity = pool.computeTotalValueLocked(
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
-  );
-
-  const bondedShareRatio =
-    queryOsmosis.queryGammPoolShare.getLockedGammShareRatio(
-      accountInfo.bech32Address,
-      pool.id
-    );
-  const bonded = poolLiquidity
-    .mul(bondedShareRatio.moveDecimalPointLeft(2))
-    .toString();
 
   return (
     <div
@@ -58,41 +32,24 @@ export const PoolCard: FunctionComponent<{
       </div>
       <div className="mt-5 mb-3 w-full bg-secondary-200 h-[1px]" />
       <div className="flex flex-wrap gap-x-8">
-        <div className="flex flex-col">
-          <div className="subtitle2 text-white-disabled">APR</div>
-          <MetricLoader
-            isLoading={queryOsmosis.queryIncentivizedPools.isAprFetching}
-          >
-            <div className="mt-0.5 subtitle1 text-white-high">{`${apr.toString()}%`}</div>
-          </MetricLoader>
-        </div>
-        <div className="flex flex-col">
-          <div className="subtitle2 text-white-disabled">Pool Liquidity</div>
-          <MetricLoader
-            isLoading={poolLiquidity.toDec().isZero()}
-            className="w-[6.5rem]"
-          >
-            <div className="mt-0.5 subtitle1 text-white-high">
-              {poolLiquidity.toString()}
+        {poolMetrics.map((poolMetric, index) => (
+          <div key={index} className="flex flex-col">
+            <div className="subtitle2 text-white-disabled">
+              {poolMetric.label}
             </div>
-          </MetricLoader>
-        </div>
-        <div className="flex flex-col">
-          <div className="subtitle2 text-white-disabled">
-            {isMyPool ? "Bonded" : "Fees"}
-          </div>
-          {isMyPool ? (
-            <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
+            {poolMetric.isLoading ? (
+              <MetricLoader isLoading={poolMetric.isLoading}>
+                <div className="mt-0.5 subtitle1 text-white-high">
+                  {poolMetric.value}
+                </div>
+              </MetricLoader>
+            ) : (
               <div className="mt-0.5 subtitle1 text-white-high">
-                {bonded.toString()}
+                {poolMetric.value}
               </div>
-            </MetricLoader>
-          ) : (
-            <div className="mt-0.5 subtitle1 text-white-high">
-              {pool.swapFee.toString()}
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
