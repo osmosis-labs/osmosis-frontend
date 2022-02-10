@@ -17,19 +17,19 @@ export const PageList: FunctionComponent<Props> = ({
   editField = false,
   className,
 }) => {
-  const [textEditing, setIsEditing] = useState(false);
+  const [isEditingText, setIsEditingText] = useState(false);
   const inputElem = useRef(null);
 
   // auto focus input text when selecting to edit
   useEffect(() => {
-    if (textEditing && inputElem.current) {
+    if (isEditingText && inputElem.current) {
       (inputElem.current as unknown as any).select();
     }
 
     if (max === min) {
-      setIsEditing(false);
+      setIsEditingText(false);
     }
-  }, [textEditing]);
+  }, [isEditingText]);
 
   const processInputValue = (e: any) => {
     const newValue = Number(e.target.value);
@@ -40,7 +40,11 @@ export const PageList: FunctionComponent<Props> = ({
 
   return (
     <div
-      className={classNames("flex", !textEditing ? "pt-2.5" : null, className)}
+      className={classNames(
+        "flex",
+        !isEditingText ? "pt-2.5" : null,
+        className
+      )}
     >
       <div
         className={classNames(
@@ -50,7 +54,7 @@ export const PageList: FunctionComponent<Props> = ({
             : "cursor-pointer"
         )}
       >
-        <div className={textEditing ? "pt-2.5 pr-2" : undefined}>
+        <div className={isEditingText ? "pt-2.5 pr-2" : undefined}>
           <Image
             alt="left"
             src="/icons/chevron-left.svg"
@@ -66,7 +70,7 @@ export const PageList: FunctionComponent<Props> = ({
           />
         </div>
       </div>
-      {editField && textEditing ? (
+      {editField && isEditingText ? (
         <input
           ref={inputElem}
           className="leading-tight border border-secondary-200 rounded-lg w-fit appearance-none bg-transparent text-center py-2"
@@ -75,7 +79,7 @@ export const PageList: FunctionComponent<Props> = ({
           value={currentValue}
           inputMode="decimal"
           onBlur={() => {
-            setIsEditing(false);
+            setIsEditingText(false);
           }}
           onFocus={(e) => {
             e.target.select();
@@ -83,7 +87,7 @@ export const PageList: FunctionComponent<Props> = ({
           onKeyPress={(e) => {
             if (e.key === "Enter") {
               processInputValue(e);
-              setIsEditing(false);
+              setIsEditingText(false);
             }
           }}
           onInput={processInputValue}
@@ -95,7 +99,7 @@ export const PageList: FunctionComponent<Props> = ({
               editField && min !== max,
           })}
           onClick={() => {
-            if (editField) setIsEditing(true);
+            if (editField) setIsEditingText(true);
           }}
         >
           {currentValue} / {max}
@@ -104,19 +108,19 @@ export const PageList: FunctionComponent<Props> = ({
       <div
         className={classNames(
           "select-none",
-          (currentValue === max || max === min) && !textEditing
+          (currentValue === max || max === min) && !isEditingText
             ? "cursor-default opacity-50"
             : "cursor-pointer"
         )}
       >
-        <div className={textEditing ? "pt-2 pl-2" : undefined}>
-          {textEditing ? (
+        <div className={isEditingText ? "pt-2 pl-2" : undefined}>
+          {isEditingText ? (
             <Image
               alt="accept"
               src="/icons/checkmark-circle.svg"
               height={22}
               width={22}
-              onClick={() => setIsEditing(false)}
+              onClick={() => setIsEditingText(false)}
             />
           ) : (
             <Image
