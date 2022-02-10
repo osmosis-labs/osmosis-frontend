@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 import { useStore } from "../../stores";
+import { PoolAssetsIcon } from "../assets";
 import { MetricLoader } from "../loaders";
 
 export const PoolCard: FunctionComponent<{
@@ -42,54 +43,9 @@ export const PoolCard: FunctionComponent<{
       className="px-[1.875rem] pt-8 pb-6 bg-card rounded-2xl cursor-pointer hover:ring-1 hover:ring-enabledGold"
       onClick={() => router.push(`/pools/${pool.id}`)}
     >
-      <div className="relative flex items-center">
-        <div
-          className={
-            "absolute z-10 w-[4.125rem] h-[4.125rem] rounded-full border-[1px] bg-card border-enabledGold flex items-center justify-center"
-          }
-        >
-          {pool.poolAssets[0].amount.currency.coinImageUrl ? (
-            <Image
-              src={pool.poolAssets[0].amount.currency.coinImageUrl}
-              alt={pool.poolAssets[0].amount.currency.coinDenom}
-              width={54}
-              height={54}
-            />
-          ) : (
-            <Image
-              src="/icons/question-mark.svg"
-              alt="no token icon"
-              width={54}
-              height={54}
-            />
-          )}
-        </div>
-        <div
-          className={
-            "ml-10 mr-6 w-[4.125rem] h-[4.125rem] rounded-full border-[1px] border-enabledGold shrink-0 flex items-center justify-center"
-          }
-        >
-          {pool.poolAssets.length >= 3 ? (
-            <div className="body1 text-white-mid ml-2.5">{`+${
-              pool.poolAssets.length - 1
-            }`}</div>
-          ) : pool.poolAssets[1].amount.currency.coinImageUrl ? (
-            <Image
-              src={pool.poolAssets[1].amount.currency.coinImageUrl}
-              alt={pool.poolAssets[1].amount.currency.coinDenom}
-              width={52}
-              height={52}
-            />
-          ) : (
-            <Image
-              src="/icons/question-mark.svg"
-              alt="no token icon"
-              width={54}
-              height={54}
-            />
-          )}
-        </div>
-        <div className="flex flex-col">
+      <div className="flex items-center">
+        <PoolAssetsIcon assets={pool.poolAssets} size="md" />
+        <div className="ml-6 flex flex-col">
           <h5>
             {pool.poolAssets.length >= 3
               ? `${pool.poolAssets.length} Token Pool`
