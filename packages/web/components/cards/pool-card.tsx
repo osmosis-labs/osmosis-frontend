@@ -6,6 +6,7 @@ import { FunctionComponent } from "react";
 import { useStore } from "../../stores";
 import { useDeterministicIntegerFromString } from "../../hooks";
 import classNames from "classnames";
+import { MetricLoader } from "../loaders";
 
 const poolCardIconBackgroundColorsToTailwindBgImage = {
   socialLive: "bg-gradients-socialLive",
@@ -151,40 +152,33 @@ export const PoolCard: FunctionComponent<{
       <div className="flex flex-wrap gap-x-8">
         <div className="flex flex-col">
           <div className="subtitle2 text-white-disabled">APR</div>
-          {queryOsmosis.queryIncentivizedPools.isAprFetching ? (
-            <div className="relative overflow-hidden rounded-sm w-[3.75rem] h-4 bg-white-faint mt-[0.4375rem]">
-              <div className="absolute left-0 -translate-x-[calc(-150%)] h-full w-1/2 bg-loading-bar animate-loading" />
-            </div>
-          ) : (
+          <MetricLoader
+            isLoading={queryOsmosis.queryIncentivizedPools.isAprFetching}
+          >
             <div className="mt-0.5 subtitle1 text-white-high">{`${apr.toString()}%`}</div>
-          )}
+          </MetricLoader>
         </div>
         <div className="flex flex-col">
           <div className="subtitle2 text-white-disabled">Pool Liquidity</div>
-          {poolLiquidity.toDec().isZero() ? (
-            <div className="relative overflow-hidden rounded-sm w-[6.5rem] h-4 bg-white-faint mt-[0.4375rem]">
-              <div className="absolute left-0 -translate-x-[calc(-150%)] h-full w-1/2 bg-loading-bar animate-loading" />
-            </div>
-          ) : (
+          <MetricLoader
+            isLoading={poolLiquidity.toDec().isZero()}
+            className="w-[6.5rem]"
+          >
             <div className="mt-0.5 subtitle1 text-white-high">
               {poolLiquidity.toString()}
             </div>
-          )}
+          </MetricLoader>
         </div>
         <div className="flex flex-col">
           <div className="subtitle2 text-white-disabled">
             {isMyPool ? "Bonded" : "Fees"}
           </div>
           {isMyPool ? (
-            poolLiquidity.toDec().isZero() ? (
-              <div className="relative overflow-hidden rounded-sm w-[3.75rem] h-4 bg-white-faint mt-[0.4375rem]">
-                <div className="absolute left-0 -translate-x-[calc(-150%)] h-full w-1/2 bg-loading-bar animate-loading" />
-              </div>
-            ) : (
+            <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
               <div className="mt-0.5 subtitle1 text-white-high">
                 {bonded.toString()}
               </div>
-            )
+            </MetricLoader>
           ) : (
             <div className="mt-0.5 subtitle1 text-white-high">
               {pool.swapFee.toString()}
