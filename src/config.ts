@@ -40,6 +40,8 @@ export const LockupAbledPoolIds: {
 	'572': true,
 	'573': true,
 	'574': true,
+	'577': true,
+	'578': true,
 	'579': true,
 	'584': true,
 	'585': true,
@@ -274,6 +276,34 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '2035',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
+		},
+	],
+	'577': [
+		{
+			gaugeId: '2088',
+			denom: 'ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E',
+		},
+		{
+			gaugeId: '2089',
+			denom: 'ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E',
+		},
+		{
+			gaugeId: '2090',
+			denom: 'ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E',
+		},
+	],
+	'578': [
+		{
+			gaugeId: '2091',
+			denom: 'ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E',
+		},
+		{
+			gaugeId: '2092',
+			denom: 'ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E',
+		},
+		{
+			gaugeId: '2093',
+			denom: 'ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E',
 		},
 	],
 	'584': [
