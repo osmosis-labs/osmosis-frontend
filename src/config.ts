@@ -1530,7 +1530,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/btsg.svg',
 			},
 		],
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://explorebitsong.com/transactions/{txHash}',
 	},
 	{
