@@ -4,32 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 import { useStore } from "../../stores";
-import { useDeterministicIntegerFromString } from "../../hooks";
-import classNames from "classnames";
 import { MetricLoader } from "../loaders";
-
-const poolCardIconBackgroundColorsToTailwindBgImage = {
-  socialLive: "bg-gradients-socialLive",
-  greenBeach: "bg-gradients-greenBeach",
-  kashmir: "bg-gradients-kashmir",
-  frost: "bg-gradients-frost",
-  cherry: "bg-gradients-cherry",
-  sunset: "bg-gradients-sunset",
-  orangeCoral: "bg-gradients-orangeCoral",
-  pinky: "bg-gradients-pinky",
-} as const;
-
-const PoolCardIconBackgroundColors: (keyof typeof poolCardIconBackgroundColorsToTailwindBgImage)[] =
-  [
-    "socialLive",
-    "greenBeach",
-    "kashmir",
-    "frost",
-    "cherry",
-    "sunset",
-    "orangeCoral",
-    "pinky",
-  ];
 
 export const PoolCard: FunctionComponent<{
   pool: ObservablePool;
@@ -38,7 +13,6 @@ export const PoolCard: FunctionComponent<{
   const { chainStore, queriesOsmosisStore, priceStore, accountStore } =
     useStore();
   const router = useRouter();
-  const deterministicInteger = useDeterministicIntegerFromString(pool.id);
   const chainInfo = chainStore.osmosis;
   const accountInfo = accountStore.getAccount(chainStore.osmosis.chainId);
   const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
@@ -82,23 +56,12 @@ export const PoolCard: FunctionComponent<{
               height={54}
             />
           ) : (
-            <div
-              className={classNames(
-                "w-[54px] h-[54px] bg-blue rounded-full flex items-center justify-center",
-                poolCardIconBackgroundColorsToTailwindBgImage[
-                  PoolCardIconBackgroundColors[
-                    deterministicInteger % PoolCardIconBackgroundColors.length
-                  ]
-                ]
-              )}
-            >
-              <Image
-                src="/icons/OSMO.svg"
-                alt="no token icon"
-                width={40}
-                height={40}
-              />
-            </div>
+            <Image
+              src="/icons/question-mark.svg"
+              alt="no token icon"
+              width={54}
+              height={54}
+            />
           )}
         </div>
         <div
@@ -118,23 +81,12 @@ export const PoolCard: FunctionComponent<{
               height={52}
             />
           ) : (
-            <div
-              className={classNames(
-                "w-[54px] h-[54px] bg-blue rounded-full flex items-center justify-center",
-                poolCardIconBackgroundColorsToTailwindBgImage[
-                  PoolCardIconBackgroundColors[
-                    deterministicInteger % PoolCardIconBackgroundColors.length
-                  ]
-                ]
-              )}
-            >
-              <Image
-                src="/icons/OSMO.svg"
-                alt="no token icon"
-                width={40}
-                height={40}
-              />
-            </div>
+            <Image
+              src="/icons/question-mark.svg"
+              alt="no token icon"
+              width={54}
+              height={54}
+            />
           )}
         </div>
         <div className="flex flex-col">
