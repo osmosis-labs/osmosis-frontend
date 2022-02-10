@@ -40,6 +40,8 @@ export const LockupAbledPoolIds: {
 	'572': true,
 	'573': true,
 	'574': true,
+	'577': true,
+	'578': true,
 	'579': true,
 	'584': true,
 	'585': true,
@@ -54,6 +56,7 @@ export const LockupAbledPoolIds: {
 	'613': true,
 	'618': true,
 	'619': true,
+	'629': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -249,30 +252,58 @@ export const ExtraGaugeInPool: {
 	],
 	'573': [
 		{
-			gaugeId: '1927',
+			gaugeId: '2030',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '1928',
+			gaugeId: '2031',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '1929',
+			gaugeId: '2032',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 	],
 	'574': [
 		{
-			gaugeId: '1930',
+			gaugeId: '2033',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '1931',
+			gaugeId: '2034',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '1932',
+			gaugeId: '2035',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
+		},
+	],
+	'577': [
+		{
+			gaugeId: '2088',
+			denom: 'ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E',
+		},
+		{
+			gaugeId: '2089',
+			denom: 'ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E',
+		},
+		{
+			gaugeId: '2090',
+			denom: 'ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E',
+		},
+	],
+	'578': [
+		{
+			gaugeId: '2091',
+			denom: 'ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E',
+		},
+		{
+			gaugeId: '2092',
+			denom: 'ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E',
+		},
+		{
+			gaugeId: '2093',
+			denom: 'ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E',
 		},
 	],
 	'584': [
@@ -333,15 +364,15 @@ export const ExtraGaugeInPool: {
 	],
 	'592': [
 		{
-			gaugeId: '1933',
+			gaugeId: '2036',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '1934',
+			gaugeId: '2037',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '1935',
+			gaugeId: '2038',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 	],
@@ -467,6 +498,16 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
 		},
 	],
+	'617': [
+		{
+			gaugeId: '2039',
+			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
+		},
+		{
+			gaugeId: '2040',
+			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
+		},
+	],
 	'618': [
 		{
 			gaugeId: '2004',
@@ -509,6 +550,20 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 	],
+	'629': [
+		{
+			gaugeId: '2067',
+			denom: 'ibc/8318FD63C42203D16DDCAF49FE10E8590669B3219A3E87676AC9DA50722687FB',
+		},
+		{
+			gaugeId: '2068',
+			denom: 'ibc/8318FD63C42203D16DDCAF49FE10E8590669B3219A3E87676AC9DA50722687FB',
+		},
+		{
+			gaugeId: '2069',
+			denom: 'ibc/8318FD63C42203D16DDCAF49FE10E8590669B3219A3E87676AC9DA50722687FB',
+		},
+	],
 };
 
 export const PoolsPerPage = 10;
@@ -528,6 +583,9 @@ export const IBCAssetInfos: {
 	// In some reasons, ibc channel is in unstable status.
 	// Disable the deposit, withdraw button and show the tooltip.
 	isUnstable?: boolean;
+
+	// If the asset is from ics20-cw20
+	ics20ContractAddress?: string;
 }[] = [
 	{
 		counterpartyChainId: 'cosmoshub-4',
@@ -564,6 +622,13 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-42',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'ujuno',
+	},
+	{
+		counterpartyChainId: 'juno-1',
+		sourceChannelId: 'channel-169',
+		destChannelId: 'channel-47',
+		coinMinimalDenom: 'cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr',
+		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 	{
 		counterpartyChainId: 'stargaze-1',
@@ -714,6 +779,30 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-128',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'udig',
+	},
+	{
+		counterpartyChainId: 'sommelier-3',
+		sourceChannelId: 'channel-165',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'usomm',
+	},
+	{
+		counterpartyChainId: 'sifchain-1',
+		sourceChannelId: 'channel-47',
+		destChannelId: 'channel-17',
+		coinMinimalDenom: 'rowan',
+	},
+	{
+		counterpartyChainId: 'laozi-mainnet',
+		sourceChannelId: 'channel-148',
+		destChannelId: 'channel-83',
+		coinMinimalDenom: 'uband',
+	},
+	{
+		counterpartyChainId: 'darchub',
+		sourceChannelId: 'channel-171',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'udarc',
 	},
 ];
 
@@ -1230,6 +1319,14 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'juno-network',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 			},
+			{
+				type: 'cw20',
+				contractAddress: 'juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr',
+				coinDenom: 'NETA',
+				coinMinimalDenom: 'cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr:NETA',
+				coinDecimals: 6,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/neta.svg',
+			},
 		],
 		feeCurrencies: [
 			{
@@ -1621,7 +1718,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			high: 50,
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
-		explorerUrlToTx: 'https://cheqd.didx.co.za/transactions/{txHash}',
+		explorerUrlToTx: 'https://explorer.cheqd.io/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://rpc.stargaze-apis.com',
@@ -1856,5 +1953,153 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://ping.pub/dig/tx/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-sommelier.keplr.app',
+		rest: 'https://lcd-sommelier.keplr.app',
+		chainId: 'sommelier-3',
+		chainName: 'Sommelier',
+		stakeCurrency: {
+			coinDenom: 'SOMM',
+			coinMinimalDenom: 'usomm',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:usomm',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/somm.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('somm'),
+		currencies: [
+			{
+				coinDenom: 'SOMM',
+				coinMinimalDenom: 'usomm',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:usomm',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/somm.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'SOMM',
+				coinMinimalDenom: 'usomm',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:usomm',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/somm.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://sommscan.io',
+	},
+	{
+		rpc: 'https://rpc.sifchain.finance',
+		rest: 'https://api-int.sifchain.finance',
+		chainId: 'sifchain-1',
+		chainName: 'Sifchain',
+		stakeCurrency: {
+			coinDenom: 'ROWAN',
+			coinMinimalDenom: 'rowan',
+			coinDecimals: 18,
+			coinGeckoId: 'sifchain',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/rowan.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('sif'),
+		currencies: [
+			{
+				coinDenom: 'ROWAN',
+				coinMinimalDenom: 'rowan',
+				coinDecimals: 18,
+				coinGeckoId: 'sifchain',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/rowan.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'ROWAN',
+				coinMinimalDenom: 'rowan',
+				coinDecimals: 18,
+				coinGeckoId: 'sifchain',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/rowan.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://www.mintscan.io/sifchain/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.laozi3.bandchain.org',
+		rest: 'https://laozi1.bandchain.org/api',
+		chainId: 'laozi-mainnet',
+		chainName: 'BandChain',
+		stakeCurrency: {
+			coinDenom: 'BAND',
+			coinMinimalDenom: 'uband',
+			coinDecimals: 6,
+			coinGeckoId: 'band-protocol',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/band.svg',
+		},
+		bip44: {
+			coinType: 494,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('band'),
+		currencies: [
+			{
+				coinDenom: 'BAND',
+				coinMinimalDenom: 'uband',
+				coinDecimals: 6,
+				coinGeckoId: 'band-protocol',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/band.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'BAND',
+				coinMinimalDenom: 'uband',
+				coinDecimals: 6,
+				coinGeckoId: 'band-protocol',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/band.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://cosmoscan.io/tx/{txHash}',
+	},
+	{
+		rpc: 'https://node1.konstellation.tech:26657',
+		rest: 'https://node1.konstellation.tech:1318',
+		chainId: 'darchub',
+		chainName: 'Konstellation',
+		stakeCurrency: {
+			coinDenom: 'DARC',
+			coinMinimalDenom: 'udarc',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:udarc',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/darc.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('darc'),
+		currencies: [
+			{
+				coinDenom: 'DARC',
+				coinMinimalDenom: 'udarc',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:udarc',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/darc.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'DARC',
+				coinMinimalDenom: 'udarc',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:udarc',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/darc.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://explorer.konstellation.tech/tx/{txHash}',
 	},
 ];
