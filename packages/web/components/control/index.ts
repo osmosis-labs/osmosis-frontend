@@ -7,3 +7,4 @@ export * from "./slider";
 export * from "./sort-menu";
 export * from "./switch";
 export * from "./toggle";
+export * from "./types";
