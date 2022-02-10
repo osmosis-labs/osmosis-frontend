@@ -4,7 +4,6 @@ import { useFilteredData, useSortedData } from "../../hooks/data";
 import { useState } from "react";
 import { Table, BaseCell, ColumnDef, RowDef } from "../../components/table";
 import { PoolCompositionCell } from "../../components/table/cells";
-import { SortDirection } from "../../components/types";
 import {
   Switch,
   CheckBox,
@@ -79,10 +78,6 @@ const Assets: NextPage = () => {
     []
   );
 
-  const [sortDirection, setSortDirection] = useState<SortDirection | undefined>(
-    undefined
-  );
-
   const [query, setQuery, filteredFruits] = useFilteredData(fruits, [
     "name",
     "nationality",
@@ -90,10 +85,14 @@ const Assets: NextPage = () => {
     "attributes.shape",
     "attributes.size",
   ]);
-  const [sortKeyPath, setSortKeyPath, sortedFruits] = useSortedData(
-    filteredFruits,
-    sortDirection
-  );
+  const [
+    sortKeyPath,
+    setSortKeyPath,
+    sortDirection,
+    setSortDirection,
+    toggleSortDirection,
+    sortedFruits,
+  ] = useSortedData(filteredFruits);
   const [page, setPage, minPage, numPages, fruitsPage] = usePaginatedData(
     sortedFruits,
     2
@@ -116,10 +115,7 @@ const Assets: NextPage = () => {
       display: "Pool Name",
       sort: {
         currentDirection: sortDirection,
-        onClickHeader: () =>
-          setSortDirection(
-            sortDirection === "ascending" ? "descending" : "ascending"
-          ),
+        onClickHeader: toggleSortDirection,
       },
       displayCell: PoolCompositionCell,
     },
@@ -128,10 +124,7 @@ const Assets: NextPage = () => {
       infoTooltip: "This is liquidity",
       sort: {
         currentDirection: sortDirection,
-        onClickHeader: () =>
-          setSortDirection(
-            sortDirection === "ascending" ? "descending" : "ascending"
-          ),
+        onClickHeader: toggleSortDirection,
       },
     },
     {
@@ -208,10 +201,7 @@ const Assets: NextPage = () => {
         sortKeyPath === "name"
           ? {
               currentDirection: sortDirection,
-              onClickHeader: () =>
-                setSortDirection(
-                  sortDirection === "ascending" ? "descending" : "ascending"
-                ),
+              onClickHeader: toggleSortDirection,
             }
           : {
               onClickHeader: () => {
@@ -227,10 +217,7 @@ const Assets: NextPage = () => {
         sortKeyPath === "attributes.color"
           ? {
               currentDirection: sortDirection,
-              onClickHeader: () =>
-                setSortDirection(
-                  sortDirection === "ascending" ? "descending" : "ascending"
-                ),
+              onClickHeader: toggleSortDirection,
             }
           : {
               onClickHeader: () => {
@@ -247,10 +234,7 @@ const Assets: NextPage = () => {
         sortKeyPath === "attributes.shape"
           ? {
               currentDirection: sortDirection,
-              onClickHeader: () =>
-                setSortDirection(
-                  sortDirection === "ascending" ? "descending" : "ascending"
-                ),
+              onClickHeader: toggleSortDirection,
             }
           : {
               onClickHeader: () => {
@@ -266,10 +250,7 @@ const Assets: NextPage = () => {
         sortKeyPath === "attributes.size"
           ? {
               currentDirection: sortDirection,
-              onClickHeader: () =>
-                setSortDirection(
-                  sortDirection === "ascending" ? "descending" : "ascending"
-                ),
+              onClickHeader: toggleSortDirection,
             }
           : {
               onClickHeader: () => {
@@ -303,11 +284,7 @@ const Assets: NextPage = () => {
                 id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id)
               }
               disabled={disabled}
-              onToggleSortDirection={() =>
-                setSortDirection(
-                  sortDirection === "ascending" ? "descending" : "ascending"
-                )
-              }
+              onToggleSortDirection={toggleSortDirection}
             />
           </div>
         </div>
