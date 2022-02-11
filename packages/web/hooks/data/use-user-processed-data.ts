@@ -7,13 +7,15 @@ import { DataProcessor } from "./types";
  *
  * @param data Data to process.
  * @param processor Instance that can process the data given user input.
+ * @param initialState Initial user state.
  * @returns [userInput, setUserInput, processedData]
  */
 export function useUserProcessedData<TData>(
   data: TData[],
-  processor: DataProcessor<TData[]>
+  processor: DataProcessor<TData[]>,
+  initialState: string = ""
 ): [string, (terms: string) => void, TData[]] {
-  const [userInput, setUserInput] = useState("");
+  const [userInput, setUserInput] = useState(initialState);
 
   return [
     userInput,

@@ -13,6 +13,7 @@ import { SortDirection } from "../../components/types";
  */
 export function useSortedData<TData>(
   data: TData[],
+  initialKeyPath?: string,
   sorter?: DataProcessor<TData[]>
 ): [
   string,
@@ -32,7 +33,11 @@ export function useSortedData<TData>(
     setSortDirection(
       sortDirection === "ascending" ? "descending" : "ascending"
     );
-  const [keypath, setKeypath, results] = useUserProcessedData(data, processor);
+  const [keypath, setKeypath, results] = useUserProcessedData(
+    data,
+    processor,
+    initialKeyPath
+  );
 
   if (sortDirection === "descending") {
     results.reverse();

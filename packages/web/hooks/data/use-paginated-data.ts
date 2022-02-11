@@ -8,13 +8,15 @@ import { useState } from "react";
  *
  * @param data Data to paginate through.
  * @param pageSize Number of data per page.
+ * @param initialPage Page to start on.
  * @returns [currentPage (1,2,3,...), setPage (1,2,3...) => void, minPage, maxPag, dataPage]
  */
 export function usePaginatedData<TData>(
   data: TData[],
-  pageSize: number
+  pageSize: number,
+  initialPage: number = 0
 ): [number, (page: number) => void, number, number, TData[]] {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(initialPage);
   const curPageStart = page * pageSize;
   const maxPages = Math.ceil(data.length / pageSize);
   return [
