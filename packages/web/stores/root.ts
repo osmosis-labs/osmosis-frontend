@@ -11,7 +11,11 @@ import { EmbedChainInfos, IBCAssetInfos } from "../config";
 import { IndexedDBKVStore, LocalKVStore } from "@keplr-wallet/common";
 import EventEmitter from "eventemitter3";
 import { ChainStore } from "./chain";
-import { QueriesOsmosisStore, LPCurrencyRegistrar } from "@osmosis-labs/stores";
+import {
+  QueriesOsmosisStore,
+  LPCurrencyRegistrar,
+  ObservableAssets,
+} from "@osmosis-labs/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 
@@ -24,6 +28,8 @@ export class RootStore {
   public readonly accountStore: AccountStore<AccountWithCosmos>;
 
   public readonly priceStore: CoinGeckoPriceStore;
+
+  public readonly assetsStore: ObservableAssets;
 
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar;
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar;
@@ -101,6 +107,15 @@ export class RootStore {
         },
       },
       "usd"
+    );
+
+    this.assetsStore = new ObservableAssets(
+      IBCAssetInfos,
+      this.chainStore,
+      this.accountStore,
+      this.queriesStore,
+      this.queriesOsmosisStore,
+      this.priceStore
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);

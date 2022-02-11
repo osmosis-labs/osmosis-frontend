@@ -1,21 +1,12 @@
 import { ChainInfo } from "@keplr-wallet/types";
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { IBCAsset } from "@osmosis-labs/stores";
 
 /**
  * Determine the channel info per the chain.
  * Guide users to use the same channel for convenience.
  */
-export const IBCAssetInfos: {
-  counterpartyChainId: string;
-  // Souce channel id based on the Osmosis chain
-  sourceChannelId: string;
-  // Destination channel id from Osmosis chain
-  destChannelId: string;
-  coinMinimalDenom: string;
-  // In some reasons, ibc channel is in unstable status.
-  // Disable the deposit, withdraw button and show the tooltip.
-  isUnstable?: boolean;
-}[] = [
+export const IBCAssetInfos: IBCAsset[] = [
   {
     counterpartyChainId: "cosmoshub-4",
     sourceChannelId: "channel-0",
