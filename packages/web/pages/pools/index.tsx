@@ -32,8 +32,8 @@ const Pools: NextPage = observer(function () {
 
   const tableCols: ColumnDef<BaseCell & PoolCompositionCell>[] = [
     {
-      header: "Pool Name",
-      headerClassName: "!pl-[5.25rem]",
+      display: "Pool Name",
+      displayClassName: "!pl-[5.25rem]",
       sort: {
         currentDirection: sortDirection,
         onClickHeader: () =>
@@ -44,7 +44,7 @@ const Pools: NextPage = observer(function () {
       displayCell: PoolCompositionCell,
     },
     {
-      header: "Liquidity",
+      display: "Liquidity",
       infoTooltip: "This is liquidity",
       sort: {
         currentDirection: sortDirection,
@@ -55,13 +55,13 @@ const Pools: NextPage = observer(function () {
       },
     },
     {
-      header: "Volume",
+      display: "Volume",
     },
     {
-      header: "Fees (7D)",
+      display: "Fees (7D)",
     },
     {
-      header: "APR",
+      display: "APR",
     },
   ];
 

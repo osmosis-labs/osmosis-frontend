@@ -1,7 +1,6 @@
 import { ChainInfo, AppCurrency } from "@keplr-wallet/types";
 import { ChainStore } from "@keplr-wallet/stores";
 
-
 export class LPCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
   constructor(protected readonly chainStore: ChainStore<C>) {
     chainStore.addSetChainInfoHandler((chainInfoInner) => {
@@ -9,7 +8,9 @@ export class LPCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
     });
   }
 
-  protected readonly registerLPCurrency = (coinMinimalDenom: string): AppCurrency | [AppCurrency | undefined, boolean] | undefined  => {
+  protected readonly registerLPCurrency = (
+    coinMinimalDenom: string
+  ): AppCurrency | [AppCurrency | undefined, boolean] | undefined => {
     if (coinMinimalDenom.startsWith("gamm/pool/")) {
       // In the case of GAMM tokens, not query the bank metadata, register as currency immediately.
       const poolId = coinMinimalDenom.replace("gamm/pool/", "");

@@ -1,8 +1,9 @@
 import type { NextPage } from "next";
+import { useMemo } from "react";
+import { useFilteredData, useSortedData } from "../../hooks/data";
 import { useState } from "react";
 import { Table, BaseCell, ColumnDef, RowDef } from "../../components/table";
 import { PoolCompositionCell } from "../../components/table/cells";
-import { SortDirection } from "../../components/types";
 import {
   Switch,
   CheckBox,
@@ -12,12 +13,91 @@ import {
   Slider,
   PageList,
   SortMenu,
+  MenuOption,
 } from "../../components/control";
 import { InputBox, SearchBox } from "../../components/input";
 import { Button, IconButton } from "../../components/buttons";
 import { Error, Info } from "../../components/alert";
+import { usePaginatedData } from "../../hooks/data/use-paginated-data";
 
-const Assets: NextPage = function () {
+type Fruit = {
+  name: string;
+  nationality: string;
+  attributes: { color: string; shape: string; size: number };
+};
+
+const Assets: NextPage = () => {
+  const fruits = useMemo<Fruit[]>(
+    () => [
+      {
+        name: "Orange",
+        nationality: "C",
+        attributes: {
+          color: "orange",
+          shape: "round",
+          size: 42,
+        },
+      },
+      {
+        name: "Pineapple",
+        nationality: "B",
+        attributes: {
+          color: "orange",
+          shape: "oval",
+          size: 44,
+        },
+      },
+      {
+        name: "Kiwi",
+        nationality: "A",
+        attributes: {
+          color: "green",
+          shape: "round",
+          size: 999,
+        },
+      },
+      {
+        name: "Watermelon",
+        nationality: "D",
+        attributes: {
+          color: "striped",
+          shape: "oval",
+          size: 99922,
+        },
+      },
+      {
+        name: "Mango",
+        nationality: "G",
+        attributes: {
+          color: "orange",
+          shape: "rounded",
+          size: 2244,
+        },
+      },
+    ],
+    []
+  );
+
+  const [query, setQuery, filteredFruits] = useFilteredData(fruits, [
+    "name",
+    "nationality",
+    "attributes.color",
+    "attributes.shape",
+    "attributes.size",
+  ]);
+  const [
+    sortKeyPath,
+    setSortKeyPath,
+    sortDirection,
+    setSortDirection,
+    toggleSortDirection,
+    sortedFruits,
+  ] = useSortedData(filteredFruits);
+  const [page, setPage, minPage, numPages, fruitsPage] = usePaginatedData(
+    sortedFruits,
+    2
+  );
+
   const [isChecked, setChecked] = useState(true);
   const [disabled, setDisabled] = useState(false);
 
@@ -29,39 +109,29 @@ const Assets: NextPage = function () {
 
   const [iV, setIV] = useState("");
 
-  const [sortDirection, setSortDirection] = useState<SortDirection | undefined>(
-    undefined
-  );
-
   const tableCols: ColumnDef<BaseCell & PoolCompositionCell>[] = [
-    {},
+    { display: "" },
     {
-      header: "Pool Name",
+      display: "Pool Name",
       sort: {
         currentDirection: sortDirection,
-        onClickHeader: () =>
-          setSortDirection(
-            sortDirection === "ascending" ? "descending" : "ascending"
-          ),
+        onClickHeader: toggleSortDirection,
       },
       displayCell: PoolCompositionCell,
     },
     {
-      header: "Liquidity",
+      display: "Liquidity",
       infoTooltip: "This is liquidity",
       sort: {
         currentDirection: sortDirection,
-        onClickHeader: () =>
-          setSortDirection(
-            sortDirection === "ascending" ? "descending" : "ascending"
-          ),
+        onClickHeader: toggleSortDirection,
       },
     },
     {
-      header: "APR (Annualized)",
+      display: "APR (Annualized)",
     },
     {
-      header: "My Liquidity",
+      display: "My Liquidity",
     },
   ];
 
@@ -123,8 +193,123 @@ const Assets: NextPage = function () {
     ],
   ];
 
+  const fruitTableCols: (ColumnDef<BaseCell> & MenuOption)[] = [
+    {
+      id: "name",
+      display: "Name",
+      sort:
+        sortKeyPath === "name"
+          ? {
+              currentDirection: sortDirection,
+              onClickHeader: toggleSortDirection,
+            }
+          : {
+              onClickHeader: () => {
+                setSortKeyPath("name");
+                setSortDirection("ascending");
+              },
+            },
+    },
+    {
+      id: "attributes.color",
+      display: "Color",
+      sort:
+        sortKeyPath === "attributes.color"
+          ? {
+              currentDirection: sortDirection,
+              onClickHeader: toggleSortDirection,
+            }
+          : {
+              onClickHeader: () => {
+                setSortKeyPath("attributes.color");
+                setSortDirection("ascending");
+              },
+            },
+      infoTooltip: "Fruit color!",
+    },
+    {
+      id: "attributes.shape",
+      display: "Shape",
+      sort:
+        sortKeyPath === "attributes.shape"
+          ? {
+              currentDirection: sortDirection,
+              onClickHeader: toggleSortDirection,
+            }
+          : {
+              onClickHeader: () => {
+                setSortKeyPath("attributes.shape");
+                setSortDirection("ascending");
+              },
+            },
+    },
+    {
+      id: "attributes.size",
+      display: "Size",
+      sort:
+        sortKeyPath === "attributes.size"
+          ? {
+              currentDirection: sortDirection,
+              onClickHeader: toggleSortDirection,
+            }
+          : {
+              onClickHeader: () => {
+                setSortKeyPath("attributes.size");
+                setSortDirection("ascending");
+              },
+            },
+    },
+  ];
+
+  const sortCols = [...fruitTableCols];
+  // sort by nationality even though it's not a column in the table
+  sortCols.push({ id: "nationality", display: "Nationality" });
+
   return (
     <main className="max-w-container mx-auto">
+      <section className="bg-surface w-full px-10">
+        <div className="flex place-content-between py-4">
+          <h5>Fruits</h5>
+          <div className="flex gap-8">
+            <SearchBox
+              currentValue={query}
+              onInput={setQuery}
+              placeholder="Search"
+              disabled={disabled}
+            />
+            <SortMenu
+              options={sortCols}
+              selectedOptionId={sortKeyPath}
+              onSelect={(id) =>
+                id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id)
+              }
+              disabled={disabled}
+              onToggleSortDirection={toggleSortDirection}
+            />
+          </div>
+        </div>
+        <Table
+          className="w-full"
+          columnDefs={fruitTableCols}
+          data={fruitsPage.map(
+            ({ name, attributes: { color, shape, size } }) => [
+              { value: name },
+              { value: color },
+              { value: shape },
+              { value: size.toString() },
+            ]
+          )}
+        />
+        <div className="flex place-content-around">
+          <PageList
+            currentValue={page}
+            max={numPages}
+            min={minPage}
+            onInput={setPage}
+            editField
+          />
+        </div>
+      </section>
       <div className="bg-background py-20 flex flex-col justify-center items-center">
         <span className="p-5">Switch:</span>
         <Switch isOn={isChecked} onToggle={setChecked} disabled={disabled} />
@@ -294,7 +479,7 @@ const Assets: NextPage = function () {
           onInput={setIV}
           labelButtons={[
             { label: "MAX", onClick: () => setIV("MAX!") },
-            // { label: "HALF", onClick: () => console.log("label button 2") },
+            { label: "HALF", onClick: () => console.log("label button 2") },
           ]}
           disabled={disabled}
           clearButton

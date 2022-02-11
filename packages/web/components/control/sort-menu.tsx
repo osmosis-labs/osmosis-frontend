@@ -6,9 +6,18 @@ import { Disableable, CustomClasses } from "../types";
 import { MenuSelectProps } from "./types";
 import { useBooleanWithWindowEvent } from "../../hooks";
 
-export const SortMenu: FunctionComponent<
-  MenuSelectProps & Disableable & CustomClasses
-> = ({ options, selectedOptionId, onSelect, disabled, className }) => {
+interface Props extends MenuSelectProps, Disableable, CustomClasses {
+  onToggleSortDirection?: () => void;
+}
+
+export const SortMenu: FunctionComponent<Props> = ({
+  options,
+  selectedOptionId,
+  onSelect,
+  disabled,
+  className,
+  onToggleSortDirection,
+}) => {
   const [dropdownOpen, setDropdownOpen] = useBooleanWithWindowEvent(false);
 
   const selectedOption = options.find(
@@ -25,28 +34,40 @@ export const SortMenu: FunctionComponent<
           },
           className
         )}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (!disabled) {
-            setDropdownOpen(!dropdownOpen);
-          }
-        }}
       >
         <Image
           alt="sort"
           src="/icons/up-down-arrow.svg"
           height={18}
           width={18}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onToggleSortDirection && selectedOption) {
+              onToggleSortDirection();
+            } else if (!disabled) {
+              setDropdownOpen(!dropdownOpen);
+            }
+          }}
         />
-        <span className="m-auto mx-2 leading-loose text-secondary-200 select-none min-w-[60px] max-w-[100px] text-center text-ellipsis overflow-hidden">
-          {selectedOption ? selectedOption.display : "SORT BY"}
-        </span>
-        <Image
-          alt="open"
-          src="/icons/chevron-down-green.svg"
-          height={15}
-          width={15}
-        />
+        <div
+          className="flex"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!disabled) {
+              setDropdownOpen(!dropdownOpen);
+            }
+          }}
+        >
+          <span className="block m-auto mx-2 leading-loose text-secondary-200 min-w-[60px] max-w-[100px] select-none text-center text-ellipsis overflow-hidden">
+            {selectedOption ? selectedOption.display : "SORT BY"}
+          </span>
+          <Image
+            alt="open"
+            src="/icons/chevron-down-green.svg"
+            height={15}
+            width={15}
+          />
+        </div>
       </div>
       <MenuDropdown
         options={options}

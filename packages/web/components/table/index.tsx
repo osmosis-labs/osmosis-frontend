@@ -15,16 +15,16 @@ export interface ColumnSortDef {
   onClickHeader: (colIndex: number) => void;
 }
 
-export interface ColumnDef<CellT extends BaseCell> {
-  header?: string;
-  headerClassName?: string;
+export interface ColumnDef<TCell extends BaseCell> {
+  display: string;
+  displayClassName?: string;
   sort?: ColumnSortDef;
   infoTooltip?: string;
   /** If provided, will be used to render the cell for each row in this column.
    *
    * Note: components must accept optionals for all cell data and check for the data they need.
    */
-  displayCell?: React.FunctionComponent<Partial<CellT>>;
+  displayCell?: React.FunctionComponent<Partial<TCell>>;
 }
 
 export interface RowDef {
@@ -33,21 +33,21 @@ export interface RowDef {
   onClick?: (rowIndex: number) => void;
 }
 
-export interface Props<CellT extends BaseCell> extends CustomClasses {
-  columnDefs: ColumnDef<CellT>[];
+export interface Props<TCell extends BaseCell> extends CustomClasses {
+  columnDefs: ColumnDef<TCell>[];
   rowDefs?: RowDef[];
-  data: Partial<CellT>[][];
+  data: Partial<TCell>[][];
 }
 
 /** Generic table that accepts a 2d array of any type of data cell,
  *  as well as row and column definitions that dictate header and cell appearance & behavior.
  */
-export const Table = <CellT extends BaseCell>({
+export const Table = <TCell extends BaseCell = BaseCell>({
   columnDefs,
   rowDefs,
   data,
   className,
-}: PropsWithoutRef<Props<CellT>>) => {
+}: PropsWithoutRef<Props<TCell>>) => {
   const [rowsHovered, setRowsHovered] = useState(data.map(() => false));
 
   const setRowHovered = (rowIndex: number, value: boolean) =>
@@ -64,24 +64,24 @@ export const Table = <CellT extends BaseCell>({
                 {
                   "cursor-pointer select-none": colDef?.sort?.onClickHeader,
                 },
-                colDef?.headerClassName
+                colDef?.displayClassName
               )}
               onClick={() => colDef?.sort?.onClickHeader(colIndex)}
             >
               <span>
-                {colDef?.header ?? ""}
+                {colDef?.display ?? ""}
                 <div className="inline pl-1 align-middle">
                   {colDef?.sort?.currentDirection === "ascending" ? (
                     <Image
                       alt="ascending"
-                      src="/icons/arrow-down.svg"
+                      src="/icons/arrow-up.svg"
                       height={16}
                       width={16}
                     />
                   ) : colDef?.sort?.currentDirection === "descending" ? (
                     <Image
                       alt="descending"
-                      src="/icons/arrow-up.svg"
+                      src="/icons/arrow-down.svg"
                       height={16}
                       width={16}
                     />
