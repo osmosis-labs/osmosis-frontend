@@ -23,6 +23,9 @@ export class DataSorter<TData> implements DataProcessor<TData[]> {
         if (!Number.isNaN(aDataNumerical) && !Number.isNaN(bDataNumerical)) {
           aData = aDataNumerical;
           bData = bDataNumerical;
+        } else {
+          // sort strings locale aware
+          return aData.localeCompare(bData);
         }
       }
 
