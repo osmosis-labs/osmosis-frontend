@@ -551,6 +551,12 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 	],
+		'621': [
+		{
+			gaugeId: '2020',
+			denom: 'ibc/307E5C96C8F60D1CBEE269A9A86C0834E1DB06F2B3788AE4F716EDB97A48B97D',
+		},
+	],
 	'629': [
 		{
 			gaugeId: '2067',
