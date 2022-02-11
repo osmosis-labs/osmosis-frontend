@@ -43,7 +43,7 @@ export const PageList: FunctionComponent<Props> = ({
       className={classNames(
         "flex",
         !isEditingText ? "pt-2.5" : null,
-        className
+        className ?? "place-content-center"
       )}
     >
       <div

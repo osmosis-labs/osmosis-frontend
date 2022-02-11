@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, ReactElement } from "react";
 import { OverviewLabelValue } from "./overview-label-value";
 import { Button } from "../buttons/button";
 import { ButtonProps } from "../buttons/types";
@@ -10,7 +10,7 @@ interface LabelButton extends ButtonProps {
 
 interface Props {
   /** Title text at top left of overview. */
-  title: string;
+  title: string | ReactElement;
   /** Label buttons to the right of the title at the top.
    *  Accepts at most 2.
    */
@@ -45,9 +45,15 @@ export const Overview: FunctionComponent<Props> = ({
         }}
       >
         <div className="flex items-center">
-          <h5 className="text-white-full">{title}</h5>
+          {typeof title === "string" ? <h5>{title}</h5> : <>{title}</>}
           {titleButtons?.slice(0, 2).map(({ label, onClick }, index) => (
-            <Button key={index} color="primary" size="sm" className="ml-6">
+            <Button
+              key={index}
+              color="primary"
+              size="sm"
+              className="ml-6"
+              onClick={onClick}
+            >
               {label}
             </Button>
           ))}

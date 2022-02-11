@@ -7,7 +7,7 @@ import { replaceAt } from "../utils";
 
 export interface BaseCell {
   value: string;
-  rowHovered: boolean;
+  rowHovered?: boolean;
 }
 
 export interface ColumnSortDef {
@@ -15,7 +15,7 @@ export interface ColumnSortDef {
   onClickHeader: (colIndex: number) => void;
 }
 
-export interface ColumnDef<TCell extends BaseCell> {
+export interface ColumnDef<TCell extends BaseCell> extends CustomClasses {
   display: string;
   sort?: ColumnSortDef;
   infoTooltip?: string;
@@ -59,9 +59,12 @@ export const Table = <TCell extends BaseCell = BaseCell>({
           {columnDefs.map((colDef, colIndex) => (
             <th
               key={colIndex}
-              className={classNames({
-                "cursor-pointer select-none": colDef?.sort?.onClickHeader,
-              })}
+              className={classNames(
+                {
+                  "cursor-pointer select-none": colDef?.sort?.onClickHeader,
+                },
+                colDef.className
+              )}
               onClick={() => colDef?.sort?.onClickHeader(colIndex)}
             >
               <span>
@@ -110,7 +113,7 @@ export const Table = <TCell extends BaseCell = BaseCell>({
       <tbody>
         {data.map((row, rowIndex) => {
           const rowDef = rowDefs?.[rowIndex];
-          const rowHovered = rowsHovered[rowIndex];
+          const rowHovered = rowsHovered[rowIndex] ?? false;
 
           return (
             <tr
@@ -131,9 +134,10 @@ export const Table = <TCell extends BaseCell = BaseCell>({
             >
               {row.map((cell, columnIndex) => {
                 const DisplayCell = columnDefs[columnIndex]?.displayCell;
+                const customClass = columnDefs[columnIndex]?.className;
 
                 return (
-                  <td key={`${rowIndex}${columnIndex}`}>
+                  <td className={customClass} key={`${rowIndex}${columnIndex}`}>
                     {DisplayCell ? (
                       <DisplayCell rowHovered={rowHovered} {...cell} />
                     ) : (
