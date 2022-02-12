@@ -2108,6 +2108,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
-		explorerUrlToTx: 'https://explorer.konstellation.tech/tx/{txHash}',
+		explorerUrlToTx: 'https://www.mintscan.io/konstellation/txs/{txHash}',
 	},
 ];
