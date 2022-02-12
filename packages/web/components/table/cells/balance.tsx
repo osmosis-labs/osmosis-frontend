@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { Cell } from "./types";
+import { AssetCell as Cell } from "./types";
 
 export const BalanceCell: FunctionComponent<Partial<Cell>> = ({
   amount,

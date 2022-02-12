@@ -1,20 +1,18 @@
 import Image from "next/image";
 import React, { FunctionComponent } from "react";
 import classNames from "classnames";
-import { BaseCell } from "..";
-
-export interface PoolCompositionCell {
-  poolId: number;
-  tokenDenoms: string[];
-}
+import { PoolCell } from "./types";
 
 /** Displays pool composition as a cell in a table.
  *
  *  Accepts the base hover flag.
  */
-export const PoolCompositionCell: FunctionComponent<
-  Partial<BaseCell & PoolCompositionCell>
-> = ({ value, rowHovered, poolId, tokenDenoms }) => (
+export const PoolCompositionCell: FunctionComponent<Partial<PoolCell>> = ({
+  value,
+  rowHovered,
+  poolId,
+  tokenDenoms,
+}) => (
   <React.Fragment>
     {poolId && tokenDenoms ? (
       <div className="flex gap-1">

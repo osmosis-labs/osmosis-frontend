@@ -1,7 +1,11 @@
-import { BaseCell } from "../../../components/table";
+import { BaseCell } from "../types";
 
-/** Data available to each cell in the assets table. */
-type AssetCell = {
+export interface PoolCell extends BaseCell {
+  poolId: number;
+  tokenDenoms: string[];
+}
+
+export type AssetCell = BaseCell & {
   chainName?: string;
   chainId?: string;
   coinDenom: string;
@@ -16,5 +20,3 @@ type AssetCell = {
   onWithdraw?: (chainId: string) => void;
   onDeposit?: (chainId: string) => void;
 };
-
-export type Cell = BaseCell & AssetCell;
