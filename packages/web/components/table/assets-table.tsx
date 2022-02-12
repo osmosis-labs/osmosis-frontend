@@ -1,27 +1,23 @@
-import { FunctionComponent, useCallback, useMemo } from "react";
+import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import {
   IBCBalance,
   IBCCW20ContractBalance,
   CoinBalance,
 } from "@osmosis-labs/stores";
 import { Dec } from "@keplr-wallet/unit";
-import { SearchBox } from "../../components/input";
-import { PageList, SortMenu } from "../../components/control";
-import { Table } from "../../components/table";
-import { SortDirection } from "../../components/types";
+import { SearchBox } from "../input";
+import { CheckBox, SortMenu } from "../control";
+import { Table } from ".";
+import { SortDirection } from "../types";
 import {
-  Cell,
+  AssetNameCell,
   BalanceCell,
-  AssetCell,
-  DepositButtonCell,
-  WidthrawButtonCell,
+  TransferButtonCell,
+  AssetCell as Cell,
 } from "./cells";
-import {
-  useSortedData,
-  useFilteredData,
-  usePaginatedData,
-} from "../../hooks/data";
+import { useSortedData, useFilteredData } from "../../hooks/data";
 import { DataSorter } from "../../hooks/data/data-sorter";
+import { ShowMoreButton } from "../buttons/show-more";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -30,7 +26,7 @@ interface Props {
   onWithdraw: (chainId: string) => void;
 }
 
-export const AssetsTable: FunctionComponent<Props> = ({
+const AssetsTable: FunctionComponent<Props> = ({
   nativeBalances,
   ibcBalances,
   onDeposit,
@@ -92,7 +88,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
         .process("fiatValueRaw")
         .reverse(), // sort IBC assets by value on initial load
     ],
-    [nativeBalances, ibcBalances]
+    [nativeBalances, ibcBalances, onWithdraw, onDeposit]
   );
 
   const [
@@ -107,7 +103,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
   const sortColumnWithKeys = useCallback(
     (sortKeys: string[], onClickSortDirection: SortDirection = "ascending") => {
       const isSorting = sortKeys.some((key) => key === sortKey);
-      const firstKey = sortKeys.at(0);
+      const firstKey = sortKeys.find((_, i) => i === 0);
 
       return {
         currentDirection: isSorting ? sortDirection : undefined,
@@ -124,19 +120,17 @@ export const AssetsTable: FunctionComponent<Props> = ({
     [sortKey, sortDirection, toggleSortDirection, setSortKey, setSortDirection]
   );
 
-  const [query, setQuery, filteredSortedCells] = useFilteredData(sortedCells, [
-    "chainName",
-    "chainId",
-    "coinDenom",
-    "amount",
-    "fiatValue",
-    "queryTags",
-  ]);
+  const [showAllPools, setShowAllPools] = useState(false);
+  const [hideZeroBalances, setHideZeroBalances] = useState(false);
 
-  const [curPage, setPage, minPage, maxPage, pageData] = usePaginatedData(
-    filteredSortedCells,
-    11
+  const [query, setQuery, filteredSortedCells] = useFilteredData(
+    hideZeroBalances
+      ? sortedCells.filter((cell) => cell.amount !== "0")
+      : sortedCells,
+    ["chainName", "chainId", "coinDenom", "amount", "fiatValue", "queryTags"]
   );
+
+  const [showAll, setShowAll] = useState(false);
 
   return (
     <section className="bg-surface">
@@ -147,7 +141,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             <SearchBox
               currentValue={query}
               onInput={(query) => {
-                setPage(1);
+                setHideZeroBalances(false);
                 setQuery(query);
               }}
               placeholder="Filter by symbol"
@@ -178,7 +172,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
           columnDefs={[
             {
               display: "Asset / Chain",
-              displayCell: AssetCell,
+              displayCell: AssetNameCell,
               sort: sortColumnWithKeys(["coinDenom", "chainName"]),
             },
             {
@@ -189,25 +183,43 @@ export const AssetsTable: FunctionComponent<Props> = ({
             },
             {
               display: "Deposit",
-              displayCell: DepositButtonCell,
+              displayCell: (cell) => (
+                <TransferButtonCell type="deposit" {...cell} />
+              ),
               className: "text-center max-w-[5rem]",
             },
             {
               display: "Withdraw",
-              displayCell: WidthrawButtonCell,
+              displayCell: (cell) => (
+                <TransferButtonCell type="withdraw" {...cell} />
+              ),
               className: "text-center max-w-[5rem]",
             },
           ]}
-          data={pageData.map((cell) => [cell, cell, cell, cell])}
+          data={filteredSortedCells.map((cell) => [cell, cell, cell, cell])}
         />
-        <PageList
-          currentValue={curPage}
-          onInput={setPage}
-          min={minPage}
-          max={maxPage}
-          editField
-        />
+        <div className="relative flex gap-2 justify-center">
+          <ShowMoreButton
+            className="m-auto"
+            isOn={showAllPools}
+            onToggle={() => setShowAllPools(!showAllPools)}
+          />
+          <div className="flex gap-2 absolute right-24 bottom-1">
+            <CheckBox
+              className={
+                hideZeroBalances
+                  ? "after:bg-primary-200"
+                  : "after:!border-2 after:!border-white-full"
+              }
+              isOn={hideZeroBalances}
+              onToggle={() => setHideZeroBalances(!hideZeroBalances)}
+            />
+            <span className="text-body2">Hide zero balances</span>
+          </div>
+        </div>
       </div>
     </section>
   );
 };
+
+export default AssetsTable;

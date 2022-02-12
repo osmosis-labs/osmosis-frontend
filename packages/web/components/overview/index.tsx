@@ -1,4 +1,5 @@
 import { FunctionComponent, ReactElement } from "react";
+import { nanoid } from "nanoid";
 import { OverviewLabelValue } from "./overview-label-value";
 import { Button } from "../buttons/button";
 import { ButtonProps } from "../buttons/types";
@@ -46,9 +47,9 @@ export const Overview: FunctionComponent<Props> = ({
       >
         <div className="flex items-center">
           {typeof title === "string" ? <h5>{title}</h5> : <>{title}</>}
-          {titleButtons?.slice(0, 2).map(({ label, onClick }, index) => (
+          {titleButtons?.slice(0, 2).map(({ label, onClick }) => (
             <Button
-              key={index}
+              key={nanoid()}
               color="primary"
               size="sm"
               className="ml-6"
@@ -59,15 +60,17 @@ export const Overview: FunctionComponent<Props> = ({
           ))}
         </div>
         <div className="mt-6 flex items-center gap-20">
-          {primaryOverviewLabels
-            .slice(0, bgImageUrl ? 2 : 4)
-            .map((label, index) => (
-              <OverviewLabelValue key={index} {...label} />
-            ))}
+          {primaryOverviewLabels.slice(0, bgImageUrl ? 2 : 4).map((label) => (
+            <OverviewLabelValue key={nanoid()} {...label} />
+          ))}
         </div>
         <div className="mt-6 flex items-center gap-20">
-          {secondaryOverviewLabels?.slice(0, 3).map((label, index) => (
-            <OverviewLabelValue prominence="secondary" key={index} {...label} />
+          {secondaryOverviewLabels?.slice(0, 3).map((label) => (
+            <OverviewLabelValue
+              prominence="secondary"
+              key={nanoid()}
+              {...label}
+            />
           ))}
         </div>
       </div>

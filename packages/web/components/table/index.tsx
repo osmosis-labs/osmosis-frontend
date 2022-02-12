@@ -2,38 +2,15 @@ import Image from "next/image";
 import React, { PropsWithoutRef, useState } from "react";
 import classNames from "classnames";
 import Tippy from "@tippyjs/react";
-import { SortDirection, CustomClasses } from "../types";
+import { nanoid } from "nanoid";
 import { replaceAt } from "../utils";
-
-export interface BaseCell {
-  value: string;
-  rowHovered?: boolean;
-}
-
-export interface ColumnSortDef {
-  currentDirection?: SortDirection;
-  onClickHeader: (colIndex: number) => void;
-}
-
-export interface ColumnDef<TCell extends BaseCell> extends CustomClasses {
-  display: string;
-  sort?: ColumnSortDef;
-  infoTooltip?: string;
-  /** If provided, will be used to render the cell for each row in this column.
-   *
-   * Note: components must accept optionals for all cell data and check for the data they need.
-   */
-  displayCell?: React.FunctionComponent<Partial<TCell>>;
-}
-
-export interface RowDef {
-  makeClass?: (rowIndex: number) => string;
-  makeHoverClass?: (rowIndex: number) => string;
-  onClick?: (rowIndex: number) => void;
-}
+import { CustomClasses } from "../types";
+import { BaseCell, ColumnDef, RowDef } from "./types";
 
 export interface Props<TCell extends BaseCell> extends CustomClasses {
+  /** Functionality common to all columns. */
   columnDefs: ColumnDef<TCell>[];
+  /** Functionality common to all rows. */
   rowDefs?: RowDef[];
   data: Partial<TCell>[][];
 }
@@ -58,7 +35,7 @@ export const Table = <TCell extends BaseCell = BaseCell>({
         <tr className="h-20">
           {columnDefs.map((colDef, colIndex) => (
             <th
-              key={colIndex}
+              key={nanoid()}
               className={classNames(
                 {
                   "cursor-pointer select-none": colDef?.sort?.onClickHeader,
@@ -68,7 +45,15 @@ export const Table = <TCell extends BaseCell = BaseCell>({
               onClick={() => colDef?.sort?.onClickHeader(colIndex)}
             >
               <span>
-                {colDef?.display ?? ""}
+                {colDef?.display ? (
+                  typeof colDef.display === "string" ? (
+                    colDef.display ?? ""
+                  ) : (
+                    <>{colDef.display}</>
+                  )
+                ) : (
+                  ""
+                )}
                 <div className="inline pl-1 align-middle">
                   {colDef?.sort?.currentDirection === "ascending" ? (
                     <Image
@@ -117,7 +102,7 @@ export const Table = <TCell extends BaseCell = BaseCell>({
 
           return (
             <tr
-              key={rowIndex}
+              key={nanoid()}
               className={classNames(
                 "h-20 shadow-separator bg-surface",
                 rowDef?.makeClass?.(rowIndex),
@@ -141,7 +126,7 @@ export const Table = <TCell extends BaseCell = BaseCell>({
                     {DisplayCell ? (
                       <DisplayCell rowHovered={rowHovered} {...cell} />
                     ) : (
-                      cell.value
+                      cell.value ?? ""
                     )}
                   </td>
                 );

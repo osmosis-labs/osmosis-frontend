@@ -8,7 +8,7 @@ type IconName = string;
 interface Props extends ButtonProps {
   color?: "primary" | "secondary";
   size?: "sm";
-  type?: "chevron-right" | "chevron-down-green" | IconName;
+  type?: "chevron-right" | "chevron-down-secondary" | IconName;
   disabled?: boolean;
 }
 
@@ -26,9 +26,9 @@ export const IconButton: FunctionComponent<Props> = ({
         "opacity-50": disabled,
         "px-2 py-2": size === "sm",
         "rounded-full":
-          type !== "chevron-right" && type !== "chevron-down-green",
+          type !== "chevron-right" && type !== "chevron-down-secondary",
       },
-      type !== "chevron-right" && type !== "chevron-down-green"
+      type !== "chevron-right" && type !== "chevron-down-secondary"
         ? {
             "bg-primary-200": color === "primary",
             "bg-secondary-200": color === "secondary",

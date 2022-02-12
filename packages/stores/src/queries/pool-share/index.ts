@@ -28,6 +28,7 @@ export class ObservableQueryGammPoolShare {
 
   /**
    * 특정 주소가 소유하고 있는 모든 share들의 pool id 배열을 반환한다.
+   * Returns the POOL ID array of all shares that the specific address owns.
    */
   readonly getOwnPools = computedFn((bech32Address: string): string[] => {
     const balances: {

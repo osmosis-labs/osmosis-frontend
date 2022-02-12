@@ -1,5 +1,6 @@
 import { FunctionComponent, useState } from "react";
 import classNames from "classnames";
+import { nanoid } from "nanoid";
 import { InputProps, Disableable, CustomClasses } from "../types";
 import { ButtonProps } from "../buttons/types";
 import { CloseButton } from "../buttons";
@@ -78,9 +79,9 @@ export const InputBox: FunctionComponent<Props> = ({
               disabled={disabled}
             />
           ) : (
-            labelButtons.slice(0, 2).map(({ label, onClick, className }, i) => (
+            labelButtons.slice(0, 2).map(({ label, onClick, className }) => (
               <button
-                key={i}
+                key={nanoid()}
                 className={classNames(
                   "h-8 border-2 border-primary-200 rounded-lg my-1.5 bg-[#322dc24d] select-none",
                   {

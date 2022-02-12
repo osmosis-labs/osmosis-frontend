@@ -63,7 +63,7 @@ export const SortMenu: FunctionComponent<Props> = ({
           </span>
           <Image
             alt="open"
-            src="/icons/chevron-down-green.svg"
+            src="/icons/chevron-down-secondary.svg"
             height={15}
             width={15}
           />

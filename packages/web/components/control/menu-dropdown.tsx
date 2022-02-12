@@ -1,5 +1,6 @@
 import { FunctionComponent } from "react";
 import classNames from "classnames";
+import { nanoid } from "nanoid";
 import { MenuSelectProps } from "./types";
 import { CustomClasses } from "../types";
 
@@ -37,7 +38,7 @@ export const MenuDropdown: FunctionComponent<Props> = ({
             "rounded-b-lginset": index === options.length - 1,
           }
         )}
-        key={index}
+        key={nanoid()}
         onClick={() => onSelect(id)}
       >
         {display}

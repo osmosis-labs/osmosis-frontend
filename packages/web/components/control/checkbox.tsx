@@ -7,7 +7,7 @@ import { ToggleProps } from "./types";
 export const CheckBox: FunctionComponent<
   ToggleProps & Disableable & CustomClasses
 > = ({ isOn, onToggle: onToggle, disabled = false, className }) => (
-  <label htmlFor="toggle-checkbox">
+  <label className="relative" htmlFor="toggle-checkbox">
     {isOn && (
       <div
         className={classNames(
@@ -22,7 +22,7 @@ export const CheckBox: FunctionComponent<
       type="checkbox"
       id="toggle-checkbox"
       className={classNames(
-        "relative cursor-pointer h-5 w-5 appearance-none",
+        "cursor-pointer h-5 w-5 appearance-none",
         "after:absolute after:h-5 after:w-5 after:rounded z-10", // box
         disabled
           ? isOn

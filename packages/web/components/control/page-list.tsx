@@ -29,7 +29,7 @@ export const PageList: FunctionComponent<Props> = ({
     if (max === min) {
       setIsEditingText(false);
     }
-  }, [isEditingText]);
+  }, [isEditingText, max, min]);
 
   const processInputValue = (e: any) => {
     const newValue = Number(e.target.value);

@@ -1,8 +1,8 @@
 import Image from "next/image";
 import React, { FunctionComponent } from "react";
-import { Cell } from "./types";
+import { AssetCell as Cell } from "./types";
 
-export const AssetCell: FunctionComponent<Partial<Cell>> = ({
+export const AssetNameCell: FunctionComponent<Partial<Cell>> = ({
   coinDenom,
   chainName,
   coinImageUrl = "/icons/OSMO.svg",
