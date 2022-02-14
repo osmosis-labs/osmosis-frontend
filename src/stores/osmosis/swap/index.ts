@@ -1,5 +1,5 @@
 import { computed, makeObservable, observable } from 'mobx';
-import { Dec, IntPretty } from '@keplr-wallet/unit';
+import { Dec, Int, IntPretty } from '@keplr-wallet/unit';
 import { ObservableQueryPools } from '../query/pools';
 import { AppCurrency, Currency } from '@keplr-wallet/types';
 import { computedFn } from 'mobx-utils';
@@ -158,6 +158,7 @@ export class GammSwapManager {
 				let bestPool:
 					| (typeof multihopPools[0] & {
 							spotPrice: IntPretty;
+							outAmount: IntPretty;
 					  })
 					| undefined;
 
@@ -169,20 +170,70 @@ export class GammSwapManager {
 
 					const hopCurrency = currencies.find(cur => cur.coinMinimalDenom === multihopPool.hopMinimalDenom);
 					if (pool1 && pool2 && hopCurrency) {
-						const spotPrice = pool1
-							.calculateSpotPrice(inCurrency.coinMinimalDenom, hopCurrency.coinMinimalDenom)
-							.mul(pool2.calculateSpotPrice(hopCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom));
+						try {
+							if (!inAmount) {
+								throw new Error('In amount is empty');
+							}
 
-						if (!bestPool) {
-							bestPool = {
-								...multihopPool,
-								spotPrice,
-							};
-						} else if (bestPool.spotPrice.toDec().gt(spotPrice.toDec())) {
-							bestPool = {
-								...multihopPool,
-								spotPrice,
-							};
+							const firstOutAmount = pool1
+								.estimateSwapExactAmountIn(
+									{
+										currency: inCurrency,
+										amount: inAmount,
+									},
+									hopCurrency
+								)
+								.tokenOut.toDec();
+
+							const secondOutAmount = pool2
+								.estimateSwapExactAmountIn(
+									{
+										currency: hopCurrency,
+										amount: firstOutAmount.truncate().toString(),
+									},
+									outCurrency
+								)
+								.tokenOut.toDec();
+
+							const spotPrice = pool1
+								.calculateSpotPrice(inCurrency.coinMinimalDenom, hopCurrency.coinMinimalDenom)
+								.mul(pool2.calculateSpotPrice(hopCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom));
+
+							if (!bestPool) {
+								bestPool = {
+									...multihopPool,
+									spotPrice,
+									outAmount: new IntPretty(secondOutAmount.truncate()),
+								};
+							} else if (bestPool.outAmount.toDec().lt(secondOutAmount.truncateDec())) {
+								bestPool = {
+									...multihopPool,
+									spotPrice,
+									outAmount: new IntPretty(secondOutAmount.truncate()),
+								};
+							}
+						} catch (e) {
+							if (e?.message !== 'In amount is empty') {
+								console.log('Unexpected error on calculate the best pool for multihop swap', e);
+							}
+
+							const spotPrice = pool1
+								.calculateSpotPrice(inCurrency.coinMinimalDenom, hopCurrency.coinMinimalDenom)
+								.mul(pool2.calculateSpotPrice(hopCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom));
+
+							if (!bestPool) {
+								bestPool = {
+									...multihopPool,
+									spotPrice,
+									outAmount: new IntPretty(0),
+								};
+							} else if (bestPool.spotPrice.toDec().gt(spotPrice.toDec())) {
+								bestPool = {
+									...multihopPool,
+									spotPrice,
+									outAmount: new IntPretty(0),
+								};
+							}
 						}
 					}
 				}
@@ -246,15 +297,52 @@ export class GammSwapManager {
 					};
 				}
 
-				// Sort pool by the spot price.
-				pools.sort((pool1, pool2) => {
-					const sp1 = pool1.calculateSpotPrice(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom).toDec();
-					const sp2 = pool2.calculateSpotPrice(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom).toDec();
-					if (sp1.equals(sp2)) {
-						return 0;
+				try {
+					if (!inAmount) {
+						throw new Error('In amount is empty');
 					}
-					return sp1.gt(sp2) ? 1 : -1;
-				});
+
+					const poolOutAmountMap: Map<string, Int> = new Map();
+
+					for (const pool of pools) {
+						const outAmount = pool
+							.estimateSwapExactAmountIn(
+								{
+									currency: inCurrency,
+									amount: inAmount,
+								},
+								outCurrency
+							)
+							.tokenOut.toDec()
+							.truncate();
+
+						poolOutAmountMap.set(pool.id, outAmount);
+					}
+
+					// Sort pool by estimated out amount.
+					pools.sort((pool1, pool2) => {
+						const outAmount1 = poolOutAmountMap.get(pool1.id) ?? new Int(0);
+						const outAmount2 = poolOutAmountMap.get(pool2.id) ?? new Int(0);
+						if (outAmount1.equals(outAmount2)) {
+							return 0;
+						}
+						return outAmount1.gt(outAmount2) ? -1 : 1;
+					});
+				} catch (e) {
+					if (e?.message !== 'In amount is empty') {
+						console.log('Unexpected error on calculate the best pool for multihop swap', e);
+
+						// Sort pool by the spot price.
+						pools.sort((pool1, pool2) => {
+							const sp1 = pool1.calculateSpotPrice(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom).toDec();
+							const sp2 = pool2.calculateSpotPrice(inCurrency.coinMinimalDenom, outCurrency.coinMinimalDenom).toDec();
+							if (sp1.equals(sp2)) {
+								return 0;
+							}
+							return sp1.gt(sp2) ? 1 : -1;
+						});
+					}
+				}
 
 				const pool = pools[0];
 
