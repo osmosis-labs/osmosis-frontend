@@ -272,7 +272,7 @@ export class RootStore {
 					destCoinId: 'osmosis',
 				},
 				{
-					alternativeCoinId: 'pool:neta',
+					alternativeCoinId: 'pool:cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr',
 					poolId: '631',
 					spotPriceSourceDenom: DenomHelper.ibcDenom(
 						[{ portId: 'transfer', channelId: 'channel-169' }],
