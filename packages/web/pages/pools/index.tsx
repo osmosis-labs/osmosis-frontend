@@ -115,15 +115,6 @@ const Pools: NextPage = observer(function () {
                   priceStore,
                   priceStore.getFiatCurrency("usd")!
                 );
-
-                const bondedShareRatio =
-                  queryOsmosis.queryGammPoolShare.getLockedGammShareRatio(
-                    account.bech32Address,
-                    pool.id
-                  );
-                const bonded = poolLiquidity
-                  .mul(bondedShareRatio.moveDecimalPointLeft(2))
-                  .toString();
                 return (
                   <PoolCard
                     key={pool.id}
@@ -131,7 +122,7 @@ const Pools: NextPage = observer(function () {
                     poolMetrics={[
                       {
                         label: "APR",
-                        value: apr.toString(),
+                        value: `${apr.toString()}%`,
                         isLoading:
                           queryOsmosis.queryIncentivizedPools.isAprFetching,
                       },

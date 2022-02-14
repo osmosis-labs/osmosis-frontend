@@ -20,7 +20,7 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
             "w-[4.125rem] h-[4.125rem]": size === "md",
             "w-[2.125rem] h-[2.125rem]": size === "sm",
           },
-          `absolute z-10 w-[4.125rem] h-[4.125rem] rounded-full border-[1px] bg-card border-enabledGold flex items-center justify-center`
+          "absolute z-10 w-[4.125rem] h-[4.125rem] rounded-full border bg-card border-enabledGold flex items-center justify-center"
         )}
       >
         {assets[0].amount.currency.coinImageUrl ? (
@@ -45,7 +45,7 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
             "w-[4.125rem] h-[4.125rem] ml-10": size === "md",
             "w-[2.125rem] h-[2.125rem] ml-5": size === "sm",
           },
-          "rounded-full border-[1px] border-enabledGold shrink-0 flex items-center justify-center"
+          "rounded-full border border-enabledGold shrink-0 flex items-center justify-center"
         )}
       >
         {assets.length >= 3 ? (

@@ -2,7 +2,7 @@ import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 interface Props {
-  isLoading: boolean;
+  isLoading?: boolean;
   className?: string;
 }
 

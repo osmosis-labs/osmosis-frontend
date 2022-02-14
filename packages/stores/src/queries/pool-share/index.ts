@@ -157,9 +157,8 @@ export class ObservableQueryGammPoolShare {
   readonly getAllGammShare = computedFn(
     (bech32Address: string, poolId: string): CoinPretty => {
       const available = this.getAvailableGammShare(bech32Address, poolId);
-      const locked = this.getLockedGammShare(bech32Address, poolId);
       // Note that Unlocking is also included in locked because it is not currently fluidized.
-      // const unlocking = this.getUnlockingGammShare(bech32Address, poolId);
+      const locked = this.getLockedGammShare(bech32Address, poolId);
 
       return available.add(locked);
     }

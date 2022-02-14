@@ -37,17 +37,11 @@ export const PoolCard: FunctionComponent<{
             <div className="subtitle2 text-white-disabled">
               {poolMetric.label}
             </div>
-            {poolMetric.isLoading ? (
-              <MetricLoader isLoading={poolMetric.isLoading}>
-                <div className="mt-0.5 subtitle1 text-white-high">
-                  {poolMetric.value}
-                </div>
-              </MetricLoader>
-            ) : (
+            <MetricLoader isLoading={poolMetric.isLoading}>
               <div className="mt-0.5 subtitle1 text-white-high">
                 {poolMetric.value}
               </div>
-            )}
+            </MetricLoader>
           </div>
         ))}
       </div>
