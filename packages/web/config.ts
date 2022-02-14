@@ -1,4 +1,4 @@
-import { ChainInfo } from "@keplr-wallet/types";
+import { ChainInfoWithExplorer } from "./stores/chain";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { IBCAsset } from "@osmosis-labs/stores";
 
@@ -177,7 +177,7 @@ export const IBCAssetInfos: IBCAsset[] = [
   },
 ];
 
-export const EmbedChainInfos: ChainInfo[] = [
+export const EmbedChainInfos: ChainInfoWithExplorer[] = [
   {
     rpc: "https://rpc-osmosis.keplr.app",
     rest: "https://lcd-osmosis.keplr.app",
@@ -188,6 +188,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "uosmo",
       coinDecimals: 6,
       coinGeckoId: "osmosis",
+      coinImageUrl: "/tokens/osmosis.svg",
     },
     bip44: {
       coinType: 118,
@@ -199,12 +200,14 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uosmo",
         coinDecimals: 6,
         coinGeckoId: "osmosis",
+        coinImageUrl: "/tokens/osmosis.svg",
       },
       {
         coinDenom: "ION",
         coinMinimalDenom: "uion",
         coinDecimals: 6,
         coinGeckoId: "ion",
+        coinImageUrl: "/tokens/ion.png",
       },
     ],
     feeCurrencies: [
@@ -213,29 +216,24 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uosmo",
         coinDecimals: 6,
         coinGeckoId: "osmosis",
+        coinImageUrl: "/tokens/osmosis.svg",
       },
     ],
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/osmosis/txs/{txHash}",
   },
   {
     rpc: "https://rpc-cosmoshub.keplr.app",
     rest: "https://lcd-cosmoshub.keplr.app",
     chainId: "cosmoshub-4",
-    chainName: "Cosmos",
+    chainName: "Cosmos Hub",
     stakeCurrency: {
       coinDenom: "ATOM",
       coinMinimalDenom: "uatom",
       coinDecimals: 6,
       coinGeckoId: "cosmos",
+      coinImageUrl: "/tokens/cosmos.svg",
     },
-    walletUrl:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/#/cosmoshub/stake"
-        : "http://localhost:8080/#/cosmoshub/stake",
-    walletUrlForStaking:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/#/cosmoshub/stake"
-        : "http://localhost:8080/#/cosmoshub/stake",
     bip44: {
       coinType: 118,
     },
@@ -246,6 +244,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uatom",
         coinDecimals: 6,
         coinGeckoId: "cosmos",
+        coinImageUrl: "/tokens/cosmos.svg",
       },
     ],
     feeCurrencies: [
@@ -254,10 +253,12 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uatom",
         coinDecimals: 6,
         coinGeckoId: "cosmos",
+        coinImageUrl: "/tokens/cosmos.svg",
       },
     ],
     coinType: 118,
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/cosmos/txs/{txHash}",
   },
   {
     rpc: "https://rpc-columbus.keplr.app",
@@ -269,6 +270,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "uluna",
       coinDecimals: 6,
       coinGeckoId: "terra-luna",
+      coinImageUrl: "/tokens/luna.png",
     },
     bip44: {
       coinType: 330,
@@ -280,18 +282,21 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uluna",
         coinDecimals: 6,
         coinGeckoId: "terra-luna",
+        coinImageUrl: "/tokens/luna.png",
       },
       {
         coinDenom: "UST",
         coinMinimalDenom: "uusd",
         coinDecimals: 6,
         coinGeckoId: "terrausd",
+        coinImageUrl: "/tokens/ust.png",
       },
       {
         coinDenom: "KRT",
         coinMinimalDenom: "ukrw",
         coinDecimals: 6,
         coinGeckoId: "terra-krw",
+        coinImageUrl: "/tokens/krt.png",
       },
     ],
     feeCurrencies: [
@@ -300,12 +305,14 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uluna",
         coinDecimals: 6,
         coinGeckoId: "terra-luna",
+        coinImageUrl: "/tokens/luna.png",
       },
       {
         coinDenom: "UST",
         coinMinimalDenom: "uusd",
         coinDecimals: 6,
         coinGeckoId: "terrausd",
+        coinImageUrl: "/tokens/ust.png",
       },
     ],
     gasPriceStep: {
@@ -314,6 +321,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       high: 0.015,
     },
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+    explorerUrlToTx: "https://finder.terra.money/columbus-5/tx/{txHash}",
   },
   {
     rpc: "https://rpc-secret.keplr.app",
@@ -325,6 +333,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "uscrt",
       coinDecimals: 6,
       coinGeckoId: "secret",
+      coinImageUrl: "/tokens/scrt.svg",
     },
     bip44: {
       coinType: 529,
@@ -336,6 +345,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uscrt",
         coinDecimals: 6,
         coinGeckoId: "secret",
+        coinImageUrl: "/tokens/scrt.svg",
       },
     ],
     feeCurrencies: [
@@ -344,10 +354,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uscrt",
         coinDecimals: 6,
         coinGeckoId: "secret",
+        coinImageUrl: "/tokens/scrt.svg",
       },
     ],
     coinType: 118,
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+    explorerUrlToTx:
+      "https://secretnodes.com/secret/chains/secret-4/transactions/{txHash}",
   },
   {
     rpc: "https://rpc-akash.keplr.app",
@@ -359,6 +372,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "uakt",
       coinDecimals: 6,
       coinGeckoId: "akash-network",
+      coinImageUrl: "/tokens/akt.svg",
     },
     bip44: {
       coinType: 118,
@@ -370,6 +384,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uakt",
         coinDecimals: 6,
         coinGeckoId: "akash-network",
+        coinImageUrl: "/tokens/akt.svg",
       },
     ],
     feeCurrencies: [
@@ -378,10 +393,12 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uakt",
         coinDecimals: 6,
         coinGeckoId: "akash-network",
+        coinImageUrl: "/tokens/akt.svg",
       },
     ],
     coinType: 118,
     features: ["stargate", "ibc-transfer"],
+    explorerUrlToTx: "https://www.mintscan.io/akash/txs/{txHash}",
   },
   {
     rpc: "https://rpc-regen.keplr.app",
@@ -392,6 +409,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDenom: "REGEN",
       coinMinimalDenom: "uregen",
       coinDecimals: 6,
+      coinImageUrl: "/tokens/regen.png",
       coinGeckoId: "regen",
     },
     bip44: { coinType: 118 },
@@ -401,6 +419,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinDenom: "REGEN",
         coinMinimalDenom: "uregen",
         coinDecimals: 6,
+        coinImageUrl: "/tokens/regen.png",
         coinGeckoId: "regen",
       },
     ],
@@ -409,10 +428,12 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinDenom: "REGEN",
         coinMinimalDenom: "uregen",
         coinDecimals: 6,
+        coinImageUrl: "/tokens/regen.png",
         coinGeckoId: "regen",
       },
     ],
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+    explorerUrlToTx: "https://regen.aneka.io/txs/{txHash}",
   },
   {
     rpc: "https://rpc-sentinel.keplr.app",
@@ -424,6 +445,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "udvpn",
       coinDecimals: 6,
       coinGeckoId: "sentinel",
+      coinImageUrl: "/tokens/dvpn.png",
     },
     bip44: { coinType: 118 },
     bech32Config: Bech32Address.defaultBech32Config("sent"),
@@ -433,6 +455,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "udvpn",
         coinDecimals: 6,
         coinGeckoId: "sentinel",
+        coinImageUrl: "/tokens/dvpn.png",
       },
     ],
     feeCurrencies: [
@@ -441,8 +464,10 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "udvpn",
         coinDecimals: 6,
         coinGeckoId: "sentinel",
+        coinImageUrl: "/tokens/dvpn.png",
       },
     ],
+    explorerUrlToTx: "https://www.mintscan.io/sentinel/txs/{txHash}",
     features: ["stargate", "ibc-transfer"],
   },
   {
@@ -455,6 +480,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "uxprt",
       coinDecimals: 6,
       coinGeckoId: "persistence",
+      coinImageUrl: "/tokens/xprt.png",
     },
     bip44: {
       coinType: 750,
@@ -466,6 +492,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uxprt",
         coinDecimals: 6,
         coinGeckoId: "persistence",
+        coinImageUrl: "/tokens/xprt.png",
       },
     ],
     feeCurrencies: [
@@ -474,9 +501,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uxprt",
         coinDecimals: 6,
         coinGeckoId: "persistence",
+        coinImageUrl: "/tokens/xprt.png",
       },
     ],
     features: ["stargate", "ibc-transfer"],
+    explorerUrlToTx: "https://www.mintscan.io/persistence/txs/{txHash}",
   },
   {
     rpc: "https://rpc-iris.keplr.app",
@@ -488,6 +517,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "uiris",
       coinDecimals: 6,
       coinGeckoId: "iris-network",
+      coinImageUrl: "/tokens/iris.svg",
     },
     bip44: {
       coinType: 118,
@@ -499,6 +529,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uiris",
         coinDecimals: 6,
         coinGeckoId: "iris-network",
+        coinImageUrl: "/tokens/iris.svg",
       },
     ],
     feeCurrencies: [
@@ -507,9 +538,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uiris",
         coinDecimals: 6,
         coinGeckoId: "iris-network",
+        coinImageUrl: "/tokens/iris.svg",
       },
     ],
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+    explorerUrlToTx: "https://www.mintscan.io/iris/txs/{txHash}",
   },
   {
     rpc: "https://rpc-crypto-org.keplr.app/",
@@ -521,6 +554,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "basecro",
       coinDecimals: 8,
       coinGeckoId: "crypto-com-chain",
+      coinImageUrl: "/tokens/cro.png",
     },
     bip44: {
       coinType: 394,
@@ -532,6 +566,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "basecro",
         coinDecimals: 8,
         coinGeckoId: "crypto-com-chain",
+        coinImageUrl: "/tokens/cro.png",
       },
     ],
     feeCurrencies: [
@@ -540,9 +575,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "basecro",
         coinDecimals: 8,
         coinGeckoId: "crypto-com-chain",
+        coinImageUrl: "/tokens/cro.png",
       },
     ],
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+    explorerUrlToTx: "https://www.mintscan.io/crypto-org/txs/{txHash}",
   },
   {
     rpc: "https://rpc-iov.keplr.app",
@@ -554,6 +591,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "uiov",
       coinDecimals: 6,
       coinGeckoId: "starname",
+      coinImageUrl: "/tokens/iov.png",
     },
     bip44: {
       coinType: 234,
@@ -565,6 +603,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uiov",
         coinDecimals: 6,
         coinGeckoId: "starname",
+        coinImageUrl: "/tokens/iov.png",
       },
     ],
     feeCurrencies: [
@@ -573,9 +612,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uiov",
         coinDecimals: 6,
         coinGeckoId: "starname",
+        coinImageUrl: "/tokens/iov.png",
       },
     ],
     features: ["stargate", "ibc-transfer"],
+    explorerUrlToTx: "https://www.mintscan.io/starname/txs/{txHash}",
   },
   {
     rpc: "https://rpc-emoney.keplr.app",
@@ -587,6 +628,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "ungm",
       coinDecimals: 6,
       coinGeckoId: "e-money",
+      coinImageUrl: "/tokens/ngm.png",
     },
     bip44: {
       coinType: 118,
@@ -598,12 +640,14 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ungm",
         coinDecimals: 6,
         coinGeckoId: "e-money",
+        coinImageUrl: "/tokens/ngm.png",
       },
       {
         coinDenom: "EEUR",
         coinMinimalDenom: "eeur",
         coinDecimals: 6,
         coinGeckoId: "e-money-eur",
+        coinImageUrl: "/tokens/eeur.png",
       },
     ],
     feeCurrencies: [
@@ -612,6 +656,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ungm",
         coinDecimals: 6,
         coinGeckoId: "e-money",
+        coinImageUrl: "/tokens/ngm.png",
       },
     ],
     gasPriceStep: {
@@ -620,10 +665,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       high: 1,
     },
     features: ["stargate", "ibc-transfer"],
+    explorerUrlToTx: "https://emoney.bigdipper.live/transactions/{txHash}",
   },
   {
-    rpc: "https://rpc-juno.itastakers.com",
-    rest: "https://lcd-juno.itastakers.com",
+    rpc: "https://rpc-juno.keplr.app",
+    rest: "https://lcd-juno.keplr.app",
     chainId: "juno-1",
     chainName: "Juno",
     stakeCurrency: {
@@ -631,6 +677,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "ujuno",
       coinDecimals: 6,
       coinGeckoId: "juno-network",
+      coinImageUrl: "/tokens/juno.svg",
     },
     bip44: {
       coinType: 118,
@@ -642,6 +689,17 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ujuno",
         coinDecimals: 6,
         coinGeckoId: "juno-network",
+        coinImageUrl: "/tokens/juno.svg",
+      },
+      {
+        type: "cw20",
+        contractAddress:
+          "juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
+        coinDenom: "NETA",
+        coinMinimalDenom:
+          "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr:NETA",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/neta.svg",
       },
     ],
     feeCurrencies: [
@@ -650,9 +708,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ujuno",
         coinDecimals: 6,
         coinGeckoId: "juno-network",
+        coinImageUrl: "/tokens/juno.svg",
       },
     ],
     features: ["stargate", "ibc-transfer"],
+    explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
   },
   {
     rpc: "https://rpc-microtick.keplr.app",
@@ -664,6 +724,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "utick",
       coinDecimals: 6,
       coinGeckoId: "pool:utick",
+      coinImageUrl: "/tokens/tick.svg",
     },
     bip44: {
       coinType: 118,
@@ -675,6 +736,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "utick",
         coinDecimals: 6,
         coinGeckoId: "pool:utick",
+        coinImageUrl: "/tokens/tick.svg",
       },
     ],
     feeCurrencies: [
@@ -683,9 +745,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "utick",
         coinDecimals: 6,
         coinGeckoId: "pool:utick",
+        coinImageUrl: "/tokens/tick.svg",
       },
     ],
     features: ["stargate", "ibc-transfer"],
+    explorerUrlToTx: "https://explorer.microtick.zone/transactions/{txHash}",
   },
   {
     rpc: "https://mainnet-node.like.co/rpc",
@@ -697,6 +761,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "nanolike",
       coinDecimals: 9,
       coinGeckoId: "likecoin",
+      coinImageUrl: "/tokens/likecoin.svg",
     },
     bip44: {
       coinType: 118,
@@ -708,6 +773,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "nanolike",
         coinDecimals: 9,
         coinGeckoId: "likecoin",
+        coinImageUrl: "/tokens/likecoin.svg",
       },
     ],
     feeCurrencies: [
@@ -716,9 +782,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "nanolike",
         coinDecimals: 9,
         coinGeckoId: "likecoin",
+        coinImageUrl: "/tokens/likecoin.svg",
       },
     ],
     features: ["stargate", "ibc-transfer"],
+    explorerUrlToTx: "https://likecoin.bigdipper.live/transactions/{txHash}",
   },
   {
     rpc: "https://rpc-impacthub.keplr.app",
@@ -730,6 +798,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "uixo",
       coinDecimals: 6,
       coinGeckoId: "pool:uixo",
+      coinImageUrl: "/tokens/ixo.svg",
     },
     bip44: {
       coinType: 118,
@@ -741,6 +810,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uixo",
         coinDecimals: 6,
         coinGeckoId: "pool:uixo",
+        coinImageUrl: "/tokens/ixo.png",
       },
     ],
     feeCurrencies: [
@@ -749,9 +819,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uixo",
         coinDecimals: 6,
         coinGeckoId: "pool:uixo",
+        coinImageUrl: "/tokens/ixo.png",
       },
     ],
     features: ["stargate", "ibc-transfer"],
+    explorerUrlToTx: "https://blockscan.ixo.world/transactions/{txHash}",
   },
   {
     rpc: "https://rpc.bitcanna.io",
@@ -763,6 +835,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "ubcna",
       coinDecimals: 6,
       coinGeckoId: "bitcanna",
+      coinImageUrl: "/tokens/bcna.svg",
     },
     bip44: {
       coinType: 118,
@@ -774,6 +847,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ubcna",
         coinDecimals: 6,
         coinGeckoId: "bitcanna",
+        coinImageUrl: "/tokens/bcna.svg",
       },
     ],
     feeCurrencies: [
@@ -782,9 +856,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ubcna",
         coinDecimals: 6,
         coinGeckoId: "bitcanna",
+        coinImageUrl: "/tokens/bcna.svg",
       },
     ],
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+    explorerUrlToTx: "https://www.mintscan.io/bitcanna/txs/{txHash}",
   },
   {
     rpc: "https://rpc.explorebitsong.com",
@@ -796,6 +872,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "ubtsg",
       coinDecimals: 6,
       coinGeckoId: "pool:ubtsg",
+      coinImageUrl: "/tokens/btsg.svg",
     },
     bip44: {
       coinType: 639,
@@ -807,6 +884,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ubtsg",
         coinDecimals: 6,
         coinGeckoId: "pool:ubtsg",
+        coinImageUrl: "/tokens/btsg.svg",
       },
     ],
     feeCurrencies: [
@@ -815,9 +893,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ubtsg",
         coinDecimals: 6,
         coinGeckoId: "pool:ubtsg",
+        coinImageUrl: "/tokens/btsg.svg",
       },
     ],
     features: ["stargate", "ibc-transfer"],
+    explorerUrlToTx: "https://explorebitsong.com/transactions/{txHash}",
   },
   {
     rpc: "https://rpc-mainnet.blockchain.ki",
@@ -829,6 +909,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "uxki",
       coinDecimals: 6,
       coinGeckoId: "pool:uxki",
+      coinImageUrl: "/tokens/ki.svg",
     },
     bip44: {
       coinType: 118,
@@ -840,6 +921,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uxki",
         coinDecimals: 6,
         coinGeckoId: "pool:uxki",
+        coinImageUrl: "/tokens/ki.svg",
       },
     ],
     feeCurrencies: [
@@ -848,9 +930,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uxki",
         coinDecimals: 6,
         coinGeckoId: "pool:uxki",
+        coinImageUrl: "/tokens/ki.svg",
       },
     ],
     features: ["stargate", "ibc-transfer"],
+    explorerUrlToTx: "https://www.mintscan.io/ki-chain/txs/{txHash}",
   },
   {
     rpc: "https://rpc.gopanacea.org",
@@ -862,6 +946,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "umed",
       coinDecimals: 6,
       coinGeckoId: "medibloc",
+      coinImageUrl: "/tokens/med.png",
     },
     bip44: {
       coinType: 371,
@@ -873,6 +958,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "umed",
         coinDecimals: 6,
         coinGeckoId: "medibloc",
+        coinImageUrl: "/tokens/med.png",
       },
     ],
     feeCurrencies: [
@@ -881,6 +967,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "umed",
         coinDecimals: 6,
         coinGeckoId: "medibloc",
+        coinImageUrl: "/tokens/med.png",
       },
     ],
     gasPriceStep: {
@@ -889,6 +976,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       high: 9,
     },
     features: ["stargate", "ibc-transfer"],
+    explorerUrlToTx: "https://www.mintscan.io/medibloc/txs/{txHash}",
   },
   {
     rpc: "https://rpc.bostrom.cybernode.ai",
@@ -900,6 +988,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "boot",
       coinDecimals: 0,
       // coinGeckoId: 'pool:boot',
+      coinImageUrl: "/tokens/boot.png",
     },
     bip44: {
       coinType: 118,
@@ -911,6 +1000,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "boot",
         coinDecimals: 0,
         // coinGeckoId: 'pool:boot',
+        coinImageUrl: "/tokens/boot.png",
       },
     ],
     feeCurrencies: [
@@ -919,9 +1009,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "boot",
         coinDecimals: 0,
         // coinGeckoId: 'pool:boot',
+        coinImageUrl: "/tokens/boot.png",
       },
     ],
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+    explorerUrlToTx: "https://cyb.ai/network/bostrom/tx/{txHash}",
   },
   {
     rpc: "https://rpc.comdex.one",
@@ -933,6 +1025,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "ucmdx",
       coinDecimals: 6,
       coinGeckoId: "comdex",
+      coinImageUrl: "/tokens/cmdx.png",
     },
     bip44: {
       coinType: 118,
@@ -944,6 +1037,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ucmdx",
         coinDecimals: 6,
         coinGeckoId: "comdex",
+        coinImageUrl: "/tokens/cmdx.png",
       },
     ],
     feeCurrencies: [
@@ -952,9 +1046,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ucmdx",
         coinDecimals: 6,
         coinGeckoId: "comdex",
+        coinImageUrl: "/tokens/cmdx.png",
       },
     ],
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+    explorerUrlToTx: "https://www.mintscan.io/comdex/txs/{txHash}",
   },
   {
     rpc: "https://rpc.cheqd.net",
@@ -966,6 +1062,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "ncheq",
       coinDecimals: 9,
       coinGeckoId: "cheqd-network",
+      coinImageUrl: "/tokens/cheq.svg",
     },
     bip44: {
       coinType: 118,
@@ -977,6 +1074,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ncheq",
         coinDecimals: 9,
         coinGeckoId: "cheqd-network",
+        coinImageUrl: "/tokens/cheq.svg",
       },
     ],
     feeCurrencies: [
@@ -985,6 +1083,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ncheq",
         coinDecimals: 9,
         coinGeckoId: "cheqd-network",
+        coinImageUrl: "/tokens/cheq.svg",
       },
     ],
     gasPriceStep: {
@@ -993,10 +1092,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       high: 50,
     },
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+    explorerUrlToTx: "https://explorer.cheqd.io/transactions/{txHash}",
   },
   {
-    rpc: "https://rpc.stargaze.publicawesome.dev",
-    rest: "https://rest.stargaze.publicawesome.dev",
+    rpc: "https://rpc.stargaze-apis.com",
+    rest: "https://rest.stargaze-apis.com",
     chainId: "stargaze-1",
     chainName: "Stargaze",
     stakeCurrency: {
@@ -1004,6 +1104,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "ustars",
       coinDecimals: 6,
       coinGeckoId: "pool:ustars",
+      coinImageUrl: "/tokens/stars.png",
     },
     bip44: {
       coinType: 118,
@@ -1015,6 +1116,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ustars",
         coinDecimals: 6,
         coinGeckoId: "pool:ustars",
+        coinImageUrl: "/tokens/stars.png",
       },
     ],
     feeCurrencies: [
@@ -1023,9 +1125,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ustars",
         coinDecimals: 6,
         coinGeckoId: "pool:ustars",
+        coinImageUrl: "/tokens/stars.png",
       },
     ],
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+    explorerUrlToTx: "https://www.mintscan.io/stargaze/txs/{txHash}",
   },
   {
     rpc: "https://rpc.chihuahua.wtf",
@@ -1037,6 +1141,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "uhuahua",
       coinDecimals: 6,
       coinGeckoId: "pool:uhuahua",
+      coinImageUrl: "/tokens/huahua.png",
     },
     bip44: {
       coinType: 118,
@@ -1048,6 +1153,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uhuahua",
         coinDecimals: 6,
         coinGeckoId: "pool:uhuahua",
+        coinImageUrl: "/tokens/huahua.png",
       },
     ],
     feeCurrencies: [
@@ -1056,6 +1162,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uhuahua",
         coinDecimals: 6,
         coinGeckoId: "pool:uhuahua",
+        coinImageUrl: "/tokens/huahua.png",
       },
     ],
     gasPriceStep: {
@@ -1064,6 +1171,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       high: 0.035,
     },
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+    explorerUrlToTx: "https://ping.pub/chihuahua/tx/{txHash}",
   },
   {
     rpc: "https://node0.mainnet.lum.network/rpc",
@@ -1075,6 +1183,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "ulum",
       coinDecimals: 6,
       coinGeckoId: "pool:ulum",
+      coinImageUrl: "/tokens/lum.svg",
     },
     bip44: {
       coinType: 118,
@@ -1086,6 +1195,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ulum",
         coinDecimals: 6,
         coinGeckoId: "pool:ulum",
+        coinImageUrl: "/tokens/lum.svg",
       },
     ],
     feeCurrencies: [
@@ -1094,9 +1204,202 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ulum",
         coinDecimals: 6,
         coinGeckoId: "pool:ulum",
+        coinImageUrl: "/tokens/lum.svg",
       },
     ],
     coinType: 118,
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/lum/txs/{txHash}",
+  },
+  {
+    rpc: "https://mainnet-rpc.vidulum.app",
+    rest: "https://mainnet-lcd.vidulum.app",
+    chainId: "vidulum-1",
+    chainName: "Vidulum",
+    stakeCurrency: {
+      coinDenom: "VDL",
+      coinMinimalDenom: "uvdl",
+      coinDecimals: 6,
+      coinGeckoId: "vidulum",
+      coinImageUrl: "/tokens/vdl.svg",
+    },
+    bip44: {
+      coinType: 370,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("vdl"),
+    currencies: [
+      {
+        coinDenom: "VDL",
+        coinMinimalDenom: "uvdl",
+        coinDecimals: 6,
+        coinGeckoId: "vidulum",
+        coinImageUrl: "/tokens/vdl.svg",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "VDL",
+        coinMinimalDenom: "uvdl",
+        coinDecimals: 6,
+        coinGeckoId: "vidulum",
+        coinImageUrl: "/tokens/vdl.svg",
+      },
+    ],
+    coinType: 370,
+    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    explorerUrlToTx: "https://explorers.vidulum.app/vidulum/tx/{txHash}",
+  },
+  {
+    rpc: "https://rpc.mainnet.desmos.network",
+    rest: "https://api.mainnet.desmos.network",
+    chainId: "desmos-mainnet",
+    chainName: "Desmos",
+    stakeCurrency: {
+      coinDenom: "DSM",
+      coinMinimalDenom: "udsm",
+      coinDecimals: 6,
+      coinGeckoId: "pool:udsm",
+      coinImageUrl: "/tokens/dsm.svg",
+    },
+    bip44: {
+      coinType: 852,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("desmos"),
+    currencies: [
+      {
+        coinDenom: "DSM",
+        coinMinimalDenom: "udsm",
+        coinDecimals: 6,
+        coinGeckoId: "pool:udsm",
+        coinImageUrl: "/tokens/dsm.svg",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "DSM",
+        coinMinimalDenom: "udsm",
+        coinDecimals: 6,
+        coinGeckoId: "pool:udsm",
+        coinImageUrl: "/tokens/dsm.svg",
+      },
+    ],
+    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    explorerUrlToTx: "https://explorer.desmos.network/transactions/{txHash}",
+  },
+  {
+    rpc: "https://rpc-1-dig.notional.ventures",
+    rest: "https://api-1-dig.notional.ventures",
+    chainId: "dig-1",
+    chainName: "Dig",
+    stakeCurrency: {
+      coinDenom: "DIG",
+      coinMinimalDenom: "udig",
+      coinDecimals: 6,
+      coinGeckoId: "pool:udig",
+      coinImageUrl: "/tokens/dig.png",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("dig"),
+    currencies: [
+      {
+        coinDenom: "DIG",
+        coinMinimalDenom: "udig",
+        coinDecimals: 6,
+        coinGeckoId: "pool:udig",
+        coinImageUrl: "/tokens/dig.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "DIG",
+        coinMinimalDenom: "udig",
+        coinDecimals: 6,
+        coinGeckoId: "pool:udig",
+        coinImageUrl: "/tokens/dig.png",
+      },
+    ],
+    gasPriceStep: {
+      low: 0.025,
+      average: 0.03,
+      high: 0.035,
+    },
+    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    explorerUrlToTx: "https://ping.pub/dig/tx/{txHash}",
+  },
+  {
+    rpc: "https://rpc-sommelier.keplr.app",
+    rest: "https://lcd-sommelier.keplr.app",
+    chainId: "sommelier-3",
+    chainName: "Sommelier",
+    stakeCurrency: {
+      coinDenom: "SOMM",
+      coinMinimalDenom: "usomm",
+      coinDecimals: 6,
+      coinGeckoId: "pool:usomm",
+      coinImageUrl: "/tokens/somm.png",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("somm"),
+    currencies: [
+      {
+        coinDenom: "SOMM",
+        coinMinimalDenom: "usomm",
+        coinDecimals: 6,
+        coinGeckoId: "pool:usomm",
+        coinImageUrl: "/tokens/somm.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "SOMM",
+        coinMinimalDenom: "usomm",
+        coinDecimals: 6,
+        coinGeckoId: "pool:usomm",
+        coinImageUrl: "/tokens/somm.png",
+      },
+    ],
+    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    explorerUrlToTx: "https://sommscan.io",
+  },
+  {
+    rpc: "https://rpc.sifchain.finance",
+    rest: "https://api-int.sifchain.finance",
+    chainId: "sifchain-1",
+    chainName: "Sifchain",
+    stakeCurrency: {
+      coinDenom: "ROWAN",
+      coinMinimalDenom: "rowan",
+      coinDecimals: 18,
+      coinGeckoId: "sifchain",
+      coinImageUrl: "/tokens/rowan.svg",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("sif"),
+    currencies: [
+      {
+        coinDenom: "ROWAN",
+        coinMinimalDenom: "rowan",
+        coinDecimals: 18,
+        coinGeckoId: "sifchain",
+        coinImageUrl: "/tokens/rowan.svg",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "ROWAN",
+        coinMinimalDenom: "rowan",
+        coinDecimals: 18,
+        coinGeckoId: "sifchain",
+        coinImageUrl: "/tokens/rowan.svg",
+      },
+    ],
+    features: ["stargate", "ibc-transfer"],
+    explorerUrlToTx: "https://www.mintscan.io/sifchain/txs/{txHash}",
   },
 ];

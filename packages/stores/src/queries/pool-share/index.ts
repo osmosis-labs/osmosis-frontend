@@ -1,6 +1,13 @@
 import { ObservableQueryBalances } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
-import { AppCurrency, Currency } from "@keplr-wallet/types";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  Int,
+  IntPretty,
+  PricePretty,
+} from "@keplr-wallet/unit";
+import { AppCurrency, Currency, FiatCurrency } from "@keplr-wallet/types";
 import { ObservableQueryPools } from "../pools";
 import { computedFn } from "mobx-utils";
 import {
@@ -16,8 +23,6 @@ export class ObservableQueryGammPoolShare {
       coinDecimals: 18,
     };
   }
-  protected _isFetchingShareRatio: boolean = false;
-  protected _isFetchingLockedShareRatio: boolean = false;
 
   constructor(
     protected readonly queryPools: ObservableQueryPools,
@@ -39,7 +44,7 @@ export class ObservableQueryGammPoolShare {
     let result: string[] = [];
 
     for (const bal of balances.concat(locked)) {
-      // Pool share 토큰은 `gamm/pool/${poolId}` 형태이다.
+      // The pool share token is in the form of 'gamm/pool/${poolId}'.
       if (bal.currency.coinMinimalDenom.startsWith("gamm/pool/")) {
         result.push(bal.currency.coinMinimalDenom.replace("gamm/pool/", ""));
       }
@@ -77,7 +82,6 @@ export class ObservableQueryGammPoolShare {
 
   readonly getLockedGammShareRatio = computedFn(
     (bech32Address: string, poolId: string): IntPretty => {
-      this._isFetchingLockedShareRatio = true;
       const pool = this.queryPools.getPool(poolId);
       if (!pool) {
         return new IntPretty(new Int(0)).ready(false);
@@ -89,13 +93,34 @@ export class ObservableQueryGammPoolShare {
 
       const totalShare = pool.totalShare;
 
-      this._isFetchingLockedShareRatio = false;
-      // 백분률로 만들어주기 위해서 마지막에 10^2를 곱한다
+      // To make it a percentage, multiply it by 10^2 at the end.
       return new IntPretty(
-        share.quo(totalShare).mul(DecUtils.getPrecisionDec(2))
+        share.quo(totalShare).mul(DecUtils.getTenExponentNInPrecisionRange(2))
       )
         .maxDecimals(2)
         .trim(true);
+    }
+  );
+
+  readonly getLockedGammShareValue = computedFn(
+    (
+      bech32Address: string,
+      poolId: string,
+      poolLiqudity: PricePretty,
+      fiatCurrency: FiatCurrency
+    ): PricePretty => {
+      const pool = this.queryPools.getPool(poolId);
+      if (!pool) {
+        return new PricePretty(fiatCurrency, new Dec(0));
+      }
+
+      const share = this.getLockedGammShare(bech32Address, poolId);
+      // Remember that the unlockings are included in the locked.
+      // So, no need to handle the unlockings here
+
+      const totalShare = pool.totalShare;
+
+      return poolLiqudity.mul(new IntPretty(share.quo(totalShare))).trim(true);
     }
   );
 
@@ -126,16 +151,15 @@ export class ObservableQueryGammPoolShare {
   );
 
   /**
-   * locked, unlocking, unlockable인 share도 포함한다.
+   * It also includes locked, unlocked, and unlocked shares.
    * @param bech32Address
    * @param poolId
    */
   readonly getAllGammShare = computedFn(
     (bech32Address: string, poolId: string): CoinPretty => {
       const available = this.getAvailableGammShare(bech32Address, poolId);
+      // Note that Unlocking is also included in locked because it is not currently fluidized.
       const locked = this.getLockedGammShare(bech32Address, poolId);
-      // Unlocking도 현재 유동화되어 있지 않으므로 locked에 포함된다는 걸 유의.
-      // const unlocking = this.getUnlockingGammShare(bech32Address, poolId);
 
       return available.add(locked);
     }
@@ -143,7 +167,6 @@ export class ObservableQueryGammPoolShare {
 
   readonly getAllGammShareRatio = computedFn(
     (bech32Address: string, poolId: string): IntPretty => {
-      this._isFetchingShareRatio = true;
       const pool = this.queryPools.getPool(poolId);
       if (!pool) {
         return new IntPretty(new Int(0)).ready(false);
@@ -153,21 +176,12 @@ export class ObservableQueryGammPoolShare {
 
       const totalShare = pool.totalShare;
 
-      this._isFetchingShareRatio = false;
-      // 백분률로 만들어주기 위해서 마지막에 10^2를 곱한다
+      // To make it a percentage, multiply it by 10^2 at the end.
       return new IntPretty(
-        share.quo(totalShare).mul(DecUtils.getPrecisionDec(2))
+        share.quo(totalShare).mul(DecUtils.getTenExponentNInPrecisionRange(2))
       )
         .maxDecimals(2)
         .trim(true);
     }
   );
-
-  get isFetchingShareRatio(): boolean {
-    return this._isFetchingShareRatio;
-  }
-
-  get isFetchingLockedShareRatio(): boolean {
-    return this._isFetchingLockedShareRatio;
-  }
 }
