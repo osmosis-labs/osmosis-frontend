@@ -2118,8 +2118,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://www.mintscan.io/konstellation/txs/{txHash}',
 	},
 	{
-		rpc: 'https://gravitychain.io',
-		rest: 'https://gravitychain.io',
+		rpc: 'https://gravitychain.io:26657',
+		rest: 'https://gravitychain.io:1317',
 		chainId: 'gravity-bridge-3',
 		chainName: 'Gravity Bridge',
 		stakeCurrency: {
