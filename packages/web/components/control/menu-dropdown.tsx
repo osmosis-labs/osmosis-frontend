@@ -1,8 +1,9 @@
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { MenuSelectProps } from "./types";
+import { CustomClasses } from "../types";
 
-interface Props extends MenuSelectProps {
+interface Props extends MenuSelectProps, CustomClasses {
   isOpen: boolean;
 }
 
@@ -14,13 +15,15 @@ export const MenuDropdown: FunctionComponent<Props> = ({
   selectedOptionId,
   onSelect,
   isOpen,
+  className,
 }) => (
   <div
     className={classNames(
       "absolute flex flex-col w-fit bg-card rounded-lg border border-white-faint select-none",
       {
         hidden: !isOpen,
-      }
+      },
+      className
     )}
   >
     {options.map(({ id, display }, index) => (
