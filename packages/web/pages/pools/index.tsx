@@ -8,12 +8,13 @@ import { Table, BaseCell, ColumnDef, RowDef } from "../../components/table";
 
 import { PoolCompositionCell } from "../../components/table/cells";
 import { SortDirection } from "../../components/types";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 const Pools: NextPage = observer(function () {
   const {
     chainStore,
     accountStore,
+    priceStore,
     queriesOsmosisStore,
     queriesImperatorStore,
   } = useStore();
@@ -30,11 +31,16 @@ const Pools: NextPage = observer(function () {
   const incentivizedPools =
     queryOsmosis.queryIncentivizedPools.incentivizedPools;
 
-  const allPools = queryOsmosis.queryGammPools.getAllPools();
+  const allPools = queryOsmosis.queryGammPools.getPools(10, 1);
 
   const queryImperator = queriesImperatorStore.get();
 
-  const poolMetrics = queryImperator.queryGammPoolMetrics.poolMetrics;
+  const allPoolsWithMetric =
+    queryImperator.queryGammPoolMetrics.getPoolsWithMetric(
+      allPools,
+      priceStore,
+      priceStore.getFiatCurrency("usd")!
+    );
 
   const [sortDirection, setSortDirection] = useState<SortDirection | undefined>(
     undefined
@@ -65,13 +71,13 @@ const Pools: NextPage = observer(function () {
       },
     },
     {
-      display: "Volume",
+      display: "Volume (24H)",
     },
     {
       display: "Fees (7D)",
     },
     {
-      display: "APR",
+      display: "My Liquidity",
     },
   ];
 
@@ -79,31 +85,20 @@ const Pools: NextPage = observer(function () {
     makeHoverClass: () => "text-secondary-200",
   };
 
-  const tableRows: RowDef[] = [
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
-  ];
-
-  const tableData: Partial<BaseCell & PoolCompositionCell>[][] = [
-    [
-      { poolId: "1" },
-      { value: "hi" },
-      { value: "asf" },
-      { value: "fff" },
-      { value: "fjd" },
-    ],
-    [
-      { poolId: "2" },
-      { value: "A" },
-      { value: "asf" },
-      { value: "fff" },
-      { value: "fjd" },
-    ],
-  ];
+  const tableRows: RowDef[] = allPoolsWithMetric.map(() => ({
+    ...baseRow,
+    onClick: (i) => console.log(i),
+  }));
+  const tableData: Partial<BaseCell & PoolCompositionCell>[][] =
+    allPoolsWithMetric.map((poolWithMetric) => {
+      return [
+        { poolId: poolWithMetric.pool.id },
+        { value: poolWithMetric.liqudity },
+        { value: poolWithMetric.volume24h },
+        { value: poolWithMetric.fees7d },
+        { value: "not yet" },
+      ];
+    });
   return (
     <main>
       <Overview
