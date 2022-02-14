@@ -812,6 +812,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'udarc',
 	},
+	{
+		counterpartyChainId: 'fetchhub-3',
+		sourceChannelId: 'channel-175',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'afet',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -2109,5 +2115,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://www.mintscan.io/konstellation/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-fetchhub.fetch.ai',
+		rest: 'https://rest-fetchhub.fetch.ai',
+		chainId: 'fetchhub-3',
+		chainName: 'Fetch Hub',
+		stakeCurrency: {
+			coinDenom: 'FET',
+			coinMinimalDenom: 'afet',
+			coinDecimals: 18,
+			coinGeckoId: 'fetch-ai',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/fet.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('fetch'),
+		currencies: [
+			{
+				coinDenom: 'FET',
+				coinMinimalDenom: 'afet',
+				coinDecimals: 18,
+				coinGeckoId: 'fetch-ai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/fet.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'FET',
+				coinMinimalDenom: 'afet',
+				coinDecimals: 18,
+				coinGeckoId: 'fetch-ai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/fet.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/fetchai/txs/{txHash}',
 	},
 ];
