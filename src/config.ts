@@ -812,6 +812,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'udarc',
 	},
+	{
+		counterpartyChainId: 'gravity-bridge-3',
+		sourceChannelId: 'channel-144',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'ugraviton',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
