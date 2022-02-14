@@ -14,12 +14,14 @@ import { ChainStore } from "./chain";
 import { QueriesOsmosisStore, LPCurrencyRegistrar } from "@osmosis-labs/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
+import { QueriesImperatorStore } from "./imperator-queries/store";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
 
   public readonly queriesStore: QueriesStore<QueriesWithCosmos>;
   public readonly queriesOsmosisStore: QueriesOsmosisStore;
+  public readonly queriesImperatorStore: QueriesImperatorStore;
 
   public readonly accountStore: AccountStore<AccountWithCosmos>;
 
@@ -60,6 +62,9 @@ export class RootStore {
       (chainId: string) => this.queriesStore.get(chainId),
       new IndexedDBKVStore("store_web_queries"),
       this.chainStore
+    );
+    this.queriesImperatorStore = new QueriesImperatorStore(
+      new IndexedDBKVStore("store_web_queries")
     );
 
     this.accountStore = new AccountStore<AccountWithCosmos>(

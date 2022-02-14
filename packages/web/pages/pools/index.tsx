@@ -11,7 +11,12 @@ import { SortDirection } from "../../components/types";
 import { useState } from "react";
 
 const Pools: NextPage = observer(function () {
-  const { chainStore, accountStore, queriesOsmosisStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesOsmosisStore,
+    queriesImperatorStore,
+  } = useStore();
 
   const chainInfo = chainStore.getChain("osmosis");
 
@@ -24,7 +29,12 @@ const Pools: NextPage = observer(function () {
 
   const incentivizedPools =
     queryOsmosis.queryIncentivizedPools.incentivizedPools;
-  // const allPools = queryOsmosis.queryGammPools.getPoolsDescendingOrderTVL();
+
+  const allPools = queryOsmosis.queryGammPools.getAllPools();
+
+  const queryImperator = queriesImperatorStore.get();
+
+  const poolMetrics = queryImperator.queryGammPoolMetrics.poolMetrics;
 
   const [sortDirection, setSortDirection] = useState<SortDirection | undefined>(
     undefined
