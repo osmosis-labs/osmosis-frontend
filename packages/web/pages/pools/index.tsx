@@ -1,14 +1,14 @@
 import type { NextPage } from "next";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { IncentivizedPoolCard, MyPoolCard } from "../../components/cards";
+import { PoolCard } from "../../components/cards";
 import { Overview } from "../../components/overview";
 import { LeftTime } from "../../components/left-time";
 import { Table, BaseCell, ColumnDef, RowDef } from "../../components/table";
 
 import { PoolCompositionCell } from "../../components/table/cells";
 import { SortDirection } from "../../components/types";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 const Pools: NextPage = observer(function () {
   const {
@@ -28,8 +28,12 @@ const Pools: NextPage = observer(function () {
     account.bech32Address
   );
 
-  const incentivizedPools =
-    queryOsmosis.queryIncentivizedPools.incentivizedPools;
+  const top3Pools = queryOsmosis.queryGammPools.getPoolsDescendingOrderTVL(
+    priceStore,
+    priceStore.getFiatCurrency("usd")!,
+    3,
+    1
+  );
 
   const allPools = queryOsmosis.queryGammPools.getPools(10, 1);
 
@@ -119,27 +123,98 @@ const Pools: NextPage = observer(function () {
             {myPools.map((poolId) => {
               const pool = queryOsmosis.queryGammPools.getPool(poolId);
               if (pool) {
-                return <MyPoolCard pool={pool} key={pool.id} />;
+                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
+                  pool.id,
+                  priceStore,
+                  priceStore.getFiatCurrency("usd")!
+                );
+                const poolLiquidity = pool.computeTotalValueLocked(
+                  priceStore,
+                  priceStore.getFiatCurrency("usd")!
+                );
+                const bonded =
+                  queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
+                    account.bech32Address,
+                    pool.id,
+                    poolLiquidity,
+                    priceStore.getFiatCurrency("usd")!
+                  );
+
+                return (
+                  <PoolCard
+                    key={pool.id}
+                    pool={pool}
+                    poolMetrics={[
+                      {
+                        label: "APR",
+                        value: `${apr.toString()}%`,
+                        isLoading:
+                          queryOsmosis.queryIncentivizedPools.isAprFetching,
+                      },
+                      {
+                        label: "Pool Liquidity",
+                        value: poolLiquidity.toString(),
+                        isLoading: poolLiquidity.toDec().isZero(),
+                      },
+                      {
+                        label: "Bonded",
+                        value: bonded.toString(),
+                        isLoading: poolLiquidity.toDec().isZero(),
+                      },
+                    ]}
+                  />
+                );
               }
             })}
           </div>
         </div>
       </section>
       <section className="bg-surface">
-        <div className="max-w-container mx-auto px-10 py-[3.75rem]">
-          <h5>Incentivized Pools</h5>
-          <div className="mt-5 grid grid-cols-3 gap-4">
-            {incentivizedPools.map((poolId) => {
-              const pool = queryOsmosis.queryGammPools.getPool(poolId);
+        <div className="max-w-container mx-auto p-10">
+          <h5>Top Pools</h5>
+          <div className="mt-4 grid grid-cols-3 gap-4">
+            {top3Pools.map((pool) => {
               if (pool) {
-                return <IncentivizedPoolCard pool={pool} key={pool.id} />;
+                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
+                  pool.id,
+                  priceStore,
+                  priceStore.getFiatCurrency("usd")!
+                );
+
+                const poolLiquidity = pool.computeTotalValueLocked(
+                  priceStore,
+                  priceStore.getFiatCurrency("usd")!
+                );
+                return (
+                  <PoolCard
+                    key={pool.id}
+                    pool={pool}
+                    poolMetrics={[
+                      {
+                        label: "APR",
+                        value: `${apr.toString()}%`,
+                        isLoading:
+                          queryOsmosis.queryIncentivizedPools.isAprFetching,
+                      },
+                      {
+                        label: "Pool Liquidity",
+                        value: poolLiquidity.toString(),
+                        isLoading: poolLiquidity.toDec().isZero(),
+                      },
+                      {
+                        label: "Fees",
+                        value: pool.swapFee.toString(),
+                      },
+                    ]}
+                  />
+                );
               }
             })}
           </div>
         </div>
       </section>
-      <section className="bg-surface">
-        <div className="max-w-container mx-auto p-10 py-[3.75rem] shadow-separator">
+      <section className="bg-surface shadow-separator">
+        <div className="max-w-container mx-auto p-10 py-[3.75rem]">
           <div className="flex items-center justify-between">
             <h5>All Pools</h5>
             <label
