@@ -2126,6 +2126,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'GRAV',
 			coinMinimalDenom: 'ugraviton',
 			coinDecimals: 6,
+			coinGeckoId: 'pool:ugraviton',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
 		},
 		bip44: {
@@ -2137,6 +2138,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'GRAV',
 				coinMinimalDenom: 'ugraviton',
 				coinDecimals: 6,
+				coinGeckoId: 'pool:ugraviton',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
 			},
 		],
@@ -2145,6 +2147,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'GRAV',
 				coinMinimalDenom: 'ugraviton',
 				coinDecimals: 6,
+				coinGeckoId: 'pool:ugraviton',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
 			},
 		],
