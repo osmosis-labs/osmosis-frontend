@@ -35,13 +35,19 @@ const Pools: NextPage = observer(function () {
     1
   );
 
-  const allPools = queryOsmosis.queryGammPools.getPools(10, 1);
+  const allPoolsPerPage =
+    queryOsmosis.queryGammPools.getPoolsDescendingOrderTVL(
+      priceStore,
+      priceStore.getFiatCurrency("usd")!,
+      10,
+      1
+    );
 
   const queryImperator = queriesImperatorStore.get();
 
   const allPoolsWithMetric =
     queryImperator.queryGammPoolMetrics.getPoolsWithMetric(
-      allPools,
+      allPoolsPerPage,
       priceStore,
       priceStore.getFiatCurrency("usd")!
     );

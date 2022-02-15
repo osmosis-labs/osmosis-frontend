@@ -34,8 +34,8 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
           <Image
             src="/icons/question-mark.svg"
             alt="no token icon"
-            width={54}
-            height={54}
+            width={size === "md" ? 54 : 28}
+            height={size === "md" ? 54 : 28}
           />
         )}
       </div>
@@ -56,15 +56,15 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
           <Image
             src={assets[1].amount.currency.coinImageUrl}
             alt={assets[1].amount.currency.coinDenom}
-            width={54}
-            height={54}
+            width={size === "md" ? 54 : 28}
+            height={size === "md" ? 54 : 28}
           />
         ) : (
           <Image
             src="/icons/question-mark.svg"
             alt="no token icon"
-            width={54}
-            height={54}
+            width={size === "md" ? 54 : 28}
+            height={size === "md" ? 54 : 28}
           />
         )}
       </div>
