@@ -10,14 +10,11 @@ import {
 import { EmbedChainInfos, IBCAssetInfos } from "../config";
 import { IndexedDBKVStore, LocalKVStore } from "@keplr-wallet/common";
 import EventEmitter from "eventemitter3";
-import { ChainStore } from "./chain";
-import {
-  QueriesOsmosisStore,
-  LPCurrencyRegistrar,
-  ObservableAssets,
-} from "@osmosis-labs/stores";
+import { ChainStore, ChainInfoWithExplorer } from "./chain";
+import { QueriesOsmosisStore, LPCurrencyRegistrar } from "@osmosis-labs/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
+import { ObservableAssets } from "./assets";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -31,8 +28,8 @@ export class RootStore {
 
   public readonly assetsStore: ObservableAssets;
 
-  protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar;
-  protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar;
+  protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
+  protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
 
   constructor(getKeplr: () => Promise<Keplr | undefined>) {
     this.chainStore = new ChainStore(EmbedChainInfos, "osmosis");

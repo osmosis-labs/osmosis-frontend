@@ -1,6 +1,6 @@
 import { ChainInfoWithExplorer } from "./stores/chain";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { IBCAsset } from "@osmosis-labs/stores";
+import { IBCAsset } from "./stores/assets";
 
 /**
  * Determine the channel info per the chain.

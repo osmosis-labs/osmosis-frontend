@@ -19,13 +19,13 @@ export interface CoinBalance {
   fiatValue?: PricePretty;
 }
 
-export interface IBCChainInfo {
+export interface IBCChainIdentity {
   chainId: string;
   chainName: string;
 }
 
 export interface IBCBalance extends CoinBalance {
-  chainInfo: IBCChainInfo;
+  chainInfo: IBCChainIdentity;
   sourceChannelId: string;
   destChannelId: string;
   isUnstable?: boolean;

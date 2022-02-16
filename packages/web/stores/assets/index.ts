@@ -2,11 +2,12 @@ import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Dec, PricePretty, CoinPretty } from "@keplr-wallet/unit";
 import {
-  ChainStore,
   CoinGeckoPriceStore,
   QueriesStore,
   QueriesWithCosmos,
 } from "@keplr-wallet/stores";
+import { ChainStore } from "../chain";
+import { QueriesOsmosisStore } from "@osmosis-labs/stores";
 import { makeIBCMinimalDenom } from "./utils";
 import {
   IBCAsset,
@@ -14,10 +15,9 @@ import {
   IBCCW20ContractBalance,
   CoinBalance,
 } from "./types";
-import { QueriesOsmosisStore } from "..";
 
 /**
- * Wrapper around IBC asset config and stores to provide memoized metrics about assets.
+ * Wrapper around IBC asset config and stores to provide memoized metrics about osmosis assets.
  */
 export class ObservableAssets {
   constructor(
