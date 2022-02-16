@@ -10,7 +10,9 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = ({
 }) =>
   coinDenom ? (
     <div className="flex gap-4">
-      <Image alt={coinDenom} src={coinImageUrl} height={40} width={40} />
+      <div>
+        <Image alt={coinDenom} src={coinImageUrl} height={40} width={40} />
+      </div>
       <div className="flex flex-col place-content-center">
         <div className="flex">
           <span className="text-subtitle1 text-white-high">{coinDenom}</span>

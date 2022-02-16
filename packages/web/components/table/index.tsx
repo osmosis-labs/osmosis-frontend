@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { PropsWithoutRef, useState } from "react";
+import React, { PropsWithoutRef, useState, useCallback } from "react";
 import classNames from "classnames";
 import Tippy from "@tippyjs/react";
 import { nanoid } from "nanoid";
@@ -24,10 +24,13 @@ export const Table = <TCell extends BaseCell = BaseCell>({
   data,
   className,
 }: PropsWithoutRef<Props<TCell>>) => {
-  const [rowsHovered, setRowsHovered] = useState(data.map(() => false));
+  const [rowsHovered, setRowsHovered] = useState(() => data.map(() => false));
 
-  const setRowHovered = (rowIndex: number, value: boolean) =>
-    setRowsHovered(replaceAt(value, rowsHovered, rowIndex));
+  const setRowHovered = useCallback(
+    (rowIndex: number, value: boolean) =>
+      setRowsHovered(replaceAt(value, rowsHovered, rowIndex)),
+    [rowsHovered]
+  );
 
   return (
     <table className={className}>
@@ -102,7 +105,7 @@ export const Table = <TCell extends BaseCell = BaseCell>({
 
           return (
             <tr
-              key={nanoid()}
+              key={rowIndex}
               className={classNames(
                 "h-20 shadow-separator bg-surface",
                 rowDef?.makeClass?.(rowIndex),

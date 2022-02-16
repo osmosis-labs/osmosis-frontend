@@ -1,10 +1,10 @@
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
+import { Dec } from "@keplr-wallet/unit";
 import {
   IBCBalance,
   IBCCW20ContractBalance,
   CoinBalance,
-} from "@osmosis-labs/stores";
-import { Dec } from "@keplr-wallet/unit";
+} from "../../stores/assets";
 import { SearchBox } from "../input";
 import { CheckBox, SortMenu } from "../control";
 import { Table } from ".";
@@ -26,7 +26,7 @@ interface Props {
   onWithdraw: (chainId: string) => void;
 }
 
-const AssetsTable: FunctionComponent<Props> = ({
+export const AssetsTable: FunctionComponent<Props> = ({
   nativeBalances,
   ibcBalances,
   onDeposit,
@@ -40,6 +40,7 @@ const AssetsTable: FunctionComponent<Props> = ({
         return {
           value: balance.toString(),
           coinDenom: balance.denom,
+          coinImageUrl: balance.currency.coinImageUrl,
           amount: balance.hideDenom(true).trim(true).maxDecimals(6).toString(),
           fiatValue:
             value && value.toDec().gt(new Dec(0))
@@ -130,8 +131,6 @@ const AssetsTable: FunctionComponent<Props> = ({
     ["chainName", "chainId", "coinDenom", "amount", "fiatValue", "queryTags"]
   );
 
-  const [showAll, setShowAll] = useState(false);
-
   return (
     <section className="bg-surface">
       <div className="max-w-container mx-auto p-10">
@@ -196,7 +195,10 @@ const AssetsTable: FunctionComponent<Props> = ({
               className: "text-center max-w-[5rem]",
             },
           ]}
-          data={filteredSortedCells.map((cell) => [cell, cell, cell, cell])}
+          data={(showAllPools
+            ? filteredSortedCells
+            : filteredSortedCells.slice(0, 10)
+          ).map((cell) => [cell, cell, cell, cell])}
         />
         <div className="relative flex gap-2 justify-center">
           <ShowMoreButton
@@ -209,7 +211,7 @@ const AssetsTable: FunctionComponent<Props> = ({
               className={
                 hideZeroBalances
                   ? "after:bg-primary-200"
-                  : "after:!border-2 after:!border-white-full"
+                  : "after:border-2 after:border-white-full"
               }
               isOn={hideZeroBalances}
               onToggle={() => setHideZeroBalances(!hideZeroBalances)}
@@ -221,5 +223,3 @@ const AssetsTable: FunctionComponent<Props> = ({
     </section>
   );
 };
-
-export default AssetsTable;
