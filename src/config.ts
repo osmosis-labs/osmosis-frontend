@@ -2117,7 +2117,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://www.mintscan.io/konstellation/txs/{txHash}',
 	},
 	{
-		rpc: 'https://rpc-fetchhub.fetch.ai',
+		rpc: 'https://rpc-fetchhub.fetch.ai:443',
 		rest: 'https://rest-fetchhub.fetch.ai',
 		chainId: 'fetchhub-3',
 		chainName: 'Fetch Hub',
