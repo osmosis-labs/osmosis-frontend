@@ -818,12 +818,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'uumee',
 	},
-  {
-    counterpartyChainId: 'gravity-bridge-3',
+	{
+		counterpartyChainId: 'gravity-bridge-3',
 		sourceChannelId: 'channel-144',
 		destChannelId: 'channel-10',
 		coinMinimalDenom: 'ugraviton',
-  },
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -2160,7 +2160,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://www.mintscan.io/umee/txs/{txHash}',
 	},
-  {
+	{
 		rpc: 'https://gravitychain.io:26657',
 		rest: 'https://gravitychain.io:1317',
 		chainId: 'gravity-bridge-3',
