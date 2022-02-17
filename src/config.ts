@@ -813,6 +813,12 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'udarc',
 	},
 	{
+		counterpartyChainId: 'umee-1',
+		sourceChannelId: 'channel-184',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'uumee',
+	},
+	{
 		counterpartyChainId: 'gravity-bridge-3',
 		sourceChannelId: 'channel-144',
 		destChannelId: 'channel-10',
@@ -2118,6 +2124,43 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://www.mintscan.io/konstellation/txs/{txHash}',
 	},
 	{
+		rpc: 'https://rpc.aphrodite.main.network.umee.cc',
+		rest: 'https://api.aphrodite.main.network.umee.cc',
+		chainId: 'umee-1',
+		chainName: 'Umee',
+		stakeCurrency: {
+			coinDenom: 'UMEE',
+			coinMinimalDenom: 'uumee',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:uumee',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/umee.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('umee'),
+		currencies: [
+			{
+				coinDenom: 'UMEE',
+				coinMinimalDenom: 'uumee',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:uumee',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/umee.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'UMEE',
+				coinMinimalDenom: 'uumee',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:uumee',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/umee.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://www.mintscan.io/umee/txs/{txHash}',
+	},
+	{
 		rpc: 'https://gravitychain.io:26657',
 		rest: 'https://gravitychain.io:1317',
 		chainId: 'gravity-bridge-3',
@@ -2126,6 +2169,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'GRAV',
 			coinMinimalDenom: 'ugraviton',
 			coinDecimals: 6,
+			coinGeckoId: 'pool:ugraviton',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
 		},
 		bip44: {
@@ -2137,6 +2181,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'GRAV',
 				coinMinimalDenom: 'ugraviton',
 				coinDecimals: 6,
+				coinGeckoId: 'pool:ugraviton',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
 			},
 		],
@@ -2145,6 +2190,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'GRAV',
 				coinMinimalDenom: 'ugraviton',
 				coinDecimals: 6,
+				coinGeckoId: 'pool:ugraviton',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
 			},
 		],

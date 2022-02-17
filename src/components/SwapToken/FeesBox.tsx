@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { AppCurrency } from '@keplr-wallet/types';
-import { Dec, IntPretty } from '@keplr-wallet/unit';
+import { Dec, IntPretty, RatePretty } from '@keplr-wallet/unit';
 import { observer } from 'mobx-react-lite';
 import React, { HTMLAttributes } from 'react';
 import { CenterV } from 'src/components/layouts/Containers';
@@ -94,10 +94,7 @@ export const FeesBox = observer(function FeesBox({ config, ...props }: Props) {
 					size="sm"
 					weight="semiBold"
 					style={!isPoolSwapConfig(config) && config.showWarningOfSlippage ? { color: colorError } : undefined}>
-					{`${config.estimatedSlippage
-						.trim(true)
-						.maxDecimals(3)
-						.toString()}%`}
+					{new RatePretty(config.estimatedSlippage).moveDecimalPointLeft(2).toString()}
 				</Text>
 			</Section>
 		</FeeBoxContainer>
