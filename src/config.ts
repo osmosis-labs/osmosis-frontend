@@ -53,6 +53,7 @@ export const LockupAbledPoolIds: {
 	'602': true,
 	'604': true,
 	'611': true,
+	'612': true,
 	'613': true,
 	'617': true,
 	'618': true,
@@ -500,6 +501,12 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
 		},
 	],
+	'612': [
+		{
+			gaugeId: '2109',
+			denom: 'ibc/A0CC0CF735BFB30E730C70019D4218A1244FF383503FF7579C9201AB93CA9293',
+		},
+	],
 	'613': [
 		{
 			gaugeId: '1982',
@@ -813,11 +820,23 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'udarc',
 	},
 	{
+		counterpartyChainId: 'umee-1',
+		sourceChannelId: 'channel-184',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'uumee',
+	},
+	{
+		counterpartyChainId: 'gravity-bridge-3',
+		sourceChannelId: 'channel-144',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'ugraviton',
+	},
+  {
 		counterpartyChainId: 'fetchhub-3',
 		sourceChannelId: 'channel-175',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'afet',
-	},
+  },
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1339,6 +1358,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'NETA',
 				coinMinimalDenom: 'cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr:NETA',
 				coinDecimals: 6,
+				coinGeckoId: 'pool:neta',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/neta.svg',
 			},
 		],
@@ -2117,6 +2137,84 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://www.mintscan.io/konstellation/txs/{txHash}',
 	},
 	{
+		rpc: 'https://rpc.aphrodite.main.network.umee.cc',
+		rest: 'https://api.aphrodite.main.network.umee.cc',
+		chainId: 'umee-1',
+		chainName: 'Umee',
+		stakeCurrency: {
+			coinDenom: 'UMEE',
+			coinMinimalDenom: 'uumee',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:uumee',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/umee.png',
+		},
+		bip44: {
+			coinType: 118,
+		bech32Config: Bech32Address.defaultBech32Config('umee'),
+		currencies: [
+			{
+				coinDenom: 'UMEE',
+				coinMinimalDenom: 'uumee',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:uumee',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/umee.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'UMEE',
+				coinMinimalDenom: 'uumee',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:uumee',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/umee.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://www.mintscan.io/umee/txs/{txHash}',
+	},
+	{
+		rpc: 'https://gravitychain.io:26657',
+		rest: 'https://gravitychain.io:1317',
+		chainId: 'gravity-bridge-3',
+		chainName: 'Gravity Bridge',
+		stakeCurrency: {
+			coinDenom: 'GRAV',
+			coinMinimalDenom: 'ugraviton',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:ugraviton',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('gravity'),
+		currencies: [
+			{
+				coinDenom: 'GRAV',
+				coinMinimalDenom: 'ugraviton',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:ugraviton',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'GRAV',
+				coinMinimalDenom: 'ugraviton',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:ugraviton',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0,
+			average: 0,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/gravity-bridge/txs/{txHash}',
+	},
+  {
 		rpc: 'https://rpc-fetchhub.fetch.ai:443',
 		rest: 'https://rest-fetchhub.fetch.ai',
 		chainId: 'fetchhub-3',
@@ -2152,5 +2250,5 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/fetchai/txs/{txHash}',
-	},
+  },
 ];
