@@ -825,6 +825,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'uumee',
 	},
+	{
+		counterpartyChainId: 'gravity-bridge-3',
+		sourceChannelId: 'channel-144',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'ugraviton',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -2160,5 +2166,47 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://www.mintscan.io/umee/txs/{txHash}',
+	},
+	{
+		rpc: 'https://gravitychain.io:26657',
+		rest: 'https://gravitychain.io:1317',
+		chainId: 'gravity-bridge-3',
+		chainName: 'Gravity Bridge',
+		stakeCurrency: {
+			coinDenom: 'GRAV',
+			coinMinimalDenom: 'ugraviton',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:ugraviton',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('gravity'),
+		currencies: [
+			{
+				coinDenom: 'GRAV',
+				coinMinimalDenom: 'ugraviton',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:ugraviton',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'GRAV',
+				coinMinimalDenom: 'ugraviton',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:ugraviton',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0,
+			average: 0,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/gravity-bridge/txs/{txHash}',
 	},
 ];
