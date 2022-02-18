@@ -15,6 +15,9 @@ import {
   usePaginatedData,
 } from "../../hooks/data";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { useState } from "react";
+
+const TVL_FILTER_THRESHOLD = 1000;
 
 const Pools: NextPage = observer(function () {
   const {
@@ -75,13 +78,12 @@ const Pools: NextPage = observer(function () {
     1
   );
 
-  const allPoolsPerPage = queryOsmosis.queryGammPools.getAllPools();
+  const allPools = queryOsmosis.queryGammPools.getAllPools();
 
   const queryImperator = queriesImperatorStore.get();
-
   const allPoolsWithMetric = queryImperator.queryGammPoolMetrics
     .getPoolsWithMetric(
-      allPoolsPerPage,
+      allPools,
       priceStore,
       priceStore.getFiatCurrency("usd")!
     )
@@ -92,11 +94,17 @@ const Pools: NextPage = observer(function () {
           ?.myLiquidity ||
         new PricePretty(priceStore.getFiatCurrency("usd")!, new Dec(0)),
     }));
+  const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(true);
+  const tvlFilteredPools = isPoolTvlFiltered
+    ? allPoolsWithMetric.filter((poolWithMetric) =>
+        poolWithMetric.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
+      )
+    : allPoolsWithMetric;
 
-  const [query, setQuery, filteredFruits] = useFilteredData(
-    allPoolsWithMetric,
-    ["pool.id", "pool.poolAssets.amount.currency.coinDenom"]
-  );
+  const [query, setQuery, filteredPools] = useFilteredData(tvlFilteredPools, [
+    "pool.id",
+    "pool.poolAssets.amount.currency.coinDenom",
+  ]);
   const [
     sortKeyPath,
     setSortKeyPath,
@@ -104,7 +112,7 @@ const Pools: NextPage = observer(function () {
     setSortDirection,
     toggleSortDirection,
     sortedAllPoolsWithMetric,
-  ] = useSortedData(filteredFruits);
+  ] = useSortedData(filteredPools);
   const [page, setPage, minPage, numPages, allPoolsPages] = usePaginatedData(
     sortedAllPoolsWithMetric,
     10
@@ -334,8 +342,7 @@ const Pools: NextPage = observer(function () {
             rowDefs={tableRows}
             data={tableData}
           />
-
-          <div className="flex place-content-around">
+          <div className="relative flex place-content-around">
             <PageList
               currentValue={page}
               max={numPages}
@@ -343,6 +350,19 @@ const Pools: NextPage = observer(function () {
               onInput={setPage}
               editField
             />
+            <label
+              htmlFor="show-all-pools"
+              className="absolute right-2 bottom-1 text-base flex items-center"
+              onClick={() => setIsPoolTvlFiltered(!isPoolTvlFiltered)}
+            >
+              <input
+                className="mr-2"
+                id="show-all-pools"
+                type="checkbox"
+                checked={isPoolTvlFiltered}
+              />
+              Show pools less then $1,000 TVL
+            </label>
           </div>
         </div>
       </section>

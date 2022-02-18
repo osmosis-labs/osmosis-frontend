@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useState } from "react";
 
 /**
@@ -17,6 +18,13 @@ export function usePaginatedData<TData>(
   const [page, setPage] = useState(0);
   const curPageStart = page * pageSize;
   const maxPages = Math.ceil(data.length / pageSize);
+
+  useEffect(() => {
+    if (page + 1 > maxPages) {
+      setPage(maxPages - 1);
+    }
+  }, [maxPages]);
+
   return [
     Math.min(page + 1, maxPages),
     (page: number) => setPage(page - 1),
