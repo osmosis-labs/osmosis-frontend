@@ -5,9 +5,11 @@ import { BaseCell } from "..";
 import { useStore } from "../../../stores";
 import { useDeterministicIntegerFromString } from "../../../hooks";
 import { PoolAssetsIcon } from "../../assets";
+import { PricePretty } from "@keplr-wallet/unit";
 
-export interface PoolCompositionCell {
+export interface PoolCompositionCell extends Omit<BaseCell, "value"> {
   poolId: string;
+  value: PricePretty;
 }
 
 /** Displays pool composition as a cell in a table.
@@ -15,7 +17,7 @@ export interface PoolCompositionCell {
  *  Accepts the base hover flag.
  */
 export const PoolCompositionCell: FunctionComponent<
-  Partial<BaseCell & PoolCompositionCell>
+  Partial<PoolCompositionCell>
 > = ({ value, rowHovered, poolId }) => {
   const { queriesOsmosisStore, chainStore } = useStore();
 
@@ -56,7 +58,7 @@ export const PoolCompositionCell: FunctionComponent<
           />
         </div>
       ) : (
-        <span>{value ?? "No pool"}</span>
+        <span>{value?.toString() ?? "No pool"}</span>
       )}
     </React.Fragment>
   );

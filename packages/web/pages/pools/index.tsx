@@ -4,11 +4,13 @@ import { useStore } from "../../stores";
 import { PoolCard } from "../../components/cards";
 import { Overview } from "../../components/overview";
 import { LeftTime } from "../../components/left-time";
-import { Table, BaseCell, ColumnDef, RowDef } from "../../components/table";
+import { Table, PoolTable, ColumnDef, RowDef } from "../../components/table";
 
 import { PoolCompositionCell } from "../../components/table/cells";
-import { SortDirection } from "../../components/types";
-import { useState } from "react";
+import { SearchBox } from "../../components/input";
+import { MenuOption, SortMenu } from "../../components/control";
+import { useFilteredData, useSortedData } from "../../hooks/data";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 
 const Pools: NextPage = observer(function () {
   const {
@@ -24,9 +26,43 @@ const Pools: NextPage = observer(function () {
   const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
   const account = accountStore.getAccount(chainInfo.chainId);
 
-  const myPools = queryOsmosis.queryGammPoolShare.getOwnPools(
+  const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
     account.bech32Address
   );
+  const myPools = myPoolIds.map((poolId) => {
+    const pool = queryOsmosis.queryGammPools.getPool(poolId);
+    if (pool) {
+      const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
+        pool.id,
+        priceStore,
+        priceStore.getFiatCurrency("usd")!
+      );
+      const poolLiquidity = pool.computeTotalValueLocked(
+        priceStore,
+        priceStore.getFiatCurrency("usd")!
+      );
+      const myLiquidity = poolLiquidity.mul(
+        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+          account.bech32Address,
+          poolId
+        )
+      );
+      const myBonded = queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
+        account.bech32Address,
+        pool.id,
+        poolLiquidity,
+        priceStore.getFiatCurrency("usd")!
+      );
+
+      return {
+        pool,
+        apr,
+        myLiquidity,
+        poolLiquidity,
+        myBonded,
+      };
+    }
+  });
 
   const top3Pools = queryOsmosis.queryGammPools.getPoolsDescendingOrderTVL(
     priceStore,
@@ -45,49 +81,117 @@ const Pools: NextPage = observer(function () {
 
   const queryImperator = queriesImperatorStore.get();
 
-  const allPoolsWithMetric =
-    queryImperator.queryGammPoolMetrics.getPoolsWithMetric(
+  const allPoolsWithMetric = queryImperator.queryGammPoolMetrics
+    .getPoolsWithMetric(
       allPoolsPerPage,
       priceStore,
       priceStore.getFiatCurrency("usd")!
-    );
+    )
+    .map((poolWithMetric) => ({
+      ...poolWithMetric,
+      myLiquidity:
+        myPools.find((myPool) => myPool?.pool.id === poolWithMetric.pool.id)
+          ?.myLiquidity ||
+        new PricePretty(priceStore.getFiatCurrency("usd")!, new Dec(0)),
+    }));
 
-  const [sortDirection, setSortDirection] = useState<SortDirection | undefined>(
-    undefined
+  const [query, setQuery, filteredFruits] = useFilteredData(
+    allPoolsWithMetric,
+    ["pool.id", "pool.poolAssets.amount.currency.coinDenom"]
   );
 
-  const tableCols: ColumnDef<BaseCell & PoolCompositionCell>[] = [
+  const [
+    sortKeyPath,
+    setSortKeyPath,
+    sortDirection,
+    setSortDirection,
+    toggleSortDirection,
+    sortedAllPoolsWithMetric,
+  ] = useSortedData(filteredFruits);
+
+  const tableCols: (ColumnDef<PoolCompositionCell> & MenuOption)[] = [
     {
-      display: "Pool Name",
+      id: "pool.id",
+      display: "Pool ID/Tokens",
       displayClassName: "!pl-[5.25rem]",
-      sort: {
-        currentDirection: sortDirection,
-        onClickHeader: () =>
-          setSortDirection(
-            sortDirection === "ascending" ? "descending" : "ascending"
-          ),
-      },
+      sort:
+        sortKeyPath === "pool.id"
+          ? {
+              currentDirection: sortDirection,
+              onClickHeader: toggleSortDirection,
+            }
+          : {
+              onClickHeader: () => {
+                setSortKeyPath("pool.id");
+                setSortDirection("ascending");
+              },
+            },
       displayCell: PoolCompositionCell,
     },
     {
+      id: "liquidity",
       display: "Liquidity",
       infoTooltip: "This is liquidity",
-      sort: {
-        currentDirection: sortDirection,
-        onClickHeader: () =>
-          setSortDirection(
-            sortDirection === "ascending" ? "descending" : "ascending"
-          ),
-      },
+      sort:
+        sortKeyPath === "liquidity"
+          ? {
+              currentDirection: sortDirection,
+              onClickHeader: toggleSortDirection,
+            }
+          : {
+              onClickHeader: () => {
+                setSortKeyPath("liquidity");
+                setSortDirection("ascending");
+              },
+            },
     },
     {
+      id: "volume24h",
       display: "Volume (24H)",
+      sort:
+        sortKeyPath === "volume24h"
+          ? {
+              currentDirection: sortDirection,
+              onClickHeader: toggleSortDirection,
+            }
+          : {
+              onClickHeader: () => {
+                setSortKeyPath("volume24h");
+                setSortDirection("ascending");
+              },
+            },
     },
     {
+      id: "fees7d",
       display: "Fees (7D)",
+      sort:
+        sortKeyPath === "fees7d"
+          ? {
+              currentDirection: sortDirection,
+              onClickHeader: toggleSortDirection,
+            }
+          : {
+              onClickHeader: () => {
+                setSortKeyPath("fees7d");
+                setSortDirection("ascending");
+              },
+            },
     },
     {
+      id: "myLiquidity",
       display: "My Liquidity",
+      sort:
+        sortKeyPath === "myLiquidity"
+          ? {
+              currentDirection: sortDirection,
+              onClickHeader: toggleSortDirection,
+            }
+          : {
+              onClickHeader: () => {
+                setSortKeyPath("myLiquidity");
+                setSortDirection("ascending");
+              },
+            },
     },
   ];
 
@@ -99,14 +203,14 @@ const Pools: NextPage = observer(function () {
     ...baseRow,
     onClick: (i) => console.log(i),
   }));
-  const tableData: Partial<BaseCell & PoolCompositionCell>[][] =
-    allPoolsWithMetric.map((poolWithMetric) => {
+  const tableData: Partial<PoolCompositionCell>[][] =
+    sortedAllPoolsWithMetric.map((poolWithMetric) => {
       return [
         { poolId: poolWithMetric.pool.id },
-        { value: poolWithMetric.liqudity },
+        { value: poolWithMetric.liquidity },
         { value: poolWithMetric.volume24h },
         { value: poolWithMetric.fees7d },
-        { value: "not yet" },
+        { value: poolWithMetric.myLiquidity },
       ];
     });
   return (
@@ -126,46 +230,28 @@ const Pools: NextPage = observer(function () {
         <div className="max-w-container mx-auto p-10 pb-[3.75rem]">
           <h5>My Pools</h5>
           <div className="mt-5 grid grid-cols-3 gap-10">
-            {myPools.map((poolId) => {
-              const pool = queryOsmosis.queryGammPools.getPool(poolId);
-              if (pool) {
-                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
-                  pool.id,
-                  priceStore,
-                  priceStore.getFiatCurrency("usd")!
-                );
-                const poolLiquidity = pool.computeTotalValueLocked(
-                  priceStore,
-                  priceStore.getFiatCurrency("usd")!
-                );
-                const bonded =
-                  queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
-                    account.bech32Address,
-                    pool.id,
-                    poolLiquidity,
-                    priceStore.getFiatCurrency("usd")!
-                  );
-
+            {myPools.map((myPool) => {
+              if (myPool) {
                 return (
                   <PoolCard
-                    key={pool.id}
-                    pool={pool}
+                    key={myPool.pool.id}
+                    pool={myPool.pool}
                     poolMetrics={[
                       {
                         label: "APR",
-                        value: `${apr.toString()}%`,
+                        value: `${myPool.apr.toString()}%`,
                         isLoading:
                           queryOsmosis.queryIncentivizedPools.isAprFetching,
                       },
                       {
                         label: "Pool Liquidity",
-                        value: poolLiquidity.toString(),
-                        isLoading: poolLiquidity.toDec().isZero(),
+                        value: myPool.poolLiquidity.toString(),
+                        isLoading: myPool.poolLiquidity.toDec().isZero(),
                       },
                       {
                         label: "Bonded",
-                        value: bonded.toString(),
-                        isLoading: poolLiquidity.toDec().isZero(),
+                        value: myPool.myBonded.toString(),
+                        isLoading: myPool.poolLiquidity.toDec().isZero(),
                       },
                     ]}
                   />
@@ -223,15 +309,24 @@ const Pools: NextPage = observer(function () {
         <div className="max-w-container mx-auto p-10 py-[3.75rem]">
           <div className="flex items-center justify-between">
             <h5>All Pools</h5>
-            <label
-              htmlFor="show-all-pools"
-              className="text-base flex items-center"
-            >
-              <input className="mr-2" id="show-all-pools" type="checkbox" />
-              Show pools less then $1,000 TVL
-            </label>
+            <div className="flex gap-8">
+              <SearchBox
+                currentValue={query}
+                onInput={setQuery}
+                placeholder="Search by pool id or tokens"
+                className="!w-64"
+              />
+              <SortMenu
+                options={tableCols}
+                selectedOptionId={sortKeyPath}
+                onSelect={(id) =>
+                  id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id)
+                }
+                onToggleSortDirection={toggleSortDirection}
+              />
+            </div>
           </div>
-          <Table
+          <PoolTable
             className="mt-5 w-full"
             columnDefs={tableCols}
             rowDefs={tableRows}

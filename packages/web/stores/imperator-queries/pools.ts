@@ -25,9 +25,9 @@ interface PoolMetric {
 
 interface ObservablePoolWithMetric {
   pool: ObservablePool;
-  liqudity: string;
-  volume24h: string;
-  fees7d: string;
+  liquidity: PricePretty;
+  volume24h: PricePretty;
+  fees7d: PricePretty;
 }
 
 export class ObservableImperatorQuery<
@@ -71,26 +71,27 @@ export class ObservableImperatorQueryPoolMetrics extends ObservableImperatorQuer
           (poolMetric) => poolMetric.pool_id === pool.id
         );
 
-        const liqudity = pool
-          .computeTotalValueLocked(priceStore, fiatCurrency)
-          .toString();
+        const liquidity = pool.computeTotalValueLocked(
+          priceStore,
+          fiatCurrency
+        );
 
-        const volume24h = poolMetric?.volume_24h
-          ? new PricePretty(
-              fiatCurrency,
-              new Dec(poolMetric.volume_24h.toFixed(10))
-            ).toString()
-          : "...";
-        const fees7d = poolMetric?.fees_spent_7d
-          ? new PricePretty(
-              fiatCurrency,
-              new Dec(poolMetric.fees_spent_7d.toFixed(10))
-            ).toString()
-          : "...";
+        const volume24h = new PricePretty(
+          fiatCurrency,
+          poolMetric?.volume_24h
+            ? new Dec(poolMetric.volume_24h.toFixed(10))
+            : new Dec(0)
+        );
+        const fees7d = new PricePretty(
+          fiatCurrency,
+          poolMetric?.fees_spent_7d
+            ? new Dec(poolMetric.fees_spent_7d.toFixed(10))
+            : new Dec(0)
+        );
 
         return {
           pool,
-          liqudity,
+          liquidity,
           volume24h,
           fees7d,
         };
