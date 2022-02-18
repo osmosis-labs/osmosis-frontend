@@ -8,8 +8,12 @@ import { Table, PoolTable, ColumnDef, RowDef } from "../../components/table";
 
 import { PoolCompositionCell } from "../../components/table/cells";
 import { SearchBox } from "../../components/input";
-import { MenuOption, SortMenu } from "../../components/control";
-import { useFilteredData, useSortedData } from "../../hooks/data";
+import { MenuOption, PageList, SortMenu } from "../../components/control";
+import {
+  useFilteredData,
+  useSortedData,
+  usePaginatedData,
+} from "../../hooks/data";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 
 const Pools: NextPage = observer(function () {
@@ -71,13 +75,7 @@ const Pools: NextPage = observer(function () {
     1
   );
 
-  const allPoolsPerPage =
-    queryOsmosis.queryGammPools.getPoolsDescendingOrderTVL(
-      priceStore,
-      priceStore.getFiatCurrency("usd")!,
-      10,
-      1
-    );
+  const allPoolsPerPage = queryOsmosis.queryGammPools.getAllPools();
 
   const queryImperator = queriesImperatorStore.get();
 
@@ -99,7 +97,6 @@ const Pools: NextPage = observer(function () {
     allPoolsWithMetric,
     ["pool.id", "pool.poolAssets.amount.currency.coinDenom"]
   );
-
   const [
     sortKeyPath,
     setSortKeyPath,
@@ -108,6 +105,10 @@ const Pools: NextPage = observer(function () {
     toggleSortDirection,
     sortedAllPoolsWithMetric,
   ] = useSortedData(filteredFruits);
+  const [page, setPage, minPage, numPages, allPoolsPages] = usePaginatedData(
+    sortedAllPoolsWithMetric,
+    10
+  );
 
   const tableCols: (ColumnDef<PoolCompositionCell> & MenuOption)[] = [
     {
@@ -203,8 +204,8 @@ const Pools: NextPage = observer(function () {
     ...baseRow,
     onClick: (i) => console.log(i),
   }));
-  const tableData: Partial<PoolCompositionCell>[][] =
-    sortedAllPoolsWithMetric.map((poolWithMetric) => {
+  const tableData: Partial<PoolCompositionCell>[][] = allPoolsPages.map(
+    (poolWithMetric) => {
       return [
         { poolId: poolWithMetric.pool.id },
         { value: poolWithMetric.liquidity },
@@ -212,7 +213,8 @@ const Pools: NextPage = observer(function () {
         { value: poolWithMetric.fees7d },
         { value: poolWithMetric.myLiquidity },
       ];
-    });
+    }
+  );
   return (
     <main>
       <Overview
@@ -332,6 +334,16 @@ const Pools: NextPage = observer(function () {
             rowDefs={tableRows}
             data={tableData}
           />
+
+          <div className="flex place-content-around">
+            <PageList
+              currentValue={page}
+              max={numPages}
+              min={minPage}
+              onInput={setPage}
+              editField
+            />
+          </div>
         </div>
       </section>
     </main>
