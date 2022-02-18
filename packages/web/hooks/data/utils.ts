@@ -1,3 +1,4 @@
+import { PricePretty } from "@keplr-wallet/unit";
 import {
   isDefined,
   isString,
@@ -9,7 +10,7 @@ import {
 
 // adapted from https://github.com/krisk/Fuse/tree/master/src/helpers
 export default function get(obj: any, path: any) {
-  const list: string[] = [];
+  const list: string[] | PricePretty[] = [];
   let arr = false;
 
   const deepGet = (obj: any, path: any, index: number) => {
@@ -30,12 +31,7 @@ export default function get(obj: any, path: any) {
 
       // If we're at the last value in the path, and if it's a string/number/bool,
       // add it to the list
-      if (
-        index === path.length - 1 &&
-        (isString(value) || isNumber(value) || isBoolean(value))
-      ) {
-        list.push(toString(value));
-      } else if (isArray(value)) {
+      if (isArray(value)) {
         arr = true;
         // Search each item in the array.
         for (let i = 0, len = value.length; i < len; i += 1) {
@@ -44,6 +40,8 @@ export default function get(obj: any, path: any) {
       } else if (path.length) {
         // An object. Recurse further.
         deepGet(value, path, index + 1);
+      } else {
+        list.push(value);
       }
     }
   };

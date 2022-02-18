@@ -1,3 +1,5 @@
+import { PricePretty } from "@keplr-wallet/unit";
+
 /** Object instance capable of processing memoized data via user input. */
 export interface DataProcessor<TData> {
   process: (input: string) => TData;

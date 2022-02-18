@@ -1,3 +1,4 @@
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DataProcessor } from "./types";
 import get from "./utils";
 
@@ -12,11 +13,21 @@ export class DataSorter<TData> implements DataProcessor<TData[]> {
   /** Key is a path of arbitrary length. Example: `"attributes.color"` or `"attributes.color.shade"` */
   process(key: string) {
     this._data.sort((a: any, b: any) => {
-      let aData: string | string[] | number = get(a, key);
-      let bData: string | string[] | number = get(b, key);
+      let aData: string | string[] | number | PricePretty | PricePretty[] = get(
+        a,
+        key
+      );
+      let bData: string | string[] | number | PricePretty | PricePretty[] = get(
+        b,
+        key
+      );
 
       // try to sort numerically
-      if (typeof aData === "string" && typeof bData === "string") {
+      if (aData instanceof PricePretty && bData instanceof PricePretty) {
+        if (bData.toDec().gt(aData.toDec())) return -1;
+        if (bData.toDec().lt(aData.toDec())) return 1;
+        return 0;
+      } else if (typeof aData === "string" && typeof bData === "string") {
         const aDataNumerical = parseFloat(aData);
         const bDataNumerical = parseFloat(bData);
 

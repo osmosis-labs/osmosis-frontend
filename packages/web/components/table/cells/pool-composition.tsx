@@ -3,7 +3,6 @@ import React, { FunctionComponent } from "react";
 import classNames from "classnames";
 import { BaseCell } from "..";
 import { useStore } from "../../../stores";
-import { useDeterministicIntegerFromString } from "../../../hooks";
 import { PoolAssetsIcon } from "../../assets";
 import { PricePretty } from "@keplr-wallet/unit";
 
