@@ -2219,7 +2219,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		rpc: 'https://rpc-fetchhub.fetch.ai:443',
 		rest: 'https://rest-fetchhub.fetch.ai',
 		chainId: 'fetchhub-3',
-		chainName: 'Fetch Hub',
+		chainName: 'Fetch.ai',
 		stakeCurrency: {
 			coinDenom: 'FET',
 			coinMinimalDenom: 'afet',
