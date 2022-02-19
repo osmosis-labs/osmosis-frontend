@@ -735,9 +735,9 @@ export const IBCAssetInfos: {
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	{
-		rpc: 'http://165.227.122.46:26657/',
-		rest: 'http://165.227.122.46:1317/',
-		chainId: 'osmo-testnet-1',
+		rpc: 'https://rpc.osmo-test.ccvalidators.com',
+		rest: 'https://lcd.osmo-test.ccvalidators.com',
+		chainId: 'osmo-test-3',
 		chainName: 'Osmosis',
 		stakeCurrency: {
 			coinDenom: 'OSMO',
