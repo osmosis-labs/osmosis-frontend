@@ -1203,7 +1203,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		rpc: 'https://rpc-crypto-org.keplr.app/',
 		rest: 'https://lcd-crypto-org.keplr.app/',
 		chainId: 'crypto-org-chain-mainnet-1',
-		chainName: 'Crypto.org',
+		chainName: 'Cronos',
 		stakeCurrency: {
 			coinDenom: 'CRO',
 			coinMinimalDenom: 'basecro',
