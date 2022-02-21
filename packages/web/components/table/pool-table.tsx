@@ -3,10 +3,10 @@ import React, { PropsWithoutRef, useState } from "react";
 import classNames from "classnames";
 import Tippy from "@tippyjs/react";
 import { replaceAt } from "../utils";
-import { TableProps } from "./base";
+import { BaseCell, TableProps } from "./base";
 import { PoolCompositionCell } from "./cells/pool-composition";
 
-export const PoolTable = <TCell extends PoolCompositionCell>({
+export const PoolTable = <TCell extends PoolCompositionCell | BaseCell>({
   columnDefs,
   rowDefs,
   data,

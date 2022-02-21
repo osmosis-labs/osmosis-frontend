@@ -1,2 +1,2 @@
 export * from "./base";
-export * from "./pool";
+export * from "./pool-table";

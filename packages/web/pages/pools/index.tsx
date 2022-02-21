@@ -19,16 +19,16 @@ import {
   useSortedData,
   usePaginatedData,
 } from "../../hooks/data";
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { useEffect, useMemo, useState } from "react";
 import { ObservablePool } from "@osmosis-labs/stores";
+import { ExtraGaugeInPool } from "../../config";
+import { useAllPoolsTable } from "../../hooks/use-all-pools-table";
+import { useExternalIncentivizedPoolsTable } from "../../hooks/use-external-incentivized-pools-table";
+import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
+import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
 
 const TVL_FILTER_THRESHOLD = 1000;
-
-const allPoolsMenuOptions = [
-  { id: "incentivized-pools", display: "Incentivized Pools" },
-  { id: "all-pools", display: "All Pools" },
-];
 
 const Pools: NextPage = observer(function () {
   const {
@@ -38,10 +38,6 @@ const Pools: NextPage = observer(function () {
     queriesOsmosisStore,
     queriesImperatorStore,
   } = useStore();
-  const [activeAllPoolsOptionId, setActiveAllPoolsOptionId] = useState(
-    allPoolsMenuOptions[1].id
-  );
-  const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(true);
 
   const chainInfo = chainStore.getChain("osmosis");
   const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
@@ -111,7 +107,7 @@ const Pools: NextPage = observer(function () {
   );
   const allPoolsWithMetric = queryImperator.queryGammPoolMetrics
     .makePoolsWithMetric(
-      activeAllPoolsOptionId === "all-pools" ? allPools : incentivizedPools,
+      allPools,
       priceStore,
       priceStore.getFiatCurrency("usd")!
     )
@@ -123,139 +119,77 @@ const Pools: NextPage = observer(function () {
         new PricePretty(priceStore.getFiatCurrency("usd")!, new Dec(0)),
     }));
 
-  const tvlFilteredPools = isPoolTvlFiltered
-    ? allPoolsWithMetric.filter((poolWithMetric) =>
-        poolWithMetric.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
-      )
-    : allPoolsWithMetric;
+  const extraIncentivizedPools = Object.keys(ExtraGaugeInPool)
+    .map((poolId: string) => {
+      const pool = queryOsmosis.queryGammPools.getPool(poolId);
+      if (pool) {
+        return pool;
+      }
+    })
+    .filter((pool: ObservablePool | undefined): pool is ObservablePool => {
+      if (!pool) {
+        return false;
+      }
 
-  const [query, setQuery, filteredPools] = useFilteredData(tvlFilteredPools, [
-    "pool.id",
-    "pool.poolAssets.amount.currency.coinDenom",
-  ]);
-  const [
-    sortKeyPath,
-    setSortKeyPath,
-    sortDirection,
-    setSortDirection,
-    toggleSortDirection,
-    sortedAllPoolsWithMetric,
-  ] = useSortedData(filteredPools);
-  const [page, setPage, minPage, numPages, allPoolsPages] = usePaginatedData(
-    sortedAllPoolsWithMetric,
-    10
-  );
+      const inner = ExtraGaugeInPool[pool.id];
+      const data = Array.isArray(inner) ? inner : [inner];
 
-  const tableCols: (ColumnDef<PoolCompositionCell> & MenuOption)[] = [
-    {
-      id: "pool.id",
-      display: "Pool ID/Tokens",
-      displayClassName: "!pl-[5.25rem]",
-      sort:
-        sortKeyPath === "pool.id"
-          ? {
-              currentDirection: sortDirection,
-              onClickHeader: toggleSortDirection,
-            }
-          : {
-              onClickHeader: () => {
-                setSortKeyPath("pool.id");
-                setSortDirection("ascending");
-              },
-            },
-      displayCell: PoolCompositionCell,
-    },
-    {
-      id: "liquidity",
-      display: "Liquidity",
-      infoTooltip: "This is liquidity",
-      sort:
-        sortKeyPath === "liquidity"
-          ? {
-              currentDirection: sortDirection,
-              onClickHeader: toggleSortDirection,
-            }
-          : {
-              onClickHeader: () => {
-                setSortKeyPath("liquidity");
-                setSortDirection("ascending");
-              },
-            },
-    },
-    {
-      id: "volume24h",
-      display: "Volume (24H)",
-      sort:
-        sortKeyPath === "volume24h"
-          ? {
-              currentDirection: sortDirection,
-              onClickHeader: toggleSortDirection,
-            }
-          : {
-              onClickHeader: () => {
-                setSortKeyPath("volume24h");
-                setSortDirection("ascending");
-              },
-            },
-    },
-    {
-      id: "fees7d",
-      display: "Fees (7D)",
-      sort:
-        sortKeyPath === "fees7d"
-          ? {
-              currentDirection: sortDirection,
-              onClickHeader: toggleSortDirection,
-            }
-          : {
-              onClickHeader: () => {
-                setSortKeyPath("fees7d");
-                setSortDirection("ascending");
-              },
-            },
-    },
-    {
-      id: "myLiquidity",
-      display: "My Liquidity",
-      sort:
-        sortKeyPath === "myLiquidity"
-          ? {
-              currentDirection: sortDirection,
-              onClickHeader: toggleSortDirection,
-            }
-          : {
-              onClickHeader: () => {
-                setSortKeyPath("myLiquidity");
-                setSortDirection("ascending");
-              },
-            },
-    },
-  ];
+      if (data.length === 0) {
+        return false;
+      }
+      const gaugeIds = data.map((d) => d.gaugeId);
+      const gauges = gaugeIds.map((gaugeId) =>
+        queryOsmosis.queryGauge.get(gaugeId)
+      );
 
-  useEffect(() => {
-    setSortKeyPath("liquidity");
-    setSortDirection("descending");
-  }, []);
+      let maxRemainingEpoch = 0;
+      for (const gauge of gauges) {
+        if (maxRemainingEpoch < gauge.remainingEpoch) {
+          maxRemainingEpoch = gauge.remainingEpoch;
+        }
+      }
 
-  const baseRow: RowDef = {
-    makeHoverClass: () => "text-secondary-200",
-  };
+      return maxRemainingEpoch > 0;
+    });
+  const extraIncentivizedPoolsWithMetric = queryImperator.queryGammPoolMetrics
+    .makePoolsWithMetric(
+      extraIncentivizedPools,
+      priceStore,
+      priceStore.getFiatCurrency("usd")!
+    )
+    .map((poolWithMetric) => {
+      const inner = ExtraGaugeInPool[poolWithMetric.pool.id];
+      const data = Array.isArray(inner) ? inner : [inner];
+      const gaugeIds = data.map((d) => d.gaugeId);
+      const gauges = gaugeIds.map((gaugeId) => {
+        return queryOsmosis.queryGauge.get(gaugeId);
+      });
+      const incentiveDenom = data[0].denom;
+      const currency = chainStore
+        .getChain(chainInfo.chainId)
+        .forceFindCurrency(incentiveDenom);
+      let sumRemainingBonus: CoinPretty = new CoinPretty(currency, new Dec(0));
+      let maxRemainingEpoch = 0;
+      for (const gauge of gauges) {
+        sumRemainingBonus = sumRemainingBonus.add(
+          gauge.getRemainingCoin(currency)
+        );
 
-  const tableRows: RowDef[] = allPoolsWithMetric.map(() => ({
-    ...baseRow,
-    onClick: (i) => console.log(i),
-  }));
-  const tableData: Partial<PoolCompositionCell>[][] = allPoolsPages.map(
-    (poolWithMetric) => {
-      return [
-        { poolId: poolWithMetric.pool.id },
-        { value: poolWithMetric.liquidity },
-        { value: poolWithMetric.volume24h },
-        { value: poolWithMetric.fees7d },
-        { value: poolWithMetric.myLiquidity },
-      ];
-    }
-  );
+        if (gauge.remainingEpoch > maxRemainingEpoch) {
+          maxRemainingEpoch = gauge.remainingEpoch;
+        }
+      }
+
+      return {
+        ...poolWithMetric,
+        epochsRemaining: maxRemainingEpoch,
+        myLiquidity:
+          myPools.find((myPool) => myPool?.pool.id === poolWithMetric.pool.id)
+            ?.myLiquidity ||
+          new PricePretty(priceStore.getFiatCurrency("usd")!, new Dec(0)),
+      };
+    });
+
   return (
     <main>
       <Overview
@@ -315,7 +249,6 @@ const Pools: NextPage = observer(function () {
                   priceStore,
                   priceStore.getFiatCurrency("usd")!
                 );
-
                 const poolLiquidity = pool.computeTotalValueLocked(
                   priceStore,
                   priceStore.getFiatCurrency("usd")!
@@ -350,58 +283,17 @@ const Pools: NextPage = observer(function () {
       </section>
       <section className="bg-surface shadow-separator">
         <div className="max-w-container mx-auto p-10 py-[3.75rem]">
-          <h5>All Pools</h5>
-          <div className="mt-5 flex items-center justify-between">
-            <MenuToggle
-              options={allPoolsMenuOptions}
-              selectedOptionId={activeAllPoolsOptionId}
-              onSelect={(optionId) => setActiveAllPoolsOptionId(optionId)}
-            />
-            <div className="flex gap-8">
-              <SearchBox
-                currentValue={query}
-                onInput={setQuery}
-                placeholder="Search by pool id or tokens"
-                className="!w-64"
-              />
-              <SortMenu
-                options={tableCols}
-                selectedOptionId={sortKeyPath}
-                onSelect={(id) =>
-                  id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id)
-                }
-                onToggleSortDirection={toggleSortDirection}
-              />
-            </div>
-          </div>
-          <PoolTable
-            className="mt-5 w-full"
-            columnDefs={tableCols}
-            rowDefs={tableRows}
-            data={tableData}
+          <AllPoolsTableSet
+            allPools={allPoolsWithMetric}
+            incentivizedPoolIds={incentivizedPoolIds}
           />
-          <div className="relative flex place-content-around">
-            <PageList
-              currentValue={page}
-              max={numPages}
-              min={minPage}
-              onInput={setPage}
-              editField
-            />
-            <label
-              htmlFor="show-all-pools"
-              className="absolute right-2 bottom-1 text-base flex items-center"
-              onClick={() => setIsPoolTvlFiltered(!isPoolTvlFiltered)}
-            >
-              <input
-                className="mr-2"
-                id="show-all-pools"
-                type="checkbox"
-                checked={isPoolTvlFiltered}
-              />
-              Show pools less then $1,000 TVL
-            </label>
-          </div>
+        </div>
+      </section>
+      <section className="bg-surface shadow-separator">
+        <div className="max-w-container mx-auto p-10 py-[3.75rem]">
+          <ExternalIncentivizedPoolsTableSet
+            externalIncentivizedPools={extraIncentivizedPoolsWithMetric}
+          />
         </div>
       </section>
     </main>

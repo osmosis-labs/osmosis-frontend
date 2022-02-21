@@ -23,11 +23,13 @@ interface PoolMetric {
   fees_percentage: number;
 }
 
-interface ObservablePoolWithMetric {
+export interface ObservablePoolWithMetric {
   pool: ObservablePool;
   liquidity: PricePretty;
   volume24h: PricePretty;
   fees7d: PricePretty;
+  myLiquidity?: PricePretty;
+  epochsRemaining: number;
 }
 
 export class ObservableImperatorQuery<

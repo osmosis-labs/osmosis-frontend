@@ -8,7 +8,7 @@ import { PricePretty } from "@keplr-wallet/unit";
 
 export interface PoolCompositionCell extends Omit<BaseCell, "value"> {
   poolId: string;
-  value: PricePretty;
+  value: PricePretty | string;
 }
 
 /** Displays pool composition as a cell in a table.
