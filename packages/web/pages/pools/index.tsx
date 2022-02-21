@@ -8,16 +8,27 @@ import { Table, PoolTable, ColumnDef, RowDef } from "../../components/table";
 
 import { PoolCompositionCell } from "../../components/table/cells";
 import { SearchBox } from "../../components/input";
-import { MenuOption, PageList, SortMenu } from "../../components/control";
+import {
+  MenuOption,
+  MenuToggle,
+  PageList,
+  SortMenu,
+} from "../../components/control";
 import {
   useFilteredData,
   useSortedData,
   usePaginatedData,
 } from "../../hooks/data";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { ObservablePool } from "@osmosis-labs/stores";
 
 const TVL_FILTER_THRESHOLD = 1000;
+
+const allPoolsMenuOptions = [
+  { id: "incentivized-pools", display: "Incentivized Pools" },
+  { id: "all-pools", display: "All Pools" },
+];
 
 const Pools: NextPage = observer(function () {
   const {
@@ -27,10 +38,14 @@ const Pools: NextPage = observer(function () {
     queriesOsmosisStore,
     queriesImperatorStore,
   } = useStore();
+  const [activeAllPoolsOptionId, setActiveAllPoolsOptionId] = useState(
+    allPoolsMenuOptions[1].id
+  );
+  const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(true);
 
   const chainInfo = chainStore.getChain("osmosis");
-
   const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
+  const queryImperator = queriesImperatorStore.get();
   const account = accountStore.getAccount(chainInfo.chainId);
 
   const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
@@ -79,11 +94,24 @@ const Pools: NextPage = observer(function () {
   );
 
   const allPools = queryOsmosis.queryGammPools.getAllPools();
-
-  const queryImperator = queriesImperatorStore.get();
+  const incentivizedPoolIds =
+    queryOsmosis.queryIncentivizedPools.incentivizedPools;
+  const incentivizedPools = useMemo(
+    () =>
+      allPools.reduce(
+        (incentivizedPools: ObservablePool[], pool: ObservablePool) => {
+          if (incentivizedPoolIds.some((poolId) => pool.id === poolId)) {
+            incentivizedPools.push(pool);
+          }
+          return incentivizedPools;
+        },
+        []
+      ),
+    [incentivizedPoolIds, allPools]
+  );
   const allPoolsWithMetric = queryImperator.queryGammPoolMetrics
-    .getPoolsWithMetric(
-      allPools,
+    .makePoolsWithMetric(
+      activeAllPoolsOptionId === "all-pools" ? allPools : incentivizedPools,
       priceStore,
       priceStore.getFiatCurrency("usd")!
     )
@@ -94,7 +122,7 @@ const Pools: NextPage = observer(function () {
           ?.myLiquidity ||
         new PricePretty(priceStore.getFiatCurrency("usd")!, new Dec(0)),
     }));
-  const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(true);
+
   const tvlFilteredPools = isPoolTvlFiltered
     ? allPoolsWithMetric.filter((poolWithMetric) =>
         poolWithMetric.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
@@ -203,6 +231,11 @@ const Pools: NextPage = observer(function () {
             },
     },
   ];
+
+  useEffect(() => {
+    setSortKeyPath("liquidity");
+    setSortDirection("descending");
+  }, []);
 
   const baseRow: RowDef = {
     makeHoverClass: () => "text-secondary-200",
@@ -317,8 +350,13 @@ const Pools: NextPage = observer(function () {
       </section>
       <section className="bg-surface shadow-separator">
         <div className="max-w-container mx-auto p-10 py-[3.75rem]">
-          <div className="flex items-center justify-between">
-            <h5>All Pools</h5>
+          <h5>All Pools</h5>
+          <div className="mt-5 flex items-center justify-between">
+            <MenuToggle
+              options={allPoolsMenuOptions}
+              selectedOptionId={activeAllPoolsOptionId}
+              onSelect={(optionId) => setActiveAllPoolsOptionId(optionId)}
+            />
             <div className="flex gap-8">
               <SearchBox
                 currentValue={query}

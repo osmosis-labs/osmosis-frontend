@@ -141,15 +141,17 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
 
       let pools = this.getAllPools();
 
-      pools = pools.sort((poolA: ObservablePool, poolB: ObservablePool) => {
-        const poolATvl = poolA
-          .computeTotalValueLocked(priceStore, fiatCurrency)
-          .toDec();
-        const poolBTvl = poolB
-          .computeTotalValueLocked(priceStore, fiatCurrency)
-          .toDec();
-        return poolATvl.gt(poolBTvl) ? -1 : 1;
-      });
+      pools = pools
+        .slice()
+        .sort((poolA: ObservablePool, poolB: ObservablePool) => {
+          const poolATvl = poolA
+            .computeTotalValueLocked(priceStore, fiatCurrency)
+            .toDec();
+          const poolBTvl = poolB
+            .computeTotalValueLocked(priceStore, fiatCurrency)
+            .toDec();
+          return poolATvl.gt(poolBTvl) ? -1 : 1;
+        });
 
       const offset = (page - 1) * itemsPerPage;
       return pools.slice(offset, offset + itemsPerPage);

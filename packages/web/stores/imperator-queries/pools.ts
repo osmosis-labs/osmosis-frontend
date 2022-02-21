@@ -51,9 +51,9 @@ export class ObservableImperatorQueryPoolMetrics extends ObservableImperatorQuer
     makeObservable(this);
   }
 
-  readonly getPoolsWithMetric = computedFn(
+  readonly makePoolsWithMetric = computedFn(
     (
-      allPools: ObservablePool[],
+      pools: ObservablePool[],
       priceStore: {
         calculatePrice(
           coin: CoinPretty,
@@ -66,7 +66,7 @@ export class ObservableImperatorQueryPoolMetrics extends ObservableImperatorQuer
         return [];
       }
 
-      return allPools.map((pool) => {
+      return pools.map((pool) => {
         const poolMetric = this.response?.data.data.find(
           (poolMetric) => poolMetric.pool_id === pool.id
         );

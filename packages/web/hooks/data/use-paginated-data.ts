@@ -20,7 +20,7 @@ export function usePaginatedData<TData>(
   const maxPages = Math.ceil(data.length / pageSize);
 
   useEffect(() => {
-    if (page + 1 > maxPages) {
+    if (maxPages > 0 && page + 1 > maxPages) {
       setPage(maxPages - 1);
     }
   }, [maxPages]);
