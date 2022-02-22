@@ -3,6 +3,7 @@ import { Dec, IntPretty } from '@keplr-wallet/unit';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useState } from 'react';
+import { Img } from 'src/components/common/Img';
 import { ButtonPrimary } from 'src/components/layouts/Buttons';
 import { CenterSelf, WellContainer } from 'src/components/layouts/Containers';
 import { TitleText, Text } from 'src/components/Texts';
@@ -38,15 +39,23 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const closeDialog = () => setIsDialogOpen(false);
 
+	// It can be modified
+	const isSuperfluidEnabled = poolId === '1';
+
 	return (
 		<>
 			<LiquidityMiningContainer>
 				<LockLpTokenDialog isOpen={isDialogOpen} close={closeDialog} poolId={poolId} />
 				<LiquidityMiningSummary>
 					<div>
-						<TitleText isMobileView={isMobileView} weight="semiBold">
-							Liquidity Mining
-						</TitleText>
+						<div className="pb-4 flex gap-3 items-center">
+							<TitleText isMobileView={isMobileView} pb={0} weight="semiBold">
+								Liquidity Mining
+							</TitleText>
+							{isSuperfluidEnabled && (
+								<button className="bg-sfs rounded-full px-4 py-1">Superfluid Staking Enabled</button>
+							)}
+						</div>
 						<Text isMobileView={isMobileView}>
 							Bond liquidity to various minimum unbonding period to earn
 							{!isMobileView ? <br /> : ' '}
@@ -121,6 +130,7 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 									.toString()}%`}
 								duration={lockableDuration.humanize()}
 								isMobileView={isMobileView}
+								isSuperfluidEnabled={i === lockableDurations.length - 1 && isSuperfluidEnabled}
 							/>
 						);
 					})}
@@ -140,22 +150,28 @@ const LockupBox: FunctionComponent<{
 	duration: string;
 	apy: string;
 	isMobileView: boolean;
-}> = ({ duration, apy, isMobileView }) => {
+	isSuperfluidEnabled?: boolean;
+}> = ({ duration, apy, isMobileView, isSuperfluidEnabled }) => {
 	return (
-		<WellContainer>
-			<TitleText isMobileView={isMobileView} weight="medium">
-				{duration} unbonding
-			</TitleText>
-			<Text isMobileView={isMobileView} color="gold" size="lg">
-				APR {apy}
-			</Text>
-		</WellContainer>
+		<div className={`w-full rounded-xl py-0.5 px-0.5 ${isSuperfluidEnabled ? 'bg-sfs' : 'bg-card'}`}>
+			<div className="rounded-xl bg-card py-4 px-5.5 md:py-5.5 md:px-7">
+				<div className="pb-4 flex items-center gap-2">
+					<TitleText isMobileView={isMobileView} pb={0} weight="medium">
+						{duration} unbonding
+					</TitleText>
+					{isSuperfluidEnabled && <Img src={'/public/assets/Icons/superfluid-osmo.svg'} />}
+				</div>
+				<Text isMobileView={isMobileView} color="gold" size="lg">
+					APR {apy}
+					{isSuperfluidEnabled && ` + 29%`}
+				</Text>
+			</div>
+		</div>
 	);
 };
 
 const LiquidityMiningContainer = styled(CenterSelf)`
 	padding: 20px 20px 28px;
-
 	@media (min-width: 768px) {
 		padding: 40px 0;
 	}
@@ -165,7 +181,6 @@ const LiquidityMiningSummary = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: 32px;
-
 	@media (min-width: 768px) {
 		flex-direction: row;
 		justify-content: space-between;
@@ -177,7 +192,6 @@ const AvailableLpColumn = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-item: flex-start;
-
 	@media (min-width: 768px) {
 		align-items: flex-end;
 	}
@@ -188,7 +202,6 @@ const LockDurationSection = styled.div`
 	display: flex;
 	flex-wrap: wrap;
 	gap: 16px;
-
 	@media (min-width: 768px) {
 		flex-wrap: nowrap;
 		gap: 36px;

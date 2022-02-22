@@ -16,6 +16,7 @@ const spacing = {
 	4: '16px',
 	4.5: '18px',
 	5: '20px',
+	5.5: '22px',
 	6: '24px',
 	7: '28px',
 	7.5: '30px',
@@ -179,6 +180,7 @@ module.exports = {
 			'gradients-sunset': 'linear-gradient(180deg, #FFBC00 0%, #FF8E00 100%)',
 			'gradients-orangeCoral': 'linear-gradient(180deg, #FF8200 0%, #FF2C00 100%)',
 			'gradients-pinky': 'linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)',
+			sfs: 'linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)',
 		},
 		spacing: {
 			...spacing,
