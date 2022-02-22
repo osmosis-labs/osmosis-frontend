@@ -58,7 +58,7 @@ export const SortMenu: FunctionComponent<Props> = ({
             }
           }}
         >
-          <span className="block m-auto mx-2 leading-loose text-secondary-200 min-w-[60px] max-w-[100px] select-none text-center text-ellipsis overflow-hidden">
+          <span className="block m-auto mx-2 leading-loose text-secondary-200 min-w-[60px] max-w-[100px] select-none text-center text-ellipsis overflow-hidden text-subtitle2">
             {selectedOption ? selectedOption.display : "SORT BY"}
           </span>
           <Image

@@ -17,10 +17,10 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
       <div
         className={classNames(
           {
-            "w-[4.125rem] h-[4.125rem]": size === "md",
+            "w-[3.8rem] h-[3.8rem]": size === "md",
             "w-[2.125rem] h-[2.125rem]": size === "sm",
           },
-          "absolute z-10 w-[4.125rem] h-[4.125rem] rounded-full border bg-card border-enabledGold flex items-center justify-center"
+          "absolute z-10 rounded-full border bg-card border-enabledGold flex items-center justify-center"
         )}
       >
         {assets[0].amount.currency.coinImageUrl ? (
@@ -42,7 +42,7 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
       <div
         className={classNames(
           {
-            "w-[4.125rem] h-[4.125rem] ml-10": size === "md",
+            "w-[3.8rem] h-[3.8rem] ml-10": size === "md",
             "w-[2.125rem] h-[2.125rem] ml-5": size === "sm",
           },
           "rounded-full border border-enabledGold shrink-0 flex items-center justify-center"
@@ -56,15 +56,15 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
           <Image
             src={assets[1].amount.currency.coinImageUrl}
             alt={assets[1].amount.currency.coinDenom}
-            width={54}
-            height={54}
+            width={50}
+            height={50}
           />
         ) : (
           <Image
             src="/icons/question-mark.svg"
             alt="no token icon"
-            width={54}
-            height={54}
+            width={50}
+            height={50}
           />
         )}
       </div>

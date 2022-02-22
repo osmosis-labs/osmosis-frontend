@@ -7,7 +7,7 @@ import { ButtonProps } from "./types";
 interface Props extends ButtonProps, CustomClasses {
   color?: "primary" | "secondary";
   size?: "xs" | "sm" | "lg";
-  type?: "block" | "arrow" | "outline";
+  type?: "block" | "arrow" | "arrow-sm" | "outline";
   loading?: boolean;
   disabled?: boolean;
 }
@@ -67,8 +67,13 @@ export const Button: FunctionComponent<Props> = ({
     >
       {children}
     </div>
-    {type === "arrow" && size === "xs" && (
-      <Image alt="" src="/icons/chevron-right.svg" height={12} width={12} />
+    {(type === "arrow" || type === "arrow-sm") && size === "xs" && (
+      <Image
+        alt=""
+        src="/icons/chevron-right.svg"
+        height={type === "arrow" ? 13 : 6.67}
+        width={type === "arrow" ? 8 : 4}
+      />
     )}
     {size !== "xs" && loading && (
       <Image alt="" src="/icons/loading.svg" height={24} width={24} />

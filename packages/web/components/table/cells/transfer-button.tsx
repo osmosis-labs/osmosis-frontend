@@ -17,7 +17,12 @@ const TransferButton: FunctionComponent<{
   label: string;
   action: () => void;
 }> = ({ label, action }) => (
-  <Button className="m-auto" onClick={action} size="xs" type="arrow">
+  <Button
+    className="m-auto text-button"
+    onClick={action}
+    size="xs"
+    type="arrow-sm"
+  >
     <span>{label}</span>
   </Button>
 );

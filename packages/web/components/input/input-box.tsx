@@ -61,7 +61,7 @@ export const InputBox: FunctionComponent<Props> = ({
             }
           )}
           value={currentValue}
-          placeholder={placeholder}
+          placeholder={placeholder ?? ""}
           autoComplete="off"
           onBlur={() => setInputFocused(false)}
           onFocus={() => setInputFocused(true)}

@@ -113,7 +113,7 @@ module.exports = {
       subtitle2: 600,
       body1: 500,
       body2: 500,
-      button: 500,
+      button: 700,
       caption: 400,
       overline: 400,
     },

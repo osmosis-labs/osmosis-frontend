@@ -14,14 +14,13 @@ export interface ColumnSortDef {
 export interface ColumnDef<TCell extends BaseCell> extends CustomClasses {
   /** Header label or element. */
   display: string | ReactElement;
-  /** If set, will make this column sortable. */
+  /** If set, will enable column header as sort control. */
   sort?: ColumnSortDef;
   /** If set, will show a 'i' icon tooltip for hover. */
   infoTooltip?: string;
   /** If provided, will be used to render the cell for each row in this column.
    *
-   * Note: components must accept optionals for all cell data and check for the data they need.
-   */
+   *  Note: components must accept optionals for all cell data and check for the data they need. */
   displayCell?: React.FunctionComponent<Partial<TCell>>;
 }
 
