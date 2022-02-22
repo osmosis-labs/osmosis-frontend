@@ -114,8 +114,9 @@ export class IBCTransferHistoryStore {
 	});
 
 	protected getBlockSubscriber(chainId: string): TxTracer {
+		let osmoWss = (this.chainGetter.getChain(chainId).chainName = "Osmosis") ? "https://testnet-wsrpc.osmosis.zone" : this.chainGetter.getChain(chainId).rpc;
 		if (!this.blockSubscriberMap.has(chainId)) {
-			this.blockSubscriberMap.set(chainId, new TxTracer(this.chainGetter.getChain(chainId).rpc, '/websocket'));
+			this.blockSubscriberMap.set(chainId, new TxTracer(osmoWss, '/websocket'));
 		}
 
 		return this.blockSubscriberMap.get(chainId)!;
@@ -167,7 +168,8 @@ export class IBCTransferHistoryStore {
 
 		if (history.status === 'timeout') {
 			// If the packet is timeouted, wait until the packet timeout sent to the source chain.
-			const txTracer = new TxTracer(this.chainGetter.getChain(history.sourceChainId).rpc, '/websocket');
+			let osmoWss = (this.chainGetter.getChain(history.sourceChainId).chainName = "Osmosis") ? "https://testnet-wsrpc.osmosis.zone" : this.chainGetter.getChain(history.sourceChainId).rpc;
+			const txTracer = new TxTracer(osmoWss, '/websocket');
 			await txTracer.traceTx({
 				'timeout_packet.packet_src_channel': history.sourceChannelId,
 				'timeout_packet.packet_sequence': history.sequence,
@@ -202,8 +204,8 @@ export class IBCTransferHistoryStore {
 				})()
 			);
 		}
-
-		const txTracer = new TxTracer(this.chainGetter.getChain(history.destChainId).rpc, '/websocket');
+		let osmoWss = (this.chainGetter.getChain(history.sourceChainId).chainName = "Osmosis") ? "https://testnet-wsrpc.osmosis.zone" : this.chainGetter.getChain(history.sourceChainId).rpc;
+		const txTracer = new TxTracer(osmoWss, '/websocket');
 		promises.push(
 			txTracer.traceTx({
 				// Should use the dst channel. B
@@ -279,7 +281,8 @@ export class IBCTransferHistoryStore {
 	protected *traceUncommitedHistoryAndUpgradeToPendingHistory(txHash: string) {
 		const uncommited = this._uncommitedHistories.find(uncommited => uncommited.txHash === txHash);
 		if (uncommited) {
-			const txTracer = new TxTracer(this.chainGetter.getChain(uncommited.sourceChainId).rpc, '/websocket');
+			let osmoWss = (this.chainGetter.getChain(uncommited.sourceChainId).chainName = "Osmosis") ? "https://testnet-wsrpc.osmosis.zone" : this.chainGetter.getChain(uncommited.sourceChainId).rpc;
+			const txTracer = new TxTracer(osmoWss, '/websocket');
 			const result = yield* toGenerator(txTracer.traceTx(Buffer.from(uncommited.txHash, 'hex')));
 			txTracer.close();
 
