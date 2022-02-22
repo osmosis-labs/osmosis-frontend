@@ -664,6 +664,12 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'uxprt',
 	},
 	{
+		counterpartyChainId: 'core-1',
+		sourceChannelId: 'channel-4',
+		destChannelId: 'channel-6',
+		coinMinimalDenom: 'ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444',
+	},
+	{
 		counterpartyChainId: 'columbus-5',
 		sourceChannelId: 'channel-72',
 		destChannelId: 'channel-1',
@@ -1149,6 +1155,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'persistence',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/xprt.png',
 			},
+			{
+				coinDenom: 'PSTAKE',
+				coinMinimalDenom: 'ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444',
+				coinDecimals: 18,
+				coinGeckoId: 'pstake',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/pstake.png',
+			}
 		],
 		feeCurrencies: [
 			{
