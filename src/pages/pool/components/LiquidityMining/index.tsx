@@ -17,9 +17,10 @@ import { MyUnBondingTable } from './MyUnbondingTable';
 
 interface Props {
 	poolId: string;
+	isSuperfluidEnabled: boolean;
 }
 
-export const LiquidityMining = observer(function LiquidityMining({ poolId }: Props) {
+export const LiquidityMining = observer(function LiquidityMining({ poolId, isSuperfluidEnabled }: Props) {
 	const { chainStore, queriesStore, accountStore, priceStore } = useStore();
 
 	const { isMobileView } = useWindowSize();
@@ -38,9 +39,6 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId }: Pro
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const closeDialog = () => setIsDialogOpen(false);
-
-	// It can be modified
-	const isSuperfluidEnabled = poolId === '1';
 
 	return (
 		<>
