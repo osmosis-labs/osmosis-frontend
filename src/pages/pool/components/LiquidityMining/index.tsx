@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useState } from 'react';
 import { Img } from 'src/components/common/Img';
 import { ButtonPrimary } from 'src/components/layouts/Buttons';
-import { CenterSelf, WellContainer } from 'src/components/layouts/Containers';
+import { CenterSelf } from 'src/components/layouts/Containers';
 import { TitleText, Text } from 'src/components/Texts';
 import { ExtraGaugeInPool } from 'src/config';
 import { LockLpTokenDialog } from 'src/dialogs';
@@ -43,7 +43,12 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId, isSup
 	return (
 		<>
 			<LiquidityMiningContainer>
-				<LockLpTokenDialog isOpen={isDialogOpen} close={closeDialog} poolId={poolId} />
+				<LockLpTokenDialog
+					isOpen={isDialogOpen}
+					close={closeDialog}
+					poolId={poolId}
+					isSuperfluidEnabled={isSuperfluidEnabled}
+				/>
 				<LiquidityMiningSummary>
 					<div>
 						<div className="pb-4 flex gap-3 items-center">
@@ -157,7 +162,11 @@ const LockupBox: FunctionComponent<{
 					<TitleText isMobileView={isMobileView} pb={0} weight="medium">
 						{duration} unbonding
 					</TitleText>
-					{isSuperfluidEnabled && <Img src={'/public/assets/Icons/superfluid-osmo.svg'} />}
+					{isSuperfluidEnabled && (
+						<div className="w-6 h-6">
+							<Img src={'/public/assets/Icons/superfluid-osmo.svg'} />
+						</div>
+					)}
 				</div>
 				<Text isMobileView={isMobileView} color="gold" size="lg">
 					APR {apy}

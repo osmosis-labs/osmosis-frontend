@@ -181,6 +181,7 @@ module.exports = {
 			'gradients-orangeCoral': 'linear-gradient(180deg, #FF8200 0%, #FF2C00 100%)',
 			'gradients-pinky': 'linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)',
 			sfs: 'linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)',
+			'sfs-20': 'linear-gradient(90deg, rgba(138, 134, 255, 0.2) 0.04%, rgba(225, 60, 189, 0.2) 99.5%)',
 		},
 		spacing: {
 			...spacing,
@@ -205,20 +206,20 @@ module.exports = {
 				fit: 'fit-content',
 				...sizes,
 				...screenWidths,
-				modal: '41.25rem',
+				modal: '42rem',
 			},
 			minWidth: {
 				...screenWidths,
 				...sidebarWidths,
 				...genericWidths,
-				modal: '41.25rem',
+				modal: '42rem',
 			},
 			maxWidth: {
 				...sizes,
 				...screenWidths,
 				...sidebarWidths,
 				...genericWidths,
-				modal: '41.25rem',
+				modal: '42rem',
 				page: '1440px',
 			},
 			borderOpacity: {

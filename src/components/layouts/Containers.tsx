@@ -57,19 +57,11 @@ export const PoolCardListGridContainer = styled.ul`
 	}
 `;
 
-export const WellContainer = styled.div<{ isSuperfluidEnabled?: boolean }>`
+export const WellContainer = styled.div`
 	width: 100%;
 	border-radius: 0.75rem;
 	background-color: ${colorPrimary};
 	padding: 18px 24px;
-	${({ isSuperfluidEnabled }) =>
-		isSuperfluidEnabled
-			? `
-	box-shadow: inset 0 0 12px 12px ${colorPrimary}, inset 0 0 3px 2px ${colorPrimary};
-	background: linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%);
-	`
-			: ''}
-
 	@media (min-width: 768px) {
 		padding: 24px 30px;
 	}
