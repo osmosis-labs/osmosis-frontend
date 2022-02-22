@@ -2204,6 +2204,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'pool:ugraviton',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
 			},
+			{
+				coinDenom: 'PSTAKE',
+				coinMinimalDenom: 'gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006',
+				coinDecimals: 18,
+				// coinGeckoId: 'pstake',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/pstake.png',
+			},
 		],
 		feeCurrencies: [
 			{
