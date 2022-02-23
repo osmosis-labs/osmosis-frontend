@@ -27,7 +27,11 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 
 	const ibcBalances = IBCAssetInfos.map(channelInfo => {
 		const chainInfo = chainStore.getChain(channelInfo.counterpartyChainId);
-		const ibcDenom = makeIBCMinimalDenom(channelInfo.sourceChannelId, channelInfo.coinMinimalDenom);
+		let ibcDenom = makeIBCMinimalDenom(channelInfo.sourceChannelId, channelInfo.coinMinimalDenom);
+
+		if (channelInfo.ibcTransferPathDenom) {
+			ibcDenom = makeIBCMinimalDenom(channelInfo.sourceChannelId, channelInfo.ibcTransferPathDenom);
+		}
 
 		const originCurrency = chainInfo.currencies.find(cur => {
 			if (channelInfo.coinMinimalDenom.startsWith('cw20:')) {
