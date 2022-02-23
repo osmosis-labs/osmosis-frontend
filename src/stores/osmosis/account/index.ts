@@ -43,6 +43,7 @@ export interface OsmosisMsgOpts {
 	readonly swapExactAmountIn: MsgOpt;
 	readonly swapExactAmountOut: MsgOpt;
 	readonly lockTokens: MsgOpt;
+	readonly lockAndSuperfluidDelegate: MsgOpt;
 	readonly beginUnlocking: MsgOpt;
 	readonly unlockPeriodLock: MsgOpt;
 }
@@ -66,7 +67,7 @@ export class AccountWithCosmosAndOsmosis
 			},
 			joinPool: {
 				type: 'osmosis/gamm/join-pool',
-				gas: 140000,
+				gas: 240000,
 				shareCoinDecimals: 18,
 			},
 			joinSwapExternAmountIn: {
@@ -90,6 +91,10 @@ export class AccountWithCosmosAndOsmosis
 			lockTokens: {
 				type: 'osmosis/lockup/lock-tokens',
 				gas: 250000,
+			},
+			lockAndSuperfluidDelegate: {
+				type: 'osmosis/superfluid/lock-and-superfluid-delegate',
+				gas: 500000,
 			},
 			beginUnlocking: {
 				type: 'osmosis/lockup/begin-unlock-period-lock',
@@ -848,6 +853,74 @@ export class OsmosisAccount {
 					// Refresh the locked coins
 					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
+				}
+
+				if (onFulfill) {
+					onFulfill(tx);
+				}
+			}
+		);
+	}
+
+	async sendLockAndSuperfluidDelegateMsg(
+		tokens: {
+			currency: Currency;
+			amount: string;
+		}[],
+		validatorAddress: string,
+		memo: string = '',
+		onFulfill?: (tx: any) => void
+	) {
+		const primitiveTokens = tokens.map(token => {
+			const amount = new Dec(token.amount).mul(DecUtils.getPrecisionDec(token.currency.coinDecimals)).truncate();
+
+			return {
+				amount: amount.toString(),
+				denom: token.currency.coinMinimalDenom,
+			};
+		});
+
+		const msg = {
+			type: this.base.msgOpts.lockAndSuperfluidDelegate.type,
+			value: {
+				sender: this.base.bech32Address,
+				coins: primitiveTokens,
+				val_addr: validatorAddress,
+			},
+		};
+
+		await this.base.sendMsgs(
+			'lockAndSuperfluidDelegate',
+			{
+				aminoMsgs: [msg],
+				protoMsgs: [
+					{
+						type_url: '/osmosis.superfluid.MsgLockAndSuperfluidDelegate',
+						value: osmosis.superfluid.MsgLockAndSuperfluidDelegate.encode({
+							sender: msg.value.sender,
+							coins: msg.value.coins,
+							valAddr: msg.value.val_addr,
+						}).finish(),
+					},
+				],
+			},
+			memo,
+			{
+				amount: [],
+				gas: this.base.msgOpts.lockAndSuperfluidDelegate.gas.toString(),
+			},
+			undefined,
+			tx => {
+				if (tx.code == null || tx.code === 0) {
+					// Refresh the balances
+					const queries = this.queriesStore.get(this.chainId);
+					queries.queryBalances.getQueryBech32Address(this.base.bech32Address).fetch();
+
+					// Refresh the locked coins
+					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
+					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
+
+					// TODO: Refresh the superfluid validated to be delegated.
 				}
 
 				if (onFulfill) {

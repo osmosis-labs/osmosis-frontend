@@ -42,7 +42,7 @@ RUN git clone https://github.com/osmosis-labs/osmosis
 WORKDIR /osmosis
 
 # Change the commit hash if you want.
-RUN git fetch && git checkout 48ed0a75a8df0dfa23592efc0f02a493fb1d688d
+RUN git fetch && git checkout 0e75e3adde28e3ff13a2945ec9689080afee34ca
 
 # Build daemon.
 RUN make build
@@ -58,9 +58,10 @@ RUN yq eval 'del(.app_state.epochs.epochs.[1])' ~/.osmosisd/config/genesis.json 
     | yq eval '.app_state.epochs.epochs.[0].duration = "3600s"' - \
     | yq eval '.app_state.poolincentives.distr_info.total_weight = "0"' - \
     | yq eval '.app_state.poolincentives.distr_info.records = []' - \
+    | yq eval '.app_state.staking.params.unbonding_time = "25200s"' - \
     | yq eval '.app_state.gov.deposit_params.min_deposit.[0].denom = "uosmo"' - \
     | yq eval '.app_state.gov.deposit_params.min_deposit.[0].amount = "1"' - \
-    | yq eval '.app_state.gov.voting_params.voting_period = "300s"' - \
+    | yq eval '.app_state.gov.voting_params.voting_period = "60s"' - \
     | yq eval '.app_state.gov.tally_params.quorum = "0.000000003340000000"' - \
     | yq eval '.app_state.gov.tally_params.threshold = "0.000000003340000000"' - \
     | yq eval '' -j - \

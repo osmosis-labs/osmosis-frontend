@@ -22,7 +22,7 @@ import { ObservableQueryDistrInfo } from './pool-incentives/distr-info';
 import { ObservableQueryTotalCliamable, ObservableQueryClaimRecord, ObservableQueryClaimParams } from './claim';
 import { ObservableQueryGuage } from './incentives';
 import { ObservableQueryPoolCreationFee } from './pool-creation-fee';
-import { ObservableQuerySuperfluidPools } from 'src/stores/osmosis/query/superfluid-pools';
+import { ObservableQuerySuperfluidPools } from './superfluid-pools';
 
 export interface HasOsmosisQueries {
 	osmosis: OsmosisQueries;

@@ -56,7 +56,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 			return (
 				<div className="text-white-high w-full h-full">
 					{!isValidatorSelectStage ? (
-						<>
+						<React.Fragment>
 							{' '}
 							<h5 className="text-lg md:text-xl mb-5 md:mb-9">Bond LP tokens</h5>
 							<div className="mb-2.5 md:mb-7.5">
@@ -166,7 +166,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 											}
 										}
 									}}>
-									{account.isSendingMsg === 'lockTokens' ? (
+									{account.isSendingMsg === 'lockTokens' || account.isSendingMsg === 'lockAndSuperfluidDelegate' ? (
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											fill="none"
@@ -186,9 +186,9 @@ export const LockLpTokenDialog = wrapBaseDialog(
 									)}
 								</button>
 							</div>
-						</>
+						</React.Fragment>
 					) : (
-						<>
+						<React.Fragment>
 							<div className="flex items-center mb-5 md:mb-9">
 								<img
 									src="/public/assets/Icons/Left.svg"
@@ -288,14 +288,33 @@ export const LockLpTokenDialog = wrapBaseDialog(
 							<div className="flex w-full justify-center items-center">
 								<button
 									className="mt-7.5 w-full md:w-2/3 h-12 md:h-15 bg-primary-200 rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer disabled:opacity-50"
-									disabled={!account.isReadyToSendMsgs || amountConfig.getError() != null}
+									disabled={
+										!account.isReadyToSendMsgs || selectedValidatorAddress === '' || amountConfig.getError() != null
+									}
 									onClick={async e => {
 										e.preventDefault();
 
-										if (account.isReadyToSendMsgs) {
+										if (account.isReadyToSendMsgs && selectedValidatorAddress) {
+											try {
+												await account.osmosis.sendLockAndSuperfluidDelegateMsg(
+													[
+														{
+															currency: amountConfig.sendCurrency,
+															amount: amountConfig.amount,
+														},
+													],
+													selectedValidatorAddress,
+													'',
+													() => {
+														close();
+													}
+												);
+											} catch (e) {
+												console.log(e);
+											}
 										}
 									}}>
-									{account.isSendingMsg === 'lockTokens' ? (
+									{account.isSendingMsg === 'lockTokens' || account.isSendingMsg === 'lockAndSuperfluidDelegate' ? (
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											fill="none"
@@ -313,7 +332,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 									)}
 								</button>
 							</div>
-						</>
+						</React.Fragment>
 					)}
 				</div>
 			);
