@@ -1159,7 +1159,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'PSTAKE',
 				coinMinimalDenom: 'ibc/8061A06D3BD4D52C4A28FFECF7150D370393AF0BA661C3776C54FF32836C3961',
 				coinDecimals: 18,
-				coinGeckoId: 'persistence',
+				coinGeckoId: 'persistence-staked-xprt',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/pstake.svg',
 			},
 		],
