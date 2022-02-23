@@ -61,7 +61,7 @@ export class AccountWithCosmosAndOsmosis
 		AccountWithCosmos.defaultMsgOpts,
 		deepmerge(AccountWithCosmwasm.defaultMsgOpts, {
 			createPool: {
-				type: 'osmosis/gamm/create-pool',
+				type: 'osmosis/gamm/create-balancer-pool',
 				gas: 250000,
 			},
 			joinPool: {
@@ -217,8 +217,8 @@ export class OsmosisAccount {
 				aminoMsgs: [msg],
 				protoMsgs: [
 					{
-						type_url: '/osmosis.gamm.v1beta1.MsgCreatePool',
-						value: osmosis.gamm.v1beta1.MsgCreatePool.encode({
+						type_url: '/osmosis.gamm.v1beta1.MsgCreateBalancerPool',
+						value: osmosis.gamm.v1beta1.MsgCreateBalancerPool.encode({
 							sender: msg.value.sender,
 							poolParams: {
 								swapFee: this.changeDecStringToProtoBz(msg.value.poolParams.swapFee),
@@ -865,6 +865,7 @@ export class OsmosisAccount {
 					owner: this.base.bech32Address,
 					// XXX: 얘는 어째서인지 소문자가 아님 ㅋ;
 					ID: lockId,
+					coins: [],
 				},
 			};
 		});
