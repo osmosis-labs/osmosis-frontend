@@ -1,7 +1,7 @@
 import cn from 'clsx';
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { IBCCurrency } from '@keplr-wallet/types';
+import { AppCurrency, IBCCurrency } from '@keplr-wallet/types';
 import { AmountInput } from '../components/form/Inputs';
 import { colorWhiteEmphasis } from '../emotionStyles/colors';
 import { useStore } from '../stores';
@@ -13,6 +13,7 @@ import { wrapBaseDialog } from './base';
 import { useAccountConnection } from '../hooks/account/useAccountConnection';
 import { ConnectAccountButton } from '../components/ConnectAccountButton';
 import { Buffer } from 'buffer/';
+import { makeIBCMinimalDenom } from 'src/utils/ibc';
 
 export const TransferDialog = wrapBaseDialog(
 	observer(
@@ -68,6 +69,7 @@ export const TransferDialog = wrapBaseDialog(
 					isWithdraw
 				)
 			);
+
 			const feeConfig = useFakeFeeConfig(
 				chainStore,
 				pickOne(chainStore.current.chainId, counterpartyChainId, isWithdraw),
