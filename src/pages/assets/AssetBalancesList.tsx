@@ -182,6 +182,8 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 										originCurrency: (currency as IBCCurrency).originCurrency,
 									};
 
+									console.log(currency as IBCCurrency);
+
 									setDialogState({
 										open: true,
 										counterpartyChainId: bal.chainInfo.chainId,
