@@ -1358,7 +1358,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'NETA',
 				coinMinimalDenom: 'cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr:NETA',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:neta',
+				coinGeckoId: 'neta',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/neta.svg',
 			},
 		],
