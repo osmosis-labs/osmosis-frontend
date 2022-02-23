@@ -171,10 +171,21 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 								onDeposit={() => {
 									console.log(currency as IBCCurrency);
 
+									const sourceCurrency = {
+										coinDecimals: currency.coinDecimals,
+										coinGeckoId: currency.coinGeckoId,
+										coinImageUrl: currency.coinImageUrl,
+										coinDenom: currency.coinDenom,
+										coinMinimalDenom: bal.sourceDenom,
+										paths: (currency as IBCCurrency).paths,
+										originChainId: (currency as IBCCurrency).originChainId,
+										originCurrency: (currency as IBCCurrency).originCurrency,
+									};
+
 									setDialogState({
 										open: true,
 										counterpartyChainId: bal.chainInfo.chainId,
-										currency: currency as IBCCurrency,
+										currency: sourceCurrency as IBCCurrency,
 										sourceChannelId: bal.sourceChannelId,
 										destChannelId: bal.destChannelId,
 										isWithdraw: false,
