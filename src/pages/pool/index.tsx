@@ -17,6 +17,7 @@ import { useFakeFeeConfig } from 'src/hooks/tx';
 import { PoolSwapClipboardContent } from 'src/pages/pool/components/PoolInfoHeader/PoolSwapDialog';
 import { TitleText } from 'src/components/Texts';
 import useWindowSize from 'src/hooks/useWindowSize';
+import { SuperfluidStaking } from './components/SuperfluidStaking';
 
 interface QueryParams {
 	/**pool id*/
@@ -48,6 +49,9 @@ export const PoolPage: FunctionComponent = observer(() => {
 		);
 	}
 
+	// It can be modified
+	const isSuperfluidEnabled = pool.id === '1';
+
 	return (
 		<FullScreenContainer>
 			<PoolInfoHeaderSection>
@@ -74,11 +78,17 @@ export const PoolPage: FunctionComponent = observer(() => {
 				{/* 인센티브를 받을 수 있는 풀 또는 config에서 설정된 풀의 경우만 Synthesis를 표시한다. */}
 				{(queries.osmosis.queryIncentivizedPools.isIncentivized(pool.id) || LockupAbledPoolIds[pool.id]) && (
 					<CenterSelf>
-						<LiquidityMining poolId={pool.id} />
+						<LiquidityMining poolId={pool.id} isSuperfluidEnabled={isSuperfluidEnabled} />
 					</CenterSelf>
 				)}
 				{isLbp(pool.smoothWeightChangeParams) && <LbpCatalyst pool={pool} lbpParams={pool.smoothWeightChangeParams} />}
 			</LiquidityMiningSection>
+
+			<SuperfluidStakingSection>
+				<CenterSelf>
+					<SuperfluidStaking isSuperfluidEnabled={isSuperfluidEnabled} />
+				</CenterSelf>
+			</SuperfluidStakingSection>
 
 			<PoolCatalystSection>
 				<CenterSelf>
@@ -140,7 +150,6 @@ const PoolInfoHeaderWrapper = styled.div`
 	width: 100%;
 	position: relative;
 	z-index: 10;
-
 	@media (min-width: 768px) {
 		padding: 40px;
 	}
@@ -166,7 +175,6 @@ const PoolInfoHeaderBg = styled.div`
 	background-position-y: bottom;
 	background-repeat: no-repeat;
 	background-size: contain;
-
 	@media (min-width: 768px) {
 		background: url('/public/assets/backgrounds/osmosis-guy-in-lab.png');
 		background-position-x: right;
@@ -178,7 +186,6 @@ const PoolInfoHeaderBg = styled.div`
 const LBPInPageSwapClipboardSection = styled.div`
 	background-color: ${colorPrimaryDark};
 	width: 100%;
-
 	@media (min-width: 768px) {
 		padding: 0 40px;
 	}
@@ -186,7 +193,6 @@ const LBPInPageSwapClipboardSection = styled.div`
 
 const PoolSwapClipboardContainer = styled.div`
 	width: 100%;
-
 	@media (min-width: 768px) {
 		max-width: 600px;
 	}
@@ -195,7 +201,6 @@ const PoolSwapClipboardContainer = styled.div`
 const LiquidityMiningSection = styled.div`
 	background-color: ${colorPrimaryDark};
 	width: 100%;
-
 	@media (min-width: 768px) {
 		padding: 0 40px;
 	}
@@ -205,7 +210,15 @@ const PoolCatalystSection = styled.div`
 	background-color: ${colorPrimaryDark};
 	width: 100%;
 	padding: 20px;
+	@media (min-width: 768px) {
+		padding: 20px 40px 40px;
+	}
+`;
 
+const SuperfluidStakingSection = styled.div`
+	background-color: ${colorPrimaryDark};
+	width: 100%;
+	padding: 20px;
 	@media (min-width: 768px) {
 		padding: 20px 40px 40px;
 	}
@@ -214,7 +227,6 @@ const PoolCatalystSection = styled.div`
 const LoaderStyled = styled(Loader)`
 	width: 6rem;
 	height: 6rem;
-
 	@media (min-width: 768px) {
 		width: 12.5rem;
 		height: 12.5rem;
