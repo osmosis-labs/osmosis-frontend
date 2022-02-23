@@ -831,6 +831,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-10',
 		coinMinimalDenom: 'ugraviton',
 	},
+	{
+		counterpartyChainId: 'mainnet-3',
+		sourceChannelId: 'channel-181',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'udec',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -2208,5 +2214,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/gravity-bridge/txs/{txHash}',
+	},
+  {
+		rpc: 'https://poseidon.mainnet.decentr.xyz',
+		rest: 'https://rest.mainnet.decentr.xyz',
+		chainId: 'mainnet-3',
+		chainName: 'Decentr',
+		stakeCurrency: {
+			coinDenom: 'DEC',
+			coinMinimalDenom: 'udec',
+			coinDecimals: 6,
+			coinGeckoId: 'decentr',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/dec.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('decentr'),
+		currencies: [
+			{
+				coinDenom: 'DEC',
+				coinMinimalDenom: 'udec',
+				coinDecimals: 6,
+				coinGeckoId: 'decentr',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dec.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'DEC',
+				coinMinimalDenom: 'udec',
+				coinDecimals: 6,
+				coinGeckoId: 'decentr',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dec.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://explorer.decentr.net/transactions/${txHash}?networkId=mainnet',
 	},
 ];
