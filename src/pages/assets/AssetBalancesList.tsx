@@ -13,8 +13,6 @@ import { makeIBCMinimalDenom } from 'src/utils/ibc';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { Dec } from '@keplr-wallet/unit';
-import { flatMap } from 'lodash-es';
-import { IBCCurrencyRegsitrar } from '@keplr-wallet/stores';
 
 const tableWidths = ['45%', '25%', '15%', '15%'];
 const tableWidthsOnMobileView = ['70%', '30%'];
