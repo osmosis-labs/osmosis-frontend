@@ -180,6 +180,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 									.toString()}
 								totalFiatValue={totalFiatValue}
 								onDeposit={() => {
+									console.log(currency);
 									setDialogState({
 										open: true,
 										counterpartyChainId: bal.chainInfo.chainId,
