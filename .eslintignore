@@ -12,3 +12,5 @@ dist/*
 prod/*
 
 src/styles/index.scss
+
+src/proto/generated/*
