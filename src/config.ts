@@ -2250,6 +2250,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
-		explorerUrlToTx: 'https://explorer.decentr.net/transactions/${txHash}?networkId=mainnet',
+		explorerUrlToTx: 'https://explorer.decentr.net/transactions/{txHash}?networkId=mainnet',
 	},
 ];
