@@ -16,6 +16,7 @@ import {
 	ObservableQueryAccountLockedCoins,
 	ObservableQueryAccountUnlockingCoins,
 	ObservableQueryAccountLocked,
+	ObservableSyntheticLockupsByLockId,
 } from './lockup';
 import { ObservableQueryEpochProvisions, ObservableQueryMintParmas } from './mint';
 import { ObservableQueryDistrInfo } from './pool-incentives/distr-info';
@@ -48,6 +49,7 @@ export class OsmosisQueries {
 	public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
 	public readonly queryUnlockingCoins: DeepReadonly<ObservableQueryAccountUnlockingCoins>;
 	public readonly queryAccountLocked: DeepReadonly<ObservableQueryAccountLocked>;
+	public readonly querySyntheticLockupsByLockId: DeepReadonly<ObservableSyntheticLockupsByLockId>;
 
 	public readonly queryMintParams: DeepReadonly<ObservableQueryMintParmas>;
 	public readonly queryEpochProvisions: DeepReadonly<ObservableQueryEpochProvisions>;
@@ -73,6 +75,7 @@ export class OsmosisQueries {
 		this.queryLockedCoins = new ObservableQueryAccountLockedCoins(kvStore, chainId, chainGetter);
 		this.queryUnlockingCoins = new ObservableQueryAccountUnlockingCoins(kvStore, chainId, chainGetter);
 		this.queryAccountLocked = new ObservableQueryAccountLocked(kvStore, chainId, chainGetter);
+		this.querySyntheticLockupsByLockId = new ObservableSyntheticLockupsByLockId(kvStore, chainId, chainGetter);
 
 		this.queryGammPools = new ObservableQueryPools(kvStore, chainId, chainGetter, queryGammPool);
 		this.queryGammNumPools = new ObservableQueryNumPools(kvStore, chainId, chainGetter);

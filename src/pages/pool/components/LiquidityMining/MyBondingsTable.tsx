@@ -13,9 +13,10 @@ const tableWidthsOnMobileView = ['30%', '40%', '30%'];
 
 interface Props {
 	poolId: string;
+	isSuperfluidEnabled: boolean;
 }
 
-export const MyBondingsTable = observer(function MyBondingsTable({ poolId }: Props) {
+export const MyBondingsTable = observer(function MyBondingsTable({ poolId, isSuperfluidEnabled }: Props) {
 	const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
 	const { isMobileView } = useWindowSize();
@@ -47,6 +48,7 @@ export const MyBondingsTable = observer(function MyBondingsTable({ poolId }: Pro
 									.computeAPY(poolId, lockableDuration, priceStore, priceStore.getFiatCurrency('usd')!)
 									.toString()}%`}
 								isMobileView={isMobileView}
+								isSuperfluidEnabled={isSuperfluidEnabled}
 							/>
 						);
 					})}
@@ -91,12 +93,20 @@ interface LockupTableRowProps {
 		lockIds: string[];
 	};
 	isMobileView: boolean;
+	isSuperfluidEnabled: boolean;
 }
 
-const LockupTableRow = observer(function LockupTableRow({ duration, apy, lockup, isMobileView }: LockupTableRowProps) {
-	const { chainStore, accountStore } = useStore();
+const LockupTableRow = observer(function LockupTableRow({
+	duration,
+	apy,
+	lockup,
+	isMobileView,
+	isSuperfluidEnabled,
+}: LockupTableRowProps) {
+	const { chainStore, accountStore, queriesStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
+	const queries = queriesStore.get(chainStore.current.chainId);
 
 	const [isUnlocking, setIsUnlocking] = useState(false);
 
@@ -132,10 +142,32 @@ const LockupTableRow = observer(function LockupTableRow({ duration, apy, lockup,
 							try {
 								setIsUnlocking(true);
 
-								// XXX: Due to the block gas limit, restrict the number of lock id to included in the one tx.
-								await account.osmosis.sendBeginUnlockingMsg(lockup.lockIds.slice(0, 10), '', () => {
-									setIsUnlocking(false);
-								});
+								if (!isSuperfluidEnabled) {
+									// XXX: Due to the block gas limit, restrict the number of lock id to included in the one tx.
+									await account.osmosis.sendBeginUnlockingMsg(lockup.lockIds.slice(0, 10), '', () => {
+										setIsUnlocking(false);
+									});
+								} else {
+									// XXX: Due to the block gas limit, restrict the number of lock id to included in the one tx.
+									const lockIds = lockup.lockIds.slice(0, 10);
+
+									for (const lockId of lockIds) {
+										await queries.osmosis.querySyntheticLockupsByLockId.get(lockId).waitFreshResponse();
+									}
+
+									await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+										lockup.lockIds.map(lockId => {
+											return {
+												lockId,
+												isSyntheticLock: queries.osmosis.querySyntheticLockupsByLockId.get(lockId).isSyntheticLock,
+											};
+										}),
+										'',
+										() => {
+											setIsUnlocking(false);
+										}
+									);
+								}
 							} catch (e) {
 								setIsUnlocking(false);
 								console.log(e);
