@@ -62,7 +62,7 @@ export class AccountWithCosmosAndOsmosis
 		deepmerge(AccountWithCosmwasm.defaultMsgOpts, {
 			createPool: {
 				type: 'osmosis/gamm/create-balancer-pool',
-				gas: 250000,
+				gas: 350000,
 			},
 			joinPool: {
 				type: 'osmosis/gamm/join-pool',

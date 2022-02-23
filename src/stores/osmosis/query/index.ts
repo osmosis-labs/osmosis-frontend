@@ -22,6 +22,7 @@ import { ObservableQueryDistrInfo } from './pool-incentives/distr-info';
 import { ObservableQueryTotalCliamable, ObservableQueryClaimRecord, ObservableQueryClaimParams } from './claim';
 import { ObservableQueryGuage } from './incentives';
 import { ObservableQueryPoolCreationFee } from './pool-creation-fee';
+import { ObservableQuerySuperfluidPools } from 'src/stores/osmosis/query/superfluid-pools';
 
 export interface HasOsmosisQueries {
 	osmosis: OsmosisQueries;
@@ -64,6 +65,8 @@ export class OsmosisQueries {
 
 	public readonly queryPoolCreationFee: DeepReadonly<ObservableQueryPoolCreationFee>;
 
+	public readonly querySuperfluidPools: DeepReadonly<ObservableQuerySuperfluidPools>;
+
 	constructor(queries: QueriesSetBase, kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
 		const queryGammPool = new ObservableQueryPool(kvStore, chainId, chainGetter);
 
@@ -105,5 +108,7 @@ export class OsmosisQueries {
 		this.queryClaimParams = new ObservableQueryClaimParams(kvStore, chainId, chainGetter);
 
 		this.queryPoolCreationFee = new ObservableQueryPoolCreationFee(kvStore, chainId, chainGetter);
+
+		this.querySuperfluidPools = new ObservableQuerySuperfluidPools(kvStore, chainId, chainGetter);
 	}
 }

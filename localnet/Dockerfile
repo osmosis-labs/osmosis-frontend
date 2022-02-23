@@ -58,6 +58,11 @@ RUN yq eval 'del(.app_state.epochs.epochs.[1])' ~/.osmosisd/config/genesis.json 
     | yq eval '.app_state.epochs.epochs.[0].duration = "3600s"' - \
     | yq eval '.app_state.poolincentives.distr_info.total_weight = "0"' - \
     | yq eval '.app_state.poolincentives.distr_info.records = []' - \
+    | yq eval '.app_state.gov.deposit_params.min_deposit.[0].denom = "uosmo"' - \
+    | yq eval '.app_state.gov.deposit_params.min_deposit.[0].amount = "1"' - \
+    | yq eval '.app_state.gov.voting_params.voting_period = "300s"' - \
+    | yq eval '.app_state.gov.tally_params.quorum = "0.000000003340000000"' - \
+    | yq eval '.app_state.gov.tally_params.threshold = "0.000000003340000000"' - \
     | yq eval '' -j - \
     > ~/.osmosisd/config/genesis.tmp.json
 RUN mv ~/.osmosisd/config/genesis.tmp.json ~/.osmosisd/config/genesis.json
