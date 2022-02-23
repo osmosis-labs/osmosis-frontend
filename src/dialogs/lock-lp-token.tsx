@@ -28,7 +28,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 				queries.queryBalances
 			);
 
-			const [selectedDurationIndex, setSelectedDurationIndex] = useState(0);
+			const [selectedDurationIndex, setSelectedDurationIndex] = useState(2);
 			const [isCheckedSuperfluid, setIsCheckedSuperfluid] = useState(false);
 			const [isValidatorSelectStage, setIsValidatorSelectStage] = useState(false);
 			const isShowingSuperfluidCheckbox = selectedDurationIndex === lockableDurations.length - 1 && isSuperfluidEnabled;
@@ -190,7 +190,11 @@ export const LockLpTokenDialog = wrapBaseDialog(
 					) : (
 						<>
 							<div className="flex items-center mb-5 md:mb-9">
-								<img src="/public/assets/Icons/Left.svg" className="w-7 h-7 mr-0 cursor-pointer" />
+								<img
+									src="/public/assets/Icons/Left.svg"
+									className="w-7 h-7 mr-0 cursor-pointer"
+									onClick={() => setIsValidatorSelectStage(false)}
+								/>
 								<h5 className="ml-9 text-lg md:text-xl">Select Superfluid Validator</h5>
 							</div>
 							<div className="mb-2.5 md:mb-7.5">
@@ -234,7 +238,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 													<TableData
 														width={'80%'}
 														className={`!pl-5 !pr-0 !py-2.5 ${
-															isSelected ? 'bg-backdrop' : isDelegatedValidator ? 'bg-card' : 'bg-surface'
+															isSelected ? 'bg-selected-validator' : isDelegatedValidator ? 'bg-card' : 'bg-surface'
 														}`}>
 														<div className="rounded-full border border-enabledGold mr-3 w-9 h-9 p-0.75 flex justify-center items-center">
 															<img
@@ -248,7 +252,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 													<TableData
 														width={'20%'}
 														className={`!pl-0 !pr-5 !py-4 justify-end ${
-															isSelected ? 'bg-backdrop' : isDelegatedValidator ? 'bg-card' : 'bg-surface'
+															isSelected ? 'bg-selected-validator' : isDelegatedValidator ? 'bg-card' : 'bg-surface'
 														}`}>
 														<Text emphasis="medium">
 															{DecUtils.trim(
