@@ -1273,7 +1273,7 @@ export class RootStore {
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom(
 							[{ portId: 'transfer', channelId: 'channel-4' }],
-							'ibc/8061A06D3BD4D52C4A28FFECF7150D370393AF0BA661C3776C54FF32836C3961'
+							'ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444'
 						),
 						coinDenom: 'PSTAKE',
 						coinDecimals: 18,
