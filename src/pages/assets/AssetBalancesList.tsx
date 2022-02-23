@@ -13,6 +13,7 @@ import { makeIBCMinimalDenom } from 'src/utils/ibc';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { Dec } from '@keplr-wallet/unit';
+import { flatMap } from 'lodash-es';
 
 const tableWidths = ['45%', '25%', '15%', '15%'];
 const tableWidthsOnMobileView = ['70%', '30%'];
@@ -29,8 +30,12 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 		const chainInfo = chainStore.getChain(channelInfo.counterpartyChainId);
 		let ibcDenom = makeIBCMinimalDenom(channelInfo.sourceChannelId, channelInfo.coinMinimalDenom);
 
+		// if this is a multihop ibc, need to special case because the denom on osmosis
+		// isn't H(source_denom), but rather H(ibc_path)
+		let sourceDenom = '';
 		if (channelInfo.ibcTransferPathDenom) {
 			ibcDenom = makeIBCMinimalDenom(channelInfo.sourceChannelId, channelInfo.ibcTransferPathDenom);
+			sourceDenom = channelInfo.coinMinimalDenom;
 		}
 
 		const originCurrency = chainInfo.currencies.find(cur => {
@@ -68,6 +73,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 			destChannelId: channelInfo.destChannelId,
 			isUnstable: channelInfo.isUnstable,
 			ics20ContractAddress: channelInfo.ics20ContractAddress,
+			sourceDenom: sourceDenom,
 		};
 	});
 
@@ -163,6 +169,8 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 									.toString()}
 								totalFiatValue={totalFiatValue}
 								onDeposit={() => {
+									console.log(currency as IBCCurrency);
+
 									setDialogState({
 										open: true,
 										counterpartyChainId: bal.chainInfo.chainId,
