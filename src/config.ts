@@ -1165,6 +1165,20 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 18,
 				// coinGeckoId: 'pool:apstake',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/pstake.png',
+				paths: [
+					{
+						portId: 'transfer',
+						channelId: 'channel-38',
+					},
+				],
+				originChainId: 'gravity-bridge-3',
+				originCurrency: {
+					coinDenom: 'PSTAKE',
+					coinMinimalDenom: 'gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006',
+					coinDecimals: 18,
+					// coinGeckoId: 'pstake',
+					coinImageUrl: window.location.origin + '/public/assets/tokens/pstake.png',
+				},
 			},
 		],
 		feeCurrencies: [

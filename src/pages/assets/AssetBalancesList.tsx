@@ -30,14 +30,6 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 		const chainInfo = chainStore.getChain(channelInfo.counterpartyChainId);
 		let ibcDenom = makeIBCMinimalDenom(channelInfo.sourceChannelId, channelInfo.coinMinimalDenom);
 
-		// if this is a multihop ibc, need to special case because the denom on osmosis
-		// isn't H(source_denom), but rather H(ibc_path)
-		let sourceDenom = '';
-		if (channelInfo.ibcTransferPathDenom) {
-			ibcDenom = makeIBCMinimalDenom(channelInfo.sourceChannelId, channelInfo.ibcTransferPathDenom);
-			sourceDenom = channelInfo.coinMinimalDenom;
-		}
-
 		const originCurrency = chainInfo.currencies.find(cur => {
 			if (channelInfo.coinMinimalDenom.startsWith('cw20:')) {
 				return cur.coinMinimalDenom.startsWith(channelInfo.coinMinimalDenom);
@@ -48,6 +40,26 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 
 		if (!originCurrency) {
 			throw new Error(`Unknown currency ${channelInfo.coinMinimalDenom} for ${channelInfo.counterpartyChainId}`);
+		}
+
+		// if this is a multihop ibc, need to special case because the denom on osmosis
+		// isn't H(source_denom), but rather H(ibc_path)
+		if (channelInfo.ibcTransferPathDenom) {
+			ibcDenom = makeIBCMinimalDenom(channelInfo.sourceChannelId, channelInfo.ibcTransferPathDenom);
+			// originCurrency.coinMinimalDenom = channelInfo.coinMinimalDenom;
+
+			// originCurrency = {
+			// 	coinDecimals: originCurrency.coinDecimals,
+			// 	coinGeckoId: originCurrency.coinGeckoId,
+			// 	coinImageUrl: originCurrency.coinImageUrl,
+			// 	coinDenom: currency.coinDenom,
+			// 	coinMinimalDenom: bal.sourceDenom,
+			// 	paths: (currency as IBCCurrency).paths,
+			// 	originChainId: (currency as IBCCurrency).originChainId,
+			// 	originCurrency: (currency as IBCCurrency).originCurrency,
+			// };
+
+			// console.log(currency as IBCCurrency);
 		}
 
 		const balance = queries.queryBalances.getQueryBech32Address(account.bech32Address).getBalanceFromCurrency({
@@ -73,7 +85,6 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 			destChannelId: channelInfo.destChannelId,
 			isUnstable: channelInfo.isUnstable,
 			ics20ContractAddress: channelInfo.ics20ContractAddress,
-			sourceDenom: sourceDenom,
 		};
 	});
 
@@ -169,25 +180,10 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 									.toString()}
 								totalFiatValue={totalFiatValue}
 								onDeposit={() => {
-									console.log(currency as IBCCurrency);
-
-									const sourceCurrency = {
-										coinDecimals: currency.coinDecimals,
-										coinGeckoId: currency.coinGeckoId,
-										coinImageUrl: currency.coinImageUrl,
-										coinDenom: currency.coinDenom,
-										coinMinimalDenom: bal.sourceDenom,
-										paths: (currency as IBCCurrency).paths,
-										originChainId: (currency as IBCCurrency).originChainId,
-										originCurrency: (currency as IBCCurrency).originCurrency,
-									};
-
-									console.log(currency as IBCCurrency);
-
 									setDialogState({
 										open: true,
 										counterpartyChainId: bal.chainInfo.chainId,
-										currency: sourceCurrency as IBCCurrency,
+										currency: currency as IBCCurrency,
 										sourceChannelId: bal.sourceChannelId,
 										destChannelId: bal.destChannelId,
 										isWithdraw: false,
