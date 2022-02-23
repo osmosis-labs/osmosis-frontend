@@ -182,6 +182,7 @@ module.exports = {
 			'gradients-pinky': 'linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)',
 			sfs: 'linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)',
 			'sfs-20': 'linear-gradient(90deg, rgba(138, 134, 255, 0.2) 0.04%, rgba(225, 60, 189, 0.2) 99.5%)',
+			'selected-validator': 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), linear-gradient(#231d4b, #231d4b)',
 		},
 		spacing: {
 			...spacing,
