@@ -1169,7 +1169,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'PSTAKE',
 				coinMinimalDenom: 'ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444',
 				coinDecimals: 18,
-				coinGeckoId: 'pool:pstake',
+				coinGeckoId: 'pstake-finance',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/pstake.png',
 			},
 		],
@@ -2218,7 +2218,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'PSTAKE',
 				coinMinimalDenom: 'gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006',
 				coinDecimals: 18,
-				// coinGeckoId: 'pstake',
+				coinGeckoId: 'pstake-finance',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/pstake.png',
 			},
 		],
@@ -2239,7 +2239,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/gravity-bridge/txs/{txHash}',
 	},
-  {
+	{
 		rpc: 'https://poseidon.mainnet.decentr.xyz',
 		rest: 'https://rest.mainnet.decentr.xyz',
 		chainId: 'mainnet-3',
