@@ -34,15 +34,15 @@ export class ObservableQuerySuperfluidUndelegationsInner extends ObservableChain
 
 		const validatorCombinedUndelegationRecordMap = this.response.data.superfluid_delegation_records.reduce(
 			(undelecationRecordMap, undelegationRecord) => {
-				const undelegationRecordKey = `${undelegationRecord.delegation_amount.denom}/${undelegationRecord.validator_address}`;
-				const combiningUndelegationRecord = undelecationRecordMap.get(undelegationRecordKey);
+				const undelegationRecordMapKey = `${undelegationRecord.delegation_amount.denom}/${undelegationRecord.validator_address}`;
+				const combiningUndelegationRecord = undelecationRecordMap.get(undelegationRecordMapKey);
 
 				if (combiningUndelegationRecord) {
 					const combinedDelegationAmount = new Dec(combiningUndelegationRecord.delegation_amount.amount).add(
 						new Dec(undelegationRecord.delegation_amount.amount)
 					);
 
-					undelecationRecordMap.set(undelegationRecordKey, {
+					undelecationRecordMap.set(undelegationRecordMapKey, {
 						...undelegationRecord,
 						delegation_amount: {
 							...combiningUndelegationRecord.delegation_amount,
@@ -50,7 +50,7 @@ export class ObservableQuerySuperfluidUndelegationsInner extends ObservableChain
 						},
 					});
 				} else {
-					undelecationRecordMap.set(undelegationRecordKey, undelegationRecord);
+					undelecationRecordMap.set(undelegationRecordMapKey, undelegationRecord);
 				}
 
 				return undelecationRecordMap;

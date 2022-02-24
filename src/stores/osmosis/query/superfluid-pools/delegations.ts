@@ -30,14 +30,15 @@ export class ObservableQuerySuperfluidDelegationsInner extends ObservableChainQu
 
 		const validatorCombinedDelegationRecordMap = this.response.data.superfluid_delegation_records.reduce(
 			(delecationRecordMap, delegationRecord) => {
-				const combiningDelegationRecord = delecationRecordMap.get(delegationRecord.validator_address);
+				const delegationRecordMapKey = `${delegationRecord.delegation_amount.denom}/${delegationRecord.validator_address}`;
+				const combiningDelegationRecord = delecationRecordMap.get(delegationRecordMapKey);
 
 				if (combiningDelegationRecord) {
 					const combinedDelegationAmount = new Dec(combiningDelegationRecord.delegation_amount.amount).add(
 						new Dec(delegationRecord.delegation_amount.amount)
 					);
 
-					delecationRecordMap.set(delegationRecord.validator_address, {
+					delecationRecordMap.set(delegationRecordMapKey, {
 						...delegationRecord,
 						delegation_amount: {
 							...combiningDelegationRecord.delegation_amount,
@@ -45,7 +46,7 @@ export class ObservableQuerySuperfluidDelegationsInner extends ObservableChainQu
 						},
 					});
 				} else {
-					delecationRecordMap.set(delegationRecord.validator_address, delegationRecord);
+					delecationRecordMap.set(delegationRecordMapKey, delegationRecord);
 				}
 
 				return delecationRecordMap;
