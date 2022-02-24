@@ -135,6 +135,7 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId, isSup
 									.toString()}%`}
 								duration={lockableDuration.humanize()}
 								isMobileView={isMobileView}
+								poolId={poolId}
 								isSuperfluidEnabled={i === lockableDurations.length - 1 && isSuperfluidEnabled}
 							/>
 						);
@@ -154,11 +155,21 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId, isSup
 });
 
 const LockupBox: FunctionComponent<{
+	poolId: string;
 	duration: string;
 	apy: string;
 	isMobileView: boolean;
 	isSuperfluidEnabled?: boolean;
-}> = ({ duration, apy, isMobileView, isSuperfluidEnabled }) => {
+}> = observer(({ poolId, duration, apy, isMobileView, isSuperfluidEnabled }) => {
+	const { chainStore, queriesStore } = useStore();
+
+	const queries = queriesStore.get(chainStore.current.chainId);
+	const superfluidAPY = isSuperfluidEnabled
+		? queries.cosmos.queryInflation.inflation.mul(
+				queries.osmosis.querySuperfluidOsmoEquivalent.calculateOsmoEquivalentMultiplier(`gamm/pool/${poolId}`)
+		  )
+		: new IntPretty(0);
+
 	return (
 		<div className={`w-full rounded-xl py-0.5 px-0.5 ${isSuperfluidEnabled ? 'bg-sfs' : 'bg-card'}`}>
 			<div className="rounded-xl bg-card py-4 px-5.5 md:py-5.5 md:px-7">
@@ -174,12 +185,12 @@ const LockupBox: FunctionComponent<{
 				</div>
 				<Text isMobileView={isMobileView} color="gold" size="lg">
 					APR {apy}
-					{isSuperfluidEnabled && ` + 29%`}
+					{isSuperfluidEnabled && ` + ${superfluidAPY.maxDecimals(0).toString()}%`}
 				</Text>
 			</div>
 		</div>
 	);
-};
+});
 
 const LiquidityMiningContainer = styled(CenterSelf)`
 	padding: 20px 20px 28px;
