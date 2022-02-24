@@ -6,22 +6,22 @@ import { useStore } from 'src/stores';
 import { Staking } from '@keplr-wallet/stores';
 import { Dec, DecUtils } from '@keplr-wallet/unit';
 
-export const SuperfluidStaking: FunctionComponent = observer(() => {
+export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer(({ poolId }) => {
 	const { isMobileView } = useWindowSize();
 	const { accountStore, queriesStore, chainStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
+	const poolShareCurrency = queries.osmosis.queryGammPoolShare.getShareCurrency(poolId);
 
-	const superfluidDelegations = queries.osmosis.querySuperfluidDelegations.getQuerySuperfluidDelegations(
-		account.bech32Address
-	).delegations;
+	const superfluidDelegations = queries.osmosis.querySuperfluidDelegations
+		.getQuerySuperfluidDelegations(account.bech32Address)
+		.getDelegations(poolShareCurrency);
 	const queryActiveValidators = queries.cosmos.queryValidators.getQueryStatus(Staking.BondStatus.Bonded);
 	const activeValidators = queryActiveValidators.validators;
 	const superfluidDelegatedValidators = activeValidators.filter(activeValidator =>
-		superfluidDelegations?.superfluid_delegation_records.some(
-			superfluidDelegationRecord =>
-				superfluidDelegationRecord.validator_address.split('superbonding/')[1] === activeValidator.operator_address
+		superfluidDelegations?.some(
+			delegation => delegation.validator_address.split('superbonding/')[1] === activeValidator.operator_address
 		)
 	);
 

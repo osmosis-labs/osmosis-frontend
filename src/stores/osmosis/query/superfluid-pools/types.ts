@@ -1,3 +1,5 @@
+import { CoinPretty } from '@keplr-wallet/unit';
+
 export type SuperfluidAllAssets = {
 	assets: [
 		{
@@ -7,7 +9,7 @@ export type SuperfluidAllAssets = {
 	];
 };
 
-export type SuperfluidDelegationRecords = {
+export type SuperfluidDelegationRecordsResponse = {
 	delegator_address: string;
 	validator_address: string;
 	delegation_amount: {
@@ -16,12 +18,18 @@ export type SuperfluidDelegationRecords = {
 	};
 };
 
-export type SuperfluidDelegations = {
-	superfluid_delegation_records: SuperfluidDelegationRecords[];
+export type SuperfluidDelegationsResponse = {
+	superfluid_delegation_records: SuperfluidDelegationRecordsResponse[];
 	total_delegated_coins: [
 		{
 			denom: string;
 			amount: string;
 		}
 	];
+};
+
+export type SuperfluidDelegation = {
+	delegator_address: string;
+	validator_address: string;
+	amount: CoinPretty;
 };

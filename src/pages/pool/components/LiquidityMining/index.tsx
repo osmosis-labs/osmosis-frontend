@@ -140,7 +140,7 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId, isSup
 					})}
 				</LockDurationSection>
 			</LiquidityMiningContainer>
-			{isSuperfluidEnabled && <SuperfluidStaking />}
+			{isSuperfluidEnabled && <SuperfluidStaking poolId={poolId} />}
 			<TableSection className="mt-10">
 				<MyBondingsTable poolId={poolId} isSuperfluidEnabled={isSuperfluidEnabled} />
 			</TableSection>
