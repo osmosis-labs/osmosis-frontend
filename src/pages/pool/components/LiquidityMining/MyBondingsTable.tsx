@@ -149,7 +149,7 @@ const LockupTableRow = observer(function LockupTableRow({
 									});
 								} else {
 									// XXX: Due to the block gas limit, restrict the number of lock id to included in the one tx.
-									const lockIds = lockup.lockIds.slice(0, 10);
+									const lockIds = lockup.lockIds.slice(0, 4);
 
 									for (const lockId of lockIds) {
 										await queries.osmosis.querySyntheticLockupsByLockId.get(lockId).waitFreshResponse();

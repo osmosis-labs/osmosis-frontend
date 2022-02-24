@@ -45,6 +45,7 @@ export interface OsmosisMsgOpts {
 	readonly lockTokens: MsgOpt;
 	readonly lockAndSuperfluidDelegate: MsgOpt;
 	readonly beginUnlocking: MsgOpt;
+	readonly superfluidUndelegate: MsgOpt;
 	readonly superfluidUnbondLock: MsgOpt;
 	readonly unlockPeriodLock: MsgOpt;
 }
@@ -106,6 +107,10 @@ export class AccountWithCosmosAndOsmosis
 				type: 'osmosis/lockup/unlock-period-lock',
 				// Gas per msg
 				gas: 140000,
+			},
+			superfluidUndelegate: {
+				type: 'osmosis/superfluid/superfluid-undelegate',
+				gas: 300000,
 			},
 			superfluidUnbondLock: {
 				type: 'osmosis/superfluid/superfluid-unbond-lock',
@@ -998,9 +1003,11 @@ export class OsmosisAccount {
 		memo: string = '',
 		onFulfill?: (tx: any) => void
 	) {
-		const msgs = locks.map(lock => {
+		const msgs: { type: string; value: any }[] = [];
+
+		for (const lock of locks) {
 			if (!lock.isSyntheticLock) {
-				return {
+				msgs.push({
 					type: this.base.msgOpts.beginUnlocking.type,
 					value: {
 						owner: this.base.bech32Address,
@@ -1008,19 +1015,29 @@ export class OsmosisAccount {
 						ID: lock.lockId,
 						coins: [],
 					},
-				};
+				});
 			} else {
-				return {
-					type: this.base.msgOpts.superfluidUnbondLock.type,
-					value: {
-						sender: this.base.bech32Address,
-						lock_id: lock.lockId,
+				msgs.push(
+					{
+						type: this.base.msgOpts.superfluidUndelegate.type,
+						value: {
+							sender: this.base.bech32Address,
+							lock_id: lock.lockId,
+						},
 					},
-				};
+					{
+						type: this.base.msgOpts.superfluidUnbondLock.type,
+						value: {
+							sender: this.base.bech32Address,
+							lock_id: lock.lockId,
+						},
+					}
+				);
 			}
-		});
+		}
 
 		let numBeginUnlocking = 0;
+		let numSuperfluidUndelegate = 0;
 		let numSuperfluidUnbondLock = 0;
 
 		const protoMsgs = msgs.map(msg => {
@@ -1031,6 +1048,15 @@ export class OsmosisAccount {
 					value: osmosis.lockup.MsgBeginUnlocking.encode({
 						owner: msg.value.owner,
 						ID: Long.fromString(msg.value.ID),
+					}).finish(),
+				};
+			} else if (msg.type === this.base.msgOpts.superfluidUndelegate.type && msg.value.lock_id) {
+				numSuperfluidUndelegate++;
+				return {
+					type_url: '/osmosis.superfluid.MsgSuperfluidUndelegate',
+					value: osmosis.superfluid.MsgSuperfluidUndelegate.encode({
+						sender: msg.value.sender,
+						lockId: Long.fromString(msg.value.lock_id),
 					}).finish(),
 				};
 			} else if (msg.type === this.base.msgOpts.superfluidUnbondLock.type && msg.value.lock_id) {
@@ -1058,6 +1084,7 @@ export class OsmosisAccount {
 				amount: [],
 				gas: (
 					numBeginUnlocking * this.base.msgOpts.beginUnlocking.gas +
+					numSuperfluidUndelegate * this.base.msgOpts.superfluidUndelegate.gas +
 					numSuperfluidUnbondLock * this.base.msgOpts.superfluidUnbondLock.gas
 				).toString(),
 			},
