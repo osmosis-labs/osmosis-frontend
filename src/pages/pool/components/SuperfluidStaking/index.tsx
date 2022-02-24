@@ -20,9 +20,7 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 	const queryActiveValidators = queries.cosmos.queryValidators.getQueryStatus(Staking.BondStatus.Bonded);
 	const activeValidators = queryActiveValidators.validators;
 	const superfluidDelegatedValidators = activeValidators.filter(activeValidator =>
-		superfluidDelegations?.some(
-			delegation => delegation.validator_address.split('superbonding/')[1] === activeValidator.operator_address
-		)
+		superfluidDelegations?.some(delegation => delegation.validator_address === activeValidator.operator_address)
 	);
 
 	return (
