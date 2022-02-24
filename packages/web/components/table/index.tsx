@@ -113,7 +113,7 @@ export const Table = <TCell extends BaseCell = BaseCell>({
                   "cursor-pointer select-none": rowDef?.onClick !== undefined,
                 },
                 rowHovered
-                  ? `${rowDef?.makeHoverClass?.(rowIndex)} bg-card`
+                  ? rowDef?.makeHoverClass?.(rowIndex) || "bg-card"
                   : undefined
               )}
               onClick={() => rowDef?.onClick?.(rowIndex)}

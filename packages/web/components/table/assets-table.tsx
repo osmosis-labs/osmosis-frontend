@@ -8,6 +8,7 @@ import {
 import { SearchBox } from "../input";
 import { CheckBox, SortMenu } from "../control";
 import { Table } from ".";
+import { RowDef } from "./types";
 import { SortDirection } from "../types";
 import {
   AssetNameCell,
@@ -102,7 +103,10 @@ export const AssetsTable: FunctionComponent<Props> = ({
   ] = useSortedData(cells);
 
   const sortColumnWithKeys = useCallback(
-    (sortKeys: string[], onClickSortDirection: SortDirection = "ascending") => {
+    (
+      sortKeys: string[],
+      onClickSortDirection: SortDirection = "descending"
+    ) => {
       const isSorting = sortKeys.some((key) => key === sortKey);
       const firstKey = sortKeys.find((_, i) => i === 0);
 
@@ -131,8 +135,12 @@ export const AssetsTable: FunctionComponent<Props> = ({
     ["chainName", "chainId", "coinDenom", "amount", "fiatValue", "queryTags"]
   );
 
+  const tableData = showAllPools
+    ? filteredSortedCells
+    : filteredSortedCells.slice(0, 10);
+
   return (
-    <section className="bg-surface">
+    <section className="bg-surface min-h-screen">
       <div className="max-w-container mx-auto p-10">
         <div className="flex place-content-between">
           <h5>Osmosis Assets</h5>
@@ -195,17 +203,17 @@ export const AssetsTable: FunctionComponent<Props> = ({
               className: "text-center max-w-[5rem]",
             },
           ]}
-          data={(showAllPools
-            ? filteredSortedCells
-            : filteredSortedCells.slice(0, 10)
-          ).map((cell) => [cell, cell, cell, cell])}
+          rowDefs={tableData.map(() => ({ makeHoverClass: () => " " }))}
+          data={tableData.map((cell) => [cell, cell, cell, cell])}
         />
-        <div className="relative flex gap-2 justify-center">
-          <ShowMoreButton
-            className="m-auto"
-            isOn={showAllPools}
-            onToggle={() => setShowAllPools(!showAllPools)}
-          />
+        <div className="relative flex h-12 justify-center">
+          {filteredSortedCells.length > 10 && (
+            <ShowMoreButton
+              className="m-auto"
+              isOn={showAllPools}
+              onToggle={() => setShowAllPools(!showAllPools)}
+            />
+          )}
           <div className="flex gap-2 absolute right-24 bottom-1">
             <CheckBox
               className={
