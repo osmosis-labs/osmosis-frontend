@@ -30,7 +30,7 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 			<TitleText isMobileView={isMobileView} pb={isMobileView ? 10 : 20}>
 				Superfluid Staking
 			</TitleText>
-			{superfluidDelegations ? (
+			{Array.isArray(superfluidDelegations) && superfluidDelegations.length > 0 ? (
 				<div className="bg-sfs p-0.5 rounded-2xl">
 					<div className="p-4.5 bg-card rounded-2xl">
 						<div className="pb-4 border-b border-white-faint font-body font-semibold flex justify-between items-center">
