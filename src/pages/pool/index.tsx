@@ -84,12 +84,6 @@ export const PoolPage: FunctionComponent = observer(() => {
 				{isLbp(pool.smoothWeightChangeParams) && <LbpCatalyst pool={pool} lbpParams={pool.smoothWeightChangeParams} />}
 			</LiquidityMiningSection>
 
-			<SuperfluidStakingSection>
-				<CenterSelf>
-					<SuperfluidStaking isSuperfluidEnabled={isSuperfluidEnabled} />
-				</CenterSelf>
-			</SuperfluidStakingSection>
-
 			<PoolCatalystSection>
 				<CenterSelf>
 					<PoolCatalyst poolId={pool.id} />
@@ -207,15 +201,6 @@ const LiquidityMiningSection = styled.div`
 `;
 
 const PoolCatalystSection = styled.div`
-	background-color: ${colorPrimaryDark};
-	width: 100%;
-	padding: 20px;
-	@media (min-width: 768px) {
-		padding: 20px 40px 40px;
-	}
-`;
-
-const SuperfluidStakingSection = styled.div`
 	background-color: ${colorPrimaryDark};
 	width: 100%;
 	padding: 20px;

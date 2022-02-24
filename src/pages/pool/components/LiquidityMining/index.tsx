@@ -11,6 +11,7 @@ import { ExtraGaugeInPool } from 'src/config';
 import { LockLpTokenDialog } from 'src/dialogs';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { useStore } from 'src/stores';
+import { SuperfluidStaking } from '../SuperfluidStaking';
 import { ExtraGauge } from './ExtraGauge';
 import { MyBondingsTable } from './MyBondingsTable';
 import { MyUnBondingTable } from './MyUnbondingTable';
@@ -139,7 +140,8 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId, isSup
 					})}
 				</LockDurationSection>
 			</LiquidityMiningContainer>
-			<TableSection>
+			<SuperfluidStaking isSuperfluidEnabled={isSuperfluidEnabled} />
+			<TableSection className="mt-10">
 				<MyBondingsTable poolId={poolId} />
 			</TableSection>
 			<TableSection>
