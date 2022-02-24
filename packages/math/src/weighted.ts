@@ -348,21 +348,47 @@ export class WeightedPoolEstimates {
     };
   }
 
-  public static estimateExitSwap(
+  public static estimateJoinSwap(
     pool: {
       totalShare: Int;
     },
     poolAssets: { denom: string; amount: Int }[],
+    makeCoinPretty: (coin: Coin) => CoinPretty,
+    shareOutAmount: string,
+    shareCoinDecimals: number
+  ): {
+    tokenIns: CoinPretty[];
+  } {
+    const estimated = WeightedPoolEstimates_Raw.estimateJoinPool(
+      pool.totalShare,
+      poolAssets,
+      new Dec(shareOutAmount)
+        .mul(DecUtils.getTenExponentNInPrecisionRange(shareCoinDecimals))
+        .truncate()
+    );
+
+    const tokenIns = estimated.tokenIns.map(makeCoinPretty);
+
+    return {
+      tokenIns,
+    };
+  }
+
+  public static estimateExitSwap(
+    pool: {
+      totalShare: Int;
+      poolAssets: { denom: string; amount: Int }[];
+    },
     makeCoinPretty: (coin: Coin) => CoinPretty,
     shareInAmount: string,
     shareCoinDecimals: number
   ): { tokenOuts: CoinPretty[] } {
     const estimated = WeightedPoolEstimates_Raw.estimateExitPool(
       pool.totalShare,
+      pool.poolAssets,
       new Dec(shareInAmount)
-        .mul(DecUtils.getPrecisionDec(shareCoinDecimals))
-        .truncate(),
-      poolAssets
+        .mul(DecUtils.getTenExponentNInPrecisionRange(shareCoinDecimals))
+        .truncate()
     );
 
     const tokenOuts = estimated.tokenOuts.map(makeCoinPretty);
@@ -694,8 +720,8 @@ class WeightedPoolEstimates_Raw {
 
   public static estimateExitPool(
     totalShare: Int,
-    shareInAmount: Int,
-    poolAssets: { denom: string; amount: Int }[]
+    poolAssets: { denom: string; amount: Int }[],
+    shareInAmount: Int
   ): {
     tokenOuts: Coin[];
   } {
