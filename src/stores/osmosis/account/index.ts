@@ -45,6 +45,8 @@ export interface OsmosisMsgOpts {
 	readonly lockTokens: MsgOpt;
 	readonly lockAndSuperfluidDelegate: MsgOpt;
 	readonly beginUnlocking: MsgOpt;
+	readonly superfluidUndelegate: MsgOpt;
+	readonly superfluidUnbondLock: MsgOpt;
 	readonly unlockPeriodLock: MsgOpt;
 }
 
@@ -105,6 +107,15 @@ export class AccountWithCosmosAndOsmosis
 				type: 'osmosis/lockup/unlock-period-lock',
 				// Gas per msg
 				gas: 140000,
+			},
+			superfluidUndelegate: {
+				type: 'osmosis/superfluid/superfluid-undelegate',
+				gas: 300000,
+			},
+			superfluidUnbondLock: {
+				type: 'osmosis/superfluid/superfluid-unbond-lock',
+				// Gas per msg
+				gas: 300000,
 			},
 		})
 	);
@@ -975,6 +986,121 @@ export class OsmosisAccount {
 					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryUnlockingCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
+				}
+
+				if (onFulfill) {
+					onFulfill(tx);
+				}
+			}
+		);
+	}
+
+	async sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+		locks: {
+			lockId: string;
+			isSyntheticLock: boolean;
+		}[],
+		memo: string = '',
+		onFulfill?: (tx: any) => void
+	) {
+		const msgs: { type: string; value: any }[] = [];
+
+		for (const lock of locks) {
+			if (!lock.isSyntheticLock) {
+				msgs.push({
+					type: this.base.msgOpts.beginUnlocking.type,
+					value: {
+						owner: this.base.bech32Address,
+						// XXX: 얘는 어째서인지 소문자가 아님 ㅋ;
+						ID: lock.lockId,
+						coins: [],
+					},
+				});
+			} else {
+				msgs.push(
+					{
+						type: this.base.msgOpts.superfluidUndelegate.type,
+						value: {
+							sender: this.base.bech32Address,
+							lock_id: lock.lockId,
+						},
+					},
+					{
+						type: this.base.msgOpts.superfluidUnbondLock.type,
+						value: {
+							sender: this.base.bech32Address,
+							lock_id: lock.lockId,
+						},
+					}
+				);
+			}
+		}
+
+		let numBeginUnlocking = 0;
+		let numSuperfluidUndelegate = 0;
+		let numSuperfluidUnbondLock = 0;
+
+		const protoMsgs = msgs.map(msg => {
+			if (msg.type === this.base.msgOpts.beginUnlocking.type && msg.value.ID) {
+				numBeginUnlocking++;
+				return {
+					type_url: '/osmosis.lockup.MsgBeginUnlocking',
+					value: osmosis.lockup.MsgBeginUnlocking.encode({
+						owner: msg.value.owner,
+						ID: Long.fromString(msg.value.ID),
+					}).finish(),
+				};
+			} else if (msg.type === this.base.msgOpts.superfluidUndelegate.type && msg.value.lock_id) {
+				numSuperfluidUndelegate++;
+				return {
+					type_url: '/osmosis.superfluid.MsgSuperfluidUndelegate',
+					value: osmosis.superfluid.MsgSuperfluidUndelegate.encode({
+						sender: msg.value.sender,
+						lockId: Long.fromString(msg.value.lock_id),
+					}).finish(),
+				};
+			} else if (msg.type === this.base.msgOpts.superfluidUnbondLock.type && msg.value.lock_id) {
+				numSuperfluidUnbondLock++;
+				return {
+					type_url: '/osmosis.superfluid.MsgSuperfluidUnbondLock',
+					value: osmosis.superfluid.MsgSuperfluidUnbondLock.encode({
+						sender: msg.value.sender,
+						lockId: Long.fromString(msg.value.lock_id),
+					}).finish(),
+				};
+			} else {
+				throw new Error('Invalid locks');
+			}
+		});
+
+		await this.base.sendMsgs(
+			'beginUnlocking',
+			{
+				aminoMsgs: msgs,
+				protoMsgs,
+			},
+			memo,
+			{
+				amount: [],
+				gas: (
+					numBeginUnlocking * this.base.msgOpts.beginUnlocking.gas +
+					numSuperfluidUndelegate * this.base.msgOpts.superfluidUndelegate.gas +
+					numSuperfluidUnbondLock * this.base.msgOpts.superfluidUnbondLock.gas
+				).toString(),
+			},
+			undefined,
+			tx => {
+				if (tx.code == null || tx.code === 0) {
+					// Refresh the balances
+					const queries = this.queriesStore.get(this.chainId);
+					queries.queryBalances.getQueryBech32Address(this.base.bech32Address).fetch();
+
+					// Refresh the locked coins
+					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
+					queries.osmosis.queryUnlockingCoins.get(this.base.bech32Address).fetch();
+					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
+
+					// TODO: Refresh more if it includes the superfluidUnbondLock
 				}
 
 				if (onFulfill) {
