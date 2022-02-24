@@ -14,6 +14,7 @@ import { useStore } from 'src/stores';
 import { SuperfluidStaking } from '../SuperfluidStaking';
 import { ExtraGauge } from './ExtraGauge';
 import { MyBondingsTable } from './MyBondingsTable';
+import { MySuperfluidUnbondingTable } from './MySuperfluidUnbondingTable';
 import { MyUnBondingTable } from './MyUnbondingTable';
 
 interface Props {
@@ -140,7 +141,8 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId, isSup
 					})}
 				</LockDurationSection>
 			</LiquidityMiningContainer>
-			{isSuperfluidEnabled && <SuperfluidStaking />}
+			{isSuperfluidEnabled && <SuperfluidStaking poolId={poolId} />}
+			{isSuperfluidEnabled && <MySuperfluidUnbondingTable poolId={poolId} />}
 			<TableSection className="mt-10">
 				<MyBondingsTable poolId={poolId} isSuperfluidEnabled={isSuperfluidEnabled} />
 			</TableSection>

@@ -1,10 +1,12 @@
 import { KVStore } from '@keplr-wallet/common';
 import { ChainGetter, ObservableChainQuery, ObservableChainQueryMap } from '@keplr-wallet/stores';
-import { SuperfluidDelegationRecords, SuperfluidDelegations } from './types';
-import { computed, makeObservable } from 'mobx';
-import { Dec } from '@keplr-wallet/unit';
+import { SuperfluidDelegationsResponse, SuperfluidDelegationRecordsResponse, SuperfluidDelegation } from './types';
+import { makeObservable } from 'mobx';
+import { CoinPretty, Dec } from '@keplr-wallet/unit';
+import { Currency } from '@keplr-wallet/types';
+import { computedFn } from 'mobx-utils';
 
-export class ObservableQuerySuperfluidDelegationsInner extends ObservableChainQuery<SuperfluidDelegations> {
+export class ObservableQuerySuperfluidDelegationsInner extends ObservableChainQuery<SuperfluidDelegationsResponse> {
 	constructor(
 		kvStore: KVStore,
 		chainId: string,
@@ -21,8 +23,7 @@ export class ObservableQuerySuperfluidDelegationsInner extends ObservableChainQu
 		makeObservable(this);
 	}
 
-	@computed
-	get delegations(): SuperfluidDelegations | undefined {
+	readonly getDelegations = computedFn((poolShareCurrency: Currency): SuperfluidDelegation[] | undefined => {
 		if (!this.response) {
 			return undefined;
 		}
@@ -44,27 +45,25 @@ export class ObservableQuerySuperfluidDelegationsInner extends ObservableChainQu
 						},
 					});
 				} else {
-					delecationRecordMap.set(
-						`${delegationRecord.validator_address}${delegationRecord.delegation_amount.denom}`,
-						delegationRecord
-					);
+					delecationRecordMap.set(delegationRecord.validator_address, delegationRecord);
 				}
 
 				return delecationRecordMap;
 			},
-			new Map<string, SuperfluidDelegationRecords>()
+			new Map<string, SuperfluidDelegationRecordsResponse>()
 		);
 
 		const validatorCombinedDelegationRecords = [...validatorCombinedDelegationRecordMap.values()];
 
-		return {
-			superfluid_delegation_records: validatorCombinedDelegationRecords,
-			total_delegated_coins: this.response.data.total_delegated_coins,
-		};
-	}
+		return validatorCombinedDelegationRecords.map(record => ({
+			delegator_address: record.delegator_address,
+			validator_address: record.validator_address,
+			amount: new CoinPretty(poolShareCurrency, new Dec(record.delegation_amount.amount)),
+		}));
+	});
 }
 
-export class ObservableQuerySuperfluidDelegations extends ObservableChainQueryMap<SuperfluidDelegations> {
+export class ObservableQuerySuperfluidDelegations extends ObservableChainQueryMap<SuperfluidDelegationsResponse> {
 	constructor(
 		protected readonly kvStore: KVStore,
 		protected readonly chainId: string,
