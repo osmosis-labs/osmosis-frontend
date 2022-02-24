@@ -42,7 +42,7 @@ RUN git clone https://github.com/osmosis-labs/osmosis
 WORKDIR /osmosis
 
 # Change the commit hash if you want.
-RUN git fetch && git checkout eedef4feca681829bc35d2edf02818aedf0fa7c7
+RUN git fetch && git checkout 06cbf2cdc0b090829858a3affde03c674a9769d8
 
 # Build daemon.
 RUN make build
@@ -92,8 +92,12 @@ RUN ./osmosisd add-genesis-account $(./osmosisd keys show local1 -a --keyring-ba
 RUN ./osmosisd add-genesis-account $(./osmosisd keys show local2 -a --keyring-backend test) 100000000000000uosmo,10000000000uion,10000000000uatom,10000000000ufoo,10000000000ubar
 RUN ./osmosisd add-genesis-account $(./osmosisd keys show local3 -a --keyring-backend test) 100000000000000uosmo,10000000000uion,10000000000uatom,10000000000ufoo,10000000000ubar
 
+# COPY gentx /root/.osmosisd/config/gentx
+
 RUN ./osmosisd gentx val 10000000000uosmo --chain-id localnet-1 --keyring-backend test
 RUN ./osmosisd collect-gentxs
+
+RUN sed -i 's/persistent_peers = ".*"/persistent_peers = ""/g' ~/.osmosisd/config/config.toml
 
 EXPOSE 26657
 EXPOSE 1317
