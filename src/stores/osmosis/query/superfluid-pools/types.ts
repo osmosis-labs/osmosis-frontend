@@ -1,4 +1,5 @@
 import { CoinPretty } from '@keplr-wallet/unit';
+import { Duration } from 'dayjs/plugin/duration';
 
 export type SuperfluidParams = {
 	params: {
@@ -61,7 +62,15 @@ export type SuperfluidUndelegationRecordsResponse = {
 };
 
 export type SuperfluidUndelegationsResponse = {
-	superfluid_delegation_records: SuperfluidDelegationRecordsResponse[];
+	superfluid_delegation_records: SuperfluidUndelegationRecordsResponse[];
+	synthetic_locks: [
+		{
+			duration: string;
+			end_time: string;
+			synth_denom: string;
+			underlying_lock_id: string;
+		}
+	];
 	total_delegated_coins: [
 		{
 			denom: string;
@@ -74,4 +83,7 @@ export type SuperfluidUndelegation = {
 	delegator_address: string;
 	validator_address: string;
 	amount: CoinPretty;
+	duration: Duration;
+	end_time: Date;
+	lock_id: string;
 };

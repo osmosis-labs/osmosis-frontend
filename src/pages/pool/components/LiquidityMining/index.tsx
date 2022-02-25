@@ -147,13 +147,9 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId, isSup
 					<SuperfluidStaking poolId={poolId} />
 				</div>
 			)}
-			<TableSection>
-				<MyBondingsTable poolId={poolId} isSuperfluidEnabled={isSuperfluidEnabled} />
-			</TableSection>
-			<TableSection>
-				<MyUnBondingTable poolId={poolId} />
-			</TableSection>
-			<TableSection>{isSuperfluidEnabled && <MySuperfluidUnbondingTable poolId={poolId} />}</TableSection>
+			<MyBondingsTable poolId={poolId} isSuperfluidEnabled={isSuperfluidEnabled} />
+			<MyUnBondingTable poolId={poolId} />
+			{isSuperfluidEnabled && <MySuperfluidUnbondingTable poolId={poolId} />}
 		</>
 	);
 });
@@ -235,5 +231,5 @@ const LockDurationSection = styled.div`
 `;
 
 const TableSection = styled.div`
-	margin-top: 40px;
+	padding-top: 40px;
 `;
