@@ -73,9 +73,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 									if (lockableDurations.length - 1 === i && isSuperfluidEnabled) {
 										const superfluidAPY = (() => {
 											const superfluidAPY = queries.cosmos.queryInflation.inflation.mul(
-												queries.osmosis.querySuperfluidOsmoEquivalent.calculateOsmoEquivalentMultiplier(
-													`gamm/pool/${poolId}`
-												)
+												queries.osmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(poolId)
 											);
 
 											if (lockableDurations.length > 0) {

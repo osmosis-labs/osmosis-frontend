@@ -133,7 +133,8 @@ export class OsmosisQueries {
 			chainId,
 			chainGetter,
 			this.querySuperfluidParams,
-			this.querySuperfluidAssetMultiplier
+			this.querySuperfluidAssetMultiplier,
+			this.queryGammPools
 		);
 	}
 }

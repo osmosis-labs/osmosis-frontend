@@ -166,7 +166,7 @@ const LockupBox: FunctionComponent<{
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const superfluidAPY = isSuperfluidEnabled
 		? queries.cosmos.queryInflation.inflation.mul(
-				queries.osmosis.querySuperfluidOsmoEquivalent.calculateOsmoEquivalentMultiplier(`gamm/pool/${poolId}`)
+				queries.osmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(poolId)
 		  )
 		: new IntPretty(0);
 

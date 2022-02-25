@@ -1,47 +1,67 @@
 import { ChainGetter } from '@keplr-wallet/stores';
-import { ObservableQuerySuperfluidParams } from 'src/stores/osmosis/query/superfluid-pools/params';
-import { ObservableQuerySuperfluidAssetMultiplier } from 'src/stores/osmosis/query/superfluid-pools/asset-multiplier';
+import { ObservableQuerySuperfluidParams } from '../superfluid-pools/params';
+import { ObservableQuerySuperfluidAssetMultiplier } from '../superfluid-pools/asset-multiplier';
 import { computedFn } from 'mobx-utils';
 import { CoinPretty, Dec, DecUtils } from '@keplr-wallet/unit';
+import { AppCurrency } from '@keplr-wallet/types';
+import { ObservableQueryPools } from '../pools';
 
 export class ObservableQuerySuperfluidOsmoEquivalent {
 	constructor(
 		protected readonly chainId: string,
 		protected readonly chainGetter: ChainGetter,
 		protected readonly _querySuperfluidParams: ObservableQuerySuperfluidParams,
-		protected readonly _querySuperfluidAssetMultiplier: ObservableQuerySuperfluidAssetMultiplier
+		protected readonly _querySuperfluidAssetMultiplier: ObservableQuerySuperfluidAssetMultiplier,
+		protected readonly _queryPools: ObservableQueryPools
 	) {}
 
 	readonly calculateOsmoEquivalent = computedFn(
 		(coinPretty: CoinPretty): CoinPretty => {
-			return this.calculateOsmoEquivalentInner(
-				coinPretty
-					.toDec()
-					.mul(DecUtils.getTenExponentN(coinPretty.currency.coinDecimals))
-					.toString(),
-				coinPretty.currency.coinMinimalDenom
+			const multiplier = this.calculateOsmoEquivalentMultiplier(coinPretty.currency);
+
+			const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
+
+			return new CoinPretty(
+				stakeCurrency,
+				coinPretty.mul(multiplier).mul(DecUtils.getTenExponentN(stakeCurrency.coinDecimals))
 			);
 		}
 	);
 
-	protected readonly calculateOsmoEquivalentInner = computedFn(
-		(amountRaw: string, denom: string): CoinPretty => {
-			const amountDec = new Dec(amountRaw);
+	readonly calculateOsmoEquivalentMultiplier = computedFn(
+		(currency: AppCurrency): Dec => {
+			const minimumRiskFactor = this._querySuperfluidParams.minimumRiskFactor;
+			const assetMultiplier = this._querySuperfluidAssetMultiplier.getDenom(currency.coinMinimalDenom).multiplier;
 
-			const multiplier = this.calculateOsmoEquivalentMultiplier(denom);
+			const osmoCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
 
-			const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
+			const multipication = DecUtils.getTenExponentN(currency.coinDecimals - osmoCurrency.coinDecimals);
 
-			return new CoinPretty(stakeCurrency, amountDec.mul(multiplier));
+			return assetMultiplier.mul(new Dec(1).sub(minimumRiskFactor)).mul(multipication);
 		}
 	);
 
-	readonly calculateOsmoEquivalentMultiplier = computedFn(
-		(denom: string): Dec => {
-			const minimumRiskFactor = this._querySuperfluidParams.minimumRiskFactor;
-			const assetMultiplier = this._querySuperfluidAssetMultiplier.getDenom(denom).multiplier;
+	/**
+	 * Estimate the multiplication value to compute the superfluid's APR. We assume that arbitrage trading is going well, not the exact value on the current chain, and estimate only by looking at the pool weight.
+	 */
+	readonly estimatePoolAPROsmoEquivalentMultiplier = computedFn(
+		(poolId: string): Dec => {
+			const pool = this._queryPools.getPool(poolId);
+			if (pool) {
+				const osmoCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
 
-			return assetMultiplier.mul(new Dec(1).sub(minimumRiskFactor));
+				const poolAsset = pool.poolAssets.find(
+					asset => asset.amount.currency.coinMinimalDenom === osmoCurrency.coinMinimalDenom
+				);
+				if (poolAsset && pool.totalWeight.toDec().gt(new Dec(0))) {
+					const ratio = poolAsset.weight.quo(pool.totalWeight);
+
+					const minimumRiskFactor = this._querySuperfluidParams.minimumRiskFactor;
+
+					return ratio.toDec().mul(new Dec(1).sub(minimumRiskFactor));
+				}
+			}
+			return new Dec(0);
 		}
 	);
 }

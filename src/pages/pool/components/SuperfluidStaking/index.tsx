@@ -19,7 +19,7 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 
 	const superfluidAPYWithPoolAPY = useMemo(() => {
 		const superfluidAPY = queries.cosmos.queryInflation.inflation.mul(
-			queries.osmosis.querySuperfluidOsmoEquivalent.calculateOsmoEquivalentMultiplier(`gamm/pool/${poolId}`)
+			queries.osmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(poolId)
 		);
 
 		if (lockableDurations.length > 0) {
