@@ -28,7 +28,7 @@ export const MyBondingsTable = observer(function MyBondingsTable({ poolId, isSup
 	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
 
 	return (
-		<div>
+		<div className="mt-10">
 			<div className="px-5 md:px-0">
 				<SubTitleText isMobileView={isMobileView}>My Bondings</SubTitleText>
 			</div>

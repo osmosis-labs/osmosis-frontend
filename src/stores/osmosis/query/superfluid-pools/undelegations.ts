@@ -9,6 +9,7 @@ import { makeObservable } from 'mobx';
 import { CoinPretty, Dec } from '@keplr-wallet/unit';
 import { Currency } from '@keplr-wallet/types';
 import { computedFn } from 'mobx-utils';
+import dayjs from 'dayjs';
 
 export class ObservableQuerySuperfluidUndelegationsInner extends ObservableChainQuery<SuperfluidUndelegationsResponse> {
 	constructor(
@@ -32,38 +33,16 @@ export class ObservableQuerySuperfluidUndelegationsInner extends ObservableChain
 			return undefined;
 		}
 
-		const validatorCombinedUndelegationRecordMap = this.response.data.superfluid_delegation_records.reduce(
-			(undelecationRecordMap, undelegationRecord) => {
-				const undelegationRecordMapKey = `${undelegationRecord.delegation_amount.denom}/${undelegationRecord.validator_address}`;
-				const combiningUndelegationRecord = undelecationRecordMap.get(undelegationRecordMapKey);
+		const superfluidUndelegationRecords = this.response.data.superfluid_delegation_records;
+		const superfluidUndelegationLocks = this.response.data.synthetic_locks;
 
-				if (combiningUndelegationRecord) {
-					const combinedDelegationAmount = new Dec(combiningUndelegationRecord.delegation_amount.amount).add(
-						new Dec(undelegationRecord.delegation_amount.amount)
-					);
-
-					undelecationRecordMap.set(undelegationRecordMapKey, {
-						...undelegationRecord,
-						delegation_amount: {
-							...combiningUndelegationRecord.delegation_amount,
-							amount: combinedDelegationAmount.toString(),
-						},
-					});
-				} else {
-					undelecationRecordMap.set(undelegationRecordMapKey, undelegationRecord);
-				}
-
-				return undelecationRecordMap;
-			},
-			new Map<string, SuperfluidUndelegationRecordsResponse>()
-		);
-
-		const validatorCombinedUndelegationRecords = [...validatorCombinedUndelegationRecordMap.values()];
-
-		return validatorCombinedUndelegationRecords.map(record => ({
+		return superfluidUndelegationRecords.map((record, index) => ({
 			delegator_address: record.delegator_address,
 			validator_address: record.validator_address,
 			amount: new CoinPretty(poolShareCurrency, new Dec(record.delegation_amount.amount)),
+			duration: dayjs.duration(parseInt(superfluidUndelegationLocks[index].duration.replace('s', '')) * 1000),
+			end_time: new Date(superfluidUndelegationLocks[index].end_time),
+			lock_id: superfluidUndelegationLocks[index].underlying_lock_id,
 		}));
 	});
 }

@@ -86,7 +86,7 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 					</div>
 				</div>
 			) : (
-				<div className="bg-card p-5 rounded-2xl flex items-center justify-between font-body">
+				<div className="mt-5 bg-card p-5 rounded-2xl flex items-center justify-between font-body">
 					<div>
 						<div className="text-base font-semibold text-white-high">Superfluid Staking Inactive</div>
 						<div className="mt-2 text-sm font-medium text-iconDefault">

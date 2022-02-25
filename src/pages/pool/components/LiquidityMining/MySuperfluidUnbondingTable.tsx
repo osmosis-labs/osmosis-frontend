@@ -29,9 +29,7 @@ export const MySuperfluidUnbondingTable = observer(function MySuperfluidUnbondin
 		.getUndelegations(poolShareCurrency);
 	const queryActiveValidators = queries.cosmos.queryValidators.getQueryStatus(Staking.BondStatus.Bonded);
 	const activeValidators = queryActiveValidators.validators;
-	const superfluidDelegatedValidators = activeValidators.filter(activeValidator =>
-		superfluidUndelegations?.some(undelegation => undelegation.validator_address === activeValidator.operator_address)
-	);
+
 	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
 
 	if (!superfluidUndelegations || (Array.isArray(superfluidUndelegations) && superfluidUndelegations.length === 0)) {
@@ -39,7 +37,7 @@ export const MySuperfluidUnbondingTable = observer(function MySuperfluidUnbondin
 	}
 
 	return (
-		<React.Fragment>
+		<div className="mt-10">
 			<div className="px-5 md:px-0">
 				<SubTitleText isMobileView={isMobileView}>My Superfluid Unbondings</SubTitleText>
 			</div>
@@ -47,23 +45,27 @@ export const MySuperfluidUnbondingTable = observer(function MySuperfluidUnbondin
 				<UnlockingTableHeader isMobileView={isMobileView} />
 				<tbody className="w-full">
 					{superfluidUndelegations &&
-						superfluidDelegatedValidators.map((validator, i) => {
+						superfluidUndelegations.map((undelegation, i) => {
+							const superfluidValidator = activeValidators.find(
+								activeValidator => activeValidator.operator_address === undelegation.validator_address
+							);
+
 							return (
 								<UnlockingTableRow
-									key={validator.operator_address}
-									validatorName={validator.description.moniker}
+									key={undelegation.lock_id}
+									validatorName={superfluidValidator?.description.moniker}
 									amount={superfluidUndelegations[i].amount
 										.maxDecimals(6)
 										.trim(true)
 										.toString()}
-									endTime={new Date()}
+									endTime={undelegation.end_time}
 									isMobileView={isMobileView}
 								/>
 							);
 						})}
 				</tbody>
 			</table>
-		</React.Fragment>
+		</div>
 	);
 });
 
@@ -102,8 +104,6 @@ const UnlockingTableRow = observer(function UnlockingTableRow({
 	endTime,
 	isMobileView,
 }: UnlockingTableRowProps) {
-	const { chainStore, accountStore } = useStore();
-
 	const endTimeMoment = moment(endTime);
 
 	return (
