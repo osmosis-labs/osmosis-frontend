@@ -53,12 +53,12 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId, isSup
 				/>
 				<LiquidityMiningSummary>
 					<div>
-						<div className="pb-4 flex gap-3 items-center">
+						<div className="pb-4 flex flex-col md:flex-row gap-2.5 md:gap-3 items-start md:items-center">
 							<TitleText isMobileView={isMobileView} pb={0} weight="semiBold">
 								Liquidity Mining
 							</TitleText>
 							{isSuperfluidEnabled && (
-								<button className="bg-sfs rounded-full px-4 py-1">Superfluid Staking Enabled</button>
+								<div className="bg-sfs rounded-full px-4 py-1 text-xs md:text-base">Superfluid Staking Enabled</div>
 							)}
 						</div>
 						<Text isMobileView={isMobileView}>
@@ -142,14 +142,18 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId, isSup
 					})}
 				</LockDurationSection>
 			</LiquidityMiningContainer>
-			{isSuperfluidEnabled && <SuperfluidStaking poolId={poolId} />}
-			{isSuperfluidEnabled && <MySuperfluidUnbondingTable poolId={poolId} />}
-			<TableSection className="mt-10">
+			{isSuperfluidEnabled && (
+				<div className="px-5 mt-5 md:px-0 md:mt-0">
+					<SuperfluidStaking poolId={poolId} />
+				</div>
+			)}
+			<TableSection>
 				<MyBondingsTable poolId={poolId} isSuperfluidEnabled={isSuperfluidEnabled} />
 			</TableSection>
 			<TableSection>
 				<MyUnBondingTable poolId={poolId} />
 			</TableSection>
+			<TableSection>{isSuperfluidEnabled && <MySuperfluidUnbondingTable poolId={poolId} />}</TableSection>
 		</>
 	);
 });
@@ -231,5 +235,5 @@ const LockDurationSection = styled.div`
 `;
 
 const TableSection = styled.div`
-	padding-bottom: 20px;
+	margin-top: 40px;
 `;

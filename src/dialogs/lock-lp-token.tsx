@@ -189,21 +189,23 @@ export const LockLpTokenDialog = wrapBaseDialog(
 						</React.Fragment>
 					) : (
 						<React.Fragment>
-							<div className="flex items-center mb-5 md:mb-9">
+							<div className="flex items-center mb-5 md:mb-9 -mt-1.5 md:mt-0">
 								<img
 									src="/public/assets/Icons/Left.svg"
 									className="w-7 h-7 mr-0 cursor-pointer"
 									onClick={() => setIsValidatorSelectStage(false)}
 								/>
-								<h5 className="ml-9 text-lg md:text-xl">Select Superfluid Validator</h5>
+								<h5 className="ml-9 text-lg md:text-xl">
+									Select <span className="hidden md:inline">{'Superfluid '}</span>Validator
+								</h5>
 							</div>
-							<div className="mb-2.5 md:mb-7.5">
+							<div className="mb-2.5 md:mb-7.5 text-sm md:text-base">
 								<p>Choose your superfluid validator</p>
 							</div>
 							<div className="overflow-auto h-[282px]">
 								<table className="w-full">
 									<thead className="sticky top-0 z-10 bg-surface">
-										<TableHeadRow className="!px-5 !py-0 !mt-0">
+										<TableHeadRow className="!px-5 !py-0 !mt-0 !rounded-t-2xl">
 											<TableData as="th" width={'80%'} className="!px-0 !py-3">
 												<Text size="sm">Validator</Text>
 											</TableData>
@@ -271,8 +273,8 @@ export const LockLpTokenDialog = wrapBaseDialog(
 							</div>
 							<div className="mt-10 py-3 px-5 border border-white-faint rounded-xl bg-card">
 								<div className="flex justify-between">
-									<div className="font-body">Bonded Amount</div>
-									<div className="font-body text-white-mid">
+									<div className="font-body text-sm md:text-base">Bonded Amount</div>
+									<div className="font-body text-sm md:text-base text-white-mid">
 										{queries.queryBalances
 											.getQueryBech32Address(account.bech32Address)
 											.getBalanceFromCurrency(amountConfig.sendCurrency)
@@ -281,8 +283,8 @@ export const LockLpTokenDialog = wrapBaseDialog(
 									</div>
 								</div>
 								<div className="mt-4 flex justify-between">
-									<div className="font-body">Estimated Superfluid Delegation</div>
-									<div className="font-body text-white-mid">~100,000,000 OSMO</div>
+									<div className="font-body text-sm md:text-base">Estimated Superfluid Delegation</div>
+									<div className="font-body text-sm md:text-base text-white-mid">~100,000,000 OSMO</div>
 								</div>
 							</div>
 							<div className="flex w-full justify-center items-center">

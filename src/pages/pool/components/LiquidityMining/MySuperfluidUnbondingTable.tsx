@@ -39,7 +39,7 @@ export const MySuperfluidUnbondingTable = observer(function MySuperfluidUnbondin
 	}
 
 	return (
-		<div className="mt-10">
+		<React.Fragment>
 			<div className="px-5 md:px-0">
 				<SubTitleText isMobileView={isMobileView}>My Superfluid Unbondings</SubTitleText>
 			</div>
@@ -63,7 +63,7 @@ export const MySuperfluidUnbondingTable = observer(function MySuperfluidUnbondin
 						})}
 				</tbody>
 			</table>
-		</div>
+		</React.Fragment>
 	);
 });
 
