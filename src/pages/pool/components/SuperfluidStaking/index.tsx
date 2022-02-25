@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import { TitleText } from 'src/components/Texts';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { useStore } from 'src/stores';
 import { Staking } from '@keplr-wallet/stores';
-import { Dec, DecUtils } from '@keplr-wallet/unit';
+import { CoinPretty, Dec, DecUtils } from '@keplr-wallet/unit';
 
 export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer(({ poolId }) => {
 	const { isMobileView } = useWindowSize();
@@ -22,6 +22,16 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 	const superfluidDelegatedValidators = activeValidators.filter(activeValidator =>
 		superfluidDelegations?.some(delegation => delegation.validator_address === activeValidator.operator_address)
 	);
+
+	const totalDelegations = useMemo(() => {
+		let r = new CoinPretty(poolShareCurrency, new Dec(0));
+		if (superfluidDelegations) {
+			for (const del of superfluidDelegations) {
+				r = r.add(del.amount);
+			}
+		}
+		return r;
+	}, [poolShareCurrency, superfluidDelegations]);
 
 	return (
 		<div>
@@ -50,7 +60,12 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 									<div className="ml-5 w-full">
 										<div className="flex items-center justify-between text-lg font-semibold leading-6">
 											<span>{validator.description.moniker}</span>
-											<span>~100,000,000 OSMO</span>
+											<span>{`~${queries.osmosis.querySuperfluidOsmoEquivalent
+												.calculateOsmoEquivalent(totalDelegations)
+												.trim(true)
+												.maxDecimals(3)
+												.shrink(true)
+												.toString()}`}</span>
 										</div>
 										<div className="mt-1 flex items-center justify-between text-iconDefault">
 											<span>

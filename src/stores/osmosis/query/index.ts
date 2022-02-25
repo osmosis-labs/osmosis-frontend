@@ -27,6 +27,9 @@ import {
 	ObservableQuerySuperfluidDelegations,
 	ObservableQuerySuperfluidPools,
 	ObservableQuerySuperfluidUndelegations,
+	ObservableQuerySuperfluidAssetMultiplier,
+	ObservableQuerySuperfluidOsmoEquivalent,
+	ObservableQuerySuperfluidParams,
 } from './superfluid-pools';
 
 export interface HasOsmosisQueries {
@@ -74,6 +77,9 @@ export class OsmosisQueries {
 	public readonly querySuperfluidPools: DeepReadonly<ObservableQuerySuperfluidPools>;
 	public readonly querySuperfluidDelegations: DeepReadonly<ObservableQuerySuperfluidDelegations>;
 	public readonly querySuperfluidUndelegations: DeepReadonly<ObservableQuerySuperfluidUndelegations>;
+	public readonly querySuperfluidParams: DeepReadonly<ObservableQuerySuperfluidParams>;
+	public readonly querySuperfluidAssetMultiplier: DeepReadonly<ObservableQuerySuperfluidAssetMultiplier>;
+	public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
 
 	constructor(queries: QueriesSetBase, kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
 		const queryGammPool = new ObservableQueryPool(kvStore, chainId, chainGetter);
@@ -121,5 +127,13 @@ export class OsmosisQueries {
 		this.querySuperfluidPools = new ObservableQuerySuperfluidPools(kvStore, chainId, chainGetter);
 		this.querySuperfluidDelegations = new ObservableQuerySuperfluidDelegations(kvStore, chainId, chainGetter);
 		this.querySuperfluidUndelegations = new ObservableQuerySuperfluidUndelegations(kvStore, chainId, chainGetter);
+		this.querySuperfluidParams = new ObservableQuerySuperfluidParams(kvStore, chainId, chainGetter);
+		this.querySuperfluidAssetMultiplier = new ObservableQuerySuperfluidAssetMultiplier(kvStore, chainId, chainGetter);
+		this.querySuperfluidOsmoEquivalent = new ObservableQuerySuperfluidOsmoEquivalent(
+			chainId,
+			chainGetter,
+			this.querySuperfluidParams,
+			this.querySuperfluidAssetMultiplier
+		);
 	}
 }
