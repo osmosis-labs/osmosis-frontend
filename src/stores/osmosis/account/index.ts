@@ -43,6 +43,7 @@ export interface OsmosisMsgOpts {
 	readonly swapExactAmountIn: MsgOpt;
 	readonly swapExactAmountOut: MsgOpt;
 	readonly lockTokens: MsgOpt;
+	readonly superfluidDelegate: MsgOpt;
 	readonly lockAndSuperfluidDelegate: MsgOpt;
 	readonly beginUnlocking: MsgOpt;
 	readonly superfluidUndelegate: MsgOpt;
@@ -93,6 +94,10 @@ export class AccountWithCosmosAndOsmosis
 			lockTokens: {
 				type: 'osmosis/lockup/lock-tokens',
 				gas: 250000,
+			},
+			superfluidDelegate: {
+				type: 'osmosis/superfluid-delegate',
+				gas: 500000,
 			},
 			lockAndSuperfluidDelegate: {
 				type: 'osmosis/lock-and-superfluid-delegate',
@@ -864,6 +869,62 @@ export class OsmosisAccount {
 					// Refresh the locked coins
 					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
+				}
+
+				if (onFulfill) {
+					onFulfill(tx);
+				}
+			}
+		);
+	}
+
+	async sendSuperfluidDelegate(
+		lockIds: string[],
+		validatorAddress: string,
+		memo: string = '',
+		onFulfill?: (tx: any) => void
+	) {
+		const msgs = lockIds.map(lockId => {
+			return {
+				type: this.base.msgOpts.superfluidDelegate.type,
+				value: {
+					sender: this.base.bech32Address,
+					lock_id: lockId,
+					val_addr: validatorAddress,
+				},
+			};
+		});
+
+		const protoMsgs = msgs.map(msg => {
+			return {
+				type_url: '/osmosis.superfluid.MsgSuperfluidDelegate',
+				value: osmosis.superfluid.MsgSuperfluidDelegate.encode({
+					sender: msg.value.sender,
+					lockId: Long.fromString(msg.value.lock_id),
+					valAddr: msg.value.val_addr,
+				}).finish(),
+			};
+		});
+
+		await this.base.sendMsgs(
+			'superfluidDelegate',
+			{
+				aminoMsgs: msgs,
+				protoMsgs,
+			},
+			memo,
+			{
+				amount: [],
+				gas: this.base.msgOpts.lockAndSuperfluidDelegate.gas.toString(),
+			},
+			undefined,
+			tx => {
+				if (tx.code == null || tx.code === 0) {
+					// Refresh the balances
+					const queries = this.queriesStore.get(this.chainId);
+					queries.queryBalances.getQueryBech32Address(this.base.bech32Address).fetch();
+
+					// TODO: Refresh the superfluid validated to be delegated.
 				}
 
 				if (onFulfill) {
