@@ -36,6 +36,10 @@ export class ObservableQuerySuperfluidUndelegationsInner extends ObservableChain
 		const superfluidUndelegationRecords = this.response.data.superfluid_delegation_records;
 		const superfluidUndelegationLocks = this.response.data.synthetic_locks;
 
+		if (superfluidUndelegationRecords.length !== superfluidUndelegationLocks.length) {
+			throw new Error('Undelegation records and locks are different.');
+		}
+
 		return superfluidUndelegationRecords.map((record, index) => ({
 			delegator_address: record.delegator_address,
 			validator_address: record.validator_address,

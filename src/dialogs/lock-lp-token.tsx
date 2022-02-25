@@ -52,6 +52,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 				);
 			}, [activeValidators, delegatedValidators]);
 			const [selectedValidatorAddress, setSelectedValidatorAddress] = useState('');
+			const [searchingValidatorValue, setSearchingValidatorValue] = useState('');
 
 			return (
 				<div className="text-white-high w-full h-full">
@@ -199,8 +200,17 @@ export const LockLpTokenDialog = wrapBaseDialog(
 									Select <span className="hidden md:inline">{'Superfluid '}</span>Validator
 								</h5>
 							</div>
-							<div className="mb-2.5 md:mb-7.5 text-sm md:text-base">
+							<div className="w-full mb-2.5 md:mb-4 text-sm md:text-base flex flex-col md:flex-row md:items-center md:justify-between">
 								<p>Choose your superfluid validator</p>
+								<div className="mt-4.5 md:mt-0 border border-secondary-200 py-2 px-3.5 w-full md:w-[180px] rounded-xl flex items-center">
+									<img src="/public/assets/Icons/search-outline.svg" />
+									<input
+										className="ml-3 text-xs w-full"
+										value={searchingValidatorValue}
+										onChange={e => setSearchingValidatorValue(e.target.value)}
+										placeholder="Search by name"
+									/>
+								</div>
 							</div>
 							<div className="overflow-auto h-[282px]">
 								<table className="w-full">
@@ -215,59 +225,71 @@ export const LockLpTokenDialog = wrapBaseDialog(
 										</TableHeadRow>
 									</thead>
 									<tbody className="w-full">
-										{activeValidators.map(activeValidator => {
-											const validatorThumbnail = activeValidatorsResult.getValidatorThumbnail(
-												activeValidator.operator_address
-											);
-											const isDelegatedValidator = delegatedValidators.some(
-												delegatedValidator => delegatedValidator.validator_address === activeValidator.operator_address
-											);
-											const isSelected = activeValidator.operator_address === selectedValidatorAddress;
+										{activeValidators
+											.filter(activeValidator => {
+												if (searchingValidatorValue) {
+													const matchingValidatorName = activeValidator.description.moniker?.toLowerCase().trim();
+													return matchingValidatorName?.includes(searchingValidatorValue);
+												} else {
+													return true;
+												}
+											})
+											.map(activeValidator => {
+												const validatorThumbnail = activeValidatorsResult.getValidatorThumbnail(
+													activeValidator.operator_address
+												);
+												const isDelegatedValidator = delegatedValidators.some(
+													delegatedValidator =>
+														delegatedValidator.validator_address === activeValidator.operator_address
+												);
+												const isSelected = activeValidator.operator_address === selectedValidatorAddress;
 
-											return (
-												<TableBodyRow
-													key={activeValidator.operator_address}
-													className={`!px-[1px] !py-[1px] !h-full cursor-pointer ${
-														isSelected
-															? 'bg-sfs border-none mb-0.25'
-															: isDelegatedValidator
-															? 'bg-card'
-															: 'bg-transparent'
-													}`}
-													onClick={() =>
-														setSelectedValidatorAddress(isSelected ? '' : activeValidator.operator_address)
-													}>
-													<TableData
-														width={'80%'}
-														className={`!pl-5 !pr-0 !py-2.5 ${
-															isSelected ? 'bg-selected-validator' : isDelegatedValidator ? 'bg-card' : 'bg-surface'
-														}`}>
-														<div className="rounded-full border border-enabledGold mr-3 w-9 h-9 p-0.75 flex justify-center items-center">
-															<img
-																src={validatorThumbnail || '/public/assets/Icons/Profile.svg'}
-																alt="validator thumbnail"
-																className="rounded-full"
-															/>
-														</div>
-														<Text emphasis="medium">{activeValidator.description.moniker}</Text>
-													</TableData>
-													<TableData
-														width={'20%'}
-														className={`!pl-0 !pr-5 !py-4 justify-end ${
-															isSelected ? 'bg-selected-validator' : isDelegatedValidator ? 'bg-card' : 'bg-surface'
-														}`}>
-														<Text emphasis="medium">
-															{DecUtils.trim(
-																new Dec(activeValidator.commission.commission_rates.rate)
-																	.mul(DecUtils.getTenExponentN(2))
-																	.toString(1)
-															)}
-															%
-														</Text>
-													</TableData>
-												</TableBodyRow>
-											);
-										})}
+												return (
+													<TableBodyRow
+														key={activeValidator.operator_address}
+														className={`!px-[1px] !py-[1px] !h-full cursor-pointer ${
+															isSelected
+																? 'bg-sfs border-none mb-0.25'
+																: isDelegatedValidator
+																? 'bg-card'
+																: 'bg-transparent'
+														}`}
+														onClick={() =>
+															setSelectedValidatorAddress(isSelected ? '' : activeValidator.operator_address)
+														}>
+														<TableData
+															width={'80%'}
+															className={`!pl-5 !pr-0 !py-2.5 ${
+																isSelected ? 'bg-selected-validator' : isDelegatedValidator ? 'bg-card' : 'bg-surface'
+															}`}>
+															<div className="rounded-full border border-enabledGold mr-3 w-9 h-9 p-0.75 flex justify-center items-center">
+																<img
+																	src={validatorThumbnail || '/public/assets/Icons/Profile.svg'}
+																	alt="validator thumbnail"
+																	className="rounded-full"
+																/>
+															</div>
+															<div className="font-body md:text-base text-sm">
+																{activeValidator.description.moniker}
+															</div>
+														</TableData>
+														<TableData
+															width={'20%'}
+															className={`!pl-0 !pr-5 !py-4 justify-end ${
+																isSelected ? 'bg-selected-validator' : isDelegatedValidator ? 'bg-card' : 'bg-surface'
+															}`}>
+															<div className="font-body md:text-base text-sm">
+																{DecUtils.trim(
+																	new Dec(activeValidator.commission.commission_rates.rate)
+																		.mul(DecUtils.getTenExponentN(2))
+																		.toString(1)
+																)}
+																%
+															</div>
+														</TableData>
+													</TableBodyRow>
+												);
+											})}
 									</tbody>
 								</table>
 							</div>
