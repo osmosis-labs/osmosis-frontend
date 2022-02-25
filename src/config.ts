@@ -893,13 +893,18 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 						coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 					},
 				],
+				gasPriceStep: {
+					low: 0,
+					average: 0,
+					high: 0.025,
+				},
 				features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 				explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
 		  }
 		: {
-				rpc: 'https://rpc-osmosis.keplr.app',
-				rest: 'https://lcd-osmosis.keplr.app',
-				chainId: 'osmosis-1',
+				rpc: 'https://rpc-osmosis-v7-testnet.keplr.app',
+				rest: 'https://lcd-osmosis-v7-testnet.keplr.app',
+				chainId: 'osmo-test-3',
 				chainName: 'Osmosis',
 				stakeCurrency: {
 					coinDenom: 'OSMO',
@@ -937,6 +942,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 						coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 					},
 				],
+				gasPriceStep: {
+					low: 0,
+					average: 0,
+					high: 0.025,
+				},
 				features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 				explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
 		  },
