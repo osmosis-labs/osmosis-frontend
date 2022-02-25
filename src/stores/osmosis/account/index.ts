@@ -95,7 +95,7 @@ export class AccountWithCosmosAndOsmosis
 				gas: 250000,
 			},
 			lockAndSuperfluidDelegate: {
-				type: 'osmosis/superfluid/lock-and-superfluid-delegate',
+				type: 'osmosis/lock-and-superfluid-delegate',
 				gas: 500000,
 			},
 			beginUnlocking: {
@@ -109,11 +109,11 @@ export class AccountWithCosmosAndOsmosis
 				gas: 140000,
 			},
 			superfluidUndelegate: {
-				type: 'osmosis/superfluid/superfluid-undelegate',
+				type: 'osmosis/superfluid-undelegate',
 				gas: 300000,
 			},
 			superfluidUnbondLock: {
-				type: 'osmosis/superfluid/superfluid-unbond-lock',
+				type: 'osmosis/superfluid-unbond-lock',
 				// Gas per msg
 				gas: 300000,
 			},
