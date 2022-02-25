@@ -17,7 +17,6 @@ import { useFakeFeeConfig } from 'src/hooks/tx';
 import { PoolSwapClipboardContent } from 'src/pages/pool/components/PoolInfoHeader/PoolSwapDialog';
 import { TitleText } from 'src/components/Texts';
 import useWindowSize from 'src/hooks/useWindowSize';
-import { SuperfluidStaking } from './components/SuperfluidStaking';
 
 interface QueryParams {
 	/**pool id*/
@@ -203,9 +202,9 @@ const LiquidityMiningSection = styled.div`
 const PoolCatalystSection = styled.div`
 	background-color: ${colorPrimaryDark};
 	width: 100%;
-	padding: 20px;
+	padding: 40px 20px 20px;
 	@media (min-width: 768px) {
-		padding: 20px 40px 40px;
+		padding: 40px;
 	}
 `;
 

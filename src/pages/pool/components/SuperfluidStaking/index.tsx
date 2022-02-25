@@ -35,13 +35,13 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 
 	return (
 		<div>
-			<TitleText isMobileView={isMobileView} pb={isMobileView ? 10 : 20}>
+			<TitleText isMobileView={isMobileView} pb={0}>
 				Superfluid Staking
 			</TitleText>
 			{Array.isArray(superfluidDelegations) && superfluidDelegations.length > 0 ? (
-				<div className="bg-sfs p-0.5 rounded-2xl">
-					<div className="p-4.5 bg-card rounded-2xl">
-						<div className="pb-4 border-b border-white-faint font-body font-semibold flex justify-between items-center">
+				<div className="mt-5 bg-sfs p-0.5 rounded-2xl">
+					<div className="p-4.5 pt-0.5 md:pt-4.5 bg-card rounded-2xl">
+						<div className="hidden md:flex justify-between items-center pb-4 border-b border-white-faint font-body font-semibold">
 							<span>My Superfluid Validator</span>
 							<span>My Superfluid Delegation</span>
 						</div>
@@ -50,15 +50,15 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 
 							return (
 								<div key={validator.operator_address} className="pt-4 flex justify-between items-center">
-									<div className="rounded-full border border-enabledGold w-15 h-15 p-1.5 flex justify-center items-center flex-shrink-0">
+									<div className="rounded-full border border-enabledGold w-12 h-12 md:w-15 md:h-15 p-1 md:p-1.5 flex justify-center items-center flex-shrink-0">
 										<img
 											src={validatorThumbnail || '/public/assets/Icons/Profile.svg'}
 											alt="validator thumbnail"
-											className={`rounded-full ${validatorThumbnail ? 'w-full h-full' : 'w-9 h-9'}`}
+											className={`rounded-full ${validatorThumbnail ? 'w-full h-full' : 'w-7 h-7 md:w-9 md:h-9'}`}
 										/>
 									</div>
-									<div className="ml-5 w-full">
-										<div className="flex items-center justify-between text-lg font-semibold leading-6">
+									<div className="ml-4 md:ml-5 w-full">
+										<div className="flex items-center justify-between text-sm md:text-lg font-semibold leading-6">
 											<span>{validator.description.moniker}</span>
 											<span>{`~${queries.osmosis.querySuperfluidOsmoEquivalent
 												.calculateOsmoEquivalent(totalDelegations)
@@ -67,7 +67,7 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 												.shrink(true)
 												.toString()}`}</span>
 										</div>
-										<div className="mt-1 flex items-center justify-between text-iconDefault">
+										<div className="mt-1 flex items-center justify-between text-iconDefault text-xs md:text-base">
 											<span>
 												Commission -{' '}
 												{DecUtils.trim(

@@ -37,7 +37,7 @@ export type SuperfluidDelegationRecordsResponse = {
 
 export type SuperfluidDelegationsResponse = {
 	superfluid_delegation_records: SuperfluidDelegationRecordsResponse[];
-	total_delegated_coins: [
+	total_undelegated_coins: [
 		{
 			denom: string;
 			amount: string;
@@ -46,6 +46,31 @@ export type SuperfluidDelegationsResponse = {
 };
 
 export type SuperfluidDelegation = {
+	delegator_address: string;
+	validator_address: string;
+	amount: CoinPretty;
+};
+
+export type SuperfluidUndelegationRecordsResponse = {
+	delegator_address: string;
+	validator_address: string;
+	delegation_amount: {
+		denom: string;
+		amount: string;
+	};
+};
+
+export type SuperfluidUndelegationsResponse = {
+	superfluid_delegation_records: SuperfluidDelegationRecordsResponse[];
+	total_delegated_coins: [
+		{
+			denom: string;
+			amount: string;
+		}
+	];
+};
+
+export type SuperfluidUndelegation = {
 	delegator_address: string;
 	validator_address: string;
 	amount: CoinPretty;

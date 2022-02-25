@@ -24,37 +24,35 @@ export const MySuperfluidUnbondingTable = observer(function MySuperfluidUnbondin
 
 	const poolShareCurrency = queries.osmosis.queryGammPoolShare.getShareCurrency(poolId);
 
-	const superfluidDelegations = queries.osmosis.querySuperfluidDelegations
+	const superfluidUndelegations = queries.osmosis.querySuperfluidUndelegations
 		.getQuerySuperfluidDelegations(account.bech32Address)
-		.getDelegations(poolShareCurrency);
+		.getUndelegations(poolShareCurrency);
 	const queryActiveValidators = queries.cosmos.queryValidators.getQueryStatus(Staking.BondStatus.Bonded);
 	const activeValidators = queryActiveValidators.validators;
 	const superfluidDelegatedValidators = activeValidators.filter(activeValidator =>
-		superfluidDelegations?.some(
-			delegation => delegation.validator_address.split('superbonding/')[1] === activeValidator.operator_address
-		)
+		superfluidUndelegations?.some(undelegation => undelegation.validator_address === activeValidator.operator_address)
 	);
 	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
 
-	if (!superfluidDelegations || (Array.isArray(superfluidDelegations) && superfluidDelegations.length === 0)) {
+	if (!superfluidUndelegations || (Array.isArray(superfluidUndelegations) && superfluidUndelegations.length === 0)) {
 		return null;
 	}
 
 	return (
-		<div className="mt-10">
+		<React.Fragment>
 			<div className="px-5 md:px-0">
 				<SubTitleText isMobileView={isMobileView}>My Superfluid Unbondings</SubTitleText>
 			</div>
 			<table className="w-full">
 				<UnlockingTableHeader isMobileView={isMobileView} />
 				<tbody className="w-full">
-					{superfluidDelegations &&
+					{superfluidUndelegations &&
 						superfluidDelegatedValidators.map((validator, i) => {
 							return (
 								<UnlockingTableRow
 									key={validator.operator_address}
 									validatorName={validator.description.moniker}
-									amount={superfluidDelegations[i].amount
+									amount={superfluidUndelegations[i].amount
 										.maxDecimals(6)
 										.trim(true)
 										.toString()}
@@ -65,7 +63,7 @@ export const MySuperfluidUnbondingTable = observer(function MySuperfluidUnbondin
 						})}
 				</tbody>
 			</table>
-		</div>
+		</React.Fragment>
 	);
 });
 
