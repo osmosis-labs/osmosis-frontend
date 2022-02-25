@@ -1,6 +1,7 @@
 import { CoinPretty, Dec } from '@keplr-wallet/unit';
 import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
+import { Img } from 'src/components/common/Img';
 import { ButtonFaint } from 'src/components/layouts/Buttons';
 import { Spinner } from 'src/components/Spinners';
 import { TableBodyRow, TableData, TableHeadRow } from 'src/components/Tables';
@@ -24,6 +25,9 @@ export const MyBondingsTable = observer(function MyBondingsTable({ poolId, isSup
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const poolShareCurrency = queries.osmosis.queryGammPoolShare.getShareCurrency(poolId);
+	const superfluidDelegations = queries.osmosis.querySuperfluidDelegations
+		.getQuerySuperfluidDelegations(account.bech32Address)
+		.getDelegations(poolShareCurrency);
 
 	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
 
@@ -35,7 +39,7 @@ export const MyBondingsTable = observer(function MyBondingsTable({ poolId, isSup
 			<table className="w-full">
 				<LockupTableHeader isMobileView={isMobileView} />
 				<tbody className="w-full">
-					{lockableDurations.map(lockableDuration => {
+					{lockableDurations.map((lockableDuration, index) => {
 						const lockedCoin = queries.osmosis.queryAccountLocked
 							.get(account.bech32Address)
 							.getLockedCoinWithDuration(poolShareCurrency, lockableDuration);
@@ -49,6 +53,11 @@ export const MyBondingsTable = observer(function MyBondingsTable({ poolId, isSup
 									.toString()}%`}
 								isMobileView={isMobileView}
 								isSuperfluidEnabled={isSuperfluidEnabled}
+								isSuperfluidDelegated={
+									index === lockableDurations.length - 1 &&
+									Array.isArray(superfluidDelegations) &&
+									superfluidDelegations.length > 0
+								}
 							/>
 						);
 					})}
@@ -94,6 +103,7 @@ interface LockupTableRowProps {
 	};
 	isMobileView: boolean;
 	isSuperfluidEnabled: boolean;
+	isSuperfluidDelegated: boolean;
 }
 
 const LockupTableRow = observer(function LockupTableRow({
@@ -102,6 +112,7 @@ const LockupTableRow = observer(function LockupTableRow({
 	lockup,
 	isMobileView,
 	isSuperfluidEnabled,
+	isSuperfluidDelegated,
 }: LockupTableRowProps) {
 	const { chainStore, accountStore, queriesStore } = useStore();
 
@@ -113,9 +124,14 @@ const LockupTableRow = observer(function LockupTableRow({
 	return (
 		<TableBodyRow>
 			<TableData width={isMobileView ? tableWidthsOnMobileView[0] : tableWidths[0]}>
-				<Text emphasis="medium" isMobileView={isMobileView}>
+				<div className="font-body text-sm md:text-base flex items-center">
 					{duration}
-				</Text>
+					{isSuperfluidEnabled && isSuperfluidDelegated && (
+						<div className="ml-3 w-5 h-5">
+							<Img src={'/public/assets/Icons/superfluid-osmo.svg'} />
+						</div>
+					)}
+				</div>
 			</TableData>
 			{!isMobileView && (
 				<TableData width={tableWidths[1]}>
