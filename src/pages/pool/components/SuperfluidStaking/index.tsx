@@ -78,6 +78,12 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 	})();
 	const [isOpenUpgradeLockedLPDialog, setIsOpenUpgradeLockedLPDialog] = useState(false);
 
+	const showUpgradeLpLockView =
+		superfluidDelegations &&
+		superfluidDelegations.length === 0 &&
+		upgradableLPLockIds &&
+		upgradableLPLockIds.lockIds.length > 0;
+
 	return (
 		<div>
 			<TitleText isMobileView={isMobileView} pb={isMobileView ? 10 : 24}>
@@ -133,7 +139,8 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 						})}
 					</div>
 				</div>
-			) : (
+			) : null}
+			{showUpgradeLpLockView ? (
 				<React.Fragment>
 					{upgradableLPLockIds ? (
 						<UpgradeLockedLPToSuperfluidDialog
@@ -164,7 +171,7 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 						</button>
 					</div>
 				</React.Fragment>
-			)}
+			) : null}
 		</div>
 	);
 });
