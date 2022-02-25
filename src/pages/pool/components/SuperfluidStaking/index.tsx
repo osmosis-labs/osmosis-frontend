@@ -4,15 +4,43 @@ import { TitleText } from 'src/components/Texts';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { useStore } from 'src/stores';
 import { Staking } from '@keplr-wallet/stores';
-import { CoinPretty, Dec, DecUtils } from '@keplr-wallet/unit';
+import { CoinPretty, Dec, DecUtils, IntPretty } from '@keplr-wallet/unit';
 
 export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer(({ poolId }) => {
 	const { isMobileView } = useWindowSize();
-	const { accountStore, queriesStore, chainStore } = useStore();
+	const { accountStore, queriesStore, chainStore, priceStore } = useStore();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
 	const poolShareCurrency = queries.osmosis.queryGammPoolShare.getShareCurrency(poolId);
+
+	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
+
+	const superfluidAPYWithPoolAPY = useMemo(() => {
+		const superfluidAPY = queries.cosmos.queryInflation.inflation.mul(
+			queries.osmosis.querySuperfluidOsmoEquivalent.calculateOsmoEquivalentMultiplier(`gamm/pool/${poolId}`)
+		);
+
+		if (lockableDurations.length > 0) {
+			const poolAPY = queries.osmosis.queryIncentivizedPools.computeAPY(
+				poolId,
+				lockableDurations[lockableDurations.length - 1],
+				priceStore,
+				priceStore.getFiatCurrency('usd')!
+			);
+
+			return superfluidAPY.add(poolAPY);
+		} else {
+			return superfluidAPY;
+		}
+	}, [
+		lockableDurations,
+		poolId,
+		priceStore,
+		queries.cosmos.queryInflation.inflation,
+		queries.osmosis.queryIncentivizedPools,
+		queries.osmosis.querySuperfluidOsmoEquivalent,
+	]);
 
 	const superfluidDelegations = queries.osmosis.querySuperfluidDelegations
 		.getQuerySuperfluidDelegations(account.bech32Address)
@@ -77,7 +105,10 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 												)}
 												%
 											</span>
-											<span>~999.92% APR</span>
+											<span>{`~${superfluidAPYWithPoolAPY
+												.maxDecimals(0)
+												.trim(true)
+												.toString()}% APR`}</span>
 										</div>
 									</div>
 								</div>
