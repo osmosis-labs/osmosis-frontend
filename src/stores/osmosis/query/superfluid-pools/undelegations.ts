@@ -28,6 +28,10 @@ export class ObservableQuerySuperfluidUndelegationsInner extends ObservableChain
 		makeObservable(this);
 	}
 
+	protected canFetch(): boolean {
+		return this.delegatorBech32Address !== '';
+	}
+
 	readonly getUndelegations = computedFn((poolShareCurrency: Currency): SuperfluidUndelegation[] | undefined => {
 		if (!this.response) {
 			return undefined;

@@ -869,6 +869,8 @@ export class OsmosisAccount {
 					// Refresh the locked coins
 					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
+
+					queries.osmosis.querySuperfluidDelegations.getQuerySuperfluidDelegations(this.base.bech32Address).fetch();
 				}
 
 				if (onFulfill) {
@@ -924,7 +926,7 @@ export class OsmosisAccount {
 					const queries = this.queriesStore.get(this.chainId);
 					queries.queryBalances.getQueryBech32Address(this.base.bech32Address).fetch();
 
-					// TODO: Refresh the superfluid validated to be delegated.
+					queries.osmosis.querySuperfluidDelegations.getQuerySuperfluidDelegations(this.base.bech32Address).fetch();
 				}
 
 				if (onFulfill) {
@@ -992,7 +994,7 @@ export class OsmosisAccount {
 					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
 
-					// TODO: Refresh the superfluid validated to be delegated.
+					queries.osmosis.querySuperfluidDelegations.getQuerySuperfluidDelegations(this.base.bech32Address).fetch();
 				}
 
 				if (onFulfill) {
@@ -1161,7 +1163,8 @@ export class OsmosisAccount {
 					queries.osmosis.queryUnlockingCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
 
-					// TODO: Refresh more if it includes the superfluidUnbondLock
+					queries.osmosis.querySuperfluidDelegations.getQuerySuperfluidDelegations(this.base.bech32Address).fetch();
+					queries.osmosis.querySuperfluidUndelegations.getQuerySuperfluidDelegations(this.base.bech32Address).fetch();
 				}
 
 				if (onFulfill) {

@@ -23,6 +23,10 @@ export class ObservableQuerySuperfluidDelegationsInner extends ObservableChainQu
 		makeObservable(this);
 	}
 
+	protected canFetch(): boolean {
+		return this.delegatorBech32Address !== '';
+	}
+
 	readonly getDelegations = computedFn((poolShareCurrency: Currency): SuperfluidDelegation[] | undefined => {
 		if (!this.response) {
 			return undefined;
