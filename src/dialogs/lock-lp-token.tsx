@@ -66,6 +66,38 @@ export const LockLpTokenDialog = wrapBaseDialog(
 							</div>
 							<ul className="flex flex-col gap-2.5 mb-5 md:flex-row md:gap-6 md:mb-6">
 								{lockableDurations.map((duration, i) => {
+									let apy = `${queries.osmosis.queryIncentivizedPools
+										.computeAPY(poolId, duration, priceStore, priceStore.getFiatCurrency('usd')!)
+										.toString()}%`;
+
+									if (lockableDurations.length - 1 === i && isSuperfluidEnabled) {
+										const superfluidAPY = (() => {
+											const superfluidAPY = queries.cosmos.queryInflation.inflation.mul(
+												queries.osmosis.querySuperfluidOsmoEquivalent.calculateOsmoEquivalentMultiplier(
+													`gamm/pool/${poolId}`
+												)
+											);
+
+											if (lockableDurations.length > 0) {
+												const poolAPY = queries.osmosis.queryIncentivizedPools.computeAPY(
+													poolId,
+													lockableDurations[lockableDurations.length - 1],
+													priceStore,
+													priceStore.getFiatCurrency('usd')!
+												);
+
+												return superfluidAPY.add(poolAPY);
+											} else {
+												return superfluidAPY;
+											}
+										})();
+
+										apy += ` + ${superfluidAPY
+											.maxDecimals(0)
+											.trim(true)
+											.toString()}%`;
+									}
+
 									return (
 										<LockupItem
 											key={i.toString()}
@@ -74,9 +106,7 @@ export const LockLpTokenDialog = wrapBaseDialog(
 												setSelectedDurationIndex(i);
 											}}
 											selected={i === selectedDurationIndex}
-											apy={`${queries.osmosis.queryIncentivizedPools
-												.computeAPY(poolId, duration, priceStore, priceStore.getFiatCurrency('usd')!)
-												.toString()}%`}
+											apy={apy}
 											isSuperfluidEnabled={lockableDurations.length - 1 === i && isSuperfluidEnabled}
 										/>
 									);
@@ -490,10 +520,7 @@ const LockupItem: FunctionComponent<{
 							</div>
 						)}
 					</div>
-					<p className="md:mt-1 text-secondary-200 text-sm md:text-base">
-						{apy}
-						{isSuperfluidEnabled ? '+ 29%' : ''}
-					</p>
+					<p className="md:mt-1 text-secondary-200 text-sm md:text-base">{apy}</p>
 				</div>
 			</div>
 		</li>
