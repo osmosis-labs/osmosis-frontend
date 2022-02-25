@@ -9,7 +9,7 @@ import { IconCheckBox } from 'src/icons';
 import { TableBodyRow, TableData, TableHeadRow } from 'src/components/Tables';
 import { Text } from 'src/components/Texts';
 import { Staking } from '@keplr-wallet/stores';
-import { Dec, DecUtils } from '@keplr-wallet/unit';
+import { CoinPretty, Dec, DecUtils } from '@keplr-wallet/unit';
 
 export const LockLpTokenDialog = wrapBaseDialog(
 	observer(
@@ -19,6 +19,19 @@ export const LockLpTokenDialog = wrapBaseDialog(
 			const account = accountStore.getAccount(chainStore.current.chainId);
 			const queries = queriesStore.get(chainStore.current.chainId);
 			const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
+
+			const hasNotExistSuperfluidLock = useMemo(() => {
+				const superfluidDelegations = queries.osmosis.querySuperfluidDelegations
+					.getQuerySuperfluidDelegations(account.bech32Address)
+					.getDelegations(queries.osmosis.queryGammPoolShare.getShareCurrency(poolId));
+
+				return !superfluidDelegations || superfluidDelegations.length === 0;
+			}, [
+				account.bech32Address,
+				poolId,
+				queries.osmosis.queryGammPoolShare,
+				queries.osmosis.querySuperfluidDelegations,
+			]);
 
 			const amountConfig = useBasicAmountConfig(
 				chainStore,
@@ -31,7 +44,8 @@ export const LockLpTokenDialog = wrapBaseDialog(
 			const [selectedDurationIndex, setSelectedDurationIndex] = useState(2);
 			const [isCheckedSuperfluid, setIsCheckedSuperfluid] = useState(false);
 			const [isValidatorSelectStage, setIsValidatorSelectStage] = useState(false);
-			const isShowingSuperfluidCheckbox = selectedDurationIndex === lockableDurations.length - 1 && isSuperfluidEnabled;
+			const isShowingSuperfluidCheckbox =
+				selectedDurationIndex === lockableDurations.length - 1 && isSuperfluidEnabled && hasNotExistSuperfluidLock;
 			useEffect(() => {
 				if (isShowingSuperfluidCheckbox) {
 					setIsCheckedSuperfluid(true);
@@ -273,18 +287,23 @@ export const LockLpTokenDialog = wrapBaseDialog(
 							</div>
 							<div className="mt-10 py-3 px-5 border border-white-faint rounded-xl bg-card">
 								<div className="flex justify-between">
-									<div className="font-body text-sm md:text-base">Bonded Amount</div>
+									<div className="font-body text-sm md:text-base">Bond Amount</div>
 									<div className="font-body text-sm md:text-base text-white-mid">
-										{queries.queryBalances
-											.getQueryBech32Address(account.bech32Address)
-											.getBalanceFromCurrency(amountConfig.sendCurrency)
+										{new CoinPretty(amountConfig.sendCurrency, amountConfig.getAmountPrimitive().amount)
+											.maxDecimals(3)
 											.trim(true)
 											.toString()}
 									</div>
 								</div>
 								<div className="mt-4 flex justify-between">
 									<div className="font-body text-sm md:text-base">Estimated Superfluid Delegation</div>
-									<div className="font-body text-sm md:text-base text-white-mid">~100,000,000 OSMO</div>
+									<div className="font-body text-sm md:text-base text-white-mid">{`~${queries.osmosis.querySuperfluidOsmoEquivalent
+										.calculateOsmoEquivalent(
+											new CoinPretty(amountConfig.sendCurrency, amountConfig.getAmountPrimitive().amount)
+										)
+										.maxDecimals(3)
+										.trim(true)
+										.toString()}`}</div>
 								</div>
 							</div>
 							<div className="flex w-full justify-center items-center">
