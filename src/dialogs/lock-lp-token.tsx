@@ -346,14 +346,51 @@ export const LockLpTokenValidatorSelectStageViewInDialog: FunctionComponent<{
 		const activeValidatorsResult = queries.cosmos.queryValidators.getQueryStatus(Staking.BondStatus.Bonded);
 		const activeValidators = activeValidatorsResult.validators;
 		const delegationsResult = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
-		const delegatedValidators = delegationsResult.delegations;
-		useMemo(() => {
-			activeValidators.sort((aVal, bVal) =>
-				delegatedValidators.some(delegatedValidator => delegatedValidator.validator_address === bVal.operator_address)
-					? 1
-					: -1
-			);
-		}, [activeValidators, delegatedValidators]);
+		const delegations = delegationsResult.delegations;
+		const delegatedValidators = useMemo(
+			() =>
+				activeValidators
+					.filter(validator =>
+						delegations.some(delegation => delegation.validator_address === validator.operator_address)
+					)
+					.sort((aVal, bVal) => {
+						const aValName = aVal.description.moniker;
+						const bValName = bVal.description.moniker;
+						if (!aValName || !bValName) {
+							return -1;
+						}
+						if (aValName.toLowerCase().trim() > bValName.toLowerCase().trim()) {
+							return 1;
+						}
+						if (bValName.toLowerCase().trim() > aValName.toLowerCase().trim()) {
+							return -1;
+						}
+						return 0;
+					}),
+			[activeValidators, delegations]
+		);
+		const extraValidators = useMemo(
+			() =>
+				activeValidators
+					.filter(
+						validator => !delegations.some(delegation => delegation.validator_address === validator.operator_address)
+					)
+					.sort((aVal, bVal) => {
+						const aValName = aVal.description.moniker;
+						const bValName = bVal.description.moniker;
+						if (!aValName || !bValName) {
+							return -1;
+						}
+						if (aValName.toLowerCase().trim() > bValName.toLowerCase().trim()) {
+							return 1;
+						}
+						if (bValName.toLowerCase().trim() > aValName.toLowerCase().trim()) {
+							return -1;
+						}
+						return 0;
+					}),
+			[activeValidators, delegations]
+		);
 		const [selectedValidatorAddress, setSelectedValidatorAddress] = useState('');
 		const [searchingValidatorValue, setSearchingValidatorValue] = useState('');
 
@@ -385,7 +422,8 @@ export const LockLpTokenValidatorSelectStageViewInDialog: FunctionComponent<{
 							</TableHeadRow>
 						</thead>
 						<tbody className="w-full">
-							{activeValidators
+							{delegatedValidators
+								.concat(extraValidators)
 								.filter(activeValidator => {
 									if (searchingValidatorValue) {
 										const matchingValidatorName = activeValidator.description.moniker?.toLowerCase().trim();
@@ -398,8 +436,8 @@ export const LockLpTokenValidatorSelectStageViewInDialog: FunctionComponent<{
 									const validatorThumbnail = activeValidatorsResult.getValidatorThumbnail(
 										activeValidator.operator_address
 									);
-									const isDelegatedValidator = delegatedValidators.some(
-										delegatedValidator => delegatedValidator.validator_address === activeValidator.operator_address
+									const isDelegatedValidator = delegations.some(
+										delegation => delegation.validator_address === activeValidator.operator_address
 									);
 									const isSelected = activeValidator.operator_address === selectedValidatorAddress;
 
