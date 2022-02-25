@@ -10,7 +10,7 @@ import { TableBodyRow, TableData, TableHeadRow } from 'src/components/Tables';
 import { Text } from 'src/components/Texts';
 import { Staking } from '@keplr-wallet/stores';
 import { CoinPretty, Dec, DecUtils } from '@keplr-wallet/unit';
-import { IAmountConfig, useAmountConfig } from '@keplr-wallet/hooks';
+import { IAmountConfig, InsufficientAmountError, useAmountConfig } from '@keplr-wallet/hooks';
 
 export const LockLpTokenDialog = wrapBaseDialog(
 	observer(
@@ -302,6 +302,13 @@ export const UpgradeLockedLPToSuperfluidDialog = wrapBaseDialog(
 						</React.Fragment>
 					}
 					amountConfig={amountConfig}
+					checkAmountConfigError={(amountConfig: IAmountConfig) => {
+						const error = amountConfig.getError();
+						if (error && error instanceof InsufficientAmountError) {
+							return false;
+						}
+						return error != null;
+					}}
 					onSumbit={async (selectedValidatorAddress: string) => {
 						try {
 							await account.osmosis.sendSuperfluidDelegate(lockIds, selectedValidatorAddress, '', () => {
@@ -321,168 +328,180 @@ export const LockLpTokenValidatorSelectStageViewInDialog: FunctionComponent<{
 	header: React.ReactElement;
 	amountConfig: IAmountConfig;
 	onSumbit: (selectedValidatorAddress: string) => Promise<void>;
-}> = observer(({ header, amountConfig, onSumbit }) => {
-	const { chainStore, queriesStore, accountStore } = useStore();
+	checkAmountConfigError?: (amountConfig: IAmountConfig) => boolean;
+}> = observer(
+	({
+		header,
+		amountConfig,
+		onSumbit,
+		checkAmountConfigError = (amountConfig: IAmountConfig) => {
+			return amountConfig.getError() != null;
+		},
+	}) => {
+		const { chainStore, queriesStore, accountStore } = useStore();
 
-	const account = accountStore.getAccount(chainStore.current.chainId);
-	const queries = queriesStore.get(chainStore.current.chainId);
+		const account = accountStore.getAccount(chainStore.current.chainId);
+		const queries = queriesStore.get(chainStore.current.chainId);
 
-	const activeValidatorsResult = queries.cosmos.queryValidators.getQueryStatus(Staking.BondStatus.Bonded);
-	const activeValidators = activeValidatorsResult.validators;
-	const delegationsResult = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
-	const delegatedValidators = delegationsResult.delegations;
-	useMemo(() => {
-		activeValidators.sort((aVal, bVal) =>
-			delegatedValidators.some(delegatedValidator => delegatedValidator.validator_address === bVal.operator_address)
-				? 1
-				: -1
-		);
-	}, [activeValidators, delegatedValidators]);
-	const [selectedValidatorAddress, setSelectedValidatorAddress] = useState('');
-	const [searchingValidatorValue, setSearchingValidatorValue] = useState('');
+		const activeValidatorsResult = queries.cosmos.queryValidators.getQueryStatus(Staking.BondStatus.Bonded);
+		const activeValidators = activeValidatorsResult.validators;
+		const delegationsResult = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
+		const delegatedValidators = delegationsResult.delegations;
+		useMemo(() => {
+			activeValidators.sort((aVal, bVal) =>
+				delegatedValidators.some(delegatedValidator => delegatedValidator.validator_address === bVal.operator_address)
+					? 1
+					: -1
+			);
+		}, [activeValidators, delegatedValidators]);
+		const [selectedValidatorAddress, setSelectedValidatorAddress] = useState('');
+		const [searchingValidatorValue, setSearchingValidatorValue] = useState('');
 
-	return (
-		<React.Fragment>
-			<div className="flex items-center mb-5 md:mb-9 -mt-1.5 md:mt-0">{header}</div>
-			<div className="w-full mb-2.5 md:mb-4 text-sm md:text-base flex flex-col md:flex-row md:items-center md:justify-between">
-				<p>Choose your superfluid validator</p>
-				<div className="mt-4.5 md:mt-0 border border-secondary-200 py-2 px-3.5 w-full md:w-[180px] rounded-xl flex items-center">
-					<img src="/public/assets/Icons/search-outline.svg" />
-					<input
-						className="ml-3 text-xs w-full"
-						value={searchingValidatorValue}
-						onChange={e => setSearchingValidatorValue(e.target.value)}
-						placeholder="Search by name"
-					/>
-				</div>
-			</div>
-			<div className="overflow-auto h-[282px]">
-				<table className="w-full">
-					<thead className="sticky top-0 z-10 bg-surface">
-						<TableHeadRow className="!px-5 !py-0 !mt-0 !rounded-t-2xl">
-							<TableData as="th" width={'80%'} className="!px-0 !py-3">
-								<Text size="sm">Validator</Text>
-							</TableData>
-							<TableData as="th" width={'20%'} className="!px-0 !py-3 justify-end">
-								<Text size="sm">Commission</Text>
-							</TableData>
-						</TableHeadRow>
-					</thead>
-					<tbody className="w-full">
-						{activeValidators
-							.filter(activeValidator => {
-								if (searchingValidatorValue) {
-									const matchingValidatorName = activeValidator.description.moniker?.toLowerCase().trim();
-									return matchingValidatorName?.includes(searchingValidatorValue);
-								} else {
-									return true;
-								}
-							})
-							.map(activeValidator => {
-								const validatorThumbnail = activeValidatorsResult.getValidatorThumbnail(
-									activeValidator.operator_address
-								);
-								const isDelegatedValidator = delegatedValidators.some(
-									delegatedValidator => delegatedValidator.validator_address === activeValidator.operator_address
-								);
-								const isSelected = activeValidator.operator_address === selectedValidatorAddress;
-
-								return (
-									<TableBodyRow
-										key={activeValidator.operator_address}
-										className={`!px-[1px] !py-[1px] !h-full cursor-pointer ${
-											isSelected ? 'bg-sfs border-none mb-0.25' : isDelegatedValidator ? 'bg-card' : 'bg-transparent'
-										}`}
-										onClick={() => setSelectedValidatorAddress(isSelected ? '' : activeValidator.operator_address)}>
-										<TableData
-											width={'80%'}
-											className={`!pl-5 !pr-0 !py-2.5 ${
-												isSelected ? 'bg-selected-validator' : isDelegatedValidator ? 'bg-card' : 'bg-surface'
-											}`}>
-											<div className="rounded-full border border-enabledGold mr-3 w-9 h-9 p-0.75 flex justify-center items-center">
-												<img
-													src={validatorThumbnail || '/public/assets/Icons/Profile.svg'}
-													alt="validator thumbnail"
-													className="rounded-full"
-												/>
-											</div>
-											<div className="font-body md:text-base text-sm">{activeValidator.description.moniker}</div>
-										</TableData>
-										<TableData
-											width={'20%'}
-											className={`!pl-0 !pr-5 !py-4 justify-end ${
-												isSelected ? 'bg-selected-validator' : isDelegatedValidator ? 'bg-card' : 'bg-surface'
-											}`}>
-											<div className="font-body md:text-base text-sm">
-												{DecUtils.trim(
-													new Dec(activeValidator.commission.commission_rates.rate)
-														.mul(DecUtils.getTenExponentN(2))
-														.toString(1)
-												)}
-												%
-											</div>
-										</TableData>
-									</TableBodyRow>
-								);
-							})}
-					</tbody>
-				</table>
-			</div>
-			<div className="mt-10 py-3 px-5 border border-white-faint rounded-xl bg-card">
-				<div className="flex justify-between">
-					<div className="font-body text-sm md:text-base">Bond Amount</div>
-					<div className="font-body text-sm md:text-base text-white-mid">
-						{new CoinPretty(amountConfig.sendCurrency, amountConfig.getAmountPrimitive().amount)
-							.maxDecimals(3)
-							.trim(true)
-							.toString()}
+		return (
+			<React.Fragment>
+				<div className="flex items-center mb-5 md:mb-9 -mt-1.5 md:mt-0">{header}</div>
+				<div className="w-full mb-2.5 md:mb-4 text-sm md:text-base flex flex-col md:flex-row md:items-center md:justify-between">
+					<p>Choose your superfluid validator</p>
+					<div className="mt-4.5 md:mt-0 border border-secondary-200 py-2 px-3.5 w-full md:w-[180px] rounded-xl flex items-center">
+						<img src="/public/assets/Icons/search-outline.svg" />
+						<input
+							className="ml-3 text-xs w-full"
+							value={searchingValidatorValue}
+							onChange={e => setSearchingValidatorValue(e.target.value)}
+							placeholder="Search by name"
+						/>
 					</div>
 				</div>
-				<div className="mt-4 flex justify-between">
-					<div className="font-body text-sm md:text-base">Estimated Superfluid Delegation</div>
-					<div className="font-body text-sm md:text-base text-white-mid">{`~${queries.osmosis.querySuperfluidOsmoEquivalent
-						.calculateOsmoEquivalent(
-							new CoinPretty(amountConfig.sendCurrency, amountConfig.getAmountPrimitive().amount)
-						)
-						.maxDecimals(3)
-						.trim(true)
-						.toString()}`}</div>
-				</div>
-			</div>
-			<div className="flex w-full justify-center items-center">
-				<button
-					className="mt-7.5 w-full md:w-2/3 h-12 md:h-15 bg-primary-200 rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer disabled:opacity-50"
-					disabled={!account.isReadyToSendMsgs || selectedValidatorAddress === '' || amountConfig.getError() != null}
-					onClick={async e => {
-						e.preventDefault();
+				<div className="overflow-auto h-[282px]">
+					<table className="w-full">
+						<thead className="sticky top-0 z-10 bg-surface">
+							<TableHeadRow className="!px-5 !py-0 !mt-0 !rounded-t-2xl">
+								<TableData as="th" width={'80%'} className="!px-0 !py-3">
+									<Text size="sm">Validator</Text>
+								</TableData>
+								<TableData as="th" width={'20%'} className="!px-0 !py-3 justify-end">
+									<Text size="sm">Commission</Text>
+								</TableData>
+							</TableHeadRow>
+						</thead>
+						<tbody className="w-full">
+							{activeValidators
+								.filter(activeValidator => {
+									if (searchingValidatorValue) {
+										const matchingValidatorName = activeValidator.description.moniker?.toLowerCase().trim();
+										return matchingValidatorName?.includes(searchingValidatorValue);
+									} else {
+										return true;
+									}
+								})
+								.map(activeValidator => {
+									const validatorThumbnail = activeValidatorsResult.getValidatorThumbnail(
+										activeValidator.operator_address
+									);
+									const isDelegatedValidator = delegatedValidators.some(
+										delegatedValidator => delegatedValidator.validator_address === activeValidator.operator_address
+									);
+									const isSelected = activeValidator.operator_address === selectedValidatorAddress;
 
-						if (account.isReadyToSendMsgs && selectedValidatorAddress) {
-							await onSumbit(selectedValidatorAddress);
+									return (
+										<TableBodyRow
+											key={activeValidator.operator_address}
+											className={`!px-[1px] !py-[1px] !h-full cursor-pointer ${
+												isSelected ? 'bg-sfs border-none mb-0.25' : isDelegatedValidator ? 'bg-card' : 'bg-transparent'
+											}`}
+											onClick={() => setSelectedValidatorAddress(isSelected ? '' : activeValidator.operator_address)}>
+											<TableData
+												width={'80%'}
+												className={`!pl-5 !pr-0 !py-2.5 ${
+													isSelected ? 'bg-selected-validator' : isDelegatedValidator ? 'bg-card' : 'bg-surface'
+												}`}>
+												<div className="rounded-full border border-enabledGold mr-3 w-9 h-9 p-0.75 flex justify-center items-center">
+													<img
+														src={validatorThumbnail || '/public/assets/Icons/Profile.svg'}
+														alt="validator thumbnail"
+														className="rounded-full"
+													/>
+												</div>
+												<div className="font-body md:text-base text-sm">{activeValidator.description.moniker}</div>
+											</TableData>
+											<TableData
+												width={'20%'}
+												className={`!pl-0 !pr-5 !py-4 justify-end ${
+													isSelected ? 'bg-selected-validator' : isDelegatedValidator ? 'bg-card' : 'bg-surface'
+												}`}>
+												<div className="font-body md:text-base text-sm">
+													{DecUtils.trim(
+														new Dec(activeValidator.commission.commission_rates.rate)
+															.mul(DecUtils.getTenExponentN(2))
+															.toString(1)
+													)}
+													%
+												</div>
+											</TableData>
+										</TableBodyRow>
+									);
+								})}
+						</tbody>
+					</table>
+				</div>
+				<div className="mt-10 py-3 px-5 border border-white-faint rounded-xl bg-card">
+					<div className="flex justify-between">
+						<div className="font-body text-sm md:text-base">Bond Amount</div>
+						<div className="font-body text-sm md:text-base text-white-mid">
+							{new CoinPretty(amountConfig.sendCurrency, amountConfig.getAmountPrimitive().amount)
+								.maxDecimals(3)
+								.trim(true)
+								.toString()}
+						</div>
+					</div>
+					<div className="mt-4 flex justify-between">
+						<div className="font-body text-sm md:text-base">Estimated Superfluid Delegation</div>
+						<div className="font-body text-sm md:text-base text-white-mid">{`~${queries.osmosis.querySuperfluidOsmoEquivalent
+							.calculateOsmoEquivalent(
+								new CoinPretty(amountConfig.sendCurrency, amountConfig.getAmountPrimitive().amount)
+							)
+							.maxDecimals(3)
+							.trim(true)
+							.toString()}`}</div>
+					</div>
+				</div>
+				<div className="flex w-full justify-center items-center">
+					<button
+						className="mt-7.5 w-full md:w-2/3 h-12 md:h-15 bg-primary-200 rounded-2xl flex justify-center items-center hover:opacity-75 cursor-pointer disabled:opacity-50"
+						disabled={
+							!account.isReadyToSendMsgs || selectedValidatorAddress === '' || checkAmountConfigError(amountConfig)
 						}
-					}}>
-					{account.isSendingMsg === 'lockTokens' ||
-					account.isSendingMsg === 'lockAndSuperfluidDelegate' ||
-					account.isSendingMsg === 'superfluidDelegate' ? (
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-							viewBox="0 0 24 24">
-							<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
-							<path
-								fill="currentColor"
-								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-								className="opacity-75"
-							/>
-						</svg>
-					) : (
-						<p className="text-white-high font-semibold text-base md:text-lg">{'Bond & Stake'}</p>
-					)}
-				</button>
-			</div>
-		</React.Fragment>
-	);
-});
+						onClick={async e => {
+							e.preventDefault();
+
+							if (account.isReadyToSendMsgs && selectedValidatorAddress) {
+								await onSumbit(selectedValidatorAddress);
+							}
+						}}>
+						{account.isSendingMsg === 'lockTokens' ||
+						account.isSendingMsg === 'lockAndSuperfluidDelegate' ||
+						account.isSendingMsg === 'superfluidDelegate' ? (
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+								viewBox="0 0 24 24">
+								<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
+								<path
+									fill="currentColor"
+									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+									className="opacity-75"
+								/>
+							</svg>
+						) : (
+							<p className="text-white-high font-semibold text-base md:text-lg">{'Bond & Stake'}</p>
+						)}
+					</button>
+				</div>
+			</React.Fragment>
+		);
+	}
+);
 
 const LockupItem: FunctionComponent<{
 	duration: string;
