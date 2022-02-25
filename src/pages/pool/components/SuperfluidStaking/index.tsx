@@ -1,10 +1,11 @@
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useMemo } from 'react';
+import React, { FunctionComponent, useMemo, useState } from 'react';
 import { TitleText } from 'src/components/Texts';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { useStore } from 'src/stores';
 import { Staking } from '@keplr-wallet/stores';
-import { CoinPretty, Dec, DecUtils, IntPretty } from '@keplr-wallet/unit';
+import { CoinPretty, Dec, DecUtils } from '@keplr-wallet/unit';
+import { UpgradeLockedLPToSuperfluidDialog } from 'src/dialogs';
 
 export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer(({ poolId }) => {
 	const { isMobileView } = useWindowSize();
@@ -61,9 +62,25 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 		return r;
 	}, [poolShareCurrency, superfluidDelegations]);
 
+	const upgradableLPLockIds:
+		| {
+				amount: CoinPretty;
+				lockIds: string[];
+		  }
+		| undefined = (() => {
+		if (lockableDurations.length > 0) {
+			return queries.osmosis.queryAccountLocked
+				.get(account.bech32Address)
+				.getLockedCoinWithDuration(poolShareCurrency, lockableDurations[lockableDurations.length - 1]);
+		} else {
+			return;
+		}
+	})();
+	const [isOpenUpgradeLockedLPDialog, setIsOpenUpgradeLockedLPDialog] = useState(false);
+
 	return (
 		<div>
-			<TitleText isMobileView={isMobileView} pb={0}>
+			<TitleText isMobileView={isMobileView} pb={isMobileView ? 10 : 24}>
 				Superfluid Staking
 			</TitleText>
 			{Array.isArray(superfluidDelegations) && superfluidDelegations.length > 0 ? (
@@ -117,19 +134,36 @@ export const SuperfluidStaking: FunctionComponent<{ poolId: string }> = observer
 					</div>
 				</div>
 			) : (
-				<div className="bg-card p-5 rounded-2xl flex items-center justify-between font-body">
-					<div>
-						<div className="text-base font-semibold text-white-high">Superfluid Staking Inactive</div>
-						<div className="mt-2 text-sm font-medium text-iconDefault">
-							You have a superfluid eligible bonded liquidity.
-							<br />
-							Choose a Superfluid Staking validator to earn additional rewards.
+				<React.Fragment>
+					{upgradableLPLockIds ? (
+						<UpgradeLockedLPToSuperfluidDialog
+							amount={upgradableLPLockIds.amount}
+							lockIds={upgradableLPLockIds.lockIds}
+							isOpen={isOpenUpgradeLockedLPDialog}
+							close={() => setIsOpenUpgradeLockedLPDialog(false)}
+						/>
+					) : null}
+					<div className="bg-card p-5 rounded-2xl flex items-center justify-between font-body">
+						<div>
+							<div className="text-base font-semibold text-white-high">Superfluid Staking Inactive</div>
+							<div className="mt-2 text-sm font-medium text-iconDefault">
+								You have a superfluid eligible bonded liquidity.
+								<br />
+								Choose a Superfluid Staking validator to earn additional rewards.
+							</div>
 						</div>
+						<button
+							className="bg-sfs rounded-lg py-2 px-8 text-white-high font-semibold text-sm shadow-elevation-04dp"
+							type="button"
+							onClick={e => {
+								e.preventDefault();
+
+								setIsOpenUpgradeLockedLPDialog(true);
+							}}>
+							Go Superfluid
+						</button>
 					</div>
-					<button className="bg-sfs rounded-lg py-2 px-8 text-white-high font-semibold text-sm shadow-elevation-04dp">
-						Go Superfluid
-					</button>
-				</div>
+				</React.Fragment>
 			)}
 		</div>
 	);
