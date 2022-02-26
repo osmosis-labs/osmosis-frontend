@@ -902,9 +902,9 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
 		  }
 		: {
-				rpc: 'https://rpc-osmosis-v7-testnet.keplr.app',
-				rest: 'https://lcd-osmosis-v7-testnet.keplr.app',
-				chainId: 'osmo-test-3',
+				rpc: 'https://testnet-rpc.osmosis.zone',
+				rest: 'https://testnet-rest.osmosis.zone/',
+				chainId: 'osmo-test-4',
 				chainName: 'Osmosis',
 				stakeCurrency: {
 					coinDenom: 'OSMO',
