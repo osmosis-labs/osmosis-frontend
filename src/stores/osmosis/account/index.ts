@@ -93,7 +93,7 @@ export class AccountWithCosmosAndOsmosis
 			},
 			lockTokens: {
 				type: 'osmosis/lockup/lock-tokens',
-				gas: 250000,
+				gas: 450000,
 			},
 			superfluidDelegate: {
 				type: 'osmosis/superfluid-delegate',
