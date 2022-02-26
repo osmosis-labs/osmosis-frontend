@@ -737,7 +737,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	{
 		rpc: 'https://testnet-rpc.osmosis.zone',
 		rest: 'https://testnet-rest.osmosis.zone',
-		chainId: 'osmo-test-3',
+		chainId: 'osmo-test-4',
 		chainName: 'Osmosis',
 		stakeCurrency: {
 			coinDenom: 'OSMO',
