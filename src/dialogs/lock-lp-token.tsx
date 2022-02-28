@@ -71,24 +71,9 @@ export const LockLpTokenDialog = wrapBaseDialog(
 										.toString()}%`;
 
 									if (lockableDurations.length - 1 === i && isSuperfluidEnabled) {
-										const superfluidAPY = (() => {
-											const superfluidAPY = queries.cosmos.queryInflation.inflation.mul(
-												queries.osmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(poolId)
-											);
-
-											if (lockableDurations.length > 0) {
-												const poolAPY = queries.osmosis.queryIncentivizedPools.computeAPY(
-													poolId,
-													lockableDurations[lockableDurations.length - 1],
-													priceStore,
-													priceStore.getFiatCurrency('usd')!
-												);
-
-												return superfluidAPY.add(poolAPY);
-											} else {
-												return superfluidAPY;
-											}
-										})();
+										const superfluidAPY = queries.cosmos.queryInflation.inflation.mul(
+											queries.osmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(poolId)
+										);
 
 										apy += ` + ${superfluidAPY
 											.maxDecimals(0)
