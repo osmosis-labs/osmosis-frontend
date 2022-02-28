@@ -9,8 +9,9 @@ import { applyOptionalDecimal } from 'src/utils/format';
 import { Optional } from 'utility-types';
 import { CardInfoPlaceholder } from 'src/components/common/CardInfoPlaceholder';
 import { useStore } from 'src/stores';
+import { observer } from 'mobx-react-lite';
 
-export function PoolCardItem(
+export const PoolCardItem = observer(function PoolCardItem(
 	props: (IncentivizedPoolCardProp | Optional<MyPoolCardProp, 'myLiquidity'>) & {
 		onClick: HTMLAttributes<HTMLDivElement>['onClick'];
 	}
@@ -105,7 +106,7 @@ export function PoolCardItem(
 			</PoolCardItemContainer>
 		</div>
 	);
-}
+});
 
 const PoolCardItemContainer = styled.li`
 	cursor: pointer;
