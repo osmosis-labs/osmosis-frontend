@@ -918,9 +918,9 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
 		  }
 		: {
-				rpc: 'https://testnet-rpc.osmosis.zone',
-				rest: 'https://testnet-rest.osmosis.zone/',
-				chainId: 'osmo-test-4',
+				rpc: 'https://rpc-osmosis.keplr.app',
+				rest: 'https://lcd-osmosis.keplr.app',
+				chainId: 'osmosis-1',
 				chainName: 'Osmosis',
 				stakeCurrency: {
 					coinDenom: 'OSMO',
@@ -2311,7 +2311,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/gravity-bridge/txs/{txHash}',
 	},
-  {
+	{
 		rpc: 'https://poseidon.mainnet.decentr.xyz',
 		rest: 'https://rest.mainnet.decentr.xyz',
 		chainId: 'mainnet-3',
