@@ -159,7 +159,7 @@ const webConfig = () => {
 				chunks: ['main'],
 			}),
 			new WriteFilePlugin(),
-			new webpack.EnvironmentPlugin(['NODE_ENV']),
+			new webpack.EnvironmentPlugin(['NODE_ENV', 'LOCALNET']),
 			isEnvAnalyzer &&
 				new BundleAnalyzerPlugin({
 					analyzerMode: isEnvAnalyzer ? 'server' : 'disabled',

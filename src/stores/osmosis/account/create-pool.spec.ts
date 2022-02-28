@@ -121,7 +121,7 @@ describe('Test Osmosis Create Pool Tx', () => {
 			{
 				type: 'message',
 				attributes: [
-					{ key: 'action', value: '/osmosis.gamm.v1beta1.MsgCreatePool' },
+					{ key: 'action', value: '/osmosis.gamm.v1beta1.MsgCreateBalancerPool' },
 					{ key: 'module', value: 'gamm' },
 					{
 						key: 'sender',
@@ -182,7 +182,7 @@ describe('Test Osmosis Create Pool Tx', () => {
 			{
 				type: 'message',
 				attributes: [
-					{ key: 'action', value: '/osmosis.gamm.v1beta1.MsgCreatePool' },
+					{ key: 'action', value: '/osmosis.gamm.v1beta1.MsgCreateBalancerPool' },
 					{ key: 'module', value: 'gamm' },
 					{
 						key: 'sender',
