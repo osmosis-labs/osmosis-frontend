@@ -172,6 +172,7 @@ module.exports = {
 			},
 		}),
 		backgroundImage: {
+			none: 'none',
 			'gradients-socialLive': 'linear-gradient(180deg, #89EAFB 0%, #1377B0 100%)',
 			'gradients-greenBeach': 'linear-gradient(180deg, #00CEBA 0%, #008A7D 100%)',
 			'gradients-kashmir': 'linear-gradient(180deg, #6976FE 0%, #3339FF 100%)',

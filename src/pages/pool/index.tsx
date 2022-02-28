@@ -48,7 +48,6 @@ export const PoolPage: FunctionComponent = observer(() => {
 		);
 	}
 
-	// It can be modified
 	const isSuperfluidEnabled = queries.osmosis.querySuperfluidPools.isSuperfluidPool(match.params.id);
 
 	return (
