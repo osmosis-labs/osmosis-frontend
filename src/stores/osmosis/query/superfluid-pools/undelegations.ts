@@ -40,6 +40,12 @@ export class ObservableQuerySuperfluidUndelegationsInner extends ObservableChain
 		const superfluidUndelegationRecords = this.response.data.superfluid_delegation_records;
 		const superfluidUndelegationLocks = this.response.data.synthetic_locks;
 
+		// synthetic_locks does not exist in v7.0.2 node due to a mistake. In this case, processing cannot be performed.
+		if (!superfluidUndelegationLocks) {
+			console.log("there is no synthetic_locks from response. check your node's version");
+			return undefined;
+		}
+
 		if (superfluidUndelegationRecords.length !== superfluidUndelegationLocks.length) {
 			throw new Error('Undelegation records and locks are different.');
 		}
