@@ -3,7 +3,7 @@ import { KVStore } from '@keplr-wallet/common';
 import { FiatCurrency } from '@keplr-wallet/types';
 import { computed, makeObservable, observable } from 'mobx';
 import { ObservableQueryPools } from '../osmosis/query/pools';
-import { Dec } from '@keplr-wallet/unit';
+import { CoinPretty, Dec } from '@keplr-wallet/unit';
 
 export interface IntermidiateRoute {
 	readonly alternativeCoinId: string;
@@ -96,5 +96,19 @@ export class PoolIntermediatePriceStore extends CoinGeckoPriceStore {
 			console.log(`Failed to calculate price of (${coinId}, ${vsCurrency}): ${e?.message}`);
 			return undefined;
 		}
+	}
+
+	getPricePretty(coin: CoinPretty, vsCurrency?: string, decimals = 2): string {
+		const coinId = coin.currency.coinGeckoId;
+		const currency = vsCurrency ? vsCurrency : this.defaultVsCurrency;
+		const symbol = this.getFiatCurrency(currency)?.symbol;
+		let price = '0';
+
+		if (coinId) {
+			const raw = super.getPrice(coinId, currency);
+			price = raw ? raw.toFixed(decimals) : '0';
+		}
+
+		return `${symbol}${price}`;
 	}
 }
