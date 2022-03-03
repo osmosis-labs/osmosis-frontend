@@ -10,6 +10,11 @@ import {
 	AccountSetOpts,
 	CosmosAccount,
 	HasCosmosAccount,
+	HasCosmwasmAccount,
+	HasCosmwasmQueries,
+	CosmwasmAccount,
+	AccountWithCosmwasm,
+	CosmwasmMsgOpts,
 } from '@keplr-wallet/stores';
 import { Coin, Dec, DecUtils } from '@keplr-wallet/unit';
 import { Currency } from '@keplr-wallet/types';
@@ -38,59 +43,87 @@ export interface OsmosisMsgOpts {
 	readonly swapExactAmountIn: MsgOpt;
 	readonly swapExactAmountOut: MsgOpt;
 	readonly lockTokens: MsgOpt;
+	readonly superfluidDelegate: MsgOpt;
+	readonly lockAndSuperfluidDelegate: MsgOpt;
 	readonly beginUnlocking: MsgOpt;
+	readonly superfluidUndelegate: MsgOpt;
+	readonly superfluidUnbondLock: MsgOpt;
 	readonly unlockPeriodLock: MsgOpt;
 }
 
 export class AccountWithCosmosAndOsmosis
-	extends AccountSetBase<CosmosMsgOpts & OsmosisMsgOpts, HasCosmosQueries & HasOsmosisQueries>
-	implements HasCosmosAccount, HasOsmosisAccount {
+	extends AccountSetBase<
+		CosmosMsgOpts & OsmosisMsgOpts & CosmwasmMsgOpts,
+		HasCosmosQueries & HasOsmosisQueries & HasCosmwasmQueries
+	>
+	implements HasCosmosAccount, HasOsmosisAccount, HasCosmwasmAccount {
 	public readonly cosmos: DeepReadonly<CosmosAccount>;
 	public readonly osmosis: DeepReadonly<OsmosisAccount>;
+	public readonly cosmwasm: DeepReadonly<CosmwasmAccount>;
 
-	static readonly defaultMsgOpts: CosmosMsgOpts & OsmosisMsgOpts = deepmerge(AccountWithCosmos.defaultMsgOpts, {
-		createPool: {
-			type: 'osmosis/gamm/create-pool',
-			gas: 250000,
-		},
-		joinPool: {
-			type: 'osmosis/gamm/join-pool',
-			gas: 140000,
-			shareCoinDecimals: 18,
-		},
-		joinSwapExternAmountIn: {
-			type: 'osmosis/gamm/join-swap-extern-amount-in',
-			gas: 140000,
-			shareCoinDecimals: 18,
-		},
-		exitPool: {
-			type: 'osmosis/gamm/exit-pool',
-			gas: 140000,
-			shareCoinDecimals: 18,
-		},
-		swapExactAmountIn: {
-			type: 'osmosis/gamm/swap-exact-amount-in',
-			gas: 250000,
-		},
-		swapExactAmountOut: {
-			type: 'osmosis/gamm/swap-exact-amount-out',
-			gas: 250000,
-		},
-		lockTokens: {
-			type: 'osmosis/lockup/lock-tokens',
-			gas: 250000,
-		},
-		beginUnlocking: {
-			type: 'osmosis/lockup/begin-unlock-period-lock',
-			// Gas per msg
-			gas: 140000,
-		},
-		unlockPeriodLock: {
-			type: 'osmosis/lockup/unlock-period-lock',
-			// Gas per msg
-			gas: 140000,
-		},
-	});
+	static readonly defaultMsgOpts: CosmosMsgOpts & OsmosisMsgOpts & CosmwasmMsgOpts = deepmerge(
+		AccountWithCosmos.defaultMsgOpts,
+		deepmerge(AccountWithCosmwasm.defaultMsgOpts, {
+			createPool: {
+				type: 'osmosis/gamm/create-balancer-pool',
+				gas: 350000,
+			},
+			joinPool: {
+				type: 'osmosis/gamm/join-pool',
+				gas: 240000,
+				shareCoinDecimals: 18,
+			},
+			joinSwapExternAmountIn: {
+				type: 'osmosis/gamm/join-swap-extern-amount-in',
+				gas: 140000,
+				shareCoinDecimals: 18,
+			},
+			exitPool: {
+				type: 'osmosis/gamm/exit-pool',
+				gas: 140000,
+				shareCoinDecimals: 18,
+			},
+			swapExactAmountIn: {
+				type: 'osmosis/gamm/swap-exact-amount-in',
+				gas: 250000,
+			},
+			swapExactAmountOut: {
+				type: 'osmosis/gamm/swap-exact-amount-out',
+				gas: 250000,
+			},
+			lockTokens: {
+				type: 'osmosis/lockup/lock-tokens',
+				gas: 450000,
+			},
+			superfluidDelegate: {
+				type: 'osmosis/superfluid-delegate',
+				gas: 500000,
+			},
+			lockAndSuperfluidDelegate: {
+				type: 'osmosis/lock-and-superfluid-delegate',
+				gas: 500000,
+			},
+			beginUnlocking: {
+				type: 'osmosis/lockup/begin-unlock-period-lock',
+				// Gas per msg
+				gas: 140000,
+			},
+			unlockPeriodLock: {
+				type: 'osmosis/lockup/unlock-period-lock',
+				// Gas per msg
+				gas: 140000,
+			},
+			superfluidUndelegate: {
+				type: 'osmosis/superfluid-undelegate',
+				gas: 300000,
+			},
+			superfluidUnbondLock: {
+				type: 'osmosis/superfluid-unbond-lock',
+				// Gas per msg
+				gas: 300000,
+			},
+		})
+	);
 
 	constructor(
 		protected readonly eventListener: {
@@ -99,8 +132,10 @@ export class AccountWithCosmosAndOsmosis
 		},
 		protected readonly chainGetter: ChainGetter,
 		protected readonly chainId: string,
-		protected readonly queriesStore: QueriesStore<QueriesSetBase & HasCosmosQueries & HasOsmosisQueries>,
-		protected readonly opts: AccountSetOpts<CosmosMsgOpts & OsmosisMsgOpts>
+		protected readonly queriesStore: QueriesStore<
+			QueriesSetBase & HasCosmosQueries & HasOsmosisQueries & HasCosmwasmQueries
+		>,
+		protected readonly opts: AccountSetOpts<CosmosMsgOpts & OsmosisMsgOpts & CosmwasmMsgOpts>
 	) {
 		super(eventListener, chainGetter, chainId, queriesStore, opts);
 
@@ -112,6 +147,12 @@ export class AccountWithCosmosAndOsmosis
 		);
 		this.osmosis = new OsmosisAccount(
 			this as AccountSetBase<OsmosisMsgOpts, HasOsmosisQueries>,
+			chainGetter,
+			chainId,
+			queriesStore
+		);
+		this.cosmwasm = new CosmwasmAccount(
+			this as AccountSetBase<CosmwasmMsgOpts, HasCosmwasmQueries>,
 			chainGetter,
 			chainId,
 			queriesStore
@@ -197,8 +238,8 @@ export class OsmosisAccount {
 				aminoMsgs: [msg],
 				protoMsgs: [
 					{
-						type_url: '/osmosis.gamm.v1beta1.MsgCreatePool',
-						value: osmosis.gamm.v1beta1.MsgCreatePool.encode({
+						type_url: '/osmosis.gamm.v1beta1.MsgCreateBalancerPool',
+						value: osmosis.gamm.v1beta1.MsgCreateBalancerPool.encode({
 							sender: msg.value.sender,
 							poolParams: {
 								swapFee: this.changeDecStringToProtoBz(msg.value.poolParams.swapFee),
@@ -828,6 +869,132 @@ export class OsmosisAccount {
 					// Refresh the locked coins
 					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
+
+					queries.osmosis.querySuperfluidDelegations.getQuerySuperfluidDelegations(this.base.bech32Address).fetch();
+				}
+
+				if (onFulfill) {
+					onFulfill(tx);
+				}
+			}
+		);
+	}
+
+	async sendSuperfluidDelegate(
+		lockIds: string[],
+		validatorAddress: string,
+		memo: string = '',
+		onFulfill?: (tx: any) => void
+	) {
+		const msgs = lockIds.map(lockId => {
+			return {
+				type: this.base.msgOpts.superfluidDelegate.type,
+				value: {
+					sender: this.base.bech32Address,
+					lock_id: lockId,
+					val_addr: validatorAddress,
+				},
+			};
+		});
+
+		const protoMsgs = msgs.map(msg => {
+			return {
+				type_url: '/osmosis.superfluid.MsgSuperfluidDelegate',
+				value: osmosis.superfluid.MsgSuperfluidDelegate.encode({
+					sender: msg.value.sender,
+					lockId: Long.fromString(msg.value.lock_id),
+					valAddr: msg.value.val_addr,
+				}).finish(),
+			};
+		});
+
+		await this.base.sendMsgs(
+			'superfluidDelegate',
+			{
+				aminoMsgs: msgs,
+				protoMsgs,
+			},
+			memo,
+			{
+				amount: [],
+				gas: this.base.msgOpts.lockAndSuperfluidDelegate.gas.toString(),
+			},
+			undefined,
+			tx => {
+				if (tx.code == null || tx.code === 0) {
+					// Refresh the balances
+					const queries = this.queriesStore.get(this.chainId);
+					queries.queryBalances.getQueryBech32Address(this.base.bech32Address).fetch();
+
+					queries.osmosis.querySuperfluidDelegations.getQuerySuperfluidDelegations(this.base.bech32Address).fetch();
+				}
+
+				if (onFulfill) {
+					onFulfill(tx);
+				}
+			}
+		);
+	}
+
+	async sendLockAndSuperfluidDelegateMsg(
+		tokens: {
+			currency: Currency;
+			amount: string;
+		}[],
+		validatorAddress: string,
+		memo: string = '',
+		onFulfill?: (tx: any) => void
+	) {
+		const primitiveTokens = tokens.map(token => {
+			const amount = new Dec(token.amount).mul(DecUtils.getPrecisionDec(token.currency.coinDecimals)).truncate();
+
+			return {
+				amount: amount.toString(),
+				denom: token.currency.coinMinimalDenom,
+			};
+		});
+
+		const msg = {
+			type: this.base.msgOpts.lockAndSuperfluidDelegate.type,
+			value: {
+				sender: this.base.bech32Address,
+				coins: primitiveTokens,
+				val_addr: validatorAddress,
+			},
+		};
+
+		await this.base.sendMsgs(
+			'lockAndSuperfluidDelegate',
+			{
+				aminoMsgs: [msg],
+				protoMsgs: [
+					{
+						type_url: '/osmosis.superfluid.MsgLockAndSuperfluidDelegate',
+						value: osmosis.superfluid.MsgLockAndSuperfluidDelegate.encode({
+							sender: msg.value.sender,
+							coins: msg.value.coins,
+							valAddr: msg.value.val_addr,
+						}).finish(),
+					},
+				],
+			},
+			memo,
+			{
+				amount: [],
+				gas: this.base.msgOpts.lockAndSuperfluidDelegate.gas.toString(),
+			},
+			undefined,
+			tx => {
+				if (tx.code == null || tx.code === 0) {
+					// Refresh the balances
+					const queries = this.queriesStore.get(this.chainId);
+					queries.queryBalances.getQueryBech32Address(this.base.bech32Address).fetch();
+
+					// Refresh the locked coins
+					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
+					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
+
+					queries.osmosis.querySuperfluidDelegations.getQuerySuperfluidDelegations(this.base.bech32Address).fetch();
 				}
 
 				if (onFulfill) {
@@ -845,6 +1012,7 @@ export class OsmosisAccount {
 					owner: this.base.bech32Address,
 					// XXX: 얘는 어째서인지 소문자가 아님 ㅋ;
 					ID: lockId,
+					coins: [],
 				},
 			};
 		});
@@ -881,6 +1049,122 @@ export class OsmosisAccount {
 					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryUnlockingCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
+				}
+
+				if (onFulfill) {
+					onFulfill(tx);
+				}
+			}
+		);
+	}
+
+	async sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+		locks: {
+			lockId: string;
+			isSyntheticLock: boolean;
+		}[],
+		memo: string = '',
+		onFulfill?: (tx: any) => void
+	) {
+		const msgs: { type: string; value: any }[] = [];
+
+		for (const lock of locks) {
+			if (!lock.isSyntheticLock) {
+				msgs.push({
+					type: this.base.msgOpts.beginUnlocking.type,
+					value: {
+						owner: this.base.bech32Address,
+						// XXX: 얘는 어째서인지 소문자가 아님 ㅋ;
+						ID: lock.lockId,
+						coins: [],
+					},
+				});
+			} else {
+				msgs.push(
+					{
+						type: this.base.msgOpts.superfluidUndelegate.type,
+						value: {
+							sender: this.base.bech32Address,
+							lock_id: lock.lockId,
+						},
+					},
+					{
+						type: this.base.msgOpts.superfluidUnbondLock.type,
+						value: {
+							sender: this.base.bech32Address,
+							lock_id: lock.lockId,
+						},
+					}
+				);
+			}
+		}
+
+		let numBeginUnlocking = 0;
+		let numSuperfluidUndelegate = 0;
+		let numSuperfluidUnbondLock = 0;
+
+		const protoMsgs = msgs.map(msg => {
+			if (msg.type === this.base.msgOpts.beginUnlocking.type && msg.value.ID) {
+				numBeginUnlocking++;
+				return {
+					type_url: '/osmosis.lockup.MsgBeginUnlocking',
+					value: osmosis.lockup.MsgBeginUnlocking.encode({
+						owner: msg.value.owner,
+						ID: Long.fromString(msg.value.ID),
+					}).finish(),
+				};
+			} else if (msg.type === this.base.msgOpts.superfluidUndelegate.type && msg.value.lock_id) {
+				numSuperfluidUndelegate++;
+				return {
+					type_url: '/osmosis.superfluid.MsgSuperfluidUndelegate',
+					value: osmosis.superfluid.MsgSuperfluidUndelegate.encode({
+						sender: msg.value.sender,
+						lockId: Long.fromString(msg.value.lock_id),
+					}).finish(),
+				};
+			} else if (msg.type === this.base.msgOpts.superfluidUnbondLock.type && msg.value.lock_id) {
+				numSuperfluidUnbondLock++;
+				return {
+					type_url: '/osmosis.superfluid.MsgSuperfluidUnbondLock',
+					value: osmosis.superfluid.MsgSuperfluidUnbondLock.encode({
+						sender: msg.value.sender,
+						lockId: Long.fromString(msg.value.lock_id),
+					}).finish(),
+				};
+			} else {
+				throw new Error('Invalid locks');
+			}
+		});
+
+		await this.base.sendMsgs(
+			'beginUnlocking',
+			{
+				aminoMsgs: msgs,
+				protoMsgs,
+			},
+			memo,
+			{
+				amount: [],
+				gas: (
+					numBeginUnlocking * this.base.msgOpts.beginUnlocking.gas +
+					numSuperfluidUndelegate * this.base.msgOpts.superfluidUndelegate.gas +
+					numSuperfluidUnbondLock * this.base.msgOpts.superfluidUnbondLock.gas
+				).toString(),
+			},
+			undefined,
+			tx => {
+				if (tx.code == null || tx.code === 0) {
+					// Refresh the balances
+					const queries = this.queriesStore.get(this.chainId);
+					queries.queryBalances.getQueryBech32Address(this.base.bech32Address).fetch();
+
+					// Refresh the locked coins
+					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
+					queries.osmosis.queryUnlockingCoins.get(this.base.bech32Address).fetch();
+					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
+
+					queries.osmosis.querySuperfluidDelegations.getQuerySuperfluidDelegations(this.base.bech32Address).fetch();
+					queries.osmosis.querySuperfluidUndelegations.getQuerySuperfluidDelegations(this.base.bech32Address).fetch();
 				}
 
 				if (onFulfill) {
