@@ -747,6 +747,7 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-6',
 		coinMinimalDenom: 'ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444',
 		ibcTransferPathDenom: 'transfer/channel-38/gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'columbus-5',
