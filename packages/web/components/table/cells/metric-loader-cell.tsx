@@ -15,7 +15,9 @@ export interface MetricLoaderCell extends BaseCell {
 export const MetricLoaderCell: FunctionComponent<MetricLoaderCell> = observer(
   ({ value, isLoading }) => {
     return (
-      <MetricLoader isLoading={isLoading}>{value.toString()}</MetricLoader>
+      <MetricLoader className="w-[4rem]" isLoading={isLoading}>
+        {value.toString()}
+      </MetricLoader>
     );
   }
 );
