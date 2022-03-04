@@ -1,5 +1,5 @@
 import cn from 'clsx';
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { IBCCurrency } from '@keplr-wallet/types';
 import { AmountInput } from '../components/form/Inputs';
@@ -51,9 +51,20 @@ export const TransferDialog = wrapBaseDialog(
 				.queryBalances.getQueryBech32Address(counterpartyAccount.bech32Address)
 				.getBalanceFromCurrency(currency.originCurrency!);
 
+			// detect if a user rejects connection to a chain account in Keplr
+			const [counterpartyInitAttempted, setCounterpartyInitAttempted] = useState(false);
+
 			useEffect(() => {
-				if (account.bech32Address && counterpartyAccount.walletStatus === WalletStatus.NotInit) {
+				if (counterpartyInitAttempted && counterpartyAccount.walletStatus === WalletStatus.NotInit) {
+					counterpartyAccount.disconnect();
+					close();
+				} else if (
+					account.bech32Address &&
+					counterpartyAccount.walletStatus === WalletStatus.NotInit &&
+					!counterpartyInitAttempted
+				) {
 					counterpartyAccount.init();
+					setCounterpartyInitAttempted(true);
 				}
 			}, [account.bech32Address, counterpartyAccount.walletStatus]);
 
