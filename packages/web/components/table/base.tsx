@@ -4,9 +4,10 @@ import classNames from "classnames";
 import Tippy from "@tippyjs/react";
 import { SortDirection, CustomClasses } from "../types";
 import { replaceAt } from "../utils";
+import { IntPretty, PricePretty } from "@keplr-wallet/unit";
 
 export interface BaseCell {
-  value: string;
+  value: string | PricePretty | IntPretty;
   rowHovered: boolean;
 }
 
@@ -24,7 +25,7 @@ export interface ColumnDef<TCell> {
    *
    * Note: components must accept optionals for all cell data and check for the data they need.
    */
-  displayCell?: React.FunctionComponent<Partial<TCell>>;
+  displayCell?: React.FunctionComponent<TCell>;
 }
 
 export interface RowDef {
@@ -36,7 +37,7 @@ export interface RowDef {
 export interface TableProps<TCell> extends CustomClasses {
   columnDefs: ColumnDef<TCell>[];
   rowDefs?: RowDef[];
-  data: Partial<TCell>[][];
+  data: TCell[][];
 }
 
 /** Generic table that accepts a 2d array of any type of data cell,
@@ -138,11 +139,7 @@ export const Table = <TCell extends BaseCell>({
 
                 return (
                   <td key={`${rowIndex}${columnIndex}`}>
-                    {DisplayCell ? (
-                      <DisplayCell rowHovered={rowHovered} {...cell} />
-                    ) : (
-                      cell.value
-                    )}
+                    {DisplayCell ? <DisplayCell {...cell} /> : cell.value}
                   </td>
                 );
               })}

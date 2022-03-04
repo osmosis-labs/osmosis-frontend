@@ -1,11 +1,20 @@
 import { useEffect } from "react";
 import { MenuOption } from "../components/control";
-import { ColumnDef, RowDef } from "../components/table";
-import { PoolCompositionCell } from "../components/table/cells";
+import { BaseCell, ColumnDef, RowDef } from "../components/table";
+import {
+  MetricLoaderCell,
+  PoolCompositionCell,
+} from "../components/table/cells";
+import { useStore } from "../stores";
 import { ObservablePoolWithMetric } from "../stores/imperator-queries";
 import { useFilteredData, usePaginatedData, useSortedData } from "./data";
 
-export const useAllPoolsTable = (pools: ObservablePoolWithMetric[]) => {
+export const useAllPoolsTable = (
+  pools: ObservablePoolWithMetric[],
+  isIncentivizedPools: boolean
+) => {
+  const { queriesOsmosisStore } = useStore();
+  const queryOsmosis = queriesOsmosisStore.get("osmosis");
   const [query, setQuery, filteredPools] = useFilteredData(pools, [
     "pool.id",
     "pool.poolAssets.amount.currency.coinDenom",
@@ -22,7 +31,7 @@ export const useAllPoolsTable = (pools: ObservablePoolWithMetric[]) => {
     sortedAllPoolsWithMetric,
     10
   );
-  const tableCols: (ColumnDef<PoolCompositionCell> & MenuOption)[] = [
+  const tableCols = [
     {
       id: "pool.id",
       display: "Pool ID/Tokens",
@@ -91,20 +100,21 @@ export const useAllPoolsTable = (pools: ObservablePoolWithMetric[]) => {
             },
     },
     {
-      id: "myLiquidity",
-      display: "My Liquidity",
+      id: isIncentivizedPools ? "apr" : "myLiquidity",
+      display: isIncentivizedPools ? "APR" : "My Liquidity",
       sort:
-        sortKeyPath === "myLiquidity"
+        sortKeyPath === (isIncentivizedPools ? "apr" : "myLiquidity")
           ? {
               currentDirection: sortDirection,
               onClickHeader: toggleSortDirection,
             }
           : {
               onClickHeader: () => {
-                setSortKeyPath("myLiquidity");
+                setSortKeyPath(isIncentivizedPools ? "apr" : "myLiquidity");
                 setSortDirection("ascending");
               },
             },
+      displayCell: isIncentivizedPools ? MetricLoaderCell : undefined,
     },
   ];
   useEffect(() => {
@@ -120,17 +130,22 @@ export const useAllPoolsTable = (pools: ObservablePoolWithMetric[]) => {
     onClick: (i) => console.log(i),
   }));
 
-  const tableData: Partial<PoolCompositionCell>[][] = allPoolsPages.map(
-    (poolWithMetric) => {
-      return [
-        { poolId: poolWithMetric.pool.id },
-        { value: poolWithMetric.liquidity },
-        { value: poolWithMetric.volume24h },
-        { value: poolWithMetric.fees7d },
-        { value: poolWithMetric.myLiquidity },
-      ];
-    }
-  );
+  const tableData = allPoolsPages.map((poolWithMetric) => {
+    return [
+      { poolId: poolWithMetric.pool.id },
+      { value: poolWithMetric.liquidity },
+      { value: poolWithMetric.volume24h },
+      { value: poolWithMetric.fees7d },
+      {
+        value: isIncentivizedPools
+          ? `${poolWithMetric.apr}%`
+          : poolWithMetric.myLiquidity,
+        isLoading: isIncentivizedPools
+          ? queryOsmosis.queryIncentivizedPools.isAprFetching
+          : false,
+      },
+    ];
+  });
 
   return {
     query,

@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useExternalIncentivizedPoolsTable } from "../../hooks/use-external-incentivized-pools-table";
 import { ObservablePoolWithMetric } from "../../stores/imperator-queries";
@@ -10,7 +11,7 @@ const TVL_FILTER_THRESHOLD = 1000;
 
 export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
   externalIncentivizedPools: ObservablePoolWithMetric[];
-}> = ({ externalIncentivizedPools }) => {
+}> = observer(({ externalIncentivizedPools }) => {
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
   const tvlFilteredPools = isPoolTvlFiltered
     ? externalIncentivizedPools
@@ -84,4 +85,4 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
       </div>
     </>
   );
-};
+});

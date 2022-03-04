@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useAllPoolsTable } from "../../hooks/use-all-pools-table";
 import { ObservablePoolWithMetric } from "../../stores/imperator-queries";
@@ -16,8 +17,8 @@ const TVL_FILTER_THRESHOLD = 1000;
 export const AllPoolsTableSet: FunctionComponent<{
   allPools: ObservablePoolWithMetric[];
   incentivizedPoolIds: string[];
-}> = ({ allPools, incentivizedPoolIds }) => {
-  const [activeOptionId, setActiveOptionId] = useState(poolsMenuOptions[1].id);
+}> = observer(({ allPools, incentivizedPoolIds }) => {
+  const [activeOptionId, setActiveOptionId] = useState(poolsMenuOptions[0].id);
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
   const incentivizedPools = allPools.reduce(
     (
@@ -33,8 +34,8 @@ export const AllPoolsTableSet: FunctionComponent<{
     },
     []
   );
-  const activeOptionPools =
-    activeOptionId === poolsMenuOptions[0].id ? incentivizedPools : allPools;
+  const isIncentivizedPools = activeOptionId === poolsMenuOptions[0].id;
+  const activeOptionPools = isIncentivizedPools ? incentivizedPools : allPools;
   const tvlFilteredPools = isPoolTvlFiltered
     ? activeOptionPools
     : activeOptionPools.filter((poolWithMetric) =>
@@ -54,7 +55,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     tableCols,
     tableRows,
     tableData,
-  } = useAllPoolsTable(tvlFilteredPools);
+  } = useAllPoolsTable(tvlFilteredPools, isIncentivizedPools);
 
   return (
     <>
@@ -112,4 +113,4 @@ export const AllPoolsTableSet: FunctionComponent<{
       </div>
     </>
   );
-};
+});

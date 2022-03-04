@@ -90,21 +90,6 @@ const Pools: NextPage = observer(function () {
   );
 
   const allPools = queryOsmosis.queryGammPools.getAllPools();
-  const incentivizedPoolIds =
-    queryOsmosis.queryIncentivizedPools.incentivizedPools;
-  const incentivizedPools = useMemo(
-    () =>
-      allPools.reduce(
-        (incentivizedPools: ObservablePool[], pool: ObservablePool) => {
-          if (incentivizedPoolIds.some((poolId) => pool.id === poolId)) {
-            incentivizedPools.push(pool);
-          }
-          return incentivizedPools;
-        },
-        []
-      ),
-    [incentivizedPoolIds, allPools]
-  );
   const allPoolsWithMetric = queryImperator.queryGammPoolMetrics
     .makePoolsWithMetric(
       allPools,
@@ -117,7 +102,16 @@ const Pools: NextPage = observer(function () {
         myPools.find((myPool) => myPool?.pool.id === poolWithMetric.pool.id)
           ?.myLiquidity ||
         new PricePretty(priceStore.getFiatCurrency("usd")!, new Dec(0)),
+      apr: queryOsmosis.queryIncentivizedPools
+        .computeMostAPY(
+          poolWithMetric.pool.id,
+          priceStore,
+          priceStore.getFiatCurrency("usd")!
+        )
+        .toString(),
     }));
+  const incentivizedPoolIds =
+    queryOsmosis.queryIncentivizedPools.incentivizedPools;
 
   const extraIncentivizedPools = Object.keys(ExtraGaugeInPool)
     .map((poolId: string) => {
@@ -187,6 +181,13 @@ const Pools: NextPage = observer(function () {
           myPools.find((myPool) => myPool?.pool.id === poolWithMetric.pool.id)
             ?.myLiquidity ||
           new PricePretty(priceStore.getFiatCurrency("usd")!, new Dec(0)),
+        apr: queryOsmosis.queryIncentivizedPools
+          .computeMostAPY(
+            poolWithMetric.pool.id,
+            priceStore,
+            priceStore.getFiatCurrency("usd")!
+          )
+          .toString(),
       };
     });
 
@@ -253,6 +254,7 @@ const Pools: NextPage = observer(function () {
                   priceStore,
                   priceStore.getFiatCurrency("usd")!
                 );
+
                 return (
                   <PoolCard
                     key={pool.id}

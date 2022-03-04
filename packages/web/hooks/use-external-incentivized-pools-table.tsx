@@ -1,13 +1,19 @@
 import { useEffect } from "react";
 import { MenuOption } from "../components/control";
 import { BaseCell, ColumnDef, RowDef } from "../components/table";
-import { PoolCompositionCell } from "../components/table/cells";
+import {
+  MetricLoaderCell,
+  PoolCompositionCell,
+} from "../components/table/cells";
+import { useStore } from "../stores";
 import { ObservablePoolWithMetric } from "../stores/imperator-queries";
 import { useFilteredData, usePaginatedData, useSortedData } from "./data";
 
 export const useExternalIncentivizedPoolsTable = (
   pools: ObservablePoolWithMetric[]
 ) => {
+  const { queriesOsmosisStore } = useStore();
+  const queryOsmosis = queriesOsmosisStore.get("osmosis");
   const [query, setQuery, filteredPools] = useFilteredData(pools, [
     "pool.id",
     "pool.poolAssets.amount.currency.coinDenom",
@@ -24,7 +30,7 @@ export const useExternalIncentivizedPoolsTable = (
     sortedAllPoolsWithMetric,
     10
   );
-  const tableCols: (ColumnDef<PoolCompositionCell> & MenuOption)[] = [
+  const tableCols = [
     {
       id: "pool.id",
       display: "Pool ID/Tokens",
@@ -61,20 +67,21 @@ export const useExternalIncentivizedPoolsTable = (
             },
     },
     {
-      id: "volume24h",
+      id: "apr",
       display: "APR",
       sort:
-        sortKeyPath === "volume24h"
+        sortKeyPath === "apr"
           ? {
               currentDirection: sortDirection,
               onClickHeader: toggleSortDirection,
             }
           : {
               onClickHeader: () => {
-                setSortKeyPath("volume24h");
+                setSortKeyPath("apr");
                 setSortDirection("ascending");
               },
             },
+      displayCell: MetricLoaderCell,
     },
     {
       id: "epochsRemaining",
@@ -123,17 +130,18 @@ export const useExternalIncentivizedPoolsTable = (
     onClick: (i) => console.log(i),
   }));
 
-  const tableData: Partial<PoolCompositionCell>[][] = allPoolsPages.map(
-    (poolWithMetric) => {
-      return [
-        { poolId: poolWithMetric.pool.id },
-        { value: poolWithMetric.liquidity },
-        { value: poolWithMetric.volume24h },
-        { value: poolWithMetric.epochsRemaining.toString() },
-        { value: poolWithMetric.myLiquidity },
-      ];
-    }
-  );
+  const tableData = allPoolsPages.map((poolWithMetric) => {
+    return [
+      { poolId: poolWithMetric.pool.id },
+      { value: poolWithMetric.liquidity },
+      {
+        value: `${poolWithMetric.apr}%`,
+        isLoading: queryOsmosis.queryIncentivizedPools.isAprFetching,
+      },
+      { value: poolWithMetric.epochsRemaining?.toString() },
+      { value: poolWithMetric.myLiquidity },
+    ];
+  });
 
   return {
     query,

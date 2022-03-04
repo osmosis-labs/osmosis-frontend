@@ -6,18 +6,19 @@ import { useStore } from "../../../stores";
 import { PoolAssetsIcon } from "../../assets";
 import { PricePretty } from "@keplr-wallet/unit";
 
-export interface PoolCompositionCell extends Omit<BaseCell, "value"> {
+export interface PoolCompositionCell extends BaseCell {
   poolId: string;
-  value: PricePretty | string;
 }
 
 /** Displays pool composition as a cell in a table.
  *
  *  Accepts the base hover flag.
  */
-export const PoolCompositionCell: FunctionComponent<
-  Partial<PoolCompositionCell>
-> = ({ value, rowHovered, poolId }) => {
+export const PoolCompositionCell: FunctionComponent<PoolCompositionCell> = ({
+  value,
+  rowHovered,
+  poolId,
+}) => {
   const { queriesOsmosisStore, chainStore } = useStore();
 
   const queryOsmosis = queriesOsmosisStore.get(chainStore.osmosis.chainId);

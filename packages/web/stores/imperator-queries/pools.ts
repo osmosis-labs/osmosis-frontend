@@ -7,7 +7,7 @@ import {
 import Axios, { AxiosInstance, CancelToken } from "axios";
 import { makeObservable, observable, action, computed } from "mobx";
 import { computedFn } from "mobx-utils";
-import { PricePretty, CoinPretty, Dec } from "@keplr-wallet/unit";
+import { PricePretty, CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 
 import { ObservablePool } from "@osmosis-labs/stores";
 
@@ -29,7 +29,8 @@ export interface ObservablePoolWithMetric {
   volume24h: PricePretty;
   fees7d: PricePretty;
   myLiquidity?: PricePretty;
-  epochsRemaining: number;
+  epochsRemaining?: number;
+  apr?: string;
 }
 
 export class ObservableImperatorQuery<
