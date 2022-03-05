@@ -2431,7 +2431,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	},
 	{
 		rpc: 'https://eth.bd.evmos.org:8545',
-		rest: 'https://lcd-crypto-org.keplr.app/',
+		rest: 'https://rest.bd.evmos.org:1317',
 		chainId: 'evmos_9001-1',
 		chainName: 'Evmos',
 		stakeCurrency: {
