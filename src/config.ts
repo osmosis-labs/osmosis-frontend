@@ -922,6 +922,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'udec',
 	},
+	{
+		counterpartyChainId: 'evmos_9001-1',
+		sourceChannelId: 'channel-204',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'aevmos',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -2422,5 +2428,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://explorer.decentr.net/transactions/{txHash}?networkId=mainnet',
+	},
+	{
+		rpc: 'https://eth.bd.evmos.org:8545',
+		rest: 'https://lcd-crypto-org.keplr.app/',
+		chainId: 'evmos_9001-1',
+		chainName: 'Evmos',
+		stakeCurrency: {
+			coinDenom: 'EVMOS',
+			coinMinimalDenom: 'aevmos',
+			coinDecimals: 18,
+			coinGeckoId: 'evmos',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.png',
+		},
+		bip44: {
+			coinType: 394,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('evmos'),
+		currencies: [
+			{
+				coinDenom: 'EVMOS',
+				coinMinimalDenom: 'aevmos',
+				coinDecimals: 18,
+				coinGeckoId: 'evmos',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'EVMOS',
+				coinMinimalDenom: 'aevmos',
+				coinDecimals: 8,
+				coinGeckoId: 'aevmos',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://www.mintscan.io/evmos/txs/{txHash}',
 	},
 ];
