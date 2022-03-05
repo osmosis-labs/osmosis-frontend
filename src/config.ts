@@ -2430,8 +2430,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://explorer.decentr.net/transactions/{txHash}?networkId=mainnet',
 	},
 	{
-		rpc: 'https://eth.bd.evmos.org:8545',
-		rest: 'https://rest.bd.evmos.org:1317',
+		rpc: 'https://rpc-evmos.keplr.app/',
+		rest: 'https://lcd-evmos.keplr.app/',
 		chainId: 'evmos_9001-1',
 		chainName: 'Evmos',
 		stakeCurrency: {
@@ -2442,7 +2442,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.svg',
 		},
 		bip44: {
-			coinType: 394,
+			coinType: 60,
 		},
 		bech32Config: Bech32Address.defaultBech32Config('evmos'),
 		currencies: [
