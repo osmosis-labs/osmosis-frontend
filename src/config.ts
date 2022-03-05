@@ -2459,7 +2459,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'EVMOS',
 				coinMinimalDenom: 'aevmos',
 				coinDecimals: 18,
-				coinGeckoId: 'aevmos',
+				coinGeckoId: 'evmos',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.svg',
 			},
 		],
