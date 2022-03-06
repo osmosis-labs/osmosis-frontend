@@ -2439,7 +2439,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'aevmos',
 			coinDecimals: 18,
 			coinGeckoId: 'evmos',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.svg',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.png',
 		},
 		bip44: {
 			coinType: 60,
@@ -2451,7 +2451,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'aevmos',
 				coinDecimals: 18,
 				coinGeckoId: 'evmos',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.svg',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.png',
 			},
 		],
 		feeCurrencies: [
@@ -2460,7 +2460,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'aevmos',
 				coinDecimals: 18,
 				coinGeckoId: 'evmos',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.svg',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.png',
 			},
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
