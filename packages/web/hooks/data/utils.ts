@@ -1,16 +1,8 @@
-import { PricePretty } from "@keplr-wallet/unit";
-import {
-  isDefined,
-  isString,
-  isNumber,
-  isBoolean,
-  isArray,
-  toString,
-} from "./types";
+import { isDefined, isString, isArray } from "./types";
 
 // adapted from https://github.com/krisk/Fuse/tree/master/src/helpers
 export default function get(obj: any, path: any) {
-  const list: string[] | PricePretty[] = [];
+  const list: any[] = [];
   let arr = false;
 
   const deepGet = (obj: any, path: any, index: number) => {

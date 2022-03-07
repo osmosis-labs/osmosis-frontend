@@ -1,34 +1,14 @@
-import type { NextPage } from "next";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { PoolCard } from "../../components/cards";
-import { Overview } from "../../components/overview";
-import { LeftTime } from "../../components/left-time";
-import { Table, PoolTable, ColumnDef, RowDef } from "../../components/table";
-
-import { PoolCompositionCell } from "../../components/table/cells";
-import { SearchBox } from "../../components/input";
-import {
-  MenuOption,
-  MenuToggle,
-  PageList,
-  SortMenu,
-} from "../../components/control";
-import {
-  useFilteredData,
-  useSortedData,
-  usePaginatedData,
-} from "../../hooks/data";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
-import { useEffect, useMemo, useState } from "react";
 import { ObservablePool } from "@osmosis-labs/stores";
-import { ExtraGaugeInPool } from "../../config";
-import { useAllPoolsTable } from "../../hooks/use-all-pools-table";
-import { useExternalIncentivizedPoolsTable } from "../../hooks/use-external-incentivized-pools-table";
+import { observer } from "mobx-react-lite";
+import type { NextPage } from "next";
+import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
 import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
-
-const TVL_FILTER_THRESHOLD = 1000;
+import { LeftTime } from "../../components/left-time";
+import { Overview } from "../../components/overview";
+import { ExtraGaugeInPool } from "../../config";
+import { useStore } from "../../stores";
 
 const Pools: NextPage = observer(function () {
   const {

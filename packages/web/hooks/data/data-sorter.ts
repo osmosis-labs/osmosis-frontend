@@ -1,6 +1,8 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { DataProcessor } from "./types";
 import get from "./utils";
+
+export type SortingData = string | Dec | { toDec(): Dec };
 
 /** Sorts ascending a copy of an arbitrary list of objects via key paths. Key path example: `"attributes.color"` */
 export class DataSorter<TData> implements DataProcessor<TData[]> {
@@ -13,32 +15,17 @@ export class DataSorter<TData> implements DataProcessor<TData[]> {
   /** Key is a path of arbitrary length. Example: `"attributes.color"` or `"attributes.color.shade"` */
   process(key: string) {
     this._data.sort((a: any, b: any) => {
-      let aData: string | string[] | number | PricePretty | PricePretty[] = get(
-        a,
-        key
-      );
-      let bData: string | string[] | number | PricePretty | PricePretty[] = get(
-        b,
-        key
-      );
+      let aData: SortingData = get(a, key);
+      let bData: SortingData = get(b, key);
 
-      // try to sort numerically
-      if (aData instanceof PricePretty && bData instanceof PricePretty) {
-        if (bData.toDec().gt(aData.toDec())) return -1;
-        if (bData.toDec().lt(aData.toDec())) return 1;
-        return 0;
-      } else if (typeof aData === "string" && typeof bData === "string") {
-        const aDataNumerical = parseFloat(aData);
-        const bDataNumerical = parseFloat(bData);
+      if (typeof aData === "string") aData = new Dec(aData);
+      if (typeof bData === "string") bData = new Dec(bData);
 
-        if (!Number.isNaN(aDataNumerical) && !Number.isNaN(bDataNumerical)) {
-          aData = aDataNumerical;
-          bData = bDataNumerical;
-        }
-      }
+      if (!(aData instanceof Dec)) aData = aData.toDec();
+      if (!(bData instanceof Dec)) bData = bData.toDec();
 
-      if (aData < bData) return -1;
-      if (aData > bData) return 1;
+      if (aData.lt(bData)) return -1;
+      if (aData.gt(bData)) return 1;
       return 0;
     });
     return this._data;

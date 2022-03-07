@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * Generic hook to allow a user to paginate through an array of data.

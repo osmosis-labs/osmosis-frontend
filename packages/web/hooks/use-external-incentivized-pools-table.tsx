@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-import { MenuOption } from "../components/control";
-import { BaseCell, ColumnDef, RowDef } from "../components/table";
+import { RowDef } from "../components/table";
 import {
   MetricLoaderCell,
   PoolCompositionCell,
