@@ -1,12 +1,7 @@
-import Image from "next/image";
-import React, { FunctionComponent } from "react";
-import classNames from "classnames";
-import { BaseCell } from "..";
-import { useStore } from "../../../stores";
-import { PoolAssetsIcon } from "../../assets";
-import { IntPretty, PricePretty } from "@keplr-wallet/unit";
-import { MetricLoader } from "../../loaders";
 import { observer } from "mobx-react-lite";
+import React, { FunctionComponent } from "react";
+import { BaseCell } from "..";
+import { MetricLoader } from "../../loaders";
 
 export interface MetricLoaderCell extends BaseCell {
   isLoading: boolean;

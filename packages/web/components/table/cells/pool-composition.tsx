@@ -1,10 +1,9 @@
+import classNames from "classnames";
 import Image from "next/image";
 import React, { FunctionComponent } from "react";
-import classNames from "classnames";
 import { BaseCell } from "..";
 import { useStore } from "../../../stores";
 import { PoolAssetsIcon } from "../../assets";
-import { PricePretty } from "@keplr-wallet/unit";
 
 export interface PoolCompositionCell extends BaseCell {
   poolId: string;

@@ -1,11 +1,11 @@
+import Tippy from "@tippyjs/react";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { PropsWithoutRef, useState } from "react";
-import classNames from "classnames";
-import Tippy from "@tippyjs/react";
 import { replaceAt } from "../utils";
-import { BaseCell, TableProps } from "./base";
-import { PoolCompositionCell, MetricLoaderCell } from "./cells";
-import { observer } from "mobx-react-lite";
+import { TableProps } from "./base";
+import { MetricLoaderCell, PoolCompositionCell } from "./cells";
 
 type PoolTableCell = PoolCompositionCell | MetricLoaderCell;
 

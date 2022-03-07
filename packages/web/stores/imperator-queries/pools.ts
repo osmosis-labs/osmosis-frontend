@@ -1,18 +1,12 @@
 import { KVStore } from "@keplr-wallet/common";
-import {
-  ObservableQuery,
-  QueryOptions,
-  QueryResponse,
-} from "@keplr-wallet/stores";
-import Axios, { AxiosInstance, CancelToken } from "axios";
-import { makeObservable, observable, action, computed } from "mobx";
-import { computedFn } from "mobx-utils";
-import { PricePretty, CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
-
-import { ObservablePool } from "@osmosis-labs/stores";
-
-import { IMPERATOR_API_DOMAIN } from "../../constants";
+import { ObservableQuery } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { ObservablePool } from "@osmosis-labs/stores";
+import Axios from "axios";
+import { makeObservable } from "mobx";
+import { computedFn } from "mobx-utils";
+import { IMPERATOR_API_DOMAIN } from "../../constants";
 
 interface PoolMetric {
   pool_id: string;
