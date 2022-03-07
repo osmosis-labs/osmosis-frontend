@@ -747,7 +747,8 @@ const AddLiquidity: FunctionComponent<{
 						onMouseEnter={() => setIsMouseOverTooltip(true)}
 						onMouseLeave={() => setIsMouseOverTooltip(false)}>
 						<div className="text-white-high text-sm mb-1 leading-tight">
-							Incorrect withdrawal address could result in loss of funds. Avoid withdrawal to exchange deposit address.
+							Single Asset LP allows you to provide liquidity using one asset. However, this will impact the pool price
+							of the asset you’re providing liquidity with.
 						</div>
 					</div>
 				)}
