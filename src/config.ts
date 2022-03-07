@@ -2439,7 +2439,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'aevmos',
 			coinDecimals: 18,
 			coinGeckoId: 'evmos',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.png',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.svg',
 		},
 		bip44: {
 			coinType: 60,
@@ -2451,7 +2451,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'aevmos',
 				coinDecimals: 18,
 				coinGeckoId: 'evmos',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.svg',
 			},
 		],
 		feeCurrencies: [
@@ -2460,10 +2460,15 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'aevmos',
 				coinDecimals: 18,
 				coinGeckoId: 'evmos',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.svg',
 			},
 		],
-		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		gasPriceStep: {
+			low: 0.025,
+			average: 0.03,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/evmos/txs/{txHash}',
 	},
 ];
