@@ -67,6 +67,7 @@ export const LockupAbledPoolIds: {
 	'641': true,
 	'642': true,
 	'643': true,
+	'648': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -684,6 +685,12 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C',
 		},
 	],
+	'648': [
+		{
+			gaugeId: '2272',
+			denom: 'ibc/8061A06D3BD4D52C4A28FFECF7150D370393AF0BA661C3776C54FF32836C3961',
+		},
+	],
 };
 
 export const PoolsPerPage = 10;
@@ -953,6 +960,12 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'udec',
 	},
 	{
+		counterpartyChainId: 'shentu-2.2',
+		sourceChannelId: 'channel-146',
+		destChannelId: 'channel-8',
+		coinMinimalDenom: 'uctk',
+	},
+  {
 		counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-169',
 		destChannelId: 'channel-47',
@@ -2468,5 +2481,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://explorer.decentr.net/transactions/{txHash}?networkId=mainnet',
+	},
+	{
+		rpc: 'https://shenturpc.certikpowered.info',
+		rest: 'https://azuredragon.noopsbycertik.com',
+		chainId: 'shentu-2.2',
+		chainName: 'Certik',
+		stakeCurrency: {
+			coinDenom: 'CTK',
+			coinMinimalDenom: 'uctk',
+			coinDecimals: 6,
+			coinGeckoId: 'certik',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('certik'),
+		currencies: [
+			{
+				coinDenom: 'CTK',
+				coinMinimalDenom: 'uctk',
+				coinDecimals: 6,
+				coinGeckoId: 'certik',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'CTK',
+				coinMinimalDenom: 'uctk',
+				coinDecimals: 6,
+				coinGeckoId: 'certik',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/certik/txs/{txHash}',
 	},
 ];
