@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useAllPoolsTable } from "../../hooks/use-all-pools-table";
@@ -147,7 +147,10 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
             type="checkbox"
             checked={isPoolTvlFiltered}
           />
-          Show pools less then $1,000 TVL
+          {`Show pools less then ${new PricePretty(
+            priceStore.getFiatCurrency("usd")!,
+            TVL_FILTER_THRESHOLD
+          ).toString()} TVL`}
         </label>
       </div>
     </>
