@@ -1,5 +1,3 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
-import { ObservablePool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { PoolCard } from "../../components/cards";
@@ -7,60 +5,19 @@ import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
 import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
 import { LeftTime } from "../../components/left-time";
 import { Overview } from "../../components/overview";
-import { ExtraGaugeInPool } from "../../config";
 import { useStore } from "../../stores";
 
 const Pools: NextPage = observer(function () {
-  const {
-    chainStore,
-    accountStore,
-    priceStore,
-    queriesOsmosisStore,
-    queriesImperatorStore,
-  } = useStore();
+  const { chainStore, accountStore, priceStore, queriesOsmosisStore } =
+    useStore();
 
   const chainInfo = chainStore.getChain("osmosis");
   const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
-  const queryImperator = queriesImperatorStore.get();
   const account = accountStore.getAccount(chainInfo.chainId);
 
   const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
     account.bech32Address
   );
-  const myPools = myPoolIds.map((poolId) => {
-    const pool = queryOsmosis.queryGammPools.getPool(poolId);
-    if (pool) {
-      const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
-        pool.id,
-        priceStore,
-        priceStore.getFiatCurrency("usd")!
-      );
-      const poolLiquidity = pool.computeTotalValueLocked(
-        priceStore,
-        priceStore.getFiatCurrency("usd")!
-      );
-      const myLiquidity = poolLiquidity.mul(
-        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-          account.bech32Address,
-          poolId
-        )
-      );
-      const myBonded = queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
-        account.bech32Address,
-        pool.id,
-        poolLiquidity,
-        priceStore.getFiatCurrency("usd")!
-      );
-
-      return {
-        pool,
-        apr,
-        myLiquidity,
-        poolLiquidity,
-        myBonded,
-      };
-    }
-  });
 
   const top3Pools = queryOsmosis.queryGammPools.getPoolsDescendingOrderTVL(
     priceStore,
@@ -68,108 +25,6 @@ const Pools: NextPage = observer(function () {
     3,
     1
   );
-
-  const allPools = queryOsmosis.queryGammPools.getAllPools();
-  const allPoolsWithMetric = queryImperator.queryGammPoolMetrics
-    .makePoolsWithMetric(
-      allPools,
-      priceStore,
-      priceStore.getFiatCurrency("usd")!
-    )
-    .map((poolWithMetric) => ({
-      ...poolWithMetric,
-      myLiquidity:
-        myPools.find((myPool) => myPool?.pool.id === poolWithMetric.pool.id)
-          ?.myLiquidity ||
-        new PricePretty(priceStore.getFiatCurrency("usd")!, new Dec(0)),
-      apr: queryOsmosis.queryIncentivizedPools
-        .computeMostAPY(
-          poolWithMetric.pool.id,
-          priceStore,
-          priceStore.getFiatCurrency("usd")!
-        )
-        .toString(),
-    }));
-  const incentivizedPoolIds =
-    queryOsmosis.queryIncentivizedPools.incentivizedPools;
-
-  const extraIncentivizedPools = Object.keys(ExtraGaugeInPool)
-    .map((poolId: string) => {
-      const pool = queryOsmosis.queryGammPools.getPool(poolId);
-      if (pool) {
-        return pool;
-      }
-    })
-    .filter((pool: ObservablePool | undefined): pool is ObservablePool => {
-      if (!pool) {
-        return false;
-      }
-
-      const inner = ExtraGaugeInPool[pool.id];
-      const data = Array.isArray(inner) ? inner : [inner];
-
-      if (data.length === 0) {
-        return false;
-      }
-      const gaugeIds = data.map((d) => d.gaugeId);
-      const gauges = gaugeIds.map((gaugeId) =>
-        queryOsmosis.queryGauge.get(gaugeId)
-      );
-
-      let maxRemainingEpoch = 0;
-      for (const gauge of gauges) {
-        if (maxRemainingEpoch < gauge.remainingEpoch) {
-          maxRemainingEpoch = gauge.remainingEpoch;
-        }
-      }
-
-      return maxRemainingEpoch > 0;
-    });
-  const extraIncentivizedPoolsWithMetric = queryImperator.queryGammPoolMetrics
-    .makePoolsWithMetric(
-      extraIncentivizedPools,
-      priceStore,
-      priceStore.getFiatCurrency("usd")!
-    )
-    .map((poolWithMetric) => {
-      const inner = ExtraGaugeInPool[poolWithMetric.pool.id];
-      const data = Array.isArray(inner) ? inner : [inner];
-      const gaugeIds = data.map((d) => d.gaugeId);
-      const gauges = gaugeIds.map((gaugeId) => {
-        return queryOsmosis.queryGauge.get(gaugeId);
-      });
-      const incentiveDenom = data[0].denom;
-      const currency = chainStore
-        .getChain(chainInfo.chainId)
-        .forceFindCurrency(incentiveDenom);
-      let sumRemainingBonus: CoinPretty = new CoinPretty(currency, new Dec(0));
-      let maxRemainingEpoch = 0;
-      for (const gauge of gauges) {
-        sumRemainingBonus = sumRemainingBonus.add(
-          gauge.getRemainingCoin(currency)
-        );
-
-        if (gauge.remainingEpoch > maxRemainingEpoch) {
-          maxRemainingEpoch = gauge.remainingEpoch;
-        }
-      }
-
-      return {
-        ...poolWithMetric,
-        epochsRemaining: maxRemainingEpoch,
-        myLiquidity:
-          myPools.find((myPool) => myPool?.pool.id === poolWithMetric.pool.id)
-            ?.myLiquidity ||
-          new PricePretty(priceStore.getFiatCurrency("usd")!, new Dec(0)),
-        apr: queryOsmosis.queryIncentivizedPools
-          .computeMostAPY(
-            poolWithMetric.pool.id,
-            priceStore,
-            priceStore.getFiatCurrency("usd")!
-          )
-          .toString(),
-      };
-    });
 
   return (
     <main>
@@ -188,28 +43,46 @@ const Pools: NextPage = observer(function () {
         <div className="max-w-container mx-auto p-10 pb-[3.75rem]">
           <h5>My Pools</h5>
           <div className="mt-5 grid grid-cols-3 gap-10">
-            {myPools.map((myPool) => {
+            {myPoolIds.map((myPoolId) => {
+              const myPool = queryOsmosis.queryGammPools.getPool(myPoolId);
               if (myPool) {
+                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
+                  myPool.id,
+                  priceStore,
+                  priceStore.getFiatCurrency("usd")!
+                );
+                const poolLiquidity = myPool.computeTotalValueLocked(
+                  priceStore,
+                  priceStore.getFiatCurrency("usd")!
+                );
+                const myBonded =
+                  queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
+                    account.bech32Address,
+                    myPoolId,
+                    poolLiquidity,
+                    priceStore.getFiatCurrency("usd")!
+                  );
+
                 return (
                   <PoolCard
-                    key={myPool.pool.id}
-                    pool={myPool.pool}
+                    key={myPoolId}
+                    pool={myPool}
                     poolMetrics={[
                       {
                         label: "APR",
-                        value: `${myPool.apr.toString()}%`,
+                        value: `${apr.toString()}%`,
                         isLoading:
                           queryOsmosis.queryIncentivizedPools.isAprFetching,
                       },
                       {
                         label: "Pool Liquidity",
-                        value: myPool.poolLiquidity.toString(),
-                        isLoading: myPool.poolLiquidity.toDec().isZero(),
+                        value: poolLiquidity.toString(),
+                        isLoading: poolLiquidity.toDec().isZero(),
                       },
                       {
                         label: "Bonded",
-                        value: myPool.myBonded.toString(),
-                        isLoading: myPool.poolLiquidity.toDec().isZero(),
+                        value: myBonded.toString(),
+                        isLoading: poolLiquidity.toDec().isZero(),
                       },
                     ]}
                   />
@@ -265,17 +138,12 @@ const Pools: NextPage = observer(function () {
       </section>
       <section className="bg-surface shadow-separator">
         <div className="max-w-container mx-auto p-10 py-[3.75rem]">
-          <AllPoolsTableSet
-            allPools={allPoolsWithMetric}
-            incentivizedPoolIds={incentivizedPoolIds}
-          />
+          <AllPoolsTableSet />
         </div>
       </section>
       <section className="bg-surface shadow-separator">
         <div className="max-w-container mx-auto p-10 py-[3.75rem]">
-          <ExternalIncentivizedPoolsTableSet
-            externalIncentivizedPools={extraIncentivizedPoolsWithMetric}
-          />
+          <ExternalIncentivizedPoolsTableSet />
         </div>
       </section>
     </main>

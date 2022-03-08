@@ -2,7 +2,8 @@ import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useAllPoolsTable } from "../../hooks/use-all-pools-table";
-import { ObservablePoolWithMetric } from "../../stores/imperator-queries";
+import { useStore } from "../../stores";
+import { ObservablePoolWithFeeMetrics } from "../../stores/imperator-queries";
 import { MenuToggle, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { PoolTable } from "../table";
@@ -14,32 +15,70 @@ const poolsMenuOptions = [
 
 const TVL_FILTER_THRESHOLD = 1000;
 
-export const AllPoolsTableSet: FunctionComponent<{
-  allPools: ObservablePoolWithMetric[];
-  incentivizedPoolIds: string[];
-}> = observer(({ allPools, incentivizedPoolIds }) => {
+export const AllPoolsTableSet: FunctionComponent = observer(() => {
+  const {
+    chainStore,
+    queriesImperatorStore,
+    priceStore,
+    queriesOsmosisStore,
+    accountStore,
+  } = useStore();
   const [activeOptionId, setActiveOptionId] = useState(poolsMenuOptions[0].id);
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
-  const incentivizedPools = allPools.reduce(
+
+  const chainInfo = chainStore.getChain("osmosis");
+  const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
+  const queryImperator = queriesImperatorStore.get();
+  const account = accountStore.getAccount(chainInfo.chainId);
+
+  const allPools = queryOsmosis.queryGammPools.getAllPools();
+  const incentivizedPoolIds =
+    queryOsmosis.queryIncentivizedPools.incentivizedPools;
+
+  const allPoolsWithMetrics = allPools.map((pool) => ({
+    ...queryImperator.queryGammPoolMetrics.makePoolWithFeeMetrics(
+      pool,
+      priceStore,
+      priceStore.getFiatCurrency("usd")!
+    ),
+    myLiquidity: pool
+      .computeTotalValueLocked(priceStore, priceStore.getFiatCurrency("usd")!)
+      .mul(
+        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+          account.bech32Address,
+          pool.id
+        )
+      ),
+    apr: queryOsmosis.queryIncentivizedPools
+      .computeMostAPY(pool.id, priceStore, priceStore.getFiatCurrency("usd")!)
+      .toString(),
+  }));
+  const incentivizedPoolsWithMetrics = allPoolsWithMetrics.reduce(
     (
-      incentivizedPools: ObservablePoolWithMetric[],
-      poolWithMetric: ObservablePoolWithMetric
+      incentivizedPools: ObservablePoolWithFeeMetrics[],
+      poolWithMetricss: ObservablePoolWithFeeMetrics
     ) => {
       if (
-        incentivizedPoolIds.some((poolId) => poolWithMetric.pool.id === poolId)
+        incentivizedPoolIds.some(
+          (incentivizedPoolId) =>
+            poolWithMetricss.pool.id === incentivizedPoolId
+        )
       ) {
-        incentivizedPools.push(poolWithMetric);
+        incentivizedPools.push(poolWithMetricss);
       }
       return incentivizedPools;
     },
     []
   );
+
   const isIncentivizedPools = activeOptionId === poolsMenuOptions[0].id;
-  const activeOptionPools = isIncentivizedPools ? incentivizedPools : allPools;
+  const activeOptionPools = isIncentivizedPools
+    ? incentivizedPoolsWithMetrics
+    : allPoolsWithMetrics;
   const tvlFilteredPools = isPoolTvlFiltered
     ? activeOptionPools
-    : activeOptionPools.filter((poolWithMetric) =>
-        poolWithMetric.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
+    : activeOptionPools.filter((poolWithMetricss) =>
+        poolWithMetricss.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
       );
 
   const {

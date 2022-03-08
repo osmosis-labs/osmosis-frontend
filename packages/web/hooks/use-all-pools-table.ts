@@ -5,11 +5,11 @@ import {
   PoolCompositionCell,
 } from "../components/table/cells";
 import { useStore } from "../stores";
-import { ObservablePoolWithMetric } from "../stores/imperator-queries";
+import { ObservablePoolWithFeeMetrics } from "../stores/imperator-queries";
 import { useFilteredData, usePaginatedData, useSortedData } from "./data";
 
 export const useAllPoolsTable = (
-  pools: ObservablePoolWithMetric[],
+  pools: ObservablePoolWithFeeMetrics[],
   isIncentivizedPools: boolean
 ) => {
   const { queriesOsmosisStore } = useStore();
@@ -18,16 +18,17 @@ export const useAllPoolsTable = (
     "pool.id",
     "pool.poolAssets.amount.currency.coinDenom",
   ]);
+
   const [
     sortKeyPath,
     setSortKeyPath,
     sortDirection,
     setSortDirection,
     toggleSortDirection,
-    sortedAllPoolsWithMetric,
+    sortedAllPoolsWithMetrics,
   ] = useSortedData(filteredPools);
   const [page, setPage, minPage, numPages, allPoolsPages] = usePaginatedData(
-    sortedAllPoolsWithMetric,
+    sortedAllPoolsWithMetrics,
     10
   );
   const tableCols = [
@@ -129,16 +130,16 @@ export const useAllPoolsTable = (
     onClick: (i) => console.log(i),
   }));
 
-  const tableData = allPoolsPages.map((poolWithMetric) => {
+  const tableData = allPoolsPages.map((poolWithMetricss) => {
     return [
-      { poolId: poolWithMetric.pool.id },
-      { value: poolWithMetric.liquidity },
-      { value: poolWithMetric.volume24h },
-      { value: poolWithMetric.fees7d },
+      { poolId: poolWithMetricss.pool.id },
+      { value: poolWithMetricss.liquidity },
+      { value: poolWithMetricss.volume24h },
+      { value: poolWithMetricss.fees7d },
       {
         value: isIncentivizedPools
-          ? `${poolWithMetric.apr}%`
-          : poolWithMetric.myLiquidity,
+          ? `${poolWithMetricss.apr}%`
+          : poolWithMetricss.myLiquidity,
         isLoading: isIncentivizedPools
           ? queryOsmosis.queryIncentivizedPools.isAprFetching
           : false,

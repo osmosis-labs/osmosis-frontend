@@ -175,12 +175,18 @@ export class ObservableQueryGammPoolShare {
 
       const totalShare = pool.totalShare;
 
+      totalShare.toDec().isZero();
+
       // To make it a percentage, multiply it by 10^2 at the end.
-      return new IntPretty(
-        share.quo(totalShare).mul(DecUtils.getTenExponentNInPrecisionRange(2))
-      )
-        .maxDecimals(2)
-        .trim(true);
+      return totalShare.toDec().isZero()
+        ? new IntPretty(totalShare)
+        : new IntPretty(
+            share
+              .quo(totalShare)
+              .mul(DecUtils.getTenExponentNInPrecisionRange(2))
+          )
+            .maxDecimals(2)
+            .trim(true);
     }
   );
 }

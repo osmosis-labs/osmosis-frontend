@@ -5,11 +5,11 @@ import {
   PoolCompositionCell,
 } from "../components/table/cells";
 import { useStore } from "../stores";
-import { ObservablePoolWithMetric } from "../stores/imperator-queries";
+import { ObservablePoolWithFeeMetrics } from "../stores/imperator-queries";
 import { useFilteredData, usePaginatedData, useSortedData } from "./data";
 
 export const useExternalIncentivizedPoolsTable = (
-  pools: ObservablePoolWithMetric[]
+  pools: ObservablePoolWithFeeMetrics[]
 ) => {
   const { queriesOsmosisStore } = useStore();
   const queryOsmosis = queriesOsmosisStore.get("osmosis");
@@ -23,10 +23,10 @@ export const useExternalIncentivizedPoolsTable = (
     sortDirection,
     setSortDirection,
     toggleSortDirection,
-    sortedAllPoolsWithMetric,
+    sortedAllPoolsWithMetrics,
   ] = useSortedData(filteredPools);
   const [page, setPage, minPage, numPages, allPoolsPages] = usePaginatedData(
-    sortedAllPoolsWithMetric,
+    sortedAllPoolsWithMetrics,
     10
   );
   const tableCols = [
@@ -129,16 +129,16 @@ export const useExternalIncentivizedPoolsTable = (
     onClick: (i) => console.log(i),
   }));
 
-  const tableData = allPoolsPages.map((poolWithMetric) => {
+  const tableData = allPoolsPages.map((poolWithMetricss) => {
     return [
-      { poolId: poolWithMetric.pool.id },
-      { value: poolWithMetric.liquidity },
+      { poolId: poolWithMetricss.pool.id },
+      { value: poolWithMetricss.liquidity },
       {
-        value: `${poolWithMetric.apr}%`,
+        value: `${poolWithMetricss.apr}%`,
         isLoading: queryOsmosis.queryIncentivizedPools.isAprFetching,
       },
-      { value: poolWithMetric.epochsRemaining?.toString() },
-      { value: poolWithMetric.myLiquidity },
+      { value: poolWithMetricss.epochsRemaining?.toString() },
+      { value: poolWithMetricss.myLiquidity },
     ];
   });
 

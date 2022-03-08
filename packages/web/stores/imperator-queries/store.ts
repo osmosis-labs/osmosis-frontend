@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
 import { DeepReadonly } from "utility-types";
-import { ObservableImperatorQueryPoolMetrics } from "./pools";
+import { ObservableQueryPoolsFeeMetrics } from "./pools";
 
 export class QueriesImperatorStore extends HasMapStore<QueriesImperator> {
   constructor(protected readonly kvStore: KVStore) {
@@ -14,11 +14,9 @@ export class QueriesImperatorStore extends HasMapStore<QueriesImperator> {
 }
 
 export class QueriesImperator {
-  public readonly queryGammPoolMetrics: DeepReadonly<ObservableImperatorQueryPoolMetrics>;
+  public readonly queryGammPoolMetrics: DeepReadonly<ObservableQueryPoolsFeeMetrics>;
 
   constructor(kvStore: KVStore) {
-    this.queryGammPoolMetrics = new ObservableImperatorQueryPoolMetrics(
-      kvStore
-    );
+    this.queryGammPoolMetrics = new ObservableQueryPoolsFeeMetrics(kvStore);
   }
 }
