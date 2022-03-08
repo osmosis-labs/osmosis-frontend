@@ -6,7 +6,8 @@ import { ObservablePool } from "@osmosis-labs/stores";
 import Axios from "axios";
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
-import { IMPERATOR_API_DOMAIN } from "../../constants";
+
+const IMPERATOR_API_DOMAIN = "https://api-osmosis.imperator.co";
 
 export interface ObservablePoolWithFeeMetrics {
   pool: ObservablePool;
