@@ -1568,7 +1568,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'MARBLE',
 				coinMinimalDenom: 'cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl:MARBLE',
 				coinDecimals: 3,
-				//coinGeckoId: 'marble',
+				coinGeckoId: 'pool:marble',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/marble.svg',
 			},
 		],
