@@ -1,8 +1,9 @@
 import cn from 'clsx';
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { IBCCurrency } from '@keplr-wallet/types';
 import { AmountInput } from '../components/form/Inputs';
+import { ButtonPrimary } from '../components/layouts/Buttons';
 import { colorWhiteEmphasis } from '../emotionStyles/colors';
 import { useStore } from '../stores';
 import { Bech32Address } from '@keplr-wallet/cosmos';
@@ -11,6 +12,7 @@ import { useFakeFeeConfig } from '../hooks/tx';
 import { useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
 import { wrapBaseDialog } from './base';
 import { useAccountConnection } from '../hooks/account/useAccountConnection';
+import { useCustomBech32Address } from '../hooks/account/useCustomBech32Address';
 import { ConnectAccountButton } from '../components/ConnectAccountButton';
 import { Buffer } from 'buffer/';
 
@@ -41,6 +43,13 @@ export const TransferDialog = wrapBaseDialog(
 
 			const account = accountStore.getAccount(chainStore.current.chainId);
 			const counterpartyAccount = accountStore.getAccount(counterpartyChainId);
+			const counterpartyBech32Prefix = chainStore.getChain(counterpartyChainId).bech32Config.bech32PrefixAccAddr;
+			const [customWithdrawAddr, isValidCustomWithdrawAddr, setCustomWithdrawAddr] = useCustomBech32Address();
+			const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
+
+			// withdraw advisory tooltip state
+			const [isMouseOverInfoIcon, setIsMouseOverInfoIcon] = useState(false);
+			const [isMouseOverToolTip, setIsMouseOverTooltip] = useState(false);
 
 			const bal = queriesStore
 				.get(chainStore.current.chainId)
@@ -51,11 +60,32 @@ export const TransferDialog = wrapBaseDialog(
 				.queryBalances.getQueryBech32Address(counterpartyAccount.bech32Address)
 				.getBalanceFromCurrency(currency.originCurrency!);
 
+			// detect if a user rejects connection to a chain account in Keplr
+			const [counterpartyInitAttempted, setCounterpartyInitAttempted] = useState(false);
+
 			useEffect(() => {
-				if (account.bech32Address && counterpartyAccount.walletStatus === WalletStatus.NotInit) {
+				if (counterpartyInitAttempted && counterpartyAccount.walletStatus === WalletStatus.NotInit) {
+					counterpartyAccount.disconnect();
+					setIsEditingWithdrawAddr(true);
+					setCustomWithdrawAddr(counterpartyAccount.bech32Address, counterpartyBech32Prefix);
+				} else if (
+					account.bech32Address &&
+					counterpartyAccount.walletStatus === WalletStatus.NotInit &&
+					!counterpartyInitAttempted
+				) {
 					counterpartyAccount.init();
+					setCounterpartyInitAttempted(true);
 				}
-			}, [account.bech32Address, counterpartyAccount.walletStatus]);
+			}, [
+				account.bech32Address,
+				counterpartyAccount.walletStatus,
+				counterpartyAccount,
+				counterpartyBech32Prefix,
+				counterpartyInitAttempted,
+				setIsEditingWithdrawAddr,
+				setCustomWithdrawAddr,
+				setCounterpartyInitAttempted,
+			]);
 
 			const amountConfig = useBasicAmountConfig(
 				chainStore,
@@ -118,15 +148,72 @@ export const TransferDialog = wrapBaseDialog(
 						<div className="flex justify-center items-center w-10 my-2 md:my-0">
 							<img src={`/public/assets/Icons/Arrow-${isMobileView ? 'Down' : 'Right'}.svg`} />
 						</div>
-						<div className="w-full flex-1 p-3 md:p-4 border border-white-faint rounded-2xl">
-							<p className="text-white-high">To</p>
-							<p className="text-white-disabled truncate overflow-ellipsis">
-								{pickOne(
-									Bech32Address.shortenAddress(counterpartyAccount.bech32Address, 25),
-									Bech32Address.shortenAddress(account.bech32Address, 25),
-									isWithdraw
-								)}
-							</p>
+						<div
+							className={`w-full flex-1 p-3 md:p-4 border ${
+								isValidCustomWithdrawAddr ? 'border-white-faint' : 'border-missionError'
+							} rounded-2xl`}>
+							<div className="flex place-content-between">
+								<div className="flex gap-2">
+									<p className="text-white-high">To</p>
+									{isEditingWithdrawAddr && (
+										<div className="relative">
+											<img
+												className="h-5 w-5 cursor-pointer"
+												src="/public/assets/Icons/Warning.svg"
+												onMouseEnter={() => setIsMouseOverInfoIcon(true)}
+												onMouseLeave={() => {
+													const timeoutId = window.setTimeout(() => {
+														setIsMouseOverInfoIcon(false);
+														window.clearTimeout(timeoutId);
+													}, 100);
+												}}
+											/>
+											{(isMouseOverInfoIcon || isMouseOverToolTip) && (
+												<div
+													className="absolute z-10 -left-0.5 md:-left-0.5 top-7 bg-wireframes-darkGrey border border-white-faint p-2 rounded-lg"
+													style={{ minWidth: '240px', maxWidth: '297px' }}
+													onMouseEnter={() => setIsMouseOverTooltip(true)}
+													onMouseLeave={() => setIsMouseOverTooltip(false)}>
+													<div className="text-white-high text-sm mb-1 leading-tight">
+														Incorrect withdrawal address could result in loss of funds. Avoid withdrawal to exchange
+														deposit address.
+													</div>
+												</div>
+											)}
+										</div>
+									)}
+								</div>
+								{!isValidCustomWithdrawAddr && <p className="text-error">Invalid address</p>}
+							</div>
+							{isEditingWithdrawAddr ? (
+								<div className="bg-background rounded-lg" style={{ padding: '0 8px' }}>
+									<AmountInput
+										style={{ fontSize: '14px', textAlign: 'left' }}
+										value={customWithdrawAddr}
+										onChange={(e: any) => setCustomWithdrawAddr(e.target.value, counterpartyBech32Prefix)}
+									/>
+								</div>
+							) : (
+								<p className="text-white-disabled truncate overflow-ellipsis">
+									{pickOne(
+										Bech32Address.shortenAddress(counterpartyAccount.bech32Address, 25),
+										Bech32Address.shortenAddress(account.bech32Address, 25),
+										isWithdraw
+									)}
+									{isWithdraw && !isEditingWithdrawAddr && counterpartyAccount.walletStatus === WalletStatus.Loaded && (
+										<ButtonPrimary
+											className="ml-1 text-white-emphasis"
+											style={{ fontSize: '11px', padding: '6px 8px' }}
+											onClick={e => {
+												e.preventDefault();
+												setIsEditingWithdrawAddr(true);
+												setCustomWithdrawAddr(counterpartyAccount.bech32Address, counterpartyBech32Prefix);
+											}}>
+											Edit
+										</ButtonPrimary>
+									)}
+								</p>
+							)}
 						</div>
 					</section>
 					<h6 className="text-base md:text-lg mt-7">Amount To {isWithdraw ? 'Withdraw' : 'Deposit'}</h6>
@@ -187,16 +274,22 @@ export const TransferDialog = wrapBaseDialog(
 								disabled={
 									!account.isReadyToSendMsgs ||
 									!counterpartyAccount.isReadyToSendMsgs ||
-									amountConfig.getError() != null
+									amountConfig.getError() != null ||
+									!isValidCustomWithdrawAddr
 								}
 								onClick={async e => {
 									e.preventDefault();
 
 									try {
 										if (isWithdraw) {
-											if (account.isReadyToSendMsgs && counterpartyAccount.bech32Address) {
+											if (
+												account.isReadyToSendMsgs &&
+												(counterpartyAccount.bech32Address || (customWithdrawAddr && isValidCustomWithdrawAddr))
+											) {
 												const sender = account.bech32Address;
-												const recipient = counterpartyAccount.bech32Address;
+												const recipient = isEditingWithdrawAddr
+													? customWithdrawAddr
+													: counterpartyAccount.bech32Address;
 
 												await account.cosmos.sendIBCTransferMsg(
 													{
