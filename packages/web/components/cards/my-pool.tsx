@@ -22,15 +22,11 @@ export const MyPoolCard: FunctionComponent<{
 
   const deterministicInteger = useDeterministicIntegerFromString(pool.id);
 
-  const poolTVL = pool.computeTotalValueLocked(
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
-  );
+  const poolTVL = pool.computeTotalValueLocked(priceStore);
 
   const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
     pool.id,
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
+    priceStore
   );
 
   const shareRatio = queryOsmosis.queryGammPoolShare.getAllGammShareRatio(

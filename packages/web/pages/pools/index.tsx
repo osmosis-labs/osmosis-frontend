@@ -21,7 +21,6 @@ const Pools: NextPage = observer(function () {
 
   const top3Pools = queryOsmosis.queryGammPools.getPoolsDescendingOrderTVL(
     priceStore,
-    priceStore.getFiatCurrency("usd")!,
     3,
     1
   );
@@ -48,19 +47,16 @@ const Pools: NextPage = observer(function () {
               if (myPool) {
                 const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
                   myPool.id,
-                  priceStore,
-                  priceStore.getFiatCurrency("usd")!
+                  priceStore
                 );
-                const poolLiquidity = myPool.computeTotalValueLocked(
-                  priceStore,
-                  priceStore.getFiatCurrency("usd")!
-                );
+                const poolLiquidity =
+                  myPool.computeTotalValueLocked(priceStore);
                 const myBonded =
                   queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
                     account.bech32Address,
                     myPoolId,
                     poolLiquidity,
-                    priceStore.getFiatCurrency("usd")!
+                    priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!
                   );
 
                 return (
@@ -100,13 +96,9 @@ const Pools: NextPage = observer(function () {
               if (pool) {
                 const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
                   pool.id,
-                  priceStore,
-                  priceStore.getFiatCurrency("usd")!
+                  priceStore
                 );
-                const poolLiquidity = pool.computeTotalValueLocked(
-                  priceStore,
-                  priceStore.getFiatCurrency("usd")!
-                );
+                const poolLiquidity = pool.computeTotalValueLocked(priceStore);
 
                 return (
                   <PoolCard

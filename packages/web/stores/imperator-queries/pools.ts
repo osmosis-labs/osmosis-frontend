@@ -1,5 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ObservableQuery } from "@keplr-wallet/stores";
+import { CoinGeckoPriceStore, ObservableQuery } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservablePool } from "@osmosis-labs/stores";
@@ -50,19 +50,17 @@ export class ObservableQueryPoolsFeeMetrics extends ObservableImperatorQuery<{
   readonly makePoolWithFeeMetrics = computedFn(
     (
       pool: ObservablePool,
-      priceStore: {
-        calculatePrice(
-          coin: CoinPretty,
-          vsCurrrency?: string
-        ): PricePretty | undefined;
-      },
-      fiatCurrency: FiatCurrency
+      priceStore: CoinGeckoPriceStore
     ): ObservablePoolWithFeeMetrics => {
       const poolMetric = this.response?.data.data.find(
         (poolMetric) => poolMetric.pool_id === pool.id
       );
 
-      const liquidity = pool.computeTotalValueLocked(priceStore, fiatCurrency);
+      const fiatCurrency = priceStore.getFiatCurrency(
+        priceStore.defaultVsCurrency
+      )!;
+
+      const liquidity = pool.computeTotalValueLocked(priceStore);
       const volume24h = new PricePretty(
         fiatCurrency,
         poolMetric?.volume_24h

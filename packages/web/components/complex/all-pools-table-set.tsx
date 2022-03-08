@@ -38,11 +38,10 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
   const allPoolsWithMetrics = allPools.map((pool) => ({
     ...queryImperator.queryGammPoolMetrics.makePoolWithFeeMetrics(
       pool,
-      priceStore,
-      priceStore.getFiatCurrency("usd")!
+      priceStore
     ),
     myLiquidity: pool
-      .computeTotalValueLocked(priceStore, priceStore.getFiatCurrency("usd")!)
+      .computeTotalValueLocked(priceStore)
       .mul(
         queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
           account.bech32Address,
@@ -50,7 +49,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
         )
       ),
     apr: queryOsmosis.queryIncentivizedPools
-      .computeMostAPY(pool.id, priceStore, priceStore.getFiatCurrency("usd")!)
+      .computeMostAPY(pool.id, priceStore)
       .toString(),
   }));
   const incentivizedPoolsWithMetrics = allPoolsWithMetrics.reduce(
@@ -148,7 +147,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
             checked={isPoolTvlFiltered}
           />
           {`Show pools less then ${new PricePretty(
-            priceStore.getFiatCurrency("usd")!,
+            priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
             TVL_FILTER_THRESHOLD
           ).toString()} TVL`}
         </label>

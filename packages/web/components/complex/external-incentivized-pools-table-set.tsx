@@ -90,15 +90,11 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
         return {
           ...queryImperator.queryGammPoolMetrics.makePoolWithFeeMetrics(
             pool,
-            priceStore,
-            priceStore.getFiatCurrency("usd")!
+            priceStore
           ),
           epochsRemaining: maxRemainingEpoch,
           myLiquidity: pool
-            .computeTotalValueLocked(
-              priceStore,
-              priceStore.getFiatCurrency("usd")!
-            )
+            .computeTotalValueLocked(priceStore)
             .mul(
               queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
                 account.bech32Address,
@@ -106,11 +102,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
               )
             ),
           apr: queryOsmosis.queryIncentivizedPools
-            .computeMostAPY(
-              pool.id,
-              priceStore,
-              priceStore.getFiatCurrency("usd")!
-            )
+            .computeMostAPY(pool.id, priceStore)
             .toString(),
         };
       }

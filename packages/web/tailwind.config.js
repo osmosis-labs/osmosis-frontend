@@ -137,6 +137,16 @@ module.exports = {
         "linear-gradient(to left,rgba(251, 251, 251, 0.1),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.3),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.1))",
     },
     extend: {
+      width: {
+        loader: {
+          1: "3.75rem",
+          2: "4rem",
+          3: "4.25rem",
+          4: "4.5rem",
+          5: "4.75rem",
+          6: "5rem",
+        },
+      },
       spacing: {
         sidebar: "12.875rem",
       },

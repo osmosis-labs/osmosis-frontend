@@ -12,8 +12,10 @@ export const useAllPoolsTable = (
   pools: ObservablePoolWithFeeMetrics[],
   isIncentivizedPools: boolean
 ) => {
-  const { queriesOsmosisStore } = useStore();
-  const queryOsmosis = queriesOsmosisStore.get("osmosis");
+  const { queriesOsmosisStore, queriesImperatorStore } = useStore();
+  const queriesOsmosis = queriesOsmosisStore.get("osmosis");
+  const queriesImperator = queriesImperatorStore.get();
+
   const [query, setQuery, filteredPools] = useFilteredData(pools, [
     "pool.id",
     "pool.poolAssets.amount.currency.coinDenom",
@@ -82,6 +84,8 @@ export const useAllPoolsTable = (
                 setSortDirection("ascending");
               },
             },
+
+      displayCell: MetricLoaderCell,
     },
     {
       id: "fees7d",
@@ -98,6 +102,7 @@ export const useAllPoolsTable = (
                 setSortDirection("ascending");
               },
             },
+      displayCell: MetricLoaderCell,
     },
     {
       id: isIncentivizedPools ? "apr" : "myLiquidity",
@@ -134,14 +139,20 @@ export const useAllPoolsTable = (
     return [
       { poolId: poolWithMetricss.pool.id },
       { value: poolWithMetricss.liquidity },
-      { value: poolWithMetricss.volume24h },
-      { value: poolWithMetricss.fees7d },
+      {
+        value: poolWithMetricss.volume24h,
+        isLoading: !queriesImperator.queryGammPoolMetrics.response,
+      },
+      {
+        value: poolWithMetricss.fees7d,
+        isLoading: !queriesImperator.queryGammPoolMetrics.response,
+      },
       {
         value: isIncentivizedPools
           ? `${poolWithMetricss.apr}%`
           : poolWithMetricss.myLiquidity,
         isLoading: isIncentivizedPools
-          ? queryOsmosis.queryIncentivizedPools.isAprFetching
+          ? queriesOsmosis.queryIncentivizedPools.isAprFetching
           : false,
       },
     ];
