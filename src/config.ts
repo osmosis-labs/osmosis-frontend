@@ -965,6 +965,13 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-8',
 		coinMinimalDenom: 'uctk',
 	},
+  {
+		counterpartyChainId: 'juno-1',
+		sourceChannelId: 'channel-169',
+		destChannelId: 'channel-47',
+		coinMinimalDenom: 'cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl',
+		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1567,6 +1574,15 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'neta',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/neta.svg',
+			},
+			{
+				type: 'cw20',
+				contractAddress: 'juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl',
+				coinDenom: 'MARBLE',
+				coinMinimalDenom: 'cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl:MARBLE',
+				coinDecimals: 3,
+				coinGeckoId: 'pool:marble',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/marble.svg',
 			},
 		],
 		feeCurrencies: [
