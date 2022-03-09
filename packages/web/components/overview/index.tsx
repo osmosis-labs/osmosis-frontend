@@ -1,16 +1,16 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, ReactElement } from "react";
 import { OverviewLabelValue } from "./overview-label-value";
 import { Button } from "../buttons/button";
 import { ButtonProps } from "../buttons/types";
-import { OverviewLabel } from "./types";
+import { Metric } from "../types";
 
 interface LabelButton extends ButtonProps {
   label: string;
 }
 
 interface Props {
-  /** Title text at top left of overview. */
-  title: string;
+  /** Title at top left of overview. */
+  title: string | ReactElement;
   /** Label buttons to the right of the title at the top.
    *  Accepts at most 2.
    */
@@ -18,11 +18,11 @@ interface Props {
   /** First row of overview labels, with more prominent value text size.
    *  Accepts at most 2. 4 if there is no background image.
    */
-  primaryOverviewLabels: OverviewLabel[];
+  primaryOverviewLabels: Metric[];
   /** Second row of overview labels, with slightly less prominent value text size.
    *  Accepts at most 3.
    */
-  secondaryOverviewLabels?: OverviewLabel[];
+  secondaryOverviewLabels?: Metric[];
   /**
    *  Image url of the right-fixed background image.
    */
@@ -36,18 +36,26 @@ export const Overview: FunctionComponent<Props> = ({
   secondaryOverviewLabels,
   bgImageUrl,
 }) => (
-  <section className="bg-background">
+  <section
+    className="bg-background bg-right-bottom bg-contain bg-no-repeat "
+    style={{
+      backgroundImage: `url(${bgImageUrl})`,
+    }}
+  >
     <div className="max-w-container mx-auto">
-      <div
-        className="bg-right bg-contain bg-no-repeat p-10"
-        style={{
-          backgroundImage: `url(${bgImageUrl})`,
-        }}
-      >
+      <div className="p-10">
         <div className="flex items-center">
-          <h5 className="text-white-full">{title}</h5>
+          <h5 className="text-white-full">
+            {typeof title === "string" ? title : <>{title}</>}
+          </h5>
           {titleButtons?.slice(0, 2).map(({ label, onClick }, index) => (
-            <Button key={index} color="primary" size="sm" className="ml-6">
+            <Button
+              className="ml-6"
+              key={index}
+              color="primary"
+              size="sm"
+              onClick={onClick}
+            >
               {label}
             </Button>
           ))}
