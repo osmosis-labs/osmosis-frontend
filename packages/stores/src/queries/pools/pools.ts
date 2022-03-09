@@ -69,6 +69,18 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
     }
   );
 
+  readonly poolExists: (id: string) => boolean | undefined = computedFn(
+    (id: string) => {
+      if (!this.response) {
+        return undefined;
+      }
+
+      return this.response.data.pools.find((raw) => raw.id === id)
+        ? true
+        : false;
+    }
+  );
+
   readonly computeAllTotalValueLocked = computedFn(
     (
       priceStore: {
