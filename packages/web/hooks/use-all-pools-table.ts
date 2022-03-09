@@ -5,16 +5,16 @@ import {
   PoolCompositionCell,
 } from "../components/table/cells";
 import { useStore } from "../stores";
-import { ObservablePoolWithFeeMetrics } from "../stores/imperator-queries";
+import { ObservablePoolWithFeeMetrics } from "../stores/external-queries";
 import { useFilteredData, usePaginatedData, useSortedData } from "./data";
 
 export const useAllPoolsTable = (
   pools: ObservablePoolWithFeeMetrics[],
   isIncentivizedPools: boolean
 ) => {
-  const { queriesOsmosisStore, queriesImperatorStore } = useStore();
+  const { queriesOsmosisStore, queriesExternalStore } = useStore();
   const queriesOsmosis = queriesOsmosisStore.get("osmosis");
-  const queriesImperator = queriesImperatorStore.get();
+  const queriesExternal = queriesExternalStore.get();
 
   const [query, setQuery, filteredPools] = useFilteredData(pools, [
     "pool.id",
@@ -141,11 +141,11 @@ export const useAllPoolsTable = (
       { value: poolWithMetricss.liquidity },
       {
         value: poolWithMetricss.volume24h,
-        isLoading: !queriesImperator.queryGammPoolMetrics.response,
+        isLoading: !queriesExternal.queryGammPoolMetrics.response,
       },
       {
         value: poolWithMetricss.fees7d,
-        isLoading: !queriesImperator.queryGammPoolMetrics.response,
+        isLoading: !queriesExternal.queryGammPoolMetrics.response,
       },
       {
         value: isIncentivizedPools

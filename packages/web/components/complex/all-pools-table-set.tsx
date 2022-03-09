@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useAllPoolsTable } from "../../hooks/use-all-pools-table";
 import { useStore } from "../../stores";
-import { ObservablePoolWithFeeMetrics } from "../../stores/imperator-queries";
+import { ObservablePoolWithFeeMetrics } from "../../stores/external-queries";
 import { MenuToggle, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { PoolTable } from "../table";
@@ -18,7 +18,7 @@ const TVL_FILTER_THRESHOLD = 1000;
 export const AllPoolsTableSet: FunctionComponent = observer(() => {
   const {
     chainStore,
-    queriesImperatorStore,
+    queriesExternalStore,
     priceStore,
     queriesOsmosisStore,
     accountStore,
@@ -28,7 +28,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
 
   const chainInfo = chainStore.getChain("osmosis");
   const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
-  const queryImperator = queriesImperatorStore.get();
+  const queryExternal = queriesExternalStore.get();
   const account = accountStore.getAccount(chainInfo.chainId);
 
   const allPools = queryOsmosis.queryGammPools.getAllPools();
@@ -36,7 +36,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
     queryOsmosis.queryIncentivizedPools.incentivizedPools;
 
   const allPoolsWithMetrics = allPools.map((pool) => ({
-    ...queryImperator.queryGammPoolMetrics.makePoolWithFeeMetrics(
+    ...queryExternal.queryGammPoolMetrics.makePoolWithFeeMetrics(
       pool,
       priceStore
     ),

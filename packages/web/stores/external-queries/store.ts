@@ -3,17 +3,17 @@ import { HasMapStore } from "@keplr-wallet/stores";
 import { DeepReadonly } from "utility-types";
 import { ObservableQueryPoolsFeeMetrics } from "./pools";
 
-export class QueriesImperatorStore extends HasMapStore<QueriesImperator> {
+export class QueriesExternalStore extends HasMapStore<QueriesExternal> {
   constructor(protected readonly kvStore: KVStore) {
-    super(() => new QueriesImperator(this.kvStore));
+    super(() => new QueriesExternal(this.kvStore));
   }
 
-  get(): QueriesImperator {
+  get(): QueriesExternal {
     return super.get("imperator");
   }
 }
 
-export class QueriesImperator {
+export class QueriesExternal {
   public readonly queryGammPoolMetrics: DeepReadonly<ObservableQueryPoolsFeeMetrics>;
 
   constructor(kvStore: KVStore) {

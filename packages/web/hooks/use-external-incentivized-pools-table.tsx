@@ -5,7 +5,7 @@ import {
   PoolCompositionCell,
 } from "../components/table/cells";
 import { useStore } from "../stores";
-import { ObservablePoolWithFeeMetrics } from "../stores/imperator-queries";
+import { ObservablePoolWithFeeMetrics } from "../stores/external-queries";
 import { useFilteredData, usePaginatedData, useSortedData } from "./data";
 
 export const useExternalIncentivizedPoolsTable = (

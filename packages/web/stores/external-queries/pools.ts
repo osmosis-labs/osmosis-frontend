@@ -1,7 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
 import { CoinGeckoPriceStore, ObservableQuery } from "@keplr-wallet/stores";
-import { FiatCurrency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservablePool } from "@osmosis-labs/stores";
 import Axios from "axios";
 import { makeObservable } from "mobx";
@@ -19,7 +18,7 @@ export interface ObservablePoolWithFeeMetrics {
   apr?: string;
 }
 
-export class ObservableImperatorQuery<
+export class ObservableExternalQuery<
   T = unknown,
   E = unknown
 > extends ObservableQuery<T, E> {
@@ -30,7 +29,7 @@ export class ObservableImperatorQuery<
   }
 }
 
-export class ObservableQueryPoolsFeeMetrics extends ObservableImperatorQuery<{
+export class ObservableQueryPoolsFeeMetrics extends ObservableExternalQuery<{
   last_update_at: number;
   data: {
     pool_id: string;

@@ -15,14 +15,14 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
   () => {
     const {
       chainStore,
-      queriesImperatorStore,
+      queriesExternalStore,
       priceStore,
       queriesOsmosisStore,
       accountStore,
     } = useStore();
 
     const chainInfo = chainStore.getChain("osmosis");
-    const queryImperator = queriesImperatorStore.get();
+    const queryExternal = queriesExternalStore.get();
     const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
     const account = accountStore.getAccount(chainInfo.chainId);
 
@@ -88,7 +88,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
         }
 
         return {
-          ...queryImperator.queryGammPoolMetrics.makePoolWithFeeMetrics(
+          ...queryExternal.queryGammPoolMetrics.makePoolWithFeeMetrics(
             pool,
             priceStore
           ),
