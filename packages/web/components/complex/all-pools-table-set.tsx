@@ -1,4 +1,4 @@
-import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservablePoolWithFeeMetrics } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
@@ -27,7 +27,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
   const [activeOptionId, setActiveOptionId] = useState(poolsMenuOptions[0].id);
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 
-  const chainInfo = chainStore.getChain("osmosis");
+  const chainInfo = chainStore.osmosis;
   const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
   const queryExternal = queriesExternalStore.get();
   const account = accountStore.getAccount(chainInfo.chainId);

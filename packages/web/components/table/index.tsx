@@ -1,7 +1,7 @@
 import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import Image from "next/image";
-import React, { PropsWithoutRef, useState } from "react";
+import React, { FunctionComponent, PropsWithoutRef, useState } from "react";
 import { CustomClasses, SortDirection } from "../types";
 import { replaceAt } from "../utils";
 
@@ -24,7 +24,7 @@ export interface ColumnDef<TCell> {
    *
    * Note: components must accept optionals for all cell data and check for the data they need.
    */
-  displayCell?: React.FunctionComponent<TCell>;
+  displayCell?: FunctionComponent<Partial<TCell>>;
 }
 
 export interface RowDef {
@@ -36,7 +36,7 @@ export interface RowDef {
 export interface TableProps<TCell> extends CustomClasses {
   columnDefs: ColumnDef<TCell>[];
   rowDefs?: RowDef[];
-  data: TCell[][];
+  data: Partial<TCell>[][];
 }
 
 /** Generic table that accepts a 2d array of any type of data cell,

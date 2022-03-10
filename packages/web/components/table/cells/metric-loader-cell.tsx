@@ -8,6 +8,6 @@ export interface MetricLoaderCell extends BaseCell {
 }
 
 export const MetricLoaderCell: FunctionComponent<Partial<MetricLoaderCell>> =
-  observer(({ value, isLoading }) => {
-    return <MetricLoader isLoading={isLoading}>{value}</MetricLoader>;
-  });
+  observer(({ value, isLoading }) => (
+    <MetricLoader isLoading={isLoading}>{value}</MetricLoader>
+  ));
