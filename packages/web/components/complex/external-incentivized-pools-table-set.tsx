@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservablePool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
@@ -7,7 +7,8 @@ import { useExternalIncentivizedPoolsTable } from "../../hooks/use-external-ince
 import { useStore } from "../../stores";
 import { CheckBox, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
-import { PoolTable } from "../table";
+import { Table } from "../table";
+import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -101,9 +102,10 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
                 pool.id
               )
             ),
-          apr: queryOsmosis.queryIncentivizedPools
-            .computeMostAPY(pool.id, priceStore)
-            .toString(),
+          apr: queryOsmosis.queryIncentivizedPools.computeMostAPY(
+            pool.id,
+            priceStore
+          ),
         };
       }
     );
@@ -150,7 +152,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             />
           </div>
         </div>
-        <PoolTable
+        <Table<PoolCompositionCell & MetricLoaderCell>
           className="mt-5 w-full"
           columnDefs={tableCols}
           rowDefs={tableRows}
@@ -167,7 +169,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
           <div className="absolute right-2 bottom-1 text-sm flex items-center">
             <CheckBox
               isOn={isPoolTvlFiltered}
-              onToggle={(value) => setIsPoolTvlFiltered(!value)}
+              onToggle={setIsPoolTvlFiltered}
               className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
               label={`Show pools less than ${new PricePretty(
                 priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,

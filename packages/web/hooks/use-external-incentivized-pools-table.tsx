@@ -136,14 +136,14 @@ export const useExternalIncentivizedPoolsTable = (
 
   const tableData = allPoolsPages.map((poolWithMetrics) => {
     return [
-      { poolId: poolWithMetrics.pool.id },
-      { value: poolWithMetrics.liquidity },
+      { poolId: poolWithMetrics.pool.id, value: poolWithMetrics.pool.id },
+      { value: poolWithMetrics.liquidity.toString() },
       {
-        value: `${poolWithMetrics.apr}%`,
+        value: poolWithMetrics.apr?.toString(),
         isLoading: queryOsmosis.queryIncentivizedPools.isAprFetching,
       },
       { value: poolWithMetrics.epochsRemaining?.toString() },
-      { value: poolWithMetrics.myLiquidity },
+      { value: poolWithMetrics.myLiquidity?.toString() },
     ];
   });
 

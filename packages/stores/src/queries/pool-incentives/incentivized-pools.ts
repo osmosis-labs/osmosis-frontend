@@ -5,7 +5,7 @@ import {
   ObservableChainQuery,
 } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
-import { Dec, Int, IntPretty } from "@keplr-wallet/unit";
+import { Dec, Int, IntPretty, RatePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
@@ -89,9 +89,9 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
    * 가장 긴 lockable duration의 apy를 반환한다.
    */
   readonly computeMostAPY = computedFn(
-    (poolId: string, priceStore: CoinGeckoPriceStore): IntPretty => {
+    (poolId: string, priceStore: CoinGeckoPriceStore): RatePretty => {
       if (!this.isIncentivized(poolId)) {
-        return new IntPretty(new Dec(0)).maxDecimals(2).trim(true);
+        return new RatePretty(new Dec(0)).maxDecimals(2).trim(true);
       }
 
       const fiatCurrency = priceStore.getFiatCurrency(
@@ -106,7 +106,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         });
 
       if (lockableDurations.length === 0) {
-        return new IntPretty(new Dec(0)).maxDecimals(2).trim(true);
+        return new RatePretty(new Dec(0)).maxDecimals(2).trim(true);
       }
 
       return this.computeAPY(
@@ -128,9 +128,9 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       duration: Duration,
       priceStore: CoinGeckoPriceStore,
       fiatCurrency: FiatCurrency
-    ): IntPretty => {
+    ): RatePretty => {
       if (!this.isIncentivized(poolId)) {
-        return new IntPretty(new Dec(0)).maxDecimals(2).trim(true);
+        return new RatePretty(new Dec(0)).maxDecimals(2).trim(true);
       }
 
       // 오름차순으로 정렬한다.
@@ -148,7 +148,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
             lockableDuration.asMilliseconds() === duration.asMilliseconds()
         )
       ) {
-        return new IntPretty(new Dec(0)).maxDecimals(2).trim(true);
+        return new RatePretty(new Dec(0)).maxDecimals(2).trim(true);
       }
 
       let apy = this.computeAPYForSpecificDuration(
@@ -183,7 +183,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     duration: Duration,
     priceStore: CoinGeckoPriceStore,
     fiatCurrency: FiatCurrency
-  ): IntPretty {
+  ): RatePretty {
     const gaugeId = this.getIncentivizedGaugeId(poolId, duration);
 
     if (this.incentivizedPools.includes(poolId) && gaugeId) {
@@ -238,12 +238,9 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
                 ).mul(yearProvisionToPot.toDec());
 
                 // 백분률로 반환한다.
-                return new IntPretty(
+                return new RatePretty(
                   yearProvisionToPotPrice.quo(poolTVL.toDec())
-                )
-                  .decreasePrecision(2)
-                  .maxDecimals(2)
-                  .trim(true);
+                );
               }
             }
           }
@@ -251,7 +248,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       }
     }
 
-    return new IntPretty(new Dec(0)).maxDecimals(2).trim(true);
+    return new RatePretty(new Dec(0)).maxDecimals(2).trim(true);
   }
 
   @computed

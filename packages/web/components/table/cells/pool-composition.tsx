@@ -13,14 +13,16 @@ export interface PoolCompositionCell extends BaseCell {
  *
  *  Accepts the base hover flag.
  */
-export const PoolCompositionCell: FunctionComponent<PoolCompositionCell> = ({
-  value,
-  rowHovered,
-  poolId,
-}) => {
+export const PoolCompositionCell: FunctionComponent<
+  Partial<PoolCompositionCell>
+> = ({ rowHovered, poolId }) => {
   const { queriesOsmosisStore, chainStore } = useStore();
 
   const queryOsmosis = queriesOsmosisStore.get(chainStore.osmosis.chainId);
+
+  if (!poolId) {
+    return <span>No pool</span>;
+  }
 
   const pool = queryOsmosis.queryGammPools.getPool(poolId);
 
@@ -57,7 +59,7 @@ export const PoolCompositionCell: FunctionComponent<PoolCompositionCell> = ({
           />
         </div>
       ) : (
-        <span>{value?.toString() ?? "No pool"}</span>
+        <span>No pool</span>
       )}
     </React.Fragment>
   );

@@ -139,20 +139,20 @@ export const useAllPoolsTable = (
 
   const tableData = allPoolsPages.map((poolWithMetrics) => {
     return [
-      { poolId: poolWithMetrics.pool.id },
-      { value: poolWithMetrics.liquidity },
+      { poolId: poolWithMetrics.pool.id, value: poolWithMetrics.pool.id },
+      { value: poolWithMetrics.liquidity.toString() },
       {
-        value: poolWithMetrics.volume24h,
+        value: poolWithMetrics.volume24h.toString(),
         isLoading: !queriesExternal.queryGammPoolMetrics.response,
       },
       {
-        value: poolWithMetrics.fees7d,
+        value: poolWithMetrics.fees7d.toString(),
         isLoading: !queriesExternal.queryGammPoolMetrics.response,
       },
       {
         value: isIncentivizedPools
-          ? `${poolWithMetrics.apr}%`
-          : poolWithMetrics.myLiquidity,
+          ? poolWithMetrics.apr?.toString()
+          : poolWithMetrics.myLiquidity?.toString(),
         isLoading: isIncentivizedPools
           ? queriesOsmosis.queryIncentivizedPools.isAprFetching
           : false,

@@ -1,13 +1,13 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { ObservablePoolWithFeeMetrics } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useAllPoolsTable } from "../../hooks/use-all-pools-table";
 import { useStore } from "../../stores";
-import { ObservablePoolWithFeeMetrics } from "@osmosis-labs/stores";
 import { CheckBox, MenuToggle, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
-import { PoolTable } from "../table";
-import classNames from "classnames";
+import { Table } from "../table";
+import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
 
 const poolsMenuOptions = [
   { id: "incentivized-pools", display: "Incentivized Pools" },
@@ -49,9 +49,10 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
           pool.id
         )
       ),
-    apr: queryOsmosis.queryIncentivizedPools
-      .computeMostAPY(pool.id, priceStore)
-      .toString(),
+    apr: queryOsmosis.queryIncentivizedPools.computeMostAPY(
+      pool.id,
+      priceStore
+    ),
   }));
   const incentivizedPoolsWithMetrics = allPoolsWithMetrics.reduce(
     (
@@ -102,7 +103,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
         <MenuToggle
           options={poolsMenuOptions}
           selectedOptionId={activeOptionId}
-          onSelect={(optionId) => setActiveOptionId(optionId)}
+          onSelect={setActiveOptionId}
         />
         <div className="flex gap-8">
           <SearchBox
@@ -121,7 +122,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
           />
         </div>
       </div>
-      <PoolTable
+      <Table<PoolCompositionCell & MetricLoaderCell>
         className="mt-5 w-full"
         columnDefs={tableCols}
         rowDefs={tableRows}
@@ -138,7 +139,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
         <div className="absolute right-2 bottom-1 text-sm flex items-center">
           <CheckBox
             isOn={isPoolTvlFiltered}
-            onToggle={(value) => setIsPoolTvlFiltered(!value)}
+            onToggle={setIsPoolTvlFiltered}
             className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
             label={`Show pools less than ${new PricePretty(
               priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,

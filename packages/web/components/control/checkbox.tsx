@@ -17,7 +17,7 @@ export const CheckBox: FunctionComponent<
     onClick={(e) => {
       e.preventDefault();
       e.stopPropagation();
-      onToggle(isOn);
+      onToggle(!isOn);
     }}
   >
     {isOn && (

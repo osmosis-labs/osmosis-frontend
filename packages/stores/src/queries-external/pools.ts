@@ -1,6 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
 import { CoinGeckoPriceStore, ObservableQuery } from "@keplr-wallet/stores";
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservablePool } from "../queries/pools";
 import Axios from "axios";
 import { makeObservable } from "mobx";
@@ -15,7 +15,7 @@ export interface ObservablePoolWithFeeMetrics {
   fees7d: PricePretty;
   myLiquidity?: PricePretty;
   epochsRemaining?: number;
-  apr?: string;
+  apr?: RatePretty;
 }
 
 export class ObservableExternalQuery<
