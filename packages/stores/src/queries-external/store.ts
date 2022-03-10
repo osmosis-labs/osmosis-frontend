@@ -9,7 +9,7 @@ export class QueriesExternalStore extends HasMapStore<QueriesExternal> {
   }
 
   get(): QueriesExternal {
-    return super.get("imperator");
+    return super.get("external");
   }
 }
 

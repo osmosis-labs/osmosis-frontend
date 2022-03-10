@@ -11,10 +11,13 @@ import { EmbedChainInfos, IBCAssetInfos } from "../config";
 import { IndexedDBKVStore, LocalKVStore } from "@keplr-wallet/common";
 import EventEmitter from "eventemitter3";
 import { ChainStore } from "./chain";
-import { QueriesOsmosisStore, LPCurrencyRegistrar } from "@osmosis-labs/stores";
+import {
+  QueriesOsmosisStore,
+  QueriesExternalStore,
+  LPCurrencyRegistrar,
+} from "@osmosis-labs/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
-import { QueriesExternalStore } from "./external-queries/store";
 
 export class RootStore {
   public readonly chainStore: ChainStore;

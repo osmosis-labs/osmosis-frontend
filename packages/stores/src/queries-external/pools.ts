@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import { CoinGeckoPriceStore, ObservableQuery } from "@keplr-wallet/stores";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { ObservablePool } from "@osmosis-labs/stores";
+import { ObservablePool } from "../queries/pools";
 import Axios from "axios";
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
