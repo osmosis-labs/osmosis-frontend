@@ -5,18 +5,22 @@ import {
   PoolCompositionCell,
 } from "../components/table/cells";
 import { useStore } from "../stores";
-import { ObservablePoolWithFeeMetrics } from "../stores/external-queries";
+import { ObservablePoolWithFeeMetrics } from "@osmosis-labs/stores";
 import { useFilteredData, usePaginatedData, useSortedData } from "./data";
+import { useRouter } from "next/router";
 
 export const useExternalIncentivizedPoolsTable = (
-  pools: ObservablePoolWithFeeMetrics[]
+  poolsWithFeeMetrics: ObservablePoolWithFeeMetrics[]
 ) => {
+  const router = useRouter();
   const { queriesOsmosisStore } = useStore();
   const queryOsmosis = queriesOsmosisStore.get("osmosis");
-  const [query, setQuery, filteredPools] = useFilteredData(pools, [
-    "pool.id",
-    "pool.poolAssets.amount.currency.coinDenom",
-  ]);
+
+  const [query, setQuery, filteredPools] = useFilteredData(
+    poolsWithFeeMetrics,
+    ["pool.id", "pool.poolAssets.amount.currency.coinDenom"]
+  );
+
   const [
     sortKeyPath,
     setSortKeyPath,
@@ -115,6 +119,7 @@ export const useExternalIncentivizedPoolsTable = (
             },
     },
   ];
+  // TODO: Remove when pull request for asset page get merged.
   useEffect(() => {
     setSortKeyPath("liquidity");
     setSortDirection("descending");
@@ -124,21 +129,21 @@ export const useExternalIncentivizedPoolsTable = (
     makeHoverClass: () => "text-secondary-200",
   };
 
-  const tableRows: RowDef[] = pools.map(() => ({
+  const tableRows: RowDef[] = poolsWithFeeMetrics.map((poolWithFeeMetrics) => ({
     ...baseRow,
-    onClick: (i) => console.log(i),
+    onClick: () => router.push(`/pool/${poolWithFeeMetrics.pool.id}`),
   }));
 
-  const tableData = allPoolsPages.map((poolWithMetricss) => {
+  const tableData = allPoolsPages.map((poolWithMetrics) => {
     return [
-      { poolId: poolWithMetricss.pool.id },
-      { value: poolWithMetricss.liquidity },
+      { poolId: poolWithMetrics.pool.id },
+      { value: poolWithMetrics.liquidity },
       {
-        value: `${poolWithMetricss.apr}%`,
+        value: `${poolWithMetrics.apr}%`,
         isLoading: queryOsmosis.queryIncentivizedPools.isAprFetching,
       },
-      { value: poolWithMetricss.epochsRemaining?.toString() },
-      { value: poolWithMetricss.myLiquidity },
+      { value: poolWithMetrics.epochsRemaining?.toString() },
+      { value: poolWithMetrics.myLiquidity },
     ];
   });
 

@@ -5,21 +5,23 @@ import {
   PoolCompositionCell,
 } from "../components/table/cells";
 import { useStore } from "../stores";
-import { ObservablePoolWithFeeMetrics } from "../stores/external-queries";
+import { ObservablePoolWithFeeMetrics } from "@osmosis-labs/stores";
 import { useFilteredData, usePaginatedData, useSortedData } from "./data";
+import { useRouter } from "next/router";
 
 export const useAllPoolsTable = (
-  pools: ObservablePoolWithFeeMetrics[],
+  poolsWithFeeMetrics: ObservablePoolWithFeeMetrics[],
   isIncentivizedPools: boolean
 ) => {
+  const router = useRouter();
   const { queriesOsmosisStore, queriesExternalStore } = useStore();
   const queriesOsmosis = queriesOsmosisStore.get("osmosis");
   const queriesExternal = queriesExternalStore.get();
 
-  const [query, setQuery, filteredPools] = useFilteredData(pools, [
-    "pool.id",
-    "pool.poolAssets.amount.currency.coinDenom",
-  ]);
+  const [query, setQuery, filteredPools] = useFilteredData(
+    poolsWithFeeMetrics,
+    ["pool.id", "pool.poolAssets.amount.currency.coinDenom"]
+  );
 
   const [
     sortKeyPath,
@@ -55,7 +57,6 @@ export const useAllPoolsTable = (
     {
       id: "liquidity",
       display: "Liquidity",
-      infoTooltip: "This is liquidity",
       sort:
         sortKeyPath === "liquidity"
           ? {
@@ -122,6 +123,7 @@ export const useAllPoolsTable = (
       displayCell: isIncentivizedPools ? MetricLoaderCell : undefined,
     },
   ];
+  // TODO: Remove when pull request for asset page get merged.
   useEffect(() => {
     setSortKeyPath("liquidity");
     setSortDirection("descending");
@@ -130,27 +132,27 @@ export const useAllPoolsTable = (
     makeHoverClass: () => "text-secondary-200",
   };
 
-  const tableRows: RowDef[] = pools.map(() => ({
+  const tableRows: RowDef[] = poolsWithFeeMetrics.map((poolWithFeeMetrics) => ({
     ...baseRow,
-    onClick: (i) => console.log(i),
+    onClick: () => router.push(`/pool/${poolWithFeeMetrics.pool.id}`),
   }));
 
-  const tableData = allPoolsPages.map((poolWithMetricss) => {
+  const tableData = allPoolsPages.map((poolWithMetrics) => {
     return [
-      { poolId: poolWithMetricss.pool.id },
-      { value: poolWithMetricss.liquidity },
+      { poolId: poolWithMetrics.pool.id },
+      { value: poolWithMetrics.liquidity },
       {
-        value: poolWithMetricss.volume24h,
+        value: poolWithMetrics.volume24h,
         isLoading: !queriesExternal.queryGammPoolMetrics.response,
       },
       {
-        value: poolWithMetricss.fees7d,
+        value: poolWithMetrics.fees7d,
         isLoading: !queriesExternal.queryGammPoolMetrics.response,
       },
       {
         value: isIncentivizedPools
-          ? `${poolWithMetricss.apr}%`
-          : poolWithMetricss.myLiquidity,
+          ? `${poolWithMetrics.apr}%`
+          : poolWithMetrics.myLiquidity,
         isLoading: isIncentivizedPools
           ? queriesOsmosis.queryIncentivizedPools.isAprFetching
           : false,

@@ -1,11 +1,11 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservablePool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { ExtraGaugeInPool } from "../../config";
 import { useExternalIncentivizedPoolsTable } from "../../hooks/use-external-incentivized-pools-table";
 import { useStore } from "../../stores";
-import { PageList, SortMenu } from "../control";
+import { CheckBox, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { PoolTable } from "../table";
 
@@ -110,8 +110,8 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
 
     const tvlFilteredPools = isPoolTvlFiltered
       ? externalIncentivizedPoolsWithMetrics
-      : externalIncentivizedPoolsWithMetrics.filter((poolWithMetricss) =>
-          poolWithMetricss.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
+      : externalIncentivizedPoolsWithMetrics.filter((poolWithMetrics) =>
+          poolWithMetrics.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
         );
 
     const {
@@ -137,7 +137,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             <SearchBox
               currentValue={query}
               onInput={setQuery}
-              placeholder="Search by pool id or tokens"
+              placeholder="Filter by name"
               className="!w-64"
             />
             <SortMenu
@@ -164,19 +164,17 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             onInput={setPage}
             editField
           />
-          <label
-            htmlFor="show-all-pools"
-            className="absolute right-2 bottom-1 text-base flex items-center"
-            onClick={() => setIsPoolTvlFiltered(!isPoolTvlFiltered)}
-          >
-            <input
-              className="mr-2"
-              id="show-all-pools"
-              type="checkbox"
-              checked={isPoolTvlFiltered}
+          <div className="absolute right-2 bottom-1 text-sm flex items-center">
+            <CheckBox
+              isOn={isPoolTvlFiltered}
+              onToggle={(value) => setIsPoolTvlFiltered(!value)}
+              className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
+              label={`Show pools less than ${new PricePretty(
+                priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+                TVL_FILTER_THRESHOLD
+              ).toString()} TVL`}
             />
-            Show pools less then $1,000 TVL
-          </label>
+          </div>
         </div>
       </>
     );

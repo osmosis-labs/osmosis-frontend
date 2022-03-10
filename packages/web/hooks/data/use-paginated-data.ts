@@ -22,7 +22,7 @@ export function usePaginatedData<TData>(
     if (maxPages > 0 && page + 1 > maxPages) {
       setPage(maxPages - 1);
     }
-  }, [maxPages]);
+  }, [maxPages, page]);
 
   return [
     Math.min(page + 1, maxPages),

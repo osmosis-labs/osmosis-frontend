@@ -3,10 +3,11 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useAllPoolsTable } from "../../hooks/use-all-pools-table";
 import { useStore } from "../../stores";
-import { ObservablePoolWithFeeMetrics } from "../../stores/external-queries";
-import { MenuToggle, PageList, SortMenu } from "../control";
+import { ObservablePoolWithFeeMetrics } from "@osmosis-labs/stores";
+import { CheckBox, MenuToggle, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { PoolTable } from "../table";
+import classNames from "classnames";
 
 const poolsMenuOptions = [
   { id: "incentivized-pools", display: "Incentivized Pools" },
@@ -55,15 +56,14 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
   const incentivizedPoolsWithMetrics = allPoolsWithMetrics.reduce(
     (
       incentivizedPools: ObservablePoolWithFeeMetrics[],
-      poolWithMetricss: ObservablePoolWithFeeMetrics
+      poolWithMetrics: ObservablePoolWithFeeMetrics
     ) => {
       if (
         incentivizedPoolIds.some(
-          (incentivizedPoolId) =>
-            poolWithMetricss.pool.id === incentivizedPoolId
+          (incentivizedPoolId) => poolWithMetrics.pool.id === incentivizedPoolId
         )
       ) {
-        incentivizedPools.push(poolWithMetricss);
+        incentivizedPools.push(poolWithMetrics);
       }
       return incentivizedPools;
     },
@@ -76,8 +76,8 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
     : allPoolsWithMetrics;
   const tvlFilteredPools = isPoolTvlFiltered
     ? activeOptionPools
-    : activeOptionPools.filter((poolWithMetricss) =>
-        poolWithMetricss.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
+    : activeOptionPools.filter((poolWithMetrics) =>
+        poolWithMetrics.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
       );
 
   const {
@@ -108,7 +108,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
           <SearchBox
             currentValue={query}
             onInput={setQuery}
-            placeholder="Search by pool id or tokens"
+            placeholder="Filter by name"
             className="!w-64"
           />
           <SortMenu
@@ -135,22 +135,17 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
           onInput={setPage}
           editField
         />
-        <label
-          htmlFor="show-all-pools"
-          className="absolute right-2 bottom-1 text-base flex items-center"
-          onClick={() => setIsPoolTvlFiltered(!isPoolTvlFiltered)}
-        >
-          <input
-            className="mr-2"
-            id="show-all-pools"
-            type="checkbox"
-            checked={isPoolTvlFiltered}
+        <div className="absolute right-2 bottom-1 text-sm flex items-center">
+          <CheckBox
+            isOn={isPoolTvlFiltered}
+            onToggle={(value) => setIsPoolTvlFiltered(!value)}
+            className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
+            label={`Show pools less than ${new PricePretty(
+              priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+              TVL_FILTER_THRESHOLD
+            ).toString()} TVL`}
           />
-          {`Show pools less then ${new PricePretty(
-            priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-            TVL_FILTER_THRESHOLD
-          ).toString()} TVL`}
-        </label>
+        </div>
       </div>
     </>
   );
