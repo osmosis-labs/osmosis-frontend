@@ -1,7 +1,10 @@
 import { KVStore } from "@keplr-wallet/common";
-import { HasMapStore } from "@keplr-wallet/stores";
+import { HasMapStore, ObservableQuery } from "@keplr-wallet/stores";
 import { DeepReadonly } from "utility-types";
-import { ObservableQueryPoolsFeeMetrics } from "./pools";
+import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
+import Axios from "axios";
+
+const IMPERATOR_API_DOMAIN = "https://api-osmosis.imperator.co";
 
 export class QueriesExternalStore extends HasMapStore<QueriesExternal> {
   constructor(protected readonly kvStore: KVStore) {
@@ -14,9 +17,20 @@ export class QueriesExternalStore extends HasMapStore<QueriesExternal> {
 }
 
 export class QueriesExternal {
-  public readonly queryGammPoolMetrics: DeepReadonly<ObservableQueryPoolsFeeMetrics>;
+  public readonly queryGammPoolMetrics: DeepReadonly<ObservableQueryPoolFeesMetrics>;
 
   constructor(kvStore: KVStore) {
-    this.queryGammPoolMetrics = new ObservableQueryPoolsFeeMetrics(kvStore);
+    this.queryGammPoolMetrics = new ObservableQueryPoolFeesMetrics(kvStore);
+  }
+}
+
+export class ObservableQueryExternal<
+  T = unknown,
+  E = unknown
+> extends ObservableQuery<T, E> {
+  constructor(kvStore: KVStore, urlPath: string) {
+    const instance = Axios.create({ baseURL: IMPERATOR_API_DOMAIN });
+
+    super(kvStore, instance, urlPath);
   }
 }

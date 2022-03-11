@@ -1,35 +1,15 @@
-import { KVStore } from "@keplr-wallet/common";
-import { CoinGeckoPriceStore, ObservableQuery } from "@keplr-wallet/stores";
-import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { ObservablePool } from "../queries/pools";
-import Axios from "axios";
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-const IMPERATOR_API_DOMAIN = "https://api-osmosis.imperator.co";
+import { KVStore } from "@keplr-wallet/common";
+import { CoinGeckoPriceStore } from "@keplr-wallet/stores";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 
-export interface ObservablePoolWithFeeMetrics {
-  pool: ObservablePool;
-  liquidity: PricePretty;
-  volume24h: PricePretty;
-  fees7d: PricePretty;
-  myLiquidity?: PricePretty;
-  epochsRemaining?: number;
-  apr?: RatePretty;
-}
+import { ObservablePool } from "../../queries/pools";
+import { ObservableQueryExternal } from "../store";
+import { ObservablePoolWithFeeMetrics } from "./types";
 
-export class ObservableExternalQuery<
-  T = unknown,
-  E = unknown
-> extends ObservableQuery<T, E> {
-  constructor(kvStore: KVStore, urlPath: string) {
-    const instance = Axios.create({ baseURL: IMPERATOR_API_DOMAIN });
-
-    super(kvStore, instance, urlPath);
-  }
-}
-
-export class ObservableQueryPoolsFeeMetrics extends ObservableExternalQuery<{
+export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<{
   last_update_at: number;
   data: {
     pool_id: string;

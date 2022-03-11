@@ -5,7 +5,7 @@ import {
   ObservableChainQuery,
 } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
-import { Dec, Int, IntPretty, RatePretty } from "@keplr-wallet/unit";
+import { Dec, Int, RatePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
