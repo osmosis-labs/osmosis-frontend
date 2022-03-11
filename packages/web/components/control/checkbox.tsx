@@ -5,12 +5,8 @@ import { Disableable, CustomClasses } from "../types";
 import { ToggleProps } from "./types";
 
 export const CheckBox: FunctionComponent<
-  ToggleProps &
-    Disableable &
-    CustomClasses & {
-      label?: string;
-    }
-> = ({ isOn, onToggle, disabled = false, className, label }) => (
+  ToggleProps & Disableable & CustomClasses
+> = ({ isOn, onToggle, disabled = false, className, children }) => (
   <label
     className="flex items-center cursor-pointer"
     htmlFor="toggle-checkbox"
@@ -48,6 +44,6 @@ export const CheckBox: FunctionComponent<
       checked={isOn}
       disabled={disabled}
     />
-    {label}
+    {children}
   </label>
 );

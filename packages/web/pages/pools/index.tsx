@@ -93,37 +93,35 @@ const Pools: NextPage = observer(function () {
           <h5>Top Pools</h5>
           <div className="mt-4 grid grid-cols-3 gap-4">
             {top3Pools.map((pool) => {
-              if (pool) {
-                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
-                  pool.id,
-                  priceStore
-                );
-                const poolLiquidity = pool.computeTotalValueLocked(priceStore);
+              const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
+                pool.id,
+                priceStore
+              );
+              const poolLiquidity = pool.computeTotalValueLocked(priceStore);
 
-                return (
-                  <PoolCard
-                    key={pool.id}
-                    pool={pool}
-                    poolMetrics={[
-                      {
-                        label: "APR",
-                        value: apr.toString(),
-                        isLoading:
-                          queryOsmosis.queryIncentivizedPools.isAprFetching,
-                      },
-                      {
-                        label: "Pool Liquidity",
-                        value: poolLiquidity.toString(),
-                        isLoading: poolLiquidity.toDec().isZero(),
-                      },
-                      {
-                        label: "Fees",
-                        value: pool.swapFee.toString(),
-                      },
-                    ]}
-                  />
-                );
-              }
+              return (
+                <PoolCard
+                  key={pool.id}
+                  pool={pool}
+                  poolMetrics={[
+                    {
+                      label: "APR",
+                      value: apr.toString(),
+                      isLoading:
+                        queryOsmosis.queryIncentivizedPools.isAprFetching,
+                    },
+                    {
+                      label: "Pool Liquidity",
+                      value: poolLiquidity.toString(),
+                      isLoading: poolLiquidity.toDec().isZero(),
+                    },
+                    {
+                      label: "Fees",
+                      value: pool.swapFee.toString(),
+                    },
+                  ]}
+                />
+              );
             })}
           </div>
         </div>

@@ -10,7 +10,7 @@ import {
 import { EmbedChainInfos, IBCAssetInfos } from "../config";
 import { IndexedDBKVStore, LocalKVStore } from "@keplr-wallet/common";
 import EventEmitter from "eventemitter3";
-import { ChainStore } from "./chain";
+import { ChainInfoWithExplorer, ChainStore } from "./chain";
 import {
   QueriesOsmosisStore,
   QueriesExternalStore,
@@ -30,8 +30,8 @@ export class RootStore {
 
   public readonly priceStore: CoinGeckoPriceStore;
 
-  protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar;
-  protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar;
+  protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
+  protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
 
   constructor(getKeplr: () => Promise<Keplr | undefined>) {
     this.chainStore = new ChainStore(EmbedChainInfos, "osmosis");
@@ -118,6 +118,8 @@ export class RootStore {
       this.chainStore,
       this.accountStore,
       this.queriesStore,
+      // TODO: implement queriesStore for cosmwasm
+      undefined,
       (
         denomTrace: {
           denom: string;
@@ -126,8 +128,8 @@ export class RootStore {
             channelId: string;
           }[];
         },
-        originChainInfo: ChainInfoInner | undefined,
-        counterpartyChainInfo: ChainInfoInner | undefined,
+        _originChainInfo: ChainInfoInner | undefined,
+        _counterpartyChainInfo: ChainInfoInner | undefined,
         originCurrency: AppCurrency | undefined
       ) => {
         const firstPath = denomTrace.paths[0];

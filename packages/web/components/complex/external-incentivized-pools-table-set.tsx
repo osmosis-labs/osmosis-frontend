@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservablePool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
@@ -89,7 +89,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
         }
 
         return {
-          ...queryExternal.queryGammPoolMetrics.makePoolWithFeeMetrics(
+          ...queryExternal.queryGammPoolFeeMetrics.makePoolWithFeeMetrics(
             pool,
             priceStore
           ),
@@ -171,11 +171,12 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
               isOn={isPoolTvlFiltered}
               onToggle={setIsPoolTvlFiltered}
               className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
-              label={`Show pools less than ${new PricePretty(
+            >
+              {`Show pools less than ${new PricePretty(
                 priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
                 TVL_FILTER_THRESHOLD
               ).toString()} TVL`}
-            />
+            </CheckBox>
           </div>
         </div>
       </>

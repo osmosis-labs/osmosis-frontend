@@ -17,10 +17,10 @@ export class QueriesExternalStore extends HasMapStore<QueriesExternal> {
 }
 
 export class QueriesExternal {
-  public readonly queryGammPoolMetrics: DeepReadonly<ObservableQueryPoolFeesMetrics>;
+  public readonly queryGammPoolFeeMetrics: DeepReadonly<ObservableQueryPoolFeesMetrics>;
 
   constructor(kvStore: KVStore) {
-    this.queryGammPoolMetrics = new ObservableQueryPoolFeesMetrics(kvStore);
+    this.queryGammPoolFeeMetrics = new ObservableQueryPoolFeesMetrics(kvStore);
   }
 }
 

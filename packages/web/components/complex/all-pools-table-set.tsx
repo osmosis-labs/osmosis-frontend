@@ -37,7 +37,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
     queryOsmosis.queryIncentivizedPools.incentivizedPools;
 
   const allPoolsWithMetrics = allPools.map((pool) => ({
-    ...queryExternal.queryGammPoolMetrics.makePoolWithFeeMetrics(
+    ...queryExternal.queryGammPoolFeeMetrics.makePoolWithFeeMetrics(
       pool,
       priceStore
     ),
@@ -141,11 +141,12 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
             isOn={isPoolTvlFiltered}
             onToggle={setIsPoolTvlFiltered}
             className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
-            label={`Show pools less than ${new PricePretty(
+          >
+            {`Show pools less than ${new PricePretty(
               priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
               TVL_FILTER_THRESHOLD
             ).toString()} TVL`}
-          />
+          </CheckBox>
         </div>
       </div>
     </>

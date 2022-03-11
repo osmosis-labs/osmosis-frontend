@@ -62,3 +62,5 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<{
     }
   );
 }
+
+export * from "./types";

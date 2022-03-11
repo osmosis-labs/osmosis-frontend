@@ -143,11 +143,11 @@ export const useAllPoolsTable = (
       { value: poolWithMetrics.liquidity.toString() },
       {
         value: poolWithMetrics.volume24h.toString(),
-        isLoading: !queriesExternal.queryGammPoolMetrics.response,
+        isLoading: !queriesExternal.queryGammPoolFeeMetrics.response,
       },
       {
         value: poolWithMetrics.fees7d.toString(),
-        isLoading: !queriesExternal.queryGammPoolMetrics.response,
+        isLoading: !queriesExternal.queryGammPoolFeeMetrics.response,
       },
       {
         value: isIncentivizedPools
