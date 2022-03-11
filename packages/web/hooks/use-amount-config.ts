@@ -1,9 +1,9 @@
 import { useMemo } from "react";
-import { BasicAmountConfig } from "@osmosis-labs/stores";
+import { ObservableAmountConfig } from "@osmosis-labs/stores";
 import { ChainGetter, ObservableQueryBalances } from "@keplr-wallet/stores";
 import { AppCurrency } from "@keplr-wallet/types";
 
-export const useBasicAmountConfig = (
+export const useAmountConfig = (
   chainGetter: ChainGetter,
   chainId: string,
   sender: string,
@@ -11,7 +11,7 @@ export const useBasicAmountConfig = (
   queryBalances: ObservableQueryBalances
 ) =>
   useMemo(() => {
-    const config = new BasicAmountConfig(
+    const config = new ObservableAmountConfig(
       chainGetter,
       chainId,
       sender,

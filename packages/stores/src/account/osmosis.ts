@@ -12,7 +12,7 @@ import { WeightedPoolEstimates } from "@osmosis-labs/math";
 import { Pool } from "@osmosis-labs/pools";
 import { HasOsmosisQueries } from "../queries";
 import { osmosis } from "./msg/proto";
-import * as Msgs from "./msg/make";
+import * as Msgs from "./msg/make-msg";
 import { OsmosisMsgOpts } from "./types";
 
 /** Use this object to generate Osmosis messages from the base account. */
