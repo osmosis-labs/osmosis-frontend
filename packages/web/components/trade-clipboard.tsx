@@ -1,5 +1,5 @@
-import { FunctionComponent, useState } from "react";
 import Tippy from "@tippyjs/react";
+import { FunctionComponent } from "react";
 import { TokenSelect } from "../components/token-select";
 import { useBooleanWithWindowEvent } from "../hooks";
 
