@@ -4,7 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import classNames from "classnames";
 import { useStore } from "../../stores";
-import { WalletStatus } from "@keplr-wallet/stores";
+import {
+  AccountWithCosmos,
+  QueriesWithCosmos,
+  WalletStatus,
+} from "@keplr-wallet/stores";
 import { observer } from "mobx-react-lite";
 
 export type MainLayoutMenu = {
@@ -22,11 +26,16 @@ export interface MainLayoutProps {
 export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
   ({ children, menus }) => {
     const router = useRouter();
+    const store = useStore();
 
-    const { chainStore, accountStore, queriesStore } = useStore();
-    const account = accountStore.getAccount(chainStore.osmosis.chainId);
-    const queries = queriesStore.get(chainStore.osmosis.chainId);
+    let account: AccountWithCosmos | undefined;
+    let queries: QueriesWithCosmos | undefined;
 
+    if (store) {
+      const { chainStore, accountStore, queriesStore } = store;
+      account = accountStore.getAccount(chainStore.osmosis.chainId);
+      queries = queriesStore.get(chainStore.osmosis.chainId);
+    }
     return (
       <React.Fragment>
         <div className="fixed w-sidebar h-full bg-card flex flex-col px-5 py-6">
@@ -106,7 +115,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
 
             <div>
               <div className="w-full">
-                {account.walletStatus === WalletStatus.Loaded ? (
+                {account?.walletStatus === WalletStatus.Loaded ? (
                   <div>
                     <div className="flex items-center mb-2">
                       <div className="p-4">
@@ -119,23 +128,24 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                       </div>
                       <div className="flex flex-col">
                         <p className="font-semibold text-white-high text-base">
-                          {account.name}
+                          {account?.name}
                         </p>
                         <p className="opacity-50 text-white-emphasis text-sm">
-                          {queries.queryBalances
-                            .getQueryBech32Address(account.bech32Address)
-                            .stakable.balance.trim(true)
-                            .maxDecimals(2)
-                            .shrink(true)
-                            .upperCase(true)
-                            .toString()}
+                          {account &&
+                            queries?.queryBalances
+                              .getQueryBech32Address(account.bech32Address)
+                              .stakable.balance.trim(true)
+                              .maxDecimals(2)
+                              .shrink(true)
+                              .upperCase(true)
+                              .toString()}
                         </p>
                       </div>
                     </div>
                     <button
                       onClick={(e) => {
                         e.preventDefault();
-                        account.disconnect();
+                        account?.disconnect();
                       }}
                       className="bg-transparent border border-opacity-30 border-secondary-200 h-9 w-full rounded-md py-2 px-1 flex items-center justify-center mb-8"
                     >
@@ -155,7 +165,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                     className="flex items-center justify-center w-full h-9 py-3.5 rounded-md bg-primary-200 mb-8"
                     onClick={(e) => {
                       e.preventDefault();
-                      account.init();
+                      account?.init();
                     }}
                   >
                     <Image

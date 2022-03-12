@@ -11,25 +11,25 @@ import { useRouter } from "next/router";
 export const IncentivizedPoolCard: FunctionComponent<{
   pool: ObservablePool;
 }> = observer(({ pool }) => {
-  const { chainStore, queriesOsmosisStore, priceStore } = useStore();
-
-  const chainInfo = chainStore.osmosis;
-  const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
-
+  const store = useStore();
   const router = useRouter();
-
   const deterministicInteger = useDeterministicIntegerFromString(pool.id);
 
-  const poolTVL = pool.computeTotalValueLocked(
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
-  );
+  let poolTVL: string | undefined;
+  let apr: string | undefined;
 
-  const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
-    pool.id,
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
-  );
+  if (store) {
+    const { chainStore, queriesOsmosisStore, priceStore } = store;
+    const chainInfo = chainStore.osmosis;
+    const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
+    const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
+
+    poolTVL = pool.computeTotalValueLocked(priceStore, fiat).toString();
+
+    apr = queryOsmosis.queryIncentivizedPools
+      .computeMostAPY(pool.id, priceStore, fiat)
+      .toString();
+  }
 
   return (
     <PoolCardBase
@@ -37,7 +37,7 @@ export const IncentivizedPoolCard: FunctionComponent<{
       subtitle={pool.poolAssets
         .map((asset) => asset.amount.currency.coinDenom)
         .join("/")}
-      icon={<Image src="/icons/OSMO.svg" width={40} height={40} />}
+      icon={<Image alt="" src="/icons/OSMO.svg" width={40} height={40} />}
       iconBackgroundColor={
         PoolCardIconBackgroundColors[
           deterministicInteger % PoolCardIconBackgroundColors.length
@@ -48,9 +48,9 @@ export const IncentivizedPoolCard: FunctionComponent<{
       }}
     >
       <div className="flex flex-row">
-        <StatLabelValue label="APR" value={apr.toString() + "%"} />
+        <StatLabelValue label="APR" value={apr ?? "0" + "%"} />
         <div className="w-[1px] mx-[1.25rem] bg-enabledGold" />
-        <StatLabelValue label="Liquidity" value={poolTVL.toString()} />
+        <StatLabelValue label="Liquidity" value={poolTVL ?? "$0"} />
       </div>
     </PoolCardBase>
   );

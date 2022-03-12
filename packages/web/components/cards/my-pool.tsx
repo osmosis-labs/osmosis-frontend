@@ -1,49 +1,53 @@
+import Image from "next/image";
+import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
-import { ObservablePool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
+import { PricePretty } from "@keplr-wallet/unit";
+import { ObservablePool } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { PoolCardBase, PoolCardIconBackgroundColors } from "./base";
-import Image from "next/image";
 import { useDeterministicIntegerFromString } from "../../hooks";
 import { StatLabelValue } from "./stat-label-value";
-import { useRouter } from "next/router";
 
 export const MyPoolCard: FunctionComponent<{
   pool: ObservablePool;
 }> = observer(({ pool }) => {
-  const { chainStore, queriesOsmosisStore, priceStore, accountStore } =
-    useStore();
-
-  const chainInfo = chainStore.getChain("osmosis");
-  const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
-  const account = accountStore.getAccount(chainInfo.chainId);
-
   const router = useRouter();
-
+  const store = useStore();
   const deterministicInteger = useDeterministicIntegerFromString(pool.id);
 
-  const poolTVL = pool.computeTotalValueLocked(
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
-  );
+  let poolTVL: PricePretty | undefined;
+  let apr: string | undefined;
+  let myLiquidity: PricePretty | undefined;
+  let myLockedAmount: PricePretty | undefined;
 
-  const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
-    pool.id,
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
-  );
+  if (store) {
+    const { chainStore, queriesOsmosisStore, priceStore, accountStore } = store;
 
-  const shareRatio = queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-    account.bech32Address,
-    pool.id
-  );
-  const lockedShareRatio =
-    queryOsmosis.queryGammPoolShare.getLockedGammShareRatio(
+    const chainInfo = chainStore.getChain(chainStore.osmosis.chainId);
+    const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
+    const account = accountStore.getAccount(chainInfo.chainId);
+    const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
+
+    const shareRatio = queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
       account.bech32Address,
       pool.id
     );
-  const myLiquidity = poolTVL.mul(shareRatio);
-  const myLockedAmount = poolTVL.mul(lockedShareRatio);
+    const lockedShareRatio =
+      queryOsmosis.queryGammPoolShare.getLockedGammShareRatio(
+        account.bech32Address,
+        pool.id
+      );
+
+    poolTVL = pool.computeTotalValueLocked(priceStore, fiat);
+
+    apr = queryOsmosis.queryIncentivizedPools
+      .computeMostAPY(pool.id, priceStore, fiat)
+      .toString();
+
+    myLiquidity = poolTVL.mul(shareRatio);
+    myLockedAmount = poolTVL.mul(lockedShareRatio);
+  }
 
   return (
     <PoolCardBase
@@ -51,7 +55,7 @@ export const MyPoolCard: FunctionComponent<{
       subtitle={pool.poolAssets
         .map((asset) => asset.amount.currency.coinDenom)
         .join("/")}
-      icon={<Image src="/icons/OSMO.svg" width={40} height={40} />}
+      icon={<Image alt="" src="/icons/OSMO.svg" width={40} height={40} />}
       iconBackgroundColor={
         PoolCardIconBackgroundColors[
           deterministicInteger % PoolCardIconBackgroundColors.length
@@ -63,15 +67,21 @@ export const MyPoolCard: FunctionComponent<{
     >
       <div className="flex flex-col">
         <div className="flex gap-5">
-          <StatLabelValue label="Pool Liquidity" value={poolTVL.toString()} />
-          <StatLabelValue label="APR" value={apr.toString() + "%"} />
+          <StatLabelValue
+            label="Pool Liquidity"
+            value={poolTVL?.toString() ?? "$0"}
+          />
+          <StatLabelValue label="APR" value={apr ?? "0" + "%"} />
         </div>
         <div className="border-b border-enabledGold mt-4 mb-4 max-w-[15.5rem]" />
         <div className="flex gap-5">
-          <StatLabelValue label="My Liquidity" value={myLiquidity.toString()} />
+          <StatLabelValue
+            label="My Liquidity"
+            value={myLiquidity?.toString() ?? "$0"}
+          />
           <StatLabelValue
             label="My Bonded Amount"
-            value={myLockedAmount.toString()}
+            value={myLockedAmount?.toString() ?? "$0"}
           />
         </div>
       </div>

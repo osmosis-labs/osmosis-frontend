@@ -1,29 +1,67 @@
 import type { NextPage } from "next";
 import { observer } from "mobx-react-lite";
+import { AccountWithCosmos } from "@keplr-wallet/stores";
+import { QueriesOsmosis, ObservablePool } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { PoolCard } from "../../components/cards";
 import { Overview } from "../../components/overview";
 import { LeftTime } from "../../components/left-time";
 
+interface PoolDisplayInfo {
+  observablePool: ObservablePool;
+  apr?: string;
+  liquidity?: string;
+  bonded?: string;
+  fees?: string;
+}
+
 const Pools: NextPage = observer(function () {
-  const { chainStore, accountStore, queriesOsmosisStore, priceStore } =
-    useStore();
+  const store = useStore();
 
-  const chainInfo = chainStore.getChain("osmosis");
+  let queryOsmosis: QueriesOsmosis | undefined;
+  let myPools: PoolDisplayInfo[] | undefined;
+  let top3Pools: PoolDisplayInfo[] | undefined;
 
-  const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
-  const account = accountStore.getAccount(chainInfo.chainId);
+  if (store) {
+    const { chainStore, accountStore, queriesOsmosisStore, priceStore } = store;
+    const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
+    const chainId = chainStore.osmosis.chainId;
+    const account = accountStore.getAccount(chainId);
 
-  const myPools = queryOsmosis.queryGammPoolShare.getOwnPools(
-    account.bech32Address
-  );
+    const getPoolDisplayInfo = (pool: ObservablePool) => {
+      const liquidity = pool.computeTotalValueLocked(priceStore, fiat);
 
-  const top3Pools = queryOsmosis.queryGammPools.getPoolsDescendingOrderTVL(
-    priceStore,
-    priceStore.getFiatCurrency("usd")!,
-    3,
-    1
-  );
+      return {
+        observablePool: pool,
+        apr: queryOsmosis?.queryIncentivizedPools
+          .computeMostAPY(pool.id, priceStore, fiat)
+          .toString(),
+        liquidity: liquidity.toString(),
+        bonded: queryOsmosis?.queryGammPoolShare
+          .getLockedGammShareValue(
+            account?.bech32Address ?? "",
+            pool.id,
+            liquidity,
+            fiat
+          )
+          .toString(),
+        fees: pool.swapFee.toString(),
+      };
+    };
+
+    queryOsmosis = queriesOsmosisStore.get(chainId);
+
+    myPools = queryOsmosis?.queryGammPoolShare
+      .getOwnPools(account.bech32Address)
+      .map((pool) => queryOsmosis?.queryGammPools.getPool(pool))
+      .filter((pool): pool is ObservablePool => pool !== undefined)
+      .map(getPoolDisplayInfo);
+
+    top3Pools = queryOsmosis?.queryGammPools
+      .getPoolsDescendingOrderTVL(priceStore, fiat, 3, 1)
+      .filter((pool): pool is ObservablePool => pool !== undefined)
+      .map(getPoolDisplayInfo);
+  }
 
   return (
     <main>
@@ -50,52 +88,31 @@ const Pools: NextPage = observer(function () {
         <div className="max-w-container mx-auto p-10">
           <h5>My Pools</h5>
           <div className="mt-4 grid grid-cols-3 gap-4">
-            {myPools.map((poolId) => {
-              const pool = queryOsmosis.queryGammPools.getPool(poolId);
-              if (pool) {
-                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
-                  pool.id,
-                  priceStore,
-                  priceStore.getFiatCurrency("usd")!
-                );
-                const poolLiquidity = pool.computeTotalValueLocked(
-                  priceStore,
-                  priceStore.getFiatCurrency("usd")!
-                );
-                const bonded =
-                  queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
-                    account.bech32Address,
-                    pool.id,
-                    poolLiquidity,
-                    priceStore.getFiatCurrency("usd")!
-                  );
-
-                return (
-                  <PoolCard
-                    key={pool.id}
-                    pool={pool}
-                    poolMetrics={[
-                      {
-                        label: "APR",
-                        value: `${apr.toString()}%`,
-                        isLoading:
-                          queryOsmosis.queryIncentivizedPools.isAprFetching,
-                      },
-                      {
-                        label: "Pool Liquidity",
-                        value: poolLiquidity.toString(),
-                        isLoading: poolLiquidity.toDec().isZero(),
-                      },
-                      {
-                        label: "Bonded",
-                        value: bonded.toString(),
-                        isLoading: poolLiquidity.toDec().isZero(),
-                      },
-                    ]}
-                  />
-                );
-              }
-            })}
+            {myPools?.map((pool) => (
+              <PoolCard
+                key={pool.observablePool.id}
+                pool={pool.observablePool}
+                poolMetrics={[
+                  {
+                    label: "APR",
+                    value: `${pool.apr ?? "0"}%`,
+                    isLoading:
+                      !pool.apr ||
+                      queryOsmosis?.queryIncentivizedPools.isAprFetching,
+                  },
+                  {
+                    label: "Pool Liquidity",
+                    value: pool.liquidity ?? "$0",
+                    isLoading: !pool.liquidity,
+                  },
+                  {
+                    label: "Bonded",
+                    value: pool.bonded ?? "$0",
+                    isLoading: !pool.bonded,
+                  },
+                ]}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -103,43 +120,31 @@ const Pools: NextPage = observer(function () {
         <div className="max-w-container mx-auto p-10">
           <h5>Top Pools</h5>
           <div className="mt-4 grid grid-cols-3 gap-4">
-            {top3Pools.map((pool) => {
-              if (pool) {
-                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
-                  pool.id,
-                  priceStore,
-                  priceStore.getFiatCurrency("usd")!
-                );
-
-                const poolLiquidity = pool.computeTotalValueLocked(
-                  priceStore,
-                  priceStore.getFiatCurrency("usd")!
-                );
-                return (
-                  <PoolCard
-                    key={pool.id}
-                    pool={pool}
-                    poolMetrics={[
-                      {
-                        label: "APR",
-                        value: `${apr.toString()}%`,
-                        isLoading:
-                          queryOsmosis.queryIncentivizedPools.isAprFetching,
-                      },
-                      {
-                        label: "Pool Liquidity",
-                        value: poolLiquidity.toString(),
-                        isLoading: poolLiquidity.toDec().isZero(),
-                      },
-                      {
-                        label: "Fees",
-                        value: pool.swapFee.toString(),
-                      },
-                    ]}
-                  />
-                );
-              }
-            })}
+            {top3Pools?.map((pool) => (
+              <PoolCard
+                key={pool.observablePool.id}
+                pool={pool.observablePool}
+                poolMetrics={[
+                  {
+                    label: "APR",
+                    value: `${pool.apr ?? "0"}%`,
+                    isLoading:
+                      !pool.apr ||
+                      queryOsmosis?.queryIncentivizedPools.isAprFetching,
+                  },
+                  {
+                    label: "Pool Liquidity",
+                    value: pool.liquidity ?? "$0",
+                    isLoading: !pool.liquidity,
+                  },
+                  {
+                    label: "Fees",
+                    value: pool.fees ?? "0%",
+                    isLoading: !pool.fees,
+                  },
+                ]}
+              />
+            ))}
           </div>
         </div>
       </section>
