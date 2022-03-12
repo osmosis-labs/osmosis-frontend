@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 
 import { RootStore } from "./root";
 import { useKeplr } from "../hooks";
@@ -9,7 +9,13 @@ const storeContext = React.createContext<RootStore | null>(null);
 export const StoreProvider: FunctionComponent = ({ children }) => {
   const keplr = useKeplr();
 
-  const [rootStore] = useState(() => new RootStore(keplr.getKeplr));
+  const [rootStore, setRootStore] = useState<RootStore | null>(null);
+
+  useEffect(() => {
+    if (!rootStore) {
+      setRootStore(new RootStore(keplr.getKeplr));
+    }
+  }, [rootStore, setRootStore, keplr]);
 
   return (
     <storeContext.Provider value={rootStore}>
@@ -19,10 +25,4 @@ export const StoreProvider: FunctionComponent = ({ children }) => {
   );
 };
 
-export const useStore = () => {
-  const store = React.useContext(storeContext);
-  if (!store) {
-    throw new Error("You have forgot to use StoreProvider");
-  }
-  return store;
-};
+export const useStore = () => React.useContext(storeContext);

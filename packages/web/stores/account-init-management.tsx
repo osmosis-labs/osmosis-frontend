@@ -7,17 +7,19 @@ import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 
 export const AccountInitManagement: FunctionComponent = observer(
   ({ children }) => {
-    const { chainStore, accountStore } = useStore();
+    const store = useStore();
 
     const keplr = useKeplr();
 
-    const chainInfo = chainStore.osmosis;
-    const account = accountStore.getAccount(chainInfo.chainId);
+    const chainInfo = store?.chainStore.osmosis;
+    const account = chainInfo
+      ? store?.accountStore.getAccount(chainInfo.chainId)
+      : undefined;
 
     const [accountHasInit, setAccountHasInit] = useState(false);
 
     useEffect(() => {
-      if (typeof localStorage !== "undefined") {
+      if (typeof localStorage !== "undefined" && account) {
         const value = localStorage.getItem("account_auto_connect");
         if (value) {
           if (value === "wallet-connect") {
@@ -29,10 +31,10 @@ export const AccountInitManagement: FunctionComponent = observer(
         }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [account]);
 
     useEffect(() => {
-      if (account.walletStatus === WalletStatus.Loaded) {
+      if (account && account.walletStatus === WalletStatus.Loaded) {
         setAccountHasInit(true);
         if (typeof localStorage !== "undefined") {
           const value =
@@ -43,7 +45,11 @@ export const AccountInitManagement: FunctionComponent = observer(
         }
       }
 
-      if (accountHasInit && account.walletStatus === WalletStatus.NotInit) {
+      if (
+        account &&
+        accountHasInit &&
+        account.walletStatus === WalletStatus.NotInit
+      ) {
         setAccountHasInit(false);
         if (typeof localStorage !== "undefined") {
           localStorage.removeItem("account_auto_connect");
@@ -59,12 +65,12 @@ export const AccountInitManagement: FunctionComponent = observer(
       }
 
       if (
-        account.walletStatus === WalletStatus.Rejected ||
-        account.walletStatus === WalletStatus.NotExist
+        account?.walletStatus === WalletStatus.Rejected ||
+        account?.walletStatus === WalletStatus.NotExist
       ) {
         account.disconnect();
       }
-    }, [account, account.walletStatus, accountHasInit, keplr]);
+    }, [account, account?.walletStatus, accountHasInit, keplr]);
 
     return <React.Fragment>{children}</React.Fragment>;
   }
