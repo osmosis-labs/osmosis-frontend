@@ -47,7 +47,13 @@ export const Overview: FunctionComponent<Props> = ({
         <div className="flex items-center">
           <h5 className="text-white-full">{title}</h5>
           {titleButtons?.slice(0, 2).map(({ label, onClick }, index) => (
-            <Button key={index} color="primary" size="sm" className="ml-6">
+            <Button
+              key={index}
+              color="primary"
+              size="sm"
+              className="ml-6"
+              onClick={onClick}
+            >
               {label}
             </Button>
           ))}

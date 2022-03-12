@@ -35,7 +35,7 @@ export const Slider: FunctionComponent<Props> = ({
     if (type === "tooltip" && rangeRef.current && tooltipRef.current) {
       const range = rangeRef.current as any;
       const tooltip = tooltipRef.current as any;
-      var setValue = () => {
+      const setValue = () => {
         const newValue = Number(
             ((range.value - range.min) * 100) / (range.max - range.min)
           ),

@@ -1,11 +1,9 @@
-import React, {
-  FunctionComponent,
-  ReactElement,
-  VoidFunctionComponent,
-} from "react";
-import ReactModal from "react-modal";
-import classNames from "classnames";
 import Image from "next/image";
+import React, { FunctionComponent, ReactElement } from "react";
+import ReactModal, { setAppElement } from "react-modal";
+import classNames from "classnames";
+
+setAppElement("body");
 
 export interface ModalBaseProps {
   isOpen: boolean;

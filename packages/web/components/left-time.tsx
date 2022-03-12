@@ -6,7 +6,7 @@ export const LeftTime: FunctionComponent<{
   minute: string;
 }> = ({ day, hour, minute }) => {
   return (
-    <h4 className="text-xl md:text-2xl flex items-center">
+    <div className="text-xl md:text-2xl flex items-center">
       {day && (
         <React.Fragment>
           {day}
@@ -24,6 +24,6 @@ export const LeftTime: FunctionComponent<{
       <div className="inline-block py-1 px-2 md:px-3 h-full rounded-lg bg-card mx-1">
         <h5 className="text-lg md:text-xl">M</h5>
       </div>
-    </h4>
+    </div>
   );
 };
