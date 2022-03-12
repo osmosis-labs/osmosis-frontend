@@ -8,10 +8,16 @@ import {
   QueriesWithCosmos,
 } from "@keplr-wallet/stores";
 import { EmbedChainInfos, IBCAssetInfos } from "../config";
-import { IndexedDBKVStore, LocalKVStore } from "@keplr-wallet/common";
+import { IndexedDBKVStore, KVStore, LocalKVStore } from "@keplr-wallet/common";
 import EventEmitter from "eventemitter3";
 import { ChainStore, ChainInfoWithExplorer } from "./chain";
-import { QueriesOsmosisStore, LPCurrencyRegistrar } from "@osmosis-labs/stores";
+import {
+  HasOsmosisQueries,
+  QueriesOsmosisStore,
+  LPCurrencyRegistrar,
+  IBCTransferHistoryStore,
+  QueriesOsmosis,
+} from "@osmosis-labs/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { ObservableAssets } from "./assets";
@@ -25,6 +31,8 @@ export class RootStore {
   public readonly accountStore: AccountStore<AccountWithCosmos>;
 
   public readonly priceStore: CoinGeckoPriceStore;
+
+  public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
 
   public readonly assetsStore: ObservableAssets;
 
@@ -106,6 +114,11 @@ export class RootStore {
       "usd"
     );
 
+    this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
+      new IndexedDBKVStore("ibc_transfer_history"),
+      this.chainStore
+    );
+
     this.assetsStore = new ObservableAssets(
       IBCAssetInfos,
       this.chainStore,
@@ -122,6 +135,7 @@ export class RootStore {
       this.chainStore,
       this.accountStore,
       this.queriesStore,
+      undefined,
       (
         denomTrace: {
           denom: string;

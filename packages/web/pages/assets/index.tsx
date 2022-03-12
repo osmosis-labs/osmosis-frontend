@@ -1,6 +1,12 @@
 import type { NextPage } from "next";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState } from "react";
+import {
+  FunctionComponent,
+  useState,
+  ComponentProps,
+  useCallback,
+} from "react";
+import { IBCCurrency } from "@keplr-wallet/types";
 import { ObservablePool } from "@osmosis-labs/stores";
 import { useStore } from "../../stores/";
 import { Overview } from "../../components/overview";
@@ -8,6 +14,7 @@ import { AssetsTable } from "../../components/table/assets-table";
 import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards/";
 import { PoolMetric } from "../../components/cards/types";
+import { IbcTransferModal } from "../../modals/ibc-transfer";
 
 const INIT_POOL_CARD_COUNT = 6;
 
@@ -22,17 +29,17 @@ const Assets: NextPage = observer(() => (
 const AssetsOverview: FunctionComponent = observer(() => {
   const { assetsStore } = useStore();
 
-  const totalAssetsPrice = assetsStore.calcValueOf([
+  const totalAssetsValue = assetsStore.calcValueOf([
     ...assetsStore.availableBalance,
     ...assetsStore.lockedCoins,
     assetsStore.stakedBalance,
     assetsStore.unstakingBalance,
   ]);
-  const availableAssetsPrice = assetsStore.calcValueOf(
+  const availableAssetsValue = assetsStore.calcValueOf(
     assetsStore.availableBalance
   );
-  const bondedAssetsPrice = assetsStore.calcValueOf(assetsStore.lockedCoins);
-  const stakedAssetsPrice = assetsStore.calcValueOf([
+  const bondedAssetsValue = assetsStore.calcValueOf(assetsStore.lockedCoins);
+  const stakedAssetsValue = assetsStore.calcValueOf([
     assetsStore.stakedBalance,
     assetsStore.unstakingBalance,
   ]);
@@ -43,19 +50,19 @@ const AssetsOverview: FunctionComponent = observer(() => {
       primaryOverviewLabels={[
         {
           label: "Total Assets",
-          value: totalAssetsPrice.toString(),
+          value: totalAssetsValue.toString(),
         },
         {
           label: "Available Assets",
-          value: availableAssetsPrice.toString(),
+          value: availableAssetsValue.toString(),
         },
         {
           label: "Bonded Assets",
-          value: bondedAssetsPrice.toString(),
+          value: bondedAssetsValue.toString(),
         },
         {
           label: "Staked OSMO",
-          value: stakedAssetsPrice.toString(),
+          value: stakedAssetsValue.toString(),
         },
       ]}
     />
@@ -85,14 +92,55 @@ const ChainAssets: FunctionComponent = observer(() => {
   const {
     assetsStore: { nativeBalances, ibcBalances },
   } = useStore();
+  const [transferModal, setTransferModal] = useState<ComponentProps<
+    typeof IbcTransferModal
+  > | null>(null);
+
+  const openTransferModal = useCallback(
+    (mode: "deposit" | "withdraw", chainId: string) => {
+      const balance = ibcBalances.find(
+        (bal) => bal.chainInfo.chainId === chainId
+      );
+
+      if (!balance) {
+        setTransferModal(null);
+        return;
+      }
+
+      const {
+        balance: { currency },
+        chainInfo: { chainId: counterpartyChainId },
+        sourceChannelId,
+        destChannelId,
+      } = balance;
+
+      setTransferModal({
+        isOpen: true,
+        onRequestClose: () => setTransferModal(null),
+        currency: currency as IBCCurrency,
+        counterpartyChainId: counterpartyChainId,
+        sourceChannelId,
+        destChannelId,
+        isWithdraw: mode === "withdraw" ? true : false,
+        ics20ContractAddress:
+          "ics20ContractAddress" in balance
+            ? balance.ics20ContractAddress
+            : undefined,
+      });
+    },
+    [ibcBalances, setTransferModal]
+  );
 
   return (
-    <AssetsTable
-      nativeBalances={nativeBalances}
-      ibcBalances={ibcBalances}
-      onDeposit={() => console.log("deposit")}
-      onWithdraw={() => console.log("withdraw")}
-    />
+    <>
+      {transferModal && <IbcTransferModal {...transferModal} />}
+      <AssetsTable
+        nativeBalances={nativeBalances}
+        ibcBalances={ibcBalances}
+        onDeposit={(chainId) => openTransferModal("deposit", chainId)}
+        onWithdraw={(chainId) => openTransferModal("withdraw", chainId)}
+      />
+    </>
   );
 });
 

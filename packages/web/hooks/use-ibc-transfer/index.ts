@@ -1,12 +1,12 @@
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import {
   AccountWithCosmos,
   getKeplrFromWindow,
   WalletStatus,
 } from "@keplr-wallet/stores";
-import { BasicAmountConfig, basicIbcTransfer } from "@osmosis-labs/stores";
+import { ObservableAmountConfig, basicIbcTransfer } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
-import { useBasicAmountConfig } from "../use-basic-amount-config";
+import { useAmountConfig } from "../use-amount-config";
 import { useFakeFeeConfig } from "../use-fake-fee-config";
 import { IbcTransfer } from ".";
 
@@ -20,7 +20,7 @@ export function useIbcTransfer({
 }: IbcTransfer): [
   AccountWithCosmos,
   AccountWithCosmos,
-  BasicAmountConfig,
+  ObservableAmountConfig,
   boolean,
   () => void
 ] {
@@ -30,9 +30,7 @@ export function useIbcTransfer({
   const account = accountStore.getAccount(chainId);
   const counterpartyAccount = accountStore.getAccount(counterpartyChainId);
 
-  console.log(counterpartyAccount);
-
-  const amountConfig = useBasicAmountConfig(
+  const amountConfig = useAmountConfig(
     chainStore,
     chainId,
     isWithdraw ? account.bech32Address : counterpartyAccount.bech32Address,
@@ -110,15 +108,27 @@ export function useIbcTransfer({
         amountConfig
       );
     } else {
+      if (
+        !currency.originCurrency ||
+        !("contractAddress" in currency.originCurrency)
+      ) {
+        throw new Error(
+          "IBC is requested to be used via cosmwam, but the provided currency does not have a contract address"
+        );
+      }
+
       await basicIbcTransfer(
         {
           account: counterpartyAccount,
           chainId: counterpartyChainId,
           channelId: destChannelId,
-          contractTransfer: {
-            contractAddress: ics20ContractAddress,
-            cosmwasmAccount: null, // add accountset to root store, add cosmwasm and osmosis account
-          },
+          contractTransfer: ics20ContractAddress
+            ? {
+                contractAddress: currency.originCurrency["contractAddress"],
+                cosmwasmAccount: (counterpartyAccount as any)["cosmwasm"], // TODO: add cosmwasm to Account type
+                ics20ContractAddress: ics20ContractAddress,
+              }
+            : undefined,
         },
         {
           account: account,
