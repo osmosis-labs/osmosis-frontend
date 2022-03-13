@@ -193,15 +193,3 @@ export const useAllPoolsTable = (
     tableData,
   };
 };
-
-function serializeTyped<O extends Record<string, any>>(obj: O): O {
-  const serialized = Object.keys(obj).reduce<O>((serialized, propertyName) => {
-    return {
-      ...serialized,
-      ...(propertyName.startsWith("_") && {
-        [propertyName.substring(1)]: obj[propertyName],
-      }),
-    };
-  }, {} as O);
-  return serialized;
-}

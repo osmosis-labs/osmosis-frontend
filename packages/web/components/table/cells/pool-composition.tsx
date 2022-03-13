@@ -1,5 +1,4 @@
 import { CoinPretty, IntPretty, RatePretty } from "@keplr-wallet/unit";
-import { ObservablePool } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import Image from "next/image";
 import React, { FunctionComponent } from "react";
