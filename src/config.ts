@@ -990,8 +990,8 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-122',
 		destChannelId: 'channel-8',
 		coinMinimalDenom: 'inj',
-		depositUrlOverride: 'https://hub.injective.network/bridge?destination=osmosis&origin=injective&token=inj',
-		withdrawUrlOverride: 'https://hub.injective.network/bridge?destination=injective&origin=osmosis&token=inj',
+		depositUrlOverride: 'https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj',
+		withdrawUrlOverride: 'https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj',
 	},
 ];
 
