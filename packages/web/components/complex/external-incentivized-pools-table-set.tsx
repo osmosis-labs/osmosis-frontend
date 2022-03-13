@@ -175,7 +175,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
               {`Show pools less than ${new PricePretty(
                 priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
                 TVL_FILTER_THRESHOLD
-              ).toString()} TVL`}
+              ).toString()}`}
             </CheckBox>
           </div>
         </div>

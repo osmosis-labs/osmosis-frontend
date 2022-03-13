@@ -138,8 +138,26 @@ export const useAllPoolsTable = (
   }));
 
   const tableData = allPoolsPages.map((poolWithMetrics) => {
+    const poolInfo = {
+      id: poolWithMetrics.pool.id,
+      assets: poolWithMetrics.pool.poolAssets.map((poolAsset) => ({
+        ...poolAsset,
+        // Remove a lower dash of property name starting with a lower dash
+        amount: Object.entries(poolAsset.amount)
+          .map(([key, value]) => [
+            key.startsWith("_") ? key.substring(1) : key,
+            value,
+          ])
+          .reduce<Record<string, any>>((amount, [key, value]) => {
+            amount[key] = value;
+            return amount;
+          }, {}),
+      })),
+    };
+    const poolInfoRaw = JSON.stringify(poolInfo);
+
     return [
-      { poolId: poolWithMetrics.pool.id, value: poolWithMetrics.pool.id },
+      { poolInfoRaw, value: poolInfoRaw },
       { value: poolWithMetrics.liquidity.toString() },
       {
         value: poolWithMetrics.volume24h.toString(),
@@ -175,3 +193,15 @@ export const useAllPoolsTable = (
     tableData,
   };
 };
+
+function serializeTyped<O extends Record<string, any>>(obj: O): O {
+  const serialized = Object.keys(obj).reduce<O>((serialized, propertyName) => {
+    return {
+      ...serialized,
+      ...(propertyName.startsWith("_") && {
+        [propertyName.substring(1)]: obj[propertyName],
+      }),
+    };
+  }, {} as O);
+  return serialized;
+}
