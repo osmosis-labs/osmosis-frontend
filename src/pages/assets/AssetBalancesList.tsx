@@ -98,9 +98,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 		<React.Fragment>
 			{dialogState.open ? (
 				<TransferDialog
-					dialogStyle={
-						isMobileView ? {} : { minHeight: '533px', maxHeight: '540px', minWidth: '656px', maxWidth: '656px' }
-					}
+					dialogStyle={isMobileView ? {} : { minHeight: '533px', minWidth: '656px', maxWidth: '656px' }}
 					isOpen={dialogState.open}
 					close={close}
 					currency={dialogState.currency}
@@ -398,7 +396,6 @@ const AssetBalanceTableRow = styled.tr`
 	align-items: center;
 	padding-left: 14px;
 	padding-right: 14px;
-
 	@media (min-width: 768px) {
 		padding-left: 30px;
 		padding-right: 30px;

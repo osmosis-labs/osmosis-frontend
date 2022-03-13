@@ -965,7 +965,7 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-8',
 		coinMinimalDenom: 'uctk',
 	},
-  {
+	{
 		counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-169',
 		destChannelId: 'channel-47',
