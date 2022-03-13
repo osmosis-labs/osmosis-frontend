@@ -47,10 +47,6 @@ export const TransferDialog = wrapBaseDialog(
 			const [customWithdrawAddr, isValidCustomWithdrawAddr, setCustomWithdrawAddr] = useCustomBech32Address();
 			const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
 
-			// withdraw advisory tooltip state
-			const [isMouseOverInfoIcon, setIsMouseOverInfoIcon] = useState(false);
-			const [isMouseOverToolTip, setIsMouseOverTooltip] = useState(false);
-
 			const bal = queriesStore
 				.get(chainStore.current.chainId)
 				.queryBalances.getQueryBech32Address(account.bech32Address)
@@ -155,33 +151,6 @@ export const TransferDialog = wrapBaseDialog(
 							<div className="flex place-content-between">
 								<div className="flex gap-2">
 									<p className="text-white-high">To</p>
-									{isEditingWithdrawAddr && (
-										<div className="relative">
-											<img
-												className="h-5 w-5 cursor-pointer"
-												src="/public/assets/Icons/Warning.svg"
-												onMouseEnter={() => setIsMouseOverInfoIcon(true)}
-												onMouseLeave={() => {
-													const timeoutId = window.setTimeout(() => {
-														setIsMouseOverInfoIcon(false);
-														window.clearTimeout(timeoutId);
-													}, 100);
-												}}
-											/>
-											{(isMouseOverInfoIcon || isMouseOverToolTip) && (
-												<div
-													className="absolute z-10 -left-0.5 md:-left-0.5 top-7 bg-wireframes-darkGrey border border-white-faint p-2 rounded-lg"
-													style={{ minWidth: '240px', maxWidth: '297px' }}
-													onMouseEnter={() => setIsMouseOverTooltip(true)}
-													onMouseLeave={() => setIsMouseOverTooltip(false)}>
-													<div className="text-white-high text-sm mb-1 leading-tight">
-														Incorrect withdrawal address could result in loss of funds. Avoid withdrawal to exchange
-														deposit address.
-													</div>
-												</div>
-											)}
-										</div>
-									)}
 								</div>
 								{!isValidCustomWithdrawAddr && <p className="text-error">Invalid address</p>}
 							</div>
@@ -216,6 +185,15 @@ export const TransferDialog = wrapBaseDialog(
 							)}
 						</div>
 					</section>
+					{isEditingWithdrawAddr && (
+						<div className="flex gap-3 w-full border border-secondary-200 rounded-xl p-2 mt-2">
+							<img className="h-5" src="/public/assets/Icons/Warning.svg" />
+							<p className="text-sm">
+								Warning: Incorrect withdrawal address could result in loss of funds. Do not withdraw into a centralized
+								exchange deposit address.
+							</p>
+						</div>
+					)}
 					<h6 className="text-base md:text-lg mt-7">Amount To {isWithdraw ? 'Withdraw' : 'Deposit'}</h6>
 					<div className="mt-3 md:mt-4 w-full p-0 md:p-5 border-0 md:border border-secondary-50 border-opacity-60 rounded-2xl">
 						<p className="text-sm md:text-base mb-2">
