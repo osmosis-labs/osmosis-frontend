@@ -5,7 +5,7 @@ import {
   CoinGeckoPriceStore,
   IBCCurrencyRegsitrar,
   QueriesStore,
-  QueriesWithCosmos,
+  QueriesWithCosmosAndSecretAndCosmwasm,
 } from "@keplr-wallet/stores";
 import { EmbedChainInfos, IBCAssetInfos } from "../config";
 import { IndexedDBKVStore, LocalKVStore } from "@keplr-wallet/common";
@@ -22,7 +22,7 @@ import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 export class RootStore {
   public readonly chainStore: ChainStore;
 
-  public readonly queriesStore: QueriesStore<QueriesWithCosmos>;
+  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasm>;
   public readonly queriesOsmosisStore: QueriesOsmosisStore;
   public readonly queriesExternalStore: QueriesExternalStore;
 
@@ -55,11 +55,11 @@ export class RootStore {
       };
     })();
 
-    this.queriesStore = new QueriesStore<QueriesWithCosmos>(
+    this.queriesStore = new QueriesStore<QueriesWithCosmosAndSecretAndCosmwasm>(
       new IndexedDBKVStore("store_web_queries"),
       this.chainStore,
       getKeplr,
-      QueriesWithCosmos
+      QueriesWithCosmosAndSecretAndCosmwasm
     );
     this.queriesOsmosisStore = new QueriesOsmosisStore(
       (chainId: string) => this.queriesStore.get(chainId),
@@ -118,8 +118,7 @@ export class RootStore {
       this.chainStore,
       this.accountStore,
       this.queriesStore,
-      // TODO: implement queriesStore for cosmwasm
-      undefined,
+      this.queriesStore,
       (
         denomTrace: {
           denom: string;
