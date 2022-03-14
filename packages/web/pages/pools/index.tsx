@@ -91,7 +91,7 @@ const Pools: NextPage = observer(function () {
       <section className="bg-surface">
         <div className="max-w-container p-10">
           <h5>Top Pools</h5>
-          <div className="mt-4 grid grid-cols-3 gap-4">
+          <div className="mt-4 grid grid-cols-3 gap-10">
             {top3Pools.map((pool) => {
               const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
                 pool.id,
