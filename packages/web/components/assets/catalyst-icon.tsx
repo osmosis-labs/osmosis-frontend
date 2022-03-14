@@ -2,7 +2,7 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CustomClasses, LoadingProps } from "../types";
-import generateGradient from "./generate-gradient";
+import { generateGradient } from "../utils";
 
 export const CatalystIcon: FunctionComponent<
   {
