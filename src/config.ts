@@ -2565,6 +2565,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			high: 1,
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
-		explorerUrlToTx: 'https://scan.carbon.network/transaction/{txHash}?net=main',
+		explorerUrlToTx: 'https://scan.carbon.network/transaction/{txHash}?net=main', 
 	},
 ];
