@@ -2560,9 +2560,9 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		gasPriceStep: {
-			low: 1,
-			average: 1,
-			high: 1,
+			low: 0.00000769,
+			average: 0.00000769,
+			high: 0.00000769,
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://scan.carbon.network/transaction/{txHash}?net=main', 
