@@ -2,7 +2,6 @@ import Image from "next/image";
 import React, { PropsWithoutRef, useState, useCallback } from "react";
 import classNames from "classnames";
 import Tippy from "@tippyjs/react";
-import { nanoid } from "nanoid";
 import { replaceAt } from "../utils";
 import { CustomClasses } from "../types";
 import { BaseCell, ColumnDef, RowDef } from "./types";
@@ -38,7 +37,7 @@ export const Table = <TCell extends BaseCell = BaseCell>({
         <tr className="h-20">
           {columnDefs.map((colDef, colIndex) => (
             <th
-              key={nanoid()}
+              key={colIndex}
               className={classNames(
                 {
                   "cursor-pointer select-none": colDef?.sort?.onClickHeader,

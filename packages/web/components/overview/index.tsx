@@ -1,5 +1,4 @@
 import { FunctionComponent, ReactElement } from "react";
-import { nanoid } from "nanoid";
 import { OverviewLabelValue } from "./overview-label-value";
 import { Button } from "../buttons/button";
 import { ButtonProps } from "../buttons/types";
@@ -47,9 +46,9 @@ export const Overview: FunctionComponent<Props> = ({
       >
         <div className="flex items-center">
           {typeof title === "string" ? <h5>{title}</h5> : <>{title}</>}
-          {titleButtons?.slice(0, 2).map(({ label, onClick }) => (
+          {titleButtons?.slice(0, 2).map(({ label, onClick }, index) => (
             <Button
-              key={nanoid()}
+              key={index}
               color="primary"
               size="sm"
               className="ml-6"
