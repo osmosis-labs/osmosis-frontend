@@ -135,6 +135,11 @@ module.exports = {
       "home-bg-pattern": "url('/images/osmosis-home-bg-pattern.svg')",
       "loading-bar":
         "linear-gradient(to left,rgba(251, 251, 251, 0.1),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.3),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.1))",
+      superfluid: "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)",
+      "superfluid-20":
+        "linear-gradient(90deg, rgba(138, 134, 255, 0.2) 0.04%, rgba(225, 60, 189, 0.2) 99.5%)",
+      "selected-validator":
+        "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), linear-gradient(#231d4b, #231d4b)",
     },
     extend: {
       spacing: {

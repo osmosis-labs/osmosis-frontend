@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import Image from "next/image";
 import { FunctionComponent, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { Duration } from "dayjs/plugin/duration";
@@ -53,6 +54,16 @@ const Pool: FunctionComponent = observer(() => {
       }[]
     | undefined;
   let guages: ObservableQueryGuageById[] | undefined;
+  let superfluid:
+    | "not-superfluid-pool"
+    | {
+        validatorName: string;
+        validatorCommission: RatePretty;
+        validatorImgSrc: string;
+        delegation: CoinPretty;
+        apr: RatePretty;
+      }
+    | undefined;
 
   if (pool) {
     totalValueLocked = pool.computeTotalValueLocked(priceStore, fiat);
@@ -121,7 +132,7 @@ const Pool: FunctionComponent = observer(() => {
             ? new CoinPretty(
                 currency,
                 observableGauge.getCoin(currency)
-              ).moveDecimalPointRight(currency.coinDecimals) //
+              ).moveDecimalPointRight(currency.coinDecimals)
             : undefined,
           remainingEpochs: observableGauge.remainingEpoch,
         };
@@ -136,6 +147,21 @@ const Pool: FunctionComponent = observer(() => {
         return queries.queryGauge.get(guageId);
       }
     );
+
+    // TODO: use real data after superfluid store is added
+    superfluid = {
+      validatorName: "Imperator.co",
+      validatorImgSrc:
+        "https://s3.amazonaws.com/keybase_processed_uploads/1855362ac6629cbc7158012eb363e405_360_360.jpg",
+      validatorCommission: new RatePretty(new Dec(0.5)),
+      delegation: new CoinPretty(
+        pool.poolAssets.find(
+          (asset) => asset.amount.denom === "OSMO"
+        )!.amount.currency,
+        new Dec(11000000)
+      ),
+      apr: new RatePretty(new Dec(0.79)),
+    };
   }
 
   // eject to pools page if pool does not exist
@@ -214,7 +240,14 @@ const Pool: FunctionComponent = observer(() => {
         <div className="max-w-container mx-auto p-10">
           <div className="flex place-content-between">
             <div className="max-w-md">
-              <h5>Liquidity Mining</h5>
+              <div className="flex gap-3">
+                <h5>Liquidity Mining</h5>
+                {superfluid && superfluid !== "not-superfluid-pool" && (
+                  <div className="bg-superfluid rounded-full px-4 py-1 text-xs md:text-base">
+                    Superfluid Staking Enabled
+                  </div>
+                )}
+              </div>
               <p className="text-white-mid py-2">
                 Bond liquidity to various minimum unbonding periods to earn OSMO
                 liquidity rewards and swap fees
@@ -272,12 +305,63 @@ const Pool: FunctionComponent = observer(() => {
                         guage.isFetching ||
                         queries.queryIncentivizedPools.isAprFetching
                       }
+                      isSuperfluid={
+                        superfluid &&
+                        superfluid !== "not-superfluid-pool" &&
+                        guages &&
+                        i === guages.length - 1
+                      }
                     />
                   ))}
                 </div>
               </>
             )}
         </div>
+        {superfluid && superfluid !== "not-superfluid-pool" && (
+          <div className="max-w-container mx-auto p-10 flex flex-col gap-4">
+            <h5>Superfluid Staking</h5>
+            <div className="w-full p-0.5 rounded-xl bg-superfluid">
+              <div className="flex flex-col w-full gap-1 bg-card rounded-xl py-5 px-7">
+                <div className="flex place-content-between text-subtitle1">
+                  <span>My Superfluid Validator</span>
+                  <span>My Superfluid Delegation</span>
+                </div>
+                <hr className="my-3 text-white-faint" />
+                <div className="flex place-content-between">
+                  <div className="flex gap-3">
+                    <div className="rounded-full border border-enabledGold w-14 h-14 p-1 flex shrink-0">
+                      <img
+                        className="rounded-full"
+                        alt="validator image"
+                        src={superfluid.validatorImgSrc}
+                      />
+                    </div>
+                    <div className="flex flex-col place-content-evenly">
+                      <span className="text-lg text-white-high">
+                        {superfluid.validatorName}
+                      </span>
+                      <span className="text-sm text-iconDefault">
+                        Commission - {superfluid.validatorCommission.toString()}
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <h6 className="text-white-high">
+                      ~
+                      {superfluid.delegation
+                        .maxDecimals(2)
+                        .trim(true)
+                        .toString()}
+                    </h6>
+                    <span className="float-right text-sm text-iconDefault">
+                      ~{superfluid.apr.toString()} APR
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="max-w-container mx-auto p-10">
           <h6>My Bondings</h6>
           <Table<
@@ -286,11 +370,30 @@ const Pool: FunctionComponent = observer(() => {
               amount: CoinPretty;
               apr?: RatePretty;
               lockIds: string[];
+              isSuperfluidDuration: boolean;
             }
           >
             className="w-full my-5"
             columnDefs={[
-              { display: "Unbonding Duration" },
+              {
+                display: "Unbonding Duration",
+                displayCell:
+                  superfluid && superfluid !== "not-superfluid-pool"
+                    ? ({ value, isSuperfluidDuration }) => (
+                        <div className="flex gap-3">
+                          <span>{value ?? ""}</span>
+                          {isSuperfluidDuration && (
+                            <Image
+                              alt="superfluid"
+                              src="/icons/superfluid-osmo.svg"
+                              height={20}
+                              width={20}
+                            />
+                          )}
+                        </div>
+                      )
+                    : undefined,
+              },
               { display: "Current APR" },
               { display: "Amount" },
               {
@@ -313,8 +416,12 @@ const Pool: FunctionComponent = observer(() => {
               },
             ]}
             data={
-              userLockedAssets?.map((lockedAsset) => [
-                { value: lockedAsset.duration.humanize() }, // Unbonding Duration
+              userLockedAssets?.map((lockedAsset, index) => [
+                {
+                  value: lockedAsset.duration.humanize(),
+                  isSuperfluidDuration:
+                    index === (userLockedAssets?.length ?? 0) - 1,
+                }, // Unbonding Duration
                 {
                   value:
                     lockedAsset.apr?.maxDecimals(2).trim(true).toString() ??
