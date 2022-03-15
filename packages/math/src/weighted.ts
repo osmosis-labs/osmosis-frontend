@@ -15,7 +15,7 @@ export class WeightedPoolMath {
   protected static twoInt = new Int(2);
   protected static powPrecision = new Dec("0.00000001");
 
-  public static calculateSlippageTokenIn(
+  public static calcSlippageTokenIn(
     spotPriceBefore: Dec,
     tokenIn: Int,
     slippage: Dec
@@ -24,7 +24,7 @@ export class WeightedPoolMath {
     return new Dec(tokenIn).quo(effectivePrice).truncate();
   }
 
-  public static calculateSlippageTokenOut(
+  public static calcSlippageTokenOut(
     spotPriceBefore: Dec,
     tokenOut: Int,
     slippage: Dec
