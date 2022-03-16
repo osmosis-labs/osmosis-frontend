@@ -25,6 +25,6 @@
   },
   "devDependencies": {},
   "dependencies": {
-    "@keplr-wallet/unit": "^0.9.11-rc.2"
+    "@keplr-wallet/unit": "^0.9.12"
   }
 }

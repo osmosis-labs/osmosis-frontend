@@ -54,6 +54,7 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
     chainInfo.addUnknownCurrencies(...denomsInPools);
   }
 
+  /** Returns `undefined` if the pool does not exist or the data has not loaded. */
   readonly getPool: (id: string) => ObservablePool | undefined = computedFn(
     (id: string) => {
       if (!this.response) {
@@ -66,6 +67,17 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
       }
 
       return new ObservablePool(this.chainId, this.chainGetter, raw);
+    }
+  );
+
+  /** Returns `undefined` if pool data has not loaded, and `true`/`false` for if the pool exists. */
+  readonly poolExists: (id: string) => boolean | undefined = computedFn(
+    (id: string) => {
+      if (!this.response) {
+        return undefined;
+      }
+
+      return this.response.data.pools.some((raw) => raw.id === id);
     }
   );
 
