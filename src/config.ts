@@ -1588,7 +1588,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				contractAddress: 'juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z',
 				coinDenom: 'HOPE',
 				coinMinimalDenom: 'cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z:HOPE',
-				coinDecimals: 3,
+				coinDecimals: 6,
 				//coinGeckoId: 'pool:hope',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/hope.png',
 			},
