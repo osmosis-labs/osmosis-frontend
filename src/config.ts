@@ -2526,7 +2526,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'CRBRUS',
 			coinMinimalDenom: 'ucrbrus',
 			coinDecimals: 6,
-			coinImageUrl: window.location.origin + '/public/assets/tokens/ceberus.png',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
 		},
 		bip44: {
 			coinType: 118,
@@ -2537,7 +2537,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'CRBRUS',
 				coinMinimalDenom: 'ucrbrus',
 				coinDecimals: 6,
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ceberus.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
 			},
 		],
 		feeCurrencies: [
@@ -2545,7 +2545,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'CRBRUS',
 				coinMinimalDenom: 'ucrbrus',
 				coinDecimals: 6,
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ceberus.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
 			},
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
