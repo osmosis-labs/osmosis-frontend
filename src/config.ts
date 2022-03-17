@@ -2533,7 +2533,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'ucrbrus',
 			coinDecimals: 6,
 			coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
-    }
+    },
     bip44: {
 			coinType: 118,
 		},
