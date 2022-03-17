@@ -2549,6 +2549,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
-		explorerUrlToTx: 'https://skynetexplorers.com/Cerberus/tx/${txHash}',
+		explorerUrlToTx: 'https://skynetexplorers.com/Cerberus/tx/{txHash}',
 	},
 ];
