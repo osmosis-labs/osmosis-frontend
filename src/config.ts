@@ -2554,7 +2554,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
 			},
 		],
-		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://skynetexplorers.com/Cerberus/tx/{txHash}',
   },
   {
