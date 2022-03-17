@@ -49,26 +49,17 @@ const Background: FunctionComponent = () => {
 			pointerEvents="none"
 			viewBox="0 0 1300 900"
 			height="900"
-			preserveAspectRatio={ratio > 1.444 ? 'xMinYMid meet' : 'xMidYMid slice'}>
+			preserveAspectRatio={ratio > 1.444 ? 'xMinYMid meet' : 'xMinYMid slice'}>
 			<g>
 				{windowSize.width >= 1350 ? (
 					<React.Fragment>
 						<ProgressiveSVGImage
-							lowResXlinkHref="/public/assets/backgrounds/osmosis-home-bg-low.png"
-							xlinkHref="/public/assets/backgrounds/osmosis-home-bg.png"
-							x="56"
-							y="97"
-							width="578.7462"
-							height="725.6817"
-						/>
-						<rect x="-3000" y="778" width="8660" height="244" fill="#120644" />
-						<ProgressiveSVGImage
-							lowResXlinkHref="/public/assets/backgrounds/osmosis-home-fg-low.png"
-							xlinkHref="/public/assets/backgrounds/osmosis-home-fg.png"
-							x="61"
-							y="602"
-							width="448.8865"
-							height="285.1699"
+							lowResXlinkHref="/public/assets/backgrounds/osmosis-home-st-patricks-day-low.png"
+							xlinkHref="/public/assets/backgrounds/osmosis-home-st-patricks-day.png"
+							x="0"
+							y="0"
+							width="686.538"
+							height="900"
 						/>
 					</React.Fragment>
 				) : null}
@@ -140,8 +131,8 @@ const TradePosition = styled.div`
 	}
 
 	@media (min-width: 1350px) {
-		--tradeMinLeft: calc(920 * (100vh / 1080));
-		--tradePositionLeft: calc((100vw - 206px) * 0.8 - 520px);
+		--tradeMinLeft: calc(880 * (100vh / 1080));
+		--tradePositionLeft: calc((100vw - 206px) * 0.77 - 520px);
 		left: min(var(--tradeMinLeft), var(--tradePositionLeft));
 		transform: unset;
 	}
