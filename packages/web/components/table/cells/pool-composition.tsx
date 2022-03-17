@@ -1,18 +1,24 @@
 import classNames from "classnames";
 import Image from "next/image";
 import React, { FunctionComponent } from "react";
+import { BaseCell } from "..";
 import { PoolAssetsIcon } from "../../assets";
-import { PoolCompositionCell as Cell } from "./types";
+
+export interface PoolCompositionCell extends BaseCell {
+  poolId: string;
+  poolAssets: {
+    coinImageUrl: string | undefined;
+    coinDenom: string;
+  }[];
+}
 
 /** Displays pool composition as a cell in a table.
  *
  *  Accepts the base hover flag.
  */
-export const PoolCompositionCell: FunctionComponent<Partial<Cell>> = ({
-  rowHovered,
-  poolId,
-  poolAssets,
-}) => {
+export const PoolCompositionCell: FunctionComponent<
+  Partial<PoolCompositionCell>
+> = ({ rowHovered, poolId, poolAssets }) => {
   return (
     <div className="flex items-center">
       <PoolAssetsIcon assets={poolAssets} size="sm" />

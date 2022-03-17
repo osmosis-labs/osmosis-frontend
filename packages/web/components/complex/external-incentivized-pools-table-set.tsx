@@ -1,14 +1,19 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservablePool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState } from "react";
+import { useRouter } from "next/router";
+import { FunctionComponent, useEffect, useState } from "react";
 import { ExtraGaugeInPool } from "../../config";
-import { useExternalIncentivizedPoolsTable } from "../../hooks/use-external-incentivized-pools-table";
+import {
+  useFilteredData,
+  usePaginatedData,
+  useSortedData,
+} from "../../hooks/data";
 import { useStore } from "../../stores";
 import { CheckBox, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
-import { Table } from "../table";
-import { MetricLoaderCell, PoolCompositionCell } from "../table/cells/types";
+import { RowDef, Table } from "../table";
+import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -21,6 +26,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       queriesOsmosisStore,
       accountStore,
     } = useStore();
+    const router = useRouter();
 
     const chainInfo = chainStore.getChain("osmosis");
     const queryExternal = queriesExternalStore.get();
@@ -115,20 +121,142 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
           poolWithMetrics.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
         );
 
-    const {
-      query,
-      setQuery,
+    const [query, setQuery, filteredPools] = useFilteredData(tvlFilteredPools, [
+      "pool.id",
+      "pool.poolAssets.amount.currency.coinDenom",
+    ]);
+
+    const [
       sortKeyPath,
       setSortKeyPath,
+      sortDirection,
+      setSortDirection,
       toggleSortDirection,
-      page,
-      setPage,
-      minPage,
-      numPages,
-      tableCols,
-      tableRows,
-      tableData,
-    } = useExternalIncentivizedPoolsTable(tvlFilteredPools);
+      sortedAllPoolsWithMetrics,
+    ] = useSortedData(filteredPools);
+    const [page, setPage, minPage, numPages, allData] = usePaginatedData(
+      sortedAllPoolsWithMetrics,
+      10
+    );
+    const tableCols = [
+      {
+        id: "pool.id",
+        display: "Pool ID/Tokens",
+        displayClassName: "!pl-[5.25rem]",
+        sort:
+          sortKeyPath === "pool.id"
+            ? {
+                currentDirection: sortDirection,
+                onClickHeader: toggleSortDirection,
+              }
+            : {
+                onClickHeader: () => {
+                  setSortKeyPath("pool.id");
+                  setSortDirection("ascending");
+                },
+              },
+        displayCell: PoolCompositionCell,
+      },
+      {
+        id: "liquidity",
+        display: "Liquidity",
+        infoTooltip: "This is liquidity",
+        sort:
+          sortKeyPath === "liquidity"
+            ? {
+                currentDirection: sortDirection,
+                onClickHeader: toggleSortDirection,
+              }
+            : {
+                onClickHeader: () => {
+                  setSortKeyPath("liquidity");
+                  setSortDirection("ascending");
+                },
+              },
+      },
+      {
+        id: "apr",
+        display: "APR",
+        sort:
+          sortKeyPath === "apr"
+            ? {
+                currentDirection: sortDirection,
+                onClickHeader: toggleSortDirection,
+              }
+            : {
+                onClickHeader: () => {
+                  setSortKeyPath("apr");
+                  setSortDirection("ascending");
+                },
+              },
+        displayCell: MetricLoaderCell,
+      },
+      {
+        id: "epochsRemaining",
+        display: "Epochs Remaining",
+        sort:
+          sortKeyPath === "epochsRemaining"
+            ? {
+                currentDirection: sortDirection,
+                onClickHeader: toggleSortDirection,
+              }
+            : {
+                onClickHeader: () => {
+                  setSortKeyPath("epochsRemaining");
+                  setSortDirection("ascending");
+                },
+              },
+      },
+      {
+        id: "myLiquidity",
+        display: "My Liquidity",
+        sort:
+          sortKeyPath === "myLiquidity"
+            ? {
+                currentDirection: sortDirection,
+                onClickHeader: toggleSortDirection,
+              }
+            : {
+                onClickHeader: () => {
+                  setSortKeyPath("myLiquidity");
+                  setSortDirection("ascending");
+                },
+              },
+      },
+    ];
+    // TODO: Remove when pull request for asset page get merged.
+    useEffect(() => {
+      setSortKeyPath("liquidity");
+      setSortDirection("descending");
+    }, []);
+
+    const baseRow: RowDef = {
+      makeHoverClass: () => "text-secondary-200",
+    };
+
+    const tableRows: RowDef[] = allData.map((poolWithFeeMetrics) => ({
+      ...baseRow,
+      onClick: () => router.push(`/pool/${poolWithFeeMetrics.pool.id}`),
+    }));
+
+    const tableData = allData.map((poolWithMetrics) => {
+      const poolId = poolWithMetrics.pool.id;
+      const poolAssets = poolWithMetrics.pool.poolAssets.map((poolAsset) => ({
+        coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+        coinDenom: poolAsset.amount.currency.coinDenom,
+      }));
+
+      return [
+        { poolId, poolAssets },
+        { value: poolWithMetrics.liquidity.toString() },
+        {
+          value: poolWithMetrics.apr?.toString(),
+          isLoading: queryOsmosis.queryIncentivizedPools.isAprFetching,
+        },
+        { value: poolWithMetrics.epochsRemaining?.toString() },
+        { value: poolWithMetrics.myLiquidity?.toString() },
+      ];
+    });
 
     return (
       <>

@@ -1,8 +1,12 @@
 import React, { FunctionComponent } from "react";
+import { BaseCell } from "..";
 import { MetricLoader } from "../../loaders";
-import { MetricLoaderCell as Cell } from "./types";
 
-export const MetricLoaderCell: FunctionComponent<Partial<Cell>> = ({
+export interface MetricLoaderCell extends BaseCell {
+  isLoading: boolean;
+}
+
+export const MetricLoaderCell: FunctionComponent<Partial<MetricLoaderCell>> = ({
   value,
   isLoading,
 }) => <MetricLoader isLoading={isLoading}>{value}</MetricLoader>;
