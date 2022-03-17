@@ -6,7 +6,7 @@ import { CustomClasses, SortDirection } from "../types";
 import { replaceAt } from "../utils";
 
 export interface BaseCell {
-  value: string;
+  value?: string;
   rowHovered?: boolean;
 }
 

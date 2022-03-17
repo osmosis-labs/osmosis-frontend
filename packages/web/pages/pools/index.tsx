@@ -66,7 +66,7 @@ const Pools: NextPage = observer(function () {
                     poolMetrics={[
                       {
                         label: "APR",
-                        value: apr.toString(),
+                        value: apr.maxDecimals(2).toString(),
                         isLoading:
                           queryOsmosis.queryIncentivizedPools.isAprFetching,
                       },
@@ -106,7 +106,7 @@ const Pools: NextPage = observer(function () {
                   poolMetrics={[
                     {
                       label: "APR",
-                      value: apr.toString(),
+                      value: apr.maxDecimals(2).toString(),
                       isLoading:
                         queryOsmosis.queryIncentivizedPools.isAprFetching,
                     },

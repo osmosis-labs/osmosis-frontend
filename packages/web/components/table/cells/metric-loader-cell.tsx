@@ -1,13 +1,8 @@
-import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { BaseCell } from "..";
 import { MetricLoader } from "../../loaders";
+import { MetricLoaderCell as Cell } from "./types";
 
-export interface MetricLoaderCell extends BaseCell {
-  isLoading: boolean;
-}
-
-export const MetricLoaderCell: FunctionComponent<Partial<MetricLoaderCell>> =
-  observer(({ value, isLoading }) => (
-    <MetricLoader isLoading={isLoading}>{value}</MetricLoader>
-  ));
+export const MetricLoaderCell: FunctionComponent<Partial<Cell>> = ({
+  value,
+  isLoading,
+}) => <MetricLoader isLoading={isLoading}>{value}</MetricLoader>;

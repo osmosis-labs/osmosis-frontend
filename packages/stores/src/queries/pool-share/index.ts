@@ -6,6 +6,7 @@ import {
   Int,
   IntPretty,
   PricePretty,
+  RatePretty,
 } from "@keplr-wallet/unit";
 import { AppCurrency, Currency, FiatCurrency } from "@keplr-wallet/types";
 import { ObservableQueryPools } from "../pools";
@@ -165,28 +166,19 @@ export class ObservableQueryGammPoolShare {
   );
 
   readonly getAllGammShareRatio = computedFn(
-    (bech32Address: string, poolId: string): IntPretty => {
+    (bech32Address: string, poolId: string): RatePretty => {
       const pool = this.queryPools.getPool(poolId);
       if (!pool) {
-        return new IntPretty(new Int(0)).ready(false);
+        return new RatePretty(new Int(0)).ready(false);
       }
 
       const share = this.getAllGammShare(bech32Address, poolId);
 
       const totalShare = pool.totalShare;
 
-      totalShare.toDec().isZero();
-
-      // To make it a percentage, multiply it by 10^2 at the end.
       return totalShare.toDec().isZero()
-        ? new IntPretty(totalShare)
-        : new IntPretty(
-            share
-              .quo(totalShare)
-              .mul(DecUtils.getTenExponentNInPrecisionRange(2))
-          )
-            .maxDecimals(2)
-            .trim(true);
+        ? new RatePretty(totalShare)
+        : new RatePretty(share.quo(totalShare));
     }
   );
 }

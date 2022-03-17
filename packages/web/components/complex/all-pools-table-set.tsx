@@ -7,7 +7,7 @@ import { useStore } from "../../stores";
 import { CheckBox, MenuToggle, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { Table } from "../table";
-import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
+import { MetricLoaderCell, PoolCompositionCell } from "../table/cells/types";
 
 const poolsMenuOptions = [
   { id: "incentivized-pools", display: "Incentivized Pools" },
@@ -49,10 +49,9 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
           pool.id
         )
       ),
-    apr: queryOsmosis.queryIncentivizedPools.computeMostAPY(
-      pool.id,
-      priceStore
-    ),
+    apr: queryOsmosis.queryIncentivizedPools
+      .computeMostAPY(pool.id, priceStore)
+      .maxDecimals(2),
   }));
   const incentivizedPoolsWithMetrics = allPoolsWithMetrics.reduce(
     (

@@ -135,26 +135,14 @@ export const useExternalIncentivizedPoolsTable = (
   }));
 
   const tableData = allPoolsPages.map((poolWithMetrics) => {
-    const poolInfo = {
-      id: poolWithMetrics.pool.id,
-      assets: poolWithMetrics.pool.poolAssets.map((poolAsset) => ({
-        ...poolAsset,
-        // Remove a lower dash of property name starting with a lower dash
-        amount: Object.entries(poolAsset.amount)
-          .map(([key, value]) => [
-            key.startsWith("_") ? key.substring(1) : key,
-            value,
-          ])
-          .reduce<Record<string, any>>((amount, [key, value]) => {
-            amount[key] = value;
-            return amount;
-          }, {}),
-      })),
-    };
-    const poolInfoRaw = JSON.stringify(poolInfo);
+    const poolId = poolWithMetrics.pool.id;
+    const poolAssets = poolWithMetrics.pool.poolAssets.map((poolAsset) => ({
+      coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+      coinDenom: poolAsset.amount.currency.coinDenom,
+    }));
 
     return [
-      { poolInfoRaw, value: poolInfoRaw },
+      { poolId, poolAssets },
       { value: poolWithMetrics.liquidity.toString() },
       {
         value: poolWithMetrics.apr?.toString(),

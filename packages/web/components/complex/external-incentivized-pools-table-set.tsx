@@ -8,7 +8,7 @@ import { useStore } from "../../stores";
 import { CheckBox, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { Table } from "../table";
-import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
+import { MetricLoaderCell, PoolCompositionCell } from "../table/cells/types";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -102,10 +102,9 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
                 pool.id
               )
             ),
-          apr: queryOsmosis.queryIncentivizedPools.computeMostAPY(
-            pool.id,
-            priceStore
-          ),
+          apr: queryOsmosis.queryIncentivizedPools
+            .computeMostAPY(pool.id, priceStore)
+            .maxDecimals(2),
         };
       }
     );

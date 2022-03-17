@@ -3,8 +3,7 @@ import { HasMapStore, ObservableQuery } from "@keplr-wallet/stores";
 import { DeepReadonly } from "utility-types";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import Axios from "axios";
-
-const IMPERATOR_API_DOMAIN = "https://api-osmosis.imperator.co";
+import { IMPERATOR_API_DOMAIN } from "./index";
 
 export class QueriesExternalStore extends HasMapStore<QueriesExternal> {
   constructor(protected readonly kvStore: KVStore) {
