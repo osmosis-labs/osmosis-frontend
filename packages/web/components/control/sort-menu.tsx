@@ -8,6 +8,10 @@ import { useBooleanWithWindowEvent } from "../../hooks";
 
 interface Props extends MenuSelectProps, Disableable, CustomClasses {
   onToggleSortDirection?: () => void;
+  /** Default: `"left"` */
+  openDropdownHDirection?: "left" | "right";
+  /** Default: `"down"` */
+  openDropdownVDirection?: "down" | "up";
 }
 
 export const SortMenu: FunctionComponent<Props> = ({
@@ -15,6 +19,8 @@ export const SortMenu: FunctionComponent<Props> = ({
   selectedOptionId,
   onSelect,
   disabled,
+  openDropdownHDirection,
+  openDropdownVDirection,
   className,
   onToggleSortDirection,
 }) => {
@@ -25,10 +31,10 @@ export const SortMenu: FunctionComponent<Props> = ({
   );
 
   return (
-    <div>
+    <div className="relative">
       <div
         className={classNames(
-          "relative flex w-fit cursor-pointer",
+          "flex w-fit cursor-pointer",
           {
             "opacity-50 cursor-default": disabled,
           },
@@ -74,6 +80,8 @@ export const SortMenu: FunctionComponent<Props> = ({
         selectedOptionId={selectedOptionId}
         onSelect={onSelect}
         isOpen={dropdownOpen}
+        openDropdownHDirection={openDropdownHDirection}
+        openDropdownVDirection={openDropdownVDirection}
       />
     </div>
   );

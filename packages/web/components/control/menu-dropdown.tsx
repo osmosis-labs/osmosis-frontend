@@ -5,6 +5,10 @@ import { CustomClasses } from "../types";
 
 interface Props extends MenuSelectProps, CustomClasses {
   isOpen: boolean;
+  /** Default: `"left"` */
+  openDropdownHDirection?: "left" | "right";
+  /** Default: `"down"` */
+  openDropdownVDirection?: "down" | "up";
 }
 
 /**
@@ -15,13 +19,18 @@ export const MenuDropdown: FunctionComponent<Props> = ({
   selectedOptionId,
   onSelect,
   isOpen,
+  openDropdownHDirection = "left",
+  openDropdownVDirection = "down",
   className,
 }) => (
   <div
     className={classNames(
-      "absolute flex flex-col w-fit bg-card rounded-lg border border-white-faint select-none",
+      "absolute flex flex-col w-36 bg-card rounded-lg border border-white-faint select-none",
       {
         hidden: !isOpen,
+        "right-0": openDropdownHDirection === "left",
+        "left-0": openDropdownHDirection === "right",
+        "bottom-10": openDropdownVDirection === "up",
       },
       className
     )}
