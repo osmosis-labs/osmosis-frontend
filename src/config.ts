@@ -965,11 +965,17 @@ export const IBCAssetInfos: {
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 	{
-		counterpartyChainId: 'cerberus-chain-1',
+		counterpartyChainId: 'carbon-1',
+		sourceChannelId: 'channel-188',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'swth',
+	},
+  {
+    counterpartyChainId: 'cerberus-chain-1',
 		sourceChannelId: 'channel-212',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'ucrbrus',
-	},
+  },  
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -2527,22 +2533,22 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'ucrbrus',
 			coinDecimals: 6,
 			coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
-		},
-		bip44: {
+    }
+    bip44: {
 			coinType: 118,
 		},
-		bech32Config: Bech32Address.defaultBech32Config('cerberus'),
+    bech32Config: Bech32Address.defaultBech32Config('cerberus'),
 		currencies: [
 			{
 				coinDenom: 'CRBRUS',
 				coinMinimalDenom: 'ucrbrus',
 				coinDecimals: 6,
 				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
-			},
+      },
 		],
 		feeCurrencies: [
 			{
-				coinDenom: 'CRBRUS',
+        coinDenom: 'CRBRUS',
 				coinMinimalDenom: 'ucrbrus',
 				coinDecimals: 6,
 				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
@@ -2550,5 +2556,47 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://skynetexplorers.com/Cerberus/tx/{txHash}',
+  },
+  {
+		rpc: 'https://tm-api.carbon.network',
+		rest: 'https://api.carbon.network',
+		chainId: 'carbon-1',
+		chainName: 'Carbon',
+		stakeCurrency: {
+			coinDenom: 'SWTH',
+			coinMinimalDenom: 'swth',
+			coinDecimals: 8,
+			coinGeckoId: 'switcheo',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/swth.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('swth'),
+		currencies: [
+			{
+				coinDenom: 'SWTH',
+				coinMinimalDenom: 'swth',
+				coinDecimals: 8,
+				coinGeckoId: 'switcheo',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/swth.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'SWTH',
+				coinMinimalDenom: 'swth',
+				coinDecimals: 8,
+				coinGeckoId: 'switcheo',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/swth.png',
+			},
+		],
+		gasPriceStep: {
+			low: 769.23077,
+			average: 769.23077,
+			high: 769.23077,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://scan.carbon.network/transaction/{txHash}?net=main', 
 	},
 ];
