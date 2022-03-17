@@ -71,7 +71,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                           <embed
                             className="h-full w-full"
                             src={`/icons/hexagon-border${
-                              selected ? "-selected" : "-deselected"
+                              selected ? "-selected" : ""
                             }.svg`}
                             type="image/svg+xml"
                           />
