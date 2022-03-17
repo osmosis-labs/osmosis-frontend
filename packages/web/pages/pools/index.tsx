@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { PoolCard } from "../../components/cards";
@@ -7,6 +8,8 @@ import { LeftTime } from "../../components/left-time";
 import { Overview } from "../../components/overview";
 import { useStore } from "../../stores";
 
+const REWARD_EPOCH_IDENTIFIER = "day";
+
 const Pools: NextPage = observer(function () {
   const { chainStore, accountStore, priceStore, queriesOsmosisStore } =
     useStore();
@@ -14,6 +17,19 @@ const Pools: NextPage = observer(function () {
   const chainInfo = chainStore.getChain("osmosis");
   const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
   const account = accountStore.getAccount(chainInfo.chainId);
+
+  const queryEpoch = queryOsmosis.queryEpochs.getEpoch(REWARD_EPOCH_IDENTIFIER);
+  const now = new Date();
+  const epochRemainingTime = dayjs.duration(
+    dayjs(queryEpoch.endTime).diff(dayjs(now), "second"),
+    "second"
+  );
+  const epochRemainingTimeString =
+    epochRemainingTime.asSeconds() <= 0
+      ? dayjs.duration(0, "seconds").format("HH-mm")
+      : epochRemainingTime.format("HH-mm");
+  const [epochRemainingHour, epochRemainingMinute] =
+    epochRemainingTimeString.split("-");
 
   const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
     account.bech32Address
@@ -34,7 +50,12 @@ const Pools: NextPage = observer(function () {
           { label: "OSMO Price", value: "$10" },
           {
             label: "Reward distribution in",
-            value: <LeftTime hour="08" minute="20" />,
+            value: (
+              <LeftTime
+                hour={epochRemainingHour}
+                minute={epochRemainingMinute}
+              />
+            ),
           },
         ]}
       />
