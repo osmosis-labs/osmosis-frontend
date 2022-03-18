@@ -46,7 +46,7 @@ export const Overview: FunctionComponent<Props> = ({
       <div className="p-10">
         <div className="flex items-center">
           {typeof title === "string" ? (
-            <h5 className="text-white-full">title</h5>
+            <h5 className="text-white-full">{title}</h5>
           ) : (
             <>{title}</>
           )}
