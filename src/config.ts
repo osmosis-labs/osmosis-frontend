@@ -2532,25 +2532,28 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'CRBRUS',
 			coinMinimalDenom: 'ucrbrus',
 			coinDecimals: 6,
+			coinGeckoId: 'cerberus',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
-    },
-    bip44: {
+    		},
+    		bip44: {
 			coinType: 118,
 		},
-    bech32Config: Bech32Address.defaultBech32Config('cerberus'),
+    		bech32Config: Bech32Address.defaultBech32Config('cerberus'),
 		currencies: [
 			{
 				coinDenom: 'CRBRUS',
 				coinMinimalDenom: 'ucrbrus',
 				coinDecimals: 6,
+				coinGeckoId: 'cerberus',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
-      },
+      			},
 		],
 		feeCurrencies: [
 			{
-        coinDenom: 'CRBRUS',
+        			coinDenom: 'CRBRUS',
 				coinMinimalDenom: 'ucrbrus',
 				coinDecimals: 6,
+				coinGeckoId: 'cerberus',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
 			},
 		],
