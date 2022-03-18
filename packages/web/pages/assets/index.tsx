@@ -121,7 +121,7 @@ const ChainAssets: FunctionComponent = observer(() => {
         counterpartyChainId: counterpartyChainId,
         sourceChannelId,
         destChannelId,
-        isWithdraw: mode === "withdraw" ? true : false,
+        isWithdraw: mode === "withdraw",
         ics20ContractAddress:
           "ics20ContractAddress" in balance
             ? balance.ics20ContractAddress

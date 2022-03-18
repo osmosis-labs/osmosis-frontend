@@ -8,17 +8,17 @@ import {
 import { SearchBox } from "../input";
 import { CheckBox, SortMenu } from "../control";
 import { Table } from ".";
-import { RowDef } from "./types";
 import { SortDirection } from "../types";
 import {
   AssetNameCell,
   BalanceCell,
   TransferButtonCell,
-  AssetCell as Cell,
+  AssetCell as TableCell,
 } from "./cells";
+import { useStore } from "../../stores";
 import { useSortedData, useFilteredData } from "../../hooks/data";
-import { DataSorter } from "../../hooks/data/data-sorter";
 import { ShowMoreButton } from "../buttons/show-more";
+import { DataSorter } from "../../hooks/data/data-sorter";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -33,13 +33,18 @@ export const AssetsTable: FunctionComponent<Props> = ({
   onDeposit,
   onWithdraw,
 }) => {
-  const cells: Cell[] = useMemo(
+  const { chainStore } = useStore();
+  // Assemble cells with all data needed for any place in the table.
+  const cells: TableCell[] = useMemo(
     () => [
+      // hardcode native Osmosis assets (OSMO, ION) at the top initially
       ...nativeBalances.map(({ balance, fiatValue }) => {
         const value = fiatValue?.maxDecimals(2);
 
         return {
           value: balance.toString(),
+          chainId: chainStore.osmosis.chainId,
+          chainName: chainStore.osmosis.chainName,
           coinDenom: balance.denom,
           coinImageUrl: balance.currency.coinImageUrl,
           amount: balance.hideDenom(true).trim(true).maxDecimals(6).toString(),
@@ -50,6 +55,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
           isCW20: false,
         };
       }),
+      // add ibc assets, initially sorted by fiat value at top
       ...new DataSorter(
         ibcBalances.map((ibcBalance) => {
           const {
@@ -58,11 +64,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             fiatValue,
           } = ibcBalance;
           const value = fiatValue?.maxDecimals(2);
-          const isCW20 = "ics20ContractAddress" in ibcBalance ?? false;
-          const v =
-            value && value.toDec().gt(new Dec(0))
-              ? value?.toDec().toString()
-              : "0";
+          const isCW20 = "ics20ContractAddress" in ibcBalance;
 
           return {
             value: balance.toString(),
@@ -79,7 +81,10 @@ export const AssetsTable: FunctionComponent<Props> = ({
               value && value.toDec().gt(new Dec(0))
                 ? value.toString()
                 : undefined,
-            fiatValueRaw: v,
+            fiatValueRaw:
+              value && value.toDec().gt(new Dec(0))
+                ? value?.toDec().toString()
+                : "0",
             isCW20,
             queryTags: [...(isCW20 ? ["CW20"] : [])],
             onWithdraw,
@@ -88,11 +93,19 @@ export const AssetsTable: FunctionComponent<Props> = ({
         })
       )
         .process("fiatValueRaw")
-        .reverse(), // sort IBC assets by value on initial load
+        .reverse(),
     ],
-    [nativeBalances, ibcBalances, onWithdraw, onDeposit]
+    [
+      nativeBalances,
+      chainStore.osmosis.chainId,
+      chainStore.osmosis.chainName,
+      ibcBalances,
+      onWithdraw,
+      onDeposit,
+    ]
   );
 
+  // Sort data based on user's input either with the table column headers or the sort menu.
   const [
     sortKey,
     setSortKey,
@@ -102,9 +115,14 @@ export const AssetsTable: FunctionComponent<Props> = ({
     sortedCells,
   ] = useSortedData(cells);
 
+  // Table column def to determine how the first 2 column headers handle user click.
   const sortColumnWithKeys = useCallback(
     (
+      /** Possible cell keys/members this column can sort on. First key is default
+       *  sort key if this column header is selected.
+       */
       sortKeys: string[],
+      /** Default sort direction when this column is first selected. */
       onClickSortDirection: SortDirection = "descending"
     ) => {
       const isSorting = sortKeys.some((key) => key === sortKey);
@@ -112,6 +130,11 @@ export const AssetsTable: FunctionComponent<Props> = ({
 
       return {
         currentDirection: isSorting ? sortDirection : undefined,
+        // Columns can sort by more than one key. If the column is already sorting by
+        // one of it's sort keys (one that the user may have selected from the sort menu),
+        // then it will toggle sort direction on that key.
+        // If it wasn't sorting (aka first time it is clicked), then it will sort on the first
+        // key by default.
         onClickHeader: isSorting
           ? toggleSortDirection
           : () => {
@@ -125,9 +148,11 @@ export const AssetsTable: FunctionComponent<Props> = ({
     [sortKey, sortDirection, toggleSortDirection, setSortKey, setSortDirection]
   );
 
+  // User toggles for showing 10+ pools and assets with > 0 fiat value
   const [showAllPools, setShowAllPools] = useState(false);
   const [hideZeroBalances, setHideZeroBalances] = useState(false);
 
+  // Filter data based on user's input in the search box.
   const [query, setQuery, filteredSortedCells] = useFilteredData(
     hideZeroBalances
       ? sortedCells.filter((cell) => cell.amount !== "0")
@@ -174,7 +199,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             />
           </div>
         </div>
-        <Table<Cell>
+        <Table<TableCell>
           className="w-full my-5"
           columnDefs={[
             {
