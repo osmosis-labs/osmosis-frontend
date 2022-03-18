@@ -45,9 +45,11 @@ export const Overview: FunctionComponent<Props> = ({
     <div className="max-w-container mx-auto">
       <div className="p-10">
         <div className="flex items-center">
-          <h5 className="text-white-full">
-            {typeof title === "string" ? title : <>{title}</>}
-          </h5>
+          {typeof title === "string" ? (
+            <h5 className="text-white-full">title</h5>
+          ) : (
+            <>{title}</>
+          )}
           {titleButtons?.slice(0, 2).map(({ label, onClick }, index) => (
             <Button
               className="ml-6"
