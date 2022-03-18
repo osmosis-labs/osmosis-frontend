@@ -68,6 +68,7 @@ export const LockupAbledPoolIds: {
 	'642': true,
 	'643': true,
 	'648': true,
+	'651': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -683,6 +684,20 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/8061A06D3BD4D52C4A28FFECF7150D370393AF0BA661C3776C54FF32836C3961',
 		},
 	],
+	'651': [
+		{
+			gaugeId: '2547',
+			denom: 'ibc/8FEFAE6AECF6E2A255585617F781F35A8D5709A545A804482A261C0C9548A9D3',
+		},
+		{
+			gaugeId: '2548',
+			denom: 'ibc/8FEFAE6AECF6E2A255585617F781F35A8D5709A545A804482A261C0C9548A9D3',
+		},
+		{
+			gaugeId: '2549',
+			denom: 'ibc/8FEFAE6AECF6E2A255585617F781F35A8D5709A545A804482A261C0C9548A9D3',
+    },
+  ],
 };
 
 export const PoolsPerPage = 10;
