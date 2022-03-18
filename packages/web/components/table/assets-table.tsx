@@ -44,7 +44,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
         return {
           value: balance.toString(),
           chainId: chainStore.osmosis.chainId,
-          chainName: chainStore.osmosis.chainName,
           coinDenom: balance.denom,
           coinImageUrl: balance.currency.coinImageUrl,
           amount: balance.hideDenom(true).trim(true).maxDecimals(6).toString(),
