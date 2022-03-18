@@ -110,7 +110,7 @@ export class Amino {
 
     const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
       ? new Int(1)
-      : WeightedPoolMath.calculateSlippageTokenIn(
+      : WeightedPoolMath.calcSlippageTokenIn(
           estimated.raw.spotPriceBefore,
           new Dec(tokenIn.amount)
             .mul(

@@ -44,7 +44,7 @@ export const IncentivizedPoolCard: FunctionComponent<{
         ]
       }
       onClick={() => {
-        router.push(`/pools/${pool.id}`);
+        router.push(`/pool/${pool.id}`);
       }}
     >
       <div className="flex flex-row">

@@ -100,6 +100,7 @@ export class QueriesOsmosis {
     this.queryGammPoolShare = new ObservableQueryGammPoolShare(
       this.queryGammPools,
       queries.queryBalances,
+      this.queryAccountLocked,
       this.queryLockedCoins,
       this.queryUnlockingCoins
     );

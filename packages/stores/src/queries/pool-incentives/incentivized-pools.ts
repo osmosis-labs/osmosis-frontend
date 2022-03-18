@@ -1,7 +1,7 @@
 import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
 import { computedFn } from "mobx-utils";
-import { CoinPretty, Dec, Int, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int, RatePretty } from "@keplr-wallet/unit";
 import { IncentivizedPools } from "./types";
 import { computed, makeObservable } from "mobx";
 import { FiatCurrency } from "@keplr-wallet/types";
@@ -96,9 +96,9 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         ): PricePretty | undefined;
       },
       fiatCurrency: FiatCurrency
-    ): IntPretty => {
+    ): RatePretty => {
       if (!this.isIncentivized(poolId)) {
-        return new IntPretty(new Dec(0)).maxDecimals(2).trim(true);
+        return new RatePretty(new Dec(0));
       }
 
       // 내림차순으로 정렬한다.
@@ -109,7 +109,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         });
 
       if (lockableDurations.length === 0) {
-        return new IntPretty(new Dec(0)).maxDecimals(2).trim(true);
+        return new RatePretty(new Dec(0));
       }
 
       return this.computeAPY(
@@ -137,9 +137,9 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         ): PricePretty | undefined;
       },
       fiatCurrency: FiatCurrency
-    ): IntPretty => {
+    ): RatePretty => {
       if (!this.isIncentivized(poolId)) {
-        return new IntPretty(new Dec(0)).maxDecimals(2).trim(true);
+        return new RatePretty(new Dec(0));
       }
 
       // 오름차순으로 정렬한다.
@@ -157,7 +157,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
             lockableDuration.asMilliseconds() === duration.asMilliseconds()
         )
       ) {
-        return new IntPretty(new Dec(0)).maxDecimals(2).trim(true);
+        return new RatePretty(new Dec(0));
       }
 
       let apy = this.computeAPYForSpecificDuration(
@@ -198,7 +198,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       ): PricePretty | undefined;
     },
     fiatCurrency: FiatCurrency
-  ): IntPretty {
+  ): RatePretty {
     const gaugeId = this.getIncentivizedGaugeId(poolId, duration);
 
     if (this.incentivizedPools.includes(poolId) && gaugeId) {
@@ -255,11 +255,9 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
                   mintPrice.toString()
                 ).mul(yearProvisionToPot.toDec());
 
-                // 백분률로 반환한다.
-                return new IntPretty(
+                return new RatePretty(
                   yearProvisionToPotPrice.quo(poolTVL.toDec())
                 )
-                  .decreasePrecision(2)
                   .maxDecimals(2)
                   .trim(true);
               }
@@ -269,7 +267,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       }
     }
 
-    return new IntPretty(new Dec(0)).maxDecimals(2).trim(true);
+    return new RatePretty(new Dec(0));
   }
 
   @computed

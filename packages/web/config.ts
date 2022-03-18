@@ -1412,3 +1412,717 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
     explorerUrlToTx: "https://www.mintscan.io/sifchain/txs/{txHash}",
   },
 ];
+
+/** External incentive gauges visible in pool detail page. */
+export const PoolDetailExtraGaugeAllowList: {
+  [poolId: string]: {
+    gaugeId: string;
+    denom: string;
+  }[];
+} = {
+  "461": [
+    {
+      gaugeId: "1774",
+      denom:
+        "ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59",
+    },
+    {
+      gaugeId: "1775",
+      denom:
+        "ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59",
+    },
+    {
+      gaugeId: "1776",
+      denom:
+        "ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59",
+    },
+  ],
+  "482": [
+    {
+      gaugeId: "1771",
+      denom:
+        "ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59",
+    },
+    {
+      gaugeId: "1772",
+      denom:
+        "ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59",
+    },
+    {
+      gaugeId: "1773",
+      denom:
+        "ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59",
+    },
+  ],
+  "497": [
+    {
+      gaugeId: "1679",
+      denom:
+        "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED",
+    },
+    {
+      gaugeId: "1680",
+      denom:
+        "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED",
+    },
+    {
+      gaugeId: "1681",
+      denom:
+        "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED",
+    },
+  ],
+  "498": [
+    {
+      gaugeId: "1682",
+      denom:
+        "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED",
+    },
+    {
+      gaugeId: "1683",
+      denom:
+        "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED",
+    },
+    {
+      gaugeId: "1684",
+      denom:
+        "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED",
+    },
+  ],
+  "547": [
+    {
+      gaugeId: "2021",
+      denom:
+        "ibc/655BCEF3CDEBE32863FF281DBBE3B06160339E9897DC9C9C9821932A5F8BA6F8",
+    },
+    {
+      gaugeId: "2022",
+      denom:
+        "ibc/655BCEF3CDEBE32863FF281DBBE3B06160339E9897DC9C9C9821932A5F8BA6F8",
+    },
+    {
+      gaugeId: "2023",
+      denom:
+        "ibc/655BCEF3CDEBE32863FF281DBBE3B06160339E9897DC9C9C9821932A5F8BA6F8",
+    },
+  ],
+  "548": [
+    {
+      gaugeId: "1676",
+      denom:
+        "ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59",
+    },
+    {
+      gaugeId: "1677",
+      denom:
+        "ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59",
+    },
+    {
+      gaugeId: "1678",
+      denom:
+        "ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59",
+    },
+  ],
+  "553": [
+    {
+      gaugeId: "2257",
+      denom:
+        "ibc/9989AD6CCA39D1131523DB0617B50F6442081162294B4795E26746292467B525",
+    },
+    {
+      gaugeId: "2256",
+      denom:
+        "ibc/9989AD6CCA39D1131523DB0617B50F6442081162294B4795E26746292467B525",
+    },
+    {
+      gaugeId: "2255",
+      denom:
+        "ibc/9989AD6CCA39D1131523DB0617B50F6442081162294B4795E26746292467B525",
+    },
+  ],
+  "555": [
+    {
+      gaugeId: "2254",
+      denom:
+        "ibc/9989AD6CCA39D1131523DB0617B50F6442081162294B4795E26746292467B525",
+    },
+    {
+      gaugeId: "2253",
+      denom:
+        "ibc/9989AD6CCA39D1131523DB0617B50F6442081162294B4795E26746292467B525",
+    },
+    {
+      gaugeId: "2252",
+      denom:
+        "ibc/9989AD6CCA39D1131523DB0617B50F6442081162294B4795E26746292467B525",
+    },
+  ],
+  "557": [
+    {
+      gaugeId: "1736",
+      denom:
+        "ibc/F3FF7A84A73B62921538642F9797C423D2B4C4ACB3C7FCFFCE7F12AA69909C4B",
+    },
+  ],
+  "558": [
+    {
+      gaugeId: "1737",
+      denom:
+        "ibc/F3FF7A84A73B62921538642F9797C423D2B4C4ACB3C7FCFFCE7F12AA69909C4B",
+    },
+  ],
+  "560": [
+    {
+      gaugeId: "1948",
+      denom:
+        "ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0",
+    },
+    {
+      gaugeId: "1949",
+      denom:
+        "ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0",
+    },
+    {
+      gaugeId: "1950",
+      denom:
+        "ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0",
+    },
+  ],
+  "562": [
+    {
+      gaugeId: "1951",
+      denom:
+        "ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0",
+    },
+    {
+      gaugeId: "1952",
+      denom:
+        "ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0",
+    },
+    {
+      gaugeId: "1953",
+      denom:
+        "ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0",
+    },
+  ],
+  "571": [
+    {
+      gaugeId: "1759",
+      denom:
+        "ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5",
+    },
+    {
+      gaugeId: "1760",
+      denom:
+        "ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5",
+    },
+    {
+      gaugeId: "1761",
+      denom:
+        "ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5",
+    },
+  ],
+  "572": [
+    {
+      gaugeId: "1762",
+      denom:
+        "ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5",
+    },
+    {
+      gaugeId: "1763",
+      denom:
+        "ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5",
+    },
+    {
+      gaugeId: "1764",
+      denom:
+        "ibc/D805F1DA50D31B96E4282C1D4181EDDFB1A44A598BFF5666F4B43E4B8BEA95A5",
+    },
+  ],
+  "573": [
+    {
+      gaugeId: "2030",
+      denom:
+        "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
+    },
+    {
+      gaugeId: "2031",
+      denom:
+        "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
+    },
+    {
+      gaugeId: "2032",
+      denom:
+        "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
+    },
+  ],
+  "574": [
+    {
+      gaugeId: "2033",
+      denom:
+        "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
+    },
+    {
+      gaugeId: "2034",
+      denom:
+        "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
+    },
+    {
+      gaugeId: "2035",
+      denom:
+        "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
+    },
+  ],
+  "577": [
+    {
+      gaugeId: "2088",
+      denom:
+        "ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E",
+    },
+    {
+      gaugeId: "2089",
+      denom:
+        "ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E",
+    },
+    {
+      gaugeId: "2090",
+      denom:
+        "ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E",
+    },
+  ],
+  "578": [
+    {
+      gaugeId: "2091",
+      denom:
+        "ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E",
+    },
+    {
+      gaugeId: "2092",
+      denom:
+        "ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E",
+    },
+    {
+      gaugeId: "2093",
+      denom:
+        "ibc/B547DC9B897E7C3AA5B824696110B8E3D2C31E3ED3F02FF363DCBAD82457E07E",
+    },
+  ],
+  "584": [
+    {
+      gaugeId: "1861",
+      denom:
+        "ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A",
+    },
+    {
+      gaugeId: "1862",
+      denom:
+        "ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A",
+    },
+    {
+      gaugeId: "1863",
+      denom:
+        "ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A",
+    },
+  ],
+  "585": [
+    {
+      gaugeId: "1864",
+      denom:
+        "ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A",
+    },
+    {
+      gaugeId: "1865",
+      denom:
+        "ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A",
+    },
+    {
+      gaugeId: "1866",
+      denom:
+        "ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A",
+    },
+  ],
+  "586": [
+    {
+      gaugeId: "1885",
+      denom:
+        "ibc/3BCCC93AD5DF58D11A6F8A05FA8BC801CBA0BA61A981F57E91B8B598BF8061CB",
+    },
+    {
+      gaugeId: "1886",
+      denom:
+        "ibc/3BCCC93AD5DF58D11A6F8A05FA8BC801CBA0BA61A981F57E91B8B598BF8061CB",
+    },
+    {
+      gaugeId: "1887",
+      denom:
+        "ibc/3BCCC93AD5DF58D11A6F8A05FA8BC801CBA0BA61A981F57E91B8B598BF8061CB",
+    },
+  ],
+  "587": [
+    {
+      gaugeId: "1888",
+      denom:
+        "ibc/3BCCC93AD5DF58D11A6F8A05FA8BC801CBA0BA61A981F57E91B8B598BF8061CB",
+    },
+    {
+      gaugeId: "1889",
+      denom:
+        "ibc/3BCCC93AD5DF58D11A6F8A05FA8BC801CBA0BA61A981F57E91B8B598BF8061CB",
+    },
+    {
+      gaugeId: "1890",
+      denom:
+        "ibc/3BCCC93AD5DF58D11A6F8A05FA8BC801CBA0BA61A981F57E91B8B598BF8061CB",
+    },
+  ],
+  "592": [
+    {
+      gaugeId: "2036",
+      denom:
+        "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
+    },
+    {
+      gaugeId: "2037",
+      denom:
+        "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
+    },
+    {
+      gaugeId: "2038",
+      denom:
+        "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
+    },
+  ],
+  "600": [
+    {
+      gaugeId: "1879",
+      denom:
+        "ibc/EA3E1640F9B1532AB129A571203A0B9F789A7F14BB66E350DCBFA18E1A1931F0",
+    },
+    {
+      gaugeId: "1880",
+      denom:
+        "ibc/EA3E1640F9B1532AB129A571203A0B9F789A7F14BB66E350DCBFA18E1A1931F0",
+    },
+    {
+      gaugeId: "1881",
+      denom:
+        "ibc/EA3E1640F9B1532AB129A571203A0B9F789A7F14BB66E350DCBFA18E1A1931F0",
+    },
+  ],
+  "601": [
+    {
+      gaugeId: "1882",
+      denom:
+        "ibc/EA3E1640F9B1532AB129A571203A0B9F789A7F14BB66E350DCBFA18E1A1931F0",
+    },
+    {
+      gaugeId: "1883",
+      denom:
+        "ibc/EA3E1640F9B1532AB129A571203A0B9F789A7F14BB66E350DCBFA18E1A1931F0",
+    },
+    {
+      gaugeId: "1884",
+      denom:
+        "ibc/EA3E1640F9B1532AB129A571203A0B9F789A7F14BB66E350DCBFA18E1A1931F0",
+    },
+  ],
+  "5": [
+    {
+      gaugeId: "1900",
+      denom:
+        "ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84",
+    },
+    {
+      gaugeId: "1901",
+      denom:
+        "ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84",
+    },
+    {
+      gaugeId: "1902",
+      denom:
+        "ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84",
+    },
+  ],
+  "6": [
+    {
+      gaugeId: "1903",
+      denom:
+        "ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84",
+    },
+    {
+      gaugeId: "1904",
+      denom:
+        "ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84",
+    },
+    {
+      gaugeId: "1905",
+      denom:
+        "ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84",
+    },
+  ],
+  "602": [
+    {
+      gaugeId: "2127",
+      denom:
+        "ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA",
+    },
+    {
+      gaugeId: "2128",
+      denom:
+        "ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA",
+    },
+  ],
+  "604": [
+    {
+      gaugeId: "1995",
+      denom:
+        "ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4",
+    },
+    {
+      gaugeId: "1996",
+      denom:
+        "ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4",
+    },
+    {
+      gaugeId: "1997",
+      denom:
+        "ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4",
+    },
+  ],
+  "605": [
+    {
+      gaugeId: "1960",
+      denom:
+        "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228",
+    },
+    {
+      gaugeId: "1961",
+      denom:
+        "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228",
+    },
+    {
+      gaugeId: "1962",
+      denom:
+        "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228",
+    },
+  ],
+  "606": [
+    {
+      gaugeId: "1963",
+      denom:
+        "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228",
+    },
+    {
+      gaugeId: "1964",
+      denom:
+        "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228",
+    },
+    {
+      gaugeId: "1965",
+      denom:
+        "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228",
+    },
+  ],
+  "611": [
+    {
+      gaugeId: "1998",
+      denom:
+        "ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4",
+    },
+    {
+      gaugeId: "1999",
+      denom:
+        "ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4",
+    },
+    {
+      gaugeId: "2000",
+      denom:
+        "ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4",
+    },
+  ],
+  "612": [
+    {
+      gaugeId: "2109",
+      denom:
+        "ibc/A0CC0CF735BFB30E730C70019D4218A1244FF383503FF7579C9201AB93CA9293",
+    },
+  ],
+  "613": [
+    {
+      gaugeId: "1982",
+      denom:
+        "ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD",
+    },
+    {
+      gaugeId: "2013",
+      denom:
+        "ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD",
+    },
+    {
+      gaugeId: "2014",
+      denom:
+        "ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD",
+    },
+  ],
+  "617": [
+    {
+      gaugeId: "2125",
+      denom:
+        "ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA",
+    },
+    {
+      gaugeId: "2126",
+      denom:
+        "ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA",
+    },
+  ],
+  "618": [
+    {
+      gaugeId: "2004",
+      denom:
+        "ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C",
+    },
+    {
+      gaugeId: "2005",
+      denom:
+        "ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C",
+    },
+    {
+      gaugeId: "2006",
+      denom:
+        "ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C",
+    },
+  ],
+  "619": [
+    {
+      gaugeId: "2007",
+      denom:
+        "ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C",
+    },
+    {
+      gaugeId: "2008",
+      denom:
+        "ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C",
+    },
+    {
+      gaugeId: "2009",
+      denom:
+        "ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C",
+    },
+  ],
+  "621": [
+    {
+      gaugeId: "2020",
+      denom:
+        "ibc/307E5C96C8F60D1CBEE269A9A86C0834E1DB06F2B3788AE4F716EDB97A48B97D",
+    },
+  ],
+  "629": [
+    {
+      gaugeId: "2067",
+      denom:
+        "ibc/8318FD63C42203D16DDCAF49FE10E8590669B3219A3E87676AC9DA50722687FB",
+    },
+    {
+      gaugeId: "2068",
+      denom:
+        "ibc/8318FD63C42203D16DDCAF49FE10E8590669B3219A3E87676AC9DA50722687FB",
+    },
+    {
+      gaugeId: "2069",
+      denom:
+        "ibc/8318FD63C42203D16DDCAF49FE10E8590669B3219A3E87676AC9DA50722687FB",
+    },
+  ],
+  "637": [
+    {
+      gaugeId: "2258",
+      denom:
+        "ibc/346786EA82F41FE55FAD14BF69AD8BA9B36985406E43F3CB23E6C45A285A9593",
+    },
+    {
+      gaugeId: "2259",
+      denom:
+        "ibc/346786EA82F41FE55FAD14BF69AD8BA9B36985406E43F3CB23E6C45A285A9593",
+    },
+    {
+      gaugeId: "2260",
+      denom:
+        "ibc/346786EA82F41FE55FAD14BF69AD8BA9B36985406E43F3CB23E6C45A285A9593",
+    },
+  ],
+  "638": [
+    {
+      gaugeId: "2261",
+      denom:
+        "ibc/346786EA82F41FE55FAD14BF69AD8BA9B36985406E43F3CB23E6C45A285A9593",
+    },
+    {
+      gaugeId: "2262",
+      denom:
+        "ibc/346786EA82F41FE55FAD14BF69AD8BA9B36985406E43F3CB23E6C45A285A9593",
+    },
+    {
+      gaugeId: "2263",
+      denom:
+        "ibc/346786EA82F41FE55FAD14BF69AD8BA9B36985406E43F3CB23E6C45A285A9593",
+    },
+  ],
+  "641": [
+    {
+      gaugeId: "2129",
+      denom:
+        "ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C",
+    },
+    {
+      gaugeId: "2130",
+      denom:
+        "ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C",
+    },
+    {
+      gaugeId: "2131",
+      denom:
+        "ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C",
+    },
+  ],
+  "642": [
+    {
+      gaugeId: "2269",
+      denom:
+        "ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C",
+    },
+    {
+      gaugeId: "2270",
+      denom:
+        "ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C",
+    },
+    {
+      gaugeId: "2271",
+      denom:
+        "ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C",
+    },
+  ],
+  "643": [
+    {
+      gaugeId: "2266",
+      denom:
+        "ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C",
+    },
+    {
+      gaugeId: "2267",
+      denom:
+        "ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C",
+    },
+    {
+      gaugeId: "2268",
+      denom:
+        "ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C",
+    },
+  ],
+  "648": [
+    {
+      gaugeId: "2272",
+      denom:
+        "ibc/8061A06D3BD4D52C4A28FFECF7150D370393AF0BA661C3776C54FF32836C3961",
+    },
+  ],
+};

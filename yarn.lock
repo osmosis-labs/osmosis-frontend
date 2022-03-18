@@ -1172,7 +1172,7 @@
   resolved "https://registry.yarnpkg.com/@keplr-wallet/router/-/router-0.9.6.tgz#43ad4692af9ea18a13dafe97a83369b03d491c9b"
   integrity sha512-TZfqkRwGOMk0nbgel41xLfD8ifM59WIXNt90rJjKynNT1/TOLTGxRDC8Ie5yY9Oak0lz7rmdrWNTOsvtWyuplA==
 
-"@keplr-wallet/stores@^0.9.11-rc.2", "@keplr-wallet/stores@^0.9.12":
+"@keplr-wallet/stores@^0.9.12":
   version "0.9.12"
   resolved "https://registry.yarnpkg.com/@keplr-wallet/stores/-/stores-0.9.12.tgz#9c9c6ad0e2a81de7a8bca17a6bbb53a648cdb355"
   integrity sha512-WTD8YjaB1WE0FojCPs5XTZnzTzxlqiawFVnPK2sZpwrAZM9s22KzTLvch+74HU6IrALIK3LLDIO2uGifYKSLNA==
@@ -1228,7 +1228,7 @@
     big-integer "^1.6.48"
     utility-types "^3.10.0"
 
-"@keplr-wallet/unit@^0.9.11-rc.2", "@keplr-wallet/unit@^0.9.12", "@keplr-wallet/unit@^0.9.12-rc.0":
+"@keplr-wallet/unit@^0.9.12", "@keplr-wallet/unit@^0.9.12-rc.0":
   version "0.9.12"
   resolved "https://registry.yarnpkg.com/@keplr-wallet/unit/-/unit-0.9.12.tgz#ca672aab115d604ccbe18d6664285252c3acf0f4"
   integrity sha512-24b3lSaaOrD3/ctdz+ADZn8vhqojsV5SGGzgD8F+DklI76uw8jYmmxSNcKyUAYpVUzRzTas6nnfB+4MwHBNU/Q==
