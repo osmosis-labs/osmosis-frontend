@@ -83,7 +83,11 @@ const Pools: NextPage = observer(function () {
                 return (
                   <PoolCard
                     key={myPoolId}
-                    pool={myPool}
+                    poolId={myPoolId}
+                    poolAssets={myPool.poolAssets.map((poolAsset) => ({
+                      coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+                      coinDenom: poolAsset.amount.currency.coinDenom,
+                    }))}
                     poolMetrics={[
                       {
                         label: "APR",
@@ -110,7 +114,7 @@ const Pools: NextPage = observer(function () {
         </div>
       </section>
       <section className="bg-surface">
-        <div className="max-w-container p-10">
+        <div className="max-w-container mx-auto p-10">
           <h5>Top Pools</h5>
           <div className="mt-4 grid grid-cols-3 gap-10">
             {top3Pools.map((pool) => {
@@ -123,7 +127,11 @@ const Pools: NextPage = observer(function () {
               return (
                 <PoolCard
                   key={pool.id}
-                  pool={pool}
+                  poolId={pool.id}
+                  poolAssets={pool.poolAssets.map((poolAsset) => ({
+                    coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+                    coinDenom: poolAsset.amount.currency.coinDenom,
+                  }))}
                   poolMetrics={[
                     {
                       label: "APR",
@@ -148,12 +156,12 @@ const Pools: NextPage = observer(function () {
         </div>
       </section>
       <section className="bg-surface shadow-separator">
-        <div className="max-w-container p-10 py-[3.75rem]">
+        <div className="max-w-container mx-auto p-10 py-[3.75rem]">
           <AllPoolsTableSet />
         </div>
       </section>
       <section className="bg-surface shadow-separator">
-        <div className="max-w-container p-10 py-[3.75rem]">
+        <div className="max-w-container mx-auto p-10 py-[3.75rem]">
           <ExternalIncentivizedPoolsTableSet />
         </div>
       </section>

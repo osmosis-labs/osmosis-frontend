@@ -160,7 +160,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       {
         id: "liquidity",
         display: "Liquidity",
-        infoTooltip: "This is liquidity",
         sort:
           sortKeyPath === "liquidity"
             ? {

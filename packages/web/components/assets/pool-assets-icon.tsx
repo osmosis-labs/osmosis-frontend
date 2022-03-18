@@ -1,14 +1,10 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
+import { AssetInfo } from "./types";
 
 interface Props {
-  assets:
-    | {
-        coinImageUrl: string | undefined;
-        coinDenom: string;
-      }[]
-    | undefined;
+  assets: AssetInfo[] | undefined;
   size: "sm" | "md";
 }
 
