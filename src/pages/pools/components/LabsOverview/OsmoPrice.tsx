@@ -7,7 +7,7 @@ import { useStore } from 'src/stores';
 export const OsmoPrice = observer(function OsmoPrice() {
 	const { chainStore, priceStore } = useStore();
 
-	const price = priceStore.calculatePrice(
+	const price = priceStore.getPricePretty(
 		new CoinPretty(
 			chainStore.current.stakeCurrency,
 			DecUtils.getPrecisionDec(chainStore.current.stakeCurrency.coinDecimals)
@@ -16,7 +16,7 @@ export const OsmoPrice = observer(function OsmoPrice() {
 
 	return (
 		<OverviewLabelValue label="OSMO Price">
-			<h4 className="text-xl md:text-2xl leading-7 md:leading-none">{price ? price.toString() : '$0'}</h4>
+			<h4 className="text-xl md:text-2xl leading-7 md:leading-none">{price}</h4>
 		</OverviewLabelValue>
 	);
 });

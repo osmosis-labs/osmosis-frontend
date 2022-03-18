@@ -8,110 +8,114 @@ import { IncentivizedPoolCardProp, MyPoolCardProp } from 'src/pages/pools/models
 import { applyOptionalDecimal } from 'src/utils/format';
 import { Optional } from 'utility-types';
 import { CardInfoPlaceholder } from 'src/components/common/CardInfoPlaceholder';
+import { useStore } from 'src/stores';
+import { observer } from 'mobx-react-lite';
 
-export function PoolCardItem(
+export const PoolCardItem = observer(function PoolCardItem(
 	props: (IncentivizedPoolCardProp | Optional<MyPoolCardProp, 'myLiquidity'>) & {
-		onClick: HTMLAttributes<HTMLLIElement>['onClick'];
+		onClick: HTMLAttributes<HTMLDivElement>['onClick'];
 	}
 ) {
 	const { poolId, tokens, liquidity, apr, onClick } = props;
 
-	return (
-		<PoolCardItemContainer onClick={onClick}>
-			<TokenInfoContainer>
-				<PoolCardTokenIcon bgIndex={poolId} src="/public/assets/Icons/OSMO.svg" />
-				<div style={{ marginTop: '15px' }}>
-					<h5>Pool #{poolId}</h5>
-					<PoolSubTitle>
-						{tokens
-							.map(token => {
-								// IBC Currency라도 원래의 coin denom을 보여준다.
-								return 'originCurrency' in token && token.originCurrency
-									? token.originCurrency.coinDenom.toUpperCase()
-									: token.coinDenom.toUpperCase();
-							})
-							.join('/')}
-					</PoolSubTitle>
-				</div>
-			</TokenInfoContainer>
+	const { chainStore, queriesStore } = useStore();
+	const queries = queriesStore.get(chainStore.current.chainId);
+	const isSuperfluidEnabled = queries.osmosis.querySuperfluidPools.isSuperfluidPool(poolId);
 
-			{isMyPoolCardProp(props) ? (
-				<>
-					<CenterV as="section">
-						<div>
+	return (
+		<div
+			className={`rounded-xl p-0.25 hover:bg-enabledGold ${isSuperfluidEnabled ? 'bg-sfs hover:bg-none' : 'bg-card'}`}
+			onClick={onClick}>
+			<PoolCardItemContainer>
+				<TokenInfoContainer>
+					<PoolCardTokenIcon bgIndex={poolId} src="/public/assets/Icons/OSMO.svg" />
+					<div style={{ marginTop: '15px' }}>
+						<h5>Pool #{poolId}</h5>
+						<PoolSubTitle>
+							{tokens
+								.map(token => {
+									// IBC Currency라도 원래의 coin denom을 보여준다.
+									return 'originCurrency' in token && token.originCurrency
+										? token.originCurrency.coinDenom.toUpperCase()
+										: token.coinDenom.toUpperCase();
+								})
+								.join('/')}
+						</PoolSubTitle>
+					</div>
+				</TokenInfoContainer>
+
+				{isMyPoolCardProp(props) ? (
+					<>
+						<CenterV as="section">
+							<div>
+								<PoolHeaderText>Pool Liquidity</PoolHeaderText>
+								<PoolValueText>{liquidity.value}</PoolValueText>
+							</div>
+							{apr?.value && (
+								<div style={{ marginLeft: '20px' }}>
+									<PoolHeaderText>APR</PoolHeaderText>
+									{apr.isLoading ? (
+										<CardInfoPlaceholder className="w-18 h-4 bg-cardInfoPlaceholder" />
+									) : (
+										<PoolValueText>{apr.value}%</PoolValueText>
+									)}
+								</div>
+							)}
+						</CenterV>
+
+						<Hr apr={apr?.value} myLockedAmount={props.myLockedAmount?.value} />
+
+						<CenterV>
+							<div>
+								<PoolHeaderText>My Liquidity</PoolHeaderText>
+								{props.myLiquidity.isLoading ? (
+									<CardInfoPlaceholder className="w-23 h-4 bg-cardInfoPlaceholder" />
+								) : (
+									<PoolValueText>{props.myLiquidity.value}</PoolValueText>
+								)}
+							</div>
+							{props.myLockedAmount?.value && (
+								<div style={{ marginLeft: '20px' }}>
+									<PoolHeaderText>My Bonded Amount</PoolHeaderText>
+
+									{props.myLockedAmount.isLoading ? (
+										<CardInfoPlaceholder className="w-23 h-4 bg-cardInfoPlaceholder" />
+									) : (
+										<PoolValueText>{props.myLockedAmount.value}</PoolValueText>
+									)}
+								</div>
+							)}
+						</CenterV>
+					</>
+				) : (
+					<CenterV>
+						<AprCol>
+							<PoolHeaderText>APR</PoolHeaderText>
+							{apr?.isLoading ? (
+								<CardInfoPlaceholder className="w-18 h-4 bg-cardInfoPlaceholder" />
+							) : (
+								<PoolValueText>{apr?.value}%</PoolValueText>
+							)}
+						</AprCol>
+						<div style={{ marginLeft: '20px' }}>
 							<PoolHeaderText>Pool Liquidity</PoolHeaderText>
 							<PoolValueText>{liquidity.value}</PoolValueText>
 						</div>
-						{apr?.value && (
-							<div style={{ marginLeft: '20px' }}>
-								<PoolHeaderText>APR</PoolHeaderText>
-								{apr.isLoading ? (
-									<CardInfoPlaceholder className="w-18 h-4 bg-cardInfoPlaceholder" />
-								) : (
-									<PoolValueText>{apr.value}%</PoolValueText>
-								)}
-							</div>
-						)}
 					</CenterV>
-
-					<Hr apr={apr?.value} myLockedAmount={props.myLockedAmount?.value} />
-
-					<CenterV>
-						<div>
-							<PoolHeaderText>My Liquidity</PoolHeaderText>
-							{props.myLiquidity.isLoading ? (
-								<CardInfoPlaceholder className="w-23 h-4 bg-cardInfoPlaceholder" />
-							) : (
-								<PoolValueText>{props.myLiquidity.value}</PoolValueText>
-							)}
-						</div>
-						{props.myLockedAmount?.value && (
-							<div style={{ marginLeft: '20px' }}>
-								<PoolHeaderText>My Bonded Amount</PoolHeaderText>
-
-								{props.myLockedAmount.isLoading ? (
-									<CardInfoPlaceholder className="w-23 h-4 bg-cardInfoPlaceholder" />
-								) : (
-									<PoolValueText>{props.myLockedAmount.value}</PoolValueText>
-								)}
-							</div>
-						)}
-					</CenterV>
-				</>
-			) : (
-				<CenterV>
-					<AprCol>
-						<PoolHeaderText>APR</PoolHeaderText>
-						{apr?.isLoading ? (
-							<CardInfoPlaceholder className="w-18 h-4 bg-cardInfoPlaceholder" />
-						) : (
-							<PoolValueText>{apr?.value}%</PoolValueText>
-						)}
-					</AprCol>
-					<div style={{ marginLeft: '20px' }}>
-						<PoolHeaderText>Pool Liquidity</PoolHeaderText>
-						<PoolValueText>{liquidity.value}</PoolValueText>
-					</div>
-				</CenterV>
-			)}
-		</PoolCardItemContainer>
+				)}
+			</PoolCardItemContainer>
+		</div>
 	);
-}
+});
 
 const PoolCardItemContainer = styled.li`
-	border-width: 1px;
 	cursor: pointer;
-	padding: 20px;
+	padding: 19px;
 	background-color: rgba(45, 39, 85, 1);
 	border-radius: 0.75rem;
-	border-color: transparent;
-
-	&:hover {
-		border-color: rgba(196, 164, 106, 1);
-	}
 
 	@media (min-width: 768px) {
-		padding: 24px 30px;
+		padding: 23px 29px;
 	}
 `;
 

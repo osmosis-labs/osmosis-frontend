@@ -41,8 +41,17 @@ export const TokenAmountInput = observer(({ amount, currency, onChange }: Props)
 
 	return (
 		<TokenAmountInputContainer>
-			<AmountInput type="number" onChange={e => onChange(e.currentTarget.value)} value={amount} placeholder="0" />
-			<Text weight="semiBold" size="sm" isMobileView={isMobileView} emphasis={!amount ? 'low' : 'high'}>
+			<AmountInput
+				type="number"
+				onChange={e => onChange(e.currentTarget.value)}
+				value={amount !== '0' ? amount : ''}
+				placeholder="0"
+			/>
+			<Text
+				weight="semiBold"
+				size="sm"
+				isMobileView={isMobileView}
+				emphasis={!amount || amount === '0' ? 'low' : 'high'}>
 				≈ {price.toString()}
 			</Text>
 		</TokenAmountInputContainer>
