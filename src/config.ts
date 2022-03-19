@@ -991,6 +991,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'swth',
 	},
+  {
+    counterpartyChainId: 'cerberus-chain-1',
+		sourceChannelId: 'channel-212',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'ucrbrus',
+  },  
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -2539,6 +2545,43 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://www.mintscan.io/certik/txs/{txHash}',
 	},
 	{
+		rpc: 'https://rpc.cerberus.zone:26657',
+		rest: 'https://api.cerberus.zone:1317',
+		chainId: 'cerberus-chain-1',
+		chainName: 'Cerberus',
+		stakeCurrency: {
+			coinDenom: 'CRBRUS',
+			coinMinimalDenom: 'ucrbrus',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:crbrus',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
+    		},
+    		bip44: {
+			coinType: 118,
+		},
+    		bech32Config: Bech32Address.defaultBech32Config('cerberus'),
+		currencies: [
+			{
+				coinDenom: 'CRBRUS',
+				coinMinimalDenom: 'ucrbrus',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:crbrus',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
+      		},
+		],
+		feeCurrencies: [
+			{
+        		coinDenom: 'CRBRUS',
+				coinMinimalDenom: 'ucrbrus',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:crbrus',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://skynetexplorers.com/Cerberus/tx/{txHash}',
+  },
+  {
 		rpc: 'https://tm-api.carbon.network',
 		rest: 'https://api.carbon.network',
 		chainId: 'carbon-1',
