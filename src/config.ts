@@ -68,6 +68,7 @@ export const LockupAbledPoolIds: {
 	'642': true,
 	'643': true,
 	'648': true,
+	'651': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -593,6 +594,12 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/307E5C96C8F60D1CBEE269A9A86C0834E1DB06F2B3788AE4F716EDB97A48B97D',
 		},
 	],
+	'625': [
+		{
+			gaugeId: '2511',
+			denom: 'ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44',
+		},
+	],
 	'629': [
 		{
 			gaugeId: '2067',
@@ -683,6 +690,20 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/8061A06D3BD4D52C4A28FFECF7150D370393AF0BA661C3776C54FF32836C3961',
 		},
 	],
+	'651': [
+		{
+			gaugeId: '2547',
+			denom: 'ibc/8FEFAE6AECF6E2A255585617F781F35A8D5709A545A804482A261C0C9548A9D3',
+		},
+		{
+			gaugeId: '2548',
+			denom: 'ibc/8FEFAE6AECF6E2A255585617F781F35A8D5709A545A804482A261C0C9548A9D3',
+		},
+		{
+			gaugeId: '2549',
+			denom: 'ibc/8FEFAE6AECF6E2A255585617F781F35A8D5709A545A804482A261C0C9548A9D3',
+    },
+  ],
 };
 
 export const PoolsPerPage = 10;
@@ -971,7 +992,13 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'swth',
 	},
   {
-		counterpartyChainId: 'juno-1',
+    counterpartyChainId: 'cerberus-chain-1',
+		sourceChannelId: 'channel-212',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'ucrbrus',
+  },
+  {
+    counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-169',
 		destChannelId: 'channel-47',
 		coinMinimalDenom: 'cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z',
@@ -2534,6 +2561,43 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://www.mintscan.io/certik/txs/{txHash}',
 	},
 	{
+		rpc: 'https://rpc.cerberus.zone:26657',
+		rest: 'https://api.cerberus.zone:1317',
+		chainId: 'cerberus-chain-1',
+		chainName: 'Cerberus',
+		stakeCurrency: {
+			coinDenom: 'CRBRUS',
+			coinMinimalDenom: 'ucrbrus',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:crbrus',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
+    		},
+    		bip44: {
+			coinType: 118,
+		},
+    		bech32Config: Bech32Address.defaultBech32Config('cerberus'),
+		currencies: [
+			{
+				coinDenom: 'CRBRUS',
+				coinMinimalDenom: 'ucrbrus',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:crbrus',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
+      		},
+		],
+		feeCurrencies: [
+			{
+        		coinDenom: 'CRBRUS',
+				coinMinimalDenom: 'ucrbrus',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:crbrus',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://skynetexplorers.com/Cerberus/tx/{txHash}',
+  },
+  {
 		rpc: 'https://tm-api.carbon.network',
 		rest: 'https://api.carbon.network',
 		chainId: 'carbon-1',
