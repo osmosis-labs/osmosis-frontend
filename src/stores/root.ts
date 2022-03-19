@@ -322,8 +322,8 @@ export class RootStore {
 					alternativeCoinId: 'pool:crbrus',
 					poolId: '658',
 					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-212' }], 'ucrbrus'),
-					spotPriceDestDenom: 'uhuahua',
-					destCoinId: 'chihuahua',
+					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-113' }], 'uhuahua'),
+					destCoinId: 'chihuahua-token',
 				},
 			]
 		);
