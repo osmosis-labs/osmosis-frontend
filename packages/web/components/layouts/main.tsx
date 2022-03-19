@@ -67,23 +67,15 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                         )}
                         target={menu.selectionTest ? "_self" : "_blank"}
                       >
-                        <div className="h-11 w-11 relative shadow-2xl">
-                          <embed
-                            className="h-full w-full"
+                        <div className="h-11 w-11 relative">
+                          <Image
+                            className="absolute top-0 left-0 transition-all"
                             src={`/icons/hexagon-border${
                               selected ? "-selected" : ""
                             }.svg`}
-                            type="image/svg+xml"
-                          />
-
-                          {/* <Image
-                            className="absolute top-0 left-0 transition-all"
-                            src={`/icons/hexagon-border${
-                              selected ? "-selected" : "-deselected"
-                            }.svg`}
                             layout="fill"
                             alt="menu icon border"
-                          /> */}
+                          />
                           <div className="w-5 h-5 absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
                             <Image
                               src={
