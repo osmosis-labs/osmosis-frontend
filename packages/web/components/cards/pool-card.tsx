@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
-import { PoolAssetsIcon } from "../assets";
+import { PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { AssetInfo } from "../assets/types";
 import { MetricLoader } from "../loaders";
 import { PoolMetric } from "./types";
@@ -21,11 +21,10 @@ export const PoolCard: FunctionComponent<{
       <div className="flex items-center">
         <PoolAssetsIcon assets={poolAssets} size="md" />
         <div className="ml-6 flex flex-col">
-          <h5>
-            {poolAssets.length >= 3
-              ? `${poolAssets.length} Token Pool`
-              : poolAssets.map((asset) => asset.coinDenom).join(" / ")}
-          </h5>
+          <PoolAssetsName
+            size="md"
+            assetDenoms={poolAssets.map((asset) => asset.coinDenom)}
+          />
           <div className="subtitle2 text-white-mid">{`Pool #${poolId}`}</div>
         </div>
       </div>
