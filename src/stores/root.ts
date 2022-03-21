@@ -325,6 +325,16 @@ export class RootStore {
 					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-113' }], 'uhuahua'),
 					destCoinId: 'chihuahua-token',
 				},
+        {
+          alternativeCoinId: 'pool:hope',
+					poolId: '653',
+					spotPriceSourceDenom: DenomHelper.ibcDenom(
+						[{ portId: 'transfer', channelId: 'channel-169' }],
+						'cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z'
+					),
+					spotPriceDestDenom: 'uosmo',
+					destCoinId: 'osmosis',
+        },
 			]
 		);
 
@@ -1363,6 +1373,24 @@ export class RootStore {
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-113' }], 'uhuahua'),
 						coinDenom: 'HUAHUA',
             coinDecimals: 6,
+					},
+				],
+			},
+      {
+				poolId: '653',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom(
+							[{ portId: 'transfer', channelId: 'channel-169' }],
+							'cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z'
+						),
+						coinDenom: 'HOPE',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
 					},
 				],
 			},
