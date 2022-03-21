@@ -1,6 +1,7 @@
 import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import Image from "next/image";
+import Link from "next/link";
 import React, { FunctionComponent, PropsWithoutRef, useState } from "react";
 import { CustomClasses, SortDirection } from "../types";
 import { replaceAt } from "../utils";
@@ -30,7 +31,7 @@ export interface ColumnDef<TCell> {
 export interface RowDef {
   makeClass?: (rowIndex: number) => string;
   makeHoverClass?: (rowIndex: number) => string;
-  onClick?: (rowIndex: number) => void;
+  link?: string;
 }
 
 export interface TableProps<TCell> extends CustomClasses {
@@ -123,13 +124,13 @@ export const Table = <TCell extends BaseCell>({
                 "h-20 shadow-separator bg-surface",
                 rowDef?.makeClass?.(rowIndex),
                 {
-                  "cursor-pointer select-none": rowDef?.onClick !== undefined,
+                  "focus-within:bg-card focus-within:outline-none":
+                    rowDef?.link !== undefined,
                 },
                 rowHovered
                   ? `${rowDef?.makeHoverClass?.(rowIndex)} bg-card`
                   : undefined
               )}
-              onClick={() => rowDef?.onClick?.(rowIndex)}
               onMouseEnter={() => setRowHovered(rowIndex, true)}
               onMouseLeave={() => setRowHovered(rowIndex, false)}
             >
@@ -138,7 +139,20 @@ export const Table = <TCell extends BaseCell>({
 
                 return (
                   <td key={`${rowIndex}${columnIndex}`}>
-                    {DisplayCell ? <DisplayCell {...cell} /> : cell.value}
+                    {rowDef?.link ? (
+                      <Link href={rowDef?.link}>
+                        <a
+                          className="focus:outline-none"
+                          tabIndex={columnIndex > 0 ? -1 : 0}
+                        >
+                          {DisplayCell ? <DisplayCell {...cell} /> : cell.value}
+                        </a>
+                      </Link>
+                    ) : DisplayCell ? (
+                      <DisplayCell {...cell} />
+                    ) : (
+                      cell.value
+                    )}
                   </td>
                 );
               })}

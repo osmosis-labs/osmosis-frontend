@@ -237,7 +237,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
 
     const tableRows: RowDef[] = allData.map((poolWithFeeMetrics) => ({
       ...baseRow,
-      onClick: () => router.push(`/pool/${poolWithFeeMetrics.pool.id}`),
+      link: `/pool/${poolWithFeeMetrics.pool.id}`,
     }));
 
     const tableData = allData.map((poolWithMetrics) => {
