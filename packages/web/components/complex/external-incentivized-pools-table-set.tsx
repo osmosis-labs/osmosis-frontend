@@ -3,7 +3,7 @@ import { ObservablePool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useState } from "react";
-import { ExtraGaugeInPool } from "../../config";
+import { ExternalIncentiveGaugeAllowList } from "../../config";
 import {
   useFilteredData,
   usePaginatedData,
@@ -35,7 +35,9 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
 
     const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 
-    const externalIncentivizedPools = Object.keys(ExtraGaugeInPool)
+    const externalIncentivizedPools = Object.keys(
+      ExternalIncentiveGaugeAllowList
+    )
       .map((poolId: string) => {
         const pool = queryOsmosis.queryGammPools.getPool(poolId);
         if (pool) {
@@ -47,7 +49,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
           return false;
         }
 
-        const inner = ExtraGaugeInPool[pool.id];
+        const inner = ExternalIncentiveGaugeAllowList[pool.id];
         const data = Array.isArray(inner) ? inner : [inner];
 
         if (data.length === 0) {
@@ -69,7 +71,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       });
     const externalIncentivizedPoolsWithMetrics = externalIncentivizedPools.map(
       (pool) => {
-        const inner = ExtraGaugeInPool[pool.id];
+        const inner = ExternalIncentiveGaugeAllowList[pool.id];
         const data = Array.isArray(inner) ? inner : [inner];
         const gaugeIds = data.map((d) => d.gaugeId);
         const gauges = gaugeIds.map((gaugeId) => {

@@ -1,8 +1,8 @@
 import { FunctionComponent } from "react";
 import classNames from "classnames";
-import { OverviewLabel } from "./types";
+import { Metric } from "../types";
 
-interface Props extends OverviewLabel {
+interface Props extends Metric {
   containerClassName?: string;
   labelClassName?: string;
   valueClassName?: string;

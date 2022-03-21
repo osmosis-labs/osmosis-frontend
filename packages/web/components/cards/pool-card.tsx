@@ -16,7 +16,7 @@ export const PoolCard: FunctionComponent<{
   return (
     <div
       className="px-[1.875rem] pt-8 pb-6 bg-card rounded-2xl cursor-pointer hover:ring-1 hover:ring-enabledGold"
-      onClick={() => router.push(`/pools/${poolId}`)}
+      onClick={() => router.push(`/pool/${poolId}`)}
     >
       <div className="flex items-center">
         <PoolAssetsIcon assets={poolAssets} size="md" />

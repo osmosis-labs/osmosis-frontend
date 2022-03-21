@@ -1,3 +1,4 @@
+import { Duration } from "dayjs/plugin/duration";
 import { ObservableQueryBalances } from "@keplr-wallet/stores";
 import {
   CoinPretty,
@@ -12,6 +13,7 @@ import { AppCurrency, Currency, FiatCurrency } from "@keplr-wallet/types";
 import { ObservableQueryPools } from "../pools";
 import { computedFn } from "mobx-utils";
 import {
+  ObservableQueryAccountLocked,
   ObservableQueryAccountLockedCoins,
   ObservableQueryAccountUnlockingCoins,
 } from "../lockup";
@@ -28,13 +30,12 @@ export class ObservableQueryGammPoolShare {
   constructor(
     protected readonly queryPools: ObservableQueryPools,
     protected readonly queryBalances: ObservableQueryBalances,
+    protected readonly queryAccountLocked: ObservableQueryAccountLocked,
     protected readonly queryLockedCoins: ObservableQueryAccountLockedCoins,
     protected readonly queryUnlockingCoins: ObservableQueryAccountUnlockingCoins
   ) {}
 
-  /**
-   * Returns the pool id arrangement of all shares owned by a particular address.
-   */
+  /** Returns the pool id arrangement of all shares owned by user.  */
   readonly getOwnPools = computedFn((bech32Address: string): string[] => {
     const balances: {
       currency: AppCurrency;
@@ -64,6 +65,7 @@ export class ObservableQueryGammPoolShare {
     return ObservableQueryGammPoolShare.getShareCurrency(poolId);
   });
 
+  /** Gets coin balance of user's locked gamm shares in pool. */
   readonly getLockedGammShare = computedFn(
     (bech32Address: string, poolId: string): CoinPretty => {
       const currency = this.getShareCurrency(poolId);
@@ -80,11 +82,12 @@ export class ObservableQueryGammPoolShare {
     }
   );
 
+  /** Gets percentage of user's locked shares vs pool total share. */
   readonly getLockedGammShareRatio = computedFn(
-    (bech32Address: string, poolId: string): IntPretty => {
+    (bech32Address: string, poolId: string): RatePretty => {
       const pool = this.queryPools.getPool(poolId);
       if (!pool) {
-        return new IntPretty(new Int(0)).ready(false);
+        return new RatePretty(new Int(0)).ready(false);
       }
 
       const share = this.getLockedGammShare(bech32Address, poolId);
@@ -93,15 +96,11 @@ export class ObservableQueryGammPoolShare {
 
       const totalShare = pool.totalShare;
 
-      // To make it a percentage, multiply it by 10^2 at the end.
-      return new IntPretty(
-        share.quo(totalShare).mul(DecUtils.getTenExponentNInPrecisionRange(2))
-      )
-        .maxDecimals(2)
-        .trim(true);
+      return new RatePretty(share.quo(totalShare).moveDecimalPointLeft(2));
     }
   );
 
+  /** Returns fiat value of locked gamm shares. */
   readonly getLockedGammShareValue = computedFn(
     (
       bech32Address: string,
@@ -114,9 +113,9 @@ export class ObservableQueryGammPoolShare {
         return new PricePretty(fiatCurrency, new Dec(0));
       }
 
-      const share = this.getLockedGammShare(bech32Address, poolId);
       // Remember that the unlockings are included in the locked.
       // So, no need to handle the unlockings here
+      const share = this.getLockedGammShare(bech32Address, poolId);
 
       const totalShare = pool.totalShare;
 
@@ -124,6 +123,7 @@ export class ObservableQueryGammPoolShare {
     }
   );
 
+  /** Gets coin balance of user's shares currently unlocking in pool. */
   readonly getUnlockingGammShare = computedFn(
     (bech32Address: string, poolId: string): CoinPretty => {
       const currency = this.getShareCurrency(poolId);
@@ -140,6 +140,7 @@ export class ObservableQueryGammPoolShare {
     }
   );
 
+  /** Gets coin balance of user's unlocked gamm shares in a pool.  */
   readonly getAvailableGammShare = computedFn(
     (bech32Address: string, poolId: string): CoinPretty => {
       const currency = this.getShareCurrency(poolId);
@@ -150,11 +151,21 @@ export class ObservableQueryGammPoolShare {
     }
   );
 
-  /**
-   * It also includes locked, unlocked, and unlocked shares.
-   * @param bech32Address
-   * @param poolId
-   */
+  /** Gets percentage of user's shares that are not locked. */
+  readonly getAvailableGammShareRatio = computedFn(
+    (bech32Address: string, poolId: string): RatePretty => {
+      const pool = this.queryPools.getPool(poolId);
+      if (!pool) {
+        return new RatePretty(new Int(0)).ready(false);
+      }
+
+      return new RatePretty(
+        this.getAvailableGammShare(bech32Address, poolId).quo(pool.totalShare)
+      );
+    }
+  );
+
+  /** Gets coin balance of user's locked, unlocked, and unlocking shares in a pool. */
   readonly getAllGammShare = computedFn(
     (bech32Address: string, poolId: string): CoinPretty => {
       const available = this.getAvailableGammShare(bech32Address, poolId);
@@ -165,6 +176,7 @@ export class ObservableQueryGammPoolShare {
     }
   );
 
+  /** Gets percentage of user's ownership of pool. */
   readonly getAllGammShareRatio = computedFn(
     (bech32Address: string, poolId: string): RatePretty => {
       const pool = this.queryPools.getPool(poolId);
@@ -173,12 +185,62 @@ export class ObservableQueryGammPoolShare {
       }
 
       const share = this.getAllGammShare(bech32Address, poolId);
-
       const totalShare = pool.totalShare;
 
       return totalShare.toDec().isZero()
         ? new RatePretty(totalShare)
         : new RatePretty(share.quo(totalShare));
+    }
+  );
+
+  /** Gets user's ownership ratio and coin balance of each asset in pool. */
+  readonly getShareAssets = computedFn(
+    (
+      bech32Address: string,
+      poolId: string
+    ): {
+      ratio: RatePretty;
+      asset: CoinPretty;
+    }[] => {
+      const shareRatio = this.getAllGammShareRatio(bech32Address, poolId);
+      const pool = this.queryPools.getPool(poolId);
+      if (!pool) {
+        return [];
+      }
+
+      return pool.poolAssets.map((asset) => ({
+        ratio: new RatePretty(asset.weight.quo(pool.totalWeight)),
+        asset: asset.amount
+          .mul(shareRatio.moveDecimalPointLeft(2))
+          .trim(true)
+          .shrink(true),
+      }));
+    }
+  );
+
+  /** Gets user's locked assets given a set of durations. */
+  readonly getShareLockedAssets = computedFn(
+    (
+      bech32Address: string,
+      poolId: string,
+      lockableDurations: Duration[]
+    ): {
+      duration: Duration;
+      amount: CoinPretty;
+      lockIds: string[];
+    }[] => {
+      const poolShareCurrency = this.getShareCurrency(poolId);
+      return lockableDurations.map((duration) => {
+        const lockedCoin = this.queryAccountLocked
+          .get(bech32Address)
+          .getLockedCoinWithDuration(poolShareCurrency, duration);
+
+        return {
+          duration,
+          amount: lockedCoin.amount,
+          lockIds: lockedCoin.lockIds,
+        };
+      });
     }
   );
 }
