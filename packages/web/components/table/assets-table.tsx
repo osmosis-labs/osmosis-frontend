@@ -97,7 +97,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
     [
       nativeBalances,
       chainStore.osmosis.chainId,
-      chainStore.osmosis.chainName,
       ibcBalances,
       onWithdraw,
       onDeposit,

@@ -140,3 +140,5 @@ export const Table = <TCell extends BaseCell = BaseCell>({
     </table>
   );
 };
+
+export * from "./types";

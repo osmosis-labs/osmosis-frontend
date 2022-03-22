@@ -1288,38 +1288,6 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
-"@keplr-wallet/background@^0.9.12":
-  version "0.9.12"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/background/-/background-0.9.12.tgz#507661b560af0432f9d2d8a963f4c7c636f41520"
-  integrity sha512-H81Tsa/kuepa1GLP99ACYn1aYw+0W1R79jBNTym951eGB3BFihbP/ZPsV/zxBS0WNzuMPnEZR2dAyzTDBZUY8Q==
-  dependencies:
-    "@cosmjs/launchpad" "^0.24.0-alpha.25"
-    "@cosmjs/proto-signing" "^0.24.0-alpha.25"
-    "@keplr-wallet/common" "^0.9.10"
-    "@keplr-wallet/cosmos" "^0.9.12"
-    "@keplr-wallet/crypto" "^0.9.10"
-    "@keplr-wallet/popup" "^0.9.6"
-    "@keplr-wallet/router" "^0.9.6"
-    "@keplr-wallet/types" "^0.9.12"
-    "@keplr-wallet/unit" "^0.9.12"
-    "@ledgerhq/hw-transport" "^6.20.0"
-    "@ledgerhq/hw-transport-webhid" "^6.20.0"
-    "@ledgerhq/hw-transport-webusb" "^6.20.0"
-    aes-js "^3.1.2"
-    axios "^0.21.4"
-    big-integer "^1.6.48"
-    bip39 "^3.0.2"
-    buffer "^6.0.3"
-    delay "^4.4.0"
-    joi "^17.5.0"
-    ledger-cosmos-js "^2.1.8"
-    long "^4.0.0"
-    pbkdf2 "^3.1.2"
-    reflect-metadata "^0.1.13"
-    secp256k1 "^4.0.2"
-    secretjs "^0.17.0"
-    tsyringe "^4.4.0"
-
 "@keplr-wallet/background@^0.9.16":
   version "0.9.16"
   resolved "https://registry.yarnpkg.com/@keplr-wallet/background/-/background-0.9.16.tgz#6bababb26298089918aa3c2656c007a9336fe5a3"
@@ -1395,7 +1363,7 @@
     long "^4.0.0"
     protobufjs "^6.10.2"
 
-"@keplr-wallet/crypto@^0.9.10", "@keplr-wallet/crypto@^0.9.12":
+"@keplr-wallet/crypto@^0.9.10":
   version "0.9.10"
   resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.9.10.tgz#2ea6f20c68fc284c4f6e7545af7a57bb6545190b"
   integrity sha512-zjoUUL5Ky72eJBm7bd9kPNBTgQL/cFO6pbvPgVa32S8UZ6GlwsPSyiHuvq0k8z0t9X9GwdpuH0nrnlL4viU4fw==
@@ -1463,31 +1431,6 @@
   version "0.9.6"
   resolved "https://registry.yarnpkg.com/@keplr-wallet/router/-/router-0.9.6.tgz#43ad4692af9ea18a13dafe97a83369b03d491c9b"
   integrity sha512-TZfqkRwGOMk0nbgel41xLfD8ifM59WIXNt90rJjKynNT1/TOLTGxRDC8Ie5yY9Oak0lz7rmdrWNTOsvtWyuplA==
-
-"@keplr-wallet/stores@^0.9.12":
-  version "0.9.12"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/stores/-/stores-0.9.12.tgz#9c9c6ad0e2a81de7a8bca17a6bbb53a648cdb355"
-  integrity sha512-WTD8YjaB1WE0FojCPs5XTZnzTzxlqiawFVnPK2sZpwrAZM9s22KzTLvch+74HU6IrALIK3LLDIO2uGifYKSLNA==
-  dependencies:
-    "@cosmjs/encoding" "^0.24.0-alpha.25"
-    "@cosmjs/launchpad" "^0.24.0-alpha.25"
-    "@cosmjs/tendermint-rpc" "^0.24.1"
-    "@keplr-wallet/background" "^0.9.12"
-    "@keplr-wallet/common" "^0.9.10"
-    "@keplr-wallet/cosmos" "^0.9.12"
-    "@keplr-wallet/crypto" "^0.9.10"
-    "@keplr-wallet/router" "^0.9.6"
-    "@keplr-wallet/types" "^0.9.12"
-    "@keplr-wallet/unit" "^0.9.12"
-    axios "^0.21.4"
-    buffer "^6.0.3"
-    deepmerge "^4.2.2"
-    eventemitter3 "^4.0.7"
-    long "^4.0.0"
-    mobx "^6.1.7"
-    mobx-utils "^6.0.3"
-    p-queue "^6.6.2"
-    utility-types "^3.10.0"
 
 "@keplr-wallet/stores@^0.9.16":
   version "0.9.16"
@@ -11066,7 +11009,7 @@ tsutils@^3.21.0:
   dependencies:
     tslib "^1.8.1"
 
-tsyringe@^4.4.0, tsyringe@^4.5.0:
+tsyringe@^4.5.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/tsyringe/-/tsyringe-4.6.0.tgz#14915d3d7f0db35e1cf7269bdbf7c440713c8d07"
   integrity sha512-BMQAZamSfEmIQzH8WJeRu1yZGQbPSDuI9g+yEiKZFIcO46GPZuMOC2d0b52cVBdw1d++06JnDSIIZvEnogMdAw==
