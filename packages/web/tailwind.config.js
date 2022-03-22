@@ -118,6 +118,7 @@ module.exports = {
       overline: 400,
     },
     backgroundImage: {
+      none: "none",
       "gradients-socialLive":
         "linear-gradient(180deg, #89EAFB 0%, #1377B0 100%)",
       "gradients-greenBeach":

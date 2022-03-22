@@ -41,6 +41,9 @@ const Pools: NextPage = observer(function () {
     1
   );
 
+  // TODO: use real data after superfluid store is added
+  const superfluidPoolIds = ["1", "560", "561"];
+
   return (
     <main>
       <Overview
@@ -115,42 +118,48 @@ const Pools: NextPage = observer(function () {
       </section>
       <section className="bg-surface">
         <div className="max-w-container mx-auto p-10">
-          <h5>Top Pools</h5>
+          <h5>Superfluid Pools</h5>
           <div className="mt-4 grid grid-cols-3 gap-10">
-            {top3Pools.map((pool) => {
-              const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
-                pool.id,
-                priceStore
-              );
-              const poolLiquidity = pool.computeTotalValueLocked(priceStore);
+            {superfluidPoolIds.map((poolId) => {
+              const superfluidPool =
+                queryOsmosis.queryGammPools.getPool(poolId);
+              if (superfluidPool) {
+                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
+                  superfluidPool.id,
+                  priceStore
+                );
+                const poolLiquidity =
+                  superfluidPool.computeTotalValueLocked(priceStore);
 
-              return (
-                <PoolCard
-                  key={pool.id}
-                  poolId={pool.id}
-                  poolAssets={pool.poolAssets.map((poolAsset) => ({
-                    coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-                    coinDenom: poolAsset.amount.currency.coinDenom,
-                  }))}
-                  poolMetrics={[
-                    {
-                      label: "APR",
-                      value: apr.maxDecimals(2).toString(),
-                      isLoading:
-                        queryOsmosis.queryIncentivizedPools.isAprFetching,
-                    },
-                    {
-                      label: "Pool Liquidity",
-                      value: poolLiquidity.toString(),
-                      isLoading: poolLiquidity.toDec().isZero(),
-                    },
-                    {
-                      label: "Fees",
-                      value: pool.swapFee.toString(),
-                    },
-                  ]}
-                />
-              );
+                return (
+                  <PoolCard
+                    key={superfluidPool.id}
+                    poolId={superfluidPool.id}
+                    poolAssets={superfluidPool.poolAssets.map((poolAsset) => ({
+                      coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+                      coinDenom: poolAsset.amount.currency.coinDenom,
+                    }))}
+                    poolMetrics={[
+                      {
+                        label: "APR",
+                        value: apr.maxDecimals(2).toString(),
+                        isLoading:
+                          queryOsmosis.queryIncentivizedPools.isAprFetching,
+                      },
+                      {
+                        label: "Pool Liquidity",
+                        value: poolLiquidity.toString(),
+                        isLoading: poolLiquidity.toDec().isZero(),
+                      },
+                      {
+                        label: "Fees",
+                        value: superfluidPool.swapFee.toString(),
+                      },
+                    ]}
+                    isSuperfluid={true}
+                  />
+                );
+              }
             })}
           </div>
         </div>
