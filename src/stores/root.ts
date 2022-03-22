@@ -1095,6 +1095,21 @@ export class RootStore {
 				],
 			},
 			{
+				poolId: '612',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-4' }], 'uxprt'),
+						coinDenom: 'XPRT',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
+						coinDenom: 'UST',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
 				poolId: '613',
 				currencies: [
 					{
