@@ -220,7 +220,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
         isLoading: !queriesExternal.queryGammPoolFeeMetrics.response,
       },
       {
-        value: poolWithMetrics.fees7d.toString(),
+        value: poolWithMetrics.feesSpent7d.toString(),
         isLoading: !queriesExternal.queryGammPoolFeeMetrics.response,
       },
       {

@@ -7,7 +7,7 @@ import { Dec, PricePretty } from "@keplr-wallet/unit";
 
 import { ObservablePool } from "../../queries/pools";
 import { ObservableQueryExternal } from "../store";
-import { ObservablePoolWithFeeMetrics } from "./types";
+import { ObservablePoolWithFeeMetrics, PoolFeesMetrics } from "./types";
 
 export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<{
   last_update_at: number;
@@ -17,7 +17,7 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<{
     volume_7d: number;
     fees_spent_24h: number;
     fees_spent_7d: number;
-    fees_percentage: number;
+    fees_percentage: string;
   }[];
 }> {
   constructor(kvStore: KVStore) {
@@ -31,33 +31,64 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<{
       pool: ObservablePool,
       priceStore: CoinGeckoPriceStore
     ): ObservablePoolWithFeeMetrics => {
-      const poolMetric = this.response?.data.data.find(
-        (poolMetric) => poolMetric.pool_id === pool.id
-      );
-
-      const fiatCurrency = priceStore.getFiatCurrency(
-        priceStore.defaultVsCurrency
-      )!;
-
+      const poolFeesMetrics = this.getPoolFeesMetrics(pool.id, priceStore);
       const liquidity = pool.computeTotalValueLocked(priceStore);
-      const volume24h = new PricePretty(
-        fiatCurrency,
-        poolMetric?.volume_24h
-          ? new Dec(poolMetric.volume_24h.toFixed(10))
-          : new Dec(0)
-      );
-      const fees7d = new PricePretty(
-        fiatCurrency,
-        poolMetric?.fees_spent_7d
-          ? new Dec(poolMetric.fees_spent_7d.toFixed(10))
-          : new Dec(0)
-      );
 
       return {
         pool,
         liquidity,
+        ...poolFeesMetrics,
+      };
+    }
+  );
+
+  readonly getPoolFeesMetrics = computedFn(
+    (poolId: string, priceStore: CoinGeckoPriceStore): PoolFeesMetrics => {
+      const fiatCurrency = priceStore.getFiatCurrency(
+        priceStore.defaultVsCurrency
+      );
+      if (!fiatCurrency) {
+        throw new Error("There is no fiat currency in priceStore");
+      }
+
+      const poolFeesMetricsRaw = this.response?.data.data.find(
+        (poolMetric) => poolMetric.pool_id === poolId
+      );
+      if (!poolFeesMetricsRaw) {
+        const zeroPrice = new PricePretty(fiatCurrency, new Dec(0));
+        return {
+          volume24h: zeroPrice,
+          volume7d: zeroPrice,
+          feesSpent24h: zeroPrice,
+          feesSpent7d: zeroPrice,
+          feesPercentage: "",
+        };
+      }
+
+      const volume24h = new PricePretty(
+        fiatCurrency,
+        new Dec(poolFeesMetricsRaw.volume_24h)
+      );
+      const volume7d = new PricePretty(
+        fiatCurrency,
+        new Dec(poolFeesMetricsRaw.volume_7d)
+      );
+      const feesSpent24h = new PricePretty(
+        fiatCurrency,
+        new Dec(poolFeesMetricsRaw.fees_spent_24h)
+      );
+      const feesSpent7d = new PricePretty(
+        fiatCurrency,
+        new Dec(poolFeesMetricsRaw.fees_spent_7d)
+      );
+      const feesPercentage = poolFeesMetricsRaw.fees_percentage;
+
+      return {
         volume24h,
-        fees7d,
+        volume7d,
+        feesSpent24h,
+        feesSpent7d,
+        feesPercentage,
       };
     }
   );

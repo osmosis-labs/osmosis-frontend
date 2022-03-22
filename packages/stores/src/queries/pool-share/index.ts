@@ -1,22 +1,21 @@
-import { Duration } from "dayjs/plugin/duration";
 import { ObservableQueryBalances } from "@keplr-wallet/stores";
+import { AppCurrency, Currency, FiatCurrency } from "@keplr-wallet/types";
 import {
   CoinPretty,
   Dec,
-  DecUtils,
   Int,
   IntPretty,
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
-import { AppCurrency, Currency, FiatCurrency } from "@keplr-wallet/types";
-import { ObservableQueryPools } from "../pools";
+import { Duration } from "dayjs/plugin/duration";
 import { computedFn } from "mobx-utils";
 import {
   ObservableQueryAccountLocked,
   ObservableQueryAccountLockedCoins,
   ObservableQueryAccountUnlockingCoins,
 } from "../lockup";
+import { ObservableQueryPools } from "../pools";
 
 export class ObservableQueryGammPoolShare {
   static getShareCurrency(poolId: string): Currency {
