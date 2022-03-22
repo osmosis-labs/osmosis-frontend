@@ -19,7 +19,7 @@ const Pools: NextPage = observer(function () {
     queriesExternalStore,
   } = useStore();
 
-  const chainInfo = chainStore.getChain("osmosis");
+  const chainInfo = chainStore.osmosis;
   const queriesOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
   const queriesExternal = queriesExternalStore.get();
 
@@ -42,12 +42,6 @@ const Pools: NextPage = observer(function () {
 
   const myPoolIds = queriesOsmosis.queryGammPoolShare.getOwnPools(
     account.bech32Address
-  );
-
-  const top3Pools = queriesOsmosis.queryGammPools.getPoolsDescendingOrderTVL(
-    priceStore,
-    3,
-    1
   );
 
   // TODO: use real data after superfluid store is added

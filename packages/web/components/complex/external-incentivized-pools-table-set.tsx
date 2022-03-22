@@ -1,7 +1,6 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservablePool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useState } from "react";
 import { ExternalIncentiveGaugeAllowList } from "../../config";
 import {
@@ -26,9 +25,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       queriesOsmosisStore,
       accountStore,
     } = useStore();
-    const router = useRouter();
-
-    const chainInfo = chainStore.getChain("osmosis");
+    const chainInfo = chainStore.osmosis;
     const queryExternal = queriesExternalStore.get();
     const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
     const account = accountStore.getAccount(chainInfo.chainId);

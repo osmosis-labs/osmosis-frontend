@@ -1,6 +1,5 @@
 import { ChainInfoWithExplorer } from "./stores/chain";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { Int } from "@keplr-wallet/unit";
 
 /**
  * Determine the channel info per the chain.

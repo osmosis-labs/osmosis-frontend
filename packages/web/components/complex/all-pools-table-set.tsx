@@ -1,7 +1,6 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservablePoolWithFeeMetrics } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useState } from "react";
 import {
   useFilteredData,
@@ -29,7 +28,6 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
     queriesOsmosisStore,
     accountStore,
   } = useStore();
-  const router = useRouter();
   const [activeOptionId, setActiveOptionId] = useState(poolsMenuOptions[0].id);
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 

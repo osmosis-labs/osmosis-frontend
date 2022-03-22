@@ -140,12 +140,12 @@ const Assets: NextPage = () => {
   };
 
   const tableRows: RowDef[] = [
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
+    { ...baseRow },
+    { ...baseRow },
+    { ...baseRow },
+    { ...baseRow },
+    { ...baseRow },
+    { ...baseRow },
   ];
 
   const tableData: Partial<BaseCell & PoolCompositionCell>[][] = [
