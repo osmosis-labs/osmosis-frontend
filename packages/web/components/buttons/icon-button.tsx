@@ -2,14 +2,14 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { ButtonProps } from "./types";
+import { Disableable } from "../types";
 
 type IconName = string;
 
-interface Props extends ButtonProps {
+interface Props extends ButtonProps, Disableable {
   color?: "primary" | "secondary";
   size?: "sm";
   type?: "chevron-right" | "chevron-down-secondary" | IconName;
-  disabled?: boolean;
 }
 
 export const IconButton: FunctionComponent<Props> = ({

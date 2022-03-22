@@ -1,15 +1,14 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
-import { CustomClasses } from "../types";
+import { CustomClasses, Disableable } from "../types";
 import { ButtonProps } from "./types";
 
-interface Props extends ButtonProps, CustomClasses {
+interface Props extends ButtonProps, CustomClasses, Disableable {
   color?: "primary" | "secondary";
   size?: "xs" | "sm" | "lg";
   type?: "block" | "arrow" | "arrow-sm" | "outline";
   loading?: boolean;
-  disabled?: boolean;
 }
 
 export const Button: FunctionComponent<Props> = ({

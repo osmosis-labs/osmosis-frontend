@@ -98,7 +98,7 @@ module.exports = {
       body1: ["Inter", "ui-sans-serif", "system-ui"],
       body2: ["Inter", "ui-sans-serif", "system-ui"],
       button: ["Inter", "ui-sans-serif", "system-ui"],
-      caption: ["Poppins", "ui-sans-serif", "system-ui"],
+      caption: ["Inter", "ui-sans-serif", "system-ui"],
       overline: ["Poppins", "ui-sans-serif", "system-ui"],
     },
     fontWeight: {
@@ -114,7 +114,7 @@ module.exports = {
       body1: 500,
       body2: 500,
       button: 700,
-      caption: 400,
+      caption: 500,
       overline: 400,
     },
     backgroundImage: {
@@ -148,6 +148,7 @@ module.exports = {
       maxWidth: {
         container: "90rem",
         clipboard: "32.5rem",
+        modal: "42rem",
       },
       keyframes: {
         loading: {
