@@ -4,13 +4,19 @@ import { AssetCell as Cell } from "./types";
 
 export const TransferButtonCell: FunctionComponent<
   { type: "withdraw" | "deposit" } & Partial<Cell>
-> = ({ type, chainId, onWithdraw, onDeposit }) =>
+> = ({ type, chainId, coinDenom, onWithdraw, onDeposit }) =>
   type === "withdraw" ? (
-    chainId && onWithdraw ? (
-      <TransferButton label="Withdraw" action={() => onWithdraw?.(chainId)} />
+    chainId && coinDenom && onWithdraw ? (
+      <TransferButton
+        label="Withdraw"
+        action={() => onWithdraw?.(chainId, coinDenom)}
+      />
     ) : null
-  ) : chainId && onDeposit ? (
-    <TransferButton label="Deposit" action={() => onDeposit?.(chainId)} />
+  ) : chainId && coinDenom && onDeposit ? (
+    <TransferButton
+      label="Deposit"
+      action={() => onDeposit?.(chainId, coinDenom)}
+    />
   ) : null;
 
 const TransferButton: FunctionComponent<{

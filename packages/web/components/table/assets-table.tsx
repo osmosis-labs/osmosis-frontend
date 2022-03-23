@@ -23,8 +23,8 @@ import { DataSorter } from "../../hooks/data/data-sorter";
 interface Props {
   nativeBalances: CoinBalance[];
   ibcBalances: (IBCBalance | IBCCW20ContractBalance)[];
-  onDeposit: (chainId: string) => void;
-  onWithdraw: (chainId: string) => void;
+  onWithdraw: (chainId: string, coinDenom: string) => void;
+  onDeposit: (chainId: string, coinDenom: string) => void;
 }
 
 export const AssetsTable: FunctionComponent<Props> = ({
