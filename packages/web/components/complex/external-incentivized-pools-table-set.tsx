@@ -1,7 +1,7 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservablePool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { ExternalIncentiveGaugeAllowList } from "../../config";
 import {
   useFilteredData,
@@ -132,7 +132,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       setSortDirection,
       toggleSortDirection,
       sortedAllPoolsWithMetrics,
-    ] = useSortedData(filteredPools);
+    ] = useSortedData(filteredPools, "liquidity", "descending");
     const [page, setPage, minPage, numPages, allData] = usePaginatedData(
       sortedAllPoolsWithMetrics,
       10
@@ -221,18 +221,9 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
               },
       },
     ];
-    // TODO: Remove when pull request for asset page get merged.
-    useEffect(() => {
-      setSortKeyPath("liquidity");
-      setSortDirection("descending");
-    }, []);
-
-    const baseRow: RowDef = {
-      makeHoverClass: () => "text-secondary-200",
-    };
 
     const tableRows: RowDef[] = allData.map((poolWithFeeMetrics) => ({
-      ...baseRow,
+      makeHoverClass: () => "text-secondary-200",
       link: `/pool/${poolWithFeeMetrics.pool.id}`,
     }));
 
