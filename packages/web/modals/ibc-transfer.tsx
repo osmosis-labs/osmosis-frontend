@@ -26,9 +26,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     const [wasCustomWithdrawAddrEntered, setCustomWithdrawAddrEntered] =
       useState(false);
 
-    // TODO: fix cw20 (juno) depositing
-    // `ObservableQueryCosmosBalanceRegistry` does not support non-native balances
-
     return (
       <ModalBase {...props}>
         <div className="text-white-high">
