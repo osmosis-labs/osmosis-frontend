@@ -1,3 +1,4 @@
+import { CoinPretty, DecUtils } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
@@ -5,6 +6,7 @@ import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
 import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
 import { LeftTime } from "../../components/left-time";
+import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { useStore } from "../../stores";
 
@@ -47,13 +49,32 @@ const Pools: NextPage = observer(function () {
   // TODO: use real data after superfluid store is added
   const superfluidPoolIds = ["1", "560", "561"];
 
+  const osmoPrice = priceStore.calculatePrice(
+    new CoinPretty(
+      chainStore.osmosis.stakeCurrency,
+      DecUtils.getTenExponentNInPrecisionRange(
+        chainStore.osmosis.stakeCurrency.coinDecimals
+      )
+    )
+  );
+
   return (
     <main>
       <Overview
         title="Active Pools"
         titleButtons={[{ label: "Create New Pool", onClick: console.log }]}
         primaryOverviewLabels={[
-          { label: "OSMO Price", value: "$10" },
+          {
+            label: "OSMO Price",
+            value: (
+              <MetricLoader
+                className="h-[2.5rem] !mt-0"
+                isLoading={!osmoPrice || osmoPrice.toDec().isZero()}
+              >
+                <div className="h-[2.5rem]">{osmoPrice?.toString()}</div>
+              </MetricLoader>
+            ),
+          },
           {
             label: "Reward distribution in",
             value: (
