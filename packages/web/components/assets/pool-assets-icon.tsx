@@ -1,10 +1,10 @@
 import Image from "next/image";
-import { ObservablePool } from "@osmosis-labs/stores";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
+import { AssetInfo } from "./types";
 
 interface Props {
-  assets: Array<ObservablePool["poolAssets"][0]>;
+  assets: AssetInfo[] | undefined;
   size: "sm" | "md";
 }
 
@@ -12,6 +12,7 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
   assets,
   size = "md",
 }) => {
+  if (!assets) return null;
   return (
     <div className="relative flex items-center">
       <div
@@ -23,10 +24,10 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
           "absolute z-10 w-[4.125rem] h-[4.125rem] rounded-full border bg-card border-enabledGold flex items-center justify-center"
         )}
       >
-        {assets[0].amount.currency.coinImageUrl ? (
+        {assets[0].coinImageUrl ? (
           <Image
-            src={assets[0].amount.currency.coinImageUrl}
-            alt={assets[0].amount.currency.coinDenom}
+            src={assets[0].coinImageUrl}
+            alt={assets[0].coinDenom}
             width={size === "md" ? 54 : 28}
             height={size === "md" ? 54 : 28}
           />
@@ -34,8 +35,8 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
           <Image
             src="/icons/question-mark.svg"
             alt="no token icon"
-            width={54}
-            height={54}
+            width={size === "md" ? 54 : 28}
+            height={size === "md" ? 54 : 28}
           />
         )}
       </div>
@@ -52,19 +53,19 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
           <div className="body1 text-white-mid ml-2.5">{`+${
             assets.length - 1
           }`}</div>
-        ) : assets[1].amount.currency.coinImageUrl ? (
+        ) : assets[1].coinImageUrl ? (
           <Image
-            src={assets[1].amount.currency.coinImageUrl}
-            alt={assets[1].amount.currency.coinDenom}
-            width={54}
-            height={54}
+            src={assets[1].coinImageUrl}
+            alt={assets[1].coinDenom}
+            width={size === "md" ? 54 : 28}
+            height={size === "md" ? 54 : 28}
           />
         ) : (
           <Image
             src="/icons/question-mark.svg"
             alt="no token icon"
-            width={54}
-            height={54}
+            width={size === "md" ? 54 : 28}
+            height={size === "md" ? 54 : 28}
           />
         )}
       </div>

@@ -1,17 +1,9 @@
-import type { NextPage } from "next";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../stores";
-import { TradeClipboard } from "../components/trade-clipboard";
+import type { NextPage } from "next";
 import { ProgressiveSvgImage } from "../components/progressive-svg-image";
+import { TradeClipboard } from "../components/trade-clipboard";
 
 const Home: NextPage = observer(function () {
-  const { chainStore, accountStore, queriesOsmosisStore } = useStore();
-
-  const chainInfo = chainStore.osmosis;
-  const account = accountStore.getAccount(chainInfo.chainId);
-
-  const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
-
   return (
     <main className="relative bg-background h-screen">
       <div className="h-full bg-home-bg-pattern bg-repeat-x bg-cover overflow-auto flex justify-center items-center">

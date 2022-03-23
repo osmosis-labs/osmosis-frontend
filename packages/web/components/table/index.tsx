@@ -1,13 +1,14 @@
-import Image from "next/image";
-import React, { PropsWithoutRef, useState } from "react";
-import classNames from "classnames";
 import Tippy from "@tippyjs/react";
-import { SortDirection, CustomClasses } from "../types";
+import classNames from "classnames";
+import Image from "next/image";
+import Link from "next/link";
+import React, { FunctionComponent, PropsWithoutRef, useState } from "react";
+import { CustomClasses, SortDirection } from "../types";
 import { replaceAt } from "../utils";
 
 export interface BaseCell {
-  value: string;
-  rowHovered: boolean;
+  value?: string;
+  rowHovered?: boolean;
 }
 
 export interface ColumnSortDef {
@@ -15,24 +16,25 @@ export interface ColumnSortDef {
   onClickHeader: (colIndex: number) => void;
 }
 
-export interface ColumnDef<TCell extends BaseCell> {
+export interface ColumnDef<TCell> {
   display: string;
+  displayClassName?: string;
   sort?: ColumnSortDef;
   infoTooltip?: string;
   /** If provided, will be used to render the cell for each row in this column.
    *
    * Note: components must accept optionals for all cell data and check for the data they need.
    */
-  displayCell?: React.FunctionComponent<Partial<TCell>>;
+  displayCell?: FunctionComponent<Partial<TCell>>;
 }
 
 export interface RowDef {
   makeClass?: (rowIndex: number) => string;
   makeHoverClass?: (rowIndex: number) => string;
-  onClick?: (rowIndex: number) => void;
+  link?: string;
 }
 
-export interface Props<TCell extends BaseCell> extends CustomClasses {
+export interface TableProps<TCell> extends CustomClasses {
   columnDefs: ColumnDef<TCell>[];
   rowDefs?: RowDef[];
   data: Partial<TCell>[][];
@@ -41,12 +43,12 @@ export interface Props<TCell extends BaseCell> extends CustomClasses {
 /** Generic table that accepts a 2d array of any type of data cell,
  *  as well as row and column definitions that dictate header and cell appearance & behavior.
  */
-export const Table = <TCell extends BaseCell = BaseCell>({
+export const Table = <TCell extends BaseCell>({
   columnDefs,
   rowDefs,
   data,
   className,
-}: PropsWithoutRef<Props<TCell>>) => {
+}: PropsWithoutRef<TableProps<TCell>>) => {
   const [rowsHovered, setRowsHovered] = useState(data.map(() => false));
 
   const setRowHovered = (rowIndex: number, value: boolean) =>
@@ -59,9 +61,12 @@ export const Table = <TCell extends BaseCell = BaseCell>({
           {columnDefs.map((colDef, colIndex) => (
             <th
               key={colIndex}
-              className={classNames({
-                "cursor-pointer select-none": colDef?.sort?.onClickHeader,
-              })}
+              className={classNames(
+                {
+                  "cursor-pointer select-none": colDef?.sort?.onClickHeader,
+                },
+                colDef?.displayClassName
+              )}
               onClick={() => colDef?.sort?.onClickHeader(colIndex)}
             >
               <span>
@@ -119,13 +124,13 @@ export const Table = <TCell extends BaseCell = BaseCell>({
                 "h-20 shadow-separator bg-surface",
                 rowDef?.makeClass?.(rowIndex),
                 {
-                  "cursor-pointer select-none": rowDef?.onClick !== undefined,
+                  "focus-within:bg-card focus-within:outline-none":
+                    rowDef?.link !== undefined,
                 },
                 rowHovered
                   ? `${rowDef?.makeHoverClass?.(rowIndex)} bg-card`
                   : undefined
               )}
-              onClick={() => rowDef?.onClick?.(rowIndex)}
               onMouseEnter={() => setRowHovered(rowIndex, true)}
               onMouseLeave={() => setRowHovered(rowIndex, false)}
             >
@@ -134,8 +139,17 @@ export const Table = <TCell extends BaseCell = BaseCell>({
 
                 return (
                   <td key={`${rowIndex}${columnIndex}`}>
-                    {DisplayCell ? (
-                      <DisplayCell rowHovered={rowHovered} {...cell} />
+                    {rowDef?.link ? (
+                      <Link href={rowDef?.link}>
+                        <a
+                          className="focus:outline-none"
+                          tabIndex={columnIndex > 0 ? -1 : 0}
+                        >
+                          {DisplayCell ? <DisplayCell {...cell} /> : cell.value}
+                        </a>
+                      </Link>
+                    ) : DisplayCell ? (
+                      <DisplayCell {...cell} />
                     ) : (
                       cell.value
                     )}

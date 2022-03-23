@@ -50,10 +50,10 @@ export const Overview: FunctionComponent<Props> = ({
           </h5>
           {titleButtons?.slice(0, 2).map(({ label, onClick }, index) => (
             <Button
-              className="ml-6"
               key={index}
               color="primary"
               size="sm"
+              className="ml-6"
               onClick={onClick}
             >
               {label}
@@ -67,11 +67,17 @@ export const Overview: FunctionComponent<Props> = ({
               <OverviewLabelValue key={index} {...label} />
             ))}
         </div>
-        <div className="mt-6 flex items-center gap-20">
-          {secondaryOverviewLabels?.slice(0, 3).map((label, index) => (
-            <OverviewLabelValue prominence="secondary" key={index} {...label} />
-          ))}
-        </div>
+        {secondaryOverviewLabels && (
+          <div className="mt-6 flex items-center gap-20">
+            {secondaryOverviewLabels.slice(0, 3).map((label, index) => (
+              <OverviewLabelValue
+                prominence="secondary"
+                key={index}
+                {...label}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   </section>

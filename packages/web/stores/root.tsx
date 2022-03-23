@@ -5,21 +5,26 @@ import {
   CoinGeckoPriceStore,
   IBCCurrencyRegsitrar,
   QueriesStore,
-  QueriesWithCosmos,
+  QueriesWithCosmosAndSecretAndCosmwasm,
 } from "@keplr-wallet/stores";
 import { EmbedChainInfos, IBCAssetInfos } from "../config";
 import { IndexedDBKVStore, LocalKVStore } from "@keplr-wallet/common";
 import EventEmitter from "eventemitter3";
 import { ChainInfoWithExplorer, ChainStore } from "./chain";
-import { QueriesOsmosisStore, LPCurrencyRegistrar } from "@osmosis-labs/stores";
+import {
+  QueriesOsmosisStore,
+  QueriesExternalStore,
+  LPCurrencyRegistrar,
+} from "@osmosis-labs/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
 
-  public readonly queriesStore: QueriesStore<QueriesWithCosmos>;
+  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasm>;
   public readonly queriesOsmosisStore: QueriesOsmosisStore;
+  public readonly queriesExternalStore: QueriesExternalStore;
 
   public readonly accountStore: AccountStore<AccountWithCosmos>;
 
@@ -50,16 +55,19 @@ export class RootStore {
       };
     })();
 
-    this.queriesStore = new QueriesStore<QueriesWithCosmos>(
+    this.queriesStore = new QueriesStore<QueriesWithCosmosAndSecretAndCosmwasm>(
       new IndexedDBKVStore("store_web_queries"),
       this.chainStore,
       getKeplr,
-      QueriesWithCosmos
+      QueriesWithCosmosAndSecretAndCosmwasm
     );
     this.queriesOsmosisStore = new QueriesOsmosisStore(
       (chainId: string) => this.queriesStore.get(chainId),
       new IndexedDBKVStore("store_web_queries"),
       this.chainStore
+    );
+    this.queriesExternalStore = new QueriesExternalStore(
+      new IndexedDBKVStore("store_web_queries")
     );
 
     this.accountStore = new AccountStore<AccountWithCosmos>(
@@ -110,7 +118,7 @@ export class RootStore {
       this.chainStore,
       this.accountStore,
       this.queriesStore,
-      undefined,
+      this.queriesStore,
       (
         denomTrace: {
           denom: string;
@@ -119,8 +127,8 @@ export class RootStore {
             channelId: string;
           }[];
         },
-        originChainInfo: ChainInfoInner | undefined,
-        counterpartyChainInfo: ChainInfoInner | undefined,
+        _originChainInfo: ChainInfoInner | undefined,
+        _counterpartyChainInfo: ChainInfoInner | undefined,
         originCurrency: AppCurrency | undefined
       ) => {
         const firstPath = denomTrace.paths[0];
