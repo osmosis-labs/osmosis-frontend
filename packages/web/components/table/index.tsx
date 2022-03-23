@@ -61,14 +61,14 @@ export const Table = <TCell extends BaseCell>({
                   {colDef?.sort?.currentDirection === "ascending" ? (
                     <Image
                       alt="ascending"
-                      src="/icons/arrow-up.svg"
+                      src="/icons/sort-up.svg"
                       height={16}
                       width={16}
                     />
                   ) : colDef?.sort?.currentDirection === "descending" ? (
                     <Image
                       alt="descending"
-                      src="/icons/arrow-down.svg"
+                      src="/icons/sort-down.svg"
                       height={16}
                       width={16}
                     />
