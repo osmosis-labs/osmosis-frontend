@@ -15,7 +15,6 @@ import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards/";
 import { PoolMetric } from "../../components/cards/types";
 import { IbcTransferModal } from "../../modals/ibc-transfer";
-import { IBCBalance } from "../../stores/assets";
 
 const INIT_POOL_CARD_COUNT = 6;
 
@@ -192,8 +191,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
         if (!pool) {
           return undefined;
         }
-        const fiatCurrency = priceStore.getFiatCurrency("usd")!;
-        const tvl = pool.computeTotalValueLocked(priceStore, fiatCurrency);
+        const tvl = pool.computeTotalValueLocked(priceStore);
         const shareRatio =
           queriesOsmosis.queryGammPoolShare.getAllGammShareRatio(
             bech32Address,
@@ -216,7 +214,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
               ? {
                   label: "APR",
                   value: queriesOsmosis.queryIncentivizedPools
-                    .computeMostAPY(poolId, priceStore, fiatCurrency)
+                    .computeMostAPY(poolId, priceStore)
                     .toString(),
                   isLoading:
                     queriesOsmosis.queryIncentivizedPools.isAprFetching,
@@ -227,9 +225,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                 },
             {
               label: "Pool Liquidity",
-              value: pool
-                .computeTotalValueLocked(priceStore, fiatCurrency)
-                .toString(),
+              value: pool.computeTotalValueLocked(priceStore).toString(),
             },
             queriesOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
@@ -248,7 +244,12 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
     return (
       <>
         {pools.map(([pool, metrics]) => (
-          <PoolCard key={pool.id} pool={pool} poolMetrics={metrics} />
+          <PoolCard
+            key={pool.id}
+            poolId={pool.id}
+            poolAssets={pool.poolAssets.map((asset) => asset.amount.currency)}
+            poolMetrics={metrics}
+          />
         ))}
       </>
     );

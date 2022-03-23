@@ -4,8 +4,7 @@
     "baseUrl": ".",
     "outDir": "build",
     "declaration": true,
-    "rootDir": "src",
-    "allowJs": true
+    "rootDir": "src"
   },
   "include": ["src/**/*"]
 }

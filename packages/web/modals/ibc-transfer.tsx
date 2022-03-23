@@ -11,7 +11,7 @@ import { InputBox } from "../components/input";
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
     const { currency, counterpartyChainId, isWithdraw } = props;
-    const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
+    const { chainStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
 
     const [
@@ -19,7 +19,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       counterpartyAccount,
       amountConfig,
       inTransit,
-      transfer,
+      _transfer,
       customCounterpartyConfig,
     ] = useIbcTransfer(props);
     const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);

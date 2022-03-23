@@ -11,6 +11,7 @@
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build",
     "build": "tsc",
+    "build:proto": "mkdir -p build/account/msg/proto/generated && cp ./src/account/msg/proto/generated/* ./build/account/msg/proto/generated",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",

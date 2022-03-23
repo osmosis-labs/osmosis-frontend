@@ -31,8 +31,7 @@ export class ObservableAssets {
     protected readonly cosmosStore: QueriesStore<QueriesWithCosmos>,
     protected readonly osmosisStore: QueriesOsmosisStore,
     protected readonly priceStore: CoinGeckoPriceStore,
-    protected readonly chainName: string = "osmosis",
-    protected readonly fiatCurrencyKey: string = "usd"
+    protected readonly chainName: string = "osmosis"
   ) {
     makeObservable(this);
   }
@@ -51,7 +50,7 @@ export class ObservableAssets {
 
         return {
           balance: bal,
-          fiatValue: this.priceStore.calculatePrice(bal, this.fiatCurrencyKey),
+          fiatValue: this.priceStore.calculatePrice(bal),
         };
       });
   }
@@ -108,10 +107,7 @@ export class ObservableAssets {
       const ibcBalance: IBCBalance = {
         chainInfo: chainInfo,
         balance,
-        fiatValue: this.priceStore.calculatePrice(
-          balance,
-          this.fiatCurrencyKey
-        ),
+        fiatValue: this.priceStore.calculatePrice(balance),
         sourceChannelId: ibcAsset.sourceChannelId,
         destChannelId: ibcAsset.destChannelId,
         isUnstable: ibcAsset.isUnstable,
@@ -167,7 +163,9 @@ export class ObservableAssets {
 
   public calcValueOf = computedFn((balances: CoinPretty[]): PricePretty => {
     const { chainId } = this.chainStore.getChain(this.chainName);
-    const fiat = this.priceStore.getFiatCurrency(this.fiatCurrencyKey)!;
+    const fiat = this.priceStore.getFiatCurrency(
+      this.priceStore.defaultVsCurrency
+    )!;
     let fiatValue = new PricePretty(fiat, new Dec(0));
     for (const balance of balances) {
       if (balance.currency.coinMinimalDenom.startsWith("gamm/pool/")) {
@@ -179,7 +177,7 @@ export class ObservableAssets {
           .get(chainId)
           .queryGammPools.getPool(poolId);
         if (pool) {
-          const tvl = pool.computeTotalValueLocked(this.priceStore, fiat);
+          const tvl = pool.computeTotalValueLocked(this.priceStore);
           const totalShare = pool.totalShare;
           if (tvl.toDec().gt(new Dec(0)) && totalShare.toDec().gt(new Dec(0))) {
             const value = tvl.mul(balance.quo(totalShare));

@@ -31,6 +31,8 @@ export const PageList: FunctionComponent<Props> = ({
     }
   }, [isEditingText, max, min]);
 
+  // TODO: fix paging right after clicking accept edited value
+  // may be related to event propagation
   const processInputValue = (e: any) => {
     const newValue = Number(e.target.value);
     if (newValue >= min && newValue <= max) {

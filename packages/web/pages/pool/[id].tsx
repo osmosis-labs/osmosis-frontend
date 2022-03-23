@@ -1,22 +1,22 @@
-import { useRouter } from "next/router";
-import Image from "next/image";
-import { FunctionComponent, useEffect, useMemo } from "react";
-import { observer } from "mobx-react-lite";
-import { Duration } from "dayjs/plugin/duration";
-import { Dec, PricePretty, CoinPretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryGuageById } from "@osmosis-labs/stores";
-import { PoolDetailExtraGaugeAllowList } from "../../config";
-import { useStore } from "../../stores";
-import { Overview } from "../../components/overview";
+import { Duration } from "dayjs/plugin/duration";
+import { autorun } from "mobx";
+import { observer } from "mobx-react-lite";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { FunctionComponent, useEffect } from "react";
 import { Button } from "../../components/buttons";
-import { Table, BaseCell } from "../../components/table";
 import {
   PoolCatalystCard,
   PoolGaugeBonusCard,
   PoolGaugeCard,
 } from "../../components/cards";
 import { MetricLoader } from "../../components/loaders";
-import { autorun } from "mobx";
+import { Overview } from "../../components/overview";
+import { BaseCell, Table } from "../../components/table";
+import { ExternalIncentiveGaugeAllowList } from "../../config";
+import { useStore } from "../../stores";
 
 const Pool: FunctionComponent = observer(() => {
   const router = useRouter();
@@ -66,7 +66,7 @@ const Pool: FunctionComponent = observer(() => {
     | undefined;
 
   if (pool) {
-    totalValueLocked = pool.computeTotalValueLocked(priceStore, fiat);
+    totalValueLocked = pool.computeTotalValueLocked(priceStore);
     userLockedValue = totalValueLocked?.mul(
       queries.queryGammPoolShare.getAllGammShareRatio(bech32Address, pool.id)
     );
@@ -119,7 +119,7 @@ const Pool: FunctionComponent = observer(() => {
             : undefined,
         })
       );
-    externalGuages = (PoolDetailExtraGaugeAllowList[pool.id] ?? []).map(
+    externalGuages = (ExternalIncentiveGaugeAllowList[pool.id] ?? []).map(
       ({ gaugeId, denom }) => {
         const observableGauge = queries.queryGauge.get(gaugeId);
         const currency = chainStore

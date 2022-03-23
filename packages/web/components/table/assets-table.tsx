@@ -237,17 +237,14 @@ export const AssetsTable: FunctionComponent<Props> = ({
               onToggle={() => setShowAllPools(!showAllPools)}
             />
           )}
-          <div className="flex gap-2 absolute right-24 bottom-1">
+          <div className="flex gap-2 absolute text-body2 right-24 bottom-1">
             <CheckBox
-              className={
-                hideZeroBalances
-                  ? "after:bg-primary-200"
-                  : "after:border-2 after:border-white-full"
-              }
+              className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
               isOn={hideZeroBalances}
               onToggle={() => setHideZeroBalances(!hideZeroBalances)}
-            />
-            <span className="text-body2">Hide zero balances</span>
+            >
+              Hide zero balances
+            </CheckBox>
           </div>
         </div>
       </div>

@@ -43,7 +43,13 @@ export const MenuToggle: FunctionComponent<Props> = ({
           checked={id === selectedOptionId}
           onChange={() => onSelect(id)}
         ></input>
-        <span className="relative top-3 z-10">{display}</span>
+        <span
+          className={classNames("relative top-3 z-10", {
+            "text-iconDefault": id !== selectedOptionId,
+          })}
+        >
+          {display}
+        </span>
       </label>
     ))}
   </div>

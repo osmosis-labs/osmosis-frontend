@@ -1,7 +1,8 @@
 import Image from "next/image";
+import Link from "next/link";
 import React, { PropsWithoutRef, useState, useCallback } from "react";
-import classNames from "classnames";
 import Tippy from "@tippyjs/react";
+import classNames from "classnames";
 import { replaceAt } from "../utils";
 import { CustomClasses } from "../types";
 import { BaseCell, ColumnDef, RowDef } from "./types";
@@ -17,7 +18,7 @@ export interface Props<TCell extends BaseCell> extends CustomClasses {
 /** Generic table that accepts a 2d array of any type of data cell,
  *  as well as row and column definitions that dictate header and cell appearance & behavior.
  */
-export const Table = <TCell extends BaseCell = BaseCell>({
+export const Table = <TCell extends BaseCell>({
   columnDefs,
   rowDefs,
   data,
@@ -49,7 +50,7 @@ export const Table = <TCell extends BaseCell = BaseCell>({
               <span>
                 {colDef?.display ? (
                   typeof colDef.display === "string" ? (
-                    colDef.display ?? ""
+                    colDef.display
                   ) : (
                     <>{colDef.display}</>
                   )
@@ -109,15 +110,20 @@ export const Table = <TCell extends BaseCell = BaseCell>({
                 "h-20 shadow-separator bg-surface",
                 rowDef?.makeClass?.(rowIndex),
                 {
-                  "cursor-pointer select-none": rowDef?.onClick !== undefined,
+                  "focus-within:bg-card focus-within:outline-none":
+                    rowDef?.link,
                 },
                 rowHovered
-                  ? rowDef?.makeHoverClass?.(rowIndex) || "bg-card"
+                  ? `${rowDef?.makeHoverClass?.(rowIndex)} bg-card`
                   : undefined
               )}
-              onClick={() => rowDef?.onClick?.(rowIndex)}
               onMouseEnter={() => setRowHovered(rowIndex, true)}
               onMouseLeave={() => setRowHovered(rowIndex, false)}
+              onClick={() => {
+                if (rowDef && rowDef.onClick && !rowDef.link) {
+                  rowDef.onClick(rowIndex);
+                }
+              }}
             >
               {row.map((cell, columnIndex) => {
                 const DisplayCell = columnDefs[columnIndex]?.displayCell;
@@ -125,10 +131,23 @@ export const Table = <TCell extends BaseCell = BaseCell>({
 
                 return (
                   <td className={customClass} key={`${rowIndex}${columnIndex}`}>
-                    {DisplayCell ? (
+                    {rowDef?.link ? (
+                      <Link href={rowDef?.link}>
+                        <a
+                          className="focus:outline-none"
+                          tabIndex={columnIndex > 0 ? -1 : 0}
+                        >
+                          {DisplayCell ? (
+                            <DisplayCell rowHovered={rowHovered} {...cell} />
+                          ) : (
+                            cell.value
+                          )}
+                        </a>
+                      </Link>
+                    ) : DisplayCell ? (
                       <DisplayCell rowHovered={rowHovered} {...cell} />
                     ) : (
-                      cell.value ?? ""
+                      cell.value
                     )}
                   </td>
                 );

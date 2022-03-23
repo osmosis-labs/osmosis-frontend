@@ -1413,8 +1413,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
   },
 ];
 
-/** External incentive gauges visible in pool detail page. */
-export const PoolDetailExtraGaugeAllowList: {
+export const ExternalIncentiveGaugeAllowList: {
   [poolId: string]: {
     gaugeId: string;
     denom: string;

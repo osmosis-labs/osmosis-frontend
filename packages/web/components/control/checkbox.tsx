@@ -6,8 +6,8 @@ import { ToggleProps } from "./types";
 
 export const CheckBox: FunctionComponent<
   ToggleProps & Disableable & CustomClasses
-> = ({ isOn, onToggle: onToggle, disabled = false, className }) => (
-  <label className="relative" htmlFor="toggle-checkbox">
+> = ({ isOn, onToggle: onToggle, disabled = false, className, children }) => (
+  <label className="relative flex" htmlFor="toggle-checkbox">
     {isOn && (
       <div
         className={classNames(
@@ -37,5 +37,6 @@ export const CheckBox: FunctionComponent<
       disabled={disabled}
       onChange={(e) => onToggle(e.target.checked)}
     />
+    <div>{children}</div>
   </label>
 );
