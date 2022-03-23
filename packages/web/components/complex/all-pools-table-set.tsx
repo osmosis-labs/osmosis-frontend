@@ -105,7 +105,6 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
     {
       id: "pool.id",
       display: "Pool ID/Tokens",
-      className: "!pl-[5.25rem]",
       sort:
         sortKeyPath === "pool.id"
           ? {

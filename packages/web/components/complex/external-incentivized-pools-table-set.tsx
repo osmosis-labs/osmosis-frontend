@@ -141,7 +141,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       {
         id: "pool.id",
         display: "Pool ID/Tokens",
-        displayClassName: "!pl-[5.25rem]",
         sort:
           sortKeyPath === "pool.id"
             ? {

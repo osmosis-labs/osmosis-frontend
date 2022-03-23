@@ -114,7 +114,9 @@ export const Table = <TCell extends BaseCell>({
                     rowDef?.link,
                 },
                 rowHovered
-                  ? `${rowDef?.makeHoverClass?.(rowIndex)} bg-card`
+                  ? `${rowDef?.makeHoverClass?.(
+                      rowIndex
+                    )} bg-card cursor-pointer`
                   : undefined
               )}
               onMouseEnter={() => setRowHovered(rowIndex, true)}
