@@ -16,7 +16,10 @@ export interface IbcTransferSender {
 export type IbcTransferCounterparty = Omit<
   IbcTransferSender,
   "contractTransfer"
->;
+> & {
+  /** If provided, will override the counterparty account address. */
+  bech32AddressOverride?: string;
+};
 
 export interface IbcBroadcastEvent {
   txHash: string;

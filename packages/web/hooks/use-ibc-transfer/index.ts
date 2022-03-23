@@ -8,8 +8,20 @@ import { ObservableAmountConfig, basicIbcTransfer } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { useAmountConfig } from "../use-amount-config";
 import { useFakeFeeConfig } from "../use-fake-fee-config";
-import { IbcTransfer } from ".";
+import { useCustomBech32Address } from "./use-custom-bech32address";
+import { IbcTransfer, CustomCounterpartyConfig } from ".";
 
+/**
+ * Convenience hook for handling IBC transfer state. Supports user setting custom & validated bech32 counterparty address when withdrawing.
+ *
+ * @param currency IBC counterparty currency.
+ * @param counterpartyChainId ChainId of counterparty.
+ * @param sourceChannelId IBC route source channel id.
+ * @param destChannelId IBC route destination channel id.
+ * @param isWithdraw Specifies whether transfer is a withdrawal.
+ * @param ics20ContractAddress Smart contract address should counterparty currency be a CW20 token.
+ * @returns [osmosis account, counterparty account, observable amount config, isLoading, IBC transfer callback, custom withdrawal address manager if withdrawing]
+ */
 export function useIbcTransfer({
   currency,
   counterpartyChainId,
@@ -22,7 +34,8 @@ export function useIbcTransfer({
   AccountWithCosmos,
   ObservableAmountConfig,
   boolean,
-  () => void
+  () => void,
+  CustomCounterpartyConfig | undefined
 ] {
   const { chainStore, accountStore, queriesStore } = useStore();
   const { chainId } = chainStore.osmosis;
@@ -47,12 +60,31 @@ export function useIbcTransfer({
       : counterpartyAccount.msgOpts.ibcTransfer.gas
   );
   amountConfig.setFeeConfig(feeConfig);
+  const [customBech32Address, isCustomAddressValid, setCustomBech32Address] =
+    useCustomBech32Address();
+  const customCounterpartyConfig: CustomCounterpartyConfig | undefined =
+    isWithdraw
+      ? {
+          bech32Address: customBech32Address,
+          isValid: isCustomAddressValid,
+          setBech32Address: (bech32Address: string) =>
+            setCustomBech32Address(
+              bech32Address,
+              chainStore.getChain(counterpartyChainId).bech32Config
+                .bech32PrefixAccAddr
+            ),
+        }
+      : undefined;
 
+  // open keplr dialog to request connecting to counterparty chain
   useEffect(() => {
+    console.log(account.bech32Address, counterpartyAccount.walletStatus);
     if (
       account.bech32Address &&
-      counterpartyAccount.walletStatus === WalletStatus.NotInit
+      (counterpartyAccount.walletStatus === WalletStatus.NotInit ||
+        counterpartyAccount.walletStatus === WalletStatus.Rejected)
     ) {
+      console.log("init()");
       counterpartyAccount.init();
     }
   }, [account.bech32Address, counterpartyAccount]);
@@ -148,6 +180,7 @@ export function useIbcTransfer({
     (isWithdraw && account.isSendingMsg === "ibcTransfer") ||
       (!isWithdraw && counterpartyAccount.isSendingMsg === "ibcTransfer"),
     transfer,
+    customCounterpartyConfig,
   ];
 }
 

@@ -22,6 +22,9 @@ export async function basicIbcTransfer(
   if (!sender.account.isReadyToSendMsgs || !counterparty.account.bech32Address)
     return;
 
+  const recipient =
+    counterparty.bech32AddressOverride || counterparty.account.bech32Address;
+
   // process & report ibc transfer events
   const decodedTxEvents = {
     onBroadcasted: (txHash: Uint8Array) =>
@@ -34,7 +37,7 @@ export async function basicIbcTransfer(
           currency: amountConfig.sendCurrency,
         },
         sender: sender.account.bech32Address,
-        recipient: counterparty.account.bech32Address,
+        recipient,
       }),
     onFulfill: (tx: any) => {
       if (!tx.code) {
@@ -91,7 +94,7 @@ export async function basicIbcTransfer(
                 destChannelId: destChannel,
                 sequence,
                 sender: sender.account.bech32Address,
-                recipient: counterparty.account.bech32Address,
+                recipient,
                 amount: {
                   amount: amountConfig.amount,
                   currency: amountConfig.sendCurrency,
@@ -121,7 +124,7 @@ export async function basicIbcTransfer(
 
     const msg = {
       channel: counterparty.channelId,
-      remote_address: counterparty.account.bech32Address,
+      remote_address: recipient,
       // 15 min
       timeout: 900,
     };
@@ -154,7 +157,7 @@ export async function basicIbcTransfer(
       },
       amountConfig.amount,
       amountConfig.currency,
-      counterparty.account.bech32Address,
+      recipient,
       "",
       undefined,
       undefined,

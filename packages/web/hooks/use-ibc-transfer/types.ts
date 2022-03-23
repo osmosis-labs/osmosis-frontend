@@ -9,6 +9,12 @@ export interface IbcTransfer {
   ics20ContractAddress?: string;
 }
 
+export interface CustomCounterpartyConfig {
+  bech32Address: string;
+  isValid: boolean;
+  setBech32Address: (bech32Address: string) => void;
+}
+
 /*
 setDialogState({
                     open: true,

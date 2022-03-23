@@ -15,6 +15,7 @@ import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards/";
 import { PoolMetric } from "../../components/cards/types";
 import { IbcTransferModal } from "../../modals/ibc-transfer";
+import { IBCBalance } from "../../stores/assets";
 
 const INIT_POOL_CARD_COUNT = 6;
 
@@ -97,9 +98,11 @@ const ChainAssets: FunctionComponent = observer(() => {
   > | null>(null);
 
   const openTransferModal = useCallback(
-    (mode: "deposit" | "withdraw", chainId: string) => {
+    (mode: "deposit" | "withdraw", chainId: string, coinDenom) => {
       const balance = ibcBalances.find(
-        (bal) => bal.chainInfo.chainId === chainId
+        (bal) =>
+          bal.chainInfo.chainId === chainId &&
+          bal.balance.currency.coinDenom === coinDenom
       );
 
       if (!balance) {
@@ -137,8 +140,12 @@ const ChainAssets: FunctionComponent = observer(() => {
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
-        onDeposit={(chainId) => openTransferModal("deposit", chainId)}
-        onWithdraw={(chainId) => openTransferModal("withdraw", chainId)}
+        onDeposit={(chainId, coinDenom) =>
+          openTransferModal("deposit", chainId, coinDenom)
+        }
+        onWithdraw={(chainId, coinDenom) =>
+          openTransferModal("withdraw", chainId, coinDenom)
+        }
       />
     </>
   );
@@ -199,7 +206,8 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
             bech32Address,
             pool.id
           );
-        const actualLockedShareRatio = lockedShareRatio.moveDecimalPointLeft(2);
+        const actualLockedShareRatio =
+          lockedShareRatio.moveDecimalPointRight(2);
 
         return [
           pool,
@@ -207,15 +215,15 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
             queriesOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
                   label: "APR",
-                  value: `${queriesOsmosis.queryIncentivizedPools
+                  value: queriesOsmosis.queryIncentivizedPools
                     .computeMostAPY(poolId, priceStore, fiatCurrency)
-                    .toString()}%`,
+                    .toString(),
                   isLoading:
                     queriesOsmosis.queryIncentivizedPools.isAprFetching,
                 }
               : {
                   label: "Fee APR",
-                  value: "",
+                  value: "", // TODO: add fee APR
                 },
             {
               label: "Pool Liquidity",

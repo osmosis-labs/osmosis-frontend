@@ -84,6 +84,9 @@ export class ObservableAssets {
         );
       }
 
+      // TODO: support multihop IBC denoms-
+      // Reimplement: https://github.com/osmosis-labs/osmosis-frontend/pull/275/
+
       const balance = queries.queryBalances
         .getQueryBech32Address(account.bech32Address)
         .getBalanceFromCurrency({

@@ -12,11 +12,9 @@ import { IndexedDBKVStore, KVStore, LocalKVStore } from "@keplr-wallet/common";
 import EventEmitter from "eventemitter3";
 import { ChainStore, ChainInfoWithExplorer } from "./chain";
 import {
-  HasOsmosisQueries,
   QueriesOsmosisStore,
   LPCurrencyRegistrar,
   IBCTransferHistoryStore,
-  QueriesOsmosis,
 } from "@osmosis-labs/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
