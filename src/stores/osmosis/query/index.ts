@@ -1,5 +1,11 @@
 import { ObservableQueryPools, ObservableQueryNumPools } from './pools';
-import { ChainGetter, QueriesSetBase, QueriesWithCosmos } from '@keplr-wallet/stores';
+import {
+	ChainGetter,
+	CosmwasmQueries,
+	HasCosmwasmQueries,
+	QueriesSetBase,
+	QueriesWithCosmos,
+} from '@keplr-wallet/stores';
 import { KVStore } from '@keplr-wallet/common';
 import { DeepReadonly } from 'utility-types';
 import { ObservableQueryGammPoolShare } from './pool-share';
@@ -10,24 +16,35 @@ import {
 	ObservableQueryAccountLockedCoins,
 	ObservableQueryAccountUnlockingCoins,
 	ObservableQueryAccountLocked,
+	ObservableSyntheticLockupsByLockId,
 } from './lockup';
 import { ObservableQueryEpochProvisions, ObservableQueryMintParmas } from './mint';
 import { ObservableQueryDistrInfo } from './pool-incentives/distr-info';
 import { ObservableQueryTotalCliamable, ObservableQueryClaimRecord, ObservableQueryClaimParams } from './claim';
 import { ObservableQueryGuage } from './incentives';
 import { ObservableQueryPoolCreationFee } from './pool-creation-fee';
+import {
+	ObservableQuerySuperfluidDelegations,
+	ObservableQuerySuperfluidPools,
+	ObservableQuerySuperfluidUndelegations,
+	ObservableQuerySuperfluidAssetMultiplier,
+	ObservableQuerySuperfluidOsmoEquivalent,
+	ObservableQuerySuperfluidParams,
+} from './superfluid-pools';
 
 export interface HasOsmosisQueries {
 	osmosis: OsmosisQueries;
 }
 
-export class QueriesWithCosmosAndOsmosis extends QueriesWithCosmos implements HasOsmosisQueries {
+export class QueriesWithCosmosAndOsmosis extends QueriesWithCosmos implements HasOsmosisQueries, HasCosmwasmQueries {
 	public readonly osmosis: DeepReadonly<OsmosisQueries>;
+	public readonly cosmwasm: DeepReadonly<CosmwasmQueries>;
 
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
 		super(kvStore, chainId, chainGetter);
 
 		this.osmosis = new OsmosisQueries(this, kvStore, chainId, chainGetter);
+		this.cosmwasm = new CosmwasmQueries(this, kvStore, chainId, chainGetter);
 	}
 }
 
@@ -39,6 +56,7 @@ export class OsmosisQueries {
 	public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
 	public readonly queryUnlockingCoins: DeepReadonly<ObservableQueryAccountUnlockingCoins>;
 	public readonly queryAccountLocked: DeepReadonly<ObservableQueryAccountLocked>;
+	public readonly querySyntheticLockupsByLockId: DeepReadonly<ObservableSyntheticLockupsByLockId>;
 
 	public readonly queryMintParams: DeepReadonly<ObservableQueryMintParmas>;
 	public readonly queryEpochProvisions: DeepReadonly<ObservableQueryEpochProvisions>;
@@ -56,12 +74,20 @@ export class OsmosisQueries {
 
 	public readonly queryPoolCreationFee: DeepReadonly<ObservableQueryPoolCreationFee>;
 
+	public readonly querySuperfluidPools: DeepReadonly<ObservableQuerySuperfluidPools>;
+	public readonly querySuperfluidDelegations: DeepReadonly<ObservableQuerySuperfluidDelegations>;
+	public readonly querySuperfluidUndelegations: DeepReadonly<ObservableQuerySuperfluidUndelegations>;
+	public readonly querySuperfluidParams: DeepReadonly<ObservableQuerySuperfluidParams>;
+	public readonly querySuperfluidAssetMultiplier: DeepReadonly<ObservableQuerySuperfluidAssetMultiplier>;
+	public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
+
 	constructor(queries: QueriesSetBase, kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
 		const queryGammPool = new ObservableQueryPool(kvStore, chainId, chainGetter);
 
 		this.queryLockedCoins = new ObservableQueryAccountLockedCoins(kvStore, chainId, chainGetter);
 		this.queryUnlockingCoins = new ObservableQueryAccountUnlockingCoins(kvStore, chainId, chainGetter);
 		this.queryAccountLocked = new ObservableQueryAccountLocked(kvStore, chainId, chainGetter);
+		this.querySyntheticLockupsByLockId = new ObservableSyntheticLockupsByLockId(kvStore, chainId, chainGetter);
 
 		this.queryGammPools = new ObservableQueryPools(kvStore, chainId, chainGetter, queryGammPool);
 		this.queryGammNumPools = new ObservableQueryNumPools(kvStore, chainId, chainGetter);
@@ -97,5 +123,18 @@ export class OsmosisQueries {
 		this.queryClaimParams = new ObservableQueryClaimParams(kvStore, chainId, chainGetter);
 
 		this.queryPoolCreationFee = new ObservableQueryPoolCreationFee(kvStore, chainId, chainGetter);
+
+		this.querySuperfluidPools = new ObservableQuerySuperfluidPools(kvStore, chainId, chainGetter);
+		this.querySuperfluidDelegations = new ObservableQuerySuperfluidDelegations(kvStore, chainId, chainGetter);
+		this.querySuperfluidUndelegations = new ObservableQuerySuperfluidUndelegations(kvStore, chainId, chainGetter);
+		this.querySuperfluidParams = new ObservableQuerySuperfluidParams(kvStore, chainId, chainGetter);
+		this.querySuperfluidAssetMultiplier = new ObservableQuerySuperfluidAssetMultiplier(kvStore, chainId, chainGetter);
+		this.querySuperfluidOsmoEquivalent = new ObservableQuerySuperfluidOsmoEquivalent(
+			chainId,
+			chainGetter,
+			this.querySuperfluidParams,
+			this.querySuperfluidAssetMultiplier,
+			this.queryGammPools
+		);
 	}
 }

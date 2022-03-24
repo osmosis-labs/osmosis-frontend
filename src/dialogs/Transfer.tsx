@@ -1,16 +1,18 @@
 import cn from 'clsx';
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { IBCCurrency } from '@keplr-wallet/types';
 import { AmountInput } from '../components/form/Inputs';
+import { ButtonPrimary } from '../components/layouts/Buttons';
 import { colorWhiteEmphasis } from '../emotionStyles/colors';
 import { useStore } from '../stores';
 import { Bech32Address } from '@keplr-wallet/cosmos';
-import { WalletStatus } from '@keplr-wallet/stores';
+import { getKeplrFromWindow, WalletStatus } from '@keplr-wallet/stores';
 import { useFakeFeeConfig } from '../hooks/tx';
 import { useBasicAmountConfig } from '../hooks/tx/basic-amount-config';
 import { wrapBaseDialog } from './base';
 import { useAccountConnection } from '../hooks/account/useAccountConnection';
+import { useCustomBech32Address } from '../hooks/account/useCustomBech32Address';
 import { ConnectAccountButton } from '../components/ConnectAccountButton';
 import { Buffer } from 'buffer/';
 
@@ -24,6 +26,8 @@ export const TransferDialog = wrapBaseDialog(
 			isWithdraw,
 			close,
 			isMobileView,
+
+			ics20ContractAddress,
 		}: {
 			currency: IBCCurrency;
 			counterpartyChainId: string;
@@ -32,11 +36,16 @@ export const TransferDialog = wrapBaseDialog(
 			isWithdraw: boolean;
 			close: () => void;
 			isMobileView: boolean;
+
+			ics20ContractAddress?: string;
 		}) => {
 			const { chainStore, accountStore, queriesStore, ibcTransferHistoryStore } = useStore();
 
 			const account = accountStore.getAccount(chainStore.current.chainId);
 			const counterpartyAccount = accountStore.getAccount(counterpartyChainId);
+			const counterpartyBech32Prefix = chainStore.getChain(counterpartyChainId).bech32Config.bech32PrefixAccAddr;
+			const [customWithdrawAddr, isValidCustomWithdrawAddr, setCustomWithdrawAddr] = useCustomBech32Address();
+			const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
 
 			const bal = queriesStore
 				.get(chainStore.current.chainId)
@@ -47,11 +56,32 @@ export const TransferDialog = wrapBaseDialog(
 				.queryBalances.getQueryBech32Address(counterpartyAccount.bech32Address)
 				.getBalanceFromCurrency(currency.originCurrency!);
 
+			// detect if a user rejects connection to a chain account in Keplr
+			const [counterpartyInitAttempted, setCounterpartyInitAttempted] = useState(false);
+
 			useEffect(() => {
-				if (account.bech32Address && counterpartyAccount.walletStatus === WalletStatus.NotInit) {
+				if (counterpartyInitAttempted && counterpartyAccount.walletStatus === WalletStatus.NotInit) {
+					counterpartyAccount.disconnect();
+					setIsEditingWithdrawAddr(true);
+					setCustomWithdrawAddr(counterpartyAccount.bech32Address, counterpartyBech32Prefix);
+				} else if (
+					account.bech32Address &&
+					counterpartyAccount.walletStatus === WalletStatus.NotInit &&
+					!counterpartyInitAttempted
+				) {
 					counterpartyAccount.init();
+					setCounterpartyInitAttempted(true);
 				}
-			}, [account.bech32Address, counterpartyAccount.walletStatus]);
+			}, [
+				account.bech32Address,
+				counterpartyAccount.walletStatus,
+				counterpartyAccount,
+				counterpartyBech32Prefix,
+				counterpartyInitAttempted,
+				setIsEditingWithdrawAddr,
+				setCustomWithdrawAddr,
+				setCounterpartyInitAttempted,
+			]);
 
 			const amountConfig = useBasicAmountConfig(
 				chainStore,
@@ -73,6 +103,27 @@ export const TransferDialog = wrapBaseDialog(
 
 			const { isAccountConnected, connectAccount } = useAccountConnection();
 
+			useEffect(() => {
+				if (isAccountConnected && currency.originCurrency) {
+					if ('contractAddress' in currency.originCurrency) {
+						getKeplrFromWindow()
+							.then(keplr => {
+								// If the keplr is from extension and the ibc token is from cw20,
+								// suggest the token to the keplr.
+								if (keplr && keplr.mode === 'extension') {
+									if (currency.originChainId && currency.originCurrency && 'contractAddress' in currency.originCurrency)
+										keplr.suggestToken(currency.originChainId, currency.originCurrency.contractAddress).catch(e => {
+											console.log(e);
+										});
+								}
+							})
+							.catch(e => {
+								console.log(e);
+							});
+					}
+				}
+			}, [isAccountConnected, currency.originCurrency, currency.originChainId]);
+
 			return (
 				<div className="w-full h-full text-white-high">
 					<div className="mb-5 md:mb-10 flex justify-between items-center w-full">
@@ -93,17 +144,56 @@ export const TransferDialog = wrapBaseDialog(
 						<div className="flex justify-center items-center w-10 my-2 md:my-0">
 							<img src={`/public/assets/Icons/Arrow-${isMobileView ? 'Down' : 'Right'}.svg`} />
 						</div>
-						<div className="w-full flex-1 p-3 md:p-4 border border-white-faint rounded-2xl">
-							<p className="text-white-high">To</p>
-							<p className="text-white-disabled truncate overflow-ellipsis">
-								{pickOne(
-									Bech32Address.shortenAddress(counterpartyAccount.bech32Address, 25),
-									Bech32Address.shortenAddress(account.bech32Address, 25),
-									isWithdraw
-								)}
-							</p>
+						<div
+							className={`w-full flex-1 p-3 md:p-4 border ${
+								isValidCustomWithdrawAddr ? 'border-white-faint' : 'border-missionError'
+							} rounded-2xl`}>
+							<div className="flex place-content-between">
+								<div className="flex gap-2">
+									<p className="text-white-high">To</p>
+								</div>
+								{!isValidCustomWithdrawAddr && <p className="text-error">Invalid address</p>}
+							</div>
+							{isEditingWithdrawAddr ? (
+								<div className="bg-background rounded-lg" style={{ padding: '0 8px' }}>
+									<AmountInput
+										style={{ fontSize: '14px', textAlign: 'left' }}
+										value={customWithdrawAddr}
+										onChange={(e: any) => setCustomWithdrawAddr(e.target.value, counterpartyBech32Prefix)}
+									/>
+								</div>
+							) : (
+								<p className="text-white-disabled truncate overflow-ellipsis">
+									{pickOne(
+										Bech32Address.shortenAddress(counterpartyAccount.bech32Address, 25),
+										Bech32Address.shortenAddress(account.bech32Address, 25),
+										isWithdraw
+									)}
+									{isWithdraw && !isEditingWithdrawAddr && counterpartyAccount.walletStatus === WalletStatus.Loaded && (
+										<ButtonPrimary
+											className="ml-1 text-white-emphasis"
+											style={{ fontSize: '11px', padding: '6px 8px' }}
+											onClick={e => {
+												e.preventDefault();
+												setIsEditingWithdrawAddr(true);
+												setCustomWithdrawAddr(counterpartyAccount.bech32Address, counterpartyBech32Prefix);
+											}}>
+											Edit
+										</ButtonPrimary>
+									)}
+								</p>
+							)}
 						</div>
 					</section>
+					{isEditingWithdrawAddr && (
+						<div className="flex gap-3 w-full border border-secondary-200 rounded-xl p-2 mt-2">
+							<img className="h-5" src="/public/assets/Icons/Warning.svg" />
+							<p className="text-sm">
+								Warning: Incorrect withdrawal address could result in loss of funds. Do not withdraw into a centralized
+								exchange deposit address.
+							</p>
+						</div>
+					)}
 					<h6 className="text-base md:text-lg mt-7">Amount To {isWithdraw ? 'Withdraw' : 'Deposit'}</h6>
 					<div className="mt-3 md:mt-4 w-full p-0 md:p-5 border-0 md:border border-secondary-50 border-opacity-60 rounded-2xl">
 						<p className="text-sm md:text-base mb-2">
@@ -162,16 +252,22 @@ export const TransferDialog = wrapBaseDialog(
 								disabled={
 									!account.isReadyToSendMsgs ||
 									!counterpartyAccount.isReadyToSendMsgs ||
-									amountConfig.getError() != null
+									amountConfig.getError() != null ||
+									!isValidCustomWithdrawAddr
 								}
 								onClick={async e => {
 									e.preventDefault();
 
 									try {
 										if (isWithdraw) {
-											if (account.isReadyToSendMsgs && counterpartyAccount.bech32Address) {
+											if (
+												account.isReadyToSendMsgs &&
+												(counterpartyAccount.bech32Address || (customWithdrawAddr && isValidCustomWithdrawAddr))
+											) {
 												const sender = account.bech32Address;
-												const recipient = counterpartyAccount.bech32Address;
+												const recipient = isEditingWithdrawAddr
+													? customWithdrawAddr
+													: counterpartyAccount.bech32Address;
 
 												await account.cosmos.sendIBCTransferMsg(
 													{
@@ -228,6 +324,12 @@ export const TransferDialog = wrapBaseDialog(
 																			const timeoutHeight = timeoutHeightAttr
 																				? Buffer.from(timeoutHeightAttr.value, 'base64').toString()
 																				: undefined;
+																			const timeoutTimestampAttr = attributes.find(
+																				attr => attr.key === Buffer.from('packet_timeout_timestamp').toString('base64')
+																			);
+																			const timeoutTimestamp = timeoutTimestampAttr
+																				? Buffer.from(timeoutTimestampAttr.value, 'base64').toString()
+																				: undefined;
 
 																			if (sourceChannel && destChannel && sequence) {
 																				ibcTransferHistoryStore.pushPendingHistory({
@@ -241,6 +343,7 @@ export const TransferDialog = wrapBaseDialog(
 																					recipient,
 																					amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
 																					timeoutHeight,
+																					timeoutTimestamp,
 																				});
 																			}
 																		}
@@ -258,85 +361,128 @@ export const TransferDialog = wrapBaseDialog(
 												const sender = counterpartyAccount.bech32Address;
 												const recipient = account.bech32Address;
 
-												await counterpartyAccount.cosmos.sendIBCTransferMsg(
-													{
-														portId: 'transfer',
-														channelId: destChannelId,
-														counterpartyChainId: chainStore.current.chainId,
-													},
-													amountConfig.amount,
-													amountConfig.currency,
-													recipient,
-													'',
-													undefined,
-													undefined,
-													{
-														onBroadcasted: (txHash: Uint8Array) =>
-															ibcTransferHistoryStore.pushUncommitedHistore({
-																txHash: Buffer.from(txHash).toString('hex'),
-																sourceChainId: counterpartyChainId,
-																destChainId: chainStore.current.chainId,
-																amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
-																sender,
-																recipient,
-															}),
-														onFulfill: tx => {
-															if (!tx.code) {
-																const events = tx?.events as
-																	| { type: string; attributes: { key: string; value: string }[] }[]
-																	| undefined;
-																if (events) {
-																	for (const event of events) {
-																		if (event.type === 'send_packet') {
-																			const attributes = event.attributes;
-																			const sourceChannelAttr = attributes.find(
-																				attr => attr.key === Buffer.from('packet_src_channel').toString('base64')
-																			);
-																			const sourceChannel = sourceChannelAttr
-																				? Buffer.from(sourceChannelAttr.value, 'base64').toString()
-																				: undefined;
-																			const destChannelAttr = attributes.find(
-																				attr => attr.key === Buffer.from('packet_dst_channel').toString('base64')
-																			);
-																			const destChannel = destChannelAttr
-																				? Buffer.from(destChannelAttr.value, 'base64').toString()
-																				: undefined;
-																			const sequenceAttr = attributes.find(
-																				attr => attr.key === Buffer.from('packet_sequence').toString('base64')
-																			);
-																			const sequence = sequenceAttr
-																				? Buffer.from(sequenceAttr.value, 'base64').toString()
-																				: undefined;
-																			const timeoutHeightAttr = attributes.find(
-																				attr => attr.key === Buffer.from('packet_timeout_height').toString('base64')
-																			);
-																			const timeoutHeight = timeoutHeightAttr
-																				? Buffer.from(timeoutHeightAttr.value, 'base64').toString()
-																				: undefined;
+												const txEvents = {
+													onBroadcasted: (txHash: Uint8Array) =>
+														ibcTransferHistoryStore.pushUncommitedHistore({
+															txHash: Buffer.from(txHash).toString('hex'),
+															sourceChainId: counterpartyChainId,
+															destChainId: chainStore.current.chainId,
+															amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
+															sender,
+															recipient,
+														}),
+													onFulfill: (tx: any) => {
+														if (!tx.code) {
+															const events = tx?.events as
+																| { type: string; attributes: { key: string; value: string }[] }[]
+																| undefined;
+															if (events) {
+																for (const event of events) {
+																	if (event.type === 'send_packet') {
+																		const attributes = event.attributes;
+																		const sourceChannelAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_src_channel').toString('base64')
+																		);
+																		const sourceChannel = sourceChannelAttr
+																			? Buffer.from(sourceChannelAttr.value, 'base64').toString()
+																			: undefined;
+																		const destChannelAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_dst_channel').toString('base64')
+																		);
+																		const destChannel = destChannelAttr
+																			? Buffer.from(destChannelAttr.value, 'base64').toString()
+																			: undefined;
+																		const sequenceAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_sequence').toString('base64')
+																		);
+																		const sequence = sequenceAttr
+																			? Buffer.from(sequenceAttr.value, 'base64').toString()
+																			: undefined;
+																		const timeoutHeightAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_timeout_height').toString('base64')
+																		);
+																		const timeoutHeight = timeoutHeightAttr
+																			? Buffer.from(timeoutHeightAttr.value, 'base64').toString()
+																			: undefined;
+																		const timeoutTimestampAttr = attributes.find(
+																			attr => attr.key === Buffer.from('packet_timeout_timestamp').toString('base64')
+																		);
+																		const timeoutTimestamp = timeoutTimestampAttr
+																			? Buffer.from(timeoutTimestampAttr.value, 'base64').toString()
+																			: undefined;
 
-																			if (sourceChannel && destChannel && sequence) {
-																				ibcTransferHistoryStore.pushPendingHistory({
-																					txHash: tx.hash,
-																					sourceChainId: counterpartyChainId,
-																					sourceChannelId: sourceChannel,
-																					destChainId: chainStore.current.chainId,
-																					destChannelId: destChannel,
-																					sequence,
-																					sender,
-																					recipient,
-																					amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
-																					timeoutHeight,
-																				});
-																			}
+																		if (sourceChannel && destChannel && sequence) {
+																			ibcTransferHistoryStore.pushPendingHistory({
+																				txHash: tx.hash,
+																				sourceChainId: counterpartyChainId,
+																				sourceChannelId: sourceChannel,
+																				destChainId: chainStore.current.chainId,
+																				destChannelId: destChannel,
+																				sequence,
+																				sender,
+																				recipient,
+																				amount: { amount: amountConfig.amount, currency: amountConfig.sendCurrency },
+																				timeoutHeight,
+																				timeoutTimestamp,
+																			});
 																		}
 																	}
 																}
 															}
+														}
 
-															close();
-														},
+														close();
+													},
+												};
+
+												if (ics20ContractAddress) {
+													if (!currency.originCurrency || !('contractAddress' in currency.originCurrency)) {
+														throw new Error(
+															'IBC is requested to be used via cosmwam, but the provided currency does not have a contract address'
+														);
 													}
-												);
+
+													const msg = {
+														channel: destChannelId,
+														remote_address: recipient,
+														// 15 min
+														timeout: 900,
+													};
+
+													await counterpartyAccount.cosmwasm.sendExecuteContractMsg(
+														'ibcTransfer' as any,
+														currency.originCurrency.contractAddress,
+														{
+															send: {
+																contract: ics20ContractAddress,
+																amount: amountConfig.getAmountPrimitive().amount,
+																msg: Buffer.from(JSON.stringify(msg)).toString('base64'),
+															},
+														},
+														[],
+														'',
+														{
+															gas: '350000',
+														},
+														undefined,
+														txEvents
+													);
+												} else {
+													await counterpartyAccount.cosmos.sendIBCTransferMsg(
+														{
+															portId: 'transfer',
+															channelId: destChannelId,
+															counterpartyChainId: chainStore.current.chainId,
+														},
+														amountConfig.amount,
+														amountConfig.currency,
+														recipient,
+														'',
+														undefined,
+														undefined,
+														txEvents
+													);
+												}
 											}
 										}
 									} catch (e) {

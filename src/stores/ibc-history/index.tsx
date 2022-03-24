@@ -1,12 +1,13 @@
 import { computed, flow, makeObservable, observable, toJS } from 'mobx';
 import { KVStore, toGenerator } from '@keplr-wallet/common';
-import { TxTracer, WsReadyState } from '../../tx';
+import { TxTracer } from '../../tx';
 import { ChainGetter } from '@keplr-wallet/stores';
 import { AppCurrency } from '@keplr-wallet/types';
 import { computedFn, keepAlive } from 'mobx-utils';
 import { ChainIdHelper } from '@keplr-wallet/cosmos';
 import { Buffer } from 'buffer/';
 import dayjs from 'dayjs';
+import Axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 export interface UncommitedHistory {
 	// Hex encoded.
@@ -41,7 +42,75 @@ export interface IBCTransferHistory {
 	status: IBCTransferHistoryStatus;
 	// timeoutHeight should be formed as the `{chain_version}-{block_height}`
 	readonly timeoutHeight?: string;
+	readonly timeoutTimestamp?: string;
 	readonly createdAt: string;
+}
+
+export class PollingStatusSubscription {
+	protected readonly rpcInstance: AxiosInstance;
+
+	protected _subscriptionCount: number = 0;
+
+	protected _handlers: ((data: any) => void)[] = [];
+
+	constructor(protected readonly rpc: string, protected readonly rpcConfig?: AxiosRequestConfig) {
+		this.rpcInstance = Axios.create({
+			...{
+				baseURL: rpc,
+			},
+			...rpcConfig,
+		});
+	}
+
+	get subscriptionCount(): number {
+		return this._subscriptionCount;
+	}
+
+	/**
+	 * @param handler
+	 * @return unsubscriber
+	 */
+	subscribe(handler: (data: any) => void): () => void {
+		this._handlers.push(handler);
+
+		this.increaseSubscriptionCount();
+
+		return () => {
+			this._handlers = this._handlers.filter(h => h !== handler);
+			this.decreaseSubscriptionCount();
+		};
+	}
+
+	protected async startSubscription() {
+		while (this._subscriptionCount > 0) {
+			await new Promise(resolve => {
+				// 7.5 sec.
+				setTimeout(resolve, 7500);
+			});
+
+			try {
+				const response = await this.rpcInstance.get('/status');
+				if (response.status === 200) {
+					this._handlers.forEach(handler => handler(response.data));
+				}
+			} catch (e) {
+				console.log(`Failed to fetch /status: ${e?.toString()}`);
+			}
+		}
+	}
+
+	protected increaseSubscriptionCount() {
+		this._subscriptionCount++;
+
+		if (this._subscriptionCount === 1) {
+			// No need to await
+			this.startSubscription();
+		}
+	}
+
+	protected decreaseSubscriptionCount() {
+		this._subscriptionCount--;
+	}
 }
 
 export class IBCTransferHistoryStore {
@@ -64,7 +133,7 @@ export class IBCTransferHistoryStore {
 
 	// Key is chain id.
 	// No need to be observable
-	protected blockSubscriberMap: Map<string, TxTracer> = new Map();
+	protected blockSubscriberMap: Map<string, PollingStatusSubscription> = new Map();
 
 	constructor(protected readonly kvStore: KVStore, protected readonly chainGetter: ChainGetter) {
 		makeObservable(this);
@@ -114,7 +183,10 @@ export class IBCTransferHistoryStore {
 	});
 
 	protected getBlockSubscriber(chainId: string): TxTracer {
-		let osmoWss = (this.chainGetter.getChain(chainId).chainName === "Osmosis") ? "https://testnet-wsrpc.osmosis.zone" : this.chainGetter.getChain(chainId).rpc;
+		const osmoWss =
+			this.chainGetter.getChain(chainId).chainName === 'Osmosis'
+				? 'https://testnet-wsrpc.osmosis.zone'
+				: this.chainGetter.getChain(chainId).rpc;
 		if (!this.blockSubscriberMap.has(chainId)) {
 			this.blockSubscriberMap.set(chainId, new TxTracer(osmoWss, '/websocket'));
 		}
@@ -124,7 +196,7 @@ export class IBCTransferHistoryStore {
 
 	// timeoutHeight should be formed as the `{chain_version}-{block_height}`
 	protected traceTimeoutHeight(
-		blockSubscriber: TxTracer,
+		statusSubscriber: PollingStatusSubscription,
 		timeoutHeight: string
 	): {
 		unsubscriber: () => void;
@@ -137,14 +209,39 @@ export class IBCTransferHistoryStore {
 		const promise = new Promise<void>(resolve => {
 			resolver = resolve;
 		});
-		const unsubscriber = blockSubscriber.subscribeBlock(data => {
-			const chainId = data?.block?.header?.chain_id;
+		const unsubscriber = statusSubscriber.subscribe(data => {
+			const chainId = data?.result?.node_info?.network;
 			if (chainId && ChainIdHelper.parse(chainId).version > chainVersion) {
 				resolver();
 				return;
 			}
-			const blockHeight = data?.block?.header?.height;
+			const blockHeight = data?.result?.sync_info?.latest_block_height;
 			if (blockHeight && parseInt(blockHeight) > timeoutBlockHeight) {
+				resolver();
+				return;
+			}
+		});
+
+		return {
+			unsubscriber,
+			promise,
+		};
+	}
+
+	protected traceTimeoutTimestamp(
+		statusSubscriber: PollingStatusSubscription,
+		timeoutTimestamp: string
+	): {
+		unsubscriber: () => void;
+		promise: Promise<void>;
+	} {
+		let resolver: (value: PromiseLike<void> | void) => void;
+		const promise = new Promise<void>(resolve => {
+			resolver = resolve;
+		});
+		const unsubscriber = statusSubscriber.subscribe(data => {
+			const blockTime = data?.result?.sync_info?.latest_block_time;
+			if (blockTime && new Date(blockTime).getTime() > Math.floor(parseInt(timeoutTimestamp) / 1000000)) {
 				resolver();
 				return;
 			}
@@ -159,7 +256,14 @@ export class IBCTransferHistoryStore {
 	async traceHistroyStatus(
 		history: Pick<
 			IBCTransferHistory,
-			'sourceChainId' | 'sourceChannelId' | 'destChainId' | 'destChannelId' | 'sequence' | 'timeoutHeight' | 'status'
+			| 'sourceChainId'
+			| 'sourceChannelId'
+			| 'destChainId'
+			| 'destChannelId'
+			| 'sequence'
+			| 'timeoutHeight'
+			| 'timeoutTimestamp'
+			| 'status'
 		>
 	): Promise<IBCTransferHistoryStatus> {
 		if (history.status === 'complete' || history.status === 'refunded') {
@@ -168,26 +272,27 @@ export class IBCTransferHistoryStore {
 
 		if (history.status === 'timeout') {
 			// If the packet is timeouted, wait until the packet timeout sent to the source chain.
-			let osmoWss = (this.chainGetter.getChain(history.sourceChainId).chainName === "Osmosis") ? "https://testnet-wsrpc.osmosis.zone" : this.chainGetter.getChain(history.sourceChainId).rpc;
+			const osmoWss =
+				this.chainGetter.getChain(history.sourceChainId).chainName === 'Osmosis'
+					? 'https://testnet-wsrpc.osmosis.zone'
+					: this.chainGetter.getChain(history.sourceChainId).rpc;
 			const txTracer = new TxTracer(osmoWss, '/websocket');
 			await txTracer.traceTx({
 				'timeout_packet.packet_src_channel': history.sourceChannelId,
 				'timeout_packet.packet_sequence': history.sequence,
 			});
 
+			txTracer.close();
 			return 'refunded';
 		}
 
 		const blockSubscriber = this.getBlockSubscriber(history.destChainId);
-		if (blockSubscriber.readyState === WsReadyState.CLOSED) {
-			blockSubscriber.open();
-		}
 
 		let timeoutUnsubscriber: (() => void) | undefined;
 
 		const promises: Promise<any>[] = [];
 
-		if (history.timeoutHeight) {
+		if (history.timeoutHeight && !history.timeoutHeight.endsWith('-0')) {
 			promises.push(
 				(async () => {
 					const { promise, unsubscriber } = this.traceTimeoutHeight(blockSubscriber, history.timeoutHeight!);
@@ -203,8 +308,27 @@ export class IBCTransferHistoryStore {
 					});
 				})()
 			);
+		} else if (history.timeoutTimestamp && history.timeoutTimestamp !== '0') {
+			promises.push(
+				(async () => {
+					const { promise, unsubscriber } = this.traceTimeoutTimestamp(blockSubscriber, history.timeoutTimestamp!);
+					timeoutUnsubscriber = unsubscriber;
+					await promise;
+
+					// Even though the block is reached to the timeout height,
+					// the receiving packet event could be delivered before the block timeout if the network connection is unstable.
+					// This it not the chain issue itself, jsut the issue from the frontend, it it impossible to ensure the network status entirely.
+					// To reduce this problem, just wait 10 second more even if the block is reached to the timeout height.
+					await new Promise(resolve => {
+						setTimeout(resolve, 10000);
+					});
+				})()
+			);
 		}
-		let osmoWss = (this.chainGetter.getChain(history.sourceChainId).chainName === "Osmosis") ? "https://testnet-wsrpc.osmosis.zone" : this.chainGetter.getChain(history.sourceChainId).rpc;
+		const osmoWss =
+			this.chainGetter.getChain(history.sourceChainId).chainName === 'Osmosis'
+				? 'https://testnet-wsrpc.osmosis.zone'
+				: this.chainGetter.getChain(history.sourceChainId).rpc;
 		const txTracer = new TxTracer(osmoWss, '/websocket');
 		promises.push(
 			txTracer.traceTx({
@@ -220,10 +344,6 @@ export class IBCTransferHistoryStore {
 
 		if (timeoutUnsubscriber) {
 			timeoutUnsubscriber();
-
-			if (blockSubscriber.numberOfSubscriberOrPendingQuery === 0) {
-				blockSubscriber.close();
-			}
 		}
 		txTracer.close();
 
@@ -281,7 +401,10 @@ export class IBCTransferHistoryStore {
 	protected *traceUncommitedHistoryAndUpgradeToPendingHistory(txHash: string) {
 		const uncommited = this._uncommitedHistories.find(uncommited => uncommited.txHash === txHash);
 		if (uncommited) {
-			let osmoWss = (this.chainGetter.getChain(uncommited.sourceChainId).chainName === "Osmosis") ? "https://testnet-wsrpc.osmosis.zone" : this.chainGetter.getChain(uncommited.sourceChainId).rpc;
+			const osmoWss =
+				this.chainGetter.getChain(uncommited.sourceChainId).chainName === 'Osmosis'
+					? 'https://testnet-wsrpc.osmosis.zone'
+					: this.chainGetter.getChain(uncommited.sourceChainId).rpc;
 			const txTracer = new TxTracer(osmoWss, '/websocket');
 			const result = yield* toGenerator(txTracer.traceTx(Buffer.from(uncommited.txHash, 'hex')));
 			txTracer.close();
@@ -314,6 +437,12 @@ export class IBCTransferHistoryStore {
 							const timeoutHeight = timeoutHeightAttr
 								? Buffer.from(timeoutHeightAttr.value, 'base64').toString()
 								: undefined;
+							const timeoutTimestampAttr = attributes.find(
+								attr => attr.key === Buffer.from('packet_timeout_timestamp').toString('base64')
+							);
+							const timeoutTimestamp = timeoutTimestampAttr
+								? Buffer.from(timeoutTimestampAttr.value, 'base64').toString()
+								: undefined;
 
 							if (sourceChannel && destChannel && sequence) {
 								this.pushPendingHistoryWithCreatedAt({
@@ -327,6 +456,7 @@ export class IBCTransferHistoryStore {
 									recipient: uncommited.recipient,
 									amount: uncommited.amount,
 									timeoutHeight,
+									timeoutTimestamp,
 									createdAt: uncommited.createdAt,
 								});
 							}

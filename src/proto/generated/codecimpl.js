@@ -941,6 +941,1646 @@ exports.osmosis = $root.osmosis = (() => {
 				};
 				return PoolAsset;
 			})();
+			v1beta1.Msg = (function() {
+				function Msg(rpcImpl, requestDelimited, responseDelimited) {
+					$protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
+				}
+				(Msg.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = Msg;
+				Msg.create = function create(rpcImpl, requestDelimited, responseDelimited) {
+					return new this(rpcImpl, requestDelimited, responseDelimited);
+				};
+				Object.defineProperty(
+					(Msg.prototype.joinPool = function joinPool(request, callback) {
+						return this.rpcCall(
+							joinPool,
+							$root.osmosis.gamm.v1beta1.MsgJoinPool,
+							$root.osmosis.gamm.v1beta1.MsgJoinPoolResponse,
+							request,
+							callback
+						);
+					}),
+					'name',
+					{ value: 'JoinPool' }
+				);
+				Object.defineProperty(
+					(Msg.prototype.exitPool = function exitPool(request, callback) {
+						return this.rpcCall(
+							exitPool,
+							$root.osmosis.gamm.v1beta1.MsgExitPool,
+							$root.osmosis.gamm.v1beta1.MsgExitPoolResponse,
+							request,
+							callback
+						);
+					}),
+					'name',
+					{ value: 'ExitPool' }
+				);
+				Object.defineProperty(
+					(Msg.prototype.swapExactAmountIn = function swapExactAmountIn(request, callback) {
+						return this.rpcCall(
+							swapExactAmountIn,
+							$root.osmosis.gamm.v1beta1.MsgSwapExactAmountIn,
+							$root.osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse,
+							request,
+							callback
+						);
+					}),
+					'name',
+					{ value: 'SwapExactAmountIn' }
+				);
+				Object.defineProperty(
+					(Msg.prototype.swapExactAmountOut = function swapExactAmountOut(request, callback) {
+						return this.rpcCall(
+							swapExactAmountOut,
+							$root.osmosis.gamm.v1beta1.MsgSwapExactAmountOut,
+							$root.osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse,
+							request,
+							callback
+						);
+					}),
+					'name',
+					{ value: 'SwapExactAmountOut' }
+				);
+				Object.defineProperty(
+					(Msg.prototype.joinSwapExternAmountIn = function joinSwapExternAmountIn(request, callback) {
+						return this.rpcCall(
+							joinSwapExternAmountIn,
+							$root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn,
+							$root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse,
+							request,
+							callback
+						);
+					}),
+					'name',
+					{ value: 'JoinSwapExternAmountIn' }
+				);
+				Object.defineProperty(
+					(Msg.prototype.joinSwapShareAmountOut = function joinSwapShareAmountOut(request, callback) {
+						return this.rpcCall(
+							joinSwapShareAmountOut,
+							$root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut,
+							$root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse,
+							request,
+							callback
+						);
+					}),
+					'name',
+					{ value: 'JoinSwapShareAmountOut' }
+				);
+				Object.defineProperty(
+					(Msg.prototype.exitSwapExternAmountOut = function exitSwapExternAmountOut(request, callback) {
+						return this.rpcCall(
+							exitSwapExternAmountOut,
+							$root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut,
+							$root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse,
+							request,
+							callback
+						);
+					}),
+					'name',
+					{ value: 'ExitSwapExternAmountOut' }
+				);
+				Object.defineProperty(
+					(Msg.prototype.exitSwapShareAmountIn = function exitSwapShareAmountIn(request, callback) {
+						return this.rpcCall(
+							exitSwapShareAmountIn,
+							$root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn,
+							$root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse,
+							request,
+							callback
+						);
+					}),
+					'name',
+					{ value: 'ExitSwapShareAmountIn' }
+				);
+				return Msg;
+			})();
+			v1beta1.MsgCreateBalancerPool = (function() {
+				function MsgCreateBalancerPool(p) {
+					this.poolAssets = [];
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgCreateBalancerPool.prototype.sender = '';
+				MsgCreateBalancerPool.prototype.poolParams = null;
+				MsgCreateBalancerPool.prototype.poolAssets = $util.emptyArray;
+				MsgCreateBalancerPool.prototype.futurePoolGovernor = '';
+				MsgCreateBalancerPool.create = function create(properties) {
+					return new MsgCreateBalancerPool(properties);
+				};
+				MsgCreateBalancerPool.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
+					if (m.poolParams != null && Object.hasOwnProperty.call(m, 'poolParams'))
+						$root.osmosis.gamm.v1beta1.PoolParams.encode(m.poolParams, w.uint32(18).fork()).ldelim();
+					if (m.poolAssets != null && m.poolAssets.length) {
+						for (var i = 0; i < m.poolAssets.length; ++i)
+							$root.osmosis.gamm.v1beta1.PoolAsset.encode(m.poolAssets[i], w.uint32(26).fork()).ldelim();
+					}
+					if (m.futurePoolGovernor != null && Object.hasOwnProperty.call(m, 'futurePoolGovernor'))
+						w.uint32(34).string(m.futurePoolGovernor);
+					return w;
+				};
+				MsgCreateBalancerPool.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgCreateBalancerPool();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							case 1:
+								m.sender = r.string();
+								break;
+							case 2:
+								m.poolParams = $root.osmosis.gamm.v1beta1.PoolParams.decode(r, r.uint32());
+								break;
+							case 3:
+								if (!(m.poolAssets && m.poolAssets.length)) m.poolAssets = [];
+								m.poolAssets.push($root.osmosis.gamm.v1beta1.PoolAsset.decode(r, r.uint32()));
+								break;
+							case 4:
+								m.futurePoolGovernor = r.string();
+								break;
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgCreateBalancerPool.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgCreateBalancerPool) return d;
+					var m = new $root.osmosis.gamm.v1beta1.MsgCreateBalancerPool();
+					if (d.sender != null) {
+						m.sender = String(d.sender);
+					}
+					if (d.poolParams != null) {
+						if (typeof d.poolParams !== 'object')
+							throw TypeError('.osmosis.gamm.v1beta1.MsgCreateBalancerPool.poolParams: object expected');
+						m.poolParams = $root.osmosis.gamm.v1beta1.PoolParams.fromObject(d.poolParams);
+					}
+					if (d.poolAssets) {
+						if (!Array.isArray(d.poolAssets))
+							throw TypeError('.osmosis.gamm.v1beta1.MsgCreateBalancerPool.poolAssets: array expected');
+						m.poolAssets = [];
+						for (var i = 0; i < d.poolAssets.length; ++i) {
+							if (typeof d.poolAssets[i] !== 'object')
+								throw TypeError('.osmosis.gamm.v1beta1.MsgCreateBalancerPool.poolAssets: object expected');
+							m.poolAssets[i] = $root.osmosis.gamm.v1beta1.PoolAsset.fromObject(d.poolAssets[i]);
+						}
+					}
+					if (d.futurePoolGovernor != null) {
+						m.futurePoolGovernor = String(d.futurePoolGovernor);
+					}
+					return m;
+				};
+				MsgCreateBalancerPool.toObject = function toObject(m, o) {
+					if (!o) o = {};
+					var d = {};
+					if (o.arrays || o.defaults) {
+						d.poolAssets = [];
+					}
+					if (o.defaults) {
+						d.sender = '';
+						d.poolParams = null;
+						d.futurePoolGovernor = '';
+					}
+					if (m.sender != null && m.hasOwnProperty('sender')) {
+						d.sender = m.sender;
+					}
+					if (m.poolParams != null && m.hasOwnProperty('poolParams')) {
+						d.poolParams = $root.osmosis.gamm.v1beta1.PoolParams.toObject(m.poolParams, o);
+					}
+					if (m.poolAssets && m.poolAssets.length) {
+						d.poolAssets = [];
+						for (var j = 0; j < m.poolAssets.length; ++j) {
+							d.poolAssets[j] = $root.osmosis.gamm.v1beta1.PoolAsset.toObject(m.poolAssets[j], o);
+						}
+					}
+					if (m.futurePoolGovernor != null && m.hasOwnProperty('futurePoolGovernor')) {
+						d.futurePoolGovernor = m.futurePoolGovernor;
+					}
+					return d;
+				};
+				MsgCreateBalancerPool.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgCreateBalancerPool;
+			})();
+			v1beta1.MsgCreateBalancerPoolResponse = (function() {
+				function MsgCreateBalancerPoolResponse(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgCreateBalancerPoolResponse.create = function create(properties) {
+					return new MsgCreateBalancerPoolResponse(properties);
+				};
+				MsgCreateBalancerPoolResponse.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					return w;
+				};
+				MsgCreateBalancerPoolResponse.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgCreateBalancerPoolResponse();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgCreateBalancerPoolResponse.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgCreateBalancerPoolResponse) return d;
+					return new $root.osmosis.gamm.v1beta1.MsgCreateBalancerPoolResponse();
+				};
+				MsgCreateBalancerPoolResponse.toObject = function toObject() {
+					return {};
+				};
+				MsgCreateBalancerPoolResponse.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgCreateBalancerPoolResponse;
+			})();
+			v1beta1.MsgJoinPool = (function() {
+				function MsgJoinPool(p) {
+					this.tokenInMaxs = [];
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgJoinPool.prototype.sender = '';
+				MsgJoinPool.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+				MsgJoinPool.prototype.shareOutAmount = '';
+				MsgJoinPool.prototype.tokenInMaxs = $util.emptyArray;
+				MsgJoinPool.create = function create(properties) {
+					return new MsgJoinPool(properties);
+				};
+				MsgJoinPool.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
+					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(16).uint64(m.poolId);
+					if (m.shareOutAmount != null && Object.hasOwnProperty.call(m, 'shareOutAmount'))
+						w.uint32(26).string(m.shareOutAmount);
+					if (m.tokenInMaxs != null && m.tokenInMaxs.length) {
+						for (var i = 0; i < m.tokenInMaxs.length; ++i)
+							$root.cosmos.base.v1beta1.Coin.encode(m.tokenInMaxs[i], w.uint32(34).fork()).ldelim();
+					}
+					return w;
+				};
+				MsgJoinPool.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgJoinPool();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							case 1:
+								m.sender = r.string();
+								break;
+							case 2:
+								m.poolId = r.uint64();
+								break;
+							case 3:
+								m.shareOutAmount = r.string();
+								break;
+							case 4:
+								if (!(m.tokenInMaxs && m.tokenInMaxs.length)) m.tokenInMaxs = [];
+								m.tokenInMaxs.push($root.cosmos.base.v1beta1.Coin.decode(r, r.uint32()));
+								break;
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgJoinPool.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgJoinPool) return d;
+					var m = new $root.osmosis.gamm.v1beta1.MsgJoinPool();
+					if (d.sender != null) {
+						m.sender = String(d.sender);
+					}
+					if (d.poolId != null) {
+						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
+						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
+						else if (typeof d.poolId === 'object')
+							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
+					}
+					if (d.shareOutAmount != null) {
+						m.shareOutAmount = String(d.shareOutAmount);
+					}
+					if (d.tokenInMaxs) {
+						if (!Array.isArray(d.tokenInMaxs))
+							throw TypeError('.osmosis.gamm.v1beta1.MsgJoinPool.tokenInMaxs: array expected');
+						m.tokenInMaxs = [];
+						for (var i = 0; i < d.tokenInMaxs.length; ++i) {
+							if (typeof d.tokenInMaxs[i] !== 'object')
+								throw TypeError('.osmosis.gamm.v1beta1.MsgJoinPool.tokenInMaxs: object expected');
+							m.tokenInMaxs[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenInMaxs[i]);
+						}
+					}
+					return m;
+				};
+				MsgJoinPool.toObject = function toObject(m, o) {
+					if (!o) o = {};
+					var d = {};
+					if (o.arrays || o.defaults) {
+						d.tokenInMaxs = [];
+					}
+					if (o.defaults) {
+						d.sender = '';
+						if ($util.Long) {
+							var n = new $util.Long(0, 0, true);
+							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+						} else d.poolId = o.longs === String ? '0' : 0;
+						d.shareOutAmount = '';
+					}
+					if (m.sender != null && m.hasOwnProperty('sender')) {
+						d.sender = m.sender;
+					}
+					if (m.poolId != null && m.hasOwnProperty('poolId')) {
+						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+						else
+							d.poolId =
+								o.longs === String
+									? $util.Long.prototype.toString.call(m.poolId)
+									: o.longs === Number
+									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
+									: m.poolId;
+					}
+					if (m.shareOutAmount != null && m.hasOwnProperty('shareOutAmount')) {
+						d.shareOutAmount = m.shareOutAmount;
+					}
+					if (m.tokenInMaxs && m.tokenInMaxs.length) {
+						d.tokenInMaxs = [];
+						for (var j = 0; j < m.tokenInMaxs.length; ++j) {
+							d.tokenInMaxs[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenInMaxs[j], o);
+						}
+					}
+					return d;
+				};
+				MsgJoinPool.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgJoinPool;
+			})();
+			v1beta1.MsgJoinPoolResponse = (function() {
+				function MsgJoinPoolResponse(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgJoinPoolResponse.create = function create(properties) {
+					return new MsgJoinPoolResponse(properties);
+				};
+				MsgJoinPoolResponse.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					return w;
+				};
+				MsgJoinPoolResponse.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgJoinPoolResponse();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgJoinPoolResponse.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgJoinPoolResponse) return d;
+					return new $root.osmosis.gamm.v1beta1.MsgJoinPoolResponse();
+				};
+				MsgJoinPoolResponse.toObject = function toObject() {
+					return {};
+				};
+				MsgJoinPoolResponse.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgJoinPoolResponse;
+			})();
+			v1beta1.MsgExitPool = (function() {
+				function MsgExitPool(p) {
+					this.tokenOutMins = [];
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgExitPool.prototype.sender = '';
+				MsgExitPool.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+				MsgExitPool.prototype.shareInAmount = '';
+				MsgExitPool.prototype.tokenOutMins = $util.emptyArray;
+				MsgExitPool.create = function create(properties) {
+					return new MsgExitPool(properties);
+				};
+				MsgExitPool.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
+					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(16).uint64(m.poolId);
+					if (m.shareInAmount != null && Object.hasOwnProperty.call(m, 'shareInAmount'))
+						w.uint32(26).string(m.shareInAmount);
+					if (m.tokenOutMins != null && m.tokenOutMins.length) {
+						for (var i = 0; i < m.tokenOutMins.length; ++i)
+							$root.cosmos.base.v1beta1.Coin.encode(m.tokenOutMins[i], w.uint32(34).fork()).ldelim();
+					}
+					return w;
+				};
+				MsgExitPool.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgExitPool();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							case 1:
+								m.sender = r.string();
+								break;
+							case 2:
+								m.poolId = r.uint64();
+								break;
+							case 3:
+								m.shareInAmount = r.string();
+								break;
+							case 4:
+								if (!(m.tokenOutMins && m.tokenOutMins.length)) m.tokenOutMins = [];
+								m.tokenOutMins.push($root.cosmos.base.v1beta1.Coin.decode(r, r.uint32()));
+								break;
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgExitPool.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgExitPool) return d;
+					var m = new $root.osmosis.gamm.v1beta1.MsgExitPool();
+					if (d.sender != null) {
+						m.sender = String(d.sender);
+					}
+					if (d.poolId != null) {
+						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
+						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
+						else if (typeof d.poolId === 'object')
+							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
+					}
+					if (d.shareInAmount != null) {
+						m.shareInAmount = String(d.shareInAmount);
+					}
+					if (d.tokenOutMins) {
+						if (!Array.isArray(d.tokenOutMins))
+							throw TypeError('.osmosis.gamm.v1beta1.MsgExitPool.tokenOutMins: array expected');
+						m.tokenOutMins = [];
+						for (var i = 0; i < d.tokenOutMins.length; ++i) {
+							if (typeof d.tokenOutMins[i] !== 'object')
+								throw TypeError('.osmosis.gamm.v1beta1.MsgExitPool.tokenOutMins: object expected');
+							m.tokenOutMins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenOutMins[i]);
+						}
+					}
+					return m;
+				};
+				MsgExitPool.toObject = function toObject(m, o) {
+					if (!o) o = {};
+					var d = {};
+					if (o.arrays || o.defaults) {
+						d.tokenOutMins = [];
+					}
+					if (o.defaults) {
+						d.sender = '';
+						if ($util.Long) {
+							var n = new $util.Long(0, 0, true);
+							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+						} else d.poolId = o.longs === String ? '0' : 0;
+						d.shareInAmount = '';
+					}
+					if (m.sender != null && m.hasOwnProperty('sender')) {
+						d.sender = m.sender;
+					}
+					if (m.poolId != null && m.hasOwnProperty('poolId')) {
+						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+						else
+							d.poolId =
+								o.longs === String
+									? $util.Long.prototype.toString.call(m.poolId)
+									: o.longs === Number
+									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
+									: m.poolId;
+					}
+					if (m.shareInAmount != null && m.hasOwnProperty('shareInAmount')) {
+						d.shareInAmount = m.shareInAmount;
+					}
+					if (m.tokenOutMins && m.tokenOutMins.length) {
+						d.tokenOutMins = [];
+						for (var j = 0; j < m.tokenOutMins.length; ++j) {
+							d.tokenOutMins[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenOutMins[j], o);
+						}
+					}
+					return d;
+				};
+				MsgExitPool.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgExitPool;
+			})();
+			v1beta1.MsgExitPoolResponse = (function() {
+				function MsgExitPoolResponse(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgExitPoolResponse.create = function create(properties) {
+					return new MsgExitPoolResponse(properties);
+				};
+				MsgExitPoolResponse.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					return w;
+				};
+				MsgExitPoolResponse.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgExitPoolResponse();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgExitPoolResponse.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgExitPoolResponse) return d;
+					return new $root.osmosis.gamm.v1beta1.MsgExitPoolResponse();
+				};
+				MsgExitPoolResponse.toObject = function toObject() {
+					return {};
+				};
+				MsgExitPoolResponse.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgExitPoolResponse;
+			})();
+			v1beta1.SwapAmountInRoute = (function() {
+				function SwapAmountInRoute(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				SwapAmountInRoute.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+				SwapAmountInRoute.prototype.tokenOutDenom = '';
+				SwapAmountInRoute.create = function create(properties) {
+					return new SwapAmountInRoute(properties);
+				};
+				SwapAmountInRoute.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(8).uint64(m.poolId);
+					if (m.tokenOutDenom != null && Object.hasOwnProperty.call(m, 'tokenOutDenom'))
+						w.uint32(18).string(m.tokenOutDenom);
+					return w;
+				};
+				SwapAmountInRoute.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.SwapAmountInRoute();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							case 1:
+								m.poolId = r.uint64();
+								break;
+							case 2:
+								m.tokenOutDenom = r.string();
+								break;
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				SwapAmountInRoute.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.SwapAmountInRoute) return d;
+					var m = new $root.osmosis.gamm.v1beta1.SwapAmountInRoute();
+					if (d.poolId != null) {
+						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
+						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
+						else if (typeof d.poolId === 'object')
+							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
+					}
+					if (d.tokenOutDenom != null) {
+						m.tokenOutDenom = String(d.tokenOutDenom);
+					}
+					return m;
+				};
+				SwapAmountInRoute.toObject = function toObject(m, o) {
+					if (!o) o = {};
+					var d = {};
+					if (o.defaults) {
+						if ($util.Long) {
+							var n = new $util.Long(0, 0, true);
+							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+						} else d.poolId = o.longs === String ? '0' : 0;
+						d.tokenOutDenom = '';
+					}
+					if (m.poolId != null && m.hasOwnProperty('poolId')) {
+						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+						else
+							d.poolId =
+								o.longs === String
+									? $util.Long.prototype.toString.call(m.poolId)
+									: o.longs === Number
+									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
+									: m.poolId;
+					}
+					if (m.tokenOutDenom != null && m.hasOwnProperty('tokenOutDenom')) {
+						d.tokenOutDenom = m.tokenOutDenom;
+					}
+					return d;
+				};
+				SwapAmountInRoute.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return SwapAmountInRoute;
+			})();
+			v1beta1.MsgSwapExactAmountIn = (function() {
+				function MsgSwapExactAmountIn(p) {
+					this.routes = [];
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgSwapExactAmountIn.prototype.sender = '';
+				MsgSwapExactAmountIn.prototype.routes = $util.emptyArray;
+				MsgSwapExactAmountIn.prototype.tokenIn = null;
+				MsgSwapExactAmountIn.prototype.tokenOutMinAmount = '';
+				MsgSwapExactAmountIn.create = function create(properties) {
+					return new MsgSwapExactAmountIn(properties);
+				};
+				MsgSwapExactAmountIn.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
+					if (m.routes != null && m.routes.length) {
+						for (var i = 0; i < m.routes.length; ++i)
+							$root.osmosis.gamm.v1beta1.SwapAmountInRoute.encode(m.routes[i], w.uint32(18).fork()).ldelim();
+					}
+					if (m.tokenIn != null && Object.hasOwnProperty.call(m, 'tokenIn'))
+						$root.cosmos.base.v1beta1.Coin.encode(m.tokenIn, w.uint32(26).fork()).ldelim();
+					if (m.tokenOutMinAmount != null && Object.hasOwnProperty.call(m, 'tokenOutMinAmount'))
+						w.uint32(34).string(m.tokenOutMinAmount);
+					return w;
+				};
+				MsgSwapExactAmountIn.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountIn();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							case 1:
+								m.sender = r.string();
+								break;
+							case 2:
+								if (!(m.routes && m.routes.length)) m.routes = [];
+								m.routes.push($root.osmosis.gamm.v1beta1.SwapAmountInRoute.decode(r, r.uint32()));
+								break;
+							case 3:
+								m.tokenIn = $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32());
+								break;
+							case 4:
+								m.tokenOutMinAmount = r.string();
+								break;
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgSwapExactAmountIn.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgSwapExactAmountIn) return d;
+					var m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountIn();
+					if (d.sender != null) {
+						m.sender = String(d.sender);
+					}
+					if (d.routes) {
+						if (!Array.isArray(d.routes))
+							throw TypeError('.osmosis.gamm.v1beta1.MsgSwapExactAmountIn.routes: array expected');
+						m.routes = [];
+						for (var i = 0; i < d.routes.length; ++i) {
+							if (typeof d.routes[i] !== 'object')
+								throw TypeError('.osmosis.gamm.v1beta1.MsgSwapExactAmountIn.routes: object expected');
+							m.routes[i] = $root.osmosis.gamm.v1beta1.SwapAmountInRoute.fromObject(d.routes[i]);
+						}
+					}
+					if (d.tokenIn != null) {
+						if (typeof d.tokenIn !== 'object')
+							throw TypeError('.osmosis.gamm.v1beta1.MsgSwapExactAmountIn.tokenIn: object expected');
+						m.tokenIn = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenIn);
+					}
+					if (d.tokenOutMinAmount != null) {
+						m.tokenOutMinAmount = String(d.tokenOutMinAmount);
+					}
+					return m;
+				};
+				MsgSwapExactAmountIn.toObject = function toObject(m, o) {
+					if (!o) o = {};
+					var d = {};
+					if (o.arrays || o.defaults) {
+						d.routes = [];
+					}
+					if (o.defaults) {
+						d.sender = '';
+						d.tokenIn = null;
+						d.tokenOutMinAmount = '';
+					}
+					if (m.sender != null && m.hasOwnProperty('sender')) {
+						d.sender = m.sender;
+					}
+					if (m.routes && m.routes.length) {
+						d.routes = [];
+						for (var j = 0; j < m.routes.length; ++j) {
+							d.routes[j] = $root.osmosis.gamm.v1beta1.SwapAmountInRoute.toObject(m.routes[j], o);
+						}
+					}
+					if (m.tokenIn != null && m.hasOwnProperty('tokenIn')) {
+						d.tokenIn = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenIn, o);
+					}
+					if (m.tokenOutMinAmount != null && m.hasOwnProperty('tokenOutMinAmount')) {
+						d.tokenOutMinAmount = m.tokenOutMinAmount;
+					}
+					return d;
+				};
+				MsgSwapExactAmountIn.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgSwapExactAmountIn;
+			})();
+			v1beta1.MsgSwapExactAmountInResponse = (function() {
+				function MsgSwapExactAmountInResponse(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgSwapExactAmountInResponse.create = function create(properties) {
+					return new MsgSwapExactAmountInResponse(properties);
+				};
+				MsgSwapExactAmountInResponse.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					return w;
+				};
+				MsgSwapExactAmountInResponse.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgSwapExactAmountInResponse.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse) return d;
+					return new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse();
+				};
+				MsgSwapExactAmountInResponse.toObject = function toObject() {
+					return {};
+				};
+				MsgSwapExactAmountInResponse.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgSwapExactAmountInResponse;
+			})();
+			v1beta1.SwapAmountOutRoute = (function() {
+				function SwapAmountOutRoute(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				SwapAmountOutRoute.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+				SwapAmountOutRoute.prototype.tokenInDenom = '';
+				SwapAmountOutRoute.create = function create(properties) {
+					return new SwapAmountOutRoute(properties);
+				};
+				SwapAmountOutRoute.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(8).uint64(m.poolId);
+					if (m.tokenInDenom != null && Object.hasOwnProperty.call(m, 'tokenInDenom'))
+						w.uint32(18).string(m.tokenInDenom);
+					return w;
+				};
+				SwapAmountOutRoute.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.SwapAmountOutRoute();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							case 1:
+								m.poolId = r.uint64();
+								break;
+							case 2:
+								m.tokenInDenom = r.string();
+								break;
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				SwapAmountOutRoute.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.SwapAmountOutRoute) return d;
+					var m = new $root.osmosis.gamm.v1beta1.SwapAmountOutRoute();
+					if (d.poolId != null) {
+						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
+						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
+						else if (typeof d.poolId === 'object')
+							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
+					}
+					if (d.tokenInDenom != null) {
+						m.tokenInDenom = String(d.tokenInDenom);
+					}
+					return m;
+				};
+				SwapAmountOutRoute.toObject = function toObject(m, o) {
+					if (!o) o = {};
+					var d = {};
+					if (o.defaults) {
+						if ($util.Long) {
+							var n = new $util.Long(0, 0, true);
+							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+						} else d.poolId = o.longs === String ? '0' : 0;
+						d.tokenInDenom = '';
+					}
+					if (m.poolId != null && m.hasOwnProperty('poolId')) {
+						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+						else
+							d.poolId =
+								o.longs === String
+									? $util.Long.prototype.toString.call(m.poolId)
+									: o.longs === Number
+									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
+									: m.poolId;
+					}
+					if (m.tokenInDenom != null && m.hasOwnProperty('tokenInDenom')) {
+						d.tokenInDenom = m.tokenInDenom;
+					}
+					return d;
+				};
+				SwapAmountOutRoute.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return SwapAmountOutRoute;
+			})();
+			v1beta1.MsgSwapExactAmountOut = (function() {
+				function MsgSwapExactAmountOut(p) {
+					this.routes = [];
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgSwapExactAmountOut.prototype.sender = '';
+				MsgSwapExactAmountOut.prototype.routes = $util.emptyArray;
+				MsgSwapExactAmountOut.prototype.tokenInMaxAmount = '';
+				MsgSwapExactAmountOut.prototype.tokenOut = null;
+				MsgSwapExactAmountOut.create = function create(properties) {
+					return new MsgSwapExactAmountOut(properties);
+				};
+				MsgSwapExactAmountOut.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
+					if (m.routes != null && m.routes.length) {
+						for (var i = 0; i < m.routes.length; ++i)
+							$root.osmosis.gamm.v1beta1.SwapAmountOutRoute.encode(m.routes[i], w.uint32(18).fork()).ldelim();
+					}
+					if (m.tokenInMaxAmount != null && Object.hasOwnProperty.call(m, 'tokenInMaxAmount'))
+						w.uint32(26).string(m.tokenInMaxAmount);
+					if (m.tokenOut != null && Object.hasOwnProperty.call(m, 'tokenOut'))
+						$root.cosmos.base.v1beta1.Coin.encode(m.tokenOut, w.uint32(34).fork()).ldelim();
+					return w;
+				};
+				MsgSwapExactAmountOut.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOut();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							case 1:
+								m.sender = r.string();
+								break;
+							case 2:
+								if (!(m.routes && m.routes.length)) m.routes = [];
+								m.routes.push($root.osmosis.gamm.v1beta1.SwapAmountOutRoute.decode(r, r.uint32()));
+								break;
+							case 3:
+								m.tokenInMaxAmount = r.string();
+								break;
+							case 4:
+								m.tokenOut = $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32());
+								break;
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgSwapExactAmountOut.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOut) return d;
+					var m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOut();
+					if (d.sender != null) {
+						m.sender = String(d.sender);
+					}
+					if (d.routes) {
+						if (!Array.isArray(d.routes))
+							throw TypeError('.osmosis.gamm.v1beta1.MsgSwapExactAmountOut.routes: array expected');
+						m.routes = [];
+						for (var i = 0; i < d.routes.length; ++i) {
+							if (typeof d.routes[i] !== 'object')
+								throw TypeError('.osmosis.gamm.v1beta1.MsgSwapExactAmountOut.routes: object expected');
+							m.routes[i] = $root.osmosis.gamm.v1beta1.SwapAmountOutRoute.fromObject(d.routes[i]);
+						}
+					}
+					if (d.tokenInMaxAmount != null) {
+						m.tokenInMaxAmount = String(d.tokenInMaxAmount);
+					}
+					if (d.tokenOut != null) {
+						if (typeof d.tokenOut !== 'object')
+							throw TypeError('.osmosis.gamm.v1beta1.MsgSwapExactAmountOut.tokenOut: object expected');
+						m.tokenOut = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenOut);
+					}
+					return m;
+				};
+				MsgSwapExactAmountOut.toObject = function toObject(m, o) {
+					if (!o) o = {};
+					var d = {};
+					if (o.arrays || o.defaults) {
+						d.routes = [];
+					}
+					if (o.defaults) {
+						d.sender = '';
+						d.tokenInMaxAmount = '';
+						d.tokenOut = null;
+					}
+					if (m.sender != null && m.hasOwnProperty('sender')) {
+						d.sender = m.sender;
+					}
+					if (m.routes && m.routes.length) {
+						d.routes = [];
+						for (var j = 0; j < m.routes.length; ++j) {
+							d.routes[j] = $root.osmosis.gamm.v1beta1.SwapAmountOutRoute.toObject(m.routes[j], o);
+						}
+					}
+					if (m.tokenInMaxAmount != null && m.hasOwnProperty('tokenInMaxAmount')) {
+						d.tokenInMaxAmount = m.tokenInMaxAmount;
+					}
+					if (m.tokenOut != null && m.hasOwnProperty('tokenOut')) {
+						d.tokenOut = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenOut, o);
+					}
+					return d;
+				};
+				MsgSwapExactAmountOut.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgSwapExactAmountOut;
+			})();
+			v1beta1.MsgSwapExactAmountOutResponse = (function() {
+				function MsgSwapExactAmountOutResponse(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgSwapExactAmountOutResponse.create = function create(properties) {
+					return new MsgSwapExactAmountOutResponse(properties);
+				};
+				MsgSwapExactAmountOutResponse.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					return w;
+				};
+				MsgSwapExactAmountOutResponse.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgSwapExactAmountOutResponse.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse) return d;
+					return new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse();
+				};
+				MsgSwapExactAmountOutResponse.toObject = function toObject() {
+					return {};
+				};
+				MsgSwapExactAmountOutResponse.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgSwapExactAmountOutResponse;
+			})();
+			v1beta1.MsgJoinSwapExternAmountIn = (function() {
+				function MsgJoinSwapExternAmountIn(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgJoinSwapExternAmountIn.prototype.sender = '';
+				MsgJoinSwapExternAmountIn.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+				MsgJoinSwapExternAmountIn.prototype.tokenIn = null;
+				MsgJoinSwapExternAmountIn.prototype.shareOutMinAmount = '';
+				MsgJoinSwapExternAmountIn.create = function create(properties) {
+					return new MsgJoinSwapExternAmountIn(properties);
+				};
+				MsgJoinSwapExternAmountIn.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
+					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(16).uint64(m.poolId);
+					if (m.tokenIn != null && Object.hasOwnProperty.call(m, 'tokenIn'))
+						$root.cosmos.base.v1beta1.Coin.encode(m.tokenIn, w.uint32(26).fork()).ldelim();
+					if (m.shareOutMinAmount != null && Object.hasOwnProperty.call(m, 'shareOutMinAmount'))
+						w.uint32(34).string(m.shareOutMinAmount);
+					return w;
+				};
+				MsgJoinSwapExternAmountIn.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							case 1:
+								m.sender = r.string();
+								break;
+							case 2:
+								m.poolId = r.uint64();
+								break;
+							case 3:
+								m.tokenIn = $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32());
+								break;
+							case 4:
+								m.shareOutMinAmount = r.string();
+								break;
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgJoinSwapExternAmountIn.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn) return d;
+					var m = new $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn();
+					if (d.sender != null) {
+						m.sender = String(d.sender);
+					}
+					if (d.poolId != null) {
+						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
+						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
+						else if (typeof d.poolId === 'object')
+							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
+					}
+					if (d.tokenIn != null) {
+						if (typeof d.tokenIn !== 'object')
+							throw TypeError('.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn.tokenIn: object expected');
+						m.tokenIn = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenIn);
+					}
+					if (d.shareOutMinAmount != null) {
+						m.shareOutMinAmount = String(d.shareOutMinAmount);
+					}
+					return m;
+				};
+				MsgJoinSwapExternAmountIn.toObject = function toObject(m, o) {
+					if (!o) o = {};
+					var d = {};
+					if (o.defaults) {
+						d.sender = '';
+						if ($util.Long) {
+							var n = new $util.Long(0, 0, true);
+							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+						} else d.poolId = o.longs === String ? '0' : 0;
+						d.tokenIn = null;
+						d.shareOutMinAmount = '';
+					}
+					if (m.sender != null && m.hasOwnProperty('sender')) {
+						d.sender = m.sender;
+					}
+					if (m.poolId != null && m.hasOwnProperty('poolId')) {
+						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+						else
+							d.poolId =
+								o.longs === String
+									? $util.Long.prototype.toString.call(m.poolId)
+									: o.longs === Number
+									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
+									: m.poolId;
+					}
+					if (m.tokenIn != null && m.hasOwnProperty('tokenIn')) {
+						d.tokenIn = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenIn, o);
+					}
+					if (m.shareOutMinAmount != null && m.hasOwnProperty('shareOutMinAmount')) {
+						d.shareOutMinAmount = m.shareOutMinAmount;
+					}
+					return d;
+				};
+				MsgJoinSwapExternAmountIn.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgJoinSwapExternAmountIn;
+			})();
+			v1beta1.MsgJoinSwapExternAmountInResponse = (function() {
+				function MsgJoinSwapExternAmountInResponse(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgJoinSwapExternAmountInResponse.create = function create(properties) {
+					return new MsgJoinSwapExternAmountInResponse(properties);
+				};
+				MsgJoinSwapExternAmountInResponse.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					return w;
+				};
+				MsgJoinSwapExternAmountInResponse.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgJoinSwapExternAmountInResponse.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse) return d;
+					return new $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse();
+				};
+				MsgJoinSwapExternAmountInResponse.toObject = function toObject() {
+					return {};
+				};
+				MsgJoinSwapExternAmountInResponse.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgJoinSwapExternAmountInResponse;
+			})();
+			v1beta1.MsgJoinSwapShareAmountOut = (function() {
+				function MsgJoinSwapShareAmountOut(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgJoinSwapShareAmountOut.prototype.sender = '';
+				MsgJoinSwapShareAmountOut.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+				MsgJoinSwapShareAmountOut.prototype.tokenInDenom = '';
+				MsgJoinSwapShareAmountOut.prototype.shareOutAmount = '';
+				MsgJoinSwapShareAmountOut.prototype.tokenInMaxAmount = '';
+				MsgJoinSwapShareAmountOut.create = function create(properties) {
+					return new MsgJoinSwapShareAmountOut(properties);
+				};
+				MsgJoinSwapShareAmountOut.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
+					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(16).uint64(m.poolId);
+					if (m.tokenInDenom != null && Object.hasOwnProperty.call(m, 'tokenInDenom'))
+						w.uint32(26).string(m.tokenInDenom);
+					if (m.shareOutAmount != null && Object.hasOwnProperty.call(m, 'shareOutAmount'))
+						w.uint32(34).string(m.shareOutAmount);
+					if (m.tokenInMaxAmount != null && Object.hasOwnProperty.call(m, 'tokenInMaxAmount'))
+						w.uint32(42).string(m.tokenInMaxAmount);
+					return w;
+				};
+				MsgJoinSwapShareAmountOut.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							case 1:
+								m.sender = r.string();
+								break;
+							case 2:
+								m.poolId = r.uint64();
+								break;
+							case 3:
+								m.tokenInDenom = r.string();
+								break;
+							case 4:
+								m.shareOutAmount = r.string();
+								break;
+							case 5:
+								m.tokenInMaxAmount = r.string();
+								break;
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgJoinSwapShareAmountOut.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut) return d;
+					var m = new $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut();
+					if (d.sender != null) {
+						m.sender = String(d.sender);
+					}
+					if (d.poolId != null) {
+						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
+						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
+						else if (typeof d.poolId === 'object')
+							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
+					}
+					if (d.tokenInDenom != null) {
+						m.tokenInDenom = String(d.tokenInDenom);
+					}
+					if (d.shareOutAmount != null) {
+						m.shareOutAmount = String(d.shareOutAmount);
+					}
+					if (d.tokenInMaxAmount != null) {
+						m.tokenInMaxAmount = String(d.tokenInMaxAmount);
+					}
+					return m;
+				};
+				MsgJoinSwapShareAmountOut.toObject = function toObject(m, o) {
+					if (!o) o = {};
+					var d = {};
+					if (o.defaults) {
+						d.sender = '';
+						if ($util.Long) {
+							var n = new $util.Long(0, 0, true);
+							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+						} else d.poolId = o.longs === String ? '0' : 0;
+						d.tokenInDenom = '';
+						d.shareOutAmount = '';
+						d.tokenInMaxAmount = '';
+					}
+					if (m.sender != null && m.hasOwnProperty('sender')) {
+						d.sender = m.sender;
+					}
+					if (m.poolId != null && m.hasOwnProperty('poolId')) {
+						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+						else
+							d.poolId =
+								o.longs === String
+									? $util.Long.prototype.toString.call(m.poolId)
+									: o.longs === Number
+									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
+									: m.poolId;
+					}
+					if (m.tokenInDenom != null && m.hasOwnProperty('tokenInDenom')) {
+						d.tokenInDenom = m.tokenInDenom;
+					}
+					if (m.shareOutAmount != null && m.hasOwnProperty('shareOutAmount')) {
+						d.shareOutAmount = m.shareOutAmount;
+					}
+					if (m.tokenInMaxAmount != null && m.hasOwnProperty('tokenInMaxAmount')) {
+						d.tokenInMaxAmount = m.tokenInMaxAmount;
+					}
+					return d;
+				};
+				MsgJoinSwapShareAmountOut.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgJoinSwapShareAmountOut;
+			})();
+			v1beta1.MsgJoinSwapShareAmountOutResponse = (function() {
+				function MsgJoinSwapShareAmountOutResponse(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgJoinSwapShareAmountOutResponse.create = function create(properties) {
+					return new MsgJoinSwapShareAmountOutResponse(properties);
+				};
+				MsgJoinSwapShareAmountOutResponse.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					return w;
+				};
+				MsgJoinSwapShareAmountOutResponse.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgJoinSwapShareAmountOutResponse.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse) return d;
+					return new $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse();
+				};
+				MsgJoinSwapShareAmountOutResponse.toObject = function toObject() {
+					return {};
+				};
+				MsgJoinSwapShareAmountOutResponse.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgJoinSwapShareAmountOutResponse;
+			})();
+			v1beta1.MsgExitSwapShareAmountIn = (function() {
+				function MsgExitSwapShareAmountIn(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgExitSwapShareAmountIn.prototype.sender = '';
+				MsgExitSwapShareAmountIn.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+				MsgExitSwapShareAmountIn.prototype.tokenOutDenom = '';
+				MsgExitSwapShareAmountIn.prototype.shareInAmount = '';
+				MsgExitSwapShareAmountIn.prototype.tokenOutMinAmount = '';
+				MsgExitSwapShareAmountIn.create = function create(properties) {
+					return new MsgExitSwapShareAmountIn(properties);
+				};
+				MsgExitSwapShareAmountIn.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
+					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(16).uint64(m.poolId);
+					if (m.tokenOutDenom != null && Object.hasOwnProperty.call(m, 'tokenOutDenom'))
+						w.uint32(26).string(m.tokenOutDenom);
+					if (m.shareInAmount != null && Object.hasOwnProperty.call(m, 'shareInAmount'))
+						w.uint32(34).string(m.shareInAmount);
+					if (m.tokenOutMinAmount != null && Object.hasOwnProperty.call(m, 'tokenOutMinAmount'))
+						w.uint32(42).string(m.tokenOutMinAmount);
+					return w;
+				};
+				MsgExitSwapShareAmountIn.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							case 1:
+								m.sender = r.string();
+								break;
+							case 2:
+								m.poolId = r.uint64();
+								break;
+							case 3:
+								m.tokenOutDenom = r.string();
+								break;
+							case 4:
+								m.shareInAmount = r.string();
+								break;
+							case 5:
+								m.tokenOutMinAmount = r.string();
+								break;
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgExitSwapShareAmountIn.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn) return d;
+					var m = new $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn();
+					if (d.sender != null) {
+						m.sender = String(d.sender);
+					}
+					if (d.poolId != null) {
+						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
+						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
+						else if (typeof d.poolId === 'object')
+							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
+					}
+					if (d.tokenOutDenom != null) {
+						m.tokenOutDenom = String(d.tokenOutDenom);
+					}
+					if (d.shareInAmount != null) {
+						m.shareInAmount = String(d.shareInAmount);
+					}
+					if (d.tokenOutMinAmount != null) {
+						m.tokenOutMinAmount = String(d.tokenOutMinAmount);
+					}
+					return m;
+				};
+				MsgExitSwapShareAmountIn.toObject = function toObject(m, o) {
+					if (!o) o = {};
+					var d = {};
+					if (o.defaults) {
+						d.sender = '';
+						if ($util.Long) {
+							var n = new $util.Long(0, 0, true);
+							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+						} else d.poolId = o.longs === String ? '0' : 0;
+						d.tokenOutDenom = '';
+						d.shareInAmount = '';
+						d.tokenOutMinAmount = '';
+					}
+					if (m.sender != null && m.hasOwnProperty('sender')) {
+						d.sender = m.sender;
+					}
+					if (m.poolId != null && m.hasOwnProperty('poolId')) {
+						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+						else
+							d.poolId =
+								o.longs === String
+									? $util.Long.prototype.toString.call(m.poolId)
+									: o.longs === Number
+									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
+									: m.poolId;
+					}
+					if (m.tokenOutDenom != null && m.hasOwnProperty('tokenOutDenom')) {
+						d.tokenOutDenom = m.tokenOutDenom;
+					}
+					if (m.shareInAmount != null && m.hasOwnProperty('shareInAmount')) {
+						d.shareInAmount = m.shareInAmount;
+					}
+					if (m.tokenOutMinAmount != null && m.hasOwnProperty('tokenOutMinAmount')) {
+						d.tokenOutMinAmount = m.tokenOutMinAmount;
+					}
+					return d;
+				};
+				MsgExitSwapShareAmountIn.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgExitSwapShareAmountIn;
+			})();
+			v1beta1.MsgExitSwapShareAmountInResponse = (function() {
+				function MsgExitSwapShareAmountInResponse(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgExitSwapShareAmountInResponse.create = function create(properties) {
+					return new MsgExitSwapShareAmountInResponse(properties);
+				};
+				MsgExitSwapShareAmountInResponse.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					return w;
+				};
+				MsgExitSwapShareAmountInResponse.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgExitSwapShareAmountInResponse.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse) return d;
+					return new $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse();
+				};
+				MsgExitSwapShareAmountInResponse.toObject = function toObject() {
+					return {};
+				};
+				MsgExitSwapShareAmountInResponse.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgExitSwapShareAmountInResponse;
+			})();
+			v1beta1.MsgExitSwapExternAmountOut = (function() {
+				function MsgExitSwapExternAmountOut(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgExitSwapExternAmountOut.prototype.sender = '';
+				MsgExitSwapExternAmountOut.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+				MsgExitSwapExternAmountOut.prototype.tokenOut = null;
+				MsgExitSwapExternAmountOut.prototype.shareInMaxAmount = '';
+				MsgExitSwapExternAmountOut.create = function create(properties) {
+					return new MsgExitSwapExternAmountOut(properties);
+				};
+				MsgExitSwapExternAmountOut.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
+					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(16).uint64(m.poolId);
+					if (m.tokenOut != null && Object.hasOwnProperty.call(m, 'tokenOut'))
+						$root.cosmos.base.v1beta1.Coin.encode(m.tokenOut, w.uint32(26).fork()).ldelim();
+					if (m.shareInMaxAmount != null && Object.hasOwnProperty.call(m, 'shareInMaxAmount'))
+						w.uint32(34).string(m.shareInMaxAmount);
+					return w;
+				};
+				MsgExitSwapExternAmountOut.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							case 1:
+								m.sender = r.string();
+								break;
+							case 2:
+								m.poolId = r.uint64();
+								break;
+							case 3:
+								m.tokenOut = $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32());
+								break;
+							case 4:
+								m.shareInMaxAmount = r.string();
+								break;
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgExitSwapExternAmountOut.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut) return d;
+					var m = new $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut();
+					if (d.sender != null) {
+						m.sender = String(d.sender);
+					}
+					if (d.poolId != null) {
+						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
+						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
+						else if (typeof d.poolId === 'object')
+							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
+					}
+					if (d.tokenOut != null) {
+						if (typeof d.tokenOut !== 'object')
+							throw TypeError('.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut.tokenOut: object expected');
+						m.tokenOut = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenOut);
+					}
+					if (d.shareInMaxAmount != null) {
+						m.shareInMaxAmount = String(d.shareInMaxAmount);
+					}
+					return m;
+				};
+				MsgExitSwapExternAmountOut.toObject = function toObject(m, o) {
+					if (!o) o = {};
+					var d = {};
+					if (o.defaults) {
+						d.sender = '';
+						if ($util.Long) {
+							var n = new $util.Long(0, 0, true);
+							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+						} else d.poolId = o.longs === String ? '0' : 0;
+						d.tokenOut = null;
+						d.shareInMaxAmount = '';
+					}
+					if (m.sender != null && m.hasOwnProperty('sender')) {
+						d.sender = m.sender;
+					}
+					if (m.poolId != null && m.hasOwnProperty('poolId')) {
+						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+						else
+							d.poolId =
+								o.longs === String
+									? $util.Long.prototype.toString.call(m.poolId)
+									: o.longs === Number
+									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
+									: m.poolId;
+					}
+					if (m.tokenOut != null && m.hasOwnProperty('tokenOut')) {
+						d.tokenOut = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenOut, o);
+					}
+					if (m.shareInMaxAmount != null && m.hasOwnProperty('shareInMaxAmount')) {
+						d.shareInMaxAmount = m.shareInMaxAmount;
+					}
+					return d;
+				};
+				MsgExitSwapExternAmountOut.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgExitSwapExternAmountOut;
+			})();
+			v1beta1.MsgExitSwapExternAmountOutResponse = (function() {
+				function MsgExitSwapExternAmountOutResponse(p) {
+					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+				}
+				MsgExitSwapExternAmountOutResponse.create = function create(properties) {
+					return new MsgExitSwapExternAmountOutResponse(properties);
+				};
+				MsgExitSwapExternAmountOutResponse.encode = function encode(m, w) {
+					if (!w) w = $Writer.create();
+					return w;
+				};
+				MsgExitSwapExternAmountOutResponse.decode = function decode(r, l) {
+					if (!(r instanceof $Reader)) r = $Reader.create(r);
+					var c = l === undefined ? r.len : r.pos + l,
+						m = new $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse();
+					while (r.pos < c) {
+						var t = r.uint32();
+						switch (t >>> 3) {
+							default:
+								r.skipType(t & 7);
+								break;
+						}
+					}
+					return m;
+				};
+				MsgExitSwapExternAmountOutResponse.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse) return d;
+					return new $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse();
+				};
+				MsgExitSwapExternAmountOutResponse.toObject = function toObject() {
+					return {};
+				};
+				MsgExitSwapExternAmountOutResponse.prototype.toJSON = function toJSON() {
+					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+				};
+				return MsgExitSwapExternAmountOutResponse;
+			})();
 			v1beta1.SmoothWeightChangeParams = (function() {
 				function SmoothWeightChangeParams(p) {
 					this.initialPoolWeights = [];
@@ -1158,50 +2798,66 @@ exports.osmosis = $root.osmosis = (() => {
 				};
 				return PoolParams;
 			})();
-			v1beta1.MsgCreatePool = (function() {
-				function MsgCreatePool(p) {
+			v1beta1.Pool = (function() {
+				function Pool(p) {
 					this.poolAssets = [];
 					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
 				}
-				MsgCreatePool.prototype.sender = '';
-				MsgCreatePool.prototype.poolParams = null;
-				MsgCreatePool.prototype.poolAssets = $util.emptyArray;
-				MsgCreatePool.prototype.futurePoolGovernor = '';
-				MsgCreatePool.create = function create(properties) {
-					return new MsgCreatePool(properties);
+				Pool.prototype.address = '';
+				Pool.prototype.id = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+				Pool.prototype.poolParams = null;
+				Pool.prototype.futurePoolGovernor = '';
+				Pool.prototype.totalShares = null;
+				Pool.prototype.poolAssets = $util.emptyArray;
+				Pool.prototype.totalWeight = '';
+				Pool.create = function create(properties) {
+					return new Pool(properties);
 				};
-				MsgCreatePool.encode = function encode(m, w) {
+				Pool.encode = function encode(m, w) {
 					if (!w) w = $Writer.create();
-					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
+					if (m.address != null && Object.hasOwnProperty.call(m, 'address')) w.uint32(10).string(m.address);
+					if (m.id != null && Object.hasOwnProperty.call(m, 'id')) w.uint32(16).uint64(m.id);
 					if (m.poolParams != null && Object.hasOwnProperty.call(m, 'poolParams'))
-						$root.osmosis.gamm.v1beta1.PoolParams.encode(m.poolParams, w.uint32(18).fork()).ldelim();
-					if (m.poolAssets != null && m.poolAssets.length) {
-						for (var i = 0; i < m.poolAssets.length; ++i)
-							$root.osmosis.gamm.v1beta1.PoolAsset.encode(m.poolAssets[i], w.uint32(26).fork()).ldelim();
-					}
+						$root.osmosis.gamm.v1beta1.PoolParams.encode(m.poolParams, w.uint32(26).fork()).ldelim();
 					if (m.futurePoolGovernor != null && Object.hasOwnProperty.call(m, 'futurePoolGovernor'))
 						w.uint32(34).string(m.futurePoolGovernor);
+					if (m.totalShares != null && Object.hasOwnProperty.call(m, 'totalShares'))
+						$root.cosmos.base.v1beta1.Coin.encode(m.totalShares, w.uint32(42).fork()).ldelim();
+					if (m.poolAssets != null && m.poolAssets.length) {
+						for (var i = 0; i < m.poolAssets.length; ++i)
+							$root.osmosis.gamm.v1beta1.PoolAsset.encode(m.poolAssets[i], w.uint32(50).fork()).ldelim();
+					}
+					if (m.totalWeight != null && Object.hasOwnProperty.call(m, 'totalWeight')) w.uint32(58).string(m.totalWeight);
 					return w;
 				};
-				MsgCreatePool.decode = function decode(r, l) {
+				Pool.decode = function decode(r, l) {
 					if (!(r instanceof $Reader)) r = $Reader.create(r);
 					var c = l === undefined ? r.len : r.pos + l,
-						m = new $root.osmosis.gamm.v1beta1.MsgCreatePool();
+						m = new $root.osmosis.gamm.v1beta1.Pool();
 					while (r.pos < c) {
 						var t = r.uint32();
 						switch (t >>> 3) {
 							case 1:
-								m.sender = r.string();
+								m.address = r.string();
 								break;
 							case 2:
-								m.poolParams = $root.osmosis.gamm.v1beta1.PoolParams.decode(r, r.uint32());
+								m.id = r.uint64();
 								break;
 							case 3:
-								if (!(m.poolAssets && m.poolAssets.length)) m.poolAssets = [];
-								m.poolAssets.push($root.osmosis.gamm.v1beta1.PoolAsset.decode(r, r.uint32()));
+								m.poolParams = $root.osmosis.gamm.v1beta1.PoolParams.decode(r, r.uint32());
 								break;
 							case 4:
 								m.futurePoolGovernor = r.string();
+								break;
+							case 5:
+								m.totalShares = $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32());
+								break;
+							case 6:
+								if (!(m.poolAssets && m.poolAssets.length)) m.poolAssets = [];
+								m.poolAssets.push($root.osmosis.gamm.v1beta1.PoolAsset.decode(r, r.uint32()));
+								break;
+							case 7:
+								m.totalWeight = r.string();
 								break;
 							default:
 								r.skipType(t & 7);
@@ -1210,48 +2866,84 @@ exports.osmosis = $root.osmosis = (() => {
 					}
 					return m;
 				};
-				MsgCreatePool.fromObject = function fromObject(d) {
-					if (d instanceof $root.osmosis.gamm.v1beta1.MsgCreatePool) return d;
-					var m = new $root.osmosis.gamm.v1beta1.MsgCreatePool();
-					if (d.sender != null) {
-						m.sender = String(d.sender);
+				Pool.fromObject = function fromObject(d) {
+					if (d instanceof $root.osmosis.gamm.v1beta1.Pool) return d;
+					var m = new $root.osmosis.gamm.v1beta1.Pool();
+					if (d.address != null) {
+						m.address = String(d.address);
+					}
+					if (d.id != null) {
+						if ($util.Long) (m.id = $util.Long.fromValue(d.id)).unsigned = true;
+						else if (typeof d.id === 'string') m.id = parseInt(d.id, 10);
+						else if (typeof d.id === 'number') m.id = d.id;
+						else if (typeof d.id === 'object')
+							m.id = new $util.LongBits(d.id.low >>> 0, d.id.high >>> 0).toNumber(true);
 					}
 					if (d.poolParams != null) {
 						if (typeof d.poolParams !== 'object')
-							throw TypeError('.osmosis.gamm.v1beta1.MsgCreatePool.poolParams: object expected');
+							throw TypeError('.osmosis.gamm.v1beta1.Pool.poolParams: object expected');
 						m.poolParams = $root.osmosis.gamm.v1beta1.PoolParams.fromObject(d.poolParams);
-					}
-					if (d.poolAssets) {
-						if (!Array.isArray(d.poolAssets))
-							throw TypeError('.osmosis.gamm.v1beta1.MsgCreatePool.poolAssets: array expected');
-						m.poolAssets = [];
-						for (var i = 0; i < d.poolAssets.length; ++i) {
-							if (typeof d.poolAssets[i] !== 'object')
-								throw TypeError('.osmosis.gamm.v1beta1.MsgCreatePool.poolAssets: object expected');
-							m.poolAssets[i] = $root.osmosis.gamm.v1beta1.PoolAsset.fromObject(d.poolAssets[i]);
-						}
 					}
 					if (d.futurePoolGovernor != null) {
 						m.futurePoolGovernor = String(d.futurePoolGovernor);
 					}
+					if (d.totalShares != null) {
+						if (typeof d.totalShares !== 'object')
+							throw TypeError('.osmosis.gamm.v1beta1.Pool.totalShares: object expected');
+						m.totalShares = $root.cosmos.base.v1beta1.Coin.fromObject(d.totalShares);
+					}
+					if (d.poolAssets) {
+						if (!Array.isArray(d.poolAssets)) throw TypeError('.osmosis.gamm.v1beta1.Pool.poolAssets: array expected');
+						m.poolAssets = [];
+						for (var i = 0; i < d.poolAssets.length; ++i) {
+							if (typeof d.poolAssets[i] !== 'object')
+								throw TypeError('.osmosis.gamm.v1beta1.Pool.poolAssets: object expected');
+							m.poolAssets[i] = $root.osmosis.gamm.v1beta1.PoolAsset.fromObject(d.poolAssets[i]);
+						}
+					}
+					if (d.totalWeight != null) {
+						m.totalWeight = String(d.totalWeight);
+					}
 					return m;
 				};
-				MsgCreatePool.toObject = function toObject(m, o) {
+				Pool.toObject = function toObject(m, o) {
 					if (!o) o = {};
 					var d = {};
 					if (o.arrays || o.defaults) {
 						d.poolAssets = [];
 					}
 					if (o.defaults) {
-						d.sender = '';
+						d.address = '';
+						if ($util.Long) {
+							var n = new $util.Long(0, 0, true);
+							d.id = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+						} else d.id = o.longs === String ? '0' : 0;
 						d.poolParams = null;
 						d.futurePoolGovernor = '';
+						d.totalShares = null;
+						d.totalWeight = '';
 					}
-					if (m.sender != null && m.hasOwnProperty('sender')) {
-						d.sender = m.sender;
+					if (m.address != null && m.hasOwnProperty('address')) {
+						d.address = m.address;
+					}
+					if (m.id != null && m.hasOwnProperty('id')) {
+						if (typeof m.id === 'number') d.id = o.longs === String ? String(m.id) : m.id;
+						else
+							d.id =
+								o.longs === String
+									? $util.Long.prototype.toString.call(m.id)
+									: o.longs === Number
+									? new $util.LongBits(m.id.low >>> 0, m.id.high >>> 0).toNumber(true)
+									: m.id;
 					}
 					if (m.poolParams != null && m.hasOwnProperty('poolParams')) {
 						d.poolParams = $root.osmosis.gamm.v1beta1.PoolParams.toObject(m.poolParams, o);
+					}
+					if (m.futurePoolGovernor != null && m.hasOwnProperty('futurePoolGovernor')) {
+						d.futurePoolGovernor = m.futurePoolGovernor;
+					}
+					if (m.totalShares != null && m.hasOwnProperty('totalShares')) {
+						d.totalShares = $root.cosmos.base.v1beta1.Coin.toObject(m.totalShares, o);
 					}
 					if (m.poolAssets && m.poolAssets.length) {
 						d.poolAssets = [];
@@ -1259,1097 +2951,15 @@ exports.osmosis = $root.osmosis = (() => {
 							d.poolAssets[j] = $root.osmosis.gamm.v1beta1.PoolAsset.toObject(m.poolAssets[j], o);
 						}
 					}
-					if (m.futurePoolGovernor != null && m.hasOwnProperty('futurePoolGovernor')) {
-						d.futurePoolGovernor = m.futurePoolGovernor;
+					if (m.totalWeight != null && m.hasOwnProperty('totalWeight')) {
+						d.totalWeight = m.totalWeight;
 					}
 					return d;
 				};
-				MsgCreatePool.prototype.toJSON = function toJSON() {
+				Pool.prototype.toJSON = function toJSON() {
 					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
 				};
-				return MsgCreatePool;
-			})();
-			v1beta1.MsgJoinPool = (function() {
-				function MsgJoinPool(p) {
-					this.tokenInMaxs = [];
-					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-				}
-				MsgJoinPool.prototype.sender = '';
-				MsgJoinPool.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
-				MsgJoinPool.prototype.shareOutAmount = '';
-				MsgJoinPool.prototype.tokenInMaxs = $util.emptyArray;
-				MsgJoinPool.create = function create(properties) {
-					return new MsgJoinPool(properties);
-				};
-				MsgJoinPool.encode = function encode(m, w) {
-					if (!w) w = $Writer.create();
-					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
-					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(16).uint64(m.poolId);
-					if (m.shareOutAmount != null && Object.hasOwnProperty.call(m, 'shareOutAmount'))
-						w.uint32(26).string(m.shareOutAmount);
-					if (m.tokenInMaxs != null && m.tokenInMaxs.length) {
-						for (var i = 0; i < m.tokenInMaxs.length; ++i)
-							$root.cosmos.base.v1beta1.Coin.encode(m.tokenInMaxs[i], w.uint32(34).fork()).ldelim();
-					}
-					return w;
-				};
-				MsgJoinPool.decode = function decode(r, l) {
-					if (!(r instanceof $Reader)) r = $Reader.create(r);
-					var c = l === undefined ? r.len : r.pos + l,
-						m = new $root.osmosis.gamm.v1beta1.MsgJoinPool();
-					while (r.pos < c) {
-						var t = r.uint32();
-						switch (t >>> 3) {
-							case 1:
-								m.sender = r.string();
-								break;
-							case 2:
-								m.poolId = r.uint64();
-								break;
-							case 3:
-								m.shareOutAmount = r.string();
-								break;
-							case 4:
-								if (!(m.tokenInMaxs && m.tokenInMaxs.length)) m.tokenInMaxs = [];
-								m.tokenInMaxs.push($root.cosmos.base.v1beta1.Coin.decode(r, r.uint32()));
-								break;
-							default:
-								r.skipType(t & 7);
-								break;
-						}
-					}
-					return m;
-				};
-				MsgJoinPool.fromObject = function fromObject(d) {
-					if (d instanceof $root.osmosis.gamm.v1beta1.MsgJoinPool) return d;
-					var m = new $root.osmosis.gamm.v1beta1.MsgJoinPool();
-					if (d.sender != null) {
-						m.sender = String(d.sender);
-					}
-					if (d.poolId != null) {
-						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
-						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
-						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
-						else if (typeof d.poolId === 'object')
-							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
-					}
-					if (d.shareOutAmount != null) {
-						m.shareOutAmount = String(d.shareOutAmount);
-					}
-					if (d.tokenInMaxs) {
-						if (!Array.isArray(d.tokenInMaxs))
-							throw TypeError('.osmosis.gamm.v1beta1.MsgJoinPool.tokenInMaxs: array expected');
-						m.tokenInMaxs = [];
-						for (var i = 0; i < d.tokenInMaxs.length; ++i) {
-							if (typeof d.tokenInMaxs[i] !== 'object')
-								throw TypeError('.osmosis.gamm.v1beta1.MsgJoinPool.tokenInMaxs: object expected');
-							m.tokenInMaxs[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenInMaxs[i]);
-						}
-					}
-					return m;
-				};
-				MsgJoinPool.toObject = function toObject(m, o) {
-					if (!o) o = {};
-					var d = {};
-					if (o.arrays || o.defaults) {
-						d.tokenInMaxs = [];
-					}
-					if (o.defaults) {
-						d.sender = '';
-						if ($util.Long) {
-							var n = new $util.Long(0, 0, true);
-							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
-						} else d.poolId = o.longs === String ? '0' : 0;
-						d.shareOutAmount = '';
-					}
-					if (m.sender != null && m.hasOwnProperty('sender')) {
-						d.sender = m.sender;
-					}
-					if (m.poolId != null && m.hasOwnProperty('poolId')) {
-						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
-						else
-							d.poolId =
-								o.longs === String
-									? $util.Long.prototype.toString.call(m.poolId)
-									: o.longs === Number
-									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
-									: m.poolId;
-					}
-					if (m.shareOutAmount != null && m.hasOwnProperty('shareOutAmount')) {
-						d.shareOutAmount = m.shareOutAmount;
-					}
-					if (m.tokenInMaxs && m.tokenInMaxs.length) {
-						d.tokenInMaxs = [];
-						for (var j = 0; j < m.tokenInMaxs.length; ++j) {
-							d.tokenInMaxs[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenInMaxs[j], o);
-						}
-					}
-					return d;
-				};
-				MsgJoinPool.prototype.toJSON = function toJSON() {
-					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-				};
-				return MsgJoinPool;
-			})();
-			v1beta1.MsgExitPool = (function() {
-				function MsgExitPool(p) {
-					this.tokenOutMins = [];
-					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-				}
-				MsgExitPool.prototype.sender = '';
-				MsgExitPool.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
-				MsgExitPool.prototype.shareInAmount = '';
-				MsgExitPool.prototype.tokenOutMins = $util.emptyArray;
-				MsgExitPool.create = function create(properties) {
-					return new MsgExitPool(properties);
-				};
-				MsgExitPool.encode = function encode(m, w) {
-					if (!w) w = $Writer.create();
-					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
-					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(16).uint64(m.poolId);
-					if (m.shareInAmount != null && Object.hasOwnProperty.call(m, 'shareInAmount'))
-						w.uint32(26).string(m.shareInAmount);
-					if (m.tokenOutMins != null && m.tokenOutMins.length) {
-						for (var i = 0; i < m.tokenOutMins.length; ++i)
-							$root.cosmos.base.v1beta1.Coin.encode(m.tokenOutMins[i], w.uint32(34).fork()).ldelim();
-					}
-					return w;
-				};
-				MsgExitPool.decode = function decode(r, l) {
-					if (!(r instanceof $Reader)) r = $Reader.create(r);
-					var c = l === undefined ? r.len : r.pos + l,
-						m = new $root.osmosis.gamm.v1beta1.MsgExitPool();
-					while (r.pos < c) {
-						var t = r.uint32();
-						switch (t >>> 3) {
-							case 1:
-								m.sender = r.string();
-								break;
-							case 2:
-								m.poolId = r.uint64();
-								break;
-							case 3:
-								m.shareInAmount = r.string();
-								break;
-							case 4:
-								if (!(m.tokenOutMins && m.tokenOutMins.length)) m.tokenOutMins = [];
-								m.tokenOutMins.push($root.cosmos.base.v1beta1.Coin.decode(r, r.uint32()));
-								break;
-							default:
-								r.skipType(t & 7);
-								break;
-						}
-					}
-					return m;
-				};
-				MsgExitPool.fromObject = function fromObject(d) {
-					if (d instanceof $root.osmosis.gamm.v1beta1.MsgExitPool) return d;
-					var m = new $root.osmosis.gamm.v1beta1.MsgExitPool();
-					if (d.sender != null) {
-						m.sender = String(d.sender);
-					}
-					if (d.poolId != null) {
-						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
-						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
-						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
-						else if (typeof d.poolId === 'object')
-							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
-					}
-					if (d.shareInAmount != null) {
-						m.shareInAmount = String(d.shareInAmount);
-					}
-					if (d.tokenOutMins) {
-						if (!Array.isArray(d.tokenOutMins))
-							throw TypeError('.osmosis.gamm.v1beta1.MsgExitPool.tokenOutMins: array expected');
-						m.tokenOutMins = [];
-						for (var i = 0; i < d.tokenOutMins.length; ++i) {
-							if (typeof d.tokenOutMins[i] !== 'object')
-								throw TypeError('.osmosis.gamm.v1beta1.MsgExitPool.tokenOutMins: object expected');
-							m.tokenOutMins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenOutMins[i]);
-						}
-					}
-					return m;
-				};
-				MsgExitPool.toObject = function toObject(m, o) {
-					if (!o) o = {};
-					var d = {};
-					if (o.arrays || o.defaults) {
-						d.tokenOutMins = [];
-					}
-					if (o.defaults) {
-						d.sender = '';
-						if ($util.Long) {
-							var n = new $util.Long(0, 0, true);
-							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
-						} else d.poolId = o.longs === String ? '0' : 0;
-						d.shareInAmount = '';
-					}
-					if (m.sender != null && m.hasOwnProperty('sender')) {
-						d.sender = m.sender;
-					}
-					if (m.poolId != null && m.hasOwnProperty('poolId')) {
-						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
-						else
-							d.poolId =
-								o.longs === String
-									? $util.Long.prototype.toString.call(m.poolId)
-									: o.longs === Number
-									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
-									: m.poolId;
-					}
-					if (m.shareInAmount != null && m.hasOwnProperty('shareInAmount')) {
-						d.shareInAmount = m.shareInAmount;
-					}
-					if (m.tokenOutMins && m.tokenOutMins.length) {
-						d.tokenOutMins = [];
-						for (var j = 0; j < m.tokenOutMins.length; ++j) {
-							d.tokenOutMins[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenOutMins[j], o);
-						}
-					}
-					return d;
-				};
-				MsgExitPool.prototype.toJSON = function toJSON() {
-					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-				};
-				return MsgExitPool;
-			})();
-			v1beta1.SwapAmountInRoute = (function() {
-				function SwapAmountInRoute(p) {
-					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-				}
-				SwapAmountInRoute.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
-				SwapAmountInRoute.prototype.tokenOutDenom = '';
-				SwapAmountInRoute.create = function create(properties) {
-					return new SwapAmountInRoute(properties);
-				};
-				SwapAmountInRoute.encode = function encode(m, w) {
-					if (!w) w = $Writer.create();
-					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(8).uint64(m.poolId);
-					if (m.tokenOutDenom != null && Object.hasOwnProperty.call(m, 'tokenOutDenom'))
-						w.uint32(18).string(m.tokenOutDenom);
-					return w;
-				};
-				SwapAmountInRoute.decode = function decode(r, l) {
-					if (!(r instanceof $Reader)) r = $Reader.create(r);
-					var c = l === undefined ? r.len : r.pos + l,
-						m = new $root.osmosis.gamm.v1beta1.SwapAmountInRoute();
-					while (r.pos < c) {
-						var t = r.uint32();
-						switch (t >>> 3) {
-							case 1:
-								m.poolId = r.uint64();
-								break;
-							case 2:
-								m.tokenOutDenom = r.string();
-								break;
-							default:
-								r.skipType(t & 7);
-								break;
-						}
-					}
-					return m;
-				};
-				SwapAmountInRoute.fromObject = function fromObject(d) {
-					if (d instanceof $root.osmosis.gamm.v1beta1.SwapAmountInRoute) return d;
-					var m = new $root.osmosis.gamm.v1beta1.SwapAmountInRoute();
-					if (d.poolId != null) {
-						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
-						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
-						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
-						else if (typeof d.poolId === 'object')
-							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
-					}
-					if (d.tokenOutDenom != null) {
-						m.tokenOutDenom = String(d.tokenOutDenom);
-					}
-					return m;
-				};
-				SwapAmountInRoute.toObject = function toObject(m, o) {
-					if (!o) o = {};
-					var d = {};
-					if (o.defaults) {
-						if ($util.Long) {
-							var n = new $util.Long(0, 0, true);
-							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
-						} else d.poolId = o.longs === String ? '0' : 0;
-						d.tokenOutDenom = '';
-					}
-					if (m.poolId != null && m.hasOwnProperty('poolId')) {
-						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
-						else
-							d.poolId =
-								o.longs === String
-									? $util.Long.prototype.toString.call(m.poolId)
-									: o.longs === Number
-									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
-									: m.poolId;
-					}
-					if (m.tokenOutDenom != null && m.hasOwnProperty('tokenOutDenom')) {
-						d.tokenOutDenom = m.tokenOutDenom;
-					}
-					return d;
-				};
-				SwapAmountInRoute.prototype.toJSON = function toJSON() {
-					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-				};
-				return SwapAmountInRoute;
-			})();
-			v1beta1.MsgSwapExactAmountIn = (function() {
-				function MsgSwapExactAmountIn(p) {
-					this.routes = [];
-					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-				}
-				MsgSwapExactAmountIn.prototype.sender = '';
-				MsgSwapExactAmountIn.prototype.routes = $util.emptyArray;
-				MsgSwapExactAmountIn.prototype.tokenIn = null;
-				MsgSwapExactAmountIn.prototype.tokenOutMinAmount = '';
-				MsgSwapExactAmountIn.create = function create(properties) {
-					return new MsgSwapExactAmountIn(properties);
-				};
-				MsgSwapExactAmountIn.encode = function encode(m, w) {
-					if (!w) w = $Writer.create();
-					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
-					if (m.routes != null && m.routes.length) {
-						for (var i = 0; i < m.routes.length; ++i)
-							$root.osmosis.gamm.v1beta1.SwapAmountInRoute.encode(m.routes[i], w.uint32(18).fork()).ldelim();
-					}
-					if (m.tokenIn != null && Object.hasOwnProperty.call(m, 'tokenIn'))
-						$root.cosmos.base.v1beta1.Coin.encode(m.tokenIn, w.uint32(26).fork()).ldelim();
-					if (m.tokenOutMinAmount != null && Object.hasOwnProperty.call(m, 'tokenOutMinAmount'))
-						w.uint32(34).string(m.tokenOutMinAmount);
-					return w;
-				};
-				MsgSwapExactAmountIn.decode = function decode(r, l) {
-					if (!(r instanceof $Reader)) r = $Reader.create(r);
-					var c = l === undefined ? r.len : r.pos + l,
-						m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountIn();
-					while (r.pos < c) {
-						var t = r.uint32();
-						switch (t >>> 3) {
-							case 1:
-								m.sender = r.string();
-								break;
-							case 2:
-								if (!(m.routes && m.routes.length)) m.routes = [];
-								m.routes.push($root.osmosis.gamm.v1beta1.SwapAmountInRoute.decode(r, r.uint32()));
-								break;
-							case 3:
-								m.tokenIn = $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32());
-								break;
-							case 4:
-								m.tokenOutMinAmount = r.string();
-								break;
-							default:
-								r.skipType(t & 7);
-								break;
-						}
-					}
-					return m;
-				};
-				MsgSwapExactAmountIn.fromObject = function fromObject(d) {
-					if (d instanceof $root.osmosis.gamm.v1beta1.MsgSwapExactAmountIn) return d;
-					var m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountIn();
-					if (d.sender != null) {
-						m.sender = String(d.sender);
-					}
-					if (d.routes) {
-						if (!Array.isArray(d.routes))
-							throw TypeError('.osmosis.gamm.v1beta1.MsgSwapExactAmountIn.routes: array expected');
-						m.routes = [];
-						for (var i = 0; i < d.routes.length; ++i) {
-							if (typeof d.routes[i] !== 'object')
-								throw TypeError('.osmosis.gamm.v1beta1.MsgSwapExactAmountIn.routes: object expected');
-							m.routes[i] = $root.osmosis.gamm.v1beta1.SwapAmountInRoute.fromObject(d.routes[i]);
-						}
-					}
-					if (d.tokenIn != null) {
-						if (typeof d.tokenIn !== 'object')
-							throw TypeError('.osmosis.gamm.v1beta1.MsgSwapExactAmountIn.tokenIn: object expected');
-						m.tokenIn = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenIn);
-					}
-					if (d.tokenOutMinAmount != null) {
-						m.tokenOutMinAmount = String(d.tokenOutMinAmount);
-					}
-					return m;
-				};
-				MsgSwapExactAmountIn.toObject = function toObject(m, o) {
-					if (!o) o = {};
-					var d = {};
-					if (o.arrays || o.defaults) {
-						d.routes = [];
-					}
-					if (o.defaults) {
-						d.sender = '';
-						d.tokenIn = null;
-						d.tokenOutMinAmount = '';
-					}
-					if (m.sender != null && m.hasOwnProperty('sender')) {
-						d.sender = m.sender;
-					}
-					if (m.routes && m.routes.length) {
-						d.routes = [];
-						for (var j = 0; j < m.routes.length; ++j) {
-							d.routes[j] = $root.osmosis.gamm.v1beta1.SwapAmountInRoute.toObject(m.routes[j], o);
-						}
-					}
-					if (m.tokenIn != null && m.hasOwnProperty('tokenIn')) {
-						d.tokenIn = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenIn, o);
-					}
-					if (m.tokenOutMinAmount != null && m.hasOwnProperty('tokenOutMinAmount')) {
-						d.tokenOutMinAmount = m.tokenOutMinAmount;
-					}
-					return d;
-				};
-				MsgSwapExactAmountIn.prototype.toJSON = function toJSON() {
-					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-				};
-				return MsgSwapExactAmountIn;
-			})();
-			v1beta1.SwapAmountOutRoute = (function() {
-				function SwapAmountOutRoute(p) {
-					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-				}
-				SwapAmountOutRoute.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
-				SwapAmountOutRoute.prototype.tokenInDenom = '';
-				SwapAmountOutRoute.create = function create(properties) {
-					return new SwapAmountOutRoute(properties);
-				};
-				SwapAmountOutRoute.encode = function encode(m, w) {
-					if (!w) w = $Writer.create();
-					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(8).uint64(m.poolId);
-					if (m.tokenInDenom != null && Object.hasOwnProperty.call(m, 'tokenInDenom'))
-						w.uint32(18).string(m.tokenInDenom);
-					return w;
-				};
-				SwapAmountOutRoute.decode = function decode(r, l) {
-					if (!(r instanceof $Reader)) r = $Reader.create(r);
-					var c = l === undefined ? r.len : r.pos + l,
-						m = new $root.osmosis.gamm.v1beta1.SwapAmountOutRoute();
-					while (r.pos < c) {
-						var t = r.uint32();
-						switch (t >>> 3) {
-							case 1:
-								m.poolId = r.uint64();
-								break;
-							case 2:
-								m.tokenInDenom = r.string();
-								break;
-							default:
-								r.skipType(t & 7);
-								break;
-						}
-					}
-					return m;
-				};
-				SwapAmountOutRoute.fromObject = function fromObject(d) {
-					if (d instanceof $root.osmosis.gamm.v1beta1.SwapAmountOutRoute) return d;
-					var m = new $root.osmosis.gamm.v1beta1.SwapAmountOutRoute();
-					if (d.poolId != null) {
-						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
-						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
-						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
-						else if (typeof d.poolId === 'object')
-							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
-					}
-					if (d.tokenInDenom != null) {
-						m.tokenInDenom = String(d.tokenInDenom);
-					}
-					return m;
-				};
-				SwapAmountOutRoute.toObject = function toObject(m, o) {
-					if (!o) o = {};
-					var d = {};
-					if (o.defaults) {
-						if ($util.Long) {
-							var n = new $util.Long(0, 0, true);
-							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
-						} else d.poolId = o.longs === String ? '0' : 0;
-						d.tokenInDenom = '';
-					}
-					if (m.poolId != null && m.hasOwnProperty('poolId')) {
-						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
-						else
-							d.poolId =
-								o.longs === String
-									? $util.Long.prototype.toString.call(m.poolId)
-									: o.longs === Number
-									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
-									: m.poolId;
-					}
-					if (m.tokenInDenom != null && m.hasOwnProperty('tokenInDenom')) {
-						d.tokenInDenom = m.tokenInDenom;
-					}
-					return d;
-				};
-				SwapAmountOutRoute.prototype.toJSON = function toJSON() {
-					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-				};
-				return SwapAmountOutRoute;
-			})();
-			v1beta1.MsgSwapExactAmountOut = (function() {
-				function MsgSwapExactAmountOut(p) {
-					this.routes = [];
-					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-				}
-				MsgSwapExactAmountOut.prototype.sender = '';
-				MsgSwapExactAmountOut.prototype.routes = $util.emptyArray;
-				MsgSwapExactAmountOut.prototype.tokenInMaxAmount = '';
-				MsgSwapExactAmountOut.prototype.tokenOut = null;
-				MsgSwapExactAmountOut.create = function create(properties) {
-					return new MsgSwapExactAmountOut(properties);
-				};
-				MsgSwapExactAmountOut.encode = function encode(m, w) {
-					if (!w) w = $Writer.create();
-					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
-					if (m.routes != null && m.routes.length) {
-						for (var i = 0; i < m.routes.length; ++i)
-							$root.osmosis.gamm.v1beta1.SwapAmountOutRoute.encode(m.routes[i], w.uint32(18).fork()).ldelim();
-					}
-					if (m.tokenInMaxAmount != null && Object.hasOwnProperty.call(m, 'tokenInMaxAmount'))
-						w.uint32(26).string(m.tokenInMaxAmount);
-					if (m.tokenOut != null && Object.hasOwnProperty.call(m, 'tokenOut'))
-						$root.cosmos.base.v1beta1.Coin.encode(m.tokenOut, w.uint32(34).fork()).ldelim();
-					return w;
-				};
-				MsgSwapExactAmountOut.decode = function decode(r, l) {
-					if (!(r instanceof $Reader)) r = $Reader.create(r);
-					var c = l === undefined ? r.len : r.pos + l,
-						m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOut();
-					while (r.pos < c) {
-						var t = r.uint32();
-						switch (t >>> 3) {
-							case 1:
-								m.sender = r.string();
-								break;
-							case 2:
-								if (!(m.routes && m.routes.length)) m.routes = [];
-								m.routes.push($root.osmosis.gamm.v1beta1.SwapAmountOutRoute.decode(r, r.uint32()));
-								break;
-							case 3:
-								m.tokenInMaxAmount = r.string();
-								break;
-							case 4:
-								m.tokenOut = $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32());
-								break;
-							default:
-								r.skipType(t & 7);
-								break;
-						}
-					}
-					return m;
-				};
-				MsgSwapExactAmountOut.fromObject = function fromObject(d) {
-					if (d instanceof $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOut) return d;
-					var m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOut();
-					if (d.sender != null) {
-						m.sender = String(d.sender);
-					}
-					if (d.routes) {
-						if (!Array.isArray(d.routes))
-							throw TypeError('.osmosis.gamm.v1beta1.MsgSwapExactAmountOut.routes: array expected');
-						m.routes = [];
-						for (var i = 0; i < d.routes.length; ++i) {
-							if (typeof d.routes[i] !== 'object')
-								throw TypeError('.osmosis.gamm.v1beta1.MsgSwapExactAmountOut.routes: object expected');
-							m.routes[i] = $root.osmosis.gamm.v1beta1.SwapAmountOutRoute.fromObject(d.routes[i]);
-						}
-					}
-					if (d.tokenInMaxAmount != null) {
-						m.tokenInMaxAmount = String(d.tokenInMaxAmount);
-					}
-					if (d.tokenOut != null) {
-						if (typeof d.tokenOut !== 'object')
-							throw TypeError('.osmosis.gamm.v1beta1.MsgSwapExactAmountOut.tokenOut: object expected');
-						m.tokenOut = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenOut);
-					}
-					return m;
-				};
-				MsgSwapExactAmountOut.toObject = function toObject(m, o) {
-					if (!o) o = {};
-					var d = {};
-					if (o.arrays || o.defaults) {
-						d.routes = [];
-					}
-					if (o.defaults) {
-						d.sender = '';
-						d.tokenInMaxAmount = '';
-						d.tokenOut = null;
-					}
-					if (m.sender != null && m.hasOwnProperty('sender')) {
-						d.sender = m.sender;
-					}
-					if (m.routes && m.routes.length) {
-						d.routes = [];
-						for (var j = 0; j < m.routes.length; ++j) {
-							d.routes[j] = $root.osmosis.gamm.v1beta1.SwapAmountOutRoute.toObject(m.routes[j], o);
-						}
-					}
-					if (m.tokenInMaxAmount != null && m.hasOwnProperty('tokenInMaxAmount')) {
-						d.tokenInMaxAmount = m.tokenInMaxAmount;
-					}
-					if (m.tokenOut != null && m.hasOwnProperty('tokenOut')) {
-						d.tokenOut = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenOut, o);
-					}
-					return d;
-				};
-				MsgSwapExactAmountOut.prototype.toJSON = function toJSON() {
-					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-				};
-				return MsgSwapExactAmountOut;
-			})();
-			v1beta1.MsgJoinSwapExternAmountIn = (function() {
-				function MsgJoinSwapExternAmountIn(p) {
-					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-				}
-				MsgJoinSwapExternAmountIn.prototype.sender = '';
-				MsgJoinSwapExternAmountIn.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
-				MsgJoinSwapExternAmountIn.prototype.tokenIn = null;
-				MsgJoinSwapExternAmountIn.prototype.shareOutMinAmount = '';
-				MsgJoinSwapExternAmountIn.create = function create(properties) {
-					return new MsgJoinSwapExternAmountIn(properties);
-				};
-				MsgJoinSwapExternAmountIn.encode = function encode(m, w) {
-					if (!w) w = $Writer.create();
-					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
-					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(16).uint64(m.poolId);
-					if (m.tokenIn != null && Object.hasOwnProperty.call(m, 'tokenIn'))
-						$root.cosmos.base.v1beta1.Coin.encode(m.tokenIn, w.uint32(26).fork()).ldelim();
-					if (m.shareOutMinAmount != null && Object.hasOwnProperty.call(m, 'shareOutMinAmount'))
-						w.uint32(34).string(m.shareOutMinAmount);
-					return w;
-				};
-				MsgJoinSwapExternAmountIn.decode = function decode(r, l) {
-					if (!(r instanceof $Reader)) r = $Reader.create(r);
-					var c = l === undefined ? r.len : r.pos + l,
-						m = new $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn();
-					while (r.pos < c) {
-						var t = r.uint32();
-						switch (t >>> 3) {
-							case 1:
-								m.sender = r.string();
-								break;
-							case 2:
-								m.poolId = r.uint64();
-								break;
-							case 3:
-								m.tokenIn = $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32());
-								break;
-							case 4:
-								m.shareOutMinAmount = r.string();
-								break;
-							default:
-								r.skipType(t & 7);
-								break;
-						}
-					}
-					return m;
-				};
-				MsgJoinSwapExternAmountIn.fromObject = function fromObject(d) {
-					if (d instanceof $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn) return d;
-					var m = new $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn();
-					if (d.sender != null) {
-						m.sender = String(d.sender);
-					}
-					if (d.poolId != null) {
-						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
-						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
-						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
-						else if (typeof d.poolId === 'object')
-							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
-					}
-					if (d.tokenIn != null) {
-						if (typeof d.tokenIn !== 'object')
-							throw TypeError('.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn.tokenIn: object expected');
-						m.tokenIn = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenIn);
-					}
-					if (d.shareOutMinAmount != null) {
-						m.shareOutMinAmount = String(d.shareOutMinAmount);
-					}
-					return m;
-				};
-				MsgJoinSwapExternAmountIn.toObject = function toObject(m, o) {
-					if (!o) o = {};
-					var d = {};
-					if (o.defaults) {
-						d.sender = '';
-						if ($util.Long) {
-							var n = new $util.Long(0, 0, true);
-							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
-						} else d.poolId = o.longs === String ? '0' : 0;
-						d.tokenIn = null;
-						d.shareOutMinAmount = '';
-					}
-					if (m.sender != null && m.hasOwnProperty('sender')) {
-						d.sender = m.sender;
-					}
-					if (m.poolId != null && m.hasOwnProperty('poolId')) {
-						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
-						else
-							d.poolId =
-								o.longs === String
-									? $util.Long.prototype.toString.call(m.poolId)
-									: o.longs === Number
-									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
-									: m.poolId;
-					}
-					if (m.tokenIn != null && m.hasOwnProperty('tokenIn')) {
-						d.tokenIn = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenIn, o);
-					}
-					if (m.shareOutMinAmount != null && m.hasOwnProperty('shareOutMinAmount')) {
-						d.shareOutMinAmount = m.shareOutMinAmount;
-					}
-					return d;
-				};
-				MsgJoinSwapExternAmountIn.prototype.toJSON = function toJSON() {
-					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-				};
-				return MsgJoinSwapExternAmountIn;
-			})();
-			v1beta1.MsgJoinSwapShareAmountOut = (function() {
-				function MsgJoinSwapShareAmountOut(p) {
-					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-				}
-				MsgJoinSwapShareAmountOut.prototype.sender = '';
-				MsgJoinSwapShareAmountOut.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
-				MsgJoinSwapShareAmountOut.prototype.tokenInDenom = '';
-				MsgJoinSwapShareAmountOut.prototype.shareOutAmount = '';
-				MsgJoinSwapShareAmountOut.prototype.tokenInMaxAmount = '';
-				MsgJoinSwapShareAmountOut.create = function create(properties) {
-					return new MsgJoinSwapShareAmountOut(properties);
-				};
-				MsgJoinSwapShareAmountOut.encode = function encode(m, w) {
-					if (!w) w = $Writer.create();
-					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
-					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(16).uint64(m.poolId);
-					if (m.tokenInDenom != null && Object.hasOwnProperty.call(m, 'tokenInDenom'))
-						w.uint32(26).string(m.tokenInDenom);
-					if (m.shareOutAmount != null && Object.hasOwnProperty.call(m, 'shareOutAmount'))
-						w.uint32(34).string(m.shareOutAmount);
-					if (m.tokenInMaxAmount != null && Object.hasOwnProperty.call(m, 'tokenInMaxAmount'))
-						w.uint32(42).string(m.tokenInMaxAmount);
-					return w;
-				};
-				MsgJoinSwapShareAmountOut.decode = function decode(r, l) {
-					if (!(r instanceof $Reader)) r = $Reader.create(r);
-					var c = l === undefined ? r.len : r.pos + l,
-						m = new $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut();
-					while (r.pos < c) {
-						var t = r.uint32();
-						switch (t >>> 3) {
-							case 1:
-								m.sender = r.string();
-								break;
-							case 2:
-								m.poolId = r.uint64();
-								break;
-							case 3:
-								m.tokenInDenom = r.string();
-								break;
-							case 4:
-								m.shareOutAmount = r.string();
-								break;
-							case 5:
-								m.tokenInMaxAmount = r.string();
-								break;
-							default:
-								r.skipType(t & 7);
-								break;
-						}
-					}
-					return m;
-				};
-				MsgJoinSwapShareAmountOut.fromObject = function fromObject(d) {
-					if (d instanceof $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut) return d;
-					var m = new $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut();
-					if (d.sender != null) {
-						m.sender = String(d.sender);
-					}
-					if (d.poolId != null) {
-						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
-						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
-						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
-						else if (typeof d.poolId === 'object')
-							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
-					}
-					if (d.tokenInDenom != null) {
-						m.tokenInDenom = String(d.tokenInDenom);
-					}
-					if (d.shareOutAmount != null) {
-						m.shareOutAmount = String(d.shareOutAmount);
-					}
-					if (d.tokenInMaxAmount != null) {
-						m.tokenInMaxAmount = String(d.tokenInMaxAmount);
-					}
-					return m;
-				};
-				MsgJoinSwapShareAmountOut.toObject = function toObject(m, o) {
-					if (!o) o = {};
-					var d = {};
-					if (o.defaults) {
-						d.sender = '';
-						if ($util.Long) {
-							var n = new $util.Long(0, 0, true);
-							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
-						} else d.poolId = o.longs === String ? '0' : 0;
-						d.tokenInDenom = '';
-						d.shareOutAmount = '';
-						d.tokenInMaxAmount = '';
-					}
-					if (m.sender != null && m.hasOwnProperty('sender')) {
-						d.sender = m.sender;
-					}
-					if (m.poolId != null && m.hasOwnProperty('poolId')) {
-						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
-						else
-							d.poolId =
-								o.longs === String
-									? $util.Long.prototype.toString.call(m.poolId)
-									: o.longs === Number
-									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
-									: m.poolId;
-					}
-					if (m.tokenInDenom != null && m.hasOwnProperty('tokenInDenom')) {
-						d.tokenInDenom = m.tokenInDenom;
-					}
-					if (m.shareOutAmount != null && m.hasOwnProperty('shareOutAmount')) {
-						d.shareOutAmount = m.shareOutAmount;
-					}
-					if (m.tokenInMaxAmount != null && m.hasOwnProperty('tokenInMaxAmount')) {
-						d.tokenInMaxAmount = m.tokenInMaxAmount;
-					}
-					return d;
-				};
-				MsgJoinSwapShareAmountOut.prototype.toJSON = function toJSON() {
-					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-				};
-				return MsgJoinSwapShareAmountOut;
-			})();
-			v1beta1.MsgExitSwapShareAmountIn = (function() {
-				function MsgExitSwapShareAmountIn(p) {
-					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-				}
-				MsgExitSwapShareAmountIn.prototype.sender = '';
-				MsgExitSwapShareAmountIn.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
-				MsgExitSwapShareAmountIn.prototype.tokenOutDenom = '';
-				MsgExitSwapShareAmountIn.prototype.shareInAmount = '';
-				MsgExitSwapShareAmountIn.prototype.tokenOutMinAmount = '';
-				MsgExitSwapShareAmountIn.create = function create(properties) {
-					return new MsgExitSwapShareAmountIn(properties);
-				};
-				MsgExitSwapShareAmountIn.encode = function encode(m, w) {
-					if (!w) w = $Writer.create();
-					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
-					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(16).uint64(m.poolId);
-					if (m.tokenOutDenom != null && Object.hasOwnProperty.call(m, 'tokenOutDenom'))
-						w.uint32(26).string(m.tokenOutDenom);
-					if (m.shareInAmount != null && Object.hasOwnProperty.call(m, 'shareInAmount'))
-						w.uint32(34).string(m.shareInAmount);
-					if (m.tokenOutMinAmount != null && Object.hasOwnProperty.call(m, 'tokenOutMinAmount'))
-						w.uint32(42).string(m.tokenOutMinAmount);
-					return w;
-				};
-				MsgExitSwapShareAmountIn.decode = function decode(r, l) {
-					if (!(r instanceof $Reader)) r = $Reader.create(r);
-					var c = l === undefined ? r.len : r.pos + l,
-						m = new $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn();
-					while (r.pos < c) {
-						var t = r.uint32();
-						switch (t >>> 3) {
-							case 1:
-								m.sender = r.string();
-								break;
-							case 2:
-								m.poolId = r.uint64();
-								break;
-							case 3:
-								m.tokenOutDenom = r.string();
-								break;
-							case 4:
-								m.shareInAmount = r.string();
-								break;
-							case 5:
-								m.tokenOutMinAmount = r.string();
-								break;
-							default:
-								r.skipType(t & 7);
-								break;
-						}
-					}
-					return m;
-				};
-				MsgExitSwapShareAmountIn.fromObject = function fromObject(d) {
-					if (d instanceof $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn) return d;
-					var m = new $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn();
-					if (d.sender != null) {
-						m.sender = String(d.sender);
-					}
-					if (d.poolId != null) {
-						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
-						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
-						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
-						else if (typeof d.poolId === 'object')
-							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
-					}
-					if (d.tokenOutDenom != null) {
-						m.tokenOutDenom = String(d.tokenOutDenom);
-					}
-					if (d.shareInAmount != null) {
-						m.shareInAmount = String(d.shareInAmount);
-					}
-					if (d.tokenOutMinAmount != null) {
-						m.tokenOutMinAmount = String(d.tokenOutMinAmount);
-					}
-					return m;
-				};
-				MsgExitSwapShareAmountIn.toObject = function toObject(m, o) {
-					if (!o) o = {};
-					var d = {};
-					if (o.defaults) {
-						d.sender = '';
-						if ($util.Long) {
-							var n = new $util.Long(0, 0, true);
-							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
-						} else d.poolId = o.longs === String ? '0' : 0;
-						d.tokenOutDenom = '';
-						d.shareInAmount = '';
-						d.tokenOutMinAmount = '';
-					}
-					if (m.sender != null && m.hasOwnProperty('sender')) {
-						d.sender = m.sender;
-					}
-					if (m.poolId != null && m.hasOwnProperty('poolId')) {
-						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
-						else
-							d.poolId =
-								o.longs === String
-									? $util.Long.prototype.toString.call(m.poolId)
-									: o.longs === Number
-									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
-									: m.poolId;
-					}
-					if (m.tokenOutDenom != null && m.hasOwnProperty('tokenOutDenom')) {
-						d.tokenOutDenom = m.tokenOutDenom;
-					}
-					if (m.shareInAmount != null && m.hasOwnProperty('shareInAmount')) {
-						d.shareInAmount = m.shareInAmount;
-					}
-					if (m.tokenOutMinAmount != null && m.hasOwnProperty('tokenOutMinAmount')) {
-						d.tokenOutMinAmount = m.tokenOutMinAmount;
-					}
-					return d;
-				};
-				MsgExitSwapShareAmountIn.prototype.toJSON = function toJSON() {
-					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-				};
-				return MsgExitSwapShareAmountIn;
-			})();
-			v1beta1.MsgExitSwapExternAmountOut = (function() {
-				function MsgExitSwapExternAmountOut(p) {
-					if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-				}
-				MsgExitSwapExternAmountOut.prototype.sender = '';
-				MsgExitSwapExternAmountOut.prototype.poolId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
-				MsgExitSwapExternAmountOut.prototype.tokenOut = null;
-				MsgExitSwapExternAmountOut.prototype.shareInMaxAmount = '';
-				MsgExitSwapExternAmountOut.create = function create(properties) {
-					return new MsgExitSwapExternAmountOut(properties);
-				};
-				MsgExitSwapExternAmountOut.encode = function encode(m, w) {
-					if (!w) w = $Writer.create();
-					if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
-					if (m.poolId != null && Object.hasOwnProperty.call(m, 'poolId')) w.uint32(16).uint64(m.poolId);
-					if (m.tokenOut != null && Object.hasOwnProperty.call(m, 'tokenOut'))
-						$root.cosmos.base.v1beta1.Coin.encode(m.tokenOut, w.uint32(26).fork()).ldelim();
-					if (m.shareInMaxAmount != null && Object.hasOwnProperty.call(m, 'shareInMaxAmount'))
-						w.uint32(34).string(m.shareInMaxAmount);
-					return w;
-				};
-				MsgExitSwapExternAmountOut.decode = function decode(r, l) {
-					if (!(r instanceof $Reader)) r = $Reader.create(r);
-					var c = l === undefined ? r.len : r.pos + l,
-						m = new $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut();
-					while (r.pos < c) {
-						var t = r.uint32();
-						switch (t >>> 3) {
-							case 1:
-								m.sender = r.string();
-								break;
-							case 2:
-								m.poolId = r.uint64();
-								break;
-							case 3:
-								m.tokenOut = $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32());
-								break;
-							case 4:
-								m.shareInMaxAmount = r.string();
-								break;
-							default:
-								r.skipType(t & 7);
-								break;
-						}
-					}
-					return m;
-				};
-				MsgExitSwapExternAmountOut.fromObject = function fromObject(d) {
-					if (d instanceof $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut) return d;
-					var m = new $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut();
-					if (d.sender != null) {
-						m.sender = String(d.sender);
-					}
-					if (d.poolId != null) {
-						if ($util.Long) (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
-						else if (typeof d.poolId === 'string') m.poolId = parseInt(d.poolId, 10);
-						else if (typeof d.poolId === 'number') m.poolId = d.poolId;
-						else if (typeof d.poolId === 'object')
-							m.poolId = new $util.LongBits(d.poolId.low >>> 0, d.poolId.high >>> 0).toNumber(true);
-					}
-					if (d.tokenOut != null) {
-						if (typeof d.tokenOut !== 'object')
-							throw TypeError('.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut.tokenOut: object expected');
-						m.tokenOut = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenOut);
-					}
-					if (d.shareInMaxAmount != null) {
-						m.shareInMaxAmount = String(d.shareInMaxAmount);
-					}
-					return m;
-				};
-				MsgExitSwapExternAmountOut.toObject = function toObject(m, o) {
-					if (!o) o = {};
-					var d = {};
-					if (o.defaults) {
-						d.sender = '';
-						if ($util.Long) {
-							var n = new $util.Long(0, 0, true);
-							d.poolId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
-						} else d.poolId = o.longs === String ? '0' : 0;
-						d.tokenOut = null;
-						d.shareInMaxAmount = '';
-					}
-					if (m.sender != null && m.hasOwnProperty('sender')) {
-						d.sender = m.sender;
-					}
-					if (m.poolId != null && m.hasOwnProperty('poolId')) {
-						if (typeof m.poolId === 'number') d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
-						else
-							d.poolId =
-								o.longs === String
-									? $util.Long.prototype.toString.call(m.poolId)
-									: o.longs === Number
-									? new $util.LongBits(m.poolId.low >>> 0, m.poolId.high >>> 0).toNumber(true)
-									: m.poolId;
-					}
-					if (m.tokenOut != null && m.hasOwnProperty('tokenOut')) {
-						d.tokenOut = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenOut, o);
-					}
-					if (m.shareInMaxAmount != null && m.hasOwnProperty('shareInMaxAmount')) {
-						d.shareInMaxAmount = m.shareInMaxAmount;
-					}
-					return d;
-				};
-				MsgExitSwapExternAmountOut.prototype.toJSON = function toJSON() {
-					return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-				};
-				return MsgExitSwapExternAmountOut;
+				return Pool;
 			})();
 			return v1beta1;
 		})();
@@ -2357,6 +2967,140 @@ exports.osmosis = $root.osmosis = (() => {
 	})();
 	osmosis.lockup = (function() {
 		const lockup = {};
+		lockup.PeriodLock = (function() {
+			function PeriodLock(p) {
+				this.coins = [];
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			PeriodLock.prototype.ID = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+			PeriodLock.prototype.owner = '';
+			PeriodLock.prototype.duration = null;
+			PeriodLock.prototype.endTime = null;
+			PeriodLock.prototype.coins = $util.emptyArray;
+			PeriodLock.create = function create(properties) {
+				return new PeriodLock(properties);
+			};
+			PeriodLock.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				if (m.ID != null && Object.hasOwnProperty.call(m, 'ID')) w.uint32(8).uint64(m.ID);
+				if (m.owner != null && Object.hasOwnProperty.call(m, 'owner')) w.uint32(18).string(m.owner);
+				if (m.duration != null && Object.hasOwnProperty.call(m, 'duration'))
+					$root.google.protobuf.Duration.encode(m.duration, w.uint32(26).fork()).ldelim();
+				if (m.endTime != null && Object.hasOwnProperty.call(m, 'endTime'))
+					$root.google.protobuf.Timestamp.encode(m.endTime, w.uint32(34).fork()).ldelim();
+				if (m.coins != null && m.coins.length) {
+					for (var i = 0; i < m.coins.length; ++i)
+						$root.cosmos.base.v1beta1.Coin.encode(m.coins[i], w.uint32(42).fork()).ldelim();
+				}
+				return w;
+			};
+			PeriodLock.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.lockup.PeriodLock();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						case 1:
+							m.ID = r.uint64();
+							break;
+						case 2:
+							m.owner = r.string();
+							break;
+						case 3:
+							m.duration = $root.google.protobuf.Duration.decode(r, r.uint32());
+							break;
+						case 4:
+							m.endTime = $root.google.protobuf.Timestamp.decode(r, r.uint32());
+							break;
+						case 5:
+							if (!(m.coins && m.coins.length)) m.coins = [];
+							m.coins.push($root.cosmos.base.v1beta1.Coin.decode(r, r.uint32()));
+							break;
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			PeriodLock.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.lockup.PeriodLock) return d;
+				var m = new $root.osmosis.lockup.PeriodLock();
+				if (d.ID != null) {
+					if ($util.Long) (m.ID = $util.Long.fromValue(d.ID)).unsigned = true;
+					else if (typeof d.ID === 'string') m.ID = parseInt(d.ID, 10);
+					else if (typeof d.ID === 'number') m.ID = d.ID;
+					else if (typeof d.ID === 'object') m.ID = new $util.LongBits(d.ID.low >>> 0, d.ID.high >>> 0).toNumber(true);
+				}
+				if (d.owner != null) {
+					m.owner = String(d.owner);
+				}
+				if (d.duration != null) {
+					if (typeof d.duration !== 'object') throw TypeError('.osmosis.lockup.PeriodLock.duration: object expected');
+					m.duration = $root.google.protobuf.Duration.fromObject(d.duration);
+				}
+				if (d.endTime != null) {
+					if (typeof d.endTime !== 'object') throw TypeError('.osmosis.lockup.PeriodLock.endTime: object expected');
+					m.endTime = $root.google.protobuf.Timestamp.fromObject(d.endTime);
+				}
+				if (d.coins) {
+					if (!Array.isArray(d.coins)) throw TypeError('.osmosis.lockup.PeriodLock.coins: array expected');
+					m.coins = [];
+					for (var i = 0; i < d.coins.length; ++i) {
+						if (typeof d.coins[i] !== 'object') throw TypeError('.osmosis.lockup.PeriodLock.coins: object expected');
+						m.coins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.coins[i]);
+					}
+				}
+				return m;
+			};
+			PeriodLock.toObject = function toObject(m, o) {
+				if (!o) o = {};
+				var d = {};
+				if (o.arrays || o.defaults) {
+					d.coins = [];
+				}
+				if (o.defaults) {
+					if ($util.Long) {
+						var n = new $util.Long(0, 0, true);
+						d.ID = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+					} else d.ID = o.longs === String ? '0' : 0;
+					d.owner = '';
+					d.duration = null;
+					d.endTime = null;
+				}
+				if (m.ID != null && m.hasOwnProperty('ID')) {
+					if (typeof m.ID === 'number') d.ID = o.longs === String ? String(m.ID) : m.ID;
+					else
+						d.ID =
+							o.longs === String
+								? $util.Long.prototype.toString.call(m.ID)
+								: o.longs === Number
+								? new $util.LongBits(m.ID.low >>> 0, m.ID.high >>> 0).toNumber(true)
+								: m.ID;
+				}
+				if (m.owner != null && m.hasOwnProperty('owner')) {
+					d.owner = m.owner;
+				}
+				if (m.duration != null && m.hasOwnProperty('duration')) {
+					d.duration = $root.google.protobuf.Duration.toObject(m.duration, o);
+				}
+				if (m.endTime != null && m.hasOwnProperty('endTime')) {
+					d.endTime = $root.google.protobuf.Timestamp.toObject(m.endTime, o);
+				}
+				if (m.coins && m.coins.length) {
+					d.coins = [];
+					for (var j = 0; j < m.coins.length; ++j) {
+						d.coins[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.coins[j], o);
+					}
+				}
+				return d;
+			};
+			PeriodLock.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return PeriodLock;
+		})();
 		lockup.LockQueryType = (function() {
 			const valuesById = {},
 				values = Object.create(valuesById);
@@ -2468,6 +3212,169 @@ exports.osmosis = $root.osmosis = (() => {
 			};
 			return QueryCondition;
 		})();
+		lockup.SyntheticLock = (function() {
+			function SyntheticLock(p) {
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			SyntheticLock.prototype.underlyingLockId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+			SyntheticLock.prototype.synthDenom = '';
+			SyntheticLock.prototype.endTime = null;
+			SyntheticLock.prototype.duration = null;
+			SyntheticLock.create = function create(properties) {
+				return new SyntheticLock(properties);
+			};
+			SyntheticLock.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				if (m.underlyingLockId != null && Object.hasOwnProperty.call(m, 'underlyingLockId'))
+					w.uint32(8).uint64(m.underlyingLockId);
+				if (m.synthDenom != null && Object.hasOwnProperty.call(m, 'synthDenom')) w.uint32(18).string(m.synthDenom);
+				if (m.endTime != null && Object.hasOwnProperty.call(m, 'endTime'))
+					$root.google.protobuf.Timestamp.encode(m.endTime, w.uint32(26).fork()).ldelim();
+				if (m.duration != null && Object.hasOwnProperty.call(m, 'duration'))
+					$root.google.protobuf.Duration.encode(m.duration, w.uint32(34).fork()).ldelim();
+				return w;
+			};
+			SyntheticLock.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.lockup.SyntheticLock();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						case 1:
+							m.underlyingLockId = r.uint64();
+							break;
+						case 2:
+							m.synthDenom = r.string();
+							break;
+						case 3:
+							m.endTime = $root.google.protobuf.Timestamp.decode(r, r.uint32());
+							break;
+						case 4:
+							m.duration = $root.google.protobuf.Duration.decode(r, r.uint32());
+							break;
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			SyntheticLock.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.lockup.SyntheticLock) return d;
+				var m = new $root.osmosis.lockup.SyntheticLock();
+				if (d.underlyingLockId != null) {
+					if ($util.Long) (m.underlyingLockId = $util.Long.fromValue(d.underlyingLockId)).unsigned = true;
+					else if (typeof d.underlyingLockId === 'string') m.underlyingLockId = parseInt(d.underlyingLockId, 10);
+					else if (typeof d.underlyingLockId === 'number') m.underlyingLockId = d.underlyingLockId;
+					else if (typeof d.underlyingLockId === 'object')
+						m.underlyingLockId = new $util.LongBits(
+							d.underlyingLockId.low >>> 0,
+							d.underlyingLockId.high >>> 0
+						).toNumber(true);
+				}
+				if (d.synthDenom != null) {
+					m.synthDenom = String(d.synthDenom);
+				}
+				if (d.endTime != null) {
+					if (typeof d.endTime !== 'object') throw TypeError('.osmosis.lockup.SyntheticLock.endTime: object expected');
+					m.endTime = $root.google.protobuf.Timestamp.fromObject(d.endTime);
+				}
+				if (d.duration != null) {
+					if (typeof d.duration !== 'object')
+						throw TypeError('.osmosis.lockup.SyntheticLock.duration: object expected');
+					m.duration = $root.google.protobuf.Duration.fromObject(d.duration);
+				}
+				return m;
+			};
+			SyntheticLock.toObject = function toObject(m, o) {
+				if (!o) o = {};
+				var d = {};
+				if (o.defaults) {
+					if ($util.Long) {
+						var n = new $util.Long(0, 0, true);
+						d.underlyingLockId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+					} else d.underlyingLockId = o.longs === String ? '0' : 0;
+					d.synthDenom = '';
+					d.endTime = null;
+					d.duration = null;
+				}
+				if (m.underlyingLockId != null && m.hasOwnProperty('underlyingLockId')) {
+					if (typeof m.underlyingLockId === 'number')
+						d.underlyingLockId = o.longs === String ? String(m.underlyingLockId) : m.underlyingLockId;
+					else
+						d.underlyingLockId =
+							o.longs === String
+								? $util.Long.prototype.toString.call(m.underlyingLockId)
+								: o.longs === Number
+								? new $util.LongBits(m.underlyingLockId.low >>> 0, m.underlyingLockId.high >>> 0).toNumber(true)
+								: m.underlyingLockId;
+				}
+				if (m.synthDenom != null && m.hasOwnProperty('synthDenom')) {
+					d.synthDenom = m.synthDenom;
+				}
+				if (m.endTime != null && m.hasOwnProperty('endTime')) {
+					d.endTime = $root.google.protobuf.Timestamp.toObject(m.endTime, o);
+				}
+				if (m.duration != null && m.hasOwnProperty('duration')) {
+					d.duration = $root.google.protobuf.Duration.toObject(m.duration, o);
+				}
+				return d;
+			};
+			SyntheticLock.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return SyntheticLock;
+		})();
+		lockup.Msg = (function() {
+			function Msg(rpcImpl, requestDelimited, responseDelimited) {
+				$protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
+			}
+			(Msg.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = Msg;
+			Msg.create = function create(rpcImpl, requestDelimited, responseDelimited) {
+				return new this(rpcImpl, requestDelimited, responseDelimited);
+			};
+			Object.defineProperty(
+				(Msg.prototype.lockTokens = function lockTokens(request, callback) {
+					return this.rpcCall(
+						lockTokens,
+						$root.osmosis.lockup.MsgLockTokens,
+						$root.osmosis.lockup.MsgLockTokensResponse,
+						request,
+						callback
+					);
+				}),
+				'name',
+				{ value: 'LockTokens' }
+			);
+			Object.defineProperty(
+				(Msg.prototype.beginUnlockingAll = function beginUnlockingAll(request, callback) {
+					return this.rpcCall(
+						beginUnlockingAll,
+						$root.osmosis.lockup.MsgBeginUnlockingAll,
+						$root.osmosis.lockup.MsgBeginUnlockingAllResponse,
+						request,
+						callback
+					);
+				}),
+				'name',
+				{ value: 'BeginUnlockingAll' }
+			);
+			Object.defineProperty(
+				(Msg.prototype.beginUnlocking = function beginUnlocking(request, callback) {
+					return this.rpcCall(
+						beginUnlocking,
+						$root.osmosis.lockup.MsgBeginUnlocking,
+						$root.osmosis.lockup.MsgBeginUnlockingResponse,
+						request,
+						callback
+					);
+				}),
+				'name',
+				{ value: 'BeginUnlocking' }
+			);
+			return Msg;
+		})();
 		lockup.MsgLockTokens = (function() {
 			function MsgLockTokens(p) {
 				this.coins = [];
@@ -2564,6 +3471,73 @@ exports.osmosis = $root.osmosis = (() => {
 			};
 			return MsgLockTokens;
 		})();
+		lockup.MsgLockTokensResponse = (function() {
+			function MsgLockTokensResponse(p) {
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			MsgLockTokensResponse.prototype.ID = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+			MsgLockTokensResponse.create = function create(properties) {
+				return new MsgLockTokensResponse(properties);
+			};
+			MsgLockTokensResponse.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				if (m.ID != null && Object.hasOwnProperty.call(m, 'ID')) w.uint32(8).uint64(m.ID);
+				return w;
+			};
+			MsgLockTokensResponse.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.lockup.MsgLockTokensResponse();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						case 1:
+							m.ID = r.uint64();
+							break;
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			MsgLockTokensResponse.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.lockup.MsgLockTokensResponse) return d;
+				var m = new $root.osmosis.lockup.MsgLockTokensResponse();
+				if (d.ID != null) {
+					if ($util.Long) (m.ID = $util.Long.fromValue(d.ID)).unsigned = true;
+					else if (typeof d.ID === 'string') m.ID = parseInt(d.ID, 10);
+					else if (typeof d.ID === 'number') m.ID = d.ID;
+					else if (typeof d.ID === 'object') m.ID = new $util.LongBits(d.ID.low >>> 0, d.ID.high >>> 0).toNumber(true);
+				}
+				return m;
+			};
+			MsgLockTokensResponse.toObject = function toObject(m, o) {
+				if (!o) o = {};
+				var d = {};
+				if (o.defaults) {
+					if ($util.Long) {
+						var n = new $util.Long(0, 0, true);
+						d.ID = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+					} else d.ID = o.longs === String ? '0' : 0;
+				}
+				if (m.ID != null && m.hasOwnProperty('ID')) {
+					if (typeof m.ID === 'number') d.ID = o.longs === String ? String(m.ID) : m.ID;
+					else
+						d.ID =
+							o.longs === String
+								? $util.Long.prototype.toString.call(m.ID)
+								: o.longs === Number
+								? new $util.LongBits(m.ID.low >>> 0, m.ID.high >>> 0).toNumber(true)
+								: m.ID;
+				}
+				return d;
+			};
+			MsgLockTokensResponse.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return MsgLockTokensResponse;
+		})();
 		lockup.MsgBeginUnlockingAll = (function() {
 			function MsgBeginUnlockingAll(p) {
 				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
@@ -2618,12 +3592,83 @@ exports.osmosis = $root.osmosis = (() => {
 			};
 			return MsgBeginUnlockingAll;
 		})();
+		lockup.MsgBeginUnlockingAllResponse = (function() {
+			function MsgBeginUnlockingAllResponse(p) {
+				this.unlocks = [];
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			MsgBeginUnlockingAllResponse.prototype.unlocks = $util.emptyArray;
+			MsgBeginUnlockingAllResponse.create = function create(properties) {
+				return new MsgBeginUnlockingAllResponse(properties);
+			};
+			MsgBeginUnlockingAllResponse.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				if (m.unlocks != null && m.unlocks.length) {
+					for (var i = 0; i < m.unlocks.length; ++i)
+						$root.osmosis.lockup.PeriodLock.encode(m.unlocks[i], w.uint32(10).fork()).ldelim();
+				}
+				return w;
+			};
+			MsgBeginUnlockingAllResponse.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.lockup.MsgBeginUnlockingAllResponse();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						case 1:
+							if (!(m.unlocks && m.unlocks.length)) m.unlocks = [];
+							m.unlocks.push($root.osmosis.lockup.PeriodLock.decode(r, r.uint32()));
+							break;
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			MsgBeginUnlockingAllResponse.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.lockup.MsgBeginUnlockingAllResponse) return d;
+				var m = new $root.osmosis.lockup.MsgBeginUnlockingAllResponse();
+				if (d.unlocks) {
+					if (!Array.isArray(d.unlocks))
+						throw TypeError('.osmosis.lockup.MsgBeginUnlockingAllResponse.unlocks: array expected');
+					m.unlocks = [];
+					for (var i = 0; i < d.unlocks.length; ++i) {
+						if (typeof d.unlocks[i] !== 'object')
+							throw TypeError('.osmosis.lockup.MsgBeginUnlockingAllResponse.unlocks: object expected');
+						m.unlocks[i] = $root.osmosis.lockup.PeriodLock.fromObject(d.unlocks[i]);
+					}
+				}
+				return m;
+			};
+			MsgBeginUnlockingAllResponse.toObject = function toObject(m, o) {
+				if (!o) o = {};
+				var d = {};
+				if (o.arrays || o.defaults) {
+					d.unlocks = [];
+				}
+				if (m.unlocks && m.unlocks.length) {
+					d.unlocks = [];
+					for (var j = 0; j < m.unlocks.length; ++j) {
+						d.unlocks[j] = $root.osmosis.lockup.PeriodLock.toObject(m.unlocks[j], o);
+					}
+				}
+				return d;
+			};
+			MsgBeginUnlockingAllResponse.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return MsgBeginUnlockingAllResponse;
+		})();
 		lockup.MsgBeginUnlocking = (function() {
 			function MsgBeginUnlocking(p) {
+				this.coins = [];
 				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
 			}
 			MsgBeginUnlocking.prototype.owner = '';
 			MsgBeginUnlocking.prototype.ID = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+			MsgBeginUnlocking.prototype.coins = $util.emptyArray;
 			MsgBeginUnlocking.create = function create(properties) {
 				return new MsgBeginUnlocking(properties);
 			};
@@ -2631,6 +3676,10 @@ exports.osmosis = $root.osmosis = (() => {
 				if (!w) w = $Writer.create();
 				if (m.owner != null && Object.hasOwnProperty.call(m, 'owner')) w.uint32(10).string(m.owner);
 				if (m.ID != null && Object.hasOwnProperty.call(m, 'ID')) w.uint32(16).uint64(m.ID);
+				if (m.coins != null && m.coins.length) {
+					for (var i = 0; i < m.coins.length; ++i)
+						$root.cosmos.base.v1beta1.Coin.encode(m.coins[i], w.uint32(26).fork()).ldelim();
+				}
 				return w;
 			};
 			MsgBeginUnlocking.decode = function decode(r, l) {
@@ -2645,6 +3694,10 @@ exports.osmosis = $root.osmosis = (() => {
 							break;
 						case 2:
 							m.ID = r.uint64();
+							break;
+						case 3:
+							if (!(m.coins && m.coins.length)) m.coins = [];
+							m.coins.push($root.cosmos.base.v1beta1.Coin.decode(r, r.uint32()));
 							break;
 						default:
 							r.skipType(t & 7);
@@ -2665,11 +3718,23 @@ exports.osmosis = $root.osmosis = (() => {
 					else if (typeof d.ID === 'number') m.ID = d.ID;
 					else if (typeof d.ID === 'object') m.ID = new $util.LongBits(d.ID.low >>> 0, d.ID.high >>> 0).toNumber(true);
 				}
+				if (d.coins) {
+					if (!Array.isArray(d.coins)) throw TypeError('.osmosis.lockup.MsgBeginUnlocking.coins: array expected');
+					m.coins = [];
+					for (var i = 0; i < d.coins.length; ++i) {
+						if (typeof d.coins[i] !== 'object')
+							throw TypeError('.osmosis.lockup.MsgBeginUnlocking.coins: object expected');
+						m.coins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.coins[i]);
+					}
+				}
 				return m;
 			};
 			MsgBeginUnlocking.toObject = function toObject(m, o) {
 				if (!o) o = {};
 				var d = {};
+				if (o.arrays || o.defaults) {
+					d.coins = [];
+				}
 				if (o.defaults) {
 					d.owner = '';
 					if ($util.Long) {
@@ -2690,6 +3755,12 @@ exports.osmosis = $root.osmosis = (() => {
 								? new $util.LongBits(m.ID.low >>> 0, m.ID.high >>> 0).toNumber(true)
 								: m.ID;
 				}
+				if (m.coins && m.coins.length) {
+					d.coins = [];
+					for (var j = 0; j < m.coins.length; ++j) {
+						d.coins[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.coins[j], o);
+					}
+				}
 				return d;
 			};
 			MsgBeginUnlocking.prototype.toJSON = function toJSON() {
@@ -2697,10 +3768,100 @@ exports.osmosis = $root.osmosis = (() => {
 			};
 			return MsgBeginUnlocking;
 		})();
+		lockup.MsgBeginUnlockingResponse = (function() {
+			function MsgBeginUnlockingResponse(p) {
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			MsgBeginUnlockingResponse.prototype.success = false;
+			MsgBeginUnlockingResponse.create = function create(properties) {
+				return new MsgBeginUnlockingResponse(properties);
+			};
+			MsgBeginUnlockingResponse.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				if (m.success != null && Object.hasOwnProperty.call(m, 'success')) w.uint32(8).bool(m.success);
+				return w;
+			};
+			MsgBeginUnlockingResponse.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.lockup.MsgBeginUnlockingResponse();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						case 1:
+							m.success = r.bool();
+							break;
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			MsgBeginUnlockingResponse.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.lockup.MsgBeginUnlockingResponse) return d;
+				var m = new $root.osmosis.lockup.MsgBeginUnlockingResponse();
+				if (d.success != null) {
+					m.success = Boolean(d.success);
+				}
+				return m;
+			};
+			MsgBeginUnlockingResponse.toObject = function toObject(m, o) {
+				if (!o) o = {};
+				var d = {};
+				if (o.defaults) {
+					d.success = false;
+				}
+				if (m.success != null && m.hasOwnProperty('success')) {
+					d.success = m.success;
+				}
+				return d;
+			};
+			MsgBeginUnlockingResponse.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return MsgBeginUnlockingResponse;
+		})();
 		return lockup;
 	})();
 	osmosis.incentives = (function() {
 		const incentives = {};
+		incentives.Msg = (function() {
+			function Msg(rpcImpl, requestDelimited, responseDelimited) {
+				$protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
+			}
+			(Msg.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = Msg;
+			Msg.create = function create(rpcImpl, requestDelimited, responseDelimited) {
+				return new this(rpcImpl, requestDelimited, responseDelimited);
+			};
+			Object.defineProperty(
+				(Msg.prototype.createGauge = function createGauge(request, callback) {
+					return this.rpcCall(
+						createGauge,
+						$root.osmosis.incentives.MsgCreateGauge,
+						$root.osmosis.incentives.MsgCreateGaugeResponse,
+						request,
+						callback
+					);
+				}),
+				'name',
+				{ value: 'CreateGauge' }
+			);
+			Object.defineProperty(
+				(Msg.prototype.addToGauge = function addToGauge(request, callback) {
+					return this.rpcCall(
+						addToGauge,
+						$root.osmosis.incentives.MsgAddToGauge,
+						$root.osmosis.incentives.MsgAddToGaugeResponse,
+						request,
+						callback
+					);
+				}),
+				'name',
+				{ value: 'AddToGauge' }
+			);
+			return Msg;
+		})();
 		incentives.MsgCreateGauge = (function() {
 			function MsgCreateGauge(p) {
 				this.coins = [];
@@ -2856,6 +4017,43 @@ exports.osmosis = $root.osmosis = (() => {
 			};
 			return MsgCreateGauge;
 		})();
+		incentives.MsgCreateGaugeResponse = (function() {
+			function MsgCreateGaugeResponse(p) {
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			MsgCreateGaugeResponse.create = function create(properties) {
+				return new MsgCreateGaugeResponse(properties);
+			};
+			MsgCreateGaugeResponse.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				return w;
+			};
+			MsgCreateGaugeResponse.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.incentives.MsgCreateGaugeResponse();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			MsgCreateGaugeResponse.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.incentives.MsgCreateGaugeResponse) return d;
+				return new $root.osmosis.incentives.MsgCreateGaugeResponse();
+			};
+			MsgCreateGaugeResponse.toObject = function toObject() {
+				return {};
+			};
+			MsgCreateGaugeResponse.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return MsgCreateGaugeResponse;
+		})();
 		incentives.MsgAddToGauge = (function() {
 			function MsgAddToGauge(p) {
 				this.rewards = [];
@@ -2964,7 +4162,635 @@ exports.osmosis = $root.osmosis = (() => {
 			};
 			return MsgAddToGauge;
 		})();
+		incentives.MsgAddToGaugeResponse = (function() {
+			function MsgAddToGaugeResponse(p) {
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			MsgAddToGaugeResponse.create = function create(properties) {
+				return new MsgAddToGaugeResponse(properties);
+			};
+			MsgAddToGaugeResponse.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				return w;
+			};
+			MsgAddToGaugeResponse.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.incentives.MsgAddToGaugeResponse();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			MsgAddToGaugeResponse.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.incentives.MsgAddToGaugeResponse) return d;
+				return new $root.osmosis.incentives.MsgAddToGaugeResponse();
+			};
+			MsgAddToGaugeResponse.toObject = function toObject() {
+				return {};
+			};
+			MsgAddToGaugeResponse.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return MsgAddToGaugeResponse;
+		})();
 		return incentives;
+	})();
+	osmosis.superfluid = (function() {
+		const superfluid = {};
+		superfluid.Msg = (function() {
+			function Msg(rpcImpl, requestDelimited, responseDelimited) {
+				$protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
+			}
+			(Msg.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = Msg;
+			Msg.create = function create(rpcImpl, requestDelimited, responseDelimited) {
+				return new this(rpcImpl, requestDelimited, responseDelimited);
+			};
+			Object.defineProperty(
+				(Msg.prototype.superfluidDelegate = function superfluidDelegate(request, callback) {
+					return this.rpcCall(
+						superfluidDelegate,
+						$root.osmosis.superfluid.MsgSuperfluidDelegate,
+						$root.osmosis.superfluid.MsgSuperfluidDelegateResponse,
+						request,
+						callback
+					);
+				}),
+				'name',
+				{ value: 'SuperfluidDelegate' }
+			);
+			Object.defineProperty(
+				(Msg.prototype.superfluidUndelegate = function superfluidUndelegate(request, callback) {
+					return this.rpcCall(
+						superfluidUndelegate,
+						$root.osmosis.superfluid.MsgSuperfluidUndelegate,
+						$root.osmosis.superfluid.MsgSuperfluidUndelegateResponse,
+						request,
+						callback
+					);
+				}),
+				'name',
+				{ value: 'SuperfluidUndelegate' }
+			);
+			Object.defineProperty(
+				(Msg.prototype.superfluidUnbondLock = function superfluidUnbondLock(request, callback) {
+					return this.rpcCall(
+						superfluidUnbondLock,
+						$root.osmosis.superfluid.MsgSuperfluidUnbondLock,
+						$root.osmosis.superfluid.MsgSuperfluidUnbondLockResponse,
+						request,
+						callback
+					);
+				}),
+				'name',
+				{ value: 'SuperfluidUnbondLock' }
+			);
+			Object.defineProperty(
+				(Msg.prototype.lockAndSuperfluidDelegate = function lockAndSuperfluidDelegate(request, callback) {
+					return this.rpcCall(
+						lockAndSuperfluidDelegate,
+						$root.osmosis.superfluid.MsgLockAndSuperfluidDelegate,
+						$root.osmosis.superfluid.MsgLockAndSuperfluidDelegateResponse,
+						request,
+						callback
+					);
+				}),
+				'name',
+				{ value: 'LockAndSuperfluidDelegate' }
+			);
+			return Msg;
+		})();
+		superfluid.MsgSuperfluidDelegate = (function() {
+			function MsgSuperfluidDelegate(p) {
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			MsgSuperfluidDelegate.prototype.sender = '';
+			MsgSuperfluidDelegate.prototype.lockId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+			MsgSuperfluidDelegate.prototype.valAddr = '';
+			MsgSuperfluidDelegate.create = function create(properties) {
+				return new MsgSuperfluidDelegate(properties);
+			};
+			MsgSuperfluidDelegate.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
+				if (m.lockId != null && Object.hasOwnProperty.call(m, 'lockId')) w.uint32(16).uint64(m.lockId);
+				if (m.valAddr != null && Object.hasOwnProperty.call(m, 'valAddr')) w.uint32(26).string(m.valAddr);
+				return w;
+			};
+			MsgSuperfluidDelegate.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.superfluid.MsgSuperfluidDelegate();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						case 1:
+							m.sender = r.string();
+							break;
+						case 2:
+							m.lockId = r.uint64();
+							break;
+						case 3:
+							m.valAddr = r.string();
+							break;
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			MsgSuperfluidDelegate.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.superfluid.MsgSuperfluidDelegate) return d;
+				var m = new $root.osmosis.superfluid.MsgSuperfluidDelegate();
+				if (d.sender != null) {
+					m.sender = String(d.sender);
+				}
+				if (d.lockId != null) {
+					if ($util.Long) (m.lockId = $util.Long.fromValue(d.lockId)).unsigned = true;
+					else if (typeof d.lockId === 'string') m.lockId = parseInt(d.lockId, 10);
+					else if (typeof d.lockId === 'number') m.lockId = d.lockId;
+					else if (typeof d.lockId === 'object')
+						m.lockId = new $util.LongBits(d.lockId.low >>> 0, d.lockId.high >>> 0).toNumber(true);
+				}
+				if (d.valAddr != null) {
+					m.valAddr = String(d.valAddr);
+				}
+				return m;
+			};
+			MsgSuperfluidDelegate.toObject = function toObject(m, o) {
+				if (!o) o = {};
+				var d = {};
+				if (o.defaults) {
+					d.sender = '';
+					if ($util.Long) {
+						var n = new $util.Long(0, 0, true);
+						d.lockId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+					} else d.lockId = o.longs === String ? '0' : 0;
+					d.valAddr = '';
+				}
+				if (m.sender != null && m.hasOwnProperty('sender')) {
+					d.sender = m.sender;
+				}
+				if (m.lockId != null && m.hasOwnProperty('lockId')) {
+					if (typeof m.lockId === 'number') d.lockId = o.longs === String ? String(m.lockId) : m.lockId;
+					else
+						d.lockId =
+							o.longs === String
+								? $util.Long.prototype.toString.call(m.lockId)
+								: o.longs === Number
+								? new $util.LongBits(m.lockId.low >>> 0, m.lockId.high >>> 0).toNumber(true)
+								: m.lockId;
+				}
+				if (m.valAddr != null && m.hasOwnProperty('valAddr')) {
+					d.valAddr = m.valAddr;
+				}
+				return d;
+			};
+			MsgSuperfluidDelegate.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return MsgSuperfluidDelegate;
+		})();
+		superfluid.MsgSuperfluidDelegateResponse = (function() {
+			function MsgSuperfluidDelegateResponse(p) {
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			MsgSuperfluidDelegateResponse.create = function create(properties) {
+				return new MsgSuperfluidDelegateResponse(properties);
+			};
+			MsgSuperfluidDelegateResponse.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				return w;
+			};
+			MsgSuperfluidDelegateResponse.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.superfluid.MsgSuperfluidDelegateResponse();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			MsgSuperfluidDelegateResponse.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.superfluid.MsgSuperfluidDelegateResponse) return d;
+				return new $root.osmosis.superfluid.MsgSuperfluidDelegateResponse();
+			};
+			MsgSuperfluidDelegateResponse.toObject = function toObject() {
+				return {};
+			};
+			MsgSuperfluidDelegateResponse.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return MsgSuperfluidDelegateResponse;
+		})();
+		superfluid.MsgSuperfluidUndelegate = (function() {
+			function MsgSuperfluidUndelegate(p) {
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			MsgSuperfluidUndelegate.prototype.sender = '';
+			MsgSuperfluidUndelegate.prototype.lockId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+			MsgSuperfluidUndelegate.create = function create(properties) {
+				return new MsgSuperfluidUndelegate(properties);
+			};
+			MsgSuperfluidUndelegate.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
+				if (m.lockId != null && Object.hasOwnProperty.call(m, 'lockId')) w.uint32(16).uint64(m.lockId);
+				return w;
+			};
+			MsgSuperfluidUndelegate.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.superfluid.MsgSuperfluidUndelegate();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						case 1:
+							m.sender = r.string();
+							break;
+						case 2:
+							m.lockId = r.uint64();
+							break;
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			MsgSuperfluidUndelegate.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.superfluid.MsgSuperfluidUndelegate) return d;
+				var m = new $root.osmosis.superfluid.MsgSuperfluidUndelegate();
+				if (d.sender != null) {
+					m.sender = String(d.sender);
+				}
+				if (d.lockId != null) {
+					if ($util.Long) (m.lockId = $util.Long.fromValue(d.lockId)).unsigned = true;
+					else if (typeof d.lockId === 'string') m.lockId = parseInt(d.lockId, 10);
+					else if (typeof d.lockId === 'number') m.lockId = d.lockId;
+					else if (typeof d.lockId === 'object')
+						m.lockId = new $util.LongBits(d.lockId.low >>> 0, d.lockId.high >>> 0).toNumber(true);
+				}
+				return m;
+			};
+			MsgSuperfluidUndelegate.toObject = function toObject(m, o) {
+				if (!o) o = {};
+				var d = {};
+				if (o.defaults) {
+					d.sender = '';
+					if ($util.Long) {
+						var n = new $util.Long(0, 0, true);
+						d.lockId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+					} else d.lockId = o.longs === String ? '0' : 0;
+				}
+				if (m.sender != null && m.hasOwnProperty('sender')) {
+					d.sender = m.sender;
+				}
+				if (m.lockId != null && m.hasOwnProperty('lockId')) {
+					if (typeof m.lockId === 'number') d.lockId = o.longs === String ? String(m.lockId) : m.lockId;
+					else
+						d.lockId =
+							o.longs === String
+								? $util.Long.prototype.toString.call(m.lockId)
+								: o.longs === Number
+								? new $util.LongBits(m.lockId.low >>> 0, m.lockId.high >>> 0).toNumber(true)
+								: m.lockId;
+				}
+				return d;
+			};
+			MsgSuperfluidUndelegate.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return MsgSuperfluidUndelegate;
+		})();
+		superfluid.MsgSuperfluidUndelegateResponse = (function() {
+			function MsgSuperfluidUndelegateResponse(p) {
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			MsgSuperfluidUndelegateResponse.create = function create(properties) {
+				return new MsgSuperfluidUndelegateResponse(properties);
+			};
+			MsgSuperfluidUndelegateResponse.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				return w;
+			};
+			MsgSuperfluidUndelegateResponse.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.superfluid.MsgSuperfluidUndelegateResponse();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			MsgSuperfluidUndelegateResponse.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.superfluid.MsgSuperfluidUndelegateResponse) return d;
+				return new $root.osmosis.superfluid.MsgSuperfluidUndelegateResponse();
+			};
+			MsgSuperfluidUndelegateResponse.toObject = function toObject() {
+				return {};
+			};
+			MsgSuperfluidUndelegateResponse.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return MsgSuperfluidUndelegateResponse;
+		})();
+		superfluid.MsgSuperfluidUnbondLock = (function() {
+			function MsgSuperfluidUnbondLock(p) {
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			MsgSuperfluidUnbondLock.prototype.sender = '';
+			MsgSuperfluidUnbondLock.prototype.lockId = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+			MsgSuperfluidUnbondLock.create = function create(properties) {
+				return new MsgSuperfluidUnbondLock(properties);
+			};
+			MsgSuperfluidUnbondLock.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
+				if (m.lockId != null && Object.hasOwnProperty.call(m, 'lockId')) w.uint32(16).uint64(m.lockId);
+				return w;
+			};
+			MsgSuperfluidUnbondLock.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.superfluid.MsgSuperfluidUnbondLock();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						case 1:
+							m.sender = r.string();
+							break;
+						case 2:
+							m.lockId = r.uint64();
+							break;
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			MsgSuperfluidUnbondLock.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.superfluid.MsgSuperfluidUnbondLock) return d;
+				var m = new $root.osmosis.superfluid.MsgSuperfluidUnbondLock();
+				if (d.sender != null) {
+					m.sender = String(d.sender);
+				}
+				if (d.lockId != null) {
+					if ($util.Long) (m.lockId = $util.Long.fromValue(d.lockId)).unsigned = true;
+					else if (typeof d.lockId === 'string') m.lockId = parseInt(d.lockId, 10);
+					else if (typeof d.lockId === 'number') m.lockId = d.lockId;
+					else if (typeof d.lockId === 'object')
+						m.lockId = new $util.LongBits(d.lockId.low >>> 0, d.lockId.high >>> 0).toNumber(true);
+				}
+				return m;
+			};
+			MsgSuperfluidUnbondLock.toObject = function toObject(m, o) {
+				if (!o) o = {};
+				var d = {};
+				if (o.defaults) {
+					d.sender = '';
+					if ($util.Long) {
+						var n = new $util.Long(0, 0, true);
+						d.lockId = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+					} else d.lockId = o.longs === String ? '0' : 0;
+				}
+				if (m.sender != null && m.hasOwnProperty('sender')) {
+					d.sender = m.sender;
+				}
+				if (m.lockId != null && m.hasOwnProperty('lockId')) {
+					if (typeof m.lockId === 'number') d.lockId = o.longs === String ? String(m.lockId) : m.lockId;
+					else
+						d.lockId =
+							o.longs === String
+								? $util.Long.prototype.toString.call(m.lockId)
+								: o.longs === Number
+								? new $util.LongBits(m.lockId.low >>> 0, m.lockId.high >>> 0).toNumber(true)
+								: m.lockId;
+				}
+				return d;
+			};
+			MsgSuperfluidUnbondLock.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return MsgSuperfluidUnbondLock;
+		})();
+		superfluid.MsgSuperfluidUnbondLockResponse = (function() {
+			function MsgSuperfluidUnbondLockResponse(p) {
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			MsgSuperfluidUnbondLockResponse.create = function create(properties) {
+				return new MsgSuperfluidUnbondLockResponse(properties);
+			};
+			MsgSuperfluidUnbondLockResponse.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				return w;
+			};
+			MsgSuperfluidUnbondLockResponse.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.superfluid.MsgSuperfluidUnbondLockResponse();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			MsgSuperfluidUnbondLockResponse.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.superfluid.MsgSuperfluidUnbondLockResponse) return d;
+				return new $root.osmosis.superfluid.MsgSuperfluidUnbondLockResponse();
+			};
+			MsgSuperfluidUnbondLockResponse.toObject = function toObject() {
+				return {};
+			};
+			MsgSuperfluidUnbondLockResponse.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return MsgSuperfluidUnbondLockResponse;
+		})();
+		superfluid.MsgLockAndSuperfluidDelegate = (function() {
+			function MsgLockAndSuperfluidDelegate(p) {
+				this.coins = [];
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			MsgLockAndSuperfluidDelegate.prototype.sender = '';
+			MsgLockAndSuperfluidDelegate.prototype.coins = $util.emptyArray;
+			MsgLockAndSuperfluidDelegate.prototype.valAddr = '';
+			MsgLockAndSuperfluidDelegate.create = function create(properties) {
+				return new MsgLockAndSuperfluidDelegate(properties);
+			};
+			MsgLockAndSuperfluidDelegate.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				if (m.sender != null && Object.hasOwnProperty.call(m, 'sender')) w.uint32(10).string(m.sender);
+				if (m.coins != null && m.coins.length) {
+					for (var i = 0; i < m.coins.length; ++i)
+						$root.cosmos.base.v1beta1.Coin.encode(m.coins[i], w.uint32(18).fork()).ldelim();
+				}
+				if (m.valAddr != null && Object.hasOwnProperty.call(m, 'valAddr')) w.uint32(26).string(m.valAddr);
+				return w;
+			};
+			MsgLockAndSuperfluidDelegate.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.superfluid.MsgLockAndSuperfluidDelegate();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						case 1:
+							m.sender = r.string();
+							break;
+						case 2:
+							if (!(m.coins && m.coins.length)) m.coins = [];
+							m.coins.push($root.cosmos.base.v1beta1.Coin.decode(r, r.uint32()));
+							break;
+						case 3:
+							m.valAddr = r.string();
+							break;
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			MsgLockAndSuperfluidDelegate.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.superfluid.MsgLockAndSuperfluidDelegate) return d;
+				var m = new $root.osmosis.superfluid.MsgLockAndSuperfluidDelegate();
+				if (d.sender != null) {
+					m.sender = String(d.sender);
+				}
+				if (d.coins) {
+					if (!Array.isArray(d.coins))
+						throw TypeError('.osmosis.superfluid.MsgLockAndSuperfluidDelegate.coins: array expected');
+					m.coins = [];
+					for (var i = 0; i < d.coins.length; ++i) {
+						if (typeof d.coins[i] !== 'object')
+							throw TypeError('.osmosis.superfluid.MsgLockAndSuperfluidDelegate.coins: object expected');
+						m.coins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.coins[i]);
+					}
+				}
+				if (d.valAddr != null) {
+					m.valAddr = String(d.valAddr);
+				}
+				return m;
+			};
+			MsgLockAndSuperfluidDelegate.toObject = function toObject(m, o) {
+				if (!o) o = {};
+				var d = {};
+				if (o.arrays || o.defaults) {
+					d.coins = [];
+				}
+				if (o.defaults) {
+					d.sender = '';
+					d.valAddr = '';
+				}
+				if (m.sender != null && m.hasOwnProperty('sender')) {
+					d.sender = m.sender;
+				}
+				if (m.coins && m.coins.length) {
+					d.coins = [];
+					for (var j = 0; j < m.coins.length; ++j) {
+						d.coins[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.coins[j], o);
+					}
+				}
+				if (m.valAddr != null && m.hasOwnProperty('valAddr')) {
+					d.valAddr = m.valAddr;
+				}
+				return d;
+			};
+			MsgLockAndSuperfluidDelegate.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return MsgLockAndSuperfluidDelegate;
+		})();
+		superfluid.MsgLockAndSuperfluidDelegateResponse = (function() {
+			function MsgLockAndSuperfluidDelegateResponse(p) {
+				if (p) for (var ks = Object.keys(p), i = 0; i < ks.length; ++i) if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+			}
+			MsgLockAndSuperfluidDelegateResponse.prototype.ID = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+			MsgLockAndSuperfluidDelegateResponse.create = function create(properties) {
+				return new MsgLockAndSuperfluidDelegateResponse(properties);
+			};
+			MsgLockAndSuperfluidDelegateResponse.encode = function encode(m, w) {
+				if (!w) w = $Writer.create();
+				if (m.ID != null && Object.hasOwnProperty.call(m, 'ID')) w.uint32(8).uint64(m.ID);
+				return w;
+			};
+			MsgLockAndSuperfluidDelegateResponse.decode = function decode(r, l) {
+				if (!(r instanceof $Reader)) r = $Reader.create(r);
+				var c = l === undefined ? r.len : r.pos + l,
+					m = new $root.osmosis.superfluid.MsgLockAndSuperfluidDelegateResponse();
+				while (r.pos < c) {
+					var t = r.uint32();
+					switch (t >>> 3) {
+						case 1:
+							m.ID = r.uint64();
+							break;
+						default:
+							r.skipType(t & 7);
+							break;
+					}
+				}
+				return m;
+			};
+			MsgLockAndSuperfluidDelegateResponse.fromObject = function fromObject(d) {
+				if (d instanceof $root.osmosis.superfluid.MsgLockAndSuperfluidDelegateResponse) return d;
+				var m = new $root.osmosis.superfluid.MsgLockAndSuperfluidDelegateResponse();
+				if (d.ID != null) {
+					if ($util.Long) (m.ID = $util.Long.fromValue(d.ID)).unsigned = true;
+					else if (typeof d.ID === 'string') m.ID = parseInt(d.ID, 10);
+					else if (typeof d.ID === 'number') m.ID = d.ID;
+					else if (typeof d.ID === 'object') m.ID = new $util.LongBits(d.ID.low >>> 0, d.ID.high >>> 0).toNumber(true);
+				}
+				return m;
+			};
+			MsgLockAndSuperfluidDelegateResponse.toObject = function toObject(m, o) {
+				if (!o) o = {};
+				var d = {};
+				if (o.defaults) {
+					if ($util.Long) {
+						var n = new $util.Long(0, 0, true);
+						d.ID = o.longs === String ? n.toString() : o.longs === Number ? n.toNumber() : n;
+					} else d.ID = o.longs === String ? '0' : 0;
+				}
+				if (m.ID != null && m.hasOwnProperty('ID')) {
+					if (typeof m.ID === 'number') d.ID = o.longs === String ? String(m.ID) : m.ID;
+					else
+						d.ID =
+							o.longs === String
+								? $util.Long.prototype.toString.call(m.ID)
+								: o.longs === Number
+								? new $util.LongBits(m.ID.low >>> 0, m.ID.high >>> 0).toNumber(true)
+								: m.ID;
+				}
+				return d;
+			};
+			MsgLockAndSuperfluidDelegateResponse.prototype.toJSON = function toJSON() {
+				return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+			};
+			return MsgLockAndSuperfluidDelegateResponse;
+		})();
+		return superfluid;
 	})();
 	return osmosis;
 })();
