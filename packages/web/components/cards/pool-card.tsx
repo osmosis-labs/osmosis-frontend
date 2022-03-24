@@ -4,13 +4,12 @@ import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 import { PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { AssetInfo } from "../assets/types";
-import { MetricLoader } from "../loaders";
-import { PoolMetric } from "./types";
+import { Metric } from "../types";
 
 export const PoolCard: FunctionComponent<{
   poolId: string;
   poolAssets: AssetInfo[];
-  poolMetrics: PoolMetric[];
+  poolMetrics: Metric[];
   isSuperfluid?: boolean;
 }> = observer(({ poolId, poolAssets, poolMetrics, isSuperfluid }) => {
   const router = useRouter();
@@ -41,11 +40,13 @@ export const PoolCard: FunctionComponent<{
               <div className="subtitle2 text-white-disabled">
                 {poolMetric.label}
               </div>
-              <MetricLoader isLoading={poolMetric.isLoading}>
+              {typeof poolMetric.value === "string" ? (
                 <div className="mt-0.5 subtitle1 text-white-high">
                   {poolMetric.value}
                 </div>
-              </MetricLoader>
+              ) : (
+                <>{poolMetric.value}</>
+              )}
             </div>
           ))}
         </div>

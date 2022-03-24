@@ -13,7 +13,7 @@ import { Overview } from "../../components/overview";
 import { AssetsTable } from "../../components/table/assets-table";
 import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards/";
-import { PoolMetric } from "../../components/cards/types";
+import { Metric } from "../../components/types";
 import { IbcTransferModal } from "../../modals/ibc-transfer";
 
 const INIT_POOL_CARD_COUNT = 6;
@@ -237,9 +237,9 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                   value: tvl.mul(actualShareRatio).toString(),
                 },
           ],
-        ] as [ObservablePool, PoolMetric[]];
+        ] as [ObservablePool, Metric[]];
       })
-      .filter((p): p is [ObservablePool, PoolMetric[]] => p !== undefined);
+      .filter((p): p is [ObservablePool, Metric[]] => p !== undefined);
 
     return (
       <>
