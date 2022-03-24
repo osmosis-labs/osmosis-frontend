@@ -97,7 +97,7 @@ const ChainAssets: FunctionComponent = observer(() => {
   > | null>(null);
 
   const openTransferModal = useCallback(
-    (mode: "deposit" | "withdraw", chainId: string, coinDenom) => {
+    (mode: "deposit" | "withdraw", chainId: string, coinDenom: string) => {
       const balance = ibcBalances.find(
         (bal) =>
           bal.chainInfo.chainId === chainId &&

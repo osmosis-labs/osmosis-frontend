@@ -18,15 +18,19 @@ export class DataSorter<TData> implements DataProcessor<TData[]> {
       let aData: SortingData = get(a, key);
       let bData: SortingData = get(b, key);
 
-      if (typeof aData === "string" && typeof bData === "string") {
-        try {
-          // attempt to create Dec's from numerical strings
+      if (typeof aData !== typeof bData) return 0;
+
+      try {
+        // attempt to create Dec's from numerical strings
+        if (typeof aData === "string") {
           aData = new Dec(aData);
-          bData = new Dec(bData);
-        } catch {
-          // not numerical strings
-          return (aData as string).localeCompare(bData as string);
         }
+        if (typeof bData === "string") {
+          bData = new Dec(bData);
+        }
+      } catch {
+        // not numerical strings
+        return aData.toString().localeCompare(bData.toString());
       }
 
       if (!(aData instanceof Dec)) aData = aData.toDec();
