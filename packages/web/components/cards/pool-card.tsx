@@ -16,10 +16,13 @@ export const PoolCard: FunctionComponent<{
 
   return (
     <div
-      className={classNames("p-[1px] rounded-2xl hover:bg-enabledGold", {
-        "bg-card": !isSuperfluid,
-        "bg-superfluid hover:bg-none": isSuperfluid,
-      })}
+      className={classNames(
+        "min-w-min max-w-md p-[1px] rounded-2xl hover:bg-enabledGold",
+        {
+          "bg-card": !isSuperfluid,
+          "bg-superfluid hover:bg-none": isSuperfluid,
+        }
+      )}
       onClick={() => router.push(`/pool/${poolId}`)}
     >
       <div className="px-[1.875rem] pt-8 pb-6 bg-card rounded-2xl cursor-pointer">
@@ -27,6 +30,7 @@ export const PoolCard: FunctionComponent<{
           <PoolAssetsIcon assets={poolAssets} size="md" />
           <div className="ml-6 flex flex-col">
             <PoolAssetsName
+              className="whitespace-nowrap text-ellipsis overflow-hidden"
               size="md"
               assetDenoms={poolAssets.map((asset) => asset.coinDenom)}
             />
@@ -34,7 +38,7 @@ export const PoolCard: FunctionComponent<{
           </div>
         </div>
         <div className="mt-5 mb-3 w-full bg-secondary-200 h-[1px]" />
-        <div className="flex flex-wrap gap-x-8 place-content-between">
+        <div className="flex flex-nowrap gap-x-8 place-content-between">
           {poolMetrics.map((poolMetric, index) => (
             <div key={index} className="flex flex-col">
               <div className="subtitle2 text-white-disabled">

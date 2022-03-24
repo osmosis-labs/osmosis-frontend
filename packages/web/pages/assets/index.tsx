@@ -156,7 +156,7 @@ const PoolCards: FunctionComponent<{
   setShowAllPools: (show: boolean) => void;
 }> = observer(({ showAllPools, ownedPoolIds, setShowAllPools }) => (
   <>
-    <div className="grid gap-10 grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 py-5 justify-items-center">
+    <div className="my-5 grid grid-cards gap-10">
       <PoolCardsDisplayer
         poolIds={
           showAllPools

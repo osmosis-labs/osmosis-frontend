@@ -110,6 +110,10 @@
     @apply pl-3 pr-8 py-2;
   }
 
+  .grid-cards {
+    @apply grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3;
+  }
+
   /** SLIDER STYLE */
 
   input[type="range"] {

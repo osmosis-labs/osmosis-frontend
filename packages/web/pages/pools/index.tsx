@@ -89,7 +89,7 @@ const Pools: NextPage = observer(function () {
       <section className="bg-background">
         <div className="max-w-container mx-auto p-10 pb-[3.75rem]">
           <h5>My Pools</h5>
-          <div className="mt-5 grid gap-10 grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 py-5 justify-items-center">
+          <div className="mt-5 grid grid-cards gap-10">
             {myPoolIds.map((myPoolId) => {
               const myPool = queriesOsmosis.queryGammPools.getPool(myPoolId);
               if (myPool) {
@@ -161,7 +161,7 @@ const Pools: NextPage = observer(function () {
       <section className="bg-surface">
         <div className="max-w-container mx-auto p-10">
           <h5>Superfluid Pools</h5>
-          <div className="grid gap-10 grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 py-5 justify-items-center">
+          <div className="mt-5 grid grid-cards gap-10">
             {superfluidPoolIds.map((poolId) => {
               const superfluidPool =
                 queriesOsmosis.queryGammPools.getPool(poolId);
