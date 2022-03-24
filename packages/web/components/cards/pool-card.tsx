@@ -34,7 +34,7 @@ export const PoolCard: FunctionComponent<{
           </div>
         </div>
         <div className="mt-5 mb-3 w-full bg-secondary-200 h-[1px]" />
-        <div className="flex flex-wrap gap-x-8">
+        <div className="flex flex-wrap gap-x-8 place-content-between">
           {poolMetrics.map((poolMetric, index) => (
             <div key={index} className="flex flex-col">
               <div className="subtitle2 text-white-disabled">
