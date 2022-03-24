@@ -1,28 +1,61 @@
-import type { NextPage } from "next";
+import { CoinPretty, DecUtils } from "@keplr-wallet/unit";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
+import type { NextPage } from "next";
 import { PoolCard } from "../../components/cards";
-import { Overview } from "../../components/overview";
+import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
+import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
 import { LeftTime } from "../../components/left-time";
+import { MetricLoader } from "../../components/loaders";
+import { Overview } from "../../components/overview";
+import { useStore } from "../../stores";
+
+const REWARD_EPOCH_IDENTIFIER = "day";
 
 const Pools: NextPage = observer(function () {
-  const { chainStore, accountStore, queriesOsmosisStore, priceStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    priceStore,
+    queriesOsmosisStore,
+    queriesExternalStore,
+  } = useStore();
 
-  const chainInfo = chainStore.getChain("osmosis");
+  const chainInfo = chainStore.osmosis;
+  const queriesOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
+  const queriesExternal = queriesExternalStore.get();
 
-  const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
   const account = accountStore.getAccount(chainInfo.chainId);
 
-  const myPools = queryOsmosis.queryGammPoolShare.getOwnPools(
+  const queryEpoch = queriesOsmosis.queryEpochs.getEpoch(
+    REWARD_EPOCH_IDENTIFIER
+  );
+  const now = new Date();
+  const epochRemainingTime = dayjs.duration(
+    dayjs(queryEpoch.endTime).diff(dayjs(now), "second"),
+    "second"
+  );
+  const epochRemainingTimeString =
+    epochRemainingTime.asSeconds() <= 0
+      ? dayjs.duration(0, "seconds").format("HH-mm")
+      : epochRemainingTime.format("HH-mm");
+  const [epochRemainingHour, epochRemainingMinute] =
+    epochRemainingTimeString.split("-");
+
+  const myPoolIds = queriesOsmosis.queryGammPoolShare.getOwnPools(
     account.bech32Address
   );
 
-  const top3Pools = queryOsmosis.queryGammPools.getPoolsDescendingOrderTVL(
-    priceStore,
-    priceStore.getFiatCurrency("usd")!,
-    3,
-    1
+  // TODO: use real data after superfluid store is added
+  const superfluidPoolIds = ["1", "560", "561"];
+
+  const osmoPrice = priceStore.calculatePrice(
+    new CoinPretty(
+      chainStore.osmosis.stakeCurrency,
+      DecUtils.getTenExponentNInPrecisionRange(
+        chainStore.osmosis.stakeCurrency.coinDecimals
+      )
+    )
   );
 
   return (
@@ -31,55 +64,64 @@ const Pools: NextPage = observer(function () {
         title="Active Pools"
         titleButtons={[{ label: "Create New Pool", onClick: console.log }]}
         primaryOverviewLabels={[
-          { label: "OSMO Price", value: "$10" },
+          {
+            label: "OSMO Price",
+            value: (
+              <MetricLoader
+                className="h-[2.5rem] !mt-0"
+                isLoading={!osmoPrice || osmoPrice.toDec().isZero()}
+              >
+                <div className="h-[2.5rem]">{osmoPrice?.toString()}</div>
+              </MetricLoader>
+            ),
+          },
           {
             label: "Reward distribution in",
-            value: <LeftTime hour="08" minute="20" />,
+            value: (
+              <LeftTime
+                hour={epochRemainingHour}
+                minute={epochRemainingMinute}
+              />
+            ),
           },
         ]}
-        secondaryOverviewLabels={[
-          { label: "Bonded", value: "$10" },
-          {
-            label: "Swap fee",
-            value: "0.3%",
-          },
-        ]}
-        bgImageUrl="/images/osmosis-pool-machine.png"
       />
-      <section className="bg-surface">
-        <div className="max-w-container mx-auto p-10">
+      <section className="bg-background">
+        <div className="max-w-container mx-auto p-10 pb-[3.75rem]">
           <h5>My Pools</h5>
-          <div className="mt-4 grid grid-cols-3 gap-4">
-            {myPools.map((poolId) => {
-              const pool = queryOsmosis.queryGammPools.getPool(poolId);
-              if (pool) {
-                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
-                  pool.id,
-                  priceStore,
-                  priceStore.getFiatCurrency("usd")!
-                );
-                const poolLiquidity = pool.computeTotalValueLocked(
-                  priceStore,
-                  priceStore.getFiatCurrency("usd")!
-                );
-                const bonded =
-                  queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
+          <div className="mt-5 grid grid-cols-3 gap-10">
+            {myPoolIds.map((myPoolId) => {
+              const myPool = queriesOsmosis.queryGammPools.getPool(myPoolId);
+              if (myPool) {
+                const apr =
+                  queriesOsmosis.queryIncentivizedPools.computeMostAPY(
+                    myPool.id,
+                    priceStore
+                  );
+                const poolLiquidity =
+                  myPool.computeTotalValueLocked(priceStore);
+                const myBonded =
+                  queriesOsmosis.queryGammPoolShare.getLockedGammShareValue(
                     account.bech32Address,
-                    pool.id,
+                    myPoolId,
                     poolLiquidity,
-                    priceStore.getFiatCurrency("usd")!
+                    priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!
                   );
 
                 return (
                   <PoolCard
-                    key={pool.id}
-                    pool={pool}
+                    key={myPoolId}
+                    poolId={myPoolId}
+                    poolAssets={myPool.poolAssets.map((poolAsset) => ({
+                      coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+                      coinDenom: poolAsset.amount.currency.coinDenom,
+                    }))}
                     poolMetrics={[
                       {
                         label: "APR",
-                        value: `${apr.toString()}%`,
+                        value: apr.maxDecimals(2).toString(),
                         isLoading:
-                          queryOsmosis.queryIncentivizedPools.isAprFetching,
+                          queriesOsmosis.queryIncentivizedPools.isAprFetching,
                       },
                       {
                         label: "Pool Liquidity",
@@ -88,52 +130,8 @@ const Pools: NextPage = observer(function () {
                       },
                       {
                         label: "Bonded",
-                        value: bonded.toString(),
+                        value: myBonded.toString(),
                         isLoading: poolLiquidity.toDec().isZero(),
-                      },
-                    ]}
-                  />
-                );
-              }
-            })}
-          </div>
-        </div>
-      </section>
-      <section className="bg-background">
-        <div className="max-w-container mx-auto p-10">
-          <h5>Top Pools</h5>
-          <div className="mt-4 grid grid-cols-3 gap-4">
-            {top3Pools.map((pool) => {
-              if (pool) {
-                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
-                  pool.id,
-                  priceStore,
-                  priceStore.getFiatCurrency("usd")!
-                );
-
-                const poolLiquidity = pool.computeTotalValueLocked(
-                  priceStore,
-                  priceStore.getFiatCurrency("usd")!
-                );
-                return (
-                  <PoolCard
-                    key={pool.id}
-                    pool={pool}
-                    poolMetrics={[
-                      {
-                        label: "APR",
-                        value: `${apr.toString()}%`,
-                        isLoading:
-                          queryOsmosis.queryIncentivizedPools.isAprFetching,
-                      },
-                      {
-                        label: "Pool Liquidity",
-                        value: poolLiquidity.toString(),
-                        isLoading: poolLiquidity.toDec().isZero(),
-                      },
-                      {
-                        label: "Fees",
-                        value: pool.swapFee.toString(),
                       },
                     ]}
                   />
@@ -145,61 +143,67 @@ const Pools: NextPage = observer(function () {
       </section>
       <section className="bg-surface">
         <div className="max-w-container mx-auto p-10">
-          <div className="flex items-center justify-between">
-            <h5>All Pools</h5>
-            <label
-              htmlFor="show-all-pools"
-              className="text-base flex items-center"
-            >
-              <input className="mr-2" id="show-all-pools" type="checkbox" />
-              Show pools less then $1,000 TVL
-            </label>
+          <h5>Superfluid Pools</h5>
+          <div className="mt-4 grid grid-cols-3 gap-10">
+            {superfluidPoolIds.map((poolId) => {
+              const superfluidPool =
+                queriesOsmosis.queryGammPools.getPool(poolId);
+              if (superfluidPool) {
+                const poolFeesMetrics =
+                  queriesExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+                    superfluidPool.id,
+                    priceStore
+                  );
+                const apr =
+                  queriesOsmosis.queryIncentivizedPools.computeMostAPY(
+                    superfluidPool.id,
+                    priceStore
+                  );
+                const poolLiquidity =
+                  superfluidPool.computeTotalValueLocked(priceStore);
+
+                return (
+                  <PoolCard
+                    key={superfluidPool.id}
+                    poolId={superfluidPool.id}
+                    poolAssets={superfluidPool.poolAssets.map((poolAsset) => ({
+                      coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+                      coinDenom: poolAsset.amount.currency.coinDenom,
+                    }))}
+                    poolMetrics={[
+                      {
+                        label: "APR",
+                        value: apr.maxDecimals(2).toString(),
+                        isLoading:
+                          queriesOsmosis.queryIncentivizedPools.isAprFetching,
+                      },
+                      {
+                        label: "Pool Liquidity",
+                        value: poolLiquidity.toString(),
+                        isLoading: poolLiquidity.toDec().isZero(),
+                      },
+                      {
+                        label: "Fees (7D)",
+                        value: poolFeesMetrics.feesSpent7d.toString(),
+                        isLoading: poolFeesMetrics.feesSpent7d.toDec().isZero(),
+                      },
+                    ]}
+                    isSuperfluid={true}
+                  />
+                );
+              }
+            })}
           </div>
-          <table className="mt-4 w-full">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Token Info</th>
-                <th>TVL</th>
-                <th>24h Volume</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>
-                  50% ATOM, 50% OSMO
-                  <span className="ml-2 rounded-lg bg-card py-1 px-1.5">
-                    0.3%
-                  </span>
-                </td>
-                <td>$466,803,653</td>
-                <td>$28,646,361</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>
-                  50% ATOM, 25% OSMO, 25% REGEN
-                  <span className="ml-2 rounded-lg bg-card py-1 px-1.5">
-                    0.3%
-                  </span>
-                </td>
-                <td>$466,803,653</td>
-                <td>$28,646,361</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>
-                  50% ATOM, 50% OSMO
-                  <span className="ml-2 rounded-lg bg-card py-1 px-1.5">
-                    0.3%
-                  </span>
-                </td>
-                <td>$466,803,653</td>
-                <td>$28,646,361</td>
-              </tr>
-            </tbody>
-          </table>
+        </div>
+      </section>
+      <section className="bg-surface shadow-separator">
+        <div className="max-w-container mx-auto p-10 py-[3.75rem]">
+          <AllPoolsTableSet />
+        </div>
+      </section>
+      <section className="bg-surface shadow-separator">
+        <div className="max-w-container mx-auto p-10 py-[3.75rem]">
+          <ExternalIncentivizedPoolsTableSet />
         </div>
       </section>
     </main>

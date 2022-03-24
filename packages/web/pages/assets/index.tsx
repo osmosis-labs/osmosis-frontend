@@ -140,53 +140,53 @@ const Assets: NextPage = () => {
   };
 
   const tableRows: RowDef[] = [
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
-    { ...baseRow, onClick: (i) => console.log(i) },
+    { ...baseRow },
+    { ...baseRow },
+    { ...baseRow },
+    { ...baseRow },
+    { ...baseRow },
+    { ...baseRow },
   ];
 
   const tableData: Partial<BaseCell & PoolCompositionCell>[][] = [
     [
       { value: "A" },
-      { value: "A", poolId: 1, tokenDenoms: ["ATOM", "OSMO"] },
+      { value: "A" },
       { value: "asf" },
       { value: "fff" },
       { value: "fjd" },
     ],
     [
       { value: "A" },
-      { value: "A", poolId: 2, tokenDenoms: ["ATOM", "OSMO"] },
+      { value: "A" },
       { value: "asf" },
       { value: "fff" },
       { value: "fjd" },
     ],
     [
       { value: "A" },
-      { value: "A", poolId: 3, tokenDenoms: ["ATOM", "OSMO"] },
+      { value: "A" },
       { value: "asf" },
       { value: "fff" },
       { value: "fjd" },
     ],
     [
       { value: "A" },
-      { value: "A", poolId: 4, tokenDenoms: ["ATOM", "OSMO"] },
+      { value: "A" },
       { value: "asf" },
       { value: "fff" },
       { value: "fjd" },
     ],
     [
       { value: "A" },
-      { value: "A", poolId: 5, tokenDenoms: ["ATOM", "OSMO"] },
+      { value: "A" },
       { value: "asf" },
       { value: "fff" },
       { value: "fjd" },
     ],
     [
       { value: "A" },
-      { value: "A", poolId: 6, tokenDenoms: ["ATOM", "OSMO"] },
+      { value: "A" },
       { value: "asf" },
       { value: "fff" },
       { value: "fjd" },

@@ -6,12 +6,20 @@ import { ToggleProps } from "./types";
 
 export const CheckBox: FunctionComponent<
   ToggleProps & Disableable & CustomClasses
-> = ({ isOn, onToggle: onToggle, disabled = false, className }) => (
-  <label htmlFor="toggle-checkbox">
+> = ({ isOn, onToggle, disabled = false, className, children }) => (
+  <label
+    className="flex items-center cursor-pointer"
+    htmlFor="toggle-checkbox"
+    onClick={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onToggle(!isOn);
+    }}
+  >
     {isOn && (
       <div
         className={classNames(
-          "cursor-pointer absolute z-50",
+          "cursor-pointer absolute z-50 flex items-center justify-center",
           disabled ? "cursor-default opacity-50" : null
         )}
       >
@@ -35,7 +43,7 @@ export const CheckBox: FunctionComponent<
       )}
       checked={isOn}
       disabled={disabled}
-      onChange={(e) => onToggle(e.target.checked)}
     />
+    {children}
   </label>
 );

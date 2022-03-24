@@ -118,6 +118,7 @@ module.exports = {
       overline: 400,
     },
     backgroundImage: {
+      none: "none",
       "gradients-socialLive":
         "linear-gradient(180deg, #89EAFB 0%, #1377B0 100%)",
       "gradients-greenBeach":
@@ -135,8 +136,23 @@ module.exports = {
       "home-bg-pattern": "url('/images/osmosis-home-bg-pattern.svg')",
       "loading-bar":
         "linear-gradient(to left,rgba(251, 251, 251, 0.1),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.3),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.1))",
+      superfluid: "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)",
+      "superfluid-20":
+        "linear-gradient(90deg, rgba(138, 134, 255, 0.2) 0.04%, rgba(225, 60, 189, 0.2) 99.5%)",
+      "selected-validator":
+        "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), linear-gradient(#231d4b, #231d4b)",
     },
     extend: {
+      width: {
+        loader: {
+          1: "3.75rem",
+          2: "4rem",
+          3: "4.25rem",
+          4: "4.5rem",
+          5: "4.75rem",
+          6: "5rem",
+        },
+      },
       spacing: {
         sidebar: "12.875rem",
       },

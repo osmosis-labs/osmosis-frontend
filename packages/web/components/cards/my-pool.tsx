@@ -14,7 +14,7 @@ export const MyPoolCard: FunctionComponent<{
   const { chainStore, queriesOsmosisStore, priceStore, accountStore } =
     useStore();
 
-  const chainInfo = chainStore.getChain("osmosis");
+  const chainInfo = chainStore.osmosis;
   const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
   const account = accountStore.getAccount(chainInfo.chainId);
 
@@ -22,15 +22,11 @@ export const MyPoolCard: FunctionComponent<{
 
   const deterministicInteger = useDeterministicIntegerFromString(pool.id);
 
-  const poolTVL = pool.computeTotalValueLocked(
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
-  );
+  const poolTVL = pool.computeTotalValueLocked(priceStore);
 
   const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
     pool.id,
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
+    priceStore
   );
 
   const shareRatio = queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
@@ -58,7 +54,7 @@ export const MyPoolCard: FunctionComponent<{
         ]
       }
       onClick={() => {
-        router.push(`/pools/${pool.id}`);
+        router.push(`/pool/${pool.id}`);
       }}
     >
       <div className="flex flex-col">

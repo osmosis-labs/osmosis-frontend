@@ -36,7 +36,7 @@ export const SearchBox: FunctionComponent<Props> = ({
     <label className="grow shrink h-full" htmlFor="text-search">
       <input
         id="text-search"
-        className="h-full appearance-none bg-transparent"
+        className="w-full h-full appearance-none bg-transparent"
         value={currentValue}
         placeholder={placeholder}
         autoComplete="off"

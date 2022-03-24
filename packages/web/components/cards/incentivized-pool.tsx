@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useMemo } from "react";
 import { ObservablePool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import React, { FunctionComponent } from "react";
+import { useDeterministicIntegerFromString } from "../../hooks";
 import { useStore } from "../../stores";
 import { PoolCardBase, PoolCardIconBackgroundColors } from "./base";
-import Image from "next/image";
-import { useDeterministicIntegerFromString } from "../../hooks";
 import { StatLabelValue } from "./stat-label-value";
-import { useRouter } from "next/router";
 
 export const IncentivizedPoolCard: FunctionComponent<{
   pool: ObservablePool;
@@ -20,15 +20,11 @@ export const IncentivizedPoolCard: FunctionComponent<{
 
   const deterministicInteger = useDeterministicIntegerFromString(pool.id);
 
-  const poolTVL = pool.computeTotalValueLocked(
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
-  );
+  const poolTVL = pool.computeTotalValueLocked(priceStore);
 
   const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
     pool.id,
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
+    priceStore
   );
 
   return (
@@ -44,7 +40,7 @@ export const IncentivizedPoolCard: FunctionComponent<{
         ]
       }
       onClick={() => {
-        router.push(`/pools/${pool.id}`);
+        router.push(`/pool/${pool.id}`);
       }}
     >
       <div className="flex flex-row">
