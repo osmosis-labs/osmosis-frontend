@@ -1075,9 +1075,9 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
 		  }
 		: {
-				rpc: 'https://rpc-osmosis.keplr.app',
-				rest: 'https://lcd-osmosis.keplr.app',
-				chainId: 'osmosis-1',
+				rpc: 'https://testnet-rpc.osmosis.zone',
+				rest: 'https://testnet-rest.osmosis.zone',
+				chainId: 'osmo-test-4',
 				chainName: 'Osmosis',
 				stakeCurrency: {
 					coinDenom: 'OSMO',
@@ -1115,58 +1115,9 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 						coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 					},
 				],
-				gasPriceStep: {
-					low: 0,
-					average: 0,
-					high: 0.025,
-				},
 				features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 				explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
 		  },
-	{
-		rpc: 'https://testnet-rpc.osmosis.zone',
-		rest: 'https://testnet-rest.osmosis.zone',
-		chainId: 'osmo-test-4',
-		chainName: 'Osmosis',
-		stakeCurrency: {
-			coinDenom: 'OSMO',
-			coinMinimalDenom: 'uosmo',
-			coinDecimals: 6,
-			coinGeckoId: 'osmosis',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
-		},
-		bip44: {
-			coinType: 118,
-		},
-		bech32Config: Bech32Address.defaultBech32Config('osmo'),
-		currencies: [
-			{
-				coinDenom: 'OSMO',
-				coinMinimalDenom: 'uosmo',
-				coinDecimals: 6,
-				coinGeckoId: 'osmosis',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
-			},
-			{
-				coinDenom: 'ION',
-				coinMinimalDenom: 'uion',
-				coinDecimals: 6,
-				coinGeckoId: 'ion',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ion.png',
-			},
-		],
-		feeCurrencies: [
-			{
-				coinDenom: 'OSMO',
-				coinMinimalDenom: 'uosmo',
-				coinDecimals: 6,
-				coinGeckoId: 'osmosis',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
-			},
-		],
-		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
-		explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
-	},
 	{
 		rpc: 'https://rpc-cosmoshub.keplr.app',
 		rest: 'https://lcd-cosmoshub.keplr.app',
