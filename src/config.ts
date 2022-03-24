@@ -702,8 +702,8 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '2549',
 			denom: 'ibc/8FEFAE6AECF6E2A255585617F781F35A8D5709A545A804482A261C0C9548A9D3',
-    },
-  ],
+		},
+	],
 };
 
 export const PoolsPerPage = 10;
@@ -991,14 +991,14 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'swth',
 	},
-  {
-    counterpartyChainId: 'cerberus-chain-1',
+	{
+		counterpartyChainId: 'cerberus-chain-1',
 		sourceChannelId: 'channel-212',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'ucrbrus',
-  },
-  {
-    counterpartyChainId: 'juno-1',
+	},
+	{
+		counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-169',
 		destChannelId: 'channel-47',
 		coinMinimalDenom: 'cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z',
@@ -2571,11 +2571,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDecimals: 6,
 			coinGeckoId: 'cerberus',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
-    		},
-    		bip44: {
+		},
+		bip44: {
 			coinType: 118,
 		},
-    		bech32Config: Bech32Address.defaultBech32Config('cerberus'),
+		bech32Config: Bech32Address.defaultBech32Config('cerberus'),
 		currencies: [
 			{
 				coinDenom: 'CRBRUS',
@@ -2583,11 +2583,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'cerberus',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
-      		},
+			},
 		],
 		feeCurrencies: [
 			{
-        		coinDenom: 'CRBRUS',
+				coinDenom: 'CRBRUS',
 				coinMinimalDenom: 'ucrbrus',
 				coinDecimals: 6,
 				coinGeckoId: 'pool:crbrus',
@@ -2596,8 +2596,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://skynetexplorers.com/Cerberus/tx/{txHash}',
-  },
-  {
+	},
+	{
 		rpc: 'https://tm-api.carbon.network',
 		rest: 'https://api.carbon.network',
 		chainId: 'carbon-1',
@@ -2637,6 +2637,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			high: 769.23077,
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
-		explorerUrlToTx: 'https://scan.carbon.network/transaction/{txHash}?net=main', 
+		explorerUrlToTx: 'https://scan.carbon.network/transaction/{txHash}?net=main',
 	},
 ];
