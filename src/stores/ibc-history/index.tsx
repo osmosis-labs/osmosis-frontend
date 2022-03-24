@@ -93,7 +93,7 @@ export class PollingStatusSubscription {
 				if (response.status === 200) {
 					this._handlers.forEach(handler => handler(response.data));
 				}
-			} catch (e) {
+			} catch (e: any) {
 				console.log(`Failed to fetch /status: ${e?.toString()}`);
 			}
 		}
@@ -169,26 +169,25 @@ export class IBCTransferHistoryStore {
 			});
 	});
 
-	getHistoriesAndUncommitedHistoriesByAccount = computedFn((address: string): (
-		| IBCTransferHistory
-		| UncommitedHistory
-	)[] => {
-		return this._uncommitedHistories
-			.concat(this.histories)
-			.filter(history => history.sender === address || history.recipient === address)
-			.sort((history1, history2) => {
-				// Sort by created time.
-				return new Date(history1.createdAt) > new Date(history2.createdAt) ? -1 : 1;
-			});
-	});
+	getHistoriesAndUncommitedHistoriesByAccount = computedFn(
+		(address: string): (IBCTransferHistory | UncommitedHistory)[] => {
+			return this._uncommitedHistories
+				.concat(this.histories)
+				.filter(history => history.sender === address || history.recipient === address)
+				.sort((history1, history2) => {
+					// Sort by created time.
+					return new Date(history1.createdAt) > new Date(history2.createdAt) ? -1 : 1;
+				});
+		}
+	);
 
-	protected getBlockSubscriber(chainId: string): TxTracer {
+	protected getBlockSubscriber(chainId: string): PollingStatusSubscription {
 		const osmoWss =
 			this.chainGetter.getChain(chainId).chainName === 'Osmosis'
 				? 'https://testnet-wsrpc.osmosis.zone'
 				: this.chainGetter.getChain(chainId).rpc;
 		if (!this.blockSubscriberMap.has(chainId)) {
-			this.blockSubscriberMap.set(chainId, new TxTracer(osmoWss, '/websocket'));
+			this.blockSubscriberMap.set(chainId, new PollingStatusSubscription(osmoWss));
 		}
 
 		return this.blockSubscriberMap.get(chainId)!;
