@@ -154,7 +154,12 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               onInput={(value) => {
                 const floatVal = parseFloat(value);
                 if (!isNaN(floatVal)) {
-                  amountConfig.setAmount(floatVal.toString());
+                  let newVal = floatVal.toString();
+                  // parseFloat removes trailing "."
+                  if (value[value.length - 1] === ".") {
+                    newVal = newVal + ".";
+                  }
+                  amountConfig.setAmount(newVal);
                 } else if (value === "") {
                   amountConfig.setAmount("");
                 }

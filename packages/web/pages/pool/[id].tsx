@@ -178,7 +178,7 @@ const Pool: FunctionComponent = observer(() => {
       <Overview
         title={
           <MetricLoader
-            className="h-7 w-80"
+            className="h-7 w-64"
             isLoading={
               !pool ||
               pool?.poolAssets.some((asset) =>
@@ -186,9 +186,9 @@ const Pool: FunctionComponent = observer(() => {
               )
             }
           >
-            {`Pool #${pool?.id} : ${pool?.poolAssets
+            <h5>{`Pool #${pool?.id} : ${pool?.poolAssets
               .map((asset) => asset.amount.currency.coinDenom)
-              .join(" / ")}`}
+              .join(" / ")}`}</h5>
           </MetricLoader>
         }
         titleButtons={[

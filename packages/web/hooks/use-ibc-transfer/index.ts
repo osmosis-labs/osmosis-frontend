@@ -78,13 +78,11 @@ export function useIbcTransfer({
 
   // open keplr dialog to request connecting to counterparty chain
   useEffect(() => {
-    console.log(account.bech32Address, counterpartyAccount.walletStatus);
     if (
       account.bech32Address &&
       (counterpartyAccount.walletStatus === WalletStatus.NotInit ||
         counterpartyAccount.walletStatus === WalletStatus.Rejected)
     ) {
-      console.log("init()");
       counterpartyAccount.init();
     }
   }, [account.bech32Address, counterpartyAccount]);
