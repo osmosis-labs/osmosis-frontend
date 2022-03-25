@@ -110,6 +110,12 @@ export const ExtraGaugeInPool: {
 				extraRewardAmount?: Int;
 		  }[];
 } = {
+	'3': [
+		{
+			gaugeId: '2578',
+			denom: 'ibc/1480B8FD20AD5FCAE81EA87584D269547DD4D436843C1D20F15E00EB64743EF4',
+		},
+	],
 	'461': [
 		{
 			gaugeId: '1774',
