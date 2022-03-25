@@ -17,7 +17,7 @@ export const PoolCard: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "min-w-min max-w-md p-[1px] rounded-2xl hover:bg-enabledGold",
+        "w-full max-w-md p-[1px] rounded-2xl hover:bg-enabledGold",
         {
           "bg-card": !isSuperfluid,
           "bg-superfluid hover:bg-none": isSuperfluid,
