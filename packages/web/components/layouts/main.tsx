@@ -1,10 +1,11 @@
-import React, { FunctionComponent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import React, { FunctionComponent } from "react";
 import classNames from "classnames";
 import { useStore } from "../../stores";
 import { WalletStatus } from "@keplr-wallet/stores";
+import { PricePretty, Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 
 export type MainLayoutMenu = {
@@ -23,9 +24,20 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
   ({ children, menus }) => {
     const router = useRouter();
 
-    const { chainStore, accountStore, queriesStore } = useStore();
+    const { chainStore, accountStore, queriesStore, priceStore } = useStore();
     const account = accountStore.getAccount(chainStore.osmosis.chainId);
     const queries = queriesStore.get(chainStore.osmosis.chainId);
+    const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+    const osmoPrice = fiat
+      ? new PricePretty(
+          fiat,
+          new Dec(
+            priceStore.getPrice(
+              chainStore.osmosis.stakeCurrency.coinGeckoId ?? "osmosis"
+            ) ?? 0
+          )
+        )
+      : undefined;
 
     return (
       <React.Fragment>
@@ -103,8 +115,25 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                 );
               })}
             </ul>
-
             <div>
+              {osmoPrice && (
+                <div className="flex place-content-between text-caption mb-4">
+                  <div className="flex gap-2">
+                    <div>
+                      <Image
+                        alt="osmo"
+                        src="/tokens/osmosis.svg"
+                        height={24}
+                        width={24}
+                      />
+                    </div>
+                    <span className="my-auto">
+                      {chainStore.osmosis.stakeCurrency.coinDenom.toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="my-auto">{osmoPrice.toString()}</span>
+                </div>
+              )}
               <div className="w-full">
                 {account.walletStatus === WalletStatus.Loaded ? (
                   <div>
@@ -137,7 +166,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                         e.preventDefault();
                         account.disconnect();
                       }}
-                      className="bg-transparent border border-opacity-30 border-secondary-200 h-9 w-full rounded-md py-2 px-1 flex items-center justify-center mb-8"
+                      className="bg-transparent border border-opacity-30 border-secondary-200 h-9 w-full rounded-md py-2 px-1 flex items-center justify-center mb-5"
                     >
                       <Image
                         src="/icons/sign-out-secondary.svg"
@@ -152,7 +181,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                   </div>
                 ) : (
                   <button
-                    className="flex items-center justify-center w-full h-9 py-3.5 rounded-md bg-primary-200 mb-8"
+                    className="flex items-center justify-center w-full h-9 py-3.5 rounded-md bg-primary-200 mb-5"
                     onClick={(e) => {
                       e.preventDefault();
                       account.init();
@@ -171,11 +200,11 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                 )}
               </div>
 
-              <div className="flex items-center transition-all overflow-x-hidden w-full">
+              <div className="flex place-content-between transition-all overflow-x-hidden w-full">
                 <a
                   href="https://twitter.com/osmosiszone"
                   target="_blank"
-                  className="opacity-75 hover:opacity-100 cursor-pointer mb-0.5 mr-1"
+                  className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
                   rel="noreferrer"
                 >
                   <Image
@@ -188,11 +217,10 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                 <a
                   href="https://medium.com/@Osmosis"
                   target="_blank"
-                  className="opacity-75 hover:opacity-100 cursor-pointer mr-1"
+                  className="opacity-80 hover:opacity-100 cursor-pointer px-1 m-auto"
                   rel="noreferrer"
                 >
                   <Image
-                    className="w-9 h-9"
                     src="/icons/medium.svg"
                     alt="medium"
                     width={36}
@@ -200,9 +228,23 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                   />
                 </a>
                 <a
+                  href="https://gov.osmosis.zone/"
+                  target="_blank"
+                  className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
+                  rel="noreferrer"
+                >
+                  <Image
+                    className="w-9 h-9"
+                    src="/icons/commonwealth.svg"
+                    alt="commonwealth"
+                    width={32}
+                    height={32}
+                  />
+                </a>
+                <a
                   href="https://discord.gg/osmosis"
                   target="_blank"
-                  className="opacity-75 hover:opacity-100 cursor-pointer mb-0.5"
+                  className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
                   rel="noreferrer"
                 >
                   <Image
@@ -215,7 +257,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                 <a
                   href="https://t.me/osmosis_chat"
                   target="_blank"
-                  className="opacity-75 hover:opacity-100 cursor-pointer mb-0.5"
+                  className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
                   rel="noreferrer"
                 >
                   <Image
@@ -226,6 +268,16 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                   />
                 </a>
               </div>
+              <p className="py-2 text-caption text-white-high text-center">
+                <a
+                  className="opacity-30 hover:opacity-40"
+                  href="https://www.coingecko.com"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Price Data by CoinGecko
+                </a>
+              </p>
             </div>
           </div>
         </div>
