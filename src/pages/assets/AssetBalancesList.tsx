@@ -205,8 +205,8 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 									}
 								}}
 								onWithdraw={() => {
-									if (bal.depositUrlOverride) {
-										window.open(bal.depositUrlOverride, '_blank');
+									if (bal.withdrawUrlOverride) {
+										window.open(bal.withdrawUrlOverride, '_blank');
 									} else {
 										setDialogState({
 											open: true,
