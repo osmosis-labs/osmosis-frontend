@@ -2569,7 +2569,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'CRBRUS',
 			coinMinimalDenom: 'ucrbrus',
 			coinDecimals: 6,
-			coinGeckoId: 'cerberus',
+			coinGeckoId: 'cerberus-2',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
     		},
     		bip44: {
@@ -2581,7 +2581,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'CRBRUS',
 				coinMinimalDenom: 'ucrbrus',
 				coinDecimals: 6,
-				coinGeckoId: 'cerberus',
+				coinGeckoId: 'cerberus-2',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
       		},
 		],
