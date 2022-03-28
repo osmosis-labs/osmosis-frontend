@@ -180,6 +180,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             <SortMenu
               selectedOptionId={sortKey}
               onSelect={setSortKey}
+              onToggleSortDirection={toggleSortDirection}
               options={[
                 {
                   id: "coinDenom",

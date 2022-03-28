@@ -14,6 +14,7 @@ import { AssetsTable } from "../../components/table/assets-table";
 import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards/";
 import { Metric } from "../../components/types";
+import { MetricLoader } from "../../components/loaders";
 import { IbcTransferModal } from "../../modals/ibc-transfer";
 
 const INIT_POOL_CARD_COUNT = 6;
@@ -213,15 +214,22 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
             queriesOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
                   label: "APR",
-                  value: queriesOsmosis.queryIncentivizedPools
-                    .computeMostAPY(poolId, priceStore)
-                    .toString(),
-                  isLoading:
-                    queriesOsmosis.queryIncentivizedPools.isAprFetching,
+                  value: (
+                    <MetricLoader
+                      isLoading={
+                        queriesOsmosis.queryIncentivizedPools.isAprFetching
+                      }
+                    >
+                      {queriesOsmosis.queryIncentivizedPools
+                        .computeMostAPY(poolId, priceStore)
+                        .maxDecimals(2)
+                        .toString()}
+                    </MetricLoader>
+                  ),
                 }
               : {
                   label: "Fee APR",
-                  value: "", // TODO: add fee APR
+                  value: "", // TODO: add fee APR from imperator
                 },
             {
               label: "Pool Liquidity",
