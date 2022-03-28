@@ -325,7 +325,7 @@ export class RootStore {
 					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-113' }], 'uhuahua'),
 					destCoinId: 'chihuahua-token',
 				},
-        			{
+				{
 					alternativeCoinId: 'pool:hope',
 					poolId: '653',
 					spotPriceSourceDenom: DenomHelper.ibcDenom(
@@ -334,7 +334,7 @@ export class RootStore {
 					),
 					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'osmosis',
-        			},
+				},
 			]
 		);
 
@@ -1376,7 +1376,7 @@ export class RootStore {
 					},
 				],
 			},
-   			{
+			{
 				poolId: '658',
 				currencies: [
 					{
@@ -1424,7 +1424,7 @@ export class RootStore {
 					},
 				],
 			},
-    ]);
+		]);
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
 		this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithExplorer>(
