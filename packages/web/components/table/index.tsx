@@ -13,6 +13,7 @@ export interface Props<TCell extends BaseCell> extends CustomClasses {
   /** Functionality common to all rows. */
   rowDefs?: RowDef[];
   data: Partial<TCell>[][];
+  headerTrClassName?: string;
 }
 
 /** Generic table that accepts a 2d array of any type of data cell,
@@ -23,6 +24,7 @@ export const Table = <TCell extends BaseCell>({
   rowDefs,
   data,
   className,
+  headerTrClassName,
 }: PropsWithoutRef<Props<TCell>>) => {
   const [rowsHovered, setRowsHovered] = useState(() => data.map(() => false));
 
@@ -35,7 +37,7 @@ export const Table = <TCell extends BaseCell>({
   return (
     <table className={className}>
       <thead>
-        <tr className="h-20">
+        <tr className={classNames("h-20", headerTrClassName)}>
           {columnDefs.map((colDef, colIndex) => (
             <th
               key={colIndex}
@@ -76,7 +78,7 @@ export const Table = <TCell extends BaseCell>({
                 </div>
                 {colDef.infoTooltip && (
                   <Tippy
-                    className="bg-surface border border-secondary-200/30 p-2 rounded-lg text-body2"
+                    className="bg-surface border border-secondary-200/30 p-2 rounded-lg body2"
                     content={colDef.infoTooltip}
                     trigger="click"
                   >

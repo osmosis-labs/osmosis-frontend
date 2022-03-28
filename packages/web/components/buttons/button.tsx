@@ -67,12 +67,14 @@ export const Button: FunctionComponent<Props> = ({
       {children}
     </div>
     {(type === "arrow" || type === "arrow-sm") && size === "xs" && (
-      <Image
-        alt=""
-        src="/icons/chevron-right.svg"
-        height={type === "arrow" ? 13 : 6.67}
-        width={type === "arrow" ? 8 : 4}
-      />
+      <div className="min-w-fit">
+        <Image
+          alt=""
+          src="/icons/chevron-right.svg"
+          height={type === "arrow" ? 13 : 6.67}
+          width={type === "arrow" ? 8 : 4}
+        />
+      </div>
     )}
     {size !== "xs" && loading && (
       <Image alt="" src="/icons/loading.svg" height={24} width={24} />

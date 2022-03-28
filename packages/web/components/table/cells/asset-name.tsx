@@ -15,7 +15,7 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = ({
       </div>
       <div className="flex flex-col place-content-center">
         <div className="flex">
-          <span className="text-subtitle1 text-white-high">{coinDenom}</span>
+          <span className="subtitle1 text-white-high">{coinDenom}</span>
           {isCW20 && (
             <div className="ml-2 px-2 py-1 rounded-full font-title text-xs bg-primary-200">
               CW20
@@ -23,7 +23,7 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = ({
           )}
         </div>
         {chainName && (
-          <span className="text-body2 text-iconDefault">{chainName}</span>
+          <span className="body2 text-iconDefault">{chainName}</span>
         )}
       </div>
     </div>

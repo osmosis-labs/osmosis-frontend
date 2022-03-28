@@ -230,6 +230,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
           ]}
           rowDefs={tableData.map(() => ({ makeHoverClass: () => " " }))}
           data={tableData.map((cell) => [cell, cell, cell, cell])}
+          headerTrClassName="!h-12 !body2"
         />
         <div className="relative flex h-12 justify-center">
           {filteredSortedCells.length > 10 && (
@@ -239,7 +240,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
               onToggle={() => setShowAllPools(!showAllPools)}
             />
           )}
-          <div className="flex gap-2 absolute text-body2 right-24 bottom-1">
+          <div className="flex gap-2 absolute body2 right-24 bottom-1">
             <CheckBox
               className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
               isOn={hideZeroBalances}
