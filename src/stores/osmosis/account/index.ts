@@ -17,13 +17,14 @@ import {
 	CosmwasmMsgOpts,
 } from '@keplr-wallet/stores';
 import { Coin, Dec, DecUtils } from '@keplr-wallet/unit';
-import { Currency } from '@keplr-wallet/types';
+import { Currency, KeplrSignOptions } from '@keplr-wallet/types';
 import { DeepReadonly } from 'utility-types';
 import { HasOsmosisQueries } from '../query';
 import deepmerge from 'deepmerge';
 import { QueriedPoolBase } from '../query/pool';
 import { osmosis } from '../../../proto';
 import Long from 'long';
+import { StdFee } from '@cosmjs/launchpad';
 
 export interface HasOsmosisAccount {
 	osmosis: DeepReadonly<OsmosisAccount>;
@@ -466,6 +467,8 @@ export class OsmosisAccount {
 		tokenIn: { currency: Currency; amount: string },
 		maxSlippage: string = '0',
 		memo: string = '',
+		stdFee: Partial<StdFee> = {},
+		signOptions?: KeplrSignOptions,
 		onFulfill?: (tx: any) => void
 	) {
 		const queries = this.queries;
@@ -521,10 +524,10 @@ export class OsmosisAccount {
 			},
 			memo,
 			{
-				amount: [],
-				gas: (this.base.msgOpts.swapExactAmountIn.gas * Math.max(routes.length, 1)).toString(),
+				amount: stdFee.amount ?? [],
+				gas: stdFee.gas ?? (this.base.msgOpts.swapExactAmountIn.gas * Math.max(routes.length, 1)).toString(),
 			},
-			undefined,
+			signOptions,
 			tx => {
 				if (tx.code == null || tx.code === 0) {
 					// TODO: Refresh the pools list.
@@ -559,6 +562,8 @@ export class OsmosisAccount {
 		tokenOutCurrency: Currency,
 		maxSlippage: string = '0',
 		memo: string = '',
+		stdFee: Partial<StdFee> = {},
+		signOptions?: KeplrSignOptions,
 		onFulfill?: (tx: any) => void
 	) {
 		const queries = this.queries;
@@ -604,10 +609,10 @@ export class OsmosisAccount {
 			},
 			memo,
 			{
-				amount: [],
-				gas: this.base.msgOpts.swapExactAmountIn.gas.toString(),
+				amount: stdFee.amount ?? [],
+				gas: stdFee.gas ?? this.base.msgOpts.swapExactAmountIn.gas.toString(),
 			},
-			undefined,
+			signOptions,
 			tx => {
 				if (tx.code == null || tx.code === 0) {
 					// TODO: Refresh the pools list.
