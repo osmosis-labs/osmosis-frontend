@@ -2,18 +2,14 @@ name: Build and Deploy Testnet Website
 on:
   push:
     branches:
-      - main
+      - testnet
   workflow_dispatch:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    
-      - name: Checkout tools repo
-        uses: actions/checkout@v3
-        with:
-          repository: osmosis-labs/osmosis-frontend
-          path: frontier
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.1
 
       - name: Install and Build 🔧 # This will create version inside the 'build' folder.
         run: |
@@ -23,5 +19,8 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: prod
+
           branch: gh-pages # The branch the action should deploy to.
           folder: prod
