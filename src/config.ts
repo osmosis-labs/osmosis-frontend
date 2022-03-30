@@ -2596,7 +2596,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'CRBRUS',
 				coinMinimalDenom: 'ucrbrus',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:crbrus',
+				coinGeckoId: 'cerberus-2',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
       		},
 		],
