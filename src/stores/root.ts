@@ -289,6 +289,13 @@ export class RootStore {
 					destCoinId: 'osmosis',
 				},
 				{
+					alternativeCoinId: 'pool:usaage',
+					poolId: '647',
+					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-207' }], 'usaage'),
+					spotPriceDestDenom: 'uosmo',
+					destCoinId: 'osmosis',
+				},
+				{
 					alternativeCoinId: 'pool:marble',
 					poolId: '649',
 					spotPriceSourceDenom: DenomHelper.ibcDenom(
@@ -1313,6 +1320,21 @@ export class RootStore {
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-181' }], 'udec'),
 						coinDenom: 'DEC',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '647',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-207' }], 'usaage'),
+						coinDenom: 'SGE',
 						coinDecimals: 6,
 					},
 					{
