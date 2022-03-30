@@ -1,4 +1,4 @@
-name: Build and Deploy Testnet Website
+name: Build and Deploy Frontier Frontend
 on:
   push:
     branches:
