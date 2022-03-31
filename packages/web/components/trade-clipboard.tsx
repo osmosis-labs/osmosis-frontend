@@ -1,7 +1,7 @@
-import Tippy from "@tippyjs/react";
 import { FunctionComponent } from "react";
-import { TokenSelect } from "../components/token-select";
+import { TokenSelect } from "./control";
 import { useBooleanWithWindowEvent } from "../hooks";
+import { InfoTooltip } from "./tooltip";
 
 export const TradeClipboard: FunctionComponent<{
   className?: string;
@@ -51,14 +51,7 @@ export const TradeClipboard: FunctionComponent<{
                 <div className="body2 text-white-disabled mr-2">
                   Slippage tolerance
                 </div>
-                <Tippy
-                  content="Your transaction will revert if the price changes unfavorably by more than this percentage."
-                  className="bg-wireframes-darkGrey border border-white-faint p-2 rounded-lg text-white-high text-sm"
-                >
-                  <div className="flex items-center justify-center bg-enabledGold rounded-full text-[0.625rem] text-color w-3.5 h-3.5 cursor-pointer">
-                    !
-                  </div>
-                </Tippy>
+                <InfoTooltip content="Your transaction will revert if the price changes unfavorably by more than this percentage." />
               </div>
 
               <ul className="flex gap-x-3 w-full mt-3">

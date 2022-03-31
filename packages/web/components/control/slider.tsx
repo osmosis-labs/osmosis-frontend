@@ -2,6 +2,7 @@ import { FunctionComponent, useState, useRef, useEffect } from "react";
 import classNames from "classnames";
 import { CustomClasses, Disableable } from "../types";
 import { NumberSelectProps } from "./types";
+import { normalize } from "../utils";
 
 interface Props
   extends Omit<NumberSelectProps, "placeholder">,
@@ -12,6 +13,7 @@ interface Props
    *  * `entrybox`: number as text box to right of slider. */
   type?: "plain" | "tooltip" | "entrybox";
   step?: number;
+  inputClassName?: string;
 }
 
 export const Slider: FunctionComponent<Props> = ({
@@ -22,11 +24,21 @@ export const Slider: FunctionComponent<Props> = ({
   type = "entrybox",
   step = 1,
   disabled,
+  inputClassName,
   className,
 }) => {
   const [showDetail, setShowDetail] = useState(false);
+  const [sliderWidth, setSliderWidth] = useState(1);
 
-  const percent = ((currentValue - min) * 90) / (max - min) + 5;
+  // ensure background stays behind center of thumb
+  const range = max - min;
+  const percent = normalize(
+    currentValue,
+    max,
+    min,
+    min + (range * 10) / sliderWidth,
+    max - (range * 10) / sliderWidth
+  );
   const rangeRef = useRef(null);
   const tooltipRef = useRef(null);
 
@@ -52,15 +64,29 @@ export const Slider: FunctionComponent<Props> = ({
     }
   }, [type, percent, rangeRef, tooltipRef]);
 
+  // get the slider width
+  useEffect(() => {
+    const rangeRf = rangeRef.current as any;
+    const rangeWidth = parseInt(rangeRf.clientWidth);
+    if (rangeRf && !isNaN(rangeWidth)) {
+      setSliderWidth(rangeWidth);
+    }
+  }, []);
+
   return (
     <div
-      className="flex gap-3"
+      className={classNames("flex gap-3", className)}
       onFocus={() => setShowDetail(true)}
       onBlur={() => setShowDetail(false)}
       onMouseOver={() => setShowDetail(true)}
       onMouseOut={() => setShowDetail(false)}
     >
-      <div className={classNames(type === "tooltip" ? "absolute" : undefined)}>
+      <div
+        className={classNames(type === "tooltip" ? "absolute" : undefined, {
+          "w-full":
+            className?.split(" ").find((c) => c === "w-full") !== undefined,
+        })}
+      >
         {type === "tooltip" && !disabled && (
           <div
             ref={tooltipRef}
@@ -79,8 +105,10 @@ export const Slider: FunctionComponent<Props> = ({
             {
               showDetail: showDetail,
               disabled: disabled,
+              "!w-full":
+                className?.split(" ").find((c) => c === "w-full") !== undefined,
             },
-            className
+            inputClassName
           )}
           style={{
             // calculate style of track-(thumb)-track
@@ -112,8 +140,8 @@ export const Slider: FunctionComponent<Props> = ({
           inputMode="decimal"
           disabled={disabled}
           onInput={(e: any) => {
-            const num = Number(e.target.value);
-            if (num >= min && num <= max) {
+            const num = parseInt(e.target.value);
+            if (!isNaN(num) && num >= min && num <= max) {
               onInput(num);
             }
           }}

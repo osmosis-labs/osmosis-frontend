@@ -159,6 +159,7 @@ module.exports = {
       maxWidth: {
         container: "90rem",
         clipboard: "32.5rem",
+        modal: "42rem",
       },
       keyframes: {
         loading: {

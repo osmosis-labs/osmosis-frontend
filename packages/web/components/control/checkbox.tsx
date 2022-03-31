@@ -8,7 +8,7 @@ export const CheckBox: FunctionComponent<
   ToggleProps & Disableable & CustomClasses
 > = ({ isOn, onToggle, disabled = false, className, children }) => (
   <label
-    className="flex items-center cursor-pointer"
+    className="flex items-center cursor-pointer select-none"
     htmlFor="toggle-checkbox"
     onClick={(e) => {
       e.preventDefault();
