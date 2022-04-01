@@ -1137,11 +1137,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 						coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 					},
 				],
-				gasPriceStep: {
-					low: 0,
-					average: 0,
-					high: 0.025,
-				},
 				features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 				explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
 		  },
