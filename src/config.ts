@@ -709,8 +709,8 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '2549',
 			denom: 'ibc/8FEFAE6AECF6E2A255585617F781F35A8D5709A545A804482A261C0C9548A9D3',
-    },
-  ],
+		},
+	],
 	'662': [
 		{
 			gaugeId: '2554',
@@ -723,8 +723,8 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '2556',
 			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
-    },
-  ]
+		},
+	],
 };
 
 export const PoolsPerPage = 10;
@@ -1136,11 +1136,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 						coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 					},
 				],
-				gasPriceStep: {
-					low: 0,
-					average: 0,
-					high: 0.025,
-				},
 				features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 				explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
 		  },
