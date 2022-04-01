@@ -817,6 +817,12 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'uregen',
 	},
 	{
+		counterpartyChainId: 'saage-internal-testnet-1.3',
+		sourceChannelId: 'channel-207',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'usaage',
+	},
+	{
 		counterpartyChainId: 'sentinelhub-2',
 		sourceChannelId: 'channel-2',
 		destChannelId: 'channel-0',
@@ -1329,6 +1335,46 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://regen.aneka.io/txs/{txHash}',
+	},
+	{
+		rpc: 'http://52.202.79.213:26657',
+		rest: 'https://sentry.testnet.saage.io:1317',
+		chainId: 'saage-internal-testnet-1.3',
+		chainName: 'saagetestnet',
+		stakeCurrency: {
+			coinDenom: 'SGE',
+			coinMinimalDenom: 'usaage',
+			coinDecimals: 6,
+			coinImageUrl: window.location.origin + '/public/assets/tokens/saage.png',
+			coinGeckoId: 'pool:usaage',
+		},
+		bip44: { coinType: 909 },
+		bech32Config: Bech32Address.defaultBech32Config('saage'),
+		currencies: [
+			{
+				coinDenom: 'SGE',
+				coinMinimalDenom: 'usaage',
+				coinDecimals: 6,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/saage.png',
+				coinGeckoId: 'pool:usaage',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'SGE',
+				coinMinimalDenom: 'usaage',
+				coinDecimals: 6,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/saage.png',
+				coinGeckoId: 'pool:usaage',
+			},
+		],
+		gasPriceStep: {
+			low: 0.00025,
+			average: 0.0025,
+			high: 0.025,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'http://blockexplorer-1.testnet.saage.io/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://rpc-sentinel.keplr.app',
