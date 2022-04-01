@@ -3,6 +3,7 @@ import {
   ObservableQueryGuageById,
   ObservableAddLiquidityConfig,
   ObservableRemoveLiquidityConfig,
+  ObservableAmountConfig,
 } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
 import { autorun } from "mobx";
@@ -20,6 +21,7 @@ import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { BaseCell, Table } from "../../components/table";
 import { ExternalIncentiveGaugeAllowList, EmbedChainInfos } from "../../config";
+import { LockTokensModal } from "../../modals/lock-tokens";
 import { ManageLiquidityModal } from "../../modals/manage-liquidity";
 import { useStore } from "../../stores";
 
@@ -186,30 +188,39 @@ const Pool: FunctionComponent = observer(() => {
   // Manage liquidity state
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
     useState(false);
-  const [addLiquidityConfig, removeLiquidityConfig] = useMemo(() => {
-    if (pool) {
-      return [
-        new ObservableAddLiquidityConfig(
-          chainStore,
-          chainStore.osmosis.chainId,
-          pool.id,
-          bech32Address,
-          queries.queryGammPoolShare,
-          queries.queryGammPools,
-          queriesStore.get(chainStore.osmosis.chainId).queryBalances
-        ),
-        new ObservableRemoveLiquidityConfig(
-          chainStore,
-          chainStore.osmosis.chainId,
-          pool.id,
-          bech32Address,
-          queries.queryGammPoolShare,
-          "50"
-        ),
-      ];
-    }
-    return [undefined, undefined];
-  }, [pool, chainStore, bech32Address, queries, queriesStore]);
+  const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
+  const [addLiquidityConfig, removeLiquidityConfig, lockLPTokens] =
+    useMemo(() => {
+      if (pool) {
+        return [
+          new ObservableAddLiquidityConfig(
+            chainStore,
+            chainStore.osmosis.chainId,
+            pool.id,
+            bech32Address,
+            queries.queryGammPoolShare,
+            queries.queryGammPools,
+            queriesStore.get(chainStore.osmosis.chainId).queryBalances
+          ),
+          new ObservableRemoveLiquidityConfig(
+            chainStore,
+            chainStore.osmosis.chainId,
+            pool.id,
+            bech32Address,
+            queries.queryGammPoolShare,
+            "50"
+          ),
+          new ObservableAmountConfig(
+            chainStore,
+            chainStore.osmosis.chainId,
+            bech32Address,
+            queries.queryGammPoolShare.getShareCurrency(pool.id),
+            queriesStore.get(chainStore.osmosis.chainId).queryBalances
+          ),
+        ];
+      }
+      return [undefined, undefined, undefined];
+    }, [pool, chainStore, bech32Address, queries, queriesStore]);
 
   return (
     <main>
@@ -235,6 +246,43 @@ const Pool: FunctionComponent = observer(() => {
             console.log("liquidity added");
           }}
           onRemoveLiquidity={() => console.log("liquidity removed")}
+        />
+      )}
+      {lockLPTokens && (
+        <LockTokensModal
+          isOpen={showLockLPTokenModal}
+          title="Bond LP Tokens"
+          onRequestClose={() => setShowLockLPTokenModal(false)}
+          amountConfig={lockLPTokens}
+          availableToken={
+            pool
+              ? queries.queryGammPoolShare.getAvailableGammShare(
+                  bech32Address,
+                  pool.id
+                )
+              : undefined
+          }
+          gauges={queries.queryLockableDurations.lockableDurations.map(
+            (duration, index) => {
+              const apr = pool
+                ? queries.queryIncentivizedPools.computeAPY(
+                    pool.id,
+                    duration,
+                    priceStore,
+                    fiat
+                  )
+                : undefined;
+
+              return {
+                id: index.toString(),
+                apr: apr ?? new RatePretty(0),
+                duration,
+              };
+            }
+          )}
+          onLockToken={() => {
+            setShowLockLPTokenModal(false);
+          }}
         />
       )}
       <Overview
@@ -325,7 +373,10 @@ const Pool: FunctionComponent = observer(() => {
                   {userAvailableValue?.toString() || "$0"}
                 </MetricLoader>
               </h5>
-              <Button className="h-8" onClick={() => console.log("sdf")}>
+              <Button
+                className="h-8"
+                onClick={() => setShowLockLPTokenModal(true)}
+              >
                 Start Earning
               </Button>
             </div>
