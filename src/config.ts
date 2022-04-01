@@ -1337,7 +1337,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://regen.aneka.io/txs/{txHash}',
 	},
 	{
-		rpc: 'http://52.202.79.213:26657',
+		rpc: 'https://sentry.testnet.saage.io:26657',
+		rest: 'https://sentry.testnet.saage.io:1317',
 		chainId: 'saage-internal-testnet-1.3',
 		chainName: 'saagetestnet',
 		stakeCurrency: {
