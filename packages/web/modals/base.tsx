@@ -1,13 +1,14 @@
-import classNames from "classnames";
 import Image from "next/image";
 import React, { FunctionComponent, ReactElement } from "react";
-import ReactModal from "react-modal";
+import ReactModal, { setAppElement } from "react-modal";
+import classNames from "classnames";
+
+setAppElement("body");
 
 export interface ModalBaseProps {
   isOpen: boolean;
   onRequestClose: () => void;
-
-  title?: ReactElement;
+  title?: string | ReactElement;
   className?: string;
   bodyOpenClassName?: string;
   overlayClassName?: string;
@@ -35,17 +36,17 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         overlayClassName
       )}
       className={classNames(
-        "absolute outline-none w-full p-5 bg-surface rounded-2xl z-50 flex flex-col",
+        "absolute outline-none w-full p-8 bg-surface rounded-2xl z-50 flex flex-col max-w-modal",
         className
       )}
     >
       <div
         className="absolute top-5 right-5 cursor-pointer"
-        onClick={() => onRequestClose()}
+        onClick={onRequestClose}
       >
         <Image src="/icons/close.svg" alt="close icon" width={32} height={32} />
       </div>
-      {title}
+      {typeof title === "string" ? <h5>{title}</h5> : <>{title}</>}
       {children}
     </ReactModal>
   );

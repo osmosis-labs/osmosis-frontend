@@ -2,7 +2,7 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CustomClasses, LoadingProps } from "../types";
-import { generateGradient } from "../utils";
+import { generateRandom } from "../utils";
 
 export const CatalystIcon: FunctionComponent<
   {
@@ -28,7 +28,7 @@ export const CatalystIcon: FunctionComponent<
       })}
       style={
         !isLoading
-          ? { backgroundImage: generateGradient(gradientKey) }
+          ? { backgroundImage: generateRandom(gradientKey) }
           : undefined
       }
     >

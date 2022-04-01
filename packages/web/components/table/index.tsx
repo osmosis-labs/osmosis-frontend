@@ -1,8 +1,8 @@
-import Tippy from "@tippyjs/react";
-import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
 import React, { FunctionComponent, PropsWithoutRef, useState } from "react";
+import classNames from "classnames";
+import { InfoTooltip } from "../tooltip";
 import { CustomClasses, SortDirection } from "../types";
 import { replaceAt } from "../utils";
 
@@ -89,23 +89,7 @@ export const Table = <TCell extends BaseCell>({
                   ) : undefined}
                 </div>
                 {colDef.infoTooltip && (
-                  <Tippy
-                    className="bg-surface border border-secondary-200/30 p-2 rounded-lg text-body2"
-                    content={colDef.infoTooltip}
-                    trigger="click"
-                  >
-                    <div
-                      className="inline cursor-pointer pl-1 align-middle"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Image
-                        alt="info"
-                        src="/icons/info.svg"
-                        height={16}
-                        width={16}
-                      />
-                    </div>
-                  </Tippy>
+                  <InfoTooltip content={colDef.infoTooltip} />
                 )}
               </span>
             </th>
