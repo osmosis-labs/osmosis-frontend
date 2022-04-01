@@ -335,6 +335,16 @@ export class RootStore {
 					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'osmosis',
 				},
+				{
+					alternativeCoinId: 'pool:rac',
+					poolId: '669',
+					spotPriceSourceDenom: DenomHelper.ibcDenom(
+						[{ portId: 'transfer', channelId: 'channel-169' }],
+						'cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa'
+					),
+					spotPriceDestDenom: 'uosmo',
+					destCoinId: 'osmosis',
+				}
 			]
 		);
 
@@ -1424,6 +1434,24 @@ export class RootStore {
 					},
 				],
 			},
+			{
+				poolId: '669',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom(
+							[{ portId: 'transfer', channelId: 'channel-169' }],
+							'cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa'
+						),
+						coinDenom: 'RAC',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			}
 		]);
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
