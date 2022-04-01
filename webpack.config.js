@@ -161,9 +161,6 @@ const webConfig = () => {
 				filename: 'index.html',
 				chunks: ['main'],
 			}),
-			new HtmlWebpackPlugin({
-				template: 'src/404.html',
-			}),
 			new WriteFilePlugin(),
 			new webpack.EnvironmentPlugin(['NODE_ENV', 'LOCALNET']),
 			isEnvAnalyzer &&

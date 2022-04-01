@@ -43,7 +43,7 @@ const Router: FunctionComponent = () => {
 						<IBCHistoryNotifier />
 						<Terms />
 						<div className="md:h-screen bg-background z-0">
-							<BrowserRouter basename="/osmosis-frontend">
+							<BrowserRouter>
 								<Switch>
 									<Route exact path="/">
 										<RouteWrapper>
