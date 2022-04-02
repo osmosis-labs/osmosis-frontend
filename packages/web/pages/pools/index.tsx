@@ -17,19 +17,17 @@ const Pools: NextPage = observer(function () {
     chainStore,
     accountStore,
     priceStore,
-    queriesOsmosisStore,
+    queriesStore,
     queriesExternalStore,
   } = useStore();
 
   const chainInfo = chainStore.osmosis;
-  const queriesOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
+  const queryOsmosis = queriesStore.get(chainInfo.chainId).osmosis;
   const queriesExternal = queriesExternalStore.get();
 
   const account = accountStore.getAccount(chainInfo.chainId);
 
-  const queryEpoch = queriesOsmosis.queryEpochs.getEpoch(
-    REWARD_EPOCH_IDENTIFIER
-  );
+  const queryEpoch = queryOsmosis.queryEpochs.getEpoch(REWARD_EPOCH_IDENTIFIER);
   const now = new Date();
   const epochRemainingTime = dayjs.duration(
     dayjs(queryEpoch.endTime).diff(dayjs(now), "second"),
@@ -42,7 +40,7 @@ const Pools: NextPage = observer(function () {
   const [epochRemainingHour, epochRemainingMinute] =
     epochRemainingTimeString.split("-");
 
-  const myPoolIds = queriesOsmosis.queryGammPoolShare.getOwnPools(
+  const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
     account.bech32Address
   );
 
@@ -91,17 +89,16 @@ const Pools: NextPage = observer(function () {
           <h5>My Pools</h5>
           <div className="mt-5 grid grid-cards gap-10">
             {myPoolIds.map((myPoolId) => {
-              const myPool = queriesOsmosis.queryGammPools.getPool(myPoolId);
+              const myPool = queryOsmosis.queryGammPools.getPool(myPoolId);
               if (myPool) {
-                const apr =
-                  queriesOsmosis.queryIncentivizedPools.computeMostAPY(
-                    myPool.id,
-                    priceStore
-                  );
+                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
+                  myPool.id,
+                  priceStore
+                );
                 const poolLiquidity =
                   myPool.computeTotalValueLocked(priceStore);
                 const myBonded =
-                  queriesOsmosis.queryGammPoolShare.getLockedGammShareValue(
+                  queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
                     account.bech32Address,
                     myPoolId,
                     poolLiquidity,
@@ -122,8 +119,7 @@ const Pools: NextPage = observer(function () {
                         value: (
                           <MetricLoader
                             isLoading={
-                              queriesOsmosis.queryIncentivizedPools
-                                .isAprFetching
+                              queryOsmosis.queryIncentivizedPools.isAprFetching
                             }
                           >
                             {apr.maxDecimals(2).toString()}
@@ -164,18 +160,17 @@ const Pools: NextPage = observer(function () {
           <div className="mt-5 grid grid-cards gap-10">
             {superfluidPoolIds.map((poolId) => {
               const superfluidPool =
-                queriesOsmosis.queryGammPools.getPool(poolId);
+                queryOsmosis.queryGammPools.getPool(poolId);
               if (superfluidPool) {
                 const poolFeesMetrics =
                   queriesExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
                     superfluidPool.id,
                     priceStore
                   );
-                const apr =
-                  queriesOsmosis.queryIncentivizedPools.computeMostAPY(
-                    superfluidPool.id,
-                    priceStore
-                  );
+                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
+                  superfluidPool.id,
+                  priceStore
+                );
                 const poolLiquidity =
                   superfluidPool.computeTotalValueLocked(priceStore);
 
@@ -193,8 +188,7 @@ const Pools: NextPage = observer(function () {
                         value: (
                           <MetricLoader
                             isLoading={
-                              queriesOsmosis.queryIncentivizedPools
-                                .isAprFetching
+                              queryOsmosis.queryIncentivizedPools.isAprFetching
                             }
                           >
                             {apr.maxDecimals(2).toString()}

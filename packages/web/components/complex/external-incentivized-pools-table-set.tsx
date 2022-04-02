@@ -22,12 +22,12 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       chainStore,
       queriesExternalStore,
       priceStore,
-      queriesOsmosisStore,
+      queriesStore,
       accountStore,
     } = useStore();
     const chainInfo = chainStore.osmosis;
     const queryExternal = queriesExternalStore.get();
-    const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
+    const queryOsmosis = queriesStore.get(chainInfo.chainId).osmosis;
     const account = accountStore.getAccount(chainInfo.chainId);
 
     const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);

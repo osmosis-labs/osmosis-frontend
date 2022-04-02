@@ -25,14 +25,14 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
     chainStore,
     queriesExternalStore,
     priceStore,
-    queriesOsmosisStore,
+    queriesStore,
     accountStore,
   } = useStore();
   const [activeOptionId, setActiveOptionId] = useState(poolsMenuOptions[0].id);
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 
   const chainInfo = chainStore.osmosis;
-  const queriesOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
+  const queriesOsmosis = queriesStore.get(chainInfo.chainId).osmosis;
   const queriesExternal = queriesExternalStore.get();
   const account = accountStore.getAccount(chainInfo.chainId);
 

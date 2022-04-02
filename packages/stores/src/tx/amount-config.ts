@@ -1,7 +1,7 @@
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { action, computed, makeObservable, observable, override } from "mobx";
 import { AppCurrency } from "@keplr-wallet/types";
-import { ChainGetter, ObservableQueryBalances } from "@keplr-wallet/stores";
+import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 
 /** Used for configuring the amount and fee of a token to be sent by a sender. Is observable. */
 export class ObservableAmountConfig extends AmountConfig {
@@ -10,12 +10,12 @@ export class ObservableAmountConfig extends AmountConfig {
 
   constructor(
     chainGetter: ChainGetter,
+    queriesStore: IQueriesStore,
     initialChainId: string,
     sender: string,
-    currency: AppCurrency,
-    queryBalances: ObservableQueryBalances
+    currency: AppCurrency
   ) {
-    super(chainGetter, initialChainId, sender, undefined, queryBalances);
+    super(chainGetter, queriesStore, initialChainId, sender, undefined);
 
     this._currency = currency;
 

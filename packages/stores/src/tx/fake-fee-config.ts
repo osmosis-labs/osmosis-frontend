@@ -60,7 +60,7 @@ export class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
 
   feeType: FeeType | undefined;
 
-  getError(): Error | undefined {
+  get error(): Error | undefined {
     // noop
     return undefined;
   }

@@ -3,11 +3,12 @@ import { computedFn } from "mobx-utils";
 import { Dec, PricePretty, CoinPretty } from "@keplr-wallet/unit";
 import {
   CoinGeckoPriceStore,
+  CosmosQueries,
+  CosmwasmQueries,
   QueriesStore,
-  QueriesWithCosmos,
 } from "@keplr-wallet/stores";
 import { ChainStore } from "../chain";
-import { QueriesOsmosisStore } from "@osmosis-labs/stores";
+import { OsmosisQueries } from "@osmosis-labs/stores";
 import { makeIBCMinimalDenom } from "./utils";
 import {
   IBCAsset,
@@ -28,24 +29,37 @@ export class ObservableAssets {
         bech32Address: string;
       };
     },
-    protected readonly cosmosStore: QueriesStore<QueriesWithCosmos>,
-    protected readonly osmosisStore: QueriesOsmosisStore,
+    protected readonly queriesStore: QueriesStore<
+      [CosmosQueries, CosmwasmQueries, OsmosisQueries]
+    >,
     protected readonly priceStore: CoinGeckoPriceStore,
-    protected readonly chainName: string = "osmosis"
+    protected readonly chainId: string = "osmosis"
   ) {
     makeObservable(this);
   }
 
   @computed
+  get queries() {
+    return this.queriesStore.get(this.chainId);
+  }
+
+  @computed
+  get account() {
+    return this.accountStore.getAccount(this.chainId);
+  }
+
+  @computed
+  get chain() {
+    return this.chainStore.getChain(this.chainId);
+  }
+
+  @computed
   get nativeBalances(): CoinBalance[] {
-    const { chainId, currencies } = this.chainStore.getChain(this.chainName);
-    const { bech32Address } = this.accountStore.getAccount(chainId);
-    const queries = this.cosmosStore.get(chainId);
-    return currencies
+    return this.chain.currencies
       .filter((currency) => !currency.coinMinimalDenom.includes("/"))
       .map((currency) => {
-        const bal = queries.queryBalances
-          .getQueryBech32Address(bech32Address)
+        const bal = this.queries.queryBalances
+          .getQueryBech32Address(this.account.bech32Address)
           .getBalanceFromCurrency(currency);
 
         return {
@@ -57,11 +71,6 @@ export class ObservableAssets {
 
   @computed
   get ibcBalances(): (IBCBalance | IBCCW20ContractBalance)[] {
-    const { chainId } = this.chainStore.getChain(this.chainName);
-
-    const account = this.accountStore.getAccount(chainId);
-    const queries = this.cosmosStore.get(chainId);
-
     return this.ibcAssets.map((ibcAsset) => {
       const chainInfo = this.chainStore.getChain(ibcAsset.counterpartyChainId);
       const ibcDenom = makeIBCMinimalDenom(
@@ -86,8 +95,8 @@ export class ObservableAssets {
       // TODO: support multihop IBC denoms-
       // Reimplement: https://github.com/osmosis-labs/osmosis-frontend/pull/275/
 
-      const balance = queries.queryBalances
-        .getQueryBech32Address(account.bech32Address)
+      const balance = this.queries.queryBalances
+        .getQueryBech32Address(this.account.bech32Address)
         .getBalanceFromCurrency({
           coinDecimals: originCurrency.coinDecimals,
           coinGeckoId: originCurrency.coinGeckoId,
@@ -126,43 +135,34 @@ export class ObservableAssets {
 
   @computed
   get availableBalance(): CoinPretty[] {
-    const { chainId } = this.chainStore.getChain(this.chainName);
-    const account = this.accountStore.getAccount(chainId);
-    return this.cosmosStore
-      .get(chainId)
-      .queryBalances.getQueryBech32Address(account.bech32Address)
+    return this.queries.queryBalances
+      .getQueryBech32Address(this.account.bech32Address)
       .balances.map((queryBalance) => queryBalance.balance);
   }
 
   @computed
   get lockedCoins(): CoinPretty[] {
-    const { chainId } = this.chainStore.getChain(this.chainName);
-    const { bech32Address } = this.accountStore.getAccount(chainId);
-    return this.osmosisStore.get(chainId).queryLockedCoins.get(bech32Address)
+    return this.queries.osmosis.queryLockedCoins.get(this.account.bech32Address)
       .lockedCoins;
   }
 
   @computed
   get stakedBalance(): CoinPretty {
-    const { chainId } = this.chainStore.getChain(this.chainName);
-    const { bech32Address } = this.accountStore.getAccount(chainId);
-    return this.cosmosStore
-      .get(chainId)
-      .cosmos.queryDelegations.getQueryBech32Address(bech32Address).total;
+    return this.queries.cosmos.queryDelegations.getQueryBech32Address(
+      this.account.bech32Address
+    ).total;
   }
 
   @computed
   get unstakingBalance(): CoinPretty {
-    const { chainId } = this.chainStore.getChain(this.chainName);
+    const { chainId } = this.chainStore.getChain(this.chainId);
     const { bech32Address } = this.accountStore.getAccount(chainId);
-    return this.cosmosStore
-      .get(chainId)
-      .cosmos.queryUnbondingDelegations.getQueryBech32Address(bech32Address)
-      .total;
+    return this.queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
+      bech32Address
+    ).total;
   }
 
   public calcValueOf = computedFn((balances: CoinPretty[]): PricePretty => {
-    const { chainId } = this.chainStore.getChain(this.chainName);
     const fiat = this.priceStore.getFiatCurrency(
       this.priceStore.defaultVsCurrency
     )!;
@@ -173,9 +173,7 @@ export class ObservableAssets {
           "gamm/pool/",
           ""
         );
-        const pool = this.osmosisStore
-          .get(chainId)
-          .queryGammPools.getPool(poolId);
+        const pool = this.queries.osmosis.queryGammPools.getPool(poolId);
         if (pool) {
           const tvl = pool.computeTotalValueLocked(this.priceStore);
           const totalShare = pool.totalShare;

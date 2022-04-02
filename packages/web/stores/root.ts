@@ -1,34 +1,39 @@
 import {
   AccountStore,
-  AccountWithCosmos,
   ChainInfoInner,
   CoinGeckoPriceStore,
+  CosmosQueries,
+  CosmosAccount,
+  CosmwasmQueries,
+  CosmwasmAccount,
   IBCCurrencyRegsitrar,
   QueriesStore,
-  QueriesWithCosmosAndSecretAndCosmwasm,
 } from "@keplr-wallet/stores";
 import { EmbedChainInfos, IBCAssetInfos } from "../config";
 import { IndexedDBKVStore, LocalKVStore } from "@keplr-wallet/common";
 import EventEmitter from "eventemitter3";
 import { ChainStore, ChainInfoWithExplorer } from "./chain";
 import {
-  QueriesOsmosisStore,
+  OsmosisQueries,
   LPCurrencyRegistrar,
   QueriesExternalStore,
   IBCTransferHistoryStore,
+  OsmosisAccount,
 } from "@osmosis-labs/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
-import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { ObservableAssets } from "./assets";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
 
-  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasm>;
-  public readonly queriesOsmosisStore: QueriesOsmosisStore;
+  public readonly queriesStore: QueriesStore<
+    [CosmosQueries, CosmwasmQueries, OsmosisQueries]
+  >;
   public readonly queriesExternalStore: QueriesExternalStore;
 
-  public readonly accountStore: AccountStore<AccountWithCosmos>;
+  public readonly accountStore: AccountStore<
+    [CosmosAccount, CosmwasmAccount, OsmosisAccount]
+  >;
 
   public readonly priceStore: CoinGeckoPriceStore;
 
@@ -40,7 +45,9 @@ export class RootStore {
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
 
   constructor(getKeplr: () => Promise<Keplr | undefined>) {
-    this.chainStore = new ChainStore(EmbedChainInfos, "osmosis");
+    const osmosisChainId = "osmosis";
+
+    this.chainStore = new ChainStore(EmbedChainInfos, osmosisChainId);
 
     const eventListener = (() => {
       // On client-side (web browser), use the global window object.
@@ -61,47 +68,31 @@ export class RootStore {
       };
     })();
 
-    this.queriesStore = new QueriesStore<QueriesWithCosmosAndSecretAndCosmwasm>(
-      new IndexedDBKVStore("store_web_queries"),
-      this.chainStore,
-      getKeplr,
-      QueriesWithCosmosAndSecretAndCosmwasm
-    );
-    this.queriesOsmosisStore = new QueriesOsmosisStore(
-      (chainId: string) => this.queriesStore.get(chainId),
-      new IndexedDBKVStore("store_web_queries"),
-      this.chainStore
-    );
     this.queriesExternalStore = new QueriesExternalStore(
       new IndexedDBKVStore("store_web_queries")
     );
 
-    this.accountStore = new AccountStore<AccountWithCosmos>(
-      eventListener,
-      AccountWithCosmos,
+    this.queriesStore = new QueriesStore(
+      new IndexedDBKVStore("store_web_queries"),
       this.chainStore,
-      this.queriesStore,
-      {
-        defaultOpts: {
-          prefetching: false,
-          suggestChain: true,
-          autoInit: false,
+      CosmosQueries.use(),
+      CosmwasmQueries.use(),
+      OsmosisQueries.use()
+    );
+
+    this.accountStore = new AccountStore(
+      eventListener,
+      this.chainStore,
+      () => {
+        return {
+          suggestChain: false,
+          autoInit: true,
           getKeplr,
-          suggestChainFn: async (keplr, chainInfo) => {
-            if (keplr.mode === "mobile-web") {
-              // Can't suggest the chain on mobile web.
-              return;
-            }
-
-            if (keplr instanceof KeplrWalletConnectV1) {
-              // Can't suggest the chain using wallet connect.
-              return;
-            }
-
-            await keplr.experimentalSuggestChain(chainInfo.raw);
-          },
-        },
-      }
+        };
+      },
+      CosmosAccount.use({ queriesStore: this.queriesStore }),
+      CosmwasmAccount.use({ queriesStore: this.queriesStore }),
+      OsmosisAccount.use({ queriesStore: this.queriesStore })
     );
 
     this.priceStore = new CoinGeckoPriceStore(
@@ -127,8 +118,8 @@ export class RootStore {
       this.chainStore,
       this.accountStore,
       this.queriesStore,
-      this.queriesOsmosisStore,
-      this.priceStore
+      this.priceStore,
+      osmosisChainId
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);

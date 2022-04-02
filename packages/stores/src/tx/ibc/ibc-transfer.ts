@@ -19,7 +19,7 @@ export async function basicIbcTransfer(
   /** Handle IBC transfer events containing `send_packet` event type. */
   onFulfill?: (event: IbcFullfillmentEvent) => void
 ) {
-  if (!sender.account.isReadyToSendMsgs || !counterparty.account.bech32Address)
+  if (!sender.account.isReadyToSendTx || !counterparty.account.bech32Address)
     return;
 
   const recipient =

@@ -1,10 +1,16 @@
 import { useEffect } from "react";
 import {
-  AccountWithCosmos,
+  AccountSetBase,
+  CosmosAccount,
+  CosmwasmAccount,
   getKeplrFromWindow,
   WalletStatus,
 } from "@keplr-wallet/stores";
-import { ObservableAmountConfig, basicIbcTransfer } from "@osmosis-labs/stores";
+import {
+  ObservableAmountConfig,
+  basicIbcTransfer,
+  OsmosisAccount,
+} from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { useAmountConfig } from "../use-amount-config";
 import { useFakeFeeConfig } from "../use-fake-fee-config";
@@ -30,8 +36,8 @@ export function useIbcTransfer({
   isWithdraw,
   ics20ContractAddress,
 }: IbcTransfer): [
-  AccountWithCosmos,
-  AccountWithCosmos,
+  AccountSetBase & CosmosAccount & CosmwasmAccount & OsmosisAccount,
+  AccountSetBase & CosmosAccount & CosmwasmAccount & OsmosisAccount,
   ObservableAmountConfig,
   boolean,
   () => void,
@@ -45,19 +51,17 @@ export function useIbcTransfer({
 
   const amountConfig = useAmountConfig(
     chainStore,
+    queriesStore,
     chainId,
     isWithdraw ? account.bech32Address : counterpartyAccount.bech32Address,
-    isWithdraw ? currency : currency.originCurrency!,
-    isWithdraw
-      ? queriesStore.get(chainId).queryBalances
-      : queriesStore.get(counterpartyChainId).queryBalances
+    isWithdraw ? currency : currency.originCurrency!
   );
   const feeConfig = useFakeFeeConfig(
     chainStore,
     isWithdraw ? chainId : counterpartyChainId,
     isWithdraw
-      ? account.msgOpts.ibcTransfer.gas
-      : counterpartyAccount.msgOpts.ibcTransfer.gas
+      ? account.cosmos.msgOpts.ibcTransfer.gas
+      : counterpartyAccount.cosmos.msgOpts.ibcTransfer.gas
   );
   amountConfig.setFeeConfig(feeConfig);
   const [customBech32Address, isCustomAddressValid, setCustomBech32Address] =
@@ -155,7 +159,7 @@ export function useIbcTransfer({
           contractTransfer: ics20ContractAddress
             ? {
                 contractAddress: currency.originCurrency["contractAddress"],
-                cosmwasmAccount: (counterpartyAccount as any)["cosmwasm"], // TODO: add cosmwasm to Account type
+                cosmwasmAccount: counterpartyAccount, // TODO: add cosmwasm to Account type
                 ics20ContractAddress: ics20ContractAddress,
               }
             : undefined,

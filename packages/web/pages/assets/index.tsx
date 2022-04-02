@@ -71,12 +71,12 @@ const AssetsOverview: FunctionComponent = observer(() => {
 });
 
 const PoolAssets: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesOsmosisStore } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const { bech32Address } = accountStore.getAccount(chainId);
-  let ownedPoolIds = queriesOsmosisStore
+  let ownedPoolIds = queriesStore
     .get(chainId)
-    .queryGammPoolShare.getOwnPools(bech32Address);
+    .osmosis.queryGammPoolShare.getOwnPools(bech32Address);
   const [showAllPools, setShowAllPools] = useState(() => false);
 
   return (
@@ -178,9 +178,8 @@ const PoolCards: FunctionComponent<{
 
 const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
   ({ poolIds }) => {
-    const { chainStore, queriesOsmosisStore, priceStore, accountStore } =
-      useStore();
-    const queriesOsmosis = queriesOsmosisStore.get(chainStore.osmosis.chainId);
+    const { chainStore, queriesStore, priceStore, accountStore } = useStore();
+    const queriesOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis;
     const { bech32Address } = accountStore.getAccount(
       chainStore.osmosis.chainId
     );

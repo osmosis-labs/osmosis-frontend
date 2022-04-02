@@ -181,9 +181,9 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               <Button
                 className="w-full md:w-2/3 p-4 md:p-6 bg-primary-200 rounded-2xl flex items-center justify-center hover:opacity-75 disabled:opacity-50"
                 disabled={
-                  !account.isReadyToSendMsgs ||
-                  !counterpartyAccount.isReadyToSendMsgs ||
-                  amountConfig.getError() != null ||
+                  !account.isReadyToSendTx ||
+                  !counterpartyAccount.isReadyToSendTx ||
+                  amountConfig.error != null ||
                   inTransit
                 }
                 loading={inTransit}
