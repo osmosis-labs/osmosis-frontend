@@ -105,6 +105,17 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 						},
 						config.slippage,
 						'',
+						{
+							amount: [
+								{
+									denom: chainStore.current.stakeCurrency.coinMinimalDenom,
+									amount: '0',
+								},
+							],
+						},
+						{
+							preferNoSetFee: true,
+						},
 						tx => {
 							if (!tx.code) {
 								config.setAmount('');
@@ -123,6 +134,17 @@ export const SwapButton = observer(function SwapButton({ config }: Props) {
 						config.outCurrency,
 						config.slippage,
 						'',
+						{
+							amount: [
+								{
+									denom: chainStore.current.stakeCurrency.coinMinimalDenom,
+									amount: '0',
+								},
+							],
+						},
+						{
+							preferNoSetFee: true,
+						},
 						tx => {
 							if (!tx.code) {
 								config.setAmount('');

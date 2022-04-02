@@ -47,6 +47,8 @@ export const SwapButton = observer(function SwapButton({ config, close }: SwapBu
 						.maxDecimals(18)
 						.toString(),
 					'',
+					{},
+					undefined,
 					tx => {
 						if (!tx.code) {
 							config.setAmount('');

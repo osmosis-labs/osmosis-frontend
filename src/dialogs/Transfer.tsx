@@ -44,8 +44,12 @@ export const TransferDialog = wrapBaseDialog(
 			const account = accountStore.getAccount(chainStore.current.chainId);
 			const counterpartyAccount = accountStore.getAccount(counterpartyChainId);
 			const counterpartyBech32Prefix = chainStore.getChain(counterpartyChainId).bech32Config.bech32PrefixAccAddr;
+
+			// custom withdraw address state
 			const [customWithdrawAddr, isValidCustomWithdrawAddr, setCustomWithdrawAddr] = useCustomBech32Address();
 			const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
+			const [didVerifyWithdrawRisks, setDidVerifyWithdrawRisks] = useState(false);
+			const [didConfirmWithdrawAddr, setDidConfirmWithdrawAddr] = useState(false);
 
 			const bal = queriesStore
 				.get(chainStore.current.chainId)
@@ -130,19 +134,19 @@ export const TransferDialog = wrapBaseDialog(
 						<h5 className="text-lg md:text-xl">{isWithdraw ? 'Withdraw' : 'Deposit'} IBC Asset</h5>
 					</div>
 					<h6 className="mb-3 md:mb-4 text-base md:text-lg">IBC Transfer</h6>
-					<section className="flex flex-col md:flex-row items-center">
+					<section className={`flex flex-col ${!isWithdraw ? 'md:flex-row' : ''} items-center`}>
 						<div className="w-full flex-1 p-3 md:p-4 border border-white-faint rounded-2xl">
 							<p className="text-white-high">From</p>
 							<p className="text-white-disabled truncate overflow-ellipsis">
 								{pickOne(
-									Bech32Address.shortenAddress(account.bech32Address, 25),
+									Bech32Address.shortenAddress(account.bech32Address, 100),
 									Bech32Address.shortenAddress(counterpartyAccount.bech32Address, 25),
 									isWithdraw
 								)}
 							</p>
 						</div>
 						<div className="flex justify-center items-center w-10 my-2 md:my-0">
-							<img src={`/public/assets/Icons/Arrow-${isMobileView ? 'Down' : 'Right'}.svg`} />
+							<img src={`/public/assets/Icons/Arrow-${isMobileView || isWithdraw ? 'Down' : 'Right'}.svg`} />
 						</div>
 						<div
 							className={`w-full flex-1 p-3 md:p-4 border ${
@@ -155,17 +159,63 @@ export const TransferDialog = wrapBaseDialog(
 								{!isValidCustomWithdrawAddr && <p className="text-error">Invalid address</p>}
 							</div>
 							{isEditingWithdrawAddr ? (
-								<div className="bg-background rounded-lg" style={{ padding: '0 8px' }}>
-									<AmountInput
-										style={{ fontSize: '14px', textAlign: 'left' }}
-										value={customWithdrawAddr}
-										onChange={(e: any) => setCustomWithdrawAddr(e.target.value, counterpartyBech32Prefix)}
-									/>
-								</div>
+								<>
+									{isEditingWithdrawAddr && (
+										<div className="flex gap-3 w-full border border-secondary-200 rounded-xl p-1 my-2">
+											<img className="ml-2 h-3 my-auto" src="/public/assets/Icons/Warning.svg" />
+											<p className="text-xs">
+												Warning: Withdrawal to central exchange address could result in loss of funds.
+											</p>
+										</div>
+									)}
+									<div className="flex gap-2 place-content-between p-1 bg-background rounded-lg">
+										<AmountInput
+											style={{ fontSize: '14px', textAlign: 'left' }}
+											value={customWithdrawAddr}
+											onChange={(e: any) => setCustomWithdrawAddr(e.target.value, counterpartyBech32Prefix)}
+										/>
+										<button
+											onClick={() => {
+												setDidConfirmWithdrawAddr(true);
+												setIsEditingWithdrawAddr(false);
+											}}
+											className={cn('my-auto p-1.5 flex justify-center items-center rounded-md md:static', {
+												'bg-primary-200 hover:opacity-75 cursor-pointer ':
+													didVerifyWithdrawRisks && isValidCustomWithdrawAddr,
+												'opacity-30': !didVerifyWithdrawRisks || !isValidCustomWithdrawAddr,
+											})}
+											disabled={!didVerifyWithdrawRisks || !isValidCustomWithdrawAddr}>
+											<p className="text-xs text-white-high leading-none">Enter</p>
+										</button>
+									</div>
+									<label
+										htmlFor="checkbox"
+										className="text-xs flex justify-end items-center mr-2 mt-2 mb-1 cursor-pointer"
+										onClick={() => setDidVerifyWithdrawRisks(!didVerifyWithdrawRisks)}>
+										{didVerifyWithdrawRisks ? (
+											<div className="mr-2.5">
+												<svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+													<path
+														fillRule="evenodd"
+														clipRule="evenodd"
+														d="M4 2H20C21.1046 2 22 2.89543 22 4V20C22 21.1046 21.1046 22 20 22H4C2.89543 22 2 21.1046 2 20V4C2 2.89543 2.89543 2 4 2ZM0 4C0 1.79086 1.79086 0 4 0H20C22.2091 0 24 1.79086 24 4V20C24 22.2091 22.2091 24 20 24H4C1.79086 24 0 22.2091 0 20V4ZM20.6717 7.43656C21.1889 6.78946 21.0837 5.84556 20.4366 5.32831C19.7895 4.81106 18.8456 4.91633 18.3283 5.56344L10.2439 15.6773L5.61855 10.5006C5.06659 9.88282 4.11834 9.82948 3.50058 10.3814C2.88282 10.9334 2.82948 11.8817 3.38145 12.4994L9.18914 18.9994C9.48329 19.3286 9.90753 19.5115 10.3488 19.4994C10.7902 19.4873 11.2037 19.2814 11.4794 18.9366L20.6717 7.43656Z"
+														fill="white"
+													/>
+												</svg>
+											</div>
+										) : (
+											<div className="w-6 h-6 border-2 border-iconDefault mr-2.5 rounded" />
+										)}
+										I verify that I am not sending to an exchange address
+									</label>
+								</>
 							) : (
 								<p className="text-white-disabled truncate overflow-ellipsis">
 									{pickOne(
-										Bech32Address.shortenAddress(counterpartyAccount.bech32Address, 25),
+										Bech32Address.shortenAddress(
+											didConfirmWithdrawAddr ? customWithdrawAddr : counterpartyAccount.bech32Address,
+											100
+										),
 										Bech32Address.shortenAddress(account.bech32Address, 25),
 										isWithdraw
 									)}
@@ -176,7 +226,11 @@ export const TransferDialog = wrapBaseDialog(
 											onClick={e => {
 												e.preventDefault();
 												setIsEditingWithdrawAddr(true);
-												setCustomWithdrawAddr(counterpartyAccount.bech32Address, counterpartyBech32Prefix);
+												if (customWithdrawAddr === '') {
+													setCustomWithdrawAddr(counterpartyAccount.bech32Address, counterpartyBech32Prefix);
+												}
+												setDidConfirmWithdrawAddr(false);
+												setDidVerifyWithdrawRisks(false);
 											}}>
 											Edit
 										</ButtonPrimary>
@@ -185,15 +239,6 @@ export const TransferDialog = wrapBaseDialog(
 							)}
 						</div>
 					</section>
-					{isEditingWithdrawAddr && (
-						<div className="flex gap-3 w-full border border-secondary-200 rounded-xl p-2 mt-2">
-							<img className="h-5" src="/public/assets/Icons/Warning.svg" />
-							<p className="text-sm">
-								Warning: Incorrect withdrawal address could result in loss of funds. Do not withdraw into a centralized
-								exchange deposit address.
-							</p>
-						</div>
-					)}
 					<h6 className="text-base md:text-lg mt-7">Amount To {isWithdraw ? 'Withdraw' : 'Deposit'}</h6>
 					<div className="mt-3 md:mt-4 w-full p-0 md:p-5 border-0 md:border border-secondary-50 border-opacity-60 rounded-2xl">
 						<p className="text-sm md:text-base mb-2">
@@ -265,7 +310,7 @@ export const TransferDialog = wrapBaseDialog(
 												(counterpartyAccount.bech32Address || (customWithdrawAddr && isValidCustomWithdrawAddr))
 											) {
 												const sender = account.bech32Address;
-												const recipient = isEditingWithdrawAddr
+												const recipient = didConfirmWithdrawAddr
 													? customWithdrawAddr
 													: counterpartyAccount.bech32Address;
 
