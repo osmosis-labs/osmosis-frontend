@@ -713,15 +713,15 @@ export const ExtraGaugeInPool: {
   ],
 	'662': [
 		{
-			gaugeId: '2554',
+			gaugeId: '2591',
 			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
 		},
 		{
-			gaugeId: '2555',
+			gaugeId: '2592',
 			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
 		},
 		{
-			gaugeId: '2556',
+			gaugeId: '2593',
 			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
     },
   ]
