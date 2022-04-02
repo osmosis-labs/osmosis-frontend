@@ -298,7 +298,8 @@ export const TransferDialog = wrapBaseDialog(
 									!account.isReadyToSendMsgs ||
 									!counterpartyAccount.isReadyToSendMsgs ||
 									amountConfig.getError() != null ||
-									!isValidCustomWithdrawAddr
+									!isValidCustomWithdrawAddr ||
+									!didConfirmWithdrawAddr
 								}
 								onClick={async e => {
 									e.preventDefault();
