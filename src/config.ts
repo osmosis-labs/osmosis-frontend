@@ -2665,11 +2665,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		feeCurrencies: [
 			{
-<<<<<<< sunny-external-links
-        coinDenom: 'CRBRUS',
-=======
 				coinDenom: 'CRBRUS',
->>>>>>> master
 				coinMinimalDenom: 'ucrbrus',
 				coinDecimals: 6,
 				coinGeckoId: 'pool:crbrus',
