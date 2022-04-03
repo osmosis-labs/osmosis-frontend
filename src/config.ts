@@ -1389,7 +1389,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		explorerUrlToTx: 'https://www.mintscan.io/sentinel/txs/{txHash}',
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 	},
 	{
 		rpc: 'https://rpc-persistence.keplr.app',
