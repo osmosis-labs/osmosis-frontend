@@ -54,7 +54,11 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
 
           const inputAmountValue =
             inputAmount !== "" && !isNaN(parseFloat(inputAmount))
-              ? getFiatValue?.(new CoinPretty(currency, inputAmount))
+              ? getFiatValue?.(
+                  new CoinPretty(currency, inputAmount).moveDecimalPointRight(
+                    currency.coinDecimals
+                  )
+                )
               : undefined;
           const networkName = getChainNetworkName?.(currency.coinDenom);
           const assetBalance = addLiquidityConfig.isSingleAmountIn
