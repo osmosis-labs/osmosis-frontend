@@ -33,7 +33,7 @@ export class ObservableAssets {
       [CosmosQueries, CosmwasmQueries, OsmosisQueries]
     >,
     protected readonly priceStore: CoinGeckoPriceStore,
-    protected readonly chainId: string = "osmosis"
+    protected readonly chainId: string
   ) {
     makeObservable(this);
   }

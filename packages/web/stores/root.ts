@@ -45,9 +45,7 @@ export class RootStore {
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
 
   constructor(getKeplr: () => Promise<Keplr | undefined>) {
-    const osmosisChainId = "osmosis";
-
-    this.chainStore = new ChainStore(EmbedChainInfos, osmosisChainId);
+    this.chainStore = new ChainStore(EmbedChainInfos, "osmosis");
 
     const eventListener = (() => {
       // On client-side (web browser), use the global window object.
@@ -119,7 +117,7 @@ export class RootStore {
       this.accountStore,
       this.queriesStore,
       this.priceStore,
-      osmosisChainId
+      this.chainStore.osmosis.chainId
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
