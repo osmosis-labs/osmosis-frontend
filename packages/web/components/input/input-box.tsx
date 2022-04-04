@@ -13,23 +13,25 @@ export interface Button extends ButtonProps, CustomClasses {
 
 interface Props extends InputProps<string>, Disableable, CustomClasses {
   /** Style of the component, see Figma. */
-  state?: "enabled" | "active" | "error";
+  style?: "no-border" | "enabled" | "active" | "error";
   /** Determine if input text is right justified. Setting to `true` will ignore all accessory buttons. */
   rightEntry?: boolean;
   /** Will only render the first two. If `clearButton` is enabled, will show that as long as `currentValue !== ""`. */
   labelButtons?: Button[];
   /** Show a clear button when `currentValue !== ""`. */
   clearButton?: boolean;
+  inputClassName?: string;
 }
 
 export const InputBox: FunctionComponent<Props> = ({
   currentValue,
   onInput,
   placeholder,
-  state = "enabled",
+  style = "enabled",
   rightEntry = false,
   labelButtons = [],
   clearButton = false,
+  inputClassName,
   disabled = false,
   className,
 }) => {
@@ -38,11 +40,14 @@ export const InputBox: FunctionComponent<Props> = ({
   return (
     <div
       className={classNames(
-        "flex flex-nowrap justify-between w-full max-w-md h-fit mad-h-2 rounded-lg px-2 text-white-high border bg-background",
+        "flex flex-nowrap justify-between w-full h-fit mad-h-2 rounded-lg px-2 text-white-high bg-background",
         {
-          "border-secondary-200": state === "active" || inputFocused,
-          "border-background": state === "enabled" && !inputFocused,
-          "border-missionError": state === "error",
+          border: style !== "no-border",
+          "border-secondary-200":
+            style !== "no-border" && (style === "active" || inputFocused),
+          "border-background":
+            style !== "no-border" && style === "enabled" && !inputFocused,
+          "border-missionError": style === "error",
           "cursor-default bg-[#C4A46A14] border-white-disabled": disabled,
         },
         className
@@ -57,7 +62,8 @@ export const InputBox: FunctionComponent<Props> = ({
               "text-white-disabled": disabled,
               "text-white-high": currentValue != "" && !disabled,
               "text-right float-right": rightEntry,
-            }
+            },
+            inputClassName
           )}
           value={currentValue}
           placeholder={placeholder}
