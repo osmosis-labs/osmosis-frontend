@@ -165,9 +165,7 @@ const Pool: FunctionComponent = observer(() => {
         "https://s3.amazonaws.com/keybase_processed_uploads/1855362ac6629cbc7158012eb363e405_360_360.jpg",
       validatorCommission: new RatePretty(new Dec(0.5)),
       delegation: new CoinPretty(
-        pool.poolAssets.find(
-          (asset) => asset.amount.denom === "OSMO"
-        )!.amount.currency,
+        chainStore.osmosis.stakeCurrency,
         new Dec(11000000)
       ),
       apr: new RatePretty(new Dec(0.79)),
@@ -221,12 +219,10 @@ const Pool: FunctionComponent = observer(() => {
           addLiquidityConfig={addLiquidityConfig}
           removeLiquidityConfig={removeLiquidityConfig}
           getChainNetworkName={(coinDenom) =>
-            EmbedChainInfos.find(
-              (chain) =>
-                chain.stakeCurrency.coinDenom === coinDenom ||
-                chain.currencies.find(
-                  (currency) => currency.coinDenom === coinDenom
-                )
+            EmbedChainInfos.find((chain) =>
+              chain.currencies.find(
+                (currency) => currency.coinDenom === coinDenom
+              )
             )?.chainName
           }
           getFiatValue={(coin) => priceStore.calculatePrice(coin)}

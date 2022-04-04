@@ -70,7 +70,9 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
                 <PoolTokenSelect
                   tokens={addLiquidityConfig.poolAssets.map((poolAsset) => ({
                     coinDenom: poolAsset.currency.coinDenom,
-                    networkName,
+                    networkName: getChainNetworkName?.(
+                      poolAsset.currency.coinDenom
+                    ),
                     poolShare: poolAsset.weightFraction,
                   }))}
                   selectedTokenDenom={
