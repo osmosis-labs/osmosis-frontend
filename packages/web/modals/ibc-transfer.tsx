@@ -7,6 +7,7 @@ import { useStore } from "../stores";
 import { IbcTransfer, useIbcTransfer } from "../hooks/use-ibc-transfer";
 import { Button } from "../components/buttons";
 import { InputBox } from "../components/input";
+import { CheckBox } from "../components/control";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
@@ -24,7 +25,11 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     ] = useIbcTransfer(props);
     const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
     const [wasCustomWithdrawAddrEntered, setCustomWithdrawAddrEntered] =
-      useState(false);
+      useState(false); // address is locked in for modal lifecycle if use presses enter
+    const [didVerifyWithdrawRisk, setDidVerifyWithdrawRisk] = useState(false);
+    const isCustomWithdrawValid =
+      customCounterpartyConfig?.bech32Address === "" || // if not changed, it's valid since it's from Keplr
+      (customCounterpartyConfig?.isValid && wasCustomWithdrawAddrEntered);
 
     return (
       <ModalBase {...props}>
@@ -83,7 +88,9 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                             setIsEditingWithdrawAddr(false);
                             setCustomWithdrawAddrEntered(true);
                           },
-                          disabled: !customCounterpartyConfig.isValid,
+                          disabled:
+                            !customCounterpartyConfig.isValid ||
+                            !didVerifyWithdrawRisk,
                         },
                       ]}
                     />
@@ -97,25 +104,42 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                         : account.bech32Address}
                     </p>
                   )}
+                  <div className="flex place-content-end">
+                    {isEditingWithdrawAddr && (
+                      <CheckBox
+                        className="mt-0.5 after:!bg-transparent after:!border-2 after:!border-white-full"
+                        isOn={didVerifyWithdrawRisk}
+                        onToggle={() => {
+                          setDidVerifyWithdrawRisk(!didVerifyWithdrawRisk);
+                        }}
+                      >
+                        <span className="caption ml-2">
+                          I verify I am not sending to an exchange address.
+                        </span>
+                      </CheckBox>
+                    )}
+                  </div>
                 </div>
-                {customCounterpartyConfig && !isEditingWithdrawAddr && (
-                  <Button
-                    className="h-6 text-caption"
-                    size="xs"
-                    color="primary"
-                    type="outline"
-                    onClick={() => {
-                      setIsEditingWithdrawAddr(true);
-                      if (!wasCustomWithdrawAddrEntered) {
-                        customCounterpartyConfig.setBech32Address(
-                          counterpartyAccount.bech32Address
-                        );
-                      }
-                    }}
-                  >
-                    Edit
-                  </Button>
-                )}
+                {customCounterpartyConfig &&
+                  !isEditingWithdrawAddr &&
+                  !wasCustomWithdrawAddrEntered && (
+                    <Button
+                      className="h-6 text-caption"
+                      size="xs"
+                      color="primary"
+                      type="outline"
+                      onClick={() => {
+                        setIsEditingWithdrawAddr(true);
+                        if (!wasCustomWithdrawAddrEntered) {
+                          customCounterpartyConfig.setBech32Address(
+                            counterpartyAccount.bech32Address
+                          );
+                        }
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  )}
               </div>
             </div>
           </section>
@@ -183,8 +207,9 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                 disabled={
                   !account.isReadyToSendTx ||
                   !counterpartyAccount.isReadyToSendTx ||
-                  amountConfig.error != null ||
-                  inTransit
+                  amountConfig.error != undefined ||
+                  inTransit ||
+                  !isCustomWithdrawValid
                 }
                 loading={inTransit}
                 onClick={() => {
