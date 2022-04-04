@@ -3,13 +3,13 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 import { PoolAssetsIcon, PoolAssetsName } from "../assets";
-import { AssetInfo } from "../assets/types";
+import { PoolAssetInfo } from "../assets/types";
 import { MetricLoader } from "../loaders";
 import { PoolMetric } from "./types";
 
 export const PoolCard: FunctionComponent<{
   poolId: string;
-  poolAssets: AssetInfo[];
+  poolAssets: PoolAssetInfo[];
   poolMetrics: PoolMetric[];
   isSuperfluid?: boolean;
 }> = observer(({ poolId, poolAssets, poolMetrics, isSuperfluid }) => {
