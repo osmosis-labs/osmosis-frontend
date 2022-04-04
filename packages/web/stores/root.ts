@@ -83,8 +83,8 @@ export class RootStore {
       this.chainStore,
       () => {
         return {
-          suggestChain: false,
-          autoInit: true,
+          suggestChain: true,
+          autoInit: false,
           getKeplr,
         };
       },
