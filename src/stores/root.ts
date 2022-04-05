@@ -340,7 +340,7 @@ export class RootStore {
 					poolId: '652',
 					spotPriceSourceDenom: DenomHelper.ibcDenom(
 						[{ portId: 'transfer', channelId: 'channel-169' }],
-						'cw20:juno1w5e6gqd9s4z70h6jraulhnuezry0xl78yltp5gtp54h84nlgq30qta23ne'
+						'cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq'
 					),
 					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'osmosis',
@@ -1455,7 +1455,7 @@ export class RootStore {
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom(
 							[{ portId: 'transfer', channelId: 'channel-169' }],
-							'cw20:juno1w5e6gqd9s4z70h6jraulhnuezry0xl78yltp5gtp54h84nlgq30qta23ne'
+							'cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq'
 						),
 						coinDenom: 'BLOCK',
 						coinDecimals: 6,
