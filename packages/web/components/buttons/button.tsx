@@ -23,7 +23,7 @@ export const Button: FunctionComponent<Props> = ({
 }) => (
   <button
     className={classNames(
-      "flex justify-center items-center rounded-lg text-base",
+      "flex justify-center items-center rounded-lg base",
       {
         "opacity-50": disabled && !loading,
         "opacity-70": disabled && loading,
@@ -54,15 +54,11 @@ export const Button: FunctionComponent<Props> = ({
     onClick={onClick}
   >
     <div
-      className={classNames(
-        "select-none font-button",
-        size === "xs" ? "px-1.5" : "px-3",
-        {
-          "text-subtitle2": size === "xs",
-          "text-subtitle1": size === "sm",
-          "text-h6": size === "lg",
-        }
-      )}
+      className={classNames("select-none", size === "xs" ? "px-1.5" : "px-3", {
+        "text-subtitle2 font-subtitle2": size === "xs",
+        "text-subtitle1 font-subtitle1": size === "sm",
+        "text-h6 font-h6": size === "lg",
+      })}
     >
       {children}
     </div>

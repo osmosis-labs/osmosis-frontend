@@ -1,11 +1,15 @@
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { ObservableQueryGuageById } from "@osmosis-labs/stores";
+import {
+  ObservableQueryGuageById,
+  ObservableAddLiquidityConfig,
+  ObservableRemoveLiquidityConfig,
+} from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
 import { autorun } from "mobx";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent, useEffect, useState, useMemo } from "react";
 import { Button } from "../../components/buttons";
 import {
   PoolCatalystCard,
@@ -15,7 +19,8 @@ import {
 import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { BaseCell, Table } from "../../components/table";
-import { ExternalIncentiveGaugeAllowList } from "../../config";
+import { ExternalIncentiveGaugeAllowList, EmbedChainInfos } from "../../config";
+import { ManageLiquidityModal } from "../../modals/manage-liquidity";
 import { useStore } from "../../stores";
 
 const Pool: FunctionComponent = observer(() => {
@@ -158,9 +163,7 @@ const Pool: FunctionComponent = observer(() => {
         "https://s3.amazonaws.com/keybase_processed_uploads/1855362ac6629cbc7158012eb363e405_360_360.jpg",
       validatorCommission: new RatePretty(new Dec(0.5)),
       delegation: new CoinPretty(
-        pool.poolAssets.find(
-          (asset) => asset.amount.denom === "OSMO"
-        )!.amount.currency,
+        chainStore.osmosis.stakeCurrency,
         new Dec(11000000)
       ),
       apr: new RatePretty(new Dec(0.79)),
@@ -176,8 +179,60 @@ const Pool: FunctionComponent = observer(() => {
     });
   });
 
+  // Manage liquidity state
+  const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
+    useState(false);
+  const [addLiquidityConfig, removeLiquidityConfig] = useMemo(() => {
+    if (pool) {
+      return [
+        new ObservableAddLiquidityConfig(
+          chainStore,
+          chainStore.osmosis.chainId,
+          pool.id,
+          bech32Address,
+          queriesStore,
+          queryOsmosis.queryGammPoolShare,
+          queryOsmosis.queryGammPools,
+          queriesStore.get(chainStore.osmosis.chainId).queryBalances
+        ),
+        new ObservableRemoveLiquidityConfig(
+          chainStore,
+          chainStore.osmosis.chainId,
+          pool.id,
+          bech32Address,
+          queriesStore,
+          queryOsmosis.queryGammPoolShare,
+          "50"
+        ),
+      ];
+    }
+    return [undefined, undefined];
+  }, [pool, chainStore, bech32Address, queriesStore, queryOsmosis]);
+
   return (
     <main>
+      {addLiquidityConfig && removeLiquidityConfig && (
+        <ManageLiquidityModal
+          isOpen={showManageLiquidityDialog}
+          title="Manage Liquidity"
+          onRequestClose={() => setShowManageLiquidityDialog(false)}
+          addLiquidityConfig={addLiquidityConfig}
+          removeLiquidityConfig={removeLiquidityConfig}
+          getChainNetworkName={(coinDenom) =>
+            EmbedChainInfos.find((chain) =>
+              chain.currencies.find(
+                (currency) => currency.coinDenom === coinDenom
+              )
+            )?.chainName
+          }
+          getFiatValue={(coin) => priceStore.calculatePrice(coin)}
+          onAddLiquidity={() => {
+            // TODO: send msgs w/ account store
+            console.log("liquidity added");
+          }}
+          onRemoveLiquidity={() => console.log("liquidity removed")}
+        />
+      )}
       <Overview
         title={
           <MetricLoader
@@ -195,7 +250,10 @@ const Pool: FunctionComponent = observer(() => {
           </MetricLoader>
         }
         titleButtons={[
-          { label: "Add / Remove Liquidity", onClick: console.log },
+          {
+            label: "Add / Remove Liquidity",
+            onClick: () => setShowManageLiquidityDialog(true),
+          },
           { label: "Swap Tokens", onClick: console.log },
         ]}
         primaryOverviewLabels={[

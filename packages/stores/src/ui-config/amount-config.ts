@@ -1,5 +1,5 @@
-import { AmountConfig } from "@keplr-wallet/hooks";
 import { action, computed, makeObservable, observable, override } from "mobx";
+import { AmountConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 

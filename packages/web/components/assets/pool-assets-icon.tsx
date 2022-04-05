@@ -1,10 +1,10 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
-import { AssetInfo } from "./types";
+import { PoolAssetInfo } from "./types";
 
 interface Props {
-  assets: AssetInfo[] | undefined;
+  assets: PoolAssetInfo[] | undefined;
   size: "sm" | "md";
 }
 

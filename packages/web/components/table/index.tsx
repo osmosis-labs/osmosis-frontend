@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { PropsWithoutRef, useState, useCallback } from "react";
-import Tippy from "@tippyjs/react";
 import classNames from "classnames";
-import { replaceAt } from "../utils";
+import { InfoTooltip } from "../tooltip";
 import { CustomClasses } from "../types";
+import { replaceAt } from "../utils";
 import { BaseCell, ColumnDef, RowDef } from "./types";
 
 export interface Props<TCell extends BaseCell> extends CustomClasses {
@@ -77,23 +77,7 @@ export const Table = <TCell extends BaseCell>({
                   ) : undefined}
                 </div>
                 {colDef.infoTooltip && (
-                  <Tippy
-                    className="bg-surface border border-secondary-200/30 p-2 rounded-lg body2"
-                    content={colDef.infoTooltip}
-                    trigger="click"
-                  >
-                    <div
-                      className="inline cursor-pointer pl-1 align-middle"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Image
-                        alt="info"
-                        src="/icons/info.svg"
-                        height={16}
-                        width={16}
-                      />
-                    </div>
-                  </Tippy>
+                  <InfoTooltip content={colDef.infoTooltip} />
                 )}
               </span>
             </th>

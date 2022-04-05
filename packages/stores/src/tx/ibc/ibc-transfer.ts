@@ -1,6 +1,6 @@
 import { IBCCurrency } from "@keplr-wallet/types";
 import { Buffer } from "buffer";
-import { ObservableAmountConfig } from "..";
+import { ObservableAmountConfig } from "../../ui-config";
 import {
   IbcTransferSender,
   IbcTransferCounterparty,
