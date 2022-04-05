@@ -44,6 +44,6 @@ export const CheckBox: FunctionComponent<
       checked={isOn}
       disabled={disabled}
     />
-    {children}
+    <div className="pl-2">{children}</div>
   </label>
 );
