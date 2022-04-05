@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { TokenSelect } from "./control";
+// import { TokenSelect } from "./control";
 import { useBooleanWithWindowEvent } from "../hooks";
 import { InfoTooltip } from "./tooltip";
 
@@ -97,7 +97,7 @@ export const TradeClipboard: FunctionComponent<{
               </div>
             </div>
             <div className="flex items-center justify-between mt-3">
-              <TokenSelect />
+              {/* <TokenSelect /> */}
               <div className="flex flex-col items-end -ml-3">
                 <input
                   type="number"
@@ -127,7 +127,7 @@ export const TradeClipboard: FunctionComponent<{
               <span className="subtitle1 text-white-full">To</span>
             </div>
             <div className="flex items-center justify-between mt-3">
-              <TokenSelect />
+              {/* <TokenSelect /> */}
               <div className="flex flex-col items-end -ml-3">
                 <h5 className="text-white-full text-right">≈ 100 OSMO</h5>
               </div>
