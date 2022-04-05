@@ -1,10 +1,13 @@
+import type { NextPage } from "next";
 import { CoinPretty, DecUtils } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import type { NextPage } from "next";
+import { useState, useMemo } from "react";
+import { ObservableCreatePoolConfig } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
 import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
+import { CreatePoolModal } from "../../modals/create-pool";
 import { LeftTime } from "../../components/left-time";
 import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
@@ -17,6 +20,7 @@ const Pools: NextPage = observer(function () {
     chainStore,
     accountStore,
     priceStore,
+    queriesStore,
     queriesOsmosisStore,
     queriesExternalStore,
   } = useStore();
@@ -58,11 +62,36 @@ const Pools: NextPage = observer(function () {
     )
   );
 
+  // create pool dialog
+  const [isCreatingPool, setIsCreatingPool] = useState(true);
+  const createPoolConfig = useMemo(() => {
+    return new ObservableCreatePoolConfig(
+      chainStore,
+      chainInfo.chainId,
+      account.bech32Address,
+      queriesStore.get(chainInfo.chainId).queryBalances
+    );
+  }, [chainStore, chainInfo, account.bech32Address, queriesStore]);
+
   return (
     <main>
+      {isCreatingPool && (
+        <CreatePoolModal
+          isOpen={isCreatingPool}
+          onRequestClose={() => setIsCreatingPool(false)}
+          title="Create New Pool"
+          createPoolConfig={createPoolConfig}
+          onCreatePool={() => {
+            // TODO: send create pool msg
+            console.log("pool created");
+          }}
+        />
+      )}
       <Overview
         title="Active Pools"
-        titleButtons={[{ label: "Create New Pool", onClick: console.log }]}
+        titleButtons={[
+          { label: "Create New Pool", onClick: () => setIsCreatingPool(true) },
+        ]}
         primaryOverviewLabels={[
           {
             label: "OSMO Price",
