@@ -14,12 +14,24 @@ export class DataSorter<TData> implements DataProcessor<TData[]> {
 
   /** Key is a path of arbitrary length. Example: `"attributes.color"` or `"attributes.color.shade"` */
   process(key: string) {
-    this._data.sort((a: any, b: any) => {
+    this._data.sort((a: unknown, b: unknown) => {
       let aData: SortingData = get(a, key);
       let bData: SortingData = get(b, key);
 
-      if (typeof aData === "string") aData = new Dec(aData);
-      if (typeof bData === "string") bData = new Dec(bData);
+      if (typeof aData !== typeof bData) return 0;
+
+      try {
+        // attempt to create Dec's from numerical strings
+        if (typeof aData === "string") {
+          aData = new Dec(aData);
+        }
+        if (typeof bData === "string") {
+          bData = new Dec(bData);
+        }
+      } catch {
+        // not numerical strings
+        return aData.toString().localeCompare(bData.toString());
+      }
 
       if (!(aData instanceof Dec)) aData = aData.toDec();
       if (!(bData instanceof Dec)) bData = bData.toDec();

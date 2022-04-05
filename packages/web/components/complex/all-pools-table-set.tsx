@@ -1,7 +1,7 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservablePoolWithFeeMetrics } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import {
   useFilteredData,
   usePaginatedData,
@@ -25,14 +25,14 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
     chainStore,
     queriesExternalStore,
     priceStore,
-    queriesOsmosisStore,
+    queriesStore,
     accountStore,
   } = useStore();
   const [activeOptionId, setActiveOptionId] = useState(poolsMenuOptions[0].id);
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 
   const chainInfo = chainStore.osmosis;
-  const queriesOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
+  const queriesOsmosis = queriesStore.get(chainInfo.chainId).osmosis;
   const queriesExternal = queriesExternalStore.get();
   const account = accountStore.getAccount(chainInfo.chainId);
 
@@ -96,7 +96,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
     setSortDirection,
     toggleSortDirection,
     sortedAllPoolsWithMetrics,
-  ] = useSortedData(filteredPools);
+  ] = useSortedData(filteredPools, "liquidity", "descending");
   const [page, setPage, minPage, numPages, allData] = usePaginatedData(
     sortedAllPoolsWithMetrics,
     10
@@ -105,7 +105,6 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
     {
       id: "pool.id",
       display: "Pool ID/Tokens",
-      displayClassName: "!pl-[5.25rem]",
       sort:
         sortKeyPath === "pool.id"
           ? {
@@ -189,17 +188,9 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
       displayCell: isIncentivizedPools ? MetricLoaderCell : undefined,
     },
   ];
-  // TODO: Remove when pull request for asset page get merged.
-  useEffect(() => {
-    setSortKeyPath("liquidity");
-    setSortDirection("descending");
-  }, []);
-  const baseRow: RowDef = {
-    makeHoverClass: () => "text-secondary-200",
-  };
 
   const tableRows: RowDef[] = allData.map((poolWithFeeMetrics) => ({
-    ...baseRow,
+    makeHoverClass: () => "text-secondary-200",
     link: `/pool/${poolWithFeeMetrics.pool.id}`,
   }));
 
@@ -272,7 +263,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
           onInput={setPage}
           editField
         />
-        <div className="absolute right-2 bottom-1 text-sm flex items-center">
+        <div className="absolute right-2 bottom-1 text-body2 flex items-center">
           <CheckBox
             isOn={isPoolTvlFiltered}
             onToggle={setIsPoolTvlFiltered}

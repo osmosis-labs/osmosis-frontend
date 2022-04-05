@@ -11,11 +11,10 @@ import { useRouter } from "next/router";
 export const MyPoolCard: FunctionComponent<{
   pool: ObservablePool;
 }> = observer(({ pool }) => {
-  const { chainStore, queriesOsmosisStore, priceStore, accountStore } =
-    useStore();
+  const { chainStore, queriesStore, priceStore, accountStore } = useStore();
 
   const chainInfo = chainStore.osmosis;
-  const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
+  const queryOsmosis = queriesStore.get(chainInfo.chainId).osmosis;
   const account = accountStore.getAccount(chainInfo.chainId);
 
   const router = useRouter();

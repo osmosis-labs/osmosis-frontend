@@ -1,4 +1,4 @@
 export type AssetInfo = {
-  coinImageUrl: string | undefined;
+  coinImageUrl?: string;
   coinDenom: string;
 };

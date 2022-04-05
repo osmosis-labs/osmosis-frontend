@@ -1,7 +1,9 @@
-import classNames from "classnames";
 import Image from "next/image";
 import React, { FunctionComponent, ReactElement } from "react";
-import ReactModal from "react-modal";
+import ReactModal, { setAppElement } from "react-modal";
+import classNames from "classnames";
+
+setAppElement("body");
 
 export interface ModalBaseProps {
   isOpen: boolean;
@@ -35,7 +37,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         overlayClassName
       )}
       className={classNames(
-        "absolute outline-none w-full p-5 bg-surface rounded-2xl z-50 flex flex-col",
+        "absolute outline-none w-full p-5 bg-surface rounded-2xl z-50 flex flex-col max-w-modal",
         className
       )}
     >
