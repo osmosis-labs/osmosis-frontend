@@ -2,14 +2,14 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { ButtonProps } from "./types";
+import { Disableable } from "../types";
 
 type IconName = string;
 
-interface Props extends ButtonProps {
+interface Props extends ButtonProps, Disableable {
   color?: "primary" | "secondary";
   size?: "sm";
-  type?: "chevron-right" | "chevron-down-green" | IconName;
-  disabled?: boolean;
+  type?: "chevron-right" | "chevron-down-secondary" | IconName;
 }
 
 export const IconButton: FunctionComponent<Props> = ({
@@ -26,9 +26,9 @@ export const IconButton: FunctionComponent<Props> = ({
         "opacity-50": disabled,
         "px-2 py-2": size === "sm",
         "rounded-full":
-          type !== "chevron-right" && type !== "chevron-down-green",
+          type !== "chevron-right" && type !== "chevron-down-secondary",
       },
-      type !== "chevron-right" && type !== "chevron-down-green"
+      type !== "chevron-right" && type !== "chevron-down-secondary"
         ? {
             "bg-primary-200": color === "primary",
             "bg-secondary-200": color === "secondary",

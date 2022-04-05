@@ -1,43 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
-import React, { FunctionComponent, PropsWithoutRef, useState } from "react";
+import React, { PropsWithoutRef, useState, useCallback } from "react";
 import classNames from "classnames";
 import { InfoTooltip } from "../tooltip";
-import { CustomClasses, SortDirection } from "../types";
+import { CustomClasses } from "../types";
 import { replaceAt } from "../utils";
+import { BaseCell, ColumnDef, RowDef } from "./types";
 
-export interface BaseCell {
-  value?: string;
-  rowHovered?: boolean;
-}
-
-export interface ColumnSortDef {
-  currentDirection?: SortDirection;
-  onClickHeader: (colIndex: number) => void;
-}
-
-export interface ColumnDef<TCell> {
-  display: string;
-  displayClassName?: string;
-  sort?: ColumnSortDef;
-  infoTooltip?: string;
-  /** If provided, will be used to render the cell for each row in this column.
-   *
-   * Note: components must accept optionals for all cell data and check for the data they need.
-   */
-  displayCell?: FunctionComponent<Partial<TCell>>;
-}
-
-export interface RowDef {
-  makeClass?: (rowIndex: number) => string;
-  makeHoverClass?: (rowIndex: number) => string;
-  link?: string;
-}
-
-export interface TableProps<TCell> extends CustomClasses {
+export interface Props<TCell extends BaseCell> extends CustomClasses {
+  /** Functionality common to all columns. */
   columnDefs: ColumnDef<TCell>[];
+  /** Functionality common to all rows. */
   rowDefs?: RowDef[];
   data: Partial<TCell>[][];
+  headerTrClassName?: string;
 }
 
 /** Generic table that accepts a 2d array of any type of data cell,
@@ -48,16 +24,20 @@ export const Table = <TCell extends BaseCell>({
   rowDefs,
   data,
   className,
-}: PropsWithoutRef<TableProps<TCell>>) => {
-  const [rowsHovered, setRowsHovered] = useState(data.map(() => false));
+  headerTrClassName,
+}: PropsWithoutRef<Props<TCell>>) => {
+  const [rowsHovered, setRowsHovered] = useState(() => data.map(() => false));
 
-  const setRowHovered = (rowIndex: number, value: boolean) =>
-    setRowsHovered(replaceAt(value, rowsHovered, rowIndex));
+  const setRowHovered = useCallback(
+    (rowIndex: number, value: boolean) =>
+      setRowsHovered(replaceAt(value, rowsHovered, rowIndex)),
+    [rowsHovered]
+  );
 
   return (
     <table className={className}>
       <thead>
-        <tr className="h-20">
+        <tr className={classNames("h-20", headerTrClassName)}>
           {columnDefs.map((colDef, colIndex) => (
             <th
               key={colIndex}
@@ -65,24 +45,32 @@ export const Table = <TCell extends BaseCell>({
                 {
                   "cursor-pointer select-none": colDef?.sort?.onClickHeader,
                 },
-                colDef?.displayClassName
+                colDef.className
               )}
               onClick={() => colDef?.sort?.onClickHeader(colIndex)}
             >
               <span>
-                {colDef?.display ?? ""}
+                {colDef?.display ? (
+                  typeof colDef.display === "string" ? (
+                    colDef.display
+                  ) : (
+                    <>{colDef.display}</>
+                  )
+                ) : (
+                  ""
+                )}
                 <div className="inline pl-1 align-middle">
                   {colDef?.sort?.currentDirection === "ascending" ? (
                     <Image
                       alt="ascending"
-                      src="/icons/arrow-up.svg"
+                      src="/icons/sort-up.svg"
                       height={16}
                       width={16}
                     />
                   ) : colDef?.sort?.currentDirection === "descending" ? (
                     <Image
                       alt="descending"
-                      src="/icons/arrow-down.svg"
+                      src="/icons/sort-down.svg"
                       height={16}
                       width={16}
                     />
@@ -99,7 +87,7 @@ export const Table = <TCell extends BaseCell>({
       <tbody>
         {data.map((row, rowIndex) => {
           const rowDef = rowDefs?.[rowIndex];
-          const rowHovered = rowsHovered[rowIndex];
+          const rowHovered = rowsHovered[rowIndex] ?? false;
 
           return (
             <tr
@@ -109,31 +97,43 @@ export const Table = <TCell extends BaseCell>({
                 rowDef?.makeClass?.(rowIndex),
                 {
                   "focus-within:bg-card focus-within:outline-none":
-                    rowDef?.link !== undefined,
+                    rowDef?.link,
                 },
                 rowHovered
-                  ? `${rowDef?.makeHoverClass?.(rowIndex)} bg-card`
+                  ? rowDef?.makeHoverClass
+                    ? rowDef.makeHoverClass(rowIndex)
+                    : "bg-card cursor-pointer"
                   : undefined
               )}
               onMouseEnter={() => setRowHovered(rowIndex, true)}
               onMouseLeave={() => setRowHovered(rowIndex, false)}
+              onClick={() => {
+                if (rowDef && rowDef.onClick && !rowDef.link) {
+                  rowDef.onClick(rowIndex);
+                }
+              }}
             >
               {row.map((cell, columnIndex) => {
                 const DisplayCell = columnDefs[columnIndex]?.displayCell;
+                const customClass = columnDefs[columnIndex]?.className;
 
                 return (
-                  <td key={`${rowIndex}${columnIndex}`}>
+                  <td className={customClass} key={`${rowIndex}${columnIndex}`}>
                     {rowDef?.link ? (
                       <Link href={rowDef?.link}>
                         <a
                           className="focus:outline-none"
                           tabIndex={columnIndex > 0 ? -1 : 0}
                         >
-                          {DisplayCell ? <DisplayCell {...cell} /> : cell.value}
+                          {DisplayCell ? (
+                            <DisplayCell rowHovered={rowHovered} {...cell} />
+                          ) : (
+                            cell.value
+                          )}
                         </a>
                       </Link>
                     ) : DisplayCell ? (
-                      <DisplayCell {...cell} />
+                      <DisplayCell rowHovered={rowHovered} {...cell} />
                     ) : (
                       cell.value
                     )}
@@ -147,3 +147,5 @@ export const Table = <TCell extends BaseCell>({
     </table>
   );
 };
+
+export * from "./types";

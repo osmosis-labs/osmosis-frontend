@@ -1,6 +1,10 @@
 import { observable, makeObservable, computed, action } from "mobx";
 import { computedFn } from "mobx-utils";
-import { ObservableQueryBalances, ChainGetter } from "@keplr-wallet/stores";
+import {
+  ObservableQueryBalances,
+  ChainGetter,
+  IQueriesStore,
+} from "@keplr-wallet/stores";
 import {
   IntPretty,
   CoinPretty,
@@ -51,12 +55,21 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     initialChainId: string,
     poolId: string,
     sender: string,
+    queriesStore: IQueriesStore,
     queryPoolShare: ObservableQueryGammPoolShare,
     queryPools: ObservableQueryPools,
     queryBalances: ObservableQueryBalances
   ) {
-    super(chainGetter, initialChainId, poolId, sender, queryPoolShare);
+    super(
+      chainGetter,
+      initialChainId,
+      poolId,
+      sender,
+      queriesStore,
+      queryPoolShare
+    );
 
+    this._queriesStore = queriesStore;
     this._queryPools = queryPools;
     this._queryBalances = queryBalances;
     this._sender = sender;
@@ -216,10 +229,10 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
         configs: pool.poolAssets.map((asset) => {
           return new ObservableAmountConfig(
             this.chainGetter,
+            this._queriesStore,
             this.chainId,
             this.sender,
-            asset.amount.currency,
-            this._queryBalances
+            asset.amount.currency
           );
         }),
       };
@@ -275,7 +288,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     const amountConfig = this.poolAssetConfigs[index];
     amountConfig.setAmount(amount);
 
-    if (amountConfig.getError() == null) {
+    if (amountConfig.error === undefined) {
       /*
         share out amount = (token in amount * total share) / pool asset
        */
@@ -483,7 +496,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
 
     if (this.isSingleAmountIn && this.singleAmountInConfig) {
       const config = this.singleAmountInConfig;
-      const error = config.getError();
+      const error = config.error;
       if (error != null) {
         return error;
       }
@@ -491,7 +504,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
       return;
     } else {
       for (const config of this.poolAssetConfigs) {
-        const error = config.getError();
+        const error = config.error;
         if (error != null) {
           return error;
         }

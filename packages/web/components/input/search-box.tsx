@@ -17,7 +17,7 @@ export const SearchBox: FunctionComponent<Props> = ({
 }) => (
   <div
     className={classNames(
-      "flex flex-nowrap gap-3 justify-between w-max h-8 rounded-xl pr-1 pl-2 text-white-high border text-sm border-secondary-200",
+      "flex flex-nowrap gap-3 justify-between w-max h-8 rounded-xl pr-1 pl-3 text-white-high border text-sm border-secondary-200",
       {
         "border-missionError": state === "error",
         "opacity-50": disabled,
@@ -25,20 +25,13 @@ export const SearchBox: FunctionComponent<Props> = ({
       className
     )}
   >
-    <div className="shrink-0 my-auto">
-      <Image
-        alt="search"
-        src="/icons/search-hollow.svg"
-        height={14}
-        width={14}
-      />
-    </div>
+    <Image alt="search" src="/icons/search-hollow.svg" height={14} width={14} />
     <label className="grow shrink h-full" htmlFor="text-search">
       <input
         id="text-search"
         className="w-full h-full appearance-none bg-transparent"
         value={currentValue}
-        placeholder={placeholder}
+        placeholder={placeholder ?? ""}
         autoComplete="off"
         onInput={(e: any) => onInput(e.target.value)}
         onClick={(e: any) => e.target.select()}

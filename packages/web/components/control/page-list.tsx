@@ -29,8 +29,10 @@ export const PageList: FunctionComponent<Props> = ({
     if (max === min) {
       setIsEditingText(false);
     }
-  }, [isEditingText]);
+  }, [isEditingText, max, min]);
 
+  // TODO: fix paging right after clicking accept edited value
+  // may be related to event propagation
   const processInputValue = (e: any) => {
     const newValue = Number(e.target.value);
     if (newValue >= min && newValue <= max) {
@@ -43,7 +45,7 @@ export const PageList: FunctionComponent<Props> = ({
       className={classNames(
         "flex",
         !isEditingText ? "pt-2.5" : null,
-        className
+        className ?? "place-content-center"
       )}
     >
       <div

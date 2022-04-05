@@ -25,20 +25,14 @@ import { useStore } from "../../stores";
 
 const Pool: FunctionComponent = observer(() => {
   const router = useRouter();
-  const {
-    chainStore,
-    queriesStore,
-    queriesOsmosisStore,
-    accountStore,
-    priceStore,
-  } = useStore();
+  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
 
   const { id: poolId } = router.query;
   const { chainId } = chainStore.osmosis;
 
-  const queries = queriesOsmosisStore.get(chainId);
+  const queryOsmosis = queriesStore.get(chainId).osmosis;
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
-  const pool = queries.queryGammPools.getPool(poolId as string);
+  const pool = queryOsmosis.queryGammPools.getPool(poolId as string);
   const { bech32Address } = accountStore.getAccount(chainId);
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
 
@@ -78,10 +72,13 @@ const Pool: FunctionComponent = observer(() => {
   if (pool) {
     totalValueLocked = pool.computeTotalValueLocked(priceStore);
     userLockedValue = totalValueLocked?.mul(
-      queries.queryGammPoolShare.getAllGammShareRatio(bech32Address, pool.id)
+      queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+        bech32Address,
+        pool.id
+      )
     );
     userBondedValue = totalValueLocked
-      ? queries.queryGammPoolShare.getLockedGammShareValue(
+      ? queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
           bech32Address,
           pool.id,
           totalValueLocked,
@@ -90,7 +87,7 @@ const Pool: FunctionComponent = observer(() => {
       : undefined;
     userAvailableValue = !pool.totalShare.toDec().equals(new Dec(0))
       ? totalValueLocked.mul(
-          queries.queryGammPoolShare
+          queryOsmosis.queryGammPoolShare
             .getAvailableGammShare(bech32Address, pool.id)
             .quo(pool.totalShare)
         )
@@ -99,7 +96,7 @@ const Pool: FunctionComponent = observer(() => {
       ratio: new RatePretty(asset.weight.quo(pool.totalWeight)),
       asset: asset.amount
         .mul(
-          queries.queryGammPoolShare.getAllGammShareRatio(
+          queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
             bech32Address,
             pool.id
           )
@@ -107,19 +104,19 @@ const Pool: FunctionComponent = observer(() => {
         .trim(true)
         .shrink(true),
     }));
-    userLockedAssets = queries.queryGammPoolShare
+    userLockedAssets = queryOsmosis.queryGammPoolShare
       .getShareLockedAssets(
         bech32Address,
         pool.id,
-        queries.queryLockableDurations.lockableDurations
+        queryOsmosis.queryLockableDurations.lockableDurations
       )
       .map((lockedAsset) =>
         // calculate APR% for this pool asset
         ({
           ...lockedAsset,
-          apr: queries.queryIncentivizedPools.isIncentivized(pool.id)
+          apr: queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id)
             ? new RatePretty(
-                queries.queryIncentivizedPools.computeAPY(
+                queryOsmosis.queryIncentivizedPools.computeAPY(
                   pool.id,
                   lockedAsset.duration,
                   priceStore,
@@ -131,7 +128,7 @@ const Pool: FunctionComponent = observer(() => {
       );
     externalGuages = (ExternalIncentiveGaugeAllowList[pool.id] ?? []).map(
       ({ gaugeId, denom }) => {
-        const observableGauge = queries.queryGauge.get(gaugeId);
+        const observableGauge = queryOsmosis.queryGauge.get(gaugeId);
         const currency = chainStore
           .getChain(chainStore.osmosis.chainId)
           .findCurrency(denom);
@@ -148,13 +145,14 @@ const Pool: FunctionComponent = observer(() => {
         };
       }
     );
-    guages = queries.queryLockableDurations.lockableDurations.map(
+    guages = queryOsmosis.queryLockableDurations.lockableDurations.map(
       (duration) => {
-        const guageId = queries.queryIncentivizedPools.getIncentivizedGaugeId(
-          pool.id,
-          duration
-        )!;
-        return queries.queryGauge.get(guageId);
+        const guageId =
+          queryOsmosis.queryIncentivizedPools.getIncentivizedGaugeId(
+            pool.id,
+            duration
+          )!;
+        return queryOsmosis.queryGauge.get(guageId);
       }
     );
 
@@ -175,7 +173,7 @@ const Pool: FunctionComponent = observer(() => {
   // eject to pools page if pool does not exist
   useEffect(() => {
     return autorun(() => {
-      if (queries.queryGammPools.poolExists(poolId as string) === false) {
+      if (queryOsmosis.queryGammPools.poolExists(poolId as string) === false) {
         router.push("/pools");
       }
     });
@@ -192,8 +190,9 @@ const Pool: FunctionComponent = observer(() => {
           chainStore.osmosis.chainId,
           pool.id,
           bech32Address,
-          queries.queryGammPoolShare,
-          queries.queryGammPools,
+          queriesStore,
+          queryOsmosis.queryGammPoolShare,
+          queryOsmosis.queryGammPools,
           queriesStore.get(chainStore.osmosis.chainId).queryBalances
         ),
         new ObservableRemoveLiquidityConfig(
@@ -201,13 +200,14 @@ const Pool: FunctionComponent = observer(() => {
           chainStore.osmosis.chainId,
           pool.id,
           bech32Address,
-          queries.queryGammPoolShare,
+          queriesStore,
+          queryOsmosis.queryGammPoolShare,
           "50"
         ),
       ];
     }
     return [undefined, undefined];
-  }, [pool, chainStore, bech32Address, queries, queriesStore]);
+  }, [pool, chainStore, bech32Address, queriesStore, queryOsmosis]);
 
   return (
     <main>
@@ -236,7 +236,7 @@ const Pool: FunctionComponent = observer(() => {
       <Overview
         title={
           <MetricLoader
-            className="h-7 w-80"
+            className="h-7 w-64"
             isLoading={
               !pool ||
               pool?.poolAssets.some((asset) =>
@@ -244,9 +244,9 @@ const Pool: FunctionComponent = observer(() => {
               )
             }
           >
-            {`Pool #${pool?.id} : ${pool?.poolAssets
+            <h5>{`Pool #${pool?.id} : ${pool?.poolAssets
               .map((asset) => asset.amount.currency.coinDenom)
-              .join(" / ")}`}
+              .join(" / ")}`}</h5>
           </MetricLoader>
         }
         titleButtons={[
@@ -328,7 +328,7 @@ const Pool: FunctionComponent = observer(() => {
           </div>
           {pool &&
             guages &&
-            queries.queryIncentivizedPools.isIncentivized(pool.id) && (
+            queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id) && (
               <>
                 <div className="flex gap-9 place-content-between pt-10">
                   {externalGuages?.map(
@@ -353,7 +353,7 @@ const Pool: FunctionComponent = observer(() => {
                     <PoolGaugeCard
                       key={i}
                       days={guage.lockupDuration.humanize()}
-                      apr={queries.queryIncentivizedPools
+                      apr={queryOsmosis.queryIncentivizedPools
                         .computeAPY(
                           pool.id,
                           guage.lockupDuration,
@@ -364,7 +364,7 @@ const Pool: FunctionComponent = observer(() => {
                         .toString()}
                       isLoading={
                         guage.isFetching ||
-                        queries.queryIncentivizedPools.isAprFetching
+                        queryOsmosis.queryIncentivizedPools.isAprFetching
                       }
                       isSuperfluid={
                         superfluid &&
