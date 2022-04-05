@@ -184,32 +184,41 @@ const Pool: FunctionComponent = observer(() => {
   // Manage liquidity state
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
     useState(false);
-  const [addLiquidityConfig, removeLiquidityConfig] = useMemo(() => {
-    if (pool) {
-      return [
-        new ObservableAddLiquidityConfig(
-          chainStore,
-          chainStore.osmosis.chainId,
-          pool.id,
-          bech32Address,
-          queriesStore,
-          queryOsmosis.queryGammPoolShare,
-          queryOsmosis.queryGammPools,
-          queriesStore.get(chainStore.osmosis.chainId).queryBalances
-        ),
-        new ObservableRemoveLiquidityConfig(
-          chainStore,
-          chainStore.osmosis.chainId,
-          pool.id,
-          bech32Address,
-          queriesStore,
-          queryOsmosis.queryGammPoolShare,
-          "50"
-        ),
-      ];
-    }
-    return [undefined, undefined];
-  }, [pool, chainStore, bech32Address, queriesStore, queryOsmosis]);
+  const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
+  const [addLiquidityConfig, removeLiquidityConfig, lockLPTokensConfig] =
+    useMemo(() => {
+      if (pool) {
+        return [
+          new ObservableAddLiquidityConfig(
+            chainStore,
+            chainId,
+            pool.id,
+            bech32Address,
+            queriesStore,
+            queryOsmosis.queryGammPoolShare,
+            queryOsmosis.queryGammPools,
+            queriesStore.get(chainId).queryBalances
+          ),
+          new ObservableRemoveLiquidityConfig(
+            chainStore,
+            chainId,
+            pool.id,
+            bech32Address,
+            queriesStore,
+            queryOsmosis.queryGammPoolShare,
+            "50"
+          ),
+          new ObservableAmountConfig(
+            chainStore,
+            queriesStore,
+            chainId,
+            bech32Address,
+            queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id)
+          ),
+        ];
+      }
+      return [undefined, undefined];
+    }, [pool, chainStore, chainId, bech32Address, queriesStore, queryOsmosis]);
 
   return (
     <main>
@@ -235,24 +244,24 @@ const Pool: FunctionComponent = observer(() => {
           onRemoveLiquidity={() => console.log("liquidity removed")}
         />
       )}
-      {lockLPTokens && (
+      {lockLPTokensConfig && (
         <LockTokensModal
           isOpen={showLockLPTokenModal}
           title="Bond LP Tokens"
           onRequestClose={() => setShowLockLPTokenModal(false)}
-          amountConfig={lockLPTokens}
+          amountConfig={lockLPTokensConfig}
           availableToken={
             pool
-              ? queries.queryGammPoolShare.getAvailableGammShare(
+              ? queryOsmosis.queryGammPoolShare.getAvailableGammShare(
                   bech32Address,
                   pool.id
                 )
               : undefined
           }
-          gauges={queries.queryLockableDurations.lockableDurations.map(
+          gauges={queryOsmosis.queryLockableDurations.lockableDurations.map(
             (duration, index) => {
               const apr = pool
-                ? queries.queryIncentivizedPools.computeAPY(
+                ? queryOsmosis.queryIncentivizedPools.computeAPY(
                     pool.id,
                     duration,
                     priceStore,

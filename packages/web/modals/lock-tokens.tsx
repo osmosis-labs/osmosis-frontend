@@ -65,16 +65,13 @@ export const LockTokensModal: FunctionComponent<
             ]}
           />
         </div>
-        {config.getError()?.message !== undefined && (
-          <Error
-            className="mx-auto"
-            message={config.getError()?.message ?? ""}
-          />
+        {config.error?.message !== undefined && (
+          <Error className="mx-auto" message={config.error?.message ?? ""} />
         )}
         <Button
           className="h-14 w-96 mt-3 mx-auto"
           size="lg"
-          disabled={config.getError() !== undefined}
+          disabled={config.error !== undefined}
           onClick={() => {
             const gauge = gauges.find(
               (_, index) => index === selectedGaugeIndex
