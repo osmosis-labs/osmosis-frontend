@@ -3,6 +3,7 @@ import {
   ObservableQueryGuageById,
   ObservableAddLiquidityConfig,
   ObservableRemoveLiquidityConfig,
+  ObservableAmountConfig,
 } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
 import { autorun } from "mobx";
@@ -20,6 +21,7 @@ import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { BaseCell, Table } from "../../components/table";
 import { ExternalIncentiveGaugeAllowList, EmbedChainInfos } from "../../config";
+import { LockTokensModal } from "../../modals/lock-tokens";
 import { ManageLiquidityModal } from "../../modals/manage-liquidity";
 import { useStore } from "../../stores";
 
@@ -233,6 +235,43 @@ const Pool: FunctionComponent = observer(() => {
           onRemoveLiquidity={() => console.log("liquidity removed")}
         />
       )}
+      {lockLPTokens && (
+        <LockTokensModal
+          isOpen={showLockLPTokenModal}
+          title="Bond LP Tokens"
+          onRequestClose={() => setShowLockLPTokenModal(false)}
+          amountConfig={lockLPTokens}
+          availableToken={
+            pool
+              ? queries.queryGammPoolShare.getAvailableGammShare(
+                  bech32Address,
+                  pool.id
+                )
+              : undefined
+          }
+          gauges={queries.queryLockableDurations.lockableDurations.map(
+            (duration, index) => {
+              const apr = pool
+                ? queries.queryIncentivizedPools.computeAPY(
+                    pool.id,
+                    duration,
+                    priceStore,
+                    fiat
+                  )
+                : undefined;
+
+              return {
+                id: index.toString(),
+                apr: apr ?? new RatePretty(0),
+                duration,
+              };
+            }
+          )}
+          onLockToken={() => {
+            setShowLockLPTokenModal(false);
+          }}
+        />
+      )}
       <Overview
         title={
           <MetricLoader
@@ -321,7 +360,10 @@ const Pool: FunctionComponent = observer(() => {
                   {userAvailableValue?.toString() || "$0"}
                 </MetricLoader>
               </h5>
-              <Button className="h-8" onClick={() => console.log("sdf")}>
+              <Button
+                className="h-8"
+                onClick={() => setShowLockLPTokenModal(true)}
+              >
                 Start Earning
               </Button>
             </div>
