@@ -4,9 +4,9 @@ import { observer } from "mobx-react-lite";
 import { InputBox } from "../../../input";
 import { Button } from "../../../buttons";
 import { StepBase } from "./step-base";
-import { SetupStepProps } from "./types";
+import { StepProps } from "./types";
 
-export const Step2AddLiquidity: FunctionComponent<SetupStepProps> = observer(
+export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
   (props) => {
     const { createPoolConfig: config } = props;
     return (

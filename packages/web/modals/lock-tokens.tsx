@@ -37,7 +37,7 @@ export const LockTokensModal: FunctionComponent<
                 duration={duration.humanize()}
                 isSelected={index === selectedGaugeIndex}
                 onSelect={() => setSelectedGaugeIndex(index)}
-                apr={apr.toString()}
+                apr={apr.maxDecimals(2).toString()}
               />
             ))}
           </div>
@@ -65,16 +65,13 @@ export const LockTokensModal: FunctionComponent<
             ]}
           />
         </div>
-        {config.getError()?.message !== undefined && (
-          <Error
-            className="mx-auto"
-            message={config.getError()?.message ?? ""}
-          />
+        {config.error?.message !== undefined && (
+          <Error className="mx-auto" message={config.error?.message ?? ""} />
         )}
         <Button
           className="h-14 w-96 mt-3 mx-auto"
           size="lg"
-          disabled={config.getError() !== undefined}
+          disabled={config.error !== undefined}
           onClick={() => {
             const gauge = gauges.find(
               (_, index) => index === selectedGaugeIndex
@@ -129,8 +126,8 @@ const LockupItem: FunctionComponent<{
               : "border-iconDefault border"
           )}
         />
-        <div className="w-full flex items-center justify-between md:flex-col md:items-baseline">
-          <div className="flex gap-1.5 items-center">
+        <div className="w-full flex justify-between md:flex-col md:items-baseline">
+          <div className="flex gap-1.5 items-center mx-auto">
             <h5>{duration}</h5>
             {isSuperfluidEnabled && (
               <div className="w-6 h-6">
@@ -143,7 +140,7 @@ const LockupItem: FunctionComponent<{
               </div>
             )}
           </div>
-          <p className="md:mt-1 text-secondary-200 text-sm md:text-base">
+          <p className="md:mt-1 text-secondary-200 text-sm md:text-base mx-auto">
             {apr}
           </p>
         </div>

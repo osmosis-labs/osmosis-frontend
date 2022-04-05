@@ -1,6 +1,6 @@
 import { observable, makeObservable, action, computed } from "mobx";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import { ChainGetter } from "@keplr-wallet/stores";
+import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { ObservableQueryGammPoolShare } from "../../queries";
 import { ManageLiquidityConfigBase } from "./base";
 
@@ -16,10 +16,18 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
     initialChainId: string,
     poolId: string,
     sender: string,
+    queriesStore: IQueriesStore,
     queryPoolShare: ObservableQueryGammPoolShare,
     initialPercentage: string
   ) {
-    super(chainGetter, initialChainId, poolId, sender, queryPoolShare);
+    super(
+      chainGetter,
+      initialChainId,
+      poolId,
+      sender,
+      queriesStore,
+      queryPoolShare
+    );
 
     this._percentage = initialPercentage;
 

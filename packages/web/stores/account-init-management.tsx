@@ -5,6 +5,7 @@ import { WalletStatus } from "@keplr-wallet/stores";
 import { useKeplr } from "../hooks";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 
+/** Manages the initialization of the Osmosis account. */
 export const AccountInitManagement: FunctionComponent = observer(
   ({ children }) => {
     const { chainStore, accountStore } = useStore();

@@ -4,10 +4,10 @@ import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { TokenSelect } from "../../../control";
 import { InputBox } from "../../../input";
-import { SetupStepProps } from "./types";
+import { StepProps } from "./types";
 import { StepBase } from "./step-base";
 
-export const Step1SetRatios: FunctionComponent<SetupStepProps> = observer(
+export const Step1SetRatios: FunctionComponent<StepProps> = observer(
   (props) => {
     const { createPoolConfig: config } = props;
 

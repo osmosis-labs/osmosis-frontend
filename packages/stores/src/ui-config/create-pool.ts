@@ -1,7 +1,11 @@
-import { observable, makeObservable, override, action } from "mobx";
+import { observable, makeObservable, action } from "mobx";
 import { computedFn } from "mobx-utils";
 import { TxChainSetter, IFeeConfig } from "@keplr-wallet/hooks";
-import { ObservableQueryBalances, ChainGetter } from "@keplr-wallet/stores";
+import {
+  ObservableQueryBalances,
+  ChainGetter,
+  IQueriesStore,
+} from "@keplr-wallet/stores";
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
 import { ObservableAmountConfig } from "./amount-config";
@@ -13,6 +17,9 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
   @observable.ref
   protected _feeConfig: IFeeConfig | undefined = undefined;
+
+  @observable.ref
+  protected _queriesStore: IQueriesStore;
 
   @observable.ref
   protected _queryBalances: ObservableQueryBalances;
@@ -33,32 +40,18 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     chainGetter: ChainGetter,
     initialChainId: string,
     sender: string,
-    queryBalances: ObservableQueryBalances
+    queriesStore: IQueriesStore,
+    queryBalances: ObservableQueryBalances,
+    feeConfig?: IFeeConfig
   ) {
     super(chainGetter, initialChainId);
 
     this._sender = sender;
+    this._queriesStore = queriesStore;
     this._queryBalances = queryBalances;
-
-    makeObservable(this);
-  }
-
-  @override
-  setChain(chainId: string) {
-    super.setChain(chainId);
-
-    for (const asset of this.assets) {
-      asset.amountConfig.setChain(chainId);
-    }
-  }
-
-  @action
-  setFeeConfig(feeConfig: IFeeConfig) {
     this._feeConfig = feeConfig;
 
-    for (const asset of this.assets) {
-      asset.amountConfig.setFeeConfig(feeConfig);
-    }
+    makeObservable(this);
   }
 
   get feeConfig(): IFeeConfig | undefined {
@@ -80,10 +73,10 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
   addAsset(currency: AppCurrency) {
     const config = new ObservableAmountConfig(
       this.chainGetter,
+      this._queriesStore,
       this.chainId,
       this.sender,
-      currency,
-      this.queryBalances
+      currency
     );
     if (this.feeConfig) {
       config.setFeeConfig(this.feeConfig);
@@ -123,26 +116,8 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     return this._sender;
   }
 
-  @action
-  setSender(sender: string) {
-    this._sender = sender;
-
-    for (const asset of this.assets) {
-      asset.amountConfig.setSender(sender);
-    }
-  }
-
   get queryBalances(): ObservableQueryBalances {
     return this._queryBalances;
-  }
-
-  @action
-  setQueryBalances(queryBalances: ObservableQueryBalances) {
-    this._queryBalances = queryBalances;
-
-    for (const asset of this.assets) {
-      asset.amountConfig.setQueryBalances(queryBalances);
-    }
   }
 
   get sendableCurrencies(): AppCurrency[] {
@@ -222,7 +197,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
   readonly getErrorOfAmount = computedFn((): Error | undefined => {
     for (const asset of this.assets) {
-      const error = asset.amountConfig.getError();
+      const error = asset.amountConfig.error;
       if (error != null) {
         return error;
       }

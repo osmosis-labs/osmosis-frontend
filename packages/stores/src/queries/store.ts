@@ -1,5 +1,5 @@
 import { ObservableQueryPools, ObservableQueryNumPools } from "./pools";
-import { ChainGetter, HasMapStore, QueriesSetBase } from "@keplr-wallet/stores";
+import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
 import { DeepReadonly } from "utility-types";
 import { ObservableQueryGammPoolShare } from "./pool-share";
@@ -21,28 +21,36 @@ import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
 import { ObservableQueryGuage } from "./incentives";
 import { ObservableQueryPoolCreationFee } from "./pool-creation-fee";
 
-export class QueriesOsmosisStore extends HasMapStore<QueriesOsmosis> {
-  constructor(
-    protected readonly queriesBaseCreator: (chainId: string) => QueriesSetBase,
-    protected readonly kvStore: KVStore,
-    protected readonly chainGetter: ChainGetter
-  ) {
-    super((chainId: string) => {
-      return new QueriesOsmosis(
-        this.queriesBaseCreator(chainId),
-        this.kvStore,
-        chainId,
-        this.chainGetter
-      );
-    });
-  }
-
-  get(chainId: string): QueriesOsmosis {
-    return super.get(chainId);
-  }
+export interface OsmosisQueries {
+  osmosis: OsmosisQueriesImpl;
 }
 
-export class QueriesOsmosis {
+export const OsmosisQueries = {
+  use(): (
+    queriesSetBase: QueriesSetBase,
+    kvStore: KVStore,
+    chainId: string,
+    chainGetter: ChainGetter
+  ) => OsmosisQueries {
+    return (
+      queriesSetBase: QueriesSetBase,
+      kvStore: KVStore,
+      chainId: string,
+      chainGetter: ChainGetter
+    ) => {
+      return {
+        osmosis: new OsmosisQueriesImpl(
+          queriesSetBase,
+          kvStore,
+          chainId,
+          chainGetter
+        ),
+      };
+    };
+  },
+};
+
+export class OsmosisQueriesImpl {
   public readonly queryGammPools: DeepReadonly<ObservableQueryPools>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;

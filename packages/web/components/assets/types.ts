@@ -1,12 +1,8 @@
 import { RatePretty } from "@keplr-wallet/unit";
 
-export type AssetInfo = {
-  coinImageUrl: string | undefined;
+export type PoolAssetInfo = {
   coinDenom: string;
-};
-
-export type TokenInfo = {
-  coinDenom: string;
+  coinImageUrl?: string;
   networkName?: string;
   poolShare?: RatePretty;
 };

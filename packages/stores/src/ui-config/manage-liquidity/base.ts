@@ -1,6 +1,6 @@
 import { observable, makeObservable, action } from "mobx";
 import { TxChainSetter } from "@keplr-wallet/hooks";
-import { ChainGetter } from "@keplr-wallet/stores";
+import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { ObservableQueryGammPoolShare } from "../../queries";
 
@@ -14,17 +14,22 @@ export class ManageLiquidityConfigBase extends TxChainSetter {
   @observable
   protected _queryPoolShare: ObservableQueryGammPoolShare;
 
+  @observable.ref
+  protected _queriesStore: IQueriesStore;
+
   constructor(
     chainGetter: ChainGetter,
     initialChainId: string,
     poolId: string,
     sender: string,
+    queriesStore: IQueriesStore,
     queryPoolShare: ObservableQueryGammPoolShare
   ) {
     super(chainGetter, initialChainId);
 
     this._poolId = poolId;
     this._sender = sender;
+    this._queriesStore = queriesStore;
     this._queryPoolShare = queryPoolShare;
 
     makeObservable(this);

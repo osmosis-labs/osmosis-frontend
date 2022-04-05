@@ -11,10 +11,10 @@ import { StatLabelValue } from "./stat-label-value";
 export const IncentivizedPoolCard: FunctionComponent<{
   pool: ObservablePool;
 }> = observer(({ pool }) => {
-  const { chainStore, queriesOsmosisStore, priceStore } = useStore();
+  const { chainStore, queriesStore, priceStore } = useStore();
 
   const chainInfo = chainStore.osmosis;
-  const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
+  const queryOsmosis = queriesStore.get(chainInfo.chainId).osmosis;
 
   const router = useRouter();
 

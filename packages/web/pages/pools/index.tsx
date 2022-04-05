@@ -21,19 +21,16 @@ const Pools: NextPage = observer(function () {
     accountStore,
     priceStore,
     queriesStore,
-    queriesOsmosisStore,
     queriesExternalStore,
   } = useStore();
 
-  const chainInfo = chainStore.osmosis;
-  const queriesOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
+  const { chainId } = chainStore.osmosis;
+  const queryOsmosis = queriesStore.get(chainId).osmosis;
   const queriesExternal = queriesExternalStore.get();
 
-  const account = accountStore.getAccount(chainInfo.chainId);
+  const account = accountStore.getAccount(chainId);
 
-  const queryEpoch = queriesOsmosis.queryEpochs.getEpoch(
-    REWARD_EPOCH_IDENTIFIER
-  );
+  const queryEpoch = queryOsmosis.queryEpochs.getEpoch(REWARD_EPOCH_IDENTIFIER);
   const now = new Date();
   const epochRemainingTime = dayjs.duration(
     dayjs(queryEpoch.endTime).diff(dayjs(now), "second"),
@@ -46,7 +43,7 @@ const Pools: NextPage = observer(function () {
   const [epochRemainingHour, epochRemainingMinute] =
     epochRemainingTimeString.split("-");
 
-  const myPoolIds = queriesOsmosis.queryGammPoolShare.getOwnPools(
+  const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
     account.bech32Address
   );
 
@@ -63,15 +60,16 @@ const Pools: NextPage = observer(function () {
   );
 
   // create pool dialog
-  const [isCreatingPool, setIsCreatingPool] = useState(true);
+  const [isCreatingPool, setIsCreatingPool] = useState(false);
   const createPoolConfig = useMemo(() => {
     return new ObservableCreatePoolConfig(
       chainStore,
-      chainInfo.chainId,
+      chainId,
       account.bech32Address,
-      queriesStore.get(chainInfo.chainId).queryBalances
+      queriesStore,
+      queriesStore.get(chainId).queryBalances
     );
-  }, [chainStore, chainInfo, account.bech32Address, queriesStore]);
+  }, [chainStore, chainId, account.bech32Address, queriesStore]);
 
   return (
     <main>
@@ -118,19 +116,18 @@ const Pools: NextPage = observer(function () {
       <section className="bg-background">
         <div className="max-w-container mx-auto p-10 pb-[3.75rem]">
           <h5>My Pools</h5>
-          <div className="mt-5 grid grid-cols-3 gap-10">
+          <div className="mt-5 grid grid-cards gap-10">
             {myPoolIds.map((myPoolId) => {
-              const myPool = queriesOsmosis.queryGammPools.getPool(myPoolId);
+              const myPool = queryOsmosis.queryGammPools.getPool(myPoolId);
               if (myPool) {
-                const apr =
-                  queriesOsmosis.queryIncentivizedPools.computeMostAPY(
-                    myPool.id,
-                    priceStore
-                  );
+                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
+                  myPool.id,
+                  priceStore
+                );
                 const poolLiquidity =
                   myPool.computeTotalValueLocked(priceStore);
                 const myBonded =
-                  queriesOsmosis.queryGammPoolShare.getLockedGammShareValue(
+                  queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
                     account.bech32Address,
                     myPoolId,
                     poolLiquidity,
@@ -148,19 +145,35 @@ const Pools: NextPage = observer(function () {
                     poolMetrics={[
                       {
                         label: "APR",
-                        value: apr.maxDecimals(2).toString(),
-                        isLoading:
-                          queriesOsmosis.queryIncentivizedPools.isAprFetching,
+                        value: (
+                          <MetricLoader
+                            isLoading={
+                              queryOsmosis.queryIncentivizedPools.isAprFetching
+                            }
+                          >
+                            {apr.maxDecimals(2).toString()}
+                          </MetricLoader>
+                        ),
                       },
                       {
                         label: "Pool Liquidity",
-                        value: poolLiquidity.toString(),
-                        isLoading: poolLiquidity.toDec().isZero(),
+                        value: (
+                          <MetricLoader
+                            isLoading={poolLiquidity.toDec().isZero()}
+                          >
+                            {poolLiquidity.toString()}
+                          </MetricLoader>
+                        ),
                       },
                       {
                         label: "Bonded",
-                        value: myBonded.toString(),
-                        isLoading: poolLiquidity.toDec().isZero(),
+                        value: (
+                          <MetricLoader
+                            isLoading={poolLiquidity.toDec().isZero()}
+                          >
+                            {myBonded.toString()}
+                          </MetricLoader>
+                        ),
                       },
                     ]}
                   />
@@ -173,21 +186,20 @@ const Pools: NextPage = observer(function () {
       <section className="bg-surface">
         <div className="max-w-container mx-auto p-10">
           <h5>Superfluid Pools</h5>
-          <div className="mt-4 grid grid-cols-3 gap-10">
+          <div className="mt-5 grid grid-cards gap-10">
             {superfluidPoolIds.map((poolId) => {
               const superfluidPool =
-                queriesOsmosis.queryGammPools.getPool(poolId);
+                queryOsmosis.queryGammPools.getPool(poolId);
               if (superfluidPool) {
                 const poolFeesMetrics =
                   queriesExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
                     superfluidPool.id,
                     priceStore
                   );
-                const apr =
-                  queriesOsmosis.queryIncentivizedPools.computeMostAPY(
-                    superfluidPool.id,
-                    priceStore
-                  );
+                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
+                  superfluidPool.id,
+                  priceStore
+                );
                 const poolLiquidity =
                   superfluidPool.computeTotalValueLocked(priceStore);
 
@@ -202,19 +214,37 @@ const Pools: NextPage = observer(function () {
                     poolMetrics={[
                       {
                         label: "APR",
-                        value: apr.maxDecimals(2).toString(),
-                        isLoading:
-                          queriesOsmosis.queryIncentivizedPools.isAprFetching,
+                        value: (
+                          <MetricLoader
+                            isLoading={
+                              queryOsmosis.queryIncentivizedPools.isAprFetching
+                            }
+                          >
+                            {apr.maxDecimals(2).toString()}
+                          </MetricLoader>
+                        ),
                       },
                       {
                         label: "Pool Liquidity",
-                        value: poolLiquidity.toString(),
-                        isLoading: poolLiquidity.toDec().isZero(),
+                        value: (
+                          <MetricLoader
+                            isLoading={poolLiquidity.toDec().isZero()}
+                          >
+                            {poolLiquidity.toString()}
+                          </MetricLoader>
+                        ),
                       },
                       {
                         label: "Fees (7D)",
-                        value: poolFeesMetrics.feesSpent7d.toString(),
-                        isLoading: poolFeesMetrics.feesSpent7d.toDec().isZero(),
+                        value: (
+                          <MetricLoader
+                            isLoading={poolFeesMetrics.feesSpent7d
+                              .toDec()
+                              .isZero()}
+                          >
+                            {poolFeesMetrics.feesSpent7d.toString()}
+                          </MetricLoader>
+                        ),
                       },
                     ]}
                     isSuperfluid={true}
