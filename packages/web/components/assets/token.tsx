@@ -1,11 +1,11 @@
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { RateRing } from "../assets";
-import { TokenInfo } from "./types";
+import { PoolAssetInfo } from "./types";
 import { CustomClasses } from "../types";
 
 export const Token: FunctionComponent<
-  TokenInfo & CustomClasses & { ringColorIndex?: number }
+  PoolAssetInfo & CustomClasses & { ringColorIndex?: number }
 > = ({ coinDenom, networkName, poolShare, className, ringColorIndex }) => (
   <div className={classNames("flex gap-2", className)}>
     {poolShare && (

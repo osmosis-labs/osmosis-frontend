@@ -54,7 +54,11 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
 
           const inputAmountValue =
             inputAmount !== "" && !isNaN(parseFloat(inputAmount))
-              ? getFiatValue?.(new CoinPretty(currency, inputAmount))
+              ? getFiatValue?.(
+                  new CoinPretty(currency, inputAmount).moveDecimalPointRight(
+                    currency.coinDecimals
+                  )
+                )
               : undefined;
           const networkName = getChainNetworkName?.(currency.coinDenom);
           const assetBalance = addLiquidityConfig.isSingleAmountIn
@@ -70,7 +74,9 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
                 <PoolTokenSelect
                   tokens={addLiquidityConfig.poolAssets.map((poolAsset) => ({
                     coinDenom: poolAsset.currency.coinDenom,
-                    networkName,
+                    networkName: getChainNetworkName?.(
+                      poolAsset.currency.coinDenom
+                    ),
                     poolShare: poolAsset.weightFraction,
                   }))}
                   selectedTokenDenom={

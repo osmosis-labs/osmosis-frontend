@@ -1,13 +1,13 @@
 import Image from "next/image";
 import { FunctionComponent, useState } from "react";
 import classNames from "classnames";
-import { Token, TokenInfo } from "../assets";
+import { Token, PoolAssetInfo } from "../assets";
 import { CustomClasses } from "../types";
 
 /** Used to select a token token from within a pool. */
 export const PoolTokenSelect: FunctionComponent<
   {
-    tokens: TokenInfo[];
+    tokens: PoolAssetInfo[];
     selectedTokenDenom: string;
     onSelectToken: (coinDenom: string) => void;
   } & CustomClasses
@@ -27,7 +27,7 @@ export const PoolTokenSelect: FunctionComponent<
         className={classNames(
           "px-3 flex h-full  hover:bg-card cursor-pointer",
           {
-            "bg-card rounded-t-xl": isToggleOpen,
+            "bg-card rounded-t-xl w-64": isToggleOpen,
             "rounded-xl": !isToggleOpen,
           },
           className
@@ -71,10 +71,10 @@ export const PoolTokenSelect: FunctionComponent<
 };
 
 const TokensDropdown: FunctionComponent<{
-  tokens: TokenInfo[];
+  tokens: PoolAssetInfo[];
   onSelect: (coinDenom: string) => void;
 }> = ({ tokens, onSelect }) => (
-  <div className="absolute flex flex-col bg-card rounded-b-xl">
+  <div className="absolute flex flex-col bg-card rounded-b-xl z-50 w-64">
     {tokens.map((token, index) => (
       <div
         className={classNames(

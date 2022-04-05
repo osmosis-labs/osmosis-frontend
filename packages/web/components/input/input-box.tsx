@@ -7,7 +7,7 @@ import { CloseButton } from "../buttons";
 /* https://www.figma.com/file/wQjMyxY0EnEk29gBzGDMe5/Osmosis-Component?node-id=3938%3A15177 */
 
 /** Accessory button for the input box. */
-export interface Button extends ButtonProps, CustomClasses {
+export interface Button extends ButtonProps, CustomClasses, Disableable {
   label: string;
 }
 
@@ -53,7 +53,7 @@ export const InputBox: FunctionComponent<Props> = ({
         className
       )}
     >
-      <label className="grow shrink w-fit" htmlFor="text-input">
+      <label className="grow shrink w-full" htmlFor="text-input">
         <input
           id="text-input"
           className={classNames(
@@ -66,7 +66,7 @@ export const InputBox: FunctionComponent<Props> = ({
             inputClassName
           )}
           value={currentValue}
-          placeholder={placeholder}
+          placeholder={placeholder ?? ""}
           autoComplete="off"
           onBlur={() => setInputFocused(false)}
           onFocus={() => setInputFocused(true)}
@@ -84,22 +84,31 @@ export const InputBox: FunctionComponent<Props> = ({
               disabled={disabled}
             />
           ) : (
-            labelButtons.slice(0, 2).map(({ label, onClick, className }, i) => (
-              <button
-                key={i}
-                className={classNames(
-                  "h-8 border-2 border-primary-200 rounded-lg my-1.5 bg-[#322dc24d] select-none",
-                  {
-                    "opacity-30": disabled,
-                  },
-                  className
-                )}
-                onClick={onClick}
-                disabled={disabled}
-              >
-                <span className="mx-2">{label}</span>
-              </button>
-            ))
+            labelButtons
+              .slice(0, 2)
+              .map(
+                (
+                  { label, onClick, disabled: labelButtonDisabled, className },
+                  index
+                ) => (
+                  <button
+                    key={index}
+                    className={classNames(
+                      "h-[1.375rem] border-2 border-primary-200 rounded-lg mt-2.5 bg-primary-200/30 select-none",
+                      {
+                        "opacity-30": disabled || labelButtonDisabled,
+                        "hover:bg-primary-200/60":
+                          !disabled && !labelButtonDisabled,
+                      },
+                      className
+                    )}
+                    onClick={onClick}
+                    disabled={disabled || labelButtonDisabled}
+                  >
+                    <span className="mx-2 text-caption">{label}</span>
+                  </button>
+                )
+              )
           ))}
       </div>
     </div>

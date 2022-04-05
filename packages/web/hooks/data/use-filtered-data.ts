@@ -14,12 +14,13 @@ import { DataFilter } from "./data-filter";
 export function useFilteredData<TData>(
   data: TData[],
   keys?: string[],
-  filter?: DataProcessor<TData[]>
+  filter?: DataProcessor<TData[]>,
+  initialQuery?: string
 ): [string, (terms: string) => void, TData[]] {
   const processor = useMemo(
     () => filter ?? new DataFilter<TData>(data, keys),
     [data, keys]
   );
 
-  return useUserProcessedData(data, processor);
+  return useUserProcessedData(data, processor, initialQuery);
 }
