@@ -1033,7 +1033,7 @@ export const IBCAssetInfos: {
 		counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-169',
 		destChannelId: 'channel-47',
-		coinMinimalDenom: 'cw20:juno1w5e6gqd9s4z70h6jraulhnuezry0xl78yltp5gtp54h84nlgq30qta23ne',
+		coinMinimalDenom: 'cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 ];
@@ -1659,9 +1659,9 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 			{
 				type: 'cw20',
-				contractAddress: 'juno1w5e6gqd9s4z70h6jraulhnuezry0xl78yltp5gtp54h84nlgq30qta23ne',
+				contractAddress: 'juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq',
 				coinDenom: 'BLOCK',
-				coinMinimalDenom: 'cw20:juno1w5e6gqd9s4z70h6jraulhnuezry0xl78yltp5gtp54h84nlgq30qta23ne:BLOCK',
+				coinMinimalDenom: 'cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq:BLOCK',
 				coinDecimals: 6,
 				coinGeckoId: 'pool:block',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/block.svg',
