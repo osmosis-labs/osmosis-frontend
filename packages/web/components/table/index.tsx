@@ -59,23 +59,25 @@ export const Table = <TCell extends BaseCell>({
                 ) : (
                   ""
                 )}
-                <div className="inline pl-1 align-middle">
-                  {colDef?.sort?.currentDirection === "ascending" ? (
-                    <Image
-                      alt="ascending"
-                      src="/icons/sort-up.svg"
-                      height={16}
-                      width={16}
-                    />
-                  ) : colDef?.sort?.currentDirection === "descending" ? (
-                    <Image
-                      alt="descending"
-                      src="/icons/sort-down.svg"
-                      height={16}
-                      width={16}
-                    />
-                  ) : undefined}
-                </div>
+                {colDef?.sort && (
+                  <div className="inline pl-1 align-middle">
+                    {colDef?.sort?.currentDirection === "ascending" ? (
+                      <Image
+                        alt="ascending"
+                        src="/icons/sort-up.svg"
+                        height={16}
+                        width={16}
+                      />
+                    ) : colDef?.sort?.currentDirection === "descending" ? (
+                      <Image
+                        alt="descending"
+                        src="/icons/sort-down.svg"
+                        height={16}
+                        width={16}
+                      />
+                    ) : undefined}
+                  </div>
+                )}
                 {colDef.infoTooltip && (
                   <InfoTooltip content={colDef.infoTooltip} />
                 )}

@@ -20,6 +20,14 @@ import {
 import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
 import { ObservableQueryGuage } from "./incentives";
 import { ObservableQueryPoolCreationFee } from "./pool-creation-fee";
+import {
+  ObservableQuerySuperfluidDelegations,
+  ObservableQuerySuperfluidPools,
+  ObservableQuerySuperfluidUndelegations,
+  ObservableQuerySuperfluidAssetMultiplier,
+  ObservableQuerySuperfluidOsmoEquivalent,
+  ObservableQuerySuperfluidParams,
+} from "./superfluid-pools";
 
 export interface OsmosisQueries {
   osmosis: OsmosisQueriesImpl;
@@ -70,6 +78,13 @@ export class OsmosisQueriesImpl {
   public readonly queryGauge: DeepReadonly<ObservableQueryGuage>;
 
   public readonly queryPoolCreationFee: DeepReadonly<ObservableQueryPoolCreationFee>;
+
+  public readonly querySuperfluidPools: DeepReadonly<ObservableQuerySuperfluidPools>;
+  public readonly querySuperfluidDelegations: DeepReadonly<ObservableQuerySuperfluidDelegations>;
+  public readonly querySuperfluidUndelegations: DeepReadonly<ObservableQuerySuperfluidUndelegations>;
+  public readonly querySuperfluidParams: DeepReadonly<ObservableQuerySuperfluidParams>;
+  public readonly querySuperfluidAssetMultiplier: DeepReadonly<ObservableQuerySuperfluidAssetMultiplier>;
+  public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
 
   constructor(
     queries: QueriesSetBase,
@@ -155,5 +170,37 @@ export class OsmosisQueriesImpl {
       chainId,
       chainGetter
     );
+
+    this.querySuperfluidPools = new ObservableQuerySuperfluidPools(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+    this.querySuperfluidDelegations = new ObservableQuerySuperfluidDelegations(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+    this.querySuperfluidUndelegations =
+      new ObservableQuerySuperfluidUndelegations(kvStore, chainId, chainGetter);
+    this.querySuperfluidParams = new ObservableQuerySuperfluidParams(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+    this.querySuperfluidAssetMultiplier =
+      new ObservableQuerySuperfluidAssetMultiplier(
+        kvStore,
+        chainId,
+        chainGetter
+      );
+    this.querySuperfluidOsmoEquivalent =
+      new ObservableQuerySuperfluidOsmoEquivalent(
+        chainId,
+        chainGetter,
+        this.querySuperfluidParams,
+        this.querySuperfluidAssetMultiplier,
+        this.queryGammPools
+      );
   }
 }
