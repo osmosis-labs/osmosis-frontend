@@ -256,6 +256,9 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
             poolId={pool.id}
             poolAssets={pool.poolAssets.map((asset) => asset.amount.currency)}
             poolMetrics={metrics}
+            isSuperfluid={queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+              pool.id
+            )}
           />
         ))}
       </>
