@@ -344,7 +344,7 @@ export class RootStore {
 					),
 					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'osmosis',
-				}
+				},
 			]
 		);
 
@@ -1466,7 +1466,7 @@ export class RootStore {
 						coinDecimals: 6,
 					},
 				],
-			}
+			},
 		]);
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
