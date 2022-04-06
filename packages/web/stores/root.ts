@@ -10,7 +10,12 @@ import {
   QueriesStore,
 } from "@keplr-wallet/stores";
 import { EmbedChainInfos, IBCAssetInfos } from "../config";
-import { IndexedDBKVStore, LocalKVStore } from "@keplr-wallet/common";
+import {
+  IndexedDBKVStore,
+  KVStore,
+  LocalKVStore,
+  MemoryKVStore,
+} from "@keplr-wallet/common";
 import EventEmitter from "eventemitter3";
 import { ChainStore, ChainInfoWithExplorer } from "./chain";
 import {
@@ -66,12 +71,28 @@ export class RootStore {
       };
     })();
 
+    const indexedDBKVStoreCreator = (prefix: string): KVStore => {
+      if (typeof window === "undefined") {
+        // In server-side (nodejs), use memory kv store (volatile kv store).
+        return new MemoryKVStore(prefix);
+      }
+      return new IndexedDBKVStore(prefix);
+    };
+
+    const localStorageKVStoreCreator = (prefix: string): KVStore => {
+      if (typeof window === "undefined") {
+        // In server-side (nodejs), use memory kv store (volatile kv store).
+        return new MemoryKVStore(prefix);
+      }
+      return new LocalKVStore(prefix);
+    };
+
     this.queriesExternalStore = new QueriesExternalStore(
-      new IndexedDBKVStore("store_web_queries")
+      indexedDBKVStoreCreator("store_web_queries")
     );
 
     this.queriesStore = new QueriesStore(
-      new IndexedDBKVStore("store_web_queries"),
+      indexedDBKVStoreCreator("store_web_queries"),
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
@@ -94,7 +115,7 @@ export class RootStore {
     );
 
     this.priceStore = new CoinGeckoPriceStore(
-      new IndexedDBKVStore("store_web_prices"),
+      indexedDBKVStoreCreator("store_web_prices"),
       {
         usd: {
           currency: "usd",
@@ -107,7 +128,7 @@ export class RootStore {
     );
 
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
-      new IndexedDBKVStore("ibc_transfer_history"),
+      indexedDBKVStoreCreator("ibc_transfer_history"),
       this.chainStore
     );
 
@@ -122,7 +143,7 @@ export class RootStore {
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
     this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar(
-      new LocalKVStore("store_ibc_currency_registrar"),
+      localStorageKVStoreCreator("store_ibc_currency_registrar"),
       3 * 24 * 3600 * 1000, // 3 days
       this.chainStore,
       this.accountStore,
