@@ -10,11 +10,14 @@ import { InputBox } from "../components/input";
 import { Error } from "../components/alert";
 import { ModalBase, ModalBaseProps } from "./base";
 
-// TODO: add SFS UI
-
 export const LockTokensModal: FunctionComponent<
   ModalBaseProps & {
-    gauges: { id: string; duration: Duration; apr: RatePretty }[];
+    gauges: {
+      id: string;
+      duration: Duration;
+      apr: RatePretty;
+      isSuperfluid?: boolean;
+    }[];
     amountConfig: ObservableAmountConfig;
     availableToken?: CoinPretty;
     onLockToken: (gaugeId: string) => void;
@@ -31,13 +34,14 @@ export const LockTokensModal: FunctionComponent<
         <div className="flex flex-col gap-2.5">
           <span className="subitle1">Unbonding period</span>
           <div className="flex gap-4">
-            {gauges.map(({ id, duration, apr }, index) => (
+            {gauges.map(({ id, duration, apr, isSuperfluid }, index) => (
               <LockupItem
                 key={id}
                 duration={duration.humanize()}
                 isSelected={index === selectedGaugeIndex}
                 onSelect={() => setSelectedGaugeIndex(index)}
                 apr={apr.maxDecimals(2).toString()}
+                isSuperfluidEnabled={isSuperfluid}
               />
             ))}
           </div>
@@ -129,20 +133,20 @@ const LockupItem: FunctionComponent<{
         <div className="w-full flex justify-between md:flex-col md:items-baseline">
           <div className="flex gap-1.5 items-center mx-auto">
             <h5>{duration}</h5>
+          </div>
+          <div className="w-full flex text-center place-content-center gap-2">
+            <p className="md:mt-1 text-secondary-200 text-sm md:text-base">
+              {apr}
+            </p>
             {isSuperfluidEnabled && (
-              <div className="w-6 h-6">
-                <Image
-                  alt=""
-                  src={"/public/assets/Icons/superfluid-osmo.svg"}
-                  height={10}
-                  width={10}
-                />
-              </div>
+              <Image
+                alt=""
+                src={"/icons/superfluid-osmo.svg"}
+                height={20}
+                width={20}
+              />
             )}
           </div>
-          <p className="md:mt-1 text-secondary-200 text-sm md:text-base mx-auto">
-            {apr}
-          </p>
         </div>
       </div>
     </div>

@@ -355,7 +355,7 @@ const Pool: FunctionComponent = observer(() => {
               : undefined
           }
           gauges={queryOsmosis.queryLockableDurations.lockableDurations.map(
-            (duration, index) => {
+            (duration, index, durations) => {
               const apr = pool
                 ? queryOsmosis.queryIncentivizedPools.computeAPY(
                     pool.id,
@@ -369,6 +369,10 @@ const Pool: FunctionComponent = observer(() => {
                 id: index.toString(),
                 apr: apr ?? new RatePretty(0),
                 duration,
+                isSuperfluid:
+                  pool &&
+                  index === durations.length - 1 &&
+                  queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id),
               };
             }
           )}
