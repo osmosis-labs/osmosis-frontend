@@ -217,7 +217,7 @@ const Pool: FunctionComponent = observer(() => {
           ),
         ];
       }
-      return [undefined, undefined, undefined];
+      return [undefined, undefined];
     }, [pool, chainStore, chainId, bech32Address, queriesStore, queryOsmosis]);
 
   return (
