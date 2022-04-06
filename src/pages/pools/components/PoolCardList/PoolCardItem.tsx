@@ -111,9 +111,8 @@ export const PoolCardItem = observer(function PoolCardItem(
 const PoolCardItemContainer = styled.li`
 	cursor: pointer;
 	padding: 19px;
-	background-color: rgba(45, 39, 85, 1);
+	background-color: #2e2c2f;
 	border-radius: 0.75rem;
-
 	@media (min-width: 768px) {
 		padding: 23px 29px;
 	}
