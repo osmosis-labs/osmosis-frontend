@@ -151,7 +151,7 @@ module.exports = {
 			surface: '#282421',
 			card: '#2E2C2F',
 			cardInner: '#3C356D',
-			cardInfoPlaceholder: '#3E3866',
+			cardInfoPlaceholder: '#383532',
 			iconDefault: '#8E867B',
 			error: '#E91F4F',
 			enabledGold: '#C4A46A',
