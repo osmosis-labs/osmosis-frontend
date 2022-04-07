@@ -20,7 +20,7 @@ interface PoolFinancialDataRes {
 
 export async function getPoolFinancialData() {
 	const res = await axios.get<{ [poolId: string]: [PoolFinancialDataRes, PoolFinancialDataRes] }>(
-		`${IMPERATOR_API_DOMAIN}/search/v1/pools`
+		`${IMPERATOR_API_DOMAIN}/pools/v2/all?low_liquidity=true`
 	);
 	return res.data;
 }

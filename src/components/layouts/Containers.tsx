@@ -47,12 +47,10 @@ export const PoolCardListGridContainer = styled.ul`
 	height: 100%;
 	gap: 16px;
 	grid-template-columns: repeat(1, minmax(0, 1fr));
-
 	${onLgWidth} {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 35px;
 	}
-
 	${on2XlWidth} {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 35px;
@@ -64,7 +62,6 @@ export const WellContainer = styled.div`
 	border-radius: 0.75rem;
 	background-color: ${colorPrimary};
 	padding: 18px 24px;
-
 	@media (min-width: 768px) {
 		padding: 24px 30px;
 	}

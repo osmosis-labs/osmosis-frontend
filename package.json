@@ -7,6 +7,7 @@
 		"build:docker": "rm -rf ./prod && yarn build && sh ./scripts/build-docker.sh",
 		"serve": "http-server --address 0.0.0.0 --port 8080 --proxy http://localhost:8080? ./prod",
 		"dev": "cross-env NODE_ENV=development webpack-dev-server",
+		"dev:localnet": "cross-env NODE_ENV=development LOCALNET=true webpack-dev-server",
 		"dev:analyzer": "cross-env NODE_ENV=development ANALYZER=true webpack",
 		"test": "jest --passWithNoTests --runInBand",
 		"test:rand-pools": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node ./src/stores/rand-pools.ts",
