@@ -59,9 +59,17 @@ export const SidebarBottom: FunctionComponent = observer(() => {
 					}}
 				/>
 			)}
-			<p className="py-2 text-xs text-white-high text-left flex items-center">
+			<p className="py-2 text-sm text-white-high text-left flex items-center">
 				<a href="" target="_blank" rel="noreferrer">
-					Learn more about the Osmosis Frontier
+					Learn more about the{' '}
+					<span
+						style={{
+							background: '-webkit-linear-gradient(#F8C259, #B38203)',
+							WebkitBackgroundClip: 'text',
+							WebkitTextFillColor: 'transparent',
+						}}>
+						Osmosis Frontier
+					</span>
 				</a>
 				<IconExternalLink />
 			</p>
