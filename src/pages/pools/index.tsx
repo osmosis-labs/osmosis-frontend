@@ -8,6 +8,7 @@ import { AllPools } from './components/AllPools';
 import { LabsOverview } from './components/LabsOverview';
 import { ExtraIncentivizedPools } from 'src/pages/pools/components/ExtraIncentives';
 import { useFilteredExtraIncentivePools } from 'src/pages/pools/components/ExtraIncentives/hook';
+import * as c from 'src/emotionStyles/colors';
 
 export const PoolsPage = observer(function PoolsPage() {
 	const extraIncentivePools = useFilteredExtraIncentivePools();
@@ -50,7 +51,6 @@ const OverviewSection = styled(CenterSection)`
 	background-size: cover;
 	background-position-x: right;
 	padding: 84px 20px 20px;
-
 	@media (min-width: 768px) {
 		background: url('/public/assets/backgrounds/osmosis-pool-machine.png') no-repeat;
 		background-size: contain;
@@ -60,16 +60,15 @@ const OverviewSection = styled(CenterSection)`
 `;
 
 const MyPoolsSection = styled(CenterSection)`
-	background-color: #1c173c;
+	background-color: ${c.colorPrimaryDark};
 	padding: 24px 20px;
-
 	@media (min-width: 768px) {
 		padding: 40px;
 	}
 `;
 
 const IncentivizedPoolsSection = styled(CenterSection)`
-	background-color: rgba(35, 29, 75, 1);
+	background-color: ${c.colorPrimaryDarker};
 	padding: 24px 20px;
 
 	@media (min-width: 768px) {
@@ -77,7 +76,7 @@ const IncentivizedPoolsSection = styled(CenterSection)`
 `;
 
 const AllPoolsSection = styled(CenterSection)`
-	background-color: #1c173c;
+	background-color: ${c.colorPrimaryDark};
 	padding: 24px 0;
 
 	@media (min-width: 768px) {
