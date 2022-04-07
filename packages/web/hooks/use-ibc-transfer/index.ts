@@ -159,7 +159,7 @@ export function useIbcTransfer({
           contractTransfer: ics20ContractAddress
             ? {
                 contractAddress: currency.originCurrency["contractAddress"],
-                cosmwasmAccount: counterpartyAccount, // TODO: add cosmwasm to Account type
+                cosmwasmAccount: counterpartyAccount,
                 ics20ContractAddress: ics20ContractAddress,
               }
             : undefined,

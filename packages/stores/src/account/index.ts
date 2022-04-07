@@ -161,10 +161,9 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
-          // TODO: Refresh the pools list.
-
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
+          queries.osmosis.queryGammPools.waitResponse();
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
@@ -404,14 +403,12 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
-          // TODO: Refresh the pools list.
-
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
+          queries.osmosis.queryGammPools.waitResponse();
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
-              // TODO: Explicitly refresh the share expected to be minted and provided to the pool.
               bal.fetch();
             });
 
