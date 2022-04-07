@@ -59,6 +59,15 @@ export const IBCAssetInfos: IBCAsset[] = [
     coinMinimalDenom: "uxprt",
   },
   {
+    counterpartyChainId: "core-1",
+    sourceChannelId: "channel-4",
+    destChannelId: "channel-6",
+    coinMinimalDenom:
+      "ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444",
+    ibcTransferPathDenom:
+      "transfer/channel-38/gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006",
+  },
+  {
     counterpartyChainId: "columbus-5",
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
@@ -502,6 +511,14 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         coinDecimals: 6,
         coinGeckoId: "persistence",
         coinImageUrl: "/tokens/xprt.png",
+      },
+      {
+        coinDenom: "PSTAKE",
+        coinMinimalDenom:
+          "ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444",
+        coinDecimals: 18,
+        coinGeckoId: "pool:pstake",
+        coinImageUrl: "/tokens/pstake.png",
       },
     ],
     feeCurrencies: [
