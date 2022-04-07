@@ -17,7 +17,7 @@ export const FrontierBanner: FunctionComponent<{ onClose: () => void }> = ({ onC
 					<h6>You{"'"}ve entered the Osmosis Frontier</h6>
 					<div className="text-xs font-body flex gap-1">
 						You{"'"}re viewing all permissionless assets.{' '}
-						<a className="flex gap-2 items-center">
+						<a className="flex gap-2 items-center" href="https://app.osmosis.zone/" target="_self">
 							Click here to return to the main app. <IconExternalLink />
 						</a>
 					</div>
