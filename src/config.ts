@@ -1000,15 +1000,7 @@ export const IBCAssetInfos: {
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 	{
-		counterpartyChainId: 'injective-1',
-		sourceChannelId: 'channel-122',
-		destChannelId: 'channel-8',
-		coinMinimalDenom: 'inj',
-		depositUrlOverride: 'https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj',
-		withdrawUrlOverride: 'https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj',
-  },
-  {
-    counterpartyChainId: 'carbon-1',
+		counterpartyChainId: 'carbon-1',
 		sourceChannelId: 'channel-188',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'swth',
@@ -1033,6 +1025,14 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-47',
 		coinMinimalDenom: 'cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
+	{
+		counterpartyChainId: 'injective-1',
+		sourceChannelId: 'channel-122',
+		destChannelId: 'channel-8',
+		coinMinimalDenom: 'inj',
+		depositUrlOverride: 'https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj',
+		withdrawUrlOverride: 'https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj',
 	},
 	{
 		counterpartyChainId: 'gravity-bridge-3',
@@ -2553,7 +2553,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'tether',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.png',
 			},
-
 		],
 		feeCurrencies: [
 			{
@@ -2646,7 +2645,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/certik/txs/{txHash}',
 	},
-  {
+	{
 		rpc: 'https://public.api.injective.network',
 		rest: 'https://public.lcd.injective.network',
 		chainId: 'injective-1',
