@@ -1027,6 +1027,14 @@ export const IBCAssetInfos: {
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 	{
+		counterpartyChainId: 'injective-1',
+		sourceChannelId: 'channel-122',
+		destChannelId: 'channel-8',
+		coinMinimalDenom: 'inj',
+		depositUrlOverride: 'https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj',
+		withdrawUrlOverride: 'https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj',
+	},
+	{
 		counterpartyChainId: 'gravity-bridge-3',
 		sourceChannelId: 'channel-144',
 		destChannelId: 'channel-10',
@@ -2545,7 +2553,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'tether',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.png',
 			},
-
 		],
 		feeCurrencies: [
 			{
@@ -2637,6 +2644,49 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/certik/txs/{txHash}',
+	},
+	{
+		rpc: 'https://public.api.injective.network',
+		rest: 'https://public.lcd.injective.network',
+		chainId: 'injective-1',
+		chainName: 'Injective',
+		stakeCurrency: {
+			coinDenom: 'INJ',
+			coinMinimalDenom: 'inj',
+			coinDecimals: 18,
+			coinGeckoId: 'injective-protocol',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/inj.svg',
+		},
+		bip44: {
+			coinType: 60,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('inj'),
+		currencies: [
+			{
+				coinDenom: 'INJ',
+				coinMinimalDenom: 'inj',
+				coinDecimals: 18,
+				coinGeckoId: 'injective-protocol',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/inj.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'INJ',
+				coinMinimalDenom: 'inj',
+				coinDecimals: 18,
+				coinGeckoId: 'injective-protocol',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/inj.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0.0005,
+			average: 0.0007,
+			high: 0.0009,
+		},
+		coinType: 60,
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://explorer.injective.network/transaction/{txHash}',
 	},
 	{
 		rpc: 'https://rpc.cerberus.zone:26657',
