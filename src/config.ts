@@ -734,6 +734,12 @@ export const IBCAssetInfos: {
 
 	// If the asset is from ics20-cw20
 	ibcTransferPathDenom?: string;
+
+	// If the asset requires a custom deposit external link
+	depositUrlOverride?: string;
+
+	// If the asset requires a custom withdrawal external link
+	withdrawUrlOverride?: string;
 }[] = [
 	{
 		counterpartyChainId: 'cosmoshub-4',
