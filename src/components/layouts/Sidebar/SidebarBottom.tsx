@@ -59,7 +59,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
 					}}
 				/>
 			)}
-			<p className="py-2 text-sm text-white-high text-left flex items-center">
+			<p className="py-2 text-base text-white-high text-left flex items-center">
 				<a href="" target="_blank" rel="noreferrer">
 					Learn more about the{' '}
 					<span
@@ -67,11 +67,14 @@ export const SidebarBottom: FunctionComponent = observer(() => {
 							background: '-webkit-linear-gradient(#F8C259, #B38203)',
 							WebkitBackgroundClip: 'text',
 							WebkitTextFillColor: 'transparent',
+							fontWeight: 700,
 						}}>
 						Osmosis Frontier
 					</span>
 				</a>
-				<IconExternalLink />
+				<div className="w-[12px]">
+					<IconExternalLink />
+				</div>
 			</p>
 		</div>
 	);

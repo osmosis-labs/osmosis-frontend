@@ -54,21 +54,12 @@ const Background: FunctionComponent = () => {
 				{windowSize.width >= 1350 ? (
 					<React.Fragment>
 						<ProgressiveSVGImage
-							lowResXlinkHref="/public/assets/backgrounds/osmosis-home-bg-low.png"
-							xlinkHref="/public/assets/backgrounds/osmosis-home-bg.png"
-							x="56"
-							y="97"
+							lowResXlinkHref="/public/assets/backgrounds/Cowboy-Woz-lowres.png"
+							xlinkHref="/public/assets/backgrounds/Cowboy-Woz.png"
+							x="0"
+							y="175"
 							width="578.7462"
 							height="725.6817"
-						/>
-						<rect x="-3000" y="778" width="8660" height="244" fill="#120644" />
-						<ProgressiveSVGImage
-							lowResXlinkHref="/public/assets/backgrounds/osmosis-home-fg-low.png"
-							xlinkHref="/public/assets/backgrounds/osmosis-home-fg.png"
-							x="61"
-							y="602"
-							width="448.8865"
-							height="285.1699"
 						/>
 					</React.Fragment>
 				) : null}
@@ -92,12 +83,11 @@ export const MainPage: FunctionComponent = () => {
 
 const PageContainer = styled.div`
 	width: 100%;
-	background-image: url('/public/assets/backgrounds/osmosis-home-bg-pattern.svg');
+	background-image: url('/public/assets/backgrounds/home-bg-pattern-frontier.png');
 	background-repeat: repeat-x;
 	background-size: cover;
 	overflow: auto;
 	position: relative;
-
 	@media (min-width: 768px) {
 		background-color: ${colorPrimaryDarker};
 	}
@@ -110,7 +100,6 @@ const TradeClipboardContainer = styled.div`
 	height: 100%;
 	display: flex;
 	align-items: center;
-
 	@media (min-width: 768px) {
 		margin: 0;
 		max-width: unset;
@@ -130,7 +119,6 @@ const TradePosition = styled.div`
 	padding: 96px 20px 64px;
 	z-index: 3;
 	width: 100%;
-
 	@media (min-width: 768px) {
 		position: absolute;
 		padding: 0;
@@ -138,7 +126,6 @@ const TradePosition = styled.div`
 		left: 50%;
 		transform: translateX(-50%);
 	}
-
 	@media (min-width: 1350px) {
 		--tradeMinLeft: calc(920 * (100vh / 1080));
 		--tradePositionLeft: calc((100vw - 206px) * 0.8 - 520px);
