@@ -2545,7 +2545,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'tether',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.png',
 			},
-
 		],
 		feeCurrencies: [
 			{
@@ -2716,5 +2715,82 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://scan.carbon.network/transaction/{txHash}?net=main',
+	},
+	{
+		rpc: 'https://gravitychain.io:26657',
+		rest: 'https://gravitychain.io:1317',
+		chainId: 'gravity-bridge-3',
+		chainName: 'Gravity Bridge',
+		stakeCurrency: {
+			coinDenom: 'GRAV',
+			coinMinimalDenom: 'ugraviton',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:ugraviton',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('gravity'),
+		currencies: [
+			{
+				coinDenom: 'GRAV',
+				coinMinimalDenom: 'ugraviton',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:ugraviton',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
+			},
+			{
+				coinDenom: 'PSTAKE',
+				coinMinimalDenom: 'gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006',
+				coinDecimals: 18,
+				coinGeckoId: 'pstake-finance',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/pstake.png',
+			},
+			{
+				coinDenom: 'gWETH',
+				coinMinimalDenom: 'gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+				coinDecimals: 18,
+				coinGeckoId: 'ethereum',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/eth.png',
+			},
+			{
+				coinDenom: 'gUSDC',
+				coinMinimalDenom: 'gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+				coinDecimals: 6,
+				coinGeckoId: 'usd-coin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.png',
+			},
+			{
+				coinDenom: 'gDAI',
+				coinMinimalDenom: 'gravity0x6B175474E89094C44Da98b954EedeAC495271d0F',
+				coinDecimals: 18,
+				coinGeckoId: 'dai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.png',
+			},
+			{
+				coinDenom: 'gUSDT',
+				coinMinimalDenom: 'gravity0xdAC17F958D2ee523a2206206994597C13D831ec7',
+				coinDecimals: 6,
+				coinGeckoId: 'tether',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'GRAV',
+				coinMinimalDenom: 'ugraviton',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:ugraviton',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0,
+			average: 0,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/gravity-bridge/txs/{txHash}',
 	},
 ];
