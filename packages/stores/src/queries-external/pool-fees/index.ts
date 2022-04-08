@@ -1,10 +1,9 @@
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
-
 import { KVStore } from "@keplr-wallet/common";
 import { CoinGeckoPriceStore } from "@keplr-wallet/stores";
-import { Dec, PricePretty } from "@keplr-wallet/unit";
-
+import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { pow } from "@osmosis-labs/math";
 import { ObservablePool } from "../../queries/pools";
 import { ObservableQueryExternal } from "../store";
 import { ObservablePoolWithFeeMetrics, PoolFeesMetrics } from "./types";
@@ -90,6 +89,32 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<{
         feesSpent7d,
         feesPercentage,
       };
+    }
+  );
+
+  /** Get pool non-incentivized return from fees based on past 7d of activity, compounded. */
+  readonly get7dPoolFeeApy = computedFn(
+    (
+      pool: ObservablePoolWithFeeMetrics,
+      priceStore: CoinGeckoPriceStore
+    ): RatePretty => {
+      const avgDayFeeRevenue = new Dec(
+        pool.feesSpent7d.toDec().toString(),
+        6
+      ).quo(new Dec(7));
+      const poolTVL = pool.pool.computeTotalValueLocked(priceStore).toDec();
+
+      if (poolTVL.equals(new Dec(0))) {
+        return new RatePretty(0);
+      }
+      const percentRevenue = avgDayFeeRevenue.quo(poolTVL);
+      const dailyRate = new Dec(1).add(percentRevenue);
+      const rate = pow(dailyRate, new Dec(365));
+
+      return new RatePretty(rate)
+        .sub(new Dec(1))
+        .mul(new Dec(2))
+        .moveDecimalPointLeft(2);
     }
   );
 }

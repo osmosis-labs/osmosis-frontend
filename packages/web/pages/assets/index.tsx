@@ -178,7 +178,13 @@ const PoolCards: FunctionComponent<{
 
 const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
   ({ poolIds }) => {
-    const { chainStore, queriesStore, priceStore, accountStore } = useStore();
+    const {
+      chainStore,
+      queriesStore,
+      queriesExternalStore,
+      priceStore,
+      accountStore,
+    } = useStore();
     const queriesOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis;
     const { bech32Address } = accountStore.getAccount(
       chainStore.osmosis.chainId
@@ -227,8 +233,21 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                   ),
                 }
               : {
-                  label: "Fee APR",
-                  value: "", // TODO: add fee APR from imperator
+                  label: "Fee APY",
+                  value: (() => {
+                    const queriesExternal = queriesExternalStore.get();
+                    const poolWithFeeMetrics =
+                      queriesExternal.queryGammPoolFeeMetrics.makePoolWithFeeMetrics(
+                        pool,
+                        priceStore
+                      );
+                    return queriesExternal.queryGammPoolFeeMetrics.get7dPoolFeeApy(
+                      poolWithFeeMetrics,
+                      priceStore
+                    );
+                  })()
+                    .maxDecimals(2)
+                    .toString(),
                 },
             {
               label: "Pool Liquidity",
