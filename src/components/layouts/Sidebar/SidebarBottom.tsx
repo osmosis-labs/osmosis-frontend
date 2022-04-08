@@ -59,9 +59,9 @@ export const SidebarBottom: FunctionComponent = observer(() => {
 					}}
 				/>
 			)}
-			<p className="py-2 text-base text-white-high text-left flex items-center">
+			<p className="py-2 text-base text-white-high text-left flex items-center place-content-evenly">
 				<a href="" target="_blank" rel="noreferrer">
-					Learn more <br /> about the <br />
+					Learn More <br /> About the <br />
 					<span
 						style={{
 							background: '-webkit-linear-gradient(#F8C259, #B38203)',
