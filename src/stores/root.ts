@@ -210,10 +210,10 @@ export class RootStore {
 				},
 				{
 					alternativeCoinId: 'pool:ubtsg',
-					poolId: '574',
+					poolId: '573',
 					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-73' }], 'ubtsg'),
-					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
-					destCoinId: 'cosmos',
+					spotPriceDestDenom: 'uosmo',
+					destCoinId: 'osmosis',
 				},
 				{
 					alternativeCoinId: 'pool:uxki',
@@ -331,6 +331,16 @@ export class RootStore {
 					spotPriceSourceDenom: DenomHelper.ibcDenom(
 						[{ portId: 'transfer', channelId: 'channel-169' }],
 						'cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z'
+					),
+					spotPriceDestDenom: 'uosmo',
+					destCoinId: 'osmosis',
+				},
+				{
+					alternativeCoinId: 'pool:rac',
+					poolId: '669',
+					spotPriceSourceDenom: DenomHelper.ibcDenom(
+						[{ portId: 'transfer', channelId: 'channel-169' }],
+						'cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa'
 					),
 					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'osmosis',
@@ -1260,6 +1270,21 @@ export class RootStore {
 				],
 			},
 			{
+				poolId: '638',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-171' }], 'udarc'),
+						coinDenom: 'DARC',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
 				poolId: '631',
 				currencies: [
 					{
@@ -1424,6 +1449,90 @@ export class RootStore {
 					},
 				],
 			},
+			{
+				poolId: '669',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom(
+							[{ portId: 'transfer', channelId: 'channel-169' }],
+							'cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa'
+						),
+						coinDenom: 'RAC',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '633',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-144' }], 'gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'),
+						coinDenom: 'USDC',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '634',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-144' }], 'gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'),
+						coinDenom: 'WETH',
+						coinDecimals: 18,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '635',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-144' }], 'gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'),
+						coinDenom: 'USDC',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
+						coinDenom: 'UST',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-144' }], 'gravity0x6B175474E89094C44Da98b954EedeAC495271d0F'),
+						coinDenom: 'DAI',
+						coinDecimals: 18,
+					},
+				],
+			},
+			{
+				poolId: '670',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-144' }], 'gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'),
+						coinDenom: 'USDC',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+				],
+			},
+
 		]);
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);

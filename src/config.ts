@@ -299,29 +299,29 @@ export const ExtraGaugeInPool: {
 	],
 	'573': [
 		{
-			gaugeId: '2030',
+			gaugeId: '2582',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '2031',
+			gaugeId: '2583',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '2032',
+			gaugeId: '2584',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 	],
 	'574': [
 		{
-			gaugeId: '2033',
+			gaugeId: '2585',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '2034',
+			gaugeId: '2586',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '2035',
+			gaugeId: '2587',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 	],
@@ -411,15 +411,15 @@ export const ExtraGaugeInPool: {
 	],
 	'592': [
 		{
-			gaugeId: '2036',
+			gaugeId: '2588',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '2037',
+			gaugeId: '2589',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '2038',
+			gaugeId: '2590',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 	],
@@ -483,15 +483,7 @@ export const ExtraGaugeInPool: {
 	],
 	'604': [
 		{
-			gaugeId: '1995',
-			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
-		},
-		{
-			gaugeId: '1996',
-			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
-		},
-		{
-			gaugeId: '1997',
+			gaugeId: '2912',
 			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
 		},
 	],
@@ -525,15 +517,7 @@ export const ExtraGaugeInPool: {
 	],
 	'611': [
 		{
-			gaugeId: '1998',
-			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
-		},
-		{
-			gaugeId: '1999',
-			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
-		},
-		{
-			gaugeId: '2000',
+			gaugeId: '2913',
 			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
 		},
 	],
@@ -651,15 +635,15 @@ export const ExtraGaugeInPool: {
 	],
 	'641': [
 		{
-			gaugeId: '2129',
+			gaugeId: '2925',
 			denom: 'ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C',
 		},
 		{
-			gaugeId: '2130',
+			gaugeId: '2926',
 			denom: 'ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C',
 		},
 		{
-			gaugeId: '2131',
+			gaugeId: '2927',
 			denom: 'ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C',
 		},
 	],
@@ -679,15 +663,15 @@ export const ExtraGaugeInPool: {
 	],
 	'643': [
 		{
-			gaugeId: '2266',
+			gaugeId: '2928',
 			denom: 'ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C',
 		},
 		{
-			gaugeId: '2267',
+			gaugeId: '2929',
 			denom: 'ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C',
 		},
 		{
-			gaugeId: '2268',
+			gaugeId: '2930',
 			denom: 'ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C',
 		},
 	],
@@ -713,15 +697,15 @@ export const ExtraGaugeInPool: {
 	],
 	'662': [
 		{
-			gaugeId: '2554',
+			gaugeId: '2591',
 			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
 		},
 		{
-			gaugeId: '2555',
+			gaugeId: '2592',
 			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
 		},
 		{
-			gaugeId: '2556',
+			gaugeId: '2593',
 			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
 		},
 	],
@@ -792,11 +776,13 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-42',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'ujuno',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-169',
 		destChannelId: 'channel-47',
+		isUnstable: true,
 		coinMinimalDenom: 'cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
@@ -1009,6 +995,7 @@ export const IBCAssetInfos: {
 		counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-169',
 		destChannelId: 'channel-47',
+		isUnstable: true,
 		coinMinimalDenom: 'cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
@@ -1036,8 +1023,40 @@ export const IBCAssetInfos: {
 		counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-169',
 		destChannelId: 'channel-47',
+		isUnstable: true,
 		coinMinimalDenom: 'cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
+	{
+		counterpartyChainId: 'juno-1',
+		sourceChannelId: 'channel-169',
+		destChannelId: 'channel-47',
+		coinMinimalDenom: 'cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa',
+		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
+	{
+		counterpartyChainId: 'gravity-bridge-3',
+		sourceChannelId: 'channel-144',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+	},
+	{
+		counterpartyChainId: 'gravity-bridge-3',
+		sourceChannelId: 'channel-144',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+	},
+	{
+		counterpartyChainId: 'gravity-bridge-3',
+		sourceChannelId: 'channel-144',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'gravity0x6B175474E89094C44Da98b954EedeAC495271d0F',
+	},
+	{
+		counterpartyChainId: 'gravity-bridge-3',
+		sourceChannelId: 'channel-144',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'gravity0xdAC17F958D2ee523a2206206994597C13D831ec7',
 	},
 ];
 
@@ -1150,11 +1169,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 						coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
 					},
 				],
-				gasPriceStep: {
-					low: 0,
-					average: 0,
-					high: 0.025,
-				},
 				features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 				explorerUrlToTx: 'https://www.mintscan.io/osmosis/txs/{txHash}',
 		  },
@@ -1660,6 +1674,14 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'pool:hope',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/hope.svg',
 			},
+			{
+				type: 'cw20',
+				contractAddress: 'juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa',
+				coinDenom: 'RAC',
+				coinMinimalDenom: 'cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa:RAC',
+				coinDecimals: 6,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/rac.svg',
+			},
 		],
 		feeCurrencies: [
 			{
@@ -1946,7 +1968,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'BOOT',
 			coinMinimalDenom: 'boot',
 			coinDecimals: 0,
-			// coinGeckoId: 'pool:boot',
+			coinGeckoId: 'bostrom',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/boot.png',
 		},
 		bip44: {
@@ -1958,7 +1980,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'BOOT',
 				coinMinimalDenom: 'boot',
 				coinDecimals: 0,
-				// coinGeckoId: 'pool:boot',
+				coinGeckoId: 'bostrom',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/boot.png',
 			},
 		],
@@ -1967,7 +1989,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'BOOT',
 				coinMinimalDenom: 'boot',
 				coinDecimals: 0,
-				// coinGeckoId: 'pool:boot',
+				coinGeckoId: 'bostrom',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/boot.png',
 			},
 		],
@@ -2503,6 +2525,35 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'pstake-finance',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/pstake.png',
 			},
+			{
+				coinDenom: 'WETH',
+				coinMinimalDenom: 'gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+				coinDecimals: 18,
+				coinGeckoId: 'ethereum',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/eth.png',
+			},
+			{
+				coinDenom: 'USDC',
+				coinMinimalDenom: 'gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+				coinDecimals: 6,
+				coinGeckoId: 'usd-coin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.png',
+			},
+			{
+				coinDenom: 'DAI',
+				coinMinimalDenom: 'gravity0x6B175474E89094C44Da98b954EedeAC495271d0F',
+				coinDecimals: 18,
+				coinGeckoId: 'dai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.png',
+			},
+			{
+				coinDenom: 'USDT',
+				coinMinimalDenom: 'gravity0xdAC17F958D2ee523a2206206994597C13D831ec7',
+				coinDecimals: 6,
+				coinGeckoId: 'tether',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.png',
+			},
+
 		],
 		feeCurrencies: [
 			{
@@ -2668,7 +2719,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'CRBRUS',
 				coinMinimalDenom: 'ucrbrus',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:crbrus',
+				coinGeckoId: 'cerberus-2',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
 			},
 		],

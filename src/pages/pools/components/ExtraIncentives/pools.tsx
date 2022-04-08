@@ -109,14 +109,12 @@ const PoolCardItemContainer = styled.li`
 	border-width: 1px;
 	cursor: pointer;
 	padding: 20px;
-	background-color: rgba(45, 39, 85, 1);
+	background-color: #2e2c2f;
 	border-radius: 0.75rem;
 	border-color: transparent;
-
 	&:hover {
 		border-color: rgba(196, 164, 106, 1);
 	}
-
 	@media (min-width: 768px) {
 		padding: 24px 30px;
 	}

@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import utc from 'dayjs/plugin/utc';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -27,6 +27,7 @@ import './styles/index.scss';
 import { Terms } from './terms';
 import { IBCHistoryNotifier } from './provider';
 import { AccountConnectionProvider } from 'src/hooks/account/context';
+import { FrontierBanner } from './components/FrontierBanner';
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
@@ -35,12 +36,15 @@ dayjs.extend(utc);
 const queryClient = new QueryClient();
 
 const Router: FunctionComponent = () => {
+	const [showFrontierBanner, setShowFrontierBanner] = useState(true);
+
 	return (
 		<QueryClientProvider client={queryClient}>
 			<StoreProvider>
 				<ToastProvider>
 					<AccountConnectionProvider>
 						<IBCHistoryNotifier />
+						{showFrontierBanner && <FrontierBanner onClose={() => setShowFrontierBanner(false)} />}
 						<Terms />
 						<div className="md:h-screen bg-background z-0">
 							<BrowserRouter>
