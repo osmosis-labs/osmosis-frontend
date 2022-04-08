@@ -33,6 +33,7 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
               />
               <div className="flex items-center gap-2.5">
                 <InputBox
+                  type="number"
                   inputClassName="text-right text-h6 font-h6 w-32"
                   currentValue={percentage}
                   onInput={(value) => config.setAssetPercentageAt(index, value)}
