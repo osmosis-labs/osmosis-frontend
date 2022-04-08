@@ -34,6 +34,7 @@ const Pool: FunctionComponent = observer(() => {
   const { id: poolId } = router.query;
   const { chainId } = chainStore.osmosis;
 
+  const queryCosmos = queriesStore.get(chainId).cosmos;
   const queryOsmosis = queriesStore.get(chainId).osmosis;
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
   const pool = queryOsmosis.queryGammPools.getPool(poolId as string);
@@ -206,7 +207,6 @@ const Pool: FunctionComponent = observer(() => {
             .getQuerySuperfluidDelegations(bech32Address)
             .getDelegations(poolShareCurrency)
             ?.map(({ validator_address, amount }) => {
-              const queryCosmos = queriesStore.get(chainId).cosmos;
               const queryValidators =
                 queryCosmos.queryValidators.getQueryStatus(
                   Staking.BondStatus.Bonded
@@ -369,10 +369,20 @@ const Pool: FunctionComponent = observer(() => {
                 id: index.toString(),
                 apr: apr ?? new RatePretty(0),
                 duration,
-                isSuperfluid:
+                superfluidApr:
                   pool &&
                   index === durations.length - 1 &&
-                  queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id),
+                  queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id)
+                    ? new RatePretty(
+                        queryCosmos.queryInflation.inflation
+                          .mul(
+                            queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
+                              pool.id
+                            )
+                          )
+                          .moveDecimalPointLeft(2)
+                      )
+                    : undefined,
               };
             }
           )}
@@ -517,11 +527,24 @@ const Pool: FunctionComponent = observer(() => {
                         guage.isFetching ||
                         queryOsmosis.queryIncentivizedPools.isAprFetching
                       }
-                      isSuperfluid={
+                      superfluidApr={
                         superfluid &&
                         superfluid !== "not-superfluid-pool" &&
                         guages &&
                         i === guages.length - 1
+                          ? new RatePretty(
+                              queryCosmos.queryInflation.inflation
+                                .mul(
+                                  queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
+                                    pool.id
+                                  )
+                                )
+                                .moveDecimalPointLeft(2)
+                            )
+                              .maxDecimals(0)
+                              .trim(true)
+                              .toString()
+                          : undefined
                       }
                     />
                   ))}
