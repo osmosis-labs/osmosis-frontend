@@ -1031,6 +1031,22 @@ export const IBCAssetInfos: {
 		withdrawUrlOverride: 'https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj',
 	},
 	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'uusdc',
+		depositUrlOverride: 'https://satellite.axelar.network/?source=ethereum&destination=osmosis&token=usdc',
+		withdrawUrlOverride: 'https://satellite.axelar.network/?source=osmosis&destination=ethereum&token=usdc',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'frax-wei',
+		depositUrlOverride: 'https://satellite.axelar.network/?source=ethereum&destination=osmosis&token=frax',
+		withdrawUrlOverride: 'https://satellite.axelar.network/?source=osmosis&destination=ethereum&token=frax',
+	},
+	{
 		counterpartyChainId: 'gravity-bridge-3',
 		sourceChannelId: 'channel-144',
 		destChannelId: 'channel-10',
@@ -2839,5 +2855,54 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/gravity-bridge/txs/{txHash}',
+	},
+	{
+		rpc: 'https://axelar-rpc.quickapi.com:443',
+		rest: 'https://axelar-lcd.quickapi.com:443',
+		chainId: 'axelar-dojo-1',
+		chainName: 'Axelar',
+		stakeCurrency: {
+			coinDenom: 'AXL',
+			coinMinimalDenom: 'uaxl',
+			coinDecimals: 6,
+			// coinGeckoId: 'pool:uaxl',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/axl.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('gravity'),
+		currencies: [
+			{
+				coinDenom: 'ax-USDC',
+				coinMinimalDenom: 'uusdc',
+				coinDecimals: 6,
+				coinGeckoId: 'usd-coin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.png',
+			},
+			{
+				coinDenom: 'ax-FRAX',
+				coinMinimalDenom: 'frax-wei',
+				coinDecimals: 18,
+				coinGeckoId: 'frax',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/frax.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'AXL',
+				coinMinimalDenom: 'uaxl',
+				coinDecimals: 6,
+				// coinGeckoId: 'pool:uaxl',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/axl.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0.00005,
+			average: 0.00007,
+			high: 0.00009,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://axelarscan.io/tx/${txHash}',
 	},
 ];
