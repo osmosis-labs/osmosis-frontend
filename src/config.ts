@@ -2878,14 +2878,14 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uusdc',
 				coinDecimals: 6,
 				coinGeckoId: 'usd-coin',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.svg',
 			},
 			{
 				coinDenom: 'ax-FRAX',
 				coinMinimalDenom: 'frax-wei',
 				coinDecimals: 18,
 				coinGeckoId: 'frax',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/frax.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/frax.svg',
 			},
 		],
 		feeCurrencies: [
