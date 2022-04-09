@@ -2871,7 +2871,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		bip44: {
 			coinType: 118,
 		},
-		bech32Config: Bech32Address.defaultBech32Config('gravity'),
+		bech32Config: Bech32Address.defaultBech32Config('axelar'),
 		currencies: [
 			{
 				coinDenom: 'ax-USDC',
@@ -2886,6 +2886,20 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 18,
 				coinGeckoId: 'frax',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/frax.svg',
+			},
+			{
+				coinDenom: 'ax-USDT',
+				coinMinimalDenom: 'dai-wei',
+				coinDecimals: 18,
+				coinGeckoId: 'frax',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.svg',
+			},
+			{
+				coinDenom: 'ax-DAI',
+				coinMinimalDenom: 'uusdt',
+				coinDecimals: 6,
+				coinGeckoId: 'frax',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.svg',
 			},
 		],
 		feeCurrencies: [
