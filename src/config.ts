@@ -2933,6 +2933,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			high: 0.00009,
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
-		explorerUrlToTx: 'https://axelarscan.io/tx/${txHash}',
+		explorerUrlToTx: 'https://axelarscan.io/tx/{txHash}',
 	},
 ];
