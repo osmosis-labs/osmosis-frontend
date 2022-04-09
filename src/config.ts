@@ -1599,7 +1599,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 			},
 		],
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'ibc-go', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://www.mintscan.io/juno/txs/{txHash}',
 	},
 	{
