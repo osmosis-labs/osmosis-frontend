@@ -2857,8 +2857,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://www.mintscan.io/gravity-bridge/txs/{txHash}',
 	},
 	{
-		rpc: 'https://axelar-rpc.quickapi.com:443',
-		rest: 'https://axelar-lcd.quickapi.com:443',
+		rpc: 'https://rpc-axelar.keplr.app',
+		rest: 'https://lcd-axelar.keplr.app',
 		chainId: 'axelar-dojo-1',
 		chainName: 'Axelar',
 		stakeCurrency: {
