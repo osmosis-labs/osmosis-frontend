@@ -2906,7 +2906,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			{
 				coinDenom: 'ax-USDT',
 				coinMinimalDenom: 'uusdt',
-				coinDecimals: 18,
+				coinDecimals: 6,
 				coinGeckoId: 'tether',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.svg',
 			},
