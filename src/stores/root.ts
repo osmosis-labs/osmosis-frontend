@@ -1515,11 +1515,6 @@ export class RootStore {
 						coinDecimals: 6,
 					},
 					{
-						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
-						coinDenom: 'UST',
-						coinDecimals: 6,
-					},
-					{
 						coinMinimalDenom: DenomHelper.ibcDenom(
 							[{ portId: 'transfer', channelId: 'channel-144' }],
 							'gravity0x6B175474E89094C44Da98b954EedeAC495271d0F'
