@@ -677,7 +677,7 @@ export const ExtraGaugeInPool: {
 	],
 	'648': [
 		{
-			gaugeId: '2272',
+			gaugeId: '2939',
 			denom: 'ibc/8061A06D3BD4D52C4A28FFECF7150D370393AF0BA661C3776C54FF32836C3961',
 		},
 	],
@@ -734,6 +734,12 @@ export const IBCAssetInfos: {
 
 	// If the asset is from ics20-cw20
 	ibcTransferPathDenom?: string;
+
+	// If the asset requires a custom deposit external link
+	depositUrlOverride?: string;
+
+	// If the asset requires a custom withdrawal external link
+	withdrawUrlOverride?: string;
 }[] = [
 	{
 		counterpartyChainId: 'cosmoshub-4',
@@ -770,13 +776,11 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-42',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'ujuno',
-		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-169',
 		destChannelId: 'channel-47',
-		isUnstable: true,
 		coinMinimalDenom: 'cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
@@ -804,12 +808,6 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-6',
 		coinMinimalDenom: 'ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444',
 		ibcTransferPathDenom: 'transfer/channel-38/gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006',
-	},
-	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'ukrw',
 	},
 	{
 		counterpartyChainId: 'akashnet-2',
@@ -852,12 +850,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-37',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'eeur',
-	},
-	{
-		counterpartyChainId: 'microtick-1',
-		sourceChannelId: 'channel-39',
-		destChannelId: 'channel-16',
-		coinMinimalDenom: 'utick',
 	},
 	{
 		counterpartyChainId: 'likecoin-mainnet-2',
@@ -980,16 +972,9 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'udec',
 	},
 	{
-		counterpartyChainId: 'shentu-2.2',
-		sourceChannelId: 'channel-146',
-		destChannelId: 'channel-8',
-		coinMinimalDenom: 'uctk',
-	},
-	{
 		counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-169',
 		destChannelId: 'channel-47',
-		isUnstable: true,
 		coinMinimalDenom: 'cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
@@ -998,20 +983,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-188',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'swth',
-	},
-	{
-		counterpartyChainId: 'cerberus-chain-1',
-		sourceChannelId: 'channel-212',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'ucrbrus',
-	},
-	{
-		counterpartyChainId: 'juno-1',
-		sourceChannelId: 'channel-169',
-		destChannelId: 'channel-47',
-		isUnstable: true,
-		coinMinimalDenom: 'cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z',
-		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 ];
 
@@ -1200,13 +1171,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'terrausd',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
-			},
-			{
-				coinDenom: 'KRT',
-				coinMinimalDenom: 'ukrw',
-				coinDecimals: 6,
-				coinGeckoId: 'terra-krw',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
 			},
 		],
 		feeCurrencies: [
@@ -1625,15 +1589,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'pool:marble',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/marble.svg',
 			},
-			{
-				type: 'cw20',
-				contractAddress: 'juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z',
-				coinDenom: 'HOPE',
-				coinMinimalDenom: 'cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z:HOPE',
-				coinDecimals: 6,
-				coinGeckoId: 'pool:hope',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/hope.svg',
-			},
 		],
 		feeCurrencies: [
 			{
@@ -1644,45 +1599,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 			},
 		],
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'ibc-go', 'no-legacy-stdTx', 'wasmd_0.24+'],
 		explorerUrlToTx: 'https://www.mintscan.io/juno/txs/{txHash}',
-	},
-	{
-		rpc: 'https://rpc-microtick.keplr.app',
-		rest: 'https://lcd-microtick.keplr.app',
-		chainId: 'microtick-1',
-		chainName: 'Microtick',
-		stakeCurrency: {
-			coinDenom: 'TICK',
-			coinMinimalDenom: 'utick',
-			coinDecimals: 6,
-			coinGeckoId: 'pool:utick',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/tick.svg',
-		},
-		bip44: {
-			coinType: 118,
-		},
-		bech32Config: Bech32Address.defaultBech32Config('micro'),
-		currencies: [
-			{
-				coinDenom: 'TICK',
-				coinMinimalDenom: 'utick',
-				coinDecimals: 6,
-				coinGeckoId: 'pool:utick',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/tick.svg',
-			},
-		],
-		feeCurrencies: [
-			{
-				coinDenom: 'TICK',
-				coinMinimalDenom: 'utick',
-				coinDecimals: 6,
-				coinGeckoId: 'pool:utick',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/tick.svg',
-			},
-		],
-		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://explorer.microtick.zone/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://mainnet-node.like.co/rpc',
@@ -2531,80 +2449,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://explorer.decentr.net/transactions/{txHash}?networkId=mainnet',
-	},
-	{
-		rpc: 'https://shenturpc.certikpowered.info',
-		rest: 'https://azuredragon.noopsbycertik.com',
-		chainId: 'shentu-2.2',
-		chainName: 'Certik',
-		stakeCurrency: {
-			coinDenom: 'CTK',
-			coinMinimalDenom: 'uctk',
-			coinDecimals: 6,
-			coinGeckoId: 'certik',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
-		},
-		bip44: {
-			coinType: 118,
-		},
-		bech32Config: Bech32Address.defaultBech32Config('certik'),
-		currencies: [
-			{
-				coinDenom: 'CTK',
-				coinMinimalDenom: 'uctk',
-				coinDecimals: 6,
-				coinGeckoId: 'certik',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
-			},
-		],
-		feeCurrencies: [
-			{
-				coinDenom: 'CTK',
-				coinMinimalDenom: 'uctk',
-				coinDecimals: 6,
-				coinGeckoId: 'certik',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
-			},
-		],
-		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
-		explorerUrlToTx: 'https://www.mintscan.io/certik/txs/{txHash}',
-	},
-	{
-		rpc: 'https://rpc.cerberus.zone:26657',
-		rest: 'https://api.cerberus.zone:1317',
-		chainId: 'cerberus-chain-1',
-		chainName: 'Cerberus',
-		stakeCurrency: {
-			coinDenom: 'CRBRUS',
-			coinMinimalDenom: 'ucrbrus',
-			coinDecimals: 6,
-			coinGeckoId: 'cerberus-2',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
-		},
-		bip44: {
-			coinType: 118,
-		},
-		bech32Config: Bech32Address.defaultBech32Config('cerberus'),
-		currencies: [
-			{
-				coinDenom: 'CRBRUS',
-				coinMinimalDenom: 'ucrbrus',
-				coinDecimals: 6,
-				coinGeckoId: 'cerberus-2',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
-			},
-		],
-		feeCurrencies: [
-			{
-				coinDenom: 'CRBRUS',
-				coinMinimalDenom: 'ucrbrus',
-				coinDecimals: 6,
-				coinGeckoId: 'cerberus-2',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
-			},
-		],
-		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
-		explorerUrlToTx: 'https://skynetexplorers.com/Cerberus/tx/{txHash}',
 	},
 	{
 		rpc: 'https://tm-api.carbon.network',
