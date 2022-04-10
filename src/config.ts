@@ -2913,7 +2913,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			{
 				coinDenom: 'ax-DAI',
 				coinMinimalDenom: 'dai-wei',
-				coinDecimals: 6,
+				coinDecimals: 18,
 				coinGeckoId: 'dai',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.svg',
 			},
