@@ -337,7 +337,7 @@ export class RootStore {
 				},
 				{
 					alternativeCoinId: 'pool:block',
-					poolId: '652',
+					poolId: '677',
 					spotPriceSourceDenom: DenomHelper.ibcDenom(
 						[{ portId: 'transfer', channelId: 'channel-169' }],
 						'cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq'
@@ -1450,7 +1450,7 @@ export class RootStore {
 				],
 			},
 			{
-				poolId: '652',
+				poolId: '677',
 				currencies: [
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom(
