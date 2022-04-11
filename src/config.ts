@@ -1720,7 +1720,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 			},
 		],
-		features: ['stargate', 'ibc-transfer', 'ibc-go', 'no-legacy-stdTx'],
+		features: ['stargate', 'ibc-transfer', 'ibc-go', 'no-legacy-stdTx', 'wasmd_0.24+'],
 		explorerUrlToTx: 'https://www.mintscan.io/juno/txs/{txHash}',
 	},
 	{
