@@ -2965,7 +2965,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'pool:nanomobix',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/fet.png',
 			},
-            {
+			{
 				coinDenom: 'MOBX',
 				coinMinimalDenom: 'nanomobx',
 				coinDecimals: 9,
