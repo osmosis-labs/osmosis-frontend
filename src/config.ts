@@ -2867,8 +2867,15 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'FET',
 				coinMinimalDenom: 'afet',
 				coinDecimals: 18,
-				coinGeckoId: 'fetch-ai',
+				coinGeckoId: 'pool:nanomobix',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/fet.png',
+			},
+            {
+				coinDenom: 'MOBX',
+				coinMinimalDenom: 'nanomobx',
+				coinDecimals: 9,
+				coinGeckoId: 'fetch-ai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/mobx.png',
 			},
 		],
 		feeCurrencies: [
