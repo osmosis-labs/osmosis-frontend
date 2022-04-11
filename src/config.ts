@@ -1092,6 +1092,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-10',
 		coinMinimalDenom: 'afet',
 	},
+	{
+		counterpartyChainId: 'fetchhub-4',
+		sourceChannelId: 'channel-229',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'nanomobx',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
