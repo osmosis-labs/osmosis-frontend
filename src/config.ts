@@ -299,29 +299,29 @@ export const ExtraGaugeInPool: {
 	],
 	'573': [
 		{
-			gaugeId: '2030',
+			gaugeId: '2582',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '2031',
+			gaugeId: '2583',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '2032',
+			gaugeId: '2584',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 	],
 	'574': [
 		{
-			gaugeId: '2033',
+			gaugeId: '2585',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '2034',
+			gaugeId: '2586',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '2035',
+			gaugeId: '2587',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 	],
@@ -411,15 +411,15 @@ export const ExtraGaugeInPool: {
 	],
 	'592': [
 		{
-			gaugeId: '2036',
+			gaugeId: '2588',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '2037',
+			gaugeId: '2589',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 		{
-			gaugeId: '2038',
+			gaugeId: '2590',
 			denom: 'ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452',
 		},
 	],
@@ -483,15 +483,7 @@ export const ExtraGaugeInPool: {
 	],
 	'604': [
 		{
-			gaugeId: '1995',
-			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
-		},
-		{
-			gaugeId: '1996',
-			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
-		},
-		{
-			gaugeId: '1997',
+			gaugeId: '2912',
 			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
 		},
 	],
@@ -525,15 +517,7 @@ export const ExtraGaugeInPool: {
 	],
 	'611': [
 		{
-			gaugeId: '1998',
-			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
-		},
-		{
-			gaugeId: '1999',
-			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
-		},
-		{
-			gaugeId: '2000',
+			gaugeId: '2913',
 			denom: 'ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4',
 		},
 	],
@@ -651,15 +635,15 @@ export const ExtraGaugeInPool: {
 	],
 	'641': [
 		{
-			gaugeId: '2129',
+			gaugeId: '2925',
 			denom: 'ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C',
 		},
 		{
-			gaugeId: '2130',
+			gaugeId: '2926',
 			denom: 'ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C',
 		},
 		{
-			gaugeId: '2131',
+			gaugeId: '2927',
 			denom: 'ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C',
 		},
 	],
@@ -679,15 +663,15 @@ export const ExtraGaugeInPool: {
 	],
 	'643': [
 		{
-			gaugeId: '2266',
+			gaugeId: '2928',
 			denom: 'ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C',
 		},
 		{
-			gaugeId: '2267',
+			gaugeId: '2929',
 			denom: 'ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C',
 		},
 		{
-			gaugeId: '2268',
+			gaugeId: '2930',
 			denom: 'ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C',
 		},
 	],
@@ -713,15 +697,15 @@ export const ExtraGaugeInPool: {
 	],
 	'662': [
 		{
-			gaugeId: '2554',
+			gaugeId: '2591',
 			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
 		},
 		{
-			gaugeId: '2555',
+			gaugeId: '2592',
 			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
 		},
 		{
-			gaugeId: '2556',
+			gaugeId: '2593',
 			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
 		},
 	],
@@ -750,6 +734,12 @@ export const IBCAssetInfos: {
 
 	// If the asset is from ics20-cw20
 	ibcTransferPathDenom?: string;
+
+	// If the asset requires a custom deposit external link
+	depositUrlOverride?: string;
+
+	// If the asset requires a custom withdrawal external link
+	withdrawUrlOverride?: string;
 }[] = [
 	{
 		counterpartyChainId: 'cosmoshub-4',
@@ -1039,6 +1029,70 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	}
+
+		counterpartyChainId: 'injective-1',
+		sourceChannelId: 'channel-122',
+		destChannelId: 'channel-8',
+		coinMinimalDenom: 'inj',
+		depositUrlOverride: 'https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj',
+		withdrawUrlOverride: 'https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'uusdc',
+		depositUrlOverride: 'https://satellite.axelar.network/?source=ethereum&destination=osmosis&token=usdc',
+		withdrawUrlOverride: 'https://satellite.axelar.network/?source=osmosis&destination=ethereum&token=usdc',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'uusdt',
+		depositUrlOverride: 'https://satellite.axelar.network/?source=ethereum&destination=osmosis&token=usdt',
+		withdrawUrlOverride: 'https://satellite.axelar.network/?source=osmosis&destination=ethereum&token=usdt',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'dai-wei',
+		depositUrlOverride: 'https://satellite.axelar.network/?source=ethereum&destination=osmosis&token=dai',
+		withdrawUrlOverride: 'https://satellite.axelar.network/?source=osmosis&destination=ethereum&token=dai',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'frax-wei',
+		depositUrlOverride: 'https://satellite.axelar.network/?source=ethereum&destination=osmosis&token=frax',
+		withdrawUrlOverride: 'https://satellite.axelar.network/?source=osmosis&destination=ethereum&token=frax',
+	},
+	{
+		counterpartyChainId: 'gravity-bridge-3',
+		sourceChannelId: 'channel-144',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+	},
+	{
+		counterpartyChainId: 'gravity-bridge-3',
+		sourceChannelId: 'channel-144',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+	},
+	{
+		counterpartyChainId: 'gravity-bridge-3',
+		sourceChannelId: 'channel-144',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'gravity0x6B175474E89094C44Da98b954EedeAC495271d0F',
+	},
+	{
+		counterpartyChainId: 'gravity-bridge-3',
+		sourceChannelId: 'channel-144',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'gravity0xdAC17F958D2ee523a2206206994597C13D831ec7',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1398,7 +1452,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		explorerUrlToTx: 'https://www.mintscan.io/sentinel/txs/{txHash}',
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 	},
 	{
 		rpc: 'https://rpc-persistence.keplr.app',
@@ -1682,7 +1736,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 			},
 		],
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'ibc-go', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://www.mintscan.io/juno/txs/{txHash}',
 	},
 	{
@@ -1958,7 +2012,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'BOOT',
 			coinMinimalDenom: 'boot',
 			coinDecimals: 0,
-			// coinGeckoId: 'pool:boot',
+			coinGeckoId: 'bostrom',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/boot.png',
 		},
 		bip44: {
@@ -1970,7 +2024,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'BOOT',
 				coinMinimalDenom: 'boot',
 				coinDecimals: 0,
-				// coinGeckoId: 'pool:boot',
+				coinGeckoId: 'bostrom',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/boot.png',
 			},
 		],
@@ -1979,7 +2033,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'BOOT',
 				coinMinimalDenom: 'boot',
 				coinDecimals: 0,
-				// coinGeckoId: 'pool:boot',
+				coinGeckoId: 'bostrom',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/boot.png',
 			},
 		],
@@ -2515,6 +2569,34 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'pstake-finance',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/pstake.png',
 			},
+			{
+				coinDenom: 'WETH',
+				coinMinimalDenom: 'gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+				coinDecimals: 18,
+				coinGeckoId: 'ethereum',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/eth.png',
+			},
+			{
+				coinDenom: 'USDC',
+				coinMinimalDenom: 'gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+				coinDecimals: 6,
+				coinGeckoId: 'usd-coin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.png',
+			},
+			{
+				coinDenom: 'DAI',
+				coinMinimalDenom: 'gravity0x6B175474E89094C44Da98b954EedeAC495271d0F',
+				coinDecimals: 18,
+				coinGeckoId: 'dai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.png',
+			},
+			{
+				coinDenom: 'USDT',
+				coinMinimalDenom: 'gravity0xdAC17F958D2ee523a2206206994597C13D831ec7',
+				coinDecimals: 6,
+				coinGeckoId: 'tether',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.png',
+			},
 		],
 		feeCurrencies: [
 			{
@@ -2608,6 +2690,49 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://www.mintscan.io/certik/txs/{txHash}',
 	},
 	{
+		rpc: 'https://public.api.injective.network',
+		rest: 'https://public.lcd.injective.network',
+		chainId: 'injective-1',
+		chainName: 'Injective',
+		stakeCurrency: {
+			coinDenom: 'INJ',
+			coinMinimalDenom: 'inj',
+			coinDecimals: 18,
+			coinGeckoId: 'injective-protocol',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/inj.svg',
+		},
+		bip44: {
+			coinType: 60,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('inj'),
+		currencies: [
+			{
+				coinDenom: 'INJ',
+				coinMinimalDenom: 'inj',
+				coinDecimals: 18,
+				coinGeckoId: 'injective-protocol',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/inj.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'INJ',
+				coinMinimalDenom: 'inj',
+				coinDecimals: 18,
+				coinGeckoId: 'injective-protocol',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/inj.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0.0005,
+			average: 0.0007,
+			high: 0.0009,
+		},
+		coinType: 60,
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://explorer.injective.network/transaction/{txHash}',
+	},
+	{
 		rpc: 'https://rpc.cerberus.zone:26657',
 		rest: 'https://api.cerberus.zone:1317',
 		chainId: 'cerberus-chain-1',
@@ -2637,7 +2762,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'CRBRUS',
 				coinMinimalDenom: 'ucrbrus',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:crbrus',
+				coinGeckoId: 'cerberus-2',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
 			},
 		],
@@ -2685,5 +2810,145 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://scan.carbon.network/transaction/{txHash}?net=main',
+	},
+	{
+		rpc: 'https://gravitychain.io:26657',
+		rest: 'https://gravitychain.io:1317',
+		chainId: 'gravity-bridge-3',
+		chainName: 'Gravity Bridge',
+		stakeCurrency: {
+			coinDenom: 'GRAV',
+			coinMinimalDenom: 'ugraviton',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:ugraviton',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('gravity'),
+		currencies: [
+			{
+				coinDenom: 'GRAV',
+				coinMinimalDenom: 'ugraviton',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:ugraviton',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
+			},
+			{
+				coinDenom: 'PSTAKE',
+				coinMinimalDenom: 'gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006',
+				coinDecimals: 18,
+				coinGeckoId: 'pstake-finance',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/pstake.png',
+			},
+			{
+				coinDenom: 'g-WETH',
+				coinMinimalDenom: 'gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+				coinDecimals: 18,
+				coinGeckoId: 'ethereum',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/eth.png',
+			},
+			{
+				coinDenom: 'g-USDC',
+				coinMinimalDenom: 'gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+				coinDecimals: 6,
+				coinGeckoId: 'usd-coin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.png',
+			},
+			{
+				coinDenom: 'g-DAI',
+				coinMinimalDenom: 'gravity0x6B175474E89094C44Da98b954EedeAC495271d0F',
+				coinDecimals: 18,
+				coinGeckoId: 'dai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.png',
+			},
+			{
+				coinDenom: 'g-USDT',
+				coinMinimalDenom: 'gravity0xdAC17F958D2ee523a2206206994597C13D831ec7',
+				coinDecimals: 6,
+				coinGeckoId: 'tether',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'GRAV',
+				coinMinimalDenom: 'ugraviton',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:ugraviton',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0,
+			average: 0,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/gravity-bridge/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-axelar.keplr.app',
+		rest: 'https://lcd-axelar.keplr.app',
+		chainId: 'axelar-dojo-1',
+		chainName: 'Axelar',
+		stakeCurrency: {
+			coinDenom: 'AXL',
+			coinMinimalDenom: 'uaxl',
+			coinDecimals: 6,
+			// coinGeckoId: 'pool:uaxl',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/axl.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('axelar'),
+		currencies: [
+			{
+				coinDenom: 'ax-USDC',
+				coinMinimalDenom: 'uusdc',
+				coinDecimals: 6,
+				coinGeckoId: 'usd-coin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.svg',
+			},
+			{
+				coinDenom: 'ax-FRAX',
+				coinMinimalDenom: 'frax-wei',
+				coinDecimals: 18,
+				coinGeckoId: 'frax',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/frax.svg',
+			},
+			{
+				coinDenom: 'ax-USDT',
+				coinMinimalDenom: 'uusdt',
+				coinDecimals: 6,
+				coinGeckoId: 'tether',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.svg',
+			},
+			{
+				coinDenom: 'ax-DAI',
+				coinMinimalDenom: 'dai-wei',
+				coinDecimals: 18,
+				coinGeckoId: 'dai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'AXL',
+				coinMinimalDenom: 'uaxl',
+				coinDecimals: 6,
+				// coinGeckoId: 'pool:uaxl',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/axl.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0.00005,
+			average: 0.00007,
+			high: 0.00009,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://axelarscan.io/tx/{txHash}',
 	},
 ];

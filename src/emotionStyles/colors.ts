@@ -1,16 +1,15 @@
-/** 60, 53, 109 */
-export const colorPrimaryLight = `#3c356d`;
-/** 45, 39, 85 */
-export const colorPrimary = `#2d2755`;
-/** 35, 29, 75*/
-export const colorPrimaryDark = `#231d4b`;
-/** 23, 15, 52 */
-export const colorPrimaryDarker = `#170f34`;
+export const colorPrimaryLight = `#383532`;
+
+export const colorPrimary = `#2E2C2F`;
+
+export const colorPrimaryDark = `#282421`;
+
+export const colorPrimaryDarker = `#221B18`;
 
 /** 138, 134, 255 */
 export const colorPrimary50 = `#8a86ff`;
 /** 50, 45, 194 */
-export const colorPrimary200 = `#322dc2`;
+export const colorPrimary200 = `#A4432D`;
 
 /** 196, 164, 106 */
 export const colorGold = `#c4a46a`;
@@ -22,8 +21,8 @@ export const colorWhiteFaint = `rgba(255, 255, 255, 0.12)`;
 
 export const colorBlack = `#000`;
 
-export const colorError = `rgba(239, 52, 86)`;
+export const colorError = `#E91F4F`;
 
-export const colorTextIcon = `rgb(142, 131, 170)`;
+export const colorTextIcon = `#8E867B`;
 
 export const colorFilterWhiteHigh = `brightness(0%) invert(100%)`;

@@ -17,8 +17,7 @@ const PoolsTableHeader = styled(CenterV)`
 	padding: 12px 20px;
 	display: flex;
 	align-items: center;
-	background-color: rgba(45, 39, 85, 1);
-
+	background-color: #2e2c2f;
 	@media (min-width: 768px) {
 		padding-left: 30px;
 		padding-right: 35px;
@@ -39,7 +38,6 @@ const TableCellText = styled.p`
 	font-size: 14px;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 0.38);
-
 	@media (min-width: 768px) {
 		font-size: 16px;
 	}

@@ -4,6 +4,7 @@ import cn from 'clsx';
 import { TSIDEBAR_ITEM } from 'src/constants';
 import { NavLink } from 'react-router-dom';
 import { cssAbsoluteCenter } from 'src/emotionStyles/layout';
+import { IconExternalLink } from 'src/icons';
 
 const NavLinkFallback: FunctionComponent<{ sidebarItem: TSIDEBAR_ITEM; closeSidebar: () => void }> = ({
 	sidebarItem,
@@ -53,7 +54,11 @@ export const SidebarItem: FunctionComponent<TSidebarItem> = ({ sidebarItem, sele
 					)}>
 					{sidebarItem.TEXT}
 				</p>
-				{sidebarItem.LINK ? <img className="ml-2" src="/public/assets/sidebar/icon-link-deco.svg" alt="link" /> : null}
+				{sidebarItem.LINK ? (
+					<div className="ml-2">
+						<IconExternalLink />
+					</div>
+				) : null}
 			</li>
 		</NavLinkFallback>
 	);
@@ -136,7 +141,6 @@ const DisplayIconContainer = styled.div`
 	width: 2.5rem;
 	position: relative;
 	cursor: pointer;
-
 	@media (min-width: 768px) {
 		height: 2.75rem;
 		width: 2.75rem;
@@ -152,11 +156,10 @@ const IconBgImg = styled.img`
 `;
 
 const IconImg = styled.img`
-	${cssAbsoluteCenter};
-	width: 1.125rem;
-	height: 1.125rem;
+	${cssAbsoluteCenter}
+	width: 1.125rem
+	height: 1.125rem
 	z-index: 10;
-
 	@media (min-width: 768px) {
 		width: 1.25rem;
 		height: 1.25rem;

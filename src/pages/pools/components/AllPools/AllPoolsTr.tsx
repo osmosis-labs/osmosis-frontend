@@ -83,7 +83,6 @@ const TrStyled = styled.tr`
 		}
 	}
 	border-bottom-width: 1px;
-
 	@media (min-width: 768px) {
 		padding-left: 30px;
 		padding-right: 35px;
@@ -94,7 +93,6 @@ const TrStyled = styled.tr`
 
 const TdStyled = styled(CenterV)`
 	font-size: 14px;
-
 	@media (min-width: 768px) {
 		font-size: 16px;
 	}
@@ -106,7 +104,6 @@ const TextPoolRatio = styled.p`
 	text-overflow: ellipsis;
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
-
 	@media (min-width: 768px) {
 		font-size: 16px;
 	}
@@ -119,11 +116,10 @@ const Badge = styled.span`
 	padding: 5px 8px;
 	height: 25px;
 	min-width: 20px;
-	background-color: rgba(45, 39, 85, 1);
+	background-color: #2e2c2f;
 	margin-left: 8px;
 	margin-right: 8px;
 	flex-shrink: 0;
-
 	@media (min-width: 768px) {
 		display: flex;
 	}
