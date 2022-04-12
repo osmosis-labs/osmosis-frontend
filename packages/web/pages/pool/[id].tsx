@@ -229,6 +229,7 @@ const Pool: FunctionComponent = observer(() => {
           onRequestClose={() => setShowManageLiquidityDialog(false)}
           addLiquidityConfig={addLiquidityConfig}
           removeLiquidityConfig={removeLiquidityConfig}
+          isSendingMsg={account.txTypeInProgress !== ""}
           getChainNetworkName={(coinDenom) =>
             EmbedChainInfos.find((chain) =>
               chain.currencies.find(
@@ -245,12 +246,18 @@ const Pool: FunctionComponent = observer(() => {
               ) {
                 await account.osmosis.sendJoinSwapExternAmountInMsg(
                   addLiquidityConfig.poolId,
-                  addLiquidityConfig.singleAmountInConfig
+                  addLiquidityConfig.singleAmountInConfig,
+                  undefined,
+                  undefined,
+                  () => setShowManageLiquidityDialog(false)
                 );
               } else if (addLiquidityConfig.shareOutAmount) {
                 await account.osmosis.sendJoinPoolMsg(
                   addLiquidityConfig.poolId,
-                  addLiquidityConfig.shareOutAmount.toDec().toString()
+                  addLiquidityConfig.shareOutAmount.toDec().toString(),
+                  undefined,
+                  undefined,
+                  () => setShowManageLiquidityDialog(false)
                 );
               }
             } catch (e) {
@@ -261,7 +268,12 @@ const Pool: FunctionComponent = observer(() => {
             try {
               await account.osmosis.sendExitPoolMsg(
                 removeLiquidityConfig.poolId,
-                removeLiquidityConfig.poolShareWithPercentage.toDec().toString()
+                removeLiquidityConfig.poolShareWithPercentage
+                  .toDec()
+                  .toString(),
+                undefined,
+                undefined,
+                () => setShowManageLiquidityDialog(false)
               );
             } catch (e) {
               console.error(e);

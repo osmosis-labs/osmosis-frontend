@@ -9,10 +9,11 @@ import { Error } from "../../alert";
 export interface Props {
   removeLiquidityConfig: ObservableRemoveLiquidityConfig;
   onRemoveLiquidity: () => void;
+  isSendingMsg?: boolean;
 }
 
 export const RemoveLiquidity: FunctionComponent<Props> = observer(
-  ({ removeLiquidityConfig: config, onRemoveLiquidity }) => (
+  ({ removeLiquidityConfig: config, onRemoveLiquidity, isSendingMsg }) => (
     <div className="flex flex-col gap-3 text-center">
       <h2
         className={classNames("mt-12", {
@@ -75,7 +76,8 @@ export const RemoveLiquidity: FunctionComponent<Props> = observer(
         className="h-14 w-96 mt-3 mx-auto"
         size="lg"
         onClick={onRemoveLiquidity}
-        disabled={config.error !== undefined}
+        loading={isSendingMsg}
+        disabled={config.error !== undefined || isSendingMsg}
       >
         Remove Liquidity
       </Button>

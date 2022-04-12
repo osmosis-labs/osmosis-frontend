@@ -27,7 +27,6 @@ export const ManageLiquidityModal: FunctionComponent<Props> = (props) => {
               <AddLiquidity
                 {...props}
                 onAddLiquidity={() => {
-                  props.onRequestClose();
                   props.onAddLiquidity();
                 }}
               />
@@ -39,7 +38,6 @@ export const ManageLiquidityModal: FunctionComponent<Props> = (props) => {
               <RemoveLiquidity
                 {...props}
                 onRemoveLiquidity={() => {
-                  props.onRequestClose();
                   props.onRemoveLiquidity();
                 }}
               />
