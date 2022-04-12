@@ -18,9 +18,16 @@ export const LockTokensModal: FunctionComponent<
     amountConfig: ObservableAmountConfig;
     availableToken?: CoinPretty;
     onLockToken: (gaugeId: string) => void;
+    isSendingMsg?: boolean;
   }
 > = observer((props) => {
-  const { gauges, amountConfig: config, availableToken, onLockToken } = props;
+  const {
+    gauges,
+    amountConfig: config,
+    availableToken,
+    onLockToken,
+    isSendingMsg,
+  } = props;
   const [selectedGaugeIndex, setSelectedGaugeIndex] = useState<number | null>(
     null
   );
@@ -71,7 +78,8 @@ export const LockTokensModal: FunctionComponent<
         <Button
           className="h-14 w-96 mt-3 mx-auto"
           size="lg"
-          disabled={config.error !== undefined}
+          disabled={config.error !== undefined || isSendingMsg}
+          loading={isSendingMsg}
           onClick={() => {
             const gauge = gauges.find(
               (_, index) => index === selectedGaugeIndex

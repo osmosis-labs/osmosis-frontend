@@ -180,45 +180,76 @@ const Pool: FunctionComponent = observer(() => {
     });
   });
 
-  // Manage liquidity state
+  // Manage liquidity + bond LP tokens (modals) state
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
     useState(false);
   const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
-  const [addLiquidityConfig, removeLiquidityConfig, lockLPTokensConfig] =
-    useMemo(() => {
-      if (pool) {
-        return [
-          new ObservableAddLiquidityConfig(
-            chainStore,
-            chainId,
-            pool.id,
-            bech32Address,
-            queriesStore,
-            queryOsmosis.queryGammPoolShare,
-            queryOsmosis.queryGammPools,
-            queriesStore.get(chainId).queryBalances
-          ),
-          new ObservableRemoveLiquidityConfig(
-            chainStore,
-            chainId,
-            pool.id,
-            bech32Address,
-            queriesStore,
-            queryOsmosis.queryGammPoolShare,
-            queryOsmosis.queryGammPools,
-            "50"
-          ),
-          new ObservableAmountConfig(
-            chainStore,
-            queriesStore,
-            chainId,
-            bech32Address,
-            queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id)
-          ),
-        ];
-      }
-      return [undefined, undefined, undefined];
-    }, [pool, chainStore, chainId, bech32Address, queriesStore, queryOsmosis]);
+  const [
+    addLiquidityConfig,
+    removeLiquidityConfig,
+    lockLPTokensConfig,
+    lockupGauges,
+  ] = useMemo(() => {
+    if (pool) {
+      return [
+        new ObservableAddLiquidityConfig(
+          chainStore,
+          chainId,
+          pool.id,
+          bech32Address,
+          queriesStore,
+          queryOsmosis.queryGammPoolShare,
+          queryOsmosis.queryGammPools,
+          queriesStore.get(chainId).queryBalances
+        ),
+        new ObservableRemoveLiquidityConfig(
+          chainStore,
+          chainId,
+          pool.id,
+          bech32Address,
+          queriesStore,
+          queryOsmosis.queryGammPoolShare,
+          queryOsmosis.queryGammPools,
+          "50"
+        ),
+        new ObservableAmountConfig(
+          chainStore,
+          queriesStore,
+          chainId,
+          bech32Address,
+          queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id)
+        ),
+        queryOsmosis.queryLockableDurations.lockableDurations.map(
+          (duration, index) => {
+            const apr = pool
+              ? queryOsmosis.queryIncentivizedPools.computeAPY(
+                  pool.id,
+                  duration,
+                  priceStore,
+                  fiat
+                )
+              : undefined;
+
+            return {
+              id: index.toString(),
+              apr: apr ?? new RatePretty(0),
+              duration,
+            };
+          }
+        ),
+      ];
+    }
+    return [undefined, undefined, undefined, undefined];
+  }, [
+    pool,
+    chainStore,
+    chainId,
+    bech32Address,
+    queriesStore,
+    queryOsmosis,
+    priceStore,
+    fiat,
+  ]);
 
   return (
     <main>
@@ -286,6 +317,7 @@ const Pool: FunctionComponent = observer(() => {
           isOpen={showLockLPTokenModal}
           title="Bond LP Tokens"
           onRequestClose={() => setShowLockLPTokenModal(false)}
+          isSendingMsg={account.txTypeInProgress !== ""}
           amountConfig={lockLPTokensConfig}
           availableToken={
             pool
@@ -295,26 +327,29 @@ const Pool: FunctionComponent = observer(() => {
                 )
               : undefined
           }
-          gauges={queryOsmosis.queryLockableDurations.lockableDurations.map(
-            (duration, index) => {
-              const apr = pool
-                ? queryOsmosis.queryIncentivizedPools.computeAPY(
-                    pool.id,
-                    duration,
-                    priceStore,
-                    fiat
-                  )
-                : undefined;
-
-              return {
-                id: index.toString(),
-                apr: apr ?? new RatePretty(0),
-                duration,
-              };
+          gauges={lockupGauges}
+          onLockToken={async (gaugeId) => {
+            const gauge = lockupGauges.find((gauge) => gauge.id === gaugeId);
+            try {
+              if (gauge) {
+                await account.osmosis.sendLockTokensMsg(
+                  gauge.duration.asSeconds(),
+                  [
+                    {
+                      currency: lockLPTokensConfig.sendCurrency,
+                      amount: lockLPTokensConfig.amount,
+                    },
+                  ],
+                  undefined,
+                  () => setShowLockLPTokenModal(false)
+                );
+              } else {
+                console.error("Gauge ID not found:", gaugeId);
+                setShowLockLPTokenModal(false);
+              }
+            } catch (e) {
+              console.error(e);
             }
-          )}
-          onLockToken={() => {
-            setShowLockLPTokenModal(false);
           }}
         />
       )}
@@ -324,8 +359,8 @@ const Pool: FunctionComponent = observer(() => {
             className="h-7 w-64"
             isLoading={
               !pool ||
-              pool?.poolAssets.some((asset) =>
-                asset.amount.currency.coinDenom.startsWith("ibc")
+              pool?.poolAssets.some(
+                (asset) => asset.amount.currency.coinDenom.startsWith("ibc") // TODO: this may problematic for permissionless assets on frontier w/ no config
               )
             }
           >
@@ -552,10 +587,11 @@ const Pool: FunctionComponent = observer(() => {
                     type="arrow"
                     size="xs"
                     disabled={
-                      !account.isReadyToSendMsgs ||
+                      !account.isReadyToSendTx ||
                       amount?.toDec().equals(new Dec(0))
                     }
                     onClick={() => {
+                      // TODO add unbond all, handle superfluid case
                       console.log(value, lockIds);
                     }}
                   >
