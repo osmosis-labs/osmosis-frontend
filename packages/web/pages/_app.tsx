@@ -1,5 +1,7 @@
 import "../styles/globals.css";
+import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 import type { AppProps } from "next/app";
+import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
 import { MainLayout } from "../components/layouts";
 import dayjs from "dayjs";
@@ -57,6 +59,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           ]}
         >
           <Component {...pageProps} />
+          <ToastContainer transition={Bounce} />
         </MainLayout>
       </StoreProvider>
     </GetKeplrProvider>

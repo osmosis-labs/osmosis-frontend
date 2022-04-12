@@ -193,3 +193,44 @@
     @apply absolute left-[50%] w-[30px] h-[24px] leading-[24px] text-center bg-surface text-white-emphasis text-caption block translate-x-[-50%] rounded-md;
   }
 }
+
+/* Toasts override styles in `react-toastify/dist/ReactToastify.css` */
+.Toastify__toast-container {
+  z-index: 99 !important;
+  max-width: 360px !important;
+  min-width: 360px !important;
+
+  @media (max-width: 767px) {
+    min-width: 280px !important;
+    width: 100% !important;
+    padding: 0 20px !important;
+    right: 0 !important;
+    left: unset !important;
+  }
+}
+
+.Toastify__toast--default {
+  background: #2d2755 !important;
+  max-width: 360px !important;
+  min-width: 360px !important;
+  border-radius: 16px !important;
+
+  @media (max-width: 767px) {
+    min-width: 280px !important;
+    margin-top: 10px;
+    width: 100%;
+  }
+}
+
+.Toastify__toast {
+  padding: 20px 28px 20px 22px !important;
+  overflow: visible !important;
+
+  @media (max-width: 767px) {
+    padding: 16px !important;
+  }
+}
+
+.Toastify__toast-body {
+  padding: 0 !important;
+}

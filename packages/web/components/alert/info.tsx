@@ -2,9 +2,10 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CustomClasses } from "../types";
+import { Alert } from "./types";
 
 export const Info: FunctionComponent<
-  { message: string; caption?: string; data: string } & CustomClasses
+  Alert & { data: string } & CustomClasses
 > = ({ message, caption, data, className }) => (
   <div
     className={classNames(
