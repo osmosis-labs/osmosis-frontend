@@ -1,5 +1,4 @@
 import { observable, makeObservable, computed, action } from "mobx";
-import { computedFn } from "mobx-utils";
 import {
   ObservableQueryBalances,
   ChainGetter,
@@ -480,7 +479,8 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     });
   }
 
-  readonly getError = computedFn(() => {
+  @computed
+  get error() {
     if (this.poolAssetConfigs.length === 0) {
       return new Error("Not initialized yet");
     }
@@ -505,5 +505,5 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     if (!this.shareOutAmount || this.shareOutAmount.toDec().lte(new Dec(0))) {
       return new Error("Calculating the share out amount");
     }
-  });
+  }
 }

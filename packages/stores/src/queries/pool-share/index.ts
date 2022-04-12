@@ -150,7 +150,7 @@ export class ObservableQueryGammPoolShare {
     }
   );
 
-  /** Gets percentage of user's shares that are not locked. */
+  /** Gets percentage of user's shares that are unlocked. */
   readonly getAvailableGammShareRatio = computedFn(
     (bech32Address: string, poolId: string): RatePretty => {
       const pool = this.queryPools.getPool(poolId);
@@ -175,7 +175,7 @@ export class ObservableQueryGammPoolShare {
     }
   );
 
-  /** Gets percentage of user's ownership of pool. */
+  /** Gets percentage of user's ownership of pool vs all shares in pool. */
   readonly getAllGammShareRatio = computedFn(
     (bech32Address: string, poolId: string): RatePretty => {
       const pool = this.queryPools.getPool(poolId);

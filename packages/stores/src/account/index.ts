@@ -4,10 +4,10 @@ import deepmerge from "deepmerge";
 import {
   ChainGetter,
   IQueriesStore,
-  AccountSetBase,
+  AccountSetBaseSuper,
   CosmosAccount,
 } from "@keplr-wallet/stores";
-import { Coin, CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
 import { WeightedPoolEstimates } from "@osmosis-labs/math";
 import { Pool } from "@osmosis-labs/pools";
@@ -26,14 +26,8 @@ export const OsmosisAccount = {
       chainId: string
     ) => DeepPartial<OsmosisMsgOpts> | undefined;
     queriesStore: IQueriesStore<OsmosisQueries>;
-    wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
-    preTxEvents?: {
-      onBroadcastFailed?: (chainId: string, e?: Error) => void;
-      onBroadcasted?: (chainId: string, txHash: Uint8Array) => void;
-      onFulfill?: (chainId: string, tx: any) => void;
-    };
   }): (
-    base: AccountSetBase & CosmosAccount,
+    base: AccountSetBaseSuper & CosmosAccount,
     chainGetter: ChainGetter,
     chainId: string
   ) => OsmosisAccount {
@@ -60,7 +54,7 @@ export const OsmosisAccount = {
 
 export class OsmosisAccountImpl {
   constructor(
-    protected readonly base: AccountSetBase & CosmosAccount,
+    protected readonly base: AccountSetBaseSuper & CosmosAccount,
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
@@ -190,18 +184,19 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#join-pool
    * @param poolId Id of pool.
    * @param shareOutAmount LP share amount.
-   * @param maxSlippage Max tolerated slippage.
+   * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Memo attachment.
    * @param onFulfill Callback to handle tx fulfillment.
    */
   async sendJoinPoolMsg(
     poolId: string,
     shareOutAmount: string,
-    maxSlippage: string = "0",
+    maxSlippage: string = "2.5",
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
     const queries = this.queries;
+    const mkp = this.makeCoinPretty;
 
     await this.base.cosmos.sendMsgs(
       "joinPool",
@@ -225,7 +220,7 @@ export class OsmosisAccountImpl {
         const estimated = WeightedPoolEstimates.estimateJoinSwap(
           pool,
           pool.poolAssets,
-          this.makeCoinPretty,
+          mkp,
           shareOutAmount,
           this._msgOpts.joinPool.shareCoinDecimals
         );
@@ -311,14 +306,14 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#join-swap-extern-amount-in
    * @param poolId Id of pool to swap within.
    * @param tokenIn Token being swapped in.
-   * @param maxSlippage Max tolerated slippage.
+   * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment.
    */
   async sendJoinSwapExternAmountInMsg(
     poolId: string,
     tokenIn: { currency: Currency; amount: string },
-    maxSlippage: string = "0",
+    maxSlippage: string = "2.5",
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
@@ -327,7 +322,9 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "joinPool",
       async () => {
-        await queries.queryGammPools.waitFreshResponse();
+        // await queries.queryGammPools.waitFreshResponse();
+        // TODO: Only fetch (update) individual pool
+        // TODO: handle reject tx
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {
@@ -342,9 +339,10 @@ export class OsmosisAccountImpl {
         const poolAsset = queryPool.getPoolAsset(
           tokenIn.currency.coinMinimalDenom
         );
+
         const estimated = WeightedPoolEstimates.estimateJoinSwapExternAmountIn(
           {
-            amount: poolAsset.amount.toDec().truncate(),
+            amount: new Int(poolAsset.amount.toCoin().amount),
             weight: poolAsset.weight.toDec().truncate(),
           },
           pool,
@@ -361,7 +359,7 @@ export class OsmosisAccountImpl {
           .truncate();
         const coin = new Coin(tokenIn.currency.coinMinimalDenom, amount);
 
-        const outRatio = new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100)));
+        const outRatio = new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))); // not outRatio
         const shareOutMinAmount = estimated.shareOutAmountRaw
           .toDec()
           .mul(outRatio)
@@ -487,11 +485,11 @@ export class OsmosisAccountImpl {
                 ...pool,
                 inPoolAsset: {
                   ...inPoolAsset.amount.currency,
-                  amount: inPoolAsset.amount.toDec().truncate(),
+                  amount: new Int(inPoolAsset.amount.toCoin().amount),
                   weight: inPoolAsset.weight.toDec().truncate(),
                 },
                 outPoolAsset: {
-                  amount: outPoolAsset.amount.toDec().truncate(),
+                  amount: new Int(outPoolAsset.amount.toCoin().amount),
                   weight: outPoolAsset.weight.toDec().truncate(),
                 },
               },
@@ -602,11 +600,11 @@ export class OsmosisAccountImpl {
             ...pool,
             inPoolAsset: {
               ...inPoolAsset.amount.currency,
-              amount: inPoolAsset.amount.toDec().truncate(),
+              amount: new Int(inPoolAsset.amount.toCoin().amount),
               weight: inPoolAsset.weight.toDec().truncate(),
             },
             outPoolAsset: {
-              amount: outPoolAsset.amount.toDec().truncate(),
+              amount: new Int(outPoolAsset.amount.toCoin().amount),
               weight: outPoolAsset.weight.toDec().truncate(),
             },
           },
@@ -717,12 +715,12 @@ export class OsmosisAccountImpl {
             ...pool,
             inPoolAsset: {
               ...inPoolAsset.amount.currency,
-              amount: inPoolAsset.amount.toDec().truncate(),
+              amount: new Int(inPoolAsset.amount.toCoin().amount),
               weight: inPoolAsset.weight.toDec().truncate(),
             },
             outPoolAsset: {
-              amount: outPoolAsset.amount.toDec().truncate(),
-              weight: inPoolAsset.weight.toDec().truncate(),
+              amount: new Int(outPoolAsset.amount.toCoin().amount),
+              weight: outPoolAsset.weight.toDec().truncate(),
             },
           },
           this._msgOpts.swapExactAmountOut,
@@ -787,23 +785,25 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#exit-pool
    * @param poolId Id of pool to exit.
    * @param shareInAmount LP shares to redeem.
-   * @param maxSlippage Max tolerated slippage.
+   * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment.
    */
   async sendExitPoolMsg(
     poolId: string,
     shareInAmount: string,
-    maxSlippage: string = "0",
+    maxSlippage: string = "2.5",
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
     const queries = this.queries;
+    const mkp = this.makeCoinPretty;
 
     await this.base.cosmos.sendMsgs(
       "exitPool",
       async () => {
-        await queries.queryGammPools.waitFreshResponse();
+        // await queries.queryGammPools.waitFreshResponse();
+        // TODO: fetch from individual pool
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {
@@ -817,7 +817,7 @@ export class OsmosisAccountImpl {
 
         const estimated = WeightedPoolEstimates.estimateExitSwap(
           pool,
-          this.makeCoinPretty,
+          mkp,
           shareInAmount,
           this._msgOpts.exitPool.shareCoinDecimals
         );
@@ -832,7 +832,7 @@ export class OsmosisAccountImpl {
               return {
                 denom: tokenOut.currency.coinMinimalDenom,
                 amount: tokenOut
-                  .toDec()
+                  .toDec() // TODO: confirm toDec() respects token dec count
                   .mul(new Dec(1).sub(maxSlippageDec))
                   .mul(
                     DecUtils.getTenExponentNInPrecisionRange(
@@ -1044,20 +1044,21 @@ export class OsmosisAccountImpl {
     );
   }
 
-  protected changeDecStringToProtoBz(decStr: string): string {
+  protected changeDecStringToProtoBz = (decStr: string): string => {
     let r = decStr;
     while (r.length >= 2 && (r.startsWith(".") || r.startsWith("0"))) {
       r = r.slice(1);
     }
 
     return r;
-  }
+  };
 
   protected get queries() {
     return this.queriesStore.get(this.chainId).osmosis;
   }
 
-  protected makeCoinPretty(coin: Coin): CoinPretty {
+  protected makeCoinPretty = (coin: Coin): CoinPretty => {
+    console.log(this);
     const currency = this.chainGetter
       .getChain(this.chainId)
       .findCurrency(coin.denom);
@@ -1065,7 +1066,7 @@ export class OsmosisAccountImpl {
       throw new Error("Unknown currency");
     }
     return new CoinPretty(currency, coin.amount);
-  }
+  };
 }
 
 export * from "./types";
