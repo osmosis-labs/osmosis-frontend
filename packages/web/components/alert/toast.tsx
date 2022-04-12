@@ -50,12 +50,12 @@ export function displayToast(
 
 const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
   <div className="flex gap-3 md:gap-3.75">
-    <div className="animate-spin h-[23px] w-[23px]">
+    <div className="flex items-center animate-spin h-[32px] w-[32px]">
       <Image
         alt="loading"
         src="/icons/loading-blue.svg"
-        height={23}
-        width={23}
+        height={32}
+        width={32}
       />
     </div>
     <section className="text-white-high">
@@ -67,7 +67,9 @@ const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
 
 const ErrorToast: FunctionComponent<Alert> = ({ message, caption }) => (
   <div className="flex gap-3 md:gap-3.75">
-    <Image alt="failed" src="/icons/error-x.svg" height={23} width={23} />
+    <div className="w-8 h-8">
+      <Image alt="failed" src="/icons/error-x.svg" height={32} width={32} />
+    </div>
     <section className="text-white-high">
       <h6 className="mb-2 text-base md:text-lg">{message}</h6>
       {caption && <p className="text-xs md:text-sm">{caption}</p>}
@@ -82,7 +84,7 @@ const SuccessToast: FunctionComponent<Alert> = ({
 }) => (
   <div className="flex gap-3 md:gap-3.75">
     <div className="w-8 h-8">
-      <Image alt="b" src="/icons/check-circle.svg" height={23} width={23} />
+      <Image alt="b" src="/icons/check-circle.svg" height={32} width={32} />
     </div>
     <section className="text-white-high">
       <h6 className="mb-2 text-base md:text-lg">{message}</h6>
@@ -93,12 +95,12 @@ const SuccessToast: FunctionComponent<Alert> = ({
           className="text-xs md:text-sm inline hover:opacity-75 cursor-pointer"
         >
           {learnMoreUrlCaption ?? "Learn more"}
-          <div className="inline-block h-4 w-4 mb-0.75">
+          <div className="inline-block ml-2 mb-0.75">
             <Image
               alt="link"
               src="/icons/link-deco.svg"
-              height={23}
-              width={23}
+              height={12}
+              width={12}
             />
           </div>
         </a>
