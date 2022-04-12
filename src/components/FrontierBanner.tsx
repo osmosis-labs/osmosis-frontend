@@ -4,7 +4,7 @@ import { IconExternalLink } from 'src/icons';
 export const FrontierBanner: FunctionComponent<{ onClose: () => void }> = ({ onClose }) => (
 	<div
 		style={{ zIndex: 1000, backgroundImage: 'linear-gradient(to bottom, #F8C259 0%, #B38203 100%)' }}
-		className="absolute right-3 top-3 py-3 text-white-high w-[440px] md:w-[596px] max-w-screen-sm z-50 rounded-2xl flex flex-col">
+		className="absolute right-3 top-3 py-3 text-white-high w-[330px] md:w-[596px] z-50 rounded-2xl flex flex-col">
 		<div className="m-auto">
 			<img
 				className="absolute -top-1.5 -left-1.5 cursor-pointer"
