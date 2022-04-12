@@ -158,7 +158,6 @@ const Pool: FunctionComponent = observer(() => {
       }
     );
 
-    // TODO: use real data after superfluid store is added
     superfluid = {
       validatorName: "Imperator.co",
       validatorImgSrc:
@@ -206,6 +205,7 @@ const Pool: FunctionComponent = observer(() => {
             bech32Address,
             queriesStore,
             queryOsmosis.queryGammPoolShare,
+            queryOsmosis.queryGammPools,
             "50"
           ),
           new ObservableAmountConfig(
@@ -217,12 +217,12 @@ const Pool: FunctionComponent = observer(() => {
           ),
         ];
       }
-      return [undefined, undefined];
+      return [undefined, undefined, undefined];
     }, [pool, chainStore, chainId, bech32Address, queriesStore, queryOsmosis]);
 
   return (
     <main>
-      {addLiquidityConfig && removeLiquidityConfig && (
+      {pool && addLiquidityConfig && removeLiquidityConfig && (
         <ManageLiquidityModal
           isOpen={showManageLiquidityDialog}
           title="Manage Liquidity"
@@ -237,11 +237,36 @@ const Pool: FunctionComponent = observer(() => {
             )?.chainName
           }
           getFiatValue={(coin) => priceStore.calculatePrice(coin)}
-          onAddLiquidity={() => {
-            // TODO: send msgs w/ account store
-            console.log("liquidity added");
+          onAddLiquidity={async () => {
+            try {
+              if (
+                addLiquidityConfig.isSingleAmountIn &&
+                addLiquidityConfig.singleAmountInConfig
+              ) {
+                await account.osmosis.sendJoinSwapExternAmountInMsg(
+                  addLiquidityConfig.poolId,
+                  addLiquidityConfig.singleAmountInConfig
+                );
+              } else if (addLiquidityConfig.shareOutAmount) {
+                await account.osmosis.sendJoinPoolMsg(
+                  addLiquidityConfig.poolId,
+                  addLiquidityConfig.shareOutAmount.toDec().toString()
+                );
+              }
+            } catch (e) {
+              console.error(e);
+            }
           }}
-          onRemoveLiquidity={() => console.log("liquidity removed")}
+          onRemoveLiquidity={async () => {
+            try {
+              await account.osmosis.sendExitPoolMsg(
+                removeLiquidityConfig.poolId,
+                removeLiquidityConfig.poolShareWithPercentage.toDec().toString()
+              );
+            } catch (e) {
+              console.error(e);
+            }
+          }}
         />
       )}
       {lockLPTokensConfig && (

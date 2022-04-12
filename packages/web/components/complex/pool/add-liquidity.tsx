@@ -162,16 +162,16 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
           <span>{addLiquidityConfig.singleAmountInPriceImpact.toString()}</span>
         </div>
       )}
-      {addLiquidityConfig.getError() && (
+      {addLiquidityConfig.error && (
         <Error
           className="mx-auto"
-          message={addLiquidityConfig.getError()?.message ?? ""}
+          message={addLiquidityConfig.error?.message ?? ""}
         />
       )}
       <Button
         className="h-14 w-96 mt-3 mx-auto"
         size="lg"
-        disabled={addLiquidityConfig.getError() !== undefined}
+        disabled={addLiquidityConfig.error !== undefined}
         onClick={onAddLiquidity}
       >
         Add Liquidity
