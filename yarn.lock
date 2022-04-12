@@ -1836,20 +1836,20 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@keplr-wallet/background@^0.9.12-rc.0":
-  version "0.9.12-rc.0"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/background/-/background-0.9.12-rc.0.tgz#a96ba6f1509862ea06d3d6519f2d53c70379deda"
-  integrity sha512-GdoRJB8XnHkPypf8b+KjSrT0cHLq+Hl9nK7Emeyvur9Bj/TQsFIWA/TxktjQ+MGSwkzyqW88rzxFL6WdDCg+ow==
+"@keplr-wallet/background@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/background/-/background-0.9.12-rc.3.tgz#f3138a093cb022fe78ea37a4da58a5fc22075e99"
+  integrity sha512-QT9jcSAcf8GntI14ofHhZ+GL4v5YJKQyHCJM71aet8d1rOHCOAUWIL3pOoN8GbRqH/u/ncFHaXn7YsixTPp0bg==
   dependencies:
     "@cosmjs/launchpad" "^0.24.0-alpha.25"
     "@cosmjs/proto-signing" "^0.24.0-alpha.25"
-    "@keplr-wallet/common" "^0.9.10"
-    "@keplr-wallet/cosmos" "^0.9.12-rc.0"
-    "@keplr-wallet/crypto" "^0.9.10"
-    "@keplr-wallet/popup" "^0.9.6"
-    "@keplr-wallet/router" "^0.9.6"
-    "@keplr-wallet/types" "^0.9.12-rc.0"
-    "@keplr-wallet/unit" "^0.9.12-rc.0"
+    "@keplr-wallet/common" "0.9.12-rc.3"
+    "@keplr-wallet/cosmos" "0.9.12-rc.3"
+    "@keplr-wallet/crypto" "0.9.12-rc.3"
+    "@keplr-wallet/popup" "0.9.12-rc.3"
+    "@keplr-wallet/router" "0.9.12-rc.3"
+    "@keplr-wallet/types" "0.9.12-rc.3"
+    "@keplr-wallet/unit" "0.9.12-rc.3"
     "@ledgerhq/hw-transport" "^6.20.0"
     "@ledgerhq/hw-transport-webhid" "^6.20.0"
     "@ledgerhq/hw-transport-webusb" "^6.20.0"
@@ -1868,34 +1868,34 @@
     secretjs "^0.17.0"
     tsyringe "^4.4.0"
 
-"@keplr-wallet/common@0.9.10", "@keplr-wallet/common@^0.9.10":
-  version "0.9.10"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/common/-/common-0.9.10.tgz#4dd48c766823f80eee700a9f345c84e17121c85c"
-  integrity sha512-tZ3UfvGGVakr2/tpxJtYJixuDC43RE2iIRejtxF0hSenAPGr/NNnmXvo2gkxbb9WHN2Z+03d3nH6qympLssqeg==
+"@keplr-wallet/common@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/common/-/common-0.9.12-rc.3.tgz#5ad3b4270224c97c8e1c8236c61a8f8d91b1dc58"
+  integrity sha512-6oY4m4uan4K7dDWGK9reEkeApkJLDmbwrcjXrK/dSYJrw3VPSo7DczmQ3+Y97LBaPUEDFWaE/tgQGIoQedVDgw==
   dependencies:
-    "@keplr-wallet/crypto" "^0.9.10"
+    "@keplr-wallet/crypto" "0.9.12-rc.3"
     buffer "^6.0.3"
     delay "^4.4.0"
 
-"@keplr-wallet/cosmos@0.9.12-rc.0", "@keplr-wallet/cosmos@^0.9.12-rc.0":
-  version "0.9.12-rc.0"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/cosmos/-/cosmos-0.9.12-rc.0.tgz#2ad4690b457725d072f536b11311f58ae827dfa5"
-  integrity sha512-XxQf193bAEpLYcxmZatKWx5dqIxEiIEZn1sbsMjCmJSPLdrbsCkbgTM/OsYwK98CgV4JErbbeorEg96d/0trTw==
+"@keplr-wallet/cosmos@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/cosmos/-/cosmos-0.9.12-rc.3.tgz#c44a4da3a58a07647db7abaf5b272634d2a2edd2"
+  integrity sha512-sorbGcdFZ7RMHASbL1a1xDohVKQHVbBAFVElBpNusd6Ure8S70uo+3ycyVe/JEMp+vMcA0zCWZOJf3QUqhuXMQ==
   dependencies:
     "@cosmjs/launchpad" "^0.24.0-alpha.25"
-    "@keplr-wallet/crypto" "^0.9.10"
-    "@keplr-wallet/types" "^0.9.12-rc.0"
-    "@keplr-wallet/unit" "^0.9.12-rc.0"
+    "@keplr-wallet/crypto" "0.9.12-rc.3"
+    "@keplr-wallet/types" "0.9.12-rc.3"
+    "@keplr-wallet/unit" "0.9.12-rc.3"
     axios "^0.21.0"
     bech32 "^1.1.4"
     buffer "^6.0.3"
     long "^4.0.0"
     protobufjs "^6.10.2"
 
-"@keplr-wallet/crypto@0.9.10", "@keplr-wallet/crypto@^0.9.10":
-  version "0.9.10"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.9.10.tgz#2ea6f20c68fc284c4f6e7545af7a57bb6545190b"
-  integrity sha512-zjoUUL5Ky72eJBm7bd9kPNBTgQL/cFO6pbvPgVa32S8UZ6GlwsPSyiHuvq0k8z0t9X9GwdpuH0nrnlL4viU4fw==
+"@keplr-wallet/crypto@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.9.12-rc.3.tgz#56a59deed223a6ae928584518c8cb81e36b755cc"
+  integrity sha512-rHOs9YB5dKZpCRESgr1O0Fu/mk1DmnMlU4kyVrEQFZy6dfj2gpFHmkZkawNj7vbnub6dumMQJJPOROqT/BlwWQ==
   dependencies:
     bip32 "^2.0.6"
     bip39 "^3.0.3"
@@ -1904,10 +1904,10 @@
     elliptic "^6.5.3"
     sha.js "^2.4.11"
 
-"@keplr-wallet/ens@^0.9.0":
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/ens/-/ens-0.9.0.tgz#d05b0ce4cbadd71f770959e28c87af7fde22ca0b"
-  integrity sha512-ib1j18n2N/wVc+7Y2NcZxIUdMdw2hGnEiuelVQ8gNyOFKx4ZhJTlcMx5ro1Uc7JPFlb352AleH6kmi+gpSNVBQ==
+"@keplr-wallet/ens@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/ens/-/ens-0.9.12-rc.3.tgz#cbeeab07fa47590733e6e41661c7ae5edfb15960"
+  integrity sha512-yTKbhneAxSgHj/l2vo9FvSI73TtBMiDwEigoOPmamiW3efJ21THiheVIQef4SXF4RxDZ2wpDWPgO+gl8L+kYHQ==
   dependencies:
     "@ensdomains/resolver" "^0.2.4"
     buffer "^6.0.3"
@@ -1915,21 +1915,21 @@
     mobx "^6.1.7"
     web3 "^1.2.6"
 
-"@keplr-wallet/hooks@0.9.12-rc.0":
-  version "0.9.12-rc.0"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/hooks/-/hooks-0.9.12-rc.0.tgz#dc09162347b4b34ee0b65cd8632fab510ac8f59b"
-  integrity sha512-C3a1aDVeK5Mw4qbgW4/HYNlS3/SQoQeFhYKzm2z+aM7Sfc1FbQIG+cQzgPDIhF3eUtngSXEnpOUmPoNfah2a7Q==
+"@keplr-wallet/hooks@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/hooks/-/hooks-0.9.12-rc.3.tgz#9e011ed97e9deb29b0815e03a126378a3c8ae3e4"
+  integrity sha512-XHirYzPxF73Q9DJcgxTvWyR86FqHyVzHFRJf1RKRxMYejwni9qK4hzaEr4MMs7jgNRStil7QJcywBZN9dz24dA==
   dependencies:
     "@cosmjs/launchpad" "^0.24.0-alpha.25"
-    "@keplr-wallet/background" "^0.9.12-rc.0"
-    "@keplr-wallet/common" "^0.9.10"
-    "@keplr-wallet/cosmos" "^0.9.12-rc.0"
-    "@keplr-wallet/crypto" "^0.9.10"
-    "@keplr-wallet/ens" "^0.9.0"
-    "@keplr-wallet/popup" "^0.9.6"
-    "@keplr-wallet/stores" "^0.9.12-rc.0"
-    "@keplr-wallet/types" "^0.9.12-rc.0"
-    "@keplr-wallet/unit" "^0.9.12-rc.0"
+    "@keplr-wallet/background" "0.9.12-rc.3"
+    "@keplr-wallet/common" "0.9.12-rc.3"
+    "@keplr-wallet/cosmos" "0.9.12-rc.3"
+    "@keplr-wallet/crypto" "0.9.12-rc.3"
+    "@keplr-wallet/ens" "0.9.12-rc.3"
+    "@keplr-wallet/popup" "0.9.12-rc.3"
+    "@keplr-wallet/stores" "0.9.12-rc.3"
+    "@keplr-wallet/types" "0.9.12-rc.3"
+    "@keplr-wallet/unit" "0.9.12-rc.3"
     long "^4.0.0"
     mobx "^6.1.7"
     mobx-utils "^6.0.3"
@@ -1937,60 +1937,60 @@
     react-router "^5.1.2"
     utility-types "^3.10.0"
 
-"@keplr-wallet/popup@^0.9.6":
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/popup/-/popup-0.9.6.tgz#577e3786527eb9d2f34d88d0991fc618a726c4b7"
-  integrity sha512-VZy4lEj5rVz8ToLUZy5qzfQXzqbEJ2k77eDkBU7fgeEYqB/ae0WkFyzfw+MHV+VhuYEUAxTq0Qjj/5K/KUISgQ==
+"@keplr-wallet/popup@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/popup/-/popup-0.9.12-rc.3.tgz#1194dbfe899d77e9469e3e68c8abf6a7c732f2e1"
+  integrity sha512-V2b5mJQqXV8PCViBSZxzRMvLRVGelqgh4Z9kqpCLAwXkqRQbfvqj2vRX4wvqsJm4FT4HXOr87uHH0trzFc8z3Q==
 
-"@keplr-wallet/provider-mock@0.9.12-rc.0":
-  version "0.9.12-rc.0"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/provider-mock/-/provider-mock-0.9.12-rc.0.tgz#4c7fdd7d1b55457ce621d19addb72d33b27e767a"
-  integrity sha512-PBFRT5YOuiEbJ6kiEETmG7z5bgONI627kSULWDWAQHe67N5Yel6lM4HqOOsPMRulsShCnGCCXiArUNoByi3fVg==
+"@keplr-wallet/provider-mock@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/provider-mock/-/provider-mock-0.9.12-rc.3.tgz#874334ecdd26d05e18c035e474055bc0d431b1f1"
+  integrity sha512-e0KyZGe4OZSLDlKGj1t8xjtwWuIqGKpw6oTG3RSgwxEIJ/zfY3eZKLnoKSay0s9aaiPiRje9H9drXP1oFw0ZgQ==
   dependencies:
     "@cosmjs/launchpad" "^0.24.0-alpha.25"
     "@cosmjs/proto-signing" "^0.24.0-alpha.25"
-    "@keplr-wallet/cosmos" "^0.9.12-rc.0"
-    "@keplr-wallet/provider" "^0.9.12-rc.0"
-    "@keplr-wallet/router" "^0.9.6"
-    "@keplr-wallet/types" "^0.9.12-rc.0"
+    "@keplr-wallet/cosmos" "0.9.12-rc.3"
+    "@keplr-wallet/provider" "0.9.12-rc.3"
+    "@keplr-wallet/router" "0.9.12-rc.3"
+    "@keplr-wallet/types" "0.9.12-rc.3"
     buffer "^6.0.3"
     deepmerge "^4.2.2"
     secretjs "^0.17.0"
 
-"@keplr-wallet/provider@0.9.12-rc.0", "@keplr-wallet/provider@^0.9.12-rc.0":
-  version "0.9.12-rc.0"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/provider/-/provider-0.9.12-rc.0.tgz#bc02c566d6fc6fb12ab86ae1bfd36de70780a037"
-  integrity sha512-Z+Mt0bC4L7U+tG6ZpW4jl+Rrh1XWwT7/lytVLkjZKUzwPeQk/mRIcAESZhka1Nm2hugn9cClxX4R4kVOXmozaA==
+"@keplr-wallet/provider@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/provider/-/provider-0.9.12-rc.3.tgz#8f7e0251ec7afa2a16b3673c46770ac8ea2fcc6e"
+  integrity sha512-FhwGlhyucDISntTkw6aMyqIly6MQ6UxYP0k+LtWrVddgTl6zpaePDeLvEp8XgCzLECoHq21mpdkzfOx4zNOJWw==
   dependencies:
     "@cosmjs/launchpad" "^0.24.0-alpha.25"
     "@cosmjs/proto-signing" "^0.24.0-alpha.25"
-    "@keplr-wallet/router" "^0.9.6"
-    "@keplr-wallet/types" "^0.9.12-rc.0"
+    "@keplr-wallet/router" "0.9.12-rc.3"
+    "@keplr-wallet/types" "0.9.12-rc.3"
     buffer "^6.0.3"
     deepmerge "^4.2.2"
     long "^4.0.0"
     secretjs "^0.17.0"
 
-"@keplr-wallet/router@^0.9.6":
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/router/-/router-0.9.6.tgz#43ad4692af9ea18a13dafe97a83369b03d491c9b"
-  integrity sha512-TZfqkRwGOMk0nbgel41xLfD8ifM59WIXNt90rJjKynNT1/TOLTGxRDC8Ie5yY9Oak0lz7rmdrWNTOsvtWyuplA==
+"@keplr-wallet/router@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/router/-/router-0.9.12-rc.3.tgz#aa11de306ee58d9d894a7e9cfe4b9cd710f58437"
+  integrity sha512-pnBF0troIJuobJZa3AeyAPBElXVvKq2uh93N4kb+vbEHfJ7LWBLZa5DovqZntVOPM2wSmJObWApdZUqM2ueAFQ==
 
-"@keplr-wallet/stores@0.9.12-rc.0", "@keplr-wallet/stores@^0.9.12-rc.0":
-  version "0.9.12-rc.0"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/stores/-/stores-0.9.12-rc.0.tgz#69c0c5cda7101ac12356d7a1cebc0065db824088"
-  integrity sha512-+0PunEdSBYMiih0dRmCXxj4UrkdGMBDvqmDyTG7W+4eAGRnf0irPNy8E2pOrWu1A3PN12/svkoQI82YLjNeZeQ==
+"@keplr-wallet/stores@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/stores/-/stores-0.9.12-rc.3.tgz#5153730b4393956b826ecd6ab0bc318a81623100"
+  integrity sha512-kBLPjDK3qORCz1ebBqtGPsyb64HzoVkCxtyd5oXLcX6VSBFB7THgxybboCbE2hpy61VddrY3qZrA9EtdGLNaFA==
   dependencies:
     "@cosmjs/encoding" "^0.24.0-alpha.25"
     "@cosmjs/launchpad" "^0.24.0-alpha.25"
     "@cosmjs/tendermint-rpc" "^0.24.1"
-    "@keplr-wallet/background" "^0.9.12-rc.0"
-    "@keplr-wallet/common" "^0.9.10"
-    "@keplr-wallet/cosmos" "^0.9.12-rc.0"
-    "@keplr-wallet/crypto" "^0.9.10"
-    "@keplr-wallet/router" "^0.9.6"
-    "@keplr-wallet/types" "^0.9.12-rc.0"
-    "@keplr-wallet/unit" "^0.9.12-rc.0"
+    "@keplr-wallet/background" "0.9.12-rc.3"
+    "@keplr-wallet/common" "0.9.12-rc.3"
+    "@keplr-wallet/cosmos" "0.9.12-rc.3"
+    "@keplr-wallet/crypto" "0.9.12-rc.3"
+    "@keplr-wallet/router" "0.9.12-rc.3"
+    "@keplr-wallet/types" "0.9.12-rc.3"
+    "@keplr-wallet/unit" "0.9.12-rc.3"
     axios "^0.21.0"
     buffer "^6.0.3"
     deepmerge "^4.2.2"
@@ -2001,10 +2001,10 @@
     p-queue "^6.6.2"
     utility-types "^3.10.0"
 
-"@keplr-wallet/types@0.9.12-rc.0", "@keplr-wallet/types@^0.9.12-rc.0":
-  version "0.9.12-rc.0"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/types/-/types-0.9.12-rc.0.tgz#291af64da298f77b84068bb7c2435ff52b71e28a"
-  integrity sha512-3NIYsP1HuZx8BoZEoffUrj2UCWe6i/0YwolVdekaDiwst00pxKUdyumJ6xp04yDFgQq5idWAjqOciGNxHUjsSQ==
+"@keplr-wallet/types@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/types/-/types-0.9.12-rc.3.tgz#3a448453c076cf0ace4bb8563a61ca289a4fefb1"
+  integrity sha512-f4kM+fNtxz1i2RTEnn61UXTJY51RGVFQkwyhuvb6O1LKq0k+9kMbSYiF/KKPwtIvCJ5hkaaNXMrxofL0LqwrMg==
   dependencies:
     "@cosmjs/launchpad" "^0.24.0-alpha.25"
     "@cosmjs/proto-signing" "^0.24.0-alpha.25"
@@ -2012,35 +2012,35 @@
     long "^4.0.0"
     secretjs "^0.17.0"
 
-"@keplr-wallet/unit@0.9.12-rc.0", "@keplr-wallet/unit@^0.9.12-rc.0":
-  version "0.9.12-rc.0"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/unit/-/unit-0.9.12-rc.0.tgz#c4d7c268d871a89d9cfd333f54a1f9bfff2d4318"
-  integrity sha512-9IDVGWWwb7F7VzlsaM1iqh8FETE0vCKnwb1ymLJKak3LH4G/eMPnqJYqTeRFPtNIIRjb/+jrHuycw39U0a/evw==
+"@keplr-wallet/unit@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/unit/-/unit-0.9.12-rc.3.tgz#deb513dbc1a249c1c5e9f07a5476a2b843aa4f0a"
+  integrity sha512-4fxEPrVvVMo5VsDhVvjO9lvHlc4Thf38AgTcU3vWM+BKb/TwQjKwX9LlMLso0z3H8ArjC+pKeRWb+BC/CrObdQ==
   dependencies:
-    "@keplr-wallet/types" "^0.9.12-rc.0"
+    "@keplr-wallet/types" "0.9.12-rc.3"
     big-integer "^1.6.48"
     utility-types "^3.10.0"
 
-"@keplr-wallet/wc-client@0.9.12-rc.0":
-  version "0.9.12-rc.0"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/wc-client/-/wc-client-0.9.12-rc.0.tgz#52f681b92c7413d470ae678a0cf281c59a746e22"
-  integrity sha512-NI2RIA0t1uNlhxw1WeiFldEck5xNCsPl0MgmB4IFAb62YhzQTY1dZg+W4oNWbPDdF+8Vww7Is44+UaN8zj9ihg==
+"@keplr-wallet/wc-client@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/wc-client/-/wc-client-0.9.12-rc.3.tgz#15960d01bc1988398741cc52d715e2fe9b1603ec"
+  integrity sha512-1rWSLwyp5i+aP3ncjz70MHyeuya/HbFaVEQDTk6vHHKOfzLvc1ECOawOPC2BlK0FxQgwJ9TijIJltfSKgMVXnQ==
   dependencies:
     "@cosmjs/launchpad" "^0.24.0-alpha.25"
     "@cosmjs/proto-signing" "^0.24.0-alpha.25"
-    "@keplr-wallet/common" "^0.9.10"
-    "@keplr-wallet/provider" "^0.9.12-rc.0"
-    "@keplr-wallet/types" "^0.9.12-rc.0"
+    "@keplr-wallet/common" "0.9.12-rc.3"
+    "@keplr-wallet/provider" "0.9.12-rc.3"
+    "@keplr-wallet/types" "0.9.12-rc.3"
     "@walletconnect/types" "^1.6.4"
     "@walletconnect/utils" "^1.6.4"
     buffer "^6.0.3"
     deepmerge "^4.2.2"
     secretjs "^0.17.0"
 
-"@keplr-wallet/wc-qrcode-modal@0.9.0":
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/wc-qrcode-modal/-/wc-qrcode-modal-0.9.0.tgz#fda8aeac608c7a7c10eb387337ef3c9d9d9a4026"
-  integrity sha512-l0Dj0NPsYIwuvIaHO5q5jZOvhhQAzd0XDMxOimIOKi6w6ZaM62p5nY+le3kCgy3XqdJv+vsXs8vVixMWknq0nQ==
+"@keplr-wallet/wc-qrcode-modal@0.9.12-rc.3":
+  version "0.9.12-rc.3"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/wc-qrcode-modal/-/wc-qrcode-modal-0.9.12-rc.3.tgz#399ec37af2a5173af652eba0d06776b4b9857734"
+  integrity sha512-pBzuCl6E4Nzocd3JTxXiBym3ZdtE01rxSxqog+fSpjzISQMVCEo5RyNNQnXOqQrp05jIMKP/MyBNArVQUaRUAw==
   dependencies:
     "@walletconnect/browser-utils" "^1.6.5"
     "@walletconnect/types" "^1.6.5"
