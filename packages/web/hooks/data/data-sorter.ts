@@ -35,6 +35,13 @@ export class DataSorter<TData> implements DataProcessor<TData[]> {
         if (typeof bData === "boolean") {
           bData = new Dec(bData ? 1 : 0);
         }
+        // attempt to use raw number
+        if (typeof aData === "number") {
+          aData = new Dec(aData);
+        }
+        if (typeof bData === "number") {
+          bData = new Dec(bData);
+        }
       } catch {
         // not numerical
         return aData.toString().localeCompare(bData.toString());

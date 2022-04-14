@@ -1,7 +1,7 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useState, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { Staking } from "@keplr-wallet/stores";
-import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useStore } from "../stores";
 import { SearchBox } from "../components/input";
@@ -36,15 +36,20 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
         account.bech32Address
       ).delegations;
 
+    const randomSortVals = useMemo(
+      () => activeValidators.map(() => Math.random()),
+      [activeValidators]
+    );
+
     // get minimum info for display, mark validators users are delegated to
     const activeDelegatedValidators: {
       address: string;
       validatorName?: string;
       validatorImgSrc?: string;
       validatorCommission: RatePretty;
-      isDelegated: boolean;
+      isDelegated: boolean | number;
     }[] = activeValidators.map(
-      ({ operator_address, description, commission }) => {
+      ({ operator_address, description, commission }, index) => {
         const validatorImg =
           queryValidators.getValidatorThumbnail(operator_address);
         return {
@@ -55,7 +60,9 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
           isDelegated: userValidatorDelegations.some(
             ({ delegation }) =>
               delegation.validator_address === operator_address
-          ),
+          )
+            ? true
+            : randomSortVals[index],
         };
       }
     );
@@ -125,7 +132,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
                   `!h-14 ${
                     address === selectedValidatorAddress
                       ? "bg-surface/30 border border-selected-validator"
-                      : isDelegated
+                      : isDelegated === true
                       ? "bg-card"
                       : "bg-surface"
                   }`,
