@@ -8,6 +8,7 @@ import { ObservableAmountConfig } from "@osmosis-labs/stores";
 import { Button } from "../components/buttons";
 import { InputBox } from "../components/input";
 import { Error } from "../components/alert";
+import { CheckBox } from "../components/control";
 import { ModalBase, ModalBaseProps } from "./base";
 
 export const LockTokensModal: FunctionComponent<
@@ -20,13 +21,22 @@ export const LockTokensModal: FunctionComponent<
     }[];
     amountConfig: ObservableAmountConfig;
     availableToken?: CoinPretty;
-    onLockToken: (gaugeId: string) => void;
+    onLockToken: (gaugeId: string, electSuperfluid: boolean) => void;
+    /* Used to label the main button as "Next" to choose validator or "Bond" to reuse chosen sfs validator. */
+    hasSuperfluidValidator?: boolean;
   }
 > = observer((props) => {
-  const { gauges, amountConfig: config, availableToken, onLockToken } = props;
+  const {
+    gauges,
+    amountConfig: config,
+    availableToken,
+    onLockToken,
+    hasSuperfluidValidator,
+  } = props;
   const [selectedGaugeIndex, setSelectedGaugeIndex] = useState<number | null>(
     null
   );
+  const [electSuperfluid, setElectSuperfluid] = useState(true);
 
   return (
     <ModalBase {...props}>
@@ -48,6 +58,21 @@ export const LockTokensModal: FunctionComponent<
               />
             ))}
           </div>
+        </div>
+        <div className="flex gap-2 ml-auto">
+          <CheckBox
+            className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
+            isOn={electSuperfluid}
+            onToggle={() => setElectSuperfluid(!electSuperfluid)}
+          >
+            Superfluid Stake
+          </CheckBox>
+          <Image
+            alt=""
+            src={"/icons/superfluid-osmo.svg"}
+            height={22}
+            width={22}
+          />
         </div>
         <div className="flex flex-col gap-2 border border-white-faint rounded-2xl p-4">
           <span className="subtitle1">Amount To Bond</span>
@@ -78,17 +103,17 @@ export const LockTokensModal: FunctionComponent<
         <Button
           className="h-14 w-96 mt-3 mx-auto"
           size="lg"
-          disabled={config.error !== undefined}
+          disabled={config.error !== undefined || selectedGaugeIndex === null}
           onClick={() => {
             const gauge = gauges.find(
               (_, index) => index === selectedGaugeIndex
             );
             if (gauge) {
-              onLockToken(gauge.id);
+              onLockToken(gauge.id, electSuperfluid);
             }
           }}
         >
-          Bond
+          {electSuperfluid && !hasSuperfluidValidator ? "Next" : "Bond"}
         </Button>
       </div>
     </ModalBase>

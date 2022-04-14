@@ -991,7 +991,7 @@ export class OsmosisAccountImpl {
    * @param memo Tx memo.
    * @param onFulfill Callback to handle tx fullfillment.
    */
-  async sendSuperfluidDelegate(
+  async sendSuperfluidDelegateMsg(
     lockIds: string[],
     validatorAddress: string,
     memo: string = "",

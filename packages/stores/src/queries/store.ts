@@ -12,6 +12,7 @@ import {
   ObservableQueryAccountLockedCoins,
   ObservableQueryAccountUnlockingCoins,
   ObservableQueryAccountLocked,
+  ObservableSyntheticLockupsByLockId,
 } from "./lockup";
 import {
   ObservableQueryEpochProvisions,
@@ -64,6 +65,7 @@ export class OsmosisQueriesImpl {
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
 
   public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
+  public readonly querySyntheticLockupsByLockId: DeepReadonly<ObservableSyntheticLockupsByLockId>;
   public readonly queryUnlockingCoins: DeepReadonly<ObservableQueryAccountUnlockingCoins>;
   public readonly queryAccountLocked: DeepReadonly<ObservableQueryAccountLocked>;
 
@@ -93,6 +95,11 @@ export class OsmosisQueriesImpl {
     chainGetter: ChainGetter
   ) {
     this.queryLockedCoins = new ObservableQueryAccountLockedCoins(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+    this.querySyntheticLockupsByLockId = new ObservableSyntheticLockupsByLockId(
       kvStore,
       chainId,
       chainGetter

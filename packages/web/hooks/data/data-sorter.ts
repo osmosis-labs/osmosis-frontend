@@ -28,8 +28,15 @@ export class DataSorter<TData> implements DataProcessor<TData[]> {
         if (typeof bData === "string") {
           bData = new Dec(bData);
         }
+        // attempt to use boolean
+        if (typeof aData === "boolean") {
+          aData = new Dec(aData ? 1 : 0);
+        }
+        if (typeof bData === "boolean") {
+          bData = new Dec(bData ? 1 : 0);
+        }
       } catch {
-        // not numerical strings
+        // not numerical
         return aData.toString().localeCompare(bData.toString());
       }
 

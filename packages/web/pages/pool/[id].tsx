@@ -23,8 +23,11 @@ import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { BaseCell, Table } from "../../components/table";
 import { ExternalIncentiveGaugeAllowList, EmbedChainInfos } from "../../config";
-import { LockTokensModal } from "../../modals/lock-tokens";
-import { ManageLiquidityModal } from "../../modals/manage-liquidity";
+import {
+  LockTokensModal,
+  ManageLiquidityModal,
+  SuperfluidValidatorModal,
+} from "../../modals";
 import { useStore } from "../../stores";
 
 const Pool: FunctionComponent = observer(() => {
@@ -71,8 +74,16 @@ const Pool: FunctionComponent = observer(() => {
     | undefined;
   let guages: ObservableQueryGuageById[] | undefined;
   let superfluid:
-    | "not-superfluid-pool" // code smell that we don't do loading right
+    | "not-superfluid-pool" // code smell that we don't do loading right, consider other structure besides `undefined` for representing loading data
     | {
+        // has superfluid-able shares locked, but has not chosen sfs validator
+        upgradeableLPLockIds: {
+          amount: CoinPretty;
+          lockIds: string[];
+        };
+      }
+    | {
+        // has delegations or is undelegating
         delegations?: {
           validatorName?: string;
           validatorCommission?: RatePretty;
@@ -85,6 +96,10 @@ const Pool: FunctionComponent = observer(() => {
           amount: CoinPretty;
           endTime: Date;
         }[];
+        superfluidLPShares: {
+          amount: CoinPretty;
+          lockIds: string[];
+        };
       }
     | undefined;
 
@@ -186,91 +201,120 @@ const Pool: FunctionComponent = observer(() => {
         };
       }
     );
-    guages = queryOsmosis.queryLockableDurations.lockableDurations.map(
-      (duration) => {
-        const guageId =
-          queryOsmosis.queryIncentivizedPools.getIncentivizedGaugeId(
-            pool.id,
-            duration
-          )!;
-        return queryOsmosis.queryGauge.get(guageId);
-      }
-    );
+    const lockableDurations =
+      queryOsmosis.queryLockableDurations.lockableDurations;
+    guages = lockableDurations.map((duration) => {
+      const guageId =
+        queryOsmosis.queryIncentivizedPools.getIncentivizedGaugeId(
+          pool.id,
+          duration
+        )!;
+      return queryOsmosis.queryGauge.get(guageId);
+    });
 
     const isSuperfluid = queryOsmosis.querySuperfluidPools.isSuperfluidPool(
       pool.id
     );
-
-    superfluid = isSuperfluid
-      ? {
-          delegations: queryOsmosis.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(bech32Address)
-            .getDelegations(poolShareCurrency)
-            ?.map(({ validator_address, amount }) => {
-              const queryValidators =
-                queryCosmos.queryValidators.getQueryStatus(
-                  Staking.BondStatus.Bonded
-                );
-              const validatorInfo =
-                queryValidators.getValidator(validator_address);
-              let superfluidApr = queryCosmos.queryInflation.inflation.mul(
-                queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
-                  pool.id
-                )
-              );
-
-              const lockableDurations =
-                queryOsmosis.queryLockableDurations.lockableDurations;
-
-              if (lockableDurations.length > 0) {
-                const poolApr = queryOsmosis.queryIncentivizedPools.computeAPY(
-                  pool.id,
-                  lockableDurations[lockableDurations.length - 1],
-                  priceStore,
-                  fiat
-                );
-                superfluidApr = superfluidApr.add(
-                  poolApr.moveDecimalPointRight(2).toDec()
-                );
-              }
-
-              const commissionRateRaw =
-                validatorInfo?.commission.commission_rates.rate;
-
-              return {
-                validatorName: validatorInfo?.description.moniker,
-                validatorCommission: commissionRateRaw
-                  ? new RatePretty(new Dec(commissionRateRaw))
-                  : undefined,
-                validatorImgSrc:
-                  queryValidators.getValidatorThumbnail(validator_address),
-                apr: new RatePretty(superfluidApr.moveDecimalPointLeft(2)),
-                amount:
-                  queryOsmosis.querySuperfluidOsmoEquivalent.calculateOsmoEquivalent(
-                    amount
-                  ),
-              };
-            }),
-          undelegations: queryOsmosis.querySuperfluidUndelegations
-            .getQuerySuperfluidDelegations(bech32Address)
-            .getUndelegations(poolShareCurrency)
-            ?.map(({ validator_address, amount, end_time }) => ({
-              validatorName: queriesStore
-                .get(chainId)
-                .cosmos.queryValidators.getQueryStatus(
-                  Staking.BondStatus.Bonded
-                )
-                .getValidator(validator_address)?.description.moniker,
-              amount,
-              endTime: end_time,
-            })),
+    const upgradeableLPLockIds:
+      | {
+          amount: CoinPretty;
+          lockIds: string[];
         }
+      | undefined =
+      lockableDurations.length > 0
+        ? queryOsmosis.queryAccountLocked
+            .get(bech32Address)
+            .getLockedCoinWithDuration(
+              poolShareCurrency,
+              lockableDurations[lockableDurations.length - 1]
+            )
+        : undefined;
+    const notDelegatedLockedSfsLpShares =
+      queryOsmosis.querySuperfluidDelegations
+        .getQuerySuperfluidDelegations(bech32Address)
+        .getDelegations(poolShareCurrency)?.length === 0 &&
+      upgradeableLPLockIds &&
+      upgradeableLPLockIds.lockIds.length > 0;
+    superfluid = isSuperfluid
+      ? notDelegatedLockedSfsLpShares
+        ? { upgradeableLPLockIds }
+        : {
+            delegations: queryOsmosis.querySuperfluidDelegations
+              .getQuerySuperfluidDelegations(bech32Address)
+              .getDelegations(poolShareCurrency)
+              ?.map(({ validator_address, amount }) => {
+                const queryValidators =
+                  queryCosmos.queryValidators.getQueryStatus(
+                    Staking.BondStatus.Bonded
+                  );
+                const validatorInfo =
+                  queryValidators.getValidator(validator_address);
+                let superfluidApr = queryCosmos.queryInflation.inflation.mul(
+                  queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
+                    pool.id
+                  )
+                );
+
+                const lockableDurations =
+                  queryOsmosis.queryLockableDurations.lockableDurations;
+
+                if (lockableDurations.length > 0) {
+                  const poolApr =
+                    queryOsmosis.queryIncentivizedPools.computeAPY(
+                      pool.id,
+                      lockableDurations[lockableDurations.length - 1],
+                      priceStore,
+                      fiat
+                    );
+                  superfluidApr = superfluidApr.add(
+                    poolApr.moveDecimalPointRight(2).toDec()
+                  );
+                }
+
+                const commissionRateRaw =
+                  validatorInfo?.commission.commission_rates.rate;
+
+                return {
+                  validatorName: validatorInfo?.description.moniker,
+                  validatorCommission: commissionRateRaw
+                    ? new RatePretty(new Dec(commissionRateRaw))
+                    : undefined,
+                  validatorImgSrc:
+                    queryValidators.getValidatorThumbnail(validator_address),
+                  apr: new RatePretty(superfluidApr.moveDecimalPointLeft(2)),
+                  amount:
+                    queryOsmosis.querySuperfluidOsmoEquivalent.calculateOsmoEquivalent(
+                      amount
+                    ),
+                };
+              }),
+            undelegations: queryOsmosis.querySuperfluidUndelegations
+              .getQuerySuperfluidDelegations(bech32Address)
+              .getUndelegations(poolShareCurrency)
+              ?.map(({ validator_address, amount, end_time }) => ({
+                validatorName: queriesStore
+                  .get(chainId)
+                  .cosmos.queryValidators.getQueryStatus(
+                    Staking.BondStatus.Bonded
+                  )
+                  .getValidator(validator_address)?.description.moniker,
+                amount,
+                endTime: end_time,
+              })),
+            superfluidLPShares: queryOsmosis.queryAccountLocked
+              .get(bech32Address)
+              .getLockedCoinWithDuration(
+                poolShareCurrency,
+                lockableDurations[lockableDurations.length - 1]
+              ),
+          }
       : "not-superfluid-pool";
   }
 
   // eject to pools page if pool does not exist
   useEffect(() => {
     return autorun(() => {
+      // TODO: Bug- fix redirect to /pools when entering pool id (/pool/<id>) from url bar
       if (queryOsmosis.queryGammPools.poolExists(poolId as string) === false) {
         router.push("/pools");
       }
@@ -281,7 +325,7 @@ const Pool: FunctionComponent = observer(() => {
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
     useState(false);
   const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
-  const [addLiquidityConfig, removeLiquidityConfig, lockLPTokensConfig] =
+  const [addLiquidityConfig, removeLiquidityConfig, lockLPTokensAmountConfig] =
     useMemo(() => {
       if (pool) {
         return [
@@ -316,6 +360,9 @@ const Pool: FunctionComponent = observer(() => {
       return [undefined, undefined, undefined];
     }, [pool, chainStore, chainId, bech32Address, queriesStore, queryOsmosis]);
 
+  const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
+    useState(false);
+
   return (
     <main>
       {addLiquidityConfig && removeLiquidityConfig && (
@@ -340,12 +387,12 @@ const Pool: FunctionComponent = observer(() => {
           onRemoveLiquidity={() => console.log("liquidity removed")}
         />
       )}
-      {lockLPTokensConfig && (
+      {lockLPTokensAmountConfig && (
         <LockTokensModal
           isOpen={showLockLPTokenModal}
           title="Bond LP Tokens"
           onRequestClose={() => setShowLockLPTokenModal(false)}
-          amountConfig={lockLPTokensConfig}
+          amountConfig={lockLPTokensAmountConfig}
           availableToken={
             pool
               ? queryOsmosis.queryGammPoolShare.getAvailableGammShare(
@@ -386,11 +433,82 @@ const Pool: FunctionComponent = observer(() => {
               };
             }
           )}
-          onLockToken={() => {
+          hasSuperfluidValidator={
+            superfluid &&
+            typeof superfluid !== "string" &&
+            "delegations" in superfluid &&
+            superfluid.delegations &&
+            superfluid.delegations.length > 0
+          }
+          onLockToken={(_, electSuperfluid) => {
             setShowLockLPTokenModal(false);
+            if (electSuperfluid) {
+              setShowSuperfluidValidatorsModal(true);
+              // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
+            } else {
+              // TODO: merge send msg
+              console.log("send normal lock msg");
+            }
           }}
         />
       )}
+      {superfluid &&
+        superfluid !== "not-superfluid-pool" &&
+        pool &&
+        lockLPTokensAmountConfig && (
+          <SuperfluidValidatorModal
+            title="Select Superfluid Validator"
+            availableBondAmount={
+              "upgradeableLPLockIds" in superfluid
+                ? superfluid.upgradeableLPLockIds.amount // is delegating amount from existing lockup
+                : new CoinPretty(
+                    pool.shareCurrency, // is delegating amount from new/pending lockup
+                    lockLPTokensAmountConfig.amount !== ""
+                      ? lockLPTokensAmountConfig.amount
+                      : new Dec(0)
+                  )
+            }
+            isOpen={showSuperfluidValidatorModal}
+            onRequestClose={() => setShowSuperfluidValidatorsModal(false)}
+            isSendingMsg={account.txTypeInProgress !== ""}
+            onSelectValidator={async (validatorAddress) => {
+              if (superfluid && typeof superfluid !== "string") {
+                if ("upgradeableLPLockIds" in superfluid) {
+                  // is delegating existing locked shares
+                  try {
+                    await account.osmosis.sendSuperfluidDelegateMsg(
+                      superfluid.upgradeableLPLockIds.lockIds,
+                      validatorAddress,
+                      "",
+                      () => setShowSuperfluidValidatorsModal(false)
+                    );
+                  } catch (e) {
+                    console.error(e);
+                  }
+                } else if (
+                  "superfluidLPShares" in superfluid &&
+                  lockLPTokensAmountConfig
+                ) {
+                  try {
+                    await account.osmosis.sendLockAndSuperfluidDelegateMsg(
+                      [
+                        {
+                          currency: lockLPTokensAmountConfig.currency,
+                          amount: lockLPTokensAmountConfig.amount,
+                        },
+                      ],
+                      validatorAddress,
+                      "",
+                      () => setShowSuperfluidValidatorsModal(false)
+                    );
+                  } catch (e) {
+                    console.error(e);
+                  }
+                }
+              }
+            }}
+          />
+        )}
       <Overview
         title={
           <MetricLoader
@@ -473,7 +591,7 @@ const Pool: FunctionComponent = observer(() => {
               </p>
             </div>
             <div className="flex flex-col gap-2 text-right">
-              <span>Available LP tokens</span>
+              <span className="text-white-mid">Available LP tokens</span>
               <h5>
                 <MetricLoader className="h-6" isLoading={!userAvailableValue}>
                   {userAvailableValue?.toString() || "$0"}
@@ -528,10 +646,10 @@ const Pool: FunctionComponent = observer(() => {
                         queryOsmosis.queryIncentivizedPools.isAprFetching
                       }
                       superfluidApr={
-                        superfluid &&
-                        superfluid !== "not-superfluid-pool" &&
                         guages &&
-                        i === guages.length - 1
+                        i === guages.length - 1 &&
+                        superfluid &&
+                        superfluid !== "not-superfluid-pool"
                           ? new RatePretty(
                               queryCosmos.queryInflation.inflation
                                 .mul(
@@ -552,70 +670,103 @@ const Pool: FunctionComponent = observer(() => {
               </>
             )}
         </div>
-        {superfluid && superfluid !== "not-superfluid-pool" && (
-          <div className="max-w-container mx-auto p-10 flex flex-col gap-4">
-            <h5>Superfluid Staking</h5>
-            {superfluid.delegations?.map(
-              (
-                {
-                  validatorName,
-                  validatorCommission,
-                  validatorImgSrc,
-                  amount,
-                  apr,
-                },
-                index
-              ) => (
-                <div
-                  key={index}
-                  className="w-full p-0.5 rounded-xl bg-superfluid"
-                >
-                  <div className="flex flex-col w-full gap-1 bg-card rounded-xl py-5 px-7">
-                    <div className="flex place-content-between text-subtitle1">
-                      <span>My Superfluid Validator</span>
-                      <span>My Superfluid Delegation</span>
+        {superfluid &&
+          superfluid !== "not-superfluid-pool" &&
+          ("upgradeableLPLockIds" in superfluid ||
+            ("delegations" in superfluid &&
+              superfluid.delegations &&
+              superfluid.delegations.length > 0)) && (
+            <div className="max-w-container mx-auto p-10 flex flex-col gap-4">
+              <h5>Superfluid Staking</h5>
+              {"upgradeableLPLockIds" in superfluid ? (
+                <div className="mt-5 bg-card p-5 rounded-2xl flex items-center justify-between font-body">
+                  <div>
+                    <div className="text-base font-semibold text-white-high">
+                      Superfluid Staking Inactive
                     </div>
-                    <hr className="my-3 text-white-faint" />
-                    <div className="flex place-content-between">
-                      <div className="flex gap-3">
-                        <div className="rounded-full border border-enabledGold w-14 h-14 p-1 flex shrink-0">
-                          {validatorImgSrc && (
-                            <img
-                              className="rounded-full"
-                              alt="validator image"
-                              src={validatorImgSrc}
-                            />
-                          )}
-                        </div>
-                        <div className="flex flex-col place-content-evenly">
-                          <span className="text-lg text-white-high">
-                            <MetricLoader isLoading={!validatorName}>
-                              {validatorName}
-                            </MetricLoader>
-                          </span>
-                          <span className="text-sm text-iconDefault">
-                            Commission -{" "}
-                            <MetricLoader isLoading={!validatorCommission}>
-                              {validatorCommission?.toString() ?? ""}
-                            </MetricLoader>
-                          </span>
-                        </div>
-                      </div>
-                      <div>
-                        <h6 className="text-white-high">
-                          ~{amount.maxDecimals(0).trim(true).toString()}
-                        </h6>
-                        <span className="float-right text-sm text-iconDefault">
-                          ~{apr.maxDecimals(0).trim(true).toString()} APR
-                        </span>
-                      </div>
+                    <div className="mt-2 text-sm font-medium text-iconDefault">
+                      You have superfluid eligible bonded liquidity.
+                      <br />
+                      Choose a Superfluid Staking validator to earn additional
+                      rewards.
                     </div>
                   </div>
+                  <button
+                    className="bg-superfluid rounded-lg py-2 px-8 text-white-high font-semibold text-sm shadow-elevation-04dp"
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+
+                      setShowSuperfluidValidatorsModal(true);
+                    }}
+                  >
+                    Go Superfluid
+                  </button>
                 </div>
-              )
-            )}
-          </div>
-        )}
+              ) : (
+                "delegations" in superfluid &&
+                superfluid.delegations?.map(
+                  (
+                    {
+                      validatorName,
+                      validatorCommission,
+                      validatorImgSrc,
+                      amount,
+                      apr,
+                    },
+                    index
+                  ) => (
+                    <div
+                      key={index}
+                      className="w-full p-0.5 rounded-xl bg-superfluid"
+                    >
+                      <div className="flex flex-col w-full gap-1 bg-card rounded-xl py-5 px-7">
+                        <div className="flex place-content-between text-subtitle1">
+                          <span>My Superfluid Validator</span>
+                          <span>My Superfluid Delegation</span>
+                        </div>
+                        <hr className="my-3 text-white-faint" />
+                        <div className="flex place-content-between">
+                          <div className="flex gap-3">
+                            <div className="rounded-full border border-enabledGold w-14 h-14 p-1 flex shrink-0">
+                              {validatorImgSrc && (
+                                <img
+                                  className="rounded-full"
+                                  alt="validator image"
+                                  src={validatorImgSrc}
+                                />
+                              )}
+                            </div>
+                            <div className="flex flex-col place-content-evenly">
+                              <span className="text-lg text-white-high">
+                                <MetricLoader isLoading={!validatorName}>
+                                  {validatorName}
+                                </MetricLoader>
+                              </span>
+                              <span className="text-sm text-iconDefault">
+                                Commission -{" "}
+                                <MetricLoader isLoading={!validatorCommission}>
+                                  {validatorCommission?.toString() ?? ""}
+                                </MetricLoader>
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <h6 className="text-white-high">
+                              ~{amount.maxDecimals(0).trim(true).toString()}
+                            </h6>
+                            <span className="float-right text-sm text-iconDefault">
+                              ~{apr.maxDecimals(0).trim(true).toString()} APR
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                )
+              )}
+            </div>
+          )}
         <div className="max-w-container mx-auto p-10">
           <h6>My Bondings</h6>
           <Table<
@@ -652,16 +803,44 @@ const Pool: FunctionComponent = observer(() => {
               { display: "Amount" },
               {
                 display: "Action",
-                displayCell: ({ value, amount, lockIds }) => (
+                displayCell: ({ amount, lockIds, isSuperfluidDuration }) => (
                   <Button
                     type="arrow"
                     size="xs"
                     disabled={
-                      !account.isReadyToSendMsgs ||
+                      account.txTypeInProgress !== "" ||
                       amount?.toDec().equals(new Dec(0))
                     }
-                    onClick={() => {
-                      console.log(value, lockIds);
+                    onClick={async () => {
+                      if (!lockIds) return;
+                      try {
+                        if (isSuperfluidDuration) {
+                          const blockGasLimitLockIds = lockIds.slice(0, 4);
+
+                          blockGasLimitLockIds.forEach((lockId) =>
+                            queryOsmosis.querySyntheticLockupsByLockId
+                              .get(lockId)
+                              .fetch()
+                          );
+
+                          await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+                            blockGasLimitLockIds.map((lockId) => ({
+                              lockId,
+                              isSyntheticLock:
+                                queryOsmosis.querySyntheticLockupsByLockId.get(
+                                  lockId
+                                ).isSyntheticLock,
+                            }))
+                          );
+                        } else {
+                          const blockGasLimitLockIds = lockIds.slice(0, 10);
+                          await account.osmosis.sendBeginUnlockingMsg(
+                            blockGasLimitLockIds
+                          );
+                        }
+                      } catch (e) {
+                        console.error(e);
+                      }
                     }}
                   >
                     Unbond All
@@ -674,7 +853,12 @@ const Pool: FunctionComponent = observer(() => {
                 {
                   value: lockedAsset.duration.humanize(),
                   isSuperfluidDuration:
-                    index === (userLockedAssets?.length ?? 0) - 1,
+                    index === (userLockedAssets?.length ?? 0) - 1 &&
+                    superfluid &&
+                    typeof superfluid !== "string" &&
+                    "delegations" in superfluid &&
+                    superfluid.delegations &&
+                    superfluid.delegations.length > 0,
                 }, // Unbonding Duration
                 {
                   value:
@@ -687,7 +871,17 @@ const Pool: FunctionComponent = observer(() => {
                     .trim(true)
                     .toString(),
                 }, // Amount
-                { ...lockedAsset, value: lockedAsset.duration.humanize() }, // Unbond All button
+                {
+                  ...lockedAsset,
+                  value: lockedAsset.duration.humanize(),
+                  isSuperfluidDuration:
+                    index === (userLockedAssets?.length ?? 0) - 1 &&
+                    superfluid &&
+                    typeof superfluid !== "string" &&
+                    "delegations" in superfluid &&
+                    superfluid.delegations &&
+                    superfluid.delegations.length > 0,
+                }, // Unbond All button
               ]) ?? [[{ value: "" }], [{ value: "" }], [{ value: "" }]]
             }
           />
@@ -726,6 +920,7 @@ const Pool: FunctionComponent = observer(() => {
         )}
         {superfluid &&
           superfluid !== "not-superfluid-pool" &&
+          !("upgradeableLPLockIds" in superfluid) &&
           superfluid.undelegations &&
           superfluid.undelegations.length > 0 && (
             <div className="max-w-container mx-auto p-10">
