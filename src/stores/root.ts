@@ -1542,6 +1542,36 @@ export class RootStore {
 					},
 				],
 			},
+			{
+				poolId: '681',
+				currencies: [
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-229' }], 'afet'),
+						coinDenom: 'FET',
+						coinDecimals: 18,
+					},
+				],
+			},
+			{
+				poolId: '682',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-229' }], 'afet'),
+						coinDenom: 'FET',
+						coinDecimals: 18,
+					},
+				],
+			},
 		]);
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
