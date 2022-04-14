@@ -1,7 +1,7 @@
 import { FunctionComponent, useState, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { Staking } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useStore } from "../stores";
 import { SearchBox } from "../components/input";
