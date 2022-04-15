@@ -1765,6 +1765,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'RAC',
 				coinMinimalDenom: 'cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa:RAC',
 				coinDecimals: 6,
+				coinGeckoId: 'pool:rac',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/rac.svg',
 			},
 		],
