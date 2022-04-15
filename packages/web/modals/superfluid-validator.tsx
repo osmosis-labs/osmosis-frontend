@@ -131,7 +131,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
                 makeClass: () =>
                   `!h-14 ${
                     address === selectedValidatorAddress
-                      ? "bg-surface/30 border border-selected-validator"
+                      ? "bg-selected-validator border border-[#E13CBD]"
                       : isDelegated === true
                       ? "bg-card"
                       : "bg-surface"
