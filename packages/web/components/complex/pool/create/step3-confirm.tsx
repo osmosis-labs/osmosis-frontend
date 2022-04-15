@@ -82,6 +82,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
           <div className="flex items-center gap-4">
             <InputBox
               className="w-44"
+              type="number"
               inputClassName="text-right text-h6 font-h6"
               currentValue={config.swapFee}
               onInput={(value) => config.setSwapFee(value)}
