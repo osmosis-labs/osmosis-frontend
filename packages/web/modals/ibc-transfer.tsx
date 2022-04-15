@@ -221,7 +221,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   !isCustomWithdrawValid
                 }
                 loading={inTransit}
-                onClick={transfer}
+                onClick={() => transfer(() => props.onRequestClose())}
               >
                 <h6 className="text-base md:text-lg">
                   {isWithdraw ? "Withdraw" : "Deposit"}

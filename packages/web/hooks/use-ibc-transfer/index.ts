@@ -10,6 +10,8 @@ import {
   ObservableAmountConfig,
   basicIbcTransfer,
   OsmosisAccount,
+  IbcBroadcastEvent,
+  IbcFullfillmentEvent,
 } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { useAmountConfig } from "../use-amount-config";
@@ -40,7 +42,12 @@ export function useIbcTransfer({
   AccountSetBase & CosmosAccount & CosmwasmAccount & OsmosisAccount,
   ObservableAmountConfig,
   boolean,
-  () => void,
+  (
+    /** Handle IBC transfer events containing `send_packet` event type. */
+    onFulfill?: (event: IbcFullfillmentEvent) => void,
+    /** Handle when the IBC trasfer successfully broadcast to relayers. */
+    onBroadcasted?: (event: IbcBroadcastEvent) => void
+  ) => void,
   CustomCounterpartyConfig | undefined
 ] {
   const { chainStore, accountStore, queriesStore } = useStore();
@@ -125,7 +132,10 @@ export function useIbcTransfer({
     }
   }, [account.walletStatus, currency.originCurrency, currency.originChainId]);
 
-  const transfer = async () => {
+  const transfer: (
+    onFulfill?: (event: IbcFullfillmentEvent) => void,
+    onBroadcasted?: (event: IbcBroadcastEvent) => void
+  ) => void = async (onFulfill, onBroadcasted) => {
     try {
       if (isWithdraw) {
         await basicIbcTransfer(
@@ -140,7 +150,9 @@ export function useIbcTransfer({
             channelId: destChannelId,
           },
           currency,
-          amountConfig
+          amountConfig,
+          onBroadcasted,
+          onFulfill
         );
       } else {
         await basicIbcTransfer(
@@ -150,7 +162,6 @@ export function useIbcTransfer({
             channelId: destChannelId,
             contractTransfer:
               ics20ContractAddress &&
-              currency &&
               currency.originCurrency &&
               "contractAddress" in currency.originCurrency
                 ? {
@@ -166,7 +177,9 @@ export function useIbcTransfer({
             channelId: sourceChannelId,
           },
           currency,
-          amountConfig
+          amountConfig,
+          onBroadcasted,
+          onFulfill
         );
       }
     } catch (e) {

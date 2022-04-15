@@ -726,6 +726,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
           "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr:NETA",
         coinDecimals: 6,
         coinImageUrl: "/tokens/neta.svg",
+        coinGeckoId: "neta",
       },
     ],
     feeCurrencies: [
@@ -737,7 +738,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         coinImageUrl: "/tokens/juno.svg",
       },
     ],
-    features: ["stargate", "ibc-transfer"],
+    features: ["stargate", "ibc-transfer", "cosmwasm", "wasmd_0.24+"],
     explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
   },
   {
