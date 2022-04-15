@@ -1,18 +1,18 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import {
-  AccountSetBase,
+  AccountSetBaseSuper,
   CosmosAccount,
   CosmwasmAccount,
 } from "@keplr-wallet/stores";
 
 export interface IbcTransferSender {
-  account: AccountSetBase & CosmosAccount;
+  account: AccountSetBaseSuper & CosmosAccount;
   chainId: string;
   channelId: string;
   /** If provided, the transfer is assumed to be CW20 token. */
   contractTransfer?: {
     contractAddress: string;
-    cosmwasmAccount: AccountSetBase & CosmwasmAccount;
+    cosmwasmAccount: AccountSetBaseSuper & CosmwasmAccount;
     ics20ContractAddress: string;
   };
 }

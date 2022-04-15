@@ -10,7 +10,9 @@ import {
 
 /** Use to perform a standard IBC transfer from `sender` to `counterparty`. Supports CW20 transfers. */
 export async function basicIbcTransfer(
+  /** Where the tokens originate. */
   sender: IbcTransferSender,
+  /** Where the tokens should end up. */
   counterparty: IbcTransferCounterparty,
   currency: IBCCurrency,
   amountConfig: ObservableAmountConfig,
@@ -123,7 +125,7 @@ export async function basicIbcTransfer(
     }
 
     const msg = {
-      channel: counterparty.channelId,
+      channel: sender.channelId,
       remote_address: recipient,
       // 15 min
       timeout: 900,
@@ -149,10 +151,10 @@ export async function basicIbcTransfer(
     );
   } else {
     // perform standard IBC token transfer
-    await counterparty.account.cosmos.sendIBCTransferMsg(
+    await sender.account.cosmos.sendIBCTransferMsg(
       {
         portId: "transfer",
-        channelId: counterparty.channelId,
+        channelId: sender.channelId,
         counterpartyChainId: counterparty.chainId,
       },
       amountConfig.amount,

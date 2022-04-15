@@ -312,7 +312,7 @@ const Pool: FunctionComponent = observer(() => {
           }}
         />
       )}
-      {lockLPTokensConfig && (
+      {lockLPTokensConfig && lockupGauges && (
         <LockTokensModal
           isOpen={showLockLPTokenModal}
           title="Bond LP Tokens"
