@@ -130,7 +130,7 @@ export class OsmosisAccountImpl {
         aminoMsgs: [msg],
         protoMsgs: [
           {
-            type_url: "/osmosis.gamm.v1beta1.MsgCreatePool",
+            typeUrl: "/osmosis.gamm.v1beta1.MsgCreatePool",
             value: osmosis.gamm.v1beta1.MsgCreatePool.encode({
               sender: msg.value.sender,
               poolParams: {
@@ -266,7 +266,7 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              type_url: "/osmosis.gamm.v1beta1.MsgJoinPool",
+              typeUrl: "/osmosis.gamm.v1beta1.MsgJoinPool",
               value: osmosis.gamm.v1beta1.MsgJoinPool.encode({
                 sender: msg.value.sender,
                 poolId: Long.fromString(msg.value.poolId),
@@ -382,7 +382,7 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              type_url: "/osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn",
+              typeUrl: "/osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn",
               value: osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn.encode({
                 sender: msg.value.sender,
                 poolId: Long.fromString(msg.value.poolId),
@@ -503,7 +503,7 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              type_url: "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn",
+              typeUrl: "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn",
               value: osmosis.gamm.v1beta1.MsgSwapExactAmountIn.encode({
                 sender: msg.value.sender,
                 routes: msg.value.routes.map((route) => {
@@ -619,7 +619,7 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              type_url: "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn",
+              typeUrl: "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn",
               value: osmosis.gamm.v1beta1.MsgSwapExactAmountIn.encode({
                 sender: msg.value.sender,
                 routes: msg.value.routes.map(
@@ -734,7 +734,7 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              type_url: "/osmosis.gamm.v1beta1.MsgSwapExactAmountOut",
+              typeUrl: "/osmosis.gamm.v1beta1.MsgSwapExactAmountOut",
               value: osmosis.gamm.v1beta1.MsgSwapExactAmountOut.encode({
                 sender: msg.value.sender,
                 routes: msg.value.routes.map(
@@ -865,7 +865,7 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              type_url: "/osmosis.gamm.v1beta1.MsgExitPool",
+              typeUrl: "/osmosis.gamm.v1beta1.MsgExitPool",
               value: osmosis.gamm.v1beta1.MsgExitPool.encode({
                 sender: msg.value.sender,
                 poolId: Long.fromString(msg.value.poolId),
@@ -944,7 +944,7 @@ export class OsmosisAccountImpl {
         aminoMsgs: [msg],
         protoMsgs: [
           {
-            type_url: "/osmosis.lockup.MsgLockTokens",
+            typeUrl: "/osmosis.lockup.MsgLockTokens",
             value: osmosis.lockup.MsgLockTokens.encode({
               owner: msg.value.owner,
               duration: {
@@ -1005,7 +1005,7 @@ export class OsmosisAccountImpl {
 
     const protoMsgs = msgs.map((msg) => {
       return {
-        type_url: "/osmosis.lockup.MsgBeginUnlocking",
+        typeUrl: "/osmosis.lockup.MsgBeginUnlocking",
         value: osmosis.lockup.MsgBeginUnlocking.encode({
           owner: msg.value.owner,
           ID: Long.fromString(msg.value.ID),
