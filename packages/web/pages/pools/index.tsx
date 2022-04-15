@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { CoinPretty, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import { useState, useMemo } from "react";
@@ -79,9 +79,29 @@ const Pools: NextPage = observer(function () {
           onRequestClose={() => setIsCreatingPool(false)}
           title="Create New Pool"
           createPoolConfig={createPoolConfig}
-          onCreatePool={() => {
-            // TODO: send create pool msg
-            console.log("pool created");
+          isSendingMsg={account.txTypeInProgress !== ""}
+          onCreatePool={async () => {
+            try {
+              await account.osmosis.sendCreatePoolMsg(
+                createPoolConfig.swapFee,
+                createPoolConfig.assets.map((asset) => ({
+                  weight: new Dec(asset.percentage)
+                    .mul(DecUtils.getTenExponentNInPrecisionRange(4))
+                    .truncate()
+                    .toString(),
+                  token: {
+                    amount: asset.amountConfig.amount,
+                    currency: asset.amountConfig.currency,
+                  },
+                })),
+                "",
+                () => setIsCreatingPool(false)
+              );
+            } catch (e) {
+              console.error(e);
+            }
+
+            createPoolConfig.clearAssets();
           }}
         />
       )}

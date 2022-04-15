@@ -7,7 +7,14 @@ import { POOL_CREATION_FEE } from ".";
 
 export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
   observer(
-    ({ step, createPoolConfig: config, backStep, advanceStep, children }) => {
+    ({
+      step,
+      createPoolConfig: config,
+      isSendingMsg,
+      backStep,
+      advanceStep,
+      children,
+    }) => {
       const amountError = config.getErrorOfAmount()?.message;
       const percentageError = config.getErrorOfPercentage()?.message;
       const canAdvance =
@@ -53,6 +60,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
               className="w-80"
               size="lg"
               onClick={() => advanceStep()}
+              loading={isSendingMsg}
               disabled={!canAdvance}
             >
               {step === 3 ? "Create Pool" : "Next"}

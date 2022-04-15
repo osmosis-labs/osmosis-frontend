@@ -62,6 +62,7 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                   <div className="flex place-content-end items-center gap-2.5">
                     <InputBox
                       className="w-44"
+                      type="number"
                       inputClassName="text-right text-h6 font-h6"
                       currentValue={amountConfig.amount}
                       onInput={(value) => amountConfig.setAmount(value)}
