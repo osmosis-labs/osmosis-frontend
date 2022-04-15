@@ -134,7 +134,7 @@ const LockupItem: FunctionComponent<{
         {
           "shadow-elevation-08dp": isSelected,
         },
-        "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer border border-white-faint",
+        "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer",
         superfluidApr
           ? "bg-superfluid"
           : isSelected
