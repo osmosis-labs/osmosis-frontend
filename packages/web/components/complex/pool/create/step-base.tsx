@@ -15,12 +15,13 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
       advanceStep,
       children,
     }) => {
-      const amountError = config.getErrorOfAmount()?.message;
-      const percentageError = config.getErrorOfPercentage()?.message;
+      const percentageError = config.percentageError?.message;
+      const amountError = config.amountError?.message;
+      const swapFeeError = config.swapFeeError?.message;
       const canAdvance =
         (step === 1 && !percentageError) ||
         (step === 2 && !amountError) ||
-        (step === 3 && config.acknowledgeFee);
+        (step === 3 && config.acknowledgeFee && !swapFeeError);
 
       return (
         <div className="flex flex-col gap-5">
@@ -45,6 +46,9 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
           )}
           {amountError && step === 2 && (
             <Error className="mx-auto" message={amountError} />
+          )}
+          {swapFeeError && step === 3 && (
+            <Error className="mx-auto" message={swapFeeError} />
           )}
           <div className="flex gap-4 mx-auto">
             {step !== 1 && (

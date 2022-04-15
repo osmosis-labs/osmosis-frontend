@@ -1,5 +1,4 @@
 import { observable, makeObservable, action } from "mobx";
-import { computedFn } from "mobx-utils";
 import { TxChainSetter, IFeeConfig } from "@keplr-wallet/hooks";
 import {
   ObservableQueryBalances,
@@ -10,6 +9,11 @@ import { AppCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
 import { ObservableAmountConfig } from "./amount-config";
 import { CREATE_POOL_MAX_ASSETS } from ".";
+
+export interface CreatePoolConfigOpts {
+  minAssetsCount: number;
+  maxAssetsCount: number;
+}
 
 export class ObservableCreatePoolConfig extends TxChainSetter {
   @observable
@@ -36,13 +40,19 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
   @observable
   public acknowledgeFee = false;
 
+  protected _opts: CreatePoolConfigOpts;
+
   constructor(
     chainGetter: ChainGetter,
     initialChainId: string,
     sender: string,
     queriesStore: IQueriesStore,
     queryBalances: ObservableQueryBalances,
-    feeConfig?: IFeeConfig
+    feeConfig?: IFeeConfig,
+    opts: CreatePoolConfigOpts = {
+      minAssetsCount: 2,
+      maxAssetsCount: 8,
+    }
   ) {
     super(chainGetter, initialChainId);
 
@@ -50,6 +60,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     this._queriesStore = queriesStore;
     this._queryBalances = queryBalances;
     this._feeConfig = feeConfig;
+    this._opts = opts;
 
     makeObservable(this);
   }
@@ -156,12 +167,16 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     });
   }
 
-  readonly getErrorOfPercentage = computedFn((): Error | undefined => {
-    if (this.assets.length < 2) {
-      return new Error("Minimum of 2 assets required");
+  get percentageError(): Error | undefined {
+    if (this.assets.length < this._opts.minAssetsCount) {
+      return new Error(
+        `Minimum of ${this._opts.minAssetsCount} assets required`
+      );
     }
-    if (this.assets.length > 8) {
-      return new Error("Too many assets");
+    if (this.assets.length > this._opts.maxAssetsCount) {
+      return new Error(
+        `Maximumm of ${this._opts.maxAssetsCount} assets allowed`
+      );
     }
 
     let totalPercentage = new Dec(0);
@@ -181,7 +196,9 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     if (!totalPercentage.equals(new Dec(100))) {
       return new Error("Sum of percentages is not 100%");
     }
+  }
 
+  get swapFeeError(): Error | undefined {
     try {
       const dec = new Dec(this.swapFee);
       if (dec.lt(new Dec(0))) {
@@ -193,14 +210,14 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     } catch {
       return new Error("Invalid swap fee");
     }
-  });
+  }
 
-  readonly getErrorOfAmount = computedFn((): Error | undefined => {
+  get amountError(): Error | undefined {
     for (const asset of this.assets) {
       const error = asset.amountConfig.error;
       if (error != null) {
         return error;
       }
     }
-  });
+  }
 }
