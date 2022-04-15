@@ -501,6 +501,7 @@ const Pool: FunctionComponent = observer(() => {
                       "",
                       () => setShowSuperfluidValidatorsModal(false)
                     );
+                    // TODO: clear/reset LP lock amount config ??
                   } catch (e) {
                     console.error(e);
                   }

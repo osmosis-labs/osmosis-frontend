@@ -21,8 +21,10 @@ export const LockTokensModal: FunctionComponent<
     }[];
     amountConfig: ObservableAmountConfig;
     availableToken?: CoinPretty;
-    onLockToken: (gaugeId: string, electSuperfluid: boolean) => void;
-    /* Used to label the main button as "Next" to choose validator or "Bond" to reuse chosen sfs validator. */
+    /** `electSuperfluid` is left undefined if it is irrelevant- if the user has already opted into superfluid in the past. */
+    onLockToken: (gaugeId: string, electSuperfluid?: boolean) => void;
+    /* Used to label the main button as "Next" to choose validator or "Bond" to reuse chosen sfs validator.
+       If `true`, "Superfluid Stake" checkbox will not be shown since user has already opted in. */
     hasSuperfluidValidator?: boolean;
   }
 > = observer((props) => {
@@ -59,21 +61,23 @@ export const LockTokensModal: FunctionComponent<
             ))}
           </div>
         </div>
-        <div className="flex gap-2 ml-auto">
-          <CheckBox
-            className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
-            isOn={electSuperfluid}
-            onToggle={() => setElectSuperfluid(!electSuperfluid)}
-          >
-            Superfluid Stake
-          </CheckBox>
-          <Image
-            alt=""
-            src={"/icons/superfluid-osmo.svg"}
-            height={22}
-            width={22}
-          />
-        </div>
+        {!hasSuperfluidValidator && (
+          <div className="flex gap-2 ml-auto">
+            <CheckBox
+              className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
+              isOn={electSuperfluid}
+              onToggle={() => setElectSuperfluid(!electSuperfluid)}
+            >
+              Superfluid Stake
+            </CheckBox>
+            <Image
+              alt=""
+              src={"/icons/superfluid-osmo.svg"}
+              height={22}
+              width={22}
+            />
+          </div>
+        )}
         <div className="flex flex-col gap-2 border border-white-faint rounded-2xl p-4">
           <span className="subtitle1">Amount To Bond</span>
           {availableToken && (
@@ -109,7 +113,10 @@ export const LockTokensModal: FunctionComponent<
               (_, index) => index === selectedGaugeIndex
             );
             if (gauge) {
-              onLockToken(gauge.id, electSuperfluid);
+              onLockToken(
+                gauge.id,
+                hasSuperfluidValidator ? undefined : electSuperfluid
+              );
             }
           }}
         >
