@@ -823,6 +823,12 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'usaage',
 	},
 	{
+		counterpartyChainId: 'imversed-test-1',
+		sourceChannelId: 'channel-221',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'nimv',
+	},
+	{
 		counterpartyChainId: 'sentinelhub-2',
 		sourceChannelId: 'channel-2',
 		destChannelId: 'channel-0',
@@ -1375,6 +1381,47 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'http://blockexplorer-1.testnet.saage.io/transactions/{txHash}',
+	},
+
+	{
+		rpc: 'https://tx-endpoint-test.imversed.com:443',
+		rest: 'https://query-endpoint-test.imversed.com:443',
+		chainId: 'imversed-test-1',
+		chainName: 'imversedtestnet',
+		stakeCurrency: {
+			coinDenom: 'IMV',
+			coinMinimalDenom: 'nimv',
+			coinDecimals: 6,
+			coinImageUrl: window.location.origin + '/public/assets/tokens/imversed.png',
+			coinGeckoId: 'imversedtest',
+		},
+		bip44: { coinType: 118 },
+		bech32Config: Bech32Address.defaultBech32Config('imv'),
+		currencies: [
+			{
+				coinDenom: 'IMV',
+				coinMinimalDenom: 'nimv',
+				coinDecimals: 6,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/imversed.png',
+				coinGeckoId: 'imversedtest',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'IMV',
+				coinMinimalDenom: 'nimv',
+				coinDecimals: 6,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/imversed.png',
+				coinGeckoId: 'imversedtest',
+			},
+		],
+		gasPriceStep: {
+			low: 0.00025,
+			average: 0.0025,
+			high: 0.025,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://tex-t.imversed.com/transactions/${txHash}',
 	},
 	{
 		rpc: 'https://rpc-sentinel.keplr.app',
