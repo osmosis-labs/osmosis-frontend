@@ -12,8 +12,11 @@ export class DataSorter<TData> implements DataProcessor<TData[]> {
     this._data = [...data]; // we will use a copy of the data, since sort() mutates inplace.
   }
 
-  /** Key is a path of arbitrary length. Example: `"attributes.color"` or `"attributes.color.shade"` */
-  process(key: string) {
+  /** If `data` is a list of objects, key is a path of arbitrary length into the respective objects. Example: `"attributes.color"` or `"attributes.color.shade"`.
+   *
+   *  If `data` is a list of sortable raw values, leave `key` blank.
+   */
+  process(key: string = "") {
     this._data.sort((a: unknown, b: unknown) => {
       let aData: SortingData = get(a, key);
       let bData: SortingData = get(b, key);

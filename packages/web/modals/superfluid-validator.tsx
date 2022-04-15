@@ -36,6 +36,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
         account.bech32Address
       ).delegations;
 
+    // vals from 0..<1 used to initially & randomly sort validators in `isDelegated` key
     const randomSortVals = useMemo(
       () => activeValidators.map(() => Math.random()),
       [activeValidators]
@@ -47,7 +48,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
       validatorName?: string;
       validatorImgSrc?: string;
       validatorCommission: RatePretty;
-      isDelegated: boolean | number;
+      isDelegated: number;
     }[] = activeValidators.map(
       ({ operator_address, description, commission }, index) => {
         const validatorImg =
@@ -61,8 +62,8 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
             ({ delegation }) =>
               delegation.validator_address === operator_address
           )
-            ? true
-            : randomSortVals[index],
+            ? 1 // = new Dec(1)
+            : randomSortVals[index], // = new Dec(0..<1)
         };
       }
     );
@@ -95,7 +96,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
               placeholder="Search by name"
             />
           </div>
-          <div className="overflow-auto h-72">
+          <div className="overflow-y-scroll overflow-x-clip h-72">
             <Table
               className="w-full"
               tHeadClassName="sticky top-0"
@@ -132,8 +133,8 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
                   `!h-14 ${
                     address === selectedValidatorAddress
                       ? "bg-selected-validator border border-[#E13CBD]"
-                      : isDelegated === true
-                      ? "bg-card"
+                      : isDelegated === 1
+                      ? "bg-cardInner"
                       : "bg-surface"
                   }`,
                 onClick: () => setSelectedValidatorAddress(address),
