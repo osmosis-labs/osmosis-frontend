@@ -1543,6 +1543,41 @@ export class RootStore {
 				],
 			},
 			{
+				poolId: '678',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-208' }], 'uusdc'),
+						coinDenom: 'USDC',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '679',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-208' }], 'frax-wei'),
+						coinDenom: 'FRAX',
+						coinDecimals: 18,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-208' }], 'uusdt'),
+						coinDenom: 'USDT',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-208' }], 'uusdc'),
+						coinDenom: 'USDC',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
 				poolId: '681',
 				currencies: [
 					{
