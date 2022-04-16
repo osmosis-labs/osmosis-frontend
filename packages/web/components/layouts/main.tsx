@@ -129,10 +129,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
         >
           <div
             className={classNames({ hidden: showSidebar })}
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowSidebar(true);
-            }}
+            onClick={() => setShowSidebar(true)}
           >
             <Image alt="menu" src="/icons/menu.svg" height={38} width={38} />
           </div>
