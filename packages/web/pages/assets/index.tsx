@@ -20,7 +20,7 @@ import { IbcTransferModal } from "../../modals/ibc-transfer";
 const INIT_POOL_CARD_COUNT = 6;
 
 const Assets: NextPage = observer(() => (
-  <main>
+  <main className="bg-background">
     <AssetsOverview />
     <PoolAssets />
     <ChainAssets />
@@ -77,7 +77,7 @@ const PoolAssets: FunctionComponent = observer(() => {
   let ownedPoolIds = queriesStore
     .get(chainId)
     .osmosis.queryGammPoolShare.getOwnPools(bech32Address);
-  const [showAllPools, setShowAllPools] = useState(() => false);
+  const [showAllPools, setShowAllPools] = useState(false);
 
   return (
     <section className="bg-background">

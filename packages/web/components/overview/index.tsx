@@ -37,14 +37,18 @@ export const Overview: FunctionComponent<Props> = ({
   bgImageUrl,
 }) => (
   <section
-    className="bg-background bg-right-bottom bg-contain bg-no-repeat "
-    style={{
-      backgroundImage: `url(${bgImageUrl})`,
-    }}
+    className="bg-background bg-right-bottom bg-contain bg-no-repeat"
+    style={
+      bgImageUrl
+        ? {
+            backgroundImage: `url(${bgImageUrl})`,
+          }
+        : undefined
+    }
   >
-    <div className="max-w-container mx-auto">
-      <div className="p-10">
-        <div className="flex items-center">
+    <div className="max-w-container mx-auto pt-24 md:pt-0">
+      <div className="p-10 ">
+        <div className="flex flex-wrap items-center">
           {typeof title === "string" ? (
             <h5 className="text-white-full">{title}</h5>
           ) : (
@@ -62,7 +66,7 @@ export const Overview: FunctionComponent<Props> = ({
             </Button>
           ))}
         </div>
-        <div className="mt-6 flex items-center gap-20">
+        <div className="mt-6 flex flex-wrap items-center gap-20">
           {primaryOverviewLabels
             .slice(0, bgImageUrl ? 2 : 4)
             .map((label, index) => (
@@ -70,7 +74,7 @@ export const Overview: FunctionComponent<Props> = ({
             ))}
         </div>
         {secondaryOverviewLabels && (
-          <div className="mt-6 flex items-center gap-20">
+          <div className="mt-6 flex flex-wrap items-center gap-20">
             {secondaryOverviewLabels.slice(0, 3).map((label, index) => (
               <OverviewLabelValue
                 prominence="secondary"

@@ -16,17 +16,13 @@ export const OverviewLabelValue: FunctionComponent<Props> = ({
   prominence = "primary",
   label,
   value,
-}) => {
-  return (
-    <div className={classNames("flex flex-col", containerClassName)}>
-      <div className={classNames("text-white-mid", labelClassName)}>
-        {label}
-      </div>
-      {prominence === "primary" ? (
-        <h4 className={classNames("mt-3", valueClassName)}>{value}</h4>
-      ) : (
-        <h6 className={classNames("mt-3", valueClassName)}>{value}</h6>
-      )}
-    </div>
-  );
-};
+}) => (
+  <div className={classNames("flex flex-col", containerClassName)}>
+    <div className={classNames("text-white-mid", labelClassName)}>{label}</div>
+    {prominence === "primary" ? (
+      <h4 className={classNames("mt-3", valueClassName)}>{value}</h4>
+    ) : (
+      <h6 className={classNames("mt-3", valueClassName)}>{value}</h6>
+    )}
+  </div>
+);
