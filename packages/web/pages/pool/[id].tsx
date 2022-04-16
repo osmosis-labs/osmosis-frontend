@@ -20,6 +20,7 @@ import {
 import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { BaseCell, Table } from "../../components/table";
+import { truncateString } from "../../components/utils";
 import { ExternalIncentiveGaugeAllowList, EmbedChainInfos } from "../../config";
 import { LockTokensModal } from "../../modals/lock-tokens";
 import { ManageLiquidityModal } from "../../modals/manage-liquidity";
@@ -355,18 +356,13 @@ const Pool: FunctionComponent = observer(() => {
       )}
       <Overview
         title={
-          <MetricLoader
-            className="h-7 w-64"
-            isLoading={
-              !pool ||
-              pool?.poolAssets.some(
-                (asset) => asset.amount.currency.coinDenom.startsWith("ibc") // TODO: this may problematic for permissionless assets on frontier w/ no config
-              )
-            }
-          >
-            <h5>{`Pool #${pool?.id} : ${pool?.poolAssets
-              .map((asset) => asset.amount.currency.coinDenom)
-              .join(" / ")}`}</h5>
+          <MetricLoader className="h-7 w-64" isLoading={!pool}>
+            <h5>
+              {`Pool #${pool?.id} : ${pool?.poolAssets
+                .map((asset) => asset.amount.currency.coinDenom)
+                .map((denom) => truncateString(denom, 8))
+                .join(" / ")}`}
+            </h5>
           </MetricLoader>
         }
         titleButtons={[
