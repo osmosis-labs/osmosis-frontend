@@ -1393,7 +1393,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'nimv',
 			coinDecimals: 6,
 			coinImageUrl: window.location.origin + '/public/assets/tokens/imv.png',
-			coinGeckoId: 'imversedtest',
+			// coinGeckoId: 'imversedtest',
 		},
 		bip44: { coinType: 118 },
 		bech32Config: Bech32Address.defaultBech32Config('imv'),
@@ -1403,7 +1403,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'nimv',
 				coinDecimals: 6,
 				coinImageUrl: window.location.origin + '/public/assets/tokens/imv.png',
-				coinGeckoId: 'imversedtest',
+				// coinGeckoId: 'imversedtest',
 			},
 		],
 		feeCurrencies: [
@@ -1412,7 +1412,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'nimv',
 				coinDecimals: 6,
 				coinImageUrl: window.location.origin + '/public/assets/tokens/imv.png',
-				coinGeckoId: 'imversedtest',
+				// coinGeckoId: 'imversedtest',
 			},
 		],
 		gasPriceStep: {
