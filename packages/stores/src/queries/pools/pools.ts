@@ -73,7 +73,8 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
   /** Returns `undefined` if pool data has not loaded, and `true`/`false` for if the pool exists. */
   readonly poolExists: (id: string) => boolean | undefined = computedFn(
     (id: string) => {
-      if (!this.response) {
+      // TODO: address pagination limit
+      if (!this.response || this.isFetching || !this.isStarted) {
         return undefined;
       }
 
