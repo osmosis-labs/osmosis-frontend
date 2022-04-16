@@ -1,8 +1,8 @@
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { ObservablePool } from "../../queries/pools";
+import { ObservableQueryPool } from "../../queries/pools";
 
 export interface ObservablePoolWithFeeMetrics extends PoolFeesMetrics {
-  pool: ObservablePool;
+  pool: ObservableQueryPool;
   liquidity: PricePretty;
   myLiquidity?: PricePretty;
   epochsRemaining?: number;

@@ -1,4 +1,10 @@
-import { ChainGetter, CoinGeckoPriceStore } from "@keplr-wallet/stores";
+import {
+  ChainGetter,
+  CoinGeckoPriceStore,
+  ObservableChainQuery,
+  QueryResponse,
+} from "@keplr-wallet/stores";
+import { KVStore } from "@keplr-wallet/common";
 import { Currency } from "@keplr-wallet/types";
 import {
   CoinPretty,
@@ -13,18 +19,52 @@ import { Pool, WeightedPool, WeightedPoolRaw } from "@osmosis-labs/pools";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-export class ObservablePool {
+export class ObservableQueryPool extends ObservableChainQuery<{
+  pool: WeightedPoolRaw;
+}> {
   @observable.ref
   protected raw: WeightedPoolRaw;
 
+  /** Constructed with the assumption that initial pool data has already been fetched
+   *  using the `/pools` endpoint.
+   **/
+  // TODO: overload construction with only pool id
   constructor(
-    protected readonly chainId: string,
-    protected readonly chainGetter: ChainGetter,
+    readonly kvStore: KVStore,
+    chainId: string,
+    readonly chainGetter: ChainGetter,
     raw: WeightedPoolRaw
   ) {
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      `/osmosis/gamm/v1beta1/pools/${raw.id}`
+    );
+
     this.raw = raw;
 
     makeObservable(this);
+  }
+
+  protected setResponse(
+    response: Readonly<
+      QueryResponse<{
+        pool: WeightedPoolRaw;
+      }>
+    >
+  ) {
+    super.setResponse(response);
+
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    const denomsInPool: string[] = [];
+    // Try to register the Denom of Asset in the Pool in Response.(For IBC tokens)
+    for (const asset of response.data.pool.poolAssets) {
+      denomsInPool.push(asset.token.denom);
+    }
+
+    chainInfo.addUnknownCurrencies(...denomsInPool);
+    this.setRaw(response.data.pool);
   }
 
   @action

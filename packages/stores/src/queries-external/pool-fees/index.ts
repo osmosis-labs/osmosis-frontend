@@ -4,7 +4,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { CoinGeckoPriceStore } from "@keplr-wallet/stores";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { pow } from "@osmosis-labs/math";
-import { ObservablePool } from "../../queries/pools";
+import { ObservableQueryPool } from "../../queries/pools";
 import { ObservableQueryExternal } from "../store";
 import { ObservablePoolWithFeeMetrics, PoolFeesMetrics } from "./types";
 
@@ -27,7 +27,7 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<{
 
   readonly makePoolWithFeeMetrics = computedFn(
     (
-      pool: ObservablePool,
+      pool: ObservableQueryPool,
       priceStore: CoinGeckoPriceStore
     ): ObservablePoolWithFeeMetrics => {
       const poolFeesMetrics = this.getPoolFeesMetrics(pool.id, priceStore);

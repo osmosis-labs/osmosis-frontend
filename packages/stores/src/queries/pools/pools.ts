@@ -10,23 +10,24 @@ import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
 import { autorun, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { ObservableQueryNumPools } from "./num-pools";
-import { ObservablePool } from "./pool";
+import { ObservableQueryPool } from "./pool";
 import { Pools } from "./types";
+import { GET_POOLS_PAGINATION_LIMIT } from ".";
 
 export class ObservableQueryPools extends ObservableChainQuery<Pools> {
   constructor(
     kvStore: KVStore,
     chainId: string,
     chainGetter: ChainGetter,
-    queryNumPools: ObservableQueryNumPools
+    queryNumPools: ObservableQueryNumPools,
+    limit = GET_POOLS_PAGINATION_LIMIT
   ) {
     super(
       kvStore,
       chainId,
       chainGetter,
-      "/osmosis/gamm/v1beta1/pools?pagination.limit=1000"
+      `/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`
     );
-    let limit = 1000;
 
     makeObservable(this);
 
@@ -55,9 +56,10 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
   }
 
   /** Returns `undefined` if the pool does not exist or the data has not loaded. */
-  readonly getPool: (id: string) => ObservablePool | undefined = computedFn(
-    (id: string) => {
+  readonly getPool: (id: string) => ObservableQueryPool | undefined =
+    computedFn((id: string) => {
       if (!this.response) {
+        // TODO: consider using
         return undefined;
       }
 
@@ -66,9 +68,13 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
         return undefined;
       }
 
-      return new ObservablePool(this.chainId, this.chainGetter, raw);
-    }
-  );
+      return new ObservableQueryPool(
+        this.kvStore,
+        this.chainId,
+        this.chainGetter,
+        raw
+      );
+    });
 
   /** Returns `undefined` if pool data has not loaded, and `true`/`false` for if the pool exists. */
   readonly poolExists: (id: string) => boolean | undefined = computedFn(
@@ -104,7 +110,7 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
     }
   );
 
-  readonly getAllPools = computedFn((): ObservablePool[] => {
+  readonly getAllPools = computedFn((): ObservableQueryPool[] => {
     if (!this.response) {
       return [];
     }
@@ -115,7 +121,7 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
   });
 
   readonly getPools = computedFn(
-    (itemsPerPage: number, page: number): ObservablePool[] => {
+    (itemsPerPage: number, page: number): ObservableQueryPool[] => {
       if (!this.response) {
         return [];
       }
@@ -134,7 +140,7 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
       priceStore: CoinGeckoPriceStore,
       itemsPerPage: number,
       page: number
-    ): ObservablePool[] => {
+    ): ObservableQueryPool[] => {
       if (!this.response) {
         return [];
       }
@@ -143,7 +149,7 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
 
       pools = pools
         .slice()
-        .sort((poolA: ObservablePool, poolB: ObservablePool) => {
+        .sort((poolA: ObservableQueryPool, poolB: ObservableQueryPool) => {
           const poolATvl = poolA.computeTotalValueLocked(priceStore).toDec();
           const poolBTvl = poolB.computeTotalValueLocked(priceStore).toDec();
           return poolATvl.gt(poolBTvl) ? -1 : 1;

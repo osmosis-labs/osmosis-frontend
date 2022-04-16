@@ -157,7 +157,7 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries.osmosis.queryGammPools.waitResponse();
+          this.queries.queryGammPools.waitFreshResponse();
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
@@ -201,12 +201,13 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "joinPool",
       async () => {
-        await queries.queryGammPools.waitFreshResponse();
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
+
+        await queryPool.waitFreshResponse();
 
         const pool = queryPool.pool;
         if (!pool) {
@@ -294,7 +295,7 @@ export class OsmosisAccountImpl {
               bal.fetch();
             });
 
-          this.queries.queryGammPools.fetch();
+          this.queries.queryGammPools.getPool(poolId)?.fetch();
         }
 
         onFulfill?.(tx);
@@ -303,6 +304,8 @@ export class OsmosisAccountImpl {
   }
 
   /**
+   * Join pool with only one asset.
+   *
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#join-swap-extern-amount-in
    * @param poolId Id of pool to swap within.
    * @param tokenIn Token being swapped in.
@@ -322,14 +325,13 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "joinPool",
       async () => {
-        // await queries.queryGammPools.waitFreshResponse();
-        // TODO: Only fetch (update) individual pool
-        // TODO: handle reject tx
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
+
+        await queryPool.waitFreshResponse();
 
         const pool = queryPool.pool;
         if (!pool) {
@@ -401,16 +403,13 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
-          // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries.osmosis.queryGammPools.waitResponse();
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
               bal.fetch();
             });
-
-          this.queries.queryGammPools.fetch();
+          this.queries.queryGammPools.getPool(poolId)?.fetch();
         }
 
         onFulfill?.(tx);
@@ -420,6 +419,7 @@ export class OsmosisAccountImpl {
 
   /**
    * Perform multiple swaps that are routed through multiple pools, with a desired input token.
+   *
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-in
    * @param routes Desired pools to swap through.
    * @param tokenIn Token being swapped.
@@ -577,12 +577,13 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "swapExactAmountIn",
       async () => {
-        await queries.queryGammPools.waitFreshResponse();
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
+
+        await queryPool.waitFreshResponse();
 
         const pool = queryPool.pool;
         if (!pool) {
@@ -661,7 +662,7 @@ export class OsmosisAccountImpl {
             });
 
           // Refresh the pool
-          this.queries.queryGammPools.fetch();
+          this.queries.queryGammPools.getPool(poolId)?.fetch();
         }
 
         onFulfill?.(tx);
@@ -691,12 +692,13 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "swapExactAmountOut",
       async () => {
-        await queries.queryGammPools.waitFreshResponse();
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
+
+        await queryPool.waitFreshResponse();
 
         const pool = queryPool.pool;
         if (!pool) {
@@ -774,6 +776,8 @@ export class OsmosisAccountImpl {
                 bal.fetch();
               }
             });
+
+          this.queries.queryGammPools.getPool(poolId)?.fetch();
         }
 
         onFulfill?.(tx);
@@ -802,13 +806,13 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "exitPool",
       async () => {
-        // await queries.queryGammPools.waitFreshResponse();
-        // TODO: fetch from individual pool
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
+
+        await queryPool.waitFreshResponse();
 
         const pool = queryPool.pool;
         if (!pool) {
@@ -884,14 +888,12 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
-          // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .fetch();
 
-          // Refresh the pool
-          this.queries.queryGammPools.fetch();
+          this.queries.queryGammPools.getPool(poolId)?.fetch();
         }
 
         onFulfill?.(tx);
