@@ -86,14 +86,18 @@ export class ObservableQueryGammPoolShare {
     (bech32Address: string, poolId: string): RatePretty => {
       const pool = this.queryPools.getPool(poolId);
       if (!pool) {
-        return new RatePretty(new Int(0)).ready(false);
+        return new RatePretty(0).ready(false);
+      }
+
+      const totalShare = pool.totalShare;
+
+      if (totalShare.toDec().isZero()) {
+        return new RatePretty(0);
       }
 
       const share = this.getLockedGammShare(bech32Address, poolId);
       // Remember that the unlockings are included in the locked.
       // So, no need to handle the unlockings here
-
-      const totalShare = pool.totalShare;
 
       return new RatePretty(share.quo(totalShare).moveDecimalPointLeft(2));
     }
@@ -109,14 +113,17 @@ export class ObservableQueryGammPoolShare {
     ): PricePretty => {
       const pool = this.queryPools.getPool(poolId);
       if (!pool) {
-        return new PricePretty(fiatCurrency, new Dec(0));
+        return new PricePretty(fiatCurrency, 0).ready(false);
       }
 
+      const totalShare = pool.totalShare;
+
+      if (totalShare.toDec().isZero()) {
+        return new PricePretty(fiatCurrency, 0);
+      }
       // Remember that the unlockings are included in the locked.
       // So, no need to handle the unlockings here
       const share = this.getLockedGammShare(bech32Address, poolId);
-
-      const totalShare = pool.totalShare;
 
       return poolLiqudity.mul(new IntPretty(share.quo(totalShare))).trim(true);
     }
@@ -155,11 +162,16 @@ export class ObservableQueryGammPoolShare {
     (bech32Address: string, poolId: string): RatePretty => {
       const pool = this.queryPools.getPool(poolId);
       if (!pool) {
-        return new RatePretty(new Int(0)).ready(false);
+        return new RatePretty(0).ready(false);
       }
 
+      const totalShare = pool.totalShare;
+
+      if (totalShare.toDec().isZero()) {
+        return new RatePretty(0);
+      }
       return new RatePretty(
-        this.getAvailableGammShare(bech32Address, poolId).quo(pool.totalShare)
+        this.getAvailableGammShare(bech32Address, poolId).quo(totalShare)
       );
     }
   );
@@ -203,7 +215,7 @@ export class ObservableQueryGammPoolShare {
     }[] => {
       const shareRatio = this.getAllGammShareRatio(bech32Address, poolId);
       const pool = this.queryPools.getPool(poolId);
-      if (!pool) {
+      if (!pool || !shareRatio.isReady) {
         return [];
       }
 
