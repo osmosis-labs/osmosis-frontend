@@ -59,7 +59,7 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
   readonly getPool: (id: string) => ObservableQueryPool | undefined =
     computedFn((id: string) => {
       if (!this.response) {
-        // TODO: consider using
+        // TODO: consider constructing individual `ObservableQueryPool` and fetching, adding to array, and returning
         return undefined;
       }
 
