@@ -137,7 +137,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
         {showSidebar && (
           <div className="fixed md:ml-sidebar h-screen w-screen bg-black/30" />
         )}
-        <div className="md:ml-sidebar h-screen w-screen">{children}</div>
+        <div className="md:ml-sidebar h-screen">{children}</div>
       </React.Fragment>
     );
   }
