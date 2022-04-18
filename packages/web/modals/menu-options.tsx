@@ -28,7 +28,6 @@ export const MenuOptionsModal: FunctionComponent<
             {
               "bg-white-faint text-white-full": id === props.selectedOptionId,
               "text-iconDefault": id !== props.selectedOptionId,
-              "rounded-t-xlinset": index === 0,
               "rounded-b-xlinset": index === props.options.length - 1,
             }
           )}
