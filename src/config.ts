@@ -3045,20 +3045,27 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		rpc: 'https://rpc.provenance.io/',
 		rest: 'https://api.provenance.io',
 		chainId: 'pio-mainnet-1',
-		chainName: 'provenance',
+		chainName: 'Provenance',
 		stakeCurrency: {
-			coinDenom: 'hash',
+			coinDenom: 'HASH',
 			coinMinimalDenom: 'nhash',
 			coinDecimals: 9,
 			coinImageUrl: window.location.origin + '/public/assets/tokens/hash.svg',
 		},
 		bip44: {
-			coinType: 118,
+			coinType: 505,
 		},
-		bech32Config: Bech32Address.defaultBech32Config('pb'), // Please check
+		bech32Config: {
+			bech32PrefixAccAddr: "pb",
+			bech32PrefixAccPub: "pbpub",
+			bech32PrefixValAddr: "pbvaloper",
+			bech32PrefixValPub: "pbvaloperpub",
+			bech32PrefixConsAddr: "pbvalcons",
+			bech32PrefixConsPub: "pbvalconspub"
+		},
 		currencies: [
 			{
-				coinDenom: 'hash',
+				coinDenom: 'HASH',
 				coinMinimalDenom: 'nhash',
 				coinDecimals: 9,
 				coinImageUrl: window.location.origin + '/public/assets/tokens/hash.svg',
@@ -3066,14 +3073,19 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		feeCurrencies: [
 			{
-				coinDenom: 'hash',
+				coinDenom: 'HASH',
 				coinMinimalDenom: 'nhash',
 				coinDecimals: 9,
 				coinImageUrl: window.location.origin + '/public/assets/tokens/hash.svg',
 			},
 		],
-		coinType: 118,
-		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
-		explorerUrlToTx: 'https://explorer.provenance.io/tx/${txHash}',
+		gasPriceStep: {
+			low: 1905,
+			average: 2100,
+			high: 2500,
+		},
+		coinType: 505,
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go', 'cosmwasm'],
+		explorerUrlToTx: 'https://www.mintscan.io/provenance/txs/{txHash}',
 	},
 ];
