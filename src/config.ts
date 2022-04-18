@@ -3055,14 +3055,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		bip44: {
 			coinType: 505,
 		},
-		bech32Config: {
-			bech32PrefixAccAddr: "pb",
-			bech32PrefixAccPub: "pbpub",
-			bech32PrefixValAddr: "pbvaloper",
-			bech32PrefixValPub: "pbvaloperpub",
-			bech32PrefixConsAddr: "pbvalcons",
-			bech32PrefixConsPub: "pbvalconspub"
-		},
+		bech32Config: Bech32Address.defaultBech32Config('pb'),
 		currencies: [
 			{
 				coinDenom: 'HASH',
@@ -3084,7 +3077,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			average: 2100,
 			high: 2500,
 		},
-		coinType: 505,
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go', 'cosmwasm'],
 		explorerUrlToTx: 'https://www.mintscan.io/provenance/txs/{txHash}',
 	},
