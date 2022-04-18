@@ -23,7 +23,7 @@ export const PoolCard: FunctionComponent<
     return (
       <div
         className={classNames(
-          "flex items-center place-content-between w-full p-3 bg-card rounded-lg",
+          "flex items-center place-content-between w-full p-3 bg-card rounded-lg shadow-elevation-08dp",
           className
         )}
       >
