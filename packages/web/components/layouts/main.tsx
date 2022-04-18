@@ -28,7 +28,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
     const router = useRouter();
 
     const { isMobile } = useWindowSize();
-    const [y, isScrolledTop] = useWindowScroll();
+    const [_, isScrolledTop] = useWindowScroll();
     const [showSidebar, setShowSidebar] = useBooleanWithWindowEvent(false);
 
     return (
