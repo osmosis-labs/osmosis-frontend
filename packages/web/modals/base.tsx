@@ -13,6 +13,7 @@ export interface ModalBaseProps {
   className?: string;
   bodyOpenClassName?: string;
   overlayClassName?: string;
+  hideCloseButton?: boolean;
 }
 
 export const ModalBase: FunctionComponent<ModalBaseProps> = ({
@@ -22,6 +23,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   className,
   bodyOpenClassName,
   overlayClassName,
+  hideCloseButton,
   children,
 }) => {
   const { isMobile } = useWindowSize();
@@ -43,17 +45,19 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         className
       )}
     >
-      <div
-        className="absolute top-2 right-2 md:top-5 md:right-5 cursor-pointer z-50"
-        onClick={onRequestClose}
-      >
-        <Image
-          src={isMobile ? "/icons/close-dark.svg" : "/icons/close.svg"}
-          alt="close icon"
-          width={isMobile ? 24 : 32}
-          height={isMobile ? 24 : 32}
-        />
-      </div>
+      {!hideCloseButton && (
+        <div
+          className="absolute top-2 right-2 md:top-5 md:right-5 cursor-pointer z-50"
+          onClick={onRequestClose}
+        >
+          <Image
+            src={isMobile ? "/icons/close-dark.svg" : "/icons/close.svg"}
+            alt="close icon"
+            width={isMobile ? 24 : 32}
+            height={isMobile ? 24 : 32}
+          />
+        </div>
+      )}
       {typeof title === "string" ? <h5>{title}</h5> : <>{title}</>}
       {children}
     </ReactModal>
