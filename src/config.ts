@@ -1143,6 +1143,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-10',
 		coinMinimalDenom: 'afet',
 	},
+	{
+		counterpartyChainId: 'pio-mainnet-1',
+		sourceChannelId: 'channel-222',
+		destChannelId: 'channel-7',
+		coinMinimalDenom: 'nhash',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -3034,5 +3040,40 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/fetchai/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.provenance.io/',
+		rest: 'https://api.provenance.io',
+		chainId: 'pio-mainnet-1',
+		chainName: 'provenance',
+		stakeCurrency: {
+			coinDenom: 'hash',
+			coinMinimalDenom: 'nhash',
+			coinDecimals: 9,
+			coinImageUrl: window.location.origin + '/public/assets/tokens/hash.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('pb'), // Please check
+		currencies: [
+			{
+				coinDenom: 'hash',
+				coinMinimalDenom: 'nhash',
+				coinDecimals: 9,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/hash.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'hash',
+				coinMinimalDenom: 'nhash',
+				coinDecimals: 9,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/hash.svg',
+			},
+		],
+		coinType: 118,
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://explorer.provenance.io/tx/${txHash}',
 	},
 ];
