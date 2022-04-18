@@ -16,19 +16,25 @@ import { PoolCard } from "../../components/cards/";
 import { Metric } from "../../components/types";
 import { MetricLoader } from "../../components/loaders";
 import { IbcTransferModal } from "../../modals/ibc-transfer";
+import { useWindowSize } from "../../hooks";
 
 const INIT_POOL_CARD_COUNT = 6;
 
-const Assets: NextPage = observer(() => (
-  <main className="bg-background">
-    <AssetsOverview />
-    <PoolAssets />
-    <ChainAssets />
-  </main>
-));
+const Assets: NextPage = observer(() => {
+  const { isMobile } = useWindowSize();
+
+  return (
+    <main className="bg-background">
+      <AssetsOverview />
+      {!isMobile && <PoolAssets />}
+      <ChainAssets />
+    </main>
+  );
+});
 
 const AssetsOverview: FunctionComponent = observer(() => {
   const { assetsStore } = useStore();
+  const { isMobile } = useWindowSize();
 
   const totalAssetsValue = assetsStore.calcValueOf([
     ...assetsStore.availableBalance,
@@ -47,7 +53,7 @@ const AssetsOverview: FunctionComponent = observer(() => {
 
   return (
     <Overview
-      title={<h4>My Osmosis Assets</h4>}
+      title={isMobile ? "My Osmosis Assets" : <h4>My Osmosis Assets</h4>}
       primaryOverviewLabels={[
         {
           label: "Total Assets",
@@ -72,6 +78,8 @@ const AssetsOverview: FunctionComponent = observer(() => {
 
 const PoolAssets: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore } = useStore();
+  const { isMobile } = useWindowSize();
+
   const { chainId } = chainStore.osmosis;
   const { bech32Address } = accountStore.getAccount(chainId);
   let ownedPoolIds = queriesStore
@@ -82,7 +90,7 @@ const PoolAssets: FunctionComponent = observer(() => {
   return (
     <section className="bg-background">
       <div className="max-w-container mx-auto px-10 py-5">
-        <h5>My Pools</h5>
+        {isMobile ? <h6>My Pools</h6> : <h5>My Pools</h5>}
         <PoolCards {...{ showAllPools, ownedPoolIds, setShowAllPools }} />
       </div>
     </section>
@@ -93,6 +101,7 @@ const ChainAssets: FunctionComponent = observer(() => {
   const {
     assetsStore: { nativeBalances, ibcBalances },
   } = useStore();
+
   const [transferModal, setTransferModal] = useState<ComponentProps<
     typeof IbcTransferModal
   > | null>(null);
@@ -157,7 +166,7 @@ const PoolCards: FunctionComponent<{
   setShowAllPools: (show: boolean) => void;
 }> = observer(({ showAllPools, ownedPoolIds, setShowAllPools }) => (
   <>
-    <div className="my-5 grid grid-cards gap-10">
+    <div className="my-5 grid grid-cards gap-3 md:gap-10">
       <PoolCardsDisplayer
         poolIds={
           showAllPools
@@ -185,6 +194,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
       priceStore,
       accountStore,
     } = useStore();
+
     const queriesOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis;
     const { bech32Address } = accountStore.getAccount(
       chainStore.osmosis.chainId
