@@ -2,6 +2,7 @@ import Image from "next/image";
 import React, { FunctionComponent, ReactElement } from "react";
 import ReactModal, { setAppElement } from "react-modal";
 import classNames from "classnames";
+import { useWindowSize } from "../hooks";
 
 setAppElement("body");
 
@@ -23,6 +24,8 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   overlayClassName,
   children,
 }) => {
+  const { isMobile } = useWindowSize();
+
   return (
     <ReactModal
       isOpen={isOpen}
@@ -36,15 +39,20 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         overlayClassName
       )}
       className={classNames(
-        "absolute outline-none w-full p-8 bg-surface rounded-2xl z-50 flex flex-col max-w-modal",
+        "absolute outline-none w-full p-4 md:p-8 bg-surface rounded-2xl z-50 flex flex-col max-w-modalMobile md:max-w-modal",
         className
       )}
     >
       <div
-        className="absolute top-5 right-5 cursor-pointer"
+        className="absolute top-2 right-2 md:top-5 md:right-5 cursor-pointer"
         onClick={onRequestClose}
       >
-        <Image src="/icons/close.svg" alt="close icon" width={32} height={32} />
+        <Image
+          src={isMobile ? "/icons/close-dark.svg" : "/icons/close.svg"}
+          alt="close icon"
+          width={isMobile ? 24 : 32}
+          height={isMobile ? 24 : 32}
+        />
       </div>
       {typeof title === "string" ? <h5>{title}</h5> : <>{title}</>}
       {children}

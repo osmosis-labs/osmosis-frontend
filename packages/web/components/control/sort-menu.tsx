@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { MenuDropdown } from ".";
 import { Disableable, CustomClasses } from "../types";
 import { MenuSelectProps } from "./types";
-import { useBooleanWithWindowEvent } from "../../hooks";
+import { useBooleanWithWindowEvent, useWindowSize } from "../../hooks";
 
 interface Props extends MenuSelectProps, Disableable, CustomClasses {
   onToggleSortDirection?: () => void;
@@ -25,6 +25,7 @@ export const SortMenu: FunctionComponent<Props> = ({
   onToggleSortDirection,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useBooleanWithWindowEvent(false);
+  const { isMobile } = useWindowSize();
 
   const selectedOption = options.find(
     (option) => option.id === selectedOptionId
@@ -64,8 +65,12 @@ export const SortMenu: FunctionComponent<Props> = ({
             }
           }}
         >
-          <span className="block m-auto mx-2 leading-loose text-secondary-200 min-w-[3.75rem] select-none text-center text-ellipsis overflow-hidden">
-            {selectedOption ? selectedOption.display : "SORT BY"}
+          <span className="block m-auto mx-1 md:mx-2 leading-loose text-secondary-200 min-w-[3.75rem] select-none text-center text-ellipsis overflow-hidden">
+            {selectedOption
+              ? selectedOption.display
+              : isMobile
+              ? "SORT"
+              : "SORT BY"}
           </span>
           <Image
             alt="open"

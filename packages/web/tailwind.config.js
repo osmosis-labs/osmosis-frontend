@@ -160,6 +160,7 @@ module.exports = {
         container: "90rem",
         clipboard: "32.5rem",
         modal: "42rem",
+        modalMobile: "20rem",
       },
       keyframes: {
         loading: {

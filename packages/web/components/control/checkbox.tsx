@@ -35,7 +35,7 @@ export const CheckBox: FunctionComponent<
         )}
         checked={isOn}
         disabled={disabled}
-        onClick={() => onToggle(!isOn)}
+        onChange={() => onToggle(!isOn)}
       />
       <div className="cursor-pointer">{children}</div>
     </label>

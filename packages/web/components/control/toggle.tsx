@@ -12,12 +12,10 @@ export const Toggle: FunctionComponent<
     <label
       onMouseOver={() => setHovered(true)}
       onMouseOut={() => setHovered(false)}
-      htmlFor="toggle"
     >
       <div className="relative">
         <input
           type="checkbox"
-          id="toggle"
           className={classNames(
             "absolute h-6 w-full rounded-lg appearance-none",
             {

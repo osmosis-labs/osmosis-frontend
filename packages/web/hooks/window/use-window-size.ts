@@ -9,7 +9,7 @@ export interface WindowSize {
 /**
  * Hook into window size, with added check for mobile screen sizes.
  *
- * @param minMobileWidth Min width to be considered mobile screen.
+ * @param minMobileWidth Min width to be considered mobile screen. Default: 768.
  * @returns [isMobile, windowSize]
  */
 export function useWindowSize(minMobileWidth: number = 768): WindowSize {
