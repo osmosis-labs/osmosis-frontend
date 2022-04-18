@@ -142,6 +142,16 @@ module.exports = {
       "selected-validator":
         "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), linear-gradient(#231d4b, #231d4b)",
     },
+    boxShadow: {
+      container:
+        "0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)",
+      "elevation-04dp":
+        "0px 4px 5px rgba(0, 0, 0, 0.14), 0px 1px 10px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.2)",
+      "elevation-08dp":
+        "0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)",
+      "elevation-24dp":
+        "0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2)",
+    },
     extend: {
       width: {
         loader: {
@@ -160,7 +170,6 @@ module.exports = {
         container: "90rem",
         clipboard: "32.5rem",
         modal: "42rem",
-        modalMobile: "20rem",
       },
       keyframes: {
         loading: {

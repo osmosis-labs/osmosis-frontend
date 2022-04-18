@@ -35,16 +35,16 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
       }}
       bodyOpenClassName={classNames("overflow-hidden", bodyOpenClassName)}
       overlayClassName={classNames(
-        "fixed flex items-center justify-center inset-0 bg-modalOverlay z-50",
+        "fixed flex items-center justify-center inset-5 md:inset-0 bg-modalOverlay z-50",
         overlayClassName
       )}
       className={classNames(
-        "absolute outline-none w-full p-4 md:p-8 bg-surface rounded-2xl z-50 flex flex-col max-w-modalMobile md:max-w-modal",
+        "absolute outline-none w-full p-4 md:p-8 bg-surface rounded-2xl z-50 flex flex-col max-w-modal",
         className
       )}
     >
       <div
-        className="absolute top-2 right-2 md:top-5 md:right-5 cursor-pointer"
+        className="absolute top-2 right-2 md:top-5 md:right-5 cursor-pointer z-50"
         onClick={onRequestClose}
       >
         <Image
