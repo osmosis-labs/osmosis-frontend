@@ -109,7 +109,7 @@ export const LockTokensModal: FunctionComponent<
           <Error className="mx-auto" message={config.error?.message ?? ""} />
         )}
         <Button
-          className="h-14 w-96 mt-3 mx-auto"
+          className="h-14 w-full md:w-96 mt-3 mx-auto"
           size="lg"
           disabled={config.error !== undefined || selectedGaugeIndex === null}
           onClick={() => {

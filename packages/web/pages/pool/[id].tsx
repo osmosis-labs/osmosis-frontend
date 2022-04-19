@@ -462,7 +462,9 @@ const Pool: FunctionComponent = observer(() => {
         pool &&
         lockLPTokensAmountConfig && (
           <SuperfluidValidatorModal
-            title="Select Superfluid Validator"
+            title={
+              isMobile ? "Select Validator" : "Select Superfluid Validator"
+            }
             availableBondAmount={
               "upgradeableLPLockIds" in superfluid
                 ? superfluid.upgradeableLPLockIds.amount // is delegating amount from existing lockup
