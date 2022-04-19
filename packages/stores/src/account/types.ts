@@ -14,7 +14,11 @@ export interface OsmosisMsgOpts {
   readonly swapExactAmountIn: MsgOpt;
   readonly swapExactAmountOut: MsgOpt;
   readonly lockTokens: MsgOpt;
+  readonly superfluidDelegate: MsgOpt;
+  readonly lockAndSuperfluidDelegate: MsgOpt;
   readonly beginUnlocking: MsgOpt;
+  readonly superfluidUndelegate: MsgOpt;
+  readonly superfluidUnbondLock: MsgOpt;
   readonly unlockPeriodLock: MsgOpt;
 }
 
@@ -50,10 +54,27 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
     type: "osmosis/lockup/lock-tokens",
     gas: 250000,
   },
+  superfluidDelegate: {
+    type: "osmosis/superfluid-delegate",
+    gas: 500000,
+  },
+  lockAndSuperfluidDelegate: {
+    type: "osmosis/lock-and-superfluid-delegate",
+    gas: 500000,
+  },
   beginUnlocking: {
     type: "osmosis/lockup/begin-unlock-period-lock",
     // Gas per msg
     gas: 140000,
+  },
+  superfluidUndelegate: {
+    type: "osmosis/superfluid-undelegate",
+    gas: 300000,
+  },
+  superfluidUnbondLock: {
+    type: "osmosis/superfluid-unbond-lock",
+    // Gas per msg
+    gas: 300000,
   },
   unlockPeriodLock: {
     type: "osmosis/lockup/unlock-period-lock",

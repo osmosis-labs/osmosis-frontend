@@ -6,5 +6,6 @@ export * from "./pool-creation-fee";
 export * from "./pool-incentives";
 export * from "./pool-share";
 export * from "./pools";
+export * from "./superfluid-pools";
 
 export * from "./store";

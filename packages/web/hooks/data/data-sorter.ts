@@ -12,8 +12,11 @@ export class DataSorter<TData> implements DataProcessor<TData[]> {
     this._data = [...data]; // we will use a copy of the data, since sort() mutates inplace.
   }
 
-  /** Key is a path of arbitrary length. Example: `"attributes.color"` or `"attributes.color.shade"` */
-  process(key: string) {
+  /** If `data` is a list of objects, key is a path of arbitrary length into the respective objects. Example: `"attributes.color"` or `"attributes.color.shade"`.
+   *
+   *  If `data` is a list of sortable raw values, leave `key` blank.
+   */
+  process(key: string = "") {
     this._data.sort((a: unknown, b: unknown) => {
       let aData: SortingData = get(a, key);
       let bData: SortingData = get(b, key);
@@ -28,8 +31,22 @@ export class DataSorter<TData> implements DataProcessor<TData[]> {
         if (typeof bData === "string") {
           bData = new Dec(bData);
         }
+        // attempt to use boolean
+        if (typeof aData === "boolean") {
+          aData = new Dec(aData ? 1 : 0);
+        }
+        if (typeof bData === "boolean") {
+          bData = new Dec(bData ? 1 : 0);
+        }
+        // attempt to use raw number
+        if (typeof aData === "number") {
+          aData = new Dec(aData);
+        }
+        if (typeof bData === "number") {
+          bData = new Dec(bData);
+        }
       } catch {
-        // not numerical strings
+        // not numerical
         return aData.toString().localeCompare(bData.toString());
       }
 
