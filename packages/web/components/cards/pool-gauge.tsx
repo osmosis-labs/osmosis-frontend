@@ -2,6 +2,7 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { MetricLoader } from "../loaders";
+import { InfoTooltip } from "../tooltip";
 import { LoadingProps, MobileProps } from "../types";
 
 export const PoolGaugeCard: FunctionComponent<
@@ -25,11 +26,19 @@ export const PoolGaugeCard: FunctionComponent<
           {superfluidApr && (
             <>
               {" "}
-              <Image
-                alt="superfluid"
-                src="/icons/superfluid-osmo.svg"
-                height={24}
-                width={24}
+              <div className="h-[24px] w-[24px] shrink-0">
+                <Image
+                  alt="superfluid"
+                  src="/icons/superfluid-osmo.svg"
+                  height={24}
+                  width={24}
+                />
+              </div>
+              <InfoTooltip
+                className="flex shrink-0"
+                style="secondary-200"
+                size={{ height: 23, width: 23 }}
+                content="Superfluid Staking lets you secure the network and receive additional rewards paid out in OSMO."
               />
             </>
           )}
@@ -48,4 +57,8 @@ const UnbondingHeader: FunctionComponent<MobileProps> = ({
   isMobile = false,
   children,
 }) =>
-  isMobile ? <h6>{children}</h6> : <h5 className="font-medium">{children}</h5>;
+  isMobile ? (
+    <h6 className="flex items-center gap-2">{children}</h6>
+  ) : (
+    <h5 className="flex items-center gap-2 font-medium">{children}</h5>
+  );

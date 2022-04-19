@@ -617,7 +617,7 @@ const Pool: FunctionComponent = observer(() => {
             guages &&
             queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id) && (
               <>
-                <div className="flex flex-col lg:flex-row gap-9 place-content-between pt-10">
+                <div className="flex flex-col lg:flex-row gap-3 md:gap-9 place-content-between pt-10">
                   {externalGuages?.map(
                     (
                       { rewardAmount, duration: durationDays, remainingEpochs },
@@ -636,7 +636,7 @@ const Pool: FunctionComponent = observer(() => {
                     )
                   )}
                 </div>
-                <div className="flex flex-col lg:flex-row gap-9 place-content-between pt-10">
+                <div className="flex flex-col lg:flex-row gap-3 md:gap-9 place-content-between pt-10">
                   {guages.map((guage, i) => (
                     <PoolGaugeCard
                       key={i}
