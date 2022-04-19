@@ -1,10 +1,13 @@
-import { CoinPretty, DecUtils } from "@keplr-wallet/unit";
+import type { NextPage } from "next";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import type { NextPage } from "next";
+import { useState, useMemo } from "react";
+import { ObservableCreatePoolConfig } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
 import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
+import { CreatePoolModal } from "../../modals/create-pool";
 import { LeftTime } from "../../components/left-time";
 import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
@@ -21,11 +24,11 @@ const Pools: NextPage = observer(function () {
     queriesExternalStore,
   } = useStore();
 
-  const chainInfo = chainStore.osmosis;
-  const queryOsmosis = queriesStore.get(chainInfo.chainId).osmosis;
+  const { chainId } = chainStore.osmosis;
+  const queryOsmosis = queriesStore.get(chainId).osmosis;
   const queriesExternal = queriesExternalStore.get();
 
-  const account = accountStore.getAccount(chainInfo.chainId);
+  const account = accountStore.getAccount(chainId);
 
   const queryEpoch = queryOsmosis.queryEpochs.getEpoch(REWARD_EPOCH_IDENTIFIER);
   const now = new Date();
@@ -56,11 +59,57 @@ const Pools: NextPage = observer(function () {
     )
   );
 
+  // create pool dialog
+  const [isCreatingPool, setIsCreatingPool] = useState(false);
+  const createPoolConfig = useMemo(() => {
+    return new ObservableCreatePoolConfig(
+      chainStore,
+      chainId,
+      account.bech32Address,
+      queriesStore,
+      queriesStore.get(chainId).queryBalances
+    );
+  }, [chainStore, chainId, account.bech32Address, queriesStore]);
+
   return (
     <main>
+      {isCreatingPool && (
+        <CreatePoolModal
+          isOpen={isCreatingPool}
+          onRequestClose={() => setIsCreatingPool(false)}
+          title="Create New Pool"
+          createPoolConfig={createPoolConfig}
+          isSendingMsg={account.txTypeInProgress !== ""}
+          onCreatePool={async () => {
+            try {
+              await account.osmosis.sendCreatePoolMsg(
+                createPoolConfig.swapFee,
+                createPoolConfig.assets.map((asset) => ({
+                  weight: new Dec(asset.percentage)
+                    .mul(DecUtils.getTenExponentNInPrecisionRange(4))
+                    .truncate()
+                    .toString(),
+                  token: {
+                    amount: asset.amountConfig.amount,
+                    currency: asset.amountConfig.currency,
+                  },
+                })),
+                "",
+                () => setIsCreatingPool(false)
+              );
+            } catch (e) {
+              console.error(e);
+            }
+
+            createPoolConfig.clearAssets();
+          }}
+        />
+      )}
       <Overview
         title="Active Pools"
-        titleButtons={[{ label: "Create New Pool", onClick: console.log }]}
+        titleButtons={[
+          { label: "Create New Pool", onClick: () => setIsCreatingPool(true) },
+        ]}
         primaryOverviewLabels={[
           {
             label: "OSMO Price",

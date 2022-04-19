@@ -181,7 +181,7 @@ const Pool: FunctionComponent = observer(() => {
     });
   });
 
-  // Manage liquidity state
+  // modals states
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
     useState(false);
   const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
@@ -277,6 +277,7 @@ const Pool: FunctionComponent = observer(() => {
             }
           )}
           onLockToken={() => {
+            // TODO: send lock token msg
             setShowLockLPTokenModal(false);
           }}
         />

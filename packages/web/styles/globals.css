@@ -193,3 +193,8 @@
     @apply absolute left-[50%] w-[30px] h-[24px] leading-[24px] text-center bg-surface text-white-emphasis text-caption block translate-x-[-50%] rounded-md;
   }
 }
+
+/** CHARTS */
+.highcharts-background {
+  fill-opacity: 0;
+}

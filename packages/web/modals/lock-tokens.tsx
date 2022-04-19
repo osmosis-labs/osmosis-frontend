@@ -53,6 +53,7 @@ export const LockTokensModal: FunctionComponent<
             </div>
           )}
           <InputBox
+            type="number"
             currentValue={config.amount}
             onInput={(value) => config.setAmount(value)}
             placeholder=""
