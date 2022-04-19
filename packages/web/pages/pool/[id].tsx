@@ -397,6 +397,7 @@ const Pool: FunctionComponent = observer(() => {
           title="Bond LP Tokens"
           onRequestClose={() => setShowLockLPTokenModal(false)}
           amountConfig={lockLPTokensAmountConfig}
+          isMobile={isMobile}
           availableToken={
             pool
               ? queryOsmosis.queryGammPoolShare.getAvailableGammShare(
@@ -630,6 +631,7 @@ const Pool: FunctionComponent = observer(() => {
                         }
                         days={durationDays}
                         remainingEpochs={remainingEpochs.toString()}
+                        isMobile={isMobile}
                       />
                     )
                   )}
@@ -671,6 +673,7 @@ const Pool: FunctionComponent = observer(() => {
                               .toString()
                           : undefined
                       }
+                      isMobile={isMobile}
                     />
                   ))}
                 </div>

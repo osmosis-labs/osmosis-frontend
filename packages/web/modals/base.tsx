@@ -58,7 +58,15 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           />
         </div>
       )}
-      {typeof title === "string" ? <h5>{title}</h5> : <>{title}</>}
+      {typeof title === "string" ? (
+        isMobile ? (
+          <h6>{title}</h6>
+        ) : (
+          <h5>{title}</h5>
+        )
+      ) : (
+        <>{title}</>
+      )}
       {children}
     </ReactModal>
   );
