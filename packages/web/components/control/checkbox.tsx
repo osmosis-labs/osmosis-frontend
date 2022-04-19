@@ -8,11 +8,11 @@ export const CheckBox: FunctionComponent<
   ToggleProps & Disableable & CustomClasses
 > = ({ isOn, onToggle: onToggle, disabled = false, className, children }) => (
   <div>
-    <label className="relative flex select-none">
+    <label className="relative flex items-center select-none">
       {isOn && (
         <div
           className={classNames(
-            "cursor-pointer absolute z-50",
+            "cursor-pointer h-full mt-1 absolute z-10",
             disabled ? "cursor-default opacity-50" : null
           )}
         >
@@ -37,7 +37,7 @@ export const CheckBox: FunctionComponent<
         disabled={disabled}
         onChange={() => onToggle(!isOn)}
       />
-      <div className="cursor-pointer pl-2">{children}</div>
+      <div className="cursor-pointer md:pl-2">{children}</div>
     </label>
   </div>
 );
