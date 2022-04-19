@@ -139,7 +139,7 @@ describe('Test Osmosis Swap Exact Amount In Tx', () => {
 		const estimated = queryPool.pool!.estimateSwapExactAmountIn(tokenIn, tokenOutCurrency);
 
 		const tx = await new Promise<any>(resolve => {
-			account.osmosis.sendSwapExactAmountInMsg(poolId, tokenIn, tokenOutCurrency, '0', '', tx => {
+			account.osmosis.sendSwapExactAmountInMsg(poolId, tokenIn, tokenOutCurrency, '0', '', {}, {}, tx => {
 				resolve(tx);
 			});
 		});
@@ -211,9 +211,18 @@ describe('Test Osmosis Swap Exact Amount In Tx', () => {
 		expect(doubleSlippage.toDec().gt(new Dec(0))).toBeTruthy();
 
 		const tx = await new Promise<any>(resolve => {
-			account.osmosis.sendSwapExactAmountInMsg(poolId, tokenIn, tokenOutCurrency, doubleSlippage.toString(), '', tx => {
-				resolve(tx);
-			});
+			account.osmosis.sendSwapExactAmountInMsg(
+				poolId,
+				tokenIn,
+				tokenOutCurrency,
+				doubleSlippage.toString(),
+				'',
+				{},
+				{},
+				tx => {
+					resolve(tx);
+				}
+			);
 		});
 
 		deepContained(
@@ -284,6 +293,8 @@ describe('Test Osmosis Swap Exact Amount In Tx', () => {
 				tokenOutCurrency,
 				estimated.slippage.maxDecimals(18).toString(),
 				'',
+				{},
+				{},
 				tx => {
 					resolve(tx);
 				}
@@ -357,7 +368,7 @@ describe('Test Osmosis Swap Exact Amount In Tx', () => {
 		await expect(
 			new Promise<any>((resolve, reject) => {
 				account.osmosis
-					.sendSwapExactAmountInMsg(poolId, tokenIn, tokenOutCurrency, added.toString(), '', tx => {
+					.sendSwapExactAmountInMsg(poolId, tokenIn, tokenOutCurrency, added.toString(), '', {}, {}, tx => {
 						resolve(tx);
 					})
 					.catch(reject);

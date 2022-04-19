@@ -52,14 +52,27 @@ export class ObservableQuerySuperfluidUndelegationsInner extends ObservableChain
 
 		return superfluidUndelegationRecords
 			.filter(record => record.delegation_amount.denom === poolShareCurrency.coinMinimalDenom)
-			.map((record, index) => ({
-				delegator_address: record.delegator_address,
-				validator_address: record.validator_address,
-				amount: new CoinPretty(poolShareCurrency, new Dec(record.delegation_amount.amount)),
-				duration: dayjs.duration(parseInt(superfluidUndelegationLocks[index].duration.replace('s', '')) * 1000),
-				end_time: new Date(superfluidUndelegationLocks[index].end_time),
-				lock_id: superfluidUndelegationLocks[index].underlying_lock_id,
-			}));
+			.map((record, index) => {
+				const syntheticLock = superfluidUndelegationLocks.find(
+					lock =>
+						lock.synth_denom === `${poolShareCurrency.coinMinimalDenom}/superunbonding/${record.validator_address}`
+				);
+
+				if (!syntheticLock) {
+					throw new Error(
+						`Can't find synthetic lock for ${poolShareCurrency.coinMinimalDenom}, ${record.validator_address}`
+					);
+				}
+
+				return {
+					delegator_address: record.delegator_address,
+					validator_address: record.validator_address,
+					amount: new CoinPretty(poolShareCurrency, new Dec(record.delegation_amount.amount)),
+					duration: dayjs.duration(parseInt(syntheticLock.duration.replace('s', '')) * 1000),
+					end_time: new Date(syntheticLock.end_time),
+					lock_id: syntheticLock.underlying_lock_id,
+				};
+			});
 	});
 }
 

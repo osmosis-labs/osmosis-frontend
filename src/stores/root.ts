@@ -195,13 +195,6 @@ export class RootStore {
 					destCoinId: 'cosmos',
 				},
 				{
-					alternativeCoinId: 'pool:utick',
-					poolId: '547',
-					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-39' }], 'utick'),
-					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
-					destCoinId: 'cosmos',
-				},
-				{
 					alternativeCoinId: 'pool:uixo',
 					poolId: '558',
 					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-38' }], 'uixo'),
@@ -210,10 +203,10 @@ export class RootStore {
 				},
 				{
 					alternativeCoinId: 'pool:ubtsg',
-					poolId: '574',
+					poolId: '573',
 					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-73' }], 'ubtsg'),
-					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
-					destCoinId: 'cosmos',
+					spotPriceDestDenom: 'uosmo',
+					destCoinId: 'osmosis',
 				},
 				{
 					alternativeCoinId: 'pool:uxki',
@@ -318,23 +311,6 @@ export class RootStore {
 					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'osmosis',
 				},
-				{
-					alternativeCoinId: 'pool:crbrus',
-					poolId: '658',
-					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-212' }], 'ucrbrus'),
-					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-113' }], 'uhuahua'),
-					destCoinId: 'chihuahua-token',
-				},
-        {
-          alternativeCoinId: 'pool:hope',
-					poolId: '653',
-					spotPriceSourceDenom: DenomHelper.ibcDenom(
-						[{ portId: 'transfer', channelId: 'channel-169' }],
-						'cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z'
-					),
-					spotPriceDestDenom: 'uosmo',
-					destCoinId: 'osmosis',
-        },
 			]
 		);
 
@@ -675,21 +651,6 @@ export class RootStore {
 				],
 			},
 			{
-				poolId: '547',
-				currencies: [
-					{
-						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-39' }], 'utick'),
-						coinDenom: 'TICK',
-						coinDecimals: 6,
-					},
-					{
-						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
-						coinDenom: 'ATOM',
-						coinDecimals: 6,
-					},
-				],
-			},
-			{
 				poolId: '553',
 				currencies: [
 					{
@@ -860,21 +821,6 @@ export class RootStore {
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-77' }], 'uxki'),
 						coinDenom: 'XKI',
-						coinDecimals: 6,
-					},
-					{
-						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
-						coinDenom: 'UST',
-						coinDecimals: 6,
-					},
-				],
-			},
-			{
-				poolId: '582',
-				currencies: [
-					{
-						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'ukrw'),
-						coinDenom: 'KRT',
 						coinDecimals: 6,
 					},
 					{
@@ -1391,40 +1337,7 @@ export class RootStore {
 					},
 				],
 			},
-      {
-				poolId: '658',
-				currencies: [
-					{
-						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-212' }], 'ucrbrus'),
-						coinDenom: 'CRBRUS',
-						coinDecimals: 6,
-					},
-					{
-						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-113' }], 'uhuahua'),
-						coinDenom: 'HUAHUA',
-            coinDecimals: 6,
-					},
-				],
-			},
-      {
-				poolId: '653',
-				currencies: [
-					{
-						coinMinimalDenom: DenomHelper.ibcDenom(
-							[{ portId: 'transfer', channelId: 'channel-169' }],
-							'cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z'
-						),
-						coinDenom: 'HOPE',
-						coinDecimals: 6,
-					},
-					{
-						coinMinimalDenom: 'uosmo',
-						coinDenom: 'OSMO',
-						coinDecimals: 6,
-					},
-				],
-			},
-    ]);
+		]);
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
 		this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithExplorer>(
