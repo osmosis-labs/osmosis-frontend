@@ -3073,9 +3073,9 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		gasPriceStep: {
-			low: 1905,
-			average: 2100,
-			high: 2500,
+			low: 0.000001905,
+			average: 0.000002100,
+			high: 0.000002500,
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go', 'cosmwasm'],
 		explorerUrlToTx: 'https://www.mintscan.io/provenance/txs/{txHash}',
