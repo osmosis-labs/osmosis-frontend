@@ -1,4 +1,4 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, HTMLInputTypeAttribute, useState } from "react";
 import classNames from "classnames";
 import { InputProps, Disableable, CustomClasses } from "../types";
 import { ButtonProps } from "../buttons/types";
@@ -14,6 +14,7 @@ export interface Button extends ButtonProps, CustomClasses, Disableable {
 interface Props extends InputProps<string>, Disableable, CustomClasses {
   /** Style of the component, see Figma. */
   style?: "no-border" | "enabled" | "active" | "error";
+  type?: HTMLInputTypeAttribute;
   /** Determine if input text is right justified. Setting to `true` will ignore all accessory buttons. */
   rightEntry?: boolean;
   /** Will only render the first two. If `clearButton` is enabled, will show that as long as `currentValue !== ""`. */
@@ -28,6 +29,7 @@ export const InputBox: FunctionComponent<Props> = ({
   onInput,
   placeholder,
   style = "enabled",
+  type,
   rightEntry = false,
   labelButtons = [],
   clearButton = false,
@@ -68,6 +70,7 @@ export const InputBox: FunctionComponent<Props> = ({
           value={currentValue}
           placeholder={placeholder ?? ""}
           autoComplete="off"
+          type={type}
           onBlur={() => setInputFocused(false)}
           onFocus={() => setInputFocused(true)}
           onInput={(e: any) => onInput(e.target.value)}

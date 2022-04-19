@@ -8,20 +8,20 @@ export const PoolGaugeCard: FunctionComponent<
   {
     days?: string;
     apr?: string;
-    isSuperfluid?: boolean;
+    superfluidApr?: string;
   } & LoadingProps
-> = ({ days, apr, isLoading = false, isSuperfluid = false }) => (
+> = ({ days, apr, isLoading = false, superfluidApr }) => (
   <div
     className={classNames(
       "w-full p-0.5 rounded-xl ",
-      isSuperfluid ? "bg-superfluid" : "bg-card" // vanilla tailwind does not support border gradients
+      superfluidApr ? "bg-superfluid" : "bg-card" // vanilla tailwind does not support border gradients
     )}
   >
     <div className="flex flex-col w-full gap-1 bg-card rounded-xlinset py-5 px-7">
       <h5 className="font-medium">
         <MetricLoader className="h-6" isLoading={isLoading}>
           {days ?? "0"} unbonding
-          {isSuperfluid && (
+          {superfluidApr && (
             <>
               {" "}
               <Image
@@ -36,7 +36,7 @@ export const PoolGaugeCard: FunctionComponent<
       </h5>
       <MetricLoader className="h-6" isLoading={isLoading}>
         <p className="font-caption text-lg text-secondary-200">
-          APR {apr ?? "0%"}
+          APR {apr ?? "0%"} {superfluidApr ? `+ ${superfluidApr}` : null}
         </p>
       </MetricLoader>
     </div>

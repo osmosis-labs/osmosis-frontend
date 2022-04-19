@@ -14,6 +14,8 @@ export interface Props<TCell extends BaseCell> extends CustomClasses {
   rowDefs?: RowDef[];
   data: Partial<TCell>[][];
   headerTrClassName?: string;
+  tHeadClassName?: string;
+  tBodyClassName?: string;
 }
 
 /** Generic table that accepts a 2d array of any type of data cell,
@@ -25,18 +27,26 @@ export const Table = <TCell extends BaseCell>({
   data,
   className,
   headerTrClassName,
+  tHeadClassName,
+  tBodyClassName,
 }: PropsWithoutRef<Props<TCell>>) => {
   const [rowsHovered, setRowsHovered] = useState(() => data.map(() => false));
 
   const setRowHovered = useCallback(
     (rowIndex: number, value: boolean) =>
-      setRowsHovered(replaceAt(value, rowsHovered, rowIndex)),
-    [rowsHovered]
+      setRowsHovered(
+        replaceAt(
+          value,
+          data.map(() => false),
+          rowIndex
+        )
+      ),
+    []
   );
 
   return (
-    <table className={className}>
-      <thead>
+    <table className={classNames("overflow-y-scroll", className)}>
+      <thead className={tHeadClassName}>
         <tr className={classNames("h-20", headerTrClassName)}>
           {columnDefs.map((colDef, colIndex) => (
             <th
@@ -59,23 +69,25 @@ export const Table = <TCell extends BaseCell>({
                 ) : (
                   ""
                 )}
-                <div className="inline pl-1 align-middle">
-                  {colDef?.sort?.currentDirection === "ascending" ? (
-                    <Image
-                      alt="ascending"
-                      src="/icons/sort-up.svg"
-                      height={16}
-                      width={16}
-                    />
-                  ) : colDef?.sort?.currentDirection === "descending" ? (
-                    <Image
-                      alt="descending"
-                      src="/icons/sort-down.svg"
-                      height={16}
-                      width={16}
-                    />
-                  ) : undefined}
-                </div>
+                {colDef?.sort && (
+                  <div className="inline pl-1 align-middle">
+                    {colDef?.sort?.currentDirection === "ascending" ? (
+                      <Image
+                        alt="ascending"
+                        src="/icons/sort-up.svg"
+                        height={16}
+                        width={16}
+                      />
+                    ) : colDef?.sort?.currentDirection === "descending" ? (
+                      <Image
+                        alt="descending"
+                        src="/icons/sort-down.svg"
+                        height={16}
+                        width={16}
+                      />
+                    ) : undefined}
+                  </div>
+                )}
                 {colDef.infoTooltip && (
                   <InfoTooltip content={colDef.infoTooltip} />
                 )}
@@ -84,7 +96,7 @@ export const Table = <TCell extends BaseCell>({
           ))}
         </tr>
       </thead>
-      <tbody>
+      <tbody className={tBodyClassName}>
         {data.map((row, rowIndex) => {
           const rowDef = rowDefs?.[rowIndex];
           const rowHovered = rowsHovered[rowIndex] ?? false;

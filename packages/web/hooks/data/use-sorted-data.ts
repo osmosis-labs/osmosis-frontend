@@ -9,7 +9,7 @@ import { SortDirection } from "../../components/types";
  *
  * @param data Data to sort on. Reference will be copied and sorted inplace.
  * @param initialKeyPath Key to sort data on for first render.
- * @param initialSortDirection Direction to sort for first render.
+ * @param initialSortDirection Direction to sort for first render. Default: `"ascending"`.
  * @param sorter Optional object that can sort user data.
  * @returns [keypath, setKeypath, sortDirection, setSortDirection, toggleSortDirection, results]
  */

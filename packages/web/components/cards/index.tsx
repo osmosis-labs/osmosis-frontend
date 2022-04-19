@@ -1,4 +1,5 @@
 export * from "./base";
+export * from "./go-superfluid";
 export * from "./incentivized-pool";
 export * from "./stat-label-value";
 export * from "./my-pool";

@@ -12,6 +12,7 @@ import {
   ObservableQueryAccountLockedCoins,
   ObservableQueryAccountUnlockingCoins,
   ObservableQueryAccountLocked,
+  ObservableSyntheticLockupsByLockId,
 } from "./lockup";
 import {
   ObservableQueryEpochProvisions,
@@ -20,6 +21,14 @@ import {
 import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
 import { ObservableQueryGuage } from "./incentives";
 import { ObservableQueryPoolCreationFee } from "./pool-creation-fee";
+import {
+  ObservableQuerySuperfluidDelegations,
+  ObservableQuerySuperfluidPools,
+  ObservableQuerySuperfluidUndelegations,
+  ObservableQuerySuperfluidAssetMultiplier,
+  ObservableQuerySuperfluidOsmoEquivalent,
+  ObservableQuerySuperfluidParams,
+} from "./superfluid-pools";
 
 export interface OsmosisQueries {
   osmosis: OsmosisQueriesImpl;
@@ -56,6 +65,7 @@ export class OsmosisQueriesImpl {
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
 
   public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
+  public readonly querySyntheticLockupsByLockId: DeepReadonly<ObservableSyntheticLockupsByLockId>;
   public readonly queryUnlockingCoins: DeepReadonly<ObservableQueryAccountUnlockingCoins>;
   public readonly queryAccountLocked: DeepReadonly<ObservableQueryAccountLocked>;
 
@@ -71,6 +81,13 @@ export class OsmosisQueriesImpl {
 
   public readonly queryPoolCreationFee: DeepReadonly<ObservableQueryPoolCreationFee>;
 
+  public readonly querySuperfluidPools: DeepReadonly<ObservableQuerySuperfluidPools>;
+  public readonly querySuperfluidDelegations: DeepReadonly<ObservableQuerySuperfluidDelegations>;
+  public readonly querySuperfluidUndelegations: DeepReadonly<ObservableQuerySuperfluidUndelegations>;
+  public readonly querySuperfluidParams: DeepReadonly<ObservableQuerySuperfluidParams>;
+  public readonly querySuperfluidAssetMultiplier: DeepReadonly<ObservableQuerySuperfluidAssetMultiplier>;
+  public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
+
   constructor(
     queries: QueriesSetBase,
     kvStore: KVStore,
@@ -78,6 +95,11 @@ export class OsmosisQueriesImpl {
     chainGetter: ChainGetter
   ) {
     this.queryLockedCoins = new ObservableQueryAccountLockedCoins(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+    this.querySyntheticLockupsByLockId = new ObservableSyntheticLockupsByLockId(
       kvStore,
       chainId,
       chainGetter
@@ -155,5 +177,37 @@ export class OsmosisQueriesImpl {
       chainId,
       chainGetter
     );
+
+    this.querySuperfluidPools = new ObservableQuerySuperfluidPools(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+    this.querySuperfluidDelegations = new ObservableQuerySuperfluidDelegations(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+    this.querySuperfluidUndelegations =
+      new ObservableQuerySuperfluidUndelegations(kvStore, chainId, chainGetter);
+    this.querySuperfluidParams = new ObservableQuerySuperfluidParams(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+    this.querySuperfluidAssetMultiplier =
+      new ObservableQuerySuperfluidAssetMultiplier(
+        kvStore,
+        chainId,
+        chainGetter
+      );
+    this.querySuperfluidOsmoEquivalent =
+      new ObservableQuerySuperfluidOsmoEquivalent(
+        chainId,
+        chainGetter,
+        this.querySuperfluidParams,
+        this.querySuperfluidAssetMultiplier,
+        this.queryGammPools
+      );
   }
 }

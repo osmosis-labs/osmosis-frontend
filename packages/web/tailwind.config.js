@@ -165,6 +165,7 @@ module.exports = {
       },
       spacing: {
         sidebar: "12.875rem",
+        0.25: "1px",
       },
       maxWidth: {
         container: "90rem",
