@@ -716,7 +716,7 @@ const Pool: FunctionComponent = observer(() => {
                       validatorImgSrc={validatorImgSrc}
                       validatorCommission={validatorCommission?.toString()}
                       delegation={amount.maxDecimals(2).trim(true).toString()}
-                      apr={apr.toString()}
+                      apr={apr.maxDecimals(2).trim(true).toString()}
                       isMobile={isMobile}
                     />
                   )
@@ -854,13 +854,17 @@ const Pool: FunctionComponent = observer(() => {
         </div>
         {userUnlockingAssets && userUnlockingAssets.length > 0 && (
           <div className="max-w-container mx-auto p-10">
-            <h6>Unbondings</h6>
+            {isMobile ? (
+              <span className="subtitle2">Unbondings</span>
+            ) : (
+              <h6>Unbondings</h6>
+            )}
             <Table
               className="-mx-10 md:mx-0 w-screen md:w-full my-5"
               columnDefs={[
                 {
                   display: "Unbonding Duration",
-                  className: "w-1/3",
+                  className: "w-1/3 !pl-8",
                 },
                 { display: "Amount", className: "w-1/3" },
                 {
@@ -890,13 +894,17 @@ const Pool: FunctionComponent = observer(() => {
           superfluid.undelegations &&
           superfluid.undelegations.length > 0 && (
             <div className="max-w-container mx-auto p-10">
-              <h6>Superfluid Unbondings</h6>
+              {isMobile ? (
+                <span className="subtitle2">Superfluid Unbondings</span>
+              ) : (
+                <h6>Superfluid Unbondings</h6>
+              )}
               <Table
                 className="-mx-10 md:mx-0 w-screen md:w-full my-5"
                 columnDefs={[
                   {
                     display: "Validator",
-                    className: "w-1/3",
+                    className: "w-1/3 !pl-8",
                   },
                   { display: "Amount", className: "w-1/3" },
                   {
