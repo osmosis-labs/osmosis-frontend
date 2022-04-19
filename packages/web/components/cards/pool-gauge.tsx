@@ -17,7 +17,7 @@ export const PoolGaugeCard: FunctionComponent<
       isSuperfluid ? "bg-superfluid" : "bg-card" // vanilla tailwind does not support border gradients
     )}
   >
-    <div className="flex flex-col w-full gap-1 bg-card rounded-xl py-5 px-7">
+    <div className="flex flex-col w-full gap-1 bg-card rounded-xlinset py-5 px-7">
       <h5 className="font-medium">
         <MetricLoader className="h-6" isLoading={isLoading}>
           {days ?? "0"} unbonding

@@ -37,7 +37,7 @@ export const Overview: FunctionComponent<Props> = ({
   secondaryOverviewLabels,
   bgImageUrl,
 }) => {
-  const { isMobile } = useWindowSize();
+  const { width, isMobile } = useWindowSize();
 
   return (
     <section
@@ -45,14 +45,18 @@ export const Overview: FunctionComponent<Props> = ({
       style={
         bgImageUrl
           ? {
-              backgroundImage: `url(${bgImageUrl})`,
+              backgroundImage: `${
+                width < 1000
+                  ? "linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),"
+                  : ""
+              } url(${bgImageUrl})`,
             }
           : undefined
       }
     >
       <div className="max-w-container mx-auto pt-24 md:pt-0">
-        <div className="p-10 ">
-          <div className="flex flex-wrap items-center">
+        <div className="p-10">
+          <div className="flex flex-wrap gap-5 md:gap-8 items-center place-content-start">
             {typeof title === "string" ? (
               isMobile ? (
                 <h6 className="text-white-full">{title}</h6>
@@ -62,17 +66,13 @@ export const Overview: FunctionComponent<Props> = ({
             ) : (
               <>{title}</>
             )}
-            {titleButtons?.slice(0, 2).map(({ label, onClick }, index) => (
-              <Button
-                key={index}
-                color="primary"
-                size="sm"
-                className="ml-6"
-                onClick={onClick}
-              >
-                {label}
-              </Button>
-            ))}
+            <div className="flex flex-wrap gap-2 md:gap-5">
+              {titleButtons?.slice(0, 2).map(({ label, onClick }, index) => (
+                <Button key={index} color="primary" size="sm" onClick={onClick}>
+                  {label}
+                </Button>
+              ))}
+            </div>
           </div>
           <div className="mt-6 flex flex-wrap items-center gap-9 md:gap-20">
             {primaryOverviewLabels

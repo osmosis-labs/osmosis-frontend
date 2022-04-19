@@ -16,11 +16,13 @@ import {
   PoolCatalystCard,
   PoolGaugeBonusCard,
   PoolGaugeCard,
+  SuperfluidValidatorCard,
 } from "../../components/cards";
 import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
-import { BaseCell, Table } from "../../components/table";
+import { BaseCell, Table, ColumnDef } from "../../components/table";
 import { ExternalIncentiveGaugeAllowList, EmbedChainInfos } from "../../config";
+import { useWindowSize } from "../../hooks";
 import { LockTokensModal } from "../../modals/lock-tokens";
 import { ManageLiquidityModal } from "../../modals/manage-liquidity";
 import { useStore } from "../../stores";
@@ -28,6 +30,7 @@ import { useStore } from "../../stores";
 const Pool: FunctionComponent = observer(() => {
   const router = useRouter();
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+  const { isMobile } = useWindowSize();
 
   const { id: poolId } = router.query;
   const { chainId } = chainStore.osmosis;
@@ -347,12 +350,12 @@ const Pool: FunctionComponent = observer(() => {
       />
       <section className="bg-surface">
         <div className="max-w-container mx-auto p-10">
-          <div className="flex place-content-between">
+          <div className="flex flex-col lg:flex-row gap-6 place-content-between">
             <div className="max-w-md">
-              <div className="flex gap-3">
+              <div className="flex flex-col lg:flex-row gap-3">
                 <h5>Liquidity Mining</h5>
                 {superfluid && superfluid !== "not-superfluid-pool" && (
-                  <div className="bg-superfluid rounded-full px-4 py-1 text-xs md:text-base">
+                  <div className="bg-superfluid w-fit rounded-full px-4 py-1 text-xs md:text-base">
                     Superfluid Staking Enabled
                   </div>
                 )}
@@ -362,15 +365,17 @@ const Pool: FunctionComponent = observer(() => {
                 liquidity rewards and swap fees
               </p>
             </div>
-            <div className="flex flex-col gap-2 text-right">
-              <span>Available LP tokens</span>
+            <div className="flex flex-col gap-2 lg:text-right">
+              <span className="caption text-white-mid">
+                Available LP tokens
+              </span>
               <h5>
                 <MetricLoader className="h-6" isLoading={!userAvailableValue}>
                   {userAvailableValue?.toString() || "$0"}
                 </MetricLoader>
               </h5>
               <Button
-                className="h-8"
+                className="h-8 w-fit lg:w-full"
                 onClick={() => setShowLockLPTokenModal(true)}
               >
                 Start Earning
@@ -381,7 +386,7 @@ const Pool: FunctionComponent = observer(() => {
             guages &&
             queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id) && (
               <>
-                <div className="flex gap-9 place-content-between pt-10">
+                <div className="flex flex-col lg:flex-row gap-9 place-content-between pt-10">
                   {externalGuages?.map(
                     (
                       { rewardAmount, duration: durationDays, remainingEpochs },
@@ -399,7 +404,7 @@ const Pool: FunctionComponent = observer(() => {
                     )
                   )}
                 </div>
-                <div className="flex gap-9 place-content-between pt-10">
+                <div className="flex flex-col lg:flex-row gap-9 place-content-between pt-10">
                   {guages.map((guage, i) => (
                     <PoolGaugeCard
                       key={i}
@@ -431,135 +436,127 @@ const Pool: FunctionComponent = observer(() => {
         </div>
         {superfluid && superfluid !== "not-superfluid-pool" && (
           <div className="max-w-container mx-auto p-10 flex flex-col gap-4">
-            <h5>Superfluid Staking</h5>
-            <div className="w-full p-0.5 rounded-xl bg-superfluid">
-              <div className="flex flex-col w-full gap-1 bg-card rounded-xl py-5 px-7">
-                <div className="flex place-content-between text-subtitle1">
-                  <span>My Superfluid Validator</span>
-                  <span>My Superfluid Delegation</span>
-                </div>
-                <hr className="my-3 text-white-faint" />
-                <div className="flex place-content-between">
-                  <div className="flex gap-3">
-                    <div className="rounded-full border border-enabledGold w-14 h-14 p-1 flex shrink-0">
-                      <img
-                        className="rounded-full"
-                        alt="validator image"
-                        src={superfluid.validatorImgSrc}
-                      />
-                    </div>
-                    <div className="flex flex-col place-content-evenly">
-                      <span className="text-lg text-white-high">
-                        {superfluid.validatorName}
-                      </span>
-                      <span className="text-sm text-iconDefault">
-                        Commission - {superfluid.validatorCommission.toString()}
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <h6 className="text-white-high">
-                      ~
-                      {superfluid.delegation
-                        .maxDecimals(2)
-                        .trim(true)
-                        .toString()}
-                    </h6>
-                    <span className="float-right text-sm text-iconDefault">
-                      ~{superfluid.apr.toString()} APR
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {isMobile ? (
+              <span className="subtitle2">My Superfluid Stake</span>
+            ) : (
+              <h5>Superfluid Staking</h5>
+            )}
+            <SuperfluidValidatorCard
+              {...superfluid}
+              validatorCommission={superfluid.validatorCommission.toString()}
+              delegation={superfluid.delegation
+                .maxDecimals(2)
+                .trim(true)
+                .toString()}
+              apr={superfluid.apr.toString()}
+              isMobile={isMobile}
+            />
           </div>
         )}
         <div className="max-w-container mx-auto p-10">
-          <h6>My Bondings</h6>
-          <Table<
-            BaseCell & {
-              duration: Duration;
-              amount: CoinPretty;
-              apr?: RatePretty;
-              lockIds: string[];
-              isSuperfluidDuration: boolean;
-            }
-          >
-            className="w-full my-5"
-            columnDefs={[
-              {
-                display: "Unbonding Duration",
-                displayCell:
-                  superfluid && superfluid !== "not-superfluid-pool"
-                    ? ({ value, isSuperfluidDuration }) => (
-                        <div className="flex gap-3">
-                          <span>{value ?? ""}</span>
-                          {isSuperfluidDuration && (
-                            <Image
-                              alt="superfluid"
-                              src="/icons/superfluid-osmo.svg"
-                              height={20}
-                              width={20}
-                            />
-                          )}
-                        </div>
-                      )
-                    : undefined,
-              },
-              { display: "Current APR" },
-              { display: "Amount" },
-              {
-                display: "Action",
-                displayCell: ({ value, amount, lockIds }) => (
-                  <Button
-                    type="arrow"
-                    size="xs"
-                    disabled={
-                      !account.isReadyToSendMsgs ||
-                      amount?.toDec().equals(new Dec(0))
-                    }
-                    onClick={() => {
-                      console.log(value, lockIds);
-                    }}
-                  >
-                    Unbond All
-                  </Button>
-                ),
-              },
-            ]}
+          {isMobile ? (
+            <span className="subtitle2">My Bondings</span>
+          ) : (
+            <h6>My Bondings</h6>
+          )}
+          <Table
+            className="-mx-10 md:mx-0 w-screen md:w-full my-5"
+            columnDefs={(
+              [
+                {
+                  display: "Unbonding Duration",
+                  className: "!pl-8",
+                  displayCell:
+                    superfluid && superfluid !== "not-superfluid-pool"
+                      ? ({ value, isSuperfluidDuration }) => (
+                          <div className="flex gap-3">
+                            <span>{value ?? ""}</span>
+                            {isSuperfluidDuration && (
+                              <Image
+                                alt="superfluid"
+                                src="/icons/superfluid-osmo.svg"
+                                height={20}
+                                width={20}
+                              />
+                            )}
+                          </div>
+                        )
+                      : undefined,
+                },
+                { display: "Current APR" },
+                { display: "Amount" },
+                {
+                  display: "Action",
+                  className:
+                    "text-right justify-right md:text-center md:justify-center",
+                  displayCell: ({ value, amount, lockIds }) => (
+                    <Button
+                      className="ml-auto pr-0 !justify-right md:justify-center md:m-auto md:p-0"
+                      type={isMobile ? undefined : "arrow"}
+                      size="xs"
+                      disabled={
+                        !account.isReadyToSendMsgs ||
+                        amount?.toDec().equals(new Dec(0))
+                      }
+                      onClick={() => {
+                        console.log(value, lockIds);
+                      }}
+                    >
+                      {isMobile ? "Unbond" : "Unbond All"}
+                    </Button>
+                  ),
+                },
+              ] as ColumnDef<
+                BaseCell & {
+                  duration: Duration;
+                  amount: CoinPretty;
+                  apr?: RatePretty;
+                  lockIds: string[];
+                  isSuperfluidDuration: boolean;
+                }
+              >[]
+            ).filter(({ display }) =>
+              isMobile ? display !== "Current APR" : true
+            )}
             data={
-              userLockedAssets?.map((lockedAsset, index) => [
-                {
-                  value: lockedAsset.duration.humanize(),
-                  isSuperfluidDuration:
-                    index === (userLockedAssets?.length ?? 0) - 1,
-                }, // Unbonding Duration
-                {
-                  value:
-                    lockedAsset.apr?.maxDecimals(2).trim(true).toString() ??
-                    "0%",
-                }, // Current APR
-                {
-                  value: lockedAsset.amount
-                    .maxDecimals(6)
-                    .trim(true)
-                    .toString(),
-                }, // Amount
-                { ...lockedAsset, value: lockedAsset.duration.humanize() }, // Unbond All button
-              ]) ?? [[{ value: "" }], [{ value: "" }], [{ value: "" }]]
+              userLockedAssets?.map((lockedAsset, index) =>
+                [
+                  {
+                    value: lockedAsset.duration.humanize(),
+                    isSuperfluidDuration:
+                      index === (userLockedAssets?.length ?? 0) - 1,
+                  }, // Unbonding Duration
+                  {
+                    value:
+                      lockedAsset.apr?.maxDecimals(2).trim(true).toString() ??
+                      "0%",
+                  }, // Current APR
+                  {
+                    value: lockedAsset.amount
+                      .maxDecimals(6)
+                      .trim(true)
+                      .toString(),
+                  }, // Amount
+                  { ...lockedAsset, value: lockedAsset.duration.humanize() }, // Unbond All button
+                ].filter((_row, index) => (isMobile ? index !== 1 : true))
+              ) ?? []
             }
           />
         </div>
         <div className="max-w-container mx-auto p-10">
-          <h5>Pool Catalyst</h5>
-          <div className="flex gap-5 my-5">
+          {isMobile ? (
+            <span className="subtitle2">Pool Catalyst</span>
+          ) : (
+            <h5>Pool Catalyst</h5>
+          )}
+          <div className="flex flex-col md:flex-row gap-5 my-5">
             {(userPoolAssets ?? [undefined, undefined]).map(
               (userAsset, index) => (
                 <PoolCatalystCard
                   key={index}
                   colorKey={Number(pool?.id ?? "0") + index}
                   isLoading={!pool || !userPoolAssets}
-                  className="w-1/2 max-w-md"
+                  className="w-full md:w-1/2 max-w-md"
                   percentDec={userAsset?.ratio.toString()}
                   tokenMinimalDenom={userAsset?.asset.currency.coinDenom}
                   metrics={[

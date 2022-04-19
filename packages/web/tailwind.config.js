@@ -186,6 +186,7 @@ module.exports = {
       borderRadius: {
         lginset: "0.438rem", // 1px smaller than rounded-lg
         xlinset: "0.688rem", // 1px smaller than rounded-xl
+        "2xlinset": "0.938rem", // 1 px smaller than rounded-2xl
       },
     },
   },

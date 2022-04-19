@@ -6,3 +6,4 @@ export * from "./pool-card";
 export * from "./pool-catalyst";
 export * from "./pool-gauge-bonus";
 export * from "./pool-gauge";
+export * from "./superfluid-validator";
