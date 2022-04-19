@@ -1231,7 +1231,7 @@ export class RootStore {
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-42' }], 'ujuno'),
 						coinDenom: 'JUNO',
-						coinDecimals: 6,
+						coinDecimals: 6, 
 					},
 				],
 			},
