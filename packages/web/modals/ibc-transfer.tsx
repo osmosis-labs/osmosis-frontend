@@ -173,24 +173,12 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               </span>
             </p>
             <InputBox
+              type="number"
               className="text-h6"
               inputClassName="text-right"
               style="no-border"
               currentValue={amountConfig.amount}
-              onInput={(value) => {
-                // TODO: make input use "number" type after merging: https://github.com/osmosis-labs/osmosis-frontend/pull/339
-                const floatVal = parseFloat(value);
-                if (!isNaN(floatVal)) {
-                  let newVal = floatVal.toString();
-                  // parseFloat removes trailing "."
-                  if (value[value.length - 1] === ".") {
-                    newVal = newVal + ".";
-                  }
-                  amountConfig.setAmount(value);
-                } else if (value === "") {
-                  amountConfig.setAmount("");
-                }
-              }}
+              onInput={(value) => amountConfig.setAmount(value)}
               labelButtons={[
                 {
                   label: "MAX",

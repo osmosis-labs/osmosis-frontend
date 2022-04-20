@@ -8,16 +8,24 @@ import { ObservableAmountConfig } from "@osmosis-labs/stores";
 import { Button } from "../components/buttons";
 import { InputBox } from "../components/input";
 import { Error } from "../components/alert";
+import { CheckBox } from "../components/control";
 import { ModalBase, ModalBaseProps } from "./base";
-
-// TODO: add SFS UI
 
 export const LockTokensModal: FunctionComponent<
   ModalBaseProps & {
-    gauges: { id: string; duration: Duration; apr: RatePretty }[];
+    gauges: {
+      id: string;
+      duration: Duration;
+      apr: RatePretty;
+      superfluidApr?: RatePretty;
+    }[];
     amountConfig: ObservableAmountConfig;
     availableToken?: CoinPretty;
-    onLockToken: (gaugeId: string) => void;
+    /** `electSuperfluid` is left undefined if it is irrelevant- if the user has already opted into superfluid in the past. */
+    onLockToken: (gaugeId: string, electSuperfluid?: boolean) => void;
+    /* Used to label the main button as "Next" to choose validator or "Bond" to reuse chosen sfs validator.
+       If `true`, "Superfluid Stake" checkbox will not be shown since user has already opted in. */
+    hasSuperfluidValidator?: boolean;
     isSendingMsg?: boolean;
   }
 > = observer((props) => {
@@ -26,11 +34,14 @@ export const LockTokensModal: FunctionComponent<
     amountConfig: config,
     availableToken,
     onLockToken,
+    hasSuperfluidValidator,
     isSendingMsg,
   } = props;
+
   const [selectedGaugeIndex, setSelectedGaugeIndex] = useState<number | null>(
     null
   );
+  const [electSuperfluid, setElectSuperfluid] = useState(true);
 
   return (
     <ModalBase {...props}>
@@ -38,28 +49,50 @@ export const LockTokensModal: FunctionComponent<
         <div className="flex flex-col gap-2.5">
           <span className="subitle1">Unbonding period</span>
           <div className="flex gap-4">
-            {gauges.map(({ id, duration, apr }, index) => (
+            {gauges.map(({ id, duration, apr, superfluidApr }, index) => (
               <LockupItem
                 key={id}
                 duration={duration.humanize()}
                 isSelected={index === selectedGaugeIndex}
                 onSelect={() => setSelectedGaugeIndex(index)}
-                apr={apr.maxDecimals(2).toString()}
+                apr={apr.maxDecimals(2).trim(true).toString()}
+                superfluidApr={superfluidApr
+                  ?.maxDecimals(0)
+                  .trim(true)
+                  .toString()}
               />
             ))}
           </div>
         </div>
+        {!hasSuperfluidValidator && (
+          <div className="flex gap-2 ml-auto">
+            <CheckBox
+              className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
+              isOn={electSuperfluid}
+              onToggle={() => setElectSuperfluid(!electSuperfluid)}
+            >
+              Superfluid Stake
+            </CheckBox>
+            <Image
+              alt=""
+              src={"/icons/superfluid-osmo.svg"}
+              height={22}
+              width={22}
+            />
+          </div>
+        )}
         <div className="flex flex-col gap-2 border border-white-faint rounded-2xl p-4">
           <span className="subtitle1">Amount To Bond</span>
           {availableToken && (
             <div className="flex gap-1 caption">
               <span>Available LP Token</span>
               <span className="text-primary-50">
-                {availableToken.toString()}
+                {availableToken.trim(true).toString()}
               </span>
             </div>
           )}
           <InputBox
+            type="number"
             currentValue={config.amount}
             onInput={(value) => config.setAmount(value)}
             placeholder=""
@@ -78,18 +111,25 @@ export const LockTokensModal: FunctionComponent<
         <Button
           className="h-14 w-96 mt-3 mx-auto"
           size="lg"
-          disabled={config.error !== undefined || isSendingMsg}
+          disabled={
+            config.error !== undefined ||
+            selectedGaugeIndex === null ||
+            isSendingMsg
+          }
           loading={isSendingMsg}
           onClick={() => {
             const gauge = gauges.find(
               (_, index) => index === selectedGaugeIndex
             );
             if (gauge) {
-              onLockToken(gauge.id);
+              onLockToken(
+                gauge.id,
+                hasSuperfluidValidator ? undefined : electSuperfluid
+              );
             }
           }}
         >
-          Bond
+          {electSuperfluid && !hasSuperfluidValidator ? "Next" : "Bond"}
         </Button>
       </div>
     </ModalBase>
@@ -101,8 +141,8 @@ const LockupItem: FunctionComponent<{
   isSelected: boolean;
   onSelect: () => void;
   apr: string;
-  isSuperfluidEnabled?: boolean;
-}> = ({ duration, isSelected, onSelect, apr, isSuperfluidEnabled = false }) => {
+  superfluidApr?: string;
+}> = ({ duration, isSelected, onSelect, apr, superfluidApr }) => {
   return (
     <div
       onClick={onSelect}
@@ -110,9 +150,9 @@ const LockupItem: FunctionComponent<{
         {
           "shadow-elevation-08dp": isSelected,
         },
-        "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer border border-white-faint",
-        isSuperfluidEnabled
-          ? "bg-sfs"
+        "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer",
+        superfluidApr
+          ? "bg-superfluid"
           : isSelected
           ? "bg-enabledGold bg-opacity-30"
           : "bg-white-faint hover:opacity-75"
@@ -122,7 +162,7 @@ const LockupItem: FunctionComponent<{
         className={classNames(
           "flex items-center rounded-2xl bg-surface h-full px-5 py-3.5 md:py-5 md:px-4",
           {
-            "bg-sfs-20": isSuperfluidEnabled && isSelected,
+            "bg-superfluid-20": superfluidApr && isSelected,
           }
         )}
       >
@@ -137,20 +177,20 @@ const LockupItem: FunctionComponent<{
         <div className="w-full flex justify-between md:flex-col md:items-baseline">
           <div className="flex gap-1.5 items-center mx-auto">
             <h5>{duration}</h5>
-            {isSuperfluidEnabled && (
-              <div className="w-6 h-6">
-                <Image
-                  alt=""
-                  src={"/public/assets/Icons/superfluid-osmo.svg"}
-                  height={10}
-                  width={10}
-                />
-              </div>
+            {superfluidApr && (
+              <Image
+                alt=""
+                src={"/icons/superfluid-osmo.svg"}
+                height={22}
+                width={22}
+              />
             )}
           </div>
-          <p className="md:mt-1 text-secondary-200 text-sm md:text-base mx-auto">
-            {apr}
-          </p>
+          <div className="w-full flex text-center place-content-center gap-2">
+            <p className="md:mt-1 text-secondary-200 text-sm md:text-base">
+              {`${apr}${superfluidApr ? `+ ${superfluidApr}` : ""}`}
+            </p>
+          </div>
         </div>
       </div>
     </div>

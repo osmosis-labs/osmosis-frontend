@@ -15,3 +15,7 @@ export type AssetCell = BaseCell & {
   onWithdraw?: (chainId: string, coinDenom: string) => void;
   onDeposit?: (chainId: string, coinDenom: string) => void;
 };
+
+export interface ValidatorInfo extends BaseCell {
+  imgSrc?: string;
+}

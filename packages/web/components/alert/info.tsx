@@ -9,11 +9,11 @@ export const Info: FunctionComponent<
 > = ({ message, caption, data, className }) => (
   <div
     className={classNames(
-      "flex gap-3 w-full bg-background border border-secondary-200 rounded-lg px-5 py-4",
+      "flex gap-3 w-full border border-secondary-200 rounded-2xl px-5 py-4",
       className
     )}
   >
-    <div>
+    <div className="my-auto">
       <Image
         alt="error"
         src="/icons/info-secondary-200.svg"
@@ -23,13 +23,11 @@ export const Info: FunctionComponent<
     </div>
     <div className="flex grow place-content-between">
       <div className="flex flex-col">
-        <span className="text-emphasis text-h6">{message}</span>
-        {caption && (
-          <span className="text-iconDefault text-body2">{caption}</span>
-        )}
+        <h6>{message}</h6>
+        {caption && <span className="text-iconDefault body2">{caption}</span>}
       </div>
       <div className="flex flex-col place-content-around">
-        <span>{data}</span>
+        <h6>{data}</h6>
       </div>
     </div>
   </div>

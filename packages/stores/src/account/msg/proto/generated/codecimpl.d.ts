@@ -1028,6 +1028,1960 @@ export namespace osmosis {
         public toJSON(): { [k: string]: any };
       }
 
+      /** Represents a Msg */
+      class Msg extends $protobuf.rpc.Service {
+        /**
+         * Constructs a new Msg service.
+         * @param rpcImpl RPC implementation
+         * @param [requestDelimited=false] Whether requests are length-delimited
+         * @param [responseDelimited=false] Whether responses are length-delimited
+         */
+        constructor(
+          rpcImpl: $protobuf.RPCImpl,
+          requestDelimited?: boolean,
+          responseDelimited?: boolean
+        );
+
+        /**
+         * Creates new Msg service using the specified rpc implementation.
+         * @param rpcImpl RPC implementation
+         * @param [requestDelimited=false] Whether requests are length-delimited
+         * @param [responseDelimited=false] Whether responses are length-delimited
+         * @returns RPC service. Useful where requests and/or responses are streamed.
+         */
+        public static create(
+          rpcImpl: $protobuf.RPCImpl,
+          requestDelimited?: boolean,
+          responseDelimited?: boolean
+        ): Msg;
+
+        /**
+         * Calls JoinPool.
+         * @param request MsgJoinPool message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgJoinPoolResponse
+         */
+        public joinPool(
+          request: osmosis.gamm.v1beta1.IMsgJoinPool,
+          callback: osmosis.gamm.v1beta1.Msg.JoinPoolCallback
+        ): void;
+
+        /**
+         * Calls JoinPool.
+         * @param request MsgJoinPool message or plain object
+         * @returns Promise
+         */
+        public joinPool(
+          request: osmosis.gamm.v1beta1.IMsgJoinPool
+        ): Promise<osmosis.gamm.v1beta1.MsgJoinPoolResponse>;
+
+        /**
+         * Calls ExitPool.
+         * @param request MsgExitPool message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgExitPoolResponse
+         */
+        public exitPool(
+          request: osmosis.gamm.v1beta1.IMsgExitPool,
+          callback: osmosis.gamm.v1beta1.Msg.ExitPoolCallback
+        ): void;
+
+        /**
+         * Calls ExitPool.
+         * @param request MsgExitPool message or plain object
+         * @returns Promise
+         */
+        public exitPool(
+          request: osmosis.gamm.v1beta1.IMsgExitPool
+        ): Promise<osmosis.gamm.v1beta1.MsgExitPoolResponse>;
+
+        /**
+         * Calls SwapExactAmountIn.
+         * @param request MsgSwapExactAmountIn message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgSwapExactAmountInResponse
+         */
+        public swapExactAmountIn(
+          request: osmosis.gamm.v1beta1.IMsgSwapExactAmountIn,
+          callback: osmosis.gamm.v1beta1.Msg.SwapExactAmountInCallback
+        ): void;
+
+        /**
+         * Calls SwapExactAmountIn.
+         * @param request MsgSwapExactAmountIn message or plain object
+         * @returns Promise
+         */
+        public swapExactAmountIn(
+          request: osmosis.gamm.v1beta1.IMsgSwapExactAmountIn
+        ): Promise<osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse>;
+
+        /**
+         * Calls SwapExactAmountOut.
+         * @param request MsgSwapExactAmountOut message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgSwapExactAmountOutResponse
+         */
+        public swapExactAmountOut(
+          request: osmosis.gamm.v1beta1.IMsgSwapExactAmountOut,
+          callback: osmosis.gamm.v1beta1.Msg.SwapExactAmountOutCallback
+        ): void;
+
+        /**
+         * Calls SwapExactAmountOut.
+         * @param request MsgSwapExactAmountOut message or plain object
+         * @returns Promise
+         */
+        public swapExactAmountOut(
+          request: osmosis.gamm.v1beta1.IMsgSwapExactAmountOut
+        ): Promise<osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse>;
+
+        /**
+         * Calls JoinSwapExternAmountIn.
+         * @param request MsgJoinSwapExternAmountIn message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgJoinSwapExternAmountInResponse
+         */
+        public joinSwapExternAmountIn(
+          request: osmosis.gamm.v1beta1.IMsgJoinSwapExternAmountIn,
+          callback: osmosis.gamm.v1beta1.Msg.JoinSwapExternAmountInCallback
+        ): void;
+
+        /**
+         * Calls JoinSwapExternAmountIn.
+         * @param request MsgJoinSwapExternAmountIn message or plain object
+         * @returns Promise
+         */
+        public joinSwapExternAmountIn(
+          request: osmosis.gamm.v1beta1.IMsgJoinSwapExternAmountIn
+        ): Promise<osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse>;
+
+        /**
+         * Calls JoinSwapShareAmountOut.
+         * @param request MsgJoinSwapShareAmountOut message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgJoinSwapShareAmountOutResponse
+         */
+        public joinSwapShareAmountOut(
+          request: osmosis.gamm.v1beta1.IMsgJoinSwapShareAmountOut,
+          callback: osmosis.gamm.v1beta1.Msg.JoinSwapShareAmountOutCallback
+        ): void;
+
+        /**
+         * Calls JoinSwapShareAmountOut.
+         * @param request MsgJoinSwapShareAmountOut message or plain object
+         * @returns Promise
+         */
+        public joinSwapShareAmountOut(
+          request: osmosis.gamm.v1beta1.IMsgJoinSwapShareAmountOut
+        ): Promise<osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse>;
+
+        /**
+         * Calls ExitSwapExternAmountOut.
+         * @param request MsgExitSwapExternAmountOut message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgExitSwapExternAmountOutResponse
+         */
+        public exitSwapExternAmountOut(
+          request: osmosis.gamm.v1beta1.IMsgExitSwapExternAmountOut,
+          callback: osmosis.gamm.v1beta1.Msg.ExitSwapExternAmountOutCallback
+        ): void;
+
+        /**
+         * Calls ExitSwapExternAmountOut.
+         * @param request MsgExitSwapExternAmountOut message or plain object
+         * @returns Promise
+         */
+        public exitSwapExternAmountOut(
+          request: osmosis.gamm.v1beta1.IMsgExitSwapExternAmountOut
+        ): Promise<osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse>;
+
+        /**
+         * Calls ExitSwapShareAmountIn.
+         * @param request MsgExitSwapShareAmountIn message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgExitSwapShareAmountInResponse
+         */
+        public exitSwapShareAmountIn(
+          request: osmosis.gamm.v1beta1.IMsgExitSwapShareAmountIn,
+          callback: osmosis.gamm.v1beta1.Msg.ExitSwapShareAmountInCallback
+        ): void;
+
+        /**
+         * Calls ExitSwapShareAmountIn.
+         * @param request MsgExitSwapShareAmountIn message or plain object
+         * @returns Promise
+         */
+        public exitSwapShareAmountIn(
+          request: osmosis.gamm.v1beta1.IMsgExitSwapShareAmountIn
+        ): Promise<osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse>;
+      }
+
+      namespace Msg {
+        /**
+         * Callback as used by {@link osmosis.gamm.v1beta1.Msg#joinPool}.
+         * @param error Error, if any
+         * @param [response] MsgJoinPoolResponse
+         */
+        type JoinPoolCallback = (
+          error: Error | null,
+          response?: osmosis.gamm.v1beta1.MsgJoinPoolResponse
+        ) => void;
+
+        /**
+         * Callback as used by {@link osmosis.gamm.v1beta1.Msg#exitPool}.
+         * @param error Error, if any
+         * @param [response] MsgExitPoolResponse
+         */
+        type ExitPoolCallback = (
+          error: Error | null,
+          response?: osmosis.gamm.v1beta1.MsgExitPoolResponse
+        ) => void;
+
+        /**
+         * Callback as used by {@link osmosis.gamm.v1beta1.Msg#swapExactAmountIn}.
+         * @param error Error, if any
+         * @param [response] MsgSwapExactAmountInResponse
+         */
+        type SwapExactAmountInCallback = (
+          error: Error | null,
+          response?: osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse
+        ) => void;
+
+        /**
+         * Callback as used by {@link osmosis.gamm.v1beta1.Msg#swapExactAmountOut}.
+         * @param error Error, if any
+         * @param [response] MsgSwapExactAmountOutResponse
+         */
+        type SwapExactAmountOutCallback = (
+          error: Error | null,
+          response?: osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse
+        ) => void;
+
+        /**
+         * Callback as used by {@link osmosis.gamm.v1beta1.Msg#joinSwapExternAmountIn}.
+         * @param error Error, if any
+         * @param [response] MsgJoinSwapExternAmountInResponse
+         */
+        type JoinSwapExternAmountInCallback = (
+          error: Error | null,
+          response?: osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse
+        ) => void;
+
+        /**
+         * Callback as used by {@link osmosis.gamm.v1beta1.Msg#joinSwapShareAmountOut}.
+         * @param error Error, if any
+         * @param [response] MsgJoinSwapShareAmountOutResponse
+         */
+        type JoinSwapShareAmountOutCallback = (
+          error: Error | null,
+          response?: osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse
+        ) => void;
+
+        /**
+         * Callback as used by {@link osmosis.gamm.v1beta1.Msg#exitSwapExternAmountOut}.
+         * @param error Error, if any
+         * @param [response] MsgExitSwapExternAmountOutResponse
+         */
+        type ExitSwapExternAmountOutCallback = (
+          error: Error | null,
+          response?: osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse
+        ) => void;
+
+        /**
+         * Callback as used by {@link osmosis.gamm.v1beta1.Msg#exitSwapShareAmountIn}.
+         * @param error Error, if any
+         * @param [response] MsgExitSwapShareAmountInResponse
+         */
+        type ExitSwapShareAmountInCallback = (
+          error: Error | null,
+          response?: osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse
+        ) => void;
+      }
+
+      /** Properties of a MsgCreateBalancerPool. */
+      interface IMsgCreateBalancerPool {
+        /** MsgCreateBalancerPool sender */
+        sender?: string | null;
+
+        /** MsgCreateBalancerPool poolParams */
+        poolParams?: osmosis.gamm.v1beta1.IPoolParams | null;
+
+        /** MsgCreateBalancerPool poolAssets */
+        poolAssets?: osmosis.gamm.v1beta1.IPoolAsset[] | null;
+
+        /** MsgCreateBalancerPool futurePoolGovernor */
+        futurePoolGovernor?: string | null;
+      }
+
+      /** Represents a MsgCreateBalancerPool. */
+      class MsgCreateBalancerPool implements IMsgCreateBalancerPool {
+        /**
+         * Constructs a new MsgCreateBalancerPool.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgCreateBalancerPool);
+
+        /** MsgCreateBalancerPool sender. */
+        public sender: string;
+
+        /** MsgCreateBalancerPool poolParams. */
+        public poolParams?: osmosis.gamm.v1beta1.IPoolParams | null;
+
+        /** MsgCreateBalancerPool poolAssets. */
+        public poolAssets: osmosis.gamm.v1beta1.IPoolAsset[];
+
+        /** MsgCreateBalancerPool futurePoolGovernor. */
+        public futurePoolGovernor: string;
+
+        /**
+         * Creates a new MsgCreateBalancerPool instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgCreateBalancerPool instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgCreateBalancerPool
+        ): osmosis.gamm.v1beta1.MsgCreateBalancerPool;
+
+        /**
+         * Encodes the specified MsgCreateBalancerPool message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgCreateBalancerPool.verify|verify} messages.
+         * @param m MsgCreateBalancerPool message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgCreateBalancerPool,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgCreateBalancerPool message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgCreateBalancerPool
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgCreateBalancerPool;
+
+        /**
+         * Creates a MsgCreateBalancerPool message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgCreateBalancerPool
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgCreateBalancerPool;
+
+        /**
+         * Creates a plain object from a MsgCreateBalancerPool message. Also converts values to other types if specified.
+         * @param m MsgCreateBalancerPool
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgCreateBalancerPool,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgCreateBalancerPool to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgCreateBalancerPoolResponse. */
+      interface IMsgCreateBalancerPoolResponse {}
+
+      /** Represents a MsgCreateBalancerPoolResponse. */
+      class MsgCreateBalancerPoolResponse
+        implements IMsgCreateBalancerPoolResponse
+      {
+        /**
+         * Constructs a new MsgCreateBalancerPoolResponse.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgCreateBalancerPoolResponse);
+
+        /**
+         * Creates a new MsgCreateBalancerPoolResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgCreateBalancerPoolResponse instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgCreateBalancerPoolResponse
+        ): osmosis.gamm.v1beta1.MsgCreateBalancerPoolResponse;
+
+        /**
+         * Encodes the specified MsgCreateBalancerPoolResponse message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgCreateBalancerPoolResponse.verify|verify} messages.
+         * @param m MsgCreateBalancerPoolResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgCreateBalancerPoolResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgCreateBalancerPoolResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgCreateBalancerPoolResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgCreateBalancerPoolResponse;
+
+        /**
+         * Creates a MsgCreateBalancerPoolResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgCreateBalancerPoolResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgCreateBalancerPoolResponse;
+
+        /**
+         * Creates a plain object from a MsgCreateBalancerPoolResponse message. Also converts values to other types if specified.
+         * @param m MsgCreateBalancerPoolResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgCreateBalancerPoolResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgCreateBalancerPoolResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgJoinPool. */
+      interface IMsgJoinPool {
+        /** MsgJoinPool sender */
+        sender?: string | null;
+
+        /** MsgJoinPool poolId */
+        poolId?: Long | null;
+
+        /** MsgJoinPool shareOutAmount */
+        shareOutAmount?: string | null;
+
+        /** MsgJoinPool tokenInMaxs */
+        tokenInMaxs?: cosmos.base.v1beta1.ICoin[] | null;
+      }
+
+      /** Represents a MsgJoinPool. */
+      class MsgJoinPool implements IMsgJoinPool {
+        /**
+         * Constructs a new MsgJoinPool.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgJoinPool);
+
+        /** MsgJoinPool sender. */
+        public sender: string;
+
+        /** MsgJoinPool poolId. */
+        public poolId: Long;
+
+        /** MsgJoinPool shareOutAmount. */
+        public shareOutAmount: string;
+
+        /** MsgJoinPool tokenInMaxs. */
+        public tokenInMaxs: cosmos.base.v1beta1.ICoin[];
+
+        /**
+         * Creates a new MsgJoinPool instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgJoinPool instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgJoinPool
+        ): osmosis.gamm.v1beta1.MsgJoinPool;
+
+        /**
+         * Encodes the specified MsgJoinPool message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgJoinPool.verify|verify} messages.
+         * @param m MsgJoinPool message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgJoinPool,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgJoinPool message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgJoinPool
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgJoinPool;
+
+        /**
+         * Creates a MsgJoinPool message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgJoinPool
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgJoinPool;
+
+        /**
+         * Creates a plain object from a MsgJoinPool message. Also converts values to other types if specified.
+         * @param m MsgJoinPool
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgJoinPool,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgJoinPool to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgJoinPoolResponse. */
+      interface IMsgJoinPoolResponse {}
+
+      /** Represents a MsgJoinPoolResponse. */
+      class MsgJoinPoolResponse implements IMsgJoinPoolResponse {
+        /**
+         * Constructs a new MsgJoinPoolResponse.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgJoinPoolResponse);
+
+        /**
+         * Creates a new MsgJoinPoolResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgJoinPoolResponse instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgJoinPoolResponse
+        ): osmosis.gamm.v1beta1.MsgJoinPoolResponse;
+
+        /**
+         * Encodes the specified MsgJoinPoolResponse message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgJoinPoolResponse.verify|verify} messages.
+         * @param m MsgJoinPoolResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgJoinPoolResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgJoinPoolResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgJoinPoolResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgJoinPoolResponse;
+
+        /**
+         * Creates a MsgJoinPoolResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgJoinPoolResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgJoinPoolResponse;
+
+        /**
+         * Creates a plain object from a MsgJoinPoolResponse message. Also converts values to other types if specified.
+         * @param m MsgJoinPoolResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgJoinPoolResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgJoinPoolResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgExitPool. */
+      interface IMsgExitPool {
+        /** MsgExitPool sender */
+        sender?: string | null;
+
+        /** MsgExitPool poolId */
+        poolId?: Long | null;
+
+        /** MsgExitPool shareInAmount */
+        shareInAmount?: string | null;
+
+        /** MsgExitPool tokenOutMins */
+        tokenOutMins?: cosmos.base.v1beta1.ICoin[] | null;
+      }
+
+      /** Represents a MsgExitPool. */
+      class MsgExitPool implements IMsgExitPool {
+        /**
+         * Constructs a new MsgExitPool.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgExitPool);
+
+        /** MsgExitPool sender. */
+        public sender: string;
+
+        /** MsgExitPool poolId. */
+        public poolId: Long;
+
+        /** MsgExitPool shareInAmount. */
+        public shareInAmount: string;
+
+        /** MsgExitPool tokenOutMins. */
+        public tokenOutMins: cosmos.base.v1beta1.ICoin[];
+
+        /**
+         * Creates a new MsgExitPool instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgExitPool instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgExitPool
+        ): osmosis.gamm.v1beta1.MsgExitPool;
+
+        /**
+         * Encodes the specified MsgExitPool message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgExitPool.verify|verify} messages.
+         * @param m MsgExitPool message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgExitPool,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgExitPool message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgExitPool
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgExitPool;
+
+        /**
+         * Creates a MsgExitPool message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgExitPool
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgExitPool;
+
+        /**
+         * Creates a plain object from a MsgExitPool message. Also converts values to other types if specified.
+         * @param m MsgExitPool
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgExitPool,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgExitPool to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgExitPoolResponse. */
+      interface IMsgExitPoolResponse {}
+
+      /** Represents a MsgExitPoolResponse. */
+      class MsgExitPoolResponse implements IMsgExitPoolResponse {
+        /**
+         * Constructs a new MsgExitPoolResponse.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgExitPoolResponse);
+
+        /**
+         * Creates a new MsgExitPoolResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgExitPoolResponse instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgExitPoolResponse
+        ): osmosis.gamm.v1beta1.MsgExitPoolResponse;
+
+        /**
+         * Encodes the specified MsgExitPoolResponse message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgExitPoolResponse.verify|verify} messages.
+         * @param m MsgExitPoolResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgExitPoolResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgExitPoolResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgExitPoolResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgExitPoolResponse;
+
+        /**
+         * Creates a MsgExitPoolResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgExitPoolResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgExitPoolResponse;
+
+        /**
+         * Creates a plain object from a MsgExitPoolResponse message. Also converts values to other types if specified.
+         * @param m MsgExitPoolResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgExitPoolResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgExitPoolResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a SwapAmountInRoute. */
+      interface ISwapAmountInRoute {
+        /** SwapAmountInRoute poolId */
+        poolId?: Long | null;
+
+        /** SwapAmountInRoute tokenOutDenom */
+        tokenOutDenom?: string | null;
+      }
+
+      /** Represents a SwapAmountInRoute. */
+      class SwapAmountInRoute implements ISwapAmountInRoute {
+        /**
+         * Constructs a new SwapAmountInRoute.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.ISwapAmountInRoute);
+
+        /** SwapAmountInRoute poolId. */
+        public poolId: Long;
+
+        /** SwapAmountInRoute tokenOutDenom. */
+        public tokenOutDenom: string;
+
+        /**
+         * Creates a new SwapAmountInRoute instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns SwapAmountInRoute instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.ISwapAmountInRoute
+        ): osmosis.gamm.v1beta1.SwapAmountInRoute;
+
+        /**
+         * Encodes the specified SwapAmountInRoute message. Does not implicitly {@link osmosis.gamm.v1beta1.SwapAmountInRoute.verify|verify} messages.
+         * @param m SwapAmountInRoute message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.ISwapAmountInRoute,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a SwapAmountInRoute message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns SwapAmountInRoute
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.SwapAmountInRoute;
+
+        /**
+         * Creates a SwapAmountInRoute message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns SwapAmountInRoute
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.SwapAmountInRoute;
+
+        /**
+         * Creates a plain object from a SwapAmountInRoute message. Also converts values to other types if specified.
+         * @param m SwapAmountInRoute
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.SwapAmountInRoute,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this SwapAmountInRoute to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgSwapExactAmountIn. */
+      interface IMsgSwapExactAmountIn {
+        /** MsgSwapExactAmountIn sender */
+        sender?: string | null;
+
+        /** MsgSwapExactAmountIn routes */
+        routes?: osmosis.gamm.v1beta1.ISwapAmountInRoute[] | null;
+
+        /** MsgSwapExactAmountIn tokenIn */
+        tokenIn?: cosmos.base.v1beta1.ICoin | null;
+
+        /** MsgSwapExactAmountIn tokenOutMinAmount */
+        tokenOutMinAmount?: string | null;
+      }
+
+      /** Represents a MsgSwapExactAmountIn. */
+      class MsgSwapExactAmountIn implements IMsgSwapExactAmountIn {
+        /**
+         * Constructs a new MsgSwapExactAmountIn.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgSwapExactAmountIn);
+
+        /** MsgSwapExactAmountIn sender. */
+        public sender: string;
+
+        /** MsgSwapExactAmountIn routes. */
+        public routes: osmosis.gamm.v1beta1.ISwapAmountInRoute[];
+
+        /** MsgSwapExactAmountIn tokenIn. */
+        public tokenIn?: cosmos.base.v1beta1.ICoin | null;
+
+        /** MsgSwapExactAmountIn tokenOutMinAmount. */
+        public tokenOutMinAmount: string;
+
+        /**
+         * Creates a new MsgSwapExactAmountIn instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgSwapExactAmountIn instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgSwapExactAmountIn
+        ): osmosis.gamm.v1beta1.MsgSwapExactAmountIn;
+
+        /**
+         * Encodes the specified MsgSwapExactAmountIn message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgSwapExactAmountIn.verify|verify} messages.
+         * @param m MsgSwapExactAmountIn message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgSwapExactAmountIn,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgSwapExactAmountIn message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgSwapExactAmountIn
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgSwapExactAmountIn;
+
+        /**
+         * Creates a MsgSwapExactAmountIn message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgSwapExactAmountIn
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgSwapExactAmountIn;
+
+        /**
+         * Creates a plain object from a MsgSwapExactAmountIn message. Also converts values to other types if specified.
+         * @param m MsgSwapExactAmountIn
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgSwapExactAmountIn,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgSwapExactAmountIn to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgSwapExactAmountInResponse. */
+      interface IMsgSwapExactAmountInResponse {}
+
+      /** Represents a MsgSwapExactAmountInResponse. */
+      class MsgSwapExactAmountInResponse
+        implements IMsgSwapExactAmountInResponse
+      {
+        /**
+         * Constructs a new MsgSwapExactAmountInResponse.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgSwapExactAmountInResponse);
+
+        /**
+         * Creates a new MsgSwapExactAmountInResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgSwapExactAmountInResponse instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgSwapExactAmountInResponse
+        ): osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse;
+
+        /**
+         * Encodes the specified MsgSwapExactAmountInResponse message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse.verify|verify} messages.
+         * @param m MsgSwapExactAmountInResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgSwapExactAmountInResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgSwapExactAmountInResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgSwapExactAmountInResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse;
+
+        /**
+         * Creates a MsgSwapExactAmountInResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgSwapExactAmountInResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse;
+
+        /**
+         * Creates a plain object from a MsgSwapExactAmountInResponse message. Also converts values to other types if specified.
+         * @param m MsgSwapExactAmountInResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgSwapExactAmountInResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a SwapAmountOutRoute. */
+      interface ISwapAmountOutRoute {
+        /** SwapAmountOutRoute poolId */
+        poolId?: Long | null;
+
+        /** SwapAmountOutRoute tokenInDenom */
+        tokenInDenom?: string | null;
+      }
+
+      /** Represents a SwapAmountOutRoute. */
+      class SwapAmountOutRoute implements ISwapAmountOutRoute {
+        /**
+         * Constructs a new SwapAmountOutRoute.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.ISwapAmountOutRoute);
+
+        /** SwapAmountOutRoute poolId. */
+        public poolId: Long;
+
+        /** SwapAmountOutRoute tokenInDenom. */
+        public tokenInDenom: string;
+
+        /**
+         * Creates a new SwapAmountOutRoute instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns SwapAmountOutRoute instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.ISwapAmountOutRoute
+        ): osmosis.gamm.v1beta1.SwapAmountOutRoute;
+
+        /**
+         * Encodes the specified SwapAmountOutRoute message. Does not implicitly {@link osmosis.gamm.v1beta1.SwapAmountOutRoute.verify|verify} messages.
+         * @param m SwapAmountOutRoute message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.ISwapAmountOutRoute,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a SwapAmountOutRoute message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns SwapAmountOutRoute
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.SwapAmountOutRoute;
+
+        /**
+         * Creates a SwapAmountOutRoute message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns SwapAmountOutRoute
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.SwapAmountOutRoute;
+
+        /**
+         * Creates a plain object from a SwapAmountOutRoute message. Also converts values to other types if specified.
+         * @param m SwapAmountOutRoute
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.SwapAmountOutRoute,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this SwapAmountOutRoute to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgSwapExactAmountOut. */
+      interface IMsgSwapExactAmountOut {
+        /** MsgSwapExactAmountOut sender */
+        sender?: string | null;
+
+        /** MsgSwapExactAmountOut routes */
+        routes?: osmosis.gamm.v1beta1.ISwapAmountOutRoute[] | null;
+
+        /** MsgSwapExactAmountOut tokenInMaxAmount */
+        tokenInMaxAmount?: string | null;
+
+        /** MsgSwapExactAmountOut tokenOut */
+        tokenOut?: cosmos.base.v1beta1.ICoin | null;
+      }
+
+      /** Represents a MsgSwapExactAmountOut. */
+      class MsgSwapExactAmountOut implements IMsgSwapExactAmountOut {
+        /**
+         * Constructs a new MsgSwapExactAmountOut.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgSwapExactAmountOut);
+
+        /** MsgSwapExactAmountOut sender. */
+        public sender: string;
+
+        /** MsgSwapExactAmountOut routes. */
+        public routes: osmosis.gamm.v1beta1.ISwapAmountOutRoute[];
+
+        /** MsgSwapExactAmountOut tokenInMaxAmount. */
+        public tokenInMaxAmount: string;
+
+        /** MsgSwapExactAmountOut tokenOut. */
+        public tokenOut?: cosmos.base.v1beta1.ICoin | null;
+
+        /**
+         * Creates a new MsgSwapExactAmountOut instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgSwapExactAmountOut instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgSwapExactAmountOut
+        ): osmosis.gamm.v1beta1.MsgSwapExactAmountOut;
+
+        /**
+         * Encodes the specified MsgSwapExactAmountOut message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgSwapExactAmountOut.verify|verify} messages.
+         * @param m MsgSwapExactAmountOut message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgSwapExactAmountOut,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgSwapExactAmountOut message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgSwapExactAmountOut
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgSwapExactAmountOut;
+
+        /**
+         * Creates a MsgSwapExactAmountOut message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgSwapExactAmountOut
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgSwapExactAmountOut;
+
+        /**
+         * Creates a plain object from a MsgSwapExactAmountOut message. Also converts values to other types if specified.
+         * @param m MsgSwapExactAmountOut
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgSwapExactAmountOut,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgSwapExactAmountOut to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgSwapExactAmountOutResponse. */
+      interface IMsgSwapExactAmountOutResponse {}
+
+      /** Represents a MsgSwapExactAmountOutResponse. */
+      class MsgSwapExactAmountOutResponse
+        implements IMsgSwapExactAmountOutResponse
+      {
+        /**
+         * Constructs a new MsgSwapExactAmountOutResponse.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgSwapExactAmountOutResponse);
+
+        /**
+         * Creates a new MsgSwapExactAmountOutResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgSwapExactAmountOutResponse instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgSwapExactAmountOutResponse
+        ): osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse;
+
+        /**
+         * Encodes the specified MsgSwapExactAmountOutResponse message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse.verify|verify} messages.
+         * @param m MsgSwapExactAmountOutResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgSwapExactAmountOutResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgSwapExactAmountOutResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgSwapExactAmountOutResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse;
+
+        /**
+         * Creates a MsgSwapExactAmountOutResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgSwapExactAmountOutResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse;
+
+        /**
+         * Creates a plain object from a MsgSwapExactAmountOutResponse message. Also converts values to other types if specified.
+         * @param m MsgSwapExactAmountOutResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgSwapExactAmountOutResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgJoinSwapExternAmountIn. */
+      interface IMsgJoinSwapExternAmountIn {
+        /** MsgJoinSwapExternAmountIn sender */
+        sender?: string | null;
+
+        /** MsgJoinSwapExternAmountIn poolId */
+        poolId?: Long | null;
+
+        /** MsgJoinSwapExternAmountIn tokenIn */
+        tokenIn?: cosmos.base.v1beta1.ICoin | null;
+
+        /** MsgJoinSwapExternAmountIn shareOutMinAmount */
+        shareOutMinAmount?: string | null;
+      }
+
+      /** Represents a MsgJoinSwapExternAmountIn. */
+      class MsgJoinSwapExternAmountIn implements IMsgJoinSwapExternAmountIn {
+        /**
+         * Constructs a new MsgJoinSwapExternAmountIn.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgJoinSwapExternAmountIn);
+
+        /** MsgJoinSwapExternAmountIn sender. */
+        public sender: string;
+
+        /** MsgJoinSwapExternAmountIn poolId. */
+        public poolId: Long;
+
+        /** MsgJoinSwapExternAmountIn tokenIn. */
+        public tokenIn?: cosmos.base.v1beta1.ICoin | null;
+
+        /** MsgJoinSwapExternAmountIn shareOutMinAmount. */
+        public shareOutMinAmount: string;
+
+        /**
+         * Creates a new MsgJoinSwapExternAmountIn instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgJoinSwapExternAmountIn instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgJoinSwapExternAmountIn
+        ): osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn;
+
+        /**
+         * Encodes the specified MsgJoinSwapExternAmountIn message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn.verify|verify} messages.
+         * @param m MsgJoinSwapExternAmountIn message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgJoinSwapExternAmountIn,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgJoinSwapExternAmountIn message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgJoinSwapExternAmountIn
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn;
+
+        /**
+         * Creates a MsgJoinSwapExternAmountIn message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgJoinSwapExternAmountIn
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn;
+
+        /**
+         * Creates a plain object from a MsgJoinSwapExternAmountIn message. Also converts values to other types if specified.
+         * @param m MsgJoinSwapExternAmountIn
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgJoinSwapExternAmountIn to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgJoinSwapExternAmountInResponse. */
+      interface IMsgJoinSwapExternAmountInResponse {}
+
+      /** Represents a MsgJoinSwapExternAmountInResponse. */
+      class MsgJoinSwapExternAmountInResponse
+        implements IMsgJoinSwapExternAmountInResponse
+      {
+        /**
+         * Constructs a new MsgJoinSwapExternAmountInResponse.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.gamm.v1beta1.IMsgJoinSwapExternAmountInResponse
+        );
+
+        /**
+         * Creates a new MsgJoinSwapExternAmountInResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgJoinSwapExternAmountInResponse instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgJoinSwapExternAmountInResponse
+        ): osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse;
+
+        /**
+         * Encodes the specified MsgJoinSwapExternAmountInResponse message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse.verify|verify} messages.
+         * @param m MsgJoinSwapExternAmountInResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgJoinSwapExternAmountInResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgJoinSwapExternAmountInResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgJoinSwapExternAmountInResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse;
+
+        /**
+         * Creates a MsgJoinSwapExternAmountInResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgJoinSwapExternAmountInResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse;
+
+        /**
+         * Creates a plain object from a MsgJoinSwapExternAmountInResponse message. Also converts values to other types if specified.
+         * @param m MsgJoinSwapExternAmountInResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgJoinSwapExternAmountInResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgJoinSwapShareAmountOut. */
+      interface IMsgJoinSwapShareAmountOut {
+        /** MsgJoinSwapShareAmountOut sender */
+        sender?: string | null;
+
+        /** MsgJoinSwapShareAmountOut poolId */
+        poolId?: Long | null;
+
+        /** MsgJoinSwapShareAmountOut tokenInDenom */
+        tokenInDenom?: string | null;
+
+        /** MsgJoinSwapShareAmountOut shareOutAmount */
+        shareOutAmount?: string | null;
+
+        /** MsgJoinSwapShareAmountOut tokenInMaxAmount */
+        tokenInMaxAmount?: string | null;
+      }
+
+      /** Represents a MsgJoinSwapShareAmountOut. */
+      class MsgJoinSwapShareAmountOut implements IMsgJoinSwapShareAmountOut {
+        /**
+         * Constructs a new MsgJoinSwapShareAmountOut.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgJoinSwapShareAmountOut);
+
+        /** MsgJoinSwapShareAmountOut sender. */
+        public sender: string;
+
+        /** MsgJoinSwapShareAmountOut poolId. */
+        public poolId: Long;
+
+        /** MsgJoinSwapShareAmountOut tokenInDenom. */
+        public tokenInDenom: string;
+
+        /** MsgJoinSwapShareAmountOut shareOutAmount. */
+        public shareOutAmount: string;
+
+        /** MsgJoinSwapShareAmountOut tokenInMaxAmount. */
+        public tokenInMaxAmount: string;
+
+        /**
+         * Creates a new MsgJoinSwapShareAmountOut instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgJoinSwapShareAmountOut instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgJoinSwapShareAmountOut
+        ): osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut;
+
+        /**
+         * Encodes the specified MsgJoinSwapShareAmountOut message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut.verify|verify} messages.
+         * @param m MsgJoinSwapShareAmountOut message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgJoinSwapShareAmountOut,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgJoinSwapShareAmountOut message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgJoinSwapShareAmountOut
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut;
+
+        /**
+         * Creates a MsgJoinSwapShareAmountOut message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgJoinSwapShareAmountOut
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut;
+
+        /**
+         * Creates a plain object from a MsgJoinSwapShareAmountOut message. Also converts values to other types if specified.
+         * @param m MsgJoinSwapShareAmountOut
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgJoinSwapShareAmountOut to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgJoinSwapShareAmountOutResponse. */
+      interface IMsgJoinSwapShareAmountOutResponse {}
+
+      /** Represents a MsgJoinSwapShareAmountOutResponse. */
+      class MsgJoinSwapShareAmountOutResponse
+        implements IMsgJoinSwapShareAmountOutResponse
+      {
+        /**
+         * Constructs a new MsgJoinSwapShareAmountOutResponse.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.gamm.v1beta1.IMsgJoinSwapShareAmountOutResponse
+        );
+
+        /**
+         * Creates a new MsgJoinSwapShareAmountOutResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgJoinSwapShareAmountOutResponse instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgJoinSwapShareAmountOutResponse
+        ): osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse;
+
+        /**
+         * Encodes the specified MsgJoinSwapShareAmountOutResponse message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse.verify|verify} messages.
+         * @param m MsgJoinSwapShareAmountOutResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgJoinSwapShareAmountOutResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgJoinSwapShareAmountOutResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgJoinSwapShareAmountOutResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse;
+
+        /**
+         * Creates a MsgJoinSwapShareAmountOutResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgJoinSwapShareAmountOutResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse;
+
+        /**
+         * Creates a plain object from a MsgJoinSwapShareAmountOutResponse message. Also converts values to other types if specified.
+         * @param m MsgJoinSwapShareAmountOutResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgJoinSwapShareAmountOutResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgExitSwapShareAmountIn. */
+      interface IMsgExitSwapShareAmountIn {
+        /** MsgExitSwapShareAmountIn sender */
+        sender?: string | null;
+
+        /** MsgExitSwapShareAmountIn poolId */
+        poolId?: Long | null;
+
+        /** MsgExitSwapShareAmountIn tokenOutDenom */
+        tokenOutDenom?: string | null;
+
+        /** MsgExitSwapShareAmountIn shareInAmount */
+        shareInAmount?: string | null;
+
+        /** MsgExitSwapShareAmountIn tokenOutMinAmount */
+        tokenOutMinAmount?: string | null;
+      }
+
+      /** Represents a MsgExitSwapShareAmountIn. */
+      class MsgExitSwapShareAmountIn implements IMsgExitSwapShareAmountIn {
+        /**
+         * Constructs a new MsgExitSwapShareAmountIn.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgExitSwapShareAmountIn);
+
+        /** MsgExitSwapShareAmountIn sender. */
+        public sender: string;
+
+        /** MsgExitSwapShareAmountIn poolId. */
+        public poolId: Long;
+
+        /** MsgExitSwapShareAmountIn tokenOutDenom. */
+        public tokenOutDenom: string;
+
+        /** MsgExitSwapShareAmountIn shareInAmount. */
+        public shareInAmount: string;
+
+        /** MsgExitSwapShareAmountIn tokenOutMinAmount. */
+        public tokenOutMinAmount: string;
+
+        /**
+         * Creates a new MsgExitSwapShareAmountIn instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgExitSwapShareAmountIn instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgExitSwapShareAmountIn
+        ): osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn;
+
+        /**
+         * Encodes the specified MsgExitSwapShareAmountIn message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn.verify|verify} messages.
+         * @param m MsgExitSwapShareAmountIn message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgExitSwapShareAmountIn,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgExitSwapShareAmountIn message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgExitSwapShareAmountIn
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn;
+
+        /**
+         * Creates a MsgExitSwapShareAmountIn message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgExitSwapShareAmountIn
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn;
+
+        /**
+         * Creates a plain object from a MsgExitSwapShareAmountIn message. Also converts values to other types if specified.
+         * @param m MsgExitSwapShareAmountIn
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgExitSwapShareAmountIn to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgExitSwapShareAmountInResponse. */
+      interface IMsgExitSwapShareAmountInResponse {}
+
+      /** Represents a MsgExitSwapShareAmountInResponse. */
+      class MsgExitSwapShareAmountInResponse
+        implements IMsgExitSwapShareAmountInResponse
+      {
+        /**
+         * Constructs a new MsgExitSwapShareAmountInResponse.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgExitSwapShareAmountInResponse);
+
+        /**
+         * Creates a new MsgExitSwapShareAmountInResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgExitSwapShareAmountInResponse instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgExitSwapShareAmountInResponse
+        ): osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse;
+
+        /**
+         * Encodes the specified MsgExitSwapShareAmountInResponse message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse.verify|verify} messages.
+         * @param m MsgExitSwapShareAmountInResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgExitSwapShareAmountInResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgExitSwapShareAmountInResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgExitSwapShareAmountInResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse;
+
+        /**
+         * Creates a MsgExitSwapShareAmountInResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgExitSwapShareAmountInResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse;
+
+        /**
+         * Creates a plain object from a MsgExitSwapShareAmountInResponse message. Also converts values to other types if specified.
+         * @param m MsgExitSwapShareAmountInResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgExitSwapShareAmountInResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgExitSwapExternAmountOut. */
+      interface IMsgExitSwapExternAmountOut {
+        /** MsgExitSwapExternAmountOut sender */
+        sender?: string | null;
+
+        /** MsgExitSwapExternAmountOut poolId */
+        poolId?: Long | null;
+
+        /** MsgExitSwapExternAmountOut tokenOut */
+        tokenOut?: cosmos.base.v1beta1.ICoin | null;
+
+        /** MsgExitSwapExternAmountOut shareInMaxAmount */
+        shareInMaxAmount?: string | null;
+      }
+
+      /** Represents a MsgExitSwapExternAmountOut. */
+      class MsgExitSwapExternAmountOut implements IMsgExitSwapExternAmountOut {
+        /**
+         * Constructs a new MsgExitSwapExternAmountOut.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IMsgExitSwapExternAmountOut);
+
+        /** MsgExitSwapExternAmountOut sender. */
+        public sender: string;
+
+        /** MsgExitSwapExternAmountOut poolId. */
+        public poolId: Long;
+
+        /** MsgExitSwapExternAmountOut tokenOut. */
+        public tokenOut?: cosmos.base.v1beta1.ICoin | null;
+
+        /** MsgExitSwapExternAmountOut shareInMaxAmount. */
+        public shareInMaxAmount: string;
+
+        /**
+         * Creates a new MsgExitSwapExternAmountOut instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgExitSwapExternAmountOut instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgExitSwapExternAmountOut
+        ): osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut;
+
+        /**
+         * Encodes the specified MsgExitSwapExternAmountOut message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut.verify|verify} messages.
+         * @param m MsgExitSwapExternAmountOut message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgExitSwapExternAmountOut,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgExitSwapExternAmountOut message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgExitSwapExternAmountOut
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut;
+
+        /**
+         * Creates a MsgExitSwapExternAmountOut message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgExitSwapExternAmountOut
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut;
+
+        /**
+         * Creates a plain object from a MsgExitSwapExternAmountOut message. Also converts values to other types if specified.
+         * @param m MsgExitSwapExternAmountOut
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgExitSwapExternAmountOut to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgExitSwapExternAmountOutResponse. */
+      interface IMsgExitSwapExternAmountOutResponse {}
+
+      /** Represents a MsgExitSwapExternAmountOutResponse. */
+      class MsgExitSwapExternAmountOutResponse
+        implements IMsgExitSwapExternAmountOutResponse
+      {
+        /**
+         * Constructs a new MsgExitSwapExternAmountOutResponse.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.gamm.v1beta1.IMsgExitSwapExternAmountOutResponse
+        );
+
+        /**
+         * Creates a new MsgExitSwapExternAmountOutResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgExitSwapExternAmountOutResponse instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IMsgExitSwapExternAmountOutResponse
+        ): osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse;
+
+        /**
+         * Encodes the specified MsgExitSwapExternAmountOutResponse message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse.verify|verify} messages.
+         * @param m MsgExitSwapExternAmountOutResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IMsgExitSwapExternAmountOutResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgExitSwapExternAmountOutResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgExitSwapExternAmountOutResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse;
+
+        /**
+         * Creates a MsgExitSwapExternAmountOutResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgExitSwapExternAmountOutResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse;
+
+        /**
+         * Creates a plain object from a MsgExitSwapExternAmountOutResponse message. Also converts values to other types if specified.
+         * @param m MsgExitSwapExternAmountOutResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgExitSwapExternAmountOutResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
       /** Properties of a SmoothWeightChangeParams. */
       interface ISmoothWeightChangeParams {
         /** SmoothWeightChangeParams startTime */
@@ -1212,1034 +3166,114 @@ export namespace osmosis {
         public toJSON(): { [k: string]: any };
       }
 
-      /** Properties of a MsgCreatePool. */
-      interface IMsgCreatePool {
-        /** MsgCreatePool sender */
-        sender?: string | null;
+      /** Properties of a Pool. */
+      interface IPool {
+        /** Pool address */
+        address?: string | null;
 
-        /** MsgCreatePool poolParams */
+        /** Pool id */
+        id?: Long | null;
+
+        /** Pool poolParams */
         poolParams?: osmosis.gamm.v1beta1.IPoolParams | null;
 
-        /** MsgCreatePool poolAssets */
+        /** Pool futurePoolGovernor */
+        futurePoolGovernor?: string | null;
+
+        /** Pool totalShares */
+        totalShares?: cosmos.base.v1beta1.ICoin | null;
+
+        /** Pool poolAssets */
         poolAssets?: osmosis.gamm.v1beta1.IPoolAsset[] | null;
 
-        /** MsgCreatePool futurePoolGovernor */
-        futurePoolGovernor?: string | null;
+        /** Pool totalWeight */
+        totalWeight?: string | null;
       }
 
-      /** Represents a MsgCreatePool. */
-      class MsgCreatePool implements IMsgCreatePool {
+      /** Represents a Pool. */
+      class Pool implements IPool {
         /**
-         * Constructs a new MsgCreatePool.
+         * Constructs a new Pool.
          * @param [p] Properties to set
          */
-        constructor(p?: osmosis.gamm.v1beta1.IMsgCreatePool);
+        constructor(p?: osmosis.gamm.v1beta1.IPool);
 
-        /** MsgCreatePool sender. */
-        public sender: string;
+        /** Pool address. */
+        public address: string;
 
-        /** MsgCreatePool poolParams. */
+        /** Pool id. */
+        public id: Long;
+
+        /** Pool poolParams. */
         public poolParams?: osmosis.gamm.v1beta1.IPoolParams | null;
 
-        /** MsgCreatePool poolAssets. */
-        public poolAssets: osmosis.gamm.v1beta1.IPoolAsset[];
-
-        /** MsgCreatePool futurePoolGovernor. */
+        /** Pool futurePoolGovernor. */
         public futurePoolGovernor: string;
 
-        /**
-         * Creates a new MsgCreatePool instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns MsgCreatePool instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.IMsgCreatePool
-        ): osmosis.gamm.v1beta1.MsgCreatePool;
+        /** Pool totalShares. */
+        public totalShares?: cosmos.base.v1beta1.ICoin | null;
+
+        /** Pool poolAssets. */
+        public poolAssets: osmosis.gamm.v1beta1.IPoolAsset[];
+
+        /** Pool totalWeight. */
+        public totalWeight: string;
 
         /**
-         * Encodes the specified MsgCreatePool message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgCreatePool.verify|verify} messages.
-         * @param m MsgCreatePool message or plain object to encode
+         * Creates a new Pool instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns Pool instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IPool
+        ): osmosis.gamm.v1beta1.Pool;
+
+        /**
+         * Encodes the specified Pool message. Does not implicitly {@link osmosis.gamm.v1beta1.Pool.verify|verify} messages.
+         * @param m Pool message or plain object to encode
          * @param [w] Writer to encode to
          * @returns Writer
          */
         public static encode(
-          m: osmosis.gamm.v1beta1.IMsgCreatePool,
+          m: osmosis.gamm.v1beta1.IPool,
           w?: $protobuf.Writer
         ): $protobuf.Writer;
 
         /**
-         * Decodes a MsgCreatePool message from the specified reader or buffer.
+         * Decodes a Pool message from the specified reader or buffer.
          * @param r Reader or buffer to decode from
          * @param [l] Message length if known beforehand
-         * @returns MsgCreatePool
+         * @returns Pool
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         public static decode(
           r: $protobuf.Reader | Uint8Array,
           l?: number
-        ): osmosis.gamm.v1beta1.MsgCreatePool;
+        ): osmosis.gamm.v1beta1.Pool;
 
         /**
-         * Creates a MsgCreatePool message from a plain object. Also converts values to their respective internal types.
+         * Creates a Pool message from a plain object. Also converts values to their respective internal types.
          * @param d Plain object
-         * @returns MsgCreatePool
+         * @returns Pool
          */
         public static fromObject(d: {
           [k: string]: any;
-        }): osmosis.gamm.v1beta1.MsgCreatePool;
+        }): osmosis.gamm.v1beta1.Pool;
 
         /**
-         * Creates a plain object from a MsgCreatePool message. Also converts values to other types if specified.
-         * @param m MsgCreatePool
+         * Creates a plain object from a Pool message. Also converts values to other types if specified.
+         * @param m Pool
          * @param [o] Conversion options
          * @returns Plain object
          */
         public static toObject(
-          m: osmosis.gamm.v1beta1.MsgCreatePool,
+          m: osmosis.gamm.v1beta1.Pool,
           o?: $protobuf.IConversionOptions
         ): { [k: string]: any };
 
         /**
-         * Converts this MsgCreatePool to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-      }
-
-      /** Properties of a MsgJoinPool. */
-      interface IMsgJoinPool {
-        /** MsgJoinPool sender */
-        sender?: string | null;
-
-        /** MsgJoinPool poolId */
-        poolId?: Long | null;
-
-        /** MsgJoinPool shareOutAmount */
-        shareOutAmount?: string | null;
-
-        /** MsgJoinPool tokenInMaxs */
-        tokenInMaxs?: cosmos.base.v1beta1.ICoin[] | null;
-      }
-
-      /** Represents a MsgJoinPool. */
-      class MsgJoinPool implements IMsgJoinPool {
-        /**
-         * Constructs a new MsgJoinPool.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.IMsgJoinPool);
-
-        /** MsgJoinPool sender. */
-        public sender: string;
-
-        /** MsgJoinPool poolId. */
-        public poolId: Long;
-
-        /** MsgJoinPool shareOutAmount. */
-        public shareOutAmount: string;
-
-        /** MsgJoinPool tokenInMaxs. */
-        public tokenInMaxs: cosmos.base.v1beta1.ICoin[];
-
-        /**
-         * Creates a new MsgJoinPool instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns MsgJoinPool instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.IMsgJoinPool
-        ): osmosis.gamm.v1beta1.MsgJoinPool;
-
-        /**
-         * Encodes the specified MsgJoinPool message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgJoinPool.verify|verify} messages.
-         * @param m MsgJoinPool message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.IMsgJoinPool,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a MsgJoinPool message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns MsgJoinPool
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.MsgJoinPool;
-
-        /**
-         * Creates a MsgJoinPool message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns MsgJoinPool
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.MsgJoinPool;
-
-        /**
-         * Creates a plain object from a MsgJoinPool message. Also converts values to other types if specified.
-         * @param m MsgJoinPool
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.MsgJoinPool,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this MsgJoinPool to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-      }
-
-      /** Properties of a MsgExitPool. */
-      interface IMsgExitPool {
-        /** MsgExitPool sender */
-        sender?: string | null;
-
-        /** MsgExitPool poolId */
-        poolId?: Long | null;
-
-        /** MsgExitPool shareInAmount */
-        shareInAmount?: string | null;
-
-        /** MsgExitPool tokenOutMins */
-        tokenOutMins?: cosmos.base.v1beta1.ICoin[] | null;
-      }
-
-      /** Represents a MsgExitPool. */
-      class MsgExitPool implements IMsgExitPool {
-        /**
-         * Constructs a new MsgExitPool.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.IMsgExitPool);
-
-        /** MsgExitPool sender. */
-        public sender: string;
-
-        /** MsgExitPool poolId. */
-        public poolId: Long;
-
-        /** MsgExitPool shareInAmount. */
-        public shareInAmount: string;
-
-        /** MsgExitPool tokenOutMins. */
-        public tokenOutMins: cosmos.base.v1beta1.ICoin[];
-
-        /**
-         * Creates a new MsgExitPool instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns MsgExitPool instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.IMsgExitPool
-        ): osmosis.gamm.v1beta1.MsgExitPool;
-
-        /**
-         * Encodes the specified MsgExitPool message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgExitPool.verify|verify} messages.
-         * @param m MsgExitPool message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.IMsgExitPool,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a MsgExitPool message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns MsgExitPool
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.MsgExitPool;
-
-        /**
-         * Creates a MsgExitPool message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns MsgExitPool
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.MsgExitPool;
-
-        /**
-         * Creates a plain object from a MsgExitPool message. Also converts values to other types if specified.
-         * @param m MsgExitPool
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.MsgExitPool,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this MsgExitPool to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-      }
-
-      /** Properties of a SwapAmountInRoute. */
-      interface ISwapAmountInRoute {
-        /** SwapAmountInRoute poolId */
-        poolId?: Long | null;
-
-        /** SwapAmountInRoute tokenOutDenom */
-        tokenOutDenom?: string | null;
-      }
-
-      /** Represents a SwapAmountInRoute. */
-      class SwapAmountInRoute implements ISwapAmountInRoute {
-        /**
-         * Constructs a new SwapAmountInRoute.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.ISwapAmountInRoute);
-
-        /** SwapAmountInRoute poolId. */
-        public poolId: Long;
-
-        /** SwapAmountInRoute tokenOutDenom. */
-        public tokenOutDenom: string;
-
-        /**
-         * Creates a new SwapAmountInRoute instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns SwapAmountInRoute instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.ISwapAmountInRoute
-        ): osmosis.gamm.v1beta1.SwapAmountInRoute;
-
-        /**
-         * Encodes the specified SwapAmountInRoute message. Does not implicitly {@link osmosis.gamm.v1beta1.SwapAmountInRoute.verify|verify} messages.
-         * @param m SwapAmountInRoute message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.ISwapAmountInRoute,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a SwapAmountInRoute message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns SwapAmountInRoute
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.SwapAmountInRoute;
-
-        /**
-         * Creates a SwapAmountInRoute message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns SwapAmountInRoute
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.SwapAmountInRoute;
-
-        /**
-         * Creates a plain object from a SwapAmountInRoute message. Also converts values to other types if specified.
-         * @param m SwapAmountInRoute
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.SwapAmountInRoute,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this SwapAmountInRoute to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-      }
-
-      /** Properties of a MsgSwapExactAmountIn. */
-      interface IMsgSwapExactAmountIn {
-        /** MsgSwapExactAmountIn sender */
-        sender?: string | null;
-
-        /** MsgSwapExactAmountIn routes */
-        routes?: osmosis.gamm.v1beta1.ISwapAmountInRoute[] | null;
-
-        /** MsgSwapExactAmountIn tokenIn */
-        tokenIn?: cosmos.base.v1beta1.ICoin | null;
-
-        /** MsgSwapExactAmountIn tokenOutMinAmount */
-        tokenOutMinAmount?: string | null;
-      }
-
-      /** Represents a MsgSwapExactAmountIn. */
-      class MsgSwapExactAmountIn implements IMsgSwapExactAmountIn {
-        /**
-         * Constructs a new MsgSwapExactAmountIn.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.IMsgSwapExactAmountIn);
-
-        /** MsgSwapExactAmountIn sender. */
-        public sender: string;
-
-        /** MsgSwapExactAmountIn routes. */
-        public routes: osmosis.gamm.v1beta1.ISwapAmountInRoute[];
-
-        /** MsgSwapExactAmountIn tokenIn. */
-        public tokenIn?: cosmos.base.v1beta1.ICoin | null;
-
-        /** MsgSwapExactAmountIn tokenOutMinAmount. */
-        public tokenOutMinAmount: string;
-
-        /**
-         * Creates a new MsgSwapExactAmountIn instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns MsgSwapExactAmountIn instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.IMsgSwapExactAmountIn
-        ): osmosis.gamm.v1beta1.MsgSwapExactAmountIn;
-
-        /**
-         * Encodes the specified MsgSwapExactAmountIn message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgSwapExactAmountIn.verify|verify} messages.
-         * @param m MsgSwapExactAmountIn message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.IMsgSwapExactAmountIn,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a MsgSwapExactAmountIn message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns MsgSwapExactAmountIn
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.MsgSwapExactAmountIn;
-
-        /**
-         * Creates a MsgSwapExactAmountIn message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns MsgSwapExactAmountIn
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.MsgSwapExactAmountIn;
-
-        /**
-         * Creates a plain object from a MsgSwapExactAmountIn message. Also converts values to other types if specified.
-         * @param m MsgSwapExactAmountIn
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.MsgSwapExactAmountIn,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this MsgSwapExactAmountIn to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-      }
-
-      /** Properties of a SwapAmountOutRoute. */
-      interface ISwapAmountOutRoute {
-        /** SwapAmountOutRoute poolId */
-        poolId?: Long | null;
-
-        /** SwapAmountOutRoute tokenInDenom */
-        tokenInDenom?: string | null;
-      }
-
-      /** Represents a SwapAmountOutRoute. */
-      class SwapAmountOutRoute implements ISwapAmountOutRoute {
-        /**
-         * Constructs a new SwapAmountOutRoute.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.ISwapAmountOutRoute);
-
-        /** SwapAmountOutRoute poolId. */
-        public poolId: Long;
-
-        /** SwapAmountOutRoute tokenInDenom. */
-        public tokenInDenom: string;
-
-        /**
-         * Creates a new SwapAmountOutRoute instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns SwapAmountOutRoute instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.ISwapAmountOutRoute
-        ): osmosis.gamm.v1beta1.SwapAmountOutRoute;
-
-        /**
-         * Encodes the specified SwapAmountOutRoute message. Does not implicitly {@link osmosis.gamm.v1beta1.SwapAmountOutRoute.verify|verify} messages.
-         * @param m SwapAmountOutRoute message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.ISwapAmountOutRoute,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a SwapAmountOutRoute message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns SwapAmountOutRoute
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.SwapAmountOutRoute;
-
-        /**
-         * Creates a SwapAmountOutRoute message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns SwapAmountOutRoute
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.SwapAmountOutRoute;
-
-        /**
-         * Creates a plain object from a SwapAmountOutRoute message. Also converts values to other types if specified.
-         * @param m SwapAmountOutRoute
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.SwapAmountOutRoute,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this SwapAmountOutRoute to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-      }
-
-      /** Properties of a MsgSwapExactAmountOut. */
-      interface IMsgSwapExactAmountOut {
-        /** MsgSwapExactAmountOut sender */
-        sender?: string | null;
-
-        /** MsgSwapExactAmountOut routes */
-        routes?: osmosis.gamm.v1beta1.ISwapAmountOutRoute[] | null;
-
-        /** MsgSwapExactAmountOut tokenInMaxAmount */
-        tokenInMaxAmount?: string | null;
-
-        /** MsgSwapExactAmountOut tokenOut */
-        tokenOut?: cosmos.base.v1beta1.ICoin | null;
-      }
-
-      /** Represents a MsgSwapExactAmountOut. */
-      class MsgSwapExactAmountOut implements IMsgSwapExactAmountOut {
-        /**
-         * Constructs a new MsgSwapExactAmountOut.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.IMsgSwapExactAmountOut);
-
-        /** MsgSwapExactAmountOut sender. */
-        public sender: string;
-
-        /** MsgSwapExactAmountOut routes. */
-        public routes: osmosis.gamm.v1beta1.ISwapAmountOutRoute[];
-
-        /** MsgSwapExactAmountOut tokenInMaxAmount. */
-        public tokenInMaxAmount: string;
-
-        /** MsgSwapExactAmountOut tokenOut. */
-        public tokenOut?: cosmos.base.v1beta1.ICoin | null;
-
-        /**
-         * Creates a new MsgSwapExactAmountOut instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns MsgSwapExactAmountOut instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.IMsgSwapExactAmountOut
-        ): osmosis.gamm.v1beta1.MsgSwapExactAmountOut;
-
-        /**
-         * Encodes the specified MsgSwapExactAmountOut message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgSwapExactAmountOut.verify|verify} messages.
-         * @param m MsgSwapExactAmountOut message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.IMsgSwapExactAmountOut,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a MsgSwapExactAmountOut message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns MsgSwapExactAmountOut
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.MsgSwapExactAmountOut;
-
-        /**
-         * Creates a MsgSwapExactAmountOut message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns MsgSwapExactAmountOut
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.MsgSwapExactAmountOut;
-
-        /**
-         * Creates a plain object from a MsgSwapExactAmountOut message. Also converts values to other types if specified.
-         * @param m MsgSwapExactAmountOut
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.MsgSwapExactAmountOut,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this MsgSwapExactAmountOut to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-      }
-
-      /** Properties of a MsgJoinSwapExternAmountIn. */
-      interface IMsgJoinSwapExternAmountIn {
-        /** MsgJoinSwapExternAmountIn sender */
-        sender?: string | null;
-
-        /** MsgJoinSwapExternAmountIn poolId */
-        poolId?: Long | null;
-
-        /** MsgJoinSwapExternAmountIn tokenIn */
-        tokenIn?: cosmos.base.v1beta1.ICoin | null;
-
-        /** MsgJoinSwapExternAmountIn shareOutMinAmount */
-        shareOutMinAmount?: string | null;
-      }
-
-      /** Represents a MsgJoinSwapExternAmountIn. */
-      class MsgJoinSwapExternAmountIn implements IMsgJoinSwapExternAmountIn {
-        /**
-         * Constructs a new MsgJoinSwapExternAmountIn.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.IMsgJoinSwapExternAmountIn);
-
-        /** MsgJoinSwapExternAmountIn sender. */
-        public sender: string;
-
-        /** MsgJoinSwapExternAmountIn poolId. */
-        public poolId: Long;
-
-        /** MsgJoinSwapExternAmountIn tokenIn. */
-        public tokenIn?: cosmos.base.v1beta1.ICoin | null;
-
-        /** MsgJoinSwapExternAmountIn shareOutMinAmount. */
-        public shareOutMinAmount: string;
-
-        /**
-         * Creates a new MsgJoinSwapExternAmountIn instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns MsgJoinSwapExternAmountIn instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.IMsgJoinSwapExternAmountIn
-        ): osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn;
-
-        /**
-         * Encodes the specified MsgJoinSwapExternAmountIn message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn.verify|verify} messages.
-         * @param m MsgJoinSwapExternAmountIn message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.IMsgJoinSwapExternAmountIn,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a MsgJoinSwapExternAmountIn message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns MsgJoinSwapExternAmountIn
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn;
-
-        /**
-         * Creates a MsgJoinSwapExternAmountIn message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns MsgJoinSwapExternAmountIn
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn;
-
-        /**
-         * Creates a plain object from a MsgJoinSwapExternAmountIn message. Also converts values to other types if specified.
-         * @param m MsgJoinSwapExternAmountIn
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this MsgJoinSwapExternAmountIn to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-      }
-
-      /** Properties of a MsgJoinSwapShareAmountOut. */
-      interface IMsgJoinSwapShareAmountOut {
-        /** MsgJoinSwapShareAmountOut sender */
-        sender?: string | null;
-
-        /** MsgJoinSwapShareAmountOut poolId */
-        poolId?: Long | null;
-
-        /** MsgJoinSwapShareAmountOut tokenInDenom */
-        tokenInDenom?: string | null;
-
-        /** MsgJoinSwapShareAmountOut shareOutAmount */
-        shareOutAmount?: string | null;
-
-        /** MsgJoinSwapShareAmountOut tokenInMaxAmount */
-        tokenInMaxAmount?: string | null;
-      }
-
-      /** Represents a MsgJoinSwapShareAmountOut. */
-      class MsgJoinSwapShareAmountOut implements IMsgJoinSwapShareAmountOut {
-        /**
-         * Constructs a new MsgJoinSwapShareAmountOut.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.IMsgJoinSwapShareAmountOut);
-
-        /** MsgJoinSwapShareAmountOut sender. */
-        public sender: string;
-
-        /** MsgJoinSwapShareAmountOut poolId. */
-        public poolId: Long;
-
-        /** MsgJoinSwapShareAmountOut tokenInDenom. */
-        public tokenInDenom: string;
-
-        /** MsgJoinSwapShareAmountOut shareOutAmount. */
-        public shareOutAmount: string;
-
-        /** MsgJoinSwapShareAmountOut tokenInMaxAmount. */
-        public tokenInMaxAmount: string;
-
-        /**
-         * Creates a new MsgJoinSwapShareAmountOut instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns MsgJoinSwapShareAmountOut instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.IMsgJoinSwapShareAmountOut
-        ): osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut;
-
-        /**
-         * Encodes the specified MsgJoinSwapShareAmountOut message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut.verify|verify} messages.
-         * @param m MsgJoinSwapShareAmountOut message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.IMsgJoinSwapShareAmountOut,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a MsgJoinSwapShareAmountOut message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns MsgJoinSwapShareAmountOut
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut;
-
-        /**
-         * Creates a MsgJoinSwapShareAmountOut message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns MsgJoinSwapShareAmountOut
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut;
-
-        /**
-         * Creates a plain object from a MsgJoinSwapShareAmountOut message. Also converts values to other types if specified.
-         * @param m MsgJoinSwapShareAmountOut
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this MsgJoinSwapShareAmountOut to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-      }
-
-      /** Properties of a MsgExitSwapShareAmountIn. */
-      interface IMsgExitSwapShareAmountIn {
-        /** MsgExitSwapShareAmountIn sender */
-        sender?: string | null;
-
-        /** MsgExitSwapShareAmountIn poolId */
-        poolId?: Long | null;
-
-        /** MsgExitSwapShareAmountIn tokenOutDenom */
-        tokenOutDenom?: string | null;
-
-        /** MsgExitSwapShareAmountIn shareInAmount */
-        shareInAmount?: string | null;
-
-        /** MsgExitSwapShareAmountIn tokenOutMinAmount */
-        tokenOutMinAmount?: string | null;
-      }
-
-      /** Represents a MsgExitSwapShareAmountIn. */
-      class MsgExitSwapShareAmountIn implements IMsgExitSwapShareAmountIn {
-        /**
-         * Constructs a new MsgExitSwapShareAmountIn.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.IMsgExitSwapShareAmountIn);
-
-        /** MsgExitSwapShareAmountIn sender. */
-        public sender: string;
-
-        /** MsgExitSwapShareAmountIn poolId. */
-        public poolId: Long;
-
-        /** MsgExitSwapShareAmountIn tokenOutDenom. */
-        public tokenOutDenom: string;
-
-        /** MsgExitSwapShareAmountIn shareInAmount. */
-        public shareInAmount: string;
-
-        /** MsgExitSwapShareAmountIn tokenOutMinAmount. */
-        public tokenOutMinAmount: string;
-
-        /**
-         * Creates a new MsgExitSwapShareAmountIn instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns MsgExitSwapShareAmountIn instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.IMsgExitSwapShareAmountIn
-        ): osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn;
-
-        /**
-         * Encodes the specified MsgExitSwapShareAmountIn message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn.verify|verify} messages.
-         * @param m MsgExitSwapShareAmountIn message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.IMsgExitSwapShareAmountIn,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a MsgExitSwapShareAmountIn message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns MsgExitSwapShareAmountIn
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn;
-
-        /**
-         * Creates a MsgExitSwapShareAmountIn message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns MsgExitSwapShareAmountIn
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn;
-
-        /**
-         * Creates a plain object from a MsgExitSwapShareAmountIn message. Also converts values to other types if specified.
-         * @param m MsgExitSwapShareAmountIn
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this MsgExitSwapShareAmountIn to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-      }
-
-      /** Properties of a MsgExitSwapExternAmountOut. */
-      interface IMsgExitSwapExternAmountOut {
-        /** MsgExitSwapExternAmountOut sender */
-        sender?: string | null;
-
-        /** MsgExitSwapExternAmountOut poolId */
-        poolId?: Long | null;
-
-        /** MsgExitSwapExternAmountOut tokenOut */
-        tokenOut?: cosmos.base.v1beta1.ICoin | null;
-
-        /** MsgExitSwapExternAmountOut shareInMaxAmount */
-        shareInMaxAmount?: string | null;
-      }
-
-      /** Represents a MsgExitSwapExternAmountOut. */
-      class MsgExitSwapExternAmountOut implements IMsgExitSwapExternAmountOut {
-        /**
-         * Constructs a new MsgExitSwapExternAmountOut.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.IMsgExitSwapExternAmountOut);
-
-        /** MsgExitSwapExternAmountOut sender. */
-        public sender: string;
-
-        /** MsgExitSwapExternAmountOut poolId. */
-        public poolId: Long;
-
-        /** MsgExitSwapExternAmountOut tokenOut. */
-        public tokenOut?: cosmos.base.v1beta1.ICoin | null;
-
-        /** MsgExitSwapExternAmountOut shareInMaxAmount. */
-        public shareInMaxAmount: string;
-
-        /**
-         * Creates a new MsgExitSwapExternAmountOut instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns MsgExitSwapExternAmountOut instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.IMsgExitSwapExternAmountOut
-        ): osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut;
-
-        /**
-         * Encodes the specified MsgExitSwapExternAmountOut message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut.verify|verify} messages.
-         * @param m MsgExitSwapExternAmountOut message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.IMsgExitSwapExternAmountOut,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a MsgExitSwapExternAmountOut message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns MsgExitSwapExternAmountOut
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut;
-
-        /**
-         * Creates a MsgExitSwapExternAmountOut message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns MsgExitSwapExternAmountOut
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut;
-
-        /**
-         * Creates a plain object from a MsgExitSwapExternAmountOut message. Also converts values to other types if specified.
-         * @param m MsgExitSwapExternAmountOut
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this MsgExitSwapExternAmountOut to JSON.
+         * Converts this Pool to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
@@ -2249,6 +3283,107 @@ export namespace osmosis {
 
   /** Namespace lockup. */
   namespace lockup {
+    /** Properties of a PeriodLock. */
+    interface IPeriodLock {
+      /** PeriodLock ID */
+      ID?: Long | null;
+
+      /** PeriodLock owner */
+      owner?: string | null;
+
+      /** PeriodLock duration */
+      duration?: google.protobuf.IDuration | null;
+
+      /** PeriodLock endTime */
+      endTime?: google.protobuf.ITimestamp | null;
+
+      /** PeriodLock coins */
+      coins?: cosmos.base.v1beta1.ICoin[] | null;
+    }
+
+    /** Represents a PeriodLock. */
+    class PeriodLock implements IPeriodLock {
+      /**
+       * Constructs a new PeriodLock.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IPeriodLock);
+
+      /** PeriodLock ID. */
+      public ID: Long;
+
+      /** PeriodLock owner. */
+      public owner: string;
+
+      /** PeriodLock duration. */
+      public duration?: google.protobuf.IDuration | null;
+
+      /** PeriodLock endTime. */
+      public endTime?: google.protobuf.ITimestamp | null;
+
+      /** PeriodLock coins. */
+      public coins: cosmos.base.v1beta1.ICoin[];
+
+      /**
+       * Creates a new PeriodLock instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns PeriodLock instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IPeriodLock
+      ): osmosis.lockup.PeriodLock;
+
+      /**
+       * Encodes the specified PeriodLock message. Does not implicitly {@link osmosis.lockup.PeriodLock.verify|verify} messages.
+       * @param m PeriodLock message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IPeriodLock,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a PeriodLock message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns PeriodLock
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.PeriodLock;
+
+      /**
+       * Creates a PeriodLock message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns PeriodLock
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.PeriodLock;
+
+      /**
+       * Creates a plain object from a PeriodLock message. Also converts values to other types if specified.
+       * @param m PeriodLock
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.PeriodLock,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this PeriodLock to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
     /** LockQueryType enum. */
     enum LockQueryType {
       ByDuration = 0,
@@ -2350,6 +3485,218 @@ export namespace osmosis {
       public toJSON(): { [k: string]: any };
     }
 
+    /** Properties of a SyntheticLock. */
+    interface ISyntheticLock {
+      /** SyntheticLock underlyingLockId */
+      underlyingLockId?: Long | null;
+
+      /** SyntheticLock synthDenom */
+      synthDenom?: string | null;
+
+      /** SyntheticLock endTime */
+      endTime?: google.protobuf.ITimestamp | null;
+
+      /** SyntheticLock duration */
+      duration?: google.protobuf.IDuration | null;
+    }
+
+    /** Represents a SyntheticLock. */
+    class SyntheticLock implements ISyntheticLock {
+      /**
+       * Constructs a new SyntheticLock.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.ISyntheticLock);
+
+      /** SyntheticLock underlyingLockId. */
+      public underlyingLockId: Long;
+
+      /** SyntheticLock synthDenom. */
+      public synthDenom: string;
+
+      /** SyntheticLock endTime. */
+      public endTime?: google.protobuf.ITimestamp | null;
+
+      /** SyntheticLock duration. */
+      public duration?: google.protobuf.IDuration | null;
+
+      /**
+       * Creates a new SyntheticLock instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns SyntheticLock instance
+       */
+      public static create(
+        properties?: osmosis.lockup.ISyntheticLock
+      ): osmosis.lockup.SyntheticLock;
+
+      /**
+       * Encodes the specified SyntheticLock message. Does not implicitly {@link osmosis.lockup.SyntheticLock.verify|verify} messages.
+       * @param m SyntheticLock message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.ISyntheticLock,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a SyntheticLock message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns SyntheticLock
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.SyntheticLock;
+
+      /**
+       * Creates a SyntheticLock message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns SyntheticLock
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.SyntheticLock;
+
+      /**
+       * Creates a plain object from a SyntheticLock message. Also converts values to other types if specified.
+       * @param m SyntheticLock
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.SyntheticLock,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this SyntheticLock to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Represents a Msg */
+    class Msg extends $protobuf.rpc.Service {
+      /**
+       * Constructs a new Msg service.
+       * @param rpcImpl RPC implementation
+       * @param [requestDelimited=false] Whether requests are length-delimited
+       * @param [responseDelimited=false] Whether responses are length-delimited
+       */
+      constructor(
+        rpcImpl: $protobuf.RPCImpl,
+        requestDelimited?: boolean,
+        responseDelimited?: boolean
+      );
+
+      /**
+       * Creates new Msg service using the specified rpc implementation.
+       * @param rpcImpl RPC implementation
+       * @param [requestDelimited=false] Whether requests are length-delimited
+       * @param [responseDelimited=false] Whether responses are length-delimited
+       * @returns RPC service. Useful where requests and/or responses are streamed.
+       */
+      public static create(
+        rpcImpl: $protobuf.RPCImpl,
+        requestDelimited?: boolean,
+        responseDelimited?: boolean
+      ): Msg;
+
+      /**
+       * Calls LockTokens.
+       * @param request MsgLockTokens message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgLockTokensResponse
+       */
+      public lockTokens(
+        request: osmosis.lockup.IMsgLockTokens,
+        callback: osmosis.lockup.Msg.LockTokensCallback
+      ): void;
+
+      /**
+       * Calls LockTokens.
+       * @param request MsgLockTokens message or plain object
+       * @returns Promise
+       */
+      public lockTokens(
+        request: osmosis.lockup.IMsgLockTokens
+      ): Promise<osmosis.lockup.MsgLockTokensResponse>;
+
+      /**
+       * Calls BeginUnlockingAll.
+       * @param request MsgBeginUnlockingAll message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgBeginUnlockingAllResponse
+       */
+      public beginUnlockingAll(
+        request: osmosis.lockup.IMsgBeginUnlockingAll,
+        callback: osmosis.lockup.Msg.BeginUnlockingAllCallback
+      ): void;
+
+      /**
+       * Calls BeginUnlockingAll.
+       * @param request MsgBeginUnlockingAll message or plain object
+       * @returns Promise
+       */
+      public beginUnlockingAll(
+        request: osmosis.lockup.IMsgBeginUnlockingAll
+      ): Promise<osmosis.lockup.MsgBeginUnlockingAllResponse>;
+
+      /**
+       * Calls BeginUnlocking.
+       * @param request MsgBeginUnlocking message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgBeginUnlockingResponse
+       */
+      public beginUnlocking(
+        request: osmosis.lockup.IMsgBeginUnlocking,
+        callback: osmosis.lockup.Msg.BeginUnlockingCallback
+      ): void;
+
+      /**
+       * Calls BeginUnlocking.
+       * @param request MsgBeginUnlocking message or plain object
+       * @returns Promise
+       */
+      public beginUnlocking(
+        request: osmosis.lockup.IMsgBeginUnlocking
+      ): Promise<osmosis.lockup.MsgBeginUnlockingResponse>;
+    }
+
+    namespace Msg {
+      /**
+       * Callback as used by {@link osmosis.lockup.Msg#lockTokens}.
+       * @param error Error, if any
+       * @param [response] MsgLockTokensResponse
+       */
+      type LockTokensCallback = (
+        error: Error | null,
+        response?: osmosis.lockup.MsgLockTokensResponse
+      ) => void;
+
+      /**
+       * Callback as used by {@link osmosis.lockup.Msg#beginUnlockingAll}.
+       * @param error Error, if any
+       * @param [response] MsgBeginUnlockingAllResponse
+       */
+      type BeginUnlockingAllCallback = (
+        error: Error | null,
+        response?: osmosis.lockup.MsgBeginUnlockingAllResponse
+      ) => void;
+
+      /**
+       * Callback as used by {@link osmosis.lockup.Msg#beginUnlocking}.
+       * @param error Error, if any
+       * @param [response] MsgBeginUnlockingResponse
+       */
+      type BeginUnlockingCallback = (
+        error: Error | null,
+        response?: osmosis.lockup.MsgBeginUnlockingResponse
+      ) => void;
+    }
+
     /** Properties of a MsgLockTokens. */
     interface IMsgLockTokens {
       /** MsgLockTokens owner */
@@ -2439,6 +3786,83 @@ export namespace osmosis {
       public toJSON(): { [k: string]: any };
     }
 
+    /** Properties of a MsgLockTokensResponse. */
+    interface IMsgLockTokensResponse {
+      /** MsgLockTokensResponse ID */
+      ID?: Long | null;
+    }
+
+    /** Represents a MsgLockTokensResponse. */
+    class MsgLockTokensResponse implements IMsgLockTokensResponse {
+      /**
+       * Constructs a new MsgLockTokensResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IMsgLockTokensResponse);
+
+      /** MsgLockTokensResponse ID. */
+      public ID: Long;
+
+      /**
+       * Creates a new MsgLockTokensResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgLockTokensResponse instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IMsgLockTokensResponse
+      ): osmosis.lockup.MsgLockTokensResponse;
+
+      /**
+       * Encodes the specified MsgLockTokensResponse message. Does not implicitly {@link osmosis.lockup.MsgLockTokensResponse.verify|verify} messages.
+       * @param m MsgLockTokensResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IMsgLockTokensResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgLockTokensResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgLockTokensResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.MsgLockTokensResponse;
+
+      /**
+       * Creates a MsgLockTokensResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgLockTokensResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.MsgLockTokensResponse;
+
+      /**
+       * Creates a plain object from a MsgLockTokensResponse message. Also converts values to other types if specified.
+       * @param m MsgLockTokensResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.MsgLockTokensResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgLockTokensResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
     /** Properties of a MsgBeginUnlockingAll. */
     interface IMsgBeginUnlockingAll {
       /** MsgBeginUnlockingAll owner */
@@ -2516,6 +3940,85 @@ export namespace osmosis {
       public toJSON(): { [k: string]: any };
     }
 
+    /** Properties of a MsgBeginUnlockingAllResponse. */
+    interface IMsgBeginUnlockingAllResponse {
+      /** MsgBeginUnlockingAllResponse unlocks */
+      unlocks?: osmosis.lockup.IPeriodLock[] | null;
+    }
+
+    /** Represents a MsgBeginUnlockingAllResponse. */
+    class MsgBeginUnlockingAllResponse
+      implements IMsgBeginUnlockingAllResponse
+    {
+      /**
+       * Constructs a new MsgBeginUnlockingAllResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IMsgBeginUnlockingAllResponse);
+
+      /** MsgBeginUnlockingAllResponse unlocks. */
+      public unlocks: osmosis.lockup.IPeriodLock[];
+
+      /**
+       * Creates a new MsgBeginUnlockingAllResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgBeginUnlockingAllResponse instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IMsgBeginUnlockingAllResponse
+      ): osmosis.lockup.MsgBeginUnlockingAllResponse;
+
+      /**
+       * Encodes the specified MsgBeginUnlockingAllResponse message. Does not implicitly {@link osmosis.lockup.MsgBeginUnlockingAllResponse.verify|verify} messages.
+       * @param m MsgBeginUnlockingAllResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IMsgBeginUnlockingAllResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgBeginUnlockingAllResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgBeginUnlockingAllResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.MsgBeginUnlockingAllResponse;
+
+      /**
+       * Creates a MsgBeginUnlockingAllResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgBeginUnlockingAllResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.MsgBeginUnlockingAllResponse;
+
+      /**
+       * Creates a plain object from a MsgBeginUnlockingAllResponse message. Also converts values to other types if specified.
+       * @param m MsgBeginUnlockingAllResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.MsgBeginUnlockingAllResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgBeginUnlockingAllResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
     /** Properties of a MsgBeginUnlocking. */
     interface IMsgBeginUnlocking {
       /** MsgBeginUnlocking owner */
@@ -2523,6 +4026,9 @@ export namespace osmosis {
 
       /** MsgBeginUnlocking ID */
       ID?: Long | null;
+
+      /** MsgBeginUnlocking coins */
+      coins?: cosmos.base.v1beta1.ICoin[] | null;
     }
 
     /** Represents a MsgBeginUnlocking. */
@@ -2538,6 +4044,9 @@ export namespace osmosis {
 
       /** MsgBeginUnlocking ID. */
       public ID: Long;
+
+      /** MsgBeginUnlocking coins. */
+      public coins: cosmos.base.v1beta1.ICoin[];
 
       /**
        * Creates a new MsgBeginUnlocking instance using the specified properties.
@@ -2598,10 +4107,175 @@ export namespace osmosis {
        */
       public toJSON(): { [k: string]: any };
     }
+
+    /** Properties of a MsgBeginUnlockingResponse. */
+    interface IMsgBeginUnlockingResponse {
+      /** MsgBeginUnlockingResponse success */
+      success?: boolean | null;
+    }
+
+    /** Represents a MsgBeginUnlockingResponse. */
+    class MsgBeginUnlockingResponse implements IMsgBeginUnlockingResponse {
+      /**
+       * Constructs a new MsgBeginUnlockingResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IMsgBeginUnlockingResponse);
+
+      /** MsgBeginUnlockingResponse success. */
+      public success: boolean;
+
+      /**
+       * Creates a new MsgBeginUnlockingResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgBeginUnlockingResponse instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IMsgBeginUnlockingResponse
+      ): osmosis.lockup.MsgBeginUnlockingResponse;
+
+      /**
+       * Encodes the specified MsgBeginUnlockingResponse message. Does not implicitly {@link osmosis.lockup.MsgBeginUnlockingResponse.verify|verify} messages.
+       * @param m MsgBeginUnlockingResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IMsgBeginUnlockingResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgBeginUnlockingResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgBeginUnlockingResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.MsgBeginUnlockingResponse;
+
+      /**
+       * Creates a MsgBeginUnlockingResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgBeginUnlockingResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.MsgBeginUnlockingResponse;
+
+      /**
+       * Creates a plain object from a MsgBeginUnlockingResponse message. Also converts values to other types if specified.
+       * @param m MsgBeginUnlockingResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.MsgBeginUnlockingResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgBeginUnlockingResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
   }
 
   /** Namespace incentives. */
   namespace incentives {
+    /** Represents a Msg */
+    class Msg extends $protobuf.rpc.Service {
+      /**
+       * Constructs a new Msg service.
+       * @param rpcImpl RPC implementation
+       * @param [requestDelimited=false] Whether requests are length-delimited
+       * @param [responseDelimited=false] Whether responses are length-delimited
+       */
+      constructor(
+        rpcImpl: $protobuf.RPCImpl,
+        requestDelimited?: boolean,
+        responseDelimited?: boolean
+      );
+
+      /**
+       * Creates new Msg service using the specified rpc implementation.
+       * @param rpcImpl RPC implementation
+       * @param [requestDelimited=false] Whether requests are length-delimited
+       * @param [responseDelimited=false] Whether responses are length-delimited
+       * @returns RPC service. Useful where requests and/or responses are streamed.
+       */
+      public static create(
+        rpcImpl: $protobuf.RPCImpl,
+        requestDelimited?: boolean,
+        responseDelimited?: boolean
+      ): Msg;
+
+      /**
+       * Calls CreateGauge.
+       * @param request MsgCreateGauge message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgCreateGaugeResponse
+       */
+      public createGauge(
+        request: osmosis.incentives.IMsgCreateGauge,
+        callback: osmosis.incentives.Msg.CreateGaugeCallback
+      ): void;
+
+      /**
+       * Calls CreateGauge.
+       * @param request MsgCreateGauge message or plain object
+       * @returns Promise
+       */
+      public createGauge(
+        request: osmosis.incentives.IMsgCreateGauge
+      ): Promise<osmosis.incentives.MsgCreateGaugeResponse>;
+
+      /**
+       * Calls AddToGauge.
+       * @param request MsgAddToGauge message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgAddToGaugeResponse
+       */
+      public addToGauge(
+        request: osmosis.incentives.IMsgAddToGauge,
+        callback: osmosis.incentives.Msg.AddToGaugeCallback
+      ): void;
+
+      /**
+       * Calls AddToGauge.
+       * @param request MsgAddToGauge message or plain object
+       * @returns Promise
+       */
+      public addToGauge(
+        request: osmosis.incentives.IMsgAddToGauge
+      ): Promise<osmosis.incentives.MsgAddToGaugeResponse>;
+    }
+
+    namespace Msg {
+      /**
+       * Callback as used by {@link osmosis.incentives.Msg#createGauge}.
+       * @param error Error, if any
+       * @param [response] MsgCreateGaugeResponse
+       */
+      type CreateGaugeCallback = (
+        error: Error | null,
+        response?: osmosis.incentives.MsgCreateGaugeResponse
+      ) => void;
+
+      /**
+       * Callback as used by {@link osmosis.incentives.Msg#addToGauge}.
+       * @param error Error, if any
+       * @param [response] MsgAddToGaugeResponse
+       */
+      type AddToGaugeCallback = (
+        error: Error | null,
+        response?: osmosis.incentives.MsgAddToGaugeResponse
+      ) => void;
+    }
+
     /** Properties of a MsgCreateGauge. */
     interface IMsgCreateGauge {
       /** MsgCreateGauge isPerpetual */
@@ -2709,6 +4383,77 @@ export namespace osmosis {
       public toJSON(): { [k: string]: any };
     }
 
+    /** Properties of a MsgCreateGaugeResponse. */
+    interface IMsgCreateGaugeResponse {}
+
+    /** Represents a MsgCreateGaugeResponse. */
+    class MsgCreateGaugeResponse implements IMsgCreateGaugeResponse {
+      /**
+       * Constructs a new MsgCreateGaugeResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.incentives.IMsgCreateGaugeResponse);
+
+      /**
+       * Creates a new MsgCreateGaugeResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgCreateGaugeResponse instance
+       */
+      public static create(
+        properties?: osmosis.incentives.IMsgCreateGaugeResponse
+      ): osmosis.incentives.MsgCreateGaugeResponse;
+
+      /**
+       * Encodes the specified MsgCreateGaugeResponse message. Does not implicitly {@link osmosis.incentives.MsgCreateGaugeResponse.verify|verify} messages.
+       * @param m MsgCreateGaugeResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.incentives.IMsgCreateGaugeResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgCreateGaugeResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgCreateGaugeResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.incentives.MsgCreateGaugeResponse;
+
+      /**
+       * Creates a MsgCreateGaugeResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgCreateGaugeResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.incentives.MsgCreateGaugeResponse;
+
+      /**
+       * Creates a plain object from a MsgCreateGaugeResponse message. Also converts values to other types if specified.
+       * @param m MsgCreateGaugeResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.incentives.MsgCreateGaugeResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgCreateGaugeResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
     /** Properties of a MsgAddToGauge. */
     interface IMsgAddToGauge {
       /** MsgAddToGauge owner */
@@ -2793,6 +4538,870 @@ export namespace osmosis {
 
       /**
        * Converts this MsgAddToGauge to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgAddToGaugeResponse. */
+    interface IMsgAddToGaugeResponse {}
+
+    /** Represents a MsgAddToGaugeResponse. */
+    class MsgAddToGaugeResponse implements IMsgAddToGaugeResponse {
+      /**
+       * Constructs a new MsgAddToGaugeResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.incentives.IMsgAddToGaugeResponse);
+
+      /**
+       * Creates a new MsgAddToGaugeResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgAddToGaugeResponse instance
+       */
+      public static create(
+        properties?: osmosis.incentives.IMsgAddToGaugeResponse
+      ): osmosis.incentives.MsgAddToGaugeResponse;
+
+      /**
+       * Encodes the specified MsgAddToGaugeResponse message. Does not implicitly {@link osmosis.incentives.MsgAddToGaugeResponse.verify|verify} messages.
+       * @param m MsgAddToGaugeResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.incentives.IMsgAddToGaugeResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgAddToGaugeResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgAddToGaugeResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.incentives.MsgAddToGaugeResponse;
+
+      /**
+       * Creates a MsgAddToGaugeResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgAddToGaugeResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.incentives.MsgAddToGaugeResponse;
+
+      /**
+       * Creates a plain object from a MsgAddToGaugeResponse message. Also converts values to other types if specified.
+       * @param m MsgAddToGaugeResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.incentives.MsgAddToGaugeResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgAddToGaugeResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+  }
+
+  /** Namespace superfluid. */
+  namespace superfluid {
+    /** Represents a Msg */
+    class Msg extends $protobuf.rpc.Service {
+      /**
+       * Constructs a new Msg service.
+       * @param rpcImpl RPC implementation
+       * @param [requestDelimited=false] Whether requests are length-delimited
+       * @param [responseDelimited=false] Whether responses are length-delimited
+       */
+      constructor(
+        rpcImpl: $protobuf.RPCImpl,
+        requestDelimited?: boolean,
+        responseDelimited?: boolean
+      );
+
+      /**
+       * Creates new Msg service using the specified rpc implementation.
+       * @param rpcImpl RPC implementation
+       * @param [requestDelimited=false] Whether requests are length-delimited
+       * @param [responseDelimited=false] Whether responses are length-delimited
+       * @returns RPC service. Useful where requests and/or responses are streamed.
+       */
+      public static create(
+        rpcImpl: $protobuf.RPCImpl,
+        requestDelimited?: boolean,
+        responseDelimited?: boolean
+      ): Msg;
+
+      /**
+       * Calls SuperfluidDelegate.
+       * @param request MsgSuperfluidDelegate message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgSuperfluidDelegateResponse
+       */
+      public superfluidDelegate(
+        request: osmosis.superfluid.IMsgSuperfluidDelegate,
+        callback: osmosis.superfluid.Msg.SuperfluidDelegateCallback
+      ): void;
+
+      /**
+       * Calls SuperfluidDelegate.
+       * @param request MsgSuperfluidDelegate message or plain object
+       * @returns Promise
+       */
+      public superfluidDelegate(
+        request: osmosis.superfluid.IMsgSuperfluidDelegate
+      ): Promise<osmosis.superfluid.MsgSuperfluidDelegateResponse>;
+
+      /**
+       * Calls SuperfluidUndelegate.
+       * @param request MsgSuperfluidUndelegate message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgSuperfluidUndelegateResponse
+       */
+      public superfluidUndelegate(
+        request: osmosis.superfluid.IMsgSuperfluidUndelegate,
+        callback: osmosis.superfluid.Msg.SuperfluidUndelegateCallback
+      ): void;
+
+      /**
+       * Calls SuperfluidUndelegate.
+       * @param request MsgSuperfluidUndelegate message or plain object
+       * @returns Promise
+       */
+      public superfluidUndelegate(
+        request: osmosis.superfluid.IMsgSuperfluidUndelegate
+      ): Promise<osmosis.superfluid.MsgSuperfluidUndelegateResponse>;
+
+      /**
+       * Calls SuperfluidUnbondLock.
+       * @param request MsgSuperfluidUnbondLock message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgSuperfluidUnbondLockResponse
+       */
+      public superfluidUnbondLock(
+        request: osmosis.superfluid.IMsgSuperfluidUnbondLock,
+        callback: osmosis.superfluid.Msg.SuperfluidUnbondLockCallback
+      ): void;
+
+      /**
+       * Calls SuperfluidUnbondLock.
+       * @param request MsgSuperfluidUnbondLock message or plain object
+       * @returns Promise
+       */
+      public superfluidUnbondLock(
+        request: osmosis.superfluid.IMsgSuperfluidUnbondLock
+      ): Promise<osmosis.superfluid.MsgSuperfluidUnbondLockResponse>;
+
+      /**
+       * Calls LockAndSuperfluidDelegate.
+       * @param request MsgLockAndSuperfluidDelegate message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgLockAndSuperfluidDelegateResponse
+       */
+      public lockAndSuperfluidDelegate(
+        request: osmosis.superfluid.IMsgLockAndSuperfluidDelegate,
+        callback: osmosis.superfluid.Msg.LockAndSuperfluidDelegateCallback
+      ): void;
+
+      /**
+       * Calls LockAndSuperfluidDelegate.
+       * @param request MsgLockAndSuperfluidDelegate message or plain object
+       * @returns Promise
+       */
+      public lockAndSuperfluidDelegate(
+        request: osmosis.superfluid.IMsgLockAndSuperfluidDelegate
+      ): Promise<osmosis.superfluid.MsgLockAndSuperfluidDelegateResponse>;
+    }
+
+    namespace Msg {
+      /**
+       * Callback as used by {@link osmosis.superfluid.Msg#superfluidDelegate}.
+       * @param error Error, if any
+       * @param [response] MsgSuperfluidDelegateResponse
+       */
+      type SuperfluidDelegateCallback = (
+        error: Error | null,
+        response?: osmosis.superfluid.MsgSuperfluidDelegateResponse
+      ) => void;
+
+      /**
+       * Callback as used by {@link osmosis.superfluid.Msg#superfluidUndelegate}.
+       * @param error Error, if any
+       * @param [response] MsgSuperfluidUndelegateResponse
+       */
+      type SuperfluidUndelegateCallback = (
+        error: Error | null,
+        response?: osmosis.superfluid.MsgSuperfluidUndelegateResponse
+      ) => void;
+
+      /**
+       * Callback as used by {@link osmosis.superfluid.Msg#superfluidUnbondLock}.
+       * @param error Error, if any
+       * @param [response] MsgSuperfluidUnbondLockResponse
+       */
+      type SuperfluidUnbondLockCallback = (
+        error: Error | null,
+        response?: osmosis.superfluid.MsgSuperfluidUnbondLockResponse
+      ) => void;
+
+      /**
+       * Callback as used by {@link osmosis.superfluid.Msg#lockAndSuperfluidDelegate}.
+       * @param error Error, if any
+       * @param [response] MsgLockAndSuperfluidDelegateResponse
+       */
+      type LockAndSuperfluidDelegateCallback = (
+        error: Error | null,
+        response?: osmosis.superfluid.MsgLockAndSuperfluidDelegateResponse
+      ) => void;
+    }
+
+    /** Properties of a MsgSuperfluidDelegate. */
+    interface IMsgSuperfluidDelegate {
+      /** MsgSuperfluidDelegate sender */
+      sender?: string | null;
+
+      /** MsgSuperfluidDelegate lockId */
+      lockId?: Long | null;
+
+      /** MsgSuperfluidDelegate valAddr */
+      valAddr?: string | null;
+    }
+
+    /** Represents a MsgSuperfluidDelegate. */
+    class MsgSuperfluidDelegate implements IMsgSuperfluidDelegate {
+      /**
+       * Constructs a new MsgSuperfluidDelegate.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.superfluid.IMsgSuperfluidDelegate);
+
+      /** MsgSuperfluidDelegate sender. */
+      public sender: string;
+
+      /** MsgSuperfluidDelegate lockId. */
+      public lockId: Long;
+
+      /** MsgSuperfluidDelegate valAddr. */
+      public valAddr: string;
+
+      /**
+       * Creates a new MsgSuperfluidDelegate instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgSuperfluidDelegate instance
+       */
+      public static create(
+        properties?: osmosis.superfluid.IMsgSuperfluidDelegate
+      ): osmosis.superfluid.MsgSuperfluidDelegate;
+
+      /**
+       * Encodes the specified MsgSuperfluidDelegate message. Does not implicitly {@link osmosis.superfluid.MsgSuperfluidDelegate.verify|verify} messages.
+       * @param m MsgSuperfluidDelegate message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.superfluid.IMsgSuperfluidDelegate,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgSuperfluidDelegate message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgSuperfluidDelegate
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.superfluid.MsgSuperfluidDelegate;
+
+      /**
+       * Creates a MsgSuperfluidDelegate message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgSuperfluidDelegate
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.superfluid.MsgSuperfluidDelegate;
+
+      /**
+       * Creates a plain object from a MsgSuperfluidDelegate message. Also converts values to other types if specified.
+       * @param m MsgSuperfluidDelegate
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.superfluid.MsgSuperfluidDelegate,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgSuperfluidDelegate to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgSuperfluidDelegateResponse. */
+    interface IMsgSuperfluidDelegateResponse {}
+
+    /** Represents a MsgSuperfluidDelegateResponse. */
+    class MsgSuperfluidDelegateResponse
+      implements IMsgSuperfluidDelegateResponse
+    {
+      /**
+       * Constructs a new MsgSuperfluidDelegateResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.superfluid.IMsgSuperfluidDelegateResponse);
+
+      /**
+       * Creates a new MsgSuperfluidDelegateResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgSuperfluidDelegateResponse instance
+       */
+      public static create(
+        properties?: osmosis.superfluid.IMsgSuperfluidDelegateResponse
+      ): osmosis.superfluid.MsgSuperfluidDelegateResponse;
+
+      /**
+       * Encodes the specified MsgSuperfluidDelegateResponse message. Does not implicitly {@link osmosis.superfluid.MsgSuperfluidDelegateResponse.verify|verify} messages.
+       * @param m MsgSuperfluidDelegateResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.superfluid.IMsgSuperfluidDelegateResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgSuperfluidDelegateResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgSuperfluidDelegateResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.superfluid.MsgSuperfluidDelegateResponse;
+
+      /**
+       * Creates a MsgSuperfluidDelegateResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgSuperfluidDelegateResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.superfluid.MsgSuperfluidDelegateResponse;
+
+      /**
+       * Creates a plain object from a MsgSuperfluidDelegateResponse message. Also converts values to other types if specified.
+       * @param m MsgSuperfluidDelegateResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.superfluid.MsgSuperfluidDelegateResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgSuperfluidDelegateResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgSuperfluidUndelegate. */
+    interface IMsgSuperfluidUndelegate {
+      /** MsgSuperfluidUndelegate sender */
+      sender?: string | null;
+
+      /** MsgSuperfluidUndelegate lockId */
+      lockId?: Long | null;
+    }
+
+    /** Represents a MsgSuperfluidUndelegate. */
+    class MsgSuperfluidUndelegate implements IMsgSuperfluidUndelegate {
+      /**
+       * Constructs a new MsgSuperfluidUndelegate.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.superfluid.IMsgSuperfluidUndelegate);
+
+      /** MsgSuperfluidUndelegate sender. */
+      public sender: string;
+
+      /** MsgSuperfluidUndelegate lockId. */
+      public lockId: Long;
+
+      /**
+       * Creates a new MsgSuperfluidUndelegate instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgSuperfluidUndelegate instance
+       */
+      public static create(
+        properties?: osmosis.superfluid.IMsgSuperfluidUndelegate
+      ): osmosis.superfluid.MsgSuperfluidUndelegate;
+
+      /**
+       * Encodes the specified MsgSuperfluidUndelegate message. Does not implicitly {@link osmosis.superfluid.MsgSuperfluidUndelegate.verify|verify} messages.
+       * @param m MsgSuperfluidUndelegate message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.superfluid.IMsgSuperfluidUndelegate,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgSuperfluidUndelegate message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgSuperfluidUndelegate
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.superfluid.MsgSuperfluidUndelegate;
+
+      /**
+       * Creates a MsgSuperfluidUndelegate message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgSuperfluidUndelegate
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.superfluid.MsgSuperfluidUndelegate;
+
+      /**
+       * Creates a plain object from a MsgSuperfluidUndelegate message. Also converts values to other types if specified.
+       * @param m MsgSuperfluidUndelegate
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.superfluid.MsgSuperfluidUndelegate,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgSuperfluidUndelegate to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgSuperfluidUndelegateResponse. */
+    interface IMsgSuperfluidUndelegateResponse {}
+
+    /** Represents a MsgSuperfluidUndelegateResponse. */
+    class MsgSuperfluidUndelegateResponse
+      implements IMsgSuperfluidUndelegateResponse
+    {
+      /**
+       * Constructs a new MsgSuperfluidUndelegateResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.superfluid.IMsgSuperfluidUndelegateResponse);
+
+      /**
+       * Creates a new MsgSuperfluidUndelegateResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgSuperfluidUndelegateResponse instance
+       */
+      public static create(
+        properties?: osmosis.superfluid.IMsgSuperfluidUndelegateResponse
+      ): osmosis.superfluid.MsgSuperfluidUndelegateResponse;
+
+      /**
+       * Encodes the specified MsgSuperfluidUndelegateResponse message. Does not implicitly {@link osmosis.superfluid.MsgSuperfluidUndelegateResponse.verify|verify} messages.
+       * @param m MsgSuperfluidUndelegateResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.superfluid.IMsgSuperfluidUndelegateResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgSuperfluidUndelegateResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgSuperfluidUndelegateResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.superfluid.MsgSuperfluidUndelegateResponse;
+
+      /**
+       * Creates a MsgSuperfluidUndelegateResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgSuperfluidUndelegateResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.superfluid.MsgSuperfluidUndelegateResponse;
+
+      /**
+       * Creates a plain object from a MsgSuperfluidUndelegateResponse message. Also converts values to other types if specified.
+       * @param m MsgSuperfluidUndelegateResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.superfluid.MsgSuperfluidUndelegateResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgSuperfluidUndelegateResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgSuperfluidUnbondLock. */
+    interface IMsgSuperfluidUnbondLock {
+      /** MsgSuperfluidUnbondLock sender */
+      sender?: string | null;
+
+      /** MsgSuperfluidUnbondLock lockId */
+      lockId?: Long | null;
+    }
+
+    /** Represents a MsgSuperfluidUnbondLock. */
+    class MsgSuperfluidUnbondLock implements IMsgSuperfluidUnbondLock {
+      /**
+       * Constructs a new MsgSuperfluidUnbondLock.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.superfluid.IMsgSuperfluidUnbondLock);
+
+      /** MsgSuperfluidUnbondLock sender. */
+      public sender: string;
+
+      /** MsgSuperfluidUnbondLock lockId. */
+      public lockId: Long;
+
+      /**
+       * Creates a new MsgSuperfluidUnbondLock instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgSuperfluidUnbondLock instance
+       */
+      public static create(
+        properties?: osmosis.superfluid.IMsgSuperfluidUnbondLock
+      ): osmosis.superfluid.MsgSuperfluidUnbondLock;
+
+      /**
+       * Encodes the specified MsgSuperfluidUnbondLock message. Does not implicitly {@link osmosis.superfluid.MsgSuperfluidUnbondLock.verify|verify} messages.
+       * @param m MsgSuperfluidUnbondLock message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.superfluid.IMsgSuperfluidUnbondLock,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgSuperfluidUnbondLock message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgSuperfluidUnbondLock
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.superfluid.MsgSuperfluidUnbondLock;
+
+      /**
+       * Creates a MsgSuperfluidUnbondLock message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgSuperfluidUnbondLock
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.superfluid.MsgSuperfluidUnbondLock;
+
+      /**
+       * Creates a plain object from a MsgSuperfluidUnbondLock message. Also converts values to other types if specified.
+       * @param m MsgSuperfluidUnbondLock
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.superfluid.MsgSuperfluidUnbondLock,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgSuperfluidUnbondLock to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgSuperfluidUnbondLockResponse. */
+    interface IMsgSuperfluidUnbondLockResponse {}
+
+    /** Represents a MsgSuperfluidUnbondLockResponse. */
+    class MsgSuperfluidUnbondLockResponse
+      implements IMsgSuperfluidUnbondLockResponse
+    {
+      /**
+       * Constructs a new MsgSuperfluidUnbondLockResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.superfluid.IMsgSuperfluidUnbondLockResponse);
+
+      /**
+       * Creates a new MsgSuperfluidUnbondLockResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgSuperfluidUnbondLockResponse instance
+       */
+      public static create(
+        properties?: osmosis.superfluid.IMsgSuperfluidUnbondLockResponse
+      ): osmosis.superfluid.MsgSuperfluidUnbondLockResponse;
+
+      /**
+       * Encodes the specified MsgSuperfluidUnbondLockResponse message. Does not implicitly {@link osmosis.superfluid.MsgSuperfluidUnbondLockResponse.verify|verify} messages.
+       * @param m MsgSuperfluidUnbondLockResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.superfluid.IMsgSuperfluidUnbondLockResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgSuperfluidUnbondLockResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgSuperfluidUnbondLockResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.superfluid.MsgSuperfluidUnbondLockResponse;
+
+      /**
+       * Creates a MsgSuperfluidUnbondLockResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgSuperfluidUnbondLockResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.superfluid.MsgSuperfluidUnbondLockResponse;
+
+      /**
+       * Creates a plain object from a MsgSuperfluidUnbondLockResponse message. Also converts values to other types if specified.
+       * @param m MsgSuperfluidUnbondLockResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.superfluid.MsgSuperfluidUnbondLockResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgSuperfluidUnbondLockResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgLockAndSuperfluidDelegate. */
+    interface IMsgLockAndSuperfluidDelegate {
+      /** MsgLockAndSuperfluidDelegate sender */
+      sender?: string | null;
+
+      /** MsgLockAndSuperfluidDelegate coins */
+      coins?: cosmos.base.v1beta1.ICoin[] | null;
+
+      /** MsgLockAndSuperfluidDelegate valAddr */
+      valAddr?: string | null;
+    }
+
+    /** Represents a MsgLockAndSuperfluidDelegate. */
+    class MsgLockAndSuperfluidDelegate
+      implements IMsgLockAndSuperfluidDelegate
+    {
+      /**
+       * Constructs a new MsgLockAndSuperfluidDelegate.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.superfluid.IMsgLockAndSuperfluidDelegate);
+
+      /** MsgLockAndSuperfluidDelegate sender. */
+      public sender: string;
+
+      /** MsgLockAndSuperfluidDelegate coins. */
+      public coins: cosmos.base.v1beta1.ICoin[];
+
+      /** MsgLockAndSuperfluidDelegate valAddr. */
+      public valAddr: string;
+
+      /**
+       * Creates a new MsgLockAndSuperfluidDelegate instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgLockAndSuperfluidDelegate instance
+       */
+      public static create(
+        properties?: osmosis.superfluid.IMsgLockAndSuperfluidDelegate
+      ): osmosis.superfluid.MsgLockAndSuperfluidDelegate;
+
+      /**
+       * Encodes the specified MsgLockAndSuperfluidDelegate message. Does not implicitly {@link osmosis.superfluid.MsgLockAndSuperfluidDelegate.verify|verify} messages.
+       * @param m MsgLockAndSuperfluidDelegate message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.superfluid.IMsgLockAndSuperfluidDelegate,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgLockAndSuperfluidDelegate message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgLockAndSuperfluidDelegate
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.superfluid.MsgLockAndSuperfluidDelegate;
+
+      /**
+       * Creates a MsgLockAndSuperfluidDelegate message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgLockAndSuperfluidDelegate
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.superfluid.MsgLockAndSuperfluidDelegate;
+
+      /**
+       * Creates a plain object from a MsgLockAndSuperfluidDelegate message. Also converts values to other types if specified.
+       * @param m MsgLockAndSuperfluidDelegate
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.superfluid.MsgLockAndSuperfluidDelegate,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgLockAndSuperfluidDelegate to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgLockAndSuperfluidDelegateResponse. */
+    interface IMsgLockAndSuperfluidDelegateResponse {
+      /** MsgLockAndSuperfluidDelegateResponse ID */
+      ID?: Long | null;
+    }
+
+    /** Represents a MsgLockAndSuperfluidDelegateResponse. */
+    class MsgLockAndSuperfluidDelegateResponse
+      implements IMsgLockAndSuperfluidDelegateResponse
+    {
+      /**
+       * Constructs a new MsgLockAndSuperfluidDelegateResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.superfluid.IMsgLockAndSuperfluidDelegateResponse);
+
+      /** MsgLockAndSuperfluidDelegateResponse ID. */
+      public ID: Long;
+
+      /**
+       * Creates a new MsgLockAndSuperfluidDelegateResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgLockAndSuperfluidDelegateResponse instance
+       */
+      public static create(
+        properties?: osmosis.superfluid.IMsgLockAndSuperfluidDelegateResponse
+      ): osmosis.superfluid.MsgLockAndSuperfluidDelegateResponse;
+
+      /**
+       * Encodes the specified MsgLockAndSuperfluidDelegateResponse message. Does not implicitly {@link osmosis.superfluid.MsgLockAndSuperfluidDelegateResponse.verify|verify} messages.
+       * @param m MsgLockAndSuperfluidDelegateResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.superfluid.IMsgLockAndSuperfluidDelegateResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgLockAndSuperfluidDelegateResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgLockAndSuperfluidDelegateResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.superfluid.MsgLockAndSuperfluidDelegateResponse;
+
+      /**
+       * Creates a MsgLockAndSuperfluidDelegateResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgLockAndSuperfluidDelegateResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.superfluid.MsgLockAndSuperfluidDelegateResponse;
+
+      /**
+       * Creates a plain object from a MsgLockAndSuperfluidDelegateResponse message. Also converts values to other types if specified.
+       * @param m MsgLockAndSuperfluidDelegateResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.superfluid.MsgLockAndSuperfluidDelegateResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgLockAndSuperfluidDelegateResponse to JSON.
        * @returns JSON object
        */
       public toJSON(): { [k: string]: any };

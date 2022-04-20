@@ -122,6 +122,7 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
                 <div className="flex flex-col rounded-lg bg-background p-1">
                   <InputBox
                     style="no-border"
+                    type="number"
                     inputClassName="text-right h-6 text-h6 font-h6"
                     currentValue={inputAmount}
                     onInput={onInputAmount}

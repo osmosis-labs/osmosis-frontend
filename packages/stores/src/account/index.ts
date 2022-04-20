@@ -130,8 +130,8 @@ export class OsmosisAccountImpl {
         aminoMsgs: [msg],
         protoMsgs: [
           {
-            typeUrl: "/osmosis.gamm.v1beta1.MsgCreatePool",
-            value: osmosis.gamm.v1beta1.MsgCreatePool.encode({
+            typeUrl: "/osmosis.gamm.v1beta1.MsgCreateBalancerPool",
+            value: osmosis.gamm.v1beta1.MsgCreateBalancerPool.encode({
               sender: msg.value.sender,
               poolParams: {
                 swapFee: this.changeDecStringToProtoBz(
@@ -984,6 +984,152 @@ export class OsmosisAccountImpl {
     );
   }
 
+  /** https://docs.osmosis.zone/overview/osmo.html#superfluid-staking
+   * @param lockIds Ids of LP bonded locks.
+   * @param validatorAddress Bech32 address of validator to delegate to.
+   * @param memo Tx memo.
+   * @param onFulfill Callback to handle tx fullfillment.
+   */
+  async sendSuperfluidDelegateMsg(
+    lockIds: string[],
+    validatorAddress: string,
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const aminoMsgs = lockIds.map((lockId) => {
+      return {
+        type: this._msgOpts.superfluidDelegate.type,
+        value: {
+          sender: this.base.bech32Address,
+          lock_id: lockId,
+          val_addr: validatorAddress,
+        },
+      };
+    });
+
+    const protoMsgs = aminoMsgs.map((msg) => {
+      return {
+        typeUrl: "/osmosis.superfluid.MsgSuperfluidDelegate",
+        value: osmosis.superfluid.MsgSuperfluidDelegate.encode({
+          sender: msg.value.sender,
+          lockId: Long.fromString(msg.value.lock_id),
+          valAddr: msg.value.val_addr,
+        }).finish(),
+      };
+    });
+
+    await this.base.cosmos.sendMsgs(
+      "superfluidDelegate",
+      {
+        aminoMsgs,
+        protoMsgs,
+      },
+      memo,
+      {
+        amount: [],
+        gas: this._msgOpts.lockAndSuperfluidDelegate.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .fetch();
+
+          queries.osmosis.querySuperfluidDelegations
+            .getQuerySuperfluidDelegations(this.base.bech32Address)
+            .fetch();
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /** https://docs.osmosis.zone/overview/osmo.html#superfluid-staking
+   * @param tokens LP tokens to delegate and lock.
+   * @param validatorAddress Validator address to delegate to.
+   * @param memo Tx memo.
+   * @param onFulfill Callback to handle tx fullfillment.
+   */
+  async sendLockAndSuperfluidDelegateMsg(
+    tokens: {
+      currency: Currency;
+      amount: string;
+    }[],
+    validatorAddress: string,
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const primitiveTokens = tokens.map((token) => {
+      const amount = new Dec(token.amount)
+        .mul(
+          DecUtils.getTenExponentNInPrecisionRange(token.currency.coinDecimals)
+        )
+        .truncate();
+
+      return {
+        amount: amount.toString(),
+        denom: token.currency.coinMinimalDenom,
+      };
+    });
+
+    const msg = {
+      type: this._msgOpts.lockAndSuperfluidDelegate.type,
+      value: {
+        sender: this.base.bech32Address,
+        coins: primitiveTokens,
+        val_addr: validatorAddress,
+      },
+    };
+
+    await this.base.cosmos.sendMsgs(
+      "lockAndSuperfluidDelegate",
+      {
+        aminoMsgs: [msg],
+        protoMsgs: [
+          {
+            typeUrl: "/osmosis.superfluid.MsgLockAndSuperfluidDelegate",
+            value: osmosis.superfluid.MsgLockAndSuperfluidDelegate.encode({
+              sender: msg.value.sender,
+              coins: msg.value.coins,
+              valAddr: msg.value.val_addr,
+            }).finish(),
+          },
+        ],
+      },
+      memo,
+      {
+        amount: [],
+        gas: this._msgOpts.lockAndSuperfluidDelegate.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .fetch();
+
+          // Refresh the locked coins
+          queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
+          queries.osmosis.queryAccountLocked
+            .get(this.base.bech32Address)
+            .fetch();
+
+          queries.osmosis.querySuperfluidDelegations
+            .getQuerySuperfluidDelegations(this.base.bech32Address)
+            .fetch();
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
   /**
    * https://docs.osmosis.zone/developing/modules/spec-lockup.html#begin-unlock-by-id
    * @param lockIds Ids of locks to unlock.
@@ -1046,14 +1192,144 @@ export class OsmosisAccountImpl {
     );
   }
 
-  protected changeDecStringToProtoBz = (decStr: string): string => {
+  async sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+    locks: {
+      lockId: string;
+      isSyntheticLock: boolean;
+    }[],
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const msgs: { type: string; value: any }[] = [];
+
+    for (const lock of locks) {
+      if (!lock.isSyntheticLock) {
+        msgs.push({
+          type: this._msgOpts.beginUnlocking.type,
+          value: {
+            owner: this.base.bech32Address,
+            // XXX: 얘는 어째서인지 소문자가 아님 ㅋ;
+            ID: lock.lockId,
+            coins: [],
+          },
+        });
+      } else {
+        msgs.push(
+          {
+            type: this._msgOpts.superfluidUndelegate.type,
+            value: {
+              sender: this.base.bech32Address,
+              lock_id: lock.lockId,
+            },
+          },
+          {
+            type: this._msgOpts.superfluidUnbondLock.type,
+            value: {
+              sender: this.base.bech32Address,
+              lock_id: lock.lockId,
+            },
+          }
+        );
+      }
+    }
+
+    let numBeginUnlocking = 0;
+    let numSuperfluidUndelegate = 0;
+    let numSuperfluidUnbondLock = 0;
+
+    const protoMsgs = msgs.map((msg) => {
+      if (msg.type === this._msgOpts.beginUnlocking.type && msg.value.ID) {
+        numBeginUnlocking++;
+        return {
+          typeUrl: "/osmosis.lockup.MsgBeginUnlocking",
+          value: osmosis.lockup.MsgBeginUnlocking.encode({
+            owner: msg.value.owner,
+            ID: Long.fromString(msg.value.ID),
+          }).finish(),
+        };
+      } else if (
+        msg.type === this._msgOpts.superfluidUndelegate.type &&
+        msg.value.lock_id
+      ) {
+        numSuperfluidUndelegate++;
+        return {
+          typeUrl: "/osmosis.superfluid.MsgSuperfluidUndelegate",
+          value: osmosis.superfluid.MsgSuperfluidUndelegate.encode({
+            sender: msg.value.sender,
+            lockId: Long.fromString(msg.value.lock_id),
+          }).finish(),
+        };
+      } else if (
+        msg.type === this._msgOpts.superfluidUnbondLock.type &&
+        msg.value.lock_id
+      ) {
+        numSuperfluidUnbondLock++;
+        return {
+          typeUrl: "/osmosis.superfluid.MsgSuperfluidUnbondLock",
+          value: osmosis.superfluid.MsgSuperfluidUnbondLock.encode({
+            sender: msg.value.sender,
+            lockId: Long.fromString(msg.value.lock_id),
+          }).finish(),
+        };
+      } else {
+        throw new Error("Invalid locks");
+      }
+    });
+
+    await this.base.cosmos.sendMsgs(
+      "beginUnlocking",
+      {
+        aminoMsgs: msgs,
+        protoMsgs,
+      },
+      memo,
+      {
+        amount: [],
+        gas: (
+          numBeginUnlocking * this._msgOpts.beginUnlocking.gas +
+          numSuperfluidUndelegate * this._msgOpts.superfluidUndelegate.gas +
+          numSuperfluidUnbondLock * this._msgOpts.superfluidUnbondLock.gas
+        ).toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .fetch();
+
+          // Refresh the locked coins
+          queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
+          queries.osmosis.queryUnlockingCoins
+            .get(this.base.bech32Address)
+            .fetch();
+          queries.osmosis.queryAccountLocked
+            .get(this.base.bech32Address)
+            .fetch();
+
+          queries.osmosis.querySuperfluidDelegations
+            .getQuerySuperfluidDelegations(this.base.bech32Address)
+            .fetch();
+          queries.osmosis.querySuperfluidUndelegations
+            .getQuerySuperfluidDelegations(this.base.bech32Address)
+            .fetch();
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  protected changeDecStringToProtoBz(decStr: string): string {
     let r = decStr;
     while (r.length >= 2 && (r.startsWith(".") || r.startsWith("0"))) {
       r = r.slice(1);
     }
 
     return r;
-  };
+  }
 
   protected get queries() {
     return this.queriesStore.get(this.chainId).osmosis;
