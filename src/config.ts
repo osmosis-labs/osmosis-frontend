@@ -1150,6 +1150,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-10',
 		coinMinimalDenom: 'afet',
 	},
+	{
+		counterpartyChainId: 'fetchhub-4',
+		sourceChannelId: 'channel-229',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'nanomobx',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -3023,6 +3029,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 18,
 				coinGeckoId: 'fetch-ai',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/fet.png',
+			},
+			{
+				coinDenom: 'MOBX',
+				coinMinimalDenom: 'nanomobx',
+				coinDecimals: 9,
+				// coinGeckoId: 'pool:nanomobx',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/mobx.png',
 			},
 		],
 		feeCurrencies: [
