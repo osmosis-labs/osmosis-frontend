@@ -2850,7 +2850,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		rpc: 'https://rpc.assetmantle.one/',
 		rest: 'https://rest.assetmantle.one/',
 		chainId: 'mantle-1',
-		chainName: 'AssetMante',
+		chainName: 'AssetMantle',
 		stakeCurrency: {
 			coinDenom: 'MNTL',
 			coinMinimalDenom: 'umntl',
