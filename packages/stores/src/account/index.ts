@@ -1336,7 +1336,6 @@ export class OsmosisAccountImpl {
   }
 
   protected makeCoinPretty = (coin: Coin): CoinPretty => {
-    console.log(this);
     const currency = this.chainGetter
       .getChain(this.chainId)
       .findCurrency(coin.denom);

@@ -883,7 +883,6 @@ const Pool: FunctionComponent = observer(() => {
                     }
                     onClick={async () => {
                       if (!lockIds) return;
-                      console.log({ isSuperfluidDuration });
                       try {
                         if (isSuperfluidDuration) {
                           const blockGasLimitLockIds = lockIds.slice(0, 4);
@@ -895,19 +894,13 @@ const Pool: FunctionComponent = observer(() => {
                           }
 
                           await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-                            blockGasLimitLockIds.map((lockId) => {
-                              const isSynthetic =
+                            blockGasLimitLockIds.map((lockId) => ({
+                              lockId,
+                              isSyntheticLock:
                                 queryOsmosis.querySyntheticLockupsByLockId.get(
                                   lockId
-                                ).isSyntheticLock;
-
-                              console.log("isSynthetic", isSynthetic);
-
-                              return {
-                                lockId,
-                                isSyntheticLock: isSynthetic === true,
-                              };
-                            })
+                                ).isSyntheticLock === true,
+                            }))
                           );
                         } else {
                           const blockGasLimitLockIds = lockIds.slice(0, 10);
