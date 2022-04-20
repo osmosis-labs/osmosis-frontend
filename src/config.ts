@@ -2856,7 +2856,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'umntl',
 			coinDecimals: 6,
 			coinGeckoId: 'asset-mantle',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/mantle.png',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/mntl.png',
 		},
 		bip44: {
 			coinType: 118,
@@ -2868,7 +2868,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'umntl',
 				coinDecimals: 6,
 				coinGeckoId: 'asset-mantle',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/mantle.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/mntl.png',
 			},
 		],
 		feeCurrencies: [
@@ -2877,7 +2877,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'umntl',
 				coinDecimals: 6,
 				coinGeckoId: 'asset-mantle',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/mantle.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/mntl.png',
 			},
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
