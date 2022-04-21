@@ -68,7 +68,14 @@ const Pools: NextPage = observer(function () {
       queriesStore,
       queriesStore.get(chainId).queryBalances
     );
-  }, [chainStore, chainId, account.bech32Address, queriesStore]);
+    // eslint-disable-next-line
+  }, [
+    isCreatingPool, // re-init on modal open/close
+    chainStore,
+    chainId,
+    account.bech32Address,
+    queriesStore,
+  ]);
 
   return (
     <main>
@@ -97,10 +104,9 @@ const Pools: NextPage = observer(function () {
                 () => setIsCreatingPool(false)
               );
             } catch (e) {
-              console.error(e);
+              setIsCreatingPool(false);
+              console.log(e);
             }
-
-            createPoolConfig.clearAssets();
           }}
         />
       )}

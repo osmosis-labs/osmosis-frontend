@@ -55,6 +55,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
               <Button
                 className="w-28 bg-secondary-200 hover:bg-secondary-100"
                 size="lg"
+                disabled={isSendingMsg}
                 onClick={() => backStep()}
               >
                 Back
@@ -65,7 +66,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
               size="lg"
               onClick={() => advanceStep()}
               loading={isSendingMsg}
-              disabled={!canAdvance}
+              disabled={!canAdvance || isSendingMsg}
             >
               {step === 3 ? "Create Pool" : "Next"}
             </Button>
