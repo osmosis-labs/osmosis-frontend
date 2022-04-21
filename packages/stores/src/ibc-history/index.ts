@@ -290,7 +290,7 @@ export class IBCTransferHistoryStore {
   }
 
   @flow
-  *pushUncommitedHistore(history: Omit<UncommitedHistory, "createdAt">) {
+  *pushUncommitedHistory(history: Omit<UncommitedHistory, "createdAt">) {
     this._uncommitedHistories.push({
       ...history,
       createdAt: new Date().toString(),
@@ -545,3 +545,5 @@ export class IBCTransferHistoryStore {
     );
   }
 }
+
+export * from "./types";

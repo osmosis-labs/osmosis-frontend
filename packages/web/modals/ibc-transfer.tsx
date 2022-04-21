@@ -13,7 +13,7 @@ import { Error } from "../components/alert";
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
     const { currency, counterpartyChainId, isWithdraw } = props;
-    const { chainStore, queriesStore } = useStore();
+    const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
     const { chainId } = chainStore.osmosis;
 
     const [
@@ -209,7 +209,21 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   !isCustomWithdrawValid
                 }
                 loading={inTransit}
-                onClick={() => transfer(() => props.onRequestClose())}
+                onClick={() =>
+                  transfer(
+                    (txFullfillEvent) => {
+                      ibcTransferHistoryStore.pushPendingHistory(
+                        txFullfillEvent
+                      );
+                      props.onRequestClose();
+                    },
+                    (txBroadcastEvent) => {
+                      ibcTransferHistoryStore.pushUncommitedHistory(
+                        txBroadcastEvent
+                      );
+                    }
+                  )
+                }
               >
                 <h6 className="text-base md:text-lg">
                   {isWithdraw ? "Withdraw" : "Deposit"}

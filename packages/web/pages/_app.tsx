@@ -9,6 +9,7 @@ import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import { GetKeplrProvider } from "../hooks";
+import { IbcNotifier } from "../stores/ibc-notifier";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
@@ -18,6 +19,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <GetKeplrProvider>
       <StoreProvider>
+        <IbcNotifier />
         <MainLayout
           menus={[
             {

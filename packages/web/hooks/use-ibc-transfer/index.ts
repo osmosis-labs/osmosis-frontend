@@ -10,8 +10,8 @@ import {
   ObservableAmountConfig,
   basicIbcTransfer,
   OsmosisAccount,
-  IbcBroadcastEvent,
-  IbcFullfillmentEvent,
+  IBCTransferHistory,
+  UncommitedHistory,
 } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { useAmountConfig } from "../use-amount-config";
@@ -44,9 +44,11 @@ export function useIbcTransfer({
   boolean,
   (
     /** Handle IBC transfer events containing `send_packet` event type. */
-    onFulfill?: (event: IbcFullfillmentEvent) => void,
+    onFulfill?: (
+      event: Omit<IBCTransferHistory, "status" | "createdAt">
+    ) => void,
     /** Handle when the IBC trasfer successfully broadcast to relayers. */
-    onBroadcasted?: (event: IbcBroadcastEvent) => void
+    onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void
   ) => void,
   CustomCounterpartyConfig | undefined
 ] {
@@ -133,8 +135,10 @@ export function useIbcTransfer({
   }, [account.walletStatus, currency.originCurrency, currency.originChainId]);
 
   const transfer: (
-    onFulfill?: (event: IbcFullfillmentEvent) => void,
-    onBroadcasted?: (event: IbcBroadcastEvent) => void
+    onFulfill?: (
+      event: Omit<IBCTransferHistory, "status" | "createdAt">
+    ) => void,
+    onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void
   ) => void = async (onFulfill, onBroadcasted) => {
     try {
       if (isWithdraw) {
@@ -148,6 +152,8 @@ export function useIbcTransfer({
             account: counterpartyAccount,
             chainId: counterpartyChainId,
             channelId: destChannelId,
+            bech32AddressOverride:
+              customBech32Address !== "" ? customBech32Address : undefined,
           },
           currency,
           amountConfig,
