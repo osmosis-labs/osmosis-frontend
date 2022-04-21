@@ -5,7 +5,7 @@ import { ModalBase, ModalBaseProps } from "./base";
 import { Button } from "../components/buttons";
 // import { TokenSelect } from "../components/control";
 
-export const PreTransfer: FunctionComponent<
+export const PreTransferModal: FunctionComponent<
   ModalBaseProps & {
     selectedToken: CoinPretty;
     tokens: Currency[];

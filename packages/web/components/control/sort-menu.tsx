@@ -5,6 +5,7 @@ import { MenuDropdown } from ".";
 import { Disableable, CustomClasses } from "../types";
 import { MenuSelectProps } from "./types";
 import { useBooleanWithWindowEvent, useWindowSize } from "../../hooks";
+import { MenuOptionsModal } from "../../modals";
 
 interface Props extends MenuSelectProps, Disableable, CustomClasses {
   onToggleSortDirection?: () => void;
@@ -80,14 +81,25 @@ export const SortMenu: FunctionComponent<Props> = ({
           />
         </div>
       </div>
-      <MenuDropdown
-        options={options}
-        selectedOptionId={selectedOptionId}
-        onSelect={onSelect}
-        isOpen={dropdownOpen}
-        openDropdownHDirection={openDropdownHDirection}
-        openDropdownVDirection={openDropdownVDirection}
-      />
+      {isMobile ? (
+        <MenuOptionsModal
+          title="Sort By"
+          selectedOptionId={selectedOptionId}
+          options={options}
+          isOpen={dropdownOpen}
+          onRequestClose={() => setDropdownOpen(false)}
+          onSelectMenuOption={onSelect}
+        />
+      ) : (
+        <MenuDropdown
+          options={options}
+          selectedOptionId={selectedOptionId}
+          onSelect={onSelect}
+          isOpen={dropdownOpen}
+          openDropdownHDirection={openDropdownHDirection}
+          openDropdownVDirection={openDropdownVDirection}
+        />
+      )}
     </div>
   );
 };

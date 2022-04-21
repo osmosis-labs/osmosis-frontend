@@ -1,3 +1,4 @@
+export * from "./asset-card";
 export * from "./base";
 export * from "./go-superfluid";
 export * from "./incentivized-pool";
