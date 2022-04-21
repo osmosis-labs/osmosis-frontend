@@ -16,7 +16,7 @@ export function useWindowSize(minMobileWidth: number = 768): WindowSize {
   const [windowSize, setWindowSize] = useState<WindowSize>({
     width: 0,
     height: 0,
-    isMobile: true,
+    isMobile: false,
   });
   useEffect(() => {
     function handleResize() {

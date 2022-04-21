@@ -1,23 +1,32 @@
 import { FunctionComponent } from "react";
 import { CoinPretty } from "@keplr-wallet/unit";
-import { Currency } from "@keplr-wallet/types";
 import { ModalBase, ModalBaseProps } from "./base";
 import { Button } from "../components/buttons";
-// import { TokenSelect } from "../components/control";
+import { TokenSelect } from "../components/control";
 
 export const PreTransferModal: FunctionComponent<
   ModalBaseProps & {
     selectedToken: CoinPretty;
-    tokens: Currency[];
+    tokens: CoinPretty[];
     onSelectToken: (coinDenom: string) => void;
     onWithdraw: () => void;
     onDeposit: () => void;
   }
 > = (props) => {
-  const { selectedToken, onWithdraw, onDeposit } = props;
+  const { selectedToken, tokens, onSelectToken, onWithdraw, onDeposit } = props;
 
   return (
-    <ModalBase {...props} title={<div></div>}>
+    <ModalBase
+      {...props}
+      title={
+        <TokenSelect
+          selectedTokenDenom={selectedToken.denom}
+          tokens={tokens}
+          onSelect={(currency) => onSelectToken(currency.denom)}
+          sortByBalances
+        />
+      }
+    >
       <div className="flex flex-col gap-5 pt-5">
         <div className="flex flex-col gap-2 items-center">
           <h6>{selectedToken.currency.coinDenom}</h6>

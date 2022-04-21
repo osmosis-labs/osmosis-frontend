@@ -1,5 +1,4 @@
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
-import classNames from "classnames";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import {
   IBCBalance,
@@ -172,19 +171,14 @@ export const AssetsTable: FunctionComponent<Props> = ({
     ? filteredSortedCells
     : filteredSortedCells.slice(0, 10);
 
-  // State for pre-transfer menu for selecting asset to ibc transfer on mobile screens
+  // Mobile only - State for pre-transfer menu for selecting asset to ibc transfer
   const [showPreTransfer, setShowPreTransfer] = useState(false);
   const [selectedTransferToken, setPreTransferToken] = useState<CoinPretty>(
     ibcBalances[0].balance
   );
 
   return (
-    <section
-      className={classNames(
-        "min-h-screen",
-        isMobile ? "bg-background" : "bg-surface"
-      )}
-    >
+    <section className="min-h-screen bg-background md:bg-surface">
       {showPreTransfer && (
         <PreTransferModal
           isOpen={showPreTransfer}
@@ -216,12 +210,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             }
           }}
           selectedToken={selectedTransferToken}
-          tokens={ibcBalances
-            .filter(
-              (ibcAsset) =>
-                ibcAsset.balance.denom !== selectedTransferToken.denom
-            )
-            .map((ibcAsset) => ibcAsset.balance.currency)}
+          tokens={ibcBalances.map((ibcAsset) => ibcAsset.balance)}
         />
       )}
       <div className="max-w-container mx-auto pb-10 px-10 md:p-10">
@@ -329,7 +318,23 @@ export const AssetsTable: FunctionComponent<Props> = ({
                     ? [{ label: "", value: assetData.fiatValue }]
                     : []),
                 ]}
-                onClick={() => console.log("initiate pick asset dialog")}
+                onClick={
+                  assetData.chainId === undefined ||
+                  (assetData.chainId &&
+                    assetData.chainId === chainStore.osmosis.chainId)
+                    ? undefined
+                    : () => {
+                        setPreTransferToken(
+                          new CoinPretty(
+                            assetData.currency,
+                            assetData.amount
+                          ).moveDecimalPointRight(
+                            assetData.currency.coinDecimals
+                          )
+                        );
+                        setShowPreTransfer(true);
+                      }
+                }
               />
             ))}
           </div>

@@ -9,7 +9,7 @@ export const AssetCard: FunctionComponent<
     coinImageUrl?: string;
     coinDenomCaption?: string;
     metrics: Metric[];
-    onClick: () => void;
+    onClick?: () => void;
   } & CustomClasses
 > = ({
   coinDenom,
@@ -24,7 +24,7 @@ export const AssetCard: FunctionComponent<
       "flex items-center place-content-between w-full p-4 border border-white-full/20 rounded-lg",
       className
     )}
-    onClick={onClick}
+    onClick={() => onClick?.()}
   >
     <div className="flex items-center gap-3">
       {coinImageUrl && (
@@ -54,12 +54,14 @@ export const AssetCard: FunctionComponent<
           </span>
         ))}
       </div>
-      <Image
-        alt="right"
-        src="/icons/chevron-right.svg"
-        height={10}
-        width={10}
-      />
+      {onClick !== undefined && (
+        <Image
+          alt="right"
+          src="/icons/chevron-right.svg"
+          height={10}
+          width={10}
+        />
+      )}
     </div>
   </div>
 );

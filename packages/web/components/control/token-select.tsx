@@ -1,28 +1,34 @@
-import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
+import { IBCCurrency } from "@keplr-wallet/types";
+import { CoinPretty } from "@keplr-wallet/unit";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import { useBooleanWithWindowEvent, useFilteredData } from "../../hooks";
 
 export const TokenSelect: FunctionComponent<{
   selectedTokenDenom: string;
-  tokens: AppCurrency[];
-  onSelect: (token: AppCurrency) => void;
-}> = ({ selectedTokenDenom, tokens, onSelect }) => {
+  tokens: CoinPretty[];
+  onSelect: (token: CoinPretty) => void;
+  sortByBalances?: boolean;
+}> = ({ selectedTokenDenom, tokens, onSelect, sortByBalances = false }) => {
   const [isSelectOpen, setIsSelectOpen] = useBooleanWithWindowEvent(false);
   const selectedToken = tokens.find(
-    (token) => token.coinDenom === selectedTokenDenom
+    (token) => token.denom === selectedTokenDenom
   );
-  const dropdownTokens = tokens.filter(
-    (token) => token.coinDenom !== selectedTokenDenom
-  );
+  const dropdownTokens = tokens
+    .filter((token) => token.denom !== selectedTokenDenom)
+    .sort((a, b) => {
+      if (a.toDec().gt(b.toDec()) && sortByBalances) return -1;
+      if (a.toDec().lt(b.toDec()) && sortByBalances) return 1;
+      return 0;
+    });
 
   const [searchValue, setTokenSearch, searchedTokens] = useFilteredData(
     dropdownTokens,
-    ["coinDenom", "paths.channelId"]
+    ["denom"]
   );
 
   return (
-    <div className="flex justify-center items-center relative">
+    <div className="flex md:justify-center items-center relative">
       <div
         className="flex items-center group cursor-pointer"
         onClick={(e) => {
@@ -31,10 +37,10 @@ export const TokenSelect: FunctionComponent<{
         }}
       >
         <div className="w-14 h-14 rounded-full border border-enabledGold flex items-center justify-center shrink-0 mr-3">
-          {selectedToken?.coinImageUrl && (
+          {selectedToken?.currency.coinImageUrl && (
             <div className="w-11 h-11 rounded-full">
               <Image
-                src={selectedToken.coinImageUrl}
+                src={selectedToken.currency.coinImageUrl}
                 alt="token icon"
                 className="rounded-full"
                 width={44}
@@ -44,7 +50,9 @@ export const TokenSelect: FunctionComponent<{
           )}
         </div>
         <div>
-          <h5 className="text-white-full">{selectedToken?.coinDenom}</h5>
+          <h5 className="text-white-full">
+            {selectedToken?.currency.coinDenom}
+          </h5>
           {selectedToken && "paths" in selectedToken && (
             <div className="text-iconDefault text-sm font-semibold">
               {(selectedToken as IBCCurrency).paths
@@ -68,7 +76,7 @@ export const TokenSelect: FunctionComponent<{
 
       {isSelectOpen && (
         <div
-          className="absolute bottom-0 -left-3 translate-y-full p-3.5 bg-surface rounded-b-2xl z-50 w-[28.5rem]"
+          className="absolute bottom-0 -left-3 translate-y-full p-1 md:p-3.5 bg-surface rounded-b-2xl z-50 w-[18.75rem] md:w-[28.5rem]"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center h-9 pl-4 mb-3 rounded-2xl bg-card">
@@ -98,13 +106,14 @@ export const TokenSelect: FunctionComponent<{
                 onClick={(e) => {
                   e.stopPropagation();
                   onSelect(token);
+                  setIsSelectOpen(false);
                 }}
               >
                 <div className="flex items-center">
-                  {token.coinImageUrl && (
+                  {token.currency.coinImageUrl && (
                     <div className="w-9 h-9 rounded-full mr-3">
                       <Image
-                        src={token.coinImageUrl}
+                        src={token.currency.coinImageUrl}
                         alt="token icon"
                         className="rounded-full"
                         width={36}
@@ -113,14 +122,10 @@ export const TokenSelect: FunctionComponent<{
                     </div>
                   )}
                   <div>
-                    <h6 className="text-white-full">{token.coinDenom}</h6>
-                    {"paths" in token && (
-                      <div className="text-iconDefault text-sm font-semibold">
-                        {(token as IBCCurrency).paths
-                          .map((path) => path.channelId)
-                          .join(", ")}
-                      </div>
-                    )}
+                    <h6 className="text-white-full">{token.denom}</h6>
+                    <div className="text-iconDefault text-sm font-semibold">
+                      {token.trim(true).hideDenom(true).toString()}
+                    </div>
                   </div>
                 </div>
               </div>
