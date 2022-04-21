@@ -315,7 +315,6 @@ const Pool: FunctionComponent = observer(() => {
   // eject to pools page if pool does not exist
   useEffect(() => {
     return autorun(() => {
-      // TODO: Bug- fix redirect to /pools when entering pool id (/pool/<id>) from url bar
       if (queryOsmosis.queryGammPools.poolExists(poolId as string) === false) {
         router.push("/pools");
       }
