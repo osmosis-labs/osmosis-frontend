@@ -37,7 +37,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
       }}
       bodyOpenClassName={classNames("overflow-hidden", bodyOpenClassName)}
       overlayClassName={classNames(
-        "fixed flex items-center justify-center inset-5 md:inset-0 bg-modalOverlay z-50",
+        "fixed flex items-center mx-5 inset-0 justify-center bg-modalOverlay z-50",
         overlayClassName
       )}
       className={classNames(
