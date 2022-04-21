@@ -22,9 +22,9 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
               <TokenSelect
                 selectedTokenDenom={amountConfig.currency.coinDenom}
                 tokens={config.sendableCurrencies}
-                onSelect={(token) => {
+                onSelect={(coinDenom) => {
                   const currency = config.remainingSelectableCurrencies.find(
-                    (currency) => currency.coinDenom === token.coinDenom
+                    (currency) => currency.coinDenom === coinDenom
                   );
                   if (currency) {
                     amountConfig.setCurrency(currency);

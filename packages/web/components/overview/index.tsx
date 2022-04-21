@@ -54,9 +54,9 @@ export const Overview: FunctionComponent<Props> = ({
           : undefined
       }
     >
-      <div className="max-w-container mx-auto pt-24 md:pt-0">
+      <div className="max-w-container mx-auto md:pt-24 pt-0">
         <div className="p-10">
-          <div className="flex flex-wrap gap-5 md:gap-8 items-center place-content-start">
+          <div className="flex flex-wrap md:gap-5 gap-8 items-center place-content-start">
             {typeof title === "string" ? (
               isMobile ? (
                 <h6 className="text-white-full">{title}</h6>
@@ -66,7 +66,7 @@ export const Overview: FunctionComponent<Props> = ({
             ) : (
               <>{title}</>
             )}
-            <div className="flex flex-wrap gap-2 md:gap-5">
+            <div className="flex flex-wrap md:gap-2 gap-5">
               {titleButtons?.slice(0, 2).map(({ label, onClick }, index) => (
                 <Button key={index} color="primary" size="sm" onClick={onClick}>
                   {label}
@@ -74,7 +74,7 @@ export const Overview: FunctionComponent<Props> = ({
               ))}
             </div>
           </div>
-          <div className="mt-6 flex flex-wrap items-center gap-9 md:gap-20">
+          <div className="mt-6 flex flex-wrap items-center md:gap-9 gap-20">
             {primaryOverviewLabels
               .slice(0, bgImageUrl ? 2 : 4)
               .map((label, index) => (
@@ -82,7 +82,7 @@ export const Overview: FunctionComponent<Props> = ({
               ))}
           </div>
           {secondaryOverviewLabels && (
-            <div className="mt-6 flex flex-wrap items-center gap-20">
+            <div className="mt-6 flex flex-wrap items-center md:gap-9 gap-20">
               {secondaryOverviewLabels.slice(0, 3).map((label, index) => (
                 <OverviewLabelValue
                   prominence="secondary"

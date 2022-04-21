@@ -40,7 +40,7 @@ export const RemoveLiquidity: FunctionComponent<Props> = observer(
           max={100}
           step={1}
         />
-        <div className="grid grid-cols-4 gap-5 h-9 w-full mb-6 md:mb-15">
+        <div className="grid grid-cols-4 gap-5 h-9 w-full md:mb-6 mb-15">
           <button
             onClick={() => config.setPercentage("25")}
             className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75"
@@ -67,7 +67,7 @@ export const RemoveLiquidity: FunctionComponent<Props> = observer(
           </button>
         </div>
         <Button
-          className="h-14 w-full md:w-96 !p-0 mt-3 mx-auto"
+          className="h-14 md:w-full w-96 !p-0 mt-3 mx-auto"
           size="lg"
           onClick={onRemoveLiquidity}
         >

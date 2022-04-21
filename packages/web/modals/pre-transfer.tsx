@@ -22,7 +22,7 @@ export const PreTransferModal: FunctionComponent<
         <TokenSelect
           selectedTokenDenom={selectedToken.denom}
           tokens={tokens}
-          onSelect={(currency) => onSelectToken(currency.denom)}
+          onSelect={(coinDenom) => onSelectToken(coinDenom)}
           sortByBalances
         />
       }

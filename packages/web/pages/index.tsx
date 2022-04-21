@@ -8,7 +8,7 @@ const Home: NextPage = observer(function () {
     <main className="relative bg-background h-screen">
       <div className="h-full bg-home-bg-pattern bg-repeat-x bg-cover overflow-auto flex justify-center items-center">
         <svg
-          className="absolute w-full h-full hidden md:block"
+          className="absolute w-full h-full md:hidden"
           pointerEvents="none"
           viewBox="0 0 1300 900"
           height="900"

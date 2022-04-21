@@ -6,7 +6,7 @@ export const GoSuperfluidCard: FunctionComponent<
     goSuperfluid: () => void;
   } & MobileProps
 > = ({ goSuperfluid, isMobile = false }) => (
-  <div className="mt-5 bg-card p-5 rounded-2xl flex flex-col md:flex-row gap-2 items-center justify-between font-body">
+  <div className="mt-5 bg-card p-5 rounded-2xl flex md:flex-col gap-2 items-center justify-between font-body">
     <div>
       <div className="text-base font-semibold text-white-high">
         {isMobile

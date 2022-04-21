@@ -17,8 +17,8 @@ export const SuperfluidValidatorCard: FunctionComponent<
   apr,
   isMobile = false,
 }) => (
-  <div className="w-full p-0.5 rounded-2xl md:rounded-xl bg-superfluid my-2">
-    <div className="flex flex-col w-full gap-1 bg-card rounded-2xlinset md:rounded-xlinset py-5 px-7">
+  <div className="w-full p-0.5 md:rounded-2xl rounded-xl bg-superfluid my-2">
+    <div className="flex flex-col w-full gap-1 bg-card md:rounded-2xlinset rounded-xlinset py-5 px-7">
       {!isMobile && (
         <>
           <div className="flex place-content-between text-subtitle1">
@@ -38,7 +38,7 @@ export const SuperfluidValidatorCard: FunctionComponent<
             />
           </div>
           <div className="flex flex-col place-content-evenly">
-            <span className="subtitle2 md:text-lg text-white-high">
+            <span className="subtitle2 md:text-sm text-white-high">
               {validatorName ?? ""}
             </span>
             <span className="text-sm text-iconDefault">

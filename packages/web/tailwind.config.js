@@ -152,6 +152,22 @@ module.exports = {
       "elevation-24dp":
         "0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2)",
     },
+    screens: {
+      "2xl": { max: "1536px" },
+      // => @media (max-width: 1536px) { ... }
+
+      xl: { max: "1280px" },
+      // => @media (max-width: 1280px) { ... }
+
+      lg: { max: "1024px" },
+      // => @media (max-width: 1024px) { ... }
+
+      md: { max: "768px" },
+      // => @media (max-width: 768px) { ... }
+
+      sm: { max: "640px" },
+      // => @media (max-width: 640px) { ... }
+    },
     extend: {
       width: {
         loader: {

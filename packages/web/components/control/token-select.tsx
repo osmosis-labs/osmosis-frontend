@@ -1,22 +1,30 @@
-import { IBCCurrency } from "@keplr-wallet/types";
+import { IBCCurrency, AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import { useBooleanWithWindowEvent, useFilteredData } from "../../hooks";
 
+/** Will display balances if provided CoinPretty objects. Assumes denoms are unique. */
 export const TokenSelect: FunctionComponent<{
   selectedTokenDenom: string;
-  tokens: CoinPretty[];
-  onSelect: (token: CoinPretty) => void;
+  tokens: (CoinPretty | AppCurrency)[];
+  onSelect: (tokenDenom: string) => void;
   sortByBalances?: boolean;
 }> = ({ selectedTokenDenom, tokens, onSelect, sortByBalances = false }) => {
   const [isSelectOpen, setIsSelectOpen] = useBooleanWithWindowEvent(false);
   const selectedToken = tokens.find(
-    (token) => token.denom === selectedTokenDenom
+    (token) =>
+      (token instanceof CoinPretty ? token.denom : token.coinDenom) ===
+      selectedTokenDenom
   );
   const dropdownTokens = tokens
-    .filter((token) => token.denom !== selectedTokenDenom)
+    .filter(
+      (token) =>
+        (token instanceof CoinPretty ? token.denom : token.coinDenom) !==
+        selectedTokenDenom
+    )
     .sort((a, b) => {
+      if (!(a instanceof CoinPretty) || !(b instanceof CoinPretty)) return 0;
       if (a.toDec().gt(b.toDec()) && sortByBalances) return -1;
       if (a.toDec().lt(b.toDec()) && sortByBalances) return 1;
       return 0;
@@ -26,9 +34,13 @@ export const TokenSelect: FunctionComponent<{
     dropdownTokens,
     ["denom"]
   );
+  const selectedCurrency =
+    selectedToken instanceof CoinPretty
+      ? selectedToken.currency
+      : selectedToken;
 
   return (
-    <div className="flex md:justify-center items-center relative">
+    <div className="flex md:justify-start justify-center items-center relative">
       <div
         className="flex items-center group cursor-pointer"
         onClick={(e) => {
@@ -37,10 +49,10 @@ export const TokenSelect: FunctionComponent<{
         }}
       >
         <div className="w-14 h-14 rounded-full border border-enabledGold flex items-center justify-center shrink-0 mr-3">
-          {selectedToken?.currency.coinImageUrl && (
+          {selectedCurrency?.coinImageUrl && (
             <div className="w-11 h-11 rounded-full">
               <Image
-                src={selectedToken.currency.coinImageUrl}
+                src={selectedCurrency.coinImageUrl}
                 alt="token icon"
                 className="rounded-full"
                 width={44}
@@ -50,10 +62,8 @@ export const TokenSelect: FunctionComponent<{
           )}
         </div>
         <div>
-          <h5 className="text-white-full">
-            {selectedToken?.currency.coinDenom}
-          </h5>
-          {selectedToken && "paths" in selectedToken && (
+          <h5 className="text-white-full">{selectedCurrency?.coinDenom}</h5>
+          {selectedCurrency && "paths" in selectedCurrency && (
             <div className="text-iconDefault text-sm font-semibold">
               {(selectedToken as IBCCurrency).paths
                 .map((path) => path.channelId)
@@ -76,7 +86,7 @@ export const TokenSelect: FunctionComponent<{
 
       {isSelectOpen && (
         <div
-          className="absolute bottom-0 -left-3 translate-y-full p-1 md:p-3.5 bg-surface rounded-b-2xl z-50 w-[18.75rem] md:w-[28.5rem]"
+          className="absolute bottom-0 -left-3 translate-y-full md:p-1 p-3.5 bg-surface rounded-b-2xl z-50 md:w-[18.75rem] w-[28.5rem]"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center h-9 pl-4 mb-3 rounded-2xl bg-card">
@@ -99,37 +109,43 @@ export const TokenSelect: FunctionComponent<{
           </div>
 
           <div className="token-item-list overflow-y-scroll max-h-80">
-            {searchedTokens.map((token, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center rounded-2xl py-2.5 px-3 my-1 hover:bg-card cursor-pointer mr-3"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSelect(token);
-                  setIsSelectOpen(false);
-                }}
-              >
-                <div className="flex items-center">
-                  {token.currency.coinImageUrl && (
-                    <div className="w-9 h-9 rounded-full mr-3">
-                      <Image
-                        src={token.currency.coinImageUrl}
-                        alt="token icon"
-                        className="rounded-full"
-                        width={36}
-                        height={36}
-                      />
-                    </div>
-                  )}
-                  <div>
-                    <h6 className="text-white-full">{token.denom}</h6>
-                    <div className="text-iconDefault text-sm font-semibold">
-                      {token.trim(true).hideDenom(true).toString()}
+            {searchedTokens.map((token, index) => {
+              const { coinDenom, coinImageUrl } =
+                token instanceof CoinPretty ? token.currency : token;
+              return (
+                <div
+                  key={index}
+                  className="flex justify-between items-center rounded-2xl py-2.5 px-3 my-1 hover:bg-card cursor-pointer mr-3"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelect(coinDenom);
+                    setIsSelectOpen(false);
+                  }}
+                >
+                  <div className="flex items-center">
+                    {coinImageUrl && (
+                      <div className="w-9 h-9 rounded-full mr-3">
+                        <Image
+                          src={coinImageUrl}
+                          alt="token icon"
+                          className="rounded-full"
+                          width={36}
+                          height={36}
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <h6 className="text-white-full">{coinDenom}</h6>
+                      {token instanceof CoinPretty && (
+                        <div className="text-iconDefault text-sm font-semibold">
+                          {token.trim(true).hideDenom(true).toString()}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

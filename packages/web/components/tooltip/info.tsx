@@ -13,7 +13,7 @@ export const InfoTooltip: FunctionComponent<
     }
 > = ({ content, trigger, style = "iconDefault", size, className }) => (
   <Tippy
-    className="bg-surface border border-secondary-200/30 md:p-2 rounded-lg text-body2"
+    className="bg-surface border border-secondary-200/30 md:p-px p-2 rounded-lg text-body2"
     content={content}
     trigger={trigger ?? "click"}
   >

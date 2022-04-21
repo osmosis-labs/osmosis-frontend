@@ -583,12 +583,12 @@ const Pool: FunctionComponent = observer(() => {
       />
       <section className="bg-surface">
         <div className="max-w-container mx-auto p-10">
-          <div className="flex flex-col lg:flex-row gap-6 place-content-between">
+          <div className="flex lg:flex-col gap-6 place-content-between">
             <div className="max-w-md">
-              <div className="flex flex-col lg:flex-row gap-3">
+              <div className="flex lg:flex-col gap-3">
                 <h5>Liquidity Mining</h5>
                 {superfluid && superfluid !== "not-superfluid-pool" && (
-                  <div className="bg-superfluid w-fit rounded-full px-4 py-1 text-xs md:text-base">
+                  <div className="bg-superfluid w-fit rounded-full px-4 py-1 md:text-xs text-base">
                     Superfluid Staking Enabled
                   </div>
                 )}
@@ -598,7 +598,7 @@ const Pool: FunctionComponent = observer(() => {
                 liquidity rewards and swap fees
               </p>
             </div>
-            <div className="flex flex-col gap-2 lg:text-right">
+            <div className="flex flex-col gap-2 lg:text-left">
               <span className="caption text-white-mid">
                 Available LP tokens
               </span>
@@ -608,7 +608,7 @@ const Pool: FunctionComponent = observer(() => {
                 </MetricLoader>
               </h5>
               <Button
-                className="h-8 w-fit lg:w-full"
+                className="h-8 lg:w-fit w-full"
                 onClick={() => setShowLockLPTokenModal(true)}
               >
                 Start Earning
@@ -619,7 +619,7 @@ const Pool: FunctionComponent = observer(() => {
             guages &&
             queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id) && (
               <>
-                <div className="flex flex-col lg:flex-row gap-3 md:gap-9 place-content-between pt-10">
+                <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between pt-10">
                   {externalGuages?.map(
                     (
                       { rewardAmount, duration: durationDays, remainingEpochs },
@@ -638,7 +638,7 @@ const Pool: FunctionComponent = observer(() => {
                     )
                   )}
                 </div>
-                <div className="flex flex-col lg:flex-row gap-3 md:gap-9 place-content-between pt-10">
+                <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between pt-10">
                   {guages.map((guage, i) => (
                     <PoolGaugeCard
                       key={i}
@@ -733,7 +733,7 @@ const Pool: FunctionComponent = observer(() => {
             <h6>My Bondings</h6>
           )}
           <Table
-            className="-mx-10 md:mx-0 w-screen md:w-full my-5"
+            className="md:-mx-10 md:w-screen w-full my-5"
             columnDefs={(
               [
                 {
@@ -761,10 +761,10 @@ const Pool: FunctionComponent = observer(() => {
                 {
                   display: "Action",
                   className:
-                    "text-right justify-right md:text-center md:justify-center",
+                    "md:text-right text-center md:justify-right justify-center",
                   displayCell: ({ amount, lockIds, isSuperfluidDuration }) => (
                     <Button
-                      className="ml-auto pr-0 !justify-right md:justify-center md:m-auto md:p-0"
+                      className="md:ml-auto m-auto pr-0 !md:justify-right !justify-center"
                       type={isMobile ? undefined : "arrow"}
                       size="xs"
                       disabled={
@@ -862,7 +862,7 @@ const Pool: FunctionComponent = observer(() => {
               <h6>Unbondings</h6>
             )}
             <Table
-              className="-mx-10 md:mx-0 w-screen md:w-full my-5"
+              className="md:-mx-10 md:w-screen w-full my-5"
               columnDefs={[
                 {
                   display: "Unbonding Duration",
@@ -902,7 +902,7 @@ const Pool: FunctionComponent = observer(() => {
                 <h6>Superfluid Unbondings</h6>
               )}
               <Table
-                className="-mx-10 md:mx-0 w-screen md:w-full my-5"
+                className="md:-mx-10 md:w-screen w-full my-5"
                 columnDefs={[
                   {
                     display: "Validator",
@@ -938,14 +938,14 @@ const Pool: FunctionComponent = observer(() => {
           ) : (
             <h5>Pool Catalyst</h5>
           )}
-          <div className="flex flex-col md:flex-row gap-5 my-5">
+          <div className="flex md:flex-col gap-5 my-5">
             {(userPoolAssets ?? [undefined, undefined]).map(
               (userAsset, index) => (
                 <PoolCatalystCard
                   key={index}
                   colorKey={Number(pool?.id ?? "0") + index}
                   isLoading={!pool || !userPoolAssets}
-                  className="w-full md:w-1/2 max-w-md"
+                  className="md:w-full w-1/2 max-w-md"
                   percentDec={userAsset?.ratio.toString()}
                   tokenMinimalDenom={userAsset?.asset.currency.coinDenom}
                   metrics={[

@@ -120,10 +120,10 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
         </div>
         <div
           className={classNames(
-            "fixed md:hidden transition duration-150 ease-out z-40 h-24 w-screen flex items-center place-content-end px-8",
+            "fixed flex z-40 h-24 w-screen items-center place-content-end px-8",
             {
               "bg-black/30": !isScrolledTop,
-              hidden: showSidebar,
+              hidden: showSidebar || !isMobile,
             }
           )}
         >
@@ -135,9 +135,9 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
           </div>
         </div>
         {showSidebar && (
-          <div className="fixed md:ml-sidebar h-screen w-screen bg-black/30" />
+          <div className="fixed ml-sidebar md:ml-0 h-screen w-screen bg-black/30" />
         )}
-        <div className="md:ml-sidebar h-screen">{children}</div>
+        <div className="ml-sidebar md:ml-0 h-screen">{children}</div>
       </React.Fragment>
     );
   }

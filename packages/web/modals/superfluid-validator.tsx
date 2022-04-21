@@ -89,7 +89,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
     return (
       <ModalBase {...props}>
         <div className="flex flex-col gap-2.5 mt-8">
-          <div className="flex flex-col md:flex-row gap-2.5 mb-1 items-center place-content-between">
+          <div className="flex md:flex-col gap-2.5 mb-1 items-center place-content-between">
             <span className="subtitle2 mr-auto">
               Choose your superfluid validator
             </span>
@@ -152,20 +152,20 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
               )}
             />
           </div>
-          <div className="flex flex-col gap-2 md:gap-4 py-3 px-5 rounded-xl border border-white-faint bg-card">
+          <div className="flex flex-col md:gap-2 gap-4 py-3 px-5 rounded-xl border border-white-faint bg-card">
             <div className="flex items-center place-content-between">
-              <span className="caption md:subtitle1">Bonded Amount</span>
-              <span className="caption md:body1 text-white-mid">
+              <span className="md:caption subtitle1">Bonded Amount</span>
+              <span className="md:caption body1 text-white-mid">
                 {availableBondAmount.maxDecimals(2).trim(true).toString()}
               </span>
             </div>
             <div className="flex items-center place-content-between">
-              <span className="caption md:subtitle1">
+              <span className="md:caption subtitle1">
                 {isMobile
                   ? "Est. Delegation"
                   : "Estimated Superfluid Delegation"}
               </span>
-              <span className="caption md:body1 text-white-mid">
+              <span className="md:caption body1 text-white-mid">
                 ~
                 {queries.osmosis.querySuperfluidOsmoEquivalent
                   .calculateOsmoEquivalent(availableBondAmount)
@@ -180,7 +180,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
             </div>
           </div>
           <Button
-            className="h-14 w-full md:w-96 mt-3 mx-auto"
+            className="h-14 md:w-full w-96 mt-3 mx-auto"
             size="lg"
             disabled={selectedValidatorAddress === null || isSendingMsg}
             onClick={() => {

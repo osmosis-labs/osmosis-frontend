@@ -74,7 +74,7 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
             return (
               <div
                 key={currency.coinDenom}
-                className="flex w-full items-center place-content-between p-2 md:p-4 border border-white-faint rounded-xl md:rounded-2xl"
+                className="flex w-full items-center place-content-between md:p-2 p-4 border border-white-faint md:rounded-xl rounded-2xl"
               >
                 {addLiquidityConfig.isSingleAmountIn ? (
                   <PoolTokenSelect
@@ -146,7 +146,7 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
                       <InputBox
                         style="no-border"
                         type="number"
-                        inputClassName="text-right w-16 md:w-full h-6 md:text-h6 md:font-h6"
+                        inputClassName="text-right md:w-16 w-full h-6 text-h6 font-h6 md:text-base"
                         currentValue={inputAmount}
                         onInput={onInputAmount}
                         placeholder=""
@@ -201,7 +201,7 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
           />
         )}
         <Button
-          className="h-14 w-full md:w-96 mt-3 mx-auto"
+          className="h-14 md:w-full w-96 mt-3 mx-auto"
           size="lg"
           disabled={addLiquidityConfig.getError() !== undefined}
           onClick={onAddLiquidity}

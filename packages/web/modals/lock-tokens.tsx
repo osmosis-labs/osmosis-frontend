@@ -47,7 +47,7 @@ export const LockTokensModal: FunctionComponent<
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-col gap-2.5">
           <span className="subitle1">Unbonding period</span>
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex md:flex-col gap-4">
             {gauges.map(({ id, duration, apr, superfluidApr }, index) => (
               <LockupItem
                 key={id}
@@ -81,7 +81,7 @@ export const LockTokensModal: FunctionComponent<
             />
           </div>
         )}
-        <div className="flex flex-col gap-2 md:border md:border-white-faint md:vrounded-2xl md:p-4">
+        <div className="flex flex-col gap-2 md:border-0 border border-white-faint md:rounded-0 rounded-2xl md:p-px p-4">
           <span className="subtitle1">Amount To Bond</span>
           {availableToken && (
             <div className="flex gap-1 caption">
@@ -109,7 +109,7 @@ export const LockTokensModal: FunctionComponent<
           <Error className="mx-auto" message={config.error?.message ?? ""} />
         )}
         <Button
-          className="h-14 w-full md:w-96 mt-3 mx-auto"
+          className="h-14 md:w-full w-96 mt-3 mx-auto"
           size="lg"
           disabled={config.error !== undefined || selectedGaugeIndex === null}
           onClick={() => {
@@ -146,63 +146,61 @@ const LockupItem: FunctionComponent<
   apr,
   superfluidApr,
   isMobile = false,
-}) => {
-  return (
+}) => (
+  <div
+    onClick={onSelect}
+    className={classNames(
+      {
+        "shadow-elevation-08dp": isSelected,
+      },
+      "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer",
+      superfluidApr
+        ? "bg-superfluid"
+        : isSelected
+        ? "bg-enabledGold bg-opacity-30"
+        : "bg-white-faint hover:opacity-75"
+    )}
+  >
     <div
-      onClick={onSelect}
       className={classNames(
+        "flex items-center rounded-2xlinset bg-surface h-full px-5 md:py-3.5 py-5 px-4",
         {
-          "shadow-elevation-08dp": isSelected,
-        },
-        "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer",
-        superfluidApr
-          ? "bg-superfluid"
-          : isSelected
-          ? "bg-enabledGold bg-opacity-30"
-          : "bg-white-faint hover:opacity-75"
+          "bg-superfluid-20": superfluidApr && isSelected,
+        }
       )}
     >
-      <div
+      <figure
         className={classNames(
-          "flex items-center rounded-2xlinset bg-surface h-full px-5 py-3.5 md:py-5 md:px-4",
-          {
-            "bg-superfluid-20": superfluidApr && isSelected,
-          }
+          "rounded-full w-4 h-4 mr-5 md:mr-4 flex-shrink-0",
+          isSelected
+            ? "border-secondary-200 border-4 bg-white-high"
+            : "border-iconDefault border"
         )}
-      >
-        <figure
-          className={classNames(
-            "rounded-full w-4 h-4 mr-5 md:mr-4 flex-shrink-0",
-            isSelected
-              ? "border-secondary-200 border-4 bg-white-high"
-              : "border-iconDefault border"
+      />
+      <div className="flex w-full place-content-between items-center items-left flex-col md:flex-row items-baseline">
+        <div className="flex gap-1.5 items-center md:mx-1 mx-auto">
+          {isMobile ? (
+            <span className="subtitle1">{duration}</span>
+          ) : (
+            <h5>{duration}</h5>
           )}
-        />
-        <div className="flex w-full place-content-between items-center md:items-left md:flex-col md:items-baseline">
-          <div className="flex gap-1.5 items-center md:mx-auto">
-            {isMobile ? (
-              <span className="subtitle1">{duration}</span>
-            ) : (
-              <h5>{duration}</h5>
+          <div className="flex items-center w-[25px]">
+            {superfluidApr && (
+              <Image
+                alt=""
+                src={"/icons/superfluid-osmo.svg"}
+                height={22}
+                width={22}
+              />
             )}
-            <div className="flex items-center w-[25px]">
-              {superfluidApr && (
-                <Image
-                  alt=""
-                  src={"/icons/superfluid-osmo.svg"}
-                  height={22}
-                  width={22}
-                />
-              )}
-            </div>
           </div>
-          <div className="flex items-center text-right md:text-center md:mx-auto gap-2">
-            <p className="subtitle2 md:mt-1 text-secondary-200 text-sm md:text-base">
-              {`${apr}${superfluidApr ? `+ ${superfluidApr}` : ""}`}
-            </p>
-          </div>
+        </div>
+        <div className="flex items-center md:text-right text-center md:mx-0 mx-auto gap-2">
+          <p className="subtitle2 md:m-0 mt-1 text-secondary-200 md:text-sm text-base">
+            {`${apr}${superfluidApr ? `+ ${superfluidApr}` : ""}`}
+          </p>
         </div>
       </div>
     </div>
-  );
-};
+  </div>
+);

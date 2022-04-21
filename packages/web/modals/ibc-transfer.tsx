@@ -52,15 +52,15 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     return (
       <ModalBase {...props}>
         <div className="text-white-high">
-          <div className="mb-5 md:mb-10 flex justify-between items-center w-full">
-            <h5 className="text-lg md:text-xl">
+          <div className="md:mb-5 mb-10 flex justify-between items-center w-full">
+            <h5 className="md:text-lg text-xl">
               {isWithdraw ? "Withdraw" : "Deposit"}
               {!isMobile && " IBC Asset"}
             </h5>
           </div>
-          <h6 className="mb-3 md:mb-4 text-base md:text-lg">IBC Transfer</h6>
+          <h6 className="md:mb-3 mb-4 md:text-base text-lg">IBC Transfer</h6>
           <section className="flex flex-col items-center">
-            <div className="w-full flex-1 p-3 md:p-4 border border-white-faint rounded-2xl">
+            <div className="w-full flex-1 md:p-3 p-4 border border-white-faint rounded-2xl">
               <p className="text-white-high">
                 From{" "}
                 {showFromCopied && (
@@ -103,7 +103,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                 width={20}
               />
             </div>
-            <div className="w-full flex-1 p-3 md:p-4 border border-white-faint rounded-2xl">
+            <div className="w-full flex-1 md:p-3 p-4 border border-white-faint rounded-2xl">
               <p className="text-white-high">
                 To{" "}
                 {showToCopied && (
@@ -113,7 +113,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               <div className="flex gap-2 place-content-between">
                 <div className="w-full flex flex-col gap-5">
                   {isEditingWithdrawAddr && (
-                    <div className="flex gap-1 md:gap-3 place-content-evenly border border-secondary-200 rounded-xl p-1 mt-2">
+                    <div className="flex md:gap-1 gap-3 place-content-evenly border border-secondary-200 rounded-xl p-1 mt-2">
                       <div className="flex items-center w-[16px] shrink-0">
                         <Image
                           alt="warning"
@@ -122,7 +122,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                           width={16}
                         />
                       </div>
-                      <p className="text-xs md:text-sm my-auto">
+                      <p className="md:text-xs text-sm my-auto">
                         Warning: Withdrawing to central exchange address will
                         result in loss of funds.
                       </p>
@@ -191,7 +191,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                           setDidVerifyWithdrawRisk(!didVerifyWithdrawRisk);
                         }}
                       >
-                        <span className="caption text-xs md:text-sm ml-1 md:ml-2">
+                        <span className="caption md:text-xs text-sm md:ml-1 ml-2">
                           I verify I am not sending to an exchange address.
                         </span>
                       </CheckBox>
@@ -221,11 +221,11 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               </div>
             </div>
           </section>
-          <h6 className="text-base md:text-lg mt-7">
+          <h6 className="md:text-base text-lg mt-7">
             Amount To {isWithdraw ? "Withdraw" : "Deposit"}
           </h6>
-          <div className="mt-3 md:mt-4 w-full p-0 md:p-5 border-0 md:border border-secondary-50 border-opacity-60 rounded-2xl">
-            <p className="text-sm md:text-base mb-2">
+          <div className="md:mt-3 mt-4 w-full md:p-0 p-5 md:border-0 border border-secondary-50 border-opacity-60 rounded-2xl">
+            <p className="md:text-sm text-base mb-2">
               Available balance:{" "}
               <span className="text-primary-50">
                 {(isWithdraw
@@ -263,14 +263,14 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               ]}
             />
           </div>
-          <div className="w-full mt-6 md:mt-9 flex items-center justify-center">
+          <div className="w-full md:mt-6 mt-9 flex items-center justify-center">
             {!(account.walletStatus === WalletStatus.Loaded) ? (
               <Button onClick={() => account.init()}>
                 <span>Connect Wallet</span>
               </Button>
             ) : (
               <Button
-                className="w-full md:w-2/3 p-4 md:p-6 bg-primary-200 rounded-2xl flex items-center justify-center hover:opacity-75 disabled:opacity-50"
+                className="md:w-full w-2/3 md:p-4 p-6 bg-primary-200 rounded-2xl flex items-center justify-center hover:opacity-75 disabled:opacity-50"
                 disabled={
                   !account.isReadyToSendTx ||
                   !counterpartyAccount.isReadyToSendTx ||
@@ -283,7 +283,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   // TODO: do transfer from fn from hoook
                 }}
               >
-                <h6 className="text-base md:text-lg">
+                <h6 className="md:text-base text-lg">
                   {isWithdraw ? "Withdraw" : "Deposit"}
                 </h6>
               </Button>
