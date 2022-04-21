@@ -18,10 +18,6 @@ export const IbcNotifier: FunctionComponent = observer(() => {
   useEffect(() => {
     ibcTransferHistoryStore.addHistoryChangedHandler((history) => {
       if (chainStore.hasChain(history.destChainId)) {
-        // Toast the notification should use the `useToast()` context API.
-        // But, it is not yet flexible and it is the thing to be being refactored.
-        // It just uses the "toast" libaray, so for now, just use that library directly before the `useToast()` hook refactored.
-
         const transferAmount = new CoinPretty(
           history.amount.currency,
           new Dec(history.amount.amount)
