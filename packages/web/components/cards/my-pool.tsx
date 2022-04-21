@@ -8,29 +8,24 @@ import { useDeterministicIntegerFromString } from "../../hooks";
 import { StatLabelValue } from "./stat-label-value";
 import { useRouter } from "next/router";
 
-export const MyPools: FunctionComponent<{
+export const MyPoolCard: FunctionComponent<{
   pool: ObservablePool;
 }> = observer(({ pool }) => {
-  const { chainStore, queriesOsmosisStore, priceStore, accountStore } =
-    useStore();
+  const { chainStore, queriesStore, priceStore, accountStore } = useStore();
 
-  const chainInfo = chainStore.getChain("osmosis");
-  const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
+  const chainInfo = chainStore.osmosis;
+  const queryOsmosis = queriesStore.get(chainInfo.chainId).osmosis;
   const account = accountStore.getAccount(chainInfo.chainId);
 
   const router = useRouter();
 
   const deterministicInteger = useDeterministicIntegerFromString(pool.id);
 
-  const poolTVL = pool.computeTotalValueLocked(
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
-  );
+  const poolTVL = pool.computeTotalValueLocked(priceStore);
 
   const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
     pool.id,
-    priceStore,
-    priceStore.getFiatCurrency("usd")!
+    priceStore
   );
 
   const shareRatio = queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
@@ -58,7 +53,7 @@ export const MyPools: FunctionComponent<{
         ]
       }
       onClick={() => {
-        router.push(`/pools/${pool.id}`);
+        router.push(`/pool/${pool.id}`);
       }}
     >
       <div className="flex flex-col">

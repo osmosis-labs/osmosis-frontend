@@ -62,6 +62,9 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
+  input::placeholder {
+    @apply text-white-disabled tracking-wide body2;
+  }
 
   .token-item-list::-webkit-scrollbar {
     @apply border border-card rounded;
@@ -80,7 +83,7 @@
   }
 
   thead > tr {
-    @apply bg-card text-white-disabled;
+    @apply bg-card text-iconDefault;
   }
 
   thead > tr > th:first-child {
@@ -88,7 +91,7 @@
   }
 
   thead > tr > th {
-    @apply p-3;
+    @apply p-3 font-body2;
   }
 
   thead > tr > th:last-child {
@@ -96,7 +99,7 @@
   }
 
   tbody > tr > td:first-child {
-    @apply pl-8 pr-3 py-3;
+    @apply pl-4 pr-3 py-3;
   }
 
   tbody > tr > td {
@@ -106,4 +109,92 @@
   tbody > tr > td:last-child {
     @apply pl-3 pr-8 py-2;
   }
+
+  .grid-cards {
+    @apply grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 justify-items-center;
+  }
+
+  /** SLIDER STYLE */
+
+  input[type="range"] {
+    -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+    @apply w-[200px] mt-[5px] cursor-pointer rounded-full bg-transparent;
+  }
+
+  input[type="range"].disabled {
+    @apply cursor-default;
+  }
+
+  /** Slider Thumb **/
+
+  /* WebKit (Chrome, Safari) */
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: solid theme("colors.secondary.200") 1px;
+    @apply relative h-[20px] w-[20px] rounded-full bg-white-full;
+  }
+
+  input[type="range"].showDetail::-webkit-slider-thumb {
+    @apply border border-secondary-50;
+  }
+  input[type="range"].disabled::-webkit-slider-thumb {
+    border: solid #6e6c7c 1px;
+  }
+
+  /* Firefox */
+  input[type="range"]::-moz-range-thumb {
+    @apply h-[18.7px] w-[18.7px] border border-secondary-200 mt-[1px] rounded-full bg-white-full;
+  }
+
+  input[type="range"].showDetail::-moz-range-thumb {
+    @apply border border-secondary-50;
+  }
+  input[type="range"].disabled::-moz-range-thumb {
+    border: solid #6e6c7c 1px;
+  }
+
+  /* IE */
+  input[type="range"]::-ms-thumb {
+    @apply h-[20px] w-[20px] rounded-full bg-white-full;
+  }
+
+  input[type="range"].showDetail::-ms-thumb {
+    @apply border border-secondary-50;
+  }
+  input[type="range"].disabled::-ms-thumb {
+    border: solid #6e6c7c 1px;
+  }
+
+  /* Track */
+
+  /* WebKit (Chrome, Safari) */
+  input[type="range"]::-webkit-slider-runnable-track {
+    @apply w-full h-[20px];
+  }
+
+  /* Firefox */
+  input[type="range"]::-moz-range-track {
+    @apply w-full h-[2px];
+  }
+
+  /* IE */
+  input[type="range"]::-ms-track {
+    @apply w-full h-[2px] bg-transparent border-transparent text-transparent;
+  }
+  input[type="range"]::-ms-fill-lower {
+    @apply bg-secondary-200;
+  }
+  input[type="range"]::-ms-fill-upper {
+    @apply bg-secondary-300;
+  }
+
+  /* Tooltip */
+  .sliderTooltip span {
+    @apply absolute left-[50%] w-[30px] h-[24px] leading-[24px] text-center bg-surface text-white-emphasis text-caption block translate-x-[-50%] rounded-md;
+  }
+}
+
+/** CHARTS */
+.highcharts-background {
+  fill-opacity: 0;
 }

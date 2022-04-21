@@ -22,3 +22,12 @@ export type AccountLockedLongerDuration = {
     }[];
   }[];
 };
+
+export type SyntheticLockupsByLockId = {
+  synthetic_locks: {
+    underlying_lock_id: string;
+    synth_denom: string;
+    end_time: string;
+    duration: string;
+  }[];
+};

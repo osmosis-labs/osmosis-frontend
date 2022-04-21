@@ -98,7 +98,7 @@ module.exports = {
       body1: ["Inter", "ui-sans-serif", "system-ui"],
       body2: ["Inter", "ui-sans-serif", "system-ui"],
       button: ["Inter", "ui-sans-serif", "system-ui"],
-      caption: ["Poppins", "ui-sans-serif", "system-ui"],
+      caption: ["Inter", "ui-sans-serif", "system-ui"],
       overline: ["Poppins", "ui-sans-serif", "system-ui"],
     },
     fontWeight: {
@@ -113,11 +113,12 @@ module.exports = {
       subtitle2: 600,
       body1: 500,
       body2: 500,
-      button: 500,
-      caption: 400,
+      button: 700,
+      caption: 500,
       overline: 400,
     },
     backgroundImage: {
+      none: "none",
       "gradients-socialLive":
         "linear-gradient(180deg, #89EAFB 0%, #1377B0 100%)",
       "gradients-greenBeach":
@@ -133,14 +134,58 @@ module.exports = {
       "gradients-clipInner":
         "linear-gradient(180deg, #332C61 0%, #312A5D 10.94%, #2D2755 100%)",
       "home-bg-pattern": "url('/images/osmosis-home-bg-pattern.svg')",
+      "loading-bar":
+        "linear-gradient(to left,rgba(251, 251, 251, 0.1),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.3),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.1))",
+      superfluid: "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)",
+      "superfluid-20":
+        "linear-gradient(90deg, rgba(138, 134, 255, 0.2) 0.04%, rgba(225, 60, 189, 0.2) 99.5%)",
+      "selected-validator":
+        "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), linear-gradient(#231d4b, #231d4b)",
+    },
+    boxShadow: {
+      container:
+        "0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)",
+      "elevation-04dp":
+        "0px 4px 5px rgba(0, 0, 0, 0.14), 0px 1px 10px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.2)",
+      "elevation-08dp":
+        "0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)",
+      "elevation-24dp":
+        "0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2)",
     },
     extend: {
+      width: {
+        loader: {
+          1: "3.75rem",
+          2: "4rem",
+          3: "4.25rem",
+          4: "4.5rem",
+          5: "4.75rem",
+          6: "5rem",
+        },
+      },
       spacing: {
         sidebar: "12.875rem",
+        0.25: "1px",
       },
       maxWidth: {
         container: "90rem",
         clipboard: "32.5rem",
+        modal: "42rem",
+      },
+      keyframes: {
+        loading: {
+          "0%": { transform: "translateX(-150%)" },
+          "100%": { transform: "translateX(200%)" },
+        },
+      },
+      animation: {
+        loading: "loading 1s ease-in-out infinite",
+      },
+      boxShadow: {
+        separator: "0px -1px 0px 0px rgba(255, 255, 255, 0.12)",
+      },
+      borderRadius: {
+        lginset: "0.438rem", // 1px smaller than rounded-lg
       },
     },
   },

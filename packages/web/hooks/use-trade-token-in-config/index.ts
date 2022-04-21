@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { AmountConfig } from "@keplr-wallet/hooks";
+import { AmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
 import { action, computed, makeObservable, observable, override } from "mobx";
 import { AppCurrency } from "@keplr-wallet/types";
-import { ChainGetter, ObservableQueryBalances } from "@keplr-wallet/stores";
+import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import {
   OptimizedRoutes,
   Pool,
   RoutePathWithAmount,
 } from "@osmosis-labs/pools";
-import { IFeeConfig } from "@keplr-wallet/hooks/build/tx/types";
 import {
   CoinPretty,
   Dec,
@@ -29,13 +28,13 @@ export class TradeTokenInConfig extends AmountConfig {
 
   constructor(
     chainGetter: ChainGetter,
-    chainId: string,
+    queriesStore: IQueriesStore,
+    initialChainId: string,
     sender: string,
     feeConfig: IFeeConfig | undefined,
-    queryBalances: ObservableQueryBalances,
     pools: Pool[]
   ) {
-    super(chainGetter, chainId, sender, feeConfig, queryBalances);
+    super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
 
     this._pools = pools;
 
@@ -294,26 +293,25 @@ export class TradeTokenInConfig extends AmountConfig {
 // Be sure to pass the pools argument by memorizing it.
 export const useTradeTokenInConfig = (
   chainGetter: ChainGetter,
+  queriesStore: IQueriesStore,
   chainId: string,
   sender: string,
   feeConfig: IFeeConfig | undefined,
-  queryBalances: ObservableQueryBalances,
   pools: Pool[]
 ) => {
   const [config] = useState(
     () =>
       new TradeTokenInConfig(
         chainGetter,
+        queriesStore,
         chainId,
         sender,
         feeConfig,
-        queryBalances,
         pools
       )
   );
   config.setChain(chainId);
   config.setSender(sender);
-  config.setQueryBalances(queryBalances);
   config.setPools(pools);
 
   return config;

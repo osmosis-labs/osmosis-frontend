@@ -1,5 +1,5 @@
 import { ObservableQueryPools, ObservableQueryNumPools } from "./pools";
-import { ChainGetter, HasMapStore, QueriesSetBase } from "@keplr-wallet/stores";
+import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
 import { DeepReadonly } from "utility-types";
 import { ObservableQueryGammPoolShare } from "./pool-share";
@@ -12,6 +12,7 @@ import {
   ObservableQueryAccountLockedCoins,
   ObservableQueryAccountUnlockingCoins,
   ObservableQueryAccountLocked,
+  ObservableSyntheticLockupsByLockId,
 } from "./lockup";
 import {
   ObservableQueryEpochProvisions,
@@ -20,34 +21,51 @@ import {
 import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
 import { ObservableQueryGuage } from "./incentives";
 import { ObservableQueryPoolCreationFee } from "./pool-creation-fee";
+import {
+  ObservableQuerySuperfluidDelegations,
+  ObservableQuerySuperfluidPools,
+  ObservableQuerySuperfluidUndelegations,
+  ObservableQuerySuperfluidAssetMultiplier,
+  ObservableQuerySuperfluidOsmoEquivalent,
+  ObservableQuerySuperfluidParams,
+} from "./superfluid-pools";
 
-export class QueriesOsmosisStore extends HasMapStore<QueriesOsmosis> {
-  constructor(
-    protected readonly queriesBaseCreator: (chainId: string) => QueriesSetBase,
-    protected readonly kvStore: KVStore,
-    protected readonly chainGetter: ChainGetter
-  ) {
-    super((chainId: string) => {
-      return new QueriesOsmosis(
-        this.queriesBaseCreator(chainId),
-        this.kvStore,
-        chainId,
-        this.chainGetter
-      );
-    });
-  }
-
-  get(chainId: string): QueriesOsmosis {
-    return super.get(chainId);
-  }
+export interface OsmosisQueries {
+  osmosis: OsmosisQueriesImpl;
 }
 
-export class QueriesOsmosis {
+export const OsmosisQueries = {
+  use(): (
+    queriesSetBase: QueriesSetBase,
+    kvStore: KVStore,
+    chainId: string,
+    chainGetter: ChainGetter
+  ) => OsmosisQueries {
+    return (
+      queriesSetBase: QueriesSetBase,
+      kvStore: KVStore,
+      chainId: string,
+      chainGetter: ChainGetter
+    ) => {
+      return {
+        osmosis: new OsmosisQueriesImpl(
+          queriesSetBase,
+          kvStore,
+          chainId,
+          chainGetter
+        ),
+      };
+    };
+  },
+};
+
+export class OsmosisQueriesImpl {
   public readonly queryGammPools: DeepReadonly<ObservableQueryPools>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
 
   public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
+  public readonly querySyntheticLockupsByLockId: DeepReadonly<ObservableSyntheticLockupsByLockId>;
   public readonly queryUnlockingCoins: DeepReadonly<ObservableQueryAccountUnlockingCoins>;
   public readonly queryAccountLocked: DeepReadonly<ObservableQueryAccountLocked>;
 
@@ -63,6 +81,13 @@ export class QueriesOsmosis {
 
   public readonly queryPoolCreationFee: DeepReadonly<ObservableQueryPoolCreationFee>;
 
+  public readonly querySuperfluidPools: DeepReadonly<ObservableQuerySuperfluidPools>;
+  public readonly querySuperfluidDelegations: DeepReadonly<ObservableQuerySuperfluidDelegations>;
+  public readonly querySuperfluidUndelegations: DeepReadonly<ObservableQuerySuperfluidUndelegations>;
+  public readonly querySuperfluidParams: DeepReadonly<ObservableQuerySuperfluidParams>;
+  public readonly querySuperfluidAssetMultiplier: DeepReadonly<ObservableQuerySuperfluidAssetMultiplier>;
+  public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
+
   constructor(
     queries: QueriesSetBase,
     kvStore: KVStore,
@@ -70,6 +95,11 @@ export class QueriesOsmosis {
     chainGetter: ChainGetter
   ) {
     this.queryLockedCoins = new ObservableQueryAccountLockedCoins(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+    this.querySyntheticLockupsByLockId = new ObservableSyntheticLockupsByLockId(
       kvStore,
       chainId,
       chainGetter
@@ -100,6 +130,7 @@ export class QueriesOsmosis {
     this.queryGammPoolShare = new ObservableQueryGammPoolShare(
       this.queryGammPools,
       queries.queryBalances,
+      this.queryAccountLocked,
       this.queryLockedCoins,
       this.queryUnlockingCoins
     );
@@ -146,5 +177,37 @@ export class QueriesOsmosis {
       chainId,
       chainGetter
     );
+
+    this.querySuperfluidPools = new ObservableQuerySuperfluidPools(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+    this.querySuperfluidDelegations = new ObservableQuerySuperfluidDelegations(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+    this.querySuperfluidUndelegations =
+      new ObservableQuerySuperfluidUndelegations(kvStore, chainId, chainGetter);
+    this.querySuperfluidParams = new ObservableQuerySuperfluidParams(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+    this.querySuperfluidAssetMultiplier =
+      new ObservableQuerySuperfluidAssetMultiplier(
+        kvStore,
+        chainId,
+        chainGetter
+      );
+    this.querySuperfluidOsmoEquivalent =
+      new ObservableQuerySuperfluidOsmoEquivalent(
+        chainId,
+        chainGetter,
+        this.querySuperfluidParams,
+        this.querySuperfluidAssetMultiplier,
+        this.queryGammPools
+      );
   }
 }

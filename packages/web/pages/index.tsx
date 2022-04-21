@@ -6,7 +6,7 @@ import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const Home: NextPage = observer(function () {
-  const { chainStore, queriesOsmosisStore } = useStore();
+  const { chainStore, queriesStore } = useStore();
 
   const containerRef = useRef<HTMLElement | null>(null);
   const clipboardRef = useRef<HTMLDivElement | null>(null);
@@ -48,8 +48,8 @@ const Home: NextPage = observer(function () {
 
   const chainInfo = chainStore.osmosis;
 
-  const queryOsmosis = queriesOsmosisStore.get(chainInfo.chainId);
-  const queryPools = queryOsmosis.queryGammPools;
+  const queries = queriesStore.get(chainInfo.chainId);
+  const queryPools = queries.osmosis.queryGammPools;
 
   const pools = useMemo(() => {
     return queryPools.pools.map((pool) => pool.pool);

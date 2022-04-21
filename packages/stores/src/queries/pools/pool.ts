@@ -1,5 +1,5 @@
-import { Pool, WeightedPool, WeightedPoolRaw } from "@osmosis-labs/pools";
-import { action, computed, makeObservable, observable } from "mobx";
+import { ChainGetter, CoinGeckoPriceStore } from "@keplr-wallet/stores";
+import { Currency } from "@keplr-wallet/types";
 import {
   CoinPretty,
   DecUtils,
@@ -7,10 +7,10 @@ import {
   IntPretty,
   RatePretty,
 } from "@keplr-wallet/unit";
-import { Currency, FiatCurrency } from "@keplr-wallet/types";
-import { ChainGetter } from "@keplr-wallet/stores";
-import { computedFn } from "mobx-utils";
 import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
+import { Pool, WeightedPool, WeightedPoolRaw } from "@osmosis-labs/pools";
+import { action, computed, makeObservable, observable } from "mobx";
+import { computedFn } from "mobx-utils";
 
 export class ObservablePool {
   @observable.ref
@@ -338,15 +338,10 @@ export class ObservablePool {
   );
 
   readonly computeTotalValueLocked = computedFn(
-    (
-      priceStore: {
-        calculatePrice(
-          coin: CoinPretty,
-          vsCurrrency?: string
-        ): PricePretty | undefined;
-      },
-      fiatCurrency: FiatCurrency
-    ) => {
+    (priceStore: CoinGeckoPriceStore) => {
+      const fiatCurrency = priceStore.getFiatCurrency(
+        priceStore.defaultVsCurrency
+      )!;
       let price = new PricePretty(fiatCurrency, 0);
 
       for (const poolAsset of this.poolAssets) {

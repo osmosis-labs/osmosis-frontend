@@ -1,17 +1,17 @@
 import { KVStore } from "@keplr-wallet/common";
 import {
   ChainGetter,
+  CoinGeckoPriceStore,
   ObservableChainQuery,
   QueryResponse,
 } from "@keplr-wallet/stores";
-import { FiatCurrency } from "@keplr-wallet/types";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
 import { autorun, computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
-import { Pools } from "./types";
 import { ObservableQueryNumPools } from "./num-pools";
 import { ObservablePool } from "./pool";
+import { Pools } from "./types";
 
 export class ObservableQueryPools extends ObservableChainQuery<Pools> {
   constructor(
@@ -54,6 +54,7 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
     chainInfo.addUnknownCurrencies(...denomsInPools);
   }
 
+  /** Returns `undefined` if the pool does not exist or the data has not loaded. */
   readonly getPool: (id: string) => ObservablePool | undefined = computedFn(
     (id: string) => {
       if (!this.response) {
@@ -69,16 +70,22 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
     }
   );
 
+  /** Returns `undefined` if pool data has not loaded, and `true`/`false` for if the pool exists. */
+  readonly poolExists: (id: string) => boolean | undefined = computedFn(
+    (id: string) => {
+      if (!this.response) {
+        return undefined;
+      }
+
+      return this.response.data.pools.some((raw) => raw.id === id);
+    }
+  );
+
   readonly computeAllTotalValueLocked = computedFn(
-    (
-      priceStore: {
-        calculatePrice(
-          coin: CoinPretty,
-          vsCurrrency?: string
-        ): PricePretty | undefined;
-      },
-      fiatCurrency: FiatCurrency
-    ): PricePretty => {
+    (priceStore: CoinGeckoPriceStore): PricePretty => {
+      const fiatCurrency = priceStore.getFiatCurrency(
+        priceStore.defaultVsCurrency
+      )!;
       let price = new PricePretty(fiatCurrency, new Dec(0));
       if (!this.response) {
         return price;
@@ -88,9 +95,7 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
         const pool = this.getPool(raw.id);
 
         if (pool) {
-          price = price.add(
-            pool.computeTotalValueLocked(priceStore, fiatCurrency)
-          );
+          price = price.add(pool.computeTotalValueLocked(priceStore));
         }
       });
 
@@ -145,13 +150,7 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
    */
   readonly getPoolsDescendingOrderTVL = computedFn(
     (
-      priceStore: {
-        calculatePrice(
-          coin: CoinPretty,
-          vsCurrrency?: string
-        ): PricePretty | undefined;
-      },
-      fiatCurrency: FiatCurrency,
+      priceStore: CoinGeckoPriceStore,
       itemsPerPage: number,
       page: number
     ): ObservablePool[] => {
@@ -161,15 +160,13 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
 
       let pools = this.getAllPools();
 
-      pools = pools.sort((poolA: ObservablePool, poolB: ObservablePool) => {
-        const poolATvl = poolA
-          .computeTotalValueLocked(priceStore, fiatCurrency)
-          .toDec();
-        const poolBTvl = poolB
-          .computeTotalValueLocked(priceStore, fiatCurrency)
-          .toDec();
-        return poolATvl.gt(poolBTvl) ? -1 : 1;
-      });
+      pools = pools
+        .slice()
+        .sort((poolA: ObservablePool, poolB: ObservablePool) => {
+          const poolATvl = poolA.computeTotalValueLocked(priceStore).toDec();
+          const poolBTvl = poolB.computeTotalValueLocked(priceStore).toDec();
+          return poolATvl.gt(poolBTvl) ? -1 : 1;
+        });
 
       const offset = (page - 1) * itemsPerPage;
       return pools.slice(offset, offset + itemsPerPage);

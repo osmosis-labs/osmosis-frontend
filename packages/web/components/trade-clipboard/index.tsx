@@ -32,10 +32,10 @@ export const TradeClipboard = observer<
 
     const tradeTokenInConfig = useTradeTokenInConfig(
       chainStore,
+      queriesStore,
       chainStore.osmosis.chainId,
       account.bech32Address,
       undefined,
-      queries.queryBalances,
       pools
     );
 
