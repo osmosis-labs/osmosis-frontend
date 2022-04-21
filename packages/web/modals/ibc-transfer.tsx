@@ -171,23 +171,12 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               </span>
             </p>
             <InputBox
+              type="number"
               className="text-h6"
               inputClassName="text-right"
               style="no-border"
               currentValue={amountConfig.amount}
-              onInput={(value) => {
-                const floatVal = parseFloat(value);
-                if (!isNaN(floatVal)) {
-                  let newVal = floatVal.toString();
-                  // parseFloat removes trailing "."
-                  if (value[value.length - 1] === ".") {
-                    newVal = newVal + ".";
-                  }
-                  amountConfig.setAmount(newVal);
-                } else if (value === "") {
-                  amountConfig.setAmount("");
-                }
-              }}
+              onInput={(value) => amountConfig.setAmount(value)}
               labelButtons={[
                 {
                   label: "MAX",

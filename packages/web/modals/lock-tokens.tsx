@@ -8,51 +8,91 @@ import { ObservableAmountConfig } from "@osmosis-labs/stores";
 import { Button } from "../components/buttons";
 import { InputBox } from "../components/input";
 import { Error } from "../components/alert";
+import { CheckBox } from "../components/control";
 import { ModalBase, ModalBaseProps } from "./base";
-
-// TODO: add SFS UI
+import { MobileProps } from "../components/types";
 
 export const LockTokensModal: FunctionComponent<
   ModalBaseProps & {
-    gauges: { id: string; duration: Duration; apr: RatePretty }[];
+    gauges: {
+      id: string;
+      duration: Duration;
+      apr: RatePretty;
+      superfluidApr?: RatePretty;
+    }[];
     amountConfig: ObservableAmountConfig;
     availableToken?: CoinPretty;
-    onLockToken: (gaugeId: string) => void;
-  }
+    /** `electSuperfluid` is left undefined if it is irrelevant- if the user has already opted into superfluid in the past. */
+    onLockToken: (gaugeId: string, electSuperfluid?: boolean) => void;
+    /* Used to label the main button as "Next" to choose validator or "Bond" to reuse chosen sfs validator.
+       If `true`, "Superfluid Stake" checkbox will not be shown since user has already opted in. */
+    hasSuperfluidValidator?: boolean;
+  } & MobileProps
 > = observer((props) => {
-  const { gauges, amountConfig: config, availableToken, onLockToken } = props;
+  const {
+    gauges,
+    amountConfig: config,
+    availableToken,
+    onLockToken,
+    hasSuperfluidValidator,
+    isMobile = false,
+  } = props;
   const [selectedGaugeIndex, setSelectedGaugeIndex] = useState<number | null>(
     null
   );
+  const [electSuperfluid, setElectSuperfluid] = useState(true);
 
   return (
     <ModalBase {...props}>
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-col gap-2.5">
           <span className="subitle1">Unbonding period</span>
-          <div className="flex gap-4">
-            {gauges.map(({ id, duration, apr }, index) => (
+          <div className="flex flex-col md:flex-row gap-4">
+            {gauges.map(({ id, duration, apr, superfluidApr }, index) => (
               <LockupItem
                 key={id}
                 duration={duration.humanize()}
                 isSelected={index === selectedGaugeIndex}
                 onSelect={() => setSelectedGaugeIndex(index)}
-                apr={apr.maxDecimals(2).toString()}
+                apr={apr.maxDecimals(2).trim(true).toString()}
+                superfluidApr={superfluidApr
+                  ?.maxDecimals(0)
+                  .trim(true)
+                  .toString()}
+                isMobile={isMobile}
               />
             ))}
           </div>
         </div>
-        <div className="flex flex-col gap-2 border border-white-faint rounded-2xl p-4">
+        {!hasSuperfluidValidator && (
+          <div className="flex gap-2 ml-auto">
+            <CheckBox
+              className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
+              isOn={electSuperfluid}
+              onToggle={() => setElectSuperfluid(!electSuperfluid)}
+            >
+              Superfluid Stake
+            </CheckBox>
+            <Image
+              alt=""
+              src={"/icons/superfluid-osmo.svg"}
+              height={22}
+              width={22}
+            />
+          </div>
+        )}
+        <div className="flex flex-col gap-2 md:border md:border-white-faint md:vrounded-2xl md:p-4">
           <span className="subtitle1">Amount To Bond</span>
           {availableToken && (
             <div className="flex gap-1 caption">
               <span>Available LP Token</span>
               <span className="text-primary-50">
-                {availableToken.toString()}
+                {availableToken.trim(true).toString()}
               </span>
             </div>
           )}
           <InputBox
+            type="number"
             currentValue={config.amount}
             onInput={(value) => config.setAmount(value)}
             placeholder=""
@@ -69,32 +109,44 @@ export const LockTokensModal: FunctionComponent<
           <Error className="mx-auto" message={config.error?.message ?? ""} />
         )}
         <Button
-          className="h-14 w-96 mt-3 mx-auto"
+          className="h-14 w-full md:w-96 mt-3 mx-auto"
           size="lg"
-          disabled={config.error !== undefined}
+          disabled={config.error !== undefined || selectedGaugeIndex === null}
           onClick={() => {
             const gauge = gauges.find(
               (_, index) => index === selectedGaugeIndex
             );
             if (gauge) {
-              onLockToken(gauge.id);
+              onLockToken(
+                gauge.id,
+                hasSuperfluidValidator ? undefined : electSuperfluid
+              );
             }
           }}
         >
-          Bond
+          {electSuperfluid && !hasSuperfluidValidator ? "Next" : "Bond"}
         </Button>
       </div>
     </ModalBase>
   );
 });
 
-const LockupItem: FunctionComponent<{
-  duration: string;
-  isSelected: boolean;
-  onSelect: () => void;
-  apr: string;
-  isSuperfluidEnabled?: boolean;
-}> = ({ duration, isSelected, onSelect, apr, isSuperfluidEnabled = false }) => {
+const LockupItem: FunctionComponent<
+  {
+    duration: string;
+    isSelected: boolean;
+    onSelect: () => void;
+    apr: string;
+    superfluidApr?: string;
+  } & MobileProps
+> = ({
+  duration,
+  isSelected,
+  onSelect,
+  apr,
+  superfluidApr,
+  isMobile = false,
+}) => {
   return (
     <div
       onClick={onSelect}
@@ -102,9 +154,9 @@ const LockupItem: FunctionComponent<{
         {
           "shadow-elevation-08dp": isSelected,
         },
-        "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer border border-white-faint",
-        isSuperfluidEnabled
-          ? "bg-sfs"
+        "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer",
+        superfluidApr
+          ? "bg-superfluid"
           : isSelected
           ? "bg-enabledGold bg-opacity-30"
           : "bg-white-faint hover:opacity-75"
@@ -112,9 +164,9 @@ const LockupItem: FunctionComponent<{
     >
       <div
         className={classNames(
-          "flex items-center rounded-2xl bg-surface h-full px-5 py-3.5 md:py-5 md:px-4",
+          "flex items-center rounded-2xlinset bg-surface h-full px-5 py-3.5 md:py-5 md:px-4",
           {
-            "bg-sfs-20": isSuperfluidEnabled && isSelected,
+            "bg-superfluid-20": superfluidApr && isSelected,
           }
         )}
       >
@@ -126,23 +178,29 @@ const LockupItem: FunctionComponent<{
               : "border-iconDefault border"
           )}
         />
-        <div className="w-full flex justify-between md:flex-col md:items-baseline">
-          <div className="flex gap-1.5 items-center mx-auto">
-            <h5>{duration}</h5>
-            {isSuperfluidEnabled && (
-              <div className="w-6 h-6">
+        <div className="flex w-full place-content-between items-center md:items-left md:flex-col md:items-baseline">
+          <div className="flex gap-1.5 items-center md:mx-auto">
+            {isMobile ? (
+              <span className="subtitle1">{duration}</span>
+            ) : (
+              <h5>{duration}</h5>
+            )}
+            <div className="flex items-center w-[25px]">
+              {superfluidApr && (
                 <Image
                   alt=""
-                  src={"/public/assets/Icons/superfluid-osmo.svg"}
-                  height={10}
-                  width={10}
+                  src={"/icons/superfluid-osmo.svg"}
+                  height={22}
+                  width={22}
                 />
-              </div>
-            )}
+              )}
+            </div>
           </div>
-          <p className="md:mt-1 text-secondary-200 text-sm md:text-base mx-auto">
-            {apr}
-          </p>
+          <div className="flex items-center text-right md:text-center md:mx-auto gap-2">
+            <p className="subtitle2 md:mt-1 text-secondary-200 text-sm md:text-base">
+              {`${apr}${superfluidApr ? `+ ${superfluidApr}` : ""}`}
+            </p>
+          </div>
         </div>
       </div>
     </div>

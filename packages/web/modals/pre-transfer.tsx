@@ -3,7 +3,7 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
 import { ModalBase, ModalBaseProps } from "./base";
 import { Button } from "../components/buttons";
-import { TokenSelect } from "../components/control";
+// import { TokenSelect } from "../components/control";
 
 export const PreTransfer: FunctionComponent<
   ModalBaseProps & {
@@ -17,7 +17,7 @@ export const PreTransfer: FunctionComponent<
   const { selectedToken, onWithdraw, onDeposit } = props;
 
   return (
-    <ModalBase {...props} title={<TokenSelect></TokenSelect>}>
+    <ModalBase {...props} title={<div></div>}>
       <div className="flex flex-col gap-5 pt-5">
         <div className="flex flex-col gap-2 items-center">
           <h6>{selectedToken.currency.coinDenom}</h6>

@@ -25,3 +25,7 @@ export interface Metric {
   label: string;
   value: string | ReactElement;
 }
+
+export interface MobileProps {
+  isMobile?: boolean;
+}
