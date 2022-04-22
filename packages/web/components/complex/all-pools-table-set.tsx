@@ -13,6 +13,7 @@ import { CheckBox, MenuToggle, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { RowDef, Table } from "../table";
 import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
+import { Breakpoint } from "../types";
 import { CompactTableDisplay } from "./compact-table-display";
 
 const poolsMenuOptions = [
@@ -180,6 +181,7 @@ export const AllPoolsTableSet: FunctionComponent<{
               },
             },
       displayCell: MetricLoaderCell,
+      collapseAt: Breakpoint.XL,
     },
     {
       id: isIncentivizedPools ? "apr" : "myLiquidity",
@@ -197,6 +199,7 @@ export const AllPoolsTableSet: FunctionComponent<{
               },
             },
       displayCell: isIncentivizedPools ? MetricLoaderCell : undefined,
+      collapseAt: Breakpoint.LG,
     },
   ];
 

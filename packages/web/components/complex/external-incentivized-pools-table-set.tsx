@@ -14,9 +14,8 @@ import { CheckBox, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { RowDef, Table } from "../table";
 import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
+import { Breakpoint } from "../types";
 import { CompactTableDisplay } from "./compact-table-display";
-
-const TVL_FILTER_THRESHOLD = 1000;
 
 export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
   () => {
@@ -203,6 +202,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
                   setSortDirection("ascending");
                 },
               },
+        collapseAt: Breakpoint.XL,
       },
       {
         id: "myLiquidity",
@@ -219,6 +219,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
                   setSortDirection("ascending");
                 },
               },
+        collapseAt: Breakpoint.LG,
       },
     ];
 

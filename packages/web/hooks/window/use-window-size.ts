@@ -1,18 +1,10 @@
 import { useState, useEffect } from "react";
+import { Breakpoint } from "../../components/types";
 
 export interface WindowSize {
   width: number;
   height: number;
   isMobile: boolean;
-}
-
-// https://tailwindcss.com/docs/responsive-design
-export const enum Breakpoint {
-  SM = 640,
-  MD = 768,
-  LG = 1024,
-  XL = 1280,
-  XXL = 1536,
 }
 
 /**

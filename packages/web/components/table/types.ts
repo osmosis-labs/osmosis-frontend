@@ -1,5 +1,6 @@
 import { ReactElement } from "react";
 import { SortDirection, CustomClasses } from "../types";
+import { Breakpoint } from "../types";
 
 export interface BaseCell {
   /** "Default" value to be rendered.
@@ -25,6 +26,10 @@ export interface ColumnDef<TCell extends BaseCell> extends CustomClasses {
    *
    *  Note: components must accept optionals for all cell data and check for the data they need. */
   displayCell?: React.FunctionComponent<Partial<TCell>>;
+  /** Use to make your table responsive. Uses `use-window-size/Breakpoint` to incrementally
+   *  remove whole columns from display as the screen shrinks from `XXL` to `MD` size.
+   */
+  collapseAt?: Breakpoint;
 }
 
 export interface RowDef {
