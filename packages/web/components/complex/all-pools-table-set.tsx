@@ -299,13 +299,13 @@ export const AllPoolsTableSet: FunctionComponent<{
   return (
     <>
       <h5>All Pools</h5>
-      <div className="mt-5 flex items-center justify-between">
+      <div className="mt-5 flex flex-wrap gap-3 items-center justify-between">
         <MenuToggle
           options={poolsMenuOptions}
           selectedOptionId={activeOptionId}
           onSelect={selectOption}
         />
-        <div className="flex gap-8">
+        <div className="flex gap-8 lg:w-full lg:place-content-between">
           <SearchBox
             currentValue={query}
             onInput={setQuery}

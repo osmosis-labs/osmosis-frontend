@@ -291,9 +291,9 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
 
     return (
       <>
-        <div className="mt-5 flex items-center justify-between">
+        <div className="mt-5 flex flex-wrap gap-3 items-center justify-between">
           <h5>External Incentive Pools</h5>
-          <div className="flex gap-8">
+          <div className="flex gap-8 lg:w-full lg:place-content-between">
             <SearchBox
               currentValue={query}
               onInput={setQuery}
