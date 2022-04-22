@@ -346,7 +346,7 @@ export class RootStore {
 					destCoinId: 'osmosis',
 				},
 				{
-					alternativeCoinId: 'pool:assetmantle',
+					alternativeCoinId: 'pool:umntl',
 					poolId: '690',
 					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-232' }], 'umntl'),
 					spotPriceDestDenom: 'uosmo',
