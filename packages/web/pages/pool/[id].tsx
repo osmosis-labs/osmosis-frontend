@@ -22,6 +22,7 @@ import {
 import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { BaseCell, Table } from "../../components/table";
+import { truncateString } from "../../components/utils";
 import { ExternalIncentiveGaugeAllowList, EmbedChainInfos } from "../../config";
 import {
   LockTokensModal,
@@ -314,64 +315,111 @@ const Pool: FunctionComponent = observer(() => {
   // eject to pools page if pool does not exist
   useEffect(() => {
     return autorun(() => {
-      // TODO: Bug- fix redirect to /pools when entering pool id (/pool/<id>) from url bar
       if (queryOsmosis.queryGammPools.poolExists(poolId as string) === false) {
         router.push("/pools");
       }
     });
   });
 
-  // modals states
+  // Manage liquidity + bond LP tokens (modals) state
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
     useState(false);
   const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
-  const [addLiquidityConfig, removeLiquidityConfig, lockLPTokensAmountConfig] =
-    useMemo(() => {
-      if (pool) {
-        return [
-          new ObservableAddLiquidityConfig(
-            chainStore,
-            chainId,
-            pool.id,
-            bech32Address,
-            queriesStore,
-            queryOsmosis.queryGammPoolShare,
-            queryOsmosis.queryGammPools,
-            queriesStore.get(chainId).queryBalances
-          ),
-          new ObservableRemoveLiquidityConfig(
-            chainStore,
-            chainId,
-            pool.id,
-            bech32Address,
-            queriesStore,
-            queryOsmosis.queryGammPoolShare,
-            "50"
-          ),
-          new ObservableAmountConfig(
-            chainStore,
-            queriesStore,
-            chainId,
-            bech32Address,
-            queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id)
-          ),
-        ];
-      }
-      return [undefined, undefined, undefined];
-    }, [pool, chainStore, chainId, bech32Address, queriesStore, queryOsmosis]);
+  const [
+    addLiquidityConfig,
+    removeLiquidityConfig,
+    lockLPTokensConfig,
+    lockupGauges,
+  ] = useMemo(() => {
+    if (pool) {
+      return [
+        new ObservableAddLiquidityConfig(
+          chainStore,
+          chainId,
+          pool.id,
+          bech32Address,
+          queriesStore,
+          queryOsmosis.queryGammPoolShare,
+          queryOsmosis.queryGammPools,
+          queriesStore.get(chainId).queryBalances
+        ),
+        new ObservableRemoveLiquidityConfig(
+          chainStore,
+          chainId,
+          pool.id,
+          bech32Address,
+          queriesStore,
+          queryOsmosis.queryGammPoolShare,
+          queryOsmosis.queryGammPools,
+          "50"
+        ),
+        new ObservableAmountConfig(
+          chainStore,
+          queriesStore,
+          chainId,
+          bech32Address,
+          queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id)
+        ),
+        queryOsmosis.queryLockableDurations.lockableDurations.map(
+          (duration, index, durations) => {
+            const apr = pool
+              ? queryOsmosis.queryIncentivizedPools.computeAPY(
+                  pool.id,
+                  duration,
+                  priceStore,
+                  fiat
+                )
+              : undefined;
+
+            return {
+              id: index.toString(),
+              apr: apr ?? new RatePretty(0),
+              duration,
+              superfluidApr:
+                pool &&
+                index === durations.length - 1 &&
+                queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id)
+                  ? new RatePretty(
+                      queryCosmos.queryInflation.inflation
+                        .mul(
+                          queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
+                            pool.id
+                          )
+                        )
+                        .moveDecimalPointLeft(2)
+                    )
+                  : undefined,
+            };
+          }
+        ),
+      ];
+    }
+    return [undefined, undefined, undefined, undefined];
+  }, [
+    pool,
+    chainStore,
+    chainId,
+    bech32Address,
+    queriesStore,
+    queryOsmosis,
+    queryCosmos,
+    priceStore,
+    fiat,
+  ]);
 
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
     useState(false);
 
   return (
     <main>
-      {addLiquidityConfig && removeLiquidityConfig && (
+      {pool && addLiquidityConfig && removeLiquidityConfig && (
         <ManageLiquidityModal
           isOpen={showManageLiquidityDialog}
           title="Manage Liquidity"
           onRequestClose={() => setShowManageLiquidityDialog(false)}
           addLiquidityConfig={addLiquidityConfig}
           removeLiquidityConfig={removeLiquidityConfig}
+          isSendingMsg={account.txTypeInProgress !== ""}
           getChainNetworkName={(coinDenom) =>
             EmbedChainInfos.find((chain) =>
               chain.currencies.find(
@@ -380,19 +428,56 @@ const Pool: FunctionComponent = observer(() => {
             )?.chainName
           }
           getFiatValue={(coin) => priceStore.calculatePrice(coin)}
-          onAddLiquidity={() => {
-            // TODO: send msgs w/ account store
-            console.log("liquidity added");
+          onAddLiquidity={async () => {
+            try {
+              if (
+                addLiquidityConfig.isSingleAmountIn &&
+                addLiquidityConfig.singleAmountInConfig
+              ) {
+                await account.osmosis.sendJoinSwapExternAmountInMsg(
+                  addLiquidityConfig.poolId,
+                  addLiquidityConfig.singleAmountInConfig,
+                  undefined,
+                  undefined,
+                  () => setShowManageLiquidityDialog(false)
+                );
+              } else if (addLiquidityConfig.shareOutAmount) {
+                await account.osmosis.sendJoinPoolMsg(
+                  addLiquidityConfig.poolId,
+                  addLiquidityConfig.shareOutAmount.toDec().toString(),
+                  undefined,
+                  undefined,
+                  () => setShowManageLiquidityDialog(false)
+                );
+              }
+            } catch (e) {
+              console.error(e);
+            }
           }}
-          onRemoveLiquidity={() => console.log("liquidity removed")}
+          onRemoveLiquidity={async () => {
+            try {
+              await account.osmosis.sendExitPoolMsg(
+                removeLiquidityConfig.poolId,
+                removeLiquidityConfig.poolShareWithPercentage
+                  .toDec()
+                  .toString(),
+                undefined,
+                undefined,
+                () => setShowManageLiquidityDialog(false)
+              );
+            } catch (e) {
+              console.error(e);
+            }
+          }}
         />
       )}
-      {lockLPTokensAmountConfig && (
+      {lockLPTokensConfig && lockupGauges && (
         <LockTokensModal
           isOpen={showLockLPTokenModal}
           title="Bond LP Tokens"
           onRequestClose={() => setShowLockLPTokenModal(false)}
-          amountConfig={lockLPTokensAmountConfig}
+          isSendingMsg={account.txTypeInProgress !== ""}
+          amountConfig={lockLPTokensConfig}
           availableToken={
             pool
               ? queryOsmosis.queryGammPoolShare.getAvailableGammShare(
@@ -401,38 +486,7 @@ const Pool: FunctionComponent = observer(() => {
                 )
               : undefined
           }
-          gauges={queryOsmosis.queryLockableDurations.lockableDurations.map(
-            (duration, index, durations) => {
-              const apr = pool
-                ? queryOsmosis.queryIncentivizedPools.computeAPY(
-                    pool.id,
-                    duration,
-                    priceStore,
-                    fiat
-                  )
-                : undefined;
-
-              return {
-                id: index.toString(),
-                apr: apr ?? new RatePretty(0),
-                duration,
-                superfluidApr:
-                  pool &&
-                  index === durations.length - 1 &&
-                  queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id)
-                    ? new RatePretty(
-                        queryCosmos.queryInflation.inflation
-                          .mul(
-                            queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
-                              pool.id
-                            )
-                          )
-                          .moveDecimalPointLeft(2)
-                      )
-                    : undefined,
-              };
-            }
-          )}
+          gauges={lockupGauges}
           hasSuperfluidValidator={
             superfluid &&
             typeof superfluid !== "string" &&
@@ -440,14 +494,33 @@ const Pool: FunctionComponent = observer(() => {
             superfluid.delegations &&
             superfluid.delegations.length > 0
           }
-          onLockToken={(_, electSuperfluid) => {
+          onLockToken={async (gaugeId, electSuperfluid) => {
             setShowLockLPTokenModal(false);
             if (electSuperfluid) {
               setShowSuperfluidValidatorsModal(true);
               // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
             } else {
-              // TODO: merge send msg
-              console.log("send normal lock msg");
+              const gauge = lockupGauges.find((gauge) => gauge.id === gaugeId);
+              try {
+                if (gauge) {
+                  await account.osmosis.sendLockTokensMsg(
+                    gauge.duration.asSeconds(),
+                    [
+                      {
+                        currency: lockLPTokensConfig.sendCurrency,
+                        amount: lockLPTokensConfig.amount,
+                      },
+                    ],
+                    undefined,
+                    () => setShowLockLPTokenModal(false)
+                  );
+                } else {
+                  console.error("Gauge ID not found:", gaugeId);
+                  setShowLockLPTokenModal(false);
+                }
+              } catch (e) {
+                console.error(e);
+              }
             }
           }}
         />
@@ -455,7 +528,7 @@ const Pool: FunctionComponent = observer(() => {
       {superfluid &&
         superfluid !== "not-superfluid-pool" &&
         pool &&
-        lockLPTokensAmountConfig && (
+        lockLPTokensConfig && (
           <SuperfluidValidatorModal
             title="Select Superfluid Validator"
             availableBondAmount={
@@ -463,8 +536,8 @@ const Pool: FunctionComponent = observer(() => {
                 ? superfluid.upgradeableLPLockIds.amount // is delegating amount from existing lockup
                 : new CoinPretty(
                     pool.shareCurrency, // is delegating amount from new/pending lockup
-                    lockLPTokensAmountConfig.amount !== ""
-                      ? lockLPTokensAmountConfig.amount
+                    lockLPTokensConfig.amount !== ""
+                      ? lockLPTokensConfig.amount
                       : new Dec(0)
                   )
             }
@@ -487,14 +560,14 @@ const Pool: FunctionComponent = observer(() => {
                   }
                 } else if (
                   "superfluidLPShares" in superfluid &&
-                  lockLPTokensAmountConfig
+                  lockLPTokensConfig
                 ) {
                   try {
                     await account.osmosis.sendLockAndSuperfluidDelegateMsg(
                       [
                         {
-                          currency: lockLPTokensAmountConfig.currency,
-                          amount: lockLPTokensAmountConfig.amount,
+                          currency: lockLPTokensConfig.currency,
+                          amount: lockLPTokensConfig.amount,
                         },
                       ],
                       validatorAddress,
@@ -512,18 +585,13 @@ const Pool: FunctionComponent = observer(() => {
         )}
       <Overview
         title={
-          <MetricLoader
-            className="h-7 w-64"
-            isLoading={
-              !pool ||
-              pool?.poolAssets.some((asset) =>
-                asset.amount.currency.coinDenom.startsWith("ibc")
-              )
-            }
-          >
-            <h5>{`Pool #${pool?.id} : ${pool?.poolAssets
-              .map((asset) => asset.amount.currency.coinDenom)
-              .join(" / ")}`}</h5>
+          <MetricLoader className="h-7 w-64" isLoading={!pool}>
+            <h5>
+              {`Pool #${pool?.id} : ${pool?.poolAssets
+                .map((asset) => asset.amount.currency.coinDenom)
+                .map((denom) => truncateString(denom, 8))
+                .join(" / ")}`}
+            </h5>
           </MetricLoader>
         }
         titleButtons={[
@@ -818,11 +886,11 @@ const Pool: FunctionComponent = observer(() => {
                         if (isSuperfluidDuration) {
                           const blockGasLimitLockIds = lockIds.slice(0, 4);
 
-                          blockGasLimitLockIds.forEach((lockId) =>
-                            queryOsmosis.querySyntheticLockupsByLockId
+                          for (const lockId of blockGasLimitLockIds) {
+                            await queryOsmosis.querySyntheticLockupsByLockId
                               .get(lockId)
-                              .fetch()
-                          );
+                              .waitFreshResponse();
+                          }
 
                           await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
                             blockGasLimitLockIds.map((lockId) => ({
@@ -830,7 +898,7 @@ const Pool: FunctionComponent = observer(() => {
                               isSyntheticLock:
                                 queryOsmosis.querySyntheticLockupsByLockId.get(
                                   lockId
-                                ).isSyntheticLock,
+                                ).isSyntheticLock === true,
                             }))
                           );
                         } else {

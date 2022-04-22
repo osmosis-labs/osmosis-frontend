@@ -41,39 +41,34 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
               <span>Amount</span>
             </div>
             {config.assets.map(
-              ({ percentage, amountConfig: { currency, amount } }, index) => {
-                console.log({ currency });
-                return (
-                  <div key={currency.coinDenom}>
-                    <div className="flex items-center place-content-between">
-                      <div className="flex items-center">
-                        <figure
-                          className="rounded-full w-4 h-4 mr-3"
-                          style={{
-                            background: HIGHCHART_LEGEND_GRADIENTS[index],
-                          }}
-                        />
-                        <h6>{currency.coinDenom}</h6>
-                      </div>
-                      <h6>{amount}</h6>
+              ({ percentage, amountConfig: { currency, amount } }, index) => (
+                <div key={currency.coinDenom}>
+                  <div className="flex items-center place-content-between">
+                    <div className="flex items-center">
+                      <figure
+                        className="rounded-full w-4 h-4 mr-3"
+                        style={{
+                          background: HIGHCHART_LEGEND_GRADIENTS[index],
+                        }}
+                      />
+                      <h6>{currency.coinDenom}</h6>
                     </div>
-                    <div className="flex items-center place-content-between">
-                      {"paths" in currency ? (
-                        <span className="subtitle2 text-iconDefault">
-                          {(currency as IBCCurrency).paths
-                            .map((path) => path.channelId)
-                            .join(", ")}
-                        </span>
-                      ) : (
-                        <br />
-                      )}
-                      <span className="body1 text-white-mid">
-                        {percentage}%
-                      </span>
-                    </div>
+                    <h6>{amount}</h6>
                   </div>
-                );
-              }
+                  <div className="flex items-center place-content-between">
+                    {"paths" in currency ? (
+                      <span className="subtitle2 text-iconDefault">
+                        {(currency as IBCCurrency).paths
+                          .map((path) => path.channelId)
+                          .join(", ")}
+                      </span>
+                    ) : (
+                      <br />
+                    )}
+                    <span className="body1 text-white-mid">{percentage}%</span>
+                  </div>
+                </div>
+              )
             )}
           </div>
         </div>

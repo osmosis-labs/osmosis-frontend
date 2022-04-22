@@ -26,6 +26,7 @@ export const LockTokensModal: FunctionComponent<
     /* Used to label the main button as "Next" to choose validator or "Bond" to reuse chosen sfs validator.
        If `true`, "Superfluid Stake" checkbox will not be shown since user has already opted in. */
     hasSuperfluidValidator?: boolean;
+    isSendingMsg?: boolean;
   }
 > = observer((props) => {
   const {
@@ -34,7 +35,9 @@ export const LockTokensModal: FunctionComponent<
     availableToken,
     onLockToken,
     hasSuperfluidValidator,
+    isSendingMsg,
   } = props;
+
   const [selectedGaugeIndex, setSelectedGaugeIndex] = useState<number | null>(
     null
   );
@@ -108,7 +111,12 @@ export const LockTokensModal: FunctionComponent<
         <Button
           className="h-14 w-96 mt-3 mx-auto"
           size="lg"
-          disabled={config.error !== undefined || selectedGaugeIndex === null}
+          disabled={
+            config.error !== undefined ||
+            selectedGaugeIndex === null ||
+            isSendingMsg
+          }
+          loading={isSendingMsg}
           onClick={() => {
             const gauge = gauges.find(
               (_, index) => index === selectedGaugeIndex

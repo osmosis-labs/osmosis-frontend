@@ -1,10 +1,5 @@
 import { BaseCell } from "../types";
 
-export interface PoolCell extends BaseCell {
-  poolId: number;
-  tokenDenoms: string[];
-} // TODO: remove
-
 export type AssetCell = BaseCell & {
   chainName?: string;
   chainId?: string;

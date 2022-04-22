@@ -31,8 +31,6 @@ export const PageList: FunctionComponent<Props> = ({
     }
   }, [isEditingText, max, min]);
 
-  // TODO: fix paging right after clicking accept edited value
-  // may be related to event propagation
   const processInputValue = (e: any) => {
     const newValue = Number(e.target.value);
     if (newValue >= min && newValue <= max) {
@@ -80,9 +78,6 @@ export const PageList: FunctionComponent<Props> = ({
           size={4}
           value={currentValue}
           inputMode="decimal"
-          onBlur={() => {
-            setIsEditingText(false);
-          }}
           onFocus={(e) => {
             e.target.select();
           }}
@@ -115,14 +110,26 @@ export const PageList: FunctionComponent<Props> = ({
             : "cursor-pointer"
         )}
       >
-        <div className={isEditingText ? "pt-2 pl-2" : undefined}>
+        <div
+          className={isEditingText ? "pt-2 pl-2" : undefined}
+          onClick={() => {
+            if (isEditingText) {
+              setIsEditingText(false);
+            } else {
+              onInput(
+                currentValue < max && max > min
+                  ? currentValue + 1
+                  : currentValue
+              );
+            }
+          }}
+        >
           {isEditingText ? (
             <Image
               alt="accept"
               src="/icons/checkmark-circle.svg"
               height={22}
               width={22}
-              onClick={() => setIsEditingText(false)}
             />
           ) : (
             <Image
@@ -130,13 +137,6 @@ export const PageList: FunctionComponent<Props> = ({
               src="/icons/chevron-right.svg"
               height={18}
               width={18}
-              onClick={() =>
-                onInput(
-                  currentValue < max && max > min
-                    ? currentValue + 1
-                    : currentValue
-                )
-              }
             />
           )}
         </div>

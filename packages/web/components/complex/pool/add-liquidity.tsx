@@ -16,6 +16,7 @@ export interface Props {
   onAddLiquidity: () => void;
   getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   getChainNetworkName?: (coinDenom: string) => string | undefined;
+  isSendingMsg?: boolean;
 }
 
 export const AddLiquidity: FunctionComponent<Props> = observer(
@@ -24,6 +25,7 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
     getFiatValue,
     onAddLiquidity,
     getChainNetworkName,
+    isSendingMsg,
   }) => (
     <div className="flex flex-col gap-3">
       <div className="flex gap-1 text-caption font-caption">
@@ -163,16 +165,17 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
           <span>{addLiquidityConfig.singleAmountInPriceImpact.toString()}</span>
         </div>
       )}
-      {addLiquidityConfig.getError() && (
+      {addLiquidityConfig.error && (
         <Error
           className="mx-auto"
-          message={addLiquidityConfig.getError()?.message ?? ""}
+          message={addLiquidityConfig.error?.message ?? ""}
         />
       )}
       <Button
         className="h-14 w-96 mt-3 mx-auto"
         size="lg"
-        disabled={addLiquidityConfig.getError() !== undefined}
+        disabled={addLiquidityConfig.error !== undefined || isSendingMsg}
+        loading={isSendingMsg}
         onClick={onAddLiquidity}
       >
         Add Liquidity

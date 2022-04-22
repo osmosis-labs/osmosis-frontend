@@ -8,11 +8,12 @@ import { IbcTransfer, useIbcTransfer } from "../hooks/use-ibc-transfer";
 import { Button } from "../components/buttons";
 import { InputBox } from "../components/input";
 import { CheckBox } from "../components/control";
+import { Error } from "../components/alert";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
     const { currency, counterpartyChainId, isWithdraw } = props;
-    const { chainStore, queriesStore } = useStore();
+    const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
     const { chainId } = chainStore.osmosis;
 
     const [
@@ -20,16 +21,17 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       counterpartyAccount,
       amountConfig,
       inTransit,
-      _transfer,
+      transfer,
       customCounterpartyConfig,
     ] = useIbcTransfer(props);
     const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
     const [wasCustomWithdrawAddrEntered, setCustomWithdrawAddrEntered] =
-      useState(false); // address is locked in for modal lifecycle if use presses enter
+      useState(false); // address is locked in for modal lifecycle if user presses enter
     const [didVerifyWithdrawRisk, setDidVerifyWithdrawRisk] = useState(false);
     const isCustomWithdrawValid =
+      !customCounterpartyConfig ||
       customCounterpartyConfig?.bech32Address === "" || // if not changed, it's valid since it's from Keplr
-      (customCounterpartyConfig?.isValid && wasCustomWithdrawAddrEntered);
+      (customCounterpartyConfig.isValid && wasCustomWithdrawAddrEntered);
 
     return (
       <ModalBase {...props}>
@@ -185,6 +187,11 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               ]}
             />
           </div>
+          <div className="flex items-center mt-2">
+            {amountConfig.error && (
+              <Error className="mx-auto" message={amountConfig.error.message} />
+            )}
+          </div>
           <div className="w-full mt-6 md:mt-9 flex items-center justify-center">
             {!(account.walletStatus === WalletStatus.Loaded) ? (
               <Button onClick={() => account.init()}>
@@ -196,14 +203,27 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                 disabled={
                   !account.isReadyToSendTx ||
                   !counterpartyAccount.isReadyToSendTx ||
+                  account.txTypeInProgress !== "" ||
                   amountConfig.error != undefined ||
                   inTransit ||
                   !isCustomWithdrawValid
                 }
                 loading={inTransit}
-                onClick={() => {
-                  // TODO: do transfer from fn from hoook
-                }}
+                onClick={() =>
+                  transfer(
+                    (txFullfillEvent) => {
+                      ibcTransferHistoryStore.pushPendingHistory(
+                        txFullfillEvent
+                      );
+                      props.onRequestClose();
+                    },
+                    (txBroadcastEvent) => {
+                      ibcTransferHistoryStore.pushUncommitedHistory(
+                        txBroadcastEvent
+                      );
+                    }
+                  )
+                }
               >
                 <h6 className="text-base md:text-lg">
                   {isWithdraw ? "Withdraw" : "Deposit"}

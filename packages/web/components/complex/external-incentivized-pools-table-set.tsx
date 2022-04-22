@@ -1,5 +1,5 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
-import { ObservablePool } from "@osmosis-labs/stores";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { ExternalIncentiveGaugeAllowList } from "../../config";
@@ -41,31 +41,35 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
           return pool;
         }
       })
-      .filter((pool: ObservablePool | undefined): pool is ObservablePool => {
-        if (!pool) {
-          return false;
-        }
-
-        const inner = ExternalIncentiveGaugeAllowList[pool.id];
-        const data = Array.isArray(inner) ? inner : [inner];
-
-        if (data.length === 0) {
-          return false;
-        }
-        const gaugeIds = data.map((d) => d.gaugeId);
-        const gauges = gaugeIds.map((gaugeId) =>
-          queryOsmosis.queryGauge.get(gaugeId)
-        );
-
-        let maxRemainingEpoch = 0;
-        for (const gauge of gauges) {
-          if (maxRemainingEpoch < gauge.remainingEpoch) {
-            maxRemainingEpoch = gauge.remainingEpoch;
+      .filter(
+        (
+          pool: ObservableQueryPool | undefined
+        ): pool is ObservableQueryPool => {
+          if (!pool) {
+            return false;
           }
-        }
 
-        return maxRemainingEpoch > 0;
-      });
+          const inner = ExternalIncentiveGaugeAllowList[pool.id];
+          const data = Array.isArray(inner) ? inner : [inner];
+
+          if (data.length === 0) {
+            return false;
+          }
+          const gaugeIds = data.map((d) => d.gaugeId);
+          const gauges = gaugeIds.map((gaugeId) =>
+            queryOsmosis.queryGauge.get(gaugeId)
+          );
+
+          let maxRemainingEpoch = 0;
+          for (const gauge of gauges) {
+            if (maxRemainingEpoch < gauge.remainingEpoch) {
+              maxRemainingEpoch = gauge.remainingEpoch;
+            }
+          }
+
+          return maxRemainingEpoch > 0;
+        }
+      );
     const externalIncentivizedPoolsWithMetrics = externalIncentivizedPools.map(
       (pool) => {
         const inner = ExternalIncentiveGaugeAllowList[pool.id];
