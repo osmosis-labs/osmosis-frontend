@@ -320,7 +320,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         </div>
       </div>
       <Table<PoolCompositionCell & MetricLoaderCell>
-        className="mt-5 w-full"
+        className="mt-5 w-full lg:text-sm"
         columnDefs={tableCols}
         rowDefs={tableRows}
         data={tableData}

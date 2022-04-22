@@ -6,13 +6,24 @@ export interface WindowSize {
   isMobile: boolean;
 }
 
+// https://tailwindcss.com/docs/responsive-design
+export const enum Breakpoint {
+  SM = 640,
+  MD = 768,
+  LG = 1024,
+  XL = 1280,
+  XXL = 1536,
+}
+
 /**
  * Hook into window size, with added check for mobile screen sizes.
  *
- * @param minMobileWidth Min width to be considered mobile screen. Default: 768.
+ * @param maxMobileWidth Min width to be considered mobile screen. Default: 768.
  * @returns [isMobile, windowSize]
  */
-export function useWindowSize(minMobileWidth: number = 768): WindowSize {
+export function useWindowSize(
+  maxMobileWidth: Breakpoint = Breakpoint.MD
+): WindowSize {
   const [windowSize, setWindowSize] = useState<WindowSize>({
     width: 0,
     height: 0,
@@ -23,14 +34,14 @@ export function useWindowSize(minMobileWidth: number = 768): WindowSize {
       setWindowSize({
         width: window.innerWidth,
         height: window.innerHeight,
-        isMobile: window.innerWidth < minMobileWidth,
+        isMobile: window.innerWidth < maxMobileWidth,
       });
     }
 
     window.addEventListener("resize", handleResize);
     handleResize();
     return () => window.removeEventListener("resize", handleResize);
-  }, [minMobileWidth]);
+  }, [maxMobileWidth]);
 
   return windowSize;
 }

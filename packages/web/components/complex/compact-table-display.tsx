@@ -21,10 +21,10 @@ export const CompactTableDisplay: FunctionComponent<{
     metrics: Metric[];
     isSuperfluid?: boolean;
   }[];
-  searchBoxProps: InputProps<string>;
-  sortMenuProps: MenuSelectProps & { onToggleSortDirection?: () => void };
-  pageListProps: NumberSelectProps;
-  minTvlToggleProps: ToggleProps & { label: string };
+  searchBoxProps?: InputProps<string>;
+  sortMenuProps?: MenuSelectProps & { onToggleSortDirection?: () => void };
+  pageListProps?: NumberSelectProps;
+  minTvlToggleProps?: ToggleProps & { label: string };
 }> = ({
   title,
   pools,
@@ -34,14 +34,16 @@ export const CompactTableDisplay: FunctionComponent<{
   minTvlToggleProps,
 }) => (
   <div className="flex flex-col gap-5 p-5 pb-8">
-    <SearchBox className="!rounded !w-full h-11" {...searchBoxProps} />
+    {searchBoxProps && (
+      <SearchBox className="!rounded !w-full h-11" {...searchBoxProps} />
+    )}
     <div className="flex items-center place-content-between">
       {typeof title === "string" ? (
         <span className="subtitle">{title}</span>
       ) : (
         <>{title}</>
       )}
-      <SortMenu {...sortMenuProps} />
+      {sortMenuProps && <SortMenu {...sortMenuProps} />}
     </div>
     <div className="flex flex-col gap-3">
       {pools.map(({ id, assets, metrics, isSuperfluid }) => (
@@ -56,8 +58,10 @@ export const CompactTableDisplay: FunctionComponent<{
       ))}
     </div>
     <div className="flex items-center place-content-between p-4">
-      <Switch {...minTvlToggleProps}>{minTvlToggleProps.label}</Switch>
-      {pageListProps.max > 1 && (
+      {minTvlToggleProps && (
+        <Switch {...minTvlToggleProps}>{minTvlToggleProps.label}</Switch>
+      )}
+      {pageListProps && pageListProps.max > 1 && (
         <PageList {...pageListProps} editField={false} />
       )}
     </div>

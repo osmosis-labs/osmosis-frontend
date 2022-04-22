@@ -37,11 +37,13 @@ export const PoolCompositionCell: FunctionComponent<
         Pool #{poolId}
       </span>
     </div>
-    <Image
-      alt="trade"
-      src="/icons/trade-green-check.svg"
-      height={24}
-      width={24}
-    />
+    <div className="shrink-0">
+      <Image
+        alt="trade"
+        src="/icons/trade-green-check.svg"
+        height={24}
+        width={24}
+      />
+    </div>
   </div>
 );

@@ -1,7 +1,7 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import { ExternalIncentiveGaugeAllowList } from "../../config";
 import {
   useFilteredData,
@@ -33,8 +33,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     const queryExternal = queriesExternalStore.get();
     const queryOsmosis = queriesStore.get(chainId).osmosis;
     const account = accountStore.getAccount(chainId);
-
-    const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 
     const externalIncentivizedPools = Object.keys(
       ExternalIncentiveGaugeAllowList
@@ -122,16 +120,10 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       }
     );
 
-    const tvlFilteredPools = isPoolTvlFiltered
-      ? externalIncentivizedPoolsWithMetrics
-      : externalIncentivizedPoolsWithMetrics.filter((poolWithMetrics) =>
-          poolWithMetrics.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
-        );
-
-    const [query, setQuery, filteredPools] = useFilteredData(tvlFilteredPools, [
-      "pool.id",
-      "pool.poolAssets.amount.currency.coinDenom",
-    ]);
+    const [query, setQuery, filteredPools] = useFilteredData(
+      externalIncentivizedPoolsWithMetrics,
+      ["pool.id", "pool.poolAssets.amount.currency.coinDenom"]
+    );
 
     const [
       sortKeyPath,
@@ -292,14 +284,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             min: minPage,
             onInput: setPage,
           }}
-          minTvlToggleProps={{
-            isOn: isPoolTvlFiltered,
-            onToggle: setIsPoolTvlFiltered,
-            label: `Show pools less than ${new PricePretty(
-              priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-              TVL_FILTER_THRESHOLD
-            ).toString()}`,
-          }}
         />
       );
     }
@@ -326,12 +310,12 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
           </div>
         </div>
         <Table<PoolCompositionCell & MetricLoaderCell>
-          className="mt-5 w-full"
+          className="mt-5 w-full lg:text-sm"
           columnDefs={tableCols}
           rowDefs={tableRows}
           data={tableData}
         />
-        <div className="relative flex place-content-around">
+        <div className="flex place-content-around">
           <PageList
             currentValue={page}
             max={numPages}
@@ -339,18 +323,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             onInput={setPage}
             editField
           />
-          <div className="absolute right-2 bottom-1 text-sm flex items-center">
-            <CheckBox
-              isOn={isPoolTvlFiltered}
-              onToggle={setIsPoolTvlFiltered}
-              className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
-            >
-              {`Show pools less than ${new PricePretty(
-                priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-                TVL_FILTER_THRESHOLD
-              ).toString()}`}
-            </CheckBox>
-          </div>
         </div>
       </>
     );
