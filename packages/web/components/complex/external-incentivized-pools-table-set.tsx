@@ -7,12 +7,14 @@ import {
   useFilteredData,
   usePaginatedData,
   useSortedData,
-} from "../../hooks/data";
+  useWindowSize,
+} from "../../hooks";
 import { useStore } from "../../stores";
 import { CheckBox, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { RowDef, Table } from "../table";
 import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
+import { CompactTableDisplay } from "./compact-table-display";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -25,10 +27,12 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       queriesStore,
       accountStore,
     } = useStore();
-    const chainInfo = chainStore.osmosis;
+    const { isMobile } = useWindowSize();
+
+    const { chainId } = chainStore.osmosis;
     const queryExternal = queriesExternalStore.get();
-    const queryOsmosis = queriesStore.get(chainInfo.chainId).osmosis;
-    const account = accountStore.getAccount(chainInfo.chainId);
+    const queryOsmosis = queriesStore.get(chainId).osmosis;
+    const account = accountStore.getAccount(chainId);
 
     const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 
@@ -76,7 +80,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
         });
         const incentiveDenom = data[0].denom;
         const currency = chainStore
-          .getChain(chainInfo.chainId)
+          .getChain(chainId)
           .forceFindCurrency(incentiveDenom);
         let sumRemainingBonus: CoinPretty = new CoinPretty(
           currency,
@@ -245,6 +249,56 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
         { value: poolWithMetrics.myLiquidity?.toString() },
       ];
     });
+
+    if (isMobile) {
+      return (
+        <CompactTableDisplay
+          title="External Incentive Pool"
+          pools={allData.map((poolData) => ({
+            id: poolData.pool.id,
+            assets: poolData.pool.poolAssets.map(
+              (asset) => asset.amount.currency
+            ),
+            metrics: [
+              { label: "TVL", value: poolData.liquidity.toString() },
+              {
+                label: "APR",
+                value: poolData.apr?.toString() ?? "0%",
+              },
+            ],
+            isSuperfluid: queryOsmosis.querySuperfluidPools.isSuperfluidPool(
+              poolData.pool.id
+            ),
+          }))}
+          searchBoxProps={{
+            currentValue: query,
+            onInput: setQuery,
+            placeholder: "Filtery by symbol",
+          }}
+          sortMenuProps={{
+            options: tableCols,
+            selectedOptionId: sortKeyPath,
+            onSelect: (id) =>
+              id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id),
+            onToggleSortDirection: toggleSortDirection,
+          }}
+          pageListProps={{
+            currentValue: page,
+            max: numPages,
+            min: minPage,
+            onInput: setPage,
+          }}
+          minTvlToggleProps={{
+            isOn: isPoolTvlFiltered,
+            onToggle: setIsPoolTvlFiltered,
+            label: `Show pools less than ${new PricePretty(
+              priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+              TVL_FILTER_THRESHOLD
+            ).toString()}`,
+          }}
+        />
+      );
+    }
 
     return (
       <>

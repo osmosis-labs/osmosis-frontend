@@ -78,19 +78,18 @@ const AssetsOverview: FunctionComponent = observer(() => {
 
 const PoolAssets: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore } = useStore();
-  const { isMobile } = useWindowSize();
 
   const { chainId } = chainStore.osmosis;
   const { bech32Address } = accountStore.getAccount(chainId);
-  let ownedPoolIds = queriesStore
+  const ownedPoolIds = queriesStore
     .get(chainId)
     .osmosis.queryGammPoolShare.getOwnPools(bech32Address);
   const [showAllPools, setShowAllPools] = useState(false);
 
   return (
     <section className="bg-background">
-      <div className="max-w-container mx-auto px-10 py-5">
-        {isMobile ? <h6>My Pools</h6> : <h5>My Pools</h5>}
+      <div className="max-w-container mx-auto md:px-4 px-10 py-5">
+        <h5>My Pools</h5>
         <PoolCards {...{ showAllPools, ownedPoolIds, setShowAllPools }} />
       </div>
     </section>

@@ -5,7 +5,7 @@ import { PoolAssetInfo } from "./types";
 
 interface Props {
   assets: PoolAssetInfo[] | undefined;
-  size: "sm" | "md";
+  size?: "sm" | "md";
 }
 
 export const PoolAssetsIcon: FunctionComponent<Props> = ({

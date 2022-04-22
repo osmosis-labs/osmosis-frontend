@@ -23,33 +23,40 @@ export const PoolCard: FunctionComponent<
     return (
       <div
         className={classNames(
-          "flex items-center place-content-between w-full p-3 bg-card rounded-lg shadow-elevation-08dp",
+          "w-full p-px rounded-lg shadow-elevation-08dp",
+          {
+            "bg-card": !isSuperfluid,
+            "bg-superfluid": isSuperfluid,
+          },
           className
         )}
+        onClick={() => router.push(`/pool/${poolId}`)}
       >
-        <div className="flex items-center gap-3">
-          <PoolAssetsIcon assets={poolAssets} size="sm" />
+        <div className="flex items-center place-content-between w-full p-4 bg-card rounded-lginset">
+          <div className="flex items-center gap-3">
+            <PoolAssetsIcon assets={poolAssets} size="sm" />
 
-          <div className="flex flex-col gap-0.5">
-            <PoolAssetsName
-              className="whitespace-nowrap text-ellipsis overflow-hidden"
-              size="sm"
-              assetDenoms={poolAssets.map((asset) => asset.coinDenom)}
-            />
-            <span className="caption text-white-disabled">Lab #{poolId}</span>
+            <div className="flex flex-col gap-0.5">
+              <PoolAssetsName
+                className="whitespace-nowrap text-ellipsis overflow-hidden"
+                size="sm"
+                assetDenoms={poolAssets.map((asset) => asset.coinDenom)}
+              />
+              <span className="caption text-white-disabled">Lab #{poolId}</span>
+            </div>
           </div>
-        </div>
-        <div className="flex flex-col gap-px text-right">
-          {poolMetrics.map((metric, index) => (
-            <span
-              key={index}
-              className={
-                index === 0 ? "subtitle2" : "caption text-white-disabled"
-              }
-            >
-              {metric.value} {index !== 0 && metric.label}
-            </span>
-          ))}
+          <div className="flex flex-col gap-px text-right">
+            {poolMetrics.map((metric, index) => (
+              <span
+                key={index}
+                className={
+                  index === 0 ? "subtitle2" : "caption text-white-disabled"
+                }
+              >
+                {metric.value} {index !== 0 && metric.label}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -66,7 +73,7 @@ export const PoolCard: FunctionComponent<
       )}
       onClick={() => router.push(`/pool/${poolId}`)}
     >
-      <div className="px-[1.875rem] pt-8 pb-6 bg-card rounded-2xl cursor-pointer">
+      <div className="px-[1.875rem] pt-8 pb-6 bg-card rounded-2xlinset cursor-pointer">
         <div className="flex items-center">
           <PoolAssetsIcon assets={poolAssets} size="md" />
           <div className="ml-6 flex flex-col">

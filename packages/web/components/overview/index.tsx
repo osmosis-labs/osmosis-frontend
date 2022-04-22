@@ -55,7 +55,7 @@ export const Overview: FunctionComponent<Props> = ({
       }
     >
       <div className="max-w-container mx-auto md:pt-24 pt-0">
-        <div className="p-10">
+        <div className="md:p-4 p-10">
           <div className="flex flex-wrap md:gap-5 gap-8 items-center place-content-start">
             {typeof title === "string" ? (
               isMobile ? (

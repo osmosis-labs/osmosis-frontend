@@ -79,7 +79,7 @@
   }
 
   table {
-    @apply table-auto border-collapse text-left;
+    @apply md:w-screen table-auto border-collapse text-left;
   }
 
   thead > tr {
@@ -87,7 +87,7 @@
   }
 
   thead > tr > th:first-child {
-    @apply md:rounded-tl-2xl pl-8 pr-3 py-3;
+    @apply md:rounded-none rounded-tl-2xl pl-8 pr-3 py-3;
   }
 
   thead > tr > th {
@@ -95,7 +95,7 @@
   }
 
   thead > tr > th:last-child {
-    @apply md:rounded-tr-2xl pl-3 pr-8 py-3;
+    @apply md:rounded-none rounded-tr-2xl pl-3 pr-8 py-3;
   }
 
   tbody > tr > td:first-child {
@@ -112,6 +112,16 @@
 
   .grid-cards {
     @apply grid-cols-3 2xl:grid-cols-2 lg:grid-cols-1 justify-items-center;
+  }
+
+  /* Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 
   /** SLIDER STYLE */

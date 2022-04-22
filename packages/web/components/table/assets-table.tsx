@@ -213,7 +213,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
           tokens={ibcBalances.map((ibcAsset) => ibcAsset.balance)}
         />
       )}
-      <div className="max-w-container mx-auto pb-10 px-10 md:p-10">
+      <div className="max-w-container mx-auto md:p-4 p-10">
         {isMobile ? (
           <div className="flex flex-col gap-5">
             <div className="flex place-content-between gap-10 py-2">

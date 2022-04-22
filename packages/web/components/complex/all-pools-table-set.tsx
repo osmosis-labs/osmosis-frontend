@@ -6,12 +6,14 @@ import {
   useFilteredData,
   usePaginatedData,
   useSortedData,
-} from "../../hooks/data";
+  useWindowSize,
+} from "../../hooks";
 import { useStore } from "../../stores";
 import { CheckBox, MenuToggle, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { RowDef, Table } from "../table";
 import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
+import { CompactTableDisplay } from "./compact-table-display";
 
 const poolsMenuOptions = [
   { id: "incentivized-pools", display: "Incentivized Pools" },
@@ -20,7 +22,9 @@ const poolsMenuOptions = [
 
 const TVL_FILTER_THRESHOLD = 1000;
 
-export const AllPoolsTableSet: FunctionComponent = observer(() => {
+export const AllPoolsTableSet: FunctionComponent<{
+  tableSet?: "incentivized-pools" | "all-pools";
+}> = observer(({ tableSet = "incentivized-pools" }) => {
   const {
     chainStore,
     queriesExternalStore,
@@ -28,13 +32,20 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
     queriesStore,
     accountStore,
   } = useStore();
-  const [activeOptionId, setActiveOptionId] = useState(poolsMenuOptions[0].id);
+  const { isMobile } = useWindowSize();
+
+  const [activeOptionId, setActiveOptionId] = useState(tableSet);
+  const selectOption = (optionId: string) => {
+    if (optionId === "incentivized-pools" || optionId === "all-pools") {
+      setActiveOptionId(optionId);
+    }
+  };
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 
-  const chainInfo = chainStore.osmosis;
-  const queriesOsmosis = queriesStore.get(chainInfo.chainId).osmosis;
+  const { chainId } = chainStore.osmosis;
+  const queriesOsmosis = queriesStore.get(chainId).osmosis;
   const queriesExternal = queriesExternalStore.get();
-  const account = accountStore.getAccount(chainInfo.chainId);
+  const account = accountStore.getAccount(chainId);
 
   const allPools = queriesOsmosis.queryGammPools.getAllPools();
   const incentivizedPoolIds =
@@ -223,6 +234,65 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
     ];
   });
 
+  if (isMobile) {
+    return (
+      <CompactTableDisplay
+        title={isIncentivizedPools ? "Incentivized Pools" : "All Pools"}
+        pools={allData.map((poolData) => ({
+          id: poolData.pool.id,
+          assets: poolData.pool.poolAssets.map(
+            ({
+              amount: {
+                currency: { coinDenom, coinImageUrl },
+              },
+            }) => ({
+              coinDenom,
+              coinImageUrl,
+            })
+          ),
+          metrics: [
+            { label: "TVL", value: poolData.liquidity.toString() },
+            {
+              label: isIncentivizedPools ? "APR" : "7d Volume",
+              value: isIncentivizedPools
+                ? poolData.apr?.toString() ?? "0%"
+                : poolData.volume7d.toString(),
+            },
+          ],
+          isSuperfluid: queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+            poolData.pool.id
+          ),
+        }))}
+        searchBoxProps={{
+          currentValue: query,
+          onInput: setQuery,
+          placeholder: "Filter by symbol",
+        }}
+        sortMenuProps={{
+          options: tableCols,
+          selectedOptionId: sortKeyPath,
+          onSelect: (id) =>
+            id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id),
+          onToggleSortDirection: toggleSortDirection,
+        }}
+        pageListProps={{
+          currentValue: page,
+          max: numPages,
+          min: minPage,
+          onInput: setPage,
+        }}
+        minTvlToggleProps={{
+          isOn: isPoolTvlFiltered,
+          onToggle: setIsPoolTvlFiltered,
+          label: `Show pools less than ${new PricePretty(
+            priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+            TVL_FILTER_THRESHOLD
+          ).toString()}`,
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <h5>All Pools</h5>
@@ -230,7 +300,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
         <MenuToggle
           options={poolsMenuOptions}
           selectedOptionId={activeOptionId}
-          onSelect={setActiveOptionId}
+          onSelect={selectOption}
         />
         <div className="flex gap-8">
           <SearchBox

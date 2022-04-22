@@ -61,6 +61,7 @@ module.exports = {
       missionError: "#EF3456",
       black: "#000000",
       backdrop: "rgba(0, 0, 0, 0.3)",
+      superfluid: "#8A86FF",
     },
     fontSize: {
       xs: "0.75rem",
@@ -201,6 +202,7 @@ module.exports = {
         separator: "0px -1px 0px 0px rgba(255, 255, 255, 0.12)",
       },
       borderRadius: {
+        none: "0",
         lginset: "0.438rem", // 1px smaller than rounded-lg
         xlinset: "0.688rem", // 1px smaller than rounded-xl
         "2xlinset": "0.938rem", // 1 px smaller than rounded-2xl
