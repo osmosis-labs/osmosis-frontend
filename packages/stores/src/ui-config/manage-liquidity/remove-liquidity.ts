@@ -1,7 +1,10 @@
 import { observable, makeObservable, action, computed } from "mobx";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
-import { ObservableQueryGammPoolShare } from "../../queries";
+import {
+  ObservableQueryGammPoolShare,
+  ObservableQueryPools,
+} from "../../queries";
 import { ManageLiquidityConfigBase } from "./base";
 
 /** Use to config user input UI for eventually sending a valid exit pool msg.
@@ -11,6 +14,9 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
   @observable
   protected _percentage: string;
 
+  @observable
+  protected _queryPools: ObservableQueryPools;
+
   constructor(
     chainGetter: ChainGetter,
     initialChainId: string,
@@ -18,6 +24,7 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
     sender: string,
     queriesStore: IQueriesStore,
     queryPoolShare: ObservableQueryGammPoolShare,
+    queryPools: ObservableQueryPools,
     initialPercentage: string
   ) {
     super(
@@ -29,6 +36,7 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
       queryPoolShare
     );
 
+    this._queryPools = queryPools;
     this._percentage = initialPercentage;
 
     makeObservable(this);
@@ -58,10 +66,27 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
   /** Pool asset amounts equivalent to senders's unbonded gamm share vs percentage. */
   @computed
   get poolShareAssetsWithPercentage(): CoinPretty[] {
-    return this._queryPoolShare
-      .getShareAssets(this._sender, this._poolId)
-      .map(({ asset }) =>
-        asset.mul(new Dec(this.percentage).quo(new Dec(100)))
+    return (
+      this._queryPools.getPool(this._poolId)?.poolAssets.map(({ amount }) => {
+        const percentRatio = new Dec(this.percentage).quo(new Dec(100));
+        return amount
+          .mul(
+            this._queryPoolShare.getAvailableGammShareRatio(
+              this._sender,
+              this.poolId
+            )
+          )
+          .mul(percentRatio);
+      }) ?? []
+    );
+  }
+
+  @computed
+  get error(): Error | undefined {
+    if (this.poolShare.toDec().isZero()) {
+      return new Error(
+        `No available ${this.poolShare.currency.coinDenom} shares`
       );
+    }
   }
 }

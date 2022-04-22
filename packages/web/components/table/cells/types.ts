@@ -1,11 +1,6 @@
 import { BaseCell } from "../types";
 import { Currency } from "@keplr-wallet/types";
 
-export interface PoolCell extends BaseCell {
-  poolId: number;
-  tokenDenoms: string[];
-} // TODO: remove
-
 export type AssetCell = BaseCell & {
   currency: Currency;
   chainName?: string;

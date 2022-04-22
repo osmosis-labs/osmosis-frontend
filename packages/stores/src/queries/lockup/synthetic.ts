@@ -25,9 +25,10 @@ export class ObservableSyntheticLockupsByLockIdInner extends ObservableChainQuer
     return this._lockId;
   }
 
-  get isSyntheticLock(): boolean {
+  /** `undefined` if not loaded, otherwise `boolean` */
+  get isSyntheticLock(): boolean | undefined {
     if (!this.response) {
-      return false;
+      return undefined;
     }
 
     return this.response.data.synthetic_locks.length > 0;

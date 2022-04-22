@@ -7,7 +7,7 @@ import {
   useCallback,
 } from "react";
 import { IBCCurrency } from "@keplr-wallet/types";
-import { ObservablePool } from "@osmosis-labs/stores";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { useStore } from "../../stores/";
 import { Overview } from "../../components/overview";
 import { AssetsTable } from "../../components/table/assets-table";
@@ -272,9 +272,9 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                   value: tvl.mul(actualShareRatio).toString(),
                 },
           ],
-        ] as [ObservablePool, Metric[]];
+        ] as [ObservableQueryPool, Metric[]];
       })
-      .filter((p): p is [ObservablePool, Metric[]] => p !== undefined);
+      .filter((p): p is [ObservableQueryPool, Metric[]] => p !== undefined);
 
     return (
       <>

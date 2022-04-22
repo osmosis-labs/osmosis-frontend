@@ -1,4 +1,4 @@
-import { IBCCurrency, AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import Image from "next/image";
 import { FunctionComponent } from "react";

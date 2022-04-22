@@ -10,6 +10,8 @@ import {
   ObservableAmountConfig,
   basicIbcTransfer,
   OsmosisAccount,
+  IBCTransferHistory,
+  UncommitedHistory,
 } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { useAmountConfig } from "../use-amount-config";
@@ -40,7 +42,14 @@ export function useIbcTransfer({
   AccountSetBase & CosmosAccount & CosmwasmAccount & OsmosisAccount,
   ObservableAmountConfig,
   boolean,
-  () => void,
+  (
+    /** Handle IBC transfer events containing `send_packet` event type. */
+    onFulfill?: (
+      event: Omit<IBCTransferHistory, "status" | "createdAt">
+    ) => void,
+    /** Handle when the IBC trasfer successfully broadcast to relayers. */
+    onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void
+  ) => void,
   CustomCounterpartyConfig | undefined
 ] {
   const { chainStore, accountStore, queriesStore } = useStore();
@@ -52,7 +61,7 @@ export function useIbcTransfer({
   const amountConfig = useAmountConfig(
     chainStore,
     queriesStore,
-    chainId,
+    isWithdraw ? chainId : counterpartyChainId,
     isWithdraw ? account.bech32Address : counterpartyAccount.bech32Address,
     isWithdraw ? currency : currency.originCurrency!
   );
@@ -125,53 +134,62 @@ export function useIbcTransfer({
     }
   }, [account.walletStatus, currency.originCurrency, currency.originChainId]);
 
-  const transfer = async () => {
-    if (isWithdraw) {
-      await basicIbcTransfer(
-        {
-          account: account,
-          chainId: chainId,
-          channelId: sourceChannelId,
-        },
-        {
-          account: counterpartyAccount,
-          chainId: counterpartyChainId,
-          channelId: destChannelId,
-        },
-        currency,
-        amountConfig
-      );
-    } else {
-      if (
-        !currency.originCurrency ||
-        !("contractAddress" in currency.originCurrency)
-      ) {
-        throw new Error(
-          "IBC is requested to be used via cosmwam, but the provided currency does not have a contract address"
+  const transfer: (
+    onFulfill?: (
+      event: Omit<IBCTransferHistory, "status" | "createdAt">
+    ) => void,
+    onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void
+  ) => void = async (onFulfill, onBroadcasted) => {
+    try {
+      if (isWithdraw) {
+        await basicIbcTransfer(
+          {
+            account,
+            chainId,
+            channelId: sourceChannelId,
+          },
+          {
+            account: counterpartyAccount,
+            chainId: counterpartyChainId,
+            channelId: destChannelId,
+            bech32AddressOverride:
+              customBech32Address !== "" ? customBech32Address : undefined,
+          },
+          currency,
+          amountConfig,
+          onBroadcasted,
+          onFulfill
+        );
+      } else {
+        await basicIbcTransfer(
+          {
+            account: counterpartyAccount,
+            chainId: counterpartyChainId,
+            channelId: destChannelId,
+            contractTransfer:
+              ics20ContractAddress &&
+              currency.originCurrency &&
+              "contractAddress" in currency.originCurrency
+                ? {
+                    contractAddress: currency.originCurrency["contractAddress"],
+                    cosmwasmAccount: counterpartyAccount,
+                    ics20ContractAddress: ics20ContractAddress,
+                  }
+                : undefined,
+          },
+          {
+            account,
+            chainId,
+            channelId: sourceChannelId,
+          },
+          currency,
+          amountConfig,
+          onBroadcasted,
+          onFulfill
         );
       }
-
-      await basicIbcTransfer(
-        {
-          account: counterpartyAccount,
-          chainId: counterpartyChainId,
-          channelId: destChannelId,
-          contractTransfer: ics20ContractAddress
-            ? {
-                contractAddress: currency.originCurrency["contractAddress"],
-                cosmwasmAccount: counterpartyAccount, // TODO: add cosmwasm to Account type
-                ics20ContractAddress: ics20ContractAddress,
-              }
-            : undefined,
-        },
-        {
-          account: account,
-          chainId: chainId,
-          channelId: sourceChannelId,
-        },
-        currency,
-        amountConfig
-      );
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -179,8 +197,8 @@ export function useIbcTransfer({
     account,
     counterpartyAccount,
     amountConfig,
-    (isWithdraw && account.isSendingMsg === "ibcTransfer") ||
-      (!isWithdraw && counterpartyAccount.isSendingMsg === "ibcTransfer"),
+    (isWithdraw && account.txTypeInProgress === "ibcTransfer") ||
+      (!isWithdraw && counterpartyAccount.txTypeInProgress === "ibcTransfer"),
     transfer,
     customCounterpartyConfig,
   ];

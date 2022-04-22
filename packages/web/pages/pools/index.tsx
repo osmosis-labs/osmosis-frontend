@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite";
 import { useState, useMemo } from "react";
 import {
   ObservableCreatePoolConfig,
-  ObservablePool,
+  ObservableQueryPool,
 } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
@@ -64,7 +64,7 @@ const Pools: NextPage = observer(function () {
   const superfluidPoolIds = queryOsmosis.querySuperfluidPools.superfluidPoolIds;
   const superfluidPools = superfluidPoolIds
     ?.map((poolId) => queryOsmosis.queryGammPools.getPool(poolId))
-    .filter((pool): pool is ObservablePool => pool !== undefined)
+    .filter((pool): pool is ObservableQueryPool => pool !== undefined)
     .map((superfluidPool) => ({
       id: superfluidPool.id,
       poolFeesMetrics:
@@ -102,7 +102,14 @@ const Pools: NextPage = observer(function () {
       queriesStore,
       queriesStore.get(chainId).queryBalances
     );
-  }, [chainStore, chainId, account.bech32Address, queriesStore]);
+    // eslint-disable-next-line
+  }, [
+    isCreatingPool, // re-init on modal open/close
+    chainStore,
+    chainId,
+    account.bech32Address,
+    queriesStore,
+  ]);
 
   // Mobile only - pools (superfluid) pools sorting/filtering
   const [showMoreMyPools, setShowMoreMyPools] = useState(false);
@@ -146,10 +153,9 @@ const Pools: NextPage = observer(function () {
                 () => setIsCreatingPool(false)
               );
             } catch (e) {
-              console.error(e);
+              setIsCreatingPool(false);
+              console.log(e);
             }
-
-            createPoolConfig.clearAssets();
           }}
         />
       )}

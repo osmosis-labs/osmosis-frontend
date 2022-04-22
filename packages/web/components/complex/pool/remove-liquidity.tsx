@@ -8,10 +8,11 @@ import { useWindowSize } from "../../../hooks";
 export interface Props {
   removeLiquidityConfig: ObservableRemoveLiquidityConfig;
   onRemoveLiquidity: () => void;
+  isSendingMsg?: boolean;
 }
 
 export const RemoveLiquidity: FunctionComponent<Props> = observer(
-  ({ removeLiquidityConfig: config, onRemoveLiquidity }) => {
+  ({ removeLiquidityConfig: config, onRemoveLiquidity, isSendingMsg }) => {
     const { isMobile } = useWindowSize();
 
     return (
@@ -69,6 +70,8 @@ export const RemoveLiquidity: FunctionComponent<Props> = observer(
         <Button
           className="h-14 md:w-full w-96 !p-0 mt-3 mx-auto"
           size="lg"
+          loading={isSendingMsg}
+          disabled={isSendingMsg}
           onClick={onRemoveLiquidity}
         >
           Remove Liquidity

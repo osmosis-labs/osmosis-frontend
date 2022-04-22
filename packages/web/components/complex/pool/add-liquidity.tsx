@@ -17,6 +17,7 @@ export interface Props {
   onAddLiquidity: () => void;
   getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   getChainNetworkName?: (coinDenom: string) => string | undefined;
+  isSendingMsg?: boolean;
 }
 
 export const AddLiquidity: FunctionComponent<Props> = observer(
@@ -25,6 +26,7 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
     getFiatValue,
     onAddLiquidity,
     getChainNetworkName,
+    isSendingMsg,
   }) => {
     const { isMobile } = useWindowSize();
 
@@ -194,16 +196,17 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
             </span>
           </div>
         )}
-        {addLiquidityConfig.getError() && (
+        {addLiquidityConfig.error && (
           <Error
             className="mx-auto"
-            message={addLiquidityConfig.getError()?.message ?? ""}
+            message={addLiquidityConfig.error?.message ?? ""}
           />
         )}
         <Button
           className="h-14 md:w-full w-96 mt-3 mx-auto"
           size="lg"
-          disabled={addLiquidityConfig.getError() !== undefined}
+          loading={isSendingMsg}
+          disabled={addLiquidityConfig.error !== undefined || isSendingMsg}
           onClick={onAddLiquidity}
         >
           Add Liquidity

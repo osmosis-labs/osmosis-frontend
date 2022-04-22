@@ -12,6 +12,10 @@ export interface IBCAsset {
   isUnstable?: boolean;
   // If the asset is from ics20-cw20
   ics20ContractAddress?: string;
+
+  // If this is a multihop ibc, need to special case because the denom on osmosis
+  // isn't H(source_denom), but rather H(ibc_path)
+  ibcTransferPathDenom?: string;
 }
 
 export interface CoinBalance {
