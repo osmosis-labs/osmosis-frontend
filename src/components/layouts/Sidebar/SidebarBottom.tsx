@@ -60,7 +60,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
 				/>
 			)}
 			<p className="py-2 text-base text-white-high text-left flex items-center place-content-evenly">
-				<a href="" target="_blank" rel="noreferrer">
+				<a href="https://medium.com/osmosis/introducing-osmosis-frontier-d9da158b22d0" target="_blank" rel="noreferrer">
 					Learn More <br /> About the <br />
 					<span
 						style={{

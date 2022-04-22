@@ -1522,11 +1522,6 @@ export class RootStore {
 						coinDecimals: 6,
 					},
 					{
-						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
-						coinDenom: 'UST',
-						coinDecimals: 6,
-					},
-					{
 						coinMinimalDenom: DenomHelper.ibcDenom(
 							[{ portId: 'transfer', channelId: 'channel-144' }],
 							'gravity0x6B175474E89094C44Da98b954EedeAC495271d0F'
@@ -1551,6 +1546,71 @@ export class RootStore {
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
 						coinDenom: 'ATOM',
 						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '678',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-208' }], 'uusdc'),
+						coinDenom: 'USDC',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '679',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-208' }], 'frax-wei'),
+						coinDenom: 'FRAX',
+						coinDecimals: 18,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-208' }], 'uusdt'),
+						coinDenom: 'USDT',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-208' }], 'uusdc'),
+						coinDenom: 'USDC',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '681',
+				currencies: [
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-229' }], 'afet'),
+						coinDenom: 'FET',
+						coinDecimals: 18,
+					},
+				],
+			},
+			{
+				poolId: '682',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-229' }], 'afet'),
+						coinDenom: 'FET',
+						coinDecimals: 18,
 					},
 				],
 			},

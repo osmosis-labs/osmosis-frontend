@@ -62,6 +62,7 @@ export const LockupAbledPoolIds: {
 	'619': true,
 	'621': true,
 	'629': true,
+	'633': true,
 	'637': true,
 	'638': true,
 	'641': true,
@@ -69,7 +70,12 @@ export const LockupAbledPoolIds: {
 	'643': true,
 	'648': true,
 	'651': true,
+	'653': true,
 	'662': true,
+	'669': true,
+	'670': true,
+	'678': true,
+	'679': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -605,6 +611,16 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/8318FD63C42203D16DDCAF49FE10E8590669B3219A3E87676AC9DA50722687FB',
 		},
 	],
+	'633': [
+		{
+			gaugeId: '3003',
+			denom: 'ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44',
+		},
+		{
+			gaugeId: '3004',
+			denom: 'ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44',
+		},
+	],
 	'637': [
 		{
 			gaugeId: '2258',
@@ -695,6 +711,12 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/8FEFAE6AECF6E2A255585617F781F35A8D5709A545A804482A261C0C9548A9D3',
 		},
 	],
+	'653': [
+		{
+			gaugeId: '3048',
+			denom: 'ibc/C2A2E9CA95DDD4828B75124B5E27B8401C7D8493BC48353D418CBFC04565899B',
+		},
+	],
 	'662': [
 		{
 			gaugeId: '2591',
@@ -707,6 +729,42 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '2593',
 			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
+		},
+	],
+	'669': [
+		{
+			gaugeId: '2962',
+			denom: 'ibc/6BDB4C8CCD45033F9604E4B93ED395008A753E01EECD6992E7D1EA23D9D3B788',
+		},
+		{
+			gaugeId: '2963',
+			denom: 'ibc/6BDB4C8CCD45033F9604E4B93ED395008A753E01EECD6992E7D1EA23D9D3B788',
+		},
+		{
+			gaugeId: '2964',
+			denom: 'ibc/6BDB4C8CCD45033F9604E4B93ED395008A753E01EECD6992E7D1EA23D9D3B788',
+		},
+	],
+	'670': [
+		{
+			gaugeId: '3005',
+			denom: 'ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44',
+		},
+		{
+			gaugeId: '3006',
+			denom: 'ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44',
+		},
+	],
+	'678': [
+		{
+			gaugeId: '3013',
+			denom: 'uosmo',
+		},
+	],
+	'679': [
+		{
+			gaugeId: '3016',
+			denom: 'uosmo',
 		},
 	],
 };
@@ -1031,6 +1089,38 @@ export const IBCAssetInfos: {
 		withdrawUrlOverride: 'https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj',
 	},
 	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'uusdc',
+		depositUrlOverride: 'https://satellite.axelar.network/?source=ethereum&destination=osmosis&token=usdc',
+		withdrawUrlOverride: 'https://satellite.axelar.network/?source=osmosis&destination=ethereum&token=usdc',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'uusdt',
+		depositUrlOverride: 'https://satellite.axelar.network/?source=ethereum&destination=osmosis&token=usdt',
+		withdrawUrlOverride: 'https://satellite.axelar.network/?source=osmosis&destination=ethereum&token=usdt',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'dai-wei',
+		depositUrlOverride: 'https://satellite.axelar.network/?source=ethereum&destination=osmosis&token=dai',
+		withdrawUrlOverride: 'https://satellite.axelar.network/?source=osmosis&destination=ethereum&token=dai',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'frax-wei',
+		depositUrlOverride: 'https://satellite.axelar.network/?source=ethereum&destination=osmosis&token=frax',
+		withdrawUrlOverride: 'https://satellite.axelar.network/?source=osmosis&destination=ethereum&token=frax',
+	},
+	{
 		counterpartyChainId: 'gravity-bridge-3',
 		sourceChannelId: 'channel-144',
 		destChannelId: 'channel-10',
@@ -1059,6 +1149,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-232',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'umntl',
+	},
+	{
+		counterpartyChainId: 'fetchhub-4',
+		sourceChannelId: 'channel-229',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'afet',
 	},
 ];
 
@@ -1682,6 +1778,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'RAC',
 				coinMinimalDenom: 'cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa:RAC',
 				coinDecimals: 6,
+				coinGeckoId: 'pool:rac',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/rac.svg',
 			},
 		],
@@ -1694,7 +1791,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/juno.svg',
 			},
 		],
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'ibc-go', 'no-legacy-stdTx', 'wasmd_0.24+'],
 		explorerUrlToTx: 'https://www.mintscan.io/juno/txs/{txHash}',
 	},
 	{
@@ -2845,6 +2942,111 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/gravity-bridge/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-axelar.keplr.app',
+		rest: 'https://lcd-axelar.keplr.app',
+		chainId: 'axelar-dojo-1',
+		chainName: 'Axelar',
+		stakeCurrency: {
+			coinDenom: 'AXL',
+			coinMinimalDenom: 'uaxl',
+			coinDecimals: 6,
+			// coinGeckoId: 'pool:uaxl',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/axl.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('axelar'),
+		currencies: [
+			{
+				coinDenom: 'axl-USDC',
+				coinMinimalDenom: 'uusdc',
+				coinDecimals: 6,
+				coinGeckoId: 'usd-coin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.svg',
+			},
+			{
+				coinDenom: 'axl-FRAX',
+				coinMinimalDenom: 'frax-wei',
+				coinDecimals: 18,
+				coinGeckoId: 'frax',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/frax.svg',
+			},
+			{
+				coinDenom: 'axl-USDT',
+				coinMinimalDenom: 'uusdt',
+				coinDecimals: 6,
+				coinGeckoId: 'tether',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.svg',
+			},
+			{
+				coinDenom: 'axl-DAI',
+				coinMinimalDenom: 'dai-wei',
+				coinDecimals: 18,
+				coinGeckoId: 'dai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'AXL',
+				coinMinimalDenom: 'uaxl',
+				coinDecimals: 6,
+				// coinGeckoId: 'pool:uaxl',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/axl.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0.00005,
+			average: 0.00007,
+			high: 0.00009,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://axelarscan.io/tx/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-fetchhub.fetch.ai:443',
+		rest: 'https://rest-fetchhub.fetch.ai',
+		chainId: 'fetchhub-4',
+		chainName: 'Fetch.ai',
+		stakeCurrency: {
+			coinDenom: 'FET',
+			coinMinimalDenom: 'afet',
+			coinDecimals: 18,
+			coinGeckoId: 'fetch-ai',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/fet.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('fetch'),
+		currencies: [
+			{
+				coinDenom: 'FET',
+				coinMinimalDenom: 'afet',
+				coinDecimals: 18,
+				coinGeckoId: 'fetch-ai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/fet.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'FET',
+				coinMinimalDenom: 'afet',
+				coinDecimals: 18,
+				coinGeckoId: 'fetch-ai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/fet.png',
+			},
+		],
+		gasPriceStep: {
+			low: 0.025,
+			average: 0.025,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/fetchai/txs/{txHash}',
 	},
 	{
 		rpc: 'https://rpc.assetmantle.one/',
