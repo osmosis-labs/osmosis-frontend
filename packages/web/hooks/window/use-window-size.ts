@@ -26,7 +26,7 @@ export function useWindowSize(
       setWindowSize({
         width: window.innerWidth,
         height: window.innerHeight,
-        isMobile: window.innerWidth < maxMobileWidth,
+        isMobile: window.innerWidth <= maxMobileWidth,
       });
     }
 
