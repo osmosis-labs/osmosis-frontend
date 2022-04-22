@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
@@ -10,7 +10,7 @@ import {
   useWindowSize,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { CheckBox, PageList, SortMenu } from "../control";
+import { PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { RowDef, Table } from "../table";
 import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";

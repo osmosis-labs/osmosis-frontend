@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { PropsWithoutRef, useState, useCallback } from "react";
 import classNames from "classnames";
 import { InfoTooltip } from "../tooltip";
-import { CustomClasses, Breakpoint } from "../types";
+import { CustomClasses } from "../types";
 import { replaceAt } from "../utils";
 import { BaseCell, ColumnDef, RowDef } from "./types";
 import { useWindowSize } from "../../hooks";
