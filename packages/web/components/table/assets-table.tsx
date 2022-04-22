@@ -312,6 +312,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
               <AssetCard
                 key={assetData.coinDenom}
                 {...assetData}
+                coinDenomCaption={assetData.chainName}
                 metrics={[
                   { label: "", value: assetData.amount },
                   ...(assetData.fiatValue

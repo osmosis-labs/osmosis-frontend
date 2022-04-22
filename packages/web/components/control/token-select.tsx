@@ -63,13 +63,6 @@ export const TokenSelect: FunctionComponent<{
         </div>
         <div>
           <h5 className="text-white-full">{selectedCurrency?.coinDenom}</h5>
-          {selectedCurrency && "paths" in selectedCurrency && (
-            <div className="text-iconDefault text-sm font-semibold">
-              {(selectedToken as IBCCurrency).paths
-                .map((path) => path.channelId)
-                .join(", ")}
-            </div>
-          )}
         </div>
         <div className="w-5 ml-3 pb-1">
           <Image
