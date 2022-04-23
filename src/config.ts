@@ -513,15 +513,15 @@ export const ExtraGaugeInPool: {
 	],
 	'613': [
 		{
-			gaugeId: '1982',
+			gaugeId: '3193',
 			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 		{
-			gaugeId: '2013',
+			gaugeId: '3194',
 			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 		{
-			gaugeId: '2014',
+			gaugeId: '3195',
 			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 	],
