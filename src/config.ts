@@ -1145,6 +1145,12 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'gravity0xdAC17F958D2ee523a2206206994597C13D831ec7',
 	},
 	{
+		counterpartyChainId: 'mantle-1',
+		sourceChannelId: 'channel-232',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'umntl',
+	},
+	{
 		counterpartyChainId: 'fetchhub-4',
 		sourceChannelId: 'channel-229',
 		destChannelId: 'channel-10',
@@ -3041,5 +3047,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/fetchai/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.assetmantle.one/',
+		rest: 'https://rest.assetmantle.one/',
+		chainId: 'mantle-1',
+		chainName: 'AssetMantle',
+		stakeCurrency: {
+			coinDenom: 'MNTL',
+			coinMinimalDenom: 'umntl',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:umntl',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/mntl.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('mantle'),
+		currencies: [
+			{
+				coinDenom: 'MNTL',
+				coinMinimalDenom: 'umntl',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:umntl',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/mntl.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'MNTL',
+				coinMinimalDenom: 'umntl',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:umntl',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/mntl.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/asset-mantle/txs/{txHash}',
 	},
 ];
