@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactElement, useState } from "react";
+import { FunctionComponent, ReactElement, useState, useRef } from "react";
 import classNames from "classnames";
 import { CustomClasses } from "../types";
 
@@ -19,6 +19,7 @@ export const TabBox: FunctionComponent<
   } & CustomClasses
 > = ({ tabs, tabSelection, className }) => {
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
+  const tabscrollRef = useRef(null);
 
   const selectedTabI =
     tabSelection?.selectedTabIndex !== undefined
@@ -26,11 +27,20 @@ export const TabBox: FunctionComponent<
       : selectedTabIndex;
   const setTabI = tabSelection?.onTabSelected || setSelectedTabIndex;
 
+  const scrollTabIntoView = (index: number) => {
+    const tab = document.getElementById(`tab-box-${index}`);
+    if (tab) {
+      tab.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  };
+
   return (
     <div className={classNames(className)}>
       <div className="flex py-4 whitespace-nowrap overflow-x-auto no-scrollbar">
         {tabs.map(({ title, className }, index) => (
           <div
+            id={`tab-box-${index}`}
+            ref={tabscrollRef}
             key={index}
             className={classNames(
               "w-full text-center py-1 px-2 border-secondary-200 cursor-pointer",
@@ -40,7 +50,10 @@ export const TabBox: FunctionComponent<
               },
               className
             )}
-            onClick={() => setTabI(index)}
+            onClick={() => {
+              setTabI(index);
+              scrollTabIntoView(index);
+            }}
           >
             {typeof title === "string" ? (
               <span className="text-title text-secondary-200">{title}</span>

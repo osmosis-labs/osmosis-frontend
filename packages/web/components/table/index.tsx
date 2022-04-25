@@ -44,6 +44,7 @@ export const Table = <TCell extends BaseCell>({
           rowIndex
         )
       ),
+    // eslint-disable-next-line
     []
   );
 

@@ -650,7 +650,7 @@ const Pool: FunctionComponent = observer(() => {
         bgImageUrl="/images/osmosis-guy-in-lab.png"
       />
       <section className="bg-surface">
-        <div className="max-w-container mx-auto p-10">
+        <div className="max-w-container mx-auto md:p-5 p-10">
           <div className="flex lg:flex-col gap-6 place-content-between">
             <div className="max-w-md">
               <div className="flex lg:flex-col gap-3">
@@ -756,7 +756,7 @@ const Pool: FunctionComponent = observer(() => {
             ("delegations" in superfluid &&
               superfluid.delegations &&
               superfluid.delegations.length > 0)) && (
-            <div className="max-w-container mx-auto p-10 flex flex-col gap-4">
+            <div className="max-w-container mx-auto md:p-5 p-10 flex flex-col gap-4">
               {isMobile ? (
                 <span className="subtitle2">My Superfluid Stake</span>
               ) : (
@@ -794,14 +794,15 @@ const Pool: FunctionComponent = observer(() => {
               )}
             </div>
           )}
-        <div className="max-w-container mx-auto p-10">
+        <div className="max-w-container mx-auto md:p-5 p-10">
           {isMobile ? (
             <span className="subtitle2">My Bondings</span>
           ) : (
             <h6>My Bondings</h6>
           )}
           <Table
-            className="md:-mx-10 md:w-screen w-full my-5"
+            className="md:-mx-5 md:w-screen md:caption w-full my-5"
+            headerTrClassName="md:h-11"
             columnDefs={(
               [
                 {
@@ -923,14 +924,15 @@ const Pool: FunctionComponent = observer(() => {
           />
         </div>
         {userUnlockingAssets && userUnlockingAssets.length > 0 && (
-          <div className="max-w-container mx-auto p-10">
+          <div className="max-w-container mx-auto md:p-5 p-10">
             {isMobile ? (
               <span className="subtitle2">Unbondings</span>
             ) : (
               <h6>Unbondings</h6>
             )}
             <Table
-              className="md:-mx-10 md:w-screen w-full my-5"
+              className="md:-mx-5 md:w-screen md:caption w-full my-5"
+              headerTrClassName="md:h-11"
               columnDefs={[
                 {
                   display: "Unbonding Duration",
@@ -963,14 +965,15 @@ const Pool: FunctionComponent = observer(() => {
           !("upgradeableLPLockIds" in superfluid) &&
           superfluid.undelegations &&
           superfluid.undelegations.length > 0 && (
-            <div className="max-w-container mx-auto p-10">
+            <div className="max-w-container mx-auto md:p-5 p-10">
               {isMobile ? (
                 <span className="subtitle2">Superfluid Unbondings</span>
               ) : (
                 <h6>Superfluid Unbondings</h6>
               )}
               <Table
-                className="md:-mx-10 md:w-screen w-full my-5"
+                className="md:-mx-5 md:w-screen md:caption w-full my-5"
+                headerTrClassName="md:h-11"
                 columnDefs={[
                   {
                     display: "Validator",
@@ -1000,7 +1003,7 @@ const Pool: FunctionComponent = observer(() => {
               />
             </div>
           )}
-        <div className="max-w-container mx-auto p-10">
+        <div className="max-w-container mx-auto md:p-5 p-10">
           {isMobile ? (
             <span className="subtitle2">Pool Catalyst</span>
           ) : (
@@ -1015,7 +1018,8 @@ const Pool: FunctionComponent = observer(() => {
                   isLoading={!pool || !userPoolAssets}
                   className="md:w-full w-1/2 max-w-md"
                   percentDec={userAsset?.ratio.toString()}
-                  tokenMinimalDenom={userAsset?.asset.currency.coinDenom}
+                  tokenDenom={userAsset?.asset.currency.coinDenom}
+                  isMobile={isMobile}
                   metrics={[
                     {
                       label: "Total amount",
@@ -1036,7 +1040,7 @@ const Pool: FunctionComponent = observer(() => {
                       label: "My amount",
                       value: (
                         <MetricLoader isLoading={!userPoolAssets}>
-                          {userAsset?.asset.maxDecimals(0).toString()}
+                          {userAsset?.asset.maxDecimals(0).toString() ?? ""}
                         </MetricLoader>
                       ),
                     },

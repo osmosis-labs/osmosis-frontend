@@ -6,6 +6,7 @@ import { PoolAssetInfo, PoolAssetsIcon } from "../assets";
 
 // TODO: use truncateString to truncate ibc denoms w/ coinDenom config (overflow)
 
+/** For displaying a token and it's balance, or a pool overview. */
 export const AssetCard: FunctionComponent<
   {
     coinDenom: string;
@@ -14,6 +15,7 @@ export const AssetCard: FunctionComponent<
     metrics: Metric[];
     isSuperfluid?: boolean;
     onClick?: () => void;
+    contentClassName?: string;
   } & CustomClasses
 > = ({
   coinDenom,
@@ -23,6 +25,7 @@ export const AssetCard: FunctionComponent<
   isSuperfluid = false,
   onClick,
   className,
+  contentClassName,
 }) => (
   <div
     className={classNames(
@@ -35,7 +38,12 @@ export const AssetCard: FunctionComponent<
     )}
     onClick={() => onClick?.()}
   >
-    <div className="flex items-center place-content-between p-4 w-full bg-card rounded-lginset">
+    <div
+      className={classNames(
+        "flex items-center place-content-between p-4 w-full bg-card rounded-lginset",
+        contentClassName
+      )}
+    >
       <div className="flex items-center gap-3">
         {coinImageUrl &&
           (Array.isArray(coinImageUrl) ? (

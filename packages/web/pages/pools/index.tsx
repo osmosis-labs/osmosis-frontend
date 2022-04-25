@@ -22,7 +22,7 @@ import {
   usePaginatedData,
   useSortedData,
 } from "../../hooks";
-import { CompactTableDisplay } from "../../components/complex/compact-table-display";
+import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
@@ -310,7 +310,7 @@ const Pools: NextPage = observer(function () {
                   <span className="text-superfluid">Superfluid Pools</span>
                 ),
                 content: (
-                  <CompactTableDisplay
+                  <CompactPoolTableDisplay
                     title="Superfluid Pools"
                     pools={
                       sfsPoolsPage?.map(

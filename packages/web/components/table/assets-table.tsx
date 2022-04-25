@@ -191,6 +191,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             if (chainId) {
               onDeposit(chainId, selectedTransferToken.denom);
             }
+            setShowPreTransfer(false);
           }}
           onWithdraw={() => {
             const chainId = ibcBalances.find(
@@ -200,6 +201,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             if (chainId) {
               onWithdraw(chainId, selectedTransferToken.denom);
             }
+            setShowPreTransfer(false);
           }}
           onSelectToken={(coinDenom) => {
             const ibcToken = ibcBalances.find(

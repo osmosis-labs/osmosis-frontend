@@ -14,7 +14,7 @@ import { SearchBox } from "../input";
 import { RowDef, Table } from "../table";
 import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
 import { Breakpoint } from "../types";
-import { CompactTableDisplay } from "./compact-table-display";
+import { CompactPoolTableDisplay } from "./compact-pool-table-display";
 
 const poolsMenuOptions = [
   { id: "incentivized-pools", display: "Incentivized Pools" },
@@ -239,7 +239,7 @@ export const AllPoolsTableSet: FunctionComponent<{
 
   if (isMobile) {
     return (
-      <CompactTableDisplay
+      <CompactPoolTableDisplay
         title={isIncentivizedPools ? "Incentivized Pools" : "All Pools"}
         pools={allData.map((poolData) => ({
           id: poolData.pool.id,

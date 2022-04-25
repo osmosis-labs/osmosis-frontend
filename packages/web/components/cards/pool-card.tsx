@@ -49,9 +49,10 @@ export const PoolCard: FunctionComponent<
             {poolMetrics.map((metric, index) => (
               <span
                 key={index}
-                className={
+                className={classNames(
+                  "flex items-center place-content-end",
                   index === 0 ? "subtitle2" : "caption text-white-disabled"
-                }
+                )}
               >
                 {metric.value} {index !== 0 && metric.label}
               </span>
