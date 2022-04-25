@@ -31,11 +31,7 @@ export const SuperfluidValidatorCard: FunctionComponent<
       <div className="flex place-content-between">
         <div className="flex gap-3">
           <div className="rounded-full border border-enabledGold w-14 h-14 p-1 flex shrink-0">
-            <img
-              className="rounded-full"
-              alt="validator image"
-              src={validatorImgSrc}
-            />
+            <img className="rounded-full" alt="" src={validatorImgSrc} />
           </div>
           <div className="flex flex-col place-content-evenly">
             <span className="subtitle2 md:text-sm text-white-high">

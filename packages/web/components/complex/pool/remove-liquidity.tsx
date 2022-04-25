@@ -18,7 +18,7 @@ export const RemoveLiquidity: FunctionComponent<Props> = observer(
     return (
       <div className="flex flex-col text-center">
         {isMobile ? (
-          <h5 className="mt-12">{`${config.percentage}%`}</h5>
+          <h5 className="mt-5">{`${config.percentage}%`}</h5>
         ) : (
           <h2 className="mt-12">{`${config.percentage}%`}</h2>
         )}

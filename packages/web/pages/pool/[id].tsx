@@ -811,7 +811,7 @@ const Pool: FunctionComponent = observer(() => {
                   displayCell:
                     superfluid && superfluid !== "not-superfluid-pool"
                       ? ({ value, isSuperfluidDuration }) => (
-                          <div className="flex gap-3">
+                          <div className="flex items-center gap-3">
                             <span>{value ?? ""}</span>
                             {isSuperfluidDuration && (
                               <Image

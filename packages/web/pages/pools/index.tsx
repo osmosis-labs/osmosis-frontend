@@ -220,7 +220,9 @@ const Pools: NextPage = observer(function () {
                   let myPoolMetrics = [
                     {
                       label: "APR",
-                      value: (
+                      value: isMobile ? (
+                        apr.maxDecimals(2).toString()
+                      ) : (
                         <MetricLoader
                           isLoading={
                             queryOsmosis.queryIncentivizedPools.isAprFetching
@@ -232,7 +234,9 @@ const Pools: NextPage = observer(function () {
                     },
                     {
                       label: "Pool Liquidity",
-                      value: (
+                      value: isMobile ? (
+                        poolLiquidity.toString()
+                      ) : (
                         <MetricLoader
                           isLoading={poolLiquidity.toDec().isZero()}
                         >
@@ -242,7 +246,9 @@ const Pools: NextPage = observer(function () {
                     },
                     {
                       label: "Bonded",
-                      value: (
+                      value: isMobile ? (
+                        myBonded.toString()
+                      ) : (
                         <MetricLoader
                           isLoading={poolLiquidity.toDec().isZero()}
                         >

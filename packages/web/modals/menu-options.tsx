@@ -19,7 +19,7 @@ export const MenuOptionsModal: FunctionComponent<
     <span className="w-full subtitle1 text-center p-2 text-white-high">
       {props.title}
     </span>
-    <div className="mx-3 shadow-separator h-px" />
+    <hr className="mx-3 shadow-separator h-px text-white-faint" />
     <div className="flex flex-col">
       {props.options.map(({ id, display }, index) => (
         <span
