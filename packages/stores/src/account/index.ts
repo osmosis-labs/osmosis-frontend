@@ -447,9 +447,9 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "swapExactAmountIn",
       async () => {
+        await queries.queryGammPools.waitFreshResponse();
         const pools: Pool[] = [];
         for (const route of routes) {
-          await queries.queryGammPools.waitFreshResponse();
           const queryPool = queries.queryGammPools.getPool(route.poolId);
 
           if (!queryPool) {
@@ -485,9 +485,12 @@ export class OsmosisAccountImpl {
               tokenOutCurrency.coinMinimalDenom
             );
 
+            console.log(pool.swapFee);
+
             return {
               pool: {
-                ...pool,
+                id: pool.id,
+                swapFee: pool.swapFee,
                 inPoolAsset: {
                   ...inPoolAsset.amount.currency,
                   amount: inPoolAsset.amount.toDec().truncate(),

@@ -199,14 +199,19 @@ export class TradeTokenInConfig extends AmountConfig {
       return [];
     }
 
-    return this.optimizedRoutes.getOptimizedRoutesByTokenIn(
-      {
-        denom: amount.denom,
-        amount: new Int(amount.amount),
-      },
-      this.outCurrency.coinMinimalDenom,
-      5
-    );
+    try {
+      return this.optimizedRoutes.getOptimizedRoutesByTokenIn(
+        {
+          denom: amount.denom,
+          amount: new Int(amount.amount),
+        },
+        this.outCurrency.coinMinimalDenom,
+        5
+      );
+    } catch (e) {
+      console.log(e);
+      return [];
+    }
   }
 
   @computed

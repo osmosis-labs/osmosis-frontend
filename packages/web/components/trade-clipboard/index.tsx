@@ -11,6 +11,7 @@ import { Pool } from "@osmosis-labs/pools";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import AutosizeInput from "react-input-autosize";
+import { Currency } from "@keplr-wallet/types";
 
 export const TradeClipboard = observer<
   {
@@ -398,7 +399,76 @@ export const TradeClipboard = observer<
             </div>
           </div>
 
-          <button className="mt-[1.125rem] flex justify-center items-center w-full h-[3.75rem] rounded-lg bg-primary-200 text-white-full text-base font-medium shadow-md">
+          {/* TODO: Styling warning/error case. Render loading state. Handle rejection. */}
+          <button
+            className="mt-[1.125rem] flex justify-center items-center w-full h-[3.75rem] rounded-lg bg-primary-200 text-white-full text-base font-medium shadow-md"
+            disabled={
+              tradeTokenInConfig.error != null &&
+              tradeTokenInConfig.optimizedRoutePaths.length > 0
+            }
+            onClick={async (e) => {
+              e.preventDefault();
+
+              if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
+                // TODO: Only multihop is supported yet.
+                const routes: {
+                  poolId: string;
+                  tokenOutCurrency: Currency;
+                }[] = [];
+
+                for (
+                  let i = 0;
+                  i < tradeTokenInConfig.optimizedRoutePaths[0].pools.length;
+                  i++
+                ) {
+                  const pool =
+                    tradeTokenInConfig.optimizedRoutePaths[0].pools[i];
+                  const tokenOutCurrency =
+                    chainStore.osmosisObservable.currencies.find(
+                      (cur) =>
+                        cur.coinMinimalDenom ===
+                        tradeTokenInConfig.optimizedRoutePaths[0]
+                          .tokenOutDenoms[i]
+                    );
+
+                  if (!tokenOutCurrency) {
+                    throw new Error(
+                      `Failed to find currency ${tradeTokenInConfig.optimizedRoutePaths[0].tokenOutDenoms[i]}`
+                    );
+                  }
+
+                  routes.push({
+                    poolId: pool.id,
+                    tokenOutCurrency,
+                  });
+                }
+
+                const tokenInCurrency =
+                  chainStore.osmosisObservable.currencies.find(
+                    (cur) =>
+                      cur.coinMinimalDenom ===
+                      tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom
+                  );
+
+                if (!tokenInCurrency) {
+                  throw new Error(
+                    `Failed to find currency ${tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom}`
+                  );
+                }
+
+                await account.osmosis.sendMultihopSwapExactAmountInMsg(
+                  routes,
+                  {
+                    currency: tokenInCurrency,
+                    amount: tradeTokenInConfig.amount,
+                  },
+                  slippageConfig.slippage.symbol("").toString()
+                );
+
+                // TODO: Notify error if thrown ?
+              }
+            }}
+          >
             Swap
           </button>
         </div>
