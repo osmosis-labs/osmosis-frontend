@@ -5,18 +5,30 @@ import { Disableable, CustomClasses } from "../types";
 import { ToggleProps } from "./types";
 
 export const CheckBox: FunctionComponent<
-  ToggleProps & Disableable & CustomClasses
-> = ({ isOn, onToggle: onToggle, disabled = false, className, children }) => (
+  ToggleProps & Disableable & CustomClasses & { labelClassName?: string }
+> = ({
+  isOn,
+  onToggle: onToggle,
+  disabled = false,
+  labelClassName,
+  className,
+  children,
+}) => (
   <div>
-    <label className="relative flex items-center select-none">
+    <label
+      className={classNames(
+        "relative flex items-center select-none",
+        labelClassName
+      )}
+    >
       {isOn && (
         <div
           className={classNames(
-            "cursor-pointer h-full mt-1 absolute z-10",
+            "cursor-pointer h-full mt-1 absolute top-1/5 -left-0.5 z-20 my-auto",
             disabled ? "cursor-default opacity-50" : null
           )}
         >
-          <Image alt="" src="/icons/check-mark.svg" height={20} width={20} />
+          <Image alt="" src="/icons/check-mark.svg" height={24} width={24} />
         </div>
       )}
       <input

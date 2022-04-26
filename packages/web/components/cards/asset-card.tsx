@@ -40,7 +40,7 @@ export const AssetCard: FunctionComponent<
   >
     <div
       className={classNames(
-        "flex items-center place-content-between p-4 w-full bg-card rounded-lginset",
+        "flex items-center place-content-between p-4 w-full bg-background rounded-lginset",
         contentClassName
       )}
     >

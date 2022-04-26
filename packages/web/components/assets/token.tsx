@@ -25,9 +25,7 @@ export const Token: FunctionComponent<
     <div className="flex flex-col place-content-center">
       {isMobile ? <h6>{coinDenom}</h6> : <h5>{coinDenom}</h5>}
       {networkName && !isMobile && (
-        <span className="text-subtitle2 font-subtitle2 text-iconDefault">
-          {networkName}
-        </span>
+        <span className="subtitle2 text-iconDefault">{networkName}</span>
       )}
     </div>
   </div>

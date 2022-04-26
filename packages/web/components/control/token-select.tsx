@@ -3,14 +3,23 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import { useBooleanWithWindowEvent, useFilteredData } from "../../hooks";
+import { MobileProps } from "../types";
 
 /** Will display balances if provided CoinPretty objects. Assumes denoms are unique. */
-export const TokenSelect: FunctionComponent<{
-  selectedTokenDenom: string;
-  tokens: (CoinPretty | AppCurrency)[];
-  onSelect: (tokenDenom: string) => void;
-  sortByBalances?: boolean;
-}> = ({ selectedTokenDenom, tokens, onSelect, sortByBalances = false }) => {
+export const TokenSelect: FunctionComponent<
+  {
+    selectedTokenDenom: string;
+    tokens: (CoinPretty | AppCurrency)[];
+    onSelect: (tokenDenom: string) => void;
+    sortByBalances?: boolean;
+  } & MobileProps
+> = ({
+  selectedTokenDenom,
+  tokens,
+  onSelect,
+  sortByBalances = false,
+  isMobile = false,
+}) => {
   const [isSelectOpen, setIsSelectOpen] = useBooleanWithWindowEvent(false);
   const selectedToken = tokens.find(
     (token) =>
@@ -48,21 +57,25 @@ export const TokenSelect: FunctionComponent<{
           setIsSelectOpen(!isSelectOpen);
         }}
       >
-        <div className="w-14 h-14 rounded-full border border-enabledGold flex items-center justify-center shrink-0 mr-3">
+        <div className="w-14 h-14 md:h-9 md:w-9 rounded-full border border-enabledGold flex items-center justify-center shrink-0 mr-3">
           {selectedCurrency?.coinImageUrl && (
-            <div className="w-11 h-11 rounded-full">
+            <div className="w-11 h-11 md:h-7 md:w-7 rounded-full">
               <Image
                 src={selectedCurrency.coinImageUrl}
                 alt="token icon"
                 className="rounded-full"
-                width={44}
-                height={44}
+                width={isMobile ? 30 : 44}
+                height={isMobile ? 30 : 44}
               />
             </div>
           )}
         </div>
         <div>
-          <h5 className="text-white-full">{selectedCurrency?.coinDenom}</h5>
+          {isMobile ? (
+            <span className="subtitle2">{selectedCurrency?.coinDenom}</span>
+          ) : (
+            <h5>{selectedCurrency?.coinDenom}</h5>
+          )}
         </div>
         <div className="w-5 ml-3 pb-1">
           <Image
