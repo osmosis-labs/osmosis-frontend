@@ -73,8 +73,8 @@ export const CompactPoolTableDisplay: FunctionComponent<{
         ))}
       </div>
       <div
-        className={classNames("flex items-center p-4", {
-          "place-content-between":
+        className={classNames("flex items-center flex-wrap gap-2 p-4", {
+          "place-content-between xs:justify-center ":
             minTvlToggleProps !== undefined && pageListProps !== undefined,
           "place-content-around":
             minTvlToggleProps === undefined || pageListProps === undefined,
