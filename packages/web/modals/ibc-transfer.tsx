@@ -272,12 +272,23 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           </div>
           <div className="w-full md:mt-6 mt-9 flex items-center justify-center">
             {!(account.walletStatus === WalletStatus.Loaded) ? (
-              <Button onClick={() => account.init()}>
-                <span>Connect Wallet</span>
+              <Button
+                className="md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl"
+                onClick={() => account.init()}
+              >
+                <h6 className="flex items-center gap-3">
+                  <Image
+                    alt="wallet"
+                    src="/icons/wallet.svg"
+                    height={24}
+                    width={24}
+                  />
+                  Connect Wallet
+                </h6>
               </Button>
             ) : (
               <Button
-                className="md:w-full w-2/3 md:p-4 p-6 bg-primary-200 rounded-2xl flex items-center justify-center hover:opacity-75 disabled:opacity-50"
+                className="md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl"
                 disabled={
                   !account.isReadyToSendTx ||
                   !counterpartyAccount.isReadyToSendTx ||
