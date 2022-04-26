@@ -1240,7 +1240,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		coinType: 118,
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'ibc-go', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://www.mintscan.io/akash/txs/{txHash}',
 	},
 	{
