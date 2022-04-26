@@ -13,6 +13,7 @@ import { makeIBCMinimalDenom } from 'src/utils/ibc';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { Dec } from '@keplr-wallet/unit';
+import { IconExternalLink } from 'src/icons';
 
 const tableWidths = ['45%', '25%', '15%', '15%'];
 const tableWidthsOnMobileView = ['70%', '30%'];
@@ -168,6 +169,8 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 									.maxDecimals(6)
 									.toString()}
 								totalFiatValue={totalFiatValue}
+								isExternalDeposit={bal.depositUrlOverride !== undefined}
+								isExternalWithdraw={bal.withdrawUrlOverride !== undefined}
 								onDeposit={() => {
 									if (bal.depositUrlOverride) {
 										window.open(bal.depositUrlOverride, '_blank');
@@ -268,6 +271,8 @@ interface AssetBalanceRowProps {
 	currency: AppCurrency;
 	balance: string;
 	totalFiatValue?: PricePretty;
+	isExternalDeposit?: boolean;
+	isExternalWithdraw?: boolean;
 	onDeposit?: () => void;
 	onWithdraw?: () => void;
 	isUnstable?: boolean;
@@ -281,6 +286,8 @@ function AssetBalanceRow({
 	currency,
 	balance,
 	totalFiatValue,
+	isExternalDeposit,
+	isExternalWithdraw,
 	onDeposit,
 	onWithdraw,
 	isUnstable,
@@ -328,7 +335,11 @@ function AssetBalanceRow({
 											style={{ display: 'flex', alignItems: 'center' }}
 											disabled={isUnstable === true}>
 											<p className="text-sm text-secondary-200 leading-none">Deposit</p>
-											<img alt="right" src={'/public/assets/Icons/Right.svg'} />
+											{isExternalDeposit ? (
+												<IconExternalLink className="ml-2" fill="#C4A46A" fillOpacity="1" />
+											) : (
+												<img alt="right" src={'/public/assets/Icons/Right.svg'} />
+											)}
 										</ButtonFaint>
 										{isUnstable ? (
 											<div
@@ -357,7 +368,11 @@ function AssetBalanceRow({
 											style={{ display: 'flex', alignItems: 'center' }}
 											disabled={isUnstable === true}>
 											<p className="text-sm text-secondary-200 leading-none">Withdraw</p>
-											<img alt="right" src={'/public/assets/Icons/Right.svg'} />
+											{isExternalWithdraw ? (
+												<IconExternalLink className="ml-2" fill="#C4A46A" fillOpacity="1" />
+											) : (
+												<img alt="right" src={'/public/assets/Icons/Right.svg'} />
+											)}
 										</ButtonFaint>
 										{isUnstable ? (
 											<div

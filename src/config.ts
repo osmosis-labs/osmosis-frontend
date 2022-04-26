@@ -70,6 +70,7 @@ export const LockupAbledPoolIds: {
 	'643': true,
 	'648': true,
 	'651': true,
+	'653': true,
 	'662': true,
 	'669': true,
 	'670': true,
@@ -710,6 +711,12 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/8FEFAE6AECF6E2A255585617F781F35A8D5709A545A804482A261C0C9548A9D3',
 		},
 	],
+	'653': [
+		{
+			gaugeId: '3048',
+			denom: 'ibc/C2A2E9CA95DDD4828B75124B5E27B8401C7D8493BC48353D418CBFC04565899B',
+		},
+	],
 	'662': [
 		{
 			gaugeId: '2591',
@@ -1136,6 +1143,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-144',
 		destChannelId: 'channel-10',
 		coinMinimalDenom: 'gravity0xdAC17F958D2ee523a2206206994597C13D831ec7',
+	},
+	{
+		counterpartyChainId: 'mantle-1',
+		sourceChannelId: 'channel-232',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'umntl',
 	},
 	{
 		counterpartyChainId: 'fetchhub-4',
@@ -2954,28 +2967,28 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		bech32Config: Bech32Address.defaultBech32Config('axelar'),
 		currencies: [
 			{
-				coinDenom: 'ax-USDC',
+				coinDenom: 'axl-USDC',
 				coinMinimalDenom: 'uusdc',
 				coinDecimals: 6,
 				coinGeckoId: 'usd-coin',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.svg',
 			},
 			{
-				coinDenom: 'ax-FRAX',
+				coinDenom: 'axl-FRAX',
 				coinMinimalDenom: 'frax-wei',
 				coinDecimals: 18,
 				coinGeckoId: 'frax',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/frax.svg',
 			},
 			{
-				coinDenom: 'ax-USDT',
+				coinDenom: 'axl-USDT',
 				coinMinimalDenom: 'uusdt',
 				coinDecimals: 6,
 				coinGeckoId: 'tether',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.svg',
 			},
 			{
-				coinDenom: 'ax-DAI',
+				coinDenom: 'axl-DAI',
 				coinMinimalDenom: 'dai-wei',
 				coinDecimals: 18,
 				coinGeckoId: 'dai',
@@ -2999,7 +3012,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://axelarscan.io/tx/{txHash}',
 	},
-  {
+	{
 		rpc: 'https://rpc-fetchhub.fetch.ai:443',
 		rest: 'https://rest-fetchhub.fetch.ai',
 		chainId: 'fetchhub-4',
@@ -3040,6 +3053,43 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/fetchai/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.assetmantle.one/',
+		rest: 'https://rest.assetmantle.one/',
+		chainId: 'mantle-1',
+		chainName: 'AssetMantle',
+		stakeCurrency: {
+			coinDenom: 'MNTL',
+			coinMinimalDenom: 'umntl',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:umntl',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/mntl.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('mantle'),
+		currencies: [
+			{
+				coinDenom: 'MNTL',
+				coinMinimalDenom: 'umntl',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:umntl',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/mntl.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'MNTL',
+				coinMinimalDenom: 'umntl',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:umntl',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/mntl.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/asset-mantle/txs/{txHash}',
 	},
 	{
 		rpc: 'https://rpc.provenance.io/',
