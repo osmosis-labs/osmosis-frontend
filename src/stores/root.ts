@@ -1404,6 +1404,24 @@ export class RootStore {
 				],
 			},
 			{
+				poolId: '691',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom(
+							[{ portId: 'transfer', channelId: 'channel-169' }],
+							'cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq'
+						),
+						coinDenom: 'BLOCK',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
 				poolId: '651',
 				currencies: [
 					{
@@ -1630,24 +1648,6 @@ export class RootStore {
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-232' }], 'umntl'),
 						coinDenom: 'MNTL',
-						coinDecimals: 6,
-					},
-					{
-						coinMinimalDenom: 'uosmo',
-						coinDenom: 'OSMO',
-						coinDecimals: 6,
-					},
-				],
-			},
-			{
-				poolId: '691',
-				currencies: [
-					{
-						coinMinimalDenom: DenomHelper.ibcDenom(
-							[{ portId: 'transfer', channelId: 'channel-169' }],
-							'cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq'
-						),
-						coinDenom: 'BLOCK',
 						coinDecimals: 6,
 					},
 					{
