@@ -47,7 +47,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
     >
       {!hideCloseButton && (
         <div
-          className="absolute md:top-2 md:right-2 top-5 right-5 cursor-pointer z-50"
+          className="absolute md:top-4 md:right-4 top-5 right-5 cursor-pointer z-50"
           onClick={onRequestClose}
         >
           <Image
