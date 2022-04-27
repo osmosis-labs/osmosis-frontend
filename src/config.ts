@@ -1124,6 +1124,12 @@ export const IBCAssetInfos: {
 		counterpartyChainId: 'gravity-bridge-3',
 		sourceChannelId: 'channel-144',
 		destChannelId: 'channel-10',
+		coinMinimalDenom: 'gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+	},
+	{
+		counterpartyChainId: 'gravity-bridge-3',
+		sourceChannelId: 'channel-144',
+		destChannelId: 'channel-10',
 		coinMinimalDenom: 'gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
 	},
 	{
@@ -2912,6 +2918,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 18,
 				coinGeckoId: 'pstake-finance',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/pstake.png',
+			},
+			{
+				coinDenom: 'g-WBTC',
+				coinMinimalDenom: 'gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+				coinDecimals: 8,
+				coinGeckoId: 'wrapped-bitcoin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/wbtc.png',
 			},
 			{
 				coinDenom: 'g-WETH',

@@ -1503,6 +1503,25 @@ export class RootStore {
 				],
 			},
 			{
+				poolId: '694',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom(
+							[{ portId: 'transfer', channelId: 'channel-144' }],
+							'gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
+						),
+						coinDenom: 'WBTC',
+						coinDecimals: 8,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-0' }], 'uatom'),
+						coinDenom: 'ATOM',
+						coinDecimals: 6,
+					},
+				],
+			},
+
+			{
 				poolId: '634',
 				currencies: [
 					{
