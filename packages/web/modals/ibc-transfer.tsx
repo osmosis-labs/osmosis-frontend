@@ -69,7 +69,20 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   <span className="text-sm text-primary-50">Copied!</span>
                 )}
               </p>
-              <div className="flex items-center place-content-between">
+              <div
+                className="flex items-center gap-3"
+                onClick={() => {
+                  if (isMobile) {
+                    navigator.clipboard
+                      .writeText(
+                        isWithdraw
+                          ? account.bech32Address
+                          : counterpartyAccount.bech32Address
+                      )
+                      .then(() => setShowFromCopied(true));
+                  }
+                }}
+              >
                 <p className="text-white-disabled truncate overflow-ellipsis">
                   {Bech32Address.shortenAddress(
                     isWithdraw
@@ -84,15 +97,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     src="/icons/copy.svg"
                     height={20}
                     width={20}
-                    onClick={() =>
-                      navigator.clipboard
-                        .writeText(
-                          isWithdraw
-                            ? account.bech32Address
-                            : counterpartyAccount.bech32Address
-                        )
-                        .then(() => setShowFromCopied(true))
-                    }
                   />
                 )}
               </div>
@@ -150,7 +154,23 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                       ]}
                     />
                   ) : (
-                    <div className="flex items-center place-content-between">
+                    <div
+                      className="flex items-center gap-3"
+                      onClick={() => {
+                        if (isMobile) {
+                          navigator.clipboard
+                            .writeText(
+                              isWithdraw
+                                ? wasCustomWithdrawAddrEntered &&
+                                  customCounterpartyConfig
+                                  ? customCounterpartyConfig.bech32Address
+                                  : counterpartyAccount.bech32Address
+                                : account.bech32Address
+                            )
+                            .then(() => setShowToCopied(true));
+                        }
+                      }}
+                    >
                       <p className="text-white-disabled truncate overflow-ellipsis">
                         {Bech32Address.shortenAddress(
                           isWithdraw
@@ -168,18 +188,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                           src="/icons/copy.svg"
                           height={20}
                           width={20}
-                          onClick={() =>
-                            navigator.clipboard
-                              .writeText(
-                                isWithdraw
-                                  ? wasCustomWithdrawAddrEntered &&
-                                    customCounterpartyConfig
-                                    ? customCounterpartyConfig.bech32Address
-                                    : counterpartyAccount.bech32Address
-                                  : account.bech32Address
-                              )
-                              .then(() => setShowToCopied(true))
-                          }
                         />
                       )}
                     </div>
