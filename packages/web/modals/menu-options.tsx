@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { MenuOption } from "../components/control";
 import { ModalBase, ModalBaseProps } from "./base";
 
+/** Intended for mobile use only - full screen alternative to menu options dropdown. */
 export const MenuOptionsModal: FunctionComponent<
   ModalBaseProps & {
     selectedOptionId?: string;
@@ -15,6 +16,7 @@ export const MenuOptionsModal: FunctionComponent<
     {...props}
     hideCloseButton
     title=""
+    overlayClassName="-bottom-3/4"
   >
     <span className="w-full subtitle1 text-center p-2 text-white-high">
       {props.title}
