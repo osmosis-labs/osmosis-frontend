@@ -616,7 +616,7 @@ const Pool: FunctionComponent = observer(() => {
                 className="h-7 w-56"
                 isLoading={!pool || !totalValueLocked}
               >
-                {totalValueLocked!.toString()}
+                {totalValueLocked?.toString()}
               </MetricLoader>
             ),
           },
@@ -624,7 +624,7 @@ const Pool: FunctionComponent = observer(() => {
             label: "My Liquidity",
             value: (
               <MetricLoader className="h-7 " isLoading={!userLockedValue}>
-                {userLockedValue!.toString()}
+                {userLockedValue?.toString() ?? `0${fiat.symbol}`}
               </MetricLoader>
             ),
           },
@@ -634,7 +634,7 @@ const Pool: FunctionComponent = observer(() => {
             label: "Bonded",
             value: (
               <MetricLoader className="h-4" isLoading={!userBondedValue}>
-                {userBondedValue!.toString()}
+                {userBondedValue?.toString() ?? `0${fiat.symbol}`}
               </MetricLoader>
             ),
           },
@@ -642,7 +642,7 @@ const Pool: FunctionComponent = observer(() => {
             label: "Swap Fee",
             value: (
               <MetricLoader className="h-4" isLoading={!pool}>
-                {pool!.swapFee.toString()}
+                {pool?.swapFee.toString() ?? "0%"}
               </MetricLoader>
             ),
           },
@@ -1037,14 +1037,17 @@ const Pool: FunctionComponent = observer(() => {
                       label: "Total amount",
                       value: (
                         <MetricLoader isLoading={!userPoolAssets}>
-                          {pool?.poolAssets
-                            .find(
-                              (asset) =>
-                                asset.amount.currency.coinDenom ===
-                                userAsset?.asset.currency.coinDenom
-                            )
-                            ?.amount.maxDecimals(0)
-                            .toString() ?? "0"}
+                          {truncateString(
+                            pool?.poolAssets
+                              .find(
+                                (asset) =>
+                                  asset.amount.currency.coinDenom ===
+                                  userAsset?.asset.currency.coinDenom
+                              )
+                              ?.amount.maxDecimals(0)
+                              .toString() ?? "0",
+                            30
+                          )}
                         </MetricLoader>
                       ),
                     },
@@ -1052,7 +1055,10 @@ const Pool: FunctionComponent = observer(() => {
                       label: "My amount",
                       value: (
                         <MetricLoader isLoading={!userPoolAssets}>
-                          {userAsset?.asset.maxDecimals(0).toString() ?? ""}
+                          {truncateString(
+                            userAsset?.asset.maxDecimals(0).toString() ?? "",
+                            30
+                          )}
                         </MetricLoader>
                       ),
                     },

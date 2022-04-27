@@ -47,6 +47,7 @@ export const AllPoolsTableSet: FunctionComponent<{
   const queriesOsmosis = queriesStore.get(chainId).osmosis;
   const queriesExternal = queriesExternalStore.get();
   const account = accountStore.getAccount(chainId);
+  const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
 
   const allPools = queriesOsmosis.queryGammPools.getAllPools();
   const incentivizedPoolIds =
@@ -264,7 +265,8 @@ export const AllPoolsTableSet: FunctionComponent<{
                 : sortKeyPath === "myLiquidity"
                 ? {
                     label: "my liquidity",
-                    value: poolData.myLiquidity?.toString() ?? "0$",
+                    value:
+                      poolData.myLiquidity?.toString() ?? `0${fiat.symbol}`,
                   }
                 : { label: "TVL", value: poolData.liquidity.toString() },
             ],

@@ -4,6 +4,7 @@ import { CustomClasses, MobileProps } from "../types";
 import { MetricLoader } from "../loaders";
 import { CatalystIcon } from "../assets/catalyst-icon";
 import { Metric, LoadingProps } from "../types";
+import { truncateString } from "../utils";
 
 export const PoolCatalystCard: FunctionComponent<
   {
@@ -38,7 +39,7 @@ export const PoolCatalystCard: FunctionComponent<
         </MetricLoader>
         <MetricLoader isLoading={isLoading}>
           <span className="text-subtitle2 md:body2 text-white-mid">
-            {tokenDenom ?? ""}
+            {truncateString(tokenDenom ?? "")}
           </span>
         </MetricLoader>
       </div>
