@@ -3099,6 +3099,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		stakeCurrency: {
 			coinDenom: 'HASH',
 			coinMinimalDenom: 'nhash',
+			coinGeckoId: 'pool:nhash',
 			coinDecimals: 9,
 			coinImageUrl: window.location.origin + '/public/assets/tokens/hash.svg',
 		},
@@ -3110,6 +3111,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			{
 				coinDenom: 'HASH',
 				coinMinimalDenom: 'nhash',
+				coinGeckoId: 'pool:nhash',
 				coinDecimals: 9,
 				coinImageUrl: window.location.origin + '/public/assets/tokens/hash.svg',
 			},
@@ -3118,6 +3120,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			{
 				coinDenom: 'HASH',
 				coinMinimalDenom: 'nhash',
+				coinGeckoId: 'pool:nhash',
 				coinDecimals: 9,
 				coinImageUrl: window.location.origin + '/public/assets/tokens/hash.svg',
 			},

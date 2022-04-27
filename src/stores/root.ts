@@ -354,7 +354,7 @@ export class RootStore {
 				},
 				{
 					alternativeCoinId: 'pool:nhash',
-					poolId: '692',
+					poolId: '693',
 					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-222' }], 'nhash'),
 					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'osmosis',
@@ -1637,7 +1637,7 @@ export class RootStore {
 				],
 			},
 			{
-				poolId: '692',
+				poolId: '693',
 				currencies: [
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-222' }], 'nhash'),
