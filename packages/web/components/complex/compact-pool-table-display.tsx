@@ -60,7 +60,7 @@ export const CompactPoolTableDisplay: FunctionComponent<{
             coinDenom={assets.map((asset) => asset.coinDenom).join("/")}
             coinImageUrl={assets}
             metrics={metrics}
-            coinDenomCaption={`Lab #${id}`}
+            coinDenomCaption={`Pool #${id}`}
             isSuperfluid={isSuperfluid}
             onClick={() => {
               if (onClickPoolCard) {
