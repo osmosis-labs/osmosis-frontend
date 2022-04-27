@@ -68,26 +68,37 @@ export const Overview: FunctionComponent<Props> = ({
             )}
             <div className="flex flex-wrap md:gap-2 gap-5">
               {titleButtons?.slice(0, 2).map(({ label, onClick }, index) => (
-                <Button key={index} color="primary" size="sm" onClick={onClick}>
-                  {label}
+                <Button
+                  className="md:px-1"
+                  key={index}
+                  color="primary"
+                  size="sm"
+                  onClick={onClick}
+                >
+                  <span className="md:caption">{label}</span>
                 </Button>
               ))}
             </div>
           </div>
-          <div className="mt-6 flex flex-wrap items-center md:gap-9 gap-20">
+          <div className="mt-6 flex flex-wrap md:gap-9 gap-20">
             {primaryOverviewLabels
               .slice(0, bgImageUrl ? 2 : 4)
               .map((label, index) => (
-                <OverviewLabelValue key={index} {...label} />
+                <OverviewLabelValue
+                  key={index}
+                  {...label}
+                  isMobile={isMobile}
+                />
               ))}
           </div>
           {secondaryOverviewLabels && (
-            <div className="mt-6 flex flex-wrap items-center md:gap-9 gap-20">
+            <div className="mt-6 flex flex-wrap md:gap-9 gap-20">
               {secondaryOverviewLabels.slice(0, 3).map((label, index) => (
                 <OverviewLabelValue
                   prominence="secondary"
                   key={index}
                   {...label}
+                  isMobile={isMobile}
                 />
               ))}
             </div>

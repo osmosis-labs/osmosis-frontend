@@ -23,7 +23,9 @@ export const PoolCatalystCard: FunctionComponent<
   isLoading,
   isMobile,
 }) => (
-  <div className={classNames("min-w-fit bg-card rounded-xl p-6", className)}>
+  <div
+    className={classNames("min-w-fit bg-card rounded-xl p-6 md:p-5", className)}
+  >
     <div className="flex gap-5">
       <CatalystIcon
         gradientKey={colorKey}

@@ -1,8 +1,8 @@
 import { FunctionComponent } from "react";
 import classNames from "classnames";
-import { Metric } from "../types";
+import { CustomClasses, Metric, MobileProps } from "../types";
 
-interface Props extends Metric {
+interface Props extends Metric, MobileProps {
   containerClassName?: string;
   labelClassName?: string;
   valueClassName?: string;
@@ -16,13 +16,43 @@ export const OverviewLabelValue: FunctionComponent<Props> = ({
   prominence = "primary",
   label,
   value,
+  isMobile = false,
 }) => (
-  <div className={classNames("flex flex-col", containerClassName)}>
+  <div
+    className={classNames(
+      "flex flex-col justify-items-start",
+      containerClassName
+    )}
+  >
     <div className={classNames("text-white-mid", labelClassName)}>{label}</div>
     {prominence === "primary" ? (
-      <h4 className={classNames("mt-3", valueClassName)}>{value}</h4>
+      <PrimaryMetric className={valueClassName} isMobile={isMobile}>
+        {value}
+      </PrimaryMetric>
     ) : (
-      <h6 className={classNames("mt-3", valueClassName)}>{value}</h6>
+      <SecondaryMetric className={valueClassName} isMobile={isMobile}>
+        {value}
+      </SecondaryMetric>
     )}
   </div>
 );
+
+export const PrimaryMetric: FunctionComponent<MobileProps & CustomClasses> = ({
+  isMobile = false,
+  className,
+  children,
+}) =>
+  isMobile ? (
+    <h5 className={classNames("mt-3", className)}>{children}</h5>
+  ) : (
+    <h4 className={classNames("mt-3", className)}>{children}</h4>
+  );
+
+export const SecondaryMetric: FunctionComponent<
+  MobileProps & CustomClasses
+> = ({ isMobile = false, className, children }) =>
+  isMobile ? (
+    <span className={classNames("mt-3 subtitle1", className)}>{children}</span>
+  ) : (
+    <h6 className={classNames("mt-3", className)}>{children}</h6>
+  );

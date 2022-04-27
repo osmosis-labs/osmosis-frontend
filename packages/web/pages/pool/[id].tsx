@@ -616,7 +616,7 @@ const Pool: FunctionComponent = observer(() => {
                 className="h-7 w-56"
                 isLoading={!pool || !totalValueLocked}
               >
-                {totalValueLocked?.toString() || "0"}
+                {totalValueLocked!.toString()}
               </MetricLoader>
             ),
           },
@@ -624,7 +624,7 @@ const Pool: FunctionComponent = observer(() => {
             label: "My Liquidity",
             value: (
               <MetricLoader className="h-7 " isLoading={!userLockedValue}>
-                {userLockedValue?.toString() || "0"}
+                {userLockedValue!.toString()}
               </MetricLoader>
             ),
           },
@@ -634,7 +634,7 @@ const Pool: FunctionComponent = observer(() => {
             label: "Bonded",
             value: (
               <MetricLoader className="h-4" isLoading={!userBondedValue}>
-                {userBondedValue?.toString() || "0"}
+                {userBondedValue!.toString()}
               </MetricLoader>
             ),
           },
@@ -642,7 +642,7 @@ const Pool: FunctionComponent = observer(() => {
             label: "Swap Fee",
             value: (
               <MetricLoader className="h-4" isLoading={!pool}>
-                {pool?.swapFee.toString() || "0"}
+                {pool!.swapFee.toString()}
               </MetricLoader>
             ),
           },
@@ -654,29 +654,33 @@ const Pool: FunctionComponent = observer(() => {
           <div className="flex lg:flex-col gap-6 place-content-between">
             <div className="max-w-md">
               <div className="flex lg:flex-col gap-3">
-                <h5>Liquidity Mining</h5>
+                {isMobile ? (
+                  <span className="subtitle2">Liquidity Mining</span>
+                ) : (
+                  <h5>Liquidity Mining</h5>
+                )}
                 {superfluid && superfluid !== "not-superfluid-pool" && (
                   <div className="bg-superfluid w-fit rounded-full px-4 py-1 md:text-xs text-base">
                     Superfluid Staking Enabled
                   </div>
                 )}
               </div>
-              <p className="text-white-mid py-2">
+              <p className="text-white-mid md:caption py-2">
                 Bond liquidity to various minimum unbonding periods to earn OSMO
                 liquidity rewards and swap fees
               </p>
             </div>
-            <div className="flex flex-col gap-2 lg:text-left">
+            <div className="flex flex-col gap-2 text-right lg:text-left">
               <span className="caption text-white-mid">
                 Available LP tokens
               </span>
-              <h5>
+              <span className="font-h5 text-h5 md:subtitle1">
                 <MetricLoader className="h-6" isLoading={!userAvailableValue}>
                   {userAvailableValue?.toString() || "$0"}
                 </MetricLoader>
-              </h5>
+              </span>
               <Button
-                className="h-8 lg:w-fit w-full"
+                className="h-8 lg:w-fit w-full md:caption"
                 onClick={() => setShowLockLPTokenModal(true)}
               >
                 Start Earning
@@ -687,26 +691,34 @@ const Pool: FunctionComponent = observer(() => {
             guages &&
             queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id) && (
               <>
-                <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between pt-10">
-                  {externalGuages?.map(
-                    (
-                      { rewardAmount, duration: durationDays, remainingEpochs },
-                      index
-                    ) => (
-                      <PoolGaugeBonusCard
-                        key={index}
-                        bonusValue={
-                          rewardAmount?.maxDecimals(0).trim(true).toString() ??
-                          "0"
-                        }
-                        days={durationDays}
-                        remainingEpochs={remainingEpochs.toString()}
-                        isMobile={isMobile}
-                      />
-                    )
-                  )}
-                </div>
-                <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between pt-10">
+                {externalGuages && externalGuages.length > 0 && (
+                  <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
+                    {externalGuages.map(
+                      (
+                        {
+                          rewardAmount,
+                          duration: durationDays,
+                          remainingEpochs,
+                        },
+                        index
+                      ) => (
+                        <PoolGaugeBonusCard
+                          key={index}
+                          bonusValue={
+                            rewardAmount
+                              ?.maxDecimals(0)
+                              .trim(true)
+                              .toString() ?? "0"
+                          }
+                          days={durationDays}
+                          remainingEpochs={remainingEpochs.toString()}
+                          isMobile={isMobile}
+                        />
+                      )
+                    )}
+                  </div>
+                )}
+                <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
                   {guages.map((guage, i) => (
                     <PoolGaugeCard
                       key={i}
@@ -833,7 +845,7 @@ const Pool: FunctionComponent = observer(() => {
                     "md:text-right text-center md:justify-right justify-center",
                   displayCell: ({ amount, lockIds, isSuperfluidDuration }) => (
                     <Button
-                      className="md:ml-auto m-auto pr-0 !md:justify-right !justify-center"
+                      className="md:ml-auto md:caption m-auto pr-0 !md:justify-right !justify-center"
                       type={isMobile ? undefined : "arrow"}
                       size="xs"
                       disabled={

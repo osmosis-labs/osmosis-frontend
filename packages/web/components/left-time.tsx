@@ -1,29 +1,49 @@
 import React, { FunctionComponent } from "react";
+import { MobileProps } from "./types";
 
-export const LeftTime: FunctionComponent<{
-  day?: string;
-  hour: string;
-  minute: string;
-}> = ({ day, hour, minute }) => {
+export const LeftTime: FunctionComponent<
+  {
+    day?: string;
+    hour: string;
+    minute: string;
+  } & MobileProps
+> = ({ day, hour, minute, isMobile = false }) => {
   return (
     <div className="md:text-xl text-2xl flex items-center">
       {day && (
         <React.Fragment>
-          <h4>{day}</h4>
+          <Time isMobile={isMobile}>{day}</Time>
           <div className="inline-block py-1 md:px-2 px-3 h-full rounded-lg bg-card mx-1">
-            <h5 className="md:text-lg text-xl">D</h5>
+            <TimeLabel isMobile={isMobile}>D</TimeLabel>
           </div>
         </React.Fragment>
       )}
 
-      <h4>{hour}</h4>
+      <Time isMobile={isMobile}>{hour}</Time>
       <div className="inline-block py-1 md:px-2 px-3 h-full rounded-lg bg-card mx-1">
-        <h5 className="md:text-lg text-xl">H</h5>
+        <TimeLabel isMobile={isMobile}>H</TimeLabel>
       </div>
-      <h4>{minute}</h4>
+      <Time isMobile={isMobile}>{minute}</Time>
       <div className="inline-block py-1 md:px-2 px-3 h-full rounded-lg bg-card mx-1">
-        <h5 className="md:text-lg text-xl">M</h5>
+        <TimeLabel isMobile={isMobile}>M</TimeLabel>
       </div>
     </div>
   );
 };
+
+const TimeLabel: FunctionComponent<MobileProps> = ({
+  isMobile = false,
+  children,
+}) =>
+  isMobile ? (
+    <h6 className="md:text-lg text-xl">{children}</h6>
+  ) : (
+    <h5 className="md:text-lg text-xl">{children}</h5>
+  );
+
+const Time: FunctionComponent<MobileProps> = ({ isMobile = false, children }) =>
+  isMobile ? (
+    <h5 className="md:text-lg text-xl">{children}</h5>
+  ) : (
+    <h4 className="md:text-lg text-xl">{children}</h4>
+  );

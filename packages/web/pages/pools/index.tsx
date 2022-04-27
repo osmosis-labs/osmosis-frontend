@@ -184,6 +184,7 @@ const Pools: NextPage = observer(function () {
               <LeftTime
                 hour={epochRemainingHour}
                 minute={epochRemainingMinute}
+                isMobile={isMobile}
               />
             ),
           },

@@ -19,8 +19,8 @@ export const PoolGaugeCard: FunctionComponent<
       superfluidApr ? "bg-superfluid" : "bg-card" // vanilla tailwind does not support border gradients
     )}
   >
-    <div className="flex flex-col w-full gap-1 bg-card rounded-xlinset py-5 px-7">
-      <UnbondingHeader isMobile={isMobile}>
+    <div className="flex flex-col w-full gap-1 bg-card rounded-xlinset md:pl-[30%] md:p-3.5 py-5 px-7">
+      <UnbondingPeriodHeader isMobile={isMobile}>
         <MetricLoader className="h-6" isLoading={isLoading}>
           {days ?? "0"} unbonding
           {superfluidApr && (
@@ -43,9 +43,9 @@ export const PoolGaugeCard: FunctionComponent<
             </>
           )}
         </MetricLoader>
-      </UnbondingHeader>
+      </UnbondingPeriodHeader>
       <MetricLoader className="h-6" isLoading={isLoading}>
-        <p className="font-caption text-lg text-secondary-200">
+        <p className="font-caption text-lg text-secondary-200 md:subtitle2">
           APR {apr ?? "0%"} {superfluidApr ? `+ ${superfluidApr}` : null}
         </p>
       </MetricLoader>
@@ -53,12 +53,12 @@ export const PoolGaugeCard: FunctionComponent<
   </div>
 );
 
-const UnbondingHeader: FunctionComponent<MobileProps> = ({
+const UnbondingPeriodHeader: FunctionComponent<MobileProps> = ({
   isMobile = false,
   children,
 }) =>
   isMobile ? (
-    <h6 className="flex items-center gap-2">{children}</h6>
+    <span className="flex items-center gap-2 subtitle1">{children}</span>
   ) : (
     <h5 className="flex items-center gap-2 font-medium">{children}</h5>
   );
