@@ -1157,11 +1157,18 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'afet',
 	},
 	{
+		counterpartyChainId: 'juno-1',
+		sourceChannelId: 'channel-169',
+		destChannelId: 'channel-47',
+		coinMinimalDenom: 'cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq',
+		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
+	{
 		counterpartyChainId: 'pio-mainnet-1',
 		sourceChannelId: 'channel-222',
 		destChannelId: 'channel-7',
 		coinMinimalDenom: 'nhash',
-	},
+	}
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1787,6 +1794,15 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'pool:rac',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/rac.svg',
 			},
+			{
+				type: 'cw20',
+				contractAddress: 'juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq',
+				coinDenom: 'BLOCK',
+				coinMinimalDenom: 'cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq:BLOCK',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:block',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/block.svg',
+			}
 		],
 		feeCurrencies: [
 			{
