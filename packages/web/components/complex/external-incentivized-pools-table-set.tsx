@@ -260,17 +260,17 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
               ...[
                 sortKeyPath === "epochsRemaining"
                   ? {
-                      label: "epochs",
+                      label: "",
                       value: poolData.epochsRemaining.toString(),
                     }
                   : sortKeyPath === "myLiquidity"
                   ? {
-                      label: "my liquidity",
+                      label: "",
                       value: poolData.myLiquidity.toString(),
                     }
                   : sortKeyPath === "apr"
                   ? {
-                      label: "APR",
+                      label: "",
                       value: poolData.apr?.toString() ?? "0%",
                     }
                   : { label: "TVL", value: poolData.liquidity.toString() },

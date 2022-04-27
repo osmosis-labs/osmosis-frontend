@@ -327,11 +327,42 @@ const Pools: NextPage = observer(function () {
                           id,
                           assets: assets ?? [],
                           metrics: [
-                            { label: "APR", value: apr.toString() },
-                            {
-                              label: "TVL",
-                              value: poolLiquidity.toString(),
-                            },
+                            ...[
+                              sortKeyPath === "poolLiquidity"
+                                ? {
+                                    label: "",
+                                    value: poolLiquidity.toString(),
+                                  }
+                                : sortKeyPath === "apr"
+                                ? {
+                                    label: "",
+                                    value: apr
+                                      .maxDecimals(2)
+                                      .trim(true)
+                                      .toString(),
+                                  }
+                                : {
+                                    label: "APR",
+                                    value: apr
+                                      .maxDecimals(2)
+                                      .trim(true)
+                                      .toString(),
+                                  },
+                            ],
+                            ...[
+                              sortKeyPath === "poolLiquidity"
+                                ? {
+                                    label: "APR",
+                                    value: apr
+                                      .maxDecimals(2)
+                                      .trim(true)
+                                      .toString(),
+                                  }
+                                : {
+                                    label: "TVL",
+                                    value: poolLiquidity.toString(),
+                                  },
+                            ],
                           ],
                           isSuperfluid: true,
                         })

@@ -257,11 +257,14 @@ export const AllPoolsTableSet: FunctionComponent<{
           metrics: [
             ...[
               sortKeyPath === "volume24h"
-                ? { label: "24h Vol.", value: poolData.volume24h.toString() }
+                ? {
+                    label: "",
+                    value: poolData.volume24h.toString(),
+                  }
                 : sortKeyPath === "feesSpent7d"
-                ? { label: "7d fees", value: poolData.feesSpent7d.toString() }
+                ? { label: "", value: poolData.feesSpent7d.toString() }
                 : sortKeyPath === "apr"
-                ? { label: "APR", value: poolData.apr?.toString() ?? "0%" }
+                ? { label: "", value: poolData.apr?.toString() ?? "0%" }
                 : sortKeyPath === "myLiquidity"
                 ? {
                     label: "my liquidity",
