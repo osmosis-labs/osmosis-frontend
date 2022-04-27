@@ -3,8 +3,7 @@ import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CustomClasses, Metric } from "../types";
 import { PoolAssetInfo, PoolAssetsIcon } from "../assets";
-
-// TODO: use truncateString to truncate ibc denoms w/ coinDenom config (overflow)
+import { truncateString } from "../utils";
 
 /** For displaying a token and it's balance, or a pool overview. */
 export const AssetCard: FunctionComponent<
@@ -54,7 +53,7 @@ export const AssetCard: FunctionComponent<
             </div>
           ))}
         <div className="flex flex-col gap-0.5">
-          <span className="button">{coinDenom}</span>
+          <span className="button">{truncateString(coinDenom, 12)}</span>
           {coinDenomCaption && (
             <span className="caption text-white-disabled">
               {coinDenomCaption}

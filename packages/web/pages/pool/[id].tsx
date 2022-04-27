@@ -596,7 +596,7 @@ const Pool: FunctionComponent = observer(() => {
             <h5>
               {`Pool #${pool?.id} : ${pool?.poolAssets
                 .map((asset) => asset.amount.currency.coinDenom)
-                .map((denom) => truncateString(denom, 8))
+                .map((denom) => truncateString(denom))
                 .join(" / ")}`}
             </h5>
           </MetricLoader>
