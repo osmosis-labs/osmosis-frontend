@@ -139,7 +139,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     const tableCols = [
       {
         id: "pool.id",
-        display: "Pool ID/Tokens",
+        display: "Pool ID",
         sort:
           sortKeyPath === "pool.id"
             ? {
@@ -257,11 +257,32 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
               (asset) => asset.amount.currency
             ),
             metrics: [
-              { label: "TVL", value: poolData.liquidity.toString() },
-              {
-                label: "APR",
-                value: poolData.apr?.toString() ?? "0%",
-              },
+              ...[
+                sortKeyPath === "epochsRemaining"
+                  ? {
+                      label: "epochs",
+                      value: poolData.epochsRemaining.toString(),
+                    }
+                  : sortKeyPath === "myLiquidity"
+                  ? {
+                      label: "my liquidity",
+                      value: poolData.myLiquidity.toString(),
+                    }
+                  : sortKeyPath === "apr"
+                  ? {
+                      label: "APR",
+                      value: poolData.apr?.toString() ?? "0%",
+                    }
+                  : { label: "TVL", value: poolData.liquidity.toString() },
+              ],
+              ...[
+                sortKeyPath === "apr"
+                  ? { label: "TVL", value: poolData.liquidity.toString() }
+                  : {
+                      label: "APR",
+                      value: poolData.apr?.toString() ?? "0%",
+                    },
+              ],
             ],
             isSuperfluid: queryOsmosis.querySuperfluidPools.isSuperfluidPool(
               poolData.pool.id

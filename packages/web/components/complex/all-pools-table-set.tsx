@@ -116,7 +116,7 @@ export const AllPoolsTableSet: FunctionComponent<{
   const tableCols = [
     {
       id: "pool.id",
-      display: "Pool ID/Tokens",
+      display: "Pool ID",
       sort:
         sortKeyPath === "pool.id"
           ? {
@@ -166,17 +166,17 @@ export const AllPoolsTableSet: FunctionComponent<{
       displayCell: MetricLoaderCell,
     },
     {
-      id: "fees7d",
+      id: "feesSpent7d",
       display: "Fees (7D)",
       sort:
-        sortKeyPath === "fees7d"
+        sortKeyPath === "feesSpent7d"
           ? {
               currentDirection: sortDirection,
               onClickHeader: toggleSortDirection,
             }
           : {
               onClickHeader: () => {
-                setSortKeyPath("fees7d");
+                setSortKeyPath("feesSpent7d");
                 setSortDirection("ascending");
               },
             },
@@ -254,13 +254,30 @@ export const AllPoolsTableSet: FunctionComponent<{
             })
           ),
           metrics: [
-            { label: "TVL", value: poolData.liquidity.toString() },
-            {
-              label: isIncentivizedPools ? "APR" : "7d Volume",
-              value: isIncentivizedPools
-                ? poolData.apr?.toString() ?? "0%"
-                : poolData.volume7d.toString(),
-            },
+            ...[
+              sortKeyPath === "volume24h"
+                ? { label: "24h Vol.", value: poolData.volume24h.toString() }
+                : sortKeyPath === "feesSpent7d"
+                ? { label: "7d fees", value: poolData.feesSpent7d.toString() }
+                : sortKeyPath === "apr"
+                ? { label: "APR", value: poolData.apr?.toString() ?? "0%" }
+                : sortKeyPath === "myLiquidity"
+                ? {
+                    label: "my liquidity",
+                    value: poolData.myLiquidity?.toString() ?? "0$",
+                  }
+                : { label: "TVL", value: poolData.liquidity.toString() },
+            ],
+            ...[
+              sortKeyPath === "apr"
+                ? { label: "TVL", value: poolData.liquidity.toString() }
+                : {
+                    label: isIncentivizedPools ? "APR" : "7d Vol.",
+                    value: isIncentivizedPools
+                      ? poolData.apr?.toString() ?? "0%"
+                      : poolData.volume7d.toString(),
+                  },
+            ],
           ],
           isSuperfluid: queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
             poolData.pool.id
