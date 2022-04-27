@@ -42,7 +42,9 @@ export const PoolCard: FunctionComponent<
                 size="sm"
                 assetDenoms={poolAssets.map((asset) => asset.coinDenom)}
               />
-              <span className="caption text-white-disabled">Lab #{poolId}</span>
+              <span className="caption text-white-disabled">
+                Pool #{poolId}
+              </span>
             </div>
           </div>
           <div className="flex flex-col gap-px text-right">

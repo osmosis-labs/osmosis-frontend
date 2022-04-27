@@ -27,7 +27,6 @@ import { ShowMoreButton } from "../../components/buttons/show-more";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
 const TVL_FILTER_THRESHOLD = 1000;
-const MOBILE_MY_POOL_COLLAPSE_COUNT = 6;
 
 const Pools: NextPage = observer(function () {
   const {
@@ -92,6 +91,8 @@ const Pools: NextPage = observer(function () {
       )
     )
   );
+
+  const poolCountShowMoreThreshold = isMobile ? 3 : 6;
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
@@ -198,7 +199,7 @@ const Pools: NextPage = observer(function () {
           <div className="flex flex-col gap-4">
             <div className="mt-5 grid grid-cards md:gap-3 gap-10">
               {(isMobile && !showMoreMyPools
-                ? myPoolIds.slice(0, MOBILE_MY_POOL_COLLAPSE_COUNT)
+                ? myPoolIds.slice(0, poolCountShowMoreThreshold)
                 : myPoolIds
               ).map((myPoolId) => {
                 const myPool = queryOsmosis.queryGammPools.getPool(myPoolId);
@@ -285,7 +286,7 @@ const Pools: NextPage = observer(function () {
                 }
               })}
             </div>
-            {isMobile && myPoolIds.length > MOBILE_MY_POOL_COLLAPSE_COUNT && (
+            {isMobile && myPoolIds.length > poolCountShowMoreThreshold && (
               <div className="mx-auto">
                 <ShowMoreButton
                   isOn={showMoreMyPools}
