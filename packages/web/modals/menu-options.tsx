@@ -16,7 +16,7 @@ export const MenuOptionsModal: FunctionComponent<
     {...props}
     hideCloseButton
     title=""
-    overlayClassName="-bottom-3/4"
+    overlayClassName="-bottom-1/2"
   >
     <span className="w-full subtitle1 text-center p-2 text-white-high">
       {props.title}
