@@ -54,21 +54,21 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     return (
       <ModalBase {...props}>
         <div className="text-white-high">
-          <div className="md:mb-5 mb-10 flex justify-between items-center w-full">
+          <div className="relative md:mb-5 mb-10 flex items-center w-full">
             <h5 className="md:text-lg text-xl">
               {isWithdraw ? "Withdraw" : "Deposit"}
               {!isMobile && " IBC Asset"}
             </h5>
+            {(showFromCopied || showToCopied) && (
+              <span className="absolute inset-[45%] -top-0 w-fit h-fit rounded-full px-1.5 subtitle2 border-2 border-primary-200 bg-primary-200/60">
+                Copied!
+              </span>
+            )}
           </div>
           <h6 className="md:mb-3 mb-4 md:text-base text-lg">IBC Transfer</h6>
           <section className="flex flex-col items-center">
             <div className="w-full flex-1 md:p-3 p-4 border border-white-faint rounded-2xl">
-              <p className="text-white-high">
-                From{" "}
-                {showFromCopied && (
-                  <span className="text-sm text-primary-50">Copied!</span>
-                )}
-              </p>
+              <p className="text-white-high">From</p>
               <div
                 className="flex items-center gap-3"
                 onClick={() => {
@@ -110,12 +110,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               />
             </div>
             <div className="w-full flex-1 md:p-3 p-4 border border-white-faint rounded-2xl">
-              <p className="text-white-high">
-                To{" "}
-                {showToCopied && (
-                  <span className="text-sm text-primary-50">Copied!</span>
-                )}
-              </p>
+              <p className="text-white-high">To</p>
               <div className="flex gap-2 place-content-between">
                 <div className="w-full flex flex-col gap-5">
                   {isEditingWithdrawAddr && (
