@@ -352,6 +352,16 @@ export class RootStore {
 					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'osmosis',
 				},
+				{
+					alternativeCoinId: 'pool:melon',
+					poolId: '701', 
+					spotPriceSourceDenom: DenomHelper.ibcDenom(
+						[{ portId: 'transfer', channelId: 'channel-169' }],
+						'cw20:juno1lf8wdpy68c4maqusg6sl76zrre32q7a5awtks25xqn3pvepedaps5ezt7j'
+					),
+					spotPriceDestDenom: 'uosmo',
+					destCoinId: 'osmosis',
+				},
 			]
 		);
 
@@ -1615,11 +1625,14 @@ export class RootStore {
 				],
 			},
 			{
-				poolId: '690',
+				poolId: '701', /** to be changed */
 				currencies: [
 					{
-						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-232' }], 'umntl'),
-						coinDenom: 'MNTL',
+						coinMinimalDenom: DenomHelper.ibcDenom(
+							[{ portId: 'transfer', channelId: 'channel-169' }],
+							'cw20:juno1lf8wdpy68c4maqusg6sl76zrre32q7a5awtks25xqn3pvepedaps5ezt7j'
+						),
+						coinDenom: 'MELON',
 						coinDecimals: 6,
 					},
 					{
