@@ -15,6 +15,8 @@ export const HidePoolFromPage: {
 
 export const LockupAbledPoolIds: {
 	[poolId: string]: boolean | undefined;
+} = {
+	'1': true,
 	'2': true,
 	'3': true,
 	'4': true,
