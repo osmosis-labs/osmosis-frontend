@@ -655,12 +655,12 @@ const Pool: FunctionComponent = observer(() => {
             <div className="max-w-md">
               <div className="flex lg:flex-col gap-3">
                 {isMobile ? (
-                  <span className="subtitle2">Liquidity Mining</span>
+                  <span className="subtitle1 text-lg">Liquidity Mining</span>
                 ) : (
                   <h5>Liquidity Mining</h5>
                 )}
                 {superfluid && superfluid !== "not-superfluid-pool" && (
-                  <div className="bg-superfluid w-fit rounded-full px-4 py-1 md:text-xs text-base">
+                  <div className="bg-superfluid w-fit rounded-full px-4 py-1 md:caption text-base">
                     Superfluid Staking Enabled
                   </div>
                 )}

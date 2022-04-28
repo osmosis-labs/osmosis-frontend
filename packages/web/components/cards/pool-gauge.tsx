@@ -21,7 +21,7 @@ export const PoolGaugeCard: FunctionComponent<
   >
     <div className="flex flex-col w-full gap-1 bg-card rounded-xlinset md:pl-[30%] md:p-3.5 py-5 px-7">
       <UnbondingPeriodHeader isMobile={isMobile}>
-        <MetricLoader className="h-6" isLoading={isLoading}>
+        <MetricLoader className="h-6 md:h-4" isLoading={isLoading}>
           {days ?? "0"} unbonding
           {superfluidApr && (
             <>
@@ -44,7 +44,7 @@ export const PoolGaugeCard: FunctionComponent<
           )}
         </MetricLoader>
       </UnbondingPeriodHeader>
-      <MetricLoader className="h-6" isLoading={isLoading}>
+      <MetricLoader className="h-6 md:h-4" isLoading={isLoading}>
         <p className="font-caption text-lg text-secondary-200 md:subtitle2">
           APR {apr ?? "0%"} {superfluidApr ? `+ ${superfluidApr}` : null}
         </p>

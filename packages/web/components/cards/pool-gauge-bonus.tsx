@@ -10,9 +10,9 @@ export const PoolGaugeBonusCard: FunctionComponent<
   } & LoadingProps &
     MobileProps
 > = ({ bonusValue, days, remainingEpochs, isLoading, isMobile = false }) => (
-  <div className="flex flex-col w-full gap-2 bg-card rounded-xl py-5 px-7 border border-white-mid">
+  <div className="flex flex-col w-full gap-1 bg-card rounded-xl md:pl-[30%] md:p-3.5 py-5 px-7 border border-white-mid">
     {isMobile ? (
-      <h6>{`${days} bonus bonding reward`}</h6>
+      <span className="subtitle1">{`${days} bonus reward`}</span>
     ) : (
       <h5>Bonus bonding reward</h5>
     )}
@@ -24,9 +24,9 @@ export const PoolGaugeBonusCard: FunctionComponent<
         </MetricLoader>
       </p>
     )}
-    <p className="font-caption text-lg text-secondary-200">
-      <MetricLoader isLoading={isLoading || !bonusValue}>
-        Total Bonus: {bonusValue ?? "0"}
+    <p className="font-caption text-lg text-secondary-200 md:subtitle2">
+      <MetricLoader className="h-6 md:h-4" isLoading={isLoading || !bonusValue}>
+        {isMobile ? "Bonus:" : "Total Bonus:"} {bonusValue ?? "0"}
       </MetricLoader>
     </p>
   </div>

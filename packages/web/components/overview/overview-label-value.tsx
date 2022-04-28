@@ -24,7 +24,9 @@ export const OverviewLabelValue: FunctionComponent<Props> = ({
       containerClassName
     )}
   >
-    <div className={classNames("text-white-mid", labelClassName)}>{label}</div>
+    <span className={classNames("text-white-mid md:caption", labelClassName)}>
+      {label}
+    </span>
     {prominence === "primary" ? (
       <PrimaryMetric className={valueClassName} isMobile={isMobile}>
         {value}
@@ -43,7 +45,7 @@ export const PrimaryMetric: FunctionComponent<MobileProps & CustomClasses> = ({
   children,
 }) =>
   isMobile ? (
-    <h5 className={classNames("mt-3", className)}>{children}</h5>
+    <h5 className={className}>{children}</h5>
   ) : (
     <h4 className={classNames("mt-3", className)}>{children}</h4>
   );
@@ -52,7 +54,7 @@ export const SecondaryMetric: FunctionComponent<
   MobileProps & CustomClasses
 > = ({ isMobile = false, className, children }) =>
   isMobile ? (
-    <span className={classNames("mt-3 subtitle1", className)}>{children}</span>
+    <span className={classNames("subtitle1", className)}>{children}</span>
   ) : (
     <h6 className={classNames("mt-3", className)}>{children}</h6>
   );
