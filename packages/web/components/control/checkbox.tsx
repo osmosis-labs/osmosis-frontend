@@ -5,12 +5,15 @@ import { Disableable, CustomClasses } from "../types";
 import { ToggleProps } from "./types";
 
 export const CheckBox: FunctionComponent<
-  ToggleProps & Disableable & CustomClasses & { labelClassName?: string }
+  ToggleProps &
+    Disableable &
+    CustomClasses & { labelClassName?: string; checkClassName?: string }
 > = ({
   isOn,
   onToggle: onToggle,
   disabled = false,
   labelClassName,
+  checkClassName,
   className,
   children,
 }) => (
@@ -24,8 +27,9 @@ export const CheckBox: FunctionComponent<
       {isOn && (
         <div
           className={classNames(
-            "cursor-pointer h-full mt-1 absolute top-1/5 -left-0.5 z-20 my-auto",
-            disabled ? "cursor-default opacity-50" : null
+            "cursor-pointer h-full absolute h-5 w-5 z-20",
+            disabled ? "cursor-default opacity-50" : null,
+            checkClassName
           )}
         >
           <Image alt="" src="/icons/check-mark.svg" height={24} width={24} />

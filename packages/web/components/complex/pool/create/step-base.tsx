@@ -66,7 +66,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
               </Button>
             )}
             <Button
-              className="w-80 md:w-36"
+              className="w-80 md:w-36 md:h-10"
               size={isMobile ? "sm" : "lg"}
               onClick={() => advanceStep()}
               loading={isSendingMsg}
