@@ -1539,11 +1539,6 @@ export class RootStore {
 						coinDenom: 'DAI',
 						coinDecimals: 18,
 					},
-					{
-						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
-						coinDenom: 'UST',
-						coinDecimals: 6,
-					},
 				],
 			},
 			{
@@ -1595,11 +1590,6 @@ export class RootStore {
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-208' }], 'uusdc'),
 						coinDenom: 'USDC',
-						coinDecimals: 6,
-					},
-					{
-						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
-						coinDenom: 'UST',
 						coinDecimals: 6,
 					},
 				],
