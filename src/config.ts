@@ -111,7 +111,7 @@ export const ExtraGaugeInPool: {
 } = {
 	'3': [
 		{
-			gaugeId: '2578',
+			gaugeId: '3178',
 			denom: 'ibc/1480B8FD20AD5FCAE81EA87584D269547DD4D436843C1D20F15E00EB64743EF4',
 		},
 	],
