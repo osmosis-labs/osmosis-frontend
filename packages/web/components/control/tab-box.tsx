@@ -56,7 +56,9 @@ export const TabBox: FunctionComponent<
             }}
           >
             {typeof title === "string" ? (
-              <span className="text-title text-secondary-200">{title}</span>
+              <span className="subtitle1 md:caption text-secondary-200">
+                {title}
+              </span>
             ) : (
               <>{title}</>
             )}

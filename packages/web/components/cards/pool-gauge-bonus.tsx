@@ -20,7 +20,7 @@ export const PoolGaugeBonusCard: FunctionComponent<
       <p className="text-white-mid">
         <MetricLoader isLoading={isLoading}>
           This pool bonding over {days ?? "0"} will earn additional bonding
-          incentives for {remainingEpochs ?? "0"} epochs.
+          incentives for {remainingEpochs ?? "0"} days.
         </MetricLoader>
       </p>
     )}
@@ -29,5 +29,10 @@ export const PoolGaugeBonusCard: FunctionComponent<
         {isMobile ? "Bonus:" : "Total Bonus:"} {bonusValue ?? "0"}
       </MetricLoader>
     </p>
+    {isMobile && remainingEpochs && !isLoading && (
+      <span className="subtitle2 text-secondary-200">
+        {remainingEpochs} days remaining
+      </span>
+    )}
   </div>
 );

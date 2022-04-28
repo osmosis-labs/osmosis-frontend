@@ -46,7 +46,7 @@ export const CompactPoolTableDisplay: FunctionComponent<{
       )}
       <div className="flex items-center place-content-between">
         {typeof title === "string" ? (
-          <span className="subtitle">{title}</span>
+          <span className="subtitle2">{title}</span>
         ) : (
           <>{title}</>
         )}

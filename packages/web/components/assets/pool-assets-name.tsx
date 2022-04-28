@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { FunctionComponent } from "react";
 import { truncateString } from "../utils";
 
@@ -17,7 +18,7 @@ export const PoolAssetsName: FunctionComponent<{
           )
           .join(size === "sm" ? "/" : " / ");
   return size === "sm" ? (
-    <span className={className}>{assetsName}</span>
+    <span className={classNames("md:subtitle2", className)}>{assetsName}</span>
   ) : (
     <h5 className={className}>{assetsName}</h5>
   );

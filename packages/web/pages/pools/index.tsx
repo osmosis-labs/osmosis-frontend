@@ -316,7 +316,9 @@ const Pools: NextPage = observer(function () {
               },
               {
                 title: (
-                  <span className="text-superfluid">Superfluid Pools</span>
+                  <span className="text-superfluid caption">
+                    Superfluid Pools
+                  </span>
                 ),
                 content: (
                   <CompactPoolTableDisplay
@@ -404,7 +406,7 @@ const Pools: NextPage = observer(function () {
                     }}
                   />
                 ),
-                className: "border-superfluid",
+                className: "!border-superfluid",
               },
             ]}
           />

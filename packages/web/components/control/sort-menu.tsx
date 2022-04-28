@@ -46,8 +46,8 @@ export const SortMenu: FunctionComponent<Props> = ({
         <Image
           alt="sort"
           src="/icons/up-down-arrow.svg"
-          height={18}
-          width={18}
+          height={isMobile ? 12 : 18}
+          width={isMobile ? 12 : 18}
           onClick={(e) => {
             e.stopPropagation();
             if (onToggleSortDirection && selectedOption) {
@@ -66,7 +66,7 @@ export const SortMenu: FunctionComponent<Props> = ({
             }
           }}
         >
-          <span className="block m-auto md:mx-1 mx-2 leading-loose text-secondary-200 min-w-[3.75rem] select-none text-center text-ellipsis overflow-hidden">
+          <span className="block m-auto md:mx-1 mx-2 leading-loose text-secondary-200 min-w-[3.75rem] select-none text-center text-ellipsis overflow-hidden md:caption">
             {selectedOption
               ? selectedOption.display
               : isMobile
@@ -76,8 +76,8 @@ export const SortMenu: FunctionComponent<Props> = ({
           <Image
             alt="open"
             src="/icons/chevron-down-secondary.svg"
-            height={15}
-            width={15}
+            height={isMobile ? 12 : 15}
+            width={isMobile ? 12 : 15}
           />
         </div>
       </div>

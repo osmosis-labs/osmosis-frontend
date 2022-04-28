@@ -54,7 +54,7 @@ export const SecondaryMetric: FunctionComponent<
   MobileProps & CustomClasses
 > = ({ isMobile = false, className, children }) =>
   isMobile ? (
-    <span className={classNames("subtitle1", className)}>{children}</span>
+    <span className={classNames("mt-1 subtitle1", className)}>{children}</span>
   ) : (
     <h6 className={classNames("mt-3", className)}>{children}</h6>
   );
