@@ -1163,6 +1163,12 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
+	{
+		counterpartyChainId: 'pio-mainnet-1',
+		sourceChannelId: 'channel-222',
+		destChannelId: 'channel-7',
+		coinMinimalDenom: 'nhash',
+	}
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -3100,5 +3106,47 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/asset-mantle/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.provenance.io/',
+		rest: 'https://api.provenance.io',
+		chainId: 'pio-mainnet-1',
+		chainName: 'Provenance',
+		stakeCurrency: {
+			coinDenom: 'HASH',
+			coinMinimalDenom: 'nhash',
+			coinGeckoId: 'pool:nhash',
+			coinDecimals: 9,
+			coinImageUrl: window.location.origin + '/public/assets/tokens/hash.svg',
+		},
+		bip44: {
+			coinType: 505,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('pb'),
+		currencies: [
+			{
+				coinDenom: 'HASH',
+				coinMinimalDenom: 'nhash',
+				coinGeckoId: 'pool:nhash',
+				coinDecimals: 9,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/hash.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'HASH',
+				coinMinimalDenom: 'nhash',
+				coinGeckoId: 'pool:nhash',
+				coinDecimals: 9,
+				coinImageUrl: window.location.origin + '/public/assets/tokens/hash.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0.000001905,
+			average: 0.000002100,
+			high: 0.000002500,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/provenance/txs/{txHash}',
 	},
 ];
