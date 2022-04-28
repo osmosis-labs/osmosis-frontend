@@ -3146,7 +3146,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			average: 0.000002100,
 			high: 0.000002500,
 		},
-		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go', 'cosmwasm'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/provenance/txs/{txHash}',
 	},
 ];
