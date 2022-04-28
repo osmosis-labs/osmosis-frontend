@@ -10,6 +10,7 @@ import { InputBox } from "../components/input";
 import { Error } from "../components/alert";
 import { CheckBox } from "../components/control";
 import { ModalBase, ModalBaseProps } from "./base";
+import { MobileProps } from "../components/types";
 
 export const LockTokensModal: FunctionComponent<
   ModalBaseProps & {
@@ -27,7 +28,7 @@ export const LockTokensModal: FunctionComponent<
        If `true`, "Superfluid Stake" checkbox will not be shown since user has already opted in. */
     hasSuperfluidValidator?: boolean;
     isSendingMsg?: boolean;
-  }
+  } & MobileProps
 > = observer((props) => {
   const {
     gauges,
@@ -36,6 +37,7 @@ export const LockTokensModal: FunctionComponent<
     onLockToken,
     hasSuperfluidValidator,
     isSendingMsg,
+    isMobile = false,
   } = props;
 
   const [selectedGaugeIndex, setSelectedGaugeIndex] = useState<number | null>(
@@ -48,7 +50,7 @@ export const LockTokensModal: FunctionComponent<
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-col gap-2.5">
           <span className="subitle1">Unbonding period</span>
-          <div className="flex gap-4">
+          <div className="flex md:flex-col gap-4">
             {gauges.map(({ id, duration, apr, superfluidApr }, index) => (
               <LockupItem
                 key={id}
@@ -60,6 +62,7 @@ export const LockTokensModal: FunctionComponent<
                   ?.maxDecimals(0)
                   .trim(true)
                   .toString()}
+                isMobile={isMobile}
               />
             ))}
           </div>
@@ -81,7 +84,7 @@ export const LockTokensModal: FunctionComponent<
             />
           </div>
         )}
-        <div className="flex flex-col gap-2 border border-white-faint rounded-2xl p-4">
+        <div className="flex flex-col gap-2 md:border-0 border border-white-faint md:rounded-0 rounded-2xl md:p-px p-4">
           <span className="subtitle1">Amount To Bond</span>
           {availableToken && (
             <div className="flex gap-1 caption">
@@ -109,7 +112,7 @@ export const LockTokensModal: FunctionComponent<
           <Error className="mx-auto" message={config.error?.message ?? ""} />
         )}
         <Button
-          className="h-14 w-96 mt-3 mx-auto"
+          className="h-14 md:w-full w-96 mt-3 mx-auto"
           size="lg"
           disabled={
             config.error !== undefined ||
@@ -136,47 +139,60 @@ export const LockTokensModal: FunctionComponent<
   );
 });
 
-const LockupItem: FunctionComponent<{
-  duration: string;
-  isSelected: boolean;
-  onSelect: () => void;
-  apr: string;
-  superfluidApr?: string;
-}> = ({ duration, isSelected, onSelect, apr, superfluidApr }) => {
-  return (
+const LockupItem: FunctionComponent<
+  {
+    duration: string;
+    isSelected: boolean;
+    onSelect: () => void;
+    apr: string;
+    superfluidApr?: string;
+  } & MobileProps
+> = ({
+  duration,
+  isSelected,
+  onSelect,
+  apr,
+  superfluidApr,
+  isMobile = false,
+}) => (
+  <div
+    onClick={onSelect}
+    className={classNames(
+      {
+        "shadow-elevation-08dp": isSelected,
+      },
+      "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer",
+      superfluidApr
+        ? "bg-superfluid"
+        : isSelected
+        ? "bg-enabledGold bg-opacity-30"
+        : "bg-white-faint hover:opacity-75"
+    )}
+  >
     <div
-      onClick={onSelect}
       className={classNames(
+        "flex items-center rounded-2xlinset bg-surface h-full px-5 md:py-3.5 py-5 px-4",
         {
-          "shadow-elevation-08dp": isSelected,
-        },
-        "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer",
-        superfluidApr
-          ? "bg-superfluid"
-          : isSelected
-          ? "bg-enabledGold bg-opacity-30"
-          : "bg-white-faint hover:opacity-75"
+          "bg-superfluid-20": superfluidApr && isSelected,
+        }
       )}
     >
-      <div
+      <figure
         className={classNames(
-          "flex items-center rounded-2xl bg-surface h-full px-5 py-3.5 md:py-5 md:px-4",
-          {
-            "bg-superfluid-20": superfluidApr && isSelected,
-          }
+          "rounded-full w-4 h-4 mr-5 md:mr-4 flex-shrink-0",
+          isSelected
+            ? "border-secondary-200 border-4 bg-white-high"
+            : "border-iconDefault border"
         )}
-      >
-        <figure
-          className={classNames(
-            "rounded-full w-4 h-4 mr-5 md:mr-4 flex-shrink-0",
-            isSelected
-              ? "border-secondary-200 border-4 bg-white-high"
-              : "border-iconDefault border"
-          )}
-        />
-        <div className="w-full flex justify-between md:flex-col md:items-baseline">
-          <div className="flex gap-1.5 items-center mx-auto">
+      />
+      <div className="flex w-full place-content-between items-center items-left flex-col md:flex-row items-baseline">
+        <div className="flex gap-1.5 items-center md:mx-1 mx-auto">
+          {isMobile ? (
+            <span className="subtitle1">{duration}</span>
+          ) : (
             <h5>{duration}</h5>
+          )}
+          <div className="flex items-center w-[25px]">
             {superfluidApr && (
               <Image
                 alt=""
@@ -186,13 +202,13 @@ const LockupItem: FunctionComponent<{
               />
             )}
           </div>
-          <div className="w-full flex text-center place-content-center gap-2">
-            <p className="md:mt-1 text-secondary-200 text-sm md:text-base">
-              {`${apr}${superfluidApr ? `+ ${superfluidApr}` : ""}`}
-            </p>
-          </div>
+        </div>
+        <div className="flex items-center md:text-right text-center md:mx-0 mx-auto gap-2">
+          <p className="subtitle2 md:m-0 mt-1 text-secondary-200 md:text-sm text-base">
+            {`${apr}${superfluidApr ? `+ ${superfluidApr}` : ""}`}
+          </p>
         </div>
       </div>
     </div>
-  );
-};
+  </div>
+);

@@ -11,9 +11,12 @@ import { StepBase } from "./step-base";
 import { IBCCurrency } from "@keplr-wallet/types";
 import { CheckBox } from "../../../control";
 import { POOL_CREATION_FEE } from ".";
+import { useWindowSize } from "../../../../hooks";
 
 export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
   const { createPoolConfig: config } = props;
+  const { isMobile } = useWindowSize();
+
   const series = useMemo(() => {
     return generateSeries(
       config.assets.map((asset) => ({
@@ -28,15 +31,23 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
     <StepBase step={3} {...props}>
       <div className="flex flex-col gap-2.5">
         <div className="grid grid-cols-2">
-          <figure style={{ height: "200px", width: "200px" }}>
+          <figure
+            className="mx-auto"
+            style={{
+              height: isMobile ? "96px" : "200px",
+              width: isMobile ? "96px" : "200px",
+            }}
+          >
             <PieChart
               options={{
                 series,
               }}
+              height={isMobile ? 96 : 200}
+              width={isMobile ? 96 : 200}
             />
           </figure>
           <div className="flex flex-col gap-2">
-            <div className="flex place-content-between caption text-white-disabled">
+            <div className="flex place-content-between caption md:text-xxs text-white-disabled">
               <span>Token</span>
               <span>Amount</span>
             </div>
@@ -46,18 +57,26 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
                   <div className="flex items-center place-content-between">
                     <div className="flex items-center">
                       <figure
-                        className="rounded-full w-4 h-4 mr-3"
+                        className="rounded-full w-4 h-4 md:w-2 md:h-2 mr-3 md:mr-1"
                         style={{
                           background: HIGHCHART_LEGEND_GRADIENTS[index],
                         }}
                       />
-                      <h6>{currency.coinDenom}</h6>
+                      {isMobile ? (
+                        <span className="subtitle2">{currency.coinDenom}</span>
+                      ) : (
+                        <h6>{currency.coinDenom}</h6>
+                      )}
                     </div>
-                    <h6>{amount}</h6>
+                    {isMobile ? (
+                      <span className="subtitle2">{amount}</span>
+                    ) : (
+                      <h6>{amount}</h6>
+                    )}
                   </div>
                   <div className="flex items-center place-content-between">
                     {"paths" in currency ? (
-                      <span className="subtitle2 text-iconDefault">
+                      <span className="subtitle2 md:caption md:text-sm text-iconDefault">
                         {(currency as IBCCurrency).paths
                           .map((path) => path.channelId)
                           .join(", ")}
@@ -65,28 +84,30 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
                     ) : (
                       <br />
                     )}
-                    <span className="body1 text-white-mid">{percentage}%</span>
+                    <span className="body1 md:caption md:text-sm text-white-mid">
+                      {percentage}%
+                    </span>
                   </div>
                 </div>
               )
             )}
           </div>
         </div>
-        <div className="flex p-3.5 items-center place-content-between border border-white-faint rounded-2xl">
-          <span>Set Swap Fee</span>
-          <div className="flex items-center gap-4">
+        <div className="flex p-3.5 md:p-2.5 items-center place-content-between border border-white-faint rounded-2xl">
+          <span className="md:subtitle2">Set Swap Fee</span>
+          <div className="flex items-center gap-4 md:gap-1">
             <InputBox
-              className="w-44"
+              className="w-44 md:w-20"
               type="number"
-              inputClassName="text-right text-h6 font-h6"
+              inputClassName="text-right text-h6 font-h6 md:subtitle1"
               currentValue={config.swapFee}
               onInput={(value) => config.setSwapFee(value)}
               placeholder=""
             />
-            <h6>%</h6>
+            {isMobile ? <span className="subtitle2">%</span> : <h6>%</h6>}
           </div>
         </div>
-        <div className="flex items-center justify-center gap-2 p-3.5">
+        <div className="flex items-center justify-center gap-2 p-3.5 md:px-12 md:caption">
           <CheckBox
             className="after:!bg-transparent after:!border-2 after:!border-iconDefault"
             isOn={config.acknowledgeFee}
@@ -94,7 +115,14 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
               config.acknowledgeFee = !config.acknowledgeFee;
             }}
           >
-            I understand that creating a new pool will cost {POOL_CREATION_FEE}.
+            {isMobile ? (
+              <div className="w-2/3 mx-auto">
+                I understand that creating a new pool will cost{" "}
+                {POOL_CREATION_FEE}.
+              </div>
+            ) : (
+              `I understand that creating a new pool will cost ${POOL_CREATION_FEE}.`
+            )}
           </CheckBox>
         </div>
       </div>

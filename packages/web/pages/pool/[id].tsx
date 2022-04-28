@@ -18,12 +18,15 @@ import {
   PoolCatalystCard,
   PoolGaugeBonusCard,
   PoolGaugeCard,
+  SuperfluidValidatorCard,
+  GoSuperfluidCard,
 } from "../../components/cards";
 import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
-import { BaseCell, Table } from "../../components/table";
+import { BaseCell, Table, ColumnDef } from "../../components/table";
 import { truncateString } from "../../components/utils";
 import { ExternalIncentiveGaugeAllowList, EmbedChainInfos } from "../../config";
+import { useWindowSize } from "../../hooks";
 import {
   LockTokensModal,
   ManageLiquidityModal,
@@ -34,6 +37,7 @@ import { useStore } from "../../stores";
 const Pool: FunctionComponent = observer(() => {
   const router = useRouter();
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+  const { isMobile } = useWindowSize();
 
   const { id: poolId } = router.query;
   const { chainId } = chainStore.osmosis;
@@ -474,10 +478,11 @@ const Pool: FunctionComponent = observer(() => {
       {lockLPTokensConfig && lockupGauges && (
         <LockTokensModal
           isOpen={showLockLPTokenModal}
-          title="Bond LP Tokens"
+          title="Liquidity Bonding"
           onRequestClose={() => setShowLockLPTokenModal(false)}
           isSendingMsg={account.txTypeInProgress !== ""}
           amountConfig={lockLPTokensConfig}
+          isMobile={isMobile}
           availableToken={
             pool
               ? queryOsmosis.queryGammPoolShare.getAvailableGammShare(
@@ -530,7 +535,9 @@ const Pool: FunctionComponent = observer(() => {
         pool &&
         lockLPTokensConfig && (
           <SuperfluidValidatorModal
-            title="Select Superfluid Validator"
+            title={
+              isMobile ? "Select Validator" : "Select Superfluid Validator"
+            }
             availableBondAmount={
               "upgradeableLPLockIds" in superfluid
                 ? superfluid.upgradeableLPLockIds.amount // is delegating amount from existing lockup
@@ -589,7 +596,7 @@ const Pool: FunctionComponent = observer(() => {
             <h5>
               {`Pool #${pool?.id} : ${pool?.poolAssets
                 .map((asset) => asset.amount.currency.coinDenom)
-                .map((denom) => truncateString(denom, 8))
+                .map((denom) => truncateString(denom))
                 .join(" / ")}`}
             </h5>
           </MetricLoader>
@@ -609,7 +616,7 @@ const Pool: FunctionComponent = observer(() => {
                 className="h-7 w-56"
                 isLoading={!pool || !totalValueLocked}
               >
-                {totalValueLocked?.toString() || "0"}
+                {totalValueLocked?.toString()}
               </MetricLoader>
             ),
           },
@@ -617,7 +624,7 @@ const Pool: FunctionComponent = observer(() => {
             label: "My Liquidity",
             value: (
               <MetricLoader className="h-7 " isLoading={!userLockedValue}>
-                {userLockedValue?.toString() || "0"}
+                {userLockedValue?.toString() ?? `0${fiat.symbol}`}
               </MetricLoader>
             ),
           },
@@ -627,7 +634,7 @@ const Pool: FunctionComponent = observer(() => {
             label: "Bonded",
             value: (
               <MetricLoader className="h-4" isLoading={!userBondedValue}>
-                {userBondedValue?.toString() || "0"}
+                {userBondedValue?.toString() ?? `0${fiat.symbol}`}
               </MetricLoader>
             ),
           },
@@ -635,7 +642,7 @@ const Pool: FunctionComponent = observer(() => {
             label: "Swap Fee",
             value: (
               <MetricLoader className="h-4" isLoading={!pool}>
-                {pool?.swapFee.toString() || "0"}
+                {pool?.swapFee.toString() ?? "0%"}
               </MetricLoader>
             ),
           },
@@ -643,31 +650,37 @@ const Pool: FunctionComponent = observer(() => {
         bgImageUrl="/images/osmosis-guy-in-lab.png"
       />
       <section className="bg-surface">
-        <div className="max-w-container mx-auto p-10">
-          <div className="flex place-content-between">
+        <div className="max-w-container mx-auto md:p-5 p-10">
+          <div className="flex lg:flex-col gap-6 place-content-between">
             <div className="max-w-md">
-              <div className="flex gap-3">
-                <h5>Liquidity Mining</h5>
+              <div className="flex lg:flex-col gap-3">
+                {isMobile ? (
+                  <span className="subtitle1 text-lg">Liquidity Mining</span>
+                ) : (
+                  <h5>Liquidity Mining</h5>
+                )}
                 {superfluid && superfluid !== "not-superfluid-pool" && (
-                  <div className="bg-superfluid rounded-full px-4 py-1 text-xs md:text-base">
+                  <div className="bg-superfluid w-fit rounded-full px-4 py-1 md:caption text-base">
                     Superfluid Staking Enabled
                   </div>
                 )}
               </div>
-              <p className="text-white-mid py-2">
+              <p className="text-white-mid md:caption py-2">
                 Bond liquidity to various minimum unbonding periods to earn OSMO
                 liquidity rewards and swap fees
               </p>
             </div>
-            <div className="flex flex-col gap-2 text-right">
-              <span className="text-white-mid">Available LP tokens</span>
-              <h5>
+            <div className="flex flex-col gap-2 text-right lg:text-left">
+              <span className="caption text-white-mid">
+                Available LP tokens
+              </span>
+              <span className="font-h5 text-h5 md:subtitle1">
                 <MetricLoader className="h-6" isLoading={!userAvailableValue}>
                   {userAvailableValue?.toString() || "$0"}
                 </MetricLoader>
-              </h5>
+              </span>
               <Button
-                className="h-8"
+                className="h-8 lg:w-fit w-full md:caption"
                 onClick={() => setShowLockLPTokenModal(true)}
               >
                 Start Earning
@@ -678,25 +691,34 @@ const Pool: FunctionComponent = observer(() => {
             guages &&
             queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id) && (
               <>
-                <div className="flex gap-9 place-content-between pt-10">
-                  {externalGuages?.map(
-                    (
-                      { rewardAmount, duration: durationDays, remainingEpochs },
-                      index
-                    ) => (
-                      <PoolGaugeBonusCard
-                        key={index}
-                        bonusValue={
-                          rewardAmount?.maxDecimals(0).trim(true).toString() ??
-                          "0"
-                        }
-                        days={durationDays}
-                        remainingEpochs={remainingEpochs.toString()}
-                      />
-                    )
-                  )}
-                </div>
-                <div className="flex gap-9 place-content-between pt-10">
+                {externalGuages && externalGuages.length > 0 && (
+                  <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
+                    {externalGuages.map(
+                      (
+                        {
+                          rewardAmount,
+                          duration: durationDays,
+                          remainingEpochs,
+                        },
+                        index
+                      ) => (
+                        <PoolGaugeBonusCard
+                          key={index}
+                          bonusValue={
+                            rewardAmount
+                              ?.maxDecimals(0)
+                              .trim(true)
+                              .toString() ?? "0"
+                          }
+                          days={durationDays}
+                          remainingEpochs={remainingEpochs.toString()}
+                          isMobile={isMobile}
+                        />
+                      )
+                    )}
+                  </div>
+                )}
+                <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
                   {guages.map((guage, i) => (
                     <PoolGaugeCard
                       key={i}
@@ -733,6 +755,7 @@ const Pool: FunctionComponent = observer(() => {
                               .toString()
                           : undefined
                       }
+                      isMobile={isMobile}
                     />
                   ))}
                 </div>
@@ -745,225 +768,187 @@ const Pool: FunctionComponent = observer(() => {
             ("delegations" in superfluid &&
               superfluid.delegations &&
               superfluid.delegations.length > 0)) && (
-            <div className="max-w-container mx-auto p-10 flex flex-col gap-4">
-              <h5>Superfluid Staking</h5>
+            <div className="max-w-container mx-auto md:p-5 p-10 flex flex-col gap-4">
+              {isMobile ? (
+                <span className="subtitle2">My Superfluid Stake</span>
+              ) : (
+                <h5>Superfluid Staking</h5>
+              )}
               {"upgradeableLPLockIds" in superfluid ? (
-                <div className="mt-5 bg-card p-5 rounded-2xl flex items-center justify-between font-body">
-                  <div>
-                    <div className="text-base font-semibold text-white-high">
-                      Superfluid Staking Inactive
-                    </div>
-                    <div className="mt-2 text-sm font-medium text-iconDefault">
-                      You have superfluid eligible bonded liquidity.
-                      <br />
-                      Choose a Superfluid Staking validator to earn additional
-                      rewards.
-                    </div>
-                  </div>
-                  <button
-                    className="bg-superfluid rounded-lg py-2 px-8 text-white-high font-semibold text-sm shadow-elevation-04dp"
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-
-                      setShowSuperfluidValidatorsModal(true);
-                    }}
-                  >
-                    Go Superfluid
-                  </button>
-                </div>
+                <GoSuperfluidCard
+                  goSuperfluid={() => setShowSuperfluidValidatorsModal(true)}
+                  isMobile={isMobile}
+                />
               ) : (
                 "delegations" in superfluid &&
                 superfluid.delegations?.map(
                   (
                     {
                       validatorName,
-                      validatorCommission,
                       validatorImgSrc,
+                      validatorCommission,
                       amount,
                       apr,
                     },
                     index
                   ) => (
-                    <div
+                    <SuperfluidValidatorCard
                       key={index}
-                      className="w-full p-0.5 rounded-xl bg-superfluid"
-                    >
-                      <div className="flex flex-col w-full gap-1 bg-card rounded-xl py-5 px-7">
-                        <div className="flex place-content-between text-subtitle1">
-                          <span>My Superfluid Validator</span>
-                          <span>My Superfluid Delegation</span>
-                        </div>
-                        <hr className="my-3 text-white-faint" />
-                        <div className="flex place-content-between">
-                          <div className="flex gap-3">
-                            <div className="rounded-full border border-enabledGold w-14 h-14 p-1 flex shrink-0">
-                              {validatorImgSrc && (
-                                <img
-                                  className="rounded-full"
-                                  alt="validator image"
-                                  src={validatorImgSrc}
-                                />
-                              )}
-                            </div>
-                            <div className="flex flex-col place-content-evenly">
-                              <span className="text-lg text-white-high">
-                                <MetricLoader isLoading={!validatorName}>
-                                  {validatorName}
-                                </MetricLoader>
-                              </span>
-                              <span className="text-sm text-iconDefault">
-                                Commission -{" "}
-                                <MetricLoader isLoading={!validatorCommission}>
-                                  {validatorCommission?.toString() ?? ""}
-                                </MetricLoader>
-                              </span>
-                            </div>
-                          </div>
-                          <div>
-                            <h6 className="text-white-high">
-                              ~{amount.maxDecimals(0).trim(true).toString()}
-                            </h6>
-                            <span className="float-right text-sm text-iconDefault">
-                              ~{apr.maxDecimals(0).trim(true).toString()} APR
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                      validatorName={validatorName}
+                      validatorImgSrc={validatorImgSrc}
+                      validatorCommission={validatorCommission?.toString()}
+                      delegation={amount.maxDecimals(2).trim(true).toString()}
+                      apr={apr.maxDecimals(2).trim(true).toString()}
+                      isMobile={isMobile}
+                    />
                   )
                 )
               )}
             </div>
           )}
-        <div className="max-w-container mx-auto p-10">
-          <h6>My Bondings</h6>
-          <Table<
-            BaseCell & {
-              duration: Duration;
-              amount: CoinPretty;
-              apr?: RatePretty;
-              lockIds: string[];
-              isSuperfluidDuration: boolean;
-            }
-          >
-            className="w-full my-5"
-            columnDefs={[
-              {
-                display: "Unbonding Duration",
-                displayCell:
-                  superfluid && superfluid !== "not-superfluid-pool"
-                    ? ({ value, isSuperfluidDuration }) => (
-                        <div className="flex gap-3">
-                          <span>{value ?? ""}</span>
-                          {isSuperfluidDuration && (
-                            <Image
-                              alt="superfluid"
-                              src="/icons/superfluid-osmo.svg"
-                              height={20}
-                              width={20}
-                            />
-                          )}
-                        </div>
-                      )
-                    : undefined,
-              },
-              { display: "Current APR" },
-              { display: "Amount" },
-              {
-                display: "Action",
-                displayCell: ({ amount, lockIds, isSuperfluidDuration }) => (
-                  <Button
-                    type="arrow"
-                    size="xs"
-                    disabled={
-                      account.txTypeInProgress !== "" ||
-                      amount?.toDec().equals(new Dec(0))
-                    }
-                    onClick={async () => {
-                      if (!lockIds) return;
-                      try {
-                        if (isSuperfluidDuration) {
-                          const blockGasLimitLockIds = lockIds.slice(0, 4);
-
-                          for (const lockId of blockGasLimitLockIds) {
-                            await queryOsmosis.querySyntheticLockupsByLockId
-                              .get(lockId)
-                              .waitFreshResponse();
-                          }
-
-                          await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-                            blockGasLimitLockIds.map((lockId) => ({
-                              lockId,
-                              isSyntheticLock:
-                                queryOsmosis.querySyntheticLockupsByLockId.get(
-                                  lockId
-                                ).isSyntheticLock === true,
-                            }))
-                          );
-                        } else {
-                          const blockGasLimitLockIds = lockIds.slice(0, 10);
-                          await account.osmosis.sendBeginUnlockingMsg(
-                            blockGasLimitLockIds
-                          );
-                        }
-                      } catch (e) {
-                        console.error(e);
+        <div className="max-w-container mx-auto md:p-5 p-10">
+          {isMobile ? (
+            <span className="subtitle2">My Bondings</span>
+          ) : (
+            <h6>My Bondings</h6>
+          )}
+          <Table
+            className="md:-mx-5 md:w-screen md:caption w-full my-5"
+            headerTrClassName="md:h-11"
+            columnDefs={(
+              [
+                {
+                  display: "Unbonding Duration",
+                  className: "!pl-8",
+                  displayCell:
+                    superfluid && superfluid !== "not-superfluid-pool"
+                      ? ({ value, isSuperfluidDuration }) => (
+                          <div className="flex items-center gap-3">
+                            <span>{value ?? ""}</span>
+                            {isSuperfluidDuration && (
+                              <Image
+                                alt="superfluid"
+                                src="/icons/superfluid-osmo.svg"
+                                height={20}
+                                width={20}
+                              />
+                            )}
+                          </div>
+                        )
+                      : undefined,
+                },
+                { display: "Current APR" },
+                { display: "Amount" },
+                {
+                  display: "Action",
+                  className:
+                    "md:text-right text-center md:justify-right justify-center",
+                  displayCell: ({ amount, lockIds, isSuperfluidDuration }) => (
+                    <Button
+                      className="md:ml-auto md:caption m-auto pr-0 !md:justify-right !justify-center"
+                      type={isMobile ? undefined : "arrow"}
+                      size="xs"
+                      disabled={
+                        account.txTypeInProgress !== "" ||
+                        amount?.toDec().equals(new Dec(0))
                       }
-                    }}
-                  >
-                    Unbond All
-                  </Button>
-                ),
-              },
-            ]}
+                      onClick={async () => {
+                        if (!lockIds) return;
+                        try {
+                          if (isSuperfluidDuration) {
+                            const blockGasLimitLockIds = lockIds.slice(0, 4);
+
+                            for (const lockId of blockGasLimitLockIds) {
+                              await queryOsmosis.querySyntheticLockupsByLockId
+                                .get(lockId)
+                                .waitFreshResponse();
+                            }
+
+                            await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+                              blockGasLimitLockIds.map((lockId) => ({
+                                lockId,
+                                isSyntheticLock:
+                                  queryOsmosis.querySyntheticLockupsByLockId.get(
+                                    lockId
+                                  ).isSyntheticLock === true,
+                              }))
+                            );
+                          } else {
+                            const blockGasLimitLockIds = lockIds.slice(0, 10);
+                            await account.osmosis.sendBeginUnlockingMsg(
+                              blockGasLimitLockIds
+                            );
+                          }
+                        } catch (e) {
+                          console.log(e);
+                        }
+                      }}
+                    >
+                      {isMobile ? "Unbond" : "Unbond All"}
+                    </Button>
+                  ),
+                },
+              ] as ColumnDef<
+                BaseCell & {
+                  duration: Duration;
+                  amount: CoinPretty;
+                  apr?: RatePretty;
+                  lockIds: string[];
+                  isSuperfluidDuration: boolean;
+                }
+              >[]
+            ).filter(({ display }) =>
+              isMobile ? display !== "Current APR" : true
+            )}
             data={
-              userLockedAssets?.map((lockedAsset, index) => [
-                {
-                  value: lockedAsset.duration.humanize(),
-                  isSuperfluidDuration:
-                    index === (userLockedAssets?.length ?? 0) - 1 &&
-                    superfluid &&
-                    typeof superfluid !== "string" &&
-                    "delegations" in superfluid &&
-                    superfluid.delegations &&
-                    superfluid.delegations.length > 0,
-                }, // Unbonding Duration
-                {
-                  value:
-                    lockedAsset.apr?.maxDecimals(2).trim(true).toString() ??
-                    "0%",
-                }, // Current APR
-                {
-                  value: lockedAsset.amount
-                    .maxDecimals(6)
-                    .trim(true)
-                    .toString(),
-                }, // Amount
-                {
-                  ...lockedAsset,
-                  value: lockedAsset.duration.humanize(),
-                  isSuperfluidDuration:
-                    index === (userLockedAssets?.length ?? 0) - 1 &&
-                    superfluid &&
-                    typeof superfluid !== "string" &&
-                    "delegations" in superfluid &&
-                    superfluid.delegations &&
-                    superfluid.delegations.length > 0,
-                }, // Unbond All button
-              ]) ?? [[{ value: "" }], [{ value: "" }], [{ value: "" }]]
+              userLockedAssets?.map((lockedAsset, index) => {
+                const isSuperfluidDuration =
+                  index === (userLockedAssets?.length ?? 0) - 1 &&
+                  superfluid &&
+                  typeof superfluid !== "string" &&
+                  "delegations" in superfluid &&
+                  superfluid.delegations &&
+                  superfluid.delegations.length > 0;
+                return [
+                  {
+                    value: lockedAsset.duration.humanize(),
+                    isSuperfluidDuration,
+                  }, // Unbonding Duration
+                  {
+                    value:
+                      lockedAsset.apr?.maxDecimals(2).trim(true).toString() ??
+                      "0%",
+                  }, // Current APR
+                  {
+                    value: lockedAsset.amount
+                      .maxDecimals(6)
+                      .trim(true)
+                      .toString(),
+                  }, // Amount
+                  {
+                    ...lockedAsset,
+                    value: lockedAsset.duration.humanize(),
+                    isSuperfluidDuration,
+                  }, // Unbond All button
+                ].filter((_row, index) => (isMobile ? index !== 1 : true));
+              }) ?? []
             }
           />
         </div>
         {userUnlockingAssets && userUnlockingAssets.length > 0 && (
-          <div className="max-w-container mx-auto p-10">
-            <h6>Unbondings</h6>
+          <div className="max-w-container mx-auto md:p-5 p-10">
+            {isMobile ? (
+              <span className="subtitle2">Unbondings</span>
+            ) : (
+              <h6>Unbondings</h6>
+            )}
             <Table
-              className="w-full my-5"
+              className="md:-mx-5 md:w-screen md:caption w-full my-5"
+              headerTrClassName="md:h-11"
               columnDefs={[
                 {
                   display: "Unbonding Duration",
-                  className: "w-1/3",
+                  className: "w-1/3 !pl-8",
                 },
                 { display: "Amount", className: "w-1/3" },
                 {
@@ -982,7 +967,7 @@ const Pool: FunctionComponent = observer(() => {
                   {
                     value: moment(endTime).fromNow(),
                   },
-                ]) ?? [[{ value: "" }], [{ value: "" }], [{ value: "" }]]
+                ]) ?? []
               }
             />
           </div>
@@ -992,14 +977,19 @@ const Pool: FunctionComponent = observer(() => {
           !("upgradeableLPLockIds" in superfluid) &&
           superfluid.undelegations &&
           superfluid.undelegations.length > 0 && (
-            <div className="max-w-container mx-auto p-10">
-              <h6>Superfluid Unbondings</h6>
+            <div className="max-w-container mx-auto md:p-5 p-10">
+              {isMobile ? (
+                <span className="subtitle2">Superfluid Unbondings</span>
+              ) : (
+                <h6>Superfluid Unbondings</h6>
+              )}
               <Table
-                className="w-full my-5 justify-left"
+                className="md:-mx-5 md:w-screen md:caption w-full my-5"
+                headerTrClassName="md:h-11"
                 columnDefs={[
                   {
                     display: "Validator",
-                    className: "w-1/3",
+                    className: "w-1/3 !pl-8",
                   },
                   { display: "Amount", className: "w-1/3" },
                   {
@@ -1020,36 +1010,44 @@ const Pool: FunctionComponent = observer(() => {
                         value: moment(endTime).fromNow(),
                       },
                     ]
-                  ) ?? [[{ value: "" }], [{ value: "" }], [{ value: "" }]]
+                  ) ?? []
                 }
               />
             </div>
           )}
-        <div className="max-w-container mx-auto p-10">
-          <h5>Pool Catalyst</h5>
-          <div className="flex gap-5 my-5">
+        <div className="max-w-container mx-auto md:p-5 p-10">
+          {isMobile ? (
+            <span className="subtitle2">Pool Catalyst</span>
+          ) : (
+            <h5>Pool Catalyst</h5>
+          )}
+          <div className="flex md:flex-col gap-5 my-5">
             {(userPoolAssets ?? [undefined, undefined]).map(
               (userAsset, index) => (
                 <PoolCatalystCard
                   key={index}
                   colorKey={Number(pool?.id ?? "0") + index}
                   isLoading={!pool || !userPoolAssets}
-                  className="w-1/2 max-w-md"
+                  className="md:w-full w-1/2 max-w-md"
                   percentDec={userAsset?.ratio.toString()}
-                  tokenMinimalDenom={userAsset?.asset.currency.coinDenom}
+                  tokenDenom={userAsset?.asset.currency.coinDenom}
+                  isMobile={isMobile}
                   metrics={[
                     {
                       label: "Total amount",
                       value: (
                         <MetricLoader isLoading={!userPoolAssets}>
-                          {pool?.poolAssets
-                            .find(
-                              (asset) =>
-                                asset.amount.currency.coinDenom ===
-                                userAsset?.asset.currency.coinDenom
-                            )
-                            ?.amount.maxDecimals(0)
-                            .toString() ?? "0"}
+                          {truncateString(
+                            pool?.poolAssets
+                              .find(
+                                (asset) =>
+                                  asset.amount.currency.coinDenom ===
+                                  userAsset?.asset.currency.coinDenom
+                              )
+                              ?.amount.maxDecimals(0)
+                              .toString() ?? "0",
+                            30
+                          )}
                         </MetricLoader>
                       ),
                     },
@@ -1057,7 +1055,10 @@ const Pool: FunctionComponent = observer(() => {
                       label: "My amount",
                       value: (
                         <MetricLoader isLoading={!userPoolAssets}>
-                          {userAsset?.asset.maxDecimals(0).toString()}
+                          {truncateString(
+                            userAsset?.asset.maxDecimals(0).toString() ?? "",
+                            30
+                          )}
                         </MetricLoader>
                       ),
                     },

@@ -1,4 +1,6 @@
+import classNames from "classnames";
 import { FunctionComponent } from "react";
+import { truncateString } from "../utils";
 
 export const PoolAssetsName: FunctionComponent<{
   size: "sm" | "md";
@@ -12,11 +14,11 @@ export const PoolAssetsName: FunctionComponent<{
       ? `${assetDenoms.length} Token Pool`
       : assetDenoms
           .map((asset) =>
-            asset.startsWith("ibc/") ? asset.slice(0, 7).concat("...") : asset
+            asset.startsWith("ibc/") ? truncateString(asset) : asset
           )
           .join(size === "sm" ? "/" : " / ");
   return size === "sm" ? (
-    <span className={className}>{assetsName}</span>
+    <span className={classNames("md:subtitle2", className)}>{assetsName}</span>
   ) : (
     <h5 className={className}>{assetsName}</h5>
   );

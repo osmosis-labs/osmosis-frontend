@@ -2,7 +2,7 @@ import { Dec } from "@keplr-wallet/unit";
 import { DataProcessor } from "./types";
 import get from "./utils";
 
-export type SortingData = string | Dec | { toDec(): Dec };
+export type SortingData = string | Dec | { toDec(): Dec } | undefined;
 
 /** Sorts ascending a copy of an arbitrary list of objects via key paths. Key path example: `"attributes.color"` */
 export class DataSorter<TData> implements DataProcessor<TData[]> {
@@ -21,6 +21,7 @@ export class DataSorter<TData> implements DataProcessor<TData[]> {
       let aData: SortingData = get(a, key);
       let bData: SortingData = get(b, key);
 
+      if (aData === undefined || bData === undefined) return 0;
       if (typeof aData !== typeof bData) return 0;
 
       try {
@@ -50,8 +51,14 @@ export class DataSorter<TData> implements DataProcessor<TData[]> {
         return aData.toString().localeCompare(bData.toString());
       }
 
-      if (!(aData instanceof Dec)) aData = aData.toDec();
-      if (!(bData instanceof Dec)) bData = bData.toDec();
+      try {
+        // typeof === "object"
+        if (!(aData instanceof Dec)) aData = aData.toDec();
+        if (!(bData instanceof Dec)) bData = bData.toDec();
+      } catch {
+        console.error("Sort unsuccessful of", aData, bData);
+        return 0;
+      }
 
       if (aData.lt(bData)) return -1;
       if (aData.gt(bData)) return 1;

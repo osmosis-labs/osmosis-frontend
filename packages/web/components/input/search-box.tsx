@@ -26,9 +26,8 @@ export const SearchBox: FunctionComponent<Props> = ({
     )}
   >
     <Image alt="search" src="/icons/search-hollow.svg" height={14} width={14} />
-    <label className="grow shrink h-full" htmlFor="text-search">
+    <label className="grow shrink h-full">
       <input
-        id="text-search"
         className="w-full h-full appearance-none bg-transparent"
         value={currentValue}
         placeholder={placeholder ?? ""}

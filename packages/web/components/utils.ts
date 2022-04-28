@@ -33,7 +33,8 @@ export function normalize(
   return a + ((val - min) * (b - a)) / (max - min);
 }
 
-export function truncateString(str: string, num: number) {
+/** Trucates a string with ellipsis, default breakpoint: `num = 8`. */
+export function truncateString(str: string, num = 8) {
   if (str.length <= num) {
     return str;
   }

@@ -1,5 +1,5 @@
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import {
   IBCBalance,
   IBCCW20ContractBalance,
@@ -17,8 +17,13 @@ import {
 } from "./cells";
 import { useStore } from "../../stores";
 import { useSortedData, useFilteredData } from "../../hooks/data";
+import { useWindowSize } from "../../hooks/window";
 import { ShowMoreButton } from "../buttons/show-more";
+import { AssetCard } from "../cards";
+import { Switch } from "../control";
+import { Button } from "../buttons";
 import { DataSorter } from "../../hooks/data/data-sorter";
+import { PreTransferModal } from "../../modals";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -34,6 +39,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
   onWithdraw,
 }) => {
   const { chainStore } = useStore();
+  const { isMobile } = useWindowSize();
   // Assemble cells with all data needed for any place in the table.
   const cells: TableCell[] = useMemo(
     () => [
@@ -43,6 +49,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
 
         return {
           value: balance.toString(),
+          currency: balance.currency,
           chainId: chainStore.osmosis.chainId,
           chainName: "",
           coinDenom: balance.denom,
@@ -68,6 +75,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
 
           return {
             value: balance.toString(),
+            currency: balance.currency,
             chainName: chainName,
             chainId: chainId,
             coinDenom: balance.denom,
@@ -148,7 +156,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
   );
 
   // User toggles for showing 10+ pools and assets with > 0 fiat value
-  const [showAllPools, setShowAllPools] = useState(false);
+  const [showAllAssets, setShowAllAssets] = useState(false);
   const [hideZeroBalances, setHideZeroBalances] = useState(false);
 
   // Filter data based on user's input in the search box.
@@ -159,17 +167,74 @@ export const AssetsTable: FunctionComponent<Props> = ({
     ["chainName", "chainId", "coinDenom", "amount", "fiatValue", "queryTags"]
   );
 
-  const tableData = showAllPools
+  const tableData = showAllAssets
     ? filteredSortedCells
     : filteredSortedCells.slice(0, 10);
 
+  // Mobile only - State for pre-transfer menu for selecting asset to ibc transfer
+  const [showPreTransfer, setShowPreTransfer] = useState(false);
+  const [selectedTransferToken, setPreTransferToken] = useState<CoinPretty>(
+    ibcBalances[0].balance
+  );
+
   return (
-    <section className="bg-surface min-h-screen">
-      <div className="max-w-container mx-auto p-10">
-        <div className="flex place-content-between">
-          <h5>Osmosis Assets</h5>
-          <div className="flex gap-5">
+    <section className="min-h-screen md:bg-background bg-surface">
+      {showPreTransfer && (
+        <PreTransferModal
+          isOpen={showPreTransfer}
+          onRequestClose={() => setShowPreTransfer(false)}
+          onDeposit={() => {
+            const chainId = ibcBalances.find(
+              (ibcAsset) =>
+                ibcAsset.balance.denom === selectedTransferToken.denom
+            )?.chainInfo.chainId;
+            if (chainId) {
+              onDeposit(chainId, selectedTransferToken.denom);
+            }
+            setShowPreTransfer(false);
+          }}
+          onWithdraw={() => {
+            const chainId = ibcBalances.find(
+              (ibcAsset) =>
+                ibcAsset.balance.denom === selectedTransferToken.denom
+            )?.chainInfo.chainId;
+            if (chainId) {
+              onWithdraw(chainId, selectedTransferToken.denom);
+            }
+            setShowPreTransfer(false);
+          }}
+          onSelectToken={(coinDenom) => {
+            const ibcToken = ibcBalances.find(
+              (ibcAsset) => ibcAsset.balance.denom === coinDenom
+            );
+            if (ibcToken) {
+              setPreTransferToken(ibcToken.balance);
+            }
+          }}
+          selectedToken={selectedTransferToken}
+          tokens={ibcBalances.map((ibcAsset) => ibcAsset.balance)}
+        />
+      )}
+      <div className="max-w-container mx-auto md:p-4 p-10">
+        {isMobile ? (
+          <div className="flex flex-col gap-5">
+            <div className="flex place-content-between gap-10 py-2">
+              <Button
+                className="w-full h-10"
+                onClick={() => setShowPreTransfer(true)}
+              >
+                Deposit
+              </Button>
+              <Button
+                className="w-full h-10 bg-primary-200/30"
+                type="outline"
+                onClick={() => setShowPreTransfer(true)}
+              >
+                Withdraw
+              </Button>
+            </div>
             <SearchBox
+              className="!rounded !w-full h-11"
               currentValue={query}
               onInput={(query) => {
                 setHideZeroBalances(false);
@@ -177,78 +242,159 @@ export const AssetsTable: FunctionComponent<Props> = ({
               }}
               placeholder="Filter by symbol"
             />
-            <SortMenu
-              selectedOptionId={sortKey}
-              onSelect={setSortKey}
-              onToggleSortDirection={toggleSortDirection}
-              options={[
-                {
-                  id: "coinDenom",
-                  display: "Symbol",
-                },
-                {
-                  /** These ids correspond to keys in `Cell` type and are later used for sorting. */
-                  id: "chainName",
-                  display: "Network",
-                },
-                {
-                  id: "amount",
-                  display: "Balance",
-                },
-              ]}
-            />
+            <h6>Assets</h6>
+            <div className="flex gap-3 place-content-between">
+              <Switch
+                className="overline"
+                isOn={hideZeroBalances}
+                onToggle={() => setHideZeroBalances(!hideZeroBalances)}
+              >
+                Hide zero balances
+              </Switch>
+              <SortMenu
+                selectedOptionId={sortKey}
+                onSelect={setSortKey}
+                onToggleSortDirection={toggleSortDirection}
+                options={[
+                  {
+                    id: "coinDenom",
+                    display: "Symbol",
+                  },
+                  {
+                    /** These ids correspond to keys in `Cell` type and are later used for sorting. */
+                    id: "chainName",
+                    display: "Network",
+                  },
+                  {
+                    id: "amount",
+                    display: "Balance",
+                  },
+                ]}
+              />
+            </div>
           </div>
-        </div>
-        <Table<TableCell>
-          className="w-full my-5"
-          columnDefs={[
-            {
-              display: "Asset / Chain",
-              displayCell: AssetNameCell,
-              sort: sortColumnWithKeys(["coinDenom", "chainName"]),
-            },
-            {
-              display: "Balance",
-              displayCell: BalanceCell,
-              sort: sortColumnWithKeys(["amount", "fiatValue"], "descending"),
-              className: "text-right pr-24",
-            },
-            {
-              display: "Deposit",
-              displayCell: (cell) => (
-                <TransferButtonCell type="deposit" {...cell} />
-              ),
-              className: "text-center max-w-[5rem]",
-            },
-            {
-              display: "Withdraw",
-              displayCell: (cell) => (
-                <TransferButtonCell type="withdraw" {...cell} />
-              ),
-              className: "text-center max-w-[5rem]",
-            },
-          ]}
-          rowDefs={tableData.map(() => ({ makeHoverClass: () => " " }))}
-          data={tableData.map((cell) => [cell, cell, cell, cell])}
-          headerTrClassName="!h-12 !body2"
-        />
+        ) : (
+          <div className="flex place-content-between">
+            <h5>Osmosis Assets</h5>
+            <div className="flex gap-5">
+              <SearchBox
+                currentValue={query}
+                onInput={(query) => {
+                  setHideZeroBalances(false);
+                  setQuery(query);
+                }}
+                placeholder="Filter by symbol"
+              />
+              <SortMenu
+                selectedOptionId={sortKey}
+                onSelect={setSortKey}
+                onToggleSortDirection={toggleSortDirection}
+                options={[
+                  {
+                    id: "coinDenom",
+                    display: "Symbol",
+                  },
+                  {
+                    /** These ids correspond to keys in `Cell` type and are later used for sorting. */
+                    id: "chainName",
+                    display: "Network",
+                  },
+                  {
+                    id: "amount",
+                    display: "Balance",
+                  },
+                ]}
+              />
+            </div>
+          </div>
+        )}
+        {isMobile ? (
+          <div className="flex flex-col gap-3 my-7">
+            {tableData.map((assetData) => (
+              <AssetCard
+                key={assetData.coinDenom}
+                {...assetData}
+                coinDenomCaption={assetData.chainName}
+                metrics={[
+                  { label: "", value: assetData.amount },
+                  ...(assetData.fiatValue
+                    ? [{ label: "", value: assetData.fiatValue }]
+                    : []),
+                ]}
+                onClick={
+                  assetData.chainId === undefined ||
+                  (assetData.chainId &&
+                    assetData.chainId === chainStore.osmosis.chainId)
+                    ? undefined
+                    : () => {
+                        setPreTransferToken(
+                          new CoinPretty(
+                            assetData.currency,
+                            assetData.amount
+                          ).moveDecimalPointRight(
+                            assetData.currency.coinDecimals
+                          )
+                        );
+                        setShowPreTransfer(true);
+                      }
+                }
+              />
+            ))}
+          </div>
+        ) : (
+          <Table<TableCell>
+            className="w-full my-5"
+            columnDefs={[
+              {
+                display: "Asset / Chain",
+                displayCell: AssetNameCell,
+                sort: sortColumnWithKeys(["coinDenom", "chainName"]),
+              },
+              {
+                display: "Balance",
+                displayCell: BalanceCell,
+                sort: sortColumnWithKeys(["amount", "fiatValue"], "descending"),
+                className: "text-right pr-24",
+              },
+              {
+                display: "Deposit",
+                displayCell: (cell) => (
+                  <TransferButtonCell type="deposit" {...cell} />
+                ),
+                className: "text-center max-w-[5rem]",
+              },
+              {
+                display: "Withdraw",
+                displayCell: (cell) => (
+                  <TransferButtonCell type="withdraw" {...cell} />
+                ),
+                className: "text-center max-w-[5rem]",
+              },
+            ]}
+            rowDefs={tableData.map(() => ({ makeHoverClass: () => " " }))}
+            data={tableData.map((cell) => [cell, cell, cell, cell])}
+            headerTrClassName="!h-12 !body2"
+          />
+        )}
         <div className="relative flex h-12 justify-center">
           {filteredSortedCells.length > 10 && (
             <ShowMoreButton
               className="m-auto"
-              isOn={showAllPools}
-              onToggle={() => setShowAllPools(!showAllPools)}
+              isOn={showAllAssets}
+              onToggle={() => setShowAllAssets(!showAllAssets)}
             />
           )}
-          <div className="flex gap-2 absolute body2 right-24 bottom-1">
-            <CheckBox
-              className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
-              isOn={hideZeroBalances}
-              onToggle={() => setHideZeroBalances(!hideZeroBalances)}
-            >
-              Hide zero balances
-            </CheckBox>
-          </div>
+          {!isMobile && (
+            <div className="flex gap-2 absolute body2 right-24 bottom-1">
+              <CheckBox
+                className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
+                isOn={hideZeroBalances}
+                onToggle={() => setHideZeroBalances(!hideZeroBalances)}
+              >
+                Hide zero balances
+              </CheckBox>
+            </div>
+          )}
         </div>
       </div>
     </section>

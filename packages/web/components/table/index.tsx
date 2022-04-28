@@ -6,6 +6,7 @@ import { InfoTooltip } from "../tooltip";
 import { CustomClasses } from "../types";
 import { replaceAt } from "../utils";
 import { BaseCell, ColumnDef, RowDef } from "./types";
+import { useWindowSize } from "../../hooks";
 
 export interface Props<TCell extends BaseCell> extends CustomClasses {
   /** Functionality common to all columns. */
@@ -30,6 +31,8 @@ export const Table = <TCell extends BaseCell>({
   tHeadClassName,
   tBodyClassName,
 }: PropsWithoutRef<Props<TCell>>) => {
+  const { width } = useWindowSize();
+
   const [rowsHovered, setRowsHovered] = useState(() => data.map(() => false));
 
   const setRowHovered = useCallback(
@@ -41,6 +44,7 @@ export const Table = <TCell extends BaseCell>({
           rowIndex
         )
       ),
+    // eslint-disable-next-line
     []
   );
 
@@ -48,52 +52,58 @@ export const Table = <TCell extends BaseCell>({
     <table className={classNames("overflow-y-scroll", className)}>
       <thead className={tHeadClassName}>
         <tr className={classNames("h-20", headerTrClassName)}>
-          {columnDefs.map((colDef, colIndex) => (
-            <th
-              key={colIndex}
-              className={classNames(
-                {
-                  "cursor-pointer select-none": colDef?.sort?.onClickHeader,
-                },
-                colDef.className
-              )}
-              onClick={() => colDef?.sort?.onClickHeader(colIndex)}
-            >
-              <span>
-                {colDef?.display ? (
-                  typeof colDef.display === "string" ? (
-                    colDef.display
+          {columnDefs.map((colDef, colIndex) => {
+            if (colDef.collapseAt && width < colDef.collapseAt) {
+              return null;
+            }
+
+            return (
+              <th
+                key={colIndex}
+                className={classNames(
+                  {
+                    "cursor-pointer select-none": colDef?.sort?.onClickHeader,
+                  },
+                  colDef.className
+                )}
+                onClick={() => colDef?.sort?.onClickHeader(colIndex)}
+              >
+                <span>
+                  {colDef?.display ? (
+                    typeof colDef.display === "string" ? (
+                      colDef.display
+                    ) : (
+                      <>{colDef.display}</>
+                    )
                   ) : (
-                    <>{colDef.display}</>
-                  )
-                ) : (
-                  ""
-                )}
-                {colDef?.sort && (
-                  <div className="inline pl-1 align-middle">
-                    {colDef?.sort?.currentDirection === "ascending" ? (
-                      <Image
-                        alt="ascending"
-                        src="/icons/sort-up.svg"
-                        height={16}
-                        width={16}
-                      />
-                    ) : colDef?.sort?.currentDirection === "descending" ? (
-                      <Image
-                        alt="descending"
-                        src="/icons/sort-down.svg"
-                        height={16}
-                        width={16}
-                      />
-                    ) : undefined}
-                  </div>
-                )}
-                {colDef.infoTooltip && (
-                  <InfoTooltip content={colDef.infoTooltip} />
-                )}
-              </span>
-            </th>
-          ))}
+                    ""
+                  )}
+                  {colDef?.sort && (
+                    <div className="inline pl-1 align-middle">
+                      {colDef?.sort?.currentDirection === "ascending" ? (
+                        <Image
+                          alt="ascending"
+                          src="/icons/sort-up.svg"
+                          height={16}
+                          width={16}
+                        />
+                      ) : colDef?.sort?.currentDirection === "descending" ? (
+                        <Image
+                          alt="descending"
+                          src="/icons/sort-down.svg"
+                          height={16}
+                          width={16}
+                        />
+                      ) : undefined}
+                    </div>
+                  )}
+                  {colDef.infoTooltip && (
+                    <InfoTooltip content={colDef.infoTooltip} />
+                  )}
+                </span>
+              </th>
+            );
+          })}
         </tr>
       </thead>
       <tbody className={tBodyClassName}>
@@ -128,6 +138,11 @@ export const Table = <TCell extends BaseCell>({
               {row.map((cell, columnIndex) => {
                 const DisplayCell = columnDefs[columnIndex]?.displayCell;
                 const customClass = columnDefs[columnIndex]?.className;
+                const collapseAt = columnDefs[columnIndex]?.collapseAt;
+
+                if (collapseAt && width < collapseAt) {
+                  return null;
+                }
 
                 return (
                   <td className={customClass} key={`${rowIndex}${columnIndex}`}>

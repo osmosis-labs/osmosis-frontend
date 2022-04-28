@@ -55,8 +55,8 @@ export const Button: FunctionComponent<Props> = ({
   >
     <div
       className={classNames("select-none", size === "xs" ? "px-1.5" : "px-3", {
-        "text-subtitle2 font-subtitle2": size === "xs",
-        "text-subtitle1 font-subtitle1": size === "sm",
+        subtitle2: size === "xs",
+        subtitle1: size === "sm",
         "text-h6 font-h6": size === "lg",
       })}
     >

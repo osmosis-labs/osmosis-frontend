@@ -9,8 +9,8 @@ import { Button } from "../components/buttons";
 import { Table } from "../components/table";
 import { ValidatorInfoCell } from "../components/table/cells/";
 import { InfoTooltip } from "../components/tooltip";
-import { useFilteredData } from "../hooks/data";
-import { useSortedData } from "../hooks/data";
+import { useFilteredData, useSortedData } from "../hooks/data";
+import { useWindowSize } from "../hooks/window";
 
 interface Props extends ModalBaseProps {
   availableBondAmount: CoinPretty;
@@ -22,6 +22,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
   (props) => {
     const { availableBondAmount, onSelectValidator, isSendingMsg } = props;
     const { chainStore, queriesStore, accountStore } = useStore();
+    const { isMobile } = useWindowSize();
 
     const { chainId } = chainStore.osmosis;
     const account = accountStore.getAccount(chainId);
@@ -88,9 +89,12 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
     return (
       <ModalBase {...props}>
         <div className="flex flex-col gap-2.5 mt-8">
-          <div className="flex items-center place-content-between">
-            <span>Choose your superfluid validator</span>
+          <div className="flex md:flex-col gap-2.5 mb-1 items-center place-content-between">
+            <span className="subtitle2 mr-auto">
+              Choose your superfluid validator
+            </span>
             <SearchBox
+              className={isMobile ? "!rounded !w-full h-11" : undefined}
               currentValue={query}
               onInput={setQuery}
               placeholder="Search by name"
@@ -104,6 +108,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
               columnDefs={[
                 {
                   display: "Validator",
+                  className: isMobile ? "caption" : undefined,
                   sort:
                     sortKey === "validatorName"
                       ? {
@@ -115,6 +120,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
                 },
                 {
                   display: "Commission",
+                  className: `text-right ${isMobile ? "caption" : undefined}`,
                   sort:
                     sortKey === "validatorCommission"
                       ? {
@@ -125,12 +131,11 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
                           onClickHeader: () =>
                             setSortKey("validatorCommission"),
                         },
-                  className: "text-right",
                 },
               ]}
               rowDefs={searchedValidators.map(({ address, isDelegated }) => ({
                 makeClass: () =>
-                  `!h-14 ${
+                  `!h-fit ${
                     address === selectedValidatorAddress
                       ? "bg-selected-validator border border-[#E13CBD]"
                       : isDelegated === 1
@@ -147,16 +152,20 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
               )}
             />
           </div>
-          <div className="flex flex-col gap-4 py-3 px-5 rounded-xl border border-white-faint bg-card">
+          <div className="flex flex-col md:gap-2 gap-4 py-3 px-5 rounded-xl border border-white-faint bg-card">
             <div className="flex items-center place-content-between">
-              <span className="subtitle1">Bonded Amount</span>
-              <span className="body1 text-white-mid">
+              <span className="md:caption subtitle1">Bonded Amount</span>
+              <span className="md:caption body1 text-white-mid">
                 {availableBondAmount.maxDecimals(2).trim(true).toString()}
               </span>
             </div>
             <div className="flex items-center place-content-between">
-              <span className="subtitle1">Estimated Superfluid Delegation</span>
-              <span className="body1 text-white-mid">
+              <span className="md:caption subtitle1">
+                {isMobile
+                  ? "Est. Delegation"
+                  : "Estimated Superfluid Delegation"}
+              </span>
+              <span className="md:caption body1 text-white-mid">
                 ~
                 {queries.osmosis.querySuperfluidOsmoEquivalent
                   .calculateOsmoEquivalent(availableBondAmount)
@@ -171,7 +180,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
             </div>
           </div>
           <Button
-            className="h-14 w-96 mt-3 mx-auto"
+            className="h-14 md:w-full w-96 mt-3 mx-auto"
             size="lg"
             disabled={selectedValidatorAddress === null || isSendingMsg}
             onClick={() => {

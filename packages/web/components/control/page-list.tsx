@@ -91,7 +91,7 @@ export const PageList: FunctionComponent<Props> = ({
         />
       ) : (
         <span
-          className={classNames("leading-5 px-2 text-md", {
+          className={classNames("leading-5 px-2 text-md whitespace-nowrap", {
             "hover:underline underline-offset-2 cursor-pointer":
               editField && min !== max,
           })}

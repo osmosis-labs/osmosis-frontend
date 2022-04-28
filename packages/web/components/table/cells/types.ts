@@ -1,6 +1,8 @@
 import { BaseCell } from "../types";
+import { Currency } from "@keplr-wallet/types";
 
 export type AssetCell = BaseCell & {
+  currency: Currency;
   chainName?: string;
   chainId?: string;
   coinDenom: string;

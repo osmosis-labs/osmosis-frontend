@@ -22,7 +22,7 @@ export function displayToast(
       closeButton: ({ closeToast }) => (
         <button
           onClick={closeToast}
-          className="hover:opacity-75 absolute top-2 md:-top-2 right-2 md:-left-2 h-5 md:h-6 w-5 md:w-6"
+          className="hover:opacity-75 absolute md:top-2 -top-2 -left-2 md:h-5 h-6 md:w-5 w-6"
         >
           <Image
             alt="close"
@@ -50,8 +50,8 @@ export function displayToast(
 }
 
 const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
-  <div className="flex gap-3 md:gap-3.75">
-    <div className="flex items-center animate-spin h-[32px] w-[32px]">
+  <div className="flex md:gap-3 gap-3.75">
+    <div className="flex items-center animate-spin h-8 w-8">
       <Image
         alt="loading"
         src="/icons/loading-blue.svg"
@@ -60,20 +60,20 @@ const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
       />
     </div>
     <section className="text-white-high">
-      <h6 className="mb-2 text-base md:text-lg">{message}</h6>
-      {caption && <p className="text-xs md:text-sm">{caption}</p>}
+      <h6 className="mb-2 md:text-base text-lg">{message}</h6>
+      {caption && <p className="md:text-xs text-sm">{caption}</p>}
     </section>
   </div>
 );
 
 const ErrorToast: FunctionComponent<Alert> = ({ message, caption }) => (
-  <div className="flex gap-3 md:gap-3.75">
+  <div className="flex md:gap-3 gap-3.75">
     <div className="w-8 h-8">
       <Image alt="failed" src="/icons/error-x.svg" height={32} width={32} />
     </div>
     <section className="text-white-high">
-      <h6 className="mb-2 text-base md:text-lg">{message}</h6>
-      {caption && <p className="text-xs md:text-sm">{caption}</p>}
+      <h6 className="mb-2 md:text-base text-lg">{message}</h6>
+      {caption && <p className="md:text-xs text-sm">{caption}</p>}
     </section>
   </div>
 );
@@ -83,17 +83,17 @@ const SuccessToast: FunctionComponent<Alert> = ({
   learnMoreUrl,
   learnMoreUrlCaption,
 }) => (
-  <div className="flex gap-3 md:gap-3.75">
+  <div className="flex md:gap-3 gap-3.75">
     <div className="w-8 h-8">
       <Image alt="b" src="/icons/check-circle.svg" height={32} width={32} />
     </div>
     <section className="text-white-high">
-      <h6 className="mb-2 text-base md:text-lg">{message}</h6>
+      <h6 className="mb-2 md:text-base text-lg">{message}</h6>
       {learnMoreUrl && (
         <a
           target="__blank"
           href={learnMoreUrl}
-          className="text-xs md:text-sm inline hover:opacity-75 cursor-pointer"
+          className="md:text-xs text-sm inline hover:opacity-75 cursor-pointer"
         >
           {learnMoreUrlCaption ?? "Learn more"}
           <div className="inline-block ml-2 mb-0.75">
