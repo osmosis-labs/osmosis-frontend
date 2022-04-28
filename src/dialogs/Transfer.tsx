@@ -60,6 +60,22 @@ export const TransferDialog = wrapBaseDialog(
 				.queryBalances.getQueryBech32Address(counterpartyAccount.bech32Address)
 				.getBalanceFromCurrency(currency.originCurrency!);
 
+			// mobile copy addresses to clipboard
+			const tooltipShowDurationMS = 3000;
+			const [showCopiedToTooltip, setShowCopiedToTooltip] = useState(false);
+			const [showCopiedFromTooltip, setShowCopiedFromTooltip] = useState(false);
+			const showToTooltip = () => {
+				setShowCopiedToTooltip(true);
+				setTimeout(() => setShowCopiedToTooltip(false), tooltipShowDurationMS);
+			};
+			const showFromTooltip = () => {
+				setShowCopiedFromTooltip(true);
+				setTimeout(() => setShowCopiedFromTooltip(false), tooltipShowDurationMS);
+			};
+			const copyAddressToClipboard = (bech32Address: string) => {
+				updateClipboard(bech32Address).then(() => {});
+			};
+
 			// detect if a user rejects connection to a chain account in Keplr
 			const [counterpartyInitAttempted, setCounterpartyInitAttempted] = useState(false);
 
@@ -136,12 +152,30 @@ export const TransferDialog = wrapBaseDialog(
 					<h6 className="mb-3 md:mb-4 text-base md:text-lg">IBC Transfer</h6>
 					<section className={`flex flex-col ${!isWithdraw ? 'md:flex-row' : ''} items-center`}>
 						<div className="w-full flex-1 p-3 md:p-4 border border-white-faint rounded-2xl">
-							<p className="text-white-high">From</p>
-							<p className="text-white-disabled truncate overflow-ellipsis">
+							<div className="flex items-center place-content-between">
+								<p className="text-white-high">From</p>
+								{showCopiedToTooltip && (
+									<span className="text-xs text-white-high z-50 px-1 rounded-lg bg-primary-200 border border-primary-100">
+										Copied!
+									</span>
+								)}
+							</div>
+							<p className="text-white-disabled truncate overflow-ellipsis flex">
 								{pickOne(
-									Bech32Address.shortenAddress(account.bech32Address, 100),
+									Bech32Address.shortenAddress(account.bech32Address, isMobileView ? 25 : 100),
 									Bech32Address.shortenAddress(counterpartyAccount.bech32Address, 25),
 									isWithdraw
+								)}
+								{isMobileView && (
+									<div>
+										<img
+											src="/public/assets/Icons/CopyClipboard.svg"
+											onClick={() => {
+												copyAddressToClipboard(isWithdraw ? account.bech32Address : counterpartyAccount.bech32Address);
+												showToTooltip();
+											}}
+										/>
+									</div>
 								)}
 							</p>
 						</div>
@@ -152,11 +186,14 @@ export const TransferDialog = wrapBaseDialog(
 							className={`w-full flex-1 p-3 md:p-4 border ${
 								isValidCustomWithdrawAddr ? 'border-white-faint' : 'border-missionError'
 							} rounded-2xl`}>
-							<div className="flex place-content-between">
-								<div className="flex gap-2">
-									<p className="text-white-high">To</p>
-								</div>
+							<div className="flex items-center place-content-between">
+								<p className="text-white-high">To</p>
 								{!isValidCustomWithdrawAddr && <p className="text-error">Invalid address</p>}
+								{showCopiedFromTooltip && (
+									<span className="text-xs text-white-high z-50 px-1 rounded-lg bg-primary-200 border border-primary-100">
+										Copied!
+									</span>
+								)}
 							</div>
 							{isEditingWithdrawAddr ? (
 								<>
@@ -210,31 +247,49 @@ export const TransferDialog = wrapBaseDialog(
 									</label>
 								</>
 							) : (
-								<p className="text-white-disabled truncate overflow-ellipsis">
+								<p className="text-white-disabled truncate overflow-ellipsis flex">
 									{pickOne(
 										Bech32Address.shortenAddress(
 											didConfirmWithdrawAddr ? customWithdrawAddr : counterpartyAccount.bech32Address,
-											100
+											isMobileView ? 25 : 100
 										),
 										Bech32Address.shortenAddress(account.bech32Address, 25),
 										isWithdraw
 									)}
-									{isWithdraw && !isEditingWithdrawAddr && counterpartyAccount.walletStatus === WalletStatus.Loaded && (
-										<ButtonPrimary
-											className="ml-1 text-white-emphasis"
-											style={{ fontSize: '11px', padding: '6px 8px' }}
-											onClick={e => {
-												e.preventDefault();
-												setIsEditingWithdrawAddr(true);
-												if (customWithdrawAddr === '') {
-													setCustomWithdrawAddr(counterpartyAccount.bech32Address, counterpartyBech32Prefix);
-												}
-												setDidConfirmWithdrawAddr(false);
-												setDidVerifyWithdrawRisks(false);
-											}}>
-											Edit
-										</ButtonPrimary>
+									{isMobileView && (
+										<img
+											src="/public/assets/Icons/CopyClipboard.svg"
+											onClick={() => {
+												copyAddressToClipboard(
+													isWithdraw
+														? didConfirmWithdrawAddr
+															? customWithdrawAddr
+															: counterpartyAccount.bech32Address
+														: account.bech32Address
+												);
+												showFromTooltip();
+											}}
+										/>
 									)}
+									{isWithdraw &&
+										!isEditingWithdrawAddr &&
+										!didConfirmWithdrawAddr &&
+										counterpartyAccount.walletStatus === WalletStatus.Loaded && (
+											<ButtonPrimary
+												className="ml-1 text-white-emphasis"
+												style={{ fontSize: '11px', padding: '6px 8px' }}
+												onClick={e => {
+													e.preventDefault();
+													setIsEditingWithdrawAddr(true);
+													if (customWithdrawAddr === '') {
+														setCustomWithdrawAddr(counterpartyAccount.bech32Address, counterpartyBech32Prefix);
+													}
+													setDidConfirmWithdrawAddr(false);
+													setDidVerifyWithdrawRisks(false);
+												}}>
+												Edit
+											</ButtonPrimary>
+										)}
 								</p>
 							)}
 						</div>
@@ -562,4 +617,8 @@ export const TransferDialog = wrapBaseDialog(
 
 function pickOne<V1, V2>(v1: V1, v2: V2, first: boolean): V1 | V2 {
 	return first ? v1 : v2;
+}
+
+function updateClipboard(newClip: string): Promise<void> {
+	return navigator.clipboard.writeText(newClip);
 }
