@@ -2842,13 +2842,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/grav.svg',
 			},
 			{
-				coinDenom: 'PSTAKE',
-				coinMinimalDenom: 'gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006',
-				coinDecimals: 18,
-				coinGeckoId: 'pstake-finance',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/pstake.png',
-			},
-			{
 				coinDenom: 'g-WBTC',
 				coinMinimalDenom: 'gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
 				coinDecimals: 8,
