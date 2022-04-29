@@ -41,7 +41,8 @@
     "sha.js": "^2.4.11",
     "react-toastify": "^7.0.4",
     "highcharts": "^9.1.0",
-    "highcharts-react-official": "^3.0.0"
+    "highcharts-react-official": "^3.0.0",
+    "axios": "^0.21.1"
   },
   "devDependencies": {
     "@types/qrcode.react": "^1.0.2",

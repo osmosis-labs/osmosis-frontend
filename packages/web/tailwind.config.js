@@ -213,6 +213,9 @@ module.exports = {
         xlinset: "0.688rem", // 1px smaller than rounded-xl
         "2xlinset": "0.938rem", // 1 px smaller than rounded-2xl
       },
+      color: {
+        current: "currentColor",
+      },
     },
   },
   plugins: [],
