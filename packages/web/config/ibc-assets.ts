@@ -51,6 +51,18 @@ export const IBCAssetInfos: IBCAsset[] = [
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
   {
+    counterpartyChainId: "stargaze-1",
+    sourceChannelId: "channel-75",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "ustars",
+  },
+  {
+    counterpartyChainId: "chihuahua-1",
+    sourceChannelId: "channel-113",
+    destChannelId: "channel-7",
+    coinMinimalDenom: "uhuahua",
+  },
+  {
     counterpartyChainId: "core-1",
     sourceChannelId: "channel-4",
     destChannelId: "channel-6",
@@ -64,12 +76,6 @@ export const IBCAssetInfos: IBCAsset[] = [
       "ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444",
     ibcTransferPathDenom:
       "transfer/channel-38/gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006",
-  },
-  {
-    counterpartyChainId: "columbus-5",
-    sourceChannelId: "channel-72",
-    destChannelId: "channel-1",
-    coinMinimalDenom: "ukrw",
   },
   {
     counterpartyChainId: "akashnet-2",
@@ -112,12 +118,6 @@ export const IBCAssetInfos: IBCAsset[] = [
     sourceChannelId: "channel-37",
     destChannelId: "channel-0",
     coinMinimalDenom: "eeur",
-  },
-  {
-    counterpartyChainId: "microtick-1",
-    sourceChannelId: "channel-39",
-    destChannelId: "channel-16",
-    coinMinimalDenom: "utick",
   },
   {
     counterpartyChainId: "likecoin-mainnet-2",
@@ -174,21 +174,84 @@ export const IBCAssetInfos: IBCAsset[] = [
     coinMinimalDenom: "ncheq",
   },
   {
-    counterpartyChainId: "stargaze-1",
-    sourceChannelId: "channel-75",
-    destChannelId: "channel-0",
-    coinMinimalDenom: "ustars",
-  },
-  {
-    counterpartyChainId: "chihuahua-1",
-    sourceChannelId: "channel-113",
-    destChannelId: "channel-7",
-    coinMinimalDenom: "uhuahua",
-  },
-  {
     counterpartyChainId: "lum-network-1",
     sourceChannelId: "channel-115",
     destChannelId: "channel-3",
     coinMinimalDenom: "ulum",
+  },
+  {
+    counterpartyChainId: "vidulum-1",
+    sourceChannelId: "channel-124",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "uvdl",
+  },
+  {
+    counterpartyChainId: "desmos-mainnet",
+    sourceChannelId: "channel-135",
+    destChannelId: "channel-2",
+    coinMinimalDenom: "udsm",
+  },
+  {
+    counterpartyChainId: "dig-1",
+    sourceChannelId: "channel-128",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "udig",
+  },
+  {
+    counterpartyChainId: "sommelier-3",
+    sourceChannelId: "channel-165",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "usomm",
+  },
+  {
+    counterpartyChainId: "sifchain-1",
+    sourceChannelId: "channel-47",
+    destChannelId: "channel-17",
+    coinMinimalDenom: "rowan",
+  },
+  {
+    counterpartyChainId: "laozi-mainnet",
+    sourceChannelId: "channel-148",
+    destChannelId: "channel-83",
+    coinMinimalDenom: "uband",
+  },
+  {
+    counterpartyChainId: "darchub",
+    sourceChannelId: "channel-171",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "udarc",
+  },
+  {
+    counterpartyChainId: "umee-1",
+    sourceChannelId: "channel-184",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "uumee",
+  },
+  {
+    counterpartyChainId: "gravity-bridge-3",
+    sourceChannelId: "channel-144",
+    destChannelId: "channel-10",
+    coinMinimalDenom: "ugraviton",
+  },
+  {
+    counterpartyChainId: "mainnet-3",
+    sourceChannelId: "channel-181",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "udec",
+  },
+  {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
+    counterpartyChainId: "carbon-1",
+    sourceChannelId: "channel-188",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "swth",
   },
 ];

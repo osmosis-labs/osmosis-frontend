@@ -9,7 +9,7 @@ import {
   IBCCurrencyRegsitrar,
   QueriesStore,
 } from "@keplr-wallet/stores";
-import { EmbedChainInfos, IBCAssetInfos } from "../config";
+import { ChainInfos, IBCAssetInfos } from "../config";
 import {
   IndexedDBKVStore,
   KVStore,
@@ -53,7 +53,7 @@ export class RootStore {
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
 
   constructor(getKeplr: () => Promise<Keplr | undefined>) {
-    this.chainStore = new ChainStore(EmbedChainInfos, "osmosis");
+    this.chainStore = new ChainStore(ChainInfos, "osmosis");
 
     const eventListener = (() => {
       // On client-side (web browser), use the global window object.

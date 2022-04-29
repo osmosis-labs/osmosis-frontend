@@ -25,7 +25,7 @@ import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { BaseCell, Table, ColumnDef } from "../../components/table";
 import { truncateString } from "../../components/utils";
-import { ExternalIncentiveGaugeAllowList, EmbedChainInfos } from "../../config";
+import { ExternalIncentiveGaugeAllowList, ChainInfos } from "../../config";
 import { useWindowSize } from "../../hooks";
 import {
   LockTokensModal,
@@ -425,7 +425,7 @@ const Pool: FunctionComponent = observer(() => {
           removeLiquidityConfig={removeLiquidityConfig}
           isSendingMsg={account.txTypeInProgress !== ""}
           getChainNetworkName={(coinDenom) =>
-            EmbedChainInfos.find((chain) =>
+            ChainInfos.find((chain) =>
               chain.currencies.find(
                 (currency) => currency.coinDenom === coinDenom
               )
