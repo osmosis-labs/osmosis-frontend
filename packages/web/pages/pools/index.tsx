@@ -24,6 +24,7 @@ import {
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
+import { UserAction } from "../../config";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
 const TVL_FILTER_THRESHOLD = 1000;
@@ -163,9 +164,16 @@ const Pools: NextPage = observer(function () {
       )}
       <Overview
         title="Active Pools"
-        titleButtons={[
-          { label: "Create New Pool", onClick: () => setIsCreatingPool(true) },
-        ]}
+        titleButtons={
+          UserAction.CreateNewPool
+            ? [
+                {
+                  label: "Create New Pool",
+                  onClick: () => setIsCreatingPool(true),
+                },
+              ]
+            : []
+        }
         primaryOverviewLabels={[
           {
             label: "OSMO Price",
