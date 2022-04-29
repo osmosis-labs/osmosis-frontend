@@ -4,6 +4,7 @@ import type { AppProps } from "next/app";
 import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
 import { MainLayout } from "../components/layouts";
+import { Terms } from "../components/terms";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -20,6 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <GetKeplrProvider>
       <StoreProvider>
         <IbcNotifier />
+        <Terms />
         <MainLayout
           menus={[
             {

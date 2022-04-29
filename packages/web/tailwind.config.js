@@ -192,6 +192,9 @@ module.exports = {
         clipboard: "32.5rem",
         modal: "42rem",
       },
+      maxHeight: {
+        terms: "28rem",
+      },
       keyframes: {
         loading: {
           "0%": { transform: "translateX(-150%)" },
