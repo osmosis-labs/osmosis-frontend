@@ -2,7 +2,7 @@ import { KVStore } from '@keplr-wallet/common';
 import { ChainGetter, ObservableChainQuery, ObservableChainQueryMap } from '@keplr-wallet/stores';
 import { SuperfluidDelegationsResponse, SuperfluidDelegationRecordsResponse, SuperfluidDelegation } from './types';
 import { makeObservable } from 'mobx';
-import { CoinPretty, Dec } from '@keplr-wallet/unit';
+import { CoinPretty, Int } from '@keplr-wallet/unit';
 import { Currency } from '@keplr-wallet/types';
 import { computedFn } from 'mobx-utils';
 
@@ -34,12 +34,16 @@ export class ObservableQuerySuperfluidDelegationsInner extends ObservableChainQu
 
 		const validatorCombinedDelegationRecordMap = this.response.data.superfluid_delegation_records.reduce(
 			(delecationRecordMap, delegationRecord) => {
+				if (delegationRecord.delegation_amount.denom !== poolShareCurrency.coinMinimalDenom) {
+					return delecationRecordMap;
+				}
+
 				const delegationRecordMapKey = `${delegationRecord.delegation_amount.denom}/${delegationRecord.validator_address}`;
 				const combiningDelegationRecord = delecationRecordMap.get(delegationRecordMapKey);
 
 				if (combiningDelegationRecord) {
-					const combinedDelegationAmount = new Dec(combiningDelegationRecord.delegation_amount.amount).add(
-						new Dec(delegationRecord.delegation_amount.amount)
+					const combinedDelegationAmount = new Int(combiningDelegationRecord.delegation_amount.amount).add(
+						new Int(delegationRecord.delegation_amount.amount)
 					);
 
 					delecationRecordMap.set(delegationRecordMapKey, {
@@ -60,11 +64,13 @@ export class ObservableQuerySuperfluidDelegationsInner extends ObservableChainQu
 
 		const validatorCombinedDelegationRecords = [...validatorCombinedDelegationRecordMap.values()];
 
-		return validatorCombinedDelegationRecords.map(record => ({
-			delegator_address: record.delegator_address,
-			validator_address: record.validator_address,
-			amount: new CoinPretty(poolShareCurrency, new Dec(record.delegation_amount.amount)),
-		}));
+		return validatorCombinedDelegationRecords
+			.filter(record => new Int(record.delegation_amount.amount).gt(new Int(0)))
+			.map(record => ({
+				delegator_address: record.delegator_address,
+				validator_address: record.validator_address,
+				amount: new CoinPretty(poolShareCurrency, new Int(record.delegation_amount.amount)),
+			}));
 	});
 }
 

@@ -74,6 +74,8 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 			ics20ContractAddress: channelInfo.ics20ContractAddress,
 			sourceDenom: sourceDenom,
 			sourceChainId: channelInfo.counterpartyChainId,
+			depositUrlOverride: channelInfo.depositUrlOverride,
+			withdrawUrlOverride: channelInfo.withdrawUrlOverride,
 		};
 	});
 
@@ -98,9 +100,7 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 		<React.Fragment>
 			{dialogState.open ? (
 				<TransferDialog
-					dialogStyle={
-						isMobileView ? {} : { minHeight: '533px', maxHeight: '540px', minWidth: '656px', maxWidth: '656px' }
-					}
+					dialogStyle={isMobileView ? {} : { minHeight: '533px', minWidth: '656px', maxWidth: '656px' }}
 					isOpen={dialogState.open}
 					close={close}
 					currency={dialogState.currency}
@@ -169,45 +169,53 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 									.toString()}
 								totalFiatValue={totalFiatValue}
 								onDeposit={() => {
-									let modifiedCurrency = currency;
-									if (bal.sourceDenom != '') {
-										modifiedCurrency = {
-											coinDecimals: currency.coinDecimals,
-											coinGeckoId: currency.coinGeckoId,
-											coinImageUrl: currency.coinImageUrl,
-											coinDenom: currency.coinDenom,
-											coinMinimalDenom: '',
-											paths: (currency as IBCCurrency).paths.slice(0, 1),
-											originChainId: bal.sourceChainId,
-											originCurrency: {
+									if (bal.depositUrlOverride) {
+										window.open(bal.depositUrlOverride, '_blank');
+									} else {
+										let modifiedCurrency = currency;
+										if (bal.sourceDenom != '') {
+											modifiedCurrency = {
 												coinDecimals: currency.coinDecimals,
+												coinGeckoId: currency.coinGeckoId,
 												coinImageUrl: currency.coinImageUrl,
 												coinDenom: currency.coinDenom,
-												coinMinimalDenom: bal.sourceDenom,
-											},
-										};
-									}
+												coinMinimalDenom: '',
+												paths: (currency as IBCCurrency).paths.slice(0, 1),
+												originChainId: bal.sourceChainId,
+												originCurrency: {
+													coinDecimals: currency.coinDecimals,
+													coinImageUrl: currency.coinImageUrl,
+													coinDenom: currency.coinDenom,
+													coinMinimalDenom: bal.sourceDenom,
+												},
+											};
+										}
 
-									setDialogState({
-										open: true,
-										counterpartyChainId: bal.chainInfo.chainId,
-										currency: modifiedCurrency as IBCCurrency,
-										sourceChannelId: bal.sourceChannelId,
-										destChannelId: bal.destChannelId,
-										isWithdraw: false,
-										ics20ContractAddress: bal.ics20ContractAddress,
-									});
+										setDialogState({
+											open: true,
+											counterpartyChainId: bal.chainInfo.chainId,
+											currency: modifiedCurrency as IBCCurrency,
+											sourceChannelId: bal.sourceChannelId,
+											destChannelId: bal.destChannelId,
+											isWithdraw: false,
+											ics20ContractAddress: bal.ics20ContractAddress,
+										});
+									}
 								}}
 								onWithdraw={() => {
-									setDialogState({
-										open: true,
-										counterpartyChainId: bal.chainInfo.chainId,
-										currency: currency as IBCCurrency,
-										sourceChannelId: bal.sourceChannelId,
-										destChannelId: bal.destChannelId,
-										isWithdraw: true,
-										ics20ContractAddress: bal.ics20ContractAddress,
-									});
+									if (bal.withdrawUrlOverride) {
+										window.open(bal.withdrawUrlOverride, '_blank');
+									} else {
+										setDialogState({
+											open: true,
+											counterpartyChainId: bal.chainInfo.chainId,
+											currency: currency as IBCCurrency,
+											sourceChannelId: bal.sourceChannelId,
+											destChannelId: bal.destChannelId,
+											isWithdraw: true,
+											ics20ContractAddress: bal.ics20ContractAddress,
+										});
+									}
 								}}
 								isUnstable={bal.isUnstable}
 								isMobileView={isMobileView}
@@ -398,7 +406,6 @@ const AssetBalanceTableRow = styled.tr`
 	align-items: center;
 	padding-left: 14px;
 	padding-right: 14px;
-
 	@media (min-width: 768px) {
 		padding-left: 30px;
 		padding-right: 30px;

@@ -1,12 +1,11 @@
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
-import React, { ButtonHTMLAttributes, FunctionComponent, useEffect, useRef } from 'react';
+import React, { FunctionComponent, useEffect, useRef } from 'react';
 import { FeesBox } from 'src/components/SwapToken/FeesBox';
 import { FromBox } from 'src/components/SwapToken/FromBox';
 import { ToBox } from 'src/components/SwapToken/ToBox';
 import { colorPrimary, colorPrimaryLight } from 'src/emotionStyles/colors';
 import { cssRaiseButtonShadow } from 'src/emotionStyles/forms';
-import { cssAbsoluteCenter } from 'src/emotionStyles/layout';
 import { useFakeFeeConfig } from 'src/hooks/tx';
 import { Clip } from 'src/pages/main/components/TradeClipboard/Clip';
 import { useStore } from 'src/stores';
@@ -14,7 +13,6 @@ import { useTradeConfig } from '../../hooks/useTradeConfig';
 import { SwapButton } from '../SwapButton';
 import { TradeTxSettings } from './TradeTxSettings';
 import useWindowSize from 'src/hooks/useWindowSize';
-import { WalletStatus } from '@keplr-wallet/stores';
 import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'querystring';
 import { SwapDirectionButton } from 'src/components/SwapToken/SwapDirectionButton';
@@ -78,7 +76,9 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 
 	useEffect(() => {
 		if (query.from) {
-			const currency = config.sendableCurrencies.find(cur => cur.coinDenom === query.from);
+			const currency =
+				config.sendableCurrencies.find(cur => cur.coinDenom === query.from) ||
+				swapManager.swappableCurrencies.find(currency => currency.coinMinimalDenom === query.from); // ibc hash
 
 			if (currency) {
 				config.setInCurrency(currency.coinMinimalDenom);
@@ -86,7 +86,9 @@ export const TradeClipboard: FunctionComponent = observer(() => {
 		}
 
 		if (query.to) {
-			const currency = config.sendableCurrencies.find(cur => cur.coinDenom === query.to);
+			const currency =
+				config.sendableCurrencies.find(cur => cur.coinDenom === query.to) ||
+				swapManager.swappableCurrencies.find(currency => currency.coinMinimalDenom === query.to); // ibc hash
 
 			if (currency) {
 				config.setOutCurrency(currency.coinMinimalDenom);
@@ -145,7 +147,6 @@ const TradeClipboardContainer = styled.div`
 	margin-top: 20px;
 	border-radius: 1rem;
 	position: relative;
-
 	@media (min-width: 768px) {
 		padding: 10px;
 		border: 2px solid ${colorPrimaryLight};
@@ -162,10 +163,8 @@ const TradeClipboardContent = styled.div`
 	border-radius: 0.375rem;
 	z-index: 0;
 	padding: 10px 10px 14px;
-
 	display: flex;
 	flex-direction: column;
-
 	@media (min-width: 768px) {
 		padding: 20px 20px 30px;
 	}
@@ -175,7 +174,6 @@ const TradeAmountSection = styled.section`
 	position: relative;
 	width: 100%;
 	margin-top: 12px;
-
 	@media (min-width: 768px) {
 		margin-top: 18px;
 	}
