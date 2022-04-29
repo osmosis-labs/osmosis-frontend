@@ -45,7 +45,7 @@ const TransferButton: FunctionComponent<{
       {label}
       <Image
         alt="external transfer link"
-        src="/icons/external-link.svg"
+        src="/icons/external-link-secondary-200.svg"
         height={8}
         width={8}
       />

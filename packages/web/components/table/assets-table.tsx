@@ -38,7 +38,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
   onDeposit,
   onWithdraw,
 }) => {
-  const { chainStore } = useStore();
+  const { chainStore, assetsStore } = useStore();
   const { isMobile } = useWindowSize();
   // Assemble cells with all data needed for any place in the table.
   const cells: TableCell[] = useMemo(
@@ -176,6 +176,12 @@ export const AssetsTable: FunctionComponent<Props> = ({
   const [selectedTransferToken, setPreTransferToken] = useState<CoinPretty>(
     ibcBalances[0].balance
   );
+  const selectedChainInfo = ibcBalances.find(
+    (ibcAsset) => ibcAsset.balance.denom === selectedTransferToken.denom
+  )?.chainInfo;
+  const externalUrls = selectedChainInfo
+    ? assetsStore.getExternalTranferUrl?.(selectedChainInfo.chainId)
+    : undefined;
 
   return (
     <section className="min-h-screen md:bg-background bg-surface">
@@ -183,23 +189,20 @@ export const AssetsTable: FunctionComponent<Props> = ({
         <PreTransferModal
           isOpen={showPreTransfer}
           onRequestClose={() => setShowPreTransfer(false)}
+          externalDepositUrl={externalUrls?.depositUrl}
+          externalWithdrawUrl={externalUrls?.withdrawUrl}
           onDeposit={() => {
-            const chainId = ibcBalances.find(
-              (ibcAsset) =>
-                ibcAsset.balance.denom === selectedTransferToken.denom
-            )?.chainInfo.chainId;
-            if (chainId) {
-              onDeposit(chainId, selectedTransferToken.denom);
+            if (selectedChainInfo?.chainId) {
+              onDeposit(selectedChainInfo.chainId, selectedTransferToken.denom);
             }
             setShowPreTransfer(false);
           }}
           onWithdraw={() => {
-            const chainId = ibcBalances.find(
-              (ibcAsset) =>
-                ibcAsset.balance.denom === selectedTransferToken.denom
-            )?.chainInfo.chainId;
-            if (chainId) {
-              onWithdraw(chainId, selectedTransferToken.denom);
+            if (selectedChainInfo?.chainId) {
+              onWithdraw(
+                selectedChainInfo.chainId,
+                selectedTransferToken.denom
+              );
             }
             setShowPreTransfer(false);
           }}
