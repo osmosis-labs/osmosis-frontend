@@ -17,6 +17,8 @@ export const AccountInitManagement: FunctionComponent = observer(
 
     const [accountHasInit, setAccountHasInit] = useState(false);
 
+    // Init Osmosis account w/ desired connection type (wallet connect, extension)
+    // if prev connected Keplr in this browser.
     useEffect(() => {
       if (typeof localStorage !== "undefined") {
         const value = localStorage.getItem("account_auto_connect");
@@ -32,6 +34,8 @@ export const AccountInitManagement: FunctionComponent = observer(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // React to changes in Osmosis account state; store desired connection type in browser
+    // clear Keplr sessions, disconnect account.
     useEffect(() => {
       if (account.walletStatus === WalletStatus.Loaded) {
         setAccountHasInit(true);

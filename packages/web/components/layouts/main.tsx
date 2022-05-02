@@ -122,7 +122,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
           className={classNames(
             "fixed flex z-40 h-24 w-screen items-center place-content-end px-8",
             {
-              "bg-black/30": !isScrolledTop,
+              "bg-black/30": !isScrolledTop && isMobile,
               hidden: showSidebar || !isMobile,
             }
           )}

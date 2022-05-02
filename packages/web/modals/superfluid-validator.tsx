@@ -142,6 +142,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
                       ? "bg-cardInner"
                       : "bg-surface"
                   }`,
+                makeHoverClass: () => "bg-card",
                 onClick: () => setSelectedValidatorAddress(address),
               }))}
               data={searchedValidators.map(

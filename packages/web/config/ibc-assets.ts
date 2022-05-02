@@ -22,8 +22,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
-    depositUrlOverride: "https://www.google.com",
-    withdrawUrlOverride: "https://www.google.com",
   },
   {
     counterpartyChainId: "crypto-org-chain-mainnet-1",
