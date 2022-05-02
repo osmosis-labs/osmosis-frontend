@@ -28,6 +28,7 @@ import {
   prettifyTxError,
 } from "@osmosis-labs/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
+import { suggestChainFromWindow } from "../hooks/use-keplr/utils";
 import { displayToast, ToastType } from "../components/alert";
 import { ObservableAssets } from "./assets";
 
@@ -108,6 +109,9 @@ export class RootStore {
       () => {
         return {
           suggestChain: true,
+          suggestChainFn: async (keplr, chainInfo) => {
+            await suggestChainFromWindow(keplr, chainInfo.raw);
+          },
           autoInit: false,
           getKeplr,
         };
