@@ -1,6 +1,6 @@
 # Osmosis Frontend 👩‍🔬⚗️🧪
 
-<img src="https://pbs.twimg.com/profile_banners/1357133940109103104/1648318625/1500x500">
+<img src="https://user-images.githubusercontent.com/4606373/166279061-0a84a577-164f-40e8-94f9-b6b5c6f76e3f.png">
 
 ## Development 💻
 
