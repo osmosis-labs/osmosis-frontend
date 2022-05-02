@@ -111,7 +111,7 @@ export const ExtraGaugeInPool: {
 } = {
 	'3': [
 		{
-			gaugeId: '2578',
+			gaugeId: '3178',
 			denom: 'ibc/1480B8FD20AD5FCAE81EA87584D269547DD4D436843C1D20F15E00EB64743EF4',
 		},
 	],
@@ -513,15 +513,15 @@ export const ExtraGaugeInPool: {
 	],
 	'613': [
 		{
-			gaugeId: '1982',
+			gaugeId: '3193',
 			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 		{
-			gaugeId: '2013',
+			gaugeId: '3194',
 			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 		{
-			gaugeId: '2014',
+			gaugeId: '3195',
 			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 	],
@@ -1246,7 +1246,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		coinType: 118,
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'ibc-go', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://www.mintscan.io/akash/txs/{txHash}',
 	},
 	{
