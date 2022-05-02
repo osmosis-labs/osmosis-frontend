@@ -1,15 +1,14 @@
 import Image from "next/image";
-import { FunctionComponent, useState, useEffect, useContext } from "react";
+import { FunctionComponent, useState, useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { WalletStatus } from "@keplr-wallet/stores";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { ModalBase, ModalBaseProps } from ".";
 import { useStore } from "../stores";
 import {
-  GetKeplrContext,
   IbcTransfer,
   useIbcTransfer,
   useWindowSize,
+  useConnectWalletModalRedirect,
 } from "../hooks";
 import { Button } from "../components/buttons";
 import { InputBox } from "../components/input";
@@ -22,7 +21,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const { isMobile } = useWindowSize();
-    const keplrContext = useContext(GetKeplrContext);
 
     const [
       account,
@@ -41,30 +39,36 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       customCounterpartyConfig?.bech32Address === "" || // if not changed, it's valid since it's from Keplr
       (customCounterpartyConfig.isValid && wasCustomWithdrawAddrEntered);
 
-    // Allowing connect wallet dialog to sit in for this dialog for connecting wallet
-    const [walletInitiallyConnected] = useState(
-      () => account.walletStatus === WalletStatus.Loaded
-    );
-    const [showSelf, setShowSelf] = useState(true);
-    useEffect(() => {
-      if (
-        !walletInitiallyConnected &&
-        account.walletStatus === WalletStatus.Loaded
-      ) {
-        setShowSelf(true);
-      }
-      // eslint-disable-next-line
-    }, [account.walletStatus]);
-    // prevent ibc-transfer dialog from randomly appearing if they connect wallet later
-    useEffect(() => {
-      if (keplrContext) {
-        // getKeplr resolves to an exception when connection-selection modal is closed
-        keplrContext.getKeplr().catch(() => {
-          props.onRequestClose();
-        });
-      }
-      // eslint-disable-next-line
-    }, []);
+    const { showModalBase, accountActionButton } =
+      useConnectWalletModalRedirect(
+        {
+          className: "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl",
+          disabled:
+            !account.isReadyToSendTx ||
+            !counterpartyAccount.isReadyToSendTx ||
+            account.txTypeInProgress !== "" ||
+            amountConfig.error != undefined ||
+            inTransit ||
+            !isCustomWithdrawValid,
+          onClick: () =>
+            transfer(
+              (txFullfillEvent) => {
+                ibcTransferHistoryStore.pushPendingHistory(txFullfillEvent);
+                props.onRequestClose();
+              },
+              (txBroadcastEvent) => {
+                ibcTransferHistoryStore.pushUncommitedHistory(txBroadcastEvent);
+              }
+            ),
+          loading: inTransit,
+          children: (
+            <h6 className="md:text-base text-lg">
+              {isWithdraw ? "Withdraw" : "Deposit"}
+            </h6>
+          ),
+        },
+        props.onRequestClose
+      );
 
     // Mobile only - copy to clipboard
     const [showCopied, setShowCopied] = useState(false);
@@ -77,7 +81,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     }, [showCopied, setShowCopied]);
 
     return (
-      <ModalBase {...props} isOpen={props.isOpen && showSelf}>
+      <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
         <div className="text-white-high">
           <div className="relative md:mb-5 mb-10 flex items-center w-full">
             <h5 className="md:text-lg text-xl">
@@ -299,57 +303,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             )}
           </div>
           <div className="w-full md:mt-6 mt-9 flex items-center justify-center">
-            {!(account.walletStatus === WalletStatus.Loaded) ? (
-              <Button
-                className="md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl"
-                onClick={() => {
-                  account.init();
-                  setShowSelf(false); // keplr-connection-selection dialog sits behind this
-                }}
-              >
-                <h6 className="flex items-center gap-3">
-                  <Image
-                    alt="wallet"
-                    src="/icons/wallet.svg"
-                    height={24}
-                    width={24}
-                  />
-                  Connect Wallet
-                </h6>
-              </Button>
-            ) : (
-              <Button
-                className="md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl"
-                disabled={
-                  !account.isReadyToSendTx ||
-                  !counterpartyAccount.isReadyToSendTx ||
-                  account.txTypeInProgress !== "" ||
-                  amountConfig.error != undefined ||
-                  inTransit ||
-                  !isCustomWithdrawValid
-                }
-                loading={inTransit}
-                onClick={() =>
-                  transfer(
-                    (txFullfillEvent) => {
-                      ibcTransferHistoryStore.pushPendingHistory(
-                        txFullfillEvent
-                      );
-                      props.onRequestClose();
-                    },
-                    (txBroadcastEvent) => {
-                      ibcTransferHistoryStore.pushUncommitedHistory(
-                        txBroadcastEvent
-                      );
-                    }
-                  )
-                }
-              >
-                <h6 className="md:text-base text-lg">
-                  {isWithdraw ? "Withdraw" : "Deposit"}
-                </h6>
-              </Button>
-            )}
+            {accountActionButton}
           </div>
         </div>
       </ModalBase>
