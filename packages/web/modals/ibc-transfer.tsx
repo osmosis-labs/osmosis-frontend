@@ -1,11 +1,16 @@
 import Image from "next/image";
-import { FunctionComponent, useState, useEffect } from "react";
+import { FunctionComponent, useState, useEffect, useContext } from "react";
 import { observer } from "mobx-react-lite";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { ModalBase, ModalBaseProps } from ".";
 import { useStore } from "../stores";
-import { IbcTransfer, useIbcTransfer, useWindowSize } from "../hooks";
+import {
+  GetKeplrContext,
+  IbcTransfer,
+  useIbcTransfer,
+  useWindowSize,
+} from "../hooks";
 import { Button } from "../components/buttons";
 import { InputBox } from "../components/input";
 import { CheckBox } from "../components/control";
@@ -17,6 +22,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const { isMobile } = useWindowSize();
+    const keplrContext = useContext(GetKeplrContext);
 
     const [
       account,
@@ -35,31 +41,50 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       customCounterpartyConfig?.bech32Address === "" || // if not changed, it's valid since it's from Keplr
       (customCounterpartyConfig.isValid && wasCustomWithdrawAddrEntered);
 
-    // Mobile only - copy to clipboard
-    const [showFromCopied, setShowFromCopied] = useState(false);
-    const [showToCopied, setShowToCopied] = useState(false);
+    // Allowing connect wallet dialog to sit in for this dialog for connecting wallet
+    const [walletInitiallyConnected] = useState(
+      () => account.walletStatus === WalletStatus.Loaded
+    );
+    const [showSelf, setShowSelf] = useState(true);
     useEffect(() => {
-      if (showFromCopied) {
+      if (
+        !walletInitiallyConnected &&
+        account.walletStatus === WalletStatus.Loaded
+      ) {
+        setShowSelf(true);
+      }
+      // eslint-disable-next-line
+    }, [account.walletStatus]);
+    // prevent ibc-transfer dialog from randomly appearing if they connect wallet later
+    useEffect(() => {
+      if (keplrContext) {
+        // getKeplr resolves to an exception when connection-selection modal is closed
+        keplrContext.getKeplr().catch(() => {
+          props.onRequestClose();
+        });
+      }
+      // eslint-disable-next-line
+    }, []);
+
+    // Mobile only - copy to clipboard
+    const [showCopied, setShowCopied] = useState(false);
+    useEffect(() => {
+      if (showCopied) {
         setTimeout(() => {
-          setShowFromCopied(false);
+          setShowCopied(false);
         }, 5000);
       }
-      if (showToCopied) {
-        setTimeout(() => {
-          setShowToCopied(false);
-        }, 5000);
-      }
-    }, [showFromCopied, showToCopied, setShowFromCopied, setShowToCopied]);
+    }, [showCopied, setShowCopied]);
 
     return (
-      <ModalBase {...props}>
+      <ModalBase {...props} isOpen={props.isOpen && showSelf}>
         <div className="text-white-high">
           <div className="relative md:mb-5 mb-10 flex items-center w-full">
             <h5 className="md:text-lg text-xl">
               {isWithdraw ? "Withdraw" : "Deposit"}
               {!isMobile && " IBC Asset"}
             </h5>
-            {(showFromCopied || showToCopied) && (
+            {showCopied && (
               <span className="absolute inset-[45%] -top-0 w-fit h-fit rounded-full px-1.5 subtitle2 border-2 border-primary-200 bg-primary-200/60">
                 Copied!
               </span>
@@ -79,7 +104,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                           ? account.bech32Address
                           : counterpartyAccount.bech32Address
                       )
-                      .then(() => setShowFromCopied(true));
+                      .then(() => setShowCopied(true));
                   }
                 }}
               >
@@ -162,7 +187,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                                   : counterpartyAccount.bech32Address
                                 : account.bech32Address
                             )
-                            .then(() => setShowToCopied(true));
+                            .then(() => setShowCopied(true));
                         }
                       }}
                     >
@@ -277,7 +302,10 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             {!(account.walletStatus === WalletStatus.Loaded) ? (
               <Button
                 className="md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl"
-                onClick={() => account.init()}
+                onClick={() => {
+                  account.init();
+                  setShowSelf(false); // keplr-connection-selection dialog sits behind this
+                }}
               >
                 <h6 className="flex items-center gap-3">
                   <Image
