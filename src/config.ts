@@ -68,6 +68,7 @@ export const LockupAbledPoolIds: {
 	'643': true,
 	'648': true,
 	'651': true,
+	'678': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -679,6 +680,12 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/8FEFAE6AECF6E2A255585617F781F35A8D5709A545A804482A261C0C9548A9D3',
 		},
 	],
+	'678': [
+		{
+			gaugeId: '3013',
+			denom: 'uosmo',
+		},
+	],
 };
 
 export const PoolsPerPage = 10;
@@ -953,6 +960,14 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-188',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'swth',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'uusdc',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=usdc',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=usdc',
 	},
 ];
 
@@ -2461,5 +2476,47 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://scan.carbon.network/transaction/{txHash}?net=main',
+	},
+	{
+		rpc: 'https://rpc-axelar.keplr.app',
+		rest: 'https://lcd-axelar.keplr.app',
+		chainId: 'axelar-dojo-1',
+		chainName: 'Axelar',
+		stakeCurrency: {
+			coinDenom: 'AXL',
+			coinMinimalDenom: 'uaxl',
+			coinDecimals: 6,
+			// coinGeckoId: 'pool:uaxl',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/axl.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('axelar'),
+		currencies: [
+			{
+				coinDenom: 'USDC',
+				coinMinimalDenom: 'uusdc',
+				coinDecimals: 6,
+				coinGeckoId: 'usd-coin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'AXL',
+				coinMinimalDenom: 'uaxl',
+				coinDecimals: 6,
+				// coinGeckoId: 'pool:uaxl',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/axl.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0.00005,
+			average: 0.00007,
+			high: 0.00009,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://axelarscan.io/tx/{txHash}',
 	},
 ];
