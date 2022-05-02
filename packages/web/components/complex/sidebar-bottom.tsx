@@ -1,10 +1,11 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
+import { observer } from "mobx-react-lite";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { PricePretty, Dec } from "@keplr-wallet/unit";
 import { useStore } from "../../stores";
 
-export const SidebarBottom: FunctionComponent = () => {
+export const SidebarBottom: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
@@ -182,4 +183,4 @@ export const SidebarBottom: FunctionComponent = () => {
       </p>
     </div>
   );
-};
+});

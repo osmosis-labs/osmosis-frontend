@@ -246,7 +246,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
               placeholder="Filter by symbol"
             />
             <h6>Assets</h6>
-            <div className="flex gap-3 place-content-between">
+            <div className="flex gap-3 items-center place-content-between">
               <Switch
                 className="overline"
                 isOn={hideZeroBalances}
