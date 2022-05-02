@@ -11,8 +11,13 @@ import { useWindowSize } from "../../hooks";
 export interface Props<TCell extends BaseCell> extends CustomClasses {
   /** Functionality common to all columns. */
   columnDefs: ColumnDef<TCell>[];
-  /** Functionality common to all rows. */
-  rowDefs?: RowDef[];
+  /** Functionality common to all rows.
+   *  Supply an array to configure specific rows, otherwise def is applied to all rows.
+   */
+  rowDefs?: RowDef[] | RowDef;
+  /** Table of partial data objects. Each custom `ColumnDef.displayCell` component is required to check
+   *  for relevant data regardless, thus not requiring all data in each cell in table.
+   */
   data: Partial<TCell>[][];
   headerTrClassName?: string;
   tHeadClassName?: string;
@@ -108,7 +113,8 @@ export const Table = <TCell extends BaseCell>({
       </thead>
       <tbody className={tBodyClassName}>
         {data.map((row, rowIndex) => {
-          const rowDef = rowDefs?.[rowIndex];
+          const rowDef =
+            rowDefs && Array.isArray(rowDefs) ? rowDefs[rowIndex] : rowDefs;
           const rowHovered = rowsHovered[rowIndex] ?? false;
 
           return (
@@ -121,10 +127,8 @@ export const Table = <TCell extends BaseCell>({
                   "focus-within:bg-card focus-within:outline-none":
                     rowDef?.link,
                 },
-                rowHovered
-                  ? rowDef?.makeHoverClass
-                    ? rowDef.makeHoverClass(rowIndex)
-                    : "bg-card cursor-pointer"
+                rowHovered && rowDef?.makeHoverClass
+                  ? `cursor-pointer ${rowDef.makeHoverClass(rowIndex)}`
                   : undefined
               )}
               onMouseEnter={() => setRowHovered(rowIndex, true)}

@@ -374,7 +374,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 className: "text-center max-w-[5rem]",
               },
             ]}
-            rowDefs={tableData.map(() => ({ makeHoverClass: () => " " }))}
             data={tableData.map((cell) => [cell, cell, cell, cell])}
             headerTrClassName="!h-12 !body2"
           />
