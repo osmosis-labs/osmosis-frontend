@@ -719,6 +719,20 @@ export const IBCAssetInfos: {
 	withdrawUrlOverride?: string;
 }[] = [
 	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uusd',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'uusdc',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=usdc',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=usdc',
+	},
+	{
 		counterpartyChainId: 'cosmoshub-4',
 		sourceChannelId: 'channel-0',
 		destChannelId: 'channel-141',
@@ -735,12 +749,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-5',
 		destChannelId: 'channel-10',
 		coinMinimalDenom: 'basecro',
-	},
-	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uusd',
 	},
 	{
 		counterpartyChainId: 'secret-4',
@@ -960,14 +968,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-188',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'swth',
-	},
-	{
-		counterpartyChainId: 'axelar-dojo-1',
-		sourceChannelId: 'channel-208',
-		destChannelId: 'channel-3',
-		coinMinimalDenom: 'uusdc',
-		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=usdc',
-		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=usdc',
 	},
 ];
 
