@@ -46,9 +46,9 @@ export function useConnectWalletModalRedirect(
   useEffect(() => {
     if (!showSelf) {
       // getKeplr resolves to an exception when connection-selection modal is closed
-      console.log("getKeplr");
       keplr.getKeplr().catch(() => {
         onRequestClose();
+        setShowSelf(true); // reset state to allow modal to be opened later
       });
     }
     // eslint-disable-next-line
