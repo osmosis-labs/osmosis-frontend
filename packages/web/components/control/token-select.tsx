@@ -92,7 +92,7 @@ export const TokenSelect: FunctionComponent<
 
       {isSelectOpen && (
         <div
-          className="absolute bottom-0 -left-3 translate-y-full md:p-1 p-3.5 bg-surface rounded-b-2xl z-50 md:w-[18.75rem] w-[28.5rem]"
+          className="absolute bottom-0 md:-left-3 -left-4 translate-y-full md:p-1 p-3.5 bg-surface rounded-b-2xl z-50 md:w-[18.75rem] w-[28.5rem]"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center h-9 pl-4 mb-3 rounded-2xl bg-card">

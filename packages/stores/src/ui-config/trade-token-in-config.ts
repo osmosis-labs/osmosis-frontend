@@ -157,6 +157,7 @@ export class TradeTokenInConfig extends AmountConfig {
       });
   }
 
+  // TODO: Need to fix issue that shrink amount whenever it executed
   @action
   switchInAndOut() {
     const outAmount = this.expectedSwapResult.amount;

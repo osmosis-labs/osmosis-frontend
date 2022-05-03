@@ -1,18 +1,17 @@
-import React, { useEffect, useMemo, useRef } from "react";
-import Tippy from "@tippyjs/react";
-import { TokenSelect } from "../token-select";
+import { Currency } from "@keplr-wallet/types";
+import { Pool } from "@osmosis-labs/pools";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import Image from "next/image";
+import React, { useEffect, useRef } from "react";
+import AutosizeInput from "react-input-autosize";
 import {
   useBooleanWithWindowEvent,
   useSlippageConfig,
   useTradeTokenInConfig,
 } from "../../hooks";
-import classNames from "classnames";
-import { Pool } from "@osmosis-labs/pools";
-import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import AutosizeInput from "react-input-autosize";
-import { Currency } from "@keplr-wallet/types";
-import Image from "next/image";
+import { TokenSelect } from "../control/token-select";
 import { InfoTooltip } from "../tooltip";
 
 export const TradeClipboard = observer<
@@ -26,7 +25,14 @@ export const TradeClipboard = observer<
   HTMLDivElement
 >(
   ({ containerClassName, containerStyle, pools }, forwardedRef) => {
-    const { chainStore, accountStore, queriesStore } = useStore();
+    const {
+      chainStore,
+      accountStore,
+      queriesStore,
+      assetsStore: { nativeBalances, ibcBalances },
+    } = useStore();
+
+    const allTokenBalances = nativeBalances.concat(ibcBalances);
 
     const account = accountStore.getAccount(chainStore.osmosis.chainId);
     const queries = queriesStore.get(chainStore.osmosis.chainId);
@@ -47,49 +53,6 @@ export const TradeClipboard = observer<
       .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency);
 
     const [isSettingOpen, setIsSettingOpen] = useBooleanWithWindowEvent(false);
-
-    const tokenSelectCurrencies = useMemo(() => {
-      return tradeTokenInConfig.sendableCurrencies.map((cur) => {
-        if ("originChainId" in cur) {
-          const originChainId = cur.originChainId;
-          if (originChainId && chainStore.hasChain(originChainId)) {
-            const chainInfo = chainStore.getChain(originChainId);
-            return {
-              ...cur,
-              meta: [chainInfo.chainName],
-            };
-          }
-          return cur;
-        }
-
-        return {
-          ...cur,
-          meta: [chainStore.osmosis.chainName],
-        };
-      });
-    }, [chainStore, tradeTokenInConfig.sendableCurrencies]);
-
-    const tokenInSelectCurrencies = useMemo(() => {
-      return tokenSelectCurrencies.filter(
-        (cur) =>
-          cur.coinMinimalDenom !==
-          tradeTokenInConfig.outCurrency.coinMinimalDenom
-      );
-    }, [
-      tokenSelectCurrencies,
-      tradeTokenInConfig.outCurrency.coinMinimalDenom,
-    ]);
-
-    const tokenOutSelectCurrencies = useMemo(() => {
-      return tokenSelectCurrencies.filter(
-        (cur) =>
-          cur.coinMinimalDenom !==
-          tradeTokenInConfig.sendCurrency.coinMinimalDenom
-      );
-    }, [
-      tokenSelectCurrencies,
-      tradeTokenInConfig.sendCurrency.coinMinimalDenom,
-    ]);
 
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -154,14 +117,6 @@ export const TradeClipboard = observer<
                     Slippage tolerance
                   </div>
                   <InfoTooltip content="Your transaction will revert if the price changes unfavorably by more than this percentage." />
-                  {/* <Tippy
-                    content="Your transaction will revert if the price changes unfavorably by more than this percentage."
-                    className="bg-wireframes-darkGrey border border-white-faint p-2 rounded-lg text-white-high text-sm"
-                  >
-                    <div className="flex items-center justify-center bg-enabledGold rounded-full text-[0.625rem] text-color w-3.5 h-3.5 cursor-pointer">
-                      !
-                    </div>
-                  </Tippy> */}
                 </div>
 
                 <ul className="flex gap-x-3 w-full mt-3">
@@ -287,11 +242,24 @@ export const TradeClipboard = observer<
               </div>
               <div className="flex items-center mt-3">
                 <TokenSelect
-                  dropdownContainerClassName="pt-[1.25rem] bottom-[0.85rem]"
-                  currency={tradeTokenInConfig.sendCurrency}
-                  currencies={tokenInSelectCurrencies}
-                  onSelect={(currency) => {
-                    tradeTokenInConfig.setSendCurrency(currency);
+                  tokens={allTokenBalances
+                    .filter(
+                      (tokenBalance) =>
+                        tokenBalance.balance.currency.coinDenom !==
+                        tradeTokenInConfig.outCurrency.coinDenom
+                    )
+                    .map((tokenBalance) => tokenBalance.balance)}
+                  selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
+                  onSelect={(tokenDenom: string) => {
+                    const tokenInBalance = allTokenBalances.find(
+                      (tokenBalance) =>
+                        tokenBalance.balance.currency.coinDenom === tokenDenom
+                    );
+                    if (tokenInBalance) {
+                      tradeTokenInConfig.setSendCurrency(
+                        tokenInBalance.balance.currency
+                      );
+                    }
                   }}
                 />
                 <div className="flex-1" />
@@ -342,11 +310,24 @@ export const TradeClipboard = observer<
               </div>
               <div className="flex items-center mt-3">
                 <TokenSelect
-                  dropdownContainerClassName="pt-[1.25rem] bottom-[0.85rem]"
-                  currency={tradeTokenInConfig.outCurrency}
-                  currencies={tokenOutSelectCurrencies}
-                  onSelect={(currency) => {
-                    tradeTokenInConfig.setOutCurrency(currency);
+                  tokens={allTokenBalances
+                    .filter(
+                      (tokenBalance) =>
+                        tokenBalance.balance.currency.coinDenom !==
+                        tradeTokenInConfig.sendCurrency.coinDenom
+                    )
+                    .map((tokenBalance) => tokenBalance.balance)}
+                  selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
+                  onSelect={(tokenDenom: string) => {
+                    const tokenOutBalance = allTokenBalances.find(
+                      (tokenBalance) =>
+                        tokenBalance.balance.currency.coinDenom === tokenDenom
+                    );
+                    if (tokenOutBalance) {
+                      tradeTokenInConfig.setOutCurrency(
+                        tokenOutBalance.balance.currency
+                      );
+                    }
                   }}
                 />
                 <div className="flex-1" />

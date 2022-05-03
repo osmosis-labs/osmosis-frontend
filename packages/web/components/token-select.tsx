@@ -12,6 +12,8 @@ import { useStore } from "../stores";
 import classNames from "classnames";
 import { useBooleanWithWindowEvent } from "../hooks";
 
+// TODO: It will be removed after migrating to `components/control/token-select.tsx`
+
 /**
  * TokenSelect's dropdown is attached to the nearest "relative" element.
  */
