@@ -1,20 +1,21 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
-import { ObservablePool } from "@osmosis-labs/stores";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import { ExternalIncentiveGaugeAllowList } from "../../config";
 import {
   useFilteredData,
   usePaginatedData,
   useSortedData,
-} from "../../hooks/data";
+  useWindowSize,
+} from "../../hooks";
 import { useStore } from "../../stores";
-import { CheckBox, PageList, SortMenu } from "../control";
+import { PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { RowDef, Table } from "../table";
 import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
-
-const TVL_FILTER_THRESHOLD = 1000;
+import { Breakpoint } from "../types";
+import { CompactPoolTableDisplay } from "./compact-pool-table-display";
 
 export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
   () => {
@@ -25,12 +26,12 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       queriesStore,
       accountStore,
     } = useStore();
-    const chainInfo = chainStore.osmosis;
-    const queryExternal = queriesExternalStore.get();
-    const queryOsmosis = queriesStore.get(chainInfo.chainId).osmosis;
-    const account = accountStore.getAccount(chainInfo.chainId);
+    const { isMobile } = useWindowSize();
 
-    const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
+    const { chainId } = chainStore.osmosis;
+    const queryExternal = queriesExternalStore.get();
+    const queryOsmosis = queriesStore.get(chainId).osmosis;
+    const account = accountStore.getAccount(chainId);
 
     const externalIncentivizedPools = Object.keys(
       ExternalIncentiveGaugeAllowList
@@ -41,31 +42,35 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
           return pool;
         }
       })
-      .filter((pool: ObservablePool | undefined): pool is ObservablePool => {
-        if (!pool) {
-          return false;
-        }
-
-        const inner = ExternalIncentiveGaugeAllowList[pool.id];
-        const data = Array.isArray(inner) ? inner : [inner];
-
-        if (data.length === 0) {
-          return false;
-        }
-        const gaugeIds = data.map((d) => d.gaugeId);
-        const gauges = gaugeIds.map((gaugeId) =>
-          queryOsmosis.queryGauge.get(gaugeId)
-        );
-
-        let maxRemainingEpoch = 0;
-        for (const gauge of gauges) {
-          if (maxRemainingEpoch < gauge.remainingEpoch) {
-            maxRemainingEpoch = gauge.remainingEpoch;
+      .filter(
+        (
+          pool: ObservableQueryPool | undefined
+        ): pool is ObservableQueryPool => {
+          if (!pool) {
+            return false;
           }
-        }
 
-        return maxRemainingEpoch > 0;
-      });
+          const inner = ExternalIncentiveGaugeAllowList[pool.id];
+          const data = Array.isArray(inner) ? inner : [inner];
+
+          if (data.length === 0) {
+            return false;
+          }
+          const gaugeIds = data.map((d) => d.gaugeId);
+          const gauges = gaugeIds.map((gaugeId) =>
+            queryOsmosis.queryGauge.get(gaugeId)
+          );
+
+          let maxRemainingEpoch = 0;
+          for (const gauge of gauges) {
+            if (maxRemainingEpoch < gauge.remainingEpoch) {
+              maxRemainingEpoch = gauge.remainingEpoch;
+            }
+          }
+
+          return maxRemainingEpoch > 0;
+        }
+      );
     const externalIncentivizedPoolsWithMetrics = externalIncentivizedPools.map(
       (pool) => {
         const inner = ExternalIncentiveGaugeAllowList[pool.id];
@@ -76,7 +81,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
         });
         const incentiveDenom = data[0].denom;
         const currency = chainStore
-          .getChain(chainInfo.chainId)
+          .getChain(chainId)
           .forceFindCurrency(incentiveDenom);
         let sumRemainingBonus: CoinPretty = new CoinPretty(
           currency,
@@ -114,16 +119,10 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       }
     );
 
-    const tvlFilteredPools = isPoolTvlFiltered
-      ? externalIncentivizedPoolsWithMetrics
-      : externalIncentivizedPoolsWithMetrics.filter((poolWithMetrics) =>
-          poolWithMetrics.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
-        );
-
-    const [query, setQuery, filteredPools] = useFilteredData(tvlFilteredPools, [
-      "pool.id",
-      "pool.poolAssets.amount.currency.coinDenom",
-    ]);
+    const [query, setQuery, filteredPools] = useFilteredData(
+      externalIncentivizedPoolsWithMetrics,
+      ["pool.id", "pool.poolAssets.amount.currency.coinDenom"]
+    );
 
     const [
       sortKeyPath,
@@ -140,7 +139,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     const tableCols = [
       {
         id: "pool.id",
-        display: "Pool ID/Tokens",
+        display: "Pool ID",
         sort:
           sortKeyPath === "pool.id"
             ? {
@@ -203,6 +202,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
                   setSortDirection("ascending");
                 },
               },
+        collapseAt: Breakpoint.XL,
       },
       {
         id: "myLiquidity",
@@ -219,6 +219,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
                   setSortDirection("ascending");
                 },
               },
+        collapseAt: Breakpoint.LG,
       },
     ];
 
@@ -246,11 +247,74 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       ];
     });
 
+    if (isMobile) {
+      return (
+        <CompactPoolTableDisplay
+          title="External Incentive Pool"
+          pools={allData.map((poolData) => ({
+            id: poolData.pool.id,
+            assets: poolData.pool.poolAssets.map(
+              (asset) => asset.amount.currency
+            ),
+            metrics: [
+              ...[
+                sortKeyPath === "epochsRemaining"
+                  ? {
+                      label: "",
+                      value: poolData.epochsRemaining.toString(),
+                    }
+                  : sortKeyPath === "myLiquidity"
+                  ? {
+                      label: "",
+                      value: poolData.myLiquidity.toString(),
+                    }
+                  : sortKeyPath === "apr"
+                  ? {
+                      label: "",
+                      value: poolData.apr?.toString() ?? "0%",
+                    }
+                  : { label: "TVL", value: poolData.liquidity.toString() },
+              ],
+              ...[
+                sortKeyPath === "apr"
+                  ? { label: "TVL", value: poolData.liquidity.toString() }
+                  : {
+                      label: "APR",
+                      value: poolData.apr?.toString() ?? "0%",
+                    },
+              ],
+            ],
+            isSuperfluid: queryOsmosis.querySuperfluidPools.isSuperfluidPool(
+              poolData.pool.id
+            ),
+          }))}
+          searchBoxProps={{
+            currentValue: query,
+            onInput: setQuery,
+            placeholder: "Filtery by symbol",
+          }}
+          sortMenuProps={{
+            options: tableCols,
+            selectedOptionId: sortKeyPath,
+            onSelect: (id) =>
+              id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id),
+            onToggleSortDirection: toggleSortDirection,
+          }}
+          pageListProps={{
+            currentValue: page,
+            max: numPages,
+            min: minPage,
+            onInput: setPage,
+          }}
+        />
+      );
+    }
+
     return (
       <>
-        <div className="mt-5 flex items-center justify-between">
+        <div className="mt-5 flex flex-wrap gap-3 items-center justify-between">
           <h5>External Incentive Pools</h5>
-          <div className="flex gap-8">
+          <div className="flex gap-8 lg:w-full lg:place-content-between">
             <SearchBox
               currentValue={query}
               onInput={setQuery}
@@ -268,12 +332,12 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
           </div>
         </div>
         <Table<PoolCompositionCell & MetricLoaderCell>
-          className="mt-5 w-full"
+          className="mt-5 w-full lg:text-sm"
           columnDefs={tableCols}
           rowDefs={tableRows}
           data={tableData}
         />
-        <div className="relative flex place-content-around">
+        <div className="flex place-content-around">
           <PageList
             currentValue={page}
             max={numPages}
@@ -281,18 +345,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             onInput={setPage}
             editField
           />
-          <div className="absolute right-2 bottom-1 text-sm flex items-center">
-            <CheckBox
-              isOn={isPoolTvlFiltered}
-              onToggle={setIsPoolTvlFiltered}
-              className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
-            >
-              {`Show pools less than ${new PricePretty(
-                priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-                TVL_FILTER_THRESHOLD
-              ).toString()}`}
-            </CheckBox>
-          </div>
         </div>
       </>
     );

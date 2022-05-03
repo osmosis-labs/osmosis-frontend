@@ -52,9 +52,7 @@ const Home: NextPage = observer(function () {
   const queries = queriesStore.get(chainInfo.chainId);
   const queryPools = queries.osmosis.queryGammPools;
 
-  const pools = useMemo(() => {
-    return queryPools.pools.map((pool) => pool.pool);
-  }, [queryPools.pools]);
+  const pools = queryPools.getAllPools().map((pool) => pool.pool);
 
   const imageRatio = 1300 / 900;
 
@@ -69,7 +67,7 @@ const Home: NextPage = observer(function () {
     <main className="relative bg-background h-screen" ref={containerRef}>
       <div className="absolute w-full h-full bg-home-bg-pattern bg-repeat-x bg-cover">
         <svg
-          className="w-full h-full"
+          className="absolute w-full h-full md:hidden"
           pointerEvents="none"
           viewBox="0 0 1300 900"
           height="900"

@@ -61,8 +61,10 @@ module.exports = {
       missionError: "#EF3456",
       black: "#000000",
       backdrop: "rgba(0, 0, 0, 0.3)",
+      superfluid: "#8A86FF",
     },
     fontSize: {
+      xxs: "0.5rem",
       xs: "0.75rem",
       sm: "0.875rem",
       base: "1rem",
@@ -152,6 +154,24 @@ module.exports = {
       "elevation-24dp":
         "0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2)",
     },
+    screens: {
+      "2xl": { max: "1536px" },
+      // => @media (max-width: 1536px) { ... }
+
+      xl: { max: "1280px" },
+      // => @media (max-width: 1280px) { ... }
+
+      lg: { max: "1024px" },
+      // => @media (max-width: 1024px) { ... }
+
+      md: { max: "768px" },
+      // => @media (max-width: 768px) { ... }
+
+      sm: { max: "640px" },
+      // => @media (max-width: 640px) { ... }
+
+      xs: { max: "420px" },
+    },
     extend: {
       width: {
         loader: {
@@ -172,6 +192,9 @@ module.exports = {
         clipboard: "32.5rem",
         modal: "42rem",
       },
+      maxHeight: {
+        terms: "28rem",
+      },
       keyframes: {
         loading: {
           "0%": { transform: "translateX(-150%)" },
@@ -185,7 +208,10 @@ module.exports = {
         separator: "0px -1px 0px 0px rgba(255, 255, 255, 0.12)",
       },
       borderRadius: {
+        none: "0",
         lginset: "0.438rem", // 1px smaller than rounded-lg
+        xlinset: "0.688rem", // 1px smaller than rounded-xl
+        "2xlinset": "0.938rem", // 1 px smaller than rounded-2xl
       },
     },
   },

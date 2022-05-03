@@ -1,5 +1,4 @@
 import { observable, makeObservable, computed, action } from "mobx";
-import { computedFn } from "mobx-utils";
 import {
   ObservableQueryBalances,
   ChainGetter,
@@ -83,7 +82,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
 
   get singleAmountInAsset():
     | {
-        weight: IntPretty; // TODO: see if we need this member
+        weight: IntPretty;
         weightFraction: RatePretty;
         amount: CoinPretty;
         currency: Currency;
@@ -201,15 +200,6 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
       .getBalanceFromCurrency(this.singleAmountInAsset.currency);
   }
 
-  /*
-   TODO: This getter is not flexible.
-         Can't handle the case that the chain changes.
-         Can't handle the case that the pool's currencies changes.
-         Can't handle the case that the reference of chain getter or balance querier.
-         However, above cases don't exist on the current usage.
-         Due to the current architecture of this store, it is hard to handle above cases.
-         Refactor this store in future.
-   */
   @computed
   get poolAssetConfigs(): ObservableAmountConfig[] {
     const pool = this._queryPools.getPool(this._poolId);
@@ -243,7 +233,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
 
   @computed
   get poolAssets(): {
-    weight: IntPretty; // TODO: see if we need this member
+    weight: IntPretty;
     weightFraction: RatePretty;
     amount: CoinPretty;
     currency: Currency;
@@ -489,7 +479,8 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     });
   }
 
-  readonly getError = computedFn(() => {
+  @computed
+  get error() {
     if (this.poolAssetConfigs.length === 0) {
       return new Error("Not initialized yet");
     }
@@ -514,5 +505,5 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     if (!this.shareOutAmount || this.shareOutAmount.toDec().lte(new Dec(0))) {
       return new Error("Calculating the share out amount");
     }
-  });
+  }
 }

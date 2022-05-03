@@ -1,23 +1,21 @@
 import { IBCCurrency } from "@keplr-wallet/types";
 import { Buffer } from "buffer";
+import { IBCTransferHistory, UncommitedHistory } from "../../ibc-history";
 import { ObservableAmountConfig } from "../../ui-config";
-import {
-  IbcTransferSender,
-  IbcTransferCounterparty,
-  IbcBroadcastEvent,
-  IbcFullfillmentEvent,
-} from "./types";
+import { IbcTransferSender, IbcTransferCounterparty } from "./types";
 
 /** Use to perform a standard IBC transfer from `sender` to `counterparty`. Supports CW20 transfers. */
 export async function basicIbcTransfer(
+  /** Where the tokens originate. */
   sender: IbcTransferSender,
+  /** Where the tokens should end up. */
   counterparty: IbcTransferCounterparty,
   currency: IBCCurrency,
   amountConfig: ObservableAmountConfig,
   /** Handle when the IBC trasfer successfully broadcast to relayers. */
-  onBroadcasted?: (event: IbcBroadcastEvent) => void,
+  onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void,
   /** Handle IBC transfer events containing `send_packet` event type. */
-  onFulfill?: (event: IbcFullfillmentEvent) => void
+  onFulfill?: (event: Omit<IBCTransferHistory, "status" | "createdAt">) => void
 ) {
   if (!sender.account.isReadyToSendTx || !counterparty.account.bech32Address)
     return;
@@ -123,7 +121,7 @@ export async function basicIbcTransfer(
     }
 
     const msg = {
-      channel: counterparty.channelId,
+      channel: sender.channelId,
       remote_address: recipient,
       // 15 min
       timeout: 900,
@@ -149,10 +147,10 @@ export async function basicIbcTransfer(
     );
   } else {
     // perform standard IBC token transfer
-    await counterparty.account.cosmos.sendIBCTransferMsg(
+    await sender.account.cosmos.sendIBCTransferMsg(
       {
         portId: "transfer",
-        channelId: counterparty.channelId,
+        channelId: sender.channelId,
         counterpartyChainId: counterparty.chainId,
       },
       amountConfig.amount,

@@ -6,7 +6,7 @@ import {
   IQueriesStore,
 } from "@keplr-wallet/stores";
 import { AppCurrency } from "@keplr-wallet/types";
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { ObservableAmountConfig } from "./amount-config";
 import { CREATE_POOL_MAX_ASSETS } from ".";
 
@@ -80,49 +80,6 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     return this._assets.length < CREATE_POOL_MAX_ASSETS;
   }
 
-  @action
-  addAsset(currency: AppCurrency) {
-    const config = new ObservableAmountConfig(
-      this.chainGetter,
-      this._queriesStore,
-      this.chainId,
-      this.sender,
-      currency
-    );
-    if (this.feeConfig) {
-      config.setFeeConfig(this.feeConfig);
-    }
-
-    if (this.canAddAsset) {
-      this._assets.push({
-        percentage: "",
-        amountConfig: config,
-      });
-    }
-  }
-
-  @action
-  clearAssets() {
-    this._assets = [];
-  }
-
-  @action
-  setAssetPercentageAt(index: number, percentage: string) {
-    if (percentage.startsWith(".")) {
-      percentage = "0" + percentage;
-    }
-
-    this.assets[index] = {
-      ...this.assets[index],
-      percentage,
-    };
-  }
-
-  @action
-  removeAssetAt(index: number) {
-    this._assets.splice(index, 1);
-  }
-
   get sender(): string {
     return this._sender;
   }
@@ -146,11 +103,6 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     return this._swapFee;
   }
 
-  @action
-  setSwapFee(swapFee: string): void {
-    this._swapFee = swapFee;
-  }
-
   /**
    * sendableCurrencies 중에서 현재 assets에 없는 currency들을 반환한다.
    * Among the SendableCurrencies, return currencies that are not currently in Assets.
@@ -165,6 +117,13 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
         ) == null
       );
     });
+  }
+
+  /** Get the humanized (non-rounded) percentage for creating a balanced pool
+   *  from the current number of assets.
+   */
+  get balancedPercentage(): RatePretty {
+    return new RatePretty(new Dec(1).quo(new Dec(this.assets.length)));
   }
 
   get percentageError(): Error | undefined {
@@ -219,5 +178,75 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
         return error;
       }
     }
+  }
+
+  @action
+  setSwapFee(swapFee: string): void {
+    this._swapFee = swapFee;
+  }
+
+  @action
+  addAsset(currency: AppCurrency) {
+    const config = new ObservableAmountConfig(
+      this.chainGetter,
+      this._queriesStore,
+      this.chainId,
+      this.sender,
+      currency
+    );
+    if (this.feeConfig) {
+      config.setFeeConfig(this.feeConfig);
+    }
+
+    if (this.canAddAsset) {
+      this._assets.push({
+        percentage: "",
+        amountConfig: config,
+      });
+    }
+  }
+
+  @action
+  removeAssetAt(index: number) {
+    this._assets.splice(index, 1);
+  }
+
+  @action
+  clearAssets() {
+    this._assets = [];
+  }
+
+  @action
+  setAssetPercentageAt(index: number, percentage: string) {
+    if (percentage.startsWith(".")) {
+      percentage = "0" + percentage;
+    }
+
+    this.assets[index] = {
+      ...this.assets[index],
+      percentage,
+    };
+  }
+
+  /** Set percentages for all assets for an evenly balanced pool. */
+  @action
+  setBalancedPercentages() {
+    this.assets.forEach((_, index) => {
+      this.setAssetPercentageAt(
+        index,
+        new Dec(1)
+          .quo(new Dec(this.assets.length))
+          .mul(new Dec(100))
+          .add(
+            new Dec(
+              this.assets.length % 2 === 1 && this.assets.length - 1 === index
+                ? 1
+                : 0
+            )
+          )
+          .truncate()
+          .toString()
+      );
+    });
   }
 }

@@ -51,7 +51,7 @@ export class PollingStatusSubscription {
           this._handlers.forEach((handler) => handler(response.data));
         }
       } catch (e: any) {
-        console.log(`Failed to fetch /status: ${e?.toString()}`);
+        console.error(`Failed to fetch /status: ${e?.toString()}`);
       }
     }
   }

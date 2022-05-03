@@ -4,6 +4,7 @@ import { StepProps } from "./types";
 import { Info, Error } from "../../../alert";
 import { Button } from "../../../buttons";
 import { POOL_CREATION_FEE } from ".";
+import { useWindowSize } from "../../../../hooks";
 
 export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
   observer(
@@ -15,6 +16,8 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
       advanceStep,
       children,
     }) => {
+      const { isMobile } = useWindowSize();
+
       const percentageError = config.percentageError?.message;
       const amountError = config.amountError?.message;
       const swapFeeError = config.swapFeeError?.message;
@@ -25,7 +28,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
 
       return (
         <div className="flex flex-col gap-5">
-          <span className="body2">
+          <span className="body2 md:caption md:mt-4">
             Step {step} / 3 -
             {step === 1
               ? " Set token ratios"
@@ -39,6 +42,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
             message="Pool Creation Fee"
             caption="Transferred to the Osmosis community pool"
             data={POOL_CREATION_FEE}
+            isMobile={isMobile}
           />
           <div>{children}</div>
           {percentageError && step === 1 && (
@@ -53,19 +57,20 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
           <div className="flex gap-4 mx-auto">
             {step !== 1 && (
               <Button
-                className="w-28 bg-secondary-200 hover:bg-secondary-100"
-                size="lg"
+                className="w-28 md:w-20 bg-secondary-200 hover:bg-secondary-100"
+                size={isMobile ? "sm" : "lg"}
+                disabled={isSendingMsg}
                 onClick={() => backStep()}
               >
                 Back
               </Button>
             )}
             <Button
-              className="w-80"
-              size="lg"
+              className="w-80 md:w-36 md:h-10"
+              size={isMobile ? "sm" : "lg"}
               onClick={() => advanceStep()}
               loading={isSendingMsg}
-              disabled={!canAdvance}
+              disabled={!canAdvance || isSendingMsg}
             >
               {step === 3 ? "Create Pool" : "Next"}
             </Button>

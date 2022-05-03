@@ -6,12 +6,15 @@ import {
   useFilteredData,
   usePaginatedData,
   useSortedData,
-} from "../../hooks/data";
+  useWindowSize,
+} from "../../hooks";
 import { useStore } from "../../stores";
 import { CheckBox, MenuToggle, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { RowDef, Table } from "../table";
 import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
+import { Breakpoint } from "../types";
+import { CompactPoolTableDisplay } from "./compact-pool-table-display";
 
 const poolsMenuOptions = [
   { id: "incentivized-pools", display: "Incentivized Pools" },
@@ -20,7 +23,9 @@ const poolsMenuOptions = [
 
 const TVL_FILTER_THRESHOLD = 1000;
 
-export const AllPoolsTableSet: FunctionComponent = observer(() => {
+export const AllPoolsTableSet: FunctionComponent<{
+  tableSet?: "incentivized-pools" | "all-pools";
+}> = observer(({ tableSet = "incentivized-pools" }) => {
   const {
     chainStore,
     queriesExternalStore,
@@ -28,13 +33,21 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
     queriesStore,
     accountStore,
   } = useStore();
-  const [activeOptionId, setActiveOptionId] = useState(poolsMenuOptions[0].id);
+  const { isMobile } = useWindowSize();
+
+  const [activeOptionId, setActiveOptionId] = useState(tableSet);
+  const selectOption = (optionId: string) => {
+    if (optionId === "incentivized-pools" || optionId === "all-pools") {
+      setActiveOptionId(optionId);
+    }
+  };
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 
-  const chainInfo = chainStore.osmosis;
-  const queriesOsmosis = queriesStore.get(chainInfo.chainId).osmosis;
+  const { chainId } = chainStore.osmosis;
+  const queriesOsmosis = queriesStore.get(chainId).osmosis;
   const queriesExternal = queriesExternalStore.get();
-  const account = accountStore.getAccount(chainInfo.chainId);
+  const account = accountStore.getAccount(chainId);
+  const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
 
   const allPools = queriesOsmosis.queryGammPools.getAllPools();
   const incentivizedPoolIds =
@@ -104,7 +117,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
   const tableCols = [
     {
       id: "pool.id",
-      display: "Pool ID/Tokens",
+      display: "Pool ID",
       sort:
         sortKeyPath === "pool.id"
           ? {
@@ -154,21 +167,22 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
       displayCell: MetricLoaderCell,
     },
     {
-      id: "fees7d",
+      id: "feesSpent7d",
       display: "Fees (7D)",
       sort:
-        sortKeyPath === "fees7d"
+        sortKeyPath === "feesSpent7d"
           ? {
               currentDirection: sortDirection,
               onClickHeader: toggleSortDirection,
             }
           : {
               onClickHeader: () => {
-                setSortKeyPath("fees7d");
+                setSortKeyPath("feesSpent7d");
                 setSortDirection("ascending");
               },
             },
       displayCell: MetricLoaderCell,
+      collapseAt: Breakpoint.XL,
     },
     {
       id: isIncentivizedPools ? "apr" : "myLiquidity",
@@ -186,6 +200,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
               },
             },
       displayCell: isIncentivizedPools ? MetricLoaderCell : undefined,
+      collapseAt: Breakpoint.LG,
     },
   ];
 
@@ -223,16 +238,96 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
     ];
   });
 
+  if (isMobile) {
+    return (
+      <CompactPoolTableDisplay
+        title={isIncentivizedPools ? "Incentivized Pools" : "All Pools"}
+        pools={allData.map((poolData) => ({
+          id: poolData.pool.id,
+          assets: poolData.pool.poolAssets.map(
+            ({
+              amount: {
+                currency: { coinDenom, coinImageUrl },
+              },
+            }) => ({
+              coinDenom,
+              coinImageUrl,
+            })
+          ),
+          metrics: [
+            ...[
+              sortKeyPath === "volume24h"
+                ? {
+                    label: "",
+                    value: poolData.volume24h.toString(),
+                  }
+                : sortKeyPath === "feesSpent7d"
+                ? { label: "", value: poolData.feesSpent7d.toString() }
+                : sortKeyPath === "apr"
+                ? { label: "", value: poolData.apr?.toString() ?? "0%" }
+                : sortKeyPath === "myLiquidity"
+                ? {
+                    label: "my liquidity",
+                    value:
+                      poolData.myLiquidity?.toString() ?? `0${fiat.symbol}`,
+                  }
+                : { label: "TVL", value: poolData.liquidity.toString() },
+            ],
+            ...[
+              sortKeyPath === "apr"
+                ? { label: "TVL", value: poolData.liquidity.toString() }
+                : {
+                    label: isIncentivizedPools ? "APR" : "7d Vol.",
+                    value: isIncentivizedPools
+                      ? poolData.apr?.toString() ?? "0%"
+                      : poolData.volume7d.toString(),
+                  },
+            ],
+          ],
+          isSuperfluid: queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+            poolData.pool.id
+          ),
+        }))}
+        searchBoxProps={{
+          currentValue: query,
+          onInput: setQuery,
+          placeholder: "Filter by symbol",
+        }}
+        sortMenuProps={{
+          options: tableCols,
+          selectedOptionId: sortKeyPath,
+          onSelect: (id) =>
+            id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id),
+          onToggleSortDirection: toggleSortDirection,
+        }}
+        pageListProps={{
+          currentValue: page,
+          max: numPages,
+          min: minPage,
+          onInput: setPage,
+        }}
+        minTvlToggleProps={{
+          isOn: isPoolTvlFiltered,
+          onToggle: setIsPoolTvlFiltered,
+          label: `Show pools less than ${new PricePretty(
+            priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+            TVL_FILTER_THRESHOLD
+          ).toString()}`,
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <h5>All Pools</h5>
-      <div className="mt-5 flex items-center justify-between">
+      <div className="mt-5 flex flex-wrap gap-3 items-center justify-between">
         <MenuToggle
           options={poolsMenuOptions}
           selectedOptionId={activeOptionId}
-          onSelect={setActiveOptionId}
+          onSelect={selectOption}
         />
-        <div className="flex gap-8">
+        <div className="flex gap-8 lg:w-full lg:place-content-between">
           <SearchBox
             currentValue={query}
             onInput={setQuery}
@@ -250,7 +345,7 @@ export const AllPoolsTableSet: FunctionComponent = observer(() => {
         </div>
       </div>
       <Table<PoolCompositionCell & MetricLoaderCell>
-        className="mt-5 w-full"
+        className="mt-5 w-full lg:text-sm"
         columnDefs={tableCols}
         rowDefs={tableRows}
         data={tableData}

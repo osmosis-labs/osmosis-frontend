@@ -79,7 +79,7 @@
   }
 
   table {
-    @apply table-auto border-collapse text-left;
+    @apply md:w-screen table-auto border-collapse text-left;
   }
 
   thead > tr {
@@ -87,7 +87,7 @@
   }
 
   thead > tr > th:first-child {
-    @apply rounded-tl-2xl pl-8 pr-3 py-3;
+    @apply md:rounded-none rounded-tl-2xl pl-8 pr-3 py-3;
   }
 
   thead > tr > th {
@@ -95,7 +95,7 @@
   }
 
   thead > tr > th:last-child {
-    @apply rounded-tr-2xl pl-3 pr-8 py-3;
+    @apply md:rounded-none rounded-tr-2xl pl-3 pr-8 py-3;
   }
 
   tbody > tr > td:first-child {
@@ -111,7 +111,17 @@
   }
 
   .grid-cards {
-    @apply grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 justify-items-center;
+    @apply grid-cols-3 2xl:grid-cols-2 lg:grid-cols-1 justify-items-center;
+  }
+
+  /* Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 
   /** SLIDER STYLE */
@@ -191,6 +201,49 @@
   /* Tooltip */
   .sliderTooltip span {
     @apply absolute left-[50%] w-[30px] h-[24px] leading-[24px] text-center bg-surface text-white-emphasis text-caption block translate-x-[-50%] rounded-md;
+  }
+}
+
+/* Toasts override styles in `react-toastify/dist/ReactToastify.css` */
+.Toastify__toast-container {
+  z-index: 99 !important;
+  max-width: 360px !important;
+  min-width: 360px !important;
+}
+
+.Toastify__toast--default {
+  background: #2d2755 !important;
+  max-width: 360px !important;
+  min-width: 360px !important;
+  border-radius: 16px !important;
+}
+
+.Toastify__toast {
+  padding: 20px 28px 20px 22px !important;
+  overflow: visible !important;
+}
+
+.Toastify__toast-body {
+  padding: 0 !important;
+}
+
+@media (max-width: 767px) {
+  .Toastify__toast-container {
+    min-width: 280px !important;
+    width: 100% !important;
+    padding: 0 20px !important;
+    right: 0 !important;
+    left: unset !important;
+  }
+
+  .Toastify__toast--default {
+    min-width: 280px !important;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .Toastify__toast {
+    padding: 16px !important;
   }
 }
 

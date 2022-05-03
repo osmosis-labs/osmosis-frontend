@@ -1,4 +1,5 @@
 import { FunctionComponent, ReactElement } from "react";
+import { useWindowSize } from "../../hooks";
 import { OverviewLabelValue } from "./overview-label-value";
 import { Button } from "../buttons/button";
 import { ButtonProps } from "../buttons/types";
@@ -35,52 +36,75 @@ export const Overview: FunctionComponent<Props> = ({
   primaryOverviewLabels,
   secondaryOverviewLabels,
   bgImageUrl,
-}) => (
-  <section
-    className="bg-background bg-right-bottom bg-contain bg-no-repeat "
-    style={{
-      backgroundImage: `url(${bgImageUrl})`,
-    }}
-  >
-    <div className="max-w-container mx-auto">
-      <div className="p-10">
-        <div className="flex items-center">
-          {typeof title === "string" ? (
-            <h5 className="text-white-full">{title}</h5>
-          ) : (
-            <>{title}</>
-          )}
-          {titleButtons?.slice(0, 2).map(({ label, onClick }, index) => (
-            <Button
-              key={index}
-              color="primary"
-              size="sm"
-              className="ml-6"
-              onClick={onClick}
-            >
-              {label}
-            </Button>
-          ))}
-        </div>
-        <div className="mt-6 flex items-center gap-20">
-          {primaryOverviewLabels
-            .slice(0, bgImageUrl ? 2 : 4)
-            .map((label, index) => (
-              <OverviewLabelValue key={index} {...label} />
-            ))}
-        </div>
-        {secondaryOverviewLabels && (
-          <div className="mt-6 flex items-center gap-20">
-            {secondaryOverviewLabels.slice(0, 3).map((label, index) => (
-              <OverviewLabelValue
-                prominence="secondary"
-                key={index}
-                {...label}
-              />
-            ))}
+}) => {
+  const { width, isMobile } = useWindowSize();
+
+  return (
+    <section
+      className="bg-background bg-right-bottom bg-contain bg-no-repeat"
+      style={
+        bgImageUrl
+          ? {
+              backgroundImage: `${
+                width < 1000
+                  ? "linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),"
+                  : ""
+              } url(${bgImageUrl})`,
+            }
+          : undefined
+      }
+    >
+      <div className="max-w-container mx-auto md:pt-24 pt-0">
+        <div className="md:p-4 p-10">
+          <div className="flex flex-wrap md:gap-5 gap-8 items-center place-content-start">
+            {typeof title === "string" ? (
+              isMobile ? (
+                <h6 className="text-white-full">{title}</h6>
+              ) : (
+                <h5 className="text-white-full">{title}</h5>
+              )
+            ) : (
+              <>{title}</>
+            )}
+            <div className="flex flex-wrap md:gap-2 gap-5">
+              {titleButtons?.slice(0, 2).map(({ label, onClick }, index) => (
+                <Button
+                  className="md:px-1"
+                  key={index}
+                  color="primary"
+                  size="sm"
+                  onClick={onClick}
+                >
+                  <span className="md:caption">{label}</span>
+                </Button>
+              ))}
+            </div>
           </div>
-        )}
+          <div className="mt-6 flex flex-wrap md:gap-9 gap-20">
+            {primaryOverviewLabels
+              .slice(0, bgImageUrl ? 2 : 4)
+              .map((label, index) => (
+                <OverviewLabelValue
+                  key={index}
+                  {...label}
+                  isMobile={isMobile}
+                />
+              ))}
+          </div>
+          {secondaryOverviewLabels && (
+            <div className="mt-6 flex flex-wrap md:gap-9 gap-20">
+              {secondaryOverviewLabels.slice(0, 3).map((label, index) => (
+                <OverviewLabelValue
+                  prominence="secondary"
+                  key={index}
+                  {...label}
+                  isMobile={isMobile}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};

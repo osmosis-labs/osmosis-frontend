@@ -1,12 +1,16 @@
 import "../styles/globals.css";
+import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 import type { AppProps } from "next/app";
+import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
 import { MainLayout } from "../components/layouts";
+import { Terms } from "../components/terms";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import { GetKeplrProvider } from "../hooks";
+import { IbcNotifier } from "../stores/ibc-notifier";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
@@ -16,6 +20,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <GetKeplrProvider>
       <StoreProvider>
+        <IbcNotifier />
+        <Terms />
         <MainLayout
           menus={[
             {
@@ -57,6 +63,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           ]}
         >
           <Component {...pageProps} />
+          <ToastContainer transition={Bounce} />
         </MainLayout>
       </StoreProvider>
     </GetKeplrProvider>

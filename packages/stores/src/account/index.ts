@@ -4,10 +4,10 @@ import deepmerge from "deepmerge";
 import {
   ChainGetter,
   IQueriesStore,
-  AccountSetBase,
+  AccountSetBaseSuper,
   CosmosAccount,
 } from "@keplr-wallet/stores";
-import { Coin, CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
 import { WeightedPoolEstimates } from "@osmosis-labs/math";
 import { Pool } from "@osmosis-labs/pools";
@@ -26,14 +26,8 @@ export const OsmosisAccount = {
       chainId: string
     ) => DeepPartial<OsmosisMsgOpts> | undefined;
     queriesStore: IQueriesStore<OsmosisQueries>;
-    wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
-    preTxEvents?: {
-      onBroadcastFailed?: (chainId: string, e?: Error) => void;
-      onBroadcasted?: (chainId: string, txHash: Uint8Array) => void;
-      onFulfill?: (chainId: string, tx: any) => void;
-    };
   }): (
-    base: AccountSetBase & CosmosAccount,
+    base: AccountSetBaseSuper & CosmosAccount,
     chainGetter: ChainGetter,
     chainId: string
   ) => OsmosisAccount {
@@ -60,7 +54,7 @@ export const OsmosisAccount = {
 
 export class OsmosisAccountImpl {
   constructor(
-    protected readonly base: AccountSetBase & CosmosAccount,
+    protected readonly base: AccountSetBaseSuper & CosmosAccount,
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
@@ -136,7 +130,7 @@ export class OsmosisAccountImpl {
         aminoMsgs: [msg],
         protoMsgs: [
           {
-            type_url: "/osmosis.gamm.v1beta1.MsgCreateBalancerPool",
+            typeUrl: "/osmosis.gamm.v1beta1.MsgCreateBalancerPool",
             value: osmosis.gamm.v1beta1.MsgCreateBalancerPool.encode({
               sender: msg.value.sender,
               poolParams: {
@@ -161,10 +155,9 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
-          // TODO: Refresh the pools list.
-
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
+          this.queries.queryGammPools.waitFreshResponse();
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
@@ -191,28 +184,30 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#join-pool
    * @param poolId Id of pool.
    * @param shareOutAmount LP share amount.
-   * @param maxSlippage Max tolerated slippage.
+   * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Memo attachment.
    * @param onFulfill Callback to handle tx fulfillment.
    */
   async sendJoinPoolMsg(
     poolId: string,
     shareOutAmount: string,
-    maxSlippage: string = "0",
+    maxSlippage: string = "2.5",
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
     const queries = this.queries;
+    const mkp = this.makeCoinPretty;
 
     await this.base.cosmos.sendMsgs(
       "joinPool",
       async () => {
-        await queries.queryGammPools.waitFreshResponse();
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
+
+        await queryPool.waitFreshResponse();
 
         const pool = queryPool.pool;
         if (!pool) {
@@ -226,7 +221,7 @@ export class OsmosisAccountImpl {
         const estimated = WeightedPoolEstimates.estimateJoinSwap(
           pool,
           pool.poolAssets,
-          this.makeCoinPretty,
+          mkp,
           shareOutAmount,
           this._msgOpts.joinPool.shareCoinDecimals
         );
@@ -272,7 +267,7 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              type_url: "/osmosis.gamm.v1beta1.MsgJoinPool",
+              typeUrl: "/osmosis.gamm.v1beta1.MsgJoinPool",
               value: osmosis.gamm.v1beta1.MsgJoinPool.encode({
                 sender: msg.value.sender,
                 poolId: Long.fromString(msg.value.poolId),
@@ -300,7 +295,7 @@ export class OsmosisAccountImpl {
               bal.fetch();
             });
 
-          this.queries.queryGammPools.fetch();
+          this.queries.queryGammPools.getPool(poolId)?.fetch();
         }
 
         onFulfill?.(tx);
@@ -309,17 +304,19 @@ export class OsmosisAccountImpl {
   }
 
   /**
+   * Join pool with only one asset.
+   *
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#join-swap-extern-amount-in
    * @param poolId Id of pool to swap within.
    * @param tokenIn Token being swapped in.
-   * @param maxSlippage Max tolerated slippage.
+   * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment.
    */
   async sendJoinSwapExternAmountInMsg(
     poolId: string,
     tokenIn: { currency: Currency; amount: string },
-    maxSlippage: string = "0",
+    maxSlippage: string = "2.5",
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
@@ -328,12 +325,13 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "joinPool",
       async () => {
-        await queries.queryGammPools.waitFreshResponse();
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
+
+        await queryPool.waitFreshResponse();
 
         const pool = queryPool.pool;
         if (!pool) {
@@ -343,9 +341,10 @@ export class OsmosisAccountImpl {
         const poolAsset = queryPool.getPoolAsset(
           tokenIn.currency.coinMinimalDenom
         );
+
         const estimated = WeightedPoolEstimates.estimateJoinSwapExternAmountIn(
           {
-            amount: poolAsset.amount.toDec().truncate(),
+            amount: new Int(poolAsset.amount.toCoin().amount),
             weight: poolAsset.weight.toDec().truncate(),
           },
           pool,
@@ -362,7 +361,7 @@ export class OsmosisAccountImpl {
           .truncate();
         const coin = new Coin(tokenIn.currency.coinMinimalDenom, amount);
 
-        const outRatio = new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100)));
+        const outRatio = new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))); // not outRatio
         const shareOutMinAmount = estimated.shareOutAmountRaw
           .toDec()
           .mul(outRatio)
@@ -385,7 +384,7 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              type_url: "/osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn",
+              typeUrl: "/osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn",
               value: osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn.encode({
                 sender: msg.value.sender,
                 poolId: Long.fromString(msg.value.poolId),
@@ -404,18 +403,13 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
-          // TODO: Refresh the pools list.
-
-          // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
-              // TODO: Explicitly refresh the share expected to be minted and provided to the pool.
               bal.fetch();
             });
-
-          this.queries.queryGammPools.fetch();
+          this.queries.queryGammPools.getPool(poolId)?.fetch();
         }
 
         onFulfill?.(tx);
@@ -425,6 +419,7 @@ export class OsmosisAccountImpl {
 
   /**
    * Perform multiple swaps that are routed through multiple pools, with a desired input token.
+   *
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-in
    * @param routes Desired pools to swap through.
    * @param tokenIn Token being swapped.
@@ -491,11 +486,11 @@ export class OsmosisAccountImpl {
                 swapFee: pool.swapFee,
                 inPoolAsset: {
                   ...inPoolAsset.amount.currency,
-                  amount: inPoolAsset.amount.toDec().truncate(),
+                  amount: new Int(inPoolAsset.amount.toCoin().amount),
                   weight: inPoolAsset.weight.toDec().truncate(),
                 },
                 outPoolAsset: {
-                  amount: outPoolAsset.amount.toDec().truncate(),
+                  amount: new Int(outPoolAsset.amount.toCoin().amount),
                   weight: outPoolAsset.weight.toDec().truncate(),
                 },
               },
@@ -509,7 +504,7 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              type_url: "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn",
+              typeUrl: "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn",
               value: osmosis.gamm.v1beta1.MsgSwapExactAmountIn.encode({
                 sender: msg.value.sender,
                 routes: msg.value.routes.map((route) => {
@@ -583,12 +578,13 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "swapExactAmountIn",
       async () => {
-        await queries.queryGammPools.waitFreshResponse();
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
+
+        await queryPool.waitFreshResponse();
 
         const pool = queryPool.pool;
         if (!pool) {
@@ -606,11 +602,11 @@ export class OsmosisAccountImpl {
             ...pool,
             inPoolAsset: {
               ...inPoolAsset.amount.currency,
-              amount: inPoolAsset.amount.toDec().truncate(),
+              amount: new Int(inPoolAsset.amount.toCoin().amount),
               weight: inPoolAsset.weight.toDec().truncate(),
             },
             outPoolAsset: {
-              amount: outPoolAsset.amount.toDec().truncate(),
+              amount: new Int(outPoolAsset.amount.toCoin().amount),
               weight: outPoolAsset.weight.toDec().truncate(),
             },
           },
@@ -625,7 +621,7 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              type_url: "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn",
+              typeUrl: "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn",
               value: osmosis.gamm.v1beta1.MsgSwapExactAmountIn.encode({
                 sender: msg.value.sender,
                 routes: msg.value.routes.map(
@@ -667,7 +663,7 @@ export class OsmosisAccountImpl {
             });
 
           // Refresh the pool
-          this.queries.queryGammPools.fetch();
+          this.queries.queryGammPools.getPool(poolId)?.fetch();
         }
 
         onFulfill?.(tx);
@@ -697,12 +693,13 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "swapExactAmountOut",
       async () => {
-        await queries.queryGammPools.waitFreshResponse();
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
+
+        await queryPool.waitFreshResponse();
 
         const pool = queryPool.pool;
         if (!pool) {
@@ -721,12 +718,12 @@ export class OsmosisAccountImpl {
             ...pool,
             inPoolAsset: {
               ...inPoolAsset.amount.currency,
-              amount: inPoolAsset.amount.toDec().truncate(),
+              amount: new Int(inPoolAsset.amount.toCoin().amount),
               weight: inPoolAsset.weight.toDec().truncate(),
             },
             outPoolAsset: {
-              amount: outPoolAsset.amount.toDec().truncate(),
-              weight: inPoolAsset.weight.toDec().truncate(),
+              amount: new Int(outPoolAsset.amount.toCoin().amount),
+              weight: outPoolAsset.weight.toDec().truncate(),
             },
           },
           this._msgOpts.swapExactAmountOut,
@@ -740,7 +737,7 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              type_url: "/osmosis.gamm.v1beta1.MsgSwapExactAmountOut",
+              typeUrl: "/osmosis.gamm.v1beta1.MsgSwapExactAmountOut",
               value: osmosis.gamm.v1beta1.MsgSwapExactAmountOut.encode({
                 sender: msg.value.sender,
                 routes: msg.value.routes.map(
@@ -780,6 +777,8 @@ export class OsmosisAccountImpl {
                 bal.fetch();
               }
             });
+
+          this.queries.queryGammPools.getPool(poolId)?.fetch();
         }
 
         onFulfill?.(tx);
@@ -791,28 +790,30 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#exit-pool
    * @param poolId Id of pool to exit.
    * @param shareInAmount LP shares to redeem.
-   * @param maxSlippage Max tolerated slippage.
+   * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment.
    */
   async sendExitPoolMsg(
     poolId: string,
     shareInAmount: string,
-    maxSlippage: string = "0",
+    maxSlippage: string = "2.5",
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
     const queries = this.queries;
+    const mkp = this.makeCoinPretty;
 
     await this.base.cosmos.sendMsgs(
       "exitPool",
       async () => {
-        await queries.queryGammPools.waitFreshResponse();
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
+
+        await queryPool.waitFreshResponse();
 
         const pool = queryPool.pool;
         if (!pool) {
@@ -821,7 +822,7 @@ export class OsmosisAccountImpl {
 
         const estimated = WeightedPoolEstimates.estimateExitSwap(
           pool,
-          this.makeCoinPretty,
+          mkp,
           shareInAmount,
           this._msgOpts.exitPool.shareCoinDecimals
         );
@@ -836,7 +837,7 @@ export class OsmosisAccountImpl {
               return {
                 denom: tokenOut.currency.coinMinimalDenom,
                 amount: tokenOut
-                  .toDec()
+                  .toDec() // TODO: confirm toDec() respects token dec count
                   .mul(new Dec(1).sub(maxSlippageDec))
                   .mul(
                     DecUtils.getTenExponentNInPrecisionRange(
@@ -869,7 +870,7 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              type_url: "/osmosis.gamm.v1beta1.MsgExitPool",
+              typeUrl: "/osmosis.gamm.v1beta1.MsgExitPool",
               value: osmosis.gamm.v1beta1.MsgExitPool.encode({
                 sender: msg.value.sender,
                 poolId: Long.fromString(msg.value.poolId),
@@ -888,14 +889,12 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
-          // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .fetch();
 
-          // Refresh the pool
-          this.queries.queryGammPools.fetch();
+          this.queries.queryGammPools.getPool(poolId)?.fetch();
         }
 
         onFulfill?.(tx);
@@ -948,7 +947,7 @@ export class OsmosisAccountImpl {
         aminoMsgs: [msg],
         protoMsgs: [
           {
-            type_url: "/osmosis.lockup.MsgLockTokens",
+            typeUrl: "/osmosis.lockup.MsgLockTokens",
             value: osmosis.lockup.MsgLockTokens.encode({
               owner: msg.value.owner,
               duration: {
@@ -1011,7 +1010,7 @@ export class OsmosisAccountImpl {
 
     const protoMsgs = aminoMsgs.map((msg) => {
       return {
-        type_url: "/osmosis.superfluid.MsgSuperfluidDelegate",
+        typeUrl: "/osmosis.superfluid.MsgSuperfluidDelegate",
         value: osmosis.superfluid.MsgSuperfluidDelegate.encode({
           sender: msg.value.sender,
           lockId: Long.fromString(msg.value.lock_id),
@@ -1093,7 +1092,7 @@ export class OsmosisAccountImpl {
         aminoMsgs: [msg],
         protoMsgs: [
           {
-            type_url: "/osmosis.superfluid.MsgLockAndSuperfluidDelegate",
+            typeUrl: "/osmosis.superfluid.MsgLockAndSuperfluidDelegate",
             value: osmosis.superfluid.MsgLockAndSuperfluidDelegate.encode({
               sender: msg.value.sender,
               coins: msg.value.coins,
@@ -1155,7 +1154,7 @@ export class OsmosisAccountImpl {
 
     const protoMsgs = msgs.map((msg) => {
       return {
-        type_url: "/osmosis.lockup.MsgBeginUnlocking",
+        typeUrl: "/osmosis.lockup.MsgBeginUnlocking",
         value: osmosis.lockup.MsgBeginUnlocking.encode({
           owner: msg.value.owner,
           ID: Long.fromString(msg.value.ID),
@@ -1243,7 +1242,7 @@ export class OsmosisAccountImpl {
       if (msg.type === this._msgOpts.beginUnlocking.type && msg.value.ID) {
         numBeginUnlocking++;
         return {
-          type_url: "/osmosis.lockup.MsgBeginUnlocking",
+          typeUrl: "/osmosis.lockup.MsgBeginUnlocking",
           value: osmosis.lockup.MsgBeginUnlocking.encode({
             owner: msg.value.owner,
             ID: Long.fromString(msg.value.ID),
@@ -1255,7 +1254,7 @@ export class OsmosisAccountImpl {
       ) {
         numSuperfluidUndelegate++;
         return {
-          type_url: "/osmosis.superfluid.MsgSuperfluidUndelegate",
+          typeUrl: "/osmosis.superfluid.MsgSuperfluidUndelegate",
           value: osmosis.superfluid.MsgSuperfluidUndelegate.encode({
             sender: msg.value.sender,
             lockId: Long.fromString(msg.value.lock_id),
@@ -1267,7 +1266,7 @@ export class OsmosisAccountImpl {
       ) {
         numSuperfluidUnbondLock++;
         return {
-          type_url: "/osmosis.superfluid.MsgSuperfluidUnbondLock",
+          typeUrl: "/osmosis.superfluid.MsgSuperfluidUnbondLock",
           value: osmosis.superfluid.MsgSuperfluidUnbondLock.encode({
             sender: msg.value.sender,
             lockId: Long.fromString(msg.value.lock_id),
@@ -1337,7 +1336,7 @@ export class OsmosisAccountImpl {
     return this.queriesStore.get(this.chainId).osmosis;
   }
 
-  protected makeCoinPretty(coin: Coin): CoinPretty {
+  protected makeCoinPretty = (coin: Coin): CoinPretty => {
     const currency = this.chainGetter
       .getChain(this.chainId)
       .findCurrency(coin.denom);
@@ -1345,7 +1344,7 @@ export class OsmosisAccountImpl {
       throw new Error("Unknown currency");
     }
     return new CoinPretty(currency, coin.amount);
-  }
+  };
 }
 
 export * from "./types";

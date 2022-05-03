@@ -47,7 +47,7 @@ export class ObservableQuerySuperfluidUndelegationsInner extends ObservableChain
 
       // synthetic_locks does not exist in v7.0.2 node due to a mistake. In this case, processing cannot be performed.
       if (!superfluidUndelegationLocks) {
-        console.log(
+        console.error(
           "there is no synthetic_locks from response. check your node's version"
         );
         return undefined;

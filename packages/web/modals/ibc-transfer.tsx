@@ -1,53 +1,105 @@
 import Image from "next/image";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useState, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { WalletStatus } from "@keplr-wallet/stores";
+import { Bech32Address } from "@keplr-wallet/cosmos";
 import { ModalBase, ModalBaseProps } from ".";
 import { useStore } from "../stores";
-import { IbcTransfer, useIbcTransfer } from "../hooks/use-ibc-transfer";
+import { IbcTransfer, useIbcTransfer, useWindowSize } from "../hooks";
 import { Button } from "../components/buttons";
 import { InputBox } from "../components/input";
 import { CheckBox } from "../components/control";
+import { Error } from "../components/alert";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
     const { currency, counterpartyChainId, isWithdraw } = props;
-    const { chainStore, queriesStore } = useStore();
+    const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
     const { chainId } = chainStore.osmosis;
+    const { isMobile } = useWindowSize();
 
     const [
       account,
       counterpartyAccount,
       amountConfig,
       inTransit,
-      _transfer,
+      transfer,
       customCounterpartyConfig,
     ] = useIbcTransfer(props);
     const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
     const [wasCustomWithdrawAddrEntered, setCustomWithdrawAddrEntered] =
-      useState(false); // address is locked in for modal lifecycle if use presses enter
+      useState(false); // address is locked in for modal lifecycle if user presses enter
     const [didVerifyWithdrawRisk, setDidVerifyWithdrawRisk] = useState(false);
     const isCustomWithdrawValid =
+      !customCounterpartyConfig ||
       customCounterpartyConfig?.bech32Address === "" || // if not changed, it's valid since it's from Keplr
-      (customCounterpartyConfig?.isValid && wasCustomWithdrawAddrEntered);
+      (customCounterpartyConfig.isValid && wasCustomWithdrawAddrEntered);
+
+    // Mobile only - copy to clipboard
+    const [showFromCopied, setShowFromCopied] = useState(false);
+    const [showToCopied, setShowToCopied] = useState(false);
+    useEffect(() => {
+      if (showFromCopied) {
+        setTimeout(() => {
+          setShowFromCopied(false);
+        }, 5000);
+      }
+      if (showToCopied) {
+        setTimeout(() => {
+          setShowToCopied(false);
+        }, 5000);
+      }
+    }, [showFromCopied, showToCopied, setShowFromCopied, setShowToCopied]);
 
     return (
       <ModalBase {...props}>
         <div className="text-white-high">
-          <div className="mb-5 md:mb-10 flex justify-between items-center w-full">
-            <h5 className="text-lg md:text-xl">
-              {isWithdraw ? "Withdraw" : "Deposit"} IBC Asset
+          <div className="relative md:mb-5 mb-10 flex items-center w-full">
+            <h5 className="md:text-lg text-xl">
+              {isWithdraw ? "Withdraw" : "Deposit"}
+              {!isMobile && " IBC Asset"}
             </h5>
+            {(showFromCopied || showToCopied) && (
+              <span className="absolute inset-[45%] -top-0 w-fit h-fit rounded-full px-1.5 subtitle2 border-2 border-primary-200 bg-primary-200/60">
+                Copied!
+              </span>
+            )}
           </div>
-          <h6 className="mb-3 md:mb-4 text-base md:text-lg">IBC Transfer</h6>
+          <h6 className="md:mb-3 mb-4 md:text-base text-lg">IBC Transfer</h6>
           <section className="flex flex-col items-center">
-            <div className="w-full flex-1 p-3 md:p-4 border border-white-faint rounded-2xl">
+            <div className="w-full flex-1 md:p-3 p-4 border border-white-faint rounded-2xl">
               <p className="text-white-high">From</p>
-              <p className="text-white-disabled truncate overflow-ellipsis">
-                {isWithdraw
-                  ? account.bech32Address
-                  : counterpartyAccount.bech32Address}
-              </p>
+              <div
+                className="flex items-center gap-3"
+                onClick={() => {
+                  if (isMobile) {
+                    navigator.clipboard
+                      .writeText(
+                        isWithdraw
+                          ? account.bech32Address
+                          : counterpartyAccount.bech32Address
+                      )
+                      .then(() => setShowFromCopied(true));
+                  }
+                }}
+              >
+                <p className="text-white-disabled truncate overflow-ellipsis">
+                  {Bech32Address.shortenAddress(
+                    isWithdraw
+                      ? account.bech32Address
+                      : counterpartyAccount.bech32Address,
+                    isMobile ? 20 : 100
+                  )}
+                </p>
+                {isMobile && (
+                  <Image
+                    alt="copy"
+                    src="/icons/copy.svg"
+                    height={20}
+                    width={20}
+                  />
+                )}
+              </div>
             </div>
             <div className="flex justify-center items-center w-10 my-2">
               <Image
@@ -57,19 +109,21 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                 width={20}
               />
             </div>
-            <div className="w-full flex-1 p-3 md:p-4 border border-white-faint rounded-2xl">
+            <div className="w-full flex-1 md:p-3 p-4 border border-white-faint rounded-2xl">
               <p className="text-white-high">To</p>
               <div className="flex gap-2 place-content-between">
-                <div className="w-full flex flex-col gap-2">
+                <div className="w-full flex flex-col gap-5">
                   {isEditingWithdrawAddr && (
-                    <div className="flex gap-3 place-content-evenly border border-secondary-200 rounded-xl p-1 mt-2">
-                      <Image
-                        alt="warning"
-                        src="/icons/warning.svg"
-                        height={16}
-                        width={16}
-                      />
-                      <p className="text-sm my-auto">
+                    <div className="flex md:gap-1 gap-3 place-content-evenly border border-secondary-200 rounded-xl p-1 mt-2">
+                      <div className="flex items-center w-[16px] shrink-0">
+                        <Image
+                          alt="warning"
+                          src="/icons/warning.svg"
+                          height={16}
+                          width={16}
+                        />
+                      </div>
+                      <p className="md:text-xs text-sm my-auto">
                         Warning: Withdrawing to central exchange address will
                         result in loss of funds.
                       </p>
@@ -95,25 +149,54 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                       ]}
                     />
                   ) : (
-                    <p className="text-white-disabled truncate overflow-ellipsis">
-                      {isWithdraw
-                        ? wasCustomWithdrawAddrEntered &&
-                          customCounterpartyConfig
-                          ? customCounterpartyConfig.bech32Address
-                          : counterpartyAccount.bech32Address
-                        : account.bech32Address}
-                    </p>
+                    <div
+                      className="flex items-center gap-3"
+                      onClick={() => {
+                        if (isMobile) {
+                          navigator.clipboard
+                            .writeText(
+                              isWithdraw
+                                ? wasCustomWithdrawAddrEntered &&
+                                  customCounterpartyConfig
+                                  ? customCounterpartyConfig.bech32Address
+                                  : counterpartyAccount.bech32Address
+                                : account.bech32Address
+                            )
+                            .then(() => setShowToCopied(true));
+                        }
+                      }}
+                    >
+                      <p className="text-white-disabled truncate overflow-ellipsis">
+                        {Bech32Address.shortenAddress(
+                          isWithdraw
+                            ? wasCustomWithdrawAddrEntered &&
+                              customCounterpartyConfig
+                              ? customCounterpartyConfig.bech32Address
+                              : counterpartyAccount.bech32Address
+                            : account.bech32Address,
+                          isMobile ? 20 : 100
+                        )}
+                      </p>
+                      {isMobile && (
+                        <Image
+                          alt="copy"
+                          src="/icons/copy.svg"
+                          height={20}
+                          width={20}
+                        />
+                      )}
+                    </div>
                   )}
-                  <div className="flex place-content-end">
+                  <div className="flex items-center place-content-end">
                     {isEditingWithdrawAddr && (
                       <CheckBox
-                        className="mt-0.5 after:!bg-transparent after:!border-2 after:!border-white-full"
+                        className="pt-0.5 after:!bg-transparent after:!border-2 after:!border-white-full"
                         isOn={didVerifyWithdrawRisk}
                         onToggle={() => {
                           setDidVerifyWithdrawRisk(!didVerifyWithdrawRisk);
                         }}
                       >
-                        <span className="caption ml-2">
+                        <span className="caption md:text-xs text-sm md:ml-1 ml-2">
                           I verify I am not sending to an exchange address.
                         </span>
                       </CheckBox>
@@ -124,7 +207,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   !isEditingWithdrawAddr &&
                   !wasCustomWithdrawAddrEntered && (
                     <Button
-                      className="h-6 text-caption"
+                      className="h-6 !w-fit text-caption"
                       size="xs"
                       color="primary"
                       type="outline"
@@ -143,11 +226,11 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               </div>
             </div>
           </section>
-          <h6 className="text-base md:text-lg mt-7">
+          <h6 className="md:text-base text-lg mt-7">
             Amount To {isWithdraw ? "Withdraw" : "Deposit"}
           </h6>
-          <div className="mt-3 md:mt-4 w-full p-0 md:p-5 border-0 md:border border-secondary-50 border-opacity-60 rounded-2xl">
-            <p className="text-sm md:text-base mb-2">
+          <div className="md:mt-3 mt-4 w-full md:p-0 p-5 md:border-0 border border-secondary-50 border-opacity-60 rounded-2xl">
+            <p className="md:text-sm text-base mb-2">
               Available balance:{" "}
               <span className="text-primary-50">
                 {(isWithdraw
@@ -185,27 +268,56 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               ]}
             />
           </div>
-          <div className="w-full mt-6 md:mt-9 flex items-center justify-center">
+          <div className="flex items-center md:mt-1 mt-2">
+            {amountConfig.error && (
+              <Error className="mx-auto" message={amountConfig.error.message} />
+            )}
+          </div>
+          <div className="w-full md:mt-6 mt-9 flex items-center justify-center">
             {!(account.walletStatus === WalletStatus.Loaded) ? (
-              <Button onClick={() => account.init()}>
-                <span>Connect Wallet</span>
+              <Button
+                className="md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl"
+                onClick={() => account.init()}
+              >
+                <h6 className="flex items-center gap-3">
+                  <Image
+                    alt="wallet"
+                    src="/icons/wallet.svg"
+                    height={24}
+                    width={24}
+                  />
+                  Connect Wallet
+                </h6>
               </Button>
             ) : (
               <Button
-                className="w-full md:w-2/3 p-4 md:p-6 bg-primary-200 rounded-2xl flex items-center justify-center hover:opacity-75 disabled:opacity-50"
+                className="md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl"
                 disabled={
                   !account.isReadyToSendTx ||
                   !counterpartyAccount.isReadyToSendTx ||
+                  account.txTypeInProgress !== "" ||
                   amountConfig.error != undefined ||
                   inTransit ||
                   !isCustomWithdrawValid
                 }
                 loading={inTransit}
-                onClick={() => {
-                  // TODO: do transfer from fn from hoook
-                }}
+                onClick={() =>
+                  transfer(
+                    (txFullfillEvent) => {
+                      ibcTransferHistoryStore.pushPendingHistory(
+                        txFullfillEvent
+                      );
+                      props.onRequestClose();
+                    },
+                    (txBroadcastEvent) => {
+                      ibcTransferHistoryStore.pushUncommitedHistory(
+                        txBroadcastEvent
+                      );
+                    }
+                  )
+                }
               >
-                <h6 className="text-base md:text-lg">
+                <h6 className="md:text-base text-lg">
                   {isWithdraw ? "Withdraw" : "Deposit"}
                 </h6>
               </Button>

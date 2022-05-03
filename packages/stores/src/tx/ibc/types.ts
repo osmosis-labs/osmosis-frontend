@@ -1,4 +1,3 @@
-import { AppCurrency } from "@keplr-wallet/types";
 import {
   AccountSetBase,
   CosmosAccount,
@@ -24,20 +23,3 @@ export type IbcTransferCounterparty = Omit<
   /** If provided, will override the counterparty account address. */
   bech32AddressOverride?: string;
 };
-
-export interface IbcBroadcastEvent {
-  txHash: string;
-  sourceChainId: string;
-  destChainId: string;
-  amount: { amount: string; currency: AppCurrency };
-  sender: string;
-  recipient: string;
-}
-
-export interface IbcFullfillmentEvent extends IbcBroadcastEvent {
-  sourceChannelId: string;
-  destChannelId: string;
-  sequence: string;
-  timeoutHeight?: string;
-  timeoutTimestamp?: string;
-}

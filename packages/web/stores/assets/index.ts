@@ -73,7 +73,7 @@ export class ObservableAssets {
   get ibcBalances(): (IBCBalance | IBCCW20ContractBalance)[] {
     return this.ibcAssets.map((ibcAsset) => {
       const chainInfo = this.chainStore.getChain(ibcAsset.counterpartyChainId);
-      const ibcDenom = makeIBCMinimalDenom(
+      let ibcDenom = makeIBCMinimalDenom(
         ibcAsset.sourceChannelId,
         ibcAsset.coinMinimalDenom
       );
@@ -92,8 +92,16 @@ export class ObservableAssets {
         );
       }
 
-      // TODO: support multihop IBC denoms-
-      // Reimplement: https://github.com/osmosis-labs/osmosis-frontend/pull/275/
+      // If this is a multihop ibc, need to special case because the denom on osmosis
+      // isn't H(source_denom), but rather H(ibc_path)
+      let sourceDenom = "";
+      if (ibcAsset.ibcTransferPathDenom) {
+        ibcDenom = makeIBCMinimalDenom(
+          ibcAsset.sourceChannelId,
+          ibcAsset.ibcTransferPathDenom
+        );
+        sourceDenom = ibcAsset.coinMinimalDenom;
+      }
 
       const balance = this.queries.queryBalances
         .getQueryBech32Address(this.account.bech32Address)
@@ -102,7 +110,7 @@ export class ObservableAssets {
           coinGeckoId: originCurrency.coinGeckoId,
           coinImageUrl: originCurrency.coinImageUrl,
           coinDenom: originCurrency.coinDenom,
-          coinMinimalDenom: ibcDenom,
+          coinMinimalDenom: sourceDenom !== "" ? "" : ibcDenom,
           paths: [
             {
               portId: "transfer",
@@ -110,7 +118,10 @@ export class ObservableAssets {
             },
           ],
           originChainId: chainInfo.chainId,
-          originCurrency,
+          originCurrency:
+            sourceDenom !== ""
+              ? { ...originCurrency, coinMinimalDenom: sourceDenom }
+              : originCurrency,
         });
 
       const ibcBalance: IBCBalance = {

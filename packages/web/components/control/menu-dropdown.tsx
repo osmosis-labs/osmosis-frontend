@@ -25,7 +25,7 @@ export const MenuDropdown: FunctionComponent<Props> = ({
 }) => (
   <div
     className={classNames(
-      "absolute flex flex-col w-36 bg-card rounded-lg border border-white-faint select-none",
+      "absolute flex flex-col w-36 bg-card rounded-lg border border-white-faint select-none z-50",
       {
         hidden: !isOpen,
         "right-0": openDropdownHDirection === "left",

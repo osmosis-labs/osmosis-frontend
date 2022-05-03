@@ -5,11 +5,10 @@ import { ToggleProps } from "./types";
 
 export const Switch: FunctionComponent<
   ToggleProps & Disableable & CustomClasses
-> = ({ isOn, onToggle, disabled = false, className }) => (
-  <label htmlFor="toggle-switch">
+> = ({ isOn, onToggle, disabled = false, className, children }) => (
+  <label className="flex items-center gap-2 caption">
     <input
       type="checkbox"
-      id="toggle-switch"
       className={classNames(
         "cursor-pointer h-8 w-12 rounded-full appearance-none bg-iconDefault transition duration-200 relative",
         "after:h-6 after:w-6 after:rounded-full after:bg-white-high after:absolute after:left-1 after:top-1 after:transform after:scale-110 after:transition after:duration-200", // dot
@@ -23,5 +22,6 @@ export const Switch: FunctionComponent<
       disabled={disabled}
       onChange={(e) => onToggle(e.target.checked)}
     />
+    {children}
   </label>
 );

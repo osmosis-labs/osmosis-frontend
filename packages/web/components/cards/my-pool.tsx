@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { ObservablePool } from "@osmosis-labs/stores";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { PoolCardBase, PoolCardIconBackgroundColors } from "./base";
@@ -9,7 +9,7 @@ import { StatLabelValue } from "./stat-label-value";
 import { useRouter } from "next/router";
 
 export const MyPoolCard: FunctionComponent<{
-  pool: ObservablePool;
+  pool: ObservableQueryPool;
 }> = observer(({ pool }) => {
   const { chainStore, queriesStore, priceStore, accountStore } = useStore();
 
@@ -46,7 +46,7 @@ export const MyPoolCard: FunctionComponent<{
       subtitle={pool.poolAssets
         .map((asset) => asset.amount.currency.coinDenom)
         .join("/")}
-      icon={<Image src="/icons/OSMO.svg" width={40} height={40} />}
+      icon={<Image alt="OSMO" src="/icons/OSMO.svg" width={40} height={40} />}
       iconBackgroundColor={
         PoolCardIconBackgroundColors[
           deterministicInteger % PoolCardIconBackgroundColors.length
