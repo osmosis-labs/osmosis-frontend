@@ -1,9 +1,9 @@
-import type { NextPage } from "next";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../stores";
-import { TradeClipboard } from "../components/trade-clipboard";
+import type { NextPage } from "next";
+import { useEffect, useRef, useState } from "react";
 import { ProgressiveSvgImage } from "../components/progressive-svg-image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { TradeClipboard } from "../components/trade-clipboard";
+import { useStore } from "../stores";
 
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore } = useStore();
