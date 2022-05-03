@@ -7,3 +7,5 @@ export * from "./use-slippage-config";
 export * from "./use-ibc-transfer";
 export * from "./use-amount-config";
 export * from "./use-fake-fee-config";
+export * from "./use-slippage-config";
+export * from "./use-trade-token-in-config";

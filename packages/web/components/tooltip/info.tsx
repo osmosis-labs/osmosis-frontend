@@ -16,10 +16,7 @@ export const InfoTooltip: FunctionComponent<TooltipProps & CustomClasses> = ({
     trigger={trigger ?? "click"}
   >
     <div
-      className={classNames(
-        "inline cursor-pointer pl-1 align-middle",
-        className
-      )}
+      className={classNames("flex cursor-pointer pl-1 align-middle", className)}
       onClick={(e) => e.stopPropagation()}
     >
       <Image alt="info" src="/icons/info.svg" height={16} width={16} />

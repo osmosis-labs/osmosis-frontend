@@ -485,8 +485,6 @@ export class OsmosisAccountImpl {
               tokenOutCurrency.coinMinimalDenom
             );
 
-            console.log(pool.swapFee);
-
             return {
               pool: {
                 id: pool.id,

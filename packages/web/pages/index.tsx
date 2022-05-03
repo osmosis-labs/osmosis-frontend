@@ -21,6 +21,7 @@ const Home: NextPage = observer(function () {
     undefined
   );
 
+  // TODO: Use useWindowSize() hook
   useEffect(() => {
     // There seems to be no resize event for each element.
     // Instead, the container size is calculated each time the window is resized.

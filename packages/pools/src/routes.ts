@@ -72,7 +72,8 @@ export class OptimizedRoutes {
         });
       } else {
         if (permitIntermediate && (hasTokenIn || hasTokenOut)) {
-          for (const denom of pool.poolAssetDenoms) {
+          for (const poolAsset of pool.poolAssets) {
+            const denom = poolAsset.denom;
             if (denom !== tokenInDenom && denom !== tokenOutDenom) {
               if (hasTokenIn) {
                 const candiateData =

@@ -12,6 +12,8 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import AutosizeInput from "react-input-autosize";
 import { Currency } from "@keplr-wallet/types";
+import Image from "next/image";
+import { InfoTooltip } from "../tooltip";
 
 export const TradeClipboard = observer<
   {
@@ -122,18 +124,22 @@ export const TradeClipboard = observer<
                 setIsSettingOpen(!isSettingOpen);
               }}
             >
-              <img
-                className="w-11 h-11"
+              <Image
+                width={44}
+                height={44}
                 src={`/icons/hexagon-border${
                   isSettingOpen ? "-selected" : ""
                 }.svg`}
                 alt="hexagon border icon"
               />
-              <img
-                className="w-5 h-5 absolute inset-1/2 -translate-x-1/2 -translate-y-1/2"
-                src={`/icons/setting${isSettingOpen ? "-selected" : ""}.svg`}
-                alt="setting icon"
-              />
+              <div className="w-5 h-5 absolute inset-1/2 -translate-x-1/2 -translate-y-1/2">
+                <Image
+                  width={20}
+                  height={20}
+                  src={`/icons/setting${isSettingOpen ? "-selected" : ""}.svg`}
+                  alt="setting icon"
+                />
+              </div>
             </button>
             {isSettingOpen && (
               <div
@@ -147,14 +153,15 @@ export const TradeClipboard = observer<
                   <div className="body2 text-white-disabled mr-2">
                     Slippage tolerance
                   </div>
-                  <Tippy
+                  <InfoTooltip content="Your transaction will revert if the price changes unfavorably by more than this percentage." />
+                  {/* <Tippy
                     content="Your transaction will revert if the price changes unfavorably by more than this percentage."
                     className="bg-wireframes-darkGrey border border-white-faint p-2 rounded-lg text-white-high text-sm"
                   >
                     <div className="flex items-center justify-center bg-enabledGold rounded-full text-[0.625rem] text-color w-3.5 h-3.5 cursor-pointer">
                       !
                     </div>
-                  </Tippy>
+                  </Tippy> */}
                 </div>
 
                 <ul className="flex gap-x-3 w-full mt-3">
@@ -313,16 +320,20 @@ export const TradeClipboard = observer<
                 tradeTokenInConfig.switchInAndOut();
               }}
             >
-              <img
-                className="w-12 h-12"
+              <Image
+                width={48}
+                height={48}
                 src="/icons/hexagon-border.svg"
                 alt="hexagon border icon"
               />
-              <img
-                className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6"
-                src="/icons/switch.svg"
-                alt="switch icon"
-              />
+              <div className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6">
+                <Image
+                  width={24}
+                  height={24}
+                  src="/icons/switch.svg"
+                  alt="switch icon"
+                />
+              </div>
             </button>
 
             <div className="bg-surface rounded-2xl px-4 pt-3 pb-4 mt-[1.125rem] relative">

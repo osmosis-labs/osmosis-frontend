@@ -156,7 +156,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
             </div>
             <div className="flex items-center place-content-between">
               <span className="subtitle1">Estimated Superfluid Delegation</span>
-              <span className="body1 text-white-mid">
+              <span className="flex items-center body1 text-white-mid">
                 ~
                 {queries.osmosis.querySuperfluidOsmoEquivalent
                   .calculateOsmoEquivalent(availableBondAmount)
@@ -164,7 +164,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
                   .trim(true)
                   .toString()}
                 <InfoTooltip
-                  className="ml-2"
+                  className="ml-1"
                   content="The value of this delegation fluctuates and is estimated based on the amount of OSMO in the pool."
                 />
               </span>

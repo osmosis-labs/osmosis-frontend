@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { AmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
 import { action, computed, makeObservable, observable, override } from "mobx";
 import { AppCurrency } from "@keplr-wallet/types";
@@ -134,8 +133,8 @@ export class TradeTokenInConfig extends AmountConfig {
     // Get all coin denom in the pools.
     const coinDenomSet = new Set<string>();
     for (const pool of this.pools) {
-      for (const poolAssetDenom of pool.poolAssetDenoms) {
-        coinDenomSet.add(poolAssetDenom);
+      for (const poolAsset of pool.poolAssets) {
+        coinDenomSet.add(poolAsset.denom);
       }
     }
 
@@ -291,33 +290,3 @@ export class TradeTokenInConfig extends AmountConfig {
     };
   }
 }
-
-// CONTRACT: Use with `observer`
-// If the reference of the pools changes,
-// it will be recalculated without memorization for every render.
-// Be sure to pass the pools argument by memorizing it.
-export const useTradeTokenInConfig = (
-  chainGetter: ChainGetter,
-  queriesStore: IQueriesStore,
-  chainId: string,
-  sender: string,
-  feeConfig: IFeeConfig | undefined,
-  pools: Pool[]
-) => {
-  const [config] = useState(
-    () =>
-      new TradeTokenInConfig(
-        chainGetter,
-        queriesStore,
-        chainId,
-        sender,
-        feeConfig,
-        pools
-      )
-  );
-  config.setChain(chainId);
-  config.setSender(sender);
-  config.setPools(pools);
-
-  return config;
-};

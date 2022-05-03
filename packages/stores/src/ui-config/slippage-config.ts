@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-export class SlippageConfig {
+export class ObservableSlippageConfig {
   static readonly defaultSelectableSlippages: ReadonlyArray<Dec> = [
     // 1%
     new Dec("0.01"),
@@ -15,7 +14,7 @@ export class SlippageConfig {
 
   @observable.shallow
   protected _selectableSlippages: ReadonlyArray<Dec> =
-    SlippageConfig.defaultSelectableSlippages;
+    ObservableSlippageConfig.defaultSelectableSlippages;
 
   @observable
   protected _selectedIndex: number = 0;
@@ -139,10 +138,3 @@ export class SlippageConfig {
     return;
   });
 }
-
-// CONTRACT: Use with `observer`
-export const useSlippageConfig = () => {
-  const [config] = useState(() => new SlippageConfig());
-
-  return config;
-};

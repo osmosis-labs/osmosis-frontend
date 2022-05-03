@@ -16,7 +16,6 @@ export interface Pool {
     amount: Int;
     weight: Int;
   }[];
-  get poolAssetDenoms(): string[];
   getPoolAsset(denom: string): {
     denom: string;
     amount: Int;
