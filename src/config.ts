@@ -2478,6 +2478,43 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://scan.carbon.network/transaction/{txHash}?net=main',
 	},
 	{
+		rpc: 'https://rpc.cerberus.zone:26657',
+		rest: 'https://api.cerberus.zone:1317',
+		chainId: 'cerberus-chain-1',
+		chainName: 'Cerberus',
+		stakeCurrency: {
+			coinDenom: 'CRBRUS',
+			coinMinimalDenom: 'ucrbrus',
+			coinDecimals: 6,
+			coinGeckoId: 'cerberus-2',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('cerberus'),
+		currencies: [
+			{
+				coinDenom: 'CRBRUS',
+				coinMinimalDenom: 'ucrbrus',
+				coinDecimals: 6,
+				coinGeckoId: 'cerberus-2',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'CRBRUS',
+				coinMinimalDenom: 'ucrbrus',
+				coinDecimals: 6,
+				coinGeckoId: 'cerberus-2',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://skynetexplorers.com/Cerberus/tx/{txHash}',
+	},
+	{
 		rpc: 'https://rpc-axelar.keplr.app',
 		rest: 'https://lcd-axelar.keplr.app',
 		chainId: 'axelar-dojo-1',
