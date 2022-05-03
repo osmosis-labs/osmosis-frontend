@@ -12,9 +12,11 @@ import { useKeplr } from "./hook";
  *  If the user connects Keplr, your modal will appear after. If the user closes the connection
  *  selection modal, your modal will no longer appear, even if they connect Keplr later.
  *
- * @param actionButtonProps Props for the user action `<Button />` that will be replaced with a "Connect Wallet" button.
+ * @param actionButtonProps Props for the user action `<Button />` that may be replaced with a "Connect Wallet" button which adopts these styles.
  * @param onRequestClose Required callback to request this modal to be popped from `react-modal`. Use to set modal state to `null`/`false`.
- * @returns {showModalBase, accountActionButton}
+ * @returns
+ *   * `showModalBase` - Flag for whether the calling component should be shown. `ModalBase` will likely take on these props: `<ModalBase {...props} isOpen={props.isOpen && showModalBase} />`
+ *   * `accountActionButton` - JSXElement containing the wrapped action `<Button />` with the given button props (styles). May be a "Connect Account" button if Keplr not connected. Accepts children.
  */
 export function useConnectWalletModalRedirect(
   actionButtonProps: ComponentProps<typeof Button>,
@@ -42,15 +44,15 @@ export function useConnectWalletModalRedirect(
 
   // prevent ibc-transfer dialog from randomly appearing if they connect wallet later
   useEffect(() => {
-    if (keplr) {
+    if (!showSelf) {
       // getKeplr resolves to an exception when connection-selection modal is closed
+      console.log("getKeplr");
       keplr.getKeplr().catch(() => {
-        // the user set their preference: don't connect
-        onRequestClose?.();
+        onRequestClose();
       });
     }
     // eslint-disable-next-line
-  }, []);
+  }, [showSelf]);
 
   return {
     showModalBase: showSelf,
