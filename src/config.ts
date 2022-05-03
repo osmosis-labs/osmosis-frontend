@@ -571,7 +571,11 @@ export const ExtraGaugeInPool: {
 	],
 	'625': [
 		{
-			gaugeId: '2511',
+			gaugeId: '3327',
+			denom: 'ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44',
+		},
+		{
+			gaugeId: '3328',
 			denom: 'ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44',
 		},
 	],
