@@ -969,6 +969,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'swth',
 	},
+	{
+		counterpartyChainId: 'cerberus-chain-1',
+		sourceChannelId: 'channel-212',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'ucrbrus',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
