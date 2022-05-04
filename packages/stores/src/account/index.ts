@@ -1038,7 +1038,7 @@ export class OsmosisAccountImpl {
             .getQueryBech32Address(this.base.bech32Address)
             .fetch();
 
-          queries.osmosis.querySuperfluidDelegations
+          queries.osmosis?.querySuperfluidDelegations
             .getQuerySuperfluidDelegations(this.base.bech32Address)
             .fetch();
         }
@@ -1115,12 +1115,14 @@ export class OsmosisAccountImpl {
             .fetch();
 
           // Refresh the locked coins
-          queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
-          queries.osmosis.queryAccountLocked
+          queries.osmosis?.queryLockedCoins
+            .get(this.base.bech32Address)
+            .fetch();
+          queries.osmosis?.queryAccountLocked
             .get(this.base.bech32Address)
             .fetch();
 
-          queries.osmosis.querySuperfluidDelegations
+          queries.osmosis?.querySuperfluidDelegations
             .getQuerySuperfluidDelegations(this.base.bech32Address)
             .fetch();
         }
@@ -1301,18 +1303,20 @@ export class OsmosisAccountImpl {
             .fetch();
 
           // Refresh the locked coins
-          queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
-          queries.osmosis.queryUnlockingCoins
+          queries.osmosis?.queryLockedCoins
             .get(this.base.bech32Address)
             .fetch();
-          queries.osmosis.queryAccountLocked
+          queries.osmosis?.queryUnlockingCoins
+            .get(this.base.bech32Address)
+            .fetch();
+          queries.osmosis?.queryAccountLocked
             .get(this.base.bech32Address)
             .fetch();
 
-          queries.osmosis.querySuperfluidDelegations
+          queries.osmosis?.querySuperfluidDelegations
             .getQuerySuperfluidDelegations(this.base.bech32Address)
             .fetch();
-          queries.osmosis.querySuperfluidUndelegations
+          queries.osmosis?.querySuperfluidUndelegations
             .getQuerySuperfluidDelegations(this.base.bech32Address)
             .fetch();
         }
@@ -1332,7 +1336,8 @@ export class OsmosisAccountImpl {
   }
 
   protected get queries() {
-    return this.queriesStore.get(this.chainId).osmosis;
+    // eslint-disable-next-line
+    return this.queriesStore.get(this.chainId).osmosis!;
   }
 
   protected makeCoinPretty = (coin: Coin): CoinPretty => {

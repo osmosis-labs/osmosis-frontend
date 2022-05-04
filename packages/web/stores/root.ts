@@ -100,7 +100,7 @@ export class RootStore {
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
-      OsmosisQueries.use()
+      OsmosisQueries.use(this.chainStore.osmosis.chainId)
     );
 
     this.accountStore = new AccountStore(

@@ -44,7 +44,7 @@ export const AllPoolsTableSet: FunctionComponent<{
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 
   const { chainId } = chainStore.osmosis;
-  const queriesOsmosis = queriesStore.get(chainId).osmosis;
+  const queriesOsmosis = queriesStore.get(chainId).osmosis!;
   const queriesExternal = queriesExternalStore.get();
   const account = accountStore.getAccount(chainId);
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;

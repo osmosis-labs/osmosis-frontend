@@ -43,7 +43,7 @@ const Pool: FunctionComponent = observer(() => {
   const { chainId } = chainStore.osmosis;
 
   const queryCosmos = queriesStore.get(chainId).cosmos;
-  const queryOsmosis = queriesStore.get(chainId).osmosis;
+  const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
   const pool = queryOsmosis.queryGammPools.getPool(poolId as string);
   const { bech32Address } = accountStore.getAccount(chainId);

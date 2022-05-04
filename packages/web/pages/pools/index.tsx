@@ -40,7 +40,7 @@ const Pools: NextPage = observer(function () {
   const { isMobile } = useWindowSize();
 
   const { chainId } = chainStore.osmosis;
-  const queryOsmosis = queriesStore.get(chainId).osmosis;
+  const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const queriesExternal = queriesExternalStore.get();
 
   const account = accountStore.getAccount(chainId);

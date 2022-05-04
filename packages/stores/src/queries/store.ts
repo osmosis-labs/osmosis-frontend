@@ -31,11 +31,13 @@ import {
 } from "./superfluid-pools";
 
 export interface OsmosisQueries {
-  osmosis: OsmosisQueriesImpl;
+  osmosis?: OsmosisQueriesImpl;
 }
 
 export const OsmosisQueries = {
-  use(): (
+  use(
+    osmosisChainId: string
+  ): (
     queriesSetBase: QueriesSetBase,
     kvStore: KVStore,
     chainId: string,
@@ -48,12 +50,15 @@ export const OsmosisQueries = {
       chainGetter: ChainGetter
     ) => {
       return {
-        osmosis: new OsmosisQueriesImpl(
-          queriesSetBase,
-          kvStore,
-          chainId,
-          chainGetter
-        ),
+        osmosis:
+          chainId === osmosisChainId
+            ? new OsmosisQueriesImpl(
+                queriesSetBase,
+                kvStore,
+                chainId,
+                chainGetter
+              )
+            : undefined,
       };
     };
   },

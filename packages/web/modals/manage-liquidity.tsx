@@ -17,8 +17,8 @@ import {
 
 export interface Props extends ModalBaseProps {
   addLiquidityConfig: ObservableAddLiquidityConfig;
-  getChainNetworkName?: (chainId: string) => string;
-  getFiatValue?: (coin: CoinPretty) => PricePretty;
+  getChainNetworkName?: (coinDenom: string) => string | undefined;
+  getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   removeLiquidityConfig: ObservableRemoveLiquidityConfig;
   onAddLiquidity: () => void;
   onRemoveLiquidity: () => void;
@@ -55,8 +55,6 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
         },
         props.onRequestClose
       );
-
-    console.log({ showModalBase });
 
     return (
       <ModalBase {...props} isOpen={props.isOpen && showModalBase}>

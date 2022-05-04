@@ -30,7 +30,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
 
     const { chainId } = chainStore.osmosis;
     const queryExternal = queriesExternalStore.get();
-    const queryOsmosis = queriesStore.get(chainId).osmosis;
+    const queryOsmosis = queriesStore.get(chainId).osmosis!;
     const account = accountStore.getAccount(chainId);
 
     const externalIncentivizedPools = Object.keys(
