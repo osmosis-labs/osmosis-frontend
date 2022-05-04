@@ -4,7 +4,6 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { useEffect, useRef } from "react";
-import AutosizeInput from "react-input-autosize";
 import {
   useBooleanWithWindowEvent,
   useSlippageConfig,
@@ -12,6 +11,7 @@ import {
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { TokenSelect } from "../control/token-select";
+import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
 
 export const TradeClipboard = observer<
@@ -158,23 +158,22 @@ export const TradeClipboard = observer<
                       }
                     }}
                   >
-                    <AutosizeInput
-                      inputRef={(ref) => {
-                        manualSlippageInputRef.current = ref;
-                      }}
-                      inputClassName="bg-transparent text-center"
-                      minWidth={0}
-                      value={slippageConfig.manualSlippageStr}
-                      onChange={(e) => {
-                        e.preventDefault();
-
-                        slippageConfig.setManualSlippage(e.target.value);
-                      }}
-                      onFocus={(e) => {
-                        e.preventDefault();
-
-                        slippageConfig.setIsManualSlippage(true);
-                      }}
+                    <InputBox
+                      type="number"
+                      className="bg-transparent px-0 w-fit"
+                      inputClassName={`bg-transparent text-center ${
+                        !slippageConfig.isManualSlippage
+                          ? "text-white-faint"
+                          : "text-white-high"
+                      }`}
+                      style="no-border"
+                      currentValue={slippageConfig.manualSlippageStr}
+                      onInput={(value) =>
+                        slippageConfig.setManualSlippage(value)
+                      }
+                      onFocus={() => slippageConfig.setIsManualSlippage(true)}
+                      inputRef={manualSlippageInputRef}
+                      isAutosize
                     />
                     <span className="shrink-0">%</span>
                   </li>
