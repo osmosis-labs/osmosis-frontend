@@ -1,16 +1,11 @@
 import { ChainInfoWithExplorer } from "../stores/chain";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { OSMOSIS_TESTNET } from ".";
 
 export const ChainInfos: ChainInfoWithExplorer[] = [
   {
-    rpc: OSMOSIS_TESTNET
-      ? "https://testnet-rpc.osmosis.zone"
-      : "https://rpc-osmosis.keplr.app",
-    rest: OSMOSIS_TESTNET
-      ? "https://testnet-rest.osmosis.zone"
-      : "https://lcd-osmosis.keplr.app",
-    chainId: OSMOSIS_TESTNET ? "osmo-test-4" : "osmosis-1",
+    rpc: "https://rpc-osmosis.keplr.app",
+    rest: "https://lcd-osmosis.keplr.app",
+    chainId: "osmosis-1",
     chainName: "Osmosis",
     stakeCurrency: {
       coinDenom: "OSMO",

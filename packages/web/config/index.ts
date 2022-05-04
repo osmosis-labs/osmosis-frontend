@@ -8,5 +8,3 @@ export * from "./feature-flag";
 
 /** Config for displaying IBC assets in a human-friendly way. */
 export * from "./ibc-assets";
-
-export const OSMOSIS_TESTNET = false;
