@@ -1874,7 +1874,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		bip44: {
 			coinType: 118,
 		},
-		bech32Config: Bech32Address.defaultBech32Config('cosmos'),
+		bech32Config: Bech32Address.defaultBech32Config('like'),
 		currencies: [
 			{
 				coinDenom: 'LIKE',
@@ -1893,7 +1893,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/like.svg',
 			},
 		],
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://likecoin.bigdipper.live/transactions/{txHash}',
 	},
 	{
