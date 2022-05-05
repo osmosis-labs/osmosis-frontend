@@ -76,29 +76,28 @@ export const PoolCard: FunctionComponent<
       )}
       onClick={() => router.push(`/pool/${poolId}`)}
     >
-      <div className="px-[1.875rem] pt-8 pb-6 bg-card rounded-2xlinset cursor-pointer">
+      <div className="w-full h-full px-[1.875rem] pt-7 pb-6 bg-card rounded-2xlinset cursor-pointer">
         <div className="flex items-center">
           <PoolAssetsIcon assets={poolAssets} size="md" />
-          <div className="ml-6 flex flex-col">
+          <div className="ml-5 flex flex-col">
             <PoolAssetsName
-              className="whitespace-nowrap text-ellipsis overflow-hidden"
               size="md"
               assetDenoms={poolAssets.map((asset) => asset.coinDenom)}
             />
             <div className="subtitle2 text-white-mid">{`Pool #${poolId}`}</div>
           </div>
         </div>
-        <div className="mt-5 mb-3 w-full bg-secondary-200 h-px" />
-        <div className="flex flex-nowrap gap-x-8 place-content-between">
+        <hr className="mt-5 mb-3 w-full text-secondary-200 h-px" />
+        <div className="flex  place-content-between">
           {poolMetrics.map((poolMetric, index) => (
             <div key={index} className="flex flex-col">
-              <div className="subtitle2 text-white-disabled">
+              <span className="subtitle2 whitespace-nowrap text-white-disabled">
                 {poolMetric.label}
-              </div>
+              </span>
               {typeof poolMetric.value === "string" ? (
-                <div className="mt-0.5 subtitle1 text-white-high">
+                <span className="mt-0.5 subtitle1 text-white-high">
                   {poolMetric.value}
-                </div>
+                </span>
               ) : (
                 <>{poolMetric.value}</>
               )}
