@@ -3112,7 +3112,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'GLX',
 				coinMinimalDenom: 'uglx',
 				coinDecimals: 6,
-				coinGeckoId: '',
+				coinGeckoId: 'pool:uglx',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/glx.svg',
 			},
 		],
