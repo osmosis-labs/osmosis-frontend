@@ -1,6 +1,7 @@
 # Osmosis Frontend 👩‍🔬⚗️🧪
 
-<img src="https://user-images.githubusercontent.com/4606373/166279061-0a84a577-164f-40e8-94f9-b6b5c6f76e3f.png">
+![osmosis-banner-1200w](https://user-images.githubusercontent.com/4606373/167008669-fb3cafa8-e66e-4cdf-8599-3308039cc58c.png)
+
 
 ## Development 💻
 
