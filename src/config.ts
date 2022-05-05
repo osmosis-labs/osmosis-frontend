@@ -32,7 +32,6 @@ export const LockupAbledPoolIds: {
 	'482': true,
 	'497': true,
 	'498': true,
-	'547': true,
 	'548': true,
 	'553': true,
 	'555': true,
@@ -177,20 +176,6 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '1684',
 			denom: 'ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED',
-		},
-	],
-	'547': [
-		{
-			gaugeId: '2021',
-			denom: 'ibc/655BCEF3CDEBE32863FF281DBBE3B06160339E9897DC9C9C9821932A5F8BA6F8',
-		},
-		{
-			gaugeId: '2022',
-			denom: 'ibc/655BCEF3CDEBE32863FF281DBBE3B06160339E9897DC9C9C9821932A5F8BA6F8',
-		},
-		{
-			gaugeId: '2023',
-			denom: 'ibc/655BCEF3CDEBE32863FF281DBBE3B06160339E9897DC9C9C9821932A5F8BA6F8',
 		},
 	],
 	'548': [
@@ -535,15 +520,15 @@ export const ExtraGaugeInPool: {
 	],
 	'613': [
 		{
-			gaugeId: '1982',
+			gaugeId: '3193',
 			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 		{
-			gaugeId: '2013',
+			gaugeId: '3194',
 			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 		{
-			gaugeId: '2014',
+			gaugeId: '3195',
 			denom: 'ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD',
 		},
 	],
@@ -593,7 +578,11 @@ export const ExtraGaugeInPool: {
 	],
 	'625': [
 		{
-			gaugeId: '2511',
+			gaugeId: '3327',
+			denom: 'ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44',
+		},
+		{
+			gaugeId: '3328',
 			denom: 'ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44',
 		},
 	],
@@ -693,7 +682,7 @@ export const ExtraGaugeInPool: {
 	],
 	'648': [
 		{
-			gaugeId: '2272',
+			gaugeId: '2939',
 			denom: 'ibc/8061A06D3BD4D52C4A28FFECF7150D370393AF0BA661C3776C54FF32836C3961',
 		},
 	],
@@ -868,12 +857,6 @@ export const IBCAssetInfos: {
 		ibcTransferPathDenom: 'transfer/channel-38/gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006',
 	},
 	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'ukrw',
-	},
-	{
 		counterpartyChainId: 'akashnet-2',
 		sourceChannelId: 'channel-1',
 		destChannelId: 'channel-9',
@@ -914,12 +897,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-37',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'eeur',
-	},
-	{
-		counterpartyChainId: 'microtick-1',
-		sourceChannelId: 'channel-39',
-		destChannelId: 'channel-16',
-		coinMinimalDenom: 'utick',
 	},
 	{
 		counterpartyChainId: 'likecoin-mainnet-2',
@@ -1040,12 +1017,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-181',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'udec',
-	},
-	{
-		counterpartyChainId: 'shentu-2.2',
-		sourceChannelId: 'channel-146',
-		destChannelId: 'channel-8',
-		coinMinimalDenom: 'uctk',
 	},
 	{
 		counterpartyChainId: 'juno-1',
@@ -1364,13 +1335,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'terrausd',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
 			},
-			{
-				coinDenom: 'KRT',
-				coinMinimalDenom: 'ukrw',
-				coinDecimals: 6,
-				coinGeckoId: 'terra-krw',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
-			},
 		],
 		feeCurrencies: [
 			{
@@ -1469,7 +1433,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		coinType: 118,
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'ibc-go', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://www.mintscan.io/akash/txs/{txHash}',
 	},
 	{
@@ -1814,7 +1778,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'pool:block',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/block.svg',
-			}
+			},
 		],
 		feeCurrencies: [
 			{
@@ -1827,43 +1791,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'ibc-go', 'no-legacy-stdTx', 'wasmd_0.24+'],
 		explorerUrlToTx: 'https://www.mintscan.io/juno/txs/{txHash}',
-	},
-	{
-		rpc: 'https://rpc-microtick.keplr.app',
-		rest: 'https://lcd-microtick.keplr.app',
-		chainId: 'microtick-1',
-		chainName: 'Microtick',
-		stakeCurrency: {
-			coinDenom: 'TICK',
-			coinMinimalDenom: 'utick',
-			coinDecimals: 6,
-			coinGeckoId: 'pool:utick',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/tick.svg',
-		},
-		bip44: {
-			coinType: 118,
-		},
-		bech32Config: Bech32Address.defaultBech32Config('micro'),
-		currencies: [
-			{
-				coinDenom: 'TICK',
-				coinMinimalDenom: 'utick',
-				coinDecimals: 6,
-				coinGeckoId: 'pool:utick',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/tick.svg',
-			},
-		],
-		feeCurrencies: [
-			{
-				coinDenom: 'TICK',
-				coinMinimalDenom: 'utick',
-				coinDecimals: 6,
-				coinGeckoId: 'pool:utick',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/tick.svg',
-			},
-		],
-		features: ['stargate', 'ibc-transfer'],
-		explorerUrlToTx: 'https://explorer.microtick.zone/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://mainnet-node.like.co/rpc',
@@ -2665,41 +2592,46 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://explorer.decentr.net/transactions/{txHash}?networkId=mainnet',
 	},
 	{
-		rpc: 'https://shenturpc.certikpowered.info',
-		rest: 'https://azuredragon.noopsbycertik.com',
-		chainId: 'shentu-2.2',
-		chainName: 'Certik',
+		rpc: 'https://tm-api.carbon.network',
+		rest: 'https://api.carbon.network',
+		chainId: 'carbon-1',
+		chainName: 'Carbon',
 		stakeCurrency: {
-			coinDenom: 'CTK',
-			coinMinimalDenom: 'uctk',
-			coinDecimals: 6,
-			coinGeckoId: 'certik',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
+			coinDenom: 'SWTH',
+			coinMinimalDenom: 'swth',
+			coinDecimals: 8,
+			coinGeckoId: 'switcheo',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/swth.png',
 		},
 		bip44: {
 			coinType: 118,
 		},
-		bech32Config: Bech32Address.defaultBech32Config('certik'),
+		bech32Config: Bech32Address.defaultBech32Config('swth'),
 		currencies: [
 			{
-				coinDenom: 'CTK',
-				coinMinimalDenom: 'uctk',
-				coinDecimals: 6,
-				coinGeckoId: 'certik',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
+				coinDenom: 'SWTH',
+				coinMinimalDenom: 'swth',
+				coinDecimals: 8,
+				coinGeckoId: 'switcheo',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/swth.png',
 			},
 		],
 		feeCurrencies: [
 			{
-				coinDenom: 'CTK',
-				coinMinimalDenom: 'uctk',
-				coinDecimals: 6,
-				coinGeckoId: 'certik',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
+				coinDenom: 'SWTH',
+				coinMinimalDenom: 'swth',
+				coinDecimals: 8,
+				coinGeckoId: 'switcheo',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/swth.png',
 			},
 		],
+		gasPriceStep: {
+			low: 769.23077,
+			average: 769.23077,
+			high: 769.23077,
+		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
-		explorerUrlToTx: 'https://www.mintscan.io/certik/txs/{txHash}',
+		explorerUrlToTx: 'https://scan.carbon.network/transaction/{txHash}?net=main',
 	},
 	{
 		rpc: 'https://public.api.injective.network',
