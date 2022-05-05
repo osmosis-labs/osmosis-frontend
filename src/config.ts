@@ -3027,7 +3027,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		rpc: 'https://rpc.galaxychain.zone',
 		rest: 'https://rest.galaxychain.zone',
 		chainId: 'galaxy-1',
-		chainName: 'galaxy',
+		chainName: 'Galaxy',
 		stakeCurrency: {
 			coinDenom: 'GLX',
 			coinMinimalDenom: 'uglx',
