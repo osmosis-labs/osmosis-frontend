@@ -170,11 +170,17 @@ module.exports = {
       lg: { max: "1024px" },
       // => @media (max-width: 1024px) { ... }
 
+      "1.5md": { max: "896px" },
+      // => @media (max-width: 896px) { ... }
+
       md: { max: "768px" },
       // => @media (max-width: 768px) { ... }
 
       sm: { max: "640px" },
       // => @media (max-width: 640px) { ... }
+
+      "1.5xs": { max: "512px" },
+      // => @media (max-width: 512px) { ... }
 
       xs: { max: "420px" },
     },
@@ -194,7 +200,7 @@ module.exports = {
         0.25: "1px",
       },
       maxWidth: {
-        container: "80rem",
+        container: "70rem",
         clipboard: "32.5rem",
         modal: "42rem",
       },

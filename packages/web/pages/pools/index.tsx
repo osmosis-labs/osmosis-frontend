@@ -206,7 +206,7 @@ const Pools: NextPage = observer(function () {
             <h5>My Pools</h5>
           )}
           <div className="flex flex-col gap-4">
-            <div className="mt-5 grid grid-cards md:gap-3 gap-10">
+            <div className="mt-5 grid grid-cards md:gap-3">
               {(isMobile && !showMoreMyPools
                 ? myPoolIds.slice(0, poolCountShowMoreThreshold)
                 : myPoolIds
@@ -424,7 +424,7 @@ const Pools: NextPage = observer(function () {
           <section className="bg-surface">
             <div className="max-w-container mx-auto p-10">
               <h5>Superfluid Pools</h5>
-              <div className="mt-5 grid grid-cards gap-10">
+              <div className="mt-5 grid grid-cards">
                 {superfluidPools &&
                   superfluidPools.map(
                     ({ id, apr, assets, poolFeesMetrics, poolLiquidity }) => (
