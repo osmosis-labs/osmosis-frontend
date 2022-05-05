@@ -45,7 +45,7 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 			<TitleText>Incentivized Pools</TitleText>
 
 			{incentivizedPoolInfoList.length === 0 ? (
-				<NoActiveCard>
+				<NoActiveCard className="bg-card">
 					<Text size="lg" emphasis="high" pb={20}>
 						No active liquidity incentives
 					</Text>
@@ -63,7 +63,6 @@ export const IncentivizedPools: FunctionComponent = observer(() => {
 const NoActiveCard = styled.div`
 	width: 100%;
 	border-radius: 0.75rem;
-	background-color: rgba(45, 39, 85, 1);
 	padding-top: 32px;
 	padding-bottom: 32px;
 	display: flex;

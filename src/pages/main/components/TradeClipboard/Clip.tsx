@@ -11,7 +11,7 @@ export function Clip() {
 }
 
 const ClipContainer = styled.div`
-	background: linear-gradient(180deg, #3a3369 0%, #231d4b 100%);
+	background: linear-gradient(to bottom, #fef69d 0%, #eea12e 100%);
 	position: absolute;
 	left: 50%;
 	top: -8px;
@@ -22,7 +22,6 @@ const ClipContainer = styled.div`
 	border-radius: 0.375rem;
 	height: 41px;
 	width: 117px;
-
 	@media (min-width: 768px) {
 		height: 60px;
 		width: 160px;
@@ -35,13 +34,12 @@ const ClipMiddle = styled.div`
 	left: 50%;
 	bottom: 5px;
 	transform: translate(-50%, 0);
-	background: rgba(91, 83, 147, 0.12);
+	background: linear-gradient(to bottom, #fef69d 0%, #f3ae33 100%);
 	background-blend-mode: difference;
 	position: absolute;
 	border-radius: 0.375rem;
 	z-index: 10;
 	box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.25);
-
 	@media (min-width: 768px) {
 		height: 30px;
 		width: 48px;
@@ -56,11 +54,10 @@ const ClipBottom = styled.div`
 	left: 50%;
 	bottom: 0;
 	transform: translate(-50%, 0);
-	background: linear-gradient(180deg, #332c61 0%, #312a5d 10.94%, #2d2755 100%);
+	background: linear-gradient(180deg, #c46720 0%, #ffde58 10.94%, #fff89d 100%);
 	z-index: 0;
 	border-bottom-right-radius: 0.375rem;
 	border-bottom-left-radius: 0.375rem;
-
 	@media (min-width: 768px) {
 		height: 20px;
 	}
