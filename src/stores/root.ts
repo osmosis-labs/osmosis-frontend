@@ -1625,7 +1625,7 @@ export class RootStore {
 				],
 			},
 			{
-				poolId: '701', /** to be changed */
+				poolId: '701',
 				currencies: [
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom(

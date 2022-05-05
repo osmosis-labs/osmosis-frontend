@@ -1158,10 +1158,10 @@ export const IBCAssetInfos: {
 	},
 	{
 		counterpartyChainId: 'juno-1',
-		sourceChannelId: 'channel-169', /** osmosis channel for cw20<>ics20 contract on juno */
-		destChannelId: 'channel-47', /** Osmosis' channel to Juno for native Juno assets */
-		coinMinimalDenom: 'cw20:juno1lf8wdpy68c4maqusg6sl76zrre32q7a5awtks25xqn3pvepedaps5ezt7j', /** melon gov token */
-		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn', /** identical for all */
+		sourceChannelId: 'channel-169',
+		destChannelId: 'channel-47',
+		coinMinimalDenom: 'cw20:juno1lf8wdpy68c4maqusg6sl76zrre32q7a5awtks25xqn3pvepedaps5ezt7j',
+		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 ];
 
