@@ -1162,12 +1162,6 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-10',
 		coinMinimalDenom: 'afet',
 	},
-    {
-		counterpartyChainId: 'galaxy-1',
-		sourceChannelId: 'channel-236',
-		destChannelId: 'channel-0',
-		coinMinimalDenom: 'uglx',
-	},
 	{
 		counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-169',
@@ -1180,6 +1174,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-222',
 		destChannelId: 'channel-7',
 		coinMinimalDenom: 'nhash',
+	},
+	{
+		counterpartyChainId: 'galaxy-1',
+		sourceChannelId: 'channel-236',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'uglx',
 	}
 ];
 
@@ -3012,48 +3012,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/fetchai/txs/{txHash}',
 	},
-    {
-		rpc: 'https://rpc.galaxychain.zone',
-		rest: 'https://rest.galaxychain.zone',
-		chainId: 'galaxy-1',
-		chainName: 'galaxy',
-		stakeCurrency: {
-			coinDenom: 'GLX',
-			coinMinimalDenom: 'uglx',
-			coinDecimals: 6,
-			coinGeckoId: '',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/glx.svg',
-		},
-		bip44: {
-			coinType: 118,
-		},
-		bech32Config: Bech32Address.defaultBech32Config('galaxy'),
-		currencies: [
-			{
-				coinDenom: 'GLX',
-				coinMinimalDenom: 'uglx',
-				coinDecimals: 6,
-				coinGeckoId: '',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/glx.svg',
-			},
-		],
-		feeCurrencies: [
-			{
-				coinDenom: 'GLX',
-				coinMinimalDenom: 'uglx',
-				coinDecimals: 6,
-				coinGeckoId: '',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/glx.svg',
-			},
-		],
-		gasPriceStep: {
-			low: 0.025,
-			average: 0.025,
-			high: 0.035,
-		},
-		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
-		explorerUrlToTx: 'https://explorer.postcapitalist.io/galaxy/tx/{txHash}',
-	},
 	{
 		rpc: 'https://rpc.assetmantle.one/',
 		rest: 'https://rest.assetmantle.one/',
@@ -3132,5 +3090,47 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/provenance/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc.galaxychain.zone',
+		rest: 'https://rest.galaxychain.zone',
+		chainId: 'galaxy-1',
+		chainName: 'galaxy',
+		stakeCurrency: {
+			coinDenom: 'GLX',
+			coinMinimalDenom: 'uglx',
+			coinDecimals: 6,
+			coinGeckoId: '',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/glx.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('galaxy'),
+		currencies: [
+			{
+				coinDenom: 'GLX',
+				coinMinimalDenom: 'uglx',
+				coinDecimals: 6,
+				coinGeckoId: '',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/glx.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'GLX',
+				coinMinimalDenom: 'uglx',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:uglx',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/glx.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0.025,
+			average: 0.025,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://explorer.postcapitalist.io/galaxy/tx/{txHash}',
 	},
 ];
