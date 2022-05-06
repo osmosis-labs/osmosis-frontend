@@ -1169,6 +1169,13 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-236',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'uglx',
+	},
+	{
+		counterpartyChainId: 'juno-1',
+		sourceChannelId: 'channel-169',
+		destChannelId: 'channel-47',
+		coinMinimalDenom: 'cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49',
+		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	}
 ];
 
@@ -1803,6 +1810,15 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'pool:block',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/block.svg',
+			},
+			{
+				type: 'cw20',
+				contractAddress: 'juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49',
+				coinDenom: 'DHK',
+				coinMinimalDenom: 'cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49:DHK',
+				coinDecimals: 0,
+				coinGeckoId: 'pool:dhk',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dhk.svg',
 			},
 		],
 		feeCurrencies: [
