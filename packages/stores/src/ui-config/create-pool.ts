@@ -126,6 +126,14 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     return new RatePretty(new Dec(1).quo(new Dec(this.assets.length)));
   }
 
+  // ERRORS
+
+  get positiveBalanceError(): Error | undefined {
+    if (this.sendableCurrencies.length === 0) {
+      return new Error("You have no assets to deposit");
+    }
+  }
+
   get percentageError(): Error | undefined {
     if (this.assets.length < this._opts.minAssetsCount) {
       return new Error(
