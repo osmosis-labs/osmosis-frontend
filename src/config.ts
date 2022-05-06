@@ -857,6 +857,12 @@ export const IBCAssetInfos: {
 		ibcTransferPathDenom: 'transfer/channel-38/gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006',
 	},
 	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'ukrw',
+	},
+	{
 		counterpartyChainId: 'akashnet-2',
 		sourceChannelId: 'channel-1',
 		destChannelId: 'channel-9',
@@ -897,6 +903,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-37',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'eeur',
+	},
+	{
+		counterpartyChainId: 'microtick-1',
+		sourceChannelId: 'channel-39',
+		destChannelId: 'channel-16',
+		coinMinimalDenom: 'utick',
 	},
 	{
 		counterpartyChainId: 'likecoin-mainnet-2',
@@ -1017,6 +1029,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-181',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'udec',
+	},
+	{
+		counterpartyChainId: 'shentu-2.2',
+		sourceChannelId: 'channel-146',
+		destChannelId: 'channel-8',
+		coinMinimalDenom: 'uctk',
 	},
 	{
 		counterpartyChainId: 'juno-1',
@@ -1334,6 +1352,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'terrausd',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
+			},
+			{
+				coinDenom: 'KRT',
+				coinMinimalDenom: 'ukrw',
+				coinDecimals: 6,
+				coinGeckoId: 'terra-krw',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
 			},
 		],
 		feeCurrencies: [
@@ -1791,6 +1816,43 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'ibc-go', 'no-legacy-stdTx', 'wasmd_0.24+'],
 		explorerUrlToTx: 'https://www.mintscan.io/juno/txs/{txHash}',
+	},
+	{
+		rpc: 'https://rpc-microtick.keplr.app',
+		rest: 'https://lcd-microtick.keplr.app',
+		chainId: 'microtick-1',
+		chainName: 'Microtick',
+		stakeCurrency: {
+			coinDenom: 'TICK',
+			coinMinimalDenom: 'utick',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:utick',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/tick.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('micro'),
+		currencies: [
+			{
+				coinDenom: 'TICK',
+				coinMinimalDenom: 'utick',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:utick',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/tick.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'TICK',
+				coinMinimalDenom: 'utick',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:utick',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/tick.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer'],
+		explorerUrlToTx: 'https://explorer.microtick.zone/transactions/{txHash}',
 	},
 	{
 		rpc: 'https://mainnet-node.like.co/rpc',
@@ -2590,6 +2652,43 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://explorer.decentr.net/transactions/{txHash}?networkId=mainnet',
+	},
+	{
+		rpc: 'https://shenturpc.certikpowered.info',
+		rest: 'https://azuredragon.noopsbycertik.com',
+		chainId: 'shentu-2.2',
+		chainName: 'Certik',
+		stakeCurrency: {
+			coinDenom: 'CTK',
+			coinMinimalDenom: 'uctk',
+			coinDecimals: 6,
+			coinGeckoId: 'certik',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('certik'),
+		currencies: [
+			{
+				coinDenom: 'CTK',
+				coinMinimalDenom: 'uctk',
+				coinDecimals: 6,
+				coinGeckoId: 'certik',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'CTK',
+				coinMinimalDenom: 'uctk',
+				coinDecimals: 6,
+				coinGeckoId: 'certik',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ctk.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/certik/txs/{txHash}',
 	},
 	{
 		rpc: 'https://tm-api.carbon.network',
