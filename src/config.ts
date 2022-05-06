@@ -1353,6 +1353,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'terrausd',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
 			},
+			{
+				coinDenom: 'KRT',
+				coinMinimalDenom: 'ukrw',
+				coinDecimals: 6,
+				coinGeckoId: 'terra-krw',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
+			},
 		],
 		feeCurrencies: [
 			{
@@ -1368,13 +1375,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'terrausd',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
-			},
-			{
-				coinDenom: 'KRT',
-				coinMinimalDenom: 'ukrw',
-				coinDecimals: 6,
-				coinGeckoId: 'terra-krw',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
 			},
 		],
 		gasPriceStep: {
