@@ -1,5 +1,6 @@
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
+import { enableStaticRendering } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
@@ -15,6 +16,7 @@ import { IbcNotifier } from "../stores/ibc-notifier";
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 dayjs.extend(utc);
+enableStaticRendering(typeof window === "undefined");
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
