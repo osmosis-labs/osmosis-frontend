@@ -14,6 +14,7 @@
     "clean": "lerna run clean; rm -rf node_modules",
     "build": "lerna run build",
     "build:libs": "lerna run build --ignore @osmosis-labs/web",
+    "analyze": "lerna run analyze",
     "test": "lerna run test --parallel",
     "build:clean": "yarn clean && yarn install --frozen-lockfile && lerna run build",
     "lint": "lerna run lint",
