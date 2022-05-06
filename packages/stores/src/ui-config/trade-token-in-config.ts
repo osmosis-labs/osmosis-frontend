@@ -24,6 +24,8 @@ export class TradeTokenInConfig extends AmountConfig {
   protected _inCurrencyMinimalDenom: string | undefined = undefined;
   @observable
   protected _outCurrencyMinimalDenom: string | undefined = undefined;
+  @observable
+  protected _error: Error | undefined = undefined;
 
   constructor(
     chainGetter: ChainGetter,
@@ -289,5 +291,15 @@ export class TradeTokenInConfig extends AmountConfig {
       swapFee: new RatePretty(result.swapFee),
       slippage: new RatePretty(result.slippage),
     };
+  }
+
+  @override
+  get error(): Error | undefined {
+    return this._error;
+  }
+
+  @action
+  setError(error: Error) {
+    this._error = error;
   }
 }
