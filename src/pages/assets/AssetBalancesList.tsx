@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { AppCurrency, IBCCurrency } from '@keplr-wallet/types';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
+import React, { useState } from 'react';
 import { Img } from 'src/components/common/Img';
 import { ButtonFaint, ButtonSecondary } from 'src/components/layouts/Buttons';
 import { Text, TitleText } from 'src/components/Texts';
@@ -21,6 +21,8 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 	const { chainStore, queriesStore, accountStore, priceStore } = useStore();
 
 	const { isMobileView } = useWindowSize();
+
+	const [showZeroBalances, setShowZeroBalances] = useState<boolean>(false); 
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
@@ -112,8 +114,11 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 					ics20ContractAddress={dialogState.ics20ContractAddress}
 				/>
 			) : null}
-			<div className="px-5 md:px-0">
+			<div className="px-5 md:px-0 flex justify-between pb-3">
 				<TitleText isMobileView={isMobileView}>Osmosis Assets</TitleText>
+				<ButtonSecondary onClick={() => setShowZeroBalances(!showZeroBalances)}>
+					{showZeroBalances ? "Hide Zero Balances" : "Show Zero Balances"}
+				</ButtonSecondary>
 			</div>
 			<table className="w-full pb-8">
 				<AssetBalanceHeader isMobileView={isMobileView} />
@@ -121,6 +126,15 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 				<tbody className="w-full">
 					{chainStore.current.currencies
 						.filter(cur => !cur.coinMinimalDenom.includes('/'))
+						.filter(cur => {
+							const bal = queries.queryBalances
+								.getQueryBech32Address(account.bech32Address)
+								.getBalanceFromCurrency(cur);
+
+							const totalFiatValue = priceStore.calculatePrice(bal, 'usd');
+
+							return showZeroBalances || (!!totalFiatValue && totalFiatValue.toDec().gt(new Dec(0)));
+						})
 						.map(cur => {
 							const bal = queries.queryBalances
 								.getQueryBech32Address(account.bech32Address)
@@ -144,19 +158,25 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 								/>
 							);
 						})}
-					{ibcBalances.map(bal => {
-						const currency = bal.balance.currency;
-						const coinDenom = (() => {
-							if ('originCurrency' in currency && currency.originCurrency) {
-								return currency.originCurrency.coinDenom;
-							}
+					{ibcBalances
+						.filter(bal => {
+							const totalFiatValue = priceStore.calculatePrice(bal.balance, 'usd');
 
-							return currency.coinDenom;
-						})();
+							return showZeroBalances || (!!totalFiatValue && totalFiatValue.toDec().gt(new Dec(0)));
+						})
+						.map(bal => {
+							const currency = bal.balance.currency;
+							const coinDenom = (() => {
+								if ('originCurrency' in currency && currency.originCurrency) {
+									return currency.originCurrency.coinDenom;
+								}
 
-						const totalFiatValue = priceStore.calculatePrice(bal.balance, 'usd');
+								return currency.coinDenom;
+							})();
 
-						return (
+							const totalFiatValue = priceStore.calculatePrice(bal.balance, 'usd');
+
+							return (
 							<AssetBalanceRow
 								key={currency.coinMinimalDenom}
 								chainName={bal.chainInfo.chainName}
