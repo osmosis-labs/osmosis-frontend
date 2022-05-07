@@ -1183,6 +1183,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-47',
 		coinMinimalDenom: 'cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
+	{
+		counterpartyChainId: 'meme-1',
+		sourceChannelId: 'channel-1',
+		destChannelId: 'channel-238',
+		coinMinimalDenom: 'umeme',
 	}
 ];
 
@@ -3196,4 +3202,46 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://explorer.postcapitalist.io/galaxy/tx/{txHash}',
 	},
+	{
+		rpc: 'https://rpc-meme-1.meme.sx:443',
+		rest: 'https://api-meme-1.meme.sx:443',
+		chainId: 'meme-1',
+		chainName: 'Meme',
+		stakeCurrency: {
+			coinDenom: 'MEME',
+			coinMinimalDenom: 'umeme',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:umeme',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/meme.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('meme'),
+		currencies: [
+			{
+				coinDenom: 'MEME',
+				coinMinimalDenom: 'umeme',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:umeme',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/meme.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'MEME',
+				coinMinimalDenom: 'umeme',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:umeme',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/meme.png',
+			},
+		],
+		gasPriceStep: {
+			low: 0.025,
+			average: 0.025,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://explorer.meme.sx/meme/tx/{txHash}',
+	}
 ];
