@@ -68,6 +68,7 @@ export const LockupAbledPoolIds: {
 	'643': true,
 	'648': true,
 	'651': true,
+	'662': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -571,7 +572,11 @@ export const ExtraGaugeInPool: {
 	],
 	'625': [
 		{
-			gaugeId: '2511',
+			gaugeId: '3327',
+			denom: 'ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44',
+		},
+		{
+			gaugeId: '3328',
 			denom: 'ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44',
 		},
 	],
@@ -677,6 +682,20 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '2549',
 			denom: 'ibc/8FEFAE6AECF6E2A255585617F781F35A8D5709A545A804482A261C0C9548A9D3',
+		},
+	],
+	'662': [
+		{
+			gaugeId: '2591',
+			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
+		},
+		{
+			gaugeId: '2592',
+			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
+		},
+		{
+			gaugeId: '2593',
+			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
 		},
 	],
 };
@@ -955,6 +974,12 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'swth',
 
 	},
+	{
+		counterpartyChainId: 'cerberus-chain-1',
+		sourceChannelId: 'channel-212',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'ucrbrus',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -969,7 +994,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 					coinMinimalDenom: 'uosmo',
 					coinDecimals: 6,
 					coinGeckoId: 'osmosis',
-					coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
+					coinImageUrl: window.location.origin + '/public/assets/tokens/osmo.svg',
 				},
 				bip44: {
 					coinType: 118,
@@ -981,7 +1006,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 						coinMinimalDenom: 'uosmo',
 						coinDecimals: 6,
 						coinGeckoId: 'osmosis',
-						coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
+						coinImageUrl: window.location.origin + '/public/assets/tokens/osmo.svg',
 					},
 					{
 						coinDenom: 'ION',
@@ -995,7 +1020,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 						coinMinimalDenom: 'uatom',
 						coinDecimals: 6,
 						coinGeckoId: 'cosmos',
-						coinImageUrl: window.location.origin + '/public/assets/tokens/cosmos.svg',
+						coinImageUrl: window.location.origin + '/public/assets/tokens/atom.svg',
 					},
 					{
 						coinDenom: 'FOO',
@@ -1014,7 +1039,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 						coinMinimalDenom: 'uosmo',
 						coinDecimals: 6,
 						coinGeckoId: 'osmosis',
-						coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
+						coinImageUrl: window.location.origin + '/public/assets/tokens/osmo.svg',
 					},
 				],
 				gasPriceStep: {
@@ -1035,7 +1060,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 					coinMinimalDenom: 'uosmo',
 					coinDecimals: 6,
 					coinGeckoId: 'osmosis',
-					coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
+					coinImageUrl: window.location.origin + '/public/assets/tokens/osmo.svg',
 				},
 				bip44: {
 					coinType: 118,
@@ -1047,7 +1072,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 						coinMinimalDenom: 'uosmo',
 						coinDecimals: 6,
 						coinGeckoId: 'osmosis',
-						coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
+						coinImageUrl: window.location.origin + '/public/assets/tokens/osmo.svg',
 					},
 					{
 						coinDenom: 'ION',
@@ -1063,7 +1088,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 						coinMinimalDenom: 'uosmo',
 						coinDecimals: 6,
 						coinGeckoId: 'osmosis',
-						coinImageUrl: window.location.origin + '/public/assets/tokens/osmosis.svg',
+						coinImageUrl: window.location.origin + '/public/assets/tokens/osmo.svg',
 					},
 				],
 				gasPriceStep: {
@@ -1084,7 +1109,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'uatom',
 			coinDecimals: 6,
 			coinGeckoId: 'cosmos',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/cosmos.svg',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/atom.svg',
 		},
 		bip44: {
 			coinType: 118,
@@ -1096,7 +1121,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uatom',
 				coinDecimals: 6,
 				coinGeckoId: 'cosmos',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/cosmos.svg',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/atom.svg',
 			},
 		],
 		feeCurrencies: [
@@ -1105,7 +1130,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uatom',
 				coinDecimals: 6,
 				coinGeckoId: 'cosmos',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/cosmos.svg',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/atom.svg',
 			},
 		],
 		coinType: 118,
@@ -1583,19 +1608,19 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'nanolike',
 			coinDecimals: 9,
 			coinGeckoId: 'likecoin',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/likecoin.svg',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/like.svg',
 		},
 		bip44: {
 			coinType: 118,
 		},
-		bech32Config: Bech32Address.defaultBech32Config('cosmos'),
+		bech32Config: Bech32Address.defaultBech32Config('like'),
 		currencies: [
 			{
 				coinDenom: 'LIKE',
 				coinMinimalDenom: 'nanolike',
 				coinDecimals: 9,
 				coinGeckoId: 'likecoin',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/likecoin.svg',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/like.svg',
 			},
 		],
 		feeCurrencies: [
@@ -1604,10 +1629,10 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'nanolike',
 				coinDecimals: 9,
 				coinGeckoId: 'likecoin',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/likecoin.svg',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/like.svg',
 			},
 		],
-		features: ['stargate', 'ibc-transfer'],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://likecoin.bigdipper.live/transactions/{txHash}',
 	},
 	{
@@ -1731,7 +1756,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'uxki',
 			coinDecimals: 6,
 			coinGeckoId: 'pool:uxki',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/ki.svg',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/xki.svg',
 		},
 		bip44: {
 			coinType: 118,
@@ -1743,7 +1768,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uxki',
 				coinDecimals: 6,
 				coinGeckoId: 'pool:uxki',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ki.svg',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/xki.svg',
 			},
 		],
 		feeCurrencies: [
@@ -1752,7 +1777,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'uxki',
 				coinDecimals: 6,
 				coinGeckoId: 'pool:uxki',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ki.svg',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/xki.svg',
 			},
 		],
 		features: ['stargate', 'ibc-transfer'],
@@ -2463,5 +2488,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://scan.carbon.network/transaction/{txHash}?net=main',
 
+	},
+	{
+		rpc: 'https://rpc.cerberus.zone:26657',
+		rest: 'https://api.cerberus.zone:1317',
+		chainId: 'cerberus-chain-1',
+		chainName: 'Cerberus',
+		stakeCurrency: {
+			coinDenom: 'CRBRUS',
+			coinMinimalDenom: 'ucrbrus',
+			coinDecimals: 6,
+			coinGeckoId: 'cerberus-2',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('cerberus'),
+		currencies: [
+			{
+				coinDenom: 'CRBRUS',
+				coinMinimalDenom: 'ucrbrus',
+				coinDecimals: 6,
+				coinGeckoId: 'cerberus-2',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'CRBRUS',
+				coinMinimalDenom: 'ucrbrus',
+				coinDecimals: 6,
+				coinGeckoId: 'cerberus-2',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/crbrus.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://skynetexplorers.com/Cerberus/tx/{txHash}',
 	},
 ];
