@@ -70,6 +70,7 @@ export const LockupAbledPoolIds: {
 	'651': true,
 	'662': true,
   '678': true,
+	'681': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -992,6 +993,12 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-212',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'ucrbrus',
+	},
+	{
+		counterpartyChainId: 'fetchhub-4',
+		sourceChannelId: 'channel-229',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'afet',
 	},
 ];
 
@@ -2539,6 +2546,48 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://skynetexplorers.com/Cerberus/tx/{txHash}',
 	},
 	{
+		rpc: 'https://rpc-fetchhub.fetch.ai:443',
+		rest: 'https://rest-fetchhub.fetch.ai',
+		chainId: 'fetchhub-4',
+		chainName: 'Fetch.ai',
+		stakeCurrency: {
+			coinDenom: 'FET',
+			coinMinimalDenom: 'afet',
+			coinDecimals: 18,
+			coinGeckoId: 'fetch-ai',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/fet.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('fetch'),
+		currencies: [
+			{
+				coinDenom: 'FET',
+				coinMinimalDenom: 'afet',
+				coinDecimals: 18,
+				coinGeckoId: 'fetch-ai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/fet.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'FET',
+				coinMinimalDenom: 'afet',
+				coinDecimals: 18,
+				coinGeckoId: 'fetch-ai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/fet.png',
+			},
+		],
+		gasPriceStep: {
+			low: 0.025,
+			average: 0.025,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/fetchai/txs/{txHash}',
+	},
+  {
 		rpc: 'https://rpc-axelar.keplr.app',
 		rest: 'https://lcd-axelar.keplr.app',
 		chainId: 'axelar-dojo-1',
