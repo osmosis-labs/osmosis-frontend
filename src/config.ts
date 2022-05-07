@@ -1186,8 +1186,8 @@ export const IBCAssetInfos: {
 	},
 	{
 		counterpartyChainId: 'meme-1',
-		sourceChannelId: 'channel-1',
-		destChannelId: 'channel-238',
+		sourceChannelId: 'channel-238',
+		destChannelId: 'channel-1',
 		coinMinimalDenom: 'umeme',
 	}
 ];
