@@ -980,6 +980,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'ucrbrus',
 	},
+	{
+		counterpartyChainId: 'evmos_9001-2',
+		sourceChannelId: 'channel-204',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'aevmos',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -2526,4 +2532,38 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://skynetexplorers.com/Cerberus/tx/{txHash}',
 	},
+	{
+		rpc: 'https://rpc-evmos.keplr.app/',
+		rest: 'https://lcd-evmos.keplr.app/',
+		chainId: 'evmos_9001-2',
+		chainName: 'Evmos',
+		stakeCurrency: {
+			coinDenom: 'EVMOS',
+			coinMinimalDenom: 'aevmos',
+			coinDecimals: 18,
+			coinGeckoId: 'evmos',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.svg',
+		},
+		bip44: {
+			coinType: 60,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('evmos'),
+		currencies: [
+			{
+				coinDenom: 'EVMOS',
+				coinMinimalDenom: 'aevmos',
+				coinDecimals: 18,
+				coinGeckoId: 'evmos',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.svg',
+				},
+		],
+		gasPriceStep: {
+			low: 0.025,
+			average: 0.03,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/evmos/txs/{txHash}',
+	},
+						
 ];
