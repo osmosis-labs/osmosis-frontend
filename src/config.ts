@@ -77,6 +77,7 @@ export const LockupAbledPoolIds: {
 	'670': true,
 	'678': true,
 	'679': true,
+	'681': true,
 };
 
 export const PromotedLBPPoolIds: {
