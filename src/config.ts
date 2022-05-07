@@ -979,6 +979,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'ucrbrus',
 	},
+	{
+		counterpartyChainId: 'meme-1',
+		sourceChannelId: 'channel-1',
+		destChannelId: 'channel-238',
+		coinMinimalDenom: 'umeme',
+	}
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
