@@ -69,6 +69,7 @@ export const LockupAbledPoolIds: {
 	'648': true,
 	'651': true,
 	'662': true,
+  '678': true,
 	'681': true,
 };
 
@@ -699,6 +700,12 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
 		},
 	],
+	'678': [
+		{
+			gaugeId: '3013',
+			denom: 'uosmo',
+		},
+	],
 };
 
 export const PoolsPerPage = 10;
@@ -732,6 +739,20 @@ export const IBCAssetInfos: {
 	withdrawUrlOverride?: string;
 }[] = [
 	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uusd',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'uusdc',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=usdc',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=usdc',
+	},
+	{
 		counterpartyChainId: 'cosmoshub-4',
 		sourceChannelId: 'channel-0',
 		destChannelId: 'channel-141',
@@ -748,12 +769,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-5',
 		destChannelId: 'channel-10',
 		coinMinimalDenom: 'basecro',
-	},
-	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uusd',
 	},
 	{
 		counterpartyChainId: 'secret-4',
@@ -2572,5 +2587,47 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/fetchai/txs/{txHash}',
+	},
+  {
+		rpc: 'https://rpc-axelar.keplr.app',
+		rest: 'https://lcd-axelar.keplr.app',
+		chainId: 'axelar-dojo-1',
+		chainName: 'Axelar',
+		stakeCurrency: {
+			coinDenom: 'AXL',
+			coinMinimalDenom: 'uaxl',
+			coinDecimals: 6,
+			// coinGeckoId: 'pool:uaxl',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/axl.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('axelar'),
+		currencies: [
+			{
+				coinDenom: 'USDC',
+				coinMinimalDenom: 'uusdc',
+				coinDecimals: 6,
+				coinGeckoId: 'usd-coin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'AXL',
+				coinMinimalDenom: 'uaxl',
+				coinDecimals: 6,
+				// coinGeckoId: 'pool:uaxl',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/axl.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0.00005,
+			average: 0.00007,
+			high: 0.00009,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://axelarscan.io/tx/{txHash}',
 	},
 ];
