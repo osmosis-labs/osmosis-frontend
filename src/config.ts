@@ -699,11 +699,12 @@ export const ExtraGaugeInPool: {
 			gaugeId: '2593',
 			denom: 'ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7',
 		},
-  '678': [
+	],
+	'678': [
 		{
 			gaugeId: '3013',
 			denom: 'uosmo',
-    },
+		},
 	],
 };
 
