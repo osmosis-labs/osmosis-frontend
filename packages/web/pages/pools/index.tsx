@@ -1,4 +1,4 @@
-import type { GetServerSideProps, NextPage } from "next";
+import type { GetStaticProps, NextPage } from "next";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
@@ -34,7 +34,7 @@ import { UserAction } from "../../config";
 const REWARD_EPOCH_IDENTIFIER = "day";
 const TVL_FILTER_THRESHOLD = 1000;
 
-const Pools: NextPage = observer(function (props) {
+const Pools: NextPage = observer(function (ssrProps) {
   const {
     chainStore,
     accountStore,
@@ -46,9 +46,11 @@ const Pools: NextPage = observer(function (props) {
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
+  console.log("render", ssrProps);
   hydratePoolsPageStores(
     queriesStore.get(chainId),
-    (props as any).data as unknown as PoolsPageSSRProps | null
+    queriesExternalStore.get().queryGammPoolFeeMetrics,
+    (ssrProps as any).data as unknown as PoolsPageSSRProps | null
   );
   const queriesExternal = queriesExternalStore.get();
 
@@ -503,10 +505,11 @@ const Pools: NextPage = observer(function (props) {
 
 export default Pools;
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const data = await getPoolsPageData(context);
+export const getStaticProps: GetStaticProps = async () => {
+  const data = await getPoolsPageData();
 
   return {
     props: { data },
+    revalidate: 10, // SSR every 10 secs
   };
 };

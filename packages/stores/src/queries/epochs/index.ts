@@ -8,7 +8,7 @@ import { Epochs } from "./types";
 import { computed, observable } from "mobx";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
-import { HydrateableStore } from "../types";
+import { HydrateableStore } from "../../types";
 
 export class ObservableQueryEpochsInner {
   constructor(

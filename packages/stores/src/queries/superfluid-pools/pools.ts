@@ -7,7 +7,7 @@ import {
   QueryResponse,
 } from "@keplr-wallet/stores";
 import { SuperfluidAllAssets } from "./types";
-import { HydrateableStore } from "../types";
+import { HydrateableStore } from "../../types";
 
 export class ObservableQuerySuperfluidPools
   extends ObservableChainQuery<SuperfluidAllAssets>
