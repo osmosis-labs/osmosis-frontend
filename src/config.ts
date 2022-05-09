@@ -69,7 +69,7 @@ export const LockupAbledPoolIds: {
 	'648': true,
 	'651': true,
 	'662': true,
-  '678': true,
+	'678': true,
 	'681': true,
 };
 
@@ -1001,6 +1001,30 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-10',
 		coinMinimalDenom: 'afet',
 	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'dai-wei',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=dai',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=dai',
+	},
+	// {
+	// 	counterpartyChainId: 'axelar-dojo-1',
+	// 	sourceChannelId: 'channel-208',
+	// 	destChannelId: 'channel-3',
+	// 	coinMinimalDenom: 'uusdt',
+	// 	depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=usdt',
+	// 	withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=usdt',
+	// },
+	// {
+	// 	counterpartyChainId: 'axelar-dojo-1',
+	// 	sourceChannelId: 'channel-208',
+	// 	destChannelId: 'channel-3',
+	// 	coinMinimalDenom: 'frax-wei',
+	// 	depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=frax',
+	// 	withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=frax',
+	// },
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -2588,7 +2612,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/fetchai/txs/{txHash}',
 	},
-  {
+	{
 		rpc: 'https://rpc-axelar.keplr.app',
 		rest: 'https://lcd-axelar.keplr.app',
 		chainId: 'axelar-dojo-1',
@@ -2611,6 +2635,27 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'usd-coin',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.svg',
+			},
+			{
+				coinDenom: 'FRAX',
+				coinMinimalDenom: 'frax-wei',
+				coinDecimals: 18,
+				coinGeckoId: 'frax',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/frax.svg',
+			},
+			{
+				coinDenom: 'USDT',
+				coinMinimalDenom: 'uusdt',
+				coinDecimals: 6,
+				coinGeckoId: 'tether',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.svg',
+			},
+			{
+				coinDenom: 'DAI',
+				coinMinimalDenom: 'dai-wei',
+				coinDecimals: 18,
+				coinGeckoId: 'dai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.svg',
 			},
 		],
 		feeCurrencies: [
