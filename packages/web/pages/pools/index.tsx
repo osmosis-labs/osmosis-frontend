@@ -48,7 +48,7 @@ const Pools: NextPage = observer(function (props) {
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   hydratePoolsPageStores(
     queriesStore.get(chainId),
-    (props as any).data as unknown as PoolsPageSSRProps
+    (props as any).data as unknown as PoolsPageSSRProps | null
   );
   const queriesExternal = queriesExternalStore.get();
 

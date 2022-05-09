@@ -4,10 +4,21 @@ import { RootStore } from "../root";
 import { PoolsPageSSRProps } from "./types";
 import { configureContext } from "./configure-context";
 
-/** Construct the store and take response data needed for pools page. */
+/**
+ * Fetch data from store that is relevant to pools page if initial load.
+ * @param context Context object from `getServerSideProps`.
+ * @returns Pools page data, or null if data assumed to be on client.
+ */
 export async function getPoolsPageData(
   context: GetServerSidePropsContext
-): Promise<PoolsPageSSRProps> {
+): Promise<PoolsPageSSRProps | null> {
+  // Next.js provides `/pools` url for initial page render,
+  // and `/_next/**` url for subsequent page renders.
+  // Resolve to null to let client-side store be used.
+  if (context.req.url !== "/pools") {
+    return Promise.resolve(null);
+  }
+
   configureContext(context);
 
   const { chainStore, queriesStore } = new RootStore();
@@ -26,11 +37,21 @@ export async function getPoolsPageData(
   };
 }
 
-/** Hydrate the stores with pools data. */
+/**
+ * Pre-populate store data.
+ * @param stores Stores to hydrate.
+ * @param poolsPageProps Fresh pools page data. Nullable for when data is already on client.
+ */
 export function hydratePoolsPageStores(
   { osmosis }: OsmosisQueries,
-  { pools, superfluidPools, epochs }: PoolsPageSSRProps
+  poolsPageProps: PoolsPageSSRProps | null
 ) {
+  if (!poolsPageProps) {
+    return;
+  }
+
+  const { pools, superfluidPools, epochs } = poolsPageProps;
+
   if (pools) {
     osmosis?.queryGammPools.hydrate(pools);
   }
