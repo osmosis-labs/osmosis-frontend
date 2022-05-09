@@ -1,5 +1,5 @@
+import dynamic from "next/dynamic";
 import React, { FunctionComponent } from "react";
-import QRCode from "qrcode.react";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useWindowSize } from "../hooks";
 
@@ -23,11 +23,17 @@ export const KeplrWalletConnectQRModal: FunctionComponent<
         )
       }
     >
-      {uri ? (
-        <div className="bg-white-high p-3.5 md:w-80 md:mx-auto">
-          <QRCode size={isMobile ? 290 : 480} value={uri} />
-        </div>
-      ) : undefined}
+      {uri
+        ? (() => {
+            const QRCode = dynamic(() => import("qrcode.react"));
+
+            return (
+              <div className="bg-white-high p-3.5 md:w-80 md:mx-auto">
+                <QRCode size={isMobile ? 290 : 480} value={uri} />
+              </div>
+            );
+          })()
+        : undefined}
     </ModalBase>
   );
 };
