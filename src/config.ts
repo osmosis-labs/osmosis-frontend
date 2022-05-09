@@ -1005,26 +1005,26 @@ export const IBCAssetInfos: {
 		counterpartyChainId: 'axelar-dojo-1',
 		sourceChannelId: 'channel-208',
 		destChannelId: 'channel-3',
-		coinMinimalDenom: 'uusdt',
-		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=usdt',
-		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=usdt',
-	},
-	{
-		counterpartyChainId: 'axelar-dojo-1',
-		sourceChannelId: 'channel-208',
-		destChannelId: 'channel-3',
 		coinMinimalDenom: 'dai-wei',
 		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=dai',
 		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=dai',
 	},
-	{
-		counterpartyChainId: 'axelar-dojo-1',
-		sourceChannelId: 'channel-208',
-		destChannelId: 'channel-3',
-		coinMinimalDenom: 'frax-wei',
-		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=frax',
-		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=frax',
-	},
+	// {
+	// 	counterpartyChainId: 'axelar-dojo-1',
+	// 	sourceChannelId: 'channel-208',
+	// 	destChannelId: 'channel-3',
+	// 	coinMinimalDenom: 'uusdt',
+	// 	depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=usdt',
+	// 	withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=usdt',
+	// },
+	// {
+	// 	counterpartyChainId: 'axelar-dojo-1',
+	// 	sourceChannelId: 'channel-208',
+	// 	destChannelId: 'channel-3',
+	// 	coinMinimalDenom: 'frax-wei',
+	// 	depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=frax',
+	// 	withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=frax',
+	// },
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
