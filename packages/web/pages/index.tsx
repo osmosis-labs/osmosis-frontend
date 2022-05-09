@@ -3,6 +3,7 @@ import type { NextPage } from "next";
 import { useEffect, useRef, useState } from "react";
 import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 import { TradeClipboard } from "../components/trade-clipboard";
+import { useWindowSize } from "../hooks";
 import { useStore } from "../stores";
 
 const Home: NextPage = observer(function () {
@@ -10,42 +11,11 @@ const Home: NextPage = observer(function () {
 
   const containerRef = useRef<HTMLElement | null>(null);
   const clipboardRef = useRef<HTMLDivElement | null>(null);
-  const [containerSize, setContainerSize] = useState<
-    | {
-        width: number;
-        height: number;
-      }
-    | undefined
-  >(undefined);
   const [clipboardWidth, setClipboardWidth] = useState<number | undefined>(
     undefined
   );
 
-  // TODO: Use useWindowSize() hook
-  useEffect(() => {
-    // There seems to be no resize event for each element.
-    // Instead, the container size is calculated each time the window is resized.
-    // In other words, the operation of the container is guaranteed only when the container is not changed except for window resize.
-    const onResize = () => {
-      if (containerRef.current) {
-        setContainerSize({
-          width: containerRef.current.clientWidth,
-          height: containerRef.current.clientHeight,
-        });
-      }
-      if (clipboardRef.current) {
-        setClipboardWidth(clipboardRef.current.clientWidth);
-      }
-    };
-
-    onResize();
-
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      window.removeEventListener("resize", onResize);
-    };
-  }, []);
+  const windowSize = useWindowSize();
 
   const chainInfo = chainStore.osmosis;
 
@@ -74,14 +44,14 @@ const Home: NextPage = observer(function () {
           preserveAspectRatio={(() => {
             let ratio = imageRatio;
 
-            if (!containerSize) {
+            if (!windowSize) {
               if (typeof window !== "undefined") {
                 ratio =
                   (window.innerWidth - defaultDesktopSidebarWidthPx) /
                   window.innerHeight;
               }
             } else {
-              ratio = containerSize.width / containerSize.height;
+              ratio = windowSize.width / windowSize.height;
             }
 
             return ratio > imageRatio ? "xMinYMid meet" : "xMidYMid slice";
@@ -115,8 +85,8 @@ const Home: NextPage = observer(function () {
           containerStyle={{
             ["--clipboardMinLeft" as any]: `calc(${clipboardMinLeftPx} * (100vh / 1080))`,
             ["--clipboardPositionLeft" as any]: `calc((${
-              containerSize
-                ? containerSize.width + "px"
+              windowSize
+                ? windowSize.width + "px"
                 : `100vw - ${defaultDesktopSidebarWidthPx}px`
             }) * ${clipboardPositionLeft} - ${
               clipboardWidth ? clipboardWidth : defaultClipboardWidthPx

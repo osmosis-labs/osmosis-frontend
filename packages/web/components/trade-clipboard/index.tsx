@@ -10,6 +10,8 @@ import {
   useTradeTokenInConfig,
 } from "../../hooks";
 import { useStore } from "../../stores";
+import { Error as ErrorBox } from "../alert";
+import { Button } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
@@ -389,17 +391,18 @@ export const TradeClipboard = observer<
               </div>
             </div>
           </div>
-
-          {/* TODO: Styling warning/error case. Render loading state. Handle rejection. */}
-          <button
+          {tradeTokenInConfig.error && (
+            <div className="w-full flex justify-center items-center mt-4">
+              <ErrorBox message={tradeTokenInConfig.error?.message} />
+            </div>
+          )}
+          <Button
             className="mt-[1.125rem] flex justify-center items-center w-full h-[3.75rem] rounded-lg bg-primary-200 text-white-full text-base font-medium shadow-md"
             disabled={
               tradeTokenInConfig.error != null &&
               tradeTokenInConfig.optimizedRoutePaths.length > 0
             }
-            onClick={async (e) => {
-              e.preventDefault();
-
+            onClick={async () => {
               if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
                 // TODO: Only multihop is supported yet.
                 const routes: {
@@ -423,9 +426,12 @@ export const TradeClipboard = observer<
                     );
 
                   if (!tokenOutCurrency) {
-                    throw new Error(
-                      `Failed to find currency ${tradeTokenInConfig.optimizedRoutePaths[0].tokenOutDenoms[i]}`
+                    tradeTokenInConfig.setError(
+                      new Error(
+                        `Failed to find currency ${tradeTokenInConfig.optimizedRoutePaths[0].tokenOutDenoms[i]}`
+                      )
                     );
+                    return;
                   }
 
                   routes.push({
@@ -442,9 +448,12 @@ export const TradeClipboard = observer<
                   );
 
                 if (!tokenInCurrency) {
-                  throw new Error(
-                    `Failed to find currency ${tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom}`
+                  tradeTokenInConfig.setError(
+                    new Error(
+                      `Failed to find currency ${tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom}`
+                    )
                   );
+                  return;
                 }
 
                 await account.osmosis.sendMultihopSwapExactAmountInMsg(
@@ -455,13 +464,11 @@ export const TradeClipboard = observer<
                   },
                   slippageConfig.slippage.symbol("").toString()
                 );
-
-                // TODO: Notify error if thrown ?
               }
             }}
           >
             Swap
-          </button>
+          </Button>
         </div>
       </div>
     );
