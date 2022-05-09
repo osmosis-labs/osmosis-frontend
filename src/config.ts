@@ -3141,6 +3141,27 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'pool:umntl',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/mntl.png',
 			},
+			{
+				coinDenom: 'FRAX',
+				coinMinimalDenom: 'frax-wei',
+				coinDecimals: 18,
+				coinGeckoId: 'frax',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/frax.svg',
+			},
+			{
+				coinDenom: 'USDT',
+				coinMinimalDenom: 'uusdt',
+				coinDecimals: 6,
+				coinGeckoId: 'tether',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.svg',
+			},
+			{
+				coinDenom: 'DAI',
+				coinMinimalDenom: 'dai-wei',
+				coinDecimals: 18,
+				coinGeckoId: 'dai',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.svg',
+			},
 		],
 		feeCurrencies: [
 			{
