@@ -46,7 +46,6 @@ const Pools: NextPage = observer(function (ssrProps) {
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  console.log("render", ssrProps);
   hydratePoolsPageStores(
     queriesStore.get(chainId),
     queriesExternalStore.get().queryGammPoolFeeMetrics,
