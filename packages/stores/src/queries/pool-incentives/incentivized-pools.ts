@@ -9,7 +9,7 @@ import { Dec, Int, RatePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
-import { computedFn } from "mobx-utils";
+import { computedFn } from "../../computed-fn";
 import { ObservableQueryEpochs } from "../epochs";
 import {
   ObservableQueryEpochProvisions,

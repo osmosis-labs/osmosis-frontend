@@ -9,7 +9,7 @@ import { GaugeById } from "./types";
 import { computed } from "mobx";
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { computedFn } from "mobx-utils";
+import { computedFn } from "../../computed-fn";
 import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
 

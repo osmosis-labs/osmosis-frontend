@@ -3,7 +3,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { DistrInfo } from "./types";
 import { computed, makeObservable } from "mobx";
 import { Int } from "@keplr-wallet/unit";
-import { computedFn } from "mobx-utils";
+import { computedFn } from "../../computed-fn";
 
 export class ObservableQueryDistrInfo extends ObservableChainQuery<DistrInfo> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {

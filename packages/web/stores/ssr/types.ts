@@ -7,8 +7,8 @@ import {
 import { QueryResponse } from "@keplr-wallet/stores";
 
 export interface PoolsPageSSRProps {
-  pools?: QueryResponse<Pools>;
-  poolsFeeData?: QueryResponse<PoolFees>;
-  superfluidPools?: QueryResponse<SuperfluidAllAssets>;
-  epochs?: QueryResponse<Epochs>;
+  pools: QueryResponse<Pools> | null;
+  poolsFeeData: QueryResponse<PoolFees> | null;
+  superfluidPools: QueryResponse<SuperfluidAllAssets> | null;
+  epochs: QueryResponse<Epochs> | null;
 }

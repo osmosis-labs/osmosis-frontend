@@ -12,7 +12,7 @@ import {
 import { makeObservable } from "mobx";
 import { CoinPretty, Int } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
-import { computedFn } from "mobx-utils";
+import { computedFn } from "../../computed-fn";
 
 export class ObservableQuerySuperfluidDelegationsInner extends ObservableChainQuery<SuperfluidDelegationsResponse> {
   constructor(

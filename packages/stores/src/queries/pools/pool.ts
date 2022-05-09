@@ -17,7 +17,7 @@ import {
 import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
 import { Pool, WeightedPool, WeightedPoolRaw } from "@osmosis-labs/pools";
 import { action, computed, makeObservable, observable } from "mobx";
-import { computedFn } from "mobx-utils";
+import { computedFn } from "../../computed-fn";
 
 export class ObservableQueryPool extends ObservableChainQuery<{
   pool: WeightedPoolRaw;

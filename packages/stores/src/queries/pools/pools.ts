@@ -8,7 +8,7 @@ import {
 import { Dec } from "@keplr-wallet/unit";
 import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
 import { autorun, makeObservable } from "mobx";
-import { computedFn } from "mobx-utils";
+import { computedFn } from "../../computed-fn";
 import { HydrateableStore } from "../../types";
 import { ObservableQueryNumPools } from "./num-pools";
 import { ObservableQueryPool } from "./pool";

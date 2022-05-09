@@ -509,6 +509,6 @@ export const getStaticProps: GetStaticProps = async () => {
 
   return {
     props: { data },
-    revalidate: 10, // SSR every 10 secs
+    revalidate: 10, // SSR into cache every 10 secs
   };
 };

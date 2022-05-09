@@ -1,5 +1,5 @@
 import { makeObservable } from "mobx";
-import { computedFn } from "mobx-utils";
+import { computedFn } from "../../computed-fn";
 import { KVStore } from "@keplr-wallet/common";
 import { CoinGeckoPriceStore, QueryResponse } from "@keplr-wallet/stores";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";

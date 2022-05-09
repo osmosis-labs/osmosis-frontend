@@ -1,11 +1,11 @@
 import { computed, makeObservable } from "mobx";
-import { computedFn } from "mobx-utils";
 import { KVStore } from "@keplr-wallet/common";
 import {
   ChainGetter,
   ObservableChainQuery,
   QueryResponse,
 } from "@keplr-wallet/stores";
+import { computedFn } from "../../computed-fn";
 import { SuperfluidAllAssets } from "./types";
 import { HydrateableStore } from "../../types";
 

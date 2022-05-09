@@ -11,7 +11,7 @@ import {
 import { makeObservable } from "mobx";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
-import { computedFn } from "mobx-utils";
+import { computedFn } from "../../computed-fn";
 import dayjs from "dayjs";
 
 export class ObservableQuerySuperfluidUndelegationsInner extends ObservableChainQuery<SuperfluidUndelegationsResponse> {

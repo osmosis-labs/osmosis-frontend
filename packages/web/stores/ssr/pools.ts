@@ -23,10 +23,10 @@ export async function getPoolsPageData(): Promise<PoolsPageSSRProps | null> {
   const epochs = await osmosisQueries?.queryEpochs.waitFreshResponse();
 
   return {
-    pools,
-    poolsFeeData,
-    superfluidPools,
-    epochs,
+    pools: pools ?? null,
+    poolsFeeData: poolsFeeData ?? null,
+    superfluidPools: superfluidPools ?? null,
+    epochs: epochs ?? null,
   };
 }
 
