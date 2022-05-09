@@ -44,7 +44,8 @@
     "react-dom": "17.0.2",
     "react-modal": "^3.14.4",
     "react-toastify": "^7.0.4",
-    "sha.js": "^2.4.11"
+    "sha.js": "^2.4.11",
+    "sharp": "^0.30.4"
   },
   "devDependencies": {
     "@types/qrcode.react": "^1.0.2",
