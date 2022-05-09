@@ -9,12 +9,16 @@ import { Dec } from "@keplr-wallet/unit";
 import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
 import { autorun, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
+import { HydrateableStore } from "../types";
 import { ObservableQueryNumPools } from "./num-pools";
 import { ObservableQueryPool } from "./pool";
 import { Pools } from "./types";
 import { GET_POOLS_PAGINATION_LIMIT } from ".";
 
-export class ObservableQueryPools extends ObservableChainQuery<Pools> {
+export class ObservableQueryPools
+  extends ObservableChainQuery<Pools>
+  implements HydrateableStore<Pools>
+{
   constructor(
     kvStore: KVStore,
     chainId: string,
@@ -38,6 +42,11 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
         this.setUrl(`/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`);
       }
     });
+  }
+
+  hydrate(data: QueryResponse<Pools>): void {
+    this.cancel();
+    this.setResponse(data);
   }
 
   protected setResponse(response: Readonly<QueryResponse<Pools>>) {

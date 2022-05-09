@@ -1,9 +1,14 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
+import {
+  ChainGetter,
+  ObservableChainQuery,
+  QueryResponse,
+} from "@keplr-wallet/stores";
 import { Epochs } from "./types";
 import { computed, observable } from "mobx";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
+import { HydrateableStore } from "../types";
 
 export class ObservableQueryEpochsInner {
   constructor(
@@ -50,12 +55,20 @@ export class ObservableQueryEpochsInner {
   }
 }
 
-export class ObservableQueryEpochs extends ObservableChainQuery<Epochs> {
+export class ObservableQueryEpochs
+  extends ObservableChainQuery<Epochs>
+  implements HydrateableStore<Epochs>
+{
   @observable.shallow
   protected map: Map<string, ObservableQueryEpochsInner> = new Map();
 
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
     super(kvStore, chainId, chainGetter, "/osmosis/epochs/v1beta1/epochs");
+  }
+
+  hydrate(data: QueryResponse<Epochs>): void {
+    this.cancel();
+    this.setResponse(data);
   }
 
   getEpoch(identifier: string) {
@@ -67,3 +80,5 @@ export class ObservableQueryEpochs extends ObservableChainQuery<Epochs> {
     return this.map.get(identifier)!;
   }
 }
+
+export * from "./types";

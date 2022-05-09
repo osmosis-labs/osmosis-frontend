@@ -9,3 +9,4 @@ export * from "./pools";
 export * from "./superfluid-pools";
 
 export * from "./store";
+export * from "./types";
