@@ -67,7 +67,6 @@ export class ObservableQueryEpochs
   }
 
   hydrate(data: QueryResponse<Epochs>): void {
-    this.cancel();
     this.setResponse(data);
   }
 

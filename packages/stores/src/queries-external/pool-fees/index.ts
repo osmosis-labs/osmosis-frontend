@@ -24,7 +24,6 @@ export class ObservableQueryPoolFeesMetrics
   }
 
   hydrate(data: QueryResponse<PoolFees>): void {
-    this.cancel();
     this.setResponse(data);
   }
 

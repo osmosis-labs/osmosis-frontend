@@ -25,7 +25,6 @@ export class ObservableQuerySuperfluidPools
   }
 
   hydrate(data: QueryResponse<SuperfluidAllAssets>): void {
-    this.cancel();
     this.setResponse(data);
   }
 

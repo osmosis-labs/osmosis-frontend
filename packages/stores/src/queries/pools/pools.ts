@@ -45,7 +45,6 @@ export class ObservableQueryPools
   }
 
   hydrate(data: QueryResponse<Pools>): void {
-    this.cancel();
     this.setResponse(data);
   }
 

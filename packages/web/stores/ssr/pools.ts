@@ -6,7 +6,7 @@ import { RootStore } from "../root";
 import { PoolsPageSSRProps } from "./types";
 
 /**
- * Fetch data from store that is relevant to pools page.
+ * Fetch data from store that is relevant to initially render the pools page.
  * @returns Pools page data. Sent to client initially embedded in HTML or later as JSON within session.
  */
 export async function getPoolsPageData(): Promise<PoolsPageSSRProps | null> {
