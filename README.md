@@ -42,6 +42,9 @@ yarn build:css && yarn dev
 ```
 The app should be live at http://localhost:8081
 
+## Documentation
+To see a quick guide on getting started with building frontend, check out the [frontend guide](https://docs.osmosis.zone/developing/web-dev-guide.html)
+
 
 ## License
 
