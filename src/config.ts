@@ -2989,28 +2989,28 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		bech32Config: Bech32Address.defaultBech32Config('axelar'),
 		currencies: [
 			{
-				coinDenom: 'axl-USDC',
+				coinDenom: 'USDC',
 				coinMinimalDenom: 'uusdc',
 				coinDecimals: 6,
 				coinGeckoId: 'usd-coin',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.svg',
 			},
 			{
-				coinDenom: 'axl-FRAX',
+				coinDenom: 'FRAX',
 				coinMinimalDenom: 'frax-wei',
 				coinDecimals: 18,
 				coinGeckoId: 'frax',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/frax.svg',
 			},
 			{
-				coinDenom: 'axl-USDT',
+				coinDenom: 'USDT',
 				coinMinimalDenom: 'uusdt',
 				coinDecimals: 6,
 				coinGeckoId: 'tether',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.svg',
 			},
 			{
-				coinDenom: 'axl-DAI',
+				coinDenom: 'DAI',
 				coinMinimalDenom: 'dai-wei',
 				coinDecimals: 18,
 				coinGeckoId: 'dai',
