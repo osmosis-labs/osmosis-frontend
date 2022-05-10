@@ -1174,7 +1174,7 @@ export const IBCAssetInfos: {
 	{
 		counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-169',
-		destChannelId: 'channel-47',
+		destChannelId: 'channel-47',	
 		coinMinimalDenom: 'cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
@@ -1184,6 +1184,13 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-47',
 		coinMinimalDenom: 'cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
+	{
+		counterpartyChainId: 'juno-1',
+		sourceChannelId: 'channel-169',
+		destChannelId: 'channel-47',
+		coinMinimalDenom: 'cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w',
+		ics20ContractAddress: 'juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w',
 	}
 ];
 
@@ -1836,6 +1843,15 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				//coinGeckoId: 'pool:raw',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/raw.png',
+			},
+			{
+				type: 'cw20',
+				contractAddress: 'juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w',
+				coinDenom: 'ASVT',
+				coinMinimalDenom: 'cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w:ASVT',
+				coinDecimals: 6,
+				//coinGeckoId: 'pool:asvt',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/asvt.png',
 			},
 		],
 		feeCurrencies: [
