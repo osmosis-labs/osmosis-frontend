@@ -3028,7 +3028,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'weth-wei',
 				coinDecimals: 18,
 				coinGeckoId: 'weth',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/weth.svg',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/weth.png',
 			},
 		],
 		feeCurrencies: [
