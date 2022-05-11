@@ -16,6 +16,7 @@ import { RowDef, Table } from "../table";
 import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
 import { Breakpoint } from "../types";
 import { CompactPoolTableDisplay } from "./compact-pool-table-display";
+import { POOLS_PER_PAGE } from ".";
 
 export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
   () => {
@@ -134,7 +135,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     ] = useSortedData(filteredPools, "liquidity", "descending");
     const [page, setPage, minPage, numPages, allData] = usePaginatedData(
       sortedAllPoolsWithMetrics,
-      10
+      POOLS_PER_PAGE
     );
     const tableCols = [
       {

@@ -15,6 +15,7 @@ import { RowDef, Table } from "../table";
 import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
 import { Breakpoint } from "../types";
 import { CompactPoolTableDisplay } from "./compact-pool-table-display";
+import { POOLS_PER_PAGE } from ".";
 
 const poolsMenuOptions = [
   { id: "incentivized-pools", display: "Incentivized Pools" },
@@ -22,7 +23,6 @@ const poolsMenuOptions = [
 ];
 
 const TVL_FILTER_THRESHOLD = 1000;
-export const POOLS_PER_PAGE = 10;
 
 export const AllPoolsTableSet: FunctionComponent<{
   tableSet?: "incentivized-pools" | "all-pools";
@@ -42,7 +42,9 @@ export const AllPoolsTableSet: FunctionComponent<{
       setActiveOptionId(optionId);
     }
   };
-  const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
+  const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(
+    typeof window === "undefined"
+  );
 
   const { chainId } = chainStore.osmosis;
   const queriesOsmosis = queriesStore.get(chainId).osmosis!;
@@ -71,11 +73,6 @@ export const AllPoolsTableSet: FunctionComponent<{
       .computeMostAPY(pool.id, priceStore)
       .maxDecimals(2),
   }));
-
-  if (typeof window === "undefined") {
-    // console.log("pools-table-set", allPoolsWithMetrics);
-    // allPoolsWithMetrics.forEach((p) => console.log(p.liquidity.toString()));
-  }
 
   const incentivizedPoolsWithMetrics = allPoolsWithMetrics.reduce(
     (
