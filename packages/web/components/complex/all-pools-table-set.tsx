@@ -107,6 +107,8 @@ export const AllPoolsTableSet: FunctionComponent<{
     "pool.poolAssets.amount.currency.coinDenom",
   ]);
 
+  const initialKeyPath = "liquidity";
+  const initialSortDirection = "descending";
   const [
     sortKeyPath,
     setSortKeyPath,
@@ -114,97 +116,64 @@ export const AllPoolsTableSet: FunctionComponent<{
     setSortDirection,
     toggleSortDirection,
     sortedAllPoolsWithMetrics,
-  ] = useSortedData(filteredPools, "liquidity", "descending");
+  ] = useSortedData(filteredPools, initialKeyPath, initialSortDirection);
 
   const [page, setPage, minPage, numPages, allData] = usePaginatedData(
     sortedAllPoolsWithMetrics,
     POOLS_PER_PAGE
   );
+  const makeSortMechanism = (keyPath: string) =>
+    sortKeyPath === keyPath
+      ? {
+          currentDirection: sortDirection,
+          onClickHeader: () => {
+            // cycle ascending => descending => initial
+            switch (sortDirection) {
+              case "ascending":
+                setSortDirection("descending");
+                break;
+              case "descending":
+                setSortKeyPath(initialKeyPath);
+                setSortDirection(initialSortDirection);
+            }
+          },
+        }
+      : {
+          onClickHeader: () => {
+            setSortKeyPath(keyPath);
+            setSortDirection("ascending");
+          },
+        };
   const tableCols = [
     {
       id: "pool.id",
       display: "Pool ID",
-      sort:
-        sortKeyPath === "pool.id"
-          ? {
-              currentDirection: sortDirection,
-              onClickHeader: toggleSortDirection,
-            }
-          : {
-              onClickHeader: () => {
-                setSortKeyPath("pool.id");
-                setSortDirection("ascending");
-              },
-            },
+      sort: makeSortMechanism("pool.id"),
       displayCell: PoolCompositionCell,
     },
     {
       id: "liquidity",
       display: "Liquidity",
-      sort:
-        sortKeyPath === "liquidity"
-          ? {
-              currentDirection: sortDirection,
-              onClickHeader: toggleSortDirection,
-            }
-          : {
-              onClickHeader: () => {
-                setSortKeyPath("liquidity");
-                setSortDirection("ascending");
-              },
-            },
+      sort: makeSortMechanism("liquidity"),
     },
     {
       id: "volume24h",
       display: "Volume (24H)",
-      sort:
-        sortKeyPath === "volume24h"
-          ? {
-              currentDirection: sortDirection,
-              onClickHeader: toggleSortDirection,
-            }
-          : {
-              onClickHeader: () => {
-                setSortKeyPath("volume24h");
-                setSortDirection("ascending");
-              },
-            },
+      sort: makeSortMechanism("volume24h"),
 
       displayCell: MetricLoaderCell,
     },
     {
       id: "feesSpent7d",
       display: "Fees (7D)",
-      sort:
-        sortKeyPath === "feesSpent7d"
-          ? {
-              currentDirection: sortDirection,
-              onClickHeader: toggleSortDirection,
-            }
-          : {
-              onClickHeader: () => {
-                setSortKeyPath("feesSpent7d");
-                setSortDirection("ascending");
-              },
-            },
+      sort: makeSortMechanism("feesSpent7d"),
       displayCell: MetricLoaderCell,
       collapseAt: Breakpoint.XL,
     },
     {
       id: isIncentivizedPools ? "apr" : "myLiquidity",
       display: isIncentivizedPools ? "APR" : "My Liquidity",
-      sort:
-        sortKeyPath === (isIncentivizedPools ? "apr" : "myLiquidity")
-          ? {
-              currentDirection: sortDirection,
-              onClickHeader: toggleSortDirection,
-            }
-          : {
-              onClickHeader: () => {
-                setSortKeyPath(isIncentivizedPools ? "apr" : "myLiquidity");
-                setSortDirection("ascending");
-              },
-            },
+      sort: makeSortMechanism(isIncentivizedPools ? "apr" : "myLiquidity"),
       displayCell: isIncentivizedPools ? MetricLoaderCell : undefined,
       collapseAt: Breakpoint.LG,
     },

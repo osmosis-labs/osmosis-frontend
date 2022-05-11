@@ -125,6 +125,8 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       ["pool.id", "pool.poolAssets.amount.currency.coinDenom"]
     );
 
+    const initialKeyPath = "liquidity";
+    const initialSortDirection = "descending";
     const [
       sortKeyPath,
       setSortKeyPath,
@@ -132,94 +134,61 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       setSortDirection,
       toggleSortDirection,
       sortedAllPoolsWithMetrics,
-    ] = useSortedData(filteredPools, "liquidity", "descending");
+    ] = useSortedData(filteredPools, initialKeyPath, initialSortDirection);
     const [page, setPage, minPage, numPages, allData] = usePaginatedData(
       sortedAllPoolsWithMetrics,
       POOLS_PER_PAGE
     );
+    const makeSortMechanism = (keyPath: string) =>
+      sortKeyPath === keyPath
+        ? {
+            currentDirection: sortDirection,
+            onClickHeader: () => {
+              // cycle ascending => descending => initial
+              switch (sortDirection) {
+                case "ascending":
+                  setSortDirection("descending");
+                  break;
+                case "descending":
+                  setSortKeyPath(initialKeyPath);
+                  setSortDirection(initialSortDirection);
+              }
+            },
+          }
+        : {
+            onClickHeader: () => {
+              setSortKeyPath(keyPath);
+              setSortDirection("ascending");
+            },
+          };
     const tableCols = [
       {
         id: "pool.id",
         display: "Pool ID",
-        sort:
-          sortKeyPath === "pool.id"
-            ? {
-                currentDirection: sortDirection,
-                onClickHeader: toggleSortDirection,
-              }
-            : {
-                onClickHeader: () => {
-                  setSortKeyPath("pool.id");
-                  setSortDirection("ascending");
-                },
-              },
+        sort: makeSortMechanism("pool.id"),
         displayCell: PoolCompositionCell,
       },
       {
         id: "liquidity",
         display: "Liquidity",
-        sort:
-          sortKeyPath === "liquidity"
-            ? {
-                currentDirection: sortDirection,
-                onClickHeader: toggleSortDirection,
-              }
-            : {
-                onClickHeader: () => {
-                  setSortKeyPath("liquidity");
-                  setSortDirection("ascending");
-                },
-              },
+        sort: makeSortMechanism("liquidity"),
       },
       {
         id: "apr",
         display: "APR",
-        sort:
-          sortKeyPath === "apr"
-            ? {
-                currentDirection: sortDirection,
-                onClickHeader: toggleSortDirection,
-              }
-            : {
-                onClickHeader: () => {
-                  setSortKeyPath("apr");
-                  setSortDirection("ascending");
-                },
-              },
+        sort: makeSortMechanism("apr"),
         displayCell: MetricLoaderCell,
       },
       {
         id: "epochsRemaining",
         display: "Epochs Remaining",
-        sort:
-          sortKeyPath === "epochsRemaining"
-            ? {
-                currentDirection: sortDirection,
-                onClickHeader: toggleSortDirection,
-              }
-            : {
-                onClickHeader: () => {
-                  setSortKeyPath("epochsRemaining");
-                  setSortDirection("ascending");
-                },
-              },
+        sort: makeSortMechanism("epochsRemaining"),
         collapseAt: Breakpoint.XL,
       },
       {
         id: "myLiquidity",
         display: "My Liquidity",
-        sort:
-          sortKeyPath === "myLiquidity"
-            ? {
-                currentDirection: sortDirection,
-                onClickHeader: toggleSortDirection,
-              }
-            : {
-                onClickHeader: () => {
-                  setSortKeyPath("myLiquidity");
-                  setSortDirection("ascending");
-                },
-              },
+        sort: makeSortMechanism("myLiquidity"),
         collapseAt: Breakpoint.LG,
       },
     ];
