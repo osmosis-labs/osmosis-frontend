@@ -3,6 +3,7 @@ import {
   ChainGetter,
   CoinGeckoPriceStore,
   ObservableChainQuery,
+  QueryResponse,
 } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { Dec, Int, RatePretty } from "@keplr-wallet/unit";
@@ -16,11 +17,15 @@ import {
   ObservableQueryMintParmas,
 } from "../mint";
 import { ObservableQueryPools } from "../pools";
+import { HydrateableStore } from "src/types";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
 import { IncentivizedPools } from "./types";
 
-export class ObservableQueryIncentivizedPools extends ObservableChainQuery<IncentivizedPools> {
+export class ObservableQueryIncentivizedPools
+  extends ObservableChainQuery<IncentivizedPools>
+  implements HydrateableStore<IncentivizedPools>
+{
   constructor(
     kvStore: KVStore,
     chainId: string,
@@ -40,6 +45,10 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     );
 
     makeObservable(this);
+  }
+
+  hydrate(data: QueryResponse<IncentivizedPools>): void {
+    this.setResponse(data);
   }
 
   @computed

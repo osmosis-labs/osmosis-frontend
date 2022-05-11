@@ -22,6 +22,7 @@ const poolsMenuOptions = [
 ];
 
 const TVL_FILTER_THRESHOLD = 1000;
+export const POOLS_PER_PAGE = 10;
 
 export const AllPoolsTableSet: FunctionComponent<{
   tableSet?: "incentivized-pools" | "all-pools";
@@ -70,6 +71,12 @@ export const AllPoolsTableSet: FunctionComponent<{
       .computeMostAPY(pool.id, priceStore)
       .maxDecimals(2),
   }));
+
+  if (typeof window === "undefined") {
+    // console.log("pools-table-set", allPoolsWithMetrics);
+    // allPoolsWithMetrics.forEach((p) => console.log(p.liquidity.toString()));
+  }
+
   const incentivizedPoolsWithMetrics = allPoolsWithMetrics.reduce(
     (
       incentivizedPools: ObservablePoolWithFeeMetrics[],
@@ -91,6 +98,7 @@ export const AllPoolsTableSet: FunctionComponent<{
   const activeOptionPools = isIncentivizedPools
     ? incentivizedPoolsWithMetrics
     : allPoolsWithMetrics;
+
   const tvlFilteredPools = isPoolTvlFiltered
     ? activeOptionPools
     : activeOptionPools.filter((poolWithMetrics) =>
@@ -110,9 +118,10 @@ export const AllPoolsTableSet: FunctionComponent<{
     toggleSortDirection,
     sortedAllPoolsWithMetrics,
   ] = useSortedData(filteredPools, "liquidity", "descending");
+
   const [page, setPage, minPage, numPages, allData] = usePaginatedData(
     sortedAllPoolsWithMetrics,
-    10
+    POOLS_PER_PAGE
   );
   const tableCols = [
     {

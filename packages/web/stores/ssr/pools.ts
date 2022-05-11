@@ -15,6 +15,8 @@ export async function getPoolsPageData(): Promise<PoolsPageSSRProps | null> {
   const osmosisQueries = queriesStore.get(chainId).osmosis;
 
   const pools = await osmosisQueries?.queryGammPools.waitFreshResponse();
+  const incentivizedPools =
+    await osmosisQueries?.queryIncentivizedPools.waitFreshResponse();
   const poolsFeeData = await queriesExternalStore
     .get()
     .queryGammPoolFeeMetrics.waitFreshResponse();
@@ -24,6 +26,7 @@ export async function getPoolsPageData(): Promise<PoolsPageSSRProps | null> {
 
   return {
     pools: pools ?? null,
+    incentivizedPools: incentivizedPools ?? null,
     poolsFeeData: poolsFeeData ?? null,
     superfluidPools: superfluidPools ?? null,
     epochs: epochs ?? null,
@@ -44,10 +47,14 @@ export function hydratePoolsPageStores(
     return;
   }
 
-  const { pools, poolsFeeData, superfluidPools, epochs } = poolsPageProps;
+  const { pools, incentivizedPools, poolsFeeData, superfluidPools, epochs } =
+    poolsPageProps;
 
   if (pools) {
     osmosis?.queryGammPools.hydrate(pools);
+  }
+  if (incentivizedPools) {
+    osmosis?.queryIncentivizedPools.hydrate(incentivizedPools);
   }
   if (poolsFeeData) {
     queryGammPoolFeeMetrics.hydrate(poolsFeeData);
