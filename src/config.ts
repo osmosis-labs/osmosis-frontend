@@ -1089,6 +1089,14 @@ export const IBCAssetInfos: {
 		counterpartyChainId: 'axelar-dojo-1',
 		sourceChannelId: 'channel-208',
 		destChannelId: 'channel-3',
+		coinMinimalDenom: 'weth-wei',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=weth',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=weth',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uusdt',
 		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=usdt',
 		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=usdt',
@@ -3014,6 +3022,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 18,
 				coinGeckoId: 'dai',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.svg',
+			},
+			{
+				coinDenom: 'axl-WETH',
+				coinMinimalDenom: 'weth-wei',
+				coinDecimals: 18,
+				coinGeckoId: 'weth',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/weth.svg',
 			},
 		],
 		feeCurrencies: [
