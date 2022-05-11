@@ -3024,7 +3024,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.svg',
 			},
 			{
-				coinDenom: 'axl-WETH',
+				coinDenom: 'WETH',
 				coinMinimalDenom: 'weth-wei',
 				coinDecimals: 18,
 				coinGeckoId: 'weth',
