@@ -739,12 +739,6 @@ export const IBCAssetInfos: {
 	withdrawUrlOverride?: string;
 }[] = [
 	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uusd',
-	},
-	{
 		counterpartyChainId: 'axelar-dojo-1',
 		sourceChannelId: 'channel-208',
 		destChannelId: 'channel-3',
@@ -759,16 +753,22 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'uatom',
 	},
 	{
+		counterpartyChainId: 'crypto-org-chain-mainnet-1',
+		sourceChannelId: 'channel-5',
+		destChannelId: 'channel-10',
+		coinMinimalDenom: 'basecro',
+	},
+	{
 		counterpartyChainId: 'columbus-5',
 		sourceChannelId: 'channel-72',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uluna',
 	},
 	{
-		counterpartyChainId: 'crypto-org-chain-mainnet-1',
-		sourceChannelId: 'channel-5',
-		destChannelId: 'channel-10',
-		coinMinimalDenom: 'basecro',
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uusd',
 	},
 	{
 		counterpartyChainId: 'secret-4',
