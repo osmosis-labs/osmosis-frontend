@@ -16,3 +16,39 @@ body:
       placeholder: A clear and concise description of what the 🐞 is.
     validations:
       required: true
+  - type: dropdown
+    id: apptype
+    attributes:
+      label: App Version
+      description: What version of Osmosis are you running?
+      options:
+        - Frontier
+        - Main App
+    validations:
+      required: true
+
+  - type: dropdown
+    id: location
+    attributes:
+      label: Location
+      description: Where are you running this from
+      options:
+        - iOS
+        - Android
+        - Desktop
+        - Keplr mobile
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browsertype
+    attributes:
+      label: Browser Type
+      description: (Optional) Which browser are you running on?
+      options:
+        - Chrome
+        - Safari
+        - Opera
+        - Lynx
+    validations:
+      required: true
