@@ -27,40 +27,45 @@ export const IbcHistoryTable: FunctionComponent<CustomClasses> = observer(
       );
 
     return histories.length > 0 ? (
-      <Table<BaseCell & (IBCTransferHistory | UncommitedHistory)>
-        className={classNames("w-full", className)}
-        headerTrClassName="!h-12 body2 md:caption"
-        tBodyClassName="body2 md:caption"
-        columnDefs={[
-          { display: "Transaction Hash", displayCell: TxHashDisplayCell },
-          { display: "Type" },
-          { display: "Amount" },
-          { display: "Status", displayCell: StatusDisplayCell },
-        ]}
-        data={histories.map((history) => [
-          { ...history, value: history.txHash }, // Tx Hash
-          {
-            // Type
-            value:
-              ChainIdHelper.parse(chainId).identifier ===
-              ChainIdHelper.parse(history.destChainId).identifier
-                ? "Deposit"
-                : "Withdraw",
-          },
-          {
-            // Amount
-            value: new CoinPretty(
-              history.amount.currency,
-              history.amount.amount
-            )
-              .moveDecimalPointRight(history.amount.currency.coinDecimals)
-              .maxDecimals(6)
-              .trim(true)
-              .toString(),
-          },
-          { ...history }, // Status
-        ])}
-      />
+      <>
+        <div className="text-h5 font-h5 md:text-h6 md:font-h6 mt-8">
+          Transfer History
+        </div>
+        <Table<BaseCell & (IBCTransferHistory | UncommitedHistory)>
+          className={classNames("w-full", className)}
+          headerTrClassName="!h-12 body2 md:caption"
+          tBodyClassName="body2 md:caption"
+          columnDefs={[
+            { display: "Transaction Hash", displayCell: TxHashDisplayCell },
+            { display: "Type" },
+            { display: "Amount" },
+            { display: "Status", displayCell: StatusDisplayCell },
+          ]}
+          data={histories.map((history) => [
+            { ...history, value: history.txHash }, // Tx Hash
+            {
+              // Type
+              value:
+                ChainIdHelper.parse(chainId).identifier ===
+                ChainIdHelper.parse(history.destChainId).identifier
+                  ? "Deposit"
+                  : "Withdraw",
+            },
+            {
+              // Amount
+              value: new CoinPretty(
+                history.amount.currency,
+                history.amount.amount
+              )
+                .moveDecimalPointRight(history.amount.currency.coinDecimals)
+                .maxDecimals(6)
+                .trim(true)
+                .toString(),
+            },
+            { ...history }, // Status
+          ])}
+        />
+      </>
     ) : null;
   }
 );
