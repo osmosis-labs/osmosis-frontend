@@ -14,6 +14,8 @@ export async function getPoolsPageData(): Promise<PoolsPageSSRProps | null> {
   const { chainId } = chainStore.osmosis;
   const osmosisQueries = queriesStore.get(chainId).osmosis;
 
+  // TODO: add (move?) SSR hydration concept to keplr wallet & `CoinGeckoPriceStore`
+  //      would improve time to first print for price-related data
   const pools = await osmosisQueries?.queryGammPools.waitFreshResponse();
   const incentivizedPools =
     await osmosisQueries?.queryIncentivizedPools.waitFreshResponse();

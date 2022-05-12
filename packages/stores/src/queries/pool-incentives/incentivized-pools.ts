@@ -48,6 +48,7 @@ export class ObservableQueryIncentivizedPools
   }
 
   hydrate(data: QueryResponse<IncentivizedPools>): void {
+    this.cancel();
     this.setResponse(data);
   }
 
