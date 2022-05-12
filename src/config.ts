@@ -771,12 +771,14 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-72',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uluna',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'columbus-5',
 		sourceChannelId: 'channel-72',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uusd',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'secret-4',
