@@ -1366,6 +1366,9 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'terrausd',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
+				isStable: true,
+				//stableMechanism: "algorithmic",
+				//index: "United States Dollar",
 			},
 			{
 				coinDenom: 'KRT',
@@ -1373,6 +1376,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'terra-krw',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
+				isStable: true,
 			},
 		],
 		feeCurrencies: [
@@ -2937,6 +2941,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'usd-coin',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.png',
+				isStable: true,
 			},
 			{
 				coinDenom: 'g-DAI',
@@ -2944,6 +2949,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 18,
 				coinGeckoId: 'dai',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.png',
+				isStable: true,
 			},
 			{
 				coinDenom: 'g-USDT',
@@ -2951,6 +2957,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'tether',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.png',
+				isStable: true,
 			},
 		],
 		feeCurrencies: [
@@ -2993,6 +3000,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'usd-coin',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.svg',
+				isStable: true,
 			},
 			{
 				coinDenom: 'axl-FRAX',
@@ -3000,6 +3008,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 18,
 				coinGeckoId: 'frax',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/frax.svg',
+				isStable: true,
 			},
 			{
 				coinDenom: 'axl-USDT',
@@ -3007,6 +3016,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'tether',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.svg',
+				isStable: true,
 			},
 			{
 				coinDenom: 'axl-DAI',
@@ -3014,6 +3024,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 18,
 				coinGeckoId: 'dai',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.svg',
+				isStable: true,
 			},
 		],
 		feeCurrencies: [
