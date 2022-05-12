@@ -1404,6 +1404,21 @@ export class RootStore {
 					},
 				],
 			},
+			{
+				poolId: '703',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-208' }], 'weth-wei'),
+						coinDenom: 'WETH',
+						coinDecimals: 18,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
 		]);
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
