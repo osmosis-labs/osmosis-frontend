@@ -1795,7 +1795,7 @@ export class RootStore {
 				],
 			},
 			{
-				poolId: '703',
+				poolId: '704',
 				currencies: [
 					{
 						coinMinimalDenom: 'uosmo',
