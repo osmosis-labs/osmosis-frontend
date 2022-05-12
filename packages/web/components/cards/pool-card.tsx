@@ -23,7 +23,7 @@ export const PoolCard: FunctionComponent<
     return (
       <div
         className={classNames(
-          "w-full p-px rounded-lg shadow-elevation-08dp",
+          "w-full h-32 p-px rounded-lg shadow-elevation-08dp",
           {
             "bg-card": !isSuperfluid,
             "bg-superfluid": isSuperfluid,
@@ -32,8 +32,8 @@ export const PoolCard: FunctionComponent<
         )}
         onClick={() => router.push(`/pool/${poolId}`)}
       >
-        <div className="flex items-center place-content-between w-full p-4 bg-card rounded-lginset">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center place-content-between w-full h-full p-8 bg-card rounded-lginset">
+          <div className="flex flex-col place-items-start gap-3">
             <PoolAssetsIcon assets={poolAssets} size="sm" />
 
             <div className="flex flex-col gap-0.5">
@@ -47,7 +47,7 @@ export const PoolCard: FunctionComponent<
               </span>
             </div>
           </div>
-          <div className="flex flex-col gap-px text-right">
+          <div className="flex flex-col h-full place-content-between text-right">
             {poolMetrics.map((metric, index) => (
               <span
                 key={index}
