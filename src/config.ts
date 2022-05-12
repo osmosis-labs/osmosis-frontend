@@ -1859,7 +1859,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'RAW',
 				coinMinimalDenom: 'cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g:RAW',
 				coinDecimals: 6,
-				//coinGeckoId: 'pool:raw',
+				coinGeckoId: 'pool:raw',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/raw.png',
 			},
 		],
