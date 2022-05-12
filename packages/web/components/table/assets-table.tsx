@@ -24,6 +24,7 @@ import { Switch } from "../control";
 import { Button } from "../buttons";
 import { DataSorter } from "../../hooks/data/data-sorter";
 import { PreTransferModal } from "../../modals";
+import { IbcHistoryTable } from "./ibc-history";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -398,6 +399,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             </div>
           )}
         </div>
+        <IbcHistoryTable className="mt-8 md:w-screen md:-mx-4" />
       </div>
     </section>
   );
