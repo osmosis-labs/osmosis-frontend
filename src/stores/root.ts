@@ -1725,7 +1725,7 @@ export class RootStore {
 					},
 				],
 			},
-            {
+			{
 				poolId: '697',
 				currencies: [
 					{
@@ -1791,6 +1791,21 @@ export class RootStore {
 						coinMinimalDenom: 'uosmo',
 						coinDenom: 'OSMO',
 						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '674',
+				currencies: [
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-208' }], 'dai-wei'),
+						coinDenom: 'DAI',
+						coinDecimals: 18,
 					},
 				],
 			},
