@@ -466,11 +466,11 @@ export const ExtraGaugeInPool: {
 	],
 	'602': [
 		{
-			gaugeId: '2127',
+			gaugeId: '3365',
 			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
 		},
 		{
-			gaugeId: '2128',
+			gaugeId: '3366',
 			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
 		},
 	],
@@ -536,11 +536,11 @@ export const ExtraGaugeInPool: {
 	],
 	'617': [
 		{
-			gaugeId: '2125',
+			gaugeId: '3367',
 			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
 		},
 		{
-			gaugeId: '2126',
+			gaugeId: '3368',
 			denom: 'ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA',
 		},
 	],
