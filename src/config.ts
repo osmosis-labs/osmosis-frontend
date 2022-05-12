@@ -1366,9 +1366,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'terrausd',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
-				isStable: true,
-				//stableMechanism: "algorithmic",
-				//index: "United States Dollar",
+				pegMechanism: "algorithmic"
 			},
 			{
 				coinDenom: 'KRT',
@@ -1376,7 +1374,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'terra-krw',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
-				isStable: true,
+				pegMechanism: "algorithmic"
 			},
 		],
 		feeCurrencies: [
@@ -2941,7 +2939,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'usd-coin',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.png',
-				isStable: true,
+				pegMechanism: "collateralized"
 			},
 			{
 				coinDenom: 'g-DAI',
@@ -2949,7 +2947,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 18,
 				coinGeckoId: 'dai',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.png',
-				isStable: true,
+				pegMechanism: "collateralized"
 			},
 			{
 				coinDenom: 'g-USDT',
@@ -2957,7 +2955,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'tether',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.png',
-				isStable: true,
+				pegMechanism: "collateralized"
 			},
 		],
 		feeCurrencies: [
@@ -3000,7 +2998,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'usd-coin',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdc.svg',
-				isStable: true,
+				pegMechanism: "collateralized"
 			},
 			{
 				coinDenom: 'axl-FRAX',
@@ -3008,7 +3006,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 18,
 				coinGeckoId: 'frax',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/frax.svg',
-				isStable: true,
+				pegMechanism: "hybrid"
 			},
 			{
 				coinDenom: 'axl-USDT',
@@ -3016,7 +3014,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'tether',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/usdt.svg',
-				isStable: true,
+				pegMechanism: "collateralized"
 			},
 			{
 				coinDenom: 'axl-DAI',
@@ -3024,7 +3022,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 18,
 				coinGeckoId: 'dai',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.svg',
-				isStable: true,
+				pegMechanism: "collateralized"
 			},
 		],
 		feeCurrencies: [
