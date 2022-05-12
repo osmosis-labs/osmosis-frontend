@@ -41,7 +41,8 @@ export class IBCTransferHistoryStore {
 
   constructor(
     protected readonly kvStore: KVStore,
-    protected readonly chainGetter: ChainGetter
+    protected readonly chainGetter: ChainGetter,
+    protected readonly keepHistoryDays = 3
   ) {
     makeObservable(this);
 
@@ -513,7 +514,7 @@ export class IBCTransferHistoryStore {
       dayjs(new Date(uncommited.createdAt))
         .add(
           dayjs.duration({
-            days: 3,
+            days: this.keepHistoryDays,
           })
         )
         .isAfter(new Date())
@@ -524,7 +525,7 @@ export class IBCTransferHistoryStore {
       dayjs(new Date(uncommited.createdAt))
         .add(
           dayjs.duration({
-            days: 3,
+            days: this.keepHistoryDays,
           })
         )
         .isAfter(new Date())
