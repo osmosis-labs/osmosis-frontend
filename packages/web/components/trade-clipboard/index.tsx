@@ -3,6 +3,7 @@ import { Pool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import React, { useEffect, useRef } from "react";
 import {
   useBooleanWithWindowEvent,
@@ -65,6 +66,54 @@ export const TradeClipboard = observer<
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSettingOpen]);
+
+    const router = useRouter();
+    const paramChecker = useRef(false);
+
+    useEffect(() => {
+      if (
+        tradeTokenInConfig.sendCurrency.coinDenom !== "UNKNOWN" &&
+        tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN"
+      ) {
+        router.replace(
+          `?from=${tradeTokenInConfig.sendCurrency.coinDenom}&to=${tradeTokenInConfig.outCurrency.coinDenom}`
+        );
+        paramChecker.current = true;
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tradeTokenInConfig.sendCurrency, tradeTokenInConfig.outCurrency]);
+
+    useEffect(() => {
+      if (paramChecker.current) {
+        return;
+      }
+
+      if (router.query.from) {
+        const fromTokenBalance = allTokenBalances.find(
+          (tokenBalance) =>
+            tokenBalance.balance.currency.coinDenom === router.query.from
+        );
+
+        if (fromTokenBalance) {
+          tradeTokenInConfig.setSendCurrency(fromTokenBalance.balance.currency);
+        }
+      }
+
+      if (router.query.to) {
+        const toTokenBalance = allTokenBalances.find(
+          (tokenBalance) =>
+            tokenBalance.balance.currency.coinDenom === router.query.to
+        );
+        if (toTokenBalance) {
+          tradeTokenInConfig.setOutCurrency(toTokenBalance.balance.currency);
+        }
+      }
+    }, [
+      router.query.from,
+      router.query.to,
+      allTokenBalances,
+      tradeTokenInConfig,
+    ]);
 
     return (
       <div
