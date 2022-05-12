@@ -69,6 +69,7 @@ export const LockupAbledPoolIds: {
 	'642': true,
 	'643': true,
 	'648': true,
+	'649': true,
 	'651': true,
 	'653': true,
 	'662': true,
@@ -687,6 +688,16 @@ export const ExtraGaugeInPool: {
 			denom: 'ibc/8061A06D3BD4D52C4A28FFECF7150D370393AF0BA661C3776C54FF32836C3961',
 		},
 	],
+	'649': [
+		{
+			gaugeId: '3304',
+			denom: 'ibc/F6B691D5F7126579DDC87357B09D653B47FDCE0A3383FF33C8D8B544FE29A8A6',
+		},
+		{
+			gaugeId: '3303',
+			denom: 'ibc/DB9755CB6FE55192948AE074D18FA815E1429D3D374D5BDA8D89623C6CF235C3',
+		},
+	],
 	'651': [
 		{
 			gaugeId: '2547',
@@ -1090,6 +1101,14 @@ export const IBCAssetInfos: {
 		counterpartyChainId: 'axelar-dojo-1',
 		sourceChannelId: 'channel-208',
 		destChannelId: 'channel-3',
+		coinMinimalDenom: 'weth-wei',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=weth',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=weth',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uusdt',
 		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=usdt',
 		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=usdt',
@@ -1186,6 +1205,12 @@ export const IBCAssetInfos: {
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 	{
+    counterpartyChainId: 'meme-1',
+		sourceChannelId: 'channel-238',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'umeme',
+  },
+  {
 		counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-169',
 		destChannelId: 'channel-47',
@@ -3032,6 +3057,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'dai',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/dai.svg',
 			},
+			{
+				coinDenom: 'WETH',
+				coinMinimalDenom: 'weth-wei',
+				coinDecimals: 18,
+				coinGeckoId: 'weth',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/weth.png',
+			},
 		],
 		feeCurrencies: [
 			{
@@ -3213,4 +3245,46 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://explorer.postcapitalist.io/galaxy/tx/{txHash}',
 	},
+	{
+		rpc: 'https://rpc-meme-1.meme.sx:443',
+		rest: 'https://api-meme-1.meme.sx:443',
+		chainId: 'meme-1',
+		chainName: 'Meme',
+		stakeCurrency: {
+			coinDenom: 'MEME',
+			coinMinimalDenom: 'umeme',
+			coinDecimals: 6,
+			coinGeckoId: 'pool:umeme',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/meme.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('meme'),
+		currencies: [
+			{
+				coinDenom: 'MEME',
+				coinMinimalDenom: 'umeme',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:umeme',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/meme.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'MEME',
+				coinMinimalDenom: 'umeme',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:umeme',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/meme.png',
+			},
+		],
+		gasPriceStep: {
+			low: 0.025,
+			average: 0.025,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://explorer.meme.sx/meme/tx/{txHash}',
+	}
 ];
