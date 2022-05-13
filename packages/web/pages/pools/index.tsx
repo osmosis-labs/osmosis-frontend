@@ -254,9 +254,28 @@ const Pools: NextPage = observer(function (ssrProps) {
                       ),
                     },
                     {
-                      label: "Pool Liquidity",
+                      label: isMobile ? "Available" : "Pool Liquidity",
                       value: isMobile ? (
-                        poolLiquidity.toString()
+                        (!myPool.totalShare.toDec().equals(new Dec(0))
+                          ? myPool
+                              .computeTotalValueLocked(priceStore)
+                              .mul(
+                                queryOsmosis.queryGammPoolShare
+                                  .getAvailableGammShare(
+                                    account.bech32Address,
+                                    myPoolId
+                                  )
+                                  .quo(myPool.totalShare)
+                              )
+                          : new PricePretty(
+                              priceStore.getFiatCurrency(
+                                priceStore.defaultVsCurrency
+                              )!,
+                              new Dec(0)
+                            )
+                        )
+                          .maxDecimals(2)
+                          .toString()
                       ) : (
                         <MetricLoader
                           isLoading={poolLiquidity.toDec().isZero()}
@@ -282,9 +301,9 @@ const Pools: NextPage = observer(function (ssrProps) {
                   // rearrange metrics for mobile pool card
                   if (isMobile) {
                     myPoolMetrics = [
-                      myPoolMetrics[1],
-                      myPoolMetrics[2],
-                      myPoolMetrics[0],
+                      myPoolMetrics[2], // Bonded
+                      myPoolMetrics[1], // Available
+                      myPoolMetrics[0], // APR
                     ];
                   }
 
@@ -300,6 +319,7 @@ const Pools: NextPage = observer(function (ssrProps) {
                       isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
                         myPoolId
                       )}
+                      mobileShowFirstLabel
                     />
                   );
                 }
