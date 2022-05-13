@@ -1263,9 +1263,9 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			},
 		],
 		gasPriceStep: {
-			low: 0.015,
-			average: 0.015,
-			high: 0.015,
+			low: 5.665,
+			average: 5.665,
+			high: 10,
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://finder.terra.money/columbus-5/tx/{txHash}',
