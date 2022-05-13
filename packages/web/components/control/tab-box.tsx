@@ -37,18 +37,19 @@ export const TabBox: FunctionComponent<
   return (
     <div className={classNames(className)}>
       <div className="flex py-4 whitespace-nowrap overflow-x-auto no-scrollbar">
-        {tabs.map(({ title, className }, index) => (
+        {tabs.map(({ title, className: tabClassName }, index) => (
           <div
             id={`tab-box-${index}`}
             ref={tabscrollRef}
             key={index}
             className={classNames(
-              "w-full text-center py-1 px-2 border-secondary-200 cursor-pointer",
+              "w-full text-center py-1 px-5 cursor-pointer",
               {
-                "border-b-2": selectedTabI === index,
-                "border-b opacity-40 hover:opacity-60": selectedTabI !== index,
+                "border-b-2 border-secondary-200": selectedTabI === index,
+                "border-b opacity-40 border-white-full/[.12] hover:opacity-60":
+                  selectedTabI !== index,
               },
-              className
+              tabClassName
             )}
             onClick={() => {
               setTabI(index);

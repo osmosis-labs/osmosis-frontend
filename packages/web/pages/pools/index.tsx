@@ -30,6 +30,7 @@ import {
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
 import { UserAction } from "../../config";
+import { POOLS_PER_PAGE } from "../../components/complex";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
 const TVL_FILTER_THRESHOLD = 1000;
@@ -134,7 +135,7 @@ const Pools: NextPage = observer(function (ssrProps) {
     useSortedData(fiteredSfsPools, "apr", "descending");
   const [page, setPage, minPage, numPages, sfsPoolsPage] = usePaginatedData(
     sortedSfsPools,
-    10
+    POOLS_PER_PAGE
   );
   /// show pools > $1k TVL
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
@@ -354,9 +355,7 @@ const Pools: NextPage = observer(function (ssrProps) {
               },
               {
                 title: (
-                  <span className="text-superfluid caption">
-                    Superfluid Pools
-                  </span>
+                  <span className="superfluid caption">Superfluid Pools</span>
                 ),
                 content: (
                   <CompactPoolTableDisplay
