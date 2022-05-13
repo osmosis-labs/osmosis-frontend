@@ -2954,8 +2954,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'g-WETH',
 				coinMinimalDenom: 'gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
 				coinDecimals: 18,
-				coinGeckoId: 'ethereum',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/eth.png',
+				coinGeckoId: 'weth',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/weth.png',
 			},
 			{
 				coinDenom: 'g-USDC',
