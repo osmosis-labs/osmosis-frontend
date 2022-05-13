@@ -15,11 +15,12 @@
     "@cosmjs/launchpad": "^0.26.5",
     "@keplr-wallet/common": "^0.10.1",
     "@keplr-wallet/cosmos": "^0.10.1",
+    "@keplr-wallet/crypto": "^0.10.1",
+    "@keplr-wallet/hooks": "^0.10.1",
     "@keplr-wallet/stores": "^0.10.1",
     "@keplr-wallet/types": "^0.10.1",
-    "@keplr-wallet/wc-client": "^0.10.1",
     "@keplr-wallet/unit": "^0.10.1",
-    "@keplr-wallet/crypto": "^0.10.1",
+    "@keplr-wallet/wc-client": "^0.10.1",
     "@osmosis-labs/pools": "0.0.1",
     "@osmosis-labs/stores": "0.0.1",
     "@tippyjs/react": "^4.2.6",
@@ -32,19 +33,19 @@
     "dayjs": "^1.10.7",
     "eventemitter3": "^4.0.7",
     "fuse.js": "^6.5.3",
+    "highcharts": "^9.1.0",
+    "highcharts-react-official": "^3.0.0",
     "mobx": "^6.3.10",
-    "mobx-utils": "^6.0.4",
     "mobx-react-lite": "^3.2.2",
+    "mobx-utils": "^6.0.4",
     "next": "12.0.7",
     "qrcode.react": "^1.0.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-input-autosize": "^3.0.0",
     "react-modal": "^3.14.4",
-    "sha.js": "^2.4.11",
     "react-toastify": "^7.0.4",
-    "highcharts": "^9.1.0",
-    "highcharts-react-official": "^3.0.0"
+    "sha.js": "^2.4.11"
   },
   "devDependencies": {
     "@types/qrcode.react": "^1.0.2",
@@ -57,7 +58,7 @@
     "eslint-config-next": "12.0.7",
     "eslint-config-prettier": "^8.3.0",
     "postcss": "^8.4.5",
-    "tailwindcss": "^3.0.7",
-    "sass": "^1.49.9"
+    "sass": "^1.49.9",
+    "tailwindcss": "^3.0.7"
   }
 }

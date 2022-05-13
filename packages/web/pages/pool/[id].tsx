@@ -26,11 +26,12 @@ import { Overview } from "../../components/overview";
 import { BaseCell, Table, ColumnDef } from "../../components/table";
 import { truncateString } from "../../components/utils";
 import { ExternalIncentiveGaugeAllowList, EmbedChainInfos } from "../../config";
-import { useWindowSize } from "../../hooks";
+import { useTradeTokenInConfig, useWindowSize } from "../../hooks";
 import {
   LockTokensModal,
   ManageLiquidityModal,
   SuperfluidValidatorModal,
+  TradeTokens,
 } from "../../modals";
 import { useStore } from "../../stores";
 
@@ -414,6 +415,16 @@ const Pool: FunctionComponent = observer(() => {
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
     useState(false);
 
+  const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
+  const tradeTokenInConfig = useTradeTokenInConfig(
+    chainStore,
+    queriesStore,
+    chainStore.osmosis.chainId,
+    account.bech32Address,
+    undefined,
+    pool ? [pool.pool] : undefined
+  );
+
   return (
     <main>
       {pool && addLiquidityConfig && removeLiquidityConfig && (
@@ -475,6 +486,15 @@ const Pool: FunctionComponent = observer(() => {
           }}
         />
       )}
+      {tradeTokenInConfig && pool && (
+        <TradeTokens
+          isOpen={showTradeTokenModal}
+          title="Swap Token"
+          onRequestClose={() => setShowTradeTokenModal(false)}
+          pools={[pool.pool]}
+        />
+      )}
+
       {lockLPTokensConfig && lockupGauges && (
         <LockTokensModal
           isOpen={showLockLPTokenModal}
@@ -606,7 +626,7 @@ const Pool: FunctionComponent = observer(() => {
             label: "Add / Remove Liquidity",
             onClick: () => setShowManageLiquidityDialog(true),
           },
-          { label: "Swap Tokens", onClick: console.log },
+          { label: "Swap Tokens", onClick: () => setShowTradeTokenModal(true) },
         ]}
         primaryOverviewLabels={[
           {

@@ -75,7 +75,7 @@ export const InputBox: FunctionComponent<Props> = ({
             onInput={(e: any) => onInput(e.target.value)}
             onFocus={(e: any) => {
               setInputFocused(true);
-              onFocus(e);
+              onFocus && onFocus(e);
             }}
           />
         ) : (
@@ -98,7 +98,7 @@ export const InputBox: FunctionComponent<Props> = ({
             onBlur={() => setInputFocused(false)}
             onFocus={(e: any) => {
               setInputFocused(true);
-              onFocus(e);
+              onFocus && onFocus(e);
             }}
             onInput={(e: any) => onInput(e.target.value)}
             onClick={(e: any) => e.target.select()}

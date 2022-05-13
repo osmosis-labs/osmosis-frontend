@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 import { TradeClipboard } from "../components/trade-clipboard";
 import { useWindowSize } from "../hooks";
@@ -10,10 +10,7 @@ const Home: NextPage = observer(function () {
   const { chainStore, queriesStore } = useStore();
 
   const containerRef = useRef<HTMLElement | null>(null);
-  const clipboardRef = useRef<HTMLDivElement | null>(null);
-  const [clipboardWidth, setClipboardWidth] = useState<number | undefined>(
-    undefined
-  );
+  const [clipboardWidth] = useState<number | undefined>(undefined);
 
   const windowSize = useWindowSize();
 
@@ -80,7 +77,6 @@ const Home: NextPage = observer(function () {
       </div>
       <div className="absolute w-full h-full flex items-center overflow-x-hidden overflow-y-auto">
         <TradeClipboard
-          ref={clipboardRef}
           containerClassName="w-full max-w-[32.5rem]"
           containerStyle={{
             ["--clipboardMinLeft" as any]: `calc(${clipboardMinLeftPx} * (100vh / 1080))`,

@@ -4,7 +4,7 @@ import { ReactElement } from "react";
 export interface InputProps<T> {
   currentValue: T;
   onInput: (value: T) => void;
-  onFocus: (e: any) => void;
+  onFocus?: (e: any) => void;
   placeholder?: T;
 }
 

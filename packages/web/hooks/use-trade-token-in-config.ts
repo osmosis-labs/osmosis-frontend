@@ -2,7 +2,7 @@ import { IFeeConfig } from "@keplr-wallet/hooks";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { Pool } from "@osmosis-labs/pools";
 import { TradeTokenInConfig } from "@osmosis-labs/stores";
-import { useState } from "react";
+import { useMemo } from "react";
 
 // CONTRACT: Use with `observer`
 // If the reference of the pools changes,
@@ -14,22 +14,25 @@ export const useTradeTokenInConfig = (
   chainId: string,
   sender: string,
   feeConfig: IFeeConfig | undefined,
-  pools: Pool[]
-) => {
-  const [config] = useState(
-    () =>
-      new TradeTokenInConfig(
-        chainGetter,
-        queriesStore,
-        chainId,
-        sender,
-        feeConfig,
-        pools
-      )
-  );
-  config.setChain(chainId);
-  config.setSender(sender);
-  config.setPools(pools);
+  pools: Pool[] | undefined
+) =>
+  useMemo(() => {
+    const config = pools
+      ? new TradeTokenInConfig(
+          chainGetter,
+          queriesStore,
+          chainId,
+          sender,
+          feeConfig,
+          pools
+        )
+      : undefined;
 
-  return config;
-};
+    if (config && pools) {
+      config.setChain(chainId);
+      config.setSender(sender);
+      config.setPools(pools);
+    }
+
+    return config;
+  }, [chainGetter, queriesStore, chainId, sender, feeConfig, pools]);

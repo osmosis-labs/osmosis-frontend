@@ -7,3 +7,4 @@ export * from "./superfluid-validator";
 export * from "./wallet-connect";
 export * from "./menu-options";
 export * from "./pre-transfer";
+export * from "./trade-tokens";
