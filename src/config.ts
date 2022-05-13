@@ -71,6 +71,19 @@ export const LockupAbledPoolIds: {
 	'662': true,
 	'678': true,
 	'681': true,
+
+	'560': true,
+	'561': true,
+	'562': true,
+	'565': true,
+	'567': true,
+	// '578': true,
+	'580': true,
+	// '592': true,
+	'610': true,
+	// '612': true,
+	'615': true,
+	// '642': true,
 };
 
 export const PromotedLBPPoolIds: {
