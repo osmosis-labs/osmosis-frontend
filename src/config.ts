@@ -99,6 +99,15 @@ export const HideAddLiquidityPoolIds: {
 	'21': window.location.hostname.startsWith('app.'),
 	 */
 };
+/*
+ Disable the single asset lp providing feature from UI.
+ Single asset lp can be risky for the pools low liquidity,
+ especially for the users who do not have good understanding on Single Asset LP.
+ For this reason, single asset lp UI would not be supported for the pools listed below.
+ */
+export const DisabledSingleLiquidityProvidePoolIds: { [poolId: string]: boolean } = {
+	'678': true,
+};
 export const PreferHeaderShowTokenPricePoolIds: {
 	[poolId: string]:
 		| {
