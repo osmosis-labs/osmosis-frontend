@@ -1,12 +1,18 @@
 import { computed, makeObservable, observable } from "mobx";
-
+import { AppCurrency } from "@keplr-wallet/types";
 import { ChainStore as BaseChainStore } from "@keplr-wallet/stores";
 
 import { ChainInfo } from "@keplr-wallet/types";
 
 export interface ChainInfoWithExplorer extends ChainInfo {
-  // Formed as "https://explorer.com/{txHash}"
+  /** Formed as "https://explorer.com/{txHash}" */
   explorerUrlToTx: string;
+  /** Add optional stable coin peg info to currencies. */
+  currencies: Array<
+    AppCurrency & {
+      pegMechanism?: "collateralized" | "algorithmic" | "hybrid";
+    }
+  >;
 }
 
 export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {

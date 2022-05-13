@@ -89,6 +89,15 @@ const chainInfos = (
           coinGeckoId: "terrausd",
           coinImageUrl: "/tokens/ust.png",
           isFeeCurrency: true,
+          pegMechanism: "algorithmic",
+        },
+        {
+          coinDenom: "KRT",
+          coinMinimalDenom: "ukrw",
+          coinDecimals: 6,
+          coinGeckoId: "terra-krw",
+          coinImageUrl: "/tokens/krt.png",
+          pegMechanism: "algorithmic",
         },
       ],
       gasPriceStep: {
@@ -366,6 +375,61 @@ const chainInfos = (
           coinGeckoId: "pool:marble",
           coinImageUrl: "/tokens/marble.svg",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
+          coinDenom: "HOPE",
+          coinMinimalDenom:
+            "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z:HOPE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:hope",
+          coinImageUrl: "/tokens/hope.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
+          coinDenom: "RAC",
+          coinMinimalDenom:
+            "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa:RAC",
+          coinDecimals: 6,
+          coinGeckoId: "pool:rac",
+          coinImageUrl: "/tokens/rac.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
+          coinDenom: "BLOCK",
+          coinMinimalDenom:
+            "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq:BLOCK",
+          coinDecimals: 6,
+          coinGeckoId: "pool:block",
+          coinImageUrl: "/tokens/block.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
+          coinDenom: "DHK",
+          coinMinimalDenom:
+            "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49:DHK",
+          coinDecimals: 0,
+          coinGeckoId: "pool:dhk",
+          coinImageUrl: "/tokens/dhk.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
+          coinDenom: "RAW",
+          coinMinimalDenom:
+            "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g:RAW",
+          coinDecimals: 6,
+          //coinGeckoId: 'pool:raw',
+          coinImageUrl: "/tokens/raw.png", // TODO: add raw.png
+        },
       ],
       features: [
         "stargate",
@@ -375,6 +439,29 @@ const chainInfos = (
         "wasmd_0.24+",
       ],
       explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
+    },
+    {
+      rpc: "https://rpc-microtick.keplr.app",
+      rest: "https://lcd-microtick.keplr.app",
+      chainId: "microtick-1",
+      chainName: "Microtick",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("micro"),
+      currencies: [
+        {
+          coinDenom: "TICK",
+          coinMinimalDenom: "utick",
+          coinDecimals: 6,
+          coinGeckoId: "pool:utick",
+          coinImageUrl: "/tokens/tick.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      features: ["stargate", "ibc-transfer"],
+      explorerUrlToTx: "https://explorer.microtick.zone/transactions/{txHash}",
     },
     {
       rpc: "https://mainnet-node.like.co/rpc",
@@ -884,6 +971,44 @@ const chainInfos = (
           coinGeckoId: "pstake-finance",
           coinImageUrl: "/tokens/pstake.png",
         },
+        {
+          coinDenom: "g-WBTC",
+          coinMinimalDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+          coinDecimals: 8,
+          coinGeckoId: "wrapped-bitcoin",
+          coinImageUrl: "/tokens/gwbtc.png",
+        },
+        {
+          coinDenom: "g-WETH",
+          coinMinimalDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          coinDecimals: 18,
+          coinGeckoId: "ethereum",
+          coinImageUrl: "/tokens/gweth.png",
+        },
+        {
+          coinDenom: "g-USDC",
+          coinMinimalDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          coinDecimals: 6,
+          coinGeckoId: "usd-coin",
+          coinImageUrl: "/tokens/gusdc.png",
+          pegMechanism: "collateralized",
+        },
+        {
+          coinDenom: "g-DAI",
+          coinMinimalDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          coinDecimals: 18,
+          coinGeckoId: "dai",
+          coinImageUrl: "/tokens/gdai.png",
+          pegMechanism: "collateralized",
+        },
+        {
+          coinDenom: "g-USDT",
+          coinMinimalDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
+          coinDecimals: 6,
+          coinGeckoId: "tether",
+          coinImageUrl: "/tokens/gusdt.png",
+          pegMechanism: "collateralized",
+        },
       ],
       gasPriceStep: {
         low: 0,
@@ -918,6 +1043,29 @@ const chainInfos = (
         "https://explorer.decentr.net/transactions/{txHash}?networkId=mainnet",
     },
     {
+      rpc: "https://shenturpc.certikpowered.info",
+      rest: "https://azuredragon.noopsbycertik.com",
+      chainId: "shentu-2.2",
+      chainName: "Certik",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("certik"),
+      currencies: [
+        {
+          coinDenom: "CTK",
+          coinMinimalDenom: "uctk",
+          coinDecimals: 6,
+          coinGeckoId: "certik",
+          coinImageUrl: "/tokens/ctk.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/certik/txs/{txHash}",
+    },
+    {
       rpc: "https://tm-api.carbon.network",
       rest: "https://api.carbon.network",
       chainId: "carbon-1",
@@ -945,6 +1093,36 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx:
         "https://scan.carbon.network/transaction/{txHash}?net=main",
+    },
+    {
+      rpc: "https://public.api.injective.network",
+      rest: "https://public.lcd.injective.network",
+      chainId: "injective-1",
+      chainName: "Injective",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("inj"),
+      currencies: [
+        {
+          coinDenom: "INJ",
+          coinMinimalDenom: "inj",
+          coinDecimals: 18,
+          coinGeckoId: "injective-protocol",
+          coinImageUrl: "/tokens/inj.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.0005,
+        average: 0.0007,
+        high: 0.0009,
+      },
+      coinType: 60,
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx:
+        "https://explorer.injective.network/transaction/{txHash}",
     },
     {
       rpc: "https://rpc.cerberus.zone:26657",
@@ -997,10 +1175,117 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/fetchai/txs/{txHash}",
     },
+    {
+      rpc: "https://rpc.assetmantle.one/",
+      rest: "https://rest.assetmantle.one/",
+      chainId: "mantle-1",
+      chainName: "AssetMantle",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("mantle"),
+      currencies: [
+        {
+          coinDenom: "MNTL",
+          coinMinimalDenom: "umntl",
+          coinDecimals: 6,
+          coinGeckoId: "pool:umntl",
+          coinImageUrl: "/tokens/mntl.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/asset-mantle/txs/{txHash}",
+    },
+    {
+      rpc: "https://rpc.provenance.io/",
+      rest: "https://api.provenance.io",
+      chainId: "pio-mainnet-1",
+      chainName: "Provenance",
+      bip44: {
+        coinType: 505,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("pb"),
+      currencies: [
+        {
+          coinDenom: "HASH",
+          coinMinimalDenom: "nhash",
+          coinGeckoId: "provenance-blockchain",
+          coinDecimals: 9,
+          coinImageUrl: "/tokens/hash.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 1905,
+        average: 2100,
+        high: 2500,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/provenance/txs/{txHash}",
+    },
+    {
+      rpc: "https://rpc.galaxychain.zone",
+      rest: "https://rest.galaxychain.zone",
+      chainId: "galaxy-1",
+      chainName: "Galaxy",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("galaxy"),
+      currencies: [
+        {
+          coinDenom: "GLX",
+          coinMinimalDenom: "uglx",
+          coinDecimals: 6,
+          coinGeckoId: "pool:uglx",
+          coinImageUrl: "/tokens/glx.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.025,
+        average: 0.025,
+        high: 0.035,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://explorer.postcapitalist.io/galaxy/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpc-meme-1.meme.sx:443",
+      rest: "https://api-meme-1.meme.sx:443",
+      chainId: "meme-1",
+      chainName: "Meme",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("meme"),
+      currencies: [
+        {
+          coinDenom: "MEME",
+          coinMinimalDenom: "umeme",
+          coinDecimals: 6,
+          coinGeckoId: "pool:umeme",
+          coinImageUrl: "/tokens/meme.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.025,
+        average: 0.025,
+        high: 0.035,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://explorer.meme.sx/meme/tx/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
-// add normal chain infos
+// Add normal chain infos in case of `currencies` not containing the stake or fee currency.
 chainInfos.push({
   rpc: "https://rpc-axelar.keplr.app",
   rest: "https://lcd-axelar.keplr.app",
@@ -1024,6 +1309,7 @@ chainInfos.push({
       coinDecimals: 6,
       coinGeckoId: "usd-coin",
       coinImageUrl: "/tokens/usdc.svg",
+      pegMechanism: "collateralized",
     },
     {
       coinDenom: "FRAX",
@@ -1031,6 +1317,7 @@ chainInfos.push({
       coinDecimals: 18,
       coinGeckoId: "frax",
       coinImageUrl: "/tokens/frax.svg",
+      pegMechanism: "hybrid",
     },
     {
       coinDenom: "USDT",
@@ -1038,6 +1325,7 @@ chainInfos.push({
       coinDecimals: 6,
       coinGeckoId: "tether",
       coinImageUrl: "/tokens/usdt.svg",
+      pegMechanism: "collateralized",
     },
     {
       coinDenom: "DAI",
@@ -1045,6 +1333,7 @@ chainInfos.push({
       coinDecimals: 18,
       coinGeckoId: "dai",
       coinImageUrl: "/tokens/dai.svg",
+      pegMechanism: "collateralized",
     },
     {
       coinDenom: "WETH",
