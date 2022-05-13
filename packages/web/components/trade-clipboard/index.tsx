@@ -1,4 +1,5 @@
 import { Currency } from "@keplr-wallet/types";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Pool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -30,6 +31,7 @@ export const TradeClipboard: FunctionComponent<{
     accountStore,
     queriesStore,
     assetsStore: { nativeBalances, ibcBalances },
+    priceStore,
   } = useStore();
 
   const allTokenBalances = nativeBalances.concat(ibcBalances);
@@ -344,7 +346,21 @@ export const TradeClipboard: FunctionComponent<{
                     }}
                     value={tradeTokenInConfig.amount}
                   />
-                  <div className="subtitle2 text-white-full">≈ $TODO</div>
+                  <div className="subtitle2 text-white-disabled">{`≈ ${priceStore.calculatePrice(
+                    new CoinPretty(
+                      tradeTokenInConfig.sendCurrency,
+                      new Dec(
+                        tradeTokenInConfig.amount &&
+                        new Dec(tradeTokenInConfig.amount).gt(new Dec(0))
+                          ? tradeTokenInConfig.amount
+                          : "0"
+                      ).mul(
+                        DecUtils.getTenExponentNInPrecisionRange(
+                          tradeTokenInConfig.sendCurrency.coinDecimals
+                        )
+                      )
+                    )
+                  )}`}</div>
                 </div>
               )}
             </div>
