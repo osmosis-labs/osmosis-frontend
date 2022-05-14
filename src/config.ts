@@ -1234,7 +1234,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'LUNA',
 			coinMinimalDenom: 'uluna',
 			coinDecimals: 6,
-			coinGeckoId: 'terra-luna',
+			coinGeckoId: 'pool:uluna',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
 		},
 		bip44: {
@@ -1246,14 +1246,14 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'LUNA',
 				coinMinimalDenom: 'uluna',
 				coinDecimals: 6,
-				coinGeckoId: 'terra-luna',
+				coinGeckoId: 'pool:uluna',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
 			},
 			{
 				coinDenom: 'UST',
 				coinMinimalDenom: 'uusd',
 				coinDecimals: 6,
-				coinGeckoId: 'terrausd',
+				coinGeckoId: 'pool:uluna',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
 			},
 			{
@@ -1269,14 +1269,14 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'LUNA',
 				coinMinimalDenom: 'uluna',
 				coinDecimals: 6,
-				coinGeckoId: 'terra-luna',
+				coinGeckoId: 'pool:uluna',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
 			},
 			{
 				coinDenom: 'UST',
 				coinMinimalDenom: 'uusd',
 				coinDecimals: 6,
-				coinGeckoId: 'terrausd',
+				coinGeckoId: 'pool:uusd',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
 			},
 		],
@@ -3091,5 +3091,5 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://explorer.meme.sx/meme/tx/{txHash}',
-	}
+	},
 ];
