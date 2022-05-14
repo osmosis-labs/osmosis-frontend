@@ -1253,7 +1253,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'UST',
 				coinMinimalDenom: 'uusd',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:uluna',
+				coinGeckoId: 'pool:uusd',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
 			},
 			{
