@@ -1150,6 +1150,14 @@ export const IBCAssetInfos: {
 		counterpartyChainId: 'axelar-dojo-1',
 		sourceChannelId: 'channel-208',
 		destChannelId: 'channel-3',
+		coinMinimalDenom: 'wbtc-satoshi',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=wbtc',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=wbtc',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uusdt',
 		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=usdt',
 		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=usdt',
@@ -3088,6 +3096,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 18,
 				coinGeckoId: 'weth',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/weth.png',
+			},
+			{
+				coinDenom: 'WBTC',
+				coinMinimalDenom: 'wbtc-satoshi',
+				coinDecimals: 8,
+				coinGeckoId: 'wrapped-bitcoin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/wbtc.png',
 			},
 		],
 		feeCurrencies: [
