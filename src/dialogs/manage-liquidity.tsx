@@ -21,6 +21,7 @@ import useWindowSize from 'src/hooks/useWindowSize';
 import { TokenSelect } from 'src/components/SwapToken/TokenSelect';
 import { useBooleanStateWithWindowEvent } from 'src/hooks/useBooleanStateWithWindowEvent';
 import { IconExternalLink, IconCheckBox } from 'src/icons';
+import { DisabledSingleLiquidityProvidePoolIds } from 'src/config';
 
 //	TODO : edit how the circle renders the border to make gradients work
 const borderImages: Record<string, string> = {
@@ -714,45 +715,47 @@ const AddLiquidity: FunctionComponent<{
 					))}
 				</ul>
 			)}
-			<div className="relative flex items-center justify-end mt-5">
-				<label
-					htmlFor="checkbox"
-					className="text-sm md:text-base flex justify-end items-center mr-2 cursor-pointer font-semibold"
-					onClick={() => addLiquidityConfig.setIsSingleAmountIn(!addLiquidityConfig.isSingleAmountIn)}>
-					{addLiquidityConfig.isSingleAmountIn ? (
-						<div className="mr-2.5">
-							<IconCheckBox />
-						</div>
-					) : (
-						<div className="w-6 h-6 border-2 border-white-high mr-2.5 rounded" />
-					)}
-					Single Asset LP
-				</label>
-				<img
-					className="h-5 w-5 cursor-pointer"
-					src="/public/assets/Icons/Information.svg"
-					onMouseEnter={() => setIsMouseOverInfoIcon(true)}
-					onMouseLeave={() => {
-						const timeoutId = window.setTimeout(() => {
-							setIsMouseOverInfoIcon(false);
-							window.clearTimeout(timeoutId);
-						}, 100);
-					}}
-				/>
+			{!DisabledSingleLiquidityProvidePoolIds[addLiquidityConfig.poolId] ? (
+				<div className="relative flex items-center justify-end mt-5">
+					<label
+						htmlFor="checkbox"
+						className="text-sm md:text-base flex justify-end items-center mr-2 cursor-pointer font-semibold"
+						onClick={() => addLiquidityConfig.setIsSingleAmountIn(!addLiquidityConfig.isSingleAmountIn)}>
+						{addLiquidityConfig.isSingleAmountIn ? (
+							<div className="mr-2.5">
+								<IconCheckBox />
+							</div>
+						) : (
+							<div className="w-6 h-6 border-2 border-white-high mr-2.5 rounded" />
+						)}
+						Single Asset LP
+					</label>
+					<img
+						className="h-5 w-5 cursor-pointer"
+						src="/public/assets/Icons/Information.svg"
+						onMouseEnter={() => setIsMouseOverInfoIcon(true)}
+						onMouseLeave={() => {
+							const timeoutId = window.setTimeout(() => {
+								setIsMouseOverInfoIcon(false);
+								window.clearTimeout(timeoutId);
+							}, 100);
+						}}
+					/>
 
-				{(isMouseOverInfoIcon || isMouseOverToolTip) && (
-					<div
-						style={{ maxWidth: '297px' }}
-						className="absolute z-10 -right-0.5 md:-right-2 bottom-7 bg-wireframes-darkGrey border border-white-faint p-2 rounded-lg"
-						onMouseEnter={() => setIsMouseOverTooltip(true)}
-						onMouseLeave={() => setIsMouseOverTooltip(false)}>
-						<div className="text-white-high text-sm mb-1 leading-tight">
-							Single Asset LP allows you to provide liquidity using one asset. However, this will impact the pool price
-							of the asset you’re providing liquidity with.
+					{(isMouseOverInfoIcon || isMouseOverToolTip) && (
+						<div
+							style={{ maxWidth: '297px' }}
+							className="absolute z-10 -right-0.5 md:-right-2 bottom-7 bg-wireframes-darkGrey border border-white-faint p-2 rounded-lg"
+							onMouseEnter={() => setIsMouseOverTooltip(true)}
+							onMouseLeave={() => setIsMouseOverTooltip(false)}>
+							<div className="text-white-high text-sm mb-1 leading-tight">
+								Single Asset LP allows you to provide liquidity using one asset. However, this will impact the pool
+								price of the asset you’re providing liquidity with.
+							</div>
 						</div>
-					</div>
-				)}
-			</div>
+					)}
+				</div>
+			) : null}
 
 			{addLiquidityConfig.isSingleAmountIn && (
 				<div className="p-3 md:p-4 rounded-lg bg-card border border-white-faint flex flex-col mt-5">

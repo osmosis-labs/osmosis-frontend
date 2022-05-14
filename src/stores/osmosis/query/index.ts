@@ -43,7 +43,23 @@ export class QueriesWithCosmosAndOsmosis extends QueriesWithCosmos implements Ha
 	constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
 		super(kvStore, chainId, chainGetter);
 
-		this.osmosis = new OsmosisQueries(this, kvStore, chainId, chainGetter);
+		this.osmosis = new OsmosisQueries(this, kvStore, chainId, chainGetter, {
+			// Explicitly hide the terra related pools from incentivized pools.
+			disabledIncentivizedPoolIds: {
+				'560': true,
+				'561': true,
+				'562': true,
+				'565': true,
+				'567': true,
+				'578': true,
+				'580': true,
+				'592': true,
+				'610': true,
+				'612': true,
+				'615': true,
+				'642': true,
+			},
+		});
 		this.cosmwasm = new CosmwasmQueries(this, kvStore, chainId, chainGetter);
 	}
 }
@@ -81,7 +97,15 @@ export class OsmosisQueries {
 	public readonly querySuperfluidAssetMultiplier: DeepReadonly<ObservableQuerySuperfluidAssetMultiplier>;
 	public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
 
-	constructor(queries: QueriesSetBase, kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
+	constructor(
+		queries: QueriesSetBase,
+		kvStore: KVStore,
+		chainId: string,
+		chainGetter: ChainGetter,
+		options: {
+			disabledIncentivizedPoolIds?: Record<string, boolean>;
+		}
+	) {
 		const queryGammPool = new ObservableQueryPool(kvStore, chainId, chainGetter);
 
 		this.queryLockedCoins = new ObservableQueryAccountLockedCoins(kvStore, chainId, chainGetter);
@@ -114,7 +138,8 @@ export class OsmosisQueries {
 			this.queryGammPools,
 			this.queryMintParams,
 			this.queryEpochProvisions,
-			this.queryEpochs
+			this.queryEpochs,
+			options.disabledIncentivizedPoolIds ?? {}
 		);
 		this.queryGauge = new ObservableQueryGuage(kvStore, chainId, chainGetter);
 

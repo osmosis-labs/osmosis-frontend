@@ -369,7 +369,7 @@ export class RootStore {
 					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'osmosis',
 				},
-                		{
+				{
 					alternativeCoinId: 'pool:uglx',
 					poolId: '697',
 					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-236' }], 'uglx'),

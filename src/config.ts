@@ -71,11 +71,25 @@ export const LockupAbledPoolIds: {
 	'648': true,
 	'649': true,
 	'651': true,
-	'653': true,
 	'662': true,
+	'678': true,
+	'681': true,
+
+	'560': true,
+	'561': true,
+	'562': true,
+	'565': true,
+	'567': true,
+	// '578': true,
+	'580': true,
+	// '592': true,
+	'610': true,
+	// '612': true,
+	'615': true,
+	// '642': true,
+	'653': true,
 	'669': true,
 	'670': true,
-	'678': true,
 	'679': true,
 };
 
@@ -91,6 +105,15 @@ export const HideAddLiquidityPoolIds: {
 	/*
 	'21': window.location.hostname.startsWith('app.'),
 	 */
+};
+/*
+ Disable the single asset lp providing feature from UI.
+ Single asset lp can be risky for the pools low liquidity,
+ especially for the users who do not have good understanding on Single Asset LP.
+ For this reason, single asset lp UI would not be supported for the pools listed below.
+ */
+export const DisabledSingleLiquidityProvidePoolIds: { [poolId: string]: boolean } = {
+	'678': true,
 };
 export const PreferHeaderShowTokenPricePoolIds: {
 	[poolId: string]:
@@ -801,16 +824,26 @@ export const IBCAssetInfos: {
 	withdrawUrlOverride?: string;
 }[] = [
 	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'uusdc',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=usdc',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=usdc',
+	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'weth-wei',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=weth',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=weth',
+	},
+	{
 		counterpartyChainId: 'cosmoshub-4',
 		sourceChannelId: 'channel-0',
 		destChannelId: 'channel-141',
 		coinMinimalDenom: 'uatom',
-	},
-	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uluna',
 	},
 	{
 		counterpartyChainId: 'crypto-org-chain-mainnet-1',
@@ -822,7 +855,15 @@ export const IBCAssetInfos: {
 		counterpartyChainId: 'columbus-5',
 		sourceChannelId: 'channel-72',
 		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uluna',
+		isUnstable: true,
+	},
+	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uusd',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'secret-4',
@@ -1209,7 +1250,7 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-238',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'umeme',
-	}
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1371,7 +1412,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'LUNA',
 			coinMinimalDenom: 'uluna',
 			coinDecimals: 6,
-			coinGeckoId: 'terra-luna',
+			coinGeckoId: 'pool:uluna',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
 		},
 		bip44: {
@@ -1383,14 +1424,14 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'LUNA',
 				coinMinimalDenom: 'uluna',
 				coinDecimals: 6,
-				coinGeckoId: 'terra-luna',
+				coinGeckoId: 'pool:uluna',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
 			},
 			{
 				coinDenom: 'UST',
 				coinMinimalDenom: 'uusd',
 				coinDecimals: 6,
-				coinGeckoId: 'terrausd',
+				coinGeckoId: 'pool:uluna',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
 			},
 			{
@@ -1406,21 +1447,21 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'LUNA',
 				coinMinimalDenom: 'uluna',
 				coinDecimals: 6,
-				coinGeckoId: 'terra-luna',
+				coinGeckoId: 'pool:uluna',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
 			},
 			{
 				coinDenom: 'UST',
 				coinMinimalDenom: 'uusd',
 				coinDecimals: 6,
-				coinGeckoId: 'terrausd',
+				coinGeckoId: 'pool:uusd',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
 			},
 		],
 		gasPriceStep: {
-			low: 0.015,
-			average: 0.015,
-			high: 0.015,
+			low: 5.665,
+			average: 5.665,
+			high: 10,
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://finder.terra.money/columbus-5/tx/{txHash}',
@@ -3270,5 +3311,5 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://explorer.meme.sx/meme/tx/{txHash}',
-	}
+	},
 ];

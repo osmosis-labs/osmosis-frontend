@@ -24,7 +24,8 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 		protected readonly queryPools: ObservableQueryPools,
 		protected readonly queryMintParmas: ObservableQueryMintParmas,
 		protected readonly queryEpochProvision: ObservableQueryEpochProvisions,
-		protected readonly queryEpochs: ObservableQueryEpochs
+		protected readonly queryEpochs: ObservableQueryEpochs,
+		protected readonly disabledIncentivizedPoolIds: Record<string, boolean>
 	) {
 		super(kvStore, chainId, chainGetter, '/osmosis/pool-incentives/v1beta1/incentivized_pools');
 
@@ -37,18 +38,28 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 			return [];
 		}
 
-		const result = this.response.data.incentivized_pools.map(incentivizedPool => incentivizedPool.pool_id);
+		const result = this.response.data.incentivized_pools
+			.filter(pool => !this.disabledIncentivizedPoolIds[pool.pool_id])
+			.map(incentivizedPool => incentivizedPool.pool_id);
 
 		// Remove the duplicates.
 		return [...new Set(result)];
 	}
 
 	readonly isIncentivized = computedFn((poolId: string) => {
+		if (this.disabledIncentivizedPoolIds[poolId]) {
+			return false;
+		}
+
 		return this.incentivizedPools.includes(poolId);
 	});
 
 	readonly getIncentivizedGaugeId = computedFn((poolId: string, duration: Duration): string | undefined => {
 		if (!this.response) {
+			return;
+		}
+
+		if (this.disabledIncentivizedPoolIds[poolId]) {
 			return;
 		}
 
