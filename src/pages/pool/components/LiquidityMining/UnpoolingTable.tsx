@@ -6,7 +6,7 @@ import { SubTitleText, Text } from 'src/components/Texts';
 import { useStore } from 'src/stores';
 import useWindowSize from 'src/hooks/useWindowSize';
 
-const tableWidths = ['40%', '40%', '20%'];
+const tableWidths = ['50%', '50%'];
 
 export const UnpoolingTable = observer(() => {
 	const { chainStore, accountStore, queriesStore } = useStore();
@@ -16,15 +16,9 @@ export const UnpoolingTable = observer(() => {
 	const account = accountStore.getAccount(chainStore.current.chainId);
 	const queries = queriesStore.get(chainStore.current.chainId);
 
-	const unlockingTokensExceptLPShares = queries.osmosis.queryLockableDurations.lockableDurations.map(duration => {
-		return {
-			duration,
-			unlockings: queries.osmosis.queryAccountLocked
-				.get(account.bech32Address)
-				.getUnlockingCoinsWithDuration(duration)
-				.filter(unlocking => !unlocking.amount.currency.coinMinimalDenom.startsWith('gamm/pool/')),
-		};
-	});
+	const unlockingTokensExceptLPShares = queries.osmosis.queryAccountLocked
+		.get(account.bech32Address)
+		.unlockingCoins.filter(unlocking => !unlocking.amount.currency.coinMinimalDenom.startsWith('gamm/pool/'));
 
 	return (
 		<div className="mt-10">
@@ -37,25 +31,18 @@ export const UnpoolingTable = observer(() => {
 			<table className="w-full">
 				<UnpoolingTableHeader isMobileView={isMobileView} />
 				<tbody className="w-full">
-					{unlockingTokensExceptLPShares.map(({ duration, unlockings }, i) => {
+					{unlockingTokensExceptLPShares.map((unlocking, i) => {
 						return (
-							<React.Fragment key={i.toString()}>
-								{unlockings.map((unlocking, i) => {
-									return (
-										<UnpoolingTableRow
-											key={i.toString()}
-											duration={duration.humanize()}
-											amount={unlocking.amount
-												.maxDecimals(6)
-												.trim(true)
-												.toString()}
-											lockIds={unlocking.lockIds}
-											endTime={unlocking.endTime}
-											isMobileView={isMobileView}
-										/>
-									);
-								})}
-							</React.Fragment>
+							<UnpoolingTableRow
+								key={i.toString()}
+								amount={unlocking.amount
+									.maxDecimals(6)
+									.trim(true)
+									.toString()}
+								lockIds={unlocking.lockIds}
+								endTime={unlocking.endTime}
+								isMobileView={isMobileView}
+							/>
 						);
 					})}
 				</tbody>
@@ -73,12 +60,9 @@ const UnpoolingTableHeader = observer(({ isMobileView }: UnlockingTableHeaderPro
 		<thead>
 			<TableHeadRow>
 				<TableData width={tableWidths[0]}>
-					<Text isMobileView={isMobileView}>Duration</Text>
-				</TableData>
-				<TableData width={tableWidths[1]}>
 					<Text isMobileView={isMobileView}>Amount</Text>
 				</TableData>
-				<TableData width={tableWidths[2]}>
+				<TableData width={tableWidths[1]}>
 					<Text isMobileView={isMobileView}>Unlock Complete</Text>
 				</TableData>
 			</TableHeadRow>
@@ -87,29 +71,23 @@ const UnpoolingTableHeader = observer(({ isMobileView }: UnlockingTableHeaderPro
 });
 
 interface UnlockingTableRowProps {
-	duration: string;
 	amount: string;
 	lockIds: string[];
 	endTime: Date;
 	isMobileView: boolean;
 }
 
-const UnpoolingTableRow: FunctionComponent<UnlockingTableRowProps> = ({ duration, endTime, isMobileView, amount }) => {
+const UnpoolingTableRow: FunctionComponent<UnlockingTableRowProps> = ({ endTime, isMobileView, amount }) => {
 	const endTimeMoment = moment(endTime);
 
 	return (
 		<TableBodyRow height={64}>
 			<TableData width={tableWidths[0]}>
 				<Text emphasis="medium" isMobileView={isMobileView}>
-					{duration}
-				</Text>
-			</TableData>
-			<TableData width={tableWidths[1]}>
-				<Text emphasis="medium" isMobileView={isMobileView}>
 					{amount}
 				</Text>
 			</TableData>
-			<TableData width={tableWidths[2]}>
+			<TableData width={tableWidths[1]}>
 				<Text isMobileView={isMobileView}>{endTimeMoment.fromNow()}</Text>
 			</TableData>
 		</TableBodyRow>
