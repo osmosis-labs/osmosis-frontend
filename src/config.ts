@@ -73,6 +73,7 @@ export const LockupAbledPoolIds: {
 	'678': true,
 	'681': true,
 
+	// Terra related pools
 	'560': true,
 	'561': true,
 	'562': true,
@@ -85,6 +86,8 @@ export const LockupAbledPoolIds: {
 	// '612': true,
 	'615': true,
 	// '642': true,
+	'679': true,
+	'635': true,
 };
 
 export const PromotedLBPPoolIds: {
