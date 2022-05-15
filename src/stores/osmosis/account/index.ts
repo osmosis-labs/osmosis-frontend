@@ -50,6 +50,7 @@ export interface OsmosisMsgOpts {
 	readonly superfluidUndelegate: MsgOpt;
 	readonly superfluidUnbondLock: MsgOpt;
 	readonly unlockPeriodLock: MsgOpt;
+	readonly unPoolWhitelistedPool: MsgOpt;
 }
 
 export class AccountWithCosmosAndOsmosis
@@ -122,6 +123,10 @@ export class AccountWithCosmosAndOsmosis
 				type: 'osmosis/superfluid-unbond-lock',
 				// Gas per msg
 				gas: 300000,
+			},
+			unPoolWhitelistedPool: {
+				type: 'osmosis/unpool-whitelisted-pool',
+				gas: 3000000,
 			},
 		})
 	);
@@ -1216,6 +1221,56 @@ export class OsmosisAccount {
 					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryUnlockingCoins.get(this.base.bech32Address).fetch();
 					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
+				}
+
+				if (onFulfill) {
+					onFulfill(tx);
+				}
+			}
+		);
+	}
+
+	async sendUnPoolWhitelistedPoolMsg(poolId: string, memo: string = '', onFulfill?: (tx: any) => void) {
+		const msg = {
+			type: this.base.msgOpts.unPoolWhitelistedPool.type,
+			value: {
+				sender: this.base.bech32Address,
+				pool_id: poolId,
+			},
+		};
+
+		const protoMsg = {
+			type_url: '/osmosis.superfluid.MsgUnPoolWhitelistedPool',
+			value: osmosis.superfluid.MsgUnPoolWhitelistedPool.encode({
+				sender: msg.value.sender,
+				poolId: Long.fromString(msg.value.pool_id),
+			}).finish(),
+		};
+
+		await this.base.sendMsgs(
+			'unPoolWhitelistedPool',
+			{
+				aminoMsgs: [msg],
+				protoMsgs: [protoMsg],
+			},
+			memo,
+			{
+				amount: [],
+				gas: this.base.msgOpts.unPoolWhitelistedPool.gas.toString(),
+			},
+			undefined,
+			tx => {
+				if (tx.code == null || tx.code === 0) {
+					// Refresh the balances
+					const queries = this.queriesStore.get(this.chainId);
+
+					// Refresh the unlocking coins
+					queries.osmosis.queryLockedCoins.get(this.base.bech32Address).fetch();
+					queries.osmosis.queryUnlockingCoins.get(this.base.bech32Address).fetch();
+					queries.osmosis.queryAccountLocked.get(this.base.bech32Address).fetch();
+
+					queries.osmosis.querySuperfluidDelegations.getQuerySuperfluidDelegations(this.base.bech32Address).fetch();
+					queries.osmosis.querySuperfluidUndelegations.getQuerySuperfluidDelegations(this.base.bech32Address).fetch();
 				}
 
 				if (onFulfill) {

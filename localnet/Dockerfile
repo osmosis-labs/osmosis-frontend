@@ -37,12 +37,12 @@ ENV PATH $GOBIN:$GOROOT/bin:$PATH
 
 COPY --from=wasmBuilder /lib/libwasmvm.so /lib/libwasmvm.so
 
-RUN git clone https://github.com/osmosis-labs/osmosis
+RUN git clone https://github.com/Thunnini/osmosis
 
 WORKDIR /osmosis
 
 # Change the commit hash if you want.
-RUN git fetch && git checkout 7bad078ffd3a97adb226651d67c7136d28f22ee6
+RUN git fetch && git checkout ef79150ec89c1d19f89def9bb0734b732829d218
 
 # Build daemon.
 RUN make build
