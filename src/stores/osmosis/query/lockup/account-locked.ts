@@ -66,7 +66,8 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
 
 				if (currency) {
 					const time = new Date(lock.end_time).getTime();
-					const key = time.toString() + lock.duration + '/' + currency.coinMinimalDenom;
+					const key = time.toString() + '/' + lock.duration + '/' + currency.coinMinimalDenom;
+					console.log(key);
 					if (!map.has(key)) {
 						map.set(key, {
 							amount: new CoinPretty(currency, new Dec(0)),
@@ -79,7 +80,7 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
 					value.amount = value.amount.add(new CoinPretty(currency, new Dec(coin.amount)));
 					value.lockIds.push(lock.ID);
 
-					map.set(time.toString() + '/' + currency.coinMinimalDenom, value);
+					map.set(key, value);
 				}
 			}
 		}
