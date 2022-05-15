@@ -32,12 +32,40 @@ export const MyBondingsTable = observer(function MyBondingsTable({ poolId, isSup
 
 	const lockableDurations = queries.osmosis.queryLockableDurations.lockableDurations;
 
+	const showUnpoolButton = (() => {
+		if (!UnPoolWhitelistedPoolIds[poolId]) {
+			return false;
+		}
+
+		if (account.isSendingMsg === 'unPoolWhitelistedPool') {
+			return true;
+		}
+
+		const lpShareLocked = queries.osmosis.queryLockedCoins
+			.get(account.bech32Address)
+			.lockedCoins.find(coin => coin.currency.coinMinimalDenom === `gamm/pool/${poolId}`);
+
+		if (lpShareLocked) {
+			return true;
+		}
+
+		const lpShareUnlocking = queries.osmosis.queryUnlockingCoins
+			.get(account.bech32Address)
+			.unlockingCoins.find(coin => coin.currency.coinMinimalDenom === `gamm/pool/${poolId}`);
+
+		if (lpShareUnlocking) {
+			return true;
+		}
+
+		return false;
+	})();
+
 	return (
 		<div className="mt-10">
 			<div className="px-5 md:px-0 flex flex-row items-center">
 				<SubTitleText isMobileView={isMobileView}>My Bondings</SubTitleText>
 				<div className="flex-1" />
-				{UnPoolWhitelistedPoolIds[poolId] ? (
+				{showUnpoolButton ? (
 					<ButtonPrimary
 						onClick={async () => {
 							try {
