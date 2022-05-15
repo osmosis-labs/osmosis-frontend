@@ -2,12 +2,13 @@ import { CoinPretty, Dec } from '@keplr-wallet/unit';
 import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
 import { Img } from 'src/components/common/Img';
-import { ButtonFaint } from 'src/components/layouts/Buttons';
+import { ButtonFaint, ButtonPrimary } from 'src/components/layouts/Buttons';
 import { Spinner } from 'src/components/Spinners';
 import { TableBodyRow, TableData, TableHeadRow } from 'src/components/Tables';
 import { SubTitleText, Text } from 'src/components/Texts';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { useStore } from 'src/stores';
+import { UnPoolWhitelistedPoolIds } from 'src/config';
 
 const tableWidths = ['25%', '25%', '25%', '25%'];
 const tableWidthsOnMobileView = ['30%', '40%', '30%'];
@@ -33,8 +34,27 @@ export const MyBondingsTable = observer(function MyBondingsTable({ poolId, isSup
 
 	return (
 		<div className="mt-10">
-			<div className="px-5 md:px-0">
+			<div className="px-5 md:px-0 flex flex-row items-center">
 				<SubTitleText isMobileView={isMobileView}>My Bondings</SubTitleText>
+				<div className="flex-1" />
+				{UnPoolWhitelistedPoolIds[poolId] ? (
+					<ButtonPrimary
+						onClick={async () => {
+							try {
+								await account.osmosis.sendUnPoolWhitelistedPoolMsg(poolId);
+							} catch (e) {
+								console.log(e);
+							}
+						}}>
+						{account.isSendingMsg === 'unPoolWhitelistedPool' ? (
+							<Spinner />
+						) : (
+							<Text isMobileView={isMobileView} emphasis="high">
+								Depool LP Shares
+							</Text>
+						)}
+					</ButtonPrimary>
+				) : null}
 			</div>
 			<table className="w-full">
 				<LockupTableHeader isMobileView={isMobileView} />

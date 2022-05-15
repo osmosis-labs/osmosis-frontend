@@ -122,6 +122,11 @@ export const PreferHeaderShowTokenPricePoolIds: {
 	},
 	 */
 };
+export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
+	'1': true,
+	'2': true,
+	'3': true,
+};
 export const ExtraGaugeInPool: {
 	[poolId: string]:
 		| {
