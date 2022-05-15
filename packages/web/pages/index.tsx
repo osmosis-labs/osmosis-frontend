@@ -75,9 +75,9 @@ const Home: NextPage = observer(function () {
           </g>
         </svg>
       </div>
-      <div className="absolute w-full h-full flex items-center overflow-x-hidden overflow-y-auto">
+      <div className="absolute w-full h-full flex items-center overflow-x-hidden overflow-y-auto md:p-5">
         <TradeClipboard
-          containerClassName="w-full max-w-[32.5rem]"
+          containerClassName="w-full max-w-[32.5rem] md:-translate-x-1/2"
           containerStyle={{
             ["--clipboardMinLeft" as any]: `calc(${clipboardMinLeftPx} * (100vh / 1080))`,
             ["--clipboardPositionLeft" as any]: `calc((${
@@ -87,7 +87,9 @@ const Home: NextPage = observer(function () {
             }) * ${clipboardPositionLeft} - ${
               clipboardWidth ? clipboardWidth : defaultClipboardWidthPx
             }px)`,
-            left: "min(var(--clipboardMinLeft), var(--clipboardPositionLeft))",
+            left: windowSize.isMobile
+              ? "50%"
+              : "min(var(--clipboardMinLeft), var(--clipboardPositionLeft))",
           }}
           pools={pools}
         />

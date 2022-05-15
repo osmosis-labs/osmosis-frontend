@@ -11,7 +11,7 @@ export const TradeTokens: FunctionComponent<Props> = (props) => {
   return (
     <ModalBase {...props}>
       <TradeClipboard
-        containerClassName="w-full border-none !p-0 mt-4"
+        containerClassName="w-full border-none !p-0 mt-4 md:mt-0"
         pools={props.pools}
         isInModal
       />

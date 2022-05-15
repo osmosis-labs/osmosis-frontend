@@ -57,7 +57,7 @@ export const TokenSelect: FunctionComponent<
           setIsSelectOpen(!isSelectOpen);
         }}
       >
-        <div className="w-14 h-14 md:h-9 md:w-9 rounded-full border border-enabledGold flex items-center justify-center shrink-0 mr-3">
+        <div className="w-14 h-14 md:h-9 md:w-9 rounded-full border border-enabledGold flex items-center justify-center shrink-0 mr-3 md:mr-2">
           {selectedCurrency?.coinImageUrl && (
             <div className="w-11 h-11 md:h-7 md:w-7 rounded-full">
               <Image
@@ -72,12 +72,12 @@ export const TokenSelect: FunctionComponent<
         </div>
         <div>
           {isMobile ? (
-            <span className="subtitle2">{selectedCurrency?.coinDenom}</span>
+            <h6>{selectedCurrency?.coinDenom}</h6>
           ) : (
             <h5>{selectedCurrency?.coinDenom}</h5>
           )}
         </div>
-        <div className="w-5 ml-3 pb-1">
+        <div className="w-5 ml-3 md:ml-2 pb-1">
           <Image
             className={`opacity-40 group-hover:opacity-100 transition-transform duration-100 ${
               isSelectOpen ? "rotate-180" : "rotate-0"

@@ -10,6 +10,7 @@ import {
   useBooleanWithWindowEvent,
   useSlippageConfig,
   useTradeTokenInConfig,
+  useWindowSize,
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { Error as ErrorBox } from "../alert";
@@ -33,6 +34,8 @@ export const TradeClipboard: FunctionComponent<{
     assetsStore: { nativeBalances, ibcBalances },
     priceStore,
   } = useStore();
+
+  const { isMobile } = useWindowSize();
 
   const allTokenBalances = nativeBalances.concat(ibcBalances);
 
@@ -128,20 +131,20 @@ export const TradeClipboard: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "relative rounded-2xl bg-card border-2 border-cardInner p-2.5",
+        "relative rounded-2xl bg-card border-2 md:border-0 border-cardInner p-2.5 md:p-0",
         containerClassName
       )}
       style={containerStyle}
     >
-      <div className="rounded-xl bg-cardInner px-5 pt-5 pb-8">
+      <div className="rounded-xl bg-cardInner px-5 md:px-3 pt-5 md:pt-4 pb-8 md:pb-4">
         {!isInModal && (
-          <div className="absolute -top-2 inset-x-1/2 -translate-x-1/2 w-[10rem] h-[3.75rem] z-10 bg-gradients-clip rounded-md">
+          <div className="absolute -top-2 inset-x-1/2 -translate-x-1/2 w-[10rem] md:w-[7.875rem] h-[3.75rem] md:h-[2.8125rem] z-10 bg-gradients-clip rounded-md">
             <div className="absolute bottom-0 rounded-b-md w-full h-5 bg-gradients-clipInner" />
-            <div className="absolute inset-x-1/2 -translate-x-1/2 bottom-2 w-12 h-[1.875rem] bg-[rgba(91,83,147,0.12)] rounded-md shadow-[rgba(0,0,0,0.25)_1px_1px_1px_inset]" />
+            <div className="absolute inset-x-1/2 -translate-x-1/2 bottom-2 w-12 md:w-9 h-[1.875rem] md:h-[1.4rem] bg-[rgba(91,83,147,0.12)] rounded-md shadow-[rgba(0,0,0,0.25)_1px_1px_1px_inset]" />
           </div>
         )}
 
-        <div className="relative flex justify-end w-full h-11 mb-[1.125rem]">
+        <div className="relative flex justify-end w-full h-11 mb-[1.125rem] md:mb-2">
           <button
             className="relative"
             onClick={(e) => {
@@ -150,8 +153,8 @@ export const TradeClipboard: FunctionComponent<{
             }}
           >
             <Image
-              width={44}
-              height={44}
+              width={isMobile ? 36 : 44}
+              height={isMobile ? 36 : 44}
               src={`/icons/hexagon-border${
                 isSettingOpen ? "-selected" : ""
               }.svg`}
@@ -159,8 +162,8 @@ export const TradeClipboard: FunctionComponent<{
             />
             <div className="w-5 h-5 absolute inset-1/2 -translate-x-1/2 -translate-y-1/2">
               <Image
-                width={20}
-                height={20}
+                width={isMobile ? 18 : 20}
+                height={isMobile ? 18 : 20}
                 src={`/icons/setting${isSettingOpen ? "-selected" : ""}.svg`}
                 alt="setting icon"
               />
@@ -168,7 +171,7 @@ export const TradeClipboard: FunctionComponent<{
           </button>
           {isSettingOpen && (
             <div
-              className="absolute bottom-[-0.5rem] right-0 translate-y-full bg-card border border-white-faint rounded-2xl p-[1.875rem] z-20 w-full max-w-[23.875rem]"
+              className="absolute bottom-[-0.5rem] right-0 translate-y-full bg-card border border-white-faint rounded-2xl p-[1.875rem] md:p-5 z-20 w-full max-w-[23.875rem]"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="subtitle1 text-white-emphasis">
@@ -243,11 +246,13 @@ export const TradeClipboard: FunctionComponent<{
         </div>
 
         <div className="relative">
-          <div className="bg-surface rounded-2xl px-4 pt-3 pb-4 relative">
+          <div className="bg-surface rounded-2xl md:rounded-xl px-4 md:px-3 pt-3 md:pt-2.5 pb-4 md:pb-2.5 relative">
             <div className="flex justify-between items-center">
-              <span className="subtitle1 text-white-full">From</span>
+              <span className="subtitle1 md:subtitle2 text-white-full">
+                From
+              </span>
               <div className="flex items-center">
-                <span className="caption text-sm text-white-full">
+                <span className="md:hidden caption text-sm text-white-full">
                   Available
                 </span>
                 <span className="caption text-sm text-primary-50 ml-1.5">
@@ -331,6 +336,7 @@ export const TradeClipboard: FunctionComponent<{
                       );
                     }
                   }}
+                  isMobile={isMobile}
                 />
               )}
               <div className="flex-1" />
@@ -338,7 +344,7 @@ export const TradeClipboard: FunctionComponent<{
                 <div className="flex flex-col items-end">
                   <input
                     type="number"
-                    className="font-h5 text-h5 text-white-full bg-transparent text-right focus:outline-none w-full"
+                    className="font-h5 md:font-subtitle1 text-h5 md:text-subtitle1 text-white-full bg-transparent text-right focus:outline-none w-full"
                     placeholder="0"
                     onChange={(e) => {
                       e.preventDefault();
@@ -346,7 +352,7 @@ export const TradeClipboard: FunctionComponent<{
                     }}
                     value={tradeTokenInConfig.amount}
                   />
-                  <div className="subtitle2 text-white-disabled">{`≈ ${priceStore.calculatePrice(
+                  <div className="subtitle2 md:font-caption md:text-caption text-white-disabled">{`≈ ${priceStore.calculatePrice(
                     new CoinPretty(
                       tradeTokenInConfig.sendCurrency,
                       new Dec(
@@ -368,7 +374,7 @@ export const TradeClipboard: FunctionComponent<{
 
           <button
             type="button"
-            className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 z-[1]"
+            className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-12 md:w-9 h-12 md:h-9 z-[1] md:mt-0.5"
             onClick={(e) => {
               e.preventDefault();
 
@@ -376,24 +382,24 @@ export const TradeClipboard: FunctionComponent<{
             }}
           >
             <Image
-              width={48}
-              height={48}
+              width={isMobile ? 36 : 48}
+              height={isMobile ? 36 : 48}
               src="/icons/hexagon-border.svg"
               alt="hexagon border icon"
             />
-            <div className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6">
+            <div className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-6 md:w-[1.125rem] h-6 md:h-[1.125rem]">
               <Image
-                width={24}
-                height={24}
+                width={isMobile ? 18 : 24}
+                height={isMobile ? 18 : 24}
                 src="/icons/switch.svg"
                 alt="switch icon"
               />
             </div>
           </button>
 
-          <div className="bg-surface rounded-2xl px-4 pt-3 pb-4 mt-[1.125rem] relative">
+          <div className="bg-surface rounded-2xl md:rounded-xl px-4 md:px-3 pt-3 md:pt-2.5 pb-4 md:pb-2.5 mt-[1.125rem] md:mt-3 relative">
             <div className="flex justify-between items-center">
-              <span className="subtitle1 text-white-full">To</span>
+              <span className="subtitle1 md:subtitle2 text-white-full">To</span>
             </div>
             <div className="flex items-center mt-3">
               {tradeTokenInConfig && (
@@ -417,6 +423,7 @@ export const TradeClipboard: FunctionComponent<{
                       );
                     }
                   }}
+                  isMobile={isMobile}
                 />
               )}
               <div className="flex-1" />
@@ -424,7 +431,7 @@ export const TradeClipboard: FunctionComponent<{
                 <div className="flex flex-col items-end">
                   <h5
                     className={classNames(
-                      "text-right",
+                      "text-right md:subtitle1",
                       tradeTokenInConfig.expectedSwapResult.amount
                         .toDec()
                         .isPositive()
@@ -443,11 +450,13 @@ export const TradeClipboard: FunctionComponent<{
         </div>
 
         {tradeTokenInConfig && (
-          <div className="mt-[1.125rem] border border-white-faint rounded-lg bg-card py-3 px-4">
+          <div className="mt-[1.125rem] border border-white-faint rounded-lg bg-card py-3 px-4 md:px-3">
             <div className="flex justify-between">
-              <div className="subtitle2 text-wireframes-lightGrey">Rate</div>
+              <div className="subtitle2 md:caption text-wireframes-lightGrey">
+                Rate
+              </div>
               <div className="flex flex-col gap-y-1.5 text-right">
-                <div className="subtitle2 text-wireframes-lightGrey">
+                <div className="subtitle2 md:caption text-wireframes-lightGrey">
                   {`1 ${
                     tradeTokenInConfig.sendCurrency.coinDenom
                   } = ${tradeTokenInConfig.expectedSwapResult.beforeSpotPriceWithoutSwapFeeOutOverIn
@@ -466,18 +475,18 @@ export const TradeClipboard: FunctionComponent<{
               </div>
             </div>
             <div className="flex justify-between mt-2.5">
-              <div className="subtitle2 text-wireframes-lightGrey">
+              <div className="subtitle2 md:caption text-wireframes-lightGrey">
                 Swap Fee
               </div>
-              <div className="subtitle2 text-wireframes-lightGrey">
+              <div className="subtitle2 md:caption text-wireframes-lightGrey">
                 {tradeTokenInConfig.expectedSwapResult.swapFee.toString()}
               </div>
             </div>
             <div className="flex justify-between pt-4 mt-4 border-t border-white-faint">
-              <div className="subtitle2 text-white-high">
+              <div className="subtitle2 md:caption text-white-high">
                 Estimated Slippage
               </div>
-              <div className="subtitle2 text-white-high">
+              <div className="subtitle2 md:caption text-white-high">
                 {tradeTokenInConfig.expectedSwapResult.slippage.toString()}
               </div>
             </div>
@@ -490,7 +499,7 @@ export const TradeClipboard: FunctionComponent<{
         )}
         {tradeTokenInConfig && (
           <Button
-            className="mt-[1.125rem] flex justify-center items-center w-full h-[3.75rem] rounded-lg bg-primary-200 text-white-full text-base font-medium shadow-md"
+            className="mt-[1.125rem] flex justify-center items-center w-full h-[3.75rem] rounded-lg bg-primary-200 text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
             disabled={
               tradeTokenInConfig.error != null &&
               tradeTokenInConfig.optimizedRoutePaths.length > 0
