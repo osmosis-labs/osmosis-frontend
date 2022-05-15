@@ -1,32 +1,31 @@
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { Staking } from "@keplr-wallet/stores";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import {
-  ObservableQueryGuageById,
   ObservableAddLiquidityConfig,
-  ObservableRemoveLiquidityConfig,
   ObservableAmountConfig,
-  ObservableQueryIncentivizedPools,
+  ObservableQueryGuageById,
+  ObservableRemoveLiquidityConfig,
 } from "@osmosis-labs/stores";
-import { Duration } from "dayjs/plugin/duration";
 import moment from "dayjs";
+import { Duration } from "dayjs/plugin/duration";
 import { autorun } from "mobx";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useEffect, useState, useMemo } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { Button } from "../../components/buttons";
 import {
+  GoSuperfluidCard,
   PoolCatalystCard,
   PoolGaugeBonusCard,
   PoolGaugeCard,
   SuperfluidValidatorCard,
-  GoSuperfluidCard,
 } from "../../components/cards";
 import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
-import { BaseCell, Table, ColumnDef } from "../../components/table";
+import { BaseCell, ColumnDef, Table } from "../../components/table";
 import { truncateString } from "../../components/utils";
-import { ExternalIncentiveGaugeAllowList, EmbedChainInfos } from "../../config";
+import { EmbedChainInfos, ExternalIncentiveGaugeAllowList } from "../../config";
 import { useTradeTokenInConfig, useWindowSize } from "../../hooks";
 import {
   LockTokensModal,
