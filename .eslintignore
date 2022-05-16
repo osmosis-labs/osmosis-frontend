@@ -1,0 +1,16 @@
+**/*.scss
+**/*.html
+**/*.json
+**/*.png
+**/*.svg
+.DS_Store
+
+privacy-policy.html
+
+src/vendor/*
+dist/*
+prod/*
+
+src/styles/index.scss
+
+src/proto/generated/*
