@@ -7,9 +7,31 @@ import { useStore } from 'src/stores';
 import { AssetBalancesList } from './AssetBalancesList';
 import { AssetsOverview } from './AssetsOverview';
 import { IbcTransferHistoryList } from './IbcTransferHistoryList';
+import { UnpoolingTable } from 'src/pages/pool/components/LiquidityMining/UnpoolingTable';
 
 export const AssetsPage: FunctionComponent = observer(() => {
-	const { ibcTransferHistoryStore, chainStore, accountStore } = useStore();
+	const { ibcTransferHistoryStore, chainStore, queriesStore, accountStore } = useStore();
+
+	const account = accountStore.getAccount(chainStore.current.chainId);
+	const queries = queriesStore.get(chainStore.current.chainId);
+
+	const showUnpoolingTable = (() => {
+		// If has unlocking tokens except gamm lp share.
+		const accountLockedResponse = queries.osmosis.queryAccountLocked.get(account.bech32Address).response;
+		if (!accountLockedResponse) {
+			return false;
+		}
+
+		for (const lock of accountLockedResponse.data.locks) {
+			for (const coin of lock.coins) {
+				if (!coin.denom.startsWith('gamm/pool/')) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	})();
 
 	return (
 		<AssetsPageContainer>
@@ -29,6 +51,16 @@ export const AssetsPage: FunctionComponent = observer(() => {
 					) : null}
 				</CenterSelf>
 			</BalanceAndHistorySection>
+
+			{showUnpoolingTable ? (
+				<UnpoolingTableSection>
+					<CenterSelf>
+						<UnpoolingTableContainer>
+							<UnpoolingTable />
+						</UnpoolingTableContainer>
+					</CenterSelf>
+				</UnpoolingTableSection>
+			) : null}
 		</AssetsPageContainer>
 	);
 });
@@ -49,6 +81,20 @@ const AssetsOverviewSection = styled.div`
 `;
 
 const BalanceAndHistorySection = styled.div`
+	padding: 20px 0;
+
+	@media (min-width: 768px) {
+		padding: 40px 60px;
+	}
+`;
+
+const UnpoolingTableContainer = styled.div`
+	width: 100%;
+	background-color: ${colorPrimaryDark};
+	height: fit-content;
+`;
+
+const UnpoolingTableSection = styled.div`
 	padding: 20px 0;
 
 	@media (min-width: 768px) {

@@ -7,7 +7,7 @@ import { Img } from 'src/components/common/Img';
 import { ButtonPrimary } from 'src/components/layouts/Buttons';
 import { CenterSelf } from 'src/components/layouts/Containers';
 import { TitleText, Text } from 'src/components/Texts';
-import { ExtraGaugeInPool } from 'src/config';
+import { ExtraGaugeInPool, UnPoolWhitelistedPoolIds } from 'src/config';
 import { LockLpTokenDialog } from 'src/dialogs';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { useStore } from 'src/stores';
@@ -16,6 +16,7 @@ import { ExtraGauge } from './ExtraGauge';
 import { MyBondingsTable } from './MyBondingsTable';
 import { MySuperfluidUnbondingTable } from './MySuperfluidUnbondingTable';
 import { MyUnBondingTable } from './MyUnbondingTable';
+import { UnpoolingTable } from 'src/pages/pool/components/LiquidityMining/UnpoolingTable';
 
 interface Props {
 	poolId: string;
@@ -41,6 +42,28 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId, isSup
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const closeDialog = () => setIsDialogOpen(false);
+
+	const showUnpoolingTable = (() => {
+		if (!UnPoolWhitelistedPoolIds[poolId]) {
+			return false;
+		}
+
+		// If has unlocking tokens except gamm lp share.
+		const accountLockedResponse = queries.osmosis.queryAccountLocked.get(account.bech32Address).response;
+		if (!accountLockedResponse) {
+			return false;
+		}
+
+		for (const lock of accountLockedResponse.data.locks) {
+			for (const coin of lock.coins) {
+				if (!coin.denom.startsWith('gamm/pool/')) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	})();
 
 	return (
 		<>
@@ -149,6 +172,7 @@ export const LiquidityMining = observer(function LiquidityMining({ poolId, isSup
 			)}
 			<MyBondingsTable poolId={poolId} isSuperfluidEnabled={isSuperfluidEnabled} />
 			<MyUnBondingTable poolId={poolId} />
+			{showUnpoolingTable ? <UnpoolingTable /> : null}
 			{isSuperfluidEnabled && <MySuperfluidUnbondingTable poolId={poolId} />}
 		</>
 	);
