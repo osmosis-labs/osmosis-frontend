@@ -2904,6 +2904,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'weth',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/weth.png',
 			},
+			{
+				coinDenom: 'WBTC',
+				coinMinimalDenom: 'wbtc-satoshi',
+				coinDecimals: 8,
+				coinGeckoId: 'wrapped-bitcoin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/wbtc.png',
+			},
 		],
 		feeCurrencies: [
 			{
