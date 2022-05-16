@@ -1824,6 +1824,21 @@ export class RootStore {
 					},
 				],
 			},
+			{
+				poolId: '712',
+				currencies: [
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-208' }], 'wbtc-satoshi'),
+						coinDenom: 'WBTC',
+						coinDecimals: 8,
+					},
+				],
+			},
 		]);
 
 		this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
