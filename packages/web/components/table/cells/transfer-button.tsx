@@ -1,4 +1,5 @@
 import Image from "next/image";
+import classNames from "classnames";
 import { FunctionComponent } from "react";
 import { Button } from "../../../components/buttons/button";
 import { useStore } from "../../../stores";
@@ -6,7 +7,7 @@ import { AssetCell as Cell } from "./types";
 
 export const TransferButtonCell: FunctionComponent<
   { type: "withdraw" | "deposit" } & Partial<Cell>
-> = ({ type, chainId, coinDenom, onWithdraw, onDeposit }) => {
+> = ({ type, chainId, coinDenom, isUnstable, onWithdraw, onDeposit }) => {
   const { assetsStore } = useStore();
 
   const externalUrls = chainId
@@ -16,6 +17,7 @@ export const TransferButtonCell: FunctionComponent<
   return type === "withdraw" ? (
     chainId && coinDenom && onWithdraw ? (
       <TransferButton
+        disabled={isUnstable}
         externalUrl={externalUrls?.withdrawUrl}
         label="Withdraw"
         action={() => onWithdraw?.(chainId, coinDenom)}
@@ -23,6 +25,7 @@ export const TransferButtonCell: FunctionComponent<
     ) : null
   ) : chainId && coinDenom && onDeposit ? (
     <TransferButton
+      disabled={isUnstable}
       externalUrl={externalUrls?.depositUrl}
       label="Deposit"
       action={() => onDeposit?.(chainId, coinDenom)}
@@ -32,15 +35,22 @@ export const TransferButtonCell: FunctionComponent<
 
 const TransferButton: FunctionComponent<{
   externalUrl?: string;
+  disabled?: boolean;
   label: string;
   action: () => void;
-}> = ({ externalUrl, label, action }) =>
+}> = ({ externalUrl, disabled, label, action }) =>
   externalUrl ? (
     <a
-      className="mx-auto flex justify-center items-center gap-0.5 pl-1 text-button font-subtitle2 base text-secondary-200"
+      className={classNames(
+        "mx-auto flex justify-center items-center gap-0.5 pl-1 text-button font-subtitle2 base text-secondary-200",
+        { "opacity-30": disabled }
+      )}
       rel="noreferrer"
       href={externalUrl}
       target="_blank"
+      style={
+        disabled ? { pointerEvents: "none", cursor: "default" } : undefined
+      }
     >
       {label}
       <Image
@@ -54,6 +64,7 @@ const TransferButton: FunctionComponent<{
     <Button
       className="m-auto text-button"
       onClick={action}
+      disabled={disabled}
       size="xs"
       type="arrow-sm"
     >

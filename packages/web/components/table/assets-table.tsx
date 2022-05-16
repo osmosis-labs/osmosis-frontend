@@ -96,6 +96,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 : "0",
             isCW20,
             queryTags: [...(isCW20 ? ["CW20"] : [])],
+            isUnstable: ibcBalance.isUnstable === true,
             onWithdraw,
             onDeposit,
           };
@@ -207,6 +208,11 @@ export const AssetsTable: FunctionComponent<Props> = ({
             }
             setShowPreTransfer(false);
           }}
+          isUnstable={
+            ibcBalances.find(
+              (balance) => balance.balance.denom === selectedTransferToken.denom
+            )?.isUnstable ?? false
+          }
           onSelectToken={(coinDenom) => {
             const ibcToken = ibcBalances.find(
               (ibcAsset) => ibcAsset.balance.denom === coinDenom

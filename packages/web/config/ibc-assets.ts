@@ -1,6 +1,7 @@
 import { IBCAsset } from "../stores/assets";
 
 export const IS_FRONTIER = false;
+export const UNSTABLE_MSG = "Transfers are disabled and unstable";
 
 /**
  * Determine the channel info per the chain.

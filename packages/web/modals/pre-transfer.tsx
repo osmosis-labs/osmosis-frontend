@@ -3,7 +3,11 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import { ModalBase, ModalBaseProps } from "./base";
 import { Button } from "../components/buttons";
 import { TokenSelect } from "../components/control";
+import { Info } from "../components/alert";
 import Image from "next/image";
+import { useWindowSize } from "../hooks";
+import classNames from "classnames";
+import { UNSTABLE_MSG } from "../config";
 
 export const PreTransferModal: FunctionComponent<
   ModalBaseProps & {
@@ -11,6 +15,7 @@ export const PreTransferModal: FunctionComponent<
     tokens: CoinPretty[];
     externalDepositUrl?: string;
     externalWithdrawUrl?: string;
+    isUnstable?: boolean;
     onSelectToken: (coinDenom: string) => void;
     onWithdraw: () => void;
     onDeposit: () => void;
@@ -21,10 +26,12 @@ export const PreTransferModal: FunctionComponent<
     tokens,
     externalDepositUrl,
     externalWithdrawUrl,
+    isUnstable,
     onSelectToken,
     onWithdraw,
     onDeposit,
   } = props;
+  const { isMobile } = useWindowSize();
 
   return (
     <ModalBase
@@ -45,13 +52,22 @@ export const PreTransferModal: FunctionComponent<
             {selectedToken.toString()}
           </span>
         </div>
+        {isUnstable && <Info message={UNSTABLE_MSG} isMobile={isMobile} />}
         <div className="flex place-content-between gap-5 py-2">
           {externalDepositUrl ? (
             <a
-              className="flex w-full gap-1 h-10 text-button font-button justify-center items-center rounded-lg bg-primary-200"
+              className={classNames(
+                "flex w-full gap-1 h-10 text-button font-button justify-center items-center rounded-lg bg-primary-200",
+                { "opacity-30": isUnstable }
+              )}
               href={externalDepositUrl}
               rel="noreferrer"
               target="_blank"
+              style={
+                isUnstable
+                  ? { pointerEvents: "none", cursor: "default" }
+                  : undefined
+              }
             >
               Deposit
               <Image
@@ -62,16 +78,28 @@ export const PreTransferModal: FunctionComponent<
               />
             </a>
           ) : (
-            <Button className="w-full h-10" onClick={onDeposit}>
+            <Button
+              className="w-full h-10"
+              disabled={isUnstable}
+              onClick={onDeposit}
+            >
               Deposit
             </Button>
           )}
           {externalWithdrawUrl ? (
             <a
-              className="flex w-full gap-1 text-button font-button h-10 justify-center items-center rounded-lg bg-primary-200/30 border border-primary-200"
+              className={classNames(
+                "flex w-full gap-1 text-button font-button h-10 justify-center items-center rounded-lg bg-primary-200/30 border border-primary-200",
+                { "opacity-30": isUnstable }
+              )}
               href={externalWithdrawUrl}
               rel="noreferrer"
               target="_blank"
+              style={
+                isUnstable
+                  ? { pointerEvents: "none", cursor: "default" }
+                  : undefined
+              }
             >
               Withdraw
               <Image
@@ -85,6 +113,7 @@ export const PreTransferModal: FunctionComponent<
             <Button
               className="w-full h-10 bg-primary-200/30"
               type="outline"
+              disabled={isUnstable}
               onClick={onWithdraw}
             >
               Withdraw

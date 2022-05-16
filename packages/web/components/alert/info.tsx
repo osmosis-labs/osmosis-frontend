@@ -5,7 +5,7 @@ import { CustomClasses, MobileProps } from "../types";
 import { Alert } from "./types";
 
 export const Info: FunctionComponent<
-  Alert & { data: string } & CustomClasses & MobileProps
+  Alert & { data?: string } & CustomClasses & MobileProps
 > = ({ message, caption, data, className, isMobile = false }) => (
   <div
     className={classNames(
@@ -13,7 +13,7 @@ export const Info: FunctionComponent<
       className
     )}
   >
-    <div className="my-auto">
+    <div className="flex items-center">
       <Image
         alt="error"
         src="/icons/info-secondary-200.svg"
@@ -21,11 +21,16 @@ export const Info: FunctionComponent<
         width={isMobile ? 16 : 24}
       />
     </div>
-    <div className="flex grow place-content-between md:gap-1">
+    <div
+      className={classNames("flex grow place-content-between md:gap-1", {
+        "items-center": !data,
+      })}
+    >
       <div className="flex flex-col">
         {isMobile ? (
           <span className="caption">
-            {message} - {data}
+            {message}
+            {data && ` - ${data}`}
           </span>
         ) : (
           <h6>{message}</h6>
@@ -34,7 +39,7 @@ export const Info: FunctionComponent<
           <span className="text-iconDefault body2 md:caption">{caption}</span>
         )}
       </div>
-      {!isMobile && (
+      {!isMobile && data && (
         <div className="flex flex-col place-content-around">
           <h6>{data}</h6>
         </div>

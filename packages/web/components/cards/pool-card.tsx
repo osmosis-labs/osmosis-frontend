@@ -28,8 +28,6 @@ export const PoolCard: FunctionComponent<
     const router = useRouter();
     const { isMobile } = useWindowSize();
 
-    console.log(mobileShowFirstLabel);
-
     if (isMobile) {
       return (
         <div
