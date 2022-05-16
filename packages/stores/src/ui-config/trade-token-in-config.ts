@@ -1,4 +1,9 @@
-import { AmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
+import {
+  AmountConfig,
+  IFeeConfig,
+  InsufficientAmountError,
+  InvalidNumberAmountError,
+} from "@keplr-wallet/hooks";
 import { action, computed, makeObservable, observable, override } from "mobx";
 import { AppCurrency } from "@keplr-wallet/types";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
@@ -191,6 +196,7 @@ export class TradeTokenInConfig extends AmountConfig {
 
   @computed
   get optimizedRoutePaths(): RoutePathWithAmount[] {
+    this.setError(undefined);
     const amount = this.getAmountPrimitive();
     if (
       !amount.amount ||
@@ -210,8 +216,8 @@ export class TradeTokenInConfig extends AmountConfig {
         this.outCurrency.coinMinimalDenom,
         5
       );
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      this.setError(e);
       return [];
     }
   }
@@ -295,11 +301,28 @@ export class TradeTokenInConfig extends AmountConfig {
 
   @override
   get error(): Error | undefined {
+    const sendCurrency = this.sendCurrency;
+    if (!sendCurrency) {
+      return new Error("Currency to send not set");
+    }
+
+    if (this.amount) {
+      const dec = new Dec(this.amount);
+      const balance = this.queriesStore
+        .get(this.chainId)
+        .queryBalances.getQueryBech32Address(this.sender)
+        .getBalanceFromCurrency(this.sendCurrency);
+      const balanceDec = balance.toDec();
+      if (dec.gt(balanceDec)) {
+        return new InsufficientAmountError("Insufficient amount");
+      }
+    }
+
     return this._error;
   }
 
   @action
-  setError(error: Error) {
+  setError(error: Error | undefined) {
     this._error = error;
   }
 }

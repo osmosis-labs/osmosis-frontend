@@ -59,6 +59,13 @@ export const TradeClipboard: FunctionComponent<{
         .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency)
     : undefined;
 
+  const showWarningSlippage = tradeTokenInConfig
+    ? slippageConfig.slippage
+        .toDec()
+        .lt(tradeTokenInConfig.expectedSwapResult.slippage.toDec()) ||
+      tradeTokenInConfig.expectedSwapResult.slippage.toDec().gt(new Dec(0.1))
+    : false;
+
   const [isSettingOpen, setIsSettingOpen] = useBooleanWithWindowEvent(false);
 
   const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
@@ -323,6 +330,13 @@ export const TradeClipboard: FunctionComponent<{
                         tokenBalance.balance.currency.coinDenom !==
                         tradeTokenInConfig.outCurrency.coinDenom
                     )
+                    .filter((tokenBalance) =>
+                      tradeTokenInConfig.sendableCurrencies.some(
+                        (sendableCurrency) =>
+                          sendableCurrency.coinDenom ===
+                          tokenBalance.balance.currency.coinDenom
+                      )
+                    )
                     .map((tokenBalance) => tokenBalance.balance)}
                   selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
                   onSelect={(tokenDenom: string) => {
@@ -348,7 +362,9 @@ export const TradeClipboard: FunctionComponent<{
                     placeholder="0"
                     onChange={(e) => {
                       e.preventDefault();
-                      tradeTokenInConfig.setAmount(e.target.value);
+                      if (Number(e.target.value) <= Number.MAX_SAFE_INTEGER) {
+                        tradeTokenInConfig.setAmount(e.target.value);
+                      }
                     }}
                     value={tradeTokenInConfig.amount}
                   />
@@ -409,6 +425,13 @@ export const TradeClipboard: FunctionComponent<{
                       (tokenBalance) =>
                         tokenBalance.balance.currency.coinDenom !==
                         tradeTokenInConfig.sendCurrency.coinDenom
+                    )
+                    .filter((tokenBalance) =>
+                      tradeTokenInConfig.sendableCurrencies.some(
+                        (sendableCurrency) =>
+                          sendableCurrency.coinDenom ===
+                          tokenBalance.balance.currency.coinDenom
+                      )
                     )
                     .map((tokenBalance) => tokenBalance.balance)}
                   selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
@@ -486,7 +509,12 @@ export const TradeClipboard: FunctionComponent<{
               <div className="subtitle2 md:caption text-white-high">
                 Estimated Slippage
               </div>
-              <div className="subtitle2 md:caption text-white-high">
+              <div
+                className={classNames("subtitle2 md:caption", {
+                  "text-white-high": !showWarningSlippage,
+                  "text-error": showWarningSlippage,
+                })}
+              >
                 {tradeTokenInConfig.expectedSwapResult.slippage.toString()}
               </div>
             </div>
@@ -499,10 +527,11 @@ export const TradeClipboard: FunctionComponent<{
         )}
         {tradeTokenInConfig && (
           <Button
-            className="mt-[1.125rem] flex justify-center items-center w-full h-[3.75rem] rounded-lg bg-primary-200 text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
+            color={showWarningSlippage ? "error" : "primary"}
+            className="mt-[1.125rem] flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
             disabled={
-              tradeTokenInConfig.error != null &&
-              tradeTokenInConfig.optimizedRoutePaths.length > 0
+              tradeTokenInConfig.error !== undefined ||
+              tradeTokenInConfig.optimizedRoutePaths.length === 0
             }
             onClick={async () => {
               if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
@@ -569,7 +598,7 @@ export const TradeClipboard: FunctionComponent<{
               }
             }}
           >
-            Swap
+            {showWarningSlippage ? "Swap Anyway" : "Swap"}
           </Button>
         )}
       </div>

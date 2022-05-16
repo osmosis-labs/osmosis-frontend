@@ -48,13 +48,19 @@ export const TokenSelect: FunctionComponent<
       ? selectedToken.currency
       : selectedToken;
 
+  const hasNeedTokenSelect = tokens.length > 1;
+
   return (
     <div className="flex md:justify-start justify-center items-center relative">
       <div
-        className="flex items-center group cursor-pointer"
+        className={`flex items-center group ${
+          hasNeedTokenSelect ? "cursor-pointer" : ""
+        }`}
         onClick={(e) => {
           e.stopPropagation();
-          setIsSelectOpen(!isSelectOpen);
+          if (hasNeedTokenSelect) {
+            setIsSelectOpen(!isSelectOpen);
+          }
         }}
       >
         <div className="w-14 h-14 md:h-9 md:w-9 rounded-full border border-enabledGold flex items-center justify-center shrink-0 mr-3 md:mr-2">
@@ -77,17 +83,19 @@ export const TokenSelect: FunctionComponent<
             <h5>{selectedCurrency?.coinDenom}</h5>
           )}
         </div>
-        <div className="w-5 ml-3 md:ml-2 pb-1">
-          <Image
-            className={`opacity-40 group-hover:opacity-100 transition-transform duration-100 ${
-              isSelectOpen ? "rotate-180" : "rotate-0"
-            }`}
-            src="/icons/chevron-down.svg"
-            alt="select icon"
-            width={20}
-            height={8}
-          />
-        </div>
+        {hasNeedTokenSelect && (
+          <div className="w-5 ml-3 md:ml-2 pb-1">
+            <Image
+              className={`opacity-40 group-hover:opacity-100 transition-transform duration-100 ${
+                isSelectOpen ? "rotate-180" : "rotate-0"
+              }`}
+              src="/icons/chevron-down.svg"
+              alt="select icon"
+              width={20}
+              height={8}
+            />
+          </div>
+        )}
       </div>
 
       {isSelectOpen && (

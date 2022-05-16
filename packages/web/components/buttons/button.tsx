@@ -5,7 +5,7 @@ import { CustomClasses, Disableable } from "../types";
 import { ButtonProps } from "./types";
 
 interface Props extends ButtonProps, CustomClasses, Disableable {
-  color?: "primary" | "secondary";
+  color?: "primary" | "secondary" | "error";
   size?: "xs" | "sm" | "lg";
   type?: "block" | "arrow" | "arrow-sm" | "outline";
   loading?: boolean;
@@ -33,7 +33,7 @@ export const Button: FunctionComponent<Props> = ({
         [`text-secondary-200 ${!disabled ? "hover:text-secondary-100" : ""}`]:
           (color === "secondary" || type !== "outline") && size === "xs",
         [`bg-primary-200 ${!disabled ? "hover:bg-primary-100" : ""}`]:
-          size !== "xs" && type !== "outline",
+          color === "primary" && "xs" && type !== "outline",
         [`bg-primary-200/30 ${!disabled ? "hover:bg-primary-100/60" : ""}`]:
           color === "primary" && size === "xs" && type === "outline",
         [`${!disabled ? "hover:bg-secondary-100/60" : ""}`]:
@@ -44,6 +44,7 @@ export const Button: FunctionComponent<Props> = ({
         [`border border-2 border-secondary-200 ${
           !disabled ? "hover:border-secondary-100" : ""
         }`]: color === "secondary" && size === "xs" && type === "outline",
+        "bg-error": color === "error",
         "px-2 py-0.5": size === "xs",
         "px-3 py-1": size === "sm",
         "px-16 py-3": size === "lg",
