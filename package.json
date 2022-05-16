@@ -11,8 +11,10 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "dev": "lerna run dev --parallel",
+    "dev:frontier": "cross-env NEXT_PUBLIC_IS_FRONTIER=true lerna run dev --parallel",
     "clean": "lerna run clean; rm -rf node_modules",
     "build": "lerna run build",
+    "build:frontier": "cross-env NEXT_PUBLIC_IS_FRONTIER=true lerna run build",
     "build:libs": "lerna run build --ignore @osmosis-labs/web",
     "analyze": "lerna run analyze",
     "test": "lerna run test --parallel",
@@ -37,6 +39,7 @@
     "@types/jest": "^27.4.0",
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",
+    "cross-env": "^7.0.3",
     "eslint": "8.5.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-unicorn": "^40.0.0",

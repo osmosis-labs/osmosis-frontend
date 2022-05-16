@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { PricePretty, Dec } from "@keplr-wallet/unit";
 import { useStore } from "../../stores";
+import { IS_FRONTIER } from "../../config";
 
 export const SidebarBottom: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
@@ -107,80 +108,105 @@ export const SidebarBottom: FunctionComponent = observer(() => {
           </button>
         )}
       </div>
-
-      <div className="flex place-content-between transition-all overflow-x-hidden w-full">
-        <a
-          href="https://twitter.com/osmosiszone"
-          target="_blank"
-          className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
-          rel="noreferrer"
-        >
-          <Image
-            src="/icons/twitter.svg"
-            alt="twitter"
-            width={32}
-            height={32}
-          />
-        </a>
-        <a
-          href="https://medium.com/@Osmosis"
-          target="_blank"
-          className="opacity-80 hover:opacity-100 cursor-pointer px-1 m-auto"
-          rel="noreferrer"
-        >
-          <Image src="/icons/medium.svg" alt="medium" width={36} height={36} />
-        </a>
-        <a
-          href="https://gov.osmosis.zone/"
-          target="_blank"
-          className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
-          rel="noreferrer"
-        >
-          <Image
-            className="w-9 h-9"
-            src="/icons/commonwealth.svg"
-            alt="commonwealth"
-            width={32}
-            height={32}
-          />
-        </a>
-        <a
-          href="https://discord.gg/osmosis"
-          target="_blank"
-          className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
-          rel="noreferrer"
-        >
-          <Image
-            src="/icons/discord.svg"
-            alt="discord"
-            width={36}
-            height={36}
-          />
-        </a>
-        <a
-          href="https://t.me/osmosis_chat"
-          target="_blank"
-          className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
-          rel="noreferrer"
-        >
-          <Image
-            src="/icons/telegram.svg"
-            alt="telegram"
-            width={36}
-            height={36}
-          />
-        </a>
-      </div>
-      <p className="py-2 text-caption text-white-high text-center">
-        <a
-          className="opacity-30 hover:opacity-40"
-          href="https://www.coingecko.com"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Price Data by CoinGecko
-        </a>
-      </p>
+      {IS_FRONTIER ? (
+        <p className="py-2 text-base text-white-high text-left flex items-center place-content-evenly">
+          <a
+            href="https://medium.com/osmosis/introducing-osmosis-frontier-d9da158b22d0"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Learn More <br /> About the <br />
+            <span
+              style={{
+                background: "-webkit-linear-gradient(#F8C259, #B38203)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontWeight: 700,
+              }}
+            >
+              Osmosis Frontier
+            </span>
+          </a>
+          <div className="w-[12px]">
+            <Image
+              alt="link"
+              src="/icons/link-deco-white.svg"
+              height={12}
+              width={12}
+            />
+          </div>
+        </p>
+      ) : (
+        <Links />
+      )}
     </div>
   );
 });
+
+const Links: FunctionComponent = () => (
+  <>
+    <div className="flex place-content-between transition-all overflow-x-hidden w-full">
+      <a
+        href="https://twitter.com/osmosiszone"
+        target="_blank"
+        className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
+        rel="noreferrer"
+      >
+        <Image src="/icons/twitter.svg" alt="twitter" width={32} height={32} />
+      </a>
+      <a
+        href="https://medium.com/@Osmosis"
+        target="_blank"
+        className="opacity-80 hover:opacity-100 cursor-pointer px-1 m-auto"
+        rel="noreferrer"
+      >
+        <Image src="/icons/medium.svg" alt="medium" width={36} height={36} />
+      </a>
+      <a
+        href="https://gov.osmosis.zone/"
+        target="_blank"
+        className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
+        rel="noreferrer"
+      >
+        <Image
+          className="w-9 h-9"
+          src="/icons/commonwealth.svg"
+          alt="commonwealth"
+          width={32}
+          height={32}
+        />
+      </a>
+      <a
+        href="https://discord.gg/osmosis"
+        target="_blank"
+        className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
+        rel="noreferrer"
+      >
+        <Image src="/icons/discord.svg" alt="discord" width={36} height={36} />
+      </a>
+      <a
+        href="https://t.me/osmosis_chat"
+        target="_blank"
+        className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
+        rel="noreferrer"
+      >
+        <Image
+          src="/icons/telegram.svg"
+          alt="telegram"
+          width={36}
+          height={36}
+        />
+      </a>
+    </div>
+    <p className="py-2 text-caption text-white-high text-center">
+      <a
+        className="opacity-30 hover:opacity-40"
+        href="https://www.coingecko.com"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Price Data by CoinGecko
+      </a>
+    </p>
+  </>
+);

@@ -1,6 +1,6 @@
 import { IBCAsset } from "../stores/assets";
 
-export const IS_FRONTIER = false;
+export const IS_FRONTIER = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
 export const UNSTABLE_MSG = "Transfers are disabled and unstable";
 
 /**

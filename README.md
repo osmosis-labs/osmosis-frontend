@@ -2,7 +2,6 @@
 
 ![osmosis-banner-1200w](https://user-images.githubusercontent.com/4606373/167008669-fb3cafa8-e66e-4cdf-8599-3308039cc58c.png)
 
-
 ## Development 💻
 
 Our [frontend](https://app.osmosis.zone) is built with the following tools:
@@ -41,3 +40,11 @@ yarn dev
 ## Frontier 🤠
 
 Currently, the frontier frontend is built and deployed from the [`frontier`](https://github.com/osmosis-labs/osmosis-frontend/tree/frontier) branch. If your issue or PR is related to frontier, please prefix with "frontier."
+For oranization purposes, `master` and `frontier` branches are identical except for the `IS_FRONTIER` env var. If making
+updates to frontier, please still target the master branch.
+
+To develop with frontier confuration, use:
+
+```bash
+yarn build:frontier && yarn dev:frontier
+```
