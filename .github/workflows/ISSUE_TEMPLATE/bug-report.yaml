@@ -31,7 +31,7 @@ body:
     id: location
     attributes:
       label: Location
-      description: Where are you running this from
+      description: Where are you running this from?
       options:
         - iOS
         - Android
@@ -46,9 +46,11 @@ body:
       label: Browser Type
       description: (Optional) Which browser are you running on?
       options:
-        - Chrome
+        - Google Chrome
+        - Brave
+        - Microsoft Edge
+        - Mozilla Firefox
         - Safari
-        - Opera
-        - Lynx
+        - Other (please specify in description)
     validations:
       required: true
