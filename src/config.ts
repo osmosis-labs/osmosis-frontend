@@ -1097,6 +1097,12 @@ export const IBCAssetInfos: {
 	// 	depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=frax',
 	// 	withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=frax',
 	// },
+	{
+		counterpartyChainId: 'mantle-1',
+		sourceChannelId: 'channel-232',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'umntl',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
