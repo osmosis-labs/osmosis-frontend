@@ -3,29 +3,24 @@ import {
   ChainGetter,
   CoinGeckoPriceStore,
   ObservableChainQuery,
-  QueryResponse,
 } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { Dec, Int, RatePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
-import { computedFn } from "../../computed-fn";
+import { computedFn } from "mobx-utils";
 import { ObservableQueryEpochs } from "../epochs";
 import {
   ObservableQueryEpochProvisions,
   ObservableQueryMintParmas,
 } from "../mint";
 import { ObservableQueryPools } from "../pools";
-import { HydrateableStore } from "src/types";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
 import { IncentivizedPools } from "./types";
 
-export class ObservableQueryIncentivizedPools
-  extends ObservableChainQuery<IncentivizedPools>
-  implements HydrateableStore<IncentivizedPools>
-{
+export class ObservableQueryIncentivizedPools extends ObservableChainQuery<IncentivizedPools> {
   constructor(
     kvStore: KVStore,
     chainId: string,
@@ -45,11 +40,6 @@ export class ObservableQueryIncentivizedPools
     );
 
     makeObservable(this);
-  }
-
-  hydrate(data: QueryResponse<IncentivizedPools>): void {
-    this.cancel();
-    this.setResponse(data);
   }
 
   @computed

@@ -1,18 +1,10 @@
 import { computed, makeObservable } from "mobx";
 import { KVStore } from "@keplr-wallet/common";
-import {
-  ChainGetter,
-  ObservableChainQuery,
-  QueryResponse,
-} from "@keplr-wallet/stores";
-import { computedFn } from "../../computed-fn";
+import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
+import { computedFn } from "mobx-utils";
 import { SuperfluidAllAssets } from "./types";
-import { HydrateableStore } from "../../types";
 
-export class ObservableQuerySuperfluidPools
-  extends ObservableChainQuery<SuperfluidAllAssets>
-  implements HydrateableStore<SuperfluidAllAssets>
-{
+export class ObservableQuerySuperfluidPools extends ObservableChainQuery<SuperfluidAllAssets> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
     super(
       kvStore,
@@ -22,11 +14,6 @@ export class ObservableQuerySuperfluidPools
     );
 
     makeObservable(this);
-  }
-
-  hydrate(data: QueryResponse<SuperfluidAllAssets>): void {
-    this.cancel();
-    this.setResponse(data);
   }
 
   readonly isSuperfluidPool = computedFn((poolId: string): boolean => {

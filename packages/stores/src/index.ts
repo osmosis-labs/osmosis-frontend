@@ -5,5 +5,3 @@ export * from "./ibc-history";
 export * from "./currency-registrar";
 export * from "./tx";
 export * from "./ui-config";
-export * from "./computed-fn";
-export * from "./types";

@@ -1,7 +1,7 @@
 import { makeObservable } from "mobx";
-import { computedFn } from "../../computed-fn";
+import { computedFn } from "mobx-utils";
 import { KVStore } from "@keplr-wallet/common";
-import { CoinGeckoPriceStore, QueryResponse } from "@keplr-wallet/stores";
+import { CoinGeckoPriceStore } from "@keplr-wallet/stores";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { pow } from "@osmosis-labs/math";
 import { ObservableQueryPool } from "../../queries/pools";
@@ -11,21 +11,12 @@ import {
   PoolFeesMetrics,
   PoolFees,
 } from "./types";
-import { HydrateableStore } from "src/types";
 
-export class ObservableQueryPoolFeesMetrics
-  extends ObservableQueryExternal<PoolFees>
-  implements HydrateableStore<PoolFees>
-{
+export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<PoolFees> {
   constructor(kvStore: KVStore) {
     super(kvStore, "/fees/v1/pools");
 
     makeObservable(this);
-  }
-
-  hydrate(data: QueryResponse<PoolFees>): void {
-    this.cancel();
-    this.setResponse(data);
   }
 
   readonly makePoolWithFeeMetrics = computedFn(

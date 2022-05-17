@@ -2,6 +2,7 @@ import { computed, flow, makeObservable, observable, toJS } from "mobx";
 import { keepAlive } from "mobx-utils";
 import dayjs from "dayjs";
 import { Buffer } from "buffer";
+import { computedFn } from "mobx-utils";
 import { KVStore, toGenerator } from "@keplr-wallet/common";
 import { ChainGetter } from "@keplr-wallet/stores";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
@@ -12,7 +13,6 @@ import {
   IBCTransferHistoryStatus,
 } from "./types";
 import { PollingStatusSubscription } from "./polling-status-subscription";
-import { computedFn } from "../computed-fn";
 
 export class IBCTransferHistoryStore {
   /*

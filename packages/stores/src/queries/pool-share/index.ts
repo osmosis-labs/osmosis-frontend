@@ -9,7 +9,7 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
-import { computedFn } from "../../computed-fn";
+import { computedFn } from "mobx-utils";
 import {
   ObservableQueryAccountLocked,
   ObservableQueryAccountLockedCoins,
