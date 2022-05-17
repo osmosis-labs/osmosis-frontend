@@ -603,14 +603,18 @@ export const TradeClipboard: FunctionComponent<{
                   return;
                 }
 
-                await account.osmosis.sendMultihopSwapExactAmountInMsg(
-                  routes,
-                  {
-                    currency: tokenInCurrency,
-                    amount: tradeTokenInConfig.amount,
-                  },
-                  slippageConfig.slippage.symbol("").toString()
-                );
+                try {
+                  await account.osmosis.sendMultihopSwapExactAmountInMsg(
+                    routes,
+                    {
+                      currency: tokenInCurrency,
+                      amount: tradeTokenInConfig.amount,
+                    },
+                    slippageConfig.slippage.symbol("").toString()
+                  );
+                } catch (e) {
+                  console.error(e);
+                }
               }
             }}
           >

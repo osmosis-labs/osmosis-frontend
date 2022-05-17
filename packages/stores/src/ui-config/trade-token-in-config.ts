@@ -2,16 +2,9 @@ import {
   AmountConfig,
   IFeeConfig,
   InsufficientAmountError,
-  InvalidNumberAmountError,
 } from "@keplr-wallet/hooks";
-import { action, computed, makeObservable, observable, override } from "mobx";
-import { AppCurrency } from "@keplr-wallet/types";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
-import {
-  OptimizedRoutes,
-  Pool,
-  RoutePathWithAmount,
-} from "@osmosis-labs/pools";
+import { AppCurrency } from "@keplr-wallet/types";
 import {
   CoinPretty,
   Dec,
@@ -20,6 +13,12 @@ import {
   IntPretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import {
+  OptimizedRoutes,
+  Pool,
+  RoutePathWithAmount,
+} from "@osmosis-labs/pools";
+import { action, computed, makeObservable, observable, override } from "mobx";
 
 export class TradeTokenInConfig extends AmountConfig {
   @observable.ref
