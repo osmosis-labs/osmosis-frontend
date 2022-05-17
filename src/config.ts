@@ -1750,8 +1750,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 0,
 				coinGeckoId: 'pool:dhk',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/dhk.svg',
-			},
-			{
+			},{
 				type: 'cw20',
 				contractAddress: 'juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g',
 				coinDenom: 'RAW',
@@ -1759,6 +1758,15 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'pool:raw',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/raw.png',
+			},
+			{
+				type: 'cw20',
+				contractAddress: 'juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3',
+				coinDenom: 'JOE',
+				coinMinimalDenom: 'cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3:JOE',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:joe',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/joe.png',
 			},
 		],
 		feeCurrencies: [
