@@ -260,14 +260,15 @@ export const TradeClipboard: FunctionComponent<{
                 From
               </span>
               <div className="flex items-center">
-                <span className="md:hidden caption text-sm text-white-full">
+                <span className="caption text-sm md:text-xs text-white-full">
                   Available
                 </span>
-                <span className="caption text-sm text-primary-50 ml-1.5">
+                <span className="caption text-sm md:text-xs text-primary-50 ml-1.5">
                   {availableBalance
                     ? availableBalance
                         .trim(true)
                         .shrink(true)
+                        .hideDenom(true)
                         .maxDecimals(6)
                         .toString()
                     : ""}
@@ -521,7 +522,7 @@ export const TradeClipboard: FunctionComponent<{
               </div>
             </div>
             <div className="flex justify-between pt-4 mt-4 border-t border-white-faint">
-              <div className="subtitle2 md:caption text-white-high">
+              <div className="subtitle2 md:caption text-white-high md:text-wireframes-lightGrey">
                 Estimated Slippage
               </div>
               <div
