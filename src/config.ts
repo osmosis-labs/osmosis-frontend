@@ -1243,6 +1243,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'umeme',
 	},
+	{
+		counterpartyChainId: 'titan-1',
+		sourceChannelId: 'channel-221',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uatolo',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -3310,5 +3316,47 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://explorer.meme.sx/meme/tx/{txHash}',
+	},
+    {
+		rpc: 'http://seed-1.mainnet.rizon.world:26657',
+		rest: 'http://seed-1.mainnet.rizon.world:1317',
+		chainId: 'titan-1',
+		chainName: 'rizon',
+		stakeCurrency: {
+			coinDenom: 'ATOLO',
+			coinMinimalDenom: 'uatolo',
+			coinDecimals: 6,
+			coinGeckoId: 'rizon',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/atolo.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('rizon'),
+		currencies: [
+			{
+				coinDenom: 'ATOLO',
+				coinMinimalDenom: 'uatolo',
+				coinDecimals: 6,
+				coinGeckoId: 'rizon',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/atolo.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'ATOLO',
+				coinMinimalDenom: 'uatolo',
+				coinDecimals: 6,
+				coinGeckoId: 'rizon',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/atolo.png',
+			},
+		],
+		gasPriceStep: {
+			low: 0.025,
+			average: 0.025,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/rizon/txs/{txHash}',
 	},
 ];
