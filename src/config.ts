@@ -1760,7 +1760,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3:JOE',
 				coinDecimals: 6,
 				coinGeckoId: 'pool:joe',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/joedao.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/joe.png',
 			},
 		],
 		feeCurrencies: [
