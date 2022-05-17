@@ -6,6 +6,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { FunctionComponent, useEffect, useRef } from "react";
+import { EmbedChainInfos } from "../../config";
 import {
   useBooleanWithWindowEvent,
   useSlippageConfig,
@@ -350,6 +351,13 @@ export const TradeClipboard: FunctionComponent<{
                       );
                     }
                   }}
+                  getChainNetworkName={(coinDenom) =>
+                    EmbedChainInfos.find((chain) =>
+                      chain.currencies.find(
+                        (currency) => currency.coinDenom === coinDenom
+                      )
+                    )?.chainName
+                  }
                   isMobile={isMobile}
                 />
               )}
@@ -446,6 +454,13 @@ export const TradeClipboard: FunctionComponent<{
                       );
                     }
                   }}
+                  getChainNetworkName={(coinDenom) =>
+                    EmbedChainInfos.find((chain) =>
+                      chain.currencies.find(
+                        (currency) => currency.coinDenom === coinDenom
+                      )
+                    )?.chainName
+                  }
                   isMobile={isMobile}
                 />
               )}
