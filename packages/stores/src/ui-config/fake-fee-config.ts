@@ -26,17 +26,13 @@ export class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
     super(chainGetter, initialChainId);
 
     this._gas = gas;
+    this._chainId = initialChainId;
 
     makeObservable(this);
   }
 
   get gas(): number {
     return this._gas;
-  }
-
-  @action
-  setGas(gas: number): void {
-    this._gas = gas;
   }
 
   @computed

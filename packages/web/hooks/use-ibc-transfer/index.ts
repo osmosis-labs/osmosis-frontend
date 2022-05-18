@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import {
   AccountSetBase,
   CosmosAccount,
@@ -12,10 +12,9 @@ import {
   OsmosisAccount,
   IBCTransferHistory,
   UncommitedHistory,
+  FakeFeeConfig,
 } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
-import { useAmountConfig } from "../use-amount-config";
-import { useFakeFeeConfig } from "../use-fake-fee-config";
 import { useCustomBech32Address } from "./use-custom-bech32address";
 import { IbcTransfer, CustomCounterpartyConfig } from ".";
 
@@ -58,19 +57,43 @@ export function useIbcTransfer({
   const account = accountStore.getAccount(chainId);
   const counterpartyAccount = accountStore.getAccount(counterpartyChainId);
 
-  const amountConfig = useAmountConfig(
-    chainStore,
-    queriesStore,
-    isWithdraw ? chainId : counterpartyChainId,
-    isWithdraw ? account.bech32Address : counterpartyAccount.bech32Address,
-    isWithdraw ? currency : currency.originCurrency!
+  const amountConfig = useMemo(
+    () =>
+      new ObservableAmountConfig(
+        chainStore,
+        queriesStore,
+        isWithdraw ? chainId : counterpartyChainId,
+        isWithdraw ? account.bech32Address : counterpartyAccount.bech32Address,
+        isWithdraw ? currency : currency.originCurrency!
+      ),
+    [
+      chainStore,
+      queriesStore,
+      isWithdraw,
+      chainId,
+      counterpartyChainId,
+      account.bech32Address,
+      counterpartyAccount,
+      currency,
+    ]
   );
-  const feeConfig = useFakeFeeConfig(
-    chainStore,
-    isWithdraw ? chainId : counterpartyChainId,
-    isWithdraw
-      ? account.cosmos.msgOpts.ibcTransfer.gas
-      : counterpartyAccount.cosmos.msgOpts.ibcTransfer.gas
+  const feeConfig = useMemo(
+    () =>
+      new FakeFeeConfig(
+        chainStore,
+        isWithdraw ? chainId : counterpartyChainId,
+        isWithdraw
+          ? account.cosmos.msgOpts.ibcTransfer.gas
+          : counterpartyAccount.cosmos.msgOpts.ibcTransfer.gas
+      ),
+    [
+      chainStore,
+      isWithdraw,
+      chainId,
+      account,
+      counterpartyAccount,
+      counterpartyChainId,
+    ]
   );
   amountConfig.setFeeConfig(feeConfig);
   const [customBech32Address, isCustomAddressValid, setCustomBech32Address] =

@@ -1,16 +1,18 @@
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Pool } from "@osmosis-labs/pools";
+import {
+  TradeTokenInConfig,
+  ObservableSlippageConfig,
+} from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { useRouter } from "next/router";
-import React, { FunctionComponent, useEffect, useRef } from "react";
+import React, { FunctionComponent, useEffect, useRef, useMemo } from "react";
 import { EmbedChainInfos } from "../../config";
 import {
   useBooleanWithWindowEvent,
-  useSlippageConfig,
-  useTradeTokenInConfig,
+  useTokenQueryParams,
   useWindowSize,
 } from "../../hooks";
 import { useStore } from "../../stores";
@@ -34,41 +36,45 @@ export const TradeClipboard: FunctionComponent<{
     assetsStore: { nativeBalances, ibcBalances },
     priceStore,
   } = useStore();
-
+  const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();
 
   const allTokenBalances = nativeBalances.concat(ibcBalances);
 
-  const account = accountStore.getAccount(chainStore.osmosis.chainId);
-  const queries = queriesStore.get(chainStore.osmosis.chainId);
-
-  const slippageConfig = useSlippageConfig();
-
-  const tradeTokenInConfig = useTradeTokenInConfig(
-    chainStore,
-    queriesStore,
-    chainStore.osmosis.chainId,
-    account.bech32Address,
-    undefined,
-    pools
-  );
-
-  const availableBalance = tradeTokenInConfig
-    ? queries.queryBalances
-        .getQueryBech32Address(account.bech32Address)
-        .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency)
-    : undefined;
-
-  const showWarningSlippage = tradeTokenInConfig
-    ? slippageConfig.slippage
-        .toDec()
-        .lt(tradeTokenInConfig.expectedSwapResult.slippage.toDec()) ||
-      tradeTokenInConfig.expectedSwapResult.slippage.toDec().gt(new Dec(0.1))
-    : false;
+  const account = accountStore.getAccount(chainId);
+  const queries = queriesStore.get(chainId);
 
   const [isSettingOpen, setIsSettingOpen] = useBooleanWithWindowEvent(false);
-
   const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
+
+  const slippageConfig = useMemo(() => new ObservableSlippageConfig(), []);
+  const tradeTokenInConfig = useMemo(
+    () =>
+      new TradeTokenInConfig(
+        chainStore,
+        queriesStore,
+        chainId,
+        account.bech32Address,
+        undefined,
+        pools
+      ),
+    [chainStore, queriesStore, chainId, account.bech32Address, pools]
+  );
+
+  useTokenQueryParams(tradeTokenInConfig, allTokenBalances, isInModal);
+
+  const availableBalance = queries.queryBalances
+    .getQueryBech32Address(account.bech32Address)
+    .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency);
+
+  const showWarningSlippage = useMemo(
+    () =>
+      slippageConfig.slippage
+        .toDec()
+        .lt(tradeTokenInConfig.expectedSwapResult.slippage.toDec()) ||
+      tradeTokenInConfig.expectedSwapResult.slippage.toDec().gt(new Dec(0.1)),
+    [slippageConfig.slippage, tradeTokenInConfig.expectedSwapResult.slippage]
+  );
 
   useEffect(() => {
     if (isSettingOpen && slippageConfig.isManualSlippage) {
@@ -77,71 +83,6 @@ export const TradeClipboard: FunctionComponent<{
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSettingOpen]);
-
-  const router = useRouter();
-  const firstQueryEffectChecker = useRef(false);
-
-  useEffect(() => {
-    if (isInModal || !tradeTokenInConfig) {
-      return;
-    }
-
-    if (
-      router.query.from &&
-      router.query.to &&
-      tradeTokenInConfig.sendableCurrencies.length !== 0
-    ) {
-      const fromTokenBalance = allTokenBalances.find(
-        (tokenBalance) =>
-          tokenBalance.balance.currency.coinDenom === router.query.from
-      );
-      const toTokenBalance = allTokenBalances.find(
-        (tokenBalance) =>
-          tokenBalance.balance.currency.coinDenom === router.query.to
-      );
-      if (fromTokenBalance) {
-        tradeTokenInConfig.setSendCurrency(fromTokenBalance.balance.currency);
-      }
-      if (toTokenBalance) {
-        tradeTokenInConfig.setOutCurrency(toTokenBalance.balance.currency);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    router.query.from,
-    router.query.to,
-    tradeTokenInConfig?.sendableCurrencies,
-  ]);
-
-  useEffect(() => {
-    if (isInModal || !tradeTokenInConfig) {
-      return;
-    }
-
-    // Update current in and out currency to query string.
-    // The first effect should be ignored because the query string set when visiting the web page for the first time must be processed.
-    if (firstQueryEffectChecker.current) {
-      firstQueryEffectChecker.current = false;
-      return;
-    }
-
-    if (
-      tradeTokenInConfig.sendCurrency.coinDenom !== "UNKNOWN" &&
-      tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN" &&
-      tradeTokenInConfig.sendableCurrencies.length !== 0 &&
-      (tradeTokenInConfig.sendCurrency.coinDenom !== router.query.from ||
-        tradeTokenInConfig.outCurrency.coinDenom !== router.query.to)
-    ) {
-      router.replace(
-        `/?from=${tradeTokenInConfig.sendCurrency.coinDenom}&to=${tradeTokenInConfig.outCurrency.coinDenom}`
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    tradeTokenInConfig?.sendCurrency,
-    tradeTokenInConfig?.outCurrency,
-    tradeTokenInConfig?.sendableCurrencies,
-  ]);
 
   return (
     <div

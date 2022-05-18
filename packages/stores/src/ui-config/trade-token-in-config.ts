@@ -46,11 +46,6 @@ export class TradeTokenInConfig extends AmountConfig {
     makeObservable(this);
   }
 
-  @action
-  setPools(pools: Pool[]) {
-    this._pools = pools;
-  }
-
   get pools(): Pool[] {
     return this._pools;
   }
