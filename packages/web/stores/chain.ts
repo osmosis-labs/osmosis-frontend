@@ -35,7 +35,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
 
   @computed
   get osmosisObservable(): ChainInfo {
-    // FIXME: Is not designed to require this getter.
+    // TODO: Is not designed to require this getter.
     //        However, due to bug in @keplr-wallet/store library,
     //        in the case of observable chain info, the .raw property needs to be handled separately.
     //        Created a temporary getter as a temporary fix.

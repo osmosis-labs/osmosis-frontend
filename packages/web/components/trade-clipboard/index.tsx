@@ -2,7 +2,7 @@ import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Pool } from "@osmosis-labs/pools";
 import {
-  TradeTokenInConfig,
+  ObservableTradeTokenInConfig,
   ObservableSlippageConfig,
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
@@ -50,7 +50,7 @@ export const TradeClipboard: FunctionComponent<{
   const slippageConfig = useMemo(() => new ObservableSlippageConfig(), []);
   const tradeTokenInConfig = useMemo(
     () =>
-      new TradeTokenInConfig(
+      new ObservableTradeTokenInConfig(
         chainStore,
         queriesStore,
         chainId,
@@ -62,10 +62,6 @@ export const TradeClipboard: FunctionComponent<{
   );
 
   useTokenQueryParams(tradeTokenInConfig, allTokenBalances, isInModal);
-
-  const availableBalance = queries.queryBalances
-    .getQueryBech32Address(account.bech32Address)
-    .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency);
 
   const showWarningSlippage = useMemo(
     () =>
@@ -211,14 +207,13 @@ export const TradeClipboard: FunctionComponent<{
                   Available
                 </span>
                 <span className="caption text-sm md:text-xs text-primary-50 ml-1.5">
-                  {availableBalance
-                    ? availableBalance
-                        .trim(true)
-                        .shrink(true)
-                        .hideDenom(true)
-                        .maxDecimals(6)
-                        .toString()
-                    : ""}
+                  {queries.queryBalances
+                    .getQueryBech32Address(account.bech32Address)
+                    .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency)
+                    .trim(true)
+                    .hideDenom(true)
+                    .maxDecimals(tradeTokenInConfig.sendCurrency.coinDecimals)
+                    .toString()}
                 </span>
                 <button
                   type="button"
@@ -473,10 +468,13 @@ export const TradeClipboard: FunctionComponent<{
                 Estimated Slippage
               </div>
               <div
-                className={classNames("subtitle2 md:caption", {
-                  "text-white-high": !showWarningSlippage,
-                  "text-error": showWarningSlippage,
-                })}
+                className={classNames(
+                  "subtitle2 md:caption md:text-wireframes-lightGrey",
+                  {
+                    "text-white-high": !showWarningSlippage,
+                    "text-error": showWarningSlippage,
+                  }
+                )}
               >
                 {tradeTokenInConfig.expectedSwapResult.slippage.toString()}
               </div>
@@ -498,7 +496,6 @@ export const TradeClipboard: FunctionComponent<{
             }
             onClick={async () => {
               if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
-                // TODO: Only multihop is supported yet.
                 const routes: {
                   poolId: string;
                   tokenOutCurrency: Currency;
@@ -550,15 +547,29 @@ export const TradeClipboard: FunctionComponent<{
                   return;
                 }
 
+                const tokenIn = {
+                  currency: tokenInCurrency,
+                  amount: tradeTokenInConfig.amount,
+                };
+                const maxSlippage = slippageConfig.slippage
+                  .symbol("")
+                  .toString();
+
                 try {
-                  await account.osmosis.sendMultihopSwapExactAmountInMsg(
-                    routes,
-                    {
-                      currency: tokenInCurrency,
-                      amount: tradeTokenInConfig.amount,
-                    },
-                    slippageConfig.slippage.symbol("").toString()
-                  );
+                  if (routes.length === 1) {
+                    await account.osmosis.sendSwapExactAmountInMsg(
+                      routes[0].poolId,
+                      tokenIn,
+                      routes[0].tokenOutCurrency,
+                      maxSlippage
+                    );
+                  } else {
+                    await account.osmosis.sendMultihopSwapExactAmountInMsg(
+                      routes,
+                      tokenIn,
+                      maxSlippage
+                    );
+                  }
                 } catch (e) {
                   console.error(e);
                 }

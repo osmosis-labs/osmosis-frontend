@@ -20,7 +20,7 @@ import {
 } from "@osmosis-labs/pools";
 import { action, computed, makeObservable, observable, override } from "mobx";
 
-export class TradeTokenInConfig extends AmountConfig {
+export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
   protected _pools: Pool[];
 
@@ -115,10 +115,7 @@ export class TradeTokenInConfig extends AmountConfig {
   @computed
   protected get currencyMap(): Map<string, AppCurrency> {
     return this.sendableCurrencies.reduce<Map<string, AppCurrency>>(
-      (previous, current) => {
-        previous.set(current.coinMinimalDenom, current);
-        return previous;
-      },
+      (previous, current) => previous.set(current.coinMinimalDenom, current),
       new Map()
     );
   }

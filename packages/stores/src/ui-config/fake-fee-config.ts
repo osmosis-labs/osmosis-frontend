@@ -1,4 +1,4 @@
-import { action, computed, makeObservable, observable } from "mobx";
+import { computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import {
   DefaultGasPriceStep,

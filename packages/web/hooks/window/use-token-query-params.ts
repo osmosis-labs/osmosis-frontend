@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
-import { TradeTokenInConfig } from "@osmosis-labs/stores";
+import { ObservableTradeTokenInConfig } from "@osmosis-labs/stores";
 import { CoinBalance } from "../../stores/assets";
 
 /** Bidirectionally sets/gets window query params to/from `from=DENOM&to=DENOM` and sets in trade config object. */
 export function useTokenQueryParams(
-  tradeConfig: TradeTokenInConfig,
+  tradeConfig: ObservableTradeTokenInConfig,
   balances: CoinBalance[],
   isInModal = false
 ) {

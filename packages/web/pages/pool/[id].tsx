@@ -5,6 +5,7 @@ import {
   ObservableAmountConfig,
   ObservableQueryGuageById,
   ObservableRemoveLiquidityConfig,
+  ObservableTradeTokenInConfig,
 } from "@osmosis-labs/stores";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
@@ -26,7 +27,7 @@ import { Overview } from "../../components/overview";
 import { BaseCell, ColumnDef, Table } from "../../components/table";
 import { truncateString } from "../../components/utils";
 import { EmbedChainInfos, ExternalIncentiveGaugeAllowList } from "../../config";
-import { useTradeTokenInConfig, useWindowSize } from "../../hooks";
+import { useWindowSize } from "../../hooks";
 import {
   LockTokensModal,
   ManageLiquidityModal,
@@ -415,14 +416,21 @@ const Pool: FunctionComponent = observer(() => {
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
     useState(false);
 
+  // swap modal
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
-  const tradeTokenInConfig = useTradeTokenInConfig(
-    chainStore,
-    queriesStore,
-    chainStore.osmosis.chainId,
-    account.bech32Address,
-    undefined,
-    pool ? [pool.pool] : undefined
+  const tradeTokenInConfig = useMemo(
+    () =>
+      pool
+        ? new ObservableTradeTokenInConfig(
+            chainStore,
+            queriesStore,
+            chainStore.osmosis.chainId,
+            account.bech32Address,
+            undefined,
+            [pool.pool]
+          )
+        : undefined,
+    [chainStore, queriesStore, account.bech32Address, pool]
   );
 
   return (
