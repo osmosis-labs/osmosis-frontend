@@ -460,7 +460,11 @@ export const TradeClipboard: FunctionComponent<{
                 Swap Fee
               </div>
               <div className="subtitle2 md:caption text-wireframes-lightGrey">
-                {tradeTokenInConfig.expectedSwapResult.swapFee.toString()}
+                {tradeTokenInConfig.expectedSwapResult.swapFee.isReady
+                  ? tradeTokenInConfig.expectedSwapResult.swapFee.toString()
+                  : tradeTokenInConfig.amount === ""
+                  ? "0"
+                  : "--"}
               </div>
             </div>
             <div className="flex justify-between pt-4 mt-4 border-t border-white-faint">
@@ -476,15 +480,21 @@ export const TradeClipboard: FunctionComponent<{
                   }
                 )}
               >
-                {tradeTokenInConfig.expectedSwapResult.slippage.toString()}
+                {tradeTokenInConfig.expectedSwapResult.slippage.isReady
+                  ? tradeTokenInConfig.expectedSwapResult.slippage.toString()
+                  : tradeTokenInConfig.amount === ""
+                  ? "0"
+                  : "--"}
               </div>
             </div>
           </div>
         )}
         {tradeTokenInConfig && tradeTokenInConfig.error && (
-          <div className="w-full flex justify-center items-center mt-4">
-            <ErrorBox message={tradeTokenInConfig.error?.message} />
-          </div>
+          <ErrorBox
+            className="!w-full flex !justify-center items-center mt-4"
+            iconSize={isMobile ? "sm" : "md"}
+            message={tradeTokenInConfig.error?.message ?? ""}
+          />
         )}
         {tradeTokenInConfig && (
           <Button

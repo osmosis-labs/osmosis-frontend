@@ -230,17 +230,17 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     const paths = this.optimizedRoutePaths;
     if (paths.length === 0) {
       return {
-        amount: new CoinPretty(this.outCurrency, new Dec(0)),
-        beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(0),
+        amount: new CoinPretty(this.outCurrency, new Dec(0)).ready(false),
+        beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(0).ready(false),
         beforeSpotPriceWithoutSwapFeeOutOverIn: new IntPretty(0),
-        beforeSpotPriceInOverOut: new IntPretty(0),
-        beforeSpotPriceOutOverIn: new IntPretty(0),
-        afterSpotPriceInOverOut: new IntPretty(0),
-        afterSpotPriceOutOverIn: new IntPretty(0),
-        effectivePriceInOverOut: new IntPretty(0),
-        effectivePriceOutOverIn: new IntPretty(0),
-        swapFee: new RatePretty(0),
-        slippage: new RatePretty(0),
+        beforeSpotPriceInOverOut: new IntPretty(0).ready(false),
+        beforeSpotPriceOutOverIn: new IntPretty(0).ready(false),
+        afterSpotPriceInOverOut: new IntPretty(0).ready(false),
+        afterSpotPriceOutOverIn: new IntPretty(0).ready(false),
+        effectivePriceInOverOut: new IntPretty(0).ready(false),
+        effectivePriceOutOverIn: new IntPretty(0).ready(false),
+        swapFee: new RatePretty(0).ready(false),
+        slippage: new RatePretty(0).ready(false),
       };
     }
 
@@ -305,7 +305,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         .getBalanceFromCurrency(this.sendCurrency);
       const balanceDec = balance.toDec();
       if (dec.gt(balanceDec)) {
-        return new InsufficientAmountError("Insufficient amount");
+        return new InsufficientAmountError("Insufficient balance");
       }
     }
 
