@@ -1,7 +1,7 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservablePoolWithFeeMetrics } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useState, useMemo, useCallback } from "react";
 import {
   useFilteredData,
   usePaginatedData,
@@ -56,51 +56,72 @@ export const AllPoolsTableSet: FunctionComponent<{
   const incentivizedPoolIds =
     queriesOsmosis.queryIncentivizedPools.incentivizedPools;
 
-  const allPoolsWithMetrics = allPools.map((pool) => ({
-    ...queriesExternal.queryGammPoolFeeMetrics.makePoolWithFeeMetrics(
-      pool,
-      priceStore
-    ),
-    myLiquidity: pool
-      .computeTotalValueLocked(priceStore)
-      .mul(
-        queriesOsmosis.queryGammPoolShare.getAllGammShareRatio(
-          account.bech32Address,
-          pool.id
-        )
-      ),
-    apr: queriesOsmosis.queryIncentivizedPools
-      .computeMostAPY(pool.id, priceStore)
-      .maxDecimals(2),
-  }));
+  const allPoolsWithMetrics = useMemo(
+    () =>
+      allPools.map((pool) => ({
+        ...queriesExternal.queryGammPoolFeeMetrics.makePoolWithFeeMetrics(
+          pool,
+          priceStore
+        ),
+        myLiquidity: pool
+          .computeTotalValueLocked(priceStore)
+          .mul(
+            queriesOsmosis.queryGammPoolShare.getAllGammShareRatio(
+              account.bech32Address,
+              pool.id
+            )
+          ),
+        apr: queriesOsmosis.queryIncentivizedPools
+          .computeMostAPY(pool.id, priceStore)
+          .maxDecimals(2),
+      })),
+    [
+      allPools,
+      account.bech32Address,
+      queriesOsmosis,
+      priceStore,
+      queriesExternal,
+    ]
+  );
 
-  const incentivizedPoolsWithMetrics = allPoolsWithMetrics.reduce(
-    (
-      incentivizedPools: ObservablePoolWithFeeMetrics[],
-      poolWithMetrics: ObservablePoolWithFeeMetrics
-    ) => {
-      if (
-        incentivizedPoolIds.some(
-          (incentivizedPoolId) => poolWithMetrics.pool.id === incentivizedPoolId
-        )
-      ) {
-        incentivizedPools.push(poolWithMetrics);
-      }
-      return incentivizedPools;
-    },
-    []
+  const incentivizedPoolsWithMetrics = useMemo(
+    () =>
+      allPoolsWithMetrics.reduce(
+        (
+          incentivizedPools: ObservablePoolWithFeeMetrics[],
+          poolWithMetrics: ObservablePoolWithFeeMetrics
+        ) => {
+          if (
+            incentivizedPoolIds.some(
+              (incentivizedPoolId) =>
+                poolWithMetrics.pool.id === incentivizedPoolId
+            )
+          ) {
+            incentivizedPools.push(poolWithMetrics);
+          }
+          return incentivizedPools;
+        },
+        []
+      ),
+    [allPoolsWithMetrics, incentivizedPoolIds]
   );
 
   const isIncentivizedPools = activeOptionId === poolsMenuOptions[0].id;
-  const activeOptionPools = isIncentivizedPools
-    ? incentivizedPoolsWithMetrics
-    : allPoolsWithMetrics;
+  const activeOptionPools = useMemo(
+    () =>
+      isIncentivizedPools ? incentivizedPoolsWithMetrics : allPoolsWithMetrics,
+    [isIncentivizedPools, incentivizedPoolsWithMetrics, allPoolsWithMetrics]
+  );
 
-  const tvlFilteredPools = isPoolTvlFiltered
-    ? activeOptionPools
-    : activeOptionPools.filter((poolWithMetrics) =>
-        poolWithMetrics.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
-      );
+  const tvlFilteredPools = useMemo(
+    () =>
+      isPoolTvlFiltered
+        ? activeOptionPools
+        : activeOptionPools.filter((poolWithMetrics) =>
+            poolWithMetrics.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
+          ),
+    [isPoolTvlFiltered, activeOptionPools]
+  );
 
   const [query, setQuery, filteredPools] = useFilteredData(tvlFilteredPools, [
     "pool.id",
@@ -122,96 +143,110 @@ export const AllPoolsTableSet: FunctionComponent<{
     sortedAllPoolsWithMetrics,
     POOLS_PER_PAGE
   );
-  const makeSortMechanism = (keyPath: string) =>
-    sortKeyPath === keyPath
-      ? {
-          currentDirection: sortDirection,
-          onClickHeader: () => {
-            // cycle ascending => descending => initial
-            switch (sortDirection) {
-              case "ascending":
-                setSortDirection("descending");
-                break;
-              case "descending":
-                setSortKeyPath(initialKeyPath);
-                setSortDirection(initialSortDirection);
-            }
+  const makeSortMechanism = useCallback(
+    (keyPath: string) =>
+      sortKeyPath === keyPath
+        ? {
+            currentDirection: sortDirection,
+            onClickHeader: () => {
+              // cycle ascending => descending => initial
+              switch (sortDirection) {
+                case "ascending":
+                  setSortDirection("descending");
+                  break;
+                case "descending":
+                  setSortKeyPath(initialKeyPath);
+                  setSortDirection(initialSortDirection);
+              }
+            },
+          }
+        : {
+            onClickHeader: () => {
+              setSortKeyPath(keyPath);
+              setSortDirection("ascending");
+            },
           },
-        }
-      : {
-          onClickHeader: () => {
-            setSortKeyPath(keyPath);
-            setSortDirection("ascending");
+    [sortKeyPath, sortDirection, setSortDirection, setSortKeyPath]
+  );
+  const tableCols = useMemo(
+    () => [
+      {
+        id: "pool.id",
+        display: "Pool ID",
+        sort: makeSortMechanism("pool.id"),
+        displayCell: PoolCompositionCell,
+      },
+      {
+        id: "liquidity",
+        display: "Liquidity",
+        sort: makeSortMechanism("liquidity"),
+      },
+      {
+        id: "volume24h",
+        display: "Volume (24H)",
+        sort: makeSortMechanism("volume24h"),
+
+        displayCell: MetricLoaderCell,
+      },
+      {
+        id: "feesSpent7d",
+        display: "Fees (7D)",
+        sort: makeSortMechanism("feesSpent7d"),
+        displayCell: MetricLoaderCell,
+        collapseAt: Breakpoint.XL,
+      },
+      {
+        id: isIncentivizedPools ? "apr" : "myLiquidity",
+        display: isIncentivizedPools ? "APR" : "My Liquidity",
+        sort: makeSortMechanism(isIncentivizedPools ? "apr" : "myLiquidity"),
+        displayCell: isIncentivizedPools ? MetricLoaderCell : undefined,
+        collapseAt: Breakpoint.LG,
+      },
+    ],
+    [makeSortMechanism, isIncentivizedPools]
+  );
+
+  const tableRows: RowDef[] = useMemo(
+    () =>
+      allData.map((poolWithFeeMetrics) => ({
+        makeHoverClass: () => "text-secondary-200",
+        link: `/pool/${poolWithFeeMetrics.pool.id}`,
+      })),
+    [allData]
+  );
+
+  const tableData = useMemo(
+    () =>
+      allData.map((poolWithMetrics) => {
+        const poolId = poolWithMetrics.pool.id;
+        const poolAssets = poolWithMetrics.pool.poolAssets.map((poolAsset) => ({
+          coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+          coinDenom: poolAsset.amount.currency.coinDenom,
+        }));
+
+        return [
+          { poolId, poolAssets },
+          { value: poolWithMetrics.liquidity.toString() },
+          {
+            value: poolWithMetrics.volume24h.toString(),
+            isLoading: !queriesExternal.queryGammPoolFeeMetrics.response,
           },
-        };
-  const tableCols = [
-    {
-      id: "pool.id",
-      display: "Pool ID",
-      sort: makeSortMechanism("pool.id"),
-      displayCell: PoolCompositionCell,
-    },
-    {
-      id: "liquidity",
-      display: "Liquidity",
-      sort: makeSortMechanism("liquidity"),
-    },
-    {
-      id: "volume24h",
-      display: "Volume (24H)",
-      sort: makeSortMechanism("volume24h"),
-
-      displayCell: MetricLoaderCell,
-    },
-    {
-      id: "feesSpent7d",
-      display: "Fees (7D)",
-      sort: makeSortMechanism("feesSpent7d"),
-      displayCell: MetricLoaderCell,
-      collapseAt: Breakpoint.XL,
-    },
-    {
-      id: isIncentivizedPools ? "apr" : "myLiquidity",
-      display: isIncentivizedPools ? "APR" : "My Liquidity",
-      sort: makeSortMechanism(isIncentivizedPools ? "apr" : "myLiquidity"),
-      displayCell: isIncentivizedPools ? MetricLoaderCell : undefined,
-      collapseAt: Breakpoint.LG,
-    },
-  ];
-
-  const tableRows: RowDef[] = allData.map((poolWithFeeMetrics) => ({
-    makeHoverClass: () => "text-secondary-200",
-    link: `/pool/${poolWithFeeMetrics.pool.id}`,
-  }));
-
-  const tableData = allData.map((poolWithMetrics) => {
-    const poolId = poolWithMetrics.pool.id;
-    const poolAssets = poolWithMetrics.pool.poolAssets.map((poolAsset) => ({
-      coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-      coinDenom: poolAsset.amount.currency.coinDenom,
-    }));
-
-    return [
-      { poolId, poolAssets },
-      { value: poolWithMetrics.liquidity.toString() },
-      {
-        value: poolWithMetrics.volume24h.toString(),
-        isLoading: !queriesExternal.queryGammPoolFeeMetrics.response,
-      },
-      {
-        value: poolWithMetrics.feesSpent7d.toString(),
-        isLoading: !queriesExternal.queryGammPoolFeeMetrics.response,
-      },
-      {
-        value: isIncentivizedPools
-          ? poolWithMetrics.apr?.toString()
-          : poolWithMetrics.myLiquidity?.toString(),
-        isLoading: isIncentivizedPools
-          ? queriesOsmosis.queryIncentivizedPools.isAprFetching
-          : false,
-      },
-    ];
-  });
+          {
+            value: poolWithMetrics.feesSpent7d.toString(),
+            isLoading: !queriesExternal.queryGammPoolFeeMetrics.response,
+          },
+          {
+            value: isIncentivizedPools
+              ? poolWithMetrics.apr?.toString()
+              : poolWithMetrics.myLiquidity?.toString(),
+            isLoading: isIncentivizedPools
+              ? queriesOsmosis.queryIncentivizedPools.isAprFetching
+              : false,
+          },
+        ];
+      }),
+    [allData, isIncentivizedPools, queriesExternal, queriesOsmosis]
+  );
 
   if (isMobile) {
     return (
