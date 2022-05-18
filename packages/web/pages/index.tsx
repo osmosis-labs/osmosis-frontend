@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 import { TradeClipboard } from "../components/trade-clipboard";
 import { useWindowSize } from "../hooks";
@@ -10,7 +10,6 @@ const Home: NextPage = observer(function () {
   const { chainStore, queriesStore } = useStore();
 
   const containerRef = useRef<HTMLElement | null>(null);
-  const [clipboardWidth] = useState<number | undefined>(undefined);
 
   const windowSize = useWindowSize();
 
@@ -23,36 +22,18 @@ const Home: NextPage = observer(function () {
 
   const imageRatio = 1300 / 900;
 
-  const defaultDesktopSidebarWidthPx = 206;
-  const defaultClipboardWidthPx = 516;
-
-  // Set this based on the screen height 1080px.
-  const clipboardMinLeftPx = 920;
-  const clipboardPositionLeft = 0.8;
-
   return (
     <main className="relative bg-background h-screen" ref={containerRef}>
       <div className="absolute w-full h-full bg-home-bg-pattern bg-repeat-x bg-cover">
         <svg
-          className="absolute w-full h-full md:hidden"
+          className="absolute w-full h-full lg:hidden"
           pointerEvents="none"
           viewBox="0 0 1300 900"
           height="900"
-          preserveAspectRatio={(() => {
-            let ratio = imageRatio;
-
-            if (!windowSize) {
-              if (typeof window !== "undefined") {
-                ratio =
-                  (window.innerWidth - defaultDesktopSidebarWidthPx) /
-                  window.innerHeight;
-              }
-            } else {
-              ratio = windowSize.width / windowSize.height;
-            }
-
-            return ratio > imageRatio ? "xMinYMid meet" : "xMidYMid slice";
-          })()}
+          preserveAspectRatio={(() =>
+            windowSize.width / windowSize.height > imageRatio
+              ? "xMinYMid meet"
+              : "xMidYMid slice")()}
         >
           <g>
             <ProgressiveSvgImage
@@ -75,22 +56,9 @@ const Home: NextPage = observer(function () {
           </g>
         </svg>
       </div>
-      <div className="absolute w-full h-full flex items-center overflow-x-hidden overflow-y-auto md:p-5">
+      <div className="w-full h-full flex items-center overflow-x-hidden overflow-y-auto">
         <TradeClipboard
-          containerClassName="w-full max-w-[32.5rem] md:-translate-x-1/2"
-          containerStyle={{
-            ["--clipboardMinLeft" as any]: `calc(${clipboardMinLeftPx} * (100vh / 1080))`,
-            ["--clipboardPositionLeft" as any]: `calc((${
-              windowSize
-                ? windowSize.width + "px"
-                : `100vw - ${defaultDesktopSidebarWidthPx}px`
-            }) * ${clipboardPositionLeft} - ${
-              clipboardWidth ? clipboardWidth : defaultClipboardWidthPx
-            }px)`,
-            left: windowSize.isMobile
-              ? "50%"
-              : "min(var(--clipboardMinLeft), var(--clipboardPositionLeft))",
-          }}
+          containerClassName="max-w-[32.5rem] ml-auto mr-[10%] lg:mx-auto"
           pools={pools}
         />
       </div>
