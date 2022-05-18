@@ -80,7 +80,7 @@ export const TradeClipboard: FunctionComponent<{
   }, [isSettingOpen]);
 
   const router = useRouter();
-  const paramChecker = useRef(false);
+  const firstQueryEffectChecker = useRef(false);
 
   useEffect(() => {
     if (isInModal || !tradeTokenInConfig) {
@@ -88,52 +88,60 @@ export const TradeClipboard: FunctionComponent<{
     }
 
     if (
-      tradeTokenInConfig.sendCurrency.coinDenom !== "UNKNOWN" &&
-      tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN"
+      router.query.from &&
+      router.query.to &&
+      tradeTokenInConfig.sendableCurrencies.length !== 0
     ) {
-      router.replace(
-        `?from=${tradeTokenInConfig.sendCurrency.coinDenom}&to=${tradeTokenInConfig.outCurrency.coinDenom}`
-      );
-      paramChecker.current = true;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    tradeTokenInConfig,
-    tradeTokenInConfig?.sendCurrency,
-    tradeTokenInConfig?.outCurrency,
-  ]);
-
-  useEffect(() => {
-    if (paramChecker.current || isInModal || !tradeTokenInConfig) {
-      return;
-    }
-
-    if (router.query.from) {
       const fromTokenBalance = allTokenBalances.find(
         (tokenBalance) =>
           tokenBalance.balance.currency.coinDenom === router.query.from
       );
-
-      if (fromTokenBalance) {
-        tradeTokenInConfig.setSendCurrency(fromTokenBalance.balance.currency);
-      }
-    }
-
-    if (router.query.to) {
       const toTokenBalance = allTokenBalances.find(
         (tokenBalance) =>
           tokenBalance.balance.currency.coinDenom === router.query.to
       );
+      if (fromTokenBalance) {
+        tradeTokenInConfig.setSendCurrency(fromTokenBalance.balance.currency);
+      }
       if (toTokenBalance) {
         tradeTokenInConfig.setOutCurrency(toTokenBalance.balance.currency);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     router.query.from,
     router.query.to,
-    allTokenBalances,
-    tradeTokenInConfig,
-    isInModal,
+    tradeTokenInConfig?.sendableCurrencies,
+  ]);
+
+  useEffect(() => {
+    if (isInModal || !tradeTokenInConfig) {
+      return;
+    }
+
+    // Update current in and out currency to query string.
+    // The first effect should be ignored because the query string set when visiting the web page for the first time must be processed.
+    if (firstQueryEffectChecker.current) {
+      firstQueryEffectChecker.current = false;
+      return;
+    }
+
+    if (
+      tradeTokenInConfig.sendCurrency.coinDenom !== "UNKNOWN" &&
+      tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN" &&
+      tradeTokenInConfig.sendableCurrencies.length !== 0 &&
+      (tradeTokenInConfig.sendCurrency.coinDenom !== router.query.from ||
+        tradeTokenInConfig.outCurrency.coinDenom !== router.query.to)
+    ) {
+      router.replace(
+        `/?from=${tradeTokenInConfig.sendCurrency.coinDenom}&to=${tradeTokenInConfig.outCurrency.coinDenom}`
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    tradeTokenInConfig?.sendCurrency,
+    tradeTokenInConfig?.outCurrency,
+    tradeTokenInConfig?.sendableCurrencies,
   ]);
 
   return (
