@@ -2397,7 +2397,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinMinimalDenom: 'usomm',
 			coinDecimals: 6,
 			coinGeckoId: 'pool:usomm',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/somm.png',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/somm.svg',
 		},
 		bip44: {
 			coinType: 118,
@@ -2409,7 +2409,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'usomm',
 				coinDecimals: 6,
 				coinGeckoId: 'pool:usomm',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/somm.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/somm.svg',
 			},
 		],
 		feeCurrencies: [
@@ -2418,7 +2418,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinMinimalDenom: 'usomm',
 				coinDecimals: 6,
 				coinGeckoId: 'pool:usomm',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/somm.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/somm.svg',
 			},
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
