@@ -12,7 +12,7 @@ import React, { FunctionComponent, useEffect, useRef, useMemo } from "react";
 import { EmbedChainInfos } from "../../config";
 import {
   useBooleanWithWindowEvent,
-  useTokenQueryParams,
+  useTokenSwapQueryParams,
   useWindowSize,
 } from "../../hooks";
 import { useStore } from "../../stores";
@@ -58,9 +58,9 @@ export const TradeClipboard: FunctionComponent<{
       pools
     );
     // eslint-disable-next-line
-  }, [chainStore, chainId, account.bech32Address]);
+  }, [chainStore, chainId, account.bech32Address, pools.length]);
 
-  useTokenQueryParams(tradeTokenInConfig, allTokenBalances, isInModal);
+  useTokenSwapQueryParams(tradeTokenInConfig, allTokenBalances, isInModal);
 
   const showWarningSlippage = useMemo(
     () =>

@@ -4,7 +4,7 @@ import { ObservableTradeTokenInConfig } from "@osmosis-labs/stores";
 import { CoinBalance } from "../../stores/assets";
 
 /** Bidirectionally sets/gets window query params to/from `from=DENOM&to=DENOM` and sets in trade config object. */
-export function useTokenQueryParams(
+export function useTokenSwapQueryParams(
   tradeConfig: ObservableTradeTokenInConfig,
   balances: CoinBalance[],
   isInModal = false
@@ -16,7 +16,6 @@ export function useTokenQueryParams(
     if (isInModal || !tradeConfig) {
       return;
     }
-
     if (
       router.query.from &&
       router.query.to &&

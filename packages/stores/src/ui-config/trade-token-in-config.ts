@@ -50,6 +50,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     return this._pools;
   }
 
+  @action
+  setPools(pools: Pool[]) {
+    this._pools = pools;
+  }
+
   @override
   setSendCurrency(currency: AppCurrency | undefined) {
     if (currency) {
