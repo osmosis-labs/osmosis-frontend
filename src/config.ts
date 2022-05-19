@@ -785,7 +785,8 @@ export const IBCAssetInfos: {
 	destChannelId: string;
 	coinMinimalDenom: string;
 	// In some reasons, ibc channel is in unstable status.
-	// Disable the deposit, withdraw button and show the tooltip.
+	// Disable the deposit, withd
+	button and show the tooltip.
 	isUnstable?: boolean;
 
 	// If the asset is from ics20-cw20
@@ -1759,6 +1760,15 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'pool:raw',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/raw.png',
+			},
+			{
+				type: 'cw20',
+				contractAddress: 'juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w',
+				coinDenom: 'ASVT',
+				coinMinimalDenom: 'cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w:ASVT',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:asvt',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/asvt.png',
 			},
 		],
 		feeCurrencies: [
