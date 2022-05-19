@@ -253,6 +253,19 @@ export class WeightedPool implements Pool {
       this.swapFee
     ).truncate();
 
+    if (tokenOutAmount.equals(new Int(0))) {
+      return {
+        amount: new Int(0),
+        beforeSpotPriceInOverOut: new Dec(0),
+        beforeSpotPriceOutOverIn: new Dec(0),
+        afterSpotPriceInOverOut: new Dec(0),
+        afterSpotPriceOutOverIn: new Dec(0),
+        effectivePriceInOverOut: new Dec(0),
+        effectivePriceOutOverIn: new Dec(0),
+        slippage: new Dec(0),
+      };
+    }
+
     const afterSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
       new Dec(inPoolAsset.amount).add(new Dec(tokenIn.amount)),
       new Dec(inPoolAsset.weight),

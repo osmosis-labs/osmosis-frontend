@@ -225,6 +225,7 @@ export class OptimizedRoutes {
     }
 
     let paths = this.getCandidatePaths(tokenIn.denom, tokenOutDenom, true);
+    // TODO: if paths is single pool - confirm enough liquidity otherwise find different route
     if (paths.length === 0) {
       throw new NoPoolsError();
     }
@@ -329,6 +330,12 @@ export class OptimizedRoutes {
           { denom: previousInDenom, amount: previousInAmount },
           outDenom
         );
+
+        if (!tokenOut.amount.gt(new Int(0))) {
+          // not enough liquidity
+          console.warn("Token out is 0 through pool: ", pool.id);
+          return { ...tokenOut, swapFee: pool.swapFee };
+        }
 
         beforeSpotPriceInOverOut = beforeSpotPriceInOverOut.mulTruncate(
           tokenOut.beforeSpotPriceInOverOut

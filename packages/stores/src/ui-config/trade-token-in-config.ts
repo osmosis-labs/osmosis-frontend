@@ -228,27 +228,34 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     slippage: RatePretty;
   } {
     const paths = this.optimizedRoutePaths;
+    this.setError(undefined);
+    const zero = {
+      amount: new CoinPretty(this.outCurrency, new Dec(0)).ready(false),
+      beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(0).ready(false),
+      beforeSpotPriceWithoutSwapFeeOutOverIn: new IntPretty(0),
+      beforeSpotPriceInOverOut: new IntPretty(0).ready(false),
+      beforeSpotPriceOutOverIn: new IntPretty(0).ready(false),
+      afterSpotPriceInOverOut: new IntPretty(0).ready(false),
+      afterSpotPriceOutOverIn: new IntPretty(0).ready(false),
+      effectivePriceInOverOut: new IntPretty(0).ready(false),
+      effectivePriceOutOverIn: new IntPretty(0).ready(false),
+      swapFee: new RatePretty(0).ready(false),
+      slippage: new RatePretty(0).ready(false),
+    };
+
     if (paths.length === 0) {
-      return {
-        amount: new CoinPretty(this.outCurrency, new Dec(0)).ready(false),
-        beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(0).ready(false),
-        beforeSpotPriceWithoutSwapFeeOutOverIn: new IntPretty(0),
-        beforeSpotPriceInOverOut: new IntPretty(0).ready(false),
-        beforeSpotPriceOutOverIn: new IntPretty(0).ready(false),
-        afterSpotPriceInOverOut: new IntPretty(0).ready(false),
-        afterSpotPriceOutOverIn: new IntPretty(0).ready(false),
-        effectivePriceInOverOut: new IntPretty(0).ready(false),
-        effectivePriceOutOverIn: new IntPretty(0).ready(false),
-        swapFee: new RatePretty(0).ready(false),
-        slippage: new RatePretty(0).ready(false),
-      };
+      return zero;
     }
 
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
-
     const result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
+
+    if (!result.amount.gt(new Int(0))) {
+      this.setError(new Error("Not enough liquidity"));
+      return zero;
+    }
 
     const beforeSpotPriceWithoutSwapFeeInOverOutDec =
       result.beforeSpotPriceInOverOut.mulTruncate(
@@ -262,29 +269,39 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           multiplicationInOverOut
         )
       ),
-      beforeSpotPriceWithoutSwapFeeOutOverIn: new IntPretty(
-        new Dec(1)
-          .quoTruncate(beforeSpotPriceWithoutSwapFeeInOverOutDec)
-          .quoTruncate(multiplicationInOverOut)
-      ),
+      beforeSpotPriceWithoutSwapFeeOutOverIn:
+        beforeSpotPriceWithoutSwapFeeInOverOutDec.gt(new Dec(0)) &&
+        multiplicationInOverOut.gt(new Dec(0))
+          ? new IntPretty(
+              new Dec(1)
+                .quoTruncate(beforeSpotPriceWithoutSwapFeeInOverOutDec)
+                .quoTruncate(multiplicationInOverOut)
+            )
+          : new IntPretty(0),
       beforeSpotPriceInOverOut: new IntPretty(
         result.beforeSpotPriceInOverOut.mulTruncate(multiplicationInOverOut)
       ),
-      beforeSpotPriceOutOverIn: new IntPretty(
-        result.beforeSpotPriceOutOverIn.quoTruncate(multiplicationInOverOut)
-      ),
+      beforeSpotPriceOutOverIn: multiplicationInOverOut.gt(new Dec(0))
+        ? new IntPretty(
+            result.beforeSpotPriceOutOverIn.quoTruncate(multiplicationInOverOut)
+          )
+        : new IntPretty(0),
       afterSpotPriceInOverOut: new IntPretty(
         result.afterSpotPriceInOverOut.mulTruncate(multiplicationInOverOut)
       ),
-      afterSpotPriceOutOverIn: new IntPretty(
-        result.afterSpotPriceOutOverIn.quoTruncate(multiplicationInOverOut)
-      ),
+      afterSpotPriceOutOverIn: multiplicationInOverOut.gt(new Dec(0))
+        ? new IntPretty(
+            result.afterSpotPriceOutOverIn.quoTruncate(multiplicationInOverOut)
+          )
+        : new IntPretty(0),
       effectivePriceInOverOut: new IntPretty(
         result.effectivePriceInOverOut.mulTruncate(multiplicationInOverOut)
       ),
-      effectivePriceOutOverIn: new IntPretty(
-        result.effectivePriceOutOverIn.quoTruncate(multiplicationInOverOut)
-      ),
+      effectivePriceOutOverIn: multiplicationInOverOut.gt(new Dec(0))
+        ? new IntPretty(
+            result.effectivePriceOutOverIn.quoTruncate(multiplicationInOverOut)
+          )
+        : new IntPretty(0),
       swapFee: new RatePretty(result.swapFee),
       slippage: new RatePretty(result.slippage),
     };
