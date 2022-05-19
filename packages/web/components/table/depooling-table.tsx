@@ -1,4 +1,4 @@
-import { FunctionComponent, useMemo } from "react";
+import { FunctionComponent } from "react";
 import classNames from "classnames";
 import moment from "dayjs";
 import { useStore } from "../../stores";
@@ -17,7 +17,7 @@ export const DepoolingTable: FunctionComponent<
   const queriesOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getAccount(chainId);
 
-  const showDepoolingTable = useMemo(() => {
+  const showDepoolingTable = (() => {
     if (!UnPoolWhitelistedPoolIds[poolId]) {
       return false;
     }
@@ -39,7 +39,7 @@ export const DepoolingTable: FunctionComponent<
     }
 
     return false;
-  }, [poolId, queriesOsmosis, account.bech32Address]);
+  })();
 
   if (!showDepoolingTable) {
     return null;

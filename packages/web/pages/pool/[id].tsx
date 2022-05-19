@@ -439,7 +439,7 @@ const Pool: FunctionComponent = observer(() => {
   );
 
   // unpool
-  const showDepoolButton = useMemo(() => {
+  const showDepoolButton = (() => {
     if (!pool) {
       return false;
     }
@@ -473,7 +473,7 @@ const Pool: FunctionComponent = observer(() => {
     }
 
     return false;
-  }, [pool, account.txTypeInProgress, account.bech32Address, queryOsmosis]);
+  })();
 
   return (
     <main>
@@ -882,7 +882,7 @@ const Pool: FunctionComponent = observer(() => {
             </div>
           )}
         <div className="max-w-container mx-auto md:p-5 p-10">
-          <div className="flex items-center">
+          <div className="flex items-center place-content-between">
             {isMobile ? (
               <span className="subtitle2">My Bondings</span>
             ) : (
@@ -890,6 +890,7 @@ const Pool: FunctionComponent = observer(() => {
             )}
             {showDepoolButton && (
               <Button
+                className="h-8 px-2"
                 onClick={async () => {
                   if (!pool) {
                     return;
