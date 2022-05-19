@@ -410,7 +410,7 @@ export class RootStore {
 						[{ portId: 'transfer', channelId: 'channel-169' }],
 						'cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w'
 					),
-					spotPriceDestDenom: 'rowan',
+					spotPriceDestDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-47' }], 'rowan'),
 					destCoinId: 'sifchain',
 				},
 			]
