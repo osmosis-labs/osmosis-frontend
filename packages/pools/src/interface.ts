@@ -21,6 +21,7 @@ export interface Pool {
     amount: Int;
     weight: Int;
   };
+  hasPoolAsset(denom: string): boolean;
 
   getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec;
   getSpotPriceOutOverIn(tokenInDenom: string, tokenOutDenom: string): Dec;
@@ -41,23 +42,13 @@ export interface Pool {
     tokenOutDenom: string
   ): {
     amount: Int;
+    beforeSpotPriceInOverOut: Dec;
+    beforeSpotPriceOutOverIn: Dec;
     afterSpotPriceInOverOut: Dec;
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
     effectivePriceOutOverIn: Dec;
     slippage: Dec;
-  };
-  getMinTokenOutByTokenInWithSlippage(
-    tokenIn: {
-      denom: string;
-      amount: Int;
-    },
-    tokenOutDenom: string,
-    slippage: Dec
-  ): {
-    beforeSpotPriceInOverOut: Dec;
-    beforeSpotPriceOutOverIn: Dec;
-    minOutAmount: Int;
   };
   getTokenInByTokenOut(
     tokenOut: {
@@ -67,22 +58,15 @@ export interface Pool {
     tokenInDenom: string
   ): {
     amount: Int;
+    beforeSpotPriceInOverOut: Dec;
+    beforeSpotPriceOutOverIn: Dec;
     afterSpotPriceInOverOut: Dec;
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
     effectivePriceOutOverIn: Dec;
     slippage: Dec;
   };
-  getMaxTokenInByTokenOutWithSlippage(
-    tokenOut: {
-      denom: string;
-      amount: Int;
-    },
-    tokenInDenom: string,
-    slippage: Dec
-  ): {
-    beforeSpotPriceInOverOut: Dec;
-    beforeSpotPriceOutOverIn: Dec;
-    maxInAmount: Int;
-  };
+
+  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;
+  getLimitAmountByTokenIn(denom: string): Int;
 }

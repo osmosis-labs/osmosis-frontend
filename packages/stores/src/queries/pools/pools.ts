@@ -9,10 +9,10 @@ import { Dec } from "@keplr-wallet/unit";
 import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
 import { autorun, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
+import { GET_POOLS_PAGINATION_LIMIT } from ".";
 import { ObservableQueryNumPools } from "./num-pools";
 import { ObservableQueryPool } from "./pool";
 import { Pools } from "./types";
-import { GET_POOLS_PAGINATION_LIMIT } from ".";
 
 export class ObservableQueryPools extends ObservableChainQuery<Pools> {
   constructor(
@@ -119,44 +119,4 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
       return this.getPool(raw.id)!;
     });
   });
-
-  readonly getPools = computedFn(
-    (itemsPerPage: number, page: number): ObservableQueryPool[] => {
-      if (!this.response) {
-        return [];
-      }
-
-      const offset = (page - 1) * itemsPerPage;
-      return this.response.data.pools
-        .slice(offset, offset + itemsPerPage)
-        .map((raw) => {
-          return this.getPool(raw.id)!;
-        });
-    }
-  );
-
-  readonly getPoolsDescendingOrderTVL = computedFn(
-    (
-      priceStore: CoinGeckoPriceStore,
-      itemsPerPage: number,
-      page: number
-    ): ObservableQueryPool[] => {
-      if (!this.response) {
-        return [];
-      }
-
-      let pools = this.getAllPools();
-
-      pools = pools
-        .slice()
-        .sort((poolA: ObservableQueryPool, poolB: ObservableQueryPool) => {
-          const poolATvl = poolA.computeTotalValueLocked(priceStore).toDec();
-          const poolBTvl = poolB.computeTotalValueLocked(priceStore).toDec();
-          return poolATvl.gt(poolBTvl) ? -1 : 1;
-        });
-
-      const offset = (page - 1) * itemsPerPage;
-      return pools.slice(offset, offset + itemsPerPage);
-    }
-  );
 }

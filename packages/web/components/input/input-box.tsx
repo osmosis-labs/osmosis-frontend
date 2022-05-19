@@ -1,8 +1,9 @@
-import { FunctionComponent, HTMLInputTypeAttribute, useState } from "react";
 import classNames from "classnames";
-import { InputProps, Disableable, CustomClasses } from "../types";
-import { ButtonProps } from "../buttons/types";
+import { FunctionComponent, HTMLInputTypeAttribute, useState } from "react";
+import AutosizeInput from "react-input-autosize";
 import { CloseButton } from "../buttons";
+import { ButtonProps } from "../buttons/types";
+import { CustomClasses, Disableable, InputProps } from "../types";
 
 /* https://www.figma.com/file/wQjMyxY0EnEk29gBzGDMe5/Osmosis-Component?node-id=3938%3A15177 */
 
@@ -22,11 +23,14 @@ interface Props extends InputProps<string>, Disableable, CustomClasses {
   /** Show a clear button when `currentValue !== ""`. */
   clearButton?: boolean;
   inputClassName?: string;
+  isAutosize?: boolean;
+  inputRef?: React.MutableRefObject<HTMLInputElement | null>;
 }
 
 export const InputBox: FunctionComponent<Props> = ({
   currentValue,
   onInput,
+  onFocus,
   placeholder,
   style = "enabled",
   type,
@@ -36,6 +40,8 @@ export const InputBox: FunctionComponent<Props> = ({
   inputClassName,
   disabled = false,
   className,
+  isAutosize,
+  inputRef,
 }) => {
   const [inputFocused, setInputFocused] = useState(false);
 
@@ -56,27 +62,49 @@ export const InputBox: FunctionComponent<Props> = ({
       )}
     >
       <label className="grow shrink w-full" htmlFor="text-input">
-        <input
-          id="text-input"
-          className={classNames(
-            "w-full appearance-none bg-transparent align-middle leading-10 pt-px pr-1",
-            {
-              "text-white-disabled": disabled,
-              "text-white-high": currentValue != "" && !disabled,
-              "text-right float-right": rightEntry,
-            },
-            inputClassName
-          )}
-          value={currentValue}
-          placeholder={placeholder ?? ""}
-          autoComplete="off"
-          type={type}
-          onBlur={() => setInputFocused(false)}
-          onFocus={() => setInputFocused(true)}
-          onInput={(e: any) => onInput(e.target.value)}
-          onClick={(e: any) => e.target.select()}
-          disabled={disabled}
-        />
+        {isAutosize ? (
+          <AutosizeInput
+            inputRef={(ref) => {
+              if (inputRef) {
+                inputRef.current = ref;
+              }
+            }}
+            inputClassName={inputClassName}
+            minWidth={0}
+            value={currentValue}
+            onInput={(e: any) => onInput(e.target.value)}
+            onFocus={(e: any) => {
+              setInputFocused(true);
+              onFocus && onFocus(e);
+            }}
+          />
+        ) : (
+          <input
+            ref={inputRef}
+            id="text-input"
+            className={classNames(
+              "w-full appearance-none bg-transparent align-middle leading-10 pt-px pr-1",
+              {
+                "text-white-disabled": disabled,
+                "text-white-high": currentValue != "" && !disabled,
+                "text-right float-right": rightEntry,
+              },
+              inputClassName
+            )}
+            value={currentValue}
+            placeholder={placeholder ?? ""}
+            autoComplete="off"
+            type={type}
+            onBlur={() => setInputFocused(false)}
+            onFocus={(e: any) => {
+              setInputFocused(true);
+              onFocus && onFocus(e);
+            }}
+            onInput={(e: any) => onInput(e.target.value)}
+            onClick={(e: any) => e.target.select()}
+            disabled={disabled}
+          />
+        )}
       </label>
       <div className="flex flex-nowrap gap-2">
         {!rightEntry &&

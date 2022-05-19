@@ -170,7 +170,7 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
             );
           })}
         </div>
-        <div className="flex ml-auto">
+        <div className="flex items-center ml-auto">
           <CheckBox
             className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
             isOn={addLiquidityConfig.isSingleAmountIn}
@@ -184,7 +184,7 @@ export const AddLiquidity: FunctionComponent<Props> = observer(
           </CheckBox>
           <InfoTooltip
             trigger="click mouseenter"
-            className="mx-2.5 pt-1"
+            className="mx-1"
             content="'Auto-swap single asset' allows you to provide liquidity using one asset. This will impact the pool price of the asset you’re providing liquidity with."
           />
         </div>

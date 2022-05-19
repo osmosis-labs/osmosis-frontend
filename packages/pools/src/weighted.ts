@@ -76,6 +76,10 @@ export class WeightedPool implements Pool {
     });
   }
 
+  get poolAssetDenoms(): string[] {
+    return this.raw.poolAssets.map((asset) => asset.token.denom);
+  }
+
   get shareDenom(): string {
     return this.raw.totalShares.denom;
   }
@@ -97,6 +101,11 @@ export class WeightedPool implements Pool {
     }
 
     return poolAsset;
+  }
+
+  hasPoolAsset(denom: string): boolean {
+    const poolAsset = this.poolAssets.find((asset) => asset.denom === denom);
+    return poolAsset != null;
   }
 
   get totalWeight(): Int {
@@ -152,6 +161,8 @@ export class WeightedPool implements Pool {
     tokenInDenom: string
   ): {
     amount: Int;
+    beforeSpotPriceInOverOut: Dec;
+    beforeSpotPriceOutOverIn: Dec;
     afterSpotPriceInOverOut: Dec;
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
@@ -197,7 +208,11 @@ export class WeightedPool implements Pool {
 
     return {
       amount: tokenInAmount,
-      afterSpotPriceInOverOut: afterSpotPriceInOverOut,
+      beforeSpotPriceInOverOut,
+      beforeSpotPriceOutOverIn: new Dec(1).quoTruncate(
+        beforeSpotPriceInOverOut
+      ),
+      afterSpotPriceInOverOut,
       afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
       effectivePriceInOverOut: effectivePrice,
       effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePrice),
@@ -210,6 +225,8 @@ export class WeightedPool implements Pool {
     tokenOutDenom: string
   ): {
     amount: Int;
+    beforeSpotPriceInOverOut: Dec;
+    beforeSpotPriceOutOverIn: Dec;
     afterSpotPriceInOverOut: Dec;
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
@@ -236,6 +253,19 @@ export class WeightedPool implements Pool {
       this.swapFee
     ).truncate();
 
+    if (tokenOutAmount.equals(new Int(0))) {
+      return {
+        amount: new Int(0),
+        beforeSpotPriceInOverOut: new Dec(0),
+        beforeSpotPriceOutOverIn: new Dec(0),
+        afterSpotPriceInOverOut: new Dec(0),
+        afterSpotPriceOutOverIn: new Dec(0),
+        effectivePriceInOverOut: new Dec(0),
+        effectivePriceOutOverIn: new Dec(0),
+        slippage: new Dec(0),
+      };
+    }
+
     const afterSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
       new Dec(inPoolAsset.amount).add(new Dec(tokenIn.amount)),
       new Dec(inPoolAsset.weight),
@@ -255,6 +285,10 @@ export class WeightedPool implements Pool {
 
     return {
       amount: tokenOutAmount,
+      beforeSpotPriceInOverOut,
+      beforeSpotPriceOutOverIn: new Dec(1).quoTruncate(
+        beforeSpotPriceInOverOut
+      ),
       afterSpotPriceInOverOut,
       afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
       effectivePriceInOverOut: effectivePrice,
@@ -263,73 +297,20 @@ export class WeightedPool implements Pool {
     };
   }
 
-  getMaxTokenInByTokenOutWithSlippage(
-    tokenOut: { denom: string; amount: Int },
-    tokenInDenom: string,
-    slippage: Dec
-  ): {
-    beforeSpotPriceInOverOut: Dec;
-    beforeSpotPriceOutOverIn: Dec;
-    maxInAmount: Int;
-  } {
-    const inPoolAsset = this.getPoolAsset(tokenInDenom);
-    const outPoolAsset = this.getPoolAsset(tokenOut.denom);
+  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec {
+    const tokenIn = this.getPoolAsset(tokenInDenom);
+    const tokenOut = this.getPoolAsset(tokenOutDenom);
 
-    const beforeSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
-      new Dec(inPoolAsset.amount),
-      new Dec(inPoolAsset.weight),
-      new Dec(outPoolAsset.amount),
-      new Dec(outPoolAsset.weight),
-      this.swapFee
-    );
-    const beforeSpotPriceOutOverIn = new Dec(1).quoTruncate(
-      beforeSpotPriceInOverOut
-    );
-
-    const expectedEffectivePriceInOverOut =
-      beforeSpotPriceInOverOut.mulTruncate(new Dec(1).add(slippage));
-
-    return {
-      beforeSpotPriceInOverOut,
-      beforeSpotPriceOutOverIn,
-      maxInAmount: expectedEffectivePriceInOverOut
-        .mulTruncate(tokenOut.amount.toDec())
-        .truncate(),
-    };
+    return tokenOut.amount
+      .toDec()
+      .mul(tokenIn.weight.toDec())
+      .quo(tokenIn.weight.toDec().add(tokenOut.weight.toDec()));
   }
 
-  getMinTokenOutByTokenInWithSlippage(
-    tokenIn: { denom: string; amount: Int },
-    tokenOutDenom: string,
-    slippage: Dec
-  ): {
-    beforeSpotPriceInOverOut: Dec;
-    beforeSpotPriceOutOverIn: Dec;
-    minOutAmount: Int;
-  } {
-    const inPoolAsset = this.getPoolAsset(tokenIn.denom);
-    const outPoolAsset = this.getPoolAsset(tokenOutDenom);
-
-    const beforeSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
-      new Dec(inPoolAsset.amount),
-      new Dec(inPoolAsset.weight),
-      new Dec(outPoolAsset.amount),
-      new Dec(outPoolAsset.weight),
-      this.swapFee
-    );
-    const beforeSpotPriceOutOverIn = new Dec(1).quoTruncate(
-      beforeSpotPriceInOverOut
-    );
-
-    const expectedEffectivePriceOutOverIn =
-      beforeSpotPriceOutOverIn.mulTruncate(new Dec(1).add(slippage));
-
-    return {
-      beforeSpotPriceInOverOut,
-      beforeSpotPriceOutOverIn,
-      minOutAmount: expectedEffectivePriceOutOverIn
-        .mulTruncate(tokenIn.amount.toDec())
-        .truncate(),
-    };
+  getLimitAmountByTokenIn(denom: string): Int {
+    return this.getPoolAsset(denom)
+      .amount.toDec()
+      .mul(new Dec("0.3"))
+      .truncate();
   }
 }

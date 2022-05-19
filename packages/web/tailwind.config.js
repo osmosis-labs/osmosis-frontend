@@ -55,7 +55,7 @@ module.exports = {
       cardInner: "#3C356D",
       cardInfoPlaceholder: "#3E3866",
       iconDefault: "#8E83AA",
-      error: "#CF6679",
+      error: "#EF3456",
       enabledGold: "#C4A46A",
       pass: "#34EF52",
       missionError: "#EF3456",
