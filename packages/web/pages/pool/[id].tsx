@@ -683,7 +683,7 @@ const Pool: FunctionComponent = observer(() => {
         ]}
         bgImageUrl="/images/osmosis-guy-in-lab.png"
       />
-      <section className="bg-surface">
+      <section className="bg-surface min-h-screen">
         <div className="max-w-container mx-auto md:p-5 p-10">
           <div className="flex lg:flex-col gap-6 place-content-between">
             <div className="max-w-md">

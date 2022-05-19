@@ -48,18 +48,17 @@ export const TradeClipboard: FunctionComponent<{
   const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
 
   const slippageConfig = useMemo(() => new ObservableSlippageConfig(), []);
-  const tradeTokenInConfig = useMemo(
-    () =>
-      new ObservableTradeTokenInConfig(
-        chainStore,
-        queriesStore,
-        chainId,
-        account.bech32Address,
-        undefined,
-        pools
-      ),
-    [chainStore, queriesStore, chainId, account.bech32Address, pools]
-  );
+  const tradeTokenInConfig = useMemo(() => {
+    return new ObservableTradeTokenInConfig(
+      chainStore,
+      queriesStore,
+      chainId,
+      account.bech32Address,
+      undefined,
+      pools
+    );
+    // eslint-disable-next-line
+  }, [chainStore, chainId, account.bech32Address]);
 
   useTokenQueryParams(tradeTokenInConfig, allTokenBalances, isInModal);
 
