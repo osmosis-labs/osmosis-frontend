@@ -14,7 +14,7 @@ export const IncentivizedPoolCard: FunctionComponent<{
   const { chainStore, queriesStore, priceStore } = useStore();
 
   const chainInfo = chainStore.osmosis;
-  const queryOsmosis = queriesStore.get(chainInfo.chainId).osmosis;
+  const queryOsmosis = queriesStore.get(chainInfo.chainId).osmosis!;
 
   const router = useRouter();
 

@@ -50,8 +50,8 @@ export function displayToast(
 }
 
 const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
-  <div className="flex md:gap-3 gap-3.75">
-    <div className="flex items-center animate-spin h-8 w-8">
+  <div className="flex items-center md:gap-2 gap-3">
+    <div className="flex items-center animate-spin h-8 w-8 shrink-0">
       <Image
         alt="loading"
         src="/icons/loading-blue.svg"
@@ -59,22 +59,22 @@ const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
         width={32}
       />
     </div>
-    <section className="text-white-high">
+    <div className="text-white-high">
       <h6 className="mb-2 md:text-base text-lg">{message}</h6>
       {caption && <p className="md:text-xs text-sm">{caption}</p>}
-    </section>
+    </div>
   </div>
 );
 
 const ErrorToast: FunctionComponent<Alert> = ({ message, caption }) => (
-  <div className="flex md:gap-3 gap-3.75">
-    <div className="w-8 h-8">
+  <div className="flex items-center md:gap-2 gap-3">
+    <div className="w-8 h-8 shrink-0">
       <Image alt="failed" src="/icons/error-x.svg" height={32} width={32} />
     </div>
-    <section className="text-white-high">
+    <div className="text-white-high">
       <h6 className="mb-2 md:text-base text-lg">{message}</h6>
       {caption && <p className="md:text-xs text-sm">{caption}</p>}
-    </section>
+    </div>
   </div>
 );
 
@@ -83,11 +83,11 @@ const SuccessToast: FunctionComponent<Alert> = ({
   learnMoreUrl,
   learnMoreUrlCaption,
 }) => (
-  <div className="flex md:gap-3 gap-3.75">
-    <div className="w-8 h-8">
+  <div className="flex items-center md:gap-2 gap-3">
+    <div className="w-8 h-8 shrink-0">
       <Image alt="b" src="/icons/check-circle.svg" height={32} width={32} />
     </div>
-    <section className="text-white-high">
+    <div className="text-white-high">
       <h6 className="mb-2 md:text-base text-lg">{message}</h6>
       {learnMoreUrl && (
         <a
@@ -106,6 +106,6 @@ const SuccessToast: FunctionComponent<Alert> = ({
           </div>
         </a>
       )}
-    </section>
+    </div>
   </div>
 );

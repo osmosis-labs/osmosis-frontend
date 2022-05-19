@@ -18,11 +18,12 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
     }) => {
       const { isMobile } = useWindowSize();
 
+      const positiveBalanceError = config.positiveBalanceError?.message;
       const percentageError = config.percentageError?.message;
       const amountError = config.amountError?.message;
       const swapFeeError = config.swapFeeError?.message;
       const canAdvance =
-        (step === 1 && !percentageError) ||
+        (step === 1 && !percentageError && !positiveBalanceError) ||
         (step === 2 && !amountError) ||
         (step === 3 && config.acknowledgeFee && !swapFeeError);
 
@@ -45,7 +46,10 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
             isMobile={isMobile}
           />
           <div>{children}</div>
-          {percentageError && step === 1 && (
+          {positiveBalanceError && step === 1 && (
+            <Error className="mx-auto" message={positiveBalanceError} />
+          )}
+          {!positiveBalanceError && percentageError && step === 1 && (
             <Error className="mx-auto" message={percentageError} />
           )}
           {amountError && step === 2 && (

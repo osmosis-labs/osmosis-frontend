@@ -33,7 +33,11 @@ export class ObservableAssets {
       [CosmosQueries, CosmwasmQueries, OsmosisQueries]
     >,
     protected readonly priceStore: CoinGeckoPriceStore,
-    protected readonly chainId: string
+    protected readonly chainId: string,
+    readonly getExternalTranferUrl?: (chainId: string) => {
+      depositUrl?: string;
+      withdrawUrl?: string;
+    }
   ) {
     makeObservable(this);
   }
@@ -153,8 +157,10 @@ export class ObservableAssets {
 
   @computed
   get lockedCoins(): CoinPretty[] {
-    return this.queries.osmosis.queryLockedCoins.get(this.account.bech32Address)
-      .lockedCoins;
+    return (
+      this.queries.osmosis?.queryLockedCoins.get(this.account.bech32Address)
+        .lockedCoins ?? []
+    );
   }
 
   @computed
@@ -184,7 +190,7 @@ export class ObservableAssets {
           "gamm/pool/",
           ""
         );
-        const pool = this.queries.osmosis.queryGammPools.getPool(poolId);
+        const pool = this.queries.osmosis?.queryGammPools.getPool(poolId);
         if (pool) {
           const tvl = pool.computeTotalValueLocked(this.priceStore);
           const totalShare = pool.totalShare;

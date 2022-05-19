@@ -1,15 +1,18 @@
 import Image from "next/image";
 import React, { FunctionComponent } from "react";
 import { AssetCell as Cell } from "./types";
+import { InfoTooltip } from "../../tooltip";
+import { UNSTABLE_MSG } from "../../../config";
 
 export const AssetNameCell: FunctionComponent<Partial<Cell>> = ({
   coinDenom,
   chainName,
   coinImageUrl = "/icons/OSMO.svg",
   isCW20 = false,
+  isUnstable,
 }) =>
   coinDenom ? (
-    <div className="flex gap-4">
+    <div className="flex items-center gap-4">
       <div>
         <Image alt={coinDenom} src={coinImageUrl} height={40} width={40} />
       </div>
@@ -26,6 +29,9 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = ({
           <span className="body2 text-iconDefault">{chainName}</span>
         )}
       </div>
+      {isUnstable && (
+        <InfoTooltip style="secondary-200" content={UNSTABLE_MSG} />
+      )}
     </div>
   ) : (
     <span>{coinDenom}</span>

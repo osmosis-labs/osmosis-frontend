@@ -24,6 +24,8 @@ import {
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
+import { UserAction } from "../../config";
+import { POOLS_PER_PAGE } from "../../components/complex";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
 const TVL_FILTER_THRESHOLD = 1000;
@@ -39,7 +41,7 @@ const Pools: NextPage = observer(function () {
   const { isMobile } = useWindowSize();
 
   const { chainId } = chainStore.osmosis;
-  const queryOsmosis = queriesStore.get(chainId).osmosis;
+  const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const queriesExternal = queriesExternalStore.get();
 
   const account = accountStore.getAccount(chainId);
@@ -123,7 +125,7 @@ const Pools: NextPage = observer(function () {
     useSortedData(fiteredSfsPools, "apr", "descending");
   const [page, setPage, minPage, numPages, sfsPoolsPage] = usePaginatedData(
     sortedSfsPools,
-    10
+    POOLS_PER_PAGE
   );
   /// show pools > $1k TVL
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
@@ -163,9 +165,16 @@ const Pools: NextPage = observer(function () {
       )}
       <Overview
         title="Active Pools"
-        titleButtons={[
-          { label: "Create New Pool", onClick: () => setIsCreatingPool(true) },
-        ]}
+        titleButtons={
+          UserAction.CreateNewPool
+            ? [
+                {
+                  label: "Create New Pool",
+                  onClick: () => setIsCreatingPool(true),
+                },
+              ]
+            : []
+        }
         primaryOverviewLabels={[
           {
             label: "OSMO Price",
@@ -198,7 +207,7 @@ const Pools: NextPage = observer(function () {
             <h5>My Pools</h5>
           )}
           <div className="flex flex-col gap-4">
-            <div className="mt-5 grid grid-cards md:gap-3 gap-10">
+            <div className="mt-5 grid grid-cards md:gap-3">
               {(isMobile && !showMoreMyPools
                 ? myPoolIds.slice(0, poolCountShowMoreThreshold)
                 : myPoolIds
@@ -236,9 +245,28 @@ const Pools: NextPage = observer(function () {
                       ),
                     },
                     {
-                      label: "Pool Liquidity",
+                      label: isMobile ? "Available" : "Pool Liquidity",
                       value: isMobile ? (
-                        poolLiquidity.toString()
+                        (!myPool.totalShare.toDec().equals(new Dec(0))
+                          ? myPool
+                              .computeTotalValueLocked(priceStore)
+                              .mul(
+                                queryOsmosis.queryGammPoolShare
+                                  .getAvailableGammShare(
+                                    account.bech32Address,
+                                    myPoolId
+                                  )
+                                  .quo(myPool.totalShare)
+                              )
+                          : new PricePretty(
+                              priceStore.getFiatCurrency(
+                                priceStore.defaultVsCurrency
+                              )!,
+                              new Dec(0)
+                            )
+                        )
+                          .maxDecimals(2)
+                          .toString()
                       ) : (
                         <MetricLoader
                           isLoading={poolLiquidity.toDec().isZero()}
@@ -264,9 +292,9 @@ const Pools: NextPage = observer(function () {
                   // rearrange metrics for mobile pool card
                   if (isMobile) {
                     myPoolMetrics = [
-                      myPoolMetrics[1],
-                      myPoolMetrics[2],
-                      myPoolMetrics[0],
+                      myPoolMetrics[2], // Bonded
+                      myPoolMetrics[1], // Available
+                      myPoolMetrics[0], // APR
                     ];
                   }
 
@@ -282,6 +310,7 @@ const Pools: NextPage = observer(function () {
                       isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
                         myPoolId
                       )}
+                      mobileShowFirstLabel
                     />
                   );
                 }
@@ -316,9 +345,7 @@ const Pools: NextPage = observer(function () {
               },
               {
                 title: (
-                  <span className="text-superfluid caption">
-                    Superfluid Pools
-                  </span>
+                  <span className="superfluid caption">Superfluid Pools</span>
                 ),
                 content: (
                   <CompactPoolTableDisplay
@@ -416,7 +443,7 @@ const Pools: NextPage = observer(function () {
           <section className="bg-surface">
             <div className="max-w-container mx-auto p-10">
               <h5>Superfluid Pools</h5>
-              <div className="mt-5 grid grid-cards gap-10">
+              <div className="mt-5 grid grid-cards">
                 {superfluidPools &&
                   superfluidPools.map(
                     ({ id, apr, assets, poolFeesMetrics, poolLiquidity }) => (

@@ -19,7 +19,7 @@ export function useFilteredData<TData>(
 ): [string, (terms: string) => void, TData[]] {
   const processor = useMemo(
     () => filter ?? new DataFilter<TData>(data, keys),
-    [data, keys]
+    [data, keys, filter]
   );
 
   return useUserProcessedData(data, processor, initialQuery);

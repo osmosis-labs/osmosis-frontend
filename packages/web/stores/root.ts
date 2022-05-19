@@ -9,13 +9,7 @@ import {
   IBCCurrencyRegsitrar,
   QueriesStore,
 } from "@keplr-wallet/stores";
-import { EmbedChainInfos, IBCAssetInfos } from "../config";
-import {
-  IndexedDBKVStore,
-  KVStore,
-  LocalKVStore,
-  MemoryKVStore,
-} from "@keplr-wallet/common";
+import { ChainInfos, IBCAssetInfos } from "../config";
 import EventEmitter from "eventemitter3";
 import { ChainStore, ChainInfoWithExplorer } from "./chain";
 import {
@@ -28,8 +22,10 @@ import {
   prettifyTxError,
 } from "@osmosis-labs/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
+import { suggestChainFromWindow } from "../hooks/use-keplr/utils";
 import { displayToast, ToastType } from "../components/alert";
 import { ObservableAssets } from "./assets";
+import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -52,8 +48,11 @@ export class RootStore {
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
 
-  constructor(getKeplr: () => Promise<Keplr | undefined>) {
-    this.chainStore = new ChainStore(EmbedChainInfos, "osmosis");
+  constructor(
+    getKeplr: () => Promise<Keplr | undefined> = () =>
+      Promise.resolve(undefined)
+  ) {
+    this.chainStore = new ChainStore(ChainInfos, "osmosis");
 
     const eventListener = (() => {
       // On client-side (web browser), use the global window object.
@@ -74,32 +73,16 @@ export class RootStore {
       };
     })();
 
-    const indexedDBKVStoreCreator = (prefix: string): KVStore => {
-      if (typeof window === "undefined") {
-        // In server-side (nodejs), use memory kv store (volatile kv store).
-        return new MemoryKVStore(prefix);
-      }
-      return new IndexedDBKVStore(prefix);
-    };
-
-    const localStorageKVStoreCreator = (prefix: string): KVStore => {
-      if (typeof window === "undefined") {
-        // In server-side (nodejs), use memory kv store (volatile kv store).
-        return new MemoryKVStore(prefix);
-      }
-      return new LocalKVStore(prefix);
-    };
-
     this.queriesExternalStore = new QueriesExternalStore(
-      indexedDBKVStoreCreator("store_web_queries")
+      makeIndexedKVStore("store_web_queries")
     );
 
     this.queriesStore = new QueriesStore(
-      indexedDBKVStoreCreator("store_web_queries"),
+      makeIndexedKVStore("store_web_queries"),
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
-      OsmosisQueries.use()
+      OsmosisQueries.use(this.chainStore.osmosis.chainId)
     );
 
     this.accountStore = new AccountStore(
@@ -108,6 +91,9 @@ export class RootStore {
       () => {
         return {
           suggestChain: true,
+          suggestChainFn: async (keplr, chainInfo) => {
+            await suggestChainFromWindow(keplr, chainInfo.raw);
+          },
           autoInit: false,
           getKeplr,
         };
@@ -178,7 +164,7 @@ export class RootStore {
     );
 
     this.priceStore = new CoinGeckoPriceStore(
-      indexedDBKVStoreCreator("store_web_prices"),
+      makeIndexedKVStore("store_web_prices"),
       {
         usd: {
           currency: "usd",
@@ -191,7 +177,7 @@ export class RootStore {
     );
 
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
-      indexedDBKVStoreCreator("ibc_transfer_history"),
+      makeIndexedKVStore("ibc_transfer_history"),
       this.chainStore
     );
 
@@ -201,12 +187,25 @@ export class RootStore {
       this.accountStore,
       this.queriesStore,
       this.priceStore,
-      this.chainStore.osmosis.chainId
+      this.chainStore.osmosis.chainId,
+      (chainId) => {
+        const info = IBCAssetInfos.find(
+          ({ counterpartyChainId: id }) => id === chainId
+        );
+        if (info) {
+          return {
+            depositUrl: info.depositUrlOverride,
+            withdrawUrl: info.withdrawUrlOverride,
+          };
+        } else {
+          return {};
+        }
+      }
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
     this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar(
-      localStorageKVStoreCreator("store_ibc_currency_registrar"),
+      makeLocalStorageKVStore("store_ibc_currency_registrar"),
       3 * 24 * 3600 * 1000, // 3 days
       this.chainStore,
       this.accountStore,

@@ -1,7 +1,8 @@
 import { computed, flow, makeObservable, observable, toJS } from "mobx";
-import { computedFn, keepAlive } from "mobx-utils";
+import { keepAlive } from "mobx-utils";
 import dayjs from "dayjs";
 import { Buffer } from "buffer";
+import { computedFn } from "mobx-utils";
 import { KVStore, toGenerator } from "@keplr-wallet/common";
 import { ChainGetter } from "@keplr-wallet/stores";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
@@ -40,7 +41,8 @@ export class IBCTransferHistoryStore {
 
   constructor(
     protected readonly kvStore: KVStore,
-    protected readonly chainGetter: ChainGetter
+    protected readonly chainGetter: ChainGetter,
+    protected readonly keepHistoryDays = 3
   ) {
     makeObservable(this);
 
@@ -512,7 +514,7 @@ export class IBCTransferHistoryStore {
       dayjs(new Date(uncommited.createdAt))
         .add(
           dayjs.duration({
-            days: 3,
+            days: this.keepHistoryDays,
           })
         )
         .isAfter(new Date())
@@ -523,7 +525,7 @@ export class IBCTransferHistoryStore {
       dayjs(new Date(uncommited.createdAt))
         .add(
           dayjs.duration({
-            days: 3,
+            days: this.keepHistoryDays,
           })
         )
         .isAfter(new Date())

@@ -67,3 +67,5 @@ export class ObservableQueryEpochs extends ObservableChainQuery<Epochs> {
     return this.map.get(identifier)!;
   }
 }
+
+export * from "./types";

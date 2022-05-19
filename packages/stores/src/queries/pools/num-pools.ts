@@ -1,7 +1,7 @@
 import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
-import { NumPools } from "./types";
 import { KVStore } from "@keplr-wallet/common";
 import { computed, makeObservable } from "mobx";
+import { NumPools } from "./types";
 import { computedFn } from "mobx-utils";
 
 export class ObservableQueryNumPools extends ObservableChainQuery<NumPools> {

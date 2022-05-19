@@ -4,6 +4,7 @@ import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 import { TradeClipboard } from "../components/trade-clipboard";
 import { useWindowSize } from "../hooks";
 import { useStore } from "../stores";
+import { IS_FRONTIER } from "../config";
 
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore } = useStore();
@@ -11,7 +12,7 @@ const Home: NextPage = observer(function () {
   const { chainId } = chainStore.osmosis;
 
   const queries = queriesStore.get(chainId);
-  const queryPools = queries.osmosis.queryGammPools;
+  const queryPools = queries.osmosis!.queryGammPools;
 
   const pools = queryPools.getAllPools().map((pool) => pool.pool);
 
@@ -31,22 +32,40 @@ const Home: NextPage = observer(function () {
               : "xMidYMid slice")()}
         >
           <g>
+            {!IS_FRONTIER && (
+              <ProgressiveSvgImage
+                lowResXlinkHref="/images/osmosis-home-bg-low.png"
+                xlinkHref="/images/osmosis-home-bg.png"
+                x="56"
+                y="97"
+                width="578.7462"
+                height="725.6817"
+              />
+            )}
+            {!IS_FRONTIER && (
+              <rect
+                x="-3000"
+                y="778"
+                width="8660"
+                height="244"
+                fill="#120644"
+              />
+            )}
             <ProgressiveSvgImage
-              lowResXlinkHref="/images/osmosis-home-bg-low.png"
-              xlinkHref="/images/osmosis-home-bg.png"
-              x="56"
-              y="97"
-              width="578.7462"
-              height="725.6817"
-            />
-            <rect x="-3000" y="778" width="8660" height="244" fill="#120644" />
-            <ProgressiveSvgImage
-              lowResXlinkHref="/images/osmosis-home-fg-low.png"
-              xlinkHref="/images/osmosis-home-fg.png"
-              x="61"
-              y="602"
-              width="448.8865"
-              height="285.1699"
+              lowResXlinkHref={
+                IS_FRONTIER
+                  ? "/images/osmosis-cowboy-woz-low.png"
+                  : "/images/osmosis-home-fg-low.png"
+              }
+              xlinkHref={
+                IS_FRONTIER
+                  ? "/images/osmosis-cowboy-woz.png"
+                  : "/images/osmosis-home-fg.png"
+              }
+              x={IS_FRONTIER ? "-140" : "61"}
+              y={IS_FRONTIER ? "100" : "602"}
+              width={IS_FRONTIER ? "800" : "448.8865"}
+              height={IS_FRONTIER ? "800" : "285.1699"}
             />
           </g>
         </svg>

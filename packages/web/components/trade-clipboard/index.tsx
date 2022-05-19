@@ -9,7 +9,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { FunctionComponent, useEffect, useRef, useMemo } from "react";
-import { EmbedChainInfos } from "../../config";
+import { ChainInfos } from "../../config";
 import {
   useBooleanWithWindowEvent,
   useTokenSwapQueryParams,
@@ -294,7 +294,7 @@ export const TradeClipboard: FunctionComponent<{
                     }
                   }}
                   getChainNetworkName={(coinDenom) =>
-                    EmbedChainInfos.find((chain) =>
+                    ChainInfos.find((chain) =>
                       chain.currencies.find(
                         (currency) => currency.coinDenom === coinDenom
                       )
@@ -397,7 +397,7 @@ export const TradeClipboard: FunctionComponent<{
                     }
                   }}
                   getChainNetworkName={(coinDenom) =>
-                    EmbedChainInfos.find((chain) =>
+                    ChainInfos.find((chain) =>
                       chain.currencies.find(
                         (currency) => currency.coinDenom === coinDenom
                       )

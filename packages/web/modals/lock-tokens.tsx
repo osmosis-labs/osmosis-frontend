@@ -5,12 +5,12 @@ import { Duration } from "dayjs/plugin/duration";
 import classNames from "classnames";
 import { RatePretty, CoinPretty } from "@keplr-wallet/unit";
 import { ObservableAmountConfig } from "@osmosis-labs/stores";
-import { Button } from "../components/buttons";
 import { InputBox } from "../components/input";
 import { Error } from "../components/alert";
 import { CheckBox } from "../components/control";
 import { ModalBase, ModalBaseProps } from "./base";
 import { MobileProps } from "../components/types";
+import { useConnectWalletModalRedirect } from "../hooks";
 
 export const LockTokensModal: FunctionComponent<
   ModalBaseProps & {
@@ -45,8 +45,34 @@ export const LockTokensModal: FunctionComponent<
   );
   const [electSuperfluid, setElectSuperfluid] = useState(true);
 
+  const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
+    {
+      className: "h-14 md:w-full w-96 mt-3 mx-auto",
+      size: "lg",
+      disabled:
+        config.error !== undefined ||
+        selectedGaugeIndex === null ||
+        isSendingMsg,
+      loading: isSendingMsg,
+      onClick: () => {
+        const gauge = gauges.find((_, index) => index === selectedGaugeIndex);
+        if (gauge) {
+          onLockToken(
+            gauge.id,
+            hasSuperfluidValidator ? undefined : electSuperfluid
+          );
+        }
+      },
+      children:
+        electSuperfluid && !hasSuperfluidValidator
+          ? "Next"
+          : "Bond" || undefined,
+    },
+    props.onRequestClose
+  );
+
   return (
-    <ModalBase {...props}>
+    <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-col gap-2.5">
           <span className="subitle1">Unbonding period</span>
@@ -111,29 +137,7 @@ export const LockTokensModal: FunctionComponent<
         {config.error?.message !== undefined && (
           <Error className="mx-auto" message={config.error?.message ?? ""} />
         )}
-        <Button
-          className="h-14 md:w-full w-96 mt-3 mx-auto"
-          size="lg"
-          disabled={
-            config.error !== undefined ||
-            selectedGaugeIndex === null ||
-            isSendingMsg
-          }
-          loading={isSendingMsg}
-          onClick={() => {
-            const gauge = gauges.find(
-              (_, index) => index === selectedGaugeIndex
-            );
-            if (gauge) {
-              onLockToken(
-                gauge.id,
-                hasSuperfluidValidator ? undefined : electSuperfluid
-              );
-            }
-          }}
-        >
-          {electSuperfluid && !hasSuperfluidValidator ? "Next" : "Bond"}
-        </Button>
+        {accountActionButton}
       </div>
     </ModalBase>
   );

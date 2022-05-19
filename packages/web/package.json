@@ -6,6 +6,7 @@
     "dev": "next dev",
     "clean": "rm -rf node_modules; rm -rf .next",
     "build": "next build",
+    "analyze": "cross-env ANALYZE=true next build",
     "start": "next start",
     "lint": "prettier --check \"**/*\" && next lint",
     "lint:fix": "prettier --write \"**/*\" && next lint --fix",
@@ -22,6 +23,7 @@
     "@keplr-wallet/unit": "^0.10.1",
     "@keplr-wallet/wc-client": "^0.10.1",
     "@osmosis-labs/pools": "0.0.1",
+    "@next/bundle-analyzer": "^12.1.6",
     "@osmosis-labs/stores": "0.0.1",
     "@tippyjs/react": "^4.2.6",
     "@walletconnect/browser-utils": "^1.7.0",
@@ -45,7 +47,8 @@
     "react-input-autosize": "^3.0.0",
     "react-modal": "^3.14.4",
     "react-toastify": "^7.0.4",
-    "sha.js": "^2.4.11"
+    "sha.js": "^2.4.11",
+    "sharp": "^0.30.4"
   },
   "devDependencies": {
     "@types/qrcode.react": "^1.0.2",

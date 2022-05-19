@@ -1,6 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const defaultTheme = require("tailwindcss/defaultTheme");
 
+const IS_FRONTIER = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
+
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
@@ -18,46 +20,72 @@ module.exports = {
         faint: "rgba(255, 255, 255, 0.12)",
       },
       transparent: "transparent",
-      primary: {
-        50: "#8A86FF",
-        100: "#4540D8",
-        200: "#322DC2",
-        300: "#2722BB",
-        400: "#1D18A8",
-        500: "#16119E",
-        600: "#110D8B",
-        700: "#0A0674",
-        800: "#080559",
-        900: "#02003F",
-      },
+      primary: IS_FRONTIER
+        ? {
+            50: "#8A86FF",
+            100: "#D6692E",
+            200: "#A4432D",
+            300: "#2722BB",
+            400: "#1D18A8",
+            500: "#16119E",
+            600: "#110D8B",
+            700: "#92630B",
+            800: "#080559",
+            900: "#02003F",
+          }
+        : {
+            50: "#8A86FF",
+            100: "#4540D8",
+            200: "#322DC2",
+            300: "#2722BB",
+            400: "#1D18A8",
+            500: "#16119E",
+            600: "#110D8B",
+            700: "#0A0674",
+            800: "#080559",
+            900: "#02003F",
+          },
       primaryVariant: "#0A0674",
-      secondary: {
-        50: "#F4CC82",
-        100: "#D9B575",
-        200: "#C4A46A",
-        300: "#BC9856",
-        400: "#B88E42",
-        500: "#AA7E2D",
-        600: "#9C701D",
-        700: "#92630B",
-        800: "#875903",
-        900: "#734B00",
-      },
+      secondary: IS_FRONTIER
+        ? {
+            50: "#F4CC82",
+            100: "#D9A575",
+            200: "#C68D5A",
+            300: "#BC9856",
+            400: "#B88E42",
+            500: "#AA7E2D",
+            600: "#9C701D",
+            700: "#92630B",
+            800: "#875903",
+            900: "#734B00",
+          }
+        : {
+            50: "#F4CC82",
+            100: "#D9B575",
+            200: "#C4A46A",
+            300: "#BC9856",
+            400: "#B88E42",
+            500: "#AA7E2D",
+            600: "#9C701D",
+            700: "#92630B",
+            800: "#875903",
+            900: "#734B00",
+          },
       wireframes: {
         darkGrey: "#282828",
         grey: "#818181",
         lightGrey: "#B7B7B7",
       },
-      background: "#170F34",
-      modalOverlay: "rgba(23, 15, 52, 0.8)",
-      surface: "#231D4B",
-      card: "#2D2755",
+      background: IS_FRONTIER ? "#221B18" : "#170F34",
+      modalOverlay: IS_FRONTIER ? "#383532" : "rgba(23, 15, 52, 0.8)",
+      surface: IS_FRONTIER ? "#282421" : "#231D4B",
+      card: IS_FRONTIER ? "#2E2C2F" : "#2D2755",
       cardInner: "#3C356D",
       cardInfoPlaceholder: "#3E3866",
-      iconDefault: "#8E83AA",
-      error: "#EF3456",
+      iconDefault: IS_FRONTIER ? "#8E867B" : "#8E83AA",
+      error: IS_FRONTIER ? "#E91F4F" : "#EF3456",
       enabledGold: "#C4A46A",
-      pass: "#34EF52",
+      pass: IS_FRONTIER ? "#64BC3B" : "#34EF52",
       missionError: "#EF3456",
       black: "#000000",
       backdrop: "rgba(0, 0, 0, 0.3)",
@@ -135,7 +163,9 @@ module.exports = {
       "gradients-clip": "linear-gradient(180deg, #3A3369 0%, #231D4B 100%)",
       "gradients-clipInner":
         "linear-gradient(180deg, #332C61 0%, #312A5D 10.94%, #2D2755 100%)",
-      "home-bg-pattern": "url('/images/osmosis-home-bg-pattern.svg')",
+      "home-bg-pattern": IS_FRONTIER
+        ? "url('/images/osmosis-home-bg-pattern-frontier.svg')"
+        : "url('/images/osmosis-home-bg-pattern.svg')",
       "loading-bar":
         "linear-gradient(to left,rgba(251, 251, 251, 0.1),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.3),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.1))",
       superfluid: "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)",
@@ -158,17 +188,29 @@ module.exports = {
       "2xl": { max: "1536px" },
       // => @media (max-width: 1536px) { ... }
 
+      "1.5xl": { max: "1408px" },
+      // => @media (max-width: 1408px) { ... }
+
       xl: { max: "1280px" },
       // => @media (max-width: 1280px) { ... }
 
+      "1.5lg": { max: "1152px" },
+      // => @media (max-width: 1152px) { ... }
+
       lg: { max: "1024px" },
       // => @media (max-width: 1024px) { ... }
+
+      "1.5md": { max: "896px" },
+      // => @media (max-width: 896px) { ... }
 
       md: { max: "768px" },
       // => @media (max-width: 768px) { ... }
 
       sm: { max: "640px" },
       // => @media (max-width: 640px) { ... }
+
+      "1.5xs": { max: "512px" },
+      // => @media (max-width: 512px) { ... }
 
       xs: { max: "420px" },
     },
@@ -188,7 +230,7 @@ module.exports = {
         0.25: "1px",
       },
       maxWidth: {
-        container: "90rem",
+        container: "70rem",
         clipboard: "32.5rem",
         modal: "42rem",
       },

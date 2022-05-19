@@ -10,6 +10,7 @@ import {
   useBooleanWithWindowEvent,
 } from "../../hooks";
 import { SidebarBottom } from "../complex/sidebar-bottom";
+import { IS_FRONTIER } from "../../config";
 
 export type MainLayoutMenu = {
   label: string;
@@ -35,7 +36,11 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
       <React.Fragment>
         <div className="z-50 fixed w-sidebar px-5 pt-6">
           <Image
-            src="/osmosis-logo-main.svg"
+            src={
+              IS_FRONTIER
+                ? "/osmosis-logo-frontier.svg"
+                : "/osmosis-logo-main.svg"
+            }
             alt="osmosis logo"
             width={178}
             height={48}
@@ -70,9 +75,11 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                         <div className="h-11 w-11 relative">
                           <Image
                             className="absolute top-0 left-0 transition-all"
-                            src={`/icons/hexagon-border${
-                              selected ? "-selected" : ""
-                            }.svg`}
+                            src={`${
+                              IS_FRONTIER
+                                ? "/icons/hexagon-border-white"
+                                : "/icons/hexagon-border"
+                            }${selected ? "-selected" : ""}.svg`}
                             layout="fill"
                             alt="menu icon border"
                           />
@@ -102,7 +109,11 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                         {!menu.selectionTest && (
                           <div className="ml-2">
                             <Image
-                              src="/icons/link-deco.svg"
+                              src={
+                                IS_FRONTIER
+                                  ? "/icons/link-deco-white.svg"
+                                  : "/icons/link-deco.svg"
+                              }
                               alt="link"
                               width={12}
                               height={12}
@@ -122,7 +133,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
           className={classNames(
             "fixed flex z-40 h-24 w-screen items-center place-content-end px-8",
             {
-              "bg-black/30": !isScrolledTop,
+              "bg-black/30": !isScrolledTop && isMobile,
               hidden: showSidebar || !isMobile,
             }
           )}
@@ -131,7 +142,12 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
             className={classNames({ hidden: showSidebar })}
             onClick={() => setShowSidebar(true)}
           >
-            <Image alt="menu" src="/icons/menu.svg" height={38} width={38} />
+            <Image
+              alt="menu"
+              src={IS_FRONTIER ? "/icons/menu-white.svg" : "/icons/menu.svg"}
+              height={38}
+              width={38}
+            />
           </div>
         </div>
         {showSidebar && (

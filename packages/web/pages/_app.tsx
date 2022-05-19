@@ -1,5 +1,6 @@
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
+import { enableStaticRendering } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
@@ -11,10 +12,12 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import { GetKeplrProvider } from "../hooks";
 import { IbcNotifier } from "../stores/ibc-notifier";
+import { IS_FRONTIER } from "../config";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 dayjs.extend(utc);
+enableStaticRendering(typeof window === "undefined");
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -27,38 +30,40 @@ function MyApp({ Component, pageProps }: AppProps) {
             {
               label: "Trade",
               link: "/",
-              icon: "/icons/trade.svg",
+              icon: IS_FRONTIER ? "/icons/trade-white.svg" : "/icons/trade.svg",
               iconSelected: "/icons/trade-selected.svg",
               selectionTest: /\/$/,
             },
             {
               label: "Pools",
               link: "/pools",
-              icon: "/icons/pool.svg",
+              icon: IS_FRONTIER ? "/icons/pool-white.svg" : "/icons/pool.svg",
               iconSelected: "/icons/pool-selected.svg",
               selectionTest: /\/pools/,
             },
             {
               label: "Assets",
               link: "/assets",
-              icon: "/icons/asset.svg",
+              icon: IS_FRONTIER ? "/icons/asset-white.svg" : "/icons/asset.svg",
               iconSelected: "/icons/asset-selected.svg",
               selectionTest: /\/assets/,
             },
             {
               label: "Stake",
               link: "https://wallet.keplr.app/#/osmosis/stake",
-              icon: "/icons/ticket.svg",
+              icon: IS_FRONTIER
+                ? "/icons/ticket-white.svg"
+                : "/icons/ticket.svg",
             },
             {
               label: "Vote",
               link: "https://wallet.keplr.app/#/osmosis/governance",
-              icon: "/icons/vote.svg",
+              icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
             },
             {
               label: "Stats",
               link: "https://info.osmosis.zone",
-              icon: "/icons/chart.svg",
+              icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
             },
           ]}
         >

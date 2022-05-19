@@ -26,7 +26,7 @@ import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { BaseCell, ColumnDef, Table } from "../../components/table";
 import { truncateString } from "../../components/utils";
-import { EmbedChainInfos, ExternalIncentiveGaugeAllowList } from "../../config";
+import { ExternalIncentiveGaugeAllowList, ChainInfos } from "../../config";
 import { useWindowSize } from "../../hooks";
 import {
   LockTokensModal,
@@ -45,7 +45,7 @@ const Pool: FunctionComponent = observer(() => {
   const { chainId } = chainStore.osmosis;
 
   const queryCosmos = queriesStore.get(chainId).cosmos;
-  const queryOsmosis = queriesStore.get(chainId).osmosis;
+  const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
   const pool = queryOsmosis.queryGammPools.getPool(poolId as string);
   const { bech32Address } = accountStore.getAccount(chainId);
@@ -444,7 +444,7 @@ const Pool: FunctionComponent = observer(() => {
           removeLiquidityConfig={removeLiquidityConfig}
           isSendingMsg={account.txTypeInProgress !== ""}
           getChainNetworkName={(coinDenom) =>
-            EmbedChainInfos.find((chain) =>
+            ChainInfos.find((chain) =>
               chain.currencies.find(
                 (currency) => currency.coinDenom === coinDenom
               )

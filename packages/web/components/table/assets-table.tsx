@@ -24,6 +24,7 @@ import { Switch } from "../control";
 import { Button } from "../buttons";
 import { DataSorter } from "../../hooks/data/data-sorter";
 import { PreTransferModal } from "../../modals";
+import { IbcHistoryTable } from "./ibc-history";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -38,7 +39,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
   onDeposit,
   onWithdraw,
 }) => {
-  const { chainStore } = useStore();
+  const { chainStore, assetsStore } = useStore();
   const { isMobile } = useWindowSize();
   // Assemble cells with all data needed for any place in the table.
   const cells: TableCell[] = useMemo(
@@ -95,6 +96,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 : "0",
             isCW20,
             queryTags: [...(isCW20 ? ["CW20"] : [])],
+            isUnstable: ibcBalance.isUnstable === true,
             onWithdraw,
             onDeposit,
           };
@@ -176,6 +178,12 @@ export const AssetsTable: FunctionComponent<Props> = ({
   const [selectedTransferToken, setPreTransferToken] = useState<CoinPretty>(
     ibcBalances[0].balance
   );
+  const selectedChainInfo = ibcBalances.find(
+    (ibcAsset) => ibcAsset.balance.denom === selectedTransferToken.denom
+  )?.chainInfo;
+  const externalUrls = selectedChainInfo
+    ? assetsStore.getExternalTranferUrl?.(selectedChainInfo.chainId)
+    : undefined;
 
   return (
     <section className="min-h-screen md:bg-background bg-surface">
@@ -183,26 +191,28 @@ export const AssetsTable: FunctionComponent<Props> = ({
         <PreTransferModal
           isOpen={showPreTransfer}
           onRequestClose={() => setShowPreTransfer(false)}
+          externalDepositUrl={externalUrls?.depositUrl}
+          externalWithdrawUrl={externalUrls?.withdrawUrl}
           onDeposit={() => {
-            const chainId = ibcBalances.find(
-              (ibcAsset) =>
-                ibcAsset.balance.denom === selectedTransferToken.denom
-            )?.chainInfo.chainId;
-            if (chainId) {
-              onDeposit(chainId, selectedTransferToken.denom);
+            if (selectedChainInfo?.chainId) {
+              onDeposit(selectedChainInfo.chainId, selectedTransferToken.denom);
             }
             setShowPreTransfer(false);
           }}
           onWithdraw={() => {
-            const chainId = ibcBalances.find(
-              (ibcAsset) =>
-                ibcAsset.balance.denom === selectedTransferToken.denom
-            )?.chainInfo.chainId;
-            if (chainId) {
-              onWithdraw(chainId, selectedTransferToken.denom);
+            if (selectedChainInfo?.chainId) {
+              onWithdraw(
+                selectedChainInfo.chainId,
+                selectedTransferToken.denom
+              );
             }
             setShowPreTransfer(false);
           }}
+          isUnstable={
+            ibcBalances.find(
+              (balance) => balance.balance.denom === selectedTransferToken.denom
+            )?.isUnstable ?? false
+          }
           onSelectToken={(coinDenom) => {
             const ibcToken = ibcBalances.find(
               (ibcAsset) => ibcAsset.balance.denom === coinDenom
@@ -243,7 +253,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
               placeholder="Filter by symbol"
             />
             <h6>Assets</h6>
-            <div className="flex gap-3 place-content-between">
+            <div className="flex gap-3 items-center place-content-between">
               <Switch
                 className="overline"
                 isOn={hideZeroBalances}
@@ -371,7 +381,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 className: "text-center max-w-[5rem]",
               },
             ]}
-            rowDefs={tableData.map(() => ({ makeHoverClass: () => " " }))}
             data={tableData.map((cell) => [cell, cell, cell, cell])}
             headerTrClassName="!h-12 !body2"
           />
@@ -396,6 +405,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             </div>
           )}
         </div>
+        <IbcHistoryTable className="mt-8 md:w-screen md:-mx-4" />
       </div>
     </section>
   );

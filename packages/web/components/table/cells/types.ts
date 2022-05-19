@@ -14,6 +14,7 @@ export type AssetCell = BaseCell & {
    *  Be sure to add `"queryTags"` to the keys param.
    */
   queryTags?: string[];
+  isUnstable?: boolean;
   onWithdraw?: (chainId: string, coinDenom: string) => void;
   onDeposit?: (chainId: string, coinDenom: string) => void;
 };

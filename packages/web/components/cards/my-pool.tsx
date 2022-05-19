@@ -14,7 +14,7 @@ export const MyPoolCard: FunctionComponent<{
   const { chainStore, queriesStore, priceStore, accountStore } = useStore();
 
   const chainInfo = chainStore.osmosis;
-  const queryOsmosis = queriesStore.get(chainInfo.chainId).osmosis;
+  const queryOsmosis = queriesStore.get(chainInfo.chainId).osmosis!;
   const account = accountStore.getAccount(chainInfo.chainId);
 
   const router = useRouter();

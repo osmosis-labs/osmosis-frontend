@@ -39,11 +39,16 @@ export const AssetCard: FunctionComponent<
   >
     <div
       className={classNames(
-        "flex items-center place-content-between p-4 w-full bg-background rounded-lginset",
+        "flex place-content-between w-full bg-background rounded-lginset",
+        Array.isArray(coinImageUrl) ? "p-6" : "p-4",
         contentClassName
       )}
     >
-      <div className="flex items-center gap-3">
+      <div
+        className={`flex ${
+          Array.isArray(coinImageUrl) ? "flex-col items" : "items-center"
+        } gap-3`}
+      >
         {coinImageUrl &&
           (Array.isArray(coinImageUrl) ? (
             <PoolAssetsIcon assets={coinImageUrl} size="sm" />
@@ -62,7 +67,7 @@ export const AssetCard: FunctionComponent<
         </div>
       </div>
       <div className="flex items-center gap-2.5">
-        <div className="flex flex-col gap-px text-right">
+        <div className="flex flex-col text-right">
           {metrics.map(({ label, value }, index) => (
             <span
               key={index}

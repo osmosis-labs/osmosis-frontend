@@ -1,7 +1,7 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo, useCallback } from "react";
 import { ExternalIncentiveGaugeAllowList } from "../../config";
 import {
   useFilteredData,
@@ -16,6 +16,7 @@ import { RowDef, Table } from "../table";
 import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
 import { Breakpoint } from "../types";
 import { CompactPoolTableDisplay } from "./compact-pool-table-display";
+import { POOLS_PER_PAGE } from ".";
 
 export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
   () => {
@@ -30,93 +31,106 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
 
     const { chainId } = chainStore.osmosis;
     const queryExternal = queriesExternalStore.get();
-    const queryOsmosis = queriesStore.get(chainId).osmosis;
+    const queryOsmosis = queriesStore.get(chainId).osmosis!;
     const account = accountStore.getAccount(chainId);
 
-    const externalIncentivizedPools = Object.keys(
-      ExternalIncentiveGaugeAllowList
-    )
-      .map((poolId: string) => {
-        const pool = queryOsmosis.queryGammPools.getPool(poolId);
-        if (pool) {
-          return pool;
-        }
-      })
-      .filter(
-        (
-          pool: ObservableQueryPool | undefined
-        ): pool is ObservableQueryPool => {
-          if (!pool) {
-            return false;
-          }
+    const externalIncentivizedPools = useMemo(
+      () =>
+        Object.keys(ExternalIncentiveGaugeAllowList)
+          .map((poolId: string) => {
+            const pool = queryOsmosis.queryGammPools.getPool(poolId);
+            if (pool) {
+              return pool;
+            }
+          })
+          .filter(
+            (
+              pool: ObservableQueryPool | undefined
+            ): pool is ObservableQueryPool => {
+              if (!pool) {
+                return false;
+              }
 
+              const inner = ExternalIncentiveGaugeAllowList[pool.id];
+              const data = Array.isArray(inner) ? inner : [inner];
+
+              if (data.length === 0) {
+                return false;
+              }
+              const gaugeIds = data.map((d) => d.gaugeId);
+              const gauges = gaugeIds.map((gaugeId) =>
+                queryOsmosis.queryGauge.get(gaugeId)
+              );
+
+              let maxRemainingEpoch = 0;
+              for (const gauge of gauges) {
+                if (maxRemainingEpoch < gauge.remainingEpoch) {
+                  maxRemainingEpoch = gauge.remainingEpoch;
+                }
+              }
+
+              return maxRemainingEpoch > 0;
+            }
+          ),
+      [queryOsmosis]
+    );
+
+    const externalIncentivizedPoolsWithMetrics = useMemo(
+      () =>
+        externalIncentivizedPools.map((pool) => {
           const inner = ExternalIncentiveGaugeAllowList[pool.id];
           const data = Array.isArray(inner) ? inner : [inner];
-
-          if (data.length === 0) {
-            return false;
-          }
           const gaugeIds = data.map((d) => d.gaugeId);
-          const gauges = gaugeIds.map((gaugeId) =>
-            queryOsmosis.queryGauge.get(gaugeId)
+          const gauges = gaugeIds.map((gaugeId) => {
+            return queryOsmosis.queryGauge.get(gaugeId);
+          });
+          const incentiveDenom = data[0].denom;
+          const currency = chainStore
+            .getChain(chainId)
+            .forceFindCurrency(incentiveDenom);
+          let sumRemainingBonus: CoinPretty = new CoinPretty(
+            currency,
+            new Dec(0)
           );
-
           let maxRemainingEpoch = 0;
           for (const gauge of gauges) {
-            if (maxRemainingEpoch < gauge.remainingEpoch) {
+            sumRemainingBonus = sumRemainingBonus.add(
+              gauge.getRemainingCoin(currency)
+            );
+
+            if (gauge.remainingEpoch > maxRemainingEpoch) {
               maxRemainingEpoch = gauge.remainingEpoch;
             }
           }
 
-          return maxRemainingEpoch > 0;
-        }
-      );
-    const externalIncentivizedPoolsWithMetrics = externalIncentivizedPools.map(
-      (pool) => {
-        const inner = ExternalIncentiveGaugeAllowList[pool.id];
-        const data = Array.isArray(inner) ? inner : [inner];
-        const gaugeIds = data.map((d) => d.gaugeId);
-        const gauges = gaugeIds.map((gaugeId) => {
-          return queryOsmosis.queryGauge.get(gaugeId);
-        });
-        const incentiveDenom = data[0].denom;
-        const currency = chainStore
-          .getChain(chainId)
-          .forceFindCurrency(incentiveDenom);
-        let sumRemainingBonus: CoinPretty = new CoinPretty(
-          currency,
-          new Dec(0)
-        );
-        let maxRemainingEpoch = 0;
-        for (const gauge of gauges) {
-          sumRemainingBonus = sumRemainingBonus.add(
-            gauge.getRemainingCoin(currency)
-          );
-
-          if (gauge.remainingEpoch > maxRemainingEpoch) {
-            maxRemainingEpoch = gauge.remainingEpoch;
-          }
-        }
-
-        return {
-          ...queryExternal.queryGammPoolFeeMetrics.makePoolWithFeeMetrics(
-            pool,
-            priceStore
-          ),
-          epochsRemaining: maxRemainingEpoch,
-          myLiquidity: pool
-            .computeTotalValueLocked(priceStore)
-            .mul(
-              queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-                account.bech32Address,
-                pool.id
-              )
+          return {
+            ...queryExternal.queryGammPoolFeeMetrics.makePoolWithFeeMetrics(
+              pool,
+              priceStore
             ),
-          apr: queryOsmosis.queryIncentivizedPools
-            .computeMostAPY(pool.id, priceStore)
-            .maxDecimals(2),
-        };
-      }
+            epochsRemaining: maxRemainingEpoch,
+            myLiquidity: pool
+              .computeTotalValueLocked(priceStore)
+              .mul(
+                queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+                  account.bech32Address,
+                  pool.id
+                )
+              ),
+            apr: queryOsmosis.queryIncentivizedPools
+              .computeMostAPY(pool.id, priceStore)
+              .maxDecimals(2),
+          };
+        }),
+      [
+        chainId,
+        externalIncentivizedPools,
+        queryOsmosis,
+        queryExternal,
+        priceStore,
+        account,
+        chainStore,
+      ]
     );
 
     const [query, setQuery, filteredPools] = useFilteredData(
@@ -124,6 +138,8 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       ["pool.id", "pool.poolAssets.amount.currency.coinDenom"]
     );
 
+    const initialKeyPath = "liquidity";
+    const initialSortDirection = "descending";
     const [
       sortKeyPath,
       setSortKeyPath,
@@ -131,121 +147,104 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       setSortDirection,
       toggleSortDirection,
       sortedAllPoolsWithMetrics,
-    ] = useSortedData(filteredPools, "liquidity", "descending");
+    ] = useSortedData(filteredPools, initialKeyPath, initialSortDirection);
     const [page, setPage, minPage, numPages, allData] = usePaginatedData(
       sortedAllPoolsWithMetrics,
-      10
+      POOLS_PER_PAGE
     );
-    const tableCols = [
-      {
-        id: "pool.id",
-        display: "Pool ID",
-        sort:
-          sortKeyPath === "pool.id"
-            ? {
-                currentDirection: sortDirection,
-                onClickHeader: toggleSortDirection,
-              }
-            : {
-                onClickHeader: () => {
-                  setSortKeyPath("pool.id");
-                  setSortDirection("ascending");
-                },
+    const makeSortMechanism = useCallback(
+      (keyPath: string) =>
+        sortKeyPath === keyPath
+          ? {
+              currentDirection: sortDirection,
+              onClickHeader: () => {
+                // cycle ascending => descending => initial
+                switch (sortDirection) {
+                  case "ascending":
+                    setSortDirection("descending");
+                    break;
+                  case "descending":
+                    setSortKeyPath(initialKeyPath);
+                    setSortDirection(initialSortDirection);
+                }
               },
-        displayCell: PoolCompositionCell,
-      },
-      {
-        id: "liquidity",
-        display: "Liquidity",
-        sort:
-          sortKeyPath === "liquidity"
-            ? {
-                currentDirection: sortDirection,
-                onClickHeader: toggleSortDirection,
-              }
-            : {
-                onClickHeader: () => {
-                  setSortKeyPath("liquidity");
-                  setSortDirection("ascending");
-                },
+            }
+          : {
+              onClickHeader: () => {
+                setSortKeyPath(keyPath);
+                setSortDirection("ascending");
               },
-      },
-      {
-        id: "apr",
-        display: "APR",
-        sort:
-          sortKeyPath === "apr"
-            ? {
-                currentDirection: sortDirection,
-                onClickHeader: toggleSortDirection,
-              }
-            : {
-                onClickHeader: () => {
-                  setSortKeyPath("apr");
-                  setSortDirection("ascending");
-                },
-              },
-        displayCell: MetricLoaderCell,
-      },
-      {
-        id: "epochsRemaining",
-        display: "Epochs Remaining",
-        sort:
-          sortKeyPath === "epochsRemaining"
-            ? {
-                currentDirection: sortDirection,
-                onClickHeader: toggleSortDirection,
-              }
-            : {
-                onClickHeader: () => {
-                  setSortKeyPath("epochsRemaining");
-                  setSortDirection("ascending");
-                },
-              },
-        collapseAt: Breakpoint.XL,
-      },
-      {
-        id: "myLiquidity",
-        display: "My Liquidity",
-        sort:
-          sortKeyPath === "myLiquidity"
-            ? {
-                currentDirection: sortDirection,
-                onClickHeader: toggleSortDirection,
-              }
-            : {
-                onClickHeader: () => {
-                  setSortKeyPath("myLiquidity");
-                  setSortDirection("ascending");
-                },
-              },
-        collapseAt: Breakpoint.LG,
-      },
-    ];
-
-    const tableRows: RowDef[] = allData.map((poolWithFeeMetrics) => ({
-      makeHoverClass: () => "text-secondary-200",
-      link: `/pool/${poolWithFeeMetrics.pool.id}`,
-    }));
-
-    const tableData = allData.map((poolWithMetrics) => {
-      const poolId = poolWithMetrics.pool.id;
-      const poolAssets = poolWithMetrics.pool.poolAssets.map((poolAsset) => ({
-        coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-        coinDenom: poolAsset.amount.currency.coinDenom,
-      }));
-
-      return [
-        { poolId, poolAssets },
-        { value: poolWithMetrics.liquidity.toString() },
+            },
+      [sortKeyPath, sortDirection, setSortDirection, setSortKeyPath]
+    );
+    const tableCols = useMemo(
+      () => [
         {
-          value: poolWithMetrics.apr?.toString(),
-          isLoading: queryOsmosis.queryIncentivizedPools.isAprFetching,
+          id: "pool.id",
+          display: "Pool ID",
+          sort: makeSortMechanism("pool.id"),
+          displayCell: PoolCompositionCell,
         },
-        { value: poolWithMetrics.epochsRemaining?.toString() },
-        { value: poolWithMetrics.myLiquidity?.toString() },
-      ];
-    });
+        {
+          id: "liquidity",
+          display: "Liquidity",
+          sort: makeSortMechanism("liquidity"),
+        },
+        {
+          id: "apr",
+          display: "APR",
+          sort: makeSortMechanism("apr"),
+          displayCell: MetricLoaderCell,
+        },
+        {
+          id: "epochsRemaining",
+          display: "Epochs Remaining",
+          sort: makeSortMechanism("epochsRemaining"),
+          collapseAt: Breakpoint.XL,
+        },
+        {
+          id: "myLiquidity",
+          display: "My Liquidity",
+          sort: makeSortMechanism("myLiquidity"),
+          collapseAt: Breakpoint.LG,
+        },
+      ],
+      [makeSortMechanism]
+    );
+
+    const tableRows: RowDef[] = useMemo(
+      () =>
+        allData.map((poolWithFeeMetrics) => ({
+          makeHoverClass: () => "text-secondary-200",
+          link: `/pool/${poolWithFeeMetrics.pool.id}`,
+        })),
+      [allData]
+    );
+
+    const tableData = useMemo(
+      () =>
+        allData.map((poolWithMetrics) => {
+          const poolId = poolWithMetrics.pool.id;
+          const poolAssets = poolWithMetrics.pool.poolAssets.map(
+            (poolAsset) => ({
+              coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+              coinDenom: poolAsset.amount.currency.coinDenom,
+            })
+          );
+
+          return [
+            { poolId, poolAssets },
+            { value: poolWithMetrics.liquidity.toString() },
+            {
+              value: poolWithMetrics.apr?.toString(),
+              isLoading: queryOsmosis.queryIncentivizedPools.isAprFetching,
+            },
+            { value: poolWithMetrics.epochsRemaining?.toString() },
+            { value: poolWithMetrics.myLiquidity?.toString() },
+          ];
+        }),
+      [allData, queryOsmosis]
+    );
 
     if (isMobile) {
       return (

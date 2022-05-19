@@ -14,7 +14,7 @@ import {
 import EventEmitter from "eventemitter3";
 import { BroadcastMode, StdTx } from "@cosmjs/launchpad";
 import Axios from "axios";
-import { EmbedChainInfos } from "../../config";
+import { ChainInfos } from "../../config";
 import { Buffer } from "buffer";
 import WalletConnect from "@walletconnect/client";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
@@ -25,7 +25,7 @@ export async function sendTxWC(
   mode: BroadcastMode
 ): Promise<Uint8Array> {
   const restInstance = Axios.create({
-    baseURL: EmbedChainInfos.find((chainInfo) => chainInfo.chainId === chainId)!
+    baseURL: ChainInfos.find((chainInfo) => chainInfo.chainId === chainId)!
       .rest,
   });
 
