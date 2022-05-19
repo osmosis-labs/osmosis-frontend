@@ -501,8 +501,10 @@ export const TradeClipboard: FunctionComponent<{
             className="mt-[1.125rem] flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
             disabled={
               tradeTokenInConfig.error !== undefined ||
-              tradeTokenInConfig.optimizedRoutePaths.length === 0
+              tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
+              account.txTypeInProgress !== ""
             }
+            loading={account.txTypeInProgress !== ""}
             onClick={async () => {
               if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
                 const routes: {

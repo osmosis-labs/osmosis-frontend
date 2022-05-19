@@ -108,9 +108,16 @@ export class Amino {
     tokenOutCurrency: Currency,
     maxSlippage: string = "0"
   ): Msg {
+    const inUAmount = new Dec(tokenIn.amount)
+      .mul(
+        DecUtils.getTenExponentNInPrecisionRange(tokenIn.currency.coinDecimals)
+      )
+      .truncate();
+    const coin = new Coin(tokenIn.currency.coinMinimalDenom, inUAmount);
+
     const estimated = WeightedPoolEstimates.estimateSwapExactAmountIn(
       pool,
-      new Coin(tokenIn.currency.coinMinimalDenom, tokenIn.amount),
+      coin,
       tokenOutCurrency
     );
     const maxSlippageDec = new Dec(maxSlippage).quo(
@@ -122,22 +129,9 @@ export class Amino {
       ? new Int(1)
       : WeightedPoolMath.calcSlippageTokenIn(
           estimated.raw.spotPriceBefore,
-          new Dec(tokenIn.amount)
-            .mul(
-              DecUtils.getTenExponentNInPrecisionRange(
-                tokenIn.currency.coinDecimals
-              )
-            )
-            .truncate(),
+          inUAmount,
           maxSlippageDec
         );
-
-    const amount = new Dec(tokenIn.amount)
-      .mul(
-        DecUtils.getTenExponentNInPrecisionRange(tokenIn.currency.coinDecimals)
-      )
-      .truncate();
-    const coin = new Coin(tokenIn.currency.coinMinimalDenom, amount);
 
     return {
       type: msgOpt.type,
@@ -176,38 +170,32 @@ export class Amino {
     tokenOut: { currency: Currency; amount: string },
     maxSlippage: string = "0"
   ): Msg {
+    const outUAmount = new Dec(tokenOut.amount)
+      .mul(
+        DecUtils.getTenExponentNInPrecisionRange(tokenOut.currency.coinDecimals)
+      )
+      .truncate();
+    const coin = new Coin(tokenOut.currency.coinMinimalDenom, outUAmount);
+
     const estimated = WeightedPoolEstimates.estimateSwapExactAmountOut(
       pool,
-      new Coin(tokenOut.currency.coinMinimalDenom, tokenOut.amount),
+      coin,
       tokenInCurrency
     );
 
     const maxSlippageDec = new Dec(maxSlippage).quo(
       DecUtils.getTenExponentNInPrecisionRange(2)
     );
-    // TODO: Compare the computed slippage and wanted max slippage?
+    // TODO: Compare the computed slippage and wanted max slippage?)
 
     const tokenInMaxAmount = maxSlippageDec.equals(new Dec(0))
       ? // TODO: Set exact 2^128 - 1
         new Int(1_000_000_000_000)
       : WeightedPoolMath.calcSlippageTokenOut(
           estimated.raw.spotPriceBefore,
-          new Dec(tokenOut.amount)
-            .mul(
-              DecUtils.getTenExponentNInPrecisionRange(
-                tokenOut.currency.coinDecimals
-              )
-            )
-            .truncate(),
+          outUAmount,
           maxSlippageDec
         );
-
-    const amount = new Dec(tokenOut.amount)
-      .mul(
-        DecUtils.getTenExponentNInPrecisionRange(tokenOut.currency.coinDecimals)
-      )
-      .truncate();
-    const coin = new Coin(tokenOut.currency.coinMinimalDenom, amount);
 
     return {
       type: msgOpt.type,

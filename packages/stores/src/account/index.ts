@@ -64,7 +64,7 @@ export class OsmosisAccountImpl {
   /**
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#create-pool
    * @param swapFee The swap fee of the pool. Should set as the percentage. (Ex. 10% -> 10)
-   * @param assets Assets that will be provided to the pool initially. Token can be parsed as to primitive by convenience.
+   * @param assets Assets that will be provided to the pool initially. Token can be parsed as to primitive by convenience. `amount`s are not in micro.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fulfillment.
    */
@@ -308,7 +308,7 @@ export class OsmosisAccountImpl {
    *
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#join-swap-extern-amount-in
    * @param poolId Id of pool to swap within.
-   * @param tokenIn Token being swapped in.
+   * @param tokenIn Token being swapped in. `tokenIn.amount` is NOT in micro amount.
    * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment.
@@ -559,7 +559,7 @@ export class OsmosisAccountImpl {
   /**
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-in
    * @param poolId Id of pool to swap within.
-   * @param tokenIn Token being swapped in.
+   * @param tokenIn Token being swapped in. `tokenIn.amount` is NOT in micro.
    * @param tokenOutCurrency Currency of outgoing token.
    * @param maxSlippage Max tolerated slippage.
    * @param memo Transaction memo.
@@ -599,7 +599,9 @@ export class OsmosisAccountImpl {
         );
         const msg = Msgs.Amino.makeSwapExactAmountInMsg(
           {
-            ...pool,
+            // ...pool, <= does not work w/ getters
+            id: pool.id,
+            swapFee: pool.swapFee,
             inPoolAsset: {
               ...inPoolAsset.amount.currency,
               amount: new Int(inPoolAsset.amount.toCoin().amount),
@@ -675,7 +677,7 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-out
    * @param poolId Id of pool to swap within.
    * @param tokenInCurrency Currency of incoming token.
-   * @param tokenOut Token being swapped.
+   * @param tokenOut Token being swapped. `tokenIn.amount` is NOT in micro.
    * @param maxSlippage Max amount of tolerated slippage.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment.
@@ -715,7 +717,8 @@ export class OsmosisAccountImpl {
 
         const msg = Msgs.Amino.makeSwapExactAmountOutMsg(
           {
-            ...pool,
+            id: pool.id,
+            swapFee: pool.swapFee,
             inPoolAsset: {
               ...inPoolAsset.amount.currency,
               amount: new Int(inPoolAsset.amount.toCoin().amount),
@@ -729,7 +732,17 @@ export class OsmosisAccountImpl {
           this._msgOpts.swapExactAmountOut,
           this.base.bech32Address,
           tokenInCurrency,
-          tokenOut,
+          {
+            currency: tokenOut.currency,
+            amount: new Dec(tokenOut.amount)
+              .mul(
+                DecUtils.getTenExponentNInPrecisionRange(
+                  tokenOut.currency.coinDecimals
+                )
+              )
+              .truncate()
+              .toString(),
+          },
           maxSlippage
         );
 
@@ -905,7 +918,7 @@ export class OsmosisAccountImpl {
   /**
    * https://docs.osmosis.zone/developing/modules/spec-lockup.html#lock-tokens
    * @param duration Duration, in seconds, to lock up the tokens.
-   * @param tokens Tokens to lock.
+   * @param tokens Tokens to lock. `amount`s are not in micro.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment.
    */
@@ -1050,7 +1063,7 @@ export class OsmosisAccountImpl {
   }
 
   /** https://docs.osmosis.zone/overview/osmo.html#superfluid-staking
-   * @param tokens LP tokens to delegate and lock.
+   * @param tokens LP tokens to delegate and lock. `amount`s are not in micro.
    * @param validatorAddress Validator address to delegate to.
    * @param memo Tx memo.
    * @param onFulfill Callback to handle tx fullfillment.
