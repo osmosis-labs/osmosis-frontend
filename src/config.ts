@@ -1911,6 +1911,15 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'pool:asvt',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/asvt.png',
 			},
+			{
+				type: 'cw20',
+				contractAddress: 'juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3',
+				coinDenom: 'JOE',
+				coinMinimalDenom: 'cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3:JOE',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:joe',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/joe.png',
+			},
 		],
 		feeCurrencies: [
 			{
