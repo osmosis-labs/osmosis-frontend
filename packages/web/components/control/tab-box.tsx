@@ -16,8 +16,12 @@ export const TabBox: FunctionComponent<
       selectedTabIndex: number;
       onTabSelected: (index: number) => void;
     };
+    /** Use React to re-render tab contents instead of hiding non-current tabs with CSS.
+     *  Useful if using small components with `useEffect` hooks, though less efficient and state-resetting.
+     */
+    rerenderTabs?: boolean;
   } & CustomClasses
-> = ({ tabs, tabSelection, className }) => {
+> = ({ tabs, tabSelection, rerenderTabs, className }) => {
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
   const tabscrollRef = useRef(null);
 
@@ -67,14 +71,18 @@ export const TabBox: FunctionComponent<
         ))}
       </div>
       <div>
-        {tabs.map(({ content }, index) => (
-          <div
-            key={index}
-            className={classNames({ hidden: index !== selectedTabI })} // use css to hide and keep components in memory
-          >
-            {content}
-          </div>
-        ))}
+        {rerenderTabs
+          ? tabs.find((_tab, index) => index === selectedTabI)?.content ?? (
+              <span>Tab not found</span>
+            )
+          : tabs.map(({ content }, index) => (
+              <div
+                key={index}
+                className={classNames({ hidden: index !== selectedTabI })} // use css to hide and keep components in memory
+              >
+                {content}
+              </div>
+            ))}
       </div>
     </div>
   );

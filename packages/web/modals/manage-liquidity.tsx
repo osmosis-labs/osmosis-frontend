@@ -1,7 +1,7 @@
 import { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ModalBase, ModalBaseProps } from "./base";
 import { TabBox, Slider, CheckBox } from "../components/control/";
 import { Token } from "../components/assets";
@@ -48,7 +48,11 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
           disabled:
             (selectedTabIndex === 0 &&
               addLiquidityConfig.error !== undefined) ||
-            isSendingMsg,
+            isSendingMsg ||
+            (selectedTabIndex === 1 &&
+              removeLiquidityConfig.poolShareWithPercentage
+                .toDec()
+                .equals(new Dec(0))),
           onClick: selectedTabIndex === 0 ? onAddLiquidity : onRemoveLiquidity,
           children:
             selectedTabIndex === 0 ? "Add Liquidity" : "Remove Liquidity",
@@ -60,6 +64,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
       <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
         <TabBox
           className="w-full"
+          rerenderTabs
           tabSelection={{
             selectedTabIndex,
             onTabSelected: (index) => {
@@ -294,6 +299,9 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                     onInput={(value) =>
                       removeLiquidityConfig.setPercentage(value.toString())
                     }
+                    disabled={removeLiquidityConfig.poolShareWithPercentage
+                      .toDec()
+                      .equals(new Dec(0))}
                     min={0}
                     max={100}
                     step={1}
@@ -301,25 +309,37 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                   <div className="grid grid-cols-4 gap-5 h-9 w-full md:mb-6 mb-15">
                     <button
                       onClick={() => removeLiquidityConfig.setPercentage("25")}
-                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75"
+                      disabled={removeLiquidityConfig.poolShareWithPercentage
+                        .toDec()
+                        .equals(new Dec(0))}
+                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
                     >
                       <p className="text-secondary-200">25%</p>
                     </button>
                     <button
                       onClick={() => removeLiquidityConfig.setPercentage("50")}
-                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75"
+                      disabled={removeLiquidityConfig.poolShareWithPercentage
+                        .toDec()
+                        .equals(new Dec(0))}
+                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
                     >
                       <p className="text-secondary-200">50%</p>
                     </button>
                     <button
                       onClick={() => removeLiquidityConfig.setPercentage("75")}
-                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75"
+                      disabled={removeLiquidityConfig.poolShareWithPercentage
+                        .toDec()
+                        .equals(new Dec(0))}
+                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
                     >
                       <p className="text-secondary-200">75%</p>
                     </button>
                     <button
                       onClick={() => removeLiquidityConfig.setPercentage("100")}
-                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75"
+                      disabled={removeLiquidityConfig.poolShareWithPercentage
+                        .toDec()
+                        .equals(new Dec(0))}
+                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
                     >
                       <p className="text-secondary-200">MAX</p>
                     </button>
