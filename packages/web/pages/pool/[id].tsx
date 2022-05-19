@@ -1,29 +1,30 @@
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { Staking } from "@keplr-wallet/stores";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import {
-  ObservableQueryGuageById,
   ObservableAddLiquidityConfig,
-  ObservableRemoveLiquidityConfig,
   ObservableAmountConfig,
+  ObservableQueryGuageById,
+  ObservableRemoveLiquidityConfig,
+  ObservableTradeTokenInConfig,
 } from "@osmosis-labs/stores";
-import { Duration } from "dayjs/plugin/duration";
 import moment from "dayjs";
+import { Duration } from "dayjs/plugin/duration";
 import { autorun } from "mobx";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useEffect, useState, useMemo } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { Button } from "../../components/buttons";
 import {
+  GoSuperfluidCard,
   PoolCatalystCard,
   PoolGaugeBonusCard,
   PoolGaugeCard,
   SuperfluidValidatorCard,
-  GoSuperfluidCard,
 } from "../../components/cards";
 import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
-import { BaseCell, Table, ColumnDef } from "../../components/table";
+import { BaseCell, ColumnDef, Table } from "../../components/table";
 import { truncateString } from "../../components/utils";
 import { ExternalIncentiveGaugeAllowList, ChainInfos } from "../../config";
 import { useWindowSize } from "../../hooks";
@@ -31,6 +32,7 @@ import {
   LockTokensModal,
   ManageLiquidityModal,
   SuperfluidValidatorModal,
+  TradeTokens,
 } from "../../modals";
 import { useStore } from "../../stores";
 
@@ -414,6 +416,23 @@ const Pool: FunctionComponent = observer(() => {
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
     useState(false);
 
+  // swap modal
+  const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
+  const tradeTokenInConfig = useMemo(
+    () =>
+      pool
+        ? new ObservableTradeTokenInConfig(
+            chainStore,
+            queriesStore,
+            chainStore.osmosis.chainId,
+            account.bech32Address,
+            undefined,
+            [pool.pool]
+          )
+        : undefined,
+    [chainStore, queriesStore, account.bech32Address, pool]
+  );
+
   return (
     <main>
       {pool && addLiquidityConfig && removeLiquidityConfig && (
@@ -475,6 +494,21 @@ const Pool: FunctionComponent = observer(() => {
           }}
         />
       )}
+      {tradeTokenInConfig && pool && (
+        <TradeTokens
+          className="md:p-0"
+          title={
+            <h5 className="md:absolute md:text-h6 md:font-h6 top-[1.375rem] left-3 z-40">
+              Swap Tokens
+            </h5>
+          }
+          hideCloseButton={isMobile}
+          isOpen={showTradeTokenModal}
+          onRequestClose={() => setShowTradeTokenModal(false)}
+          pools={[pool.pool]}
+        />
+      )}
+
       {lockLPTokensConfig && lockupGauges && (
         <LockTokensModal
           isOpen={showLockLPTokenModal}
@@ -606,7 +640,7 @@ const Pool: FunctionComponent = observer(() => {
             label: "Add / Remove Liquidity",
             onClick: () => setShowManageLiquidityDialog(true),
           },
-          { label: "Swap Tokens", onClick: console.log },
+          { label: "Swap Tokens", onClick: () => setShowTradeTokenModal(true) },
         ]}
         primaryOverviewLabels={[
           {
@@ -649,7 +683,7 @@ const Pool: FunctionComponent = observer(() => {
         ]}
         bgImageUrl="/images/osmosis-guy-in-lab.png"
       />
-      <section className="bg-surface">
+      <section className="bg-surface min-h-screen">
         <div className="max-w-container mx-auto md:p-5 p-10">
           <div className="flex lg:flex-col gap-6 place-content-between">
             <div className="max-w-md">

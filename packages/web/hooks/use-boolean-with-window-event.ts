@@ -1,23 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-type Options = {
-  windowEventName?: string;
-  onWindowEvent?: (prevBool?: boolean) => boolean;
+type Options<K extends keyof WindowEventMap> = {
+  windowEventName?: K;
+  onWindowEvent?: (e: WindowEventMap[K], prevBool: boolean) => boolean;
 };
 
-export function useBooleanWithWindowEvent(
+export function useBooleanWithWindowEvent<K extends keyof WindowEventMap>(
   defaultBoolean: boolean,
-  { windowEventName = "click", onWindowEvent }: Options = {}
+  { windowEventName = "click" as K, onWindowEvent }: Options<K> = {}
 ) {
-  const listenerRef = useRef<Options["onWindowEvent"] | null>(
+  const listenerRef = useRef<Options<K>["onWindowEvent"] | null>(
     onWindowEvent ?? null
   );
 
   const [boolean, setBoolean] = useState<boolean>(defaultBoolean);
 
-  const windowListener = useCallback(() => {
+  const windowListener = useCallback((e: WindowEventMap[K]) => {
     setBoolean(
-      (prevBoolean) => listenerRef.current?.(prevBoolean) ?? !prevBoolean
+      (prevBoolean) => listenerRef.current?.(e, prevBoolean) ?? !prevBoolean
     );
   }, []);
 

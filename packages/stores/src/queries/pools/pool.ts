@@ -8,7 +8,6 @@ import { KVStore } from "@keplr-wallet/common";
 import { Currency } from "@keplr-wallet/types";
 import {
   CoinPretty,
-  Dec,
   DecUtils,
   Int,
   IntPretty,
@@ -302,76 +301,6 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     }
   );
 
-  getMinTokenOutByTokenInWithSlippage(
-    tokenIn: {
-      denom: string;
-      amount: Int;
-    },
-    tokenOutDenom: string,
-    slippage: Dec
-  ): {
-    beforeSpotPriceInOverOut: IntPretty;
-    beforeSpotPriceOutOverIn: IntPretty;
-    minOutAmount: CoinPretty;
-  } {
-    return this.getMinTokenOutByTokenInWithSlippageComputedFn(
-      tokenIn.denom,
-      tokenIn.amount.toString(),
-      tokenOutDenom,
-      slippage.toString()
-    );
-  }
-
-  /*
-   Unfortunately, if reference is included in args,
-   there is no guarantee that computed will memorize the result well, so to reduce this problem,
-   create an internal function that accepts only primitive types as args.
-   */
-  protected readonly getMinTokenOutByTokenInWithSlippageComputedFn: (
-    tokenInDenom: string,
-    tokenInAmount: string,
-    tokenOutDenom: string,
-    slippage: string
-  ) => {
-    beforeSpotPriceInOverOut: IntPretty;
-    beforeSpotPriceOutOverIn: IntPretty;
-    minOutAmount: CoinPretty;
-  } = computedFn(
-    (
-      tokenInDenom: string,
-      tokenInAmount: string,
-      tokenOutDenom: string,
-      slippage: string
-    ) => {
-      const result = this.pool.getMinTokenOutByTokenInWithSlippage(
-        {
-          denom: tokenInDenom,
-          amount: new Int(tokenInAmount),
-        },
-        tokenOutDenom,
-        new Dec(slippage)
-      );
-
-      const chainInfo = this.chainGetter.getChain(this.chainId);
-      const outCurrency = chainInfo.forceFindCurrency(tokenOutDenom);
-
-      const spotPriceInOverOutMul = DecUtils.getTenExponentN(
-        outCurrency.coinDecimals -
-          chainInfo.forceFindCurrency(tokenInDenom).coinDecimals
-      );
-
-      return {
-        beforeSpotPriceInOverOut: new IntPretty(
-          result.beforeSpotPriceInOverOut.mulTruncate(spotPriceInOverOutMul)
-        ),
-        beforeSpotPriceOutOverIn: new IntPretty(
-          result.beforeSpotPriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
-        ),
-        minOutAmount: new CoinPretty(outCurrency, result.minOutAmount),
-      };
-    }
-  );
-
   getTokenInByTokenOut(
     tokenOut: {
       denom: string;
@@ -444,78 +373,6 @@ export class ObservableQueryPool extends ObservableChainQuery<{
           result.effectivePriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
         ),
         slippage: new RatePretty(result.slippage),
-      };
-    }
-  );
-
-  getMaxTokenInByTokenOutWithSlippage(
-    tokenOut: {
-      denom: string;
-      amount: Int;
-    },
-    tokenInDenom: string,
-    slippage: Dec
-  ): {
-    beforeSpotPriceInOverOut: IntPretty;
-    beforeSpotPriceOutOverIn: IntPretty;
-    maxInAmount: CoinPretty;
-  } {
-    return this.getMaxTokenInByTokenOutWithSlippageComputedFn(
-      tokenOut.denom,
-      tokenOut.amount.toString(),
-      tokenInDenom,
-      slippage.toString()
-    );
-  }
-
-  /*
-   Unfortunately, if reference is included in args,
-   there is no guarantee that computed will memorize the result well, so to reduce this problem,
-   create an internal function that accepts only primitive types as args.
-  */
-  protected readonly getMaxTokenInByTokenOutWithSlippageComputedFn: (
-    tokenOutDenom: string,
-    tokenOutAmount: string,
-    tokenInDenom: string,
-    slippage: string
-  ) => {
-    beforeSpotPriceInOverOut: IntPretty;
-    beforeSpotPriceOutOverIn: IntPretty;
-    maxInAmount: CoinPretty;
-  } = computedFn(
-    (
-      tokenOutDenom: string,
-      tokenOutAmount: string,
-      tokenInDenom: string,
-      slippage: string
-    ) => {
-      const result = this.pool.getMaxTokenInByTokenOutWithSlippage(
-        {
-          denom: tokenOutDenom,
-          amount: new Int(tokenOutAmount),
-        },
-        tokenInDenom,
-        new Dec(slippage)
-      );
-
-      const chainInfo = this.chainGetter.getChain(this.chainId);
-      const inCurrency = this.chainGetter
-        .getChain(this.chainId)
-        .forceFindCurrency(tokenInDenom);
-
-      const spotPriceInOverOutMul = DecUtils.getTenExponentN(
-        chainInfo.forceFindCurrency(tokenOutDenom).coinDecimals -
-          inCurrency.coinDecimals
-      );
-
-      return {
-        beforeSpotPriceInOverOut: new IntPretty(
-          result.beforeSpotPriceInOverOut.mulTruncate(spotPriceInOverOutMul)
-        ),
-        beforeSpotPriceOutOverIn: new IntPretty(
-          result.beforeSpotPriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
-        ),
-        maxInAmount: new CoinPretty(inCurrency, result.maxInAmount),
       };
     }
   );

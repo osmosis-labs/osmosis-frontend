@@ -18,7 +18,7 @@ export const InfoTooltip: FunctionComponent<
     trigger={trigger ?? "click"}
   >
     <div
-      className={classNames("inline cursor-pointer align-middle", className)}
+      className={classNames("flex cursor-pointer align-middle", className)}
       onClick={(e) => e.stopPropagation()}
     >
       <Image

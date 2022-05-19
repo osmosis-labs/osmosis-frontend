@@ -67,9 +67,6 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
-  input::placeholder {
-    @apply text-white-disabled tracking-wide body2;
-  }
 
   .token-item-list::-webkit-scrollbar {
     @apply border border-card rounded;

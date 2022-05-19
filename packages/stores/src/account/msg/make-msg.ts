@@ -32,7 +32,17 @@ export class Amino {
     maxSlippage: string = "0"
   ) {
     const estimated = WeightedPoolEstimates.estimateMultihopSwapExactAmountIn(
-      tokenIn,
+      {
+        currency: tokenIn.currency,
+        amount: new Dec(tokenIn.amount)
+          .mul(
+            DecUtils.getTenExponentNInPrecisionRange(
+              tokenIn.currency.coinDecimals
+            )
+          )
+          .truncate()
+          .toString(),
+      },
       routes
     );
     const maxSlippageDec = new Dec(maxSlippage).quo(

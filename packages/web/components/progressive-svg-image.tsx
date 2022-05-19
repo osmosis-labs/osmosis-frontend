@@ -8,7 +8,7 @@ import {
 
 export const ProgressiveSvgImage: FunctionComponent<
   React.SVGProps<SVGImageElement> & {
-    lowResXlinkHref: string;
+    lowResXlinkHref?: string;
   }
 > = ({ lowResXlinkHref, ...props }) => {
   const ref = useRef<SVGImageElement | null>(null);
@@ -33,7 +33,9 @@ export const ProgressiveSvgImage: FunctionComponent<
 
   return (
     <Fragment>
-      {!isLoaded ? <image {...props} xlinkHref={lowResXlinkHref} /> : null}
+      {!isLoaded && lowResXlinkHref ? (
+        <image {...props} xlinkHref={lowResXlinkHref} />
+      ) : null}
       <image {...props} ref={ref} />
     </Fragment>
   );

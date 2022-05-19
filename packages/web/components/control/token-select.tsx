@@ -12,12 +12,14 @@ export const TokenSelect: FunctionComponent<
     tokens: (CoinPretty | AppCurrency)[];
     onSelect: (tokenDenom: string) => void;
     sortByBalances?: boolean;
+    getChainNetworkName?: (coinDenom: string) => string | undefined;
   } & MobileProps
 > = ({
   selectedTokenDenom,
   tokens,
   onSelect,
   sortByBalances = false,
+  getChainNetworkName,
   isMobile = false,
 }) => {
   const [isSelectOpen, setIsSelectOpen] = useBooleanWithWindowEvent(false);
@@ -26,6 +28,7 @@ export const TokenSelect: FunctionComponent<
       (token instanceof CoinPretty ? token.denom : token.coinDenom) ===
       selectedTokenDenom
   );
+
   const dropdownTokens = tokens
     .filter(
       (token) =>
@@ -48,51 +51,66 @@ export const TokenSelect: FunctionComponent<
       ? selectedToken.currency
       : selectedToken;
 
+  const hasNeedTokenSelect = tokens.length > 1;
+
   return (
     <div className="flex md:justify-start justify-center items-center relative">
-      <div
-        className="flex items-center group cursor-pointer"
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsSelectOpen(!isSelectOpen);
-        }}
-      >
-        <div className="w-14 h-14 md:h-9 md:w-9 rounded-full border border-enabledGold flex items-center justify-center shrink-0 mr-3">
-          {selectedCurrency?.coinImageUrl && (
-            <div className="w-11 h-11 md:h-7 md:w-7 rounded-full">
-              <Image
-                src={selectedCurrency.coinImageUrl}
-                alt="token icon"
-                className="rounded-full"
-                width={isMobile ? 30 : 44}
-                height={isMobile ? 30 : 44}
-              />
+      {selectedCurrency && (
+        <div
+          className={`flex items-center group ${
+            hasNeedTokenSelect ? "cursor-pointer" : ""
+          }`}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (hasNeedTokenSelect) {
+              setIsSelectOpen(!isSelectOpen);
+            }
+          }}
+        >
+          <div className="w-14 h-14 md:h-9 md:w-9 rounded-full border border-enabledGold flex items-center justify-center shrink-0 mr-3 md:mr-2">
+            {selectedCurrency.coinImageUrl && (
+              <div className="w-11 h-11 md:h-7 md:w-7 rounded-full">
+                <Image
+                  src={selectedCurrency.coinImageUrl}
+                  alt="token icon"
+                  className="rounded-full"
+                  width={isMobile ? 30 : 44}
+                  height={isMobile ? 30 : 44}
+                />
+              </div>
+            )}
+          </div>
+          <div className="flex-shrink-0">
+            <div className="flex items-center">
+              {isMobile ? (
+                <h6>{selectedCurrency.coinDenom}</h6>
+              ) : (
+                <h5>{selectedCurrency.coinDenom}</h5>
+              )}
+              {hasNeedTokenSelect && (
+                <div className="w-5 ml-3 md:ml-2 pb-1">
+                  <Image
+                    className={`opacity-40 group-hover:opacity-100 transition-transform duration-100 ${
+                      isSelectOpen ? "rotate-180" : "rotate-0"
+                    }`}
+                    src="/icons/chevron-down.svg"
+                    alt="select icon"
+                    width={20}
+                    height={8}
+                  />
+                </div>
+              )}
             </div>
-          )}
+            <div className="subtitle2 md:caption text-iconDefault">
+              {getChainNetworkName?.(selectedCurrency.coinDenom)}
+            </div>
+          </div>
         </div>
-        <div>
-          {isMobile ? (
-            <span className="subtitle2">{selectedCurrency?.coinDenom}</span>
-          ) : (
-            <h5>{selectedCurrency?.coinDenom}</h5>
-          )}
-        </div>
-        <div className="w-5 ml-3 pb-1">
-          <Image
-            className={`opacity-40 group-hover:opacity-100 transition-transform duration-100 ${
-              isSelectOpen ? "rotate-180" : "rotate-0"
-            }`}
-            src="/icons/chevron-down.svg"
-            alt="select icon"
-            width={20}
-            height={8}
-          />
-        </div>
-      </div>
+      )}
 
       {isSelectOpen && (
         <div
-          className="absolute bottom-0 -left-3 translate-y-full md:p-1 p-3.5 bg-surface rounded-b-2xl z-50 md:w-[18.75rem] w-[28.5rem]"
+          className="absolute bottom-0 md:-left-3 -left-4 translate-y-full md:p-1 p-3.5 bg-surface rounded-b-2xl z-50 w-[28.5rem] md:w-[18.75rem] xs:w-[calc(100vw-64px)]"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center h-9 pl-4 mb-3 rounded-2xl bg-card">
@@ -118,6 +136,8 @@ export const TokenSelect: FunctionComponent<
             {searchedTokens.map((token, index) => {
               const { coinDenom, coinImageUrl } =
                 token instanceof CoinPretty ? token.currency : token;
+              const networkName = getChainNetworkName?.(coinDenom);
+
               return (
                 <div
                   key={index}
@@ -128,25 +148,29 @@ export const TokenSelect: FunctionComponent<
                     setIsSelectOpen(false);
                   }}
                 >
-                  <div className="flex items-center">
-                    {coinImageUrl && (
-                      <div className="w-9 h-9 rounded-full mr-3">
-                        <Image
-                          src={coinImageUrl}
-                          alt="token icon"
-                          className="rounded-full"
-                          width={36}
-                          height={36}
-                        />
-                      </div>
-                    )}
-                    <div>
-                      <h6 className="text-white-full">{coinDenom}</h6>
-                      {token instanceof CoinPretty && (
-                        <div className="text-iconDefault text-sm font-semibold">
-                          {token.trim(true).hideDenom(true).toString()}
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center">
+                      {coinImageUrl && (
+                        <div className="w-9 h-9 rounded-full mr-3">
+                          <Image
+                            src={coinImageUrl}
+                            alt="token icon"
+                            className="rounded-full"
+                            width={36}
+                            height={36}
+                          />
                         </div>
                       )}
+                      <div>
+                        <h6 className="text-white-full">{coinDenom}</h6>
+                        <div className="text-iconDefault md:caption font-semibold">
+                          {networkName}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="md:text-sm">
+                      {token instanceof CoinPretty &&
+                        token.trim(true).hideDenom(true).toString()}
                     </div>
                   </div>
                 </div>
