@@ -1908,7 +1908,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'ASVT',
 				coinMinimalDenom: 'cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w:ASVT',
 				coinDecimals: 6,
-				//coinGeckoId: 'pool:asvt',
+				coinGeckoId: 'pool:asvt',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/asvt.png',
 			},
 		],
