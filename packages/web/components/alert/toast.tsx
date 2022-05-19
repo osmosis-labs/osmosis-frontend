@@ -50,8 +50,8 @@ export function displayToast(
 }
 
 const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
-  <div className="flex items-center md:gap-2 gap-3 place-content-between">
-    <div className="flex items-center animate-spin h-8 w-8">
+  <div className="flex items-center md:gap-2 gap-3">
+    <div className="flex items-center animate-spin h-8 w-8 shrink-0">
       <Image
         alt="loading"
         src="/icons/loading-blue.svg"
@@ -67,8 +67,8 @@ const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
 );
 
 const ErrorToast: FunctionComponent<Alert> = ({ message, caption }) => (
-  <div className="flex items-center md:gap-2 gap-3 place-content-between">
-    <div className="w-8 h-8">
+  <div className="flex items-center md:gap-2 gap-3">
+    <div className="w-8 h-8 shrink-0">
       <Image alt="failed" src="/icons/error-x.svg" height={32} width={32} />
     </div>
     <div className="text-white-high">
@@ -83,8 +83,8 @@ const SuccessToast: FunctionComponent<Alert> = ({
   learnMoreUrl,
   learnMoreUrlCaption,
 }) => (
-  <div className="flex items-center md:gap-2 gap-3 place-content-between">
-    <div className="w-8 h-8">
+  <div className="flex items-center md:gap-2 gap-3">
+    <div className="w-8 h-8 shrink-0">
       <Image alt="b" src="/icons/check-circle.svg" height={32} width={32} />
     </div>
     <div className="text-white-high">

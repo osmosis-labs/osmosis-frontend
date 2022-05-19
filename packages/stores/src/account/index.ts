@@ -1150,6 +1150,7 @@ export class OsmosisAccountImpl {
         value: {
           owner: this.base.bech32Address,
           ID: lockId,
+          coins: [],
         },
       };
     });
