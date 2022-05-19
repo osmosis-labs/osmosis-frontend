@@ -1,6 +1,5 @@
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
-import { useRef } from "react";
 import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 import { TradeClipboard } from "../components/trade-clipboard";
 import { useWindowSize } from "../hooks";
@@ -8,14 +7,10 @@ import { useStore } from "../stores";
 
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore } = useStore();
-
-  const containerRef = useRef<HTMLElement | null>(null);
-
   const windowSize = useWindowSize();
+  const { chainId } = chainStore.osmosis;
 
-  const chainInfo = chainStore.osmosis;
-
-  const queries = queriesStore.get(chainInfo.chainId);
+  const queries = queriesStore.get(chainId);
   const queryPools = queries.osmosis.queryGammPools;
 
   const pools = queryPools.getAllPools().map((pool) => pool.pool);
@@ -23,7 +18,7 @@ const Home: NextPage = observer(function () {
   const imageRatio = 1300 / 900;
 
   return (
-    <main className="relative bg-background h-screen" ref={containerRef}>
+    <main className="relative bg-background h-screen">
       <div className="absolute w-full h-full bg-home-bg-pattern bg-repeat-x bg-cover">
         <svg
           className="absolute w-full h-full lg:hidden"
