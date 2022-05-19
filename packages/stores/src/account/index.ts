@@ -1328,6 +1328,70 @@ export class OsmosisAccountImpl {
     );
   }
 
+  async sendUnPoolWhitelistedPoolMsg(
+    poolId: string,
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const msg = {
+      type: this._msgOpts.unPoolWhitelistedPool.type,
+      value: {
+        sender: this.base.bech32Address,
+        pool_id: poolId,
+      },
+    };
+
+    const protoMsg = {
+      typeUrl: "/osmosis.superfluid.MsgUnPoolWhitelistedPool",
+      value: osmosis.superfluid.MsgUnPoolWhitelistedPool.encode({
+        sender: msg.value.sender,
+        poolId: Long.fromString(msg.value.pool_id),
+      }).finish(),
+    };
+
+    await this.base.cosmos.sendMsgs(
+      "unPoolWhitelistedPool",
+      {
+        aminoMsgs: [msg],
+        protoMsgs: [protoMsg],
+      },
+      memo,
+      {
+        amount: [],
+        gas: this._msgOpts.unPoolWhitelistedPool.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+
+          // Refresh the unlocking coins
+          queries.osmosis?.queryLockedCoins
+            .get(this.base.bech32Address)
+            .fetch();
+          queries.osmosis?.queryUnlockingCoins
+            .get(this.base.bech32Address)
+            .fetch();
+          queries.osmosis?.queryAccountLocked
+            .get(this.base.bech32Address)
+            .fetch();
+
+          queries.osmosis?.querySuperfluidDelegations
+            .getQuerySuperfluidDelegations(this.base.bech32Address)
+            .fetch();
+          queries.osmosis?.querySuperfluidUndelegations
+            .getQuerySuperfluidDelegations(this.base.bech32Address)
+            .fetch();
+        }
+
+        if (onFulfill) {
+          onFulfill(tx);
+        }
+      }
+    );
+  }
+
   protected changeDecStringToProtoBz(decStr: string): string {
     let r = decStr;
     while (r.length >= 2 && (r.startsWith(".") || r.startsWith("0"))) {

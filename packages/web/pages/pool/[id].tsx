@@ -25,8 +25,13 @@ import {
 import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { BaseCell, ColumnDef, Table } from "../../components/table";
+import { DepoolingTable } from "../../components/table/depooling-table";
 import { truncateString } from "../../components/utils";
-import { ExternalIncentiveGaugeAllowList, ChainInfos } from "../../config";
+import {
+  ExternalIncentiveGaugeAllowList,
+  ChainInfos,
+  UnPoolWhitelistedPoolIds,
+} from "../../config";
 import { useWindowSize } from "../../hooks";
 import {
   LockTokensModal,
@@ -433,6 +438,43 @@ const Pool: FunctionComponent = observer(() => {
     [chainStore, queriesStore, account.bech32Address, pool]
   );
 
+  // unpool
+  const showDepoolButton = useMemo(() => {
+    if (!pool) {
+      return false;
+    }
+
+    if (!UnPoolWhitelistedPoolIds[pool.id]) {
+      return false;
+    }
+
+    if (account.txTypeInProgress === "unPoolWhitelistedPool") {
+      return true;
+    }
+
+    const lpShareLocked = queryOsmosis.queryLockedCoins
+      .get(account.bech32Address)
+      .lockedCoins.find(
+        (coin) => coin.currency.coinMinimalDenom === `gamm/pool/${pool.id}`
+      );
+
+    if (lpShareLocked) {
+      return true;
+    }
+
+    const lpShareUnlocking = queryOsmosis.queryUnlockingCoins
+      .get(account.bech32Address)
+      .unlockingCoins.find(
+        (coin) => coin.currency.coinMinimalDenom === `gamm/pool/${pool.id}`
+      );
+
+    if (lpShareUnlocking) {
+      return true;
+    }
+
+    return false;
+  }, [pool, account.txTypeInProgress, account.bech32Address, queryOsmosis]);
+
   return (
     <main>
       {pool && addLiquidityConfig && removeLiquidityConfig && (
@@ -508,7 +550,6 @@ const Pool: FunctionComponent = observer(() => {
           pools={[pool.pool]}
         />
       )}
-
       {lockLPTokensConfig && lockupGauges && (
         <LockTokensModal
           isOpen={showLockLPTokenModal}
@@ -841,11 +882,31 @@ const Pool: FunctionComponent = observer(() => {
             </div>
           )}
         <div className="max-w-container mx-auto md:p-5 p-10">
-          {isMobile ? (
-            <span className="subtitle2">My Bondings</span>
-          ) : (
-            <h6>My Bondings</h6>
-          )}
+          <div className="flex items-center">
+            {isMobile ? (
+              <span className="subtitle2">My Bondings</span>
+            ) : (
+              <h6>My Bondings</h6>
+            )}
+            {showDepoolButton && (
+              <Button
+                onClick={async () => {
+                  if (!pool) {
+                    return;
+                  }
+
+                  try {
+                    await account.osmosis.sendUnPoolWhitelistedPoolMsg(pool.id);
+                  } catch (e) {
+                    console.log(e);
+                  }
+                }}
+                loading={account.txTypeInProgress === "unPoolWhitelistedPool"}
+              >
+                Depool LP Shares
+              </Button>
+            )}
+          </div>
           <Table
             className="md:-mx-5 md:w-screen md:caption w-full my-5"
             headerTrClassName="md:h-11"
@@ -969,6 +1030,13 @@ const Pool: FunctionComponent = observer(() => {
             }
           />
         </div>
+        {pool && (
+          <DepoolingTable
+            className="w-full p-10 md:p-5 max-w-container my-5 mx-auto"
+            tableClassName="md:w-screen md:-mx-5"
+            poolId={pool.id}
+          />
+        )}
         {userUnlockingAssets && userUnlockingAssets.length > 0 && (
           <div className="max-w-container mx-auto md:p-5 p-10">
             {isMobile ? (

@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.google = exports.osmosis = exports.cosmos = void 0;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 var $protobuf = require("protobufjs/minimal");
 const $Reader = $protobuf.Reader,
   $Writer = $protobuf.Writer,
@@ -5994,6 +5993,214 @@ exports.osmosis = $root.osmosis = (() => {
           return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
       return MsgLockAndSuperfluidDelegateResponse;
+    })();
+    superfluid.MsgUnPoolWhitelistedPool = (function () {
+      function MsgUnPoolWhitelistedPool(p) {
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgUnPoolWhitelistedPool.prototype.sender = "";
+      MsgUnPoolWhitelistedPool.prototype.poolId = $util.Long
+        ? $util.Long.fromBits(0, 0, true)
+        : 0;
+      MsgUnPoolWhitelistedPool.create = function create(properties) {
+        return new MsgUnPoolWhitelistedPool(properties);
+      };
+      MsgUnPoolWhitelistedPool.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
+          w.uint32(10).string(m.sender);
+        if (m.poolId != null && Object.hasOwnProperty.call(m, "poolId"))
+          w.uint32(16).uint64(m.poolId);
+        return w;
+      };
+      MsgUnPoolWhitelistedPool.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.superfluid.MsgUnPoolWhitelistedPool();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.sender = r.string();
+              break;
+            case 2:
+              m.poolId = r.uint64();
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgUnPoolWhitelistedPool.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.superfluid.MsgUnPoolWhitelistedPool)
+          return d;
+        var m = new $root.osmosis.superfluid.MsgUnPoolWhitelistedPool();
+        if (d.sender != null) {
+          m.sender = String(d.sender);
+        }
+        if (d.poolId != null) {
+          if ($util.Long)
+            (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+          else if (typeof d.poolId === "string")
+            m.poolId = parseInt(d.poolId, 10);
+          else if (typeof d.poolId === "number") m.poolId = d.poolId;
+          else if (typeof d.poolId === "object")
+            m.poolId = new $util.LongBits(
+              d.poolId.low >>> 0,
+              d.poolId.high >>> 0
+            ).toNumber(true);
+        }
+        return m;
+      };
+      MsgUnPoolWhitelistedPool.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.defaults) {
+          d.sender = "";
+          if ($util.Long) {
+            var n = new $util.Long(0, 0, true);
+            d.poolId =
+              o.longs === String
+                ? n.toString()
+                : o.longs === Number
+                ? n.toNumber()
+                : n;
+          } else d.poolId = o.longs === String ? "0" : 0;
+        }
+        if (m.sender != null && m.hasOwnProperty("sender")) {
+          d.sender = m.sender;
+        }
+        if (m.poolId != null && m.hasOwnProperty("poolId")) {
+          if (typeof m.poolId === "number")
+            d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+          else
+            d.poolId =
+              o.longs === String
+                ? $util.Long.prototype.toString.call(m.poolId)
+                : o.longs === Number
+                ? new $util.LongBits(
+                    m.poolId.low >>> 0,
+                    m.poolId.high >>> 0
+                  ).toNumber(true)
+                : m.poolId;
+        }
+        return d;
+      };
+      MsgUnPoolWhitelistedPool.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgUnPoolWhitelistedPool;
+    })();
+    superfluid.MsgUnPoolWhitelistedPoolResponse = (function () {
+      function MsgUnPoolWhitelistedPoolResponse(p) {
+        this.exitedLockIds = [];
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgUnPoolWhitelistedPoolResponse.prototype.exitedLockIds =
+        $util.emptyArray;
+      MsgUnPoolWhitelistedPoolResponse.create = function create(properties) {
+        return new MsgUnPoolWhitelistedPoolResponse(properties);
+      };
+      MsgUnPoolWhitelistedPoolResponse.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (m.exitedLockIds != null && m.exitedLockIds.length) {
+          w.uint32(10).fork();
+          for (var i = 0; i < m.exitedLockIds.length; ++i)
+            w.uint64(m.exitedLockIds[i]);
+          w.ldelim();
+        }
+        return w;
+      };
+      MsgUnPoolWhitelistedPoolResponse.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.superfluid.MsgUnPoolWhitelistedPoolResponse();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              if (!(m.exitedLockIds && m.exitedLockIds.length))
+                m.exitedLockIds = [];
+              if ((t & 7) === 2) {
+                var c2 = r.uint32() + r.pos;
+                while (r.pos < c2) m.exitedLockIds.push(r.uint64());
+              } else m.exitedLockIds.push(r.uint64());
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgUnPoolWhitelistedPoolResponse.fromObject = function fromObject(d) {
+        if (
+          d instanceof $root.osmosis.superfluid.MsgUnPoolWhitelistedPoolResponse
+        )
+          return d;
+        var m = new $root.osmosis.superfluid.MsgUnPoolWhitelistedPoolResponse();
+        if (d.exitedLockIds) {
+          if (!Array.isArray(d.exitedLockIds))
+            throw TypeError(
+              ".osmosis.superfluid.MsgUnPoolWhitelistedPoolResponse.exitedLockIds: array expected"
+            );
+          m.exitedLockIds = [];
+          for (var i = 0; i < d.exitedLockIds.length; ++i) {
+            if ($util.Long)
+              (m.exitedLockIds[i] = $util.Long.fromValue(
+                d.exitedLockIds[i]
+              )).unsigned = true;
+            else if (typeof d.exitedLockIds[i] === "string")
+              m.exitedLockIds[i] = parseInt(d.exitedLockIds[i], 10);
+            else if (typeof d.exitedLockIds[i] === "number")
+              m.exitedLockIds[i] = d.exitedLockIds[i];
+            else if (typeof d.exitedLockIds[i] === "object")
+              m.exitedLockIds[i] = new $util.LongBits(
+                d.exitedLockIds[i].low >>> 0,
+                d.exitedLockIds[i].high >>> 0
+              ).toNumber(true);
+          }
+        }
+        return m;
+      };
+      MsgUnPoolWhitelistedPoolResponse.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.arrays || o.defaults) {
+          d.exitedLockIds = [];
+        }
+        if (m.exitedLockIds && m.exitedLockIds.length) {
+          d.exitedLockIds = [];
+          for (var j = 0; j < m.exitedLockIds.length; ++j) {
+            if (typeof m.exitedLockIds[j] === "number")
+              d.exitedLockIds[j] =
+                o.longs === String
+                  ? String(m.exitedLockIds[j])
+                  : m.exitedLockIds[j];
+            else
+              d.exitedLockIds[j] =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.exitedLockIds[j])
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.exitedLockIds[j].low >>> 0,
+                      m.exitedLockIds[j].high >>> 0
+                    ).toNumber(true)
+                  : m.exitedLockIds[j];
+          }
+        }
+        return d;
+      };
+      MsgUnPoolWhitelistedPoolResponse.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgUnPoolWhitelistedPoolResponse;
     })();
     return superfluid;
   })();

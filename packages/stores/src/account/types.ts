@@ -20,6 +20,7 @@ export interface OsmosisMsgOpts {
   readonly superfluidUndelegate: MsgOpt;
   readonly superfluidUnbondLock: MsgOpt;
   readonly unlockPeriodLock: MsgOpt;
+  readonly unPoolWhitelistedPool: MsgOpt;
 }
 
 export const defaultMsgOpts: OsmosisMsgOpts = {
@@ -80,5 +81,9 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
     type: "osmosis/lockup/unlock-period-lock",
     // Gas per msg
     gas: 140000,
+  },
+  unPoolWhitelistedPool: {
+    type: "osmosis/unpool-whitelisted-pool",
+    gas: 3000000,
   },
 };

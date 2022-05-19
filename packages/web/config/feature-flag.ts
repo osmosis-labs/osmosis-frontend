@@ -4,6 +4,33 @@ export const UserAction: { [key: string]: boolean } = {
 
 export const HiddenPoolIds: string[] = [];
 
+export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
+  // #560 (UST/OSMO)
+  // #562 (UST/LUNA)
+  // #567 (UST/EEUR)
+  // #578 (UST/XKI)
+  // #592 (UST/BTSG)
+  // #610 (UST/CMDX)
+  // #612 (UST/XPRT)
+  // #615 (UST/LUM)
+  // #642 (UST/UMEE)
+  // #679 (UST/axl-FRAX/axl-USDT/axl-USDC)
+  // #580 (UST/JUNO)
+  // #635 (UST/g-USDC/g-DAI)
+  "560": true,
+  "562": true,
+  "567": true,
+  "578": true,
+  "592": true,
+  "610": true,
+  "612": true,
+  "615": true,
+  "642": true,
+  "679": true,
+  "580": true,
+  "635": true,
+};
+
 /** Gauges to be rendered in pool's respective pool detail page. */
 export const ExternalIncentiveGaugeAllowList: {
   [poolId: string]: {

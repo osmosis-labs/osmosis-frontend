@@ -5406,6 +5406,168 @@ export namespace osmosis {
        */
       public toJSON(): { [k: string]: any };
     }
+
+    /** Properties of a MsgUnPoolWhitelistedPool. */
+    interface IMsgUnPoolWhitelistedPool {
+      /** MsgUnPoolWhitelistedPool sender */
+      sender?: string | null;
+
+      /** MsgUnPoolWhitelistedPool poolId */
+      poolId?: Long | null;
+    }
+
+    /** Represents a MsgUnPoolWhitelistedPool. */
+    class MsgUnPoolWhitelistedPool implements IMsgUnPoolWhitelistedPool {
+      /**
+       * Constructs a new MsgUnPoolWhitelistedPool.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.superfluid.IMsgUnPoolWhitelistedPool);
+
+      /** MsgUnPoolWhitelistedPool sender. */
+      public sender: string;
+
+      /** MsgUnPoolWhitelistedPool poolId. */
+      public poolId: Long;
+
+      /**
+       * Creates a new MsgUnPoolWhitelistedPool instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgUnPoolWhitelistedPool instance
+       */
+      public static create(
+        properties?: osmosis.superfluid.IMsgUnPoolWhitelistedPool
+      ): osmosis.superfluid.MsgUnPoolWhitelistedPool;
+
+      /**
+       * Encodes the specified MsgUnPoolWhitelistedPool message. Does not implicitly {@link osmosis.superfluid.MsgUnPoolWhitelistedPool.verify|verify} messages.
+       * @param m MsgUnPoolWhitelistedPool message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.superfluid.IMsgUnPoolWhitelistedPool,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgUnPoolWhitelistedPool message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgUnPoolWhitelistedPool
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.superfluid.MsgUnPoolWhitelistedPool;
+
+      /**
+       * Creates a MsgUnPoolWhitelistedPool message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgUnPoolWhitelistedPool
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.superfluid.MsgUnPoolWhitelistedPool;
+
+      /**
+       * Creates a plain object from a MsgUnPoolWhitelistedPool message. Also converts values to other types if specified.
+       * @param m MsgUnPoolWhitelistedPool
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.superfluid.MsgUnPoolWhitelistedPool,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgUnPoolWhitelistedPool to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgUnPoolWhitelistedPoolResponse. */
+    interface IMsgUnPoolWhitelistedPoolResponse {
+      /** MsgUnPoolWhitelistedPoolResponse exitedLockIds */
+      exitedLockIds?: Long[] | null;
+    }
+
+    /** Represents a MsgUnPoolWhitelistedPoolResponse. */
+    class MsgUnPoolWhitelistedPoolResponse
+      implements IMsgUnPoolWhitelistedPoolResponse
+    {
+      /**
+       * Constructs a new MsgUnPoolWhitelistedPoolResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.superfluid.IMsgUnPoolWhitelistedPoolResponse);
+
+      /** MsgUnPoolWhitelistedPoolResponse exitedLockIds. */
+      public exitedLockIds: Long[];
+
+      /**
+       * Creates a new MsgUnPoolWhitelistedPoolResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgUnPoolWhitelistedPoolResponse instance
+       */
+      public static create(
+        properties?: osmosis.superfluid.IMsgUnPoolWhitelistedPoolResponse
+      ): osmosis.superfluid.MsgUnPoolWhitelistedPoolResponse;
+
+      /**
+       * Encodes the specified MsgUnPoolWhitelistedPoolResponse message. Does not implicitly {@link osmosis.superfluid.MsgUnPoolWhitelistedPoolResponse.verify|verify} messages.
+       * @param m MsgUnPoolWhitelistedPoolResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.superfluid.IMsgUnPoolWhitelistedPoolResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgUnPoolWhitelistedPoolResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgUnPoolWhitelistedPoolResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.superfluid.MsgUnPoolWhitelistedPoolResponse;
+
+      /**
+       * Creates a MsgUnPoolWhitelistedPoolResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgUnPoolWhitelistedPoolResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.superfluid.MsgUnPoolWhitelistedPoolResponse;
+
+      /**
+       * Creates a plain object from a MsgUnPoolWhitelistedPoolResponse message. Also converts values to other types if specified.
+       * @param m MsgUnPoolWhitelistedPoolResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.superfluid.MsgUnPoolWhitelistedPoolResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgUnPoolWhitelistedPoolResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
   }
 }
 

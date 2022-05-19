@@ -50,6 +50,71 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
     chainInfo.addUnknownCurrencies(...[...new Set(unknownCurrencies)]);
   }
 
+  get unlockingCoins(): {
+    amount: CoinPretty;
+    lockIds: string[];
+    endTime: Date;
+    // duration: Duration;
+  }[] {
+    if (!this.response) {
+      return [];
+    }
+
+    const matchedLocks = this.response.data.locks.filter((lock) => {
+      // Filter the locked.
+      return new Date(lock.end_time).getTime() > 0;
+    });
+
+    // End time 별로 구분하기 위한 map. key는 end time의 getTime()의 결과이다.
+    const map: Map<
+      string,
+      {
+        amount: CoinPretty;
+        lockIds: string[];
+        // duration: Duration;
+        endTime: Date;
+      }
+    > = new Map();
+
+    for (const lock of matchedLocks) {
+      for (const coin of lock.coins) {
+        const currency = this.chainGetter
+          .getChain(this.chainId)
+          .findCurrency(coin.denom);
+
+        if (currency) {
+          const time = new Date(lock.end_time).getTime();
+          const key =
+            time.toString() +
+            "/" +
+            lock.duration +
+            "/" +
+            currency.coinMinimalDenom;
+          if (!map.has(key)) {
+            map.set(key, {
+              amount: new CoinPretty(currency, new Dec(0)),
+              lockIds: [],
+              endTime: new Date(lock.end_time),
+            });
+          }
+
+          const value = map.get(key)!;
+          value.amount = value.amount.add(
+            new CoinPretty(currency, new Dec(coin.amount))
+          );
+          value.lockIds.push(lock.ID);
+
+          map.set(key, value);
+        }
+      }
+    }
+
+    return [...map.values()].sort((v1, v2) => {
+      // End time이 더 적은 lock을 우선한다.
+      return v1.endTime > v2.endTime ? 1 : -1;
+    });
+  }
+
   readonly getLockedCoinWithDuration = computedFn(
     (
       currency: AppCurrency,
@@ -103,6 +168,79 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
         amount: coin,
         lockIds: matchedLocks.map((lock) => lock.ID),
       };
+    }
+  );
+
+  readonly getUnlockingCoinsWithDuration = computedFn(
+    (
+      duration: Duration
+    ): {
+      amount: CoinPretty;
+      lockIds: string[];
+      endTime: Date;
+    }[] => {
+      if (!this.response) {
+        return [];
+      }
+
+      const matchedLocks = this.response.data.locks
+        .filter((lock) => {
+          // Accepts the lock duration with jitter (~60s)
+          return (
+            Math.abs(
+              Number.parseInt(lock.duration.replace("s", "")) -
+                duration.asSeconds()
+            ) <= 60
+          );
+        })
+        .filter((lock) => {
+          // Filter the locked.
+          return new Date(lock.end_time).getTime() > 0;
+        });
+
+      // End time 별로 구분하기 위한 map. key는 end time의 getTime()의 결과이다.
+      const map: Map<
+        string,
+        {
+          amount: CoinPretty;
+          lockIds: string[];
+          endTime: Date;
+        }
+      > = new Map();
+
+      for (const lock of matchedLocks) {
+        for (const coin of lock.coins) {
+          const currency = this.chainGetter
+            .getChain(this.chainId)
+            .findCurrency(coin.denom);
+
+          if (currency) {
+            const time = new Date(lock.end_time).getTime();
+            if (!map.has(time.toString() + "/" + currency.coinMinimalDenom)) {
+              map.set(time.toString() + "/" + currency.coinMinimalDenom, {
+                amount: new CoinPretty(currency, new Dec(0)),
+                lockIds: [],
+                endTime: new Date(lock.end_time),
+              });
+            }
+
+            const value = map.get(
+              time.toString() + "/" + currency.coinMinimalDenom
+            )!;
+            value.amount = value.amount.add(
+              new CoinPretty(currency, new Dec(coin.amount))
+            );
+            value.lockIds.push(lock.ID);
+
+            map.set(time.toString() + "/" + currency.coinMinimalDenom, value);
+          }
+        }
+      }
+
+      return [...map.values()].sort((v1, v2) => {
+        // End time이 더 적은 lock을 우선한다.
+        return v1.endTime > v2.endTime ? 1 : -1;
+      });
     }
   );
 
