@@ -34,45 +34,47 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
     const account = accountStore.getAccount(chainId);
 
+    const pools = Object.keys(ExternalIncentiveGaugeAllowList).map(
+      (poolId: string) => {
+        const pool = queryOsmosis.queryGammPools.getPool(poolId);
+        if (pool) {
+          return pool;
+        }
+      }
+    );
+
     const externalIncentivizedPools = useMemo(
       () =>
-        Object.keys(ExternalIncentiveGaugeAllowList)
-          .map((poolId: string) => {
-            const pool = queryOsmosis.queryGammPools.getPool(poolId);
-            if (pool) {
-              return pool;
+        pools.filter(
+          (
+            pool: ObservableQueryPool | undefined
+          ): pool is ObservableQueryPool => {
+            if (!pool) {
+              return false;
             }
-          })
-          .filter(
-            (
-              pool: ObservableQueryPool | undefined
-            ): pool is ObservableQueryPool => {
-              if (!pool) {
-                return false;
-              }
 
-              const inner = ExternalIncentiveGaugeAllowList[pool.id];
-              const data = Array.isArray(inner) ? inner : [inner];
+            const inner = ExternalIncentiveGaugeAllowList[pool.id];
+            const data = Array.isArray(inner) ? inner : [inner];
 
-              if (data.length === 0) {
-                return false;
-              }
-              const gaugeIds = data.map((d) => d.gaugeId);
-              const gauges = gaugeIds.map((gaugeId) =>
-                queryOsmosis.queryGauge.get(gaugeId)
-              );
-
-              let maxRemainingEpoch = 0;
-              for (const gauge of gauges) {
-                if (maxRemainingEpoch < gauge.remainingEpoch) {
-                  maxRemainingEpoch = gauge.remainingEpoch;
-                }
-              }
-
-              return maxRemainingEpoch > 0;
+            if (data.length === 0) {
+              return false;
             }
-          ),
-      [queryOsmosis]
+            const gaugeIds = data.map((d) => d.gaugeId);
+            const gauges = gaugeIds.map((gaugeId) =>
+              queryOsmosis.queryGauge.get(gaugeId)
+            );
+
+            let maxRemainingEpoch = 0;
+            for (const gauge of gauges) {
+              if (maxRemainingEpoch < gauge.remainingEpoch) {
+                maxRemainingEpoch = gauge.remainingEpoch;
+              }
+            }
+
+            return maxRemainingEpoch > 0;
+          }
+        ),
+      [pools, queryOsmosis]
     );
 
     const externalIncentivizedPoolsWithMetrics = useMemo(
