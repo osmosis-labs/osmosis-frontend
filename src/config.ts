@@ -785,8 +785,7 @@ export const IBCAssetInfos: {
 	destChannelId: string;
 	coinMinimalDenom: string;
 	// In some reasons, ibc channel is in unstable status.
-	// Disable the deposit, withd
-	button and show the tooltip.
+	// Disable the deposit, withdraw button and show the tooltip.
 	isUnstable?: boolean;
 
 	// If the asset is from ics20-cw20
