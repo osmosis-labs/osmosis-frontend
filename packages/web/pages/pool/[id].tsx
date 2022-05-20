@@ -524,7 +524,7 @@ const Pool: FunctionComponent = observer(() => {
       )}
       {tradeTokenInConfig && pool && (
         <TradeTokens
-          className="md:p-0"
+          className="md:!p-0"
           title={
             <h5 className="md:absolute md:text-h6 md:font-h6 top-[1.375rem] left-3 z-40">
               Swap Tokens

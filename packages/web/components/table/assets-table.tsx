@@ -348,6 +348,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
                         setShowPreTransfer(true);
                       }
                 }
+                showArrow
               />
             ))}
           </div>
