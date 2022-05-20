@@ -332,6 +332,20 @@ export class RootStore {
 					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'osmosis',
 				},
+				{
+					alternativeCoinId: 'pool:umntl',
+					poolId: '690',
+					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-232' }], 'umntl'),
+					spotPriceDestDenom: 'uosmo',
+					destCoinId: 'osmosis',
+				},
+        {
+          alternativeCoinId: 'pool:umeme',
+					poolId: '701',
+					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-238' }], 'umeme'),
+          spotPriceDestDenom: 'uosmo',
+					destCoinId: 'osmosis',
+        },
 			]
 		);
 
@@ -1425,6 +1439,21 @@ export class RootStore {
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-208' }], 'weth-wei'),
 						coinDenom: 'WETH',
 						coinDecimals: 18,
+					},
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+			},
+			{
+				poolId: '690',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-232' }], 'umntl'),
+						coinDenom: 'MNTL',
+						coinDecimals: 6,
 					},
 					{
 						coinMinimalDenom: 'uosmo',

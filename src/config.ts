@@ -1097,6 +1097,12 @@ export const IBCAssetInfos: {
 	// 	depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=frax',
 	// 	withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=frax',
 	// },
+	{
+		counterpartyChainId: 'mantle-1',
+		sourceChannelId: 'channel-232',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'umntl',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -2897,6 +2903,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 18,
 				coinGeckoId: 'weth',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/weth.png',
+			},
+			{
+				coinDenom: 'WBTC',
+				coinMinimalDenom: 'wbtc-satoshi',
+				coinDecimals: 8,
+				coinGeckoId: 'wrapped-bitcoin',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/wbtc.png',
 			},
 		],
 		feeCurrencies: [
