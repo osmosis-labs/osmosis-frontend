@@ -427,8 +427,30 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g:RAW",
           coinDecimals: 6,
-          //coinGeckoId: 'pool:raw',
-          coinImageUrl: "/tokens/raw.png", // TODO: add raw.png
+          coinGeckoId: "pool:raw",
+          coinImageUrl: "/tokens/raw.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
+          coinDenom: "ASVT",
+          coinMinimalDenom:
+            "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w:ASVT",
+          coinDecimals: 6,
+          coinGeckoId: "pool:asvt",
+          coinImageUrl: "/tokens/asvt.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
+          coinDenom: "JOE",
+          coinMinimalDenom:
+            "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3:JOE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:joe",
+          coinImageUrl: "/tokens/joe.png",
         },
       ],
       features: [
@@ -1341,6 +1363,13 @@ chainInfos.push({
       coinDecimals: 18,
       coinGeckoId: "weth",
       coinImageUrl: "/tokens/weth.png",
+    },
+    {
+      coinDenom: "WBTC",
+      coinMinimalDenom: "wbtc-satoshi",
+      coinDecimals: 8,
+      coinGeckoId: "wrapped-bitcoin",
+      coinImageUrl: "/tokens/wbtc.png",
     },
   ],
   feeCurrencies: [
