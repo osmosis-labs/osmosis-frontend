@@ -512,6 +512,15 @@ export const IBCAssetInfos: (IBCAsset & {
 		ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
 	},
+  {
+		counterpartyChainId: "juno-1",
+		sourceChannelId: "channel-169",
+		destChannelId: "channel-47",
+		coinMinimalDenom:
+      "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
+		ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+	},
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;
