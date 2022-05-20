@@ -230,7 +230,11 @@ export const AllPoolsTableSet: FunctionComponent<{
         }));
 
         return [
-          { poolId, poolAssets },
+          {
+            poolId,
+            poolAssets,
+            isIncentivized: incentivizedPoolIds.some((id) => id === poolId),
+          },
           { value: poolWithMetrics.liquidity.toString() },
           {
             value: poolWithMetrics.volume24h.toString(),
