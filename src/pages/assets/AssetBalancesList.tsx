@@ -13,13 +13,13 @@ import { makeIBCMinimalDenom } from 'src/utils/ibc';
 import useWindowSize from 'src/hooks/useWindowSize';
 import { PricePretty } from '@keplr-wallet/unit/build/price-pretty';
 import { Dec } from '@keplr-wallet/unit';
+import { colorPrimaryLight } from '../../emotionStyles/colors';
 
 const tableWidths = ['45%', '25%', '15%', '15%'];
 const tableWidthsOnMobileView = ['70%', '30%'];
 
 export const AssetBalancesList = observer(function AssetBalancesList() {
 	const { chainStore, queriesStore, accountStore, priceStore } = useStore();
-
 	const { isMobileView } = useWindowSize();
 
 	const account = accountStore.getAccount(chainStore.current.chainId);
@@ -96,6 +96,8 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 
 	const close = () => setDialogState(v => ({ ...v, open: false }));
 
+	const [assetListFilterTerm, setAssetListFilterTerm] = React.useState<string>('');
+
 	return (
 		<React.Fragment>
 			{dialogState.open ? (
@@ -112,8 +114,24 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 					ics20ContractAddress={dialogState.ics20ContractAddress}
 				/>
 			) : null}
-			<div className="px-5 md:px-0">
+			<div className="w-full flex flex-row justify-between px-5 md:px-0">
 				<TitleText isMobileView={isMobileView}>Osmosis Assets</TitleText>
+				<input
+					placeholder="Search Tokens..."
+					onChange={(e: any) => setAssetListFilterTerm(e.target.value)}
+					value={assetListFilterTerm}
+					style={{
+						backgroundColor: colorPrimaryLight,
+						color: 'white',
+						outline: 'none',
+						border: 'none',
+						padding: '8px',
+						borderRadius: '4px',
+						width: '300px',
+						fontSize: '16px',
+						marginBottom: '16px',
+					}}
+				/>
 			</div>
 			<table className="w-full pb-8">
 				<AssetBalanceHeader isMobileView={isMobileView} />
@@ -144,84 +162,98 @@ export const AssetBalancesList = observer(function AssetBalancesList() {
 								/>
 							);
 						})}
-					{ibcBalances.map(bal => {
-						const currency = bal.balance.currency;
-						const coinDenom = (() => {
-							if ('originCurrency' in currency && currency.originCurrency) {
-								return currency.originCurrency.coinDenom;
-							}
 
-							return currency.coinDenom;
-						})();
+					{ibcBalances
+						.filter(bal => {
+							if (!assetListFilterTerm) return bal;
 
-						const totalFiatValue = priceStore.calculatePrice(bal.balance, 'usd');
+							const coinDenom = bal.balance.currency.coinDenom.toLowerCase();
+							const coinName = bal.chainInfo.chainName.toLowerCase();
+							const searchTerm = assetListFilterTerm.toLowerCase();
 
-						return (
-							<AssetBalanceRow
-								key={currency.coinMinimalDenom}
-								chainName={bal.chainInfo.chainName}
-								coinDenom={coinDenom}
-								currency={currency}
-								balance={bal.balance
-									.hideDenom(true)
-									.trim(true)
-									.maxDecimals(6)
-									.toString()}
-								totalFiatValue={totalFiatValue}
-								onDeposit={() => {
-									if (bal.depositUrlOverride) {
-										window.open(bal.depositUrlOverride, '_blank');
-									} else {
-										let modifiedCurrency = currency;
-										if (bal.sourceDenom != '') {
-											modifiedCurrency = {
-												coinDecimals: currency.coinDecimals,
-												coinGeckoId: currency.coinGeckoId,
-												coinImageUrl: currency.coinImageUrl,
-												coinDenom: currency.coinDenom,
-												coinMinimalDenom: '',
-												paths: (currency as IBCCurrency).paths.slice(0, 1),
-												originChainId: bal.sourceChainId,
-												originCurrency: {
+							const containsCoinName = coinName.search(searchTerm) > -1;
+							const containsCoinSymbol = coinDenom.search(searchTerm) > -1;
+
+							return containsCoinName || containsCoinSymbol;
+						})
+						.map(bal => {
+							const currency = bal.balance.currency;
+							const coinDenom = (() => {
+								if ('originCurrency' in currency && currency.originCurrency) {
+									return currency.originCurrency.coinDenom;
+								}
+
+								return currency.coinDenom;
+							})();
+
+							const totalFiatValue = priceStore.calculatePrice(bal.balance, 'usd');
+
+							return (
+								<AssetBalanceRow
+									key={currency.coinMinimalDenom}
+									chainName={bal.chainInfo.chainName}
+									coinDenom={coinDenom}
+									currency={currency}
+									balance={bal.balance
+										.hideDenom(true)
+										.trim(true)
+										.maxDecimals(6)
+										.toString()}
+									totalFiatValue={totalFiatValue}
+									onDeposit={() => {
+										if (bal.depositUrlOverride) {
+											window.open(bal.depositUrlOverride, '_blank');
+										} else {
+											let modifiedCurrency = currency;
+											if (bal.sourceDenom != '') {
+												modifiedCurrency = {
 													coinDecimals: currency.coinDecimals,
+													coinGeckoId: currency.coinGeckoId,
 													coinImageUrl: currency.coinImageUrl,
 													coinDenom: currency.coinDenom,
-													coinMinimalDenom: bal.sourceDenom,
-												},
-											};
-										}
+													coinMinimalDenom: '',
+													paths: (currency as IBCCurrency).paths.slice(0, 1),
+													originChainId: bal.sourceChainId,
+													originCurrency: {
+														coinDecimals: currency.coinDecimals,
+														coinImageUrl: currency.coinImageUrl,
+														coinDenom: currency.coinDenom,
+														coinMinimalDenom: bal.sourceDenom,
+													},
+												};
+											}
 
-										setDialogState({
-											open: true,
-											counterpartyChainId: bal.chainInfo.chainId,
-											currency: modifiedCurrency as IBCCurrency,
-											sourceChannelId: bal.sourceChannelId,
-											destChannelId: bal.destChannelId,
-											isWithdraw: false,
-											ics20ContractAddress: bal.ics20ContractAddress,
-										});
-									}
-								}}
-								onWithdraw={() => {
-									if (bal.withdrawUrlOverride) {
-										window.open(bal.withdrawUrlOverride, '_blank');
-									} else {
-										setDialogState({
-											open: true,
-											counterpartyChainId: bal.chainInfo.chainId,
-											currency: currency as IBCCurrency,
-											sourceChannelId: bal.sourceChannelId,
-											destChannelId: bal.destChannelId,
-											isWithdraw: true,
-											ics20ContractAddress: bal.ics20ContractAddress,
-										});
-									}
-								}}
-								isUnstable={bal.isUnstable}
-								isMobileView={isMobileView}
-							/>
-						);
-					})}
+											setDialogState({
+												open: true,
+												counterpartyChainId: bal.chainInfo.chainId,
+												currency: modifiedCurrency as IBCCurrency,
+												sourceChannelId: bal.sourceChannelId,
+												destChannelId: bal.destChannelId,
+												isWithdraw: false,
+												ics20ContractAddress: bal.ics20ContractAddress,
+											});
+										}
+									}}
+									onWithdraw={() => {
+										if (bal.withdrawUrlOverride) {
+											window.open(bal.withdrawUrlOverride, '_blank');
+										} else {
+											setDialogState({
+												open: true,
+												counterpartyChainId: bal.chainInfo.chainId,
+												currency: currency as IBCCurrency,
+												sourceChannelId: bal.sourceChannelId,
+												destChannelId: bal.destChannelId,
+												isWithdraw: true,
+												ics20ContractAddress: bal.ics20ContractAddress,
+											});
+										}
+									}}
+									isUnstable={bal.isUnstable}
+									isMobileView={isMobileView}
+								/>
+							);
+						})}
 				</tbody>
 			</table>
 		</React.Fragment>
