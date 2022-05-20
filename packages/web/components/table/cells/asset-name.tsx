@@ -7,14 +7,16 @@ import { UNSTABLE_MSG } from "../../../config";
 export const AssetNameCell: FunctionComponent<Partial<Cell>> = ({
   coinDenom,
   chainName,
-  coinImageUrl = "/icons/OSMO.svg",
+  coinImageUrl,
   isCW20 = false,
   isUnstable,
 }) =>
   coinDenom ? (
     <div className="flex items-center gap-4">
       <div>
-        <Image alt={coinDenom} src={coinImageUrl} height={40} width={40} />
+        {coinImageUrl && (
+          <Image alt={coinDenom} src={coinImageUrl} height={40} width={40} />
+        )}
       </div>
       <div className="flex flex-col place-content-center">
         <div className="flex">

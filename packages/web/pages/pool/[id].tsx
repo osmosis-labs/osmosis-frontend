@@ -327,7 +327,8 @@ const Pool: FunctionComponent = observer(() => {
     if (queryOsmosis.queryGammPools.poolExists(poolId as string) === false) {
       router.push("/pools");
     }
-  });
+    // eslint-disable-next-line
+  }, []);
 
   // Manage liquidity + bond LP tokens (modals) state
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =

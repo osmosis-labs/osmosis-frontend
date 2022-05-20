@@ -29,12 +29,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
         <div className="flex place-content-between text-caption mb-4">
           <div className="flex gap-2">
             <div>
-              <Image
-                alt="osmo"
-                src="/tokens/osmosis.svg"
-                height={24}
-                width={24}
-              />
+              <Image alt="osmo" src="/tokens/osmo.svg" height={24} width={24} />
             </div>
             <span className="my-auto">
               {chainStore.osmosis.stakeCurrency.coinDenom.toUpperCase()}

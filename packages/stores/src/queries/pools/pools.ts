@@ -84,7 +84,8 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
       if (r && !this.isFetching) {
         return r.data.pools.some((raw) => raw.id === id);
       }
-    }
+    },
+    true
   );
 
   readonly computeAllTotalValueLocked = computedFn(

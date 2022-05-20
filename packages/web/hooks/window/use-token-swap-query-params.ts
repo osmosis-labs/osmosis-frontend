@@ -19,6 +19,7 @@ export function useTokenSwapQueryParams(
     if (
       router.query.from &&
       router.query.to &&
+      router.query.from !== router.query.to &&
       tradeConfig.sendableCurrencies.length !== 0
     ) {
       const fromTokenBalance = balances.find(
