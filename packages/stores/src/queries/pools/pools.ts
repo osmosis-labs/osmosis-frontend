@@ -80,11 +80,10 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
   readonly poolExists: (id: string) => boolean | undefined = computedFn(
     (id: string) => {
       // TODO: address pagination limit
-      if (!this.response || this.isFetching || !this.isStarted) {
-        return undefined;
+      const r = this.response;
+      if (r && !this.isFetching) {
+        return r.data.pools.some((raw) => raw.id === id);
       }
-
-      return this.response.data.pools.some((raw) => raw.id === id);
     }
   );
 

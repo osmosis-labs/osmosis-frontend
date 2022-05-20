@@ -500,7 +500,7 @@ const Pools: NextPage = observer(function () {
               <AllPoolsTableSet />
             </div>
           </section>
-          <section className="bg-surface shadow-separator">
+          <section className="bg-surface shadow-separator min-h-screen">
             <div className="max-w-container mx-auto md:p-4 p-10 py-[3.75rem]">
               <ExternalIncentivizedPoolsTableSet />
             </div>

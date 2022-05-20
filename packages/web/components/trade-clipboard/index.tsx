@@ -86,7 +86,7 @@ export const TradeClipboard: FunctionComponent<{
         containerClassName
       )}
     >
-      <div className="rounded-xl bg-cardInner px-5 md:px-3 pt-5 md:pt-4 pb-8 md:pb-4">
+      <div className="rounded-xl bg-cardInner px-5 md:px-3 pt-5 md:pt-4 pb-6 md:pb-4">
         {!isInModal && (
           <div className="absolute -top-2 inset-x-1/2 -translate-x-1/2 w-[10rem] md:w-[7.875rem] h-[3.75rem] md:h-[2.8125rem] z-10 bg-gradients-clip rounded-md">
             <div className="absolute bottom-0 rounded-b-md w-full h-5 bg-gradients-clipInner" />
@@ -430,7 +430,7 @@ export const TradeClipboard: FunctionComponent<{
         </div>
 
         {tradeTokenInConfig && (
-          <div className="mt-[1.125rem] border border-white-faint rounded-lg bg-card py-3 px-4 md:px-3">
+          <div className="mt-[1.125rem] rounded-lg bg-card py-3 px-4 md:px-3">
             <div className="flex justify-between">
               <div className="subtitle2 md:caption text-wireframes-lightGrey">
                 Rate
@@ -444,7 +444,7 @@ export const TradeClipboard: FunctionComponent<{
                     .maxDecimals(3)
                     .toString()} ${tradeTokenInConfig.outCurrency.coinDenom}`}
                 </div>
-                <div className="caption text-wireframes-grey">
+                <div className="caption text-white-disabled">
                   {`1 ${
                     tradeTokenInConfig.outCurrency.coinDenom
                   } = ${tradeTokenInConfig.expectedSwapResult.beforeSpotPriceWithoutSwapFeeInOverOut
@@ -458,12 +458,23 @@ export const TradeClipboard: FunctionComponent<{
               <div className="subtitle2 md:caption text-wireframes-lightGrey">
                 Swap Fee
               </div>
-              <div className="subtitle2 md:caption text-wireframes-lightGrey">
-                {tradeTokenInConfig.expectedSwapResult.swapFee.isReady
-                  ? tradeTokenInConfig.expectedSwapResult.swapFee.toString()
-                  : tradeTokenInConfig.amount === ""
-                  ? "0"
-                  : "--"}
+              <div className="flex flex-col gap-y-1.5 text-right">
+                <div className="subtitle2 md:caption text-wireframes-lightGrey">
+                  {tradeTokenInConfig.expectedSwapResult.swapFee.isReady
+                    ? tradeTokenInConfig.expectedSwapResult.swapFee.toString()
+                    : tradeTokenInConfig.amount === ""
+                    ? "0"
+                    : "--"}
+                </div>
+                <div className="caption text-white-disabled">
+                  {`~${
+                    priceStore.calculatePrice(
+                      tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
+                    ) ?? "0"
+                  } (${tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
+                    .trim(true)
+                    .toString()})`}
+                </div>
               </div>
             </div>
             <div className="flex justify-between pt-4 mt-4 border-t border-white-faint">

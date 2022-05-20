@@ -1,4 +1,4 @@
-import { observable, makeObservable, action } from "mobx";
+import { observable, computed, makeObservable, action } from "mobx";
 import { TxChainSetter, IFeeConfig } from "@keplr-wallet/hooks";
 import {
   ObservableQueryBalances,
@@ -77,7 +77,10 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
   }
 
   get canAddAsset(): boolean {
-    return this._assets.length < CREATE_POOL_MAX_ASSETS;
+    return (
+      this._assets.length < CREATE_POOL_MAX_ASSETS &&
+      this.remainingSelectableCurrencies.length > 0
+    );
   }
 
   get sender(): string {
@@ -88,6 +91,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     return this._queryBalances;
   }
 
+  @computed
   get sendableCurrencies(): AppCurrency[] {
     return this._queryBalances
       .getQueryBech32Address(this._sender)

@@ -277,6 +277,7 @@ export class OptimizedRoutes {
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
     effectivePriceOutOverIn: Dec;
+    tokenInFeeAmount: Int;
     swapFee: Dec;
     slippage: Dec;
   } {
@@ -326,6 +327,7 @@ export class OptimizedRoutes {
         const pool = path.pools[i];
         const outDenom = path.tokenOutDenoms[i];
 
+        // less fee
         const tokenOut = pool.getTokenOutByTokenIn(
           { denom: previousInDenom, amount: previousInAmount },
           outDenom
@@ -334,7 +336,11 @@ export class OptimizedRoutes {
         if (!tokenOut.amount.gt(new Int(0))) {
           // not enough liquidity
           console.warn("Token out is 0 through pool: ", pool.id);
-          return { ...tokenOut, swapFee: pool.swapFee };
+          return {
+            ...tokenOut,
+            tokenInFeeAmount: new Int(0),
+            swapFee: pool.swapFee,
+          };
         }
 
         beforeSpotPriceInOverOut = beforeSpotPriceInOverOut.mulTruncate(
@@ -387,6 +393,9 @@ export class OptimizedRoutes {
       effectivePriceInOverOut: totalEffectivePriceInOverOut,
       effectivePriceOutOverIn: new Dec(1).quoTruncate(
         totalEffectivePriceInOverOut
+      ),
+      tokenInFeeAmount: sumAmount.sub(
+        new Dec(sumAmount).mulTruncate(new Dec(1).sub(totalSwapFee)).round()
       ),
       swapFee: totalSwapFee,
       slippage,
