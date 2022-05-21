@@ -9,7 +9,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { FunctionComponent, useEffect, useRef, useMemo } from "react";
-import { ChainInfos } from "../../config";
+import { ChainInfos, IS_FRONTIER } from "../../config";
 import {
   useBooleanWithWindowEvent,
   useTokenSwapQueryParams,
@@ -90,7 +90,14 @@ export const TradeClipboard: FunctionComponent<{
         {!isInModal && (
           <div className="absolute -top-2 inset-x-1/2 -translate-x-1/2 w-[10rem] md:w-[7.875rem] h-[3.75rem] md:h-[2.8125rem] z-10 bg-gradients-clip rounded-md">
             <div className="absolute bottom-0 rounded-b-md w-full h-5 bg-gradients-clipInner" />
-            <div className="absolute inset-x-1/2 -translate-x-1/2 bottom-2 w-12 md:w-9 h-[1.875rem] md:h-[1.4rem] bg-[rgba(91,83,147,0.12)] rounded-md shadow-[rgba(0,0,0,0.25)_1px_1px_1px_inset]" />
+            {!IS_FRONTIER && (
+              <div className="absolute inset-x-1/2 -translate-x-1/2 bottom-2 w-12 md:w-9 h-[1.875rem] md:h-[1.4rem] bg-[rgba(91,83,147,0.12)] rounded-md shadow-[rgba(0,0,0,0.25)_1px_1px_1px_inset]" />
+            )}
+            {IS_FRONTIER && (
+              <div className="absolute left-0 right-0 top-[20%] mx-auto h-[40px] w-[40px]">
+                <img alt="badge" src="/icons/frontier-osmo-badge.svg" />
+              </div>
+            )}
           </div>
         )}
 
@@ -105,16 +112,24 @@ export const TradeClipboard: FunctionComponent<{
             <Image
               width={isMobile ? 36 : 44}
               height={isMobile ? 36 : 44}
-              src={`/icons/hexagon-border${
-                isSettingOpen ? "-selected" : ""
-              }.svg`}
+              src={
+                IS_FRONTIER
+                  ? "/icons/hexagon-border-card.svg"
+                  : `/icons/hexagon-border${
+                      isSettingOpen ? "-selected" : ""
+                    }.svg`
+              }
               alt="hexagon border icon"
             />
             <div className="w-5 h-5 absolute inset-1/2 -translate-x-1/2 -translate-y-1/2">
               <Image
                 width={isMobile ? 18 : 20}
                 height={isMobile ? 18 : 20}
-                src={`/icons/setting${isSettingOpen ? "-selected" : ""}.svg`}
+                src={
+                  IS_FRONTIER
+                    ? "/icons/setting-white.svg"
+                    : `/icons/setting${isSettingOpen ? "-selected" : ""}.svg`
+                }
                 alt="setting icon"
               />
             </div>
@@ -350,14 +365,20 @@ export const TradeClipboard: FunctionComponent<{
             <Image
               width={isMobile ? 36 : 48}
               height={isMobile ? 36 : 48}
-              src="/icons/hexagon-border.svg"
+              src={
+                IS_FRONTIER
+                  ? "/icons/hexagon-border-card.svg"
+                  : "/icons/hexagon-border.svg"
+              }
               alt="hexagon border icon"
             />
             <div className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-6 md:w-[1.125rem] h-6 md:h-[1.125rem]">
               <Image
                 width={isMobile ? 18 : 24}
                 height={isMobile ? 18 : 24}
-                src="/icons/switch.svg"
+                src={
+                  IS_FRONTIER ? "/icons/switch-white.svg" : "/icons/switch.svg"
+                }
                 alt="switch icon"
               />
             </div>
@@ -592,6 +613,8 @@ export const TradeClipboard: FunctionComponent<{
                       maxSlippage
                     );
                   }
+                  tradeTokenInConfig.setAmount("");
+                  tradeTokenInConfig.setFraction(undefined);
                 } catch (e) {
                   console.error(e);
                 }

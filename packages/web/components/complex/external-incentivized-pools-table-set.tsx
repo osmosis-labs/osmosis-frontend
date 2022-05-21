@@ -188,7 +188,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       () => [
         {
           id: "pool.id",
-          display: "Pool ID",
+          display: "Pool Name",
           sort: makeSortMechanism("pool.id"),
           displayCell: PoolCompositionCell,
         },

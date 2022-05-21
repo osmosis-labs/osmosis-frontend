@@ -176,7 +176,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     () => [
       {
         id: "pool.id",
-        display: "Pool ID",
+        display: "Pool Name",
         sort: makeSortMechanism("pool.id"),
         displayCell: PoolCompositionCell,
       },

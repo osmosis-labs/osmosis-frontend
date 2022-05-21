@@ -13,6 +13,7 @@
     "dev": "lerna run dev --parallel",
     "dev:frontier": "cross-env NEXT_PUBLIC_IS_FRONTIER=true lerna run dev --parallel",
     "start": "lerna run start --stream",
+    "start:frontier": "cross-env NEXT_PUBLIC_IS_FRONTIER=true lerna run start --stream",
     "clean": "lerna run clean; rm -rf node_modules",
     "build": "lerna run build",
     "build:frontier": "cross-env NEXT_PUBLIC_IS_FRONTIER=true lerna run build",
