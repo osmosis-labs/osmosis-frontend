@@ -339,13 +339,13 @@ export class RootStore {
 					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'osmosis',
 				},
-        {
-          alternativeCoinId: 'pool:umeme',
+				{
+					alternativeCoinId: 'pool:umeme',
 					poolId: '701',
 					spotPriceSourceDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-238' }], 'umeme'),
-          spotPriceDestDenom: 'uosmo',
+					spotPriceDestDenom: 'uosmo',
 					destCoinId: 'osmosis',
-        },
+				},
 			]
 		);
 
