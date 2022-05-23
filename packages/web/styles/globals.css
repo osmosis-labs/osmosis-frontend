@@ -1,0 +1,255 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  html {
+    font-family: Inter, ui-sans-serif, system-ui;
+    @apply text-white-full;
+  }
+
+  h1 {
+    @apply text-h1 font-h1;
+  }
+  h2 {
+    @apply text-h2 font-h2;
+  }
+  h3 {
+    @apply text-h3 font-h3;
+  }
+  h4 {
+    @apply text-h4 font-h4;
+  }
+  h5 {
+    @apply text-h5 font-h5;
+  }
+  h6 {
+    @apply text-h6 font-h6;
+  }
+  .subtitle1 {
+    @apply text-subtitle1 font-subtitle1;
+  }
+  .subtitle2 {
+    @apply text-subtitle2 font-subtitle2;
+  }
+  .body1 {
+    @apply text-body1 font-body1;
+  }
+  .body2 {
+    @apply text-body2 font-body2;
+  }
+  button {
+    @apply text-button font-button;
+  }
+  .caption {
+    @apply text-caption font-caption;
+  }
+  .overline {
+    @apply text-overline font-overline;
+  }
+  .superfluid {
+    background: -webkit-linear-gradient(#8a86ff, #e13cbd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input:focus-visible {
+    outline: none;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  .token-item-list::-webkit-scrollbar {
+    @apply border border-card rounded;
+  }
+
+  .token-item-list::-webkit-scrollbar-track-piece {
+    @apply bg-card rounded;
+  }
+
+  .token-item-list::-webkit-scrollbar-thumb {
+    @apply bg-cardInner rounded-md;
+  }
+
+  table {
+    @apply md:w-screen table-auto border-collapse text-left;
+  }
+
+  thead > tr {
+    @apply bg-card text-iconDefault;
+  }
+
+  thead > tr > th:first-child {
+    @apply md:rounded-none rounded-tl-2xl pl-8 pr-3 py-3;
+  }
+
+  thead > tr > th {
+    @apply p-3 font-body2;
+  }
+
+  thead > tr > th:last-child {
+    @apply md:rounded-none rounded-tr-2xl pl-3 pr-8 py-3;
+  }
+
+  tbody > tr > td:first-child {
+    @apply pl-4 pr-3 py-3;
+  }
+
+  tbody > tr > td {
+    @apply p-3;
+  }
+
+  tbody > tr > td:last-child {
+    @apply pl-3 pr-8 py-2;
+  }
+
+  .grid-cards {
+    @apply grid-cols-3 gap-8 1.5xl:grid-cols-2 1.5md:grid-cols-1;
+  }
+
+  /* Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  /** SLIDER STYLE */
+
+  input[type="range"] {
+    -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+    @apply w-[200px] mt-[5px] cursor-pointer rounded-full bg-transparent;
+  }
+
+  input[type="range"].disabled {
+    @apply cursor-default;
+  }
+
+  /** Slider Thumb **/
+
+  /* WebKit (Chrome, Safari) */
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: solid theme("colors.secondary.200") 1px;
+    @apply relative h-[20px] w-[20px] rounded-full bg-white-full;
+  }
+
+  input[type="range"].showDetail::-webkit-slider-thumb {
+    @apply border border-secondary-50;
+  }
+  input[type="range"].disabled::-webkit-slider-thumb {
+    border: solid #6e6c7c 1px;
+  }
+
+  /* Firefox */
+  input[type="range"]::-moz-range-thumb {
+    @apply h-[18.7px] w-[18.7px] border border-secondary-200 mt-[1px] rounded-full bg-white-full;
+  }
+
+  input[type="range"].showDetail::-moz-range-thumb {
+    @apply border border-secondary-50;
+  }
+  input[type="range"].disabled::-moz-range-thumb {
+    border: solid #6e6c7c 1px;
+  }
+
+  /* IE */
+  input[type="range"]::-ms-thumb {
+    @apply h-[20px] w-[20px] rounded-full bg-white-full;
+  }
+
+  input[type="range"].showDetail::-ms-thumb {
+    @apply border border-secondary-50;
+  }
+  input[type="range"].disabled::-ms-thumb {
+    border: solid #6e6c7c 1px;
+  }
+
+  /* Track */
+
+  /* WebKit (Chrome, Safari) */
+  input[type="range"]::-webkit-slider-runnable-track {
+    @apply w-full h-[20px];
+  }
+
+  /* Firefox */
+  input[type="range"]::-moz-range-track {
+    @apply w-full h-[2px];
+  }
+
+  /* IE */
+  input[type="range"]::-ms-track {
+    @apply w-full h-[2px] bg-transparent border-transparent text-transparent;
+  }
+  input[type="range"]::-ms-fill-lower {
+    @apply bg-secondary-200;
+  }
+  input[type="range"]::-ms-fill-upper {
+    @apply bg-secondary-300;
+  }
+
+  /* Tooltip */
+  .sliderTooltip span {
+    @apply absolute left-[50%] w-[30px] h-[24px] leading-[24px] text-center bg-surface text-white-emphasis text-caption block translate-x-[-50%] rounded-md;
+  }
+}
+
+/* Toasts override styles in `react-toastify/dist/ReactToastify.css` */
+.Toastify__toast-container {
+  z-index: 99 !important;
+  max-width: 360px !important;
+  min-width: 360px !important;
+}
+
+.Toastify__toast--default {
+  background: #2d2755 !important;
+  max-width: 360px !important;
+  min-width: 360px !important;
+  border-radius: 16px !important;
+}
+
+.Toastify__toast {
+  padding: 20px 28px 20px 22px !important;
+  overflow: visible !important;
+}
+
+.Toastify__toast-body {
+  padding: 0 !important;
+}
+
+@media (max-width: 767px) {
+  .Toastify__toast-container {
+    min-width: 280px !important;
+    width: 100% !important;
+    padding: 0 20px !important;
+    right: 0 !important;
+    left: unset !important;
+  }
+
+  .Toastify__toast--default {
+    min-width: 280px !important;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .Toastify__toast {
+    padding: 16px !important;
+  }
+}
+
+/** CHARTS */
+.highcharts-background {
+  fill-opacity: 0;
+}
