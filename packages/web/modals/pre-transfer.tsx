@@ -49,7 +49,7 @@ export const PreTransferModal: FunctionComponent<
         <div className="flex flex-col gap-2 items-center">
           <h6>{selectedToken.currency.coinDenom}</h6>
           <span className="subtitle2 text-iconDefault">
-            {selectedToken.toString()}
+            {selectedToken.trim(true).toString()}
           </span>
         </div>
         {isUnstable && <Info message={UNSTABLE_MSG} isMobile={isMobile} />}

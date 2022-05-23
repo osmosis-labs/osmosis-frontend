@@ -30,7 +30,10 @@ const Assets: NextPage = observer(() => {
       {!isMobile && <PoolAssets />}
       <ChainAssets />
       <section className="bg-surface py-2">
-        <DepoolingTable className="p-10 max-w-container mx-auto" />
+        <DepoolingTable
+          className="p-10 md:p-5 max-w-container mx-auto"
+          tableClassName="md:w-screen md:-mx-5"
+        />
       </section>
     </main>
   );
