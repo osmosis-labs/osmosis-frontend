@@ -1,3 +1,4 @@
+import { WalletStatus } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Pool } from "@osmosis-labs/pools";
@@ -554,12 +555,17 @@ export const TradeClipboard: FunctionComponent<{
             color={showWarningSlippage ? "error" : "primary"}
             className="mt-[1.125rem] flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
             disabled={
-              tradeTokenInConfig.error !== undefined ||
-              tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
-              account.txTypeInProgress !== ""
+              account.walletStatus === WalletStatus.Loaded &&
+              (tradeTokenInConfig.error !== undefined ||
+                tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
+                account.txTypeInProgress !== "")
             }
             loading={account.txTypeInProgress !== ""}
             onClick={async () => {
+              if (account.walletStatus !== WalletStatus.Loaded) {
+                return account.init();
+              }
+
               if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
                 const routes: {
                   poolId: string;
@@ -643,7 +649,23 @@ export const TradeClipboard: FunctionComponent<{
               }
             }}
           >
-            {showWarningSlippage ? "Swap Anyway" : "Swap"}
+            {account.walletStatus === WalletStatus.Loaded ? (
+              showWarningSlippage ? (
+                "Swap Anyway"
+              ) : (
+                "Swap"
+              )
+            ) : (
+              <div className="flex items-center gap-1">
+                <Image
+                  alt="wallet"
+                  src="/icons/wallet.svg"
+                  height={24}
+                  width={24}
+                />
+                <span>Connect Wallet</span>
+              </div>
+            )}
           </Button>
         )}
       </div>
