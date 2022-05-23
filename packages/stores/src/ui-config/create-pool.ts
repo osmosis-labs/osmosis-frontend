@@ -5,9 +5,9 @@ import {
   ChainGetter,
   IQueriesStore,
 } from "@keplr-wallet/stores";
+import { AmountConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
-import { ObservableAmountConfig } from "./amount-config";
 import { CREATE_POOL_MAX_ASSETS } from ".";
 
 export interface CreatePoolConfigOpts {
@@ -31,7 +31,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
   @observable.shallow
   protected _assets: {
     percentage: string;
-    amountConfig: ObservableAmountConfig;
+    amountConfig: AmountConfig;
   }[] = [];
 
   @observable
@@ -71,7 +71,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
   get assets(): {
     percentage: string;
-    amountConfig: ObservableAmountConfig;
+    amountConfig: AmountConfig;
   }[] {
     return this._assets;
   }
@@ -116,7 +116,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
       return (
         this.assets.find(
           (asset) =>
-            asset.amountConfig.currency.coinMinimalDenom ===
+            asset.amountConfig.sendCurrency.coinMinimalDenom ===
             cur.coinMinimalDenom
         ) == null
       );
@@ -199,16 +199,14 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
   @action
   addAsset(currency: AppCurrency) {
-    const config = new ObservableAmountConfig(
+    const config = new AmountConfig(
       this.chainGetter,
       this._queriesStore,
       this.chainId,
       this.sender,
-      currency
+      this.feeConfig
     );
-    if (this.feeConfig) {
-      config.setFeeConfig(this.feeConfig);
-    }
+    config.setSendCurrency(currency);
 
     if (this.canAddAsset) {
       this._assets.push({

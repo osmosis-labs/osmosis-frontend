@@ -1,9 +1,9 @@
 import Head from "next/head";
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { AmountConfig } from "@keplr-wallet/hooks";
 import {
   ObservableAddLiquidityConfig,
-  ObservableAmountConfig,
   ObservableQueryGuageById,
   ObservableRemoveLiquidityConfig,
   ObservableTradeTokenInConfig,
@@ -338,6 +338,16 @@ const Pool: FunctionComponent = observer(() => {
   const [addLiquidityConfig, removeLiquidityConfig, lockLPTokensConfig] =
     useMemo(() => {
       if (pool) {
+        const amountConfig = new AmountConfig(
+          chainStore,
+          queriesStore,
+          chainId,
+          bech32Address,
+          undefined
+        );
+        amountConfig.setSendCurrency(
+          queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id)
+        );
         return [
           new ObservableAddLiquidityConfig(
             chainStore,
@@ -359,13 +369,7 @@ const Pool: FunctionComponent = observer(() => {
             queryOsmosis.queryGammPools,
             "50"
           ),
-          new ObservableAmountConfig(
-            chainStore,
-            queriesStore,
-            chainId,
-            bech32Address,
-            queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id)
-          ),
+          amountConfig,
         ];
       }
       return [undefined, undefined, undefined, undefined];
@@ -491,7 +495,11 @@ const Pool: FunctionComponent = observer(() => {
               ) {
                 await account.osmosis.sendJoinSwapExternAmountInMsg(
                   addLiquidityConfig.poolId,
-                  addLiquidityConfig.singleAmountInConfig,
+                  {
+                    currency:
+                      addLiquidityConfig.singleAmountInConfig.sendCurrency,
+                    amount: addLiquidityConfig.singleAmountInConfig.amount,
+                  },
                   undefined,
                   undefined,
                   () => setShowManageLiquidityDialog(false)
@@ -638,7 +646,7 @@ const Pool: FunctionComponent = observer(() => {
                     await account.osmosis.sendLockAndSuperfluidDelegateMsg(
                       [
                         {
-                          currency: lockLPTokensConfig.currency,
+                          currency: lockLPTokensConfig.sendCurrency,
                           amount: lockLPTokensConfig.amount,
                         },
                       ],

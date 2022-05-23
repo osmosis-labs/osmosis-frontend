@@ -13,11 +13,11 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
+import { AmountConfig } from "@keplr-wallet/hooks";
 import {
   ObservableQueryPools,
   ObservableQueryGammPoolShare,
 } from "../../queries";
-import { ObservableAmountConfig } from "../amount-config";
 import { ManageLiquidityConfigBase } from "./base";
 import { OSMO_MEDIUM_TX_FEE } from ".";
 
@@ -46,7 +46,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   protected _cacheAmountConfigs?: {
     poolId: string;
     sender: string;
-    configs: ObservableAmountConfig[];
+    configs: AmountConfig[];
   };
 
   constructor(
@@ -92,17 +92,17 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
       (asset) =>
         this.isSingleAmountIn &&
         asset.currency.coinDenom ===
-          this.singleAmountInConfig?.currency.coinDenom
+          this.singleAmountInConfig?.sendCurrency.coinDenom
     );
   }
 
   /*
-	 Return the `ObservableAmountConfig` of selected single amount in.
+	 Return the `AmountConfig` of selected single amount in.
 	 Return undefined if the mode is no single amount in
 	 or `this._singleAmountInConfigIndex` is out of range in poolAssetConfigs.
 	 */
   @computed
-  get singleAmountInConfig(): ObservableAmountConfig | undefined {
+  get singleAmountInConfig(): AmountConfig | undefined {
     if (!this.isSingleAmountIn) {
       return;
     }
@@ -131,7 +131,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   @action
   setSingleAmountInConfig(coinDenom: string) {
     const poolAssetIndex = this.poolAssetConfigs.findIndex(
-      (assetConfig) => assetConfig.currency.coinDenom === coinDenom
+      (assetConfig) => assetConfig.sendCurrency.coinDenom === coinDenom
     );
 
     if (poolAssetIndex !== -1) {
@@ -153,7 +153,8 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
 
       const poolAsset = this.poolAssets.find(
         (asset) =>
-          asset.currency.coinMinimalDenom === config.currency.coinMinimalDenom
+          asset.currency.coinMinimalDenom ===
+          config.sendCurrency.coinMinimalDenom
       );
       if (!poolAsset) {
         return;
@@ -175,10 +176,10 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
                   .toDec()
                   .add(
                     new CoinPretty(
-                      config.currency,
+                      config.sendCurrency,
                       new Dec(config.amount).mul(
                         DecUtils.getTenExponentNInPrecisionRange(
-                          config.currency.coinDecimals
+                          config.sendCurrency.coinDecimals
                         )
                       )
                     ).toDec()
@@ -201,7 +202,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   }
 
   @computed
-  get poolAssetConfigs(): ObservableAmountConfig[] {
+  get poolAssetConfigs(): AmountConfig[] {
     const pool = this._queryPools.getPool(this._poolId);
     if (!pool) {
       return [];
@@ -217,13 +218,15 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
         poolId: pool.id,
         sender: this.sender,
         configs: pool.poolAssets.map((asset) => {
-          return new ObservableAmountConfig(
+          const config = new AmountConfig(
             this.chainGetter,
             this._queriesStore,
             this.chainId,
             this.sender,
-            asset.amount.currency
+            undefined
           );
+          config.setSendCurrency(asset.amount.currency);
+          return config;
         }),
       };
     }
@@ -287,7 +290,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
       const poolAsset = this.poolAssets.find(
         (asset) =>
           asset.currency.coinMinimalDenom ===
-          amountConfig.currency.coinMinimalDenom
+          amountConfig.sendCurrency.coinMinimalDenom
       );
 
       if (tokenInAmount.toDec().equals(new Dec(0))) {
@@ -322,7 +325,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
         const poolAsset = this.poolAssets.find(
           (asset) =>
             asset.currency.coinMinimalDenom ===
-            otherConfig.currency.coinMinimalDenom
+            otherConfig.sendCurrency.coinMinimalDenom
         );
 
         if (!poolAsset) {
@@ -355,7 +358,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   getSenderBalanceAt(index: number): CoinPretty {
     return this._queryBalances
       .getQueryBech32Address(this._sender)
-      .getBalanceFromCurrency(this.poolAssetConfigs[index].currency);
+      .getBalanceFromCurrency(this.poolAssetConfigs[index].sendCurrency);
   }
 
   @action
@@ -371,7 +374,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     const balancePrettyList = this.poolAssetConfigs.map((poolAssetConfig) =>
       this._queryBalances
         .getQueryBech32Address(this.sender)
-        .getBalanceFromCurrency(poolAssetConfig.currency)
+        .getBalanceFromCurrency(poolAssetConfig.sendCurrency)
     );
     if (
       balancePrettyList.some((balancePretty) =>
@@ -425,7 +428,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
       feasibleMaxFound = true;
 
       const osmoIndex = this.poolAssetConfigs.findIndex((poolAssetConfig) => {
-        return poolAssetConfig.currency.coinMinimalDenom === "uosmo";
+        return poolAssetConfig.sendCurrency.coinMinimalDenom === "uosmo";
       });
 
       if (osmoIndex !== -1) {
@@ -461,7 +464,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
       const baseOutAmountInfo = outAmountInfoList.find((outAmountInfo) => {
         return (
           outAmountInfo.coinMinimalDenom ===
-          this.poolAssetConfigs[0].currency.coinMinimalDenom
+          this.poolAssetConfigs[0].sendCurrency.coinMinimalDenom
         );
       });
       if (!baseOutAmountInfo) return;

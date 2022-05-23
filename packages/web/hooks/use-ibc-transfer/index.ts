@@ -7,13 +7,13 @@ import {
   WalletStatus,
 } from "@keplr-wallet/stores";
 import {
-  ObservableAmountConfig,
   basicIbcTransfer,
   OsmosisAccount,
   IBCTransferHistory,
   UncommitedHistory,
   FakeFeeConfig,
 } from "@osmosis-labs/stores";
+import { AmountConfig } from "@keplr-wallet/hooks";
 import { useStore } from "../../stores";
 import { useCustomBech32Address } from "./use-custom-bech32address";
 import { IbcTransfer, CustomCounterpartyConfig } from ".";
@@ -39,7 +39,7 @@ export function useIbcTransfer({
 }: IbcTransfer): [
   AccountSetBase & CosmosAccount & CosmwasmAccount & OsmosisAccount,
   AccountSetBase & CosmosAccount & CosmwasmAccount & OsmosisAccount,
-  ObservableAmountConfig,
+  AmountConfig,
   boolean,
   (
     /** Handle IBC transfer events containing `send_packet` event type. */
@@ -57,26 +57,6 @@ export function useIbcTransfer({
   const account = accountStore.getAccount(chainId);
   const counterpartyAccount = accountStore.getAccount(counterpartyChainId);
 
-  const amountConfig = useMemo(
-    () =>
-      new ObservableAmountConfig(
-        chainStore,
-        queriesStore,
-        isWithdraw ? chainId : counterpartyChainId,
-        isWithdraw ? account.bech32Address : counterpartyAccount.bech32Address,
-        isWithdraw ? currency : currency.originCurrency!
-      ),
-    [
-      chainStore,
-      queriesStore,
-      isWithdraw,
-      chainId,
-      counterpartyChainId,
-      account.bech32Address,
-      counterpartyAccount,
-      currency,
-    ]
-  );
   const feeConfig = useMemo(
     () =>
       new FakeFeeConfig(
@@ -86,16 +66,27 @@ export function useIbcTransfer({
           ? account.cosmos.msgOpts.ibcTransfer.gas
           : counterpartyAccount.cosmos.msgOpts.ibcTransfer.gas
       ),
-    [
-      chainStore,
-      isWithdraw,
-      chainId,
-      account,
-      counterpartyAccount,
-      counterpartyChainId,
-    ]
+    // eslint-disable-next-line
+    [chainId, chainStore, account, counterpartyAccount]
   );
-  amountConfig.setFeeConfig(feeConfig);
+  const amountConfig = useMemo(() => {
+    const config = new AmountConfig(
+      chainStore,
+      queriesStore,
+      isWithdraw ? chainId : counterpartyChainId,
+      isWithdraw ? account.bech32Address : counterpartyAccount.bech32Address,
+      feeConfig
+    );
+    config.setSendCurrency(isWithdraw ? currency : currency.originCurrency!);
+    return config;
+    // eslint-disable-next-line
+  }, [
+    chainStore,
+    queriesStore,
+    account.bech32Address,
+    counterpartyAccount.bech32Address,
+    feeConfig,
+  ]);
   const [customBech32Address, isCustomAddressValid, setCustomBech32Address] =
     useCustomBech32Address();
   const customCounterpartyConfig: CustomCounterpartyConfig | undefined =

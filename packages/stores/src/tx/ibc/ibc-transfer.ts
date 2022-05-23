@@ -1,7 +1,7 @@
 import { IBCCurrency } from "@keplr-wallet/types";
+import { AmountConfig } from "@keplr-wallet/hooks";
 import { Buffer } from "buffer";
 import { IBCTransferHistory, UncommitedHistory } from "../../ibc-history";
-import { ObservableAmountConfig } from "../../ui-config";
 import { IbcTransferSender, IbcTransferCounterparty } from "./types";
 
 /** Use to perform a standard IBC transfer from `sender` to `counterparty`. Supports CW20 transfers. */
@@ -11,7 +11,7 @@ export async function basicIbcTransfer(
   /** Where the tokens should end up. */
   counterparty: IbcTransferCounterparty,
   currency: IBCCurrency,
-  amountConfig: ObservableAmountConfig,
+  amountConfig: AmountConfig,
   /** Handle when the IBC trasfer successfully broadcast to relayers. */
   onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void,
   /** Handle IBC transfer events containing `send_packet` event type. */
@@ -154,7 +154,7 @@ export async function basicIbcTransfer(
         counterpartyChainId: counterparty.chainId,
       },
       amountConfig.amount,
-      amountConfig.currency,
+      amountConfig.sendCurrency,
       recipient,
       "",
       undefined,

@@ -20,7 +20,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
   const series = useMemo(() => {
     return generateSeries(
       config.assets.map((asset) => ({
-        currency: asset.amountConfig.currency,
+        currency: asset.amountConfig.sendCurrency,
         percentage: asset.percentage,
         amount: asset.amountConfig.amount,
       }))
@@ -52,8 +52,11 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
               <span>Amount</span>
             </div>
             {config.assets.map(
-              ({ percentage, amountConfig: { currency, amount } }, index) => (
-                <div key={currency.coinDenom}>
+              (
+                { percentage, amountConfig: { sendCurrency, amount } },
+                index
+              ) => (
+                <div key={sendCurrency.coinDenom}>
                   <div className="flex items-center place-content-between">
                     <div className="flex items-center">
                       <figure
@@ -63,9 +66,11 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
                         }}
                       />
                       {isMobile ? (
-                        <span className="subtitle2">{currency.coinDenom}</span>
+                        <span className="subtitle2">
+                          {sendCurrency.coinDenom}
+                        </span>
                       ) : (
-                        <h6>{currency.coinDenom}</h6>
+                        <h6>{sendCurrency.coinDenom}</h6>
                       )}
                     </div>
                     {isMobile ? (
@@ -75,9 +80,9 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
                     )}
                   </div>
                   <div className="flex items-center place-content-between">
-                    {"paths" in currency ? (
+                    {"paths" in sendCurrency ? (
                       <span className="subtitle2 md:caption md:text-sm text-iconDefault">
-                        {(currency as IBCCurrency).paths
+                        {(sendCurrency as IBCCurrency).paths
                           .map((path) => path.channelId)
                           .join(", ")}
                       </span>

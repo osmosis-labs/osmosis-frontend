@@ -150,7 +150,7 @@ const Pools: NextPage = observer(function () {
                     .toString(),
                   token: {
                     amount: asset.amountConfig.amount,
-                    currency: asset.amountConfig.currency,
+                    currency: asset.amountConfig.sendCurrency,
                   },
                 })),
                 "",

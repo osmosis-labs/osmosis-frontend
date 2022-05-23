@@ -19,18 +19,18 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
         <div className="flex flex-col gap-2.5">
           {config.assets.map(({ amountConfig, percentage }, index) => (
             <div
-              key={amountConfig.currency.coinDenom}
+              key={amountConfig.sendCurrency.coinDenom}
               className="h-24 md:h-auto flex px-7 md:p-2.5 items-center place-content-between border border-white-faint rounded-2xl"
             >
               <TokenSelect
-                selectedTokenDenom={amountConfig.currency.coinDenom}
+                selectedTokenDenom={amountConfig.sendCurrency.coinDenom}
                 tokens={config.sendableCurrencies}
                 onSelect={(coinDenom) => {
                   const currency = config.remainingSelectableCurrencies.find(
                     (currency) => currency.coinDenom === coinDenom
                   );
                   if (currency) {
-                    amountConfig.setCurrency(currency);
+                    amountConfig.setSendCurrency(currency);
                   }
                 }}
                 isMobile={isMobile}

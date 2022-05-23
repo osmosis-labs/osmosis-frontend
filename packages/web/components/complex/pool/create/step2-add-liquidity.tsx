@@ -16,11 +16,11 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
       <StepBase step={2} {...props}>
         <div className="flex flex-col gap-2.5">
           {config.assets.map(({ percentage, amountConfig }) => {
-            const currency = amountConfig.currency;
+            const currency = amountConfig.sendCurrency;
 
             return (
               <div
-                key={amountConfig.currency.coinDenom}
+                key={amountConfig.sendCurrency.coinDenom}
                 className="h-24 md:h-fit flex px-7 md:p-2 items-center place-content-between border border-white-faint rounded-2xl"
               >
                 <div className="flex items-center group">
@@ -54,7 +54,7 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                       Balance:{" "}
                       {config.queryBalances
                         .getQueryBech32Address(config.sender)
-                        .getBalanceFromCurrency(amountConfig.currency)
+                        .getBalanceFromCurrency(amountConfig.sendCurrency)
                         .toString()}
                     </span>
                     <Button

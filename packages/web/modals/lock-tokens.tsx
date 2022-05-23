@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { Duration } from "dayjs/plugin/duration";
 import classNames from "classnames";
 import { RatePretty, CoinPretty } from "@keplr-wallet/unit";
-import { ObservableAmountConfig } from "@osmosis-labs/stores";
+import { AmountConfig } from "@keplr-wallet/hooks";
 import { InputBox } from "../components/input";
 import { Error } from "../components/alert";
 import { CheckBox } from "../components/control";
@@ -20,7 +20,7 @@ export const LockTokensModal: FunctionComponent<
       apr: RatePretty;
       superfluidApr?: RatePretty;
     }[];
-    amountConfig: ObservableAmountConfig;
+    amountConfig: AmountConfig;
     availableToken?: CoinPretty;
     /** `electSuperfluid` is left undefined if it is irrelevant- if the user has already opted into superfluid in the past. */
     onLockToken: (gaugeId: string, electSuperfluid?: boolean) => void;
