@@ -43,6 +43,7 @@ export const LockTokensModal: FunctionComponent<
   const [selectedGaugeIndex, setSelectedGaugeIndex] = useState<number | null>(
     null
   );
+  const highestGaugeSelected = selectedGaugeIndex === gauges.length - 1;
   const [electSuperfluid, setElectSuperfluid] = useState(true);
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
@@ -93,7 +94,7 @@ export const LockTokensModal: FunctionComponent<
             ))}
           </div>
         </div>
-        {!hasSuperfluidValidator && (
+        {!hasSuperfluidValidator && highestGaugeSelected && (
           <div className="flex gap-2 ml-auto">
             <CheckBox
               className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"

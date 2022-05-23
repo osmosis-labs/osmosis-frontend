@@ -77,7 +77,9 @@ module.exports = {
         lightGrey: "#B7B7B7",
       },
       background: IS_FRONTIER ? "#221B18" : "#170F34",
-      modalOverlay: IS_FRONTIER ? "#383532" : "rgba(23, 15, 52, 0.8)",
+      modalOverlay: IS_FRONTIER
+        ? "rgb(56, 53, 50, 0.8)"
+        : "rgba(23, 15, 52, 0.8)",
       surface: IS_FRONTIER ? "#282421" : "#231D4B",
       card: IS_FRONTIER ? "#2E2C2F" : "#2D2755",
       cardInner: IS_FRONTIER ? "#383532" : "#3C356D",
