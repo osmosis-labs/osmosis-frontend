@@ -49,7 +49,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
         </div>
         <div
           className={classNames(
-            "z-40 fixed w-sidebar h-full bg-card flex flex-col px-5 py-6 overflow-y-scroll",
+            "z-40 fixed w-sidebar h-full bg-card flex flex-col px-5 py-6 overflow-y-auto",
             {
               hidden: !showSidebar && isMobile,
             }

@@ -24,7 +24,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
     : undefined;
 
   return (
-    <div onClick={(e) => e.stopPropagation()}>
+    <div className="mt-4" onClick={(e) => e.stopPropagation()}>
       {osmoPrice && (
         <div className="flex place-content-between text-caption mb-4">
           <div className="flex gap-2">
