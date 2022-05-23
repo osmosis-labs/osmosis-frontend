@@ -19,22 +19,15 @@ export interface PoolCompositionCell extends BaseCell {
  */
 export const PoolCompositionCell: FunctionComponent<
   Partial<PoolCompositionCell>
-> = ({ rowHovered, poolId, poolAssets, isIncentivized = false }) => (
+> = ({ poolId, poolAssets, isIncentivized = false }) => (
   <div className="flex items-center">
     <PoolAssetsIcon assets={poolAssets} size="sm" />
     <div className="ml-4 mr-1 flex flex-col items-start text-white-full">
       <PoolAssetsName
         size="sm"
         assetDenoms={poolAssets?.map((asset) => asset.coinDenom)}
-        className={classNames({
-          "text-secondary-200": rowHovered,
-        })}
       />
-      <span
-        className={classNames("text-sm font-caption opacity-60", {
-          "text-secondary-600": rowHovered,
-        })}
-      >
+      <span className={classNames("text-sm font-caption opacity-60")}>
         Pool #{poolId}
       </span>
     </div>

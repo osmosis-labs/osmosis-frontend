@@ -222,7 +222,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     const tableRows: RowDef[] = useMemo(
       () =>
         allData.map((poolWithFeeMetrics) => ({
-          makeHoverClass: () => "text-secondary-200",
           link: `/pool/${poolWithFeeMetrics.pool.id}`,
         })),
       [allData]
