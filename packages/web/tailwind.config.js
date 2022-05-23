@@ -80,7 +80,7 @@ module.exports = {
       modalOverlay: IS_FRONTIER ? "#383532" : "rgba(23, 15, 52, 0.8)",
       surface: IS_FRONTIER ? "#282421" : "#231D4B",
       card: IS_FRONTIER ? "#2E2C2F" : "#2D2755",
-      cardInner: "#3C356D",
+      cardInner: IS_FRONTIER ? "#383532" : "#3C356D",
       cardInfoPlaceholder: "#3E3866",
       iconDefault: IS_FRONTIER ? "#8E867B" : "#8E83AA",
       error: IS_FRONTIER ? "#E91F4F" : "#EF3456",
@@ -160,9 +160,12 @@ module.exports = {
       "gradients-orangeCoral":
         "linear-gradient(180deg, #FF8200 0%, #FF2C00 100%)",
       "gradients-pinky": "linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)",
-      "gradients-clip": "linear-gradient(180deg, #3A3369 0%, #231D4B 100%)",
-      "gradients-clipInner":
-        "linear-gradient(180deg, #332C61 0%, #312A5D 10.94%, #2D2755 100%)",
+      "gradients-clip": IS_FRONTIER
+        ? "linear-gradient(180deg, #F8C259 0%, #B38203 100%)"
+        : "linear-gradient(180deg, #3A3369 0%, #231D4B 100%)",
+      "gradients-clipInner": IS_FRONTIER
+        ? "linear-gradient(180deg, #F8C259 0%, #F8C259 10.94%, #B38203 100%)"
+        : "linear-gradient(180deg, #332C61 0%, #312A5D 10.94%, #2D2755 100%)",
       "home-bg-pattern": IS_FRONTIER
         ? "url('/images/osmosis-home-bg-pattern-frontier.svg')"
         : "url('/images/osmosis-home-bg-pattern.svg')",

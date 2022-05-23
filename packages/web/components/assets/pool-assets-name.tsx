@@ -14,7 +14,9 @@ export const PoolAssetsName: FunctionComponent<{
       ? `${assetDenoms.length} Token Pool`
       : assetDenoms
           .map((asset) =>
-            asset.startsWith("ibc/") ? truncateString(asset) : asset
+            asset.startsWith("ibc/")
+              ? truncateString(asset)
+              : truncateString(asset, 16)
           )
           .join(size === "sm" ? "/" : " / ");
   return size === "sm" ? (

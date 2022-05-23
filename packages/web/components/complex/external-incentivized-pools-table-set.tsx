@@ -160,14 +160,19 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
           ? {
               currentDirection: sortDirection,
               onClickHeader: () => {
-                // cycle ascending => descending => initial
                 switch (sortDirection) {
                   case "ascending":
                     setSortDirection("descending");
                     break;
                   case "descending":
-                    setSortKeyPath(initialKeyPath);
-                    setSortDirection(initialSortDirection);
+                    if (sortKeyPath === initialKeyPath) {
+                      // default sort key toggles forever
+                      setSortDirection("ascending");
+                    } else {
+                      // other keys toggle then go back to default
+                      setSortKeyPath(initialKeyPath);
+                      setSortDirection(initialSortDirection);
+                    }
                 }
               },
             }
@@ -183,7 +188,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       () => [
         {
           id: "pool.id",
-          display: "Pool ID",
+          display: "Pool Name",
           sort: makeSortMechanism("pool.id"),
           displayCell: PoolCompositionCell,
         },

@@ -14,6 +14,7 @@ export const AssetCard: FunctionComponent<
     metrics: Metric[];
     isSuperfluid?: boolean;
     onClick?: () => void;
+    showArrow?: boolean;
     contentClassName?: string;
   } & CustomClasses
 > = ({
@@ -23,6 +24,7 @@ export const AssetCard: FunctionComponent<
   metrics,
   isSuperfluid = false,
   onClick,
+  showArrow,
   className,
   contentClassName,
 }) => (
@@ -79,7 +81,7 @@ export const AssetCard: FunctionComponent<
             </span>
           ))}
         </div>
-        {onClick !== undefined && (
+        {onClick !== undefined && showArrow && (
           <Image
             alt="right"
             src="/icons/chevron-right.svg"

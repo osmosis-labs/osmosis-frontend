@@ -1,9 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
-import {
-  ChainGetter,
-  CoinGeckoPriceStore,
-  ObservableChainQuery,
-} from "@keplr-wallet/stores";
+import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { Dec, Int, RatePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
@@ -16,6 +12,7 @@ import {
   ObservableQueryMintParmas,
 } from "../mint";
 import { ObservableQueryPools } from "../pools";
+import { IPriceStore } from "../../price";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
 import { IncentivizedPools } from "./types";
@@ -89,7 +86,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
    * 가장 긴 lockable duration의 apy를 반환한다.
    */
   readonly computeMostAPY = computedFn(
-    (poolId: string, priceStore: CoinGeckoPriceStore): RatePretty => {
+    (poolId: string, priceStore: IPriceStore): RatePretty => {
       if (!this.isIncentivized(poolId)) {
         return new RatePretty(new Dec(0));
       }
@@ -126,7 +123,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     (
       poolId: string,
       duration: Duration,
-      priceStore: CoinGeckoPriceStore,
+      priceStore: IPriceStore,
       fiatCurrency: FiatCurrency
     ): RatePretty => {
       if (!this.isIncentivized(poolId)) {
@@ -181,7 +178,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
   protected computeAPYForSpecificDuration(
     poolId: string,
     duration: Duration,
-    priceStore: CoinGeckoPriceStore,
+    priceStore: IPriceStore,
     fiatCurrency: FiatCurrency
   ): RatePretty {
     const gaugeId = this.getIncentivizedGaugeId(poolId, duration);

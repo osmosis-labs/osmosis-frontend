@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import {
@@ -9,7 +10,6 @@ import {
 } from "@osmosis-labs/stores";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
-import { autorun } from "mobx";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -325,98 +325,85 @@ const Pool: FunctionComponent = observer(() => {
 
   // eject to pools page if pool does not exist
   useEffect(() => {
-    return autorun(() => {
-      if (queryOsmosis.queryGammPools.poolExists(poolId as string) === false) {
-        router.push("/pools");
-      }
-    });
-  });
+    if (queryOsmosis.queryGammPools.poolExists(poolId as string) === false) {
+      router.push("/pools");
+    }
+    // eslint-disable-next-line
+  }, []);
 
   // Manage liquidity + bond LP tokens (modals) state
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
     useState(false);
   const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
-  const [
-    addLiquidityConfig,
-    removeLiquidityConfig,
-    lockLPTokensConfig,
-    lockupGauges,
-  ] = useMemo(() => {
-    if (pool) {
-      return [
-        new ObservableAddLiquidityConfig(
-          chainStore,
-          chainId,
-          pool.id,
-          bech32Address,
-          queriesStore,
-          queryOsmosis.queryGammPoolShare,
-          queryOsmosis.queryGammPools,
-          queriesStore.get(chainId).queryBalances
-        ),
-        new ObservableRemoveLiquidityConfig(
-          chainStore,
-          chainId,
-          pool.id,
-          bech32Address,
-          queriesStore,
-          queryOsmosis.queryGammPoolShare,
-          queryOsmosis.queryGammPools,
-          "50"
-        ),
-        new ObservableAmountConfig(
-          chainStore,
-          queriesStore,
-          chainId,
-          bech32Address,
-          queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id)
-        ),
-        queryOsmosis.queryLockableDurations.lockableDurations.map(
-          (duration, index, durations) => {
-            const apr = pool
-              ? queryOsmosis.queryIncentivizedPools.computeAPY(
-                  pool.id,
-                  duration,
-                  priceStore,
-                  fiat
-                )
-              : undefined;
+  const [addLiquidityConfig, removeLiquidityConfig, lockLPTokensConfig] =
+    useMemo(() => {
+      if (pool) {
+        return [
+          new ObservableAddLiquidityConfig(
+            chainStore,
+            chainId,
+            pool.id,
+            bech32Address,
+            queriesStore,
+            queryOsmosis.queryGammPoolShare,
+            queryOsmosis.queryGammPools,
+            queriesStore.get(chainId).queryBalances
+          ),
+          new ObservableRemoveLiquidityConfig(
+            chainStore,
+            chainId,
+            pool.id,
+            bech32Address,
+            queriesStore,
+            queryOsmosis.queryGammPoolShare,
+            queryOsmosis.queryGammPools,
+            "50"
+          ),
+          new ObservableAmountConfig(
+            chainStore,
+            queriesStore,
+            chainId,
+            bech32Address,
+            queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id)
+          ),
+        ];
+      }
+      return [undefined, undefined, undefined, undefined];
+    }, [pool, chainStore, chainId, bech32Address, queriesStore, queryOsmosis]);
 
-            return {
-              id: index.toString(),
-              apr: apr ?? new RatePretty(0),
+  const lockupGauges =
+    queryOsmosis.queryLockableDurations.lockableDurations.map(
+      (duration, index, durations) => {
+        const apr = pool
+          ? queryOsmosis.queryIncentivizedPools.computeAPY(
+              pool.id,
               duration,
-              superfluidApr:
-                pool &&
-                index === durations.length - 1 &&
-                queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id)
-                  ? new RatePretty(
-                      queryCosmos.queryInflation.inflation
-                        .mul(
-                          queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
-                            pool.id
-                          )
-                        )
-                        .moveDecimalPointLeft(2)
+              priceStore,
+              fiat
+            )
+          : undefined;
+
+        return {
+          id: index.toString(),
+          apr: apr ?? new RatePretty(0),
+          duration,
+          superfluidApr:
+            pool &&
+            index === durations.length - 1 &&
+            queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id)
+              ? new RatePretty(
+                  queryCosmos.queryInflation.inflation
+                    .mul(
+                      queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
+                        pool.id
+                      )
                     )
-                  : undefined,
-            };
-          }
-        ),
-      ];
-    }
-    return [undefined, undefined, undefined, undefined];
-  }, [
-    pool,
-    chainStore,
-    chainId,
-    bech32Address,
-    queriesStore,
-    queryOsmosis,
-    queryCosmos,
-    priceStore,
-    fiat,
-  ]);
+                    .moveDecimalPointLeft(2)
+                )
+              : undefined,
+        };
+      }
+    );
 
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
     useState(false);
@@ -477,6 +464,9 @@ const Pool: FunctionComponent = observer(() => {
 
   return (
     <main>
+      <Head>
+        <title>Pool #{poolId}</title>
+      </Head>
       {pool && addLiquidityConfig && removeLiquidityConfig && (
         <ManageLiquidityModal
           isOpen={showManageLiquidityDialog}
@@ -538,7 +528,7 @@ const Pool: FunctionComponent = observer(() => {
       )}
       {tradeTokenInConfig && pool && (
         <TradeTokens
-          className="md:p-0"
+          className="md:!p-0"
           title={
             <h5 className="md:absolute md:text-h6 md:font-h6 top-[1.375rem] left-3 z-40">
               Swap Tokens

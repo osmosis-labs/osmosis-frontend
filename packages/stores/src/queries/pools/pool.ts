@@ -1,6 +1,5 @@
 import {
   ChainGetter,
-  CoinGeckoPriceStore,
   ObservableChainQuery,
   QueryResponse,
 } from "@keplr-wallet/stores";
@@ -17,6 +16,7 @@ import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
 import { Pool, WeightedPool, WeightedPoolRaw } from "@osmosis-labs/pools";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
+import { IPriceStore } from "src/price";
 
 export class ObservableQueryPool extends ObservableChainQuery<{
   pool: WeightedPoolRaw;
@@ -377,24 +377,22 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     }
   );
 
-  readonly computeTotalValueLocked = computedFn(
-    (priceStore: CoinGeckoPriceStore) => {
-      const fiatCurrency = priceStore.getFiatCurrency(
-        priceStore.defaultVsCurrency
-      )!;
-      let price = new PricePretty(fiatCurrency, 0);
+  readonly computeTotalValueLocked = computedFn((priceStore: IPriceStore) => {
+    const fiatCurrency = priceStore.getFiatCurrency(
+      priceStore.defaultVsCurrency
+    )!;
+    let price = new PricePretty(fiatCurrency, 0);
 
-      for (const poolAsset of this.poolAssets) {
-        const poolPrice = priceStore.calculatePrice(
-          poolAsset.amount,
-          fiatCurrency.currency
-        );
-        if (poolPrice) {
-          price = price.add(poolPrice);
-        }
+    for (const poolAsset of this.poolAssets) {
+      const poolPrice = priceStore.calculatePrice(
+        poolAsset.amount,
+        fiatCurrency.currency
+      );
+      if (poolPrice) {
+        price = price.add(poolPrice);
       }
-
-      return price;
     }
-  );
+
+    return price;
+  });
 }

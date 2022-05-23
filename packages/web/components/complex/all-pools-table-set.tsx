@@ -42,9 +42,7 @@ export const AllPoolsTableSet: FunctionComponent<{
       setActiveOptionId(optionId);
     }
   };
-  const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(
-    typeof window === "undefined"
-  );
+  const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 
   const { chainId } = chainStore.osmosis;
   const queriesOsmosis = queriesStore.get(chainId).osmosis!;
@@ -113,15 +111,16 @@ export const AllPoolsTableSet: FunctionComponent<{
     [isIncentivizedPools, incentivizedPoolsWithMetrics, allPoolsWithMetrics]
   );
 
-  const tvlFilteredPools = useMemo(
-    () =>
-      isPoolTvlFiltered
-        ? activeOptionPools
-        : activeOptionPools.filter((poolWithMetrics) =>
-            poolWithMetrics.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
-          ),
-    [isPoolTvlFiltered, activeOptionPools]
-  );
+  const tvlFilteredPools = useMemo(() => {
+    console.log("refresh filtered pools");
+    return isPoolTvlFiltered
+      ? activeOptionPools
+      : activeOptionPools.filter((poolWithMetrics) =>
+          poolWithMetrics.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
+        );
+  }, [isPoolTvlFiltered, activeOptionPools]);
+
+  console.log(tvlFilteredPools.length);
 
   const [query, setQuery, filteredPools] = useFilteredData(tvlFilteredPools, [
     "pool.id",
@@ -149,14 +148,19 @@ export const AllPoolsTableSet: FunctionComponent<{
         ? {
             currentDirection: sortDirection,
             onClickHeader: () => {
-              // cycle ascending => descending => initial
               switch (sortDirection) {
                 case "ascending":
                   setSortDirection("descending");
                   break;
                 case "descending":
-                  setSortKeyPath(initialKeyPath);
-                  setSortDirection(initialSortDirection);
+                  if (sortKeyPath === initialKeyPath) {
+                    // default sort key toggles forever
+                    setSortDirection("ascending");
+                  } else {
+                    // other keys toggle then go back to default
+                    setSortKeyPath(initialKeyPath);
+                    setSortDirection(initialSortDirection);
+                  }
               }
             },
           }
@@ -172,7 +176,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     () => [
       {
         id: "pool.id",
-        display: "Pool ID",
+        display: "Pool Name",
         sort: makeSortMechanism("pool.id"),
         displayCell: PoolCompositionCell,
       },
@@ -225,7 +229,11 @@ export const AllPoolsTableSet: FunctionComponent<{
         }));
 
         return [
-          { poolId, poolAssets },
+          {
+            poolId,
+            poolAssets,
+            isIncentivized: incentivizedPoolIds.some((id) => id === poolId),
+          },
           { value: poolWithMetrics.liquidity.toString() },
           {
             value: poolWithMetrics.volume24h.toString(),
@@ -245,7 +253,13 @@ export const AllPoolsTableSet: FunctionComponent<{
           },
         ];
       }),
-    [allData, isIncentivizedPools, queriesExternal, queriesOsmosis]
+    [
+      allData,
+      isIncentivizedPools,
+      incentivizedPoolIds,
+      queriesExternal,
+      queriesOsmosis,
+    ]
   );
 
   if (isMobile) {

@@ -37,7 +37,9 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
               />
               <div className="flex items-center md:gap-1 gap-2.5 text-h6 font-h6 md:subtitle1">
                 <Button
-                  className="!h-full md:p-1 md:py-0"
+                  className={classNames("!h-full md:p-1 md:py-0", {
+                    hidden: config.assets.length < 2,
+                  })}
                   color="secondary"
                   type="outline"
                   size="xs"
@@ -65,7 +67,7 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
             )}
             onClick={() => {
               const unusedAsset = config.remainingSelectableCurrencies.find(
-                (_, index) => index === 0
+                () => true
               );
               if (unusedAsset) {
                 config.addAsset(unusedAsset);

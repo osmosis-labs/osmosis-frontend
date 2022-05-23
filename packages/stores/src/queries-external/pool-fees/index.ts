@@ -1,9 +1,9 @@
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { KVStore } from "@keplr-wallet/common";
-import { CoinGeckoPriceStore } from "@keplr-wallet/stores";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { pow } from "@osmosis-labs/math";
+import { IPriceStore } from "../../price";
 import { ObservableQueryPool } from "../../queries/pools";
 import { ObservableQueryExternal } from "../store";
 import {
@@ -22,7 +22,7 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<Pool
   readonly makePoolWithFeeMetrics = computedFn(
     (
       pool: ObservableQueryPool,
-      priceStore: CoinGeckoPriceStore
+      priceStore: IPriceStore
     ): ObservablePoolWithFeeMetrics => {
       const poolFeesMetrics = this.getPoolFeesMetrics(pool.id, priceStore);
       const liquidity = pool.computeTotalValueLocked(priceStore);
@@ -36,7 +36,7 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<Pool
   );
 
   readonly getPoolFeesMetrics = computedFn(
-    (poolId: string, priceStore: CoinGeckoPriceStore): PoolFeesMetrics => {
+    (poolId: string, priceStore: IPriceStore): PoolFeesMetrics => {
       const fiatCurrency = priceStore.getFiatCurrency(
         priceStore.defaultVsCurrency
       );
@@ -90,7 +90,7 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<Pool
   readonly get7dPoolFeeApy = computedFn(
     (
       pool: ObservablePoolWithFeeMetrics,
-      priceStore: CoinGeckoPriceStore
+      priceStore: IPriceStore
     ): RatePretty => {
       const avgDayFeeRevenue = new Dec(
         pool.feesSpent7d.toDec().toString(),

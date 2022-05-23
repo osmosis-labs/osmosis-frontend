@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { FunctionComponent } from "react";
 import classNames from "classnames";
@@ -48,7 +49,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
         </div>
         <div
           className={classNames(
-            "z-40 fixed w-sidebar h-full bg-card flex flex-col px-5 py-6",
+            "z-40 fixed w-sidebar h-full bg-card flex flex-col px-5 py-6 overflow-y-scroll",
             {
               hidden: !showSidebar && isMobile,
             }
@@ -56,75 +57,76 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
         >
           <div className="h-full flex flex-col justify-between">
             <ul className="mt-32">
-              {menus.map((menu) => {
-                const selected = menu.selectionTest
-                  ? menu.selectionTest.test(router.pathname)
-                  : false;
-                return (
-                  <li key={menu.label} className="h-16 flex items-center">
-                    <Link href={menu.link} passHref>
-                      <a
-                        className={classNames(
-                          "flex items-center opacity-75 hover:opacity-100",
-                          {
-                            "opacity-100 transition-all": selected,
-                          }
-                        )}
-                        target={menu.selectionTest ? "_self" : "_blank"}
-                      >
-                        <div className="h-11 w-11 relative">
-                          <Image
-                            className="absolute top-0 left-0 transition-all"
-                            src={`${
-                              IS_FRONTIER
-                                ? "/icons/hexagon-border-white"
-                                : "/icons/hexagon-border"
-                            }${selected ? "-selected" : ""}.svg`}
-                            layout="fill"
-                            alt="menu icon border"
-                          />
-                          <div className="w-5 h-5 absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-                            <Image
-                              src={
-                                selected
-                                  ? menu.iconSelected ?? menu.icon
-                                  : menu.icon
-                              }
-                              width={20}
-                              height={20}
-                              alt="menu icon"
-                            />
-                          </div>
-                        </div>
-                        <p
+              {menus.map(
+                ({ label, link, icon, iconSelected, selectionTest }) => {
+                  const selected = selectionTest
+                    ? selectionTest.test(router.pathname)
+                    : false;
+                  return (
+                    <li key={label} className="h-16 flex items-center">
+                      <Head>
+                        {selected && <title key="title">{label}</title>}
+                      </Head>
+                      <Link href={link} passHref>
+                        <a
                           className={classNames(
-                            "ml-2.5 text-base overflow-x-hidden font-bold transition-all max-w-24",
-                            selected
-                              ? "text-white-high"
-                              : "text-iconDefault group-hover:text-white-mid"
+                            "flex items-center opacity-75 hover:opacity-100",
+                            {
+                              "opacity-100 transition-all": selected,
+                            }
                           )}
+                          target={selectionTest ? "_self" : "_blank"}
                         >
-                          {menu.label}
-                        </p>
-                        {!menu.selectionTest && (
-                          <div className="ml-2">
+                          <div className="h-11 w-11 relative">
                             <Image
-                              src={
+                              className="absolute top-0 left-0 transition-all"
+                              src={`${
                                 IS_FRONTIER
-                                  ? "/icons/link-deco-white.svg"
-                                  : "/icons/link-deco.svg"
-                              }
-                              alt="link"
-                              width={12}
-                              height={12}
+                                  ? "/icons/hexagon-border-white"
+                                  : "/icons/hexagon-border"
+                              }${selected ? "-selected" : ""}.svg`}
+                              layout="fill"
+                              alt="menu icon border"
                             />
+                            <div className="w-5 h-5 absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                              <Image
+                                src={selected ? iconSelected ?? icon : icon}
+                                width={20}
+                                height={20}
+                                alt="menu icon"
+                              />
+                            </div>
                           </div>
-                        )}
-                      </a>
-                    </Link>
-                  </li>
-                );
-              })}
+                          <p
+                            className={classNames(
+                              "ml-2.5 text-base overflow-x-hidden font-bold transition-all max-w-24",
+                              selected
+                                ? "text-white-high"
+                                : "text-iconDefault group-hover:text-white-mid"
+                            )}
+                          >
+                            {label}
+                          </p>
+                          {!selectionTest && (
+                            <div className="ml-2">
+                              <Image
+                                src={
+                                  IS_FRONTIER
+                                    ? "/icons/link-deco-white.svg"
+                                    : "/icons/link-deco.svg"
+                                }
+                                alt="link"
+                                width={12}
+                                height={12}
+                              />
+                            </div>
+                          )}
+                        </a>
+                      </Link>
+                    </li>
+                  );
+                }
+              )}
             </ul>
             <SidebarBottom />
           </div>

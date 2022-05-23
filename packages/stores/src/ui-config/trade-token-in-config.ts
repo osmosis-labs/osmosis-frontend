@@ -160,9 +160,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       });
   }
 
-  // TODO: Need to fix issue that shrink amount whenever it executed
   @action
   switchInAndOut() {
+    // give back the swap fee amount
     const outAmount = this.expectedSwapResult.amount;
     if (outAmount.toDec().isZero()) {
       this.setAmount("");
@@ -229,6 +229,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     afterSpotPriceOutOverIn: IntPretty;
     effectivePriceInOverOut: IntPretty;
     effectivePriceOutOverIn: IntPretty;
+    tokenInFeeAmount: CoinPretty;
     swapFee: RatePretty;
     slippage: RatePretty;
   } {
@@ -244,6 +245,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       afterSpotPriceOutOverIn: new IntPretty(0).ready(false),
       effectivePriceInOverOut: new IntPretty(0).ready(false),
       effectivePriceOutOverIn: new IntPretty(0).ready(false),
+      tokenInFeeAmount: new CoinPretty(this.sendCurrency, new Dec(0)).ready(
+        false
+      ),
       swapFee: new RatePretty(0).ready(false),
       slippage: new RatePretty(0).ready(false),
     };
@@ -307,6 +311,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
             result.effectivePriceOutOverIn.quoTruncate(multiplicationInOverOut)
           )
         : new IntPretty(0),
+      tokenInFeeAmount: new CoinPretty(
+        this.sendCurrency,
+        result.tokenInFeeAmount
+      ),
       swapFee: new RatePretty(result.swapFee),
       slippage: new RatePretty(result.slippage),
     };

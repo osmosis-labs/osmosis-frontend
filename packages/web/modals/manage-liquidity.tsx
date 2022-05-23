@@ -233,7 +233,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                       );
                     })}
                   </div>
-                  <div className="flex ml-auto">
+                  <div className="flex items-center ml-auto">
                     <CheckBox
                       className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
                       isOn={addLiquidityConfig.isSingleAmountIn}
@@ -247,7 +247,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                     </CheckBox>
                     <InfoTooltip
                       trigger="click mouseenter"
-                      className="mx-2.5 pt-1"
+                      className="mx-2.5"
                       content="'Auto-swap single asset' allows you to provide liquidity using one asset. This will impact the pool price of the asset you’re providing liquidity with."
                     />
                   </div>
@@ -306,7 +306,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                     max={100}
                     step={1}
                   />
-                  <div className="grid grid-cols-4 gap-5 h-9 w-full md:mb-6 mb-15">
+                  <div className="grid grid-cols-4 gap-5 h-9 w-full md:mb-6 mb-14">
                     <button
                       onClick={() => removeLiquidityConfig.setPercentage("25")}
                       disabled={removeLiquidityConfig.poolShareWithPercentage

@@ -11,6 +11,7 @@ import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { useStore } from "../../stores/";
 import { Overview } from "../../components/overview";
 import { AssetsTable } from "../../components/table/assets-table";
+import { DepoolingTable } from "../../components/table/depooling-table";
 import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards/";
 import { Metric } from "../../components/types";
@@ -28,6 +29,9 @@ const Assets: NextPage = observer(() => {
       <AssetsOverview />
       {!isMobile && <PoolAssets />}
       <ChainAssets />
+      <section className="bg-surface py-2">
+        <DepoolingTable className="p-10 max-w-container mx-auto" />
+      </section>
     </main>
   );
 });
