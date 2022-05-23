@@ -13,6 +13,14 @@ Our [frontend](https://app.osmosis.zone) is built with the following tools:
   - We deploy on [Vercel](https://vercel.com/solutions/nextjs?utm_source=next-site&utm_medium=banner&utm_campaign=next-website) for optimization (CDN, regions)
 - [lerna](https://lerna.js.org/): code organization; mono-repo management and libs release
 
+## Deployment 🚀
+
+Start web server
+
+```bash
+yarn && yarn build && yarn start
+```
+
 ### Contributing 👨‍💻
 
 We welcome and encourage contributions! We recommend looking for [issues labeled with "good-first-issue"](https://github.com/osmosis-labs/osmosis-frontend/contribute).
