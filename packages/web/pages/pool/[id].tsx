@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import {
@@ -463,6 +464,9 @@ const Pool: FunctionComponent = observer(() => {
 
   return (
     <main>
+      <Head>
+        <title>Pool #{poolId}</title>
+      </Head>
       {pool && addLiquidityConfig && removeLiquidityConfig && (
         <ManageLiquidityModal
           isOpen={showManageLiquidityDialog}
