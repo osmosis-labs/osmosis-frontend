@@ -61,7 +61,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
             },
             {
-              label: "Stats",
+              label: "Info",
               link: "https://info.osmosis.zone",
               icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
             },
