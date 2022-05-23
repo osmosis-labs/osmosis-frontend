@@ -183,7 +183,7 @@ const LockupItem: FunctionComponent<
     >
       <figure
         className={classNames(
-          "rounded-full w-4 h-4 mr-5 md:mr-4 flex-shrink-0",
+          "rounded-full w-4 h-4 mr-2 flex-shrink-0",
           isSelected
             ? "border-secondary-200 border-4 bg-white-high"
             : "border-iconDefault border"
