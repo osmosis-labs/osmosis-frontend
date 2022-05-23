@@ -1250,6 +1250,12 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
+	{
+		counterpartyChainId: 'evmos_9001-2',
+		sourceChannelId: 'channel-204',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'aevmos',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
