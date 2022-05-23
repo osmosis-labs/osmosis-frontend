@@ -395,26 +395,6 @@ export const IBCAssetInfos: (IBCAsset & {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
-    coinMinimalDenom: "uusdc",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&token=usdc",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&token=usdc",
-  },
-  {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
-    coinMinimalDenom: "weth-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&token=weth",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&token=weth",
-  },
-  {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
     coinMinimalDenom: "uusdt",
     depositUrlOverride:
       "https://satellite.money/?source=ethereum&destination=osmosis&token=usdt",
@@ -476,6 +456,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-232",
     destChannelId: "channel-0",
     coinMinimalDenom: "umntl",
+	  isVerified: true,
   },
   {
     counterpartyChainId: "juno-1",
@@ -522,6 +503,24 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "umeme",
   },
+  {
+		counterpartyChainId: "juno-1",
+		sourceChannelId: "channel-169",
+		destChannelId: "channel-47",
+		coinMinimalDenom:
+      "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
+		ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+	},
+  {
+		counterpartyChainId: "juno-1",
+		sourceChannelId: "channel-169",
+		destChannelId: "channel-47",
+		coinMinimalDenom:
+      "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
+		ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+	},
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;
