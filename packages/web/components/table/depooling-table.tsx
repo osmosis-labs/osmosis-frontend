@@ -1,6 +1,7 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo } from "react";
 import classNames from "classnames";
 import moment from "dayjs";
+import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { useWindowSize } from "../../hooks";
 import { Table } from ".";
@@ -9,37 +10,23 @@ import { CustomClasses } from "../types";
 
 export const DepoolingTable: FunctionComponent<
   { poolId?: string; tableClassName?: string } & CustomClasses
-> = ({ poolId, tableClassName, className }) => {
+> = observer(({ poolId, tableClassName, className }) => {
   const { chainStore, accountStore, queriesStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();
 
   const queriesOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getAccount(chainId);
+  const accountLockedResponse = queriesOsmosis.queryAccountLocked.get(
+    account.bech32Address
+  ).response;
 
-  const showDepoolingTable = (() => {
-    if (poolId && !UnPoolWhitelistedPoolIds[poolId]) {
-      return false;
-    }
-
-    // If has unlocking tokens except gamm lp share.
-    const accountLockedResponse = queriesOsmosis.queryAccountLocked.get(
-      account.bech32Address
-    ).response;
-    if (!accountLockedResponse) {
-      return false;
-    }
-
-    for (const lock of accountLockedResponse.data.locks) {
-      for (const coin of lock.coins) {
-        if (!coin.denom.startsWith("gamm/pool/")) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  })();
+  const showDepoolingTable =
+    (poolId && UnPoolWhitelistedPoolIds[poolId]) ||
+    (accountLockedResponse &&
+      accountLockedResponse.data.locks.find((lock) =>
+        lock.coins.some((coin) => coin.denom.startsWith("gamm/pool/"))
+      ));
 
   if (!showDepoolingTable) {
     return null;
@@ -85,4 +72,4 @@ export const DepoolingTable: FunctionComponent<
       />
     </div>
   );
-};
+});
