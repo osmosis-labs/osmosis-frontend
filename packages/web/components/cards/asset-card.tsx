@@ -55,7 +55,7 @@ export const AssetCard: FunctionComponent<
           (Array.isArray(coinImageUrl) ? (
             <PoolAssetsIcon assets={coinImageUrl} size="sm" />
           ) : (
-            <div className="w-[2.125rem] h-[2.125rem] rounded-full border border-enabledGold shrink-0 flex items-center justify-center">
+            <div className="w-[2.125rem] h-[2.125rem] rounded-full border border-enabledGold shrink-0 flex items-center justify-center overflow-hidden">
               <Image alt="asset" src={coinImageUrl} height={28} width={28} />
             </div>
           ))}

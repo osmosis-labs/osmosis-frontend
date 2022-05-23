@@ -8,6 +8,8 @@ interface Props {
   size?: "sm" | "md";
 }
 
+// TODO: handle one asset
+
 export const PoolAssetsIcon: FunctionComponent<Props> = ({
   assets,
   size = "md",

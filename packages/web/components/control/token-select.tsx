@@ -69,7 +69,7 @@ export const TokenSelect: FunctionComponent<
         >
           <div className="w-14 h-14 md:h-9 md:w-9 rounded-full border border-enabledGold flex items-center justify-center shrink-0 mr-3 md:mr-2">
             {selectedCurrency.coinImageUrl && (
-              <div className="w-11 h-11 md:h-7 md:w-7 rounded-full">
+              <div className="w-11 h-11 md:h-7 md:w-7 rounded-full overflow-hidden">
                 <Image
                   src={selectedCurrency.coinImageUrl}
                   alt="token icon"
@@ -155,7 +155,6 @@ export const TokenSelect: FunctionComponent<
                           <Image
                             src={coinImageUrl}
                             alt="token icon"
-                            className="rounded-full"
                             width={36}
                             height={36}
                           />

@@ -26,7 +26,7 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                 <div className="flex items-center group">
                   <div className="w-14 h-14 md:h-9 md:w-9 rounded-full border border-enabledGold flex items-center justify-center shrink-0 mr-3">
                     {currency.coinImageUrl && (
-                      <div className="w-11 h-11 md:h-7 md:w-7 rounded-full">
+                      <div className="w-11 h-11 md:h-7 md:w-7 rounded-full overflow-hidden">
                         <Image
                           src={currency.coinImageUrl}
                           alt="token icon"
