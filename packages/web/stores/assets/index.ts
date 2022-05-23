@@ -2,13 +2,12 @@ import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Dec, PricePretty, CoinPretty } from "@keplr-wallet/unit";
 import {
-  CoinGeckoPriceStore,
   CosmosQueries,
   CosmwasmQueries,
   QueriesStore,
 } from "@keplr-wallet/stores";
 import { ChainStore } from "../chain";
-import { OsmosisQueries } from "@osmosis-labs/stores";
+import { OsmosisQueries, IPriceStore } from "@osmosis-labs/stores";
 import { makeIBCMinimalDenom } from "./utils";
 import {
   IBCAsset,
@@ -32,7 +31,7 @@ export class ObservableAssets {
     protected readonly queriesStore: QueriesStore<
       [CosmosQueries, CosmwasmQueries, OsmosisQueries]
     >,
-    protected readonly priceStore: CoinGeckoPriceStore,
+    protected readonly priceStore: IPriceStore,
     protected readonly chainId: string,
     readonly getExternalTranferUrl?: (chainId: string) => {
       depositUrl?: string;

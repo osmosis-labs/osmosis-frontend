@@ -1,7 +1,6 @@
 import {
   AccountStore,
   ChainInfoInner,
-  CoinGeckoPriceStore,
   CosmosQueries,
   CosmosAccount,
   CosmwasmQueries,
@@ -20,12 +19,15 @@ import {
   OsmosisAccount,
   isSlippageError,
   prettifyTxError,
+  IPriceStore,
+  PoolFallbackPriceStore,
 } from "@osmosis-labs/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import { suggestChainFromWindow } from "../hooks/use-keplr/utils";
 import { displayToast, ToastType } from "../components/alert";
 import { ObservableAssets } from "./assets";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
+import { PoolPriceRoutes } from "../config";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -39,7 +41,7 @@ export class RootStore {
     [CosmosAccount, CosmwasmAccount, OsmosisAccount]
   >;
 
-  public readonly priceStore: CoinGeckoPriceStore;
+  public readonly priceStore: IPriceStore;
 
   public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
 
@@ -163,7 +165,9 @@ export class RootStore {
       OsmosisAccount.use({ queriesStore: this.queriesStore })
     );
 
-    this.priceStore = new CoinGeckoPriceStore(
+    this.priceStore = new PoolFallbackPriceStore(
+      this.chainStore.osmosis.chainId,
+      this.chainStore,
       makeIndexedKVStore("store_web_prices"),
       {
         usd: {
@@ -173,7 +177,11 @@ export class RootStore {
           locale: "en-US",
         },
       },
-      "usd"
+      "usd",
+      this.queriesStore.get(
+        this.chainStore.osmosis.chainId
+      ).osmosis!.queryGammPools,
+      PoolPriceRoutes
     );
 
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
