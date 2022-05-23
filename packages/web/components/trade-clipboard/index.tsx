@@ -333,21 +333,21 @@ export const TradeClipboard: FunctionComponent<{
                     }}
                     value={tradeTokenInConfig.amount}
                   />
-                  <div className="subtitle2 md:font-caption md:text-caption text-white-disabled">{`≈ ${priceStore.calculatePrice(
-                    new CoinPretty(
-                      tradeTokenInConfig.sendCurrency,
-                      new Dec(
-                        tradeTokenInConfig.amount &&
-                        new Dec(tradeTokenInConfig.amount).gt(new Dec(0))
-                          ? tradeTokenInConfig.amount
-                          : "0"
-                      ).mul(
-                        DecUtils.getTenExponentNInPrecisionRange(
-                          tradeTokenInConfig.sendCurrency.coinDecimals
+                  <div className="subtitle2 md:font-caption md:text-caption text-white-disabled">{`≈ ${
+                    tradeTokenInConfig.amount &&
+                    new Dec(tradeTokenInConfig.amount).gt(new Dec(0))
+                      ? priceStore.calculatePrice(
+                          new CoinPretty(
+                            tradeTokenInConfig.sendCurrency,
+                            new Dec(tradeTokenInConfig.amount).mul(
+                              DecUtils.getTenExponentNInPrecisionRange(
+                                tradeTokenInConfig.sendCurrency.coinDecimals
+                              )
+                            )
+                          )
                         )
-                      )
-                    )
-                  )}`}</div>
+                      : "0"
+                  }`}</div>
                 </div>
               )}
             </div>
@@ -439,11 +439,16 @@ export const TradeClipboard: FunctionComponent<{
                         ? "text-white-full"
                         : "text-white-disabled"
                     )}
-                  >{`≈ ${tradeTokenInConfig.expectedSwapResult.amount
-                    .trim(true)
-                    .shrink(true)
-                    .maxDecimals(6)
-                    .toString()}`}</h5>
+                  >{`≈ ${
+                    tradeTokenInConfig.expectedSwapResult.amount.denom !==
+                    "UNKNOWN"
+                      ? tradeTokenInConfig.expectedSwapResult.amount
+                          .trim(true)
+                          .shrink(true)
+                          .maxDecimals(6)
+                          .toString()
+                      : "0"
+                  }`}</h5>
                 </div>
               )}
             </div>
@@ -459,19 +464,31 @@ export const TradeClipboard: FunctionComponent<{
               <div className="flex flex-col gap-y-1.5 text-right">
                 <div className="subtitle2 md:caption text-wireframes-lightGrey">
                   {`1 ${
-                    tradeTokenInConfig.sendCurrency.coinDenom
+                    tradeTokenInConfig.sendCurrency.coinDenom !== "UNKNOWN"
+                      ? tradeTokenInConfig.sendCurrency.coinDenom
+                      : ""
                   } = ${tradeTokenInConfig.expectedSwapResult.beforeSpotPriceWithoutSwapFeeOutOverIn
                     .trim(true)
                     .maxDecimals(3)
-                    .toString()} ${tradeTokenInConfig.outCurrency.coinDenom}`}
+                    .toString()} ${
+                    tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN"
+                      ? tradeTokenInConfig.outCurrency.coinDenom
+                      : ""
+                  }`}
                 </div>
                 <div className="caption text-white-disabled">
                   {`1 ${
-                    tradeTokenInConfig.outCurrency.coinDenom
+                    tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN"
+                      ? tradeTokenInConfig.outCurrency.coinDenom
+                      : ""
                   } = ${tradeTokenInConfig.expectedSwapResult.beforeSpotPriceWithoutSwapFeeInOverOut
                     .trim(true)
                     .maxDecimals(3)
-                    .toString()} ${tradeTokenInConfig.sendCurrency.coinDenom}`}
+                    .toString()} ${
+                    tradeTokenInConfig.sendCurrency.coinDenom !== "UNKNOWN"
+                      ? tradeTokenInConfig.sendCurrency.coinDenom
+                      : ""
+                  }`}
                 </div>
               </div>
             </div>
@@ -492,9 +509,14 @@ export const TradeClipboard: FunctionComponent<{
                     priceStore.calculatePrice(
                       tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
                     ) ?? "0"
-                  } (${tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
-                    .trim(true)
-                    .toString()})`}
+                  } (${
+                    tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
+                      .denom !== "UNKNOWN"
+                      ? tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
+                          .trim(true)
+                          .toString()
+                      : "0"
+                  })`}
                 </div>
               </div>
             </div>
