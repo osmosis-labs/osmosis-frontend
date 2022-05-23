@@ -40,11 +40,24 @@ yarn dev
 ## Frontier 🤠
 
 Currently, the frontier frontend is built and deployed from the [`frontier`](https://github.com/osmosis-labs/osmosis-frontend/tree/frontier) branch. If your issue or PR is related to frontier, please prefix with "frontier."
+
 For organization purposes, `master` and `frontier` branches are identical except for the `NEXT_PUBLIC_IS_FRONTIER` env var is `true` on `frontier` branch. If making
 updates to frontier, please still target the master branch.
+
+### Develop
 
 To develop with frontier configuration, use:
 
 ```bash
 yarn build:frontier && yarn dev:frontier
 ```
+
+### Deploy
+
+To deploy frontier (the env var will be set for you):
+
+```bash
+yarn build:frontier && yarn start:frontier
+```
+
+Otherwise the non-frontier commands can be used with the env var set to true.
