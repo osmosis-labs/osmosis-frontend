@@ -1255,6 +1255,8 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-204',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'aevmos',
+		depositUrlOverride: 'https://app.evmos.org/',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=usdc',
 	},
 ];
 
