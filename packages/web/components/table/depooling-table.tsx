@@ -8,7 +8,7 @@ import { UnPoolWhitelistedPoolIds } from "../../config";
 import { CustomClasses } from "../types";
 
 export const DepoolingTable: FunctionComponent<
-  { poolId: string; tableClassName?: string } & CustomClasses
+  { poolId?: string; tableClassName?: string } & CustomClasses
 > = ({ poolId, tableClassName, className }) => {
   const { chainStore, accountStore, queriesStore } = useStore();
   const { chainId } = chainStore.osmosis;
@@ -18,7 +18,7 @@ export const DepoolingTable: FunctionComponent<
   const account = accountStore.getAccount(chainId);
 
   const showDepoolingTable = (() => {
-    if (!UnPoolWhitelistedPoolIds[poolId]) {
+    if (poolId && !UnPoolWhitelistedPoolIds[poolId]) {
       return false;
     }
 
@@ -59,12 +59,14 @@ export const DepoolingTable: FunctionComponent<
       ) : (
         <h6>Depoolings</h6>
       )}
-      <div className="w-full p-2 rounded-lg border border-secondary-200">
-        <span className="subtitle1 text-white-mid md:caption">
-          Note: Depooling asset balance shown is a total across all pools, not
-          on a per-pool basis
-        </span>
-      </div>
+      {poolId && (
+        <div className="w-full p-2 rounded-lg border border-secondary-200">
+          <span className="subtitle1 text-white-mid md:caption">
+            Note: Depooling asset balance shown is a total across all pools, not
+            on a per-pool basis
+          </span>
+        </div>
+      )}
       <Table
         className={classNames("w-full md:caption", tableClassName)}
         headerTrClassName="md:h-11"
