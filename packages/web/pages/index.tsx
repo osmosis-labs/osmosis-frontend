@@ -2,13 +2,11 @@ import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 import { TradeClipboard } from "../components/trade-clipboard";
-import { useWindowSize } from "../hooks";
 import { useStore } from "../stores";
 import { IS_FRONTIER } from "../config";
 
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore } = useStore();
-  const windowSize = useWindowSize();
   const { chainId } = chainStore.osmosis;
 
   const queries = queriesStore.get(chainId);
