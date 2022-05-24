@@ -40,6 +40,9 @@ export const LockTokensModal: FunctionComponent<
     isMobile = false,
   } = props;
 
+  const isSuperfluid = gauges.some(
+    (gauge) => gauge.superfluidApr !== undefined
+  );
   const [selectedGaugeIndex, setSelectedGaugeIndex] = useState<number | null>(
     null
   );
@@ -94,7 +97,7 @@ export const LockTokensModal: FunctionComponent<
             ))}
           </div>
         </div>
-        {!hasSuperfluidValidator && highestGaugeSelected && (
+        {!hasSuperfluidValidator && highestGaugeSelected && isSuperfluid && (
           <div className="flex gap-2 ml-auto">
             <CheckBox
               className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
