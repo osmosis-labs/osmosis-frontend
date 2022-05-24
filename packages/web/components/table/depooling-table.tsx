@@ -39,6 +39,10 @@ export const DepoolingTable: FunctionComponent<
         !unlocking.amount.currency.coinMinimalDenom.startsWith("gamm/pool/")
     );
 
+  if (unlockingTokensExceptLPShares.length === 0) {
+    return null;
+  }
+
   return (
     <div className={classNames("flex flex-col gap-2", className)}>
       {isMobile ? (
