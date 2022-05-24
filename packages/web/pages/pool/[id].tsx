@@ -349,12 +349,13 @@ const Pool: FunctionComponent = observer(() => {
   }
 
   // eject to pools page if pool does not exist
+  const poolExists = queryOsmosis.queryGammPools.poolExists(poolId as string);
   useEffect(() => {
-    if (queryOsmosis.queryGammPools.poolExists(poolId as string) === false) {
+    if (poolExists === false) {
       router.push("/pools");
     }
     // eslint-disable-next-line
-  }, []);
+  }, [poolExists]);
 
   // Manage liquidity + bond LP tokens (modals) state
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
