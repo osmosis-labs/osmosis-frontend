@@ -39,7 +39,7 @@ export const PoolCatalystCard: FunctionComponent<
         </MetricLoader>
         <MetricLoader isLoading={isLoading}>
           <span className="text-subtitle2 md:body2 text-white-mid">
-            {truncateString(tokenDenom ?? "")}
+            {truncateString(tokenDenom ?? "", 28)}
           </span>
         </MetricLoader>
       </div>
