@@ -1,5 +1,6 @@
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { initialAssetsSort } from "../../config";
 import {
   IBCBalance,
   IBCCW20ContractBalance,
@@ -22,7 +23,6 @@ import { ShowMoreButton } from "../buttons/show-more";
 import { AssetCard } from "../cards";
 import { Switch } from "../control";
 import { Button } from "../buttons";
-import { DataSorter } from "../../hooks/data/data-sorter";
 import { PreTransferModal } from "../../modals";
 import { IbcHistoryTable } from "./ibc-history";
 
@@ -64,7 +64,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
         };
       }),
       // add ibc assets, initially sorted by fiat value at top
-      ...new DataSorter(
+      ...initialAssetsSort(
         ibcBalances.map((ibcBalance) => {
           const {
             chainInfo: { chainId, chainName },
@@ -101,9 +101,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             onDeposit,
           };
         })
-      )
-        .process("fiatValueRaw")
-        .reverse(),
+      ),
     ],
     [
       nativeBalances,
