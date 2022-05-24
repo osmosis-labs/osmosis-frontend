@@ -194,12 +194,29 @@ const Pool: FunctionComponent = observer(() => {
         }[]
       )
       .flat();
-    externalGuages = (ExternalIncentiveGaugeAllowList[pool.id] ?? []).map(
-      ({ gaugeId, denom }) => {
+    externalGuages = (ExternalIncentiveGaugeAllowList[pool.id] ?? [])
+      .map(({ gaugeId, denom }, _i, gauges) => {
         const observableGauge = queryOsmosis.queryGauge.get(gaugeId);
         const currency = chainStore
           .getChain(chainStore.osmosis.chainId)
           .findCurrency(denom);
+
+        if (observableGauge.remainingEpoch < 1) {
+          return;
+        }
+
+        // first gauge is main gauge, and must be longest
+        const mainGauge =
+          gauges.length > 0
+            ? queryOsmosis.queryGauge.get(gauges[0].gaugeId)
+            : undefined;
+        if (
+          mainGauge &&
+          mainGauge.lockupDuration.asMilliseconds() >
+            observableGauge.lockupDuration.asMilliseconds()
+        ) {
+          return;
+        }
 
         return {
           duration: observableGauge.lockupDuration.humanize(),
@@ -211,8 +228,16 @@ const Pool: FunctionComponent = observer(() => {
             : undefined,
           remainingEpochs: observableGauge.remainingEpoch,
         };
-      }
-    );
+      })
+      .filter(
+        (
+          gauge
+        ): gauge is {
+          duration: string;
+          rewardAmount: CoinPretty | undefined;
+          remainingEpochs: number;
+        } => gauge !== undefined
+      );
     const lockableDurations =
       queryOsmosis.queryLockableDurations.lockableDurations;
     guages = lockableDurations.map((duration) => {
@@ -385,11 +410,11 @@ const Pool: FunctionComponent = observer(() => {
               priceStore,
               fiat
             )
-          : undefined;
+          : new RatePretty(0);
 
         return {
           id: index.toString(),
-          apr: apr ?? new RatePretty(0),
+          apr,
           duration,
           superfluidApr:
             pool &&

@@ -29,34 +29,52 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
   ({ children, menus }) => {
     const router = useRouter();
 
-    const { isMobile } = useWindowSize();
+    const { height, isMobile } = useWindowSize();
     const [_, isScrolledTop] = useWindowScroll();
     const [showSidebar, setShowSidebar] = useBooleanWithWindowEvent(false);
 
+    const embedLogoInSidebar = height < 800;
+
     return (
       <React.Fragment>
-        <div className="z-50 fixed w-sidebar px-5 pt-6">
-          <Image
-            src={
-              IS_FRONTIER
-                ? "/osmosis-logo-frontier.svg"
-                : "/osmosis-logo-main.svg"
-            }
-            alt="osmosis logo"
-            width={178}
-            height={48}
-          />
-        </div>
+        {!embedLogoInSidebar && (
+          <div className="z-50 fixed w-sidebar px-5 pt-6">
+            <Image
+              src={
+                IS_FRONTIER
+                  ? "/osmosis-logo-frontier.svg"
+                  : "/osmosis-logo-main.svg"
+              }
+              alt="osmosis logo"
+              width={178}
+              height={48}
+            />
+          </div>
+        )}
         <div
           className={classNames(
-            "z-40 fixed w-sidebar h-full bg-card flex flex-col px-5 py-6 overflow-y-auto",
+            "z-40 fixed w-sidebar h-full bg-card flex flex-col px-5 py-6 overflow-x-hidden overflow-y-auto",
             {
               hidden: !showSidebar && isMobile,
             }
           )}
         >
+          {embedLogoInSidebar && showSidebar && (
+            <div className="z-50 w-sidebar mx-auto">
+              <Image
+                src={
+                  IS_FRONTIER
+                    ? "/osmosis-logo-frontier.svg"
+                    : "/osmosis-logo-main.svg"
+                }
+                alt="osmosis logo"
+                width={165}
+                height={45}
+              />
+            </div>
+          )}
           <div className="h-full flex flex-col justify-between">
-            <ul className="mt-32">
+            <ul className="my-auto">
               {menus.map(
                 ({ label, link, icon, iconSelected, selectionTest }) => {
                   const selected = selectionTest
@@ -135,7 +153,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
           className={classNames(
             "fixed flex z-40 h-24 w-screen items-center place-content-end px-8",
             {
-              "bg-black/30": !isScrolledTop && isMobile,
+              "bg-black/80": !isScrolledTop && isMobile,
               hidden: showSidebar || !isMobile,
             }
           )}
