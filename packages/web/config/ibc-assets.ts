@@ -42,6 +42,26 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'wbtc-satoshi',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=wbtc',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=wbtc',
+    isVerified: true,
+	},
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "dai-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&token=dai",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&token=dai",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "cosmoshub-4",
     sourceChannelId: "channel-0",
     destChannelId: "channel-141",
@@ -316,12 +336,6 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: "shentu-2.2",
-    sourceChannelId: "channel-146",
-    destChannelId: "channel-8",
-    coinMinimalDenom: "uctk",
-  },
-  {
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-169",
     destChannelId: "channel-47",
@@ -353,15 +367,17 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
-    coinMinimalDenom: "dai-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&token=dai",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&token=dai",
-    isVerified: true,
+    counterpartyChainId: "mantle-1",
+    sourceChannelId: "channel-232",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "umntl",
+	  isVerified: true,
+  },
+  {
+    counterpartyChainId: "shentu-2.2",
+    sourceChannelId: "channel-146",
+    destChannelId: "channel-8",
+    coinMinimalDenom: "uctk",
   },
   {
     counterpartyChainId: "juno-1",
@@ -405,16 +421,6 @@ export const IBCAssetInfos: (IBCAsset & {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
-    coinMinimalDenom: "dai-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&token=dai",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&token=dai",
-  },
-  {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
     coinMinimalDenom: "frax-wei",
     depositUrlOverride:
       "https://satellite.money/?source=ethereum&destination=osmosis&token=frax",
@@ -450,13 +456,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-  },
-  {
-    counterpartyChainId: "mantle-1",
-    sourceChannelId: "channel-232",
-    destChannelId: "channel-0",
-    coinMinimalDenom: "umntl",
-	  isVerified: true,
   },
   {
     counterpartyChainId: "juno-1",
