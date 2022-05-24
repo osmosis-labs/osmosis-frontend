@@ -16,8 +16,6 @@ const Home: NextPage = observer(function () {
 
   const pools = queryPools.getAllPools().map((pool) => pool.pool);
 
-  const imageRatio = 1300 / 900;
-
   return (
     <main className="relative bg-background h-screen">
       <div className="absolute w-full h-full bg-home-bg-pattern bg-repeat-x bg-cover">
@@ -26,10 +24,7 @@ const Home: NextPage = observer(function () {
           pointerEvents="none"
           viewBox="0 0 1300 900"
           height="900"
-          preserveAspectRatio={(() =>
-            windowSize.width / windowSize.height > imageRatio
-              ? "xMinYMid meet"
-              : "xMidYMid slice")()}
+          preserveAspectRatio={"xMidYMid slice"}
         >
           <g>
             {!IS_FRONTIER && (
@@ -62,7 +57,7 @@ const Home: NextPage = observer(function () {
                   ? "/images/osmosis-cowboy-woz.png"
                   : "/images/osmosis-home-fg.png"
               }
-              x={IS_FRONTIER ? "-140" : "61"}
+              x={IS_FRONTIER ? "-100" : "61"}
               y={IS_FRONTIER ? "100" : "602"}
               width={IS_FRONTIER ? "800" : "448.8865"}
               height={IS_FRONTIER ? "800" : "285.1699"}
