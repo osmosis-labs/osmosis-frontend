@@ -33,11 +33,16 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
     const [_, isScrolledTop] = useWindowScroll();
     const [showSidebar, setShowSidebar] = useBooleanWithWindowEvent(false);
 
-    const embedLogoInSidebar = height < 800;
+    const smallVerticalScreen = height < 800;
+
+    const showFixedLogo =
+      !smallVerticalScreen || (smallVerticalScreen && !showSidebar);
+
+    const showBlockLogo = smallVerticalScreen && showSidebar;
 
     return (
       <React.Fragment>
-        {!embedLogoInSidebar && (
+        {showFixedLogo && (
           <div className="z-50 fixed w-sidebar px-5 pt-6">
             <Image
               src={
@@ -59,7 +64,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
             }
           )}
         >
-          {embedLogoInSidebar && showSidebar && (
+          {showBlockLogo && (
             <div className="z-50 w-sidebar mx-auto">
               <Image
                 src={
