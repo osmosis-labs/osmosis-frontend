@@ -74,6 +74,7 @@ export const LockupAbledPoolIds: {
 	'662': true,
 	'678': true,
 	'681': true,
+	'719': true,
 
 	'560': true,
 	'561': true,
@@ -800,6 +801,12 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '3531',
 			denom: 'ibc/AA1C80225BCA7B32ED1FC6ABF8B8E899BEB48ECDB4B417FD69873C6D715F97E7',
+    }
+  ],
+	'719': [
+		{
+			gaugeId: '3528',
+			denom: 'ibc/A0CC0CF735BFB30E730C70019D4218A1244FF383503FF7579C9201AB93CA9293',
 		},
 	],
 };
@@ -1260,6 +1267,14 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-47',
 		coinMinimalDenom: 'cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
+	{
+		counterpartyChainId: 'evmos_9001-2',
+		sourceChannelId: 'channel-204',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'aevmos',
+		depositUrlOverride: 'https://app.evmos.org/transfer',
+		withdrawUrlOverride: 'https://app.evmos.org/transfer',
 	},
 ];
 
@@ -3338,4 +3353,46 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://explorer.meme.sx/meme/tx/{txHash}',
 	},
+	{
+		rpc: 'https://rpc-evmos.keplr.app/',
+		rest: 'https://lcd-evmos.keplr.app/',
+		chainId: 'evmos_9001-2',
+		chainName: 'Evmos',
+		stakeCurrency: {
+			coinDenom: 'EVMOS',
+			coinMinimalDenom: 'aevmos',
+			coinDecimals: 18,
+			coinGeckoId: 'evmos',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.svg',
+		},
+		bip44: {
+			coinType: 60,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('evmos'),
+		currencies: [
+			{
+				coinDenom: 'EVMOS',
+				coinMinimalDenom: 'aevmos',
+				coinDecimals: 18,
+				coinGeckoId: 'evmos',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'EVMOS',
+				coinMinimalDenom: 'aevmos',
+				coinDecimals: 18,
+				coinGeckoId: 'evmos',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/evmos.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 10000000000,
+			average: 25000000000,
+			high: 40000000000,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/evmos/txs/{txHash}',
+	}
 ];
