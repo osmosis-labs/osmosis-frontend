@@ -600,16 +600,13 @@ const Pool: FunctionComponent = observer(() => {
           }
           onLockToken={async (gaugeId, electSuperfluid) => {
             setShowLockLPTokenModal(false);
-            console.log("handler", electSuperfluid);
             if (electSuperfluid) {
               setShowSuperfluidValidatorsModal(true);
               // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
             } else {
               const gauge = lockupGauges.find((gauge) => gauge.id === gaugeId);
-              console.log({ gauge });
               try {
                 if (gauge) {
-                  console.log("sending");
                   await account.osmosis.sendLockTokensMsg(
                     gauge.duration.asSeconds(),
                     [
@@ -752,8 +749,8 @@ const Pool: FunctionComponent = observer(() => {
         bgImageUrl="/images/osmosis-guy-in-lab.png"
       />
       <section className="bg-surface min-h-screen">
-        {pool && queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id) && (
-          <div className="max-w-container mx-auto md:p-5 p-10">
+        <div className="max-w-container mx-auto md:p-5 p-10">
+          {pool && queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id) && (
             <div className="flex lg:flex-col gap-6 place-content-between">
               <div className="max-w-md">
                 <div className="flex lg:flex-col gap-3">
@@ -790,82 +787,73 @@ const Pool: FunctionComponent = observer(() => {
                 </Button>
               </div>
             </div>
-            {pool &&
-              guages &&
-              queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id) && (
-                <>
-                  {externalGuages && externalGuages.length > 0 && (
-                    <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
-                      {externalGuages.map(
-                        (
-                          {
-                            rewardAmount,
-                            duration: durationDays,
-                            remainingEpochs,
-                          },
-                          index
-                        ) => (
-                          <PoolGaugeBonusCard
-                            key={index}
-                            bonusValue={
-                              rewardAmount
-                                ?.maxDecimals(0)
-                                .trim(true)
-                                .toString() ?? "0"
-                            }
-                            days={durationDays}
-                            remainingEpochs={remainingEpochs.toString()}
-                            isMobile={isMobile}
-                          />
-                        )
-                      )}
-                    </div>
-                  )}
-                  <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
-                    {guages.map((guage, i) => (
-                      <PoolGaugeCard
-                        key={i}
-                        days={guage.lockupDuration.humanize()}
-                        apr={queryOsmosis.queryIncentivizedPools
-                          .computeAPY(
-                            pool.id,
-                            guage.lockupDuration,
-                            priceStore,
-                            fiat
-                          )
-                          .maxDecimals(2)
-                          .toString()}
-                        isLoading={
-                          guage.isFetching ||
-                          queryOsmosis.queryIncentivizedPools.isAprFetching
-                        }
-                        superfluidApr={
-                          guages &&
-                          i === guages.length - 1 &&
-                          superfluid &&
-                          superfluid !== "not-superfluid-pool"
-                            ? new RatePretty(
-                                queryCosmos.queryInflation.inflation
-                                  .mul(
-                                    queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
-                                      pool.id
-                                    )
-                                  )
-                                  .moveDecimalPointLeft(2)
-                              )
-                                .maxDecimals(0)
-                                .trim(true)
-                                .toString()
-                            : undefined
-                        }
-                        isMobile={isMobile}
-                      />
-                    ))}
-                  </div>
-                </>
+          )}
+          {externalGuages && externalGuages.length > 0 && (
+            <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
+              {externalGuages.map(
+                (
+                  { rewardAmount, duration: durationDays, remainingEpochs },
+                  index
+                ) => (
+                  <PoolGaugeBonusCard
+                    key={index}
+                    bonusValue={
+                      rewardAmount?.maxDecimals(0).trim(true).toString() ?? "0"
+                    }
+                    days={durationDays}
+                    remainingEpochs={remainingEpochs.toString()}
+                    isMobile={isMobile}
+                  />
+                )
               )}
-          </div>
-        )}
+            </div>
+          )}
+          {pool &&
+            guages &&
+            queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id) && (
+              <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
+                {guages.map((guage, i) => (
+                  <PoolGaugeCard
+                    key={i}
+                    days={guage.lockupDuration.humanize()}
+                    apr={queryOsmosis.queryIncentivizedPools
+                      .computeAPY(
+                        pool.id,
+                        guage.lockupDuration,
+                        priceStore,
+                        fiat
+                      )
+                      .maxDecimals(2)
+                      .toString()}
+                    isLoading={
+                      guage.isFetching ||
+                      queryOsmosis.queryIncentivizedPools.isAprFetching
+                    }
+                    superfluidApr={
+                      guages &&
+                      i === guages.length - 1 &&
+                      superfluid &&
+                      superfluid !== "not-superfluid-pool"
+                        ? new RatePretty(
+                            queryCosmos.queryInflation.inflation
+                              .mul(
+                                queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
+                                  pool.id
+                                )
+                              )
+                              .moveDecimalPointLeft(2)
+                          )
+                            .maxDecimals(0)
+                            .trim(true)
+                            .toString()
+                        : undefined
+                    }
+                    isMobile={isMobile}
+                  />
+                ))}
+              </div>
+            )}
+        </div>
         {superfluid &&
           superfluid !== "not-superfluid-pool" &&
           ("upgradeableLPLockIds" in superfluid ||
