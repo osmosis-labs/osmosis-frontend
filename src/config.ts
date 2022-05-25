@@ -3421,7 +3421,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		rpc: 'http://seed-1.mainnet.rizon.world:26657',
 		rest: 'http://seed-1.mainnet.rizon.world:1317',
 		chainId: 'titan-1',
-		chainName: 'rizon',
+		chainName: 'Rizon',
 		stakeCurrency: {
 			coinDenom: 'ATOLO',
 			coinMinimalDenom: 'uatolo',
