@@ -346,6 +346,8 @@ const Pool: FunctionComponent = observer(() => {
               ),
           }
       : "not-superfluid-pool";
+
+    console.log(queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id));
   }
 
   // eject to pools page if pool does not exist
@@ -749,118 +751,120 @@ const Pool: FunctionComponent = observer(() => {
         bgImageUrl="/images/osmosis-guy-in-lab.png"
       />
       <section className="bg-surface min-h-screen">
-        <div className="max-w-container mx-auto md:p-5 p-10">
-          <div className="flex lg:flex-col gap-6 place-content-between">
-            <div className="max-w-md">
-              <div className="flex lg:flex-col gap-3">
-                {isMobile ? (
-                  <span className="subtitle1 text-lg">Liquidity Mining</span>
-                ) : (
-                  <h5>Liquidity Mining</h5>
-                )}
-                {superfluid && superfluid !== "not-superfluid-pool" && (
-                  <div className="bg-superfluid w-fit rounded-full px-4 py-1 md:caption text-base">
-                    Superfluid Staking Enabled
-                  </div>
-                )}
-              </div>
-              <p className="text-white-mid md:caption py-2">
-                Bond liquidity to various minimum unbonding periods to earn OSMO
-                liquidity rewards and swap fees
-              </p>
-            </div>
-            <div className="flex flex-col gap-2 text-right lg:text-left">
-              <span className="caption text-white-mid">
-                Available LP tokens
-              </span>
-              <span className="font-h5 text-h5 md:subtitle1">
-                <MetricLoader className="h-6" isLoading={!userAvailableValue}>
-                  {userAvailableValue?.toString() || "$0"}
-                </MetricLoader>
-              </span>
-              <Button
-                className="h-8 lg:w-fit w-full md:caption"
-                onClick={() => setShowLockLPTokenModal(true)}
-              >
-                Start Earning
-              </Button>
-            </div>
-          </div>
-          {pool &&
-            guages &&
-            queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id) && (
-              <>
-                {externalGuages && externalGuages.length > 0 && (
-                  <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
-                    {externalGuages.map(
-                      (
-                        {
-                          rewardAmount,
-                          duration: durationDays,
-                          remainingEpochs,
-                        },
-                        index
-                      ) => (
-                        <PoolGaugeBonusCard
-                          key={index}
-                          bonusValue={
-                            rewardAmount
-                              ?.maxDecimals(0)
-                              .trim(true)
-                              .toString() ?? "0"
-                          }
-                          days={durationDays}
-                          remainingEpochs={remainingEpochs.toString()}
-                          isMobile={isMobile}
-                        />
-                      )
-                    )}
-                  </div>
-                )}
-                <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
-                  {guages.map((guage, i) => (
-                    <PoolGaugeCard
-                      key={i}
-                      days={guage.lockupDuration.humanize()}
-                      apr={queryOsmosis.queryIncentivizedPools
-                        .computeAPY(
-                          pool.id,
-                          guage.lockupDuration,
-                          priceStore,
-                          fiat
-                        )
-                        .maxDecimals(2)
-                        .toString()}
-                      isLoading={
-                        guage.isFetching ||
-                        queryOsmosis.queryIncentivizedPools.isAprFetching
-                      }
-                      superfluidApr={
-                        guages &&
-                        i === guages.length - 1 &&
-                        superfluid &&
-                        superfluid !== "not-superfluid-pool"
-                          ? new RatePretty(
-                              queryCosmos.queryInflation.inflation
-                                .mul(
-                                  queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
-                                    pool.id
-                                  )
-                                )
-                                .moveDecimalPointLeft(2)
-                            )
-                              .maxDecimals(0)
-                              .trim(true)
-                              .toString()
-                          : undefined
-                      }
-                      isMobile={isMobile}
-                    />
-                  ))}
+        {pool && queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id) && (
+          <div className="max-w-container mx-auto md:p-5 p-10">
+            <div className="flex lg:flex-col gap-6 place-content-between">
+              <div className="max-w-md">
+                <div className="flex lg:flex-col gap-3">
+                  {isMobile ? (
+                    <span className="subtitle1 text-lg">Liquidity Mining</span>
+                  ) : (
+                    <h5>Liquidity Mining</h5>
+                  )}
+                  {superfluid && superfluid !== "not-superfluid-pool" && (
+                    <div className="bg-superfluid w-fit rounded-full px-4 py-1 md:caption text-base">
+                      Superfluid Staking Enabled
+                    </div>
+                  )}
                 </div>
-              </>
-            )}
-        </div>
+                <p className="text-white-mid md:caption py-2">
+                  Bond liquidity to various minimum unbonding periods to earn
+                  OSMO liquidity rewards and swap fees
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 text-right lg:text-left">
+                <span className="caption text-white-mid">
+                  Available LP tokens
+                </span>
+                <span className="font-h5 text-h5 md:subtitle1">
+                  <MetricLoader className="h-6" isLoading={!userAvailableValue}>
+                    {userAvailableValue?.toString() || "$0"}
+                  </MetricLoader>
+                </span>
+                <Button
+                  className="h-8 lg:w-fit w-full md:caption"
+                  onClick={() => setShowLockLPTokenModal(true)}
+                >
+                  Start Earning
+                </Button>
+              </div>
+            </div>
+            {pool &&
+              guages &&
+              queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id) && (
+                <>
+                  {externalGuages && externalGuages.length > 0 && (
+                    <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
+                      {externalGuages.map(
+                        (
+                          {
+                            rewardAmount,
+                            duration: durationDays,
+                            remainingEpochs,
+                          },
+                          index
+                        ) => (
+                          <PoolGaugeBonusCard
+                            key={index}
+                            bonusValue={
+                              rewardAmount
+                                ?.maxDecimals(0)
+                                .trim(true)
+                                .toString() ?? "0"
+                            }
+                            days={durationDays}
+                            remainingEpochs={remainingEpochs.toString()}
+                            isMobile={isMobile}
+                          />
+                        )
+                      )}
+                    </div>
+                  )}
+                  <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
+                    {guages.map((guage, i) => (
+                      <PoolGaugeCard
+                        key={i}
+                        days={guage.lockupDuration.humanize()}
+                        apr={queryOsmosis.queryIncentivizedPools
+                          .computeAPY(
+                            pool.id,
+                            guage.lockupDuration,
+                            priceStore,
+                            fiat
+                          )
+                          .maxDecimals(2)
+                          .toString()}
+                        isLoading={
+                          guage.isFetching ||
+                          queryOsmosis.queryIncentivizedPools.isAprFetching
+                        }
+                        superfluidApr={
+                          guages &&
+                          i === guages.length - 1 &&
+                          superfluid &&
+                          superfluid !== "not-superfluid-pool"
+                            ? new RatePretty(
+                                queryCosmos.queryInflation.inflation
+                                  .mul(
+                                    queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
+                                      pool.id
+                                    )
+                                  )
+                                  .moveDecimalPointLeft(2)
+                              )
+                                .maxDecimals(0)
+                                .trim(true)
+                                .toString()
+                            : undefined
+                        }
+                        isMobile={isMobile}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+          </div>
+        )}
         {superfluid &&
           superfluid !== "not-superfluid-pool" &&
           ("upgradeableLPLockIds" in superfluid ||
@@ -905,156 +909,164 @@ const Pool: FunctionComponent = observer(() => {
               )}
             </div>
           )}
-        <div className="max-w-container mx-auto md:p-5 p-10">
-          <div className="flex items-center place-content-between">
-            {isMobile ? (
-              <span className="subtitle2">My Bondings</span>
-            ) : (
-              <h6>My Bondings</h6>
-            )}
-            {showDepoolButton && (
-              <Button
-                className="h-8 px-2"
-                onClick={async () => {
-                  if (!pool) {
-                    return;
-                  }
+        {pool && queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id) && (
+          <div className="max-w-container mx-auto md:p-5 p-10">
+            <div className="flex items-center place-content-between">
+              {isMobile ? (
+                <span className="subtitle2">My Bondings</span>
+              ) : (
+                <h6>My Bondings</h6>
+              )}
+              {showDepoolButton && (
+                <Button
+                  className="h-8 px-2"
+                  onClick={async () => {
+                    if (!pool) {
+                      return;
+                    }
 
-                  try {
-                    await account.osmosis.sendUnPoolWhitelistedPoolMsg(pool.id);
-                  } catch (e) {
-                    console.log(e);
-                  }
-                }}
-                loading={account.txTypeInProgress === "unPoolWhitelistedPool"}
-              >
-                Depool LP Shares
-              </Button>
-            )}
-          </div>
-          <Table
-            className="md:-mx-5 md:w-screen md:caption w-full my-5"
-            headerTrClassName="md:h-11"
-            columnDefs={(
-              [
-                {
-                  display: "Unbonding Duration",
-                  className: "!pl-8",
-                  displayCell:
-                    superfluid && superfluid !== "not-superfluid-pool"
-                      ? ({ value, isSuperfluidDuration }) => (
-                          <div className="flex items-center gap-3">
-                            <span>{value ?? ""}</span>
-                            {isSuperfluidDuration && (
-                              <Image
-                                alt="superfluid"
-                                src="/icons/superfluid-osmo.svg"
-                                height={20}
-                                width={20}
-                              />
-                            )}
-                          </div>
-                        )
-                      : undefined,
-                },
-                { display: "Current APR" },
-                { display: "Amount" },
-                {
-                  display: "Action",
-                  className:
-                    "md:text-right text-center md:justify-right justify-center",
-                  displayCell: ({ amount, lockIds, isSuperfluidDuration }) => (
-                    <Button
-                      className="md:ml-auto md:caption m-auto pr-0 !md:justify-right !justify-center"
-                      type={isMobile ? undefined : "arrow"}
-                      size="xs"
-                      disabled={
-                        account.txTypeInProgress !== "" ||
-                        amount?.toDec().equals(new Dec(0))
-                      }
-                      onClick={async () => {
-                        if (!lockIds) return;
-                        try {
-                          if (isSuperfluidDuration) {
-                            const blockGasLimitLockIds = lockIds.slice(0, 4);
-
-                            for (const lockId of blockGasLimitLockIds) {
-                              await queryOsmosis.querySyntheticLockupsByLockId
-                                .get(lockId)
-                                .waitFreshResponse();
-                            }
-
-                            await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-                              blockGasLimitLockIds.map((lockId) => ({
-                                lockId,
-                                isSyntheticLock:
-                                  queryOsmosis.querySyntheticLockupsByLockId.get(
-                                    lockId
-                                  ).isSyntheticLock === true,
-                              }))
-                            );
-                          } else {
-                            const blockGasLimitLockIds = lockIds.slice(0, 10);
-                            await account.osmosis.sendBeginUnlockingMsg(
-                              blockGasLimitLockIds
-                            );
-                          }
-                        } catch (e) {
-                          console.log(e);
+                    try {
+                      await account.osmosis.sendUnPoolWhitelistedPoolMsg(
+                        pool.id
+                      );
+                    } catch (e) {
+                      console.log(e);
+                    }
+                  }}
+                  loading={account.txTypeInProgress === "unPoolWhitelistedPool"}
+                >
+                  Depool LP Shares
+                </Button>
+              )}
+            </div>
+            <Table
+              className="md:-mx-5 md:w-screen md:caption w-full my-5"
+              headerTrClassName="md:h-11"
+              columnDefs={(
+                [
+                  {
+                    display: "Unbonding Duration",
+                    className: "!pl-8",
+                    displayCell:
+                      superfluid && superfluid !== "not-superfluid-pool"
+                        ? ({ value, isSuperfluidDuration }) => (
+                            <div className="flex items-center gap-3">
+                              <span>{value ?? ""}</span>
+                              {isSuperfluidDuration && (
+                                <Image
+                                  alt="superfluid"
+                                  src="/icons/superfluid-osmo.svg"
+                                  height={20}
+                                  width={20}
+                                />
+                              )}
+                            </div>
+                          )
+                        : undefined,
+                  },
+                  { display: "Current APR" },
+                  { display: "Amount" },
+                  {
+                    display: "Action",
+                    className:
+                      "md:text-right text-center md:justify-right justify-center",
+                    displayCell: ({
+                      amount,
+                      lockIds,
+                      isSuperfluidDuration,
+                    }) => (
+                      <Button
+                        className="md:ml-auto md:caption m-auto pr-0 !md:justify-right !justify-center"
+                        type={isMobile ? undefined : "arrow"}
+                        size="xs"
+                        disabled={
+                          account.txTypeInProgress !== "" ||
+                          amount?.toDec().equals(new Dec(0))
                         }
-                      }}
-                    >
-                      {isMobile ? "Unbond" : "Unbond All"}
-                    </Button>
-                  ),
-                },
-              ] as ColumnDef<
-                BaseCell & {
-                  duration: Duration;
-                  amount: CoinPretty;
-                  apr?: RatePretty;
-                  lockIds: string[];
-                  isSuperfluidDuration: boolean;
-                }
-              >[]
-            ).filter(({ display }) =>
-              isMobile ? display !== "Current APR" : true
-            )}
-            data={
-              userLockedAssets?.map((lockedAsset, index) => {
-                const isSuperfluidDuration =
-                  index === (userLockedAssets?.length ?? 0) - 1 &&
-                  superfluid &&
-                  typeof superfluid !== "string" &&
-                  "delegations" in superfluid &&
-                  superfluid.delegations &&
-                  superfluid.delegations.length > 0;
-                return [
-                  {
-                    value: lockedAsset.duration.humanize(),
-                    isSuperfluidDuration,
-                  }, // Unbonding Duration
-                  {
-                    value:
-                      lockedAsset.apr?.maxDecimals(2).trim(true).toString() ??
-                      "0%",
-                  }, // Current APR
-                  {
-                    value: lockedAsset.amount
-                      .maxDecimals(6)
-                      .trim(true)
-                      .toString(),
-                  }, // Amount
-                  {
-                    ...lockedAsset,
-                    value: lockedAsset.duration.humanize(),
-                    isSuperfluidDuration,
-                  }, // Unbond All button
-                ].filter((_row, index) => (isMobile ? index !== 1 : true));
-              }) ?? []
-            }
-          />
-        </div>
+                        onClick={async () => {
+                          if (!lockIds) return;
+                          try {
+                            if (isSuperfluidDuration) {
+                              const blockGasLimitLockIds = lockIds.slice(0, 4);
+
+                              for (const lockId of blockGasLimitLockIds) {
+                                await queryOsmosis.querySyntheticLockupsByLockId
+                                  .get(lockId)
+                                  .waitFreshResponse();
+                              }
+
+                              await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+                                blockGasLimitLockIds.map((lockId) => ({
+                                  lockId,
+                                  isSyntheticLock:
+                                    queryOsmosis.querySyntheticLockupsByLockId.get(
+                                      lockId
+                                    ).isSyntheticLock === true,
+                                }))
+                              );
+                            } else {
+                              const blockGasLimitLockIds = lockIds.slice(0, 10);
+                              await account.osmosis.sendBeginUnlockingMsg(
+                                blockGasLimitLockIds
+                              );
+                            }
+                          } catch (e) {
+                            console.log(e);
+                          }
+                        }}
+                      >
+                        {isMobile ? "Unbond" : "Unbond All"}
+                      </Button>
+                    ),
+                  },
+                ] as ColumnDef<
+                  BaseCell & {
+                    duration: Duration;
+                    amount: CoinPretty;
+                    apr?: RatePretty;
+                    lockIds: string[];
+                    isSuperfluidDuration: boolean;
+                  }
+                >[]
+              ).filter(({ display }) =>
+                isMobile ? display !== "Current APR" : true
+              )}
+              data={
+                userLockedAssets?.map((lockedAsset, index) => {
+                  const isSuperfluidDuration =
+                    index === (userLockedAssets?.length ?? 0) - 1 &&
+                    superfluid &&
+                    typeof superfluid !== "string" &&
+                    "delegations" in superfluid &&
+                    superfluid.delegations &&
+                    superfluid.delegations.length > 0;
+                  return [
+                    {
+                      value: lockedAsset.duration.humanize(),
+                      isSuperfluidDuration,
+                    }, // Unbonding Duration
+                    {
+                      value:
+                        lockedAsset.apr?.maxDecimals(2).trim(true).toString() ??
+                        "0%",
+                    }, // Current APR
+                    {
+                      value: lockedAsset.amount
+                        .maxDecimals(6)
+                        .trim(true)
+                        .toString(),
+                    }, // Amount
+                    {
+                      ...lockedAsset,
+                      value: lockedAsset.duration.humanize(),
+                      isSuperfluidDuration,
+                    }, // Unbond All button
+                  ].filter((_row, index) => (isMobile ? index !== 1 : true));
+                }) ?? []
+              }
+            />
+          </div>
+        )}
         {pool && (
           <DepoolingTable
             className="w-full p-10 md:p-5 max-w-container my-5 mx-auto"
