@@ -47,7 +47,7 @@ yarn dev
 
 ## Frontier 🤠
 
-Currently, the frontier frontend is built and deployed from the [`frontier`](https://github.com/osmosis-labs/osmosis-frontend/tree/frontier) branch. If your issue or PR is related to frontier, please prefix with "frontier."
+If your issue or PR is related to frontier, please prefix with "Frontier -".
 
 For organization purposes, `master` and `frontier` branches are identical except for the `NEXT_PUBLIC_IS_FRONTIER` env var is `true` on `frontier` branch. If making
 updates to frontier, please still target the master branch.
