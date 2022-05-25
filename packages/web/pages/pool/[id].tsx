@@ -346,8 +346,6 @@ const Pool: FunctionComponent = observer(() => {
               ),
           }
       : "not-superfluid-pool";
-
-    console.log(queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id));
   }
 
   // eject to pools page if pool does not exist
@@ -1069,7 +1067,7 @@ const Pool: FunctionComponent = observer(() => {
         )}
         {pool && (
           <DepoolingTable
-            className="w-full p-10 md:p-5 max-w-container my-5 mx-auto"
+            className="w-full p-10 md:p-5 max-w-container py-5 mx-auto"
             tableClassName="md:w-screen md:-mx-5"
             poolId={pool.id}
           />
