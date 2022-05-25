@@ -1181,7 +1181,8 @@ const Pool: FunctionComponent = observer(() => {
                                   asset.amount.currency.coinDenom ===
                                   userAsset?.asset.currency.coinDenom
                               )
-                              ?.amount.trim(true)
+                              ?.amount.maxDecimals(6)
+                              .trim(true)
                               .toString() ?? "0",
                             30
                           )}
@@ -1193,7 +1194,10 @@ const Pool: FunctionComponent = observer(() => {
                       value: (
                         <MetricLoader isLoading={!userPoolAssets}>
                           {truncateString(
-                            userAsset?.asset.trim(true).toString() ?? "",
+                            userAsset?.asset
+                              .maxDecimals(6)
+                              .trim(true)
+                              .toString() ?? "",
                             30
                           )}
                         </MetricLoader>
