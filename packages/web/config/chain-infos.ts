@@ -1304,6 +1304,34 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://explorer.meme.sx/meme/tx/{txHash}",
     },
+    {
+      rpc: "https://rpc-evmos.keplr.app/",
+      rest: "https://lcd-evmos.keplr.app/",
+      chainId: "evmos_9001-2",
+      chainName: "Evmos",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("evmos"),
+      currencies: [
+        {
+          coinDenom: "EVMOS",
+          coinMinimalDenom: "aevmos",
+          coinDecimals: 18,
+          coinGeckoId: "evmos",
+          coinImageUrl: "/tokens/evmos.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 10000000000,
+        average: 25000000000,
+        high: 40000000000,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/evmos/txs/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
