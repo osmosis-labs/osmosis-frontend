@@ -35,10 +35,9 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
 
     const smallVerticalScreen = height < 800;
 
-    const showFixedLogo =
-      !smallVerticalScreen || (smallVerticalScreen && !showSidebar);
+    const showFixedLogo = !smallVerticalScreen || (isMobile && !showSidebar);
 
-    const showBlockLogo = smallVerticalScreen && showSidebar;
+    const showBlockLogo = smallVerticalScreen;
 
     return (
       <React.Fragment>
@@ -156,7 +155,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
         </div>
         <div
           className={classNames(
-            "fixed flex z-40 h-24 w-screen items-center place-content-end px-8",
+            "fixed flex z-40 h-mobile-header w-screen items-center place-content-end px-8",
             {
               "bg-black/80": !isScrolledTop && isMobile,
               hidden: showSidebar || !isMobile,

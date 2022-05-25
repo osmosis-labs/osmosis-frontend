@@ -39,10 +39,12 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
     const { isMobile } = useWindowSize();
     const [selectedTabIndex, setSelectedTabIndex] = useState<0 | 1>(0);
 
+    console.log(addLiquidityConfig.error);
+
     const { showModalBase, accountActionButton } =
       useConnectWalletModalRedirect(
         {
-          className: "h-14 md:w-full w-96 mt-3 mx-auto",
+          className: "h-14 md:w-full md:px-1 w-96 mt-3 mx-auto",
           size: "lg",
           loading: isSendingMsg,
           disabled:

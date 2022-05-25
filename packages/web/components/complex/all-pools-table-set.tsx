@@ -119,11 +119,6 @@ export const AllPoolsTableSet: FunctionComponent<{
         );
   }, [isPoolTvlFiltered, activeOptionPools]);
 
-  const [query, setQuery, filteredPools] = useFilteredData(tvlFilteredPools, [
-    "pool.id",
-    "pool.poolAssets.amount.currency.coinDenom",
-  ]);
-
   const initialKeyPath = "liquidity";
   const initialSortDirection = "descending";
   const [
@@ -133,10 +128,15 @@ export const AllPoolsTableSet: FunctionComponent<{
     setSortDirection,
     toggleSortDirection,
     sortedAllPoolsWithMetrics,
-  ] = useSortedData(filteredPools, initialKeyPath, initialSortDirection);
+  ] = useSortedData(tvlFilteredPools, initialKeyPath, initialSortDirection);
+
+  const [query, setQuery, filteredPools] = useFilteredData(
+    sortedAllPoolsWithMetrics,
+    ["pool.id", "pool.poolAssets.amount.currency.coinDenom"]
+  );
 
   const [page, setPage, minPage, numPages, allData] = usePaginatedData(
-    sortedAllPoolsWithMetrics,
+    filteredPools,
     POOLS_PER_PAGE
   );
   const makeSortMechanism = useCallback(

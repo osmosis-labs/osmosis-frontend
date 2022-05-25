@@ -42,7 +42,7 @@ const TransferButton: FunctionComponent<{
   externalUrl ? (
     <a
       className={classNames(
-        "mx-auto flex justify-center items-center gap-0.5 pl-1 text-button font-subtitle2 base text-secondary-200",
+        "mx-auto flex justify-center items-center gap-0.5 pl-1 pt-2 text-button font-subtitle2 base text-secondary-200",
         { "opacity-30": disabled }
       )}
       rel="noreferrer"

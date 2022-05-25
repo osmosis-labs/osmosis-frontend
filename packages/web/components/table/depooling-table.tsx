@@ -22,8 +22,14 @@ export const DepoolingTable: FunctionComponent<
   ).response;
 
   const showDepoolingTable =
-    (poolId && UnPoolWhitelistedPoolIds[poolId]) ||
-    (accountLockedResponse &&
+    (poolId &&
+      UnPoolWhitelistedPoolIds[poolId] &&
+      accountLockedResponse &&
+      accountLockedResponse.data.locks.find((lock) =>
+        lock.coins.some((coin) => coin.denom.startsWith("gamm/pool/"))
+      )) ||
+    (!poolId &&
+      accountLockedResponse &&
       accountLockedResponse.data.locks.find((lock) =>
         lock.coins.some((coin) => coin.denom.startsWith("gamm/pool/"))
       ));
@@ -38,6 +44,10 @@ export const DepoolingTable: FunctionComponent<
       (unlocking) =>
         !unlocking.amount.currency.coinMinimalDenom.startsWith("gamm/pool/")
     );
+
+  if (unlockingTokensExceptLPShares.length === 0) {
+    return null;
+  }
 
   return (
     <div className={classNames("flex flex-col gap-2", className)}>

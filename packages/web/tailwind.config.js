@@ -232,6 +232,7 @@ module.exports = {
       },
       spacing: {
         sidebar: "12.875rem",
+        "mobile-header": "6rem",
         0.25: "1px",
       },
       maxWidth: {

@@ -25,6 +25,7 @@ import { Switch } from "../control";
 import { Button } from "../buttons";
 import { PreTransferModal } from "../../modals";
 import { IbcHistoryTable } from "./ibc-history";
+import { ColumnDef } from "./types";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -40,7 +41,8 @@ export const AssetsTable: FunctionComponent<Props> = ({
   onWithdraw,
 }) => {
   const { chainStore, assetsStore } = useStore();
-  const { isMobile } = useWindowSize();
+  const { width, isMobile } = useWindowSize();
+  const mergeWithdrawCol = width < 1000 && !isMobile;
   // Assemble cells with all data needed for any place in the table.
   const cells: TableCell[] = useMemo(
     () => [
@@ -282,8 +284,8 @@ export const AssetsTable: FunctionComponent<Props> = ({
             </div>
           </div>
         ) : (
-          <div className="flex place-content-between">
-            <h5>Osmosis Assets</h5>
+          <div className="flex flex-wrap place-content-between">
+            <h5 className="shrink-0">Osmosis Assets</h5>
             <div className="flex gap-5">
               <SearchBox
                 currentValue={query}
@@ -363,24 +365,43 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 display: "Balance",
                 displayCell: BalanceCell,
                 sort: sortColumnWithKeys(["amount", "fiatValue"], "descending"),
-                className: "text-right pr-24",
+                className: "text-right pr-24 lg:pr-8 1.5md:pr-1",
               },
-              {
-                display: "Deposit",
-                displayCell: (cell) => (
-                  <TransferButtonCell type="deposit" {...cell} />
-                ),
-                className: "text-center max-w-[5rem]",
-              },
-              {
-                display: "Withdraw",
-                displayCell: (cell) => (
-                  <TransferButtonCell type="withdraw" {...cell} />
-                ),
-                className: "text-center max-w-[5rem]",
-              },
+              ...(mergeWithdrawCol
+                ? ([
+                    {
+                      display: "Transfer",
+                      displayCell: (cell) => (
+                        <div>
+                          <TransferButtonCell type="deposit" {...cell} />
+                          <TransferButtonCell type="withdraw" {...cell} />
+                        </div>
+                      ),
+                      className: "text-center max-w-[5rem]",
+                    },
+                  ] as ColumnDef<TableCell>[])
+                : ([
+                    {
+                      display: "Deposit",
+                      displayCell: (cell) => (
+                        <TransferButtonCell type="deposit" {...cell} />
+                      ),
+                      className: "text-center max-w-[5rem]",
+                    },
+                    {
+                      display: "Withdraw",
+                      displayCell: (cell) => (
+                        <TransferButtonCell type="withdraw" {...cell} />
+                      ),
+                      className: "text-center max-w-[5rem]",
+                    },
+                  ] as ColumnDef<TableCell>[])),
             ]}
-            data={tableData.map((cell) => [cell, cell, cell, cell])}
+            data={tableData.map((cell) => [
+              cell,
+              cell,
+              ...(mergeWithdrawCol ? [cell] : [cell, cell]),
+            ])}
             headerTrClassName="!h-12 !body2"
           />
         )}
@@ -393,7 +414,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             />
           )}
           {!isMobile && (
-            <div className="flex gap-2 absolute body2 right-24 bottom-1">
+            <div className="flex gap-2 absolute body2 right-24 lg:right-12 1.5md:right-6 bottom-1">
               <CheckBox
                 className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
                 isOn={hideZeroBalances}

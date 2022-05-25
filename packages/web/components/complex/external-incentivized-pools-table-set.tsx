@@ -135,11 +135,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       ]
     );
 
-    const [query, setQuery, filteredPools] = useFilteredData(
-      externalIncentivizedPoolsWithMetrics,
-      ["pool.id", "pool.poolAssets.amount.currency.coinDenom"]
-    );
-
     const initialKeyPath = "liquidity";
     const initialSortDirection = "descending";
     const [
@@ -149,9 +144,17 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       setSortDirection,
       toggleSortDirection,
       sortedAllPoolsWithMetrics,
-    ] = useSortedData(filteredPools, initialKeyPath, initialSortDirection);
-    const [page, setPage, minPage, numPages, allData] = usePaginatedData(
+    ] = useSortedData(
+      externalIncentivizedPoolsWithMetrics,
+      initialKeyPath,
+      initialSortDirection
+    );
+    const [query, setQuery, filteredPools] = useFilteredData(
       sortedAllPoolsWithMetrics,
+      ["pool.id", "pool.poolAssets.amount.currency.coinDenom"]
+    );
+    const [page, setPage, minPage, numPages, allData] = usePaginatedData(
+      filteredPools,
       POOLS_PER_PAGE
     );
     const makeSortMechanism = useCallback(

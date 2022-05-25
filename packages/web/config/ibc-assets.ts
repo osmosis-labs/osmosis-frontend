@@ -520,6 +520,15 @@ export const IBCAssetInfos: (IBCAsset & {
 		ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
 	},
+  {
+		counterpartyChainId: "evmos_9001-2",
+		sourceChannelId: "channel-204",
+		destChannelId: "channel-0",
+		coinMinimalDenom: "aevmos",
+		depositUrlOverride: "https://app.evmos.org/transfer",
+		withdrawUrlOverride: "https://app.evmos.org/transfer",
+    isVerified: true,
+	},
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;

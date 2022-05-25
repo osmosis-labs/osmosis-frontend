@@ -8,7 +8,11 @@ export class DataFilter<TData> implements DataProcessor<TData[]> {
   readonly searcher: Fuse<TData>;
 
   constructor(readonly data: TData[], keys?: string[]) {
-    this.searcher = new Fuse(data, { keys: keys, findAllMatches: true });
+    this.searcher = new Fuse(data, {
+      keys: keys,
+      findAllMatches: true,
+      useExtendedSearch: true,
+    });
   }
 
   process(userInput: string) {
