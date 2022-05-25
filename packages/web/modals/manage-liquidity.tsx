@@ -39,8 +39,6 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
     const { isMobile } = useWindowSize();
     const [selectedTabIndex, setSelectedTabIndex] = useState<0 | 1>(0);
 
-    console.log(addLiquidityConfig.error);
-
     const { showModalBase, accountActionButton } =
       useConnectWalletModalRedirect(
         {
