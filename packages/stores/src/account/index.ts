@@ -473,8 +473,21 @@ export class OsmosisAccountImpl {
               throw new Error(`Pool #${pool.id} not found for route`);
             }
 
+            if (i !== 0 && typeof routes[i - 1] === "undefined") {
+              throw new Error("Previous route not found");
+            }
+
+            // console.log(
+            //   "transfer asset",
+            //   i === 0
+            //     ? tokenIn.currency.coinMinimalDenom
+            //     : routes[i - 1].tokenOutCurrency.coinMinimalDenom
+            // );
+
             const inPoolAsset = queryPool.getPoolAsset(
-              tokenIn.currency.coinMinimalDenom
+              i === 0
+                ? tokenIn.currency.coinMinimalDenom
+                : routes[i - 1].tokenOutCurrency.coinMinimalDenom
             );
             const outPoolAsset = queryPool.getPoolAsset(
               tokenOutCurrency.coinMinimalDenom

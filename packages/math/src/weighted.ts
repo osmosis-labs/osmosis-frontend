@@ -558,7 +558,12 @@ export class WeightedPoolEstimates {
       // Token out should be the token in for the next route
       tokenIn = {
         currency: route.tokenOutCurrency,
-        amount: estimated.tokenOut.locale(false).hideDenom(true).toString(),
+        amount: estimated.tokenOut
+          .moveDecimalPointRight(route.tokenOutCurrency.coinDecimals)
+          .trim(true)
+          .locale(false)
+          .hideDenom(true)
+          .toString(),
       };
     }
 
