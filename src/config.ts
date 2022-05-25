@@ -1269,20 +1269,19 @@ export const IBCAssetInfos: {
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 	{
-<<<<<<< frontier
-		counterpartyChainId: 'juno-1',
-		sourceChannelId: 'channel-169',
-		destChannelId: 'channel-47',
-		coinMinimalDenom: 'cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3',
-		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
-=======
 		counterpartyChainId: 'evmos_9001-2',
 		sourceChannelId: 'channel-204',
 		destChannelId: 'channel-0',
 		coinMinimalDenom: 'aevmos',
 		depositUrlOverride: 'https://app.evmos.org/transfer',
 		withdrawUrlOverride: 'https://app.evmos.org/transfer',
->>>>>>> frontier
+	},
+	{
+		counterpartyChainId: 'juno-1',
+		sourceChannelId: 'channel-169',
+		destChannelId: 'channel-47',
+		coinMinimalDenom: 'cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3',
+		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 ];
 
