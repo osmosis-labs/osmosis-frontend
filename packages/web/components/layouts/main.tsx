@@ -35,10 +35,9 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
 
     const smallVerticalScreen = height < 800;
 
-    const showFixedLogo =
-      !smallVerticalScreen || (smallVerticalScreen && !showSidebar);
+    const showFixedLogo = !smallVerticalScreen || (isMobile && !showSidebar);
 
-    const showBlockLogo = smallVerticalScreen && showSidebar;
+    const showBlockLogo = smallVerticalScreen;
 
     return (
       <React.Fragment>
