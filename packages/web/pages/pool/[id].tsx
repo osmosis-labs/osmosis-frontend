@@ -600,13 +600,16 @@ const Pool: FunctionComponent = observer(() => {
           }
           onLockToken={async (gaugeId, electSuperfluid) => {
             setShowLockLPTokenModal(false);
+            console.log("handler", electSuperfluid);
             if (electSuperfluid) {
               setShowSuperfluidValidatorsModal(true);
               // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
             } else {
               const gauge = lockupGauges.find((gauge) => gauge.id === gaugeId);
+              console.log({ gauge });
               try {
                 if (gauge) {
+                  console.log("sending");
                   await account.osmosis.sendLockTokensMsg(
                     gauge.duration.asSeconds(),
                     [

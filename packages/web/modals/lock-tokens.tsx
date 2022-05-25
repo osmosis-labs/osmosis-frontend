@@ -63,7 +63,9 @@ export const LockTokensModal: FunctionComponent<
         if (gauge) {
           onLockToken(
             gauge.id,
-            hasSuperfluidValidator ? undefined : electSuperfluid
+            hasSuperfluidValidator || !isSuperfluid
+              ? undefined
+              : electSuperfluid
           );
         }
       },
