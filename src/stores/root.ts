@@ -414,7 +414,7 @@ export class RootStore {
 					destCoinId: 'sifchain',
 				},
 				{
-					alternativeCoinId: 'pool:asvt',
+					alternativeCoinId: 'pool:joe',
 					poolId: '718',
 					spotPriceSourceDenom: DenomHelper.ibcDenom(
 						[{ portId: 'transfer', channelId: 'channel-169' }],
