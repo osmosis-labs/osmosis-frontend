@@ -74,6 +74,7 @@ export const LockupAbledPoolIds: {
 	'662': true,
 	'678': true,
 	'681': true,
+	'719': true,
 
 	'560': true,
 	'561': true,
@@ -789,6 +790,12 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '3016',
 			denom: 'uosmo',
+		},
+	],
+	'719': [
+		{
+			gaugeId: '3528',
+			denom: 'ibc/A0CC0CF735BFB30E730C70019D4218A1244FF383503FF7579C9201AB93CA9293',
 		},
 	],
 };
