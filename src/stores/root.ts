@@ -1909,6 +1909,21 @@ export class RootStore {
 						),
 						coinDenom: 'JOE',
 						coinDecimals: 6,
+          },
+					{
+						coinMinimalDenom: 'uosmo',
+						coinDenom: 'OSMO',
+						coinDecimals: 6,
+					},
+				],
+      },
+      {
+				poolId: '722',
+				currencies: [
+					{
+						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-204' }], 'aevmos'),
+						coinDenom: 'EVMOS',
+						coinDecimals: 18,
 					},
 					{
 						coinMinimalDenom: 'uosmo',
