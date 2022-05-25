@@ -1332,6 +1332,34 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/evmos/txs/{txHash}",
     },
+    {
+      rpc: "http://seed-1.mainnet.rizon.world:26657",
+      rest: "http://seed-1.mainnet.rizon.world:1317",
+      chainId: "titan-1",
+      chainName: "Rizon",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("rizon"),
+      currencies: [
+        {
+          coinDenom: "ATOLO",
+          coinMinimalDenom: "uatolo",
+          coinDecimals: 6,
+          coinGeckoId: "rizon",
+          coinImageUrl: "/tokens/atolo.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.025,
+        average: 0.025,
+        high: 0.035,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/rizon/txs/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
