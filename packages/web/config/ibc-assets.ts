@@ -42,6 +42,26 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'wbtc-satoshi',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=wbtc',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=wbtc',
+    isVerified: true,
+	},
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "dai-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&token=dai",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&token=dai",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "cosmoshub-4",
     sourceChannelId: "channel-0",
     destChannelId: "channel-141",
@@ -316,12 +336,6 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: "shentu-2.2",
-    sourceChannelId: "channel-146",
-    destChannelId: "channel-8",
-    coinMinimalDenom: "uctk",
-  },
-  {
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-169",
     destChannelId: "channel-47",
@@ -353,15 +367,26 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
-    coinMinimalDenom: "dai-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&token=dai",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&token=dai",
+    counterpartyChainId: "mantle-1",
+    sourceChannelId: "channel-232",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "umntl",
+	  isVerified: true,
+  },
+  {
+		counterpartyChainId: "evmos_9001-2",
+		sourceChannelId: "channel-204",
+		destChannelId: "channel-0",
+		coinMinimalDenom: "aevmos",
+		depositUrlOverride: "https://app.evmos.org/transfer",
+		withdrawUrlOverride: "https://app.evmos.org/transfer",
     isVerified: true,
+	},
+  {
+    counterpartyChainId: "shentu-2.2",
+    sourceChannelId: "channel-146",
+    destChannelId: "channel-8",
+    coinMinimalDenom: "uctk",
   },
   {
     counterpartyChainId: "juno-1",
@@ -405,16 +430,6 @@ export const IBCAssetInfos: (IBCAsset & {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
-    coinMinimalDenom: "dai-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&token=dai",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&token=dai",
-  },
-  {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
     coinMinimalDenom: "frax-wei",
     depositUrlOverride:
       "https://satellite.money/?source=ethereum&destination=osmosis&token=frax",
@@ -450,13 +465,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-  },
-  {
-    counterpartyChainId: "mantle-1",
-    sourceChannelId: "channel-232",
-    destChannelId: "channel-0",
-    coinMinimalDenom: "umntl",
-	  isVerified: true,
   },
   {
     counterpartyChainId: "juno-1",
@@ -520,15 +528,6 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
 		ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
-	},
-  {
-		counterpartyChainId: "evmos_9001-2",
-		sourceChannelId: "channel-204",
-		destChannelId: "channel-0",
-		coinMinimalDenom: "aevmos",
-		depositUrlOverride: "https://app.evmos.org/transfer",
-		withdrawUrlOverride: "https://app.evmos.org/transfer",
-    isVerified: true,
 	},
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
