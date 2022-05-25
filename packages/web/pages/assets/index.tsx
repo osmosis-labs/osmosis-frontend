@@ -277,7 +277,10 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                 }
               : {
                   label: "My Liquidity",
-                  value: tvl.mul(actualShareRatio).toString(),
+                  value: tvl
+                    .mul(actualShareRatio)
+                    .moveDecimalPointRight(2)
+                    .toString(),
                 },
           ],
         ] as [ObservableQueryPool, Metric[]];
