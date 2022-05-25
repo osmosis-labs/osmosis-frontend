@@ -89,7 +89,7 @@ const TokensDropdown: FunctionComponent<
     {tokens.map((token, index) => (
       <div
         className={classNames(
-          "hover:bg-white-faint cursor-pointer p-5 border-t border-dashed border-white-faint",
+          "hover:bg-white-faint cursor-pointer p-5 md:p-2 border-t border-dashed border-white-faint",
           { "rounded-b-xl": index === tokens.length - 1 }
         )}
         key={token.coinDenom}
