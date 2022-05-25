@@ -1276,6 +1276,13 @@ export const IBCAssetInfos: {
 		depositUrlOverride: 'https://app.evmos.org/transfer',
 		withdrawUrlOverride: 'https://app.evmos.org/transfer',
 	},
+	{
+		counterpartyChainId: 'juno-1',
+		sourceChannelId: 'channel-169',
+		destChannelId: 'channel-47',
+		coinMinimalDenom: 'cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3',
+		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -1936,6 +1943,15 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'pool:asvt',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/asvt.png',
+			},
+			{
+				type: 'cw20',
+				contractAddress: 'juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3',
+				coinDenom: 'JOE',
+				coinMinimalDenom: 'cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3:JOE',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:joe',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/joe.png',
 			},
 		],
 		feeCurrencies: [
