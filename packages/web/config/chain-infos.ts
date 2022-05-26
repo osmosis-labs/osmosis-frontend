@@ -696,8 +696,8 @@ const chainInfos = (
       ],
       gasPriceStep: {
         low: 25,
-        average: 30,
-        high: 50,
+        average: 50,
+        high: 100,
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
       explorerUrlToTx: "https://explorer.cheqd.io/transactions/{txHash}",
