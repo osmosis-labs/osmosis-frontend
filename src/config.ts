@@ -1460,18 +1460,18 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/lunc.png',
 			},
 			{
-				coinDenom: 'UST',
+				coinDenom: 'USTC',
 				coinMinimalDenom: 'uusd',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:uluna',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
+				coinGeckoId: 'terrausd',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ustc.png',
 			},
 			{
-				coinDenom: 'KRT',
+				coinDenom: 'KRTC',
 				coinMinimalDenom: 'ukrw',
 				coinDecimals: 6,
 				coinGeckoId: 'terra-krw',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/krtc.png',
 			},
 		],
 		feeCurrencies: [
@@ -1483,11 +1483,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/lunc.png',
 			},
 			{
-				coinDenom: 'UST',
+				coinDenom: 'USTC',
 				coinMinimalDenom: 'uusd',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:uusd',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
+				coinGeckoId: 'terrausd',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ustc.png',
 			},
 		],
 		gasPriceStep: {
