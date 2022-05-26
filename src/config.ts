@@ -1444,7 +1444,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDenom: 'LUNC',
 			coinMinimalDenom: 'uluna',
 			coinDecimals: 6,
-			coinGeckoId: 'pool:uluna',
+			coinGeckoId: 'terra-luna',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/lunc.png',
 		},
 		bip44: {
@@ -1456,7 +1456,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'LUNC',
 				coinMinimalDenom: 'uluna',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:uluna',
+				coinGeckoId: 'terra-luna',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/lunc.png',
 			},
 			{
@@ -1479,7 +1479,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDenom: 'LUNC',
 				coinMinimalDenom: 'uluna',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:uluna',
+				coinGeckoId: 'terra-luna',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/lunc.png',
 			},
 			{
