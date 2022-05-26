@@ -477,13 +477,6 @@ export class OsmosisAccountImpl {
               throw new Error("Previous route not found");
             }
 
-            // console.log(
-            //   "transfer asset",
-            //   i === 0
-            //     ? tokenIn.currency.coinMinimalDenom
-            //     : routes[i - 1].tokenOutCurrency.coinMinimalDenom
-            // );
-
             const inPoolAsset = queryPool.getPoolAsset(
               i === 0
                 ? tokenIn.currency.coinMinimalDenom

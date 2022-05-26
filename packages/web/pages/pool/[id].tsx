@@ -492,10 +492,6 @@ const Pool: FunctionComponent = observer(() => {
     return false;
   })();
 
-  if (pool) {
-    console.log(queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id));
-  }
-
   return (
     <main>
       <Head>
