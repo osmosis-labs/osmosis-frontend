@@ -42,14 +42,16 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-		counterpartyChainId: 'axelar-dojo-1',
-		sourceChannelId: 'channel-208',
-		destChannelId: 'channel-3',
-		coinMinimalDenom: 'wbtc-satoshi',
-		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=wbtc',
-		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=wbtc',
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "wbtc-satoshi",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&token=wbtc",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&token=wbtc",
     isVerified: true,
-	},
+  },
   {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
@@ -371,17 +373,17 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-232",
     destChannelId: "channel-0",
     coinMinimalDenom: "umntl",
-	  isVerified: true,
+    isVerified: true,
   },
   {
-		counterpartyChainId: "evmos_9001-2",
-		sourceChannelId: "channel-204",
-		destChannelId: "channel-0",
-		coinMinimalDenom: "aevmos",
-		depositUrlOverride: "https://app.evmos.org/transfer",
-		withdrawUrlOverride: "https://app.evmos.org/transfer",
+    counterpartyChainId: "evmos_9001-2",
+    sourceChannelId: "channel-204",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "aevmos",
+    depositUrlOverride: "https://app.evmos.org/transfer",
+    withdrawUrlOverride: "https://app.evmos.org/transfer",
     isVerified: true,
-	},
+  },
   {
     counterpartyChainId: "shentu-2.2",
     sourceChannelId: "channel-146",
@@ -534,7 +536,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-221",
     destChannelId: "channel-1",
     coinMinimalDenom: "uatolo",
-	},
+  },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;
