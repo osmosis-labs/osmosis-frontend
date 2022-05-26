@@ -240,9 +240,11 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
               coinDenom: poolAsset.amount.currency.coinDenom,
             })
           );
+          const isIncentivized =
+            queryOsmosis.queryIncentivizedPools.isIncentivized(poolId);
 
           return [
-            { poolId, poolAssets },
+            { poolId, poolAssets, isIncentivized },
             { value: poolWithMetrics.liquidity.toString() },
             {
               value: poolWithMetrics.apr?.toString(),
