@@ -1,0 +1,4 @@
+build/*
+
+.prettierignore
+.eslintignore

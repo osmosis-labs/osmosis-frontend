@@ -1,0 +1,31 @@
+{
+  "name": "@osmosis-labs/pools",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "author": "osmosis-labs",
+  "license": "Apache-2.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
+    "dev": "tsc -w",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
+    "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*": [
+      "eslint",
+      "prettier --check"
+    ]
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@osmosis-labs/math": "0.0.1",
+    "@keplr-wallet/unit": "^0.10.4"
+  }
+}

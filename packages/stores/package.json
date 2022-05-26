@@ -1,0 +1,49 @@
+{
+  "name": "@osmosis-labs/stores",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "author": "osmosis-labs",
+  "license": "Apache-2.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc && yarn build:proto",
+    "build:proto": "mkdir -p build/account/msg/proto/generated && cp ./src/account/msg/proto/generated/* ./build/account/msg/proto/generated",
+    "dev": "tsc -w",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
+    "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*": [
+      "eslint",
+      "prettier --check"
+    ]
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@cosmjs/launchpad": "^0.24.1",
+    "@keplr-wallet/common": "^0.10.4",
+    "@keplr-wallet/cosmos": "0.10.4",
+    "@keplr-wallet/hooks": "^0.10.4",
+    "@keplr-wallet/stores": "^0.10.4",
+    "@keplr-wallet/types": "^0.10.4",
+    "@keplr-wallet/unit": "^0.10.4",
+    "@osmosis-labs/pools": "0.0.1",
+    "@osmosis-labs/math": "0.0.1",
+    "axios": "^0.21.1",
+    "buffer": "^6.0.3",
+    "dayjs": "^1.10.7",
+    "mobx": "^6.3.10",
+    "mobx-utils": "^6.0.4",
+    "mobx-react-lite": "^3.2.2",
+    "utility-types": "^3.10.0",
+    "deepmerge": "^4.2.2",
+    "long": "^5.2.0",
+    "protobufjs": "^6.11.2"
+  }
+}
