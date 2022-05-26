@@ -74,11 +74,11 @@ const chainInfos = (
       bech32Config: Bech32Address.defaultBech32Config("terra"),
       currencies: [
         {
-          coinDenom: "LUNA",
+          coinDenom: "LUNC",
           coinMinimalDenom: "uluna",
           coinDecimals: 6,
           coinGeckoId: "terra-luna",
-          coinImageUrl: "/tokens/luna.png",
+          coinImageUrl: "/tokens/lunc.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
