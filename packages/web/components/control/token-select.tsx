@@ -1,7 +1,7 @@
+import { FunctionComponent, useEffect, useRef } from "react";
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import Image from "next/image";
-import { FunctionComponent } from "react";
 import { useBooleanWithWindowEvent, useFilteredData } from "../../hooks";
 import { MobileProps } from "../types";
 
@@ -13,6 +13,8 @@ export const TokenSelect: FunctionComponent<
     onSelect: (tokenDenom: string) => void;
     sortByBalances?: boolean;
     getChainNetworkName?: (coinDenom: string) => string | undefined;
+    dropdownOpen?: boolean;
+    onOpenDropdown?: () => void;
   } & MobileProps
 > = ({
   selectedTokenDenom,
@@ -21,8 +23,18 @@ export const TokenSelect: FunctionComponent<
   sortByBalances = false,
   getChainNetworkName,
   isMobile = false,
+  dropdownOpen,
+  onOpenDropdown,
 }) => {
-  const [isSelectOpen, setIsSelectOpen] = useBooleanWithWindowEvent(false);
+  // parent overrideable state
+  const [isSelectOpenLocal, setIsSelectOpenLocal] =
+    useBooleanWithWindowEvent(false);
+  const isSelectOpen =
+    dropdownOpen === undefined ? isSelectOpenLocal : dropdownOpen;
+  const setIsSelectOpen =
+    onOpenDropdown === undefined ? setIsSelectOpenLocal : onOpenDropdown;
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const selectedToken = tokens.find(
     (token) =>
       (token instanceof CoinPretty ? token.denom : token.coinDenom) ===
@@ -51,18 +63,24 @@ export const TokenSelect: FunctionComponent<
       ? selectedToken.currency
       : selectedToken;
 
-  const hasNeedTokenSelect = tokens.length > 1;
+  const canSelectTokens = tokens.length > 1;
+
+  useEffect(() => {
+    if (isSelectOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isSelectOpen]);
 
   return (
     <div className="flex md:justify-start justify-center items-center relative">
       {selectedCurrency && (
         <div
           className={`flex items-center group ${
-            hasNeedTokenSelect ? "cursor-pointer" : ""
+            canSelectTokens ? "cursor-pointer" : ""
           }`}
           onClick={(e) => {
             e.stopPropagation();
-            if (hasNeedTokenSelect) {
+            if (canSelectTokens) {
               setIsSelectOpen(!isSelectOpen);
             }
           }}
@@ -87,7 +105,7 @@ export const TokenSelect: FunctionComponent<
               ) : (
                 <h5>{selectedCurrency.coinDenom}</h5>
               )}
-              {hasNeedTokenSelect && (
+              {canSelectTokens && (
                 <div className="w-5 ml-3 md:ml-2 pb-1">
                   <Image
                     className={`opacity-40 group-hover:opacity-100 transition-transform duration-100 ${
@@ -123,6 +141,7 @@ export const TokenSelect: FunctionComponent<
               />
             </div>
             <input
+              ref={inputRef}
               type="text"
               className="px-4 subtitle2 text-white-full bg-transparent font-normal"
               placeholder="Search tokens"

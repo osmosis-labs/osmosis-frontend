@@ -60,6 +60,12 @@ export const TradeClipboard: FunctionComponent<{
     );
   }, [chainStore, queriesStore, chainId, account.bech32Address, pools]);
 
+  // auto focus from amount on token switch
+  const fromAmountInput = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    fromAmountInput.current?.focus();
+  }, [tradeTokenInConfig.sendCurrency]);
+
   useTokenSwapQueryParams(tradeTokenInConfig, allTokenBalances, isInModal);
 
   const showWarningSlippage = useMemo(
@@ -78,6 +84,25 @@ export const TradeClipboard: FunctionComponent<{
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSettingOpen]);
+
+  // token select dropdown
+  const [showFromTokenSelectDropdown, setFromTokenSelectDropdownLocal] =
+    useBooleanWithWindowEvent(false);
+  const [showToTokenSelectDropdown, setToTokenSelectDropdownLocal] =
+    useBooleanWithWindowEvent(false);
+  const setOneDropdownOpen = (dropdown: "to" | "from") => {
+    if (dropdown === "to") {
+      setToTokenSelectDropdownLocal(true);
+      setFromTokenSelectDropdownLocal(false);
+    } else {
+      setFromTokenSelectDropdownLocal(true);
+      setToTokenSelectDropdownLocal(false);
+    }
+  };
+  const closeTokenSelectDropdowns = () => {
+    setFromTokenSelectDropdownLocal(false);
+    setToTokenSelectDropdownLocal(false);
+  };
 
   return (
     <div
@@ -282,6 +307,9 @@ export const TradeClipboard: FunctionComponent<{
             <div className="flex items-center mt-3">
               {tradeTokenInConfig && (
                 <TokenSelect
+                  sortByBalances
+                  dropdownOpen={showFromTokenSelectDropdown}
+                  onOpenDropdown={() => setOneDropdownOpen("from")}
                   tokens={allTokenBalances
                     .filter(
                       (tokenBalance) =>
@@ -298,6 +326,7 @@ export const TradeClipboard: FunctionComponent<{
                     .map((tokenBalance) => tokenBalance.balance)}
                   selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
                   onSelect={(tokenDenom: string) => {
+                    closeTokenSelectDropdowns();
                     const tokenInBalance = allTokenBalances.find(
                       (tokenBalance) =>
                         tokenBalance.balance.currency.coinDenom === tokenDenom
@@ -322,6 +351,7 @@ export const TradeClipboard: FunctionComponent<{
               {tradeTokenInConfig && (
                 <div className="flex flex-col items-end">
                   <input
+                    ref={fromAmountInput}
                     type="number"
                     className="font-h5 md:font-subtitle1 text-h5 md:text-subtitle1 text-white-full bg-transparent text-right focus:outline-none w-full"
                     placeholder="0"
@@ -391,6 +421,9 @@ export const TradeClipboard: FunctionComponent<{
             <div className="flex items-center mt-3">
               {tradeTokenInConfig && (
                 <TokenSelect
+                  dropdownOpen={showToTokenSelectDropdown}
+                  onOpenDropdown={() => setOneDropdownOpen("to")}
+                  sortByBalances
                   tokens={allTokenBalances
                     .filter(
                       (tokenBalance) =>
@@ -407,6 +440,7 @@ export const TradeClipboard: FunctionComponent<{
                     .map((tokenBalance) => tokenBalance.balance)}
                   selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
                   onSelect={(tokenDenom: string) => {
+                    closeTokenSelectDropdowns();
                     const tokenOutBalance = allTokenBalances.find(
                       (tokenBalance) =>
                         tokenBalance.balance.currency.coinDenom === tokenDenom

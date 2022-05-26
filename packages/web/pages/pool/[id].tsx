@@ -6,7 +6,6 @@ import {
   ObservableAddLiquidityConfig,
   ObservableQueryGuageById,
   ObservableRemoveLiquidityConfig,
-  ObservableTradeTokenInConfig,
 } from "@osmosis-labs/stores";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";

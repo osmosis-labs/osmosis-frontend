@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AccountSetBase,
   CosmosAccount,
@@ -67,7 +67,7 @@ export function useIbcTransfer({
           : counterpartyAccount.cosmos.msgOpts.ibcTransfer.gas
       )
   );
-  const amountConfig = useState(() => {
+  const [amountConfig] = useState(() => {
     const config = new AmountConfig(
       chainStore,
       queriesStore,

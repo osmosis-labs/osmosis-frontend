@@ -50,7 +50,7 @@ export const DepoolingTable: FunctionComponent<
   }
 
   return (
-    <div className={classNames("flex flex-col gap-2", className)}>
+    <div className={classNames("flex flex-col gap-4", className)}>
       {isMobile ? (
         <span className="subtitle2">Depoolings</span>
       ) : (
