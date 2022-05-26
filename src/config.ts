@@ -1439,7 +1439,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		rpc: 'https://rpc-columbus.keplr.app',
 		rest: 'https://lcd-columbus.keplr.app',
 		chainId: 'columbus-5',
-		chainName: 'Terra',
+		chainName: 'Terra Classic',
 		stakeCurrency: {
 			coinDenom: 'LUNC',
 			coinMinimalDenom: 'uluna',
