@@ -1,5 +1,6 @@
 import { FunctionComponent, useMemo } from "react";
 import { observer } from "mobx-react-lite";
+import { runInAction } from "mobx";
 import { InputBox } from "../../../input";
 import {
   PieChart,
@@ -117,7 +118,9 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
             className="after:!bg-transparent after:!border-2 after:!border-iconDefault"
             isOn={config.acknowledgeFee}
             onToggle={() => {
-              config.acknowledgeFee = !config.acknowledgeFee;
+              runInAction(() => {
+                config.acknowledgeFee = !config.acknowledgeFee;
+              });
             }}
           >
             {isMobile ? (

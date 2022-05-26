@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   AccountSetBase,
   CosmosAccount,
@@ -57,7 +57,7 @@ export function useIbcTransfer({
   const account = accountStore.getAccount(chainId);
   const counterpartyAccount = accountStore.getAccount(counterpartyChainId);
 
-  const feeConfig = useMemo(
+  const [feeConfig] = useState(
     () =>
       new FakeFeeConfig(
         chainStore,
@@ -65,11 +65,9 @@ export function useIbcTransfer({
         isWithdraw
           ? account.cosmos.msgOpts.ibcTransfer.gas
           : counterpartyAccount.cosmos.msgOpts.ibcTransfer.gas
-      ),
-    // eslint-disable-next-line
-    [chainId, chainStore, account, counterpartyAccount]
+      )
   );
-  const amountConfig = useMemo(() => {
+  const amountConfig = useState(() => {
     const config = new AmountConfig(
       chainStore,
       queriesStore,
@@ -79,14 +77,7 @@ export function useIbcTransfer({
     );
     config.setSendCurrency(isWithdraw ? currency : currency.originCurrency!);
     return config;
-    // eslint-disable-next-line
-  }, [
-    chainStore,
-    queriesStore,
-    account.bech32Address,
-    counterpartyAccount.bech32Address,
-    feeConfig,
-  ]);
+  });
   const [customBech32Address, isCustomAddressValid, setCustomBech32Address] =
     useCustomBech32Address();
   const customCounterpartyConfig: CustomCounterpartyConfig | undefined =

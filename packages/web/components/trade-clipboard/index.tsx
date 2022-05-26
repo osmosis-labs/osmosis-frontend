@@ -58,8 +58,7 @@ export const TradeClipboard: FunctionComponent<{
       undefined,
       pools
     );
-    // eslint-disable-next-line
-  }, [chainStore, chainId, account.bech32Address, pools.length]);
+  }, [chainStore, queriesStore, chainId, account.bech32Address, pools]);
 
   useTokenSwapQueryParams(tradeTokenInConfig, allTokenBalances, isInModal);
 

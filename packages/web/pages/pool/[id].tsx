@@ -440,20 +440,6 @@ const Pool: FunctionComponent = observer(() => {
 
   // swap modal
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
-  const tradeTokenInConfig = useMemo(
-    () =>
-      pool
-        ? new ObservableTradeTokenInConfig(
-            chainStore,
-            queriesStore,
-            chainStore.osmosis.chainId,
-            account.bech32Address,
-            undefined,
-            [pool.pool]
-          )
-        : undefined,
-    [chainStore, queriesStore, account.bech32Address, pool]
-  );
 
   // unpool
   const showDepoolButton = (() => {
@@ -571,7 +557,7 @@ const Pool: FunctionComponent = observer(() => {
           }}
         />
       )}
-      {tradeTokenInConfig && pool && (
+      {pool && (
         <TradeTokens
           className="md:!p-0"
           title={
