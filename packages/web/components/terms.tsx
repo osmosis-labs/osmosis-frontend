@@ -1,26 +1,18 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent } from "react";
 import { TermsModal } from "../modals/terms";
+import { useLocalStorageState } from "../hooks";
 
-const TERMS_KEY = "terms_agreement";
+const TERMS_KEY = "show_terms_agreement";
 
 export const Terms: FunctionComponent = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    if (localStorage.getItem(TERMS_KEY) === null) {
-      setIsOpen(true);
-    } else {
-      setIsOpen(false);
-    }
-  }, []);
+  const [isOpen, setIsOpen] = useLocalStorageState(TERMS_KEY, true);
 
   return (
     <TermsModal
       isOpen={isOpen}
-      onRequestClose={() => setIsOpen(false)}
       onAgree={() => {
+        console.log("agreed");
         setIsOpen(false);
-        localStorage.setItem(TERMS_KEY, "accepted");
       }}
     />
   );

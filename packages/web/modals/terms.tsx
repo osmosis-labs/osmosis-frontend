@@ -5,8 +5,11 @@ import { CheckBox } from "../components/control";
 import { useWindowSize } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
 
+/** Can only be closed when a user clicks the checkbox and uses proceed button.
+ *  State stored in localstorage.
+ */
 export const TermsModal: FunctionComponent<
-  ModalBaseProps & { onAgree: () => void }
+  Omit<ModalBaseProps, "onRequestClose"> & { onAgree: () => void }
 > = (props) => {
   const { isMobile } = useWindowSize();
 
@@ -15,7 +18,7 @@ export const TermsModal: FunctionComponent<
   const [showLicense, setShowLicense] = useState(false);
 
   return (
-    <ModalBase {...props}>
+    <ModalBase {...props} onRequestClose={() => undefined}>
       <div>
         <div className="max-w-modal">
           <div className="max-h-terms overflow-y-scroll bg-background rounded-2xl p-5 my-8">
