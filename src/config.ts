@@ -1441,11 +1441,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		chainId: 'columbus-5',
 		chainName: 'Terra',
 		stakeCurrency: {
-			coinDenom: 'LUNA',
+			coinDenom: 'LUNC',
 			coinMinimalDenom: 'uluna',
 			coinDecimals: 6,
 			coinGeckoId: 'pool:uluna',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/lunc.png',
 		},
 		bip44: {
 			coinType: 330,
@@ -1453,11 +1453,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		bech32Config: Bech32Address.defaultBech32Config('terra'),
 		currencies: [
 			{
-				coinDenom: 'LUNA',
+				coinDenom: 'LUNC',
 				coinMinimalDenom: 'uluna',
 				coinDecimals: 6,
 				coinGeckoId: 'pool:uluna',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/lunc.png',
 			},
 			{
 				coinDenom: 'UST',
@@ -1476,11 +1476,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		feeCurrencies: [
 			{
-				coinDenom: 'LUNA',
+				coinDenom: 'LUNC',
 				coinMinimalDenom: 'uluna',
 				coinDecimals: 6,
 				coinGeckoId: 'pool:uluna',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/lunc.png',
 			},
 			{
 				coinDenom: 'UST',

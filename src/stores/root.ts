@@ -842,7 +842,7 @@ export class RootStore {
 				currencies: [
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uluna'),
-						coinDenom: 'LUNA',
+						coinDenom: 'LUNC',
 						coinDecimals: 6,
 					},
 					{
@@ -857,7 +857,7 @@ export class RootStore {
 				currencies: [
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uluna'),
-						coinDenom: 'LUNA',
+						coinDenom: 'LUNC',
 						coinDecimals: 6,
 					},
 					{
