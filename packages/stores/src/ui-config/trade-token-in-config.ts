@@ -272,7 +272,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       );
 
     return {
-      amount: new CoinPretty(this.outCurrency, result.amount),
+      amount: new CoinPretty(this.outCurrency, result.amount).locale(false),
       beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(
         beforeSpotPriceWithoutSwapFeeInOverOutDec.mulTruncate(
           multiplicationInOverOut
@@ -314,7 +314,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       tokenInFeeAmount: new CoinPretty(
         this.sendCurrency,
         result.tokenInFeeAmount
-      ),
+      ).locale(false),
       swapFee: new RatePretty(result.swapFee),
       slippage: new RatePretty(result.slippage),
     };
