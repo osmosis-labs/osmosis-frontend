@@ -63,7 +63,10 @@ export const LockTokensModal: FunctionComponent<
         if (gauge) {
           onLockToken(
             gauge.id,
-            hasSuperfluidValidator || !isSuperfluid
+            // Allow superfluid only for the highest gauge index.
+            // On the mainnet, this standard works well
+            // Logically it could be a problem if it's not the mainnet
+            hasSuperfluidValidator || !isSuperfluid || !highestGaugeSelected
               ? undefined
               : electSuperfluid
           );
