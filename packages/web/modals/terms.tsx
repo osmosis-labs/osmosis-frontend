@@ -68,7 +68,7 @@ export const TermsModal: FunctionComponent<
               }}
             />
             <div
-              className="cursor-pointer md:caption"
+              className="cursor-pointer md:caption md:w-44"
               onClick={(e) => {
                 e.preventDefault();
 
