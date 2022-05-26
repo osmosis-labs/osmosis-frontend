@@ -161,32 +161,30 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
       }
 
       /*
-			 The spot price is ( Bi / Wi ) / (Bo / Wo).
-			 And "single amount in" only changes the Bi or Bo.
-			 Others can be handles as constant.
-			 So, we can calculate the price impact by just consider the added amount of one asset.
-			 */
+       The spot price is ( Bi / Wi ) / (Bo / Wo).
+       And "single amount in" only changes the Bi or Bo.
+       Others can be handles as constant.
+       So, we can calculate the price impact by just consider the added amount of one asset.
+       */
       return new RatePretty(
-        new Dec(1)
-          .sub(
-            poolAsset.amount
-              .toDec()
-              .quo(
-                poolAsset.amount
-                  .toDec()
-                  .add(
-                    new CoinPretty(
-                      config.sendCurrency,
-                      new Dec(config.amount).mul(
-                        DecUtils.getTenExponentNInPrecisionRange(
-                          config.sendCurrency.coinDecimals
-                        )
+        new Dec(1).sub(
+          poolAsset.amount
+            .toDec()
+            .quo(
+              poolAsset.amount
+                .toDec()
+                .add(
+                  new CoinPretty(
+                    config.sendCurrency,
+                    new Dec(config.amount).mul(
+                      DecUtils.getTenExponentNInPrecisionRange(
+                        config.sendCurrency.coinDecimals
                       )
-                    ).toDec()
-                  )
-              )
-          )
-          .mul(new Dec(100))
+                    )
+                  ).toDec()
+                )
+            )
+        )
       );
     } catch (e) {
       console.error(e);
