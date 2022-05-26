@@ -27,12 +27,12 @@ export const DepoolingTable: FunctionComponent<
       accountLockedResponse &&
       accountLockedResponse.data.locks.find((lock) =>
         lock.coins.some((coin) => coin.denom.startsWith("gamm/pool/"))
-      )) ||
+      ) !== undefined) ||
     (!poolId &&
       accountLockedResponse &&
       accountLockedResponse.data.locks.find((lock) =>
         lock.coins.some((coin) => coin.denom.startsWith("gamm/pool/"))
-      ));
+      ) !== undefined);
 
   if (!showDepoolingTable) {
     return null;
