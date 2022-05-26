@@ -1145,54 +1145,74 @@ const Pool: FunctionComponent = observer(() => {
           ) : (
             <h5>Pool Catalyst</h5>
           )}
-          <div className="flex md:flex-col gap-5 my-5">
+          <div className="flex flex-wrap md:flex-col gap-5 my-5">
             {(userPoolAssets ?? [undefined, undefined]).map(
-              (userAsset, index) => (
-                <PoolCatalystCard
-                  key={index}
-                  colorKey={Number(pool?.id ?? "0") + index}
-                  isLoading={!pool || !userPoolAssets}
-                  className="md:w-full w-1/2 max-w-md"
-                  percentDec={userAsset?.ratio.toString()}
-                  tokenDenom={userAsset?.asset.currency.coinDenom}
-                  isMobile={isMobile}
-                  metrics={[
-                    {
-                      label: "Total amount",
-                      value: (
-                        <MetricLoader isLoading={!userPoolAssets}>
-                          {truncateString(
-                            pool?.poolAssets
-                              .find(
-                                (asset) =>
-                                  asset.amount.currency.coinDenom ===
-                                  userAsset?.asset.currency.coinDenom
-                              )
-                              ?.amount.maxDecimals(6)
-                              .trim(true)
-                              .toString() ?? "0",
-                            30
-                          )}
-                        </MetricLoader>
-                      ),
-                    },
-                    {
-                      label: "My amount",
-                      value: (
-                        <MetricLoader isLoading={!userPoolAssets}>
-                          {truncateString(
-                            userAsset?.asset
-                              .maxDecimals(6)
-                              .trim(true)
-                              .toString() ?? "",
-                            30
-                          )}
-                        </MetricLoader>
-                      ),
-                    },
-                  ]}
-                />
-              )
+              (userAsset, index) => {
+                const totalAmount = pool?.poolAssets
+                  .find(
+                    (asset) =>
+                      asset.amount.currency.coinDenom ===
+                      userAsset?.asset.currency.coinDenom
+                  )
+                  ?.amount.trim(true);
+                const myAmount = userAsset?.asset.maxDecimals(6).trim(true);
+
+                // only show "123,321,312 OSMO" or "0.2331223 OSMO", not both
+                const totalAmountAdjusted = totalAmount
+                  ? truncateString(
+                      totalAmount
+                        .maxDecimals(
+                          totalAmount.toDec().lte(new Dec(1))
+                            ? totalAmount.currency.coinDecimals
+                            : 0
+                        )
+                        .toString(),
+                      30
+                    )
+                  : "0";
+                const myAmountAdjusted = myAmount
+                  ? truncateString(
+                      myAmount
+                        .maxDecimals(
+                          myAmount.toDec().lte(new Dec(1))
+                            ? myAmount.currency.coinDecimals
+                            : 0
+                        )
+                        .toString(),
+                      30
+                    )
+                  : "0";
+
+                return (
+                  <PoolCatalystCard
+                    key={index}
+                    colorKey={Number(pool?.id ?? "0") + index}
+                    isLoading={!pool || !userPoolAssets}
+                    className="md:w-full w-1/2 max-w-md"
+                    percentDec={userAsset?.ratio.toString()}
+                    tokenDenom={userAsset?.asset.currency.coinDenom}
+                    isMobile={isMobile}
+                    metrics={[
+                      {
+                        label: "Total amount",
+                        value: (
+                          <MetricLoader isLoading={!userPoolAssets}>
+                            {totalAmountAdjusted}
+                          </MetricLoader>
+                        ),
+                      },
+                      {
+                        label: "My amount",
+                        value: (
+                          <MetricLoader isLoading={!userPoolAssets}>
+                            {myAmountAdjusted}
+                          </MetricLoader>
+                        ),
+                      },
+                    ]}
+                  />
+                );
+              }
             )}
           </div>
         </div>

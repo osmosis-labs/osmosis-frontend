@@ -5,6 +5,8 @@ import { Pool } from "@osmosis-labs/pools";
 import {
   ObservableTradeTokenInConfig,
   ObservableSlippageConfig,
+  prettifyTxError,
+  isSlippageError,
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -17,7 +19,7 @@ import {
   useWindowSize,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { Error as ErrorBox } from "../alert";
+import { Error as ErrorBox, displayToast, ToastType } from "../alert";
 import { Button } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
@@ -665,13 +667,77 @@ export const TradeClipboard: FunctionComponent<{
                       routes[0].poolId,
                       tokenIn,
                       routes[0].tokenOutCurrency,
-                      maxSlippage
+                      maxSlippage,
+                      undefined,
+                      (tx) => {
+                        // TODO: send all tx events through account store in root.ts
+                        const chainInfo = chainStore.getChain(chainId);
+                        if (tx.code) {
+                          displayToast(
+                            {
+                              message: "Transaction Failed",
+                              caption: isSlippageError(tx)
+                                ? "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage."
+                                : prettifyTxError(
+                                    tx.log,
+                                    chainInfo.currencies
+                                  ) ?? tx.log,
+                            },
+                            ToastType.ERROR
+                          );
+                        } else {
+                          displayToast(
+                            {
+                              message: "Transaction Successful",
+                              learnMoreUrl:
+                                chainInfo.raw.explorerUrlToTx.replace(
+                                  "{txHash}",
+                                  tx.hash.toUpperCase()
+                                ),
+                              learnMoreUrlCaption: "View explorer",
+                            },
+                            ToastType.SUCCESS
+                          );
+                        }
+                      }
                     );
                   } else {
                     await account.osmosis.sendMultihopSwapExactAmountInMsg(
                       routes,
                       tokenIn,
-                      maxSlippage
+                      maxSlippage,
+                      undefined,
+                      (tx) => {
+                        // TODO: send all tx events through account store in root.ts
+                        const chainInfo = chainStore.getChain(chainId);
+                        if (tx.code) {
+                          displayToast(
+                            {
+                              message: "Transaction Failed",
+                              caption: isSlippageError(tx)
+                                ? "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage."
+                                : prettifyTxError(
+                                    tx.log,
+                                    chainInfo.currencies
+                                  ) ?? tx.log,
+                            },
+                            ToastType.ERROR
+                          );
+                        } else {
+                          displayToast(
+                            {
+                              message: "Transaction Successful",
+                              learnMoreUrl:
+                                chainInfo.raw.explorerUrlToTx.replace(
+                                  "{txHash}",
+                                  tx.hash.toUpperCase()
+                                ),
+                              learnMoreUrlCaption: "View explorer",
+                            },
+                            ToastType.SUCCESS
+                          );
+                        }
+                      }
                     );
                   }
                   tradeTokenInConfig.setAmount("");
