@@ -5,8 +5,6 @@ import { Pool } from "@osmosis-labs/pools";
 import {
   ObservableTradeTokenInConfig,
   ObservableSlippageConfig,
-  prettifyTxError,
-  isSlippageError,
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -25,7 +23,7 @@ import {
   useWindowSize,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { Error as ErrorBox, displayToast, ToastType } from "../alert";
+import { Error as ErrorBox, toastOnFulfill } from "../alert";
 import { Button } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
@@ -102,7 +100,7 @@ export const TradeClipboard: FunctionComponent<{
     useBooleanWithWindowEvent(false);
   const [showToTokenSelectDropdown, setToTokenSelectDropdownLocal] =
     useBooleanWithWindowEvent(false);
-  const setOneDropdownOpen = (dropdown: "to" | "from") => {
+  const setOneTokenSelectOpen = (dropdown: "to" | "from") => {
     if (dropdown === "to") {
       setToTokenSelectDropdownLocal(true);
       setFromTokenSelectDropdownLocal(false);
@@ -321,7 +319,13 @@ export const TradeClipboard: FunctionComponent<{
                 <TokenSelect
                   sortByBalances
                   dropdownOpen={showFromTokenSelectDropdown}
-                  onOpenDropdown={() => setOneDropdownOpen("from")}
+                  setDropdownState={(isOpen) => {
+                    if (isOpen) {
+                      setOneTokenSelectOpen("from");
+                    } else {
+                      closeTokenSelectDropdowns();
+                    }
+                  }}
                   tokens={allTokenBalances
                     .filter(
                       (tokenBalance) =>
@@ -338,7 +342,6 @@ export const TradeClipboard: FunctionComponent<{
                     .map((tokenBalance) => tokenBalance.balance)}
                   selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
                   onSelect={(tokenDenom: string) => {
-                    closeTokenSelectDropdowns();
                     const tokenInBalance = allTokenBalances.find(
                       (tokenBalance) =>
                         tokenBalance.balance.currency.coinDenom === tokenDenom
@@ -348,6 +351,7 @@ export const TradeClipboard: FunctionComponent<{
                         tokenInBalance.balance.currency
                       );
                     }
+                    closeTokenSelectDropdowns();
                   }}
                   getChainNetworkName={(coinDenom) =>
                     ChainInfos.find((chain) =>
@@ -434,7 +438,13 @@ export const TradeClipboard: FunctionComponent<{
               {tradeTokenInConfig && (
                 <TokenSelect
                   dropdownOpen={showToTokenSelectDropdown}
-                  onOpenDropdown={() => setOneDropdownOpen("to")}
+                  setDropdownState={(isOpen) => {
+                    if (isOpen) {
+                      setOneTokenSelectOpen("to");
+                    } else {
+                      closeTokenSelectDropdowns();
+                    }
+                  }}
                   sortByBalances
                   tokens={allTokenBalances
                     .filter(
@@ -452,7 +462,6 @@ export const TradeClipboard: FunctionComponent<{
                     .map((tokenBalance) => tokenBalance.balance)}
                   selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
                   onSelect={(tokenDenom: string) => {
-                    closeTokenSelectDropdowns();
                     const tokenOutBalance = allTokenBalances.find(
                       (tokenBalance) =>
                         tokenBalance.balance.currency.coinDenom === tokenDenom
@@ -462,6 +471,7 @@ export const TradeClipboard: FunctionComponent<{
                         tokenOutBalance.balance.currency
                       );
                     }
+                    closeTokenSelectDropdowns();
                   }}
                   getChainNetworkName={(coinDenom) =>
                     ChainInfos.find((chain) =>
@@ -683,35 +693,9 @@ export const TradeClipboard: FunctionComponent<{
                       maxSlippage,
                       undefined,
                       (tx) => {
-                        // TODO: send all tx events through account store in root.ts
-                        const chainInfo = chainStore.getChain(chainId);
-                        if (tx.code) {
-                          displayToast(
-                            {
-                              message: "Transaction Failed",
-                              caption: isSlippageError(tx)
-                                ? "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage."
-                                : prettifyTxError(
-                                    tx.log,
-                                    chainInfo.currencies
-                                  ) ?? tx.log,
-                            },
-                            ToastType.ERROR
-                          );
-                        } else {
-                          displayToast(
-                            {
-                              message: "Transaction Successful",
-                              learnMoreUrl:
-                                chainInfo.raw.explorerUrlToTx.replace(
-                                  "{txHash}",
-                                  tx.hash.toUpperCase()
-                                ),
-                              learnMoreUrlCaption: "View explorer",
-                            },
-                            ToastType.SUCCESS
-                          );
-                        }
+                        toastOnFulfill((chainId) =>
+                          chainStore.getChain(chainId)
+                        )(chainId, tx);
                       }
                     );
                   } else {
@@ -721,35 +705,9 @@ export const TradeClipboard: FunctionComponent<{
                       maxSlippage,
                       undefined,
                       (tx) => {
-                        // TODO: send all tx events through account store in root.ts
-                        const chainInfo = chainStore.getChain(chainId);
-                        if (tx.code) {
-                          displayToast(
-                            {
-                              message: "Transaction Failed",
-                              caption: isSlippageError(tx)
-                                ? "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage."
-                                : prettifyTxError(
-                                    tx.log,
-                                    chainInfo.currencies
-                                  ) ?? tx.log,
-                            },
-                            ToastType.ERROR
-                          );
-                        } else {
-                          displayToast(
-                            {
-                              message: "Transaction Successful",
-                              learnMoreUrl:
-                                chainInfo.raw.explorerUrlToTx.replace(
-                                  "{txHash}",
-                                  tx.hash.toUpperCase()
-                                ),
-                              learnMoreUrlCaption: "View explorer",
-                            },
-                            ToastType.SUCCESS
-                          );
-                        }
+                        toastOnFulfill((chainId) =>
+                          chainStore.getChain(chainId)
+                        )(chainId, tx);
                       }
                     );
                   }

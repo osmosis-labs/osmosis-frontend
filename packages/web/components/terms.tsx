@@ -11,7 +11,6 @@ export const Terms: FunctionComponent = () => {
     <TermsModal
       isOpen={isOpen}
       onAgree={() => {
-        console.log("agreed");
         setIsOpen(false);
       }}
     />

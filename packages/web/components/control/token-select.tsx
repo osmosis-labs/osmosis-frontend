@@ -14,7 +14,7 @@ export const TokenSelect: FunctionComponent<
     sortByBalances?: boolean;
     getChainNetworkName?: (coinDenom: string) => string | undefined;
     dropdownOpen?: boolean;
-    onOpenDropdown?: () => void;
+    setDropdownState?: (isOpen: boolean) => void;
   } & MobileProps
 > = ({
   selectedTokenDenom,
@@ -24,7 +24,7 @@ export const TokenSelect: FunctionComponent<
   getChainNetworkName,
   isMobile = false,
   dropdownOpen,
-  onOpenDropdown,
+  setDropdownState,
 }) => {
   // parent overrideable state
   const [isSelectOpenLocal, setIsSelectOpenLocal] =
@@ -32,7 +32,7 @@ export const TokenSelect: FunctionComponent<
   const isSelectOpen =
     dropdownOpen === undefined ? isSelectOpenLocal : dropdownOpen;
   const setIsSelectOpen =
-    onOpenDropdown === undefined ? setIsSelectOpenLocal : onOpenDropdown;
+    setDropdownState === undefined ? setIsSelectOpenLocal : setDropdownState;
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const selectedToken = tokens.find((token) =>
@@ -172,6 +172,7 @@ export const TokenSelect: FunctionComponent<
                   onClick={(e) => {
                     e.stopPropagation();
                     onSelect(coinDenom);
+                    setTokenSearch("");
                     setIsSelectOpen(false);
                   }}
                 >
