@@ -73,7 +73,9 @@ export class ObservableAssets {
   }
 
   @computed
-  get ibcBalances(): (IBCBalance | IBCCW20ContractBalance)[] {
+  get ibcBalances(): ((IBCBalance | IBCCW20ContractBalance) & {
+    sourceMinimalDenom?: string;
+  })[] {
     return this.ibcAssets.map((ibcAsset) => {
       const chainInfo = this.chainStore.getChain(ibcAsset.counterpartyChainId);
       let ibcDenom = makeIBCMinimalDenom(
@@ -97,7 +99,7 @@ export class ObservableAssets {
 
       // If this is a multihop ibc, need to special case because the denom on osmosis
       // isn't H(source_denom), but rather H(ibc_path)
-      let sourceDenom = "";
+      let sourceDenom: string | undefined;
       if (ibcAsset.ibcTransferPathDenom) {
         ibcDenom = makeIBCMinimalDenom(
           ibcAsset.sourceChannelId,
@@ -113,7 +115,7 @@ export class ObservableAssets {
           coinGeckoId: originCurrency.coinGeckoId,
           coinImageUrl: originCurrency.coinImageUrl,
           coinDenom: originCurrency.coinDenom,
-          coinMinimalDenom: sourceDenom !== "" ? "" : ibcDenom,
+          coinMinimalDenom: ibcDenom,
           paths: [
             {
               portId: "transfer",
@@ -121,19 +123,17 @@ export class ObservableAssets {
             },
           ],
           originChainId: chainInfo.chainId,
-          originCurrency:
-            sourceDenom !== ""
-              ? { ...originCurrency, coinMinimalDenom: sourceDenom }
-              : originCurrency,
+          originCurrency,
         });
 
-      const ibcBalance: IBCBalance = {
+      let ibcBalance: IBCBalance & { sourceMinimalDenom?: string } = {
         chainInfo: chainInfo,
         balance,
         fiatValue: this.priceStore.calculatePrice(balance),
         sourceChannelId: ibcAsset.sourceChannelId,
         destChannelId: ibcAsset.destChannelId,
         isUnstable: ibcAsset.isUnstable,
+        sourceMinimalDenom: sourceDenom,
       };
 
       if (ibcAsset.ics20ContractAddress) {

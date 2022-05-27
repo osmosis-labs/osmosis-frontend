@@ -11,7 +11,13 @@ import {
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import React, { FunctionComponent, useEffect, useRef, useMemo } from "react";
+import React, {
+  FunctionComponent,
+  useEffect,
+  useRef,
+  useMemo,
+  useState,
+} from "react";
 import { ChainInfos, IS_FRONTIER } from "../../config";
 import {
   useBooleanWithWindowEvent,
@@ -26,7 +32,7 @@ import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
 
 export const TradeClipboard: FunctionComponent<{
-  // Should be memorized
+  // IMPORTANT: Pools should be memoized!!
   pools: Pool[];
 
   containerClassName?: string;
@@ -51,16 +57,20 @@ export const TradeClipboard: FunctionComponent<{
   const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
 
   const slippageConfig = useMemo(() => new ObservableSlippageConfig(), []);
-  const tradeTokenInConfig = useMemo(() => {
-    return new ObservableTradeTokenInConfig(
-      chainStore,
-      queriesStore,
-      chainId,
-      account.bech32Address,
-      undefined,
-      pools
-    );
-  }, [chainStore, queriesStore, chainId, account.bech32Address, pools]);
+  const [tradeTokenInConfig] = useState(
+    () =>
+      new ObservableTradeTokenInConfig(
+        chainStore,
+        queriesStore,
+        chainId,
+        account.bech32Address,
+        undefined,
+        pools
+      )
+  );
+  tradeTokenInConfig.setChain(chainId);
+  tradeTokenInConfig.setSender(account.bech32Address);
+  tradeTokenInConfig.setPools(pools);
 
   // auto focus from amount on token switch
   const fromAmountInput = useRef<HTMLInputElement | null>(null);
@@ -483,6 +493,9 @@ export const TradeClipboard: FunctionComponent<{
                           .shrink(true)
                           .maxDecimals(6)
                           .toString()
+                          .split(" ")
+                          .slice(0, 2)
+                          .join(" ")
                       : "0"
                   }`}</h5>
                 </div>

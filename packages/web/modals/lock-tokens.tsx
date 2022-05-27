@@ -73,7 +73,7 @@ export const LockTokensModal: FunctionComponent<
         }
       },
       children:
-        electSuperfluid && !hasSuperfluidValidator
+        electSuperfluid && !hasSuperfluidValidator && highestGaugeSelected
           ? "Next"
           : "Bond" || undefined,
     },

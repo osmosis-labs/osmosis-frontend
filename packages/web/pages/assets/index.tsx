@@ -125,8 +125,28 @@ const ChainAssets: FunctionComponent = observer(() => {
         return;
       }
 
+      const currency = balance.balance.currency;
+      // IBC multihop currency
+      const modifiedCurrency =
+        mode === "deposit" && balance.sourceMinimalDenom
+          ? {
+              coinDecimals: currency.coinDecimals,
+              coinGeckoId: currency.coinGeckoId,
+              coinImageUrl: currency.coinImageUrl,
+              coinDenom: currency.coinDenom,
+              coinMinimalDenom: "",
+              paths: (currency as IBCCurrency).paths.slice(0, 1),
+              originChainId: balance.chainInfo.chainId,
+              originCurrency: {
+                coinDecimals: currency.coinDecimals,
+                coinImageUrl: currency.coinImageUrl,
+                coinDenom: currency.coinDenom,
+                coinMinimalDenom: balance.sourceMinimalDenom,
+              },
+            }
+          : currency;
+
       const {
-        balance: { currency },
         chainInfo: { chainId: counterpartyChainId },
         sourceChannelId,
         destChannelId,
@@ -135,7 +155,7 @@ const ChainAssets: FunctionComponent = observer(() => {
       setTransferModal({
         isOpen: true,
         onRequestClose: () => setTransferModal(null),
-        currency: currency as IBCCurrency,
+        currency: modifiedCurrency as IBCCurrency,
         counterpartyChainId: counterpartyChainId,
         sourceChannelId,
         destChannelId,
