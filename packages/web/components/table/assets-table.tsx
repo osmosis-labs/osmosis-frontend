@@ -340,7 +340,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
                         setPreTransferToken(
                           new CoinPretty(
                             assetData.currency,
-                            assetData.amount
+                            assetData.amount.replace(",", "")
                           ).moveDecimalPointRight(
                             assetData.currency.coinDecimals
                           )
