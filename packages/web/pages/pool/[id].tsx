@@ -495,12 +495,14 @@ const Pool: FunctionComponent = observer(() => {
   // sections
   const showLiquidityMiningSection =
     (pool && queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id)) ||
-    (userAvailableValue && userAvailableValue.toDec().gt(new Dec(0))) ||
     (externalGuages && externalGuages.length > 0);
 
   const showPoolBondingTables =
-    (pool && queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id)) ||
-    (userLockedAssets && userLockedAssets.length > 0) ||
+    showLiquidityMiningSection ||
+    (userLockedAssets &&
+      userLockedAssets?.some((lockedAsset) =>
+        lockedAsset.amount.toDec().gt(new Dec(0))
+      )) ||
     (userUnlockingAssets && userUnlockingAssets.length > 0);
 
   return (
