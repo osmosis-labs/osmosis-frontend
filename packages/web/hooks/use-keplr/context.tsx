@@ -107,8 +107,11 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
 
     let callbackClosed: (() => void) | undefined;
 
-    if (defaultConnectionTypeRef.current === "wallet-connect") {
-      const connector = new WalletConnect({
+    const createWalletConnect = (): WalletConnect => {
+      const wcLogoURI = require("../../public/osmosis-logo-wc.png")?.default
+        ?.src;
+
+      const wc = new WalletConnect({
         bridge: "https://bridge.walletconnect.org", // Required
         signingMethods: [
           "keplr_enable_wallet_connect_v1",
@@ -122,6 +125,26 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
           close: () => setWCUri(""),
         },
       });
+
+      // XXX: I don't know why they designed that the client meta options in the constructor should be always ingored...
+      // @ts-ignore
+      wc._clientMeta = {
+        name: "Osmosis",
+        description: "Osmosis is the first IBC-native Cosmos interchain AMM",
+        url: "https://app.osmosis.zone",
+        icons: wcLogoURI
+          ? [
+              // Keplr mobile app can't show svg image.
+              window.location.origin + wcLogoURI,
+            ]
+          : [],
+      };
+
+      return wc;
+    };
+
+    if (defaultConnectionTypeRef.current === "wallet-connect") {
+      const connector = createWalletConnect();
 
       if (connector.connected) {
         const keplr = new KeplrWalletConnectV1(connector, {
@@ -161,21 +184,7 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
       });
 
       eventListener.on("select_wallet_connect", () => {
-        const connector = new WalletConnect({
-          bridge: "https://bridge.walletconnect.org", // Required
-          signingMethods: [
-            "keplr_enable_wallet_connect_v1",
-            "keplr_sign_amino_wallet_connect_v1",
-          ],
-          qrcodeModal: {
-            open: (uri: string, cb: any) => {
-              setIsModalOpen(false);
-              setWCUri(uri);
-              callbackClosed = cb;
-            },
-            close: () => setWCUri(""),
-          },
-        });
+        const connector = createWalletConnect();
 
         eventListener.on("wc_modal_close", () => {
           setWCUri("");
