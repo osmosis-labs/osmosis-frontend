@@ -21,7 +21,13 @@ import {
  */
 export class ObservableAssets {
   constructor(
-    protected readonly ibcAssets: IBCAsset[],
+    protected readonly ibcAssets: (IBCAsset & {
+      /** URL if the asset requires a custom deposit external link. Must include `https://...`. */
+      depositUrlOverride?: string;
+
+      /** URL if the asset requires a custom withdrawal external link. Must include `https://...`. */
+      withdrawUrlOverride?: string;
+    })[],
     protected readonly chainStore: ChainStore,
     protected readonly accountStore: {
       getAccount: (chainId: string) => {
@@ -32,11 +38,7 @@ export class ObservableAssets {
       [CosmosQueries, CosmwasmQueries, OsmosisQueries]
     >,
     protected readonly priceStore: IPriceStore,
-    protected readonly chainId: string,
-    readonly getExternalTranferUrl?: (chainId: string) => {
-      depositUrl?: string;
-      withdrawUrl?: string;
-    }
+    protected readonly chainId: string
   ) {
     makeObservable(this);
   }
@@ -74,7 +76,9 @@ export class ObservableAssets {
 
   @computed
   get ibcBalances(): ((IBCBalance | IBCCW20ContractBalance) & {
-    sourceMinimalDenom?: string;
+    depositingSrcMinDenom?: string;
+    depositUrlOverride?: string;
+    withdrawUrlOverride?: string;
   })[] {
     return this.ibcAssets.map((ibcAsset) => {
       const chainInfo = this.chainStore.getChain(ibcAsset.counterpartyChainId);
@@ -126,14 +130,20 @@ export class ObservableAssets {
           originCurrency,
         });
 
-      let ibcBalance: IBCBalance & { sourceMinimalDenom?: string } = {
+      let ibcBalance: IBCBalance & {
+        depositingSrcMinDenom?: string;
+        depositUrlOverride?: string;
+        withdrawUrlOverride?: string;
+      } = {
         chainInfo: chainInfo,
         balance,
         fiatValue: this.priceStore.calculatePrice(balance),
         sourceChannelId: ibcAsset.sourceChannelId,
         destChannelId: ibcAsset.destChannelId,
         isUnstable: ibcAsset.isUnstable,
-        sourceMinimalDenom: sourceDenom,
+        depositingSrcMinDenom: sourceDenom,
+        depositUrlOverride: ibcAsset.depositUrlOverride,
+        withdrawUrlOverride: ibcAsset.withdrawUrlOverride,
       };
 
       if (ibcAsset.ics20ContractAddress) {

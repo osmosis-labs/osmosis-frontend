@@ -29,7 +29,10 @@ import { ColumnDef } from "./types";
 
 interface Props {
   nativeBalances: CoinBalance[];
-  ibcBalances: (IBCBalance | IBCCW20ContractBalance)[];
+  ibcBalances: ((IBCBalance | IBCCW20ContractBalance) & {
+    depositUrlOverride?: string;
+    withdrawUrlOverride?: string;
+  })[];
   onWithdraw: (chainId: string, coinDenom: string) => void;
   onDeposit: (chainId: string, coinDenom: string) => void;
 }
@@ -40,7 +43,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
   onDeposit,
   onWithdraw,
 }) => {
-  const { chainStore, assetsStore } = useStore();
+  const { chainStore } = useStore();
   const { width, isMobile } = useWindowSize();
   const mergeWithdrawCol = width < 1000 && !isMobile;
   // Assemble cells with all data needed for any place in the table.
@@ -65,13 +68,14 @@ export const AssetsTable: FunctionComponent<Props> = ({
           isCW20: false,
         };
       }),
-      // add ibc assets, initially sorted by fiat value at top
       ...initialAssetsSort(
         ibcBalances.map((ibcBalance) => {
           const {
             chainInfo: { chainId, chainName },
             balance,
             fiatValue,
+            depositUrlOverride,
+            withdrawUrlOverride,
           } = ibcBalance;
           const value = fiatValue?.maxDecimals(2);
           const isCW20 = "ics20ContractAddress" in ibcBalance;
@@ -99,6 +103,8 @@ export const AssetsTable: FunctionComponent<Props> = ({
             isCW20,
             queryTags: [...(isCW20 ? ["CW20"] : [])],
             isUnstable: ibcBalance.isUnstable === true,
+            depositUrlOverride,
+            withdrawUrlOverride,
             onWithdraw,
             onDeposit,
           };
@@ -178,12 +184,13 @@ export const AssetsTable: FunctionComponent<Props> = ({
   const [selectedTransferToken, setPreTransferToken] = useState<CoinPretty>(
     ibcBalances[0].balance
   );
-  const selectedChainInfo = ibcBalances.find(
+  const {
+    chainInfo: selectedChainInfo,
+    depositUrlOverride: selectedDepositUrlOverride,
+    withdrawUrlOverride: selectedWithdrawUrlOverride,
+  } = ibcBalances.find(
     (ibcAsset) => ibcAsset.balance.denom === selectedTransferToken.denom
-  )?.chainInfo;
-  const externalUrls = selectedChainInfo
-    ? assetsStore.getExternalTranferUrl?.(selectedChainInfo.chainId)
-    : undefined;
+  ) ?? {};
 
   return (
     <section className="min-h-screen md:bg-background bg-surface">
@@ -191,8 +198,8 @@ export const AssetsTable: FunctionComponent<Props> = ({
         <PreTransferModal
           isOpen={showPreTransfer}
           onRequestClose={() => setShowPreTransfer(false)}
-          externalDepositUrl={externalUrls?.depositUrl}
-          externalWithdrawUrl={externalUrls?.withdrawUrl}
+          externalDepositUrl={selectedDepositUrlOverride}
+          externalWithdrawUrl={selectedWithdrawUrlOverride}
           onDeposit={() => {
             if (selectedChainInfo?.chainId) {
               onDeposit(selectedChainInfo.chainId, selectedTransferToken.denom);

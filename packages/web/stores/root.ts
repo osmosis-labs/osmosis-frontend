@@ -195,20 +195,7 @@ export class RootStore {
       this.accountStore,
       this.queriesStore,
       this.priceStore,
-      this.chainStore.osmosis.chainId,
-      (chainId) => {
-        const info = IBCAssetInfos.find(
-          ({ counterpartyChainId: id }) => id === chainId
-        );
-        if (info) {
-          return {
-            depositUrl: info.depositUrlOverride,
-            withdrawUrl: info.withdrawUrlOverride,
-          };
-        } else {
-          return {};
-        }
-      }
+      this.chainStore.osmosis.chainId
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
