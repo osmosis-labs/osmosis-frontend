@@ -617,6 +617,13 @@ const Pool: FunctionComponent = observer(() => {
             } else {
               const gauge = lockupGauges.find((gauge) => gauge.id === gaugeId);
               try {
+                if (
+                  !lockLPTokensConfig.sendCurrency.coinMinimalDenom.startsWith(
+                    "gamm"
+                  )
+                ) {
+                  throw new Error("Tried to lock non-gamm token");
+                }
                 if (gauge) {
                   await account.osmosis.sendLockTokensMsg(
                     gauge.duration.asSeconds(),
@@ -631,7 +638,6 @@ const Pool: FunctionComponent = observer(() => {
                   );
                 } else {
                   console.error("Gauge ID not found:", gaugeId);
-                  setShowLockLPTokenModal(false);
                 }
               } catch (e) {
                 console.error(e);
