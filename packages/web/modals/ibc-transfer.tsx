@@ -80,8 +80,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       }
     }, [showCopied, setShowCopied]);
 
-    console.log(currency, currency.originCurrency);
-
     return (
       <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
         <div className="text-white-high">
