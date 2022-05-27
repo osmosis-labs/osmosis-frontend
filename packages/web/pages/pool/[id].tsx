@@ -690,7 +690,7 @@ const Pool: FunctionComponent = observer(() => {
           <MetricLoader className="h-7 w-64" isLoading={!pool}>
             <h5>
               {`Pool #${pool?.id} : ${pool?.poolAssets
-                .map((asset) => asset.amount.currency.coinDenom)
+                .map((asset) => asset.amount.currency.coinDenom.split(" ")[0])
                 .map((denom) => truncateString(denom))
                 .join(" / ")}`}
             </h5>
