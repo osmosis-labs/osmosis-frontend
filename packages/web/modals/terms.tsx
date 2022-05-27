@@ -66,17 +66,9 @@ export const TermsModal: FunctionComponent<
               onToggle={() => {
                 setAgree(!agree);
               }}
-            />
-            <div
-              className="cursor-pointer md:caption md:w-44"
-              onClick={(e) => {
-                e.preventDefault();
-
-                setAgree(!agree);
-              }}
             >
               I understand the risks and would like to proceed
-            </div>
+            </CheckBox>
           </div>
           <div className="w-full flex justify-center">
             <Button
