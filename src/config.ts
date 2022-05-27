@@ -3419,7 +3419,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	},
   {
 		rpc: 'https://rpcapi.rizon.world/',
-		rest: 'http://seed-1.mainnet.rizon.world:1317',
+		rest: 'https://restapi.rizon.world/',
 		chainId: 'titan-1',
 		chainName: 'Rizon',
 		stakeCurrency: {
