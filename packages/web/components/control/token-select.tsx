@@ -1,4 +1,4 @@
-import { AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import Image from "next/image";
 import { FunctionComponent } from "react";
@@ -23,17 +23,18 @@ export const TokenSelect: FunctionComponent<
   isMobile = false,
 }) => {
   const [isSelectOpen, setIsSelectOpen] = useBooleanWithWindowEvent(false);
-  const selectedToken = tokens.find(
-    (token) =>
-      (token instanceof CoinPretty ? token.denom : token.coinDenom) ===
+  const selectedToken = tokens.find((token) =>
+    (token instanceof CoinPretty ? token.denom : token.coinDenom).includes(
       selectedTokenDenom
+    )
   );
 
   const dropdownTokens = tokens
     .filter(
       (token) =>
-        (token instanceof CoinPretty ? token.denom : token.coinDenom) !==
-        selectedTokenDenom
+        !(token instanceof CoinPretty ? token.denom : token.coinDenom).includes(
+          selectedTokenDenom
+        )
     )
     .sort((a, b) => {
       if (!(a instanceof CoinPretty) || !(b instanceof CoinPretty)) return 0;
@@ -50,6 +51,8 @@ export const TokenSelect: FunctionComponent<
     selectedToken instanceof CoinPretty
       ? selectedToken.currency
       : selectedToken;
+  const selectedDenom =
+    selectedCurrency?.coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
 
   const hasNeedTokenSelect = tokens.length > 1;
 
@@ -82,11 +85,7 @@ export const TokenSelect: FunctionComponent<
           </div>
           <div className="flex-shrink-0">
             <div className="flex items-center">
-              {isMobile ? (
-                <h6>{selectedCurrency.coinDenom}</h6>
-              ) : (
-                <h5>{selectedCurrency.coinDenom}</h5>
-              )}
+              {isMobile ? <h6>{selectedDenom}</h6> : <h5>{selectedDenom}</h5>}
               {hasNeedTokenSelect && (
                 <div className="w-5 ml-3 md:ml-2 pb-1">
                   <Image
@@ -134,9 +133,18 @@ export const TokenSelect: FunctionComponent<
 
           <div className="token-item-list overflow-y-scroll max-h-80">
             {searchedTokens.map((token, index) => {
-              const { coinDenom, coinImageUrl } =
+              const currency =
                 token instanceof CoinPretty ? token.currency : token;
+              const { coinDenom, coinImageUrl } = currency;
               const networkName = getChainNetworkName?.(coinDenom);
+              const justDenom =
+                coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
+              const channel =
+                "paths" in currency
+                  ? (currency as IBCCurrency).paths[0].channelId
+                  : undefined;
+
+              const showChannel = coinDenom.includes("channel");
 
               return (
                 <div
@@ -161,9 +169,9 @@ export const TokenSelect: FunctionComponent<
                         </div>
                       )}
                       <div>
-                        <h6 className="text-white-full">{coinDenom}</h6>
+                        <h6 className="text-white-full">{justDenom}</h6>
                         <div className="text-iconDefault md:caption font-semibold">
-                          {networkName}
+                          {showChannel ? channel : networkName}
                         </div>
                       </div>
                     </div>

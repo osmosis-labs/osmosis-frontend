@@ -42,12 +42,14 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: 'axelar-dojo-1',
-    sourceChannelId: 'channel-208',
-    destChannelId: 'channel-3',
-    coinMinimalDenom: 'wbtc-satoshi',
-    depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=wbtc',
-    withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=wbtc',
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "wbtc-satoshi",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&token=wbtc",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&token=wbtc",
     isVerified: true,
   },
   {

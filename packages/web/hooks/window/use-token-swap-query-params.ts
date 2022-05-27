@@ -22,19 +22,27 @@ export function useTokenSwapQueryParams(
       router.query.from !== router.query.to &&
       tradeConfig.sendableCurrencies.length !== 0
     ) {
-      const fromTokenBalance = balances.find(
-        (tokenBalance) =>
-          tokenBalance.balance.currency.coinDenom === router.query.from
-      );
-      const toTokenBalance = balances.find(
-        (tokenBalance) =>
-          tokenBalance.balance.currency.coinDenom === router.query.to
-      );
-      if (fromTokenBalance) {
-        tradeConfig.setSendCurrency(fromTokenBalance.balance.currency);
+      const fromCurrency =
+        balances.find(
+          (tokenBalance) =>
+            tokenBalance.balance.currency.coinDenom === router.query.from
+        )?.balance.currency ||
+        tradeConfig.sendableCurrencies.find(
+          (currency) => currency.coinMinimalDenom === router.query.from
+        );
+      const toCurrency =
+        balances.find(
+          (tokenBalance) =>
+            tokenBalance.balance.currency.coinDenom === router.query.to
+        )?.balance.currency ||
+        tradeConfig.sendableCurrencies.find(
+          (currency) => currency.coinMinimalDenom === router.query.to
+        );
+      if (fromCurrency) {
+        tradeConfig.setSendCurrency(fromCurrency);
       }
-      if (toTokenBalance) {
-        tradeConfig.setOutCurrency(toTokenBalance.balance.currency);
+      if (toCurrency) {
+        tradeConfig.setOutCurrency(toCurrency);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
