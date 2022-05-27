@@ -3418,7 +3418,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://www.mintscan.io/evmos/txs/{txHash}',
 	},
   {
-		rpc: 'http://seed-1.mainnet.rizon.world:26657',
+		rpc: 'https://rpcapi.rizon.world/',
 		rest: 'http://seed-1.mainnet.rizon.world:1317',
 		chainId: 'titan-1',
 		chainName: 'Rizon',
