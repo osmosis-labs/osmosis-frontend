@@ -24,6 +24,10 @@ export const KeplrWalletConnectQRModal: FunctionComponent<
   const [checkAndroid] = useState(() => isAndroid());
 
   const navigateToAppURL = useMemo(() => {
+    if (!uri) {
+      return;
+    }
+
     if (checkMobile) {
       if (checkAndroid) {
         // Save the mobile link.
