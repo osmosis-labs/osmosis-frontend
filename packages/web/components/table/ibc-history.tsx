@@ -11,7 +11,7 @@ import {
 } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { Table, BaseCell } from ".";
-import { CustomClasses } from "../types";
+import { Breakpoint, CustomClasses } from "../types";
 import { truncateString } from "../utils";
 
 export const IbcHistoryTable: FunctionComponent<CustomClasses> = observer(
@@ -39,7 +39,11 @@ export const IbcHistoryTable: FunctionComponent<CustomClasses> = observer(
             { display: "Transaction Hash", displayCell: TxHashDisplayCell },
             { display: "Type" },
             { display: "Amount" },
-            { display: "Status", displayCell: StatusDisplayCell },
+            {
+              display: "Status",
+              collapseAt: Breakpoint.SM,
+              displayCell: StatusDisplayCell,
+            },
           ]}
           data={histories.map((history) => [
             { ...history, value: history.txHash }, // Tx Hash
