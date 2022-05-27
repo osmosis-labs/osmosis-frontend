@@ -383,6 +383,13 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
 	},
   {
+    counterpartyChainId: 'columbus-5',
+    sourceChannelId: 'channel-72',
+    destChannelId: 'channel-1',
+    coinMinimalDenom: 'ukrw',
+    isUnstable: true,
+  },
+  {
     counterpartyChainId: "shentu-2.2",
     sourceChannelId: "channel-146",
     destChannelId: "channel-8",
