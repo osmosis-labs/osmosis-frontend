@@ -940,6 +940,7 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-72',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'ukrw',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'akashnet-2',
