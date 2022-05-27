@@ -994,23 +994,32 @@ const Pool: FunctionComponent = observer(() => {
                         onClick={async () => {
                           if (!lockIds) return;
                           try {
-                            if (isSuperfluidDuration) {
-                              const blockGasLimitLockIds = lockIds.slice(0, 4);
+                            const blockGasLimitLockIds = lockIds.slice(0, 4);
 
-                              for (const lockId of blockGasLimitLockIds) {
-                                await queryOsmosis.querySyntheticLockupsByLockId
-                                  .get(lockId)
-                                  .waitFreshResponse();
-                              }
+                            // refresh locks
+                            for (const lockId of blockGasLimitLockIds) {
+                              await queryOsmosis.querySyntheticLockupsByLockId
+                                .get(lockId)
+                                .waitFreshResponse();
+                            }
 
+                            // make msg lock objects
+                            const locks = blockGasLimitLockIds.map(
+                              (lockId) => ({
+                                lockId,
+                                isSyntheticLock:
+                                  queryOsmosis.querySyntheticLockupsByLockId.get(
+                                    lockId
+                                  ).isSyntheticLock === true,
+                              })
+                            );
+
+                            if (
+                              isSuperfluidDuration ||
+                              locks.some((lock) => lock.isSyntheticLock)
+                            ) {
                               await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-                                blockGasLimitLockIds.map((lockId) => ({
-                                  lockId,
-                                  isSyntheticLock:
-                                    queryOsmosis.querySyntheticLockupsByLockId.get(
-                                      lockId
-                                    ).isSyntheticLock === true,
-                                }))
+                                locks
                               );
                             } else {
                               const blockGasLimitLockIds = lockIds.slice(0, 10);
