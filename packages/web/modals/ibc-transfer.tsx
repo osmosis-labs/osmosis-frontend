@@ -19,7 +19,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
     const { currency, counterpartyChainId, isWithdraw } = props;
     const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
-    const { chainId } = chainStore.osmosis;
+    const { chainId: osmosisChainId } = chainStore.osmosis;
     const { isMobile } = useWindowSize();
 
     const [
@@ -264,7 +264,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               <span className="text-primary-50">
                 {(isWithdraw
                   ? queriesStore
-                      .get(chainId)
+                      .get(osmosisChainId)
                       .queryBalances.getQueryBech32Address(
                         account.bech32Address
                       )

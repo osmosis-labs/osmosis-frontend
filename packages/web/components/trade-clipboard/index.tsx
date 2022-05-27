@@ -457,6 +457,9 @@ export const TradeClipboard: FunctionComponent<{
                           .shrink(true)
                           .maxDecimals(6)
                           .toString()
+                          .split(" ")
+                          .slice(0, 2)
+                          .join(" ")
                       : "0"
                   }`}</h5>
                 </div>
