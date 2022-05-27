@@ -150,7 +150,7 @@ export const TokenSelect: FunctionComponent<
             />
           </div>
 
-          <div className="token-item-list overflow-y-scroll max-h-80">
+          <ul className="token-item-list overflow-y-scroll max-h-80">
             {searchedTokens.map((token, index) => {
               const currency =
                 token instanceof CoinPretty ? token.currency : token;
@@ -166,7 +166,7 @@ export const TokenSelect: FunctionComponent<
               const showChannel = coinDenom.includes("channel");
 
               return (
-                <div
+                <li
                   key={index}
                   className="flex justify-between items-center rounded-2xl py-2.5 px-3 my-1 hover:bg-card cursor-pointer mr-3"
                   onClick={(e) => {
@@ -200,10 +200,10 @@ export const TokenSelect: FunctionComponent<
                         token.trim(true).hideDenom(true).toString()}
                     </div>
                   </div>
-                </div>
+                </li>
               );
             })}
-          </div>
+          </ul>
         </div>
       )}
     </div>
