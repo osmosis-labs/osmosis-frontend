@@ -11,7 +11,7 @@ import {
 } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { Table, BaseCell } from ".";
-import { Breakpoint, CustomClasses } from "../types";
+import { CustomClasses } from "../types";
 import { truncateString } from "../utils";
 import { useWindowSize } from "../../hooks";
 
