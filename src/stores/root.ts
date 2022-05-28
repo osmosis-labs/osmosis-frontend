@@ -827,7 +827,7 @@ export class RootStore {
 				currencies: [
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
-						coinDenom: 'UST',
+						coinDenom: 'USTC',
 						coinDecimals: 6,
 					},
 					{
@@ -842,7 +842,7 @@ export class RootStore {
 				currencies: [
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uluna'),
-						coinDenom: 'LUNA',
+						coinDenom: 'LUNC',
 						coinDecimals: 6,
 					},
 					{
@@ -857,7 +857,7 @@ export class RootStore {
 				currencies: [
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uluna'),
-						coinDenom: 'LUNA',
+						coinDenom: 'LUNC',
 						coinDecimals: 6,
 					},
 					{
@@ -952,7 +952,7 @@ export class RootStore {
 					},
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
-						coinDenom: 'UST',
+						coinDenom: 'USTC',
 						coinDecimals: 6,
 					},
 				],
@@ -962,12 +962,12 @@ export class RootStore {
 				currencies: [
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'ukrw'),
-						coinDenom: 'KRT',
+						coinDenom: 'KRTC',
 						coinDecimals: 6,
 					},
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
-						coinDenom: 'UST',
+						coinDenom: 'USTC',
 						coinDecimals: 6,
 					},
 				],
@@ -1192,7 +1192,7 @@ export class RootStore {
 					},
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
-						coinDenom: 'UST',
+						coinDenom: 'USTC',
 						coinDecimals: 6,
 					},
 				],
@@ -1405,7 +1405,7 @@ export class RootStore {
 					},
 					{
 						coinMinimalDenom: DenomHelper.ibcDenom([{ portId: 'transfer', channelId: 'channel-72' }], 'uusd'),
-						coinDenom: 'UST',
+						coinDenom: 'USTC',
 						coinDecimals: 6,
 					},
 				],
