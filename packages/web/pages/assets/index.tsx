@@ -67,7 +67,7 @@ const AssetsOverview: FunctionComponent = observer(() => {
           value: totalAssetsValue.toString(),
         },
         {
-          label: "Available Assets",
+          label: "Unbonded Assets",
           value: availableAssetsValue.toString(),
         },
         {
