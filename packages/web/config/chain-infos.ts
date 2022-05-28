@@ -67,14 +67,14 @@ const chainInfos = (
       rpc: "https://rpc-columbus.keplr.app",
       rest: "https://lcd-columbus.keplr.app",
       chainId: "columbus-5",
-      chainName: "Terra",
+      chainName: "Terra Classic",
       bip44: {
         coinType: 330,
       },
       bech32Config: Bech32Address.defaultBech32Config("terra"),
       currencies: [
         {
-          coinDenom: "LUNA",
+          coinDenom: "LUNC",
           coinMinimalDenom: "uluna",
           coinDecimals: 6,
           coinGeckoId: "terra-luna",
@@ -83,7 +83,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
         {
-          coinDenom: "UST",
+          coinDenom: "USTC",
           coinMinimalDenom: "uusd",
           coinDecimals: 6,
           coinGeckoId: "terrausd",
@@ -92,7 +92,7 @@ const chainInfos = (
           pegMechanism: "algorithmic",
         },
         {
-          coinDenom: "KRT",
+          coinDenom: "KRTC",
           coinMinimalDenom: "ukrw",
           coinDecimals: 6,
           coinGeckoId: "terra-krw",
