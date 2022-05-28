@@ -802,8 +802,8 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '3531',
 			denom: 'ibc/AA1C80225BCA7B32ED1FC6ABF8B8E899BEB48ECDB4B417FD69873C6D715F97E7',
-    }
-  ],
+		},
+	],
 	'719': [
 		{
 			gaugeId: '3528',
@@ -3426,5 +3426,56 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/evmos/txs/{txHash}',
-	}
+	},
+	{
+		rpc: 'https://rpc-kava.keplr.app',
+		rest: 'https://lcd-kava.keplr.app',
+		chainId: 'kava_2222-10',
+		chainName: 'Kava',
+		stakeCurrency: {
+			coinDenom: 'KAVA',
+			coinMinimalDenom: 'ukava',
+			coinDecimals: 6,
+			coinGeckoId: 'kava',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/kava.png',
+		},
+		bip44: {
+			coinType: 459,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('evmos'),
+		currencies: [
+			{
+				coinDenom: 'KAVA',
+				coinMinimalDenom: 'ukava',
+				coinDecimals: 6,
+				coinGeckoId: 'kava',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/kava.png',
+			},
+			{
+				coinDenom: 'HARD',
+				coinMinimalDenom: 'hard',
+				coinDecimals: 6,
+				coinGeckoId: 'kava-lend',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/hard.svg',
+			},
+			{
+				coinDenom: 'SWP',
+				coinMinimalDenom: 'swp',
+				coinDecimals: 6,
+				coinGeckoId: 'kava-swap',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/swp.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'KAVA',
+				coinMinimalDenom: 'ukava',
+				coinDecimals: 6,
+				coinGeckoId: 'kava',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/kava.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/kava/txs/{txHash}',
+	},
 ];
