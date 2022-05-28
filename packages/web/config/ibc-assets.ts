@@ -85,6 +85,15 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "evmos_9001-2",
+    sourceChannelId: "channel-204",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "aevmos",
+    depositUrlOverride: "https://app.evmos.org/transfer",
+    withdrawUrlOverride: "https://app.evmos.org/transfer",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "secret-4",
     sourceChannelId: "channel-88",
     destChannelId: "channel-1",
@@ -363,15 +372,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-232",
     destChannelId: "channel-0",
     coinMinimalDenom: "umntl",
-    isVerified: true,
-  },
-  {
-    counterpartyChainId: "evmos_9001-2",
-    sourceChannelId: "channel-204",
-    destChannelId: "channel-0",
-    coinMinimalDenom: "aevmos",
-    depositUrlOverride: "https://app.evmos.org/transfer",
-    withdrawUrlOverride: "https://app.evmos.org/transfer",
     isVerified: true,
   },
   {
