@@ -3467,6 +3467,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.svg',
 			},
 		],
+		gasPriceStep: {
+			low: 0.15,
+			average: 0.2,
+			high: 0.25,
+		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://finder.terra.money/phoenix-1/tx/{txHash}',
 	},
