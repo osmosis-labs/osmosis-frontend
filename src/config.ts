@@ -912,12 +912,6 @@ export const IBCAssetInfos: {
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 	{
-		counterpartyChainId: 'phoenix-1',
-		sourceChannelId: 'channel-251',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uluna',
-	},
-	{
 		counterpartyChainId: 'columbus-5',
 		sourceChannelId: 'channel-72',
 		destChannelId: 'channel-1',
@@ -1304,6 +1298,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-47',
 		coinMinimalDenom: 'cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
+	{
+		counterpartyChainId: 'phoenix-1',
+		sourceChannelId: 'channel-251',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uluna',
 	},
 ];
 
