@@ -3434,8 +3434,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://www.mintscan.io/evmos/txs/{txHash}',
 	},
 	{
-		rpc: 'https://lcd.terra.dev/',
-		rest: 'https://rpc.terrav2.ccvalidators.com/',
+		rpc: 'https://rpc.terrav2.ccvalidators.com/',
+		rest: 'https://lcd.terra.dev/',
 		chainId: 'phoenix-1',
 		chainName: 'Terra 2.0',
 		stakeCurrency: {
