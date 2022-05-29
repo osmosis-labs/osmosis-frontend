@@ -3435,7 +3435,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	},
 	{
 		rpc: 'https://lcd.terra.dev/',
-		rest: 'https://terra-rpc.stakely.io/',
+		rest: 'https://terra-rpc.polkachu.com/',
 		chainId: 'phoenix-1',
 		chainName: 'Terra 2.0',
 		stakeCurrency: {
