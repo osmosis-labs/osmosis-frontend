@@ -802,8 +802,8 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '3531',
 			denom: 'ibc/AA1C80225BCA7B32ED1FC6ABF8B8E899BEB48ECDB4B417FD69873C6D715F97E7',
-    }
-  ],
+		},
+	],
 	'719': [
 		{
 			gaugeId: '3528',
@@ -893,20 +893,6 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'basecro',
 	},
 	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uluna',
-		isUnstable: true,
-	},
-	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uusd',
-		isUnstable: true,
-	},
-	{
 		counterpartyChainId: 'secret-4',
 		sourceChannelId: 'channel-88',
 		destChannelId: 'channel-1',
@@ -924,6 +910,26 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-47',
 		coinMinimalDenom: 'cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
+	{
+		counterpartyChainId: 'phoenix-1',
+		sourceChannelId: 'channel-251',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uluna',
+	},
+	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uluna',
+		isUnstable: true,
+	},
+	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uusd',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'stargaze-1',
@@ -3426,5 +3432,42 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/evmos/txs/{txHash}',
-	}
+	},
+	{
+		rpc: 'https://lcd.terra.dev/',
+		rest: 'https://terra-rpc.stakely.io/',
+		chainId: 'phoenix-1',
+		chainName: 'Terra 2.0',
+		stakeCurrency: {
+			coinDenom: 'LUNA',
+			coinMinimalDenom: 'uluna',
+			coinDecimals: 6,
+			coinGeckoId: 'terra-luna-2',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/luna.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('terra'),
+		currencies: [
+			{
+				coinDenom: 'LUNA',
+				coinMinimalDenom: 'uluna',
+				coinDecimals: 6,
+				coinGeckoId: 'terra-luna-2',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'LUNA',
+				coinMinimalDenom: 'uluna',
+				coinDecimals: 6,
+				coinGeckoId: 'terra-luna-2',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.svg',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://finder.terra.money/phoenix-1/tx/{txHash}',
+	},
 ];
