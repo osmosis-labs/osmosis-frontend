@@ -1305,6 +1305,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uluna',
 	},
+  {
+    counterpartyChainId: 'titan-1',
+		sourceChannelId: 'channel-221',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uatolo',
+  },
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -3474,5 +3480,47 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://finder.terra.money/phoenix-1/tx/{txHash}',
+	},
+  {
+		rpc: 'https://rpcapi.rizon.world/',
+		rest: 'https://restapi.rizon.world/',
+		chainId: 'titan-1',
+		chainName: 'Rizon',
+		stakeCurrency: {
+			coinDenom: 'ATOLO',
+			coinMinimalDenom: 'uatolo',
+			coinDecimals: 6,
+			coinGeckoId: 'rizon',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/atolo.png',
+    },
+		bip44: {
+			coinType: 118,
+		},
+    bech32Config: Bech32Address.defaultBech32Config('rizon'),
+		currencies: [
+			{
+				coinDenom: 'ATOLO',
+				coinMinimalDenom: 'uatolo',
+				coinDecimals: 6,
+				coinGeckoId: 'rizon',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/atolo.png',
+      },
+		],
+		feeCurrencies: [
+			{
+        coinDenom: 'ATOLO',
+				coinMinimalDenom: 'uatolo',
+				coinDecimals: 6,
+				coinGeckoId: 'rizon',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/atolo.png',
+			},
+		],
+		gasPriceStep: {
+			low: 0.025,
+			average: 0.025,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/rizon/txs/{txHash}',
 	},
 ];
