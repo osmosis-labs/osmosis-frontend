@@ -122,6 +122,9 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             apr: queryOsmosis.queryIncentivizedPools
               .computeMostAPY(pool.id, priceStore)
               .maxDecimals(2),
+            poolName: pool.poolAssets
+              .map((asset) => asset.amount.currency.coinDenom)
+              .join("/"),
           };
         }),
       [
@@ -151,7 +154,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     );
     const [query, setQuery, filteredPools] = useFilteredData(
       sortedAllPoolsWithMetrics,
-      ["pool.id", "pool.poolAssets.amount.currency.coinDenom"]
+      ["pool.id", "poolName"]
     );
     const [page, setPage, minPage, numPages, allData] = usePaginatedData(
       filteredPools,
