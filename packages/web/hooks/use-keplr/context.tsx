@@ -18,6 +18,7 @@ import { ChainInfos } from "../../config";
 import { Buffer } from "buffer";
 import WalletConnect from "@walletconnect/client";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
+import { isMobile } from "@walletconnect/browser-utils";
 
 export async function sendTxWC(
   chainId: string,
@@ -157,7 +158,11 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
     }
 
     return new Promise((resolve, reject) => {
-      setIsModalOpen(true);
+      if (!isMobile()) {
+        // If on mobile browser environment,
+        // no need to open select modal.
+        setIsModalOpen(true);
+      }
 
       const cleanUp = () => {
         eventListener.off("modal_close");
@@ -223,6 +228,11 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
           cleanUp();
         }
       });
+
+      if (isMobile()) {
+        // Force emit "select_wallet_connect" event if on mobile browser environment.
+        eventListener.emit("select_wallet_connect");
+      }
     });
   });
 
