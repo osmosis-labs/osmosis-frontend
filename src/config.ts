@@ -893,20 +893,6 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'basecro',
 	},
 	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uluna',
-		isUnstable: true,
-	},
-	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uusd',
-		isUnstable: true,
-	},
-	{
 		counterpartyChainId: 'secret-4',
 		sourceChannelId: 'channel-88',
 		destChannelId: 'channel-1',
@@ -924,6 +910,20 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-47',
 		coinMinimalDenom: 'cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
+	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uluna',
+		isUnstable: true,
+	},
+	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uusd',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'stargaze-1',
@@ -1300,6 +1300,18 @@ export const IBCAssetInfos: {
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 	{
+    counterpartyChainId: 'phoenix-1',
+		sourceChannelId: 'channel-251',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uluna',
+	},
+  {
+    counterpartyChainId: 'titan-1',
+		sourceChannelId: 'channel-221',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uatolo',
+  },
+  {
 		counterpartyChainId: 'kava_2222-10',
 		sourceChannelId: 'channel-143',
 		destChannelId: 'channel-1',
@@ -3446,7 +3458,91 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		explorerUrlToTx: 'https://www.mintscan.io/evmos/txs/{txHash}',
 	},
 	{
-		rpc: 'https://rpc-kava.keplr.app',
+		rpc: 'https://rpc.terrav2.ccvalidators.com/',
+		rest: 'https://phoenix-lcd.terra.dev/',
+		chainId: 'phoenix-1',
+		chainName: 'Terra 2.0',
+		stakeCurrency: {
+			coinDenom: 'LUNA',
+			coinMinimalDenom: 'uluna',
+			coinDecimals: 6,
+			coinGeckoId: 'terra-luna-2',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/luna.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('terra'),
+		currencies: [
+			{
+				coinDenom: 'LUNA',
+				coinMinimalDenom: 'uluna',
+				coinDecimals: 6,
+				coinGeckoId: 'terra-luna-2',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'LUNA',
+				coinMinimalDenom: 'uluna',
+				coinDecimals: 6,
+				coinGeckoId: 'terra-luna-2',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0.15,
+			average: 0.2,
+			high: 0.25,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://finder.terra.money/phoenix-1/tx/{txHash}',
+	},
+  {
+		rpc: 'https://rpcapi.rizon.world/',
+		rest: 'https://restapi.rizon.world/',
+		chainId: 'titan-1',
+		chainName: 'Rizon',
+		stakeCurrency: {
+			coinDenom: 'ATOLO',
+			coinMinimalDenom: 'uatolo',
+			coinDecimals: 6,
+			coinGeckoId: 'rizon',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/atolo.png',
+    },
+		bip44: {
+			coinType: 118,
+		},
+    bech32Config: Bech32Address.defaultBech32Config('rizon'),
+		currencies: [
+			{
+				coinDenom: 'ATOLO',
+				coinMinimalDenom: 'uatolo',
+				coinDecimals: 6,
+				coinGeckoId: 'rizon',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/atolo.png',
+      },
+		],
+		feeCurrencies: [
+			{
+        coinDenom: 'ATOLO',
+				coinMinimalDenom: 'uatolo',
+				coinDecimals: 6,
+				coinGeckoId: 'rizon',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/atolo.png',
+			},
+		],
+		gasPriceStep: {
+			low: 0.025,
+			average: 0.025,
+			high: 0.035,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/rizon/txs/{txHash}',
+	},
+  {
+    rpc: 'https://rpc-kava.keplr.app',
 		rest: 'https://lcd-kava.keplr.app',
 		chainId: 'kava_2222-10',
 		chainName: 'Kava',
@@ -3495,5 +3591,5 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/kava/txs/{txHash}',
-	},
+  },
 ];
