@@ -2,6 +2,9 @@ import { Dec, Int } from "@keplr-wallet/unit";
 
 const powPrecision = new Dec("0.00000001");
 
+// This file is intended to be a typescript implementation of power matching
+// https://github.com/osmosis-labs/osmosis/blob/main/osmomath/math.go#L52 (The osmosis chain implementation)
+// as closely as possible
 export function pow(base: Dec, exp: Dec): Dec {
   // Exponentiation of a negative base with an arbitrary real exponent is not closed within the reals.
   // You can see this by recalling that `i = (-1)^(.5)`. We have to go to complex numbers to define this.
