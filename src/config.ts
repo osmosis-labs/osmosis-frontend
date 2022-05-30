@@ -93,6 +93,7 @@ export const LockupAbledPoolIds: {
 	'670': true,
 	'679': true,
 	'716': true,
+	'701': true,
 };
 
 export const PromotedLBPPoolIds: {
@@ -801,12 +802,26 @@ export const ExtraGaugeInPool: {
 		{
 			gaugeId: '3531',
 			denom: 'ibc/AA1C80225BCA7B32ED1FC6ABF8B8E899BEB48ECDB4B417FD69873C6D715F97E7',
-    }
-  ],
+		},
+	],
 	'719': [
 		{
 			gaugeId: '3528',
 			denom: 'ibc/A0CC0CF735BFB30E730C70019D4218A1244FF383503FF7579C9201AB93CA9293',
+		},
+	],
+	'701': [
+		{
+			gaugeId: '3916',
+			denom: 'ibc/67C89B8B0A70C08F093C909A4DD996DD10E0494C87E28FD9A551697BF173D4CA',
+		},
+		{
+			gaugeId: '3915',
+			denom: 'ibc/67C89B8B0A70C08F093C909A4DD996DD10E0494C87E28FD9A551697BF173D4CA',
+		},
+		{
+			gaugeId: '3910',
+			denom: 'ibc/67C89B8B0A70C08F093C909A4DD996DD10E0494C87E28FD9A551697BF173D4CA',
 		},
 	],
 };
@@ -846,24 +861,24 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-208',
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uusdc',
-		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=usdc',
-		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=usdc',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uusdc',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uusdc',
 	},
 	{
 		counterpartyChainId: 'axelar-dojo-1',
 		sourceChannelId: 'channel-208',
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'weth-wei',
-		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=weth',
-		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=weth',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=weth-wei',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=weth-wei',
 	},
 	{
 		counterpartyChainId: 'axelar-dojo-1',
 		sourceChannelId: 'channel-208',
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'dai-wei',
-		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=dai',
-		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=dai',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=dai-wei',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=dai-wei',
 	},
 	{
 		counterpartyChainId: 'cosmoshub-4',
@@ -876,20 +891,6 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-5',
 		destChannelId: 'channel-10',
 		coinMinimalDenom: 'basecro',
-	},
-	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uluna',
-		isUnstable: true,
-	},
-	{
-		counterpartyChainId: 'columbus-5',
-		sourceChannelId: 'channel-72',
-		destChannelId: 'channel-1',
-		coinMinimalDenom: 'uusd',
-		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'secret-4',
@@ -909,6 +910,20 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-47',
 		coinMinimalDenom: 'cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
+	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uluna',
+		isUnstable: true,
+	},
+	{
+		counterpartyChainId: 'columbus-5',
+		sourceChannelId: 'channel-72',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uusd',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'stargaze-1',
@@ -940,6 +955,7 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-72',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'ukrw',
+		isUnstable: true,
 	},
 	{
 		counterpartyChainId: 'akashnet-2',
@@ -1161,24 +1177,24 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-208',
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'wbtc-satoshi',
-		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=wbtc',
-		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=wbtc',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=wbtc-satoshi',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=wbtc-satoshi',
 	},
 	{
 		counterpartyChainId: 'axelar-dojo-1',
 		sourceChannelId: 'channel-208',
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'uusdt',
-		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=usdt',
-		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=usdt',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uusdt',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uusdt',
 	},
 	{
 		counterpartyChainId: 'axelar-dojo-1',
 		sourceChannelId: 'channel-208',
 		destChannelId: 'channel-3',
 		coinMinimalDenom: 'frax-wei',
-		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&token=frax',
-		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&token=frax',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=frax-wei',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=frax-wei',
 	},
 	{
 		counterpartyChainId: 'gravity-bridge-3',
@@ -1282,6 +1298,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-47',
 		coinMinimalDenom: 'cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
+	{
+		counterpartyChainId: 'phoenix-1',
+		sourceChannelId: 'channel-251',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'uluna',
 	},
   {
     counterpartyChainId: 'titan-1',
@@ -1445,13 +1467,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		rpc: 'https://rpc-columbus.keplr.app',
 		rest: 'https://lcd-columbus.keplr.app',
 		chainId: 'columbus-5',
-		chainName: 'Terra',
+		chainName: 'Terra Classic',
 		stakeCurrency: {
-			coinDenom: 'LUNA',
+			coinDenom: 'LUNC',
 			coinMinimalDenom: 'uluna',
 			coinDecimals: 6,
-			coinGeckoId: 'pool:uluna',
-			coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+			coinGeckoId: 'terra-luna',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/lunc.png',
 		},
 		bip44: {
 			coinType: 330,
@@ -1459,41 +1481,41 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		bech32Config: Bech32Address.defaultBech32Config('terra'),
 		currencies: [
 			{
-				coinDenom: 'LUNA',
+				coinDenom: 'LUNC',
 				coinMinimalDenom: 'uluna',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:uluna',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+				coinGeckoId: 'terra-luna',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/lunc.png',
 			},
 			{
-				coinDenom: 'UST',
+				coinDenom: 'USTC',
 				coinMinimalDenom: 'uusd',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:uluna',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
+				coinGeckoId: 'terrausd',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ustc.png',
 			},
 			{
-				coinDenom: 'KRT',
+				coinDenom: 'KRTC',
 				coinMinimalDenom: 'ukrw',
 				coinDecimals: 6,
 				coinGeckoId: 'terra-krw',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/krt.png',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/krtc.png',
 			},
 		],
 		feeCurrencies: [
 			{
-				coinDenom: 'LUNA',
+				coinDenom: 'LUNC',
 				coinMinimalDenom: 'uluna',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:uluna',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.png',
+				coinGeckoId: 'terra-luna',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/lunc.png',
 			},
 			{
-				coinDenom: 'UST',
+				coinDenom: 'USTC',
 				coinMinimalDenom: 'uusd',
 				coinDecimals: 6,
-				coinGeckoId: 'pool:uusd',
-				coinImageUrl: window.location.origin + '/public/assets/tokens/ust.png',
+				coinGeckoId: 'terrausd',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/ustc.png',
 			},
 		],
 		gasPriceStep: {
@@ -3417,6 +3439,48 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/evmos/txs/{txHash}',
 	},
+	{
+		rpc: 'https://rpc.terrav2.ccvalidators.com/',
+		rest: 'https://phoenix-lcd.terra.dev/',
+		chainId: 'phoenix-1',
+		chainName: 'Terra 2.0',
+		stakeCurrency: {
+			coinDenom: 'LUNA',
+			coinMinimalDenom: 'uluna',
+			coinDecimals: 6,
+			coinGeckoId: 'terra-luna-2',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/luna.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('terra'),
+		currencies: [
+			{
+				coinDenom: 'LUNA',
+				coinMinimalDenom: 'uluna',
+				coinDecimals: 6,
+				coinGeckoId: 'terra-luna-2',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'LUNA',
+				coinMinimalDenom: 'uluna',
+				coinDecimals: 6,
+				coinGeckoId: 'terra-luna-2',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/luna.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 0.15,
+			average: 0.2,
+			high: 0.25,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+		explorerUrlToTx: 'https://finder.terra.money/phoenix-1/tx/{txHash}',
+	},
   {
 		rpc: 'https://rpcapi.rizon.world/',
 		rest: 'https://restapi.rizon.world/',
@@ -3428,11 +3492,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDecimals: 6,
 			coinGeckoId: 'rizon',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/atolo.png',
-		},
+    },
 		bip44: {
 			coinType: 118,
 		},
-		bech32Config: Bech32Address.defaultBech32Config('rizon'),
+    bech32Config: Bech32Address.defaultBech32Config('rizon'),
 		currencies: [
 			{
 				coinDenom: 'ATOLO',
@@ -3440,11 +3504,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'rizon',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/atolo.png',
-			},
+      },
 		],
 		feeCurrencies: [
 			{
-				coinDenom: 'ATOLO',
+        coinDenom: 'ATOLO',
 				coinMinimalDenom: 'uatolo',
 				coinDecimals: 6,
 				coinGeckoId: 'rizon',
@@ -3458,5 +3522,5 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/rizon/txs/{txHash}',
-	}
+	},
 ];
