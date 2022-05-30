@@ -234,7 +234,7 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
         });
 
         if (isMobile()) {
-          if (keplrFromWindow) {
+          if (keplrFromWindow && keplrFromWindow.mode === "mobile-web") {
             // If mobile with `keplr` in `window`, it means that user enters frontend from keplr app's in app browser.
             // So, their is no need to use wallet connect, and it resembles extension's usages.
             eventListener.emit("select_extension");
