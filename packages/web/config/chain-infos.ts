@@ -1360,6 +1360,43 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/rizon/txs/{txHash}",
     },
+    {
+      rpc: "https://rpc-kava.keplr.app",
+      rest: "https://lcd-kava.keplr.app",
+      chainId: "kava_2222-10",
+      chainName: "Kava",
+      bip44: {
+        coinType: 459,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("kava"),
+      currencies: [
+        {
+          coinDenom: "KAVA",
+          coinMinimalDenom: "ukava",
+          coinDecimals: 6,
+          coinGeckoId: "kava",
+          coinImageUrl: "/tokens/kava.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+        {
+          coinDenom: "HARD",
+          coinMinimalDenom: "hard",
+          coinDecimals: 6,
+          coinGeckoId: "kava-lend",
+          coinImageUrl: "/tokens/hard.svg",
+        },
+        {
+          coinDenom: "SWP",
+          coinMinimalDenom: "swp",
+          coinDecimals: 6,
+          coinGeckoId: "kava-swap",
+          coinImageUrl: "/tokens/swp.svg",
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/kava/txs/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
