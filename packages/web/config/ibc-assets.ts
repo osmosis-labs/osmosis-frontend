@@ -573,6 +573,14 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "swp",
   },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "link-wei",
+    depositUrlOverride: "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=link-wei",
+    withdrawUrlOverride: "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=link-wei",
+  },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;
