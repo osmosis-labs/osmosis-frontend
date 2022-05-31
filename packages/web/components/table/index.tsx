@@ -7,6 +7,7 @@ import { CustomClasses } from "../types";
 import { replaceAt } from "../utils";
 import { BaseCell, ColumnDef, RowDef } from "./types";
 import { useWindowSize } from "../../hooks";
+import { IS_FRONTIER } from "../../config";
 
 export interface Props<TCell extends BaseCell> extends CustomClasses {
   /** Functionality common to all columns. */
@@ -88,14 +89,22 @@ export const Table = <TCell extends BaseCell>({
                       {colDef?.sort?.currentDirection === "ascending" ? (
                         <Image
                           alt="ascending"
-                          src="/icons/sort-up.svg"
+                          src={
+                            IS_FRONTIER
+                              ? "/icons/sort-up-white.svg"
+                              : "/icons/sort-up.svg"
+                          }
                           height={16}
                           width={16}
                         />
                       ) : colDef?.sort?.currentDirection === "descending" ? (
                         <Image
                           alt="descending"
-                          src="/icons/sort-down.svg"
+                          src={
+                            IS_FRONTIER
+                              ? "/icons/sort-down-white.svg"
+                              : "/icons/sort-down.svg"
+                          }
                           height={16}
                           width={16}
                         />

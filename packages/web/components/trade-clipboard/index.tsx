@@ -129,7 +129,7 @@ export const TradeClipboard: FunctionComponent<{
               <div className="absolute inset-x-1/2 -translate-x-1/2 bottom-2 w-12 md:w-9 h-[1.875rem] md:h-[1.4rem] bg-[rgba(91,83,147,0.12)] rounded-md shadow-[rgba(0,0,0,0.25)_1px_1px_1px_inset]" />
             )}
             {IS_FRONTIER && (
-              <div className="absolute left-0 right-0 top-[20%] mx-auto h-[40px] w-[40px]">
+              <div className="absolute left-0 right-0 top-[20%] mx-auto h-[40px] w-[40px] md:h-[30px] md:w-[30px]">
                 <img alt="badge" src="/icons/frontier-osmo-badge.svg" />
               </div>
             )}
