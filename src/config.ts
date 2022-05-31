@@ -3556,7 +3556,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		bip44: {
 			coinType: 459,
 		},
-		bech32Config: Bech32Address.defaultBech32Config('evmos'),
+		bech32Config: Bech32Address.defaultBech32Config('kava'),
 		currencies: [
 			{
 				coinDenom: 'KAVA',
