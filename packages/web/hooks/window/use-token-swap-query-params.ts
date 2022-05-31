@@ -20,7 +20,7 @@ export function useTokenSwapQueryParams(
       router.query.from &&
       router.query.to &&
       router.query.from !== router.query.to &&
-      tradeConfig.sendableCurrencies.length !== 0
+      tradeConfig.sendableCurrencies.length >= tradeConfig.pools.length
     ) {
       const fromCurrency =
         balances.find(
@@ -56,21 +56,23 @@ export function useTokenSwapQueryParams(
     // Update current in and out currency to query string.
     // The first effect should be ignored because the query string set when visiting the web page for the first time must be processed.
     if (firstQueryEffectChecker.current) {
-      firstQueryEffectChecker.current = false;
-      return;
+      if (
+        tradeConfig.sendCurrency.coinDenom !== "UNKNOWN" &&
+        tradeConfig.outCurrency.coinDenom !== "UNKNOWN" &&
+        tradeConfig.sendableCurrencies.length >= tradeConfig.pools.length &&
+        (tradeConfig.sendCurrency.coinDenom !== router.query.from ||
+          tradeConfig.outCurrency.coinDenom !== router.query.to)
+      ) {
+        router.replace(
+          `/?from=${tradeConfig.sendCurrency.coinDenom.split(" ")[0]}&to=${
+            tradeConfig.outCurrency.coinDenom.split(" ")[0]
+          }`
+        );
+      }
+    } else {
+      firstQueryEffectChecker.current = true;
     }
 
-    if (
-      tradeConfig.sendCurrency.coinDenom !== "UNKNOWN" &&
-      tradeConfig.outCurrency.coinDenom !== "UNKNOWN" &&
-      tradeConfig.sendableCurrencies.length !== 0 &&
-      (tradeConfig.sendCurrency.coinDenom !== router.query.from ||
-        tradeConfig.outCurrency.coinDenom !== router.query.to)
-    ) {
-      router.replace(
-        `/?from=${tradeConfig.sendCurrency.coinDenom}&to=${tradeConfig.outCurrency.coinDenom}`
-      );
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     tradeConfig?.sendCurrency,
