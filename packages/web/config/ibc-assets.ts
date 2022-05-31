@@ -573,6 +573,12 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "swp",
   },
+  {
+    counterpartyChainId: "genesis_29-2",
+    sourceChannelId: "channel-235",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "el1",
+  },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;
