@@ -1329,6 +1329,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'swp',
 	},
+	{
+		counterpartyChainId: 'genesis_29-2',
+		sourceChannelId: 'channel-235',
+		destChannelId: 'channel-0',
+		coinMinimalDenom: 'el1',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -3592,4 +3598,46 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/kava/txs/{txHash}',
   },
+  {
+		rpc: 'https://26657.genesisl1.org',
+		rest: 'https://api.genesisl1.org',
+		chainId: 'genesis_29-2',
+		chainName: 'GenesisL1',
+		stakeCurrency: {
+			coinDenom: 'L1',
+			coinMinimalDenom: 'el1',
+			coinDecimals: 18,
+			coinGeckoId: 'pool:el1',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/l1.svg',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('l1'),
+		currencies: [
+			{
+				coinDenom: 'L1',
+				coinMinimalDenom: 'el1',
+				coinDecimals: 18,
+				coinGeckoId: 'pool:el1',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/l1.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'L1',
+				coinMinimalDenom: 'el1',
+				coinDecimals: 18,
+				coinGeckoId: 'pool:el1',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/l1.svg',
+			},
+		],
+		gasPriceStep: {
+			low: 999999999,
+			average: 1000000000,
+			high: 1000000001,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://ping.pub/genesisL1/tx/{txHash}',
+	}
 ];
