@@ -1329,6 +1329,14 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'swp',
 	},
+	{
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'link-wei',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=link-wei',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=link-wei',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -3191,6 +3199,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 8,
 				coinGeckoId: 'wrapped-bitcoin',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/wbtc.png',
+			},
+			{
+				coinDenom: 'LINK',
+				coinMinimalDenom: 'link-wei',
+				coinDecimals: 18,
+				coinGeckoId: 'chainlink',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/link.svg',
 			},
 		],
 		feeCurrencies: [
