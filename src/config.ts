@@ -1300,7 +1300,7 @@ export const IBCAssetInfos: {
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 	{
-		counterpartyChainId: 'phoenix-1',
+    counterpartyChainId: 'phoenix-1',
 		sourceChannelId: 'channel-251',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uluna',
@@ -1311,6 +1311,24 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uatolo',
   },
+  {
+		counterpartyChainId: 'kava_2222-10',
+		sourceChannelId: 'channel-143',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'ukava',
+	},
+	{
+		counterpartyChainId: 'kava_2222-10',
+		sourceChannelId: 'channel-143',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'hard',
+	},
+	{
+		counterpartyChainId: 'kava_2222-10',
+		sourceChannelId: 'channel-143',
+		destChannelId: 'channel-1',
+		coinMinimalDenom: 'swp',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -3523,4 +3541,55 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/rizon/txs/{txHash}',
 	},
+  {
+    rpc: 'https://rpc-kava.keplr.app',
+		rest: 'https://lcd-kava.keplr.app',
+		chainId: 'kava_2222-10',
+		chainName: 'Kava',
+		stakeCurrency: {
+			coinDenom: 'KAVA',
+			coinMinimalDenom: 'ukava',
+			coinDecimals: 6,
+			coinGeckoId: 'kava',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/kava.png',
+		},
+		bip44: {
+			coinType: 459,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('kava'),
+		currencies: [
+			{
+				coinDenom: 'KAVA',
+				coinMinimalDenom: 'ukava',
+				coinDecimals: 6,
+				coinGeckoId: 'kava',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/kava.png',
+			},
+			{
+				coinDenom: 'HARD',
+				coinMinimalDenom: 'hard',
+				coinDecimals: 6,
+				coinGeckoId: 'kava-lend',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/hard.svg',
+			},
+			{
+				coinDenom: 'SWP',
+				coinMinimalDenom: 'swp',
+				coinDecimals: 6,
+				coinGeckoId: 'kava-swap',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/swp.svg',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'KAVA',
+				coinMinimalDenom: 'ukava',
+				coinDecimals: 6,
+				coinGeckoId: 'kava',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/kava.png',
+			},
+		],
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/kava/txs/{txHash}',
+  },
 ];
