@@ -18,10 +18,10 @@ export const TermsModal: FunctionComponent<
   const [showLicense, setShowLicense] = useState(false);
 
   return (
-    <ModalBase {...props} onRequestClose={() => undefined}>
+    <ModalBase {...props} onRequestClose={() => undefined} hideCloseButton>
       <div>
         <div className="max-w-modal">
-          <div className="max-h-terms overflow-y-scroll bg-background rounded-2xl p-5 my-8">
+          <div className="max-h-terms overflow-y-scroll bg-background rounded-2xl p-5 mb-8">
             <div className="text-white-mid text-xs md:caption">
               Osmosis is a decentralized peer-to-peer blockchain that people can
               use to create liquidity and trade IBC enabled tokens. The Osmosis
