@@ -73,12 +73,14 @@ export const AllPoolsTableSet: FunctionComponent<{
           .computeMostAPY(pool.id, priceStore)
           .maxDecimals(2),
       })),
+    // eslint-disable-next-line
     [
       allPools,
       account.bech32Address,
       queriesOsmosis,
       priceStore,
       queriesExternal,
+      queriesExternal.queryGammPoolFeeMetrics.response,
     ]
   );
 

@@ -833,6 +833,20 @@ export const ExternalIncentiveGaugeAllowList: {
 			denom: "uosmo",
 		},
 	],
+  "701": [
+		{
+			gaugeId: "3916",
+			denom: "ibc/67C89B8B0A70C08F093C909A4DD996DD10E0494C87E28FD9A551697BF173D4CA",
+		},
+		{
+			gaugeId: "3915",
+			denom: "ibc/67C89B8B0A70C08F093C909A4DD996DD10E0494C87E28FD9A551697BF173D4CA",
+		},
+    {
+			gaugeId: "3910",
+			denom: "ibc/67C89B8B0A70C08F093C909A4DD996DD10E0494C87E28FD9A551697BF173D4CA",
+		},
+	],
   "716": [
 		{
 			gaugeId: "3532",

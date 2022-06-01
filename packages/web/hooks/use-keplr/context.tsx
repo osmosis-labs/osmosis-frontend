@@ -18,6 +18,7 @@ import { ChainInfos } from "../../config";
 import { Buffer } from "buffer";
 import WalletConnect from "@walletconnect/client";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
+import { isMobile } from "@walletconnect/browser-utils";
 
 export async function sendTxWC(
   chainId: string,
@@ -156,74 +157,94 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
       }
     }
 
-    return new Promise((resolve, reject) => {
-      setIsModalOpen(true);
+    return (async () => {
+      // First, try to get keplr from window.
+      const keplrFromWindow = await getKeplrFromWindow();
 
-      const cleanUp = () => {
-        eventListener.off("modal_close");
-        eventListener.off("select_extension");
-        eventListener.off("select_wallet_connect");
-        eventListener.off("wc_modal_close");
-        eventListener.off("connect");
-      };
+      if (!isMobile()) {
+        // If on mobile browser environment,
+        // no need to open select modal.
+        setIsModalOpen(true);
+      }
 
-      eventListener.on("modal_close", () => {
-        setIsModalOpen(false);
-        reject();
-        cleanUp();
-      });
+      return await new Promise((resolve, reject) => {
+        const cleanUp = () => {
+          eventListener.off("modal_close");
+          eventListener.off("select_extension");
+          eventListener.off("select_wallet_connect");
+          eventListener.off("wc_modal_close");
+          eventListener.off("connect");
+        };
 
-      eventListener.on("select_extension", () => {
-        setIsModalOpen(false);
-        getKeplrFromWindow().then((keplr) => {
-          lastUsedKeplrRef.current = keplr;
-          setConnectionType("extension");
-          resolve(keplr);
+        eventListener.on("modal_close", () => {
+          setIsModalOpen(false);
+          reject();
           cleanUp();
         });
-      });
 
-      eventListener.on("select_wallet_connect", () => {
-        const connector = createWalletConnect();
+        eventListener.on("select_extension", () => {
+          setIsModalOpen(false);
+          getKeplrFromWindow().then((keplr) => {
+            lastUsedKeplrRef.current = keplr;
+            setConnectionType("extension");
+            resolve(keplr);
+            cleanUp();
+          });
+        });
 
-        eventListener.on("wc_modal_close", () => {
-          setWCUri("");
-          if (callbackClosed) {
-            callbackClosed();
+        eventListener.on("select_wallet_connect", () => {
+          const connector = createWalletConnect();
+
+          eventListener.on("wc_modal_close", () => {
+            setWCUri("");
+            if (callbackClosed) {
+              callbackClosed();
+            }
+          });
+
+          // Check if connection is already established
+          if (!connector.connected) {
+            // create new session
+            connector.createSession();
+
+            connector.on("connect", (error) => {
+              cleanUp();
+              if (error) {
+                reject(error);
+              } else {
+                const keplr = new KeplrWalletConnectV1(connector, {
+                  sendTx: sendTxWC,
+                });
+                setIsModalOpen(false);
+                lastUsedKeplrRef.current = keplr;
+                setConnectionType("wallet-connect");
+                resolve(keplr);
+              }
+            });
+          } else {
+            const keplr = new KeplrWalletConnectV1(connector, {
+              sendTx: sendTxWC,
+            });
+            setIsModalOpen(false);
+            lastUsedKeplrRef.current = keplr;
+            setConnectionType("wallet-connect");
+            resolve(keplr);
+            cleanUp();
           }
         });
 
-        // Check if connection is already established
-        if (!connector.connected) {
-          // create new session
-          connector.createSession();
-
-          connector.on("connect", (error) => {
-            cleanUp();
-            if (error) {
-              reject(error);
-            } else {
-              const keplr = new KeplrWalletConnectV1(connector, {
-                sendTx: sendTxWC,
-              });
-              setIsModalOpen(false);
-              lastUsedKeplrRef.current = keplr;
-              setConnectionType("wallet-connect");
-              resolve(keplr);
-            }
-          });
-        } else {
-          const keplr = new KeplrWalletConnectV1(connector, {
-            sendTx: sendTxWC,
-          });
-          setIsModalOpen(false);
-          lastUsedKeplrRef.current = keplr;
-          setConnectionType("wallet-connect");
-          resolve(keplr);
-          cleanUp();
+        if (isMobile()) {
+          if (keplrFromWindow && keplrFromWindow.mode === "mobile-web") {
+            // If mobile with `keplr` in `window`, it means that user enters frontend from keplr app's in app browser.
+            // So, their is no need to use wallet connect, and it resembles extension's usages.
+            eventListener.emit("select_extension");
+          } else {
+            // Force emit "select_wallet_connect" event if on mobile browser environment.
+            eventListener.emit("select_wallet_connect");
+          }
         }
       });
-    });
+    })();
   });
 
   return (

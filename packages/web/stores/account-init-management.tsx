@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "./index";
-import { WalletStatus } from "@keplr-wallet/stores";
+import { getKeplrFromWindow, WalletStatus } from "@keplr-wallet/stores";
 import { useKeplr } from "../hooks";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 
@@ -16,6 +16,19 @@ export const AccountInitManagement: FunctionComponent = observer(
     const account = accountStore.getAccount(chainInfo.chainId);
 
     const [accountHasInit, setAccountHasInit] = useState(false);
+
+    useEffect(() => {
+      // Initially, try to get keplr from window, and keplr's mode is "mobile-web",
+      // it means that user enters the website via keplr app's in app browser.
+      // And, it means explicitly press the osmosis button on the keplr's dApps introduction page.
+      // So, try to init account immediately.
+      getKeplrFromWindow().then((keplr) => {
+        if (keplr && keplr.mode === "mobile-web") {
+          account.init();
+        }
+      });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Init Osmosis account w/ desired connection type (wallet connect, extension)
     // if prev connected Keplr in this browser.
