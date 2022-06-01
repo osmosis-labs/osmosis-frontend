@@ -1348,6 +1348,8 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "terra-luna-2",
           coinImageUrl: "/tokens/luna.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
         },
       ],
       gasPriceStep: {
