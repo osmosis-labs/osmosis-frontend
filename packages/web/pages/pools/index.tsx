@@ -15,7 +15,6 @@ import { LeftTime } from "../../components/left-time";
 import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { TabBox } from "../../components/control";
-import { toastOnFulfill } from "../../components/alert";
 import { useStore } from "../../stores";
 import { DataSorter } from "../../hooks/data/data-sorter";
 import {
@@ -163,13 +162,7 @@ const Pools: NextPage = observer(function () {
                   },
                 })),
                 "",
-                (tx) => {
-                  toastOnFulfill((chainId) => chainStore.getChain(chainId))(
-                    chainId,
-                    tx
-                  );
-                  setIsCreatingPool(false);
-                }
+                () => setIsCreatingPool(false)
               );
             } catch (e) {
               setIsCreatingPool(false);
