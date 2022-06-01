@@ -94,6 +94,13 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "kava_2222-10",
+    sourceChannelId: "channel-143",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "ukava",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "secret-4",
     sourceChannelId: "channel-88",
     destChannelId: "channel-1",
@@ -382,13 +389,6 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
-    isVerified: true,
-  },
-  {
-    counterpartyChainId: "kava_2222-10",
-    sourceChannelId: "channel-143",
-    destChannelId: "channel-1",
-    coinMinimalDenom: "ukava",
     isVerified: true,
   },
   {
