@@ -174,7 +174,7 @@ export const TradeClipboard: FunctionComponent<{
                         slippageConfig.select(slippage.index);
                       }}
                     >
-                      {slippage.slippage.toString()}
+                      <button>{slippage.slippage.toString()}</button>
                     </li>
                   );
                 })}
