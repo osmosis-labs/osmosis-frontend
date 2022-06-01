@@ -59,8 +59,8 @@ export const TokenSelect: FunctionComponent<
   return (
     <div className="flex md:justify-start justify-center items-center relative">
       {selectedCurrency && (
-        <div
-          className={`flex items-center group ${
+        <button
+          className={`flex items-center text-left group ${
             hasNeedTokenSelect ? "cursor-pointer" : ""
           }`}
           onClick={(e) => {
@@ -104,7 +104,7 @@ export const TokenSelect: FunctionComponent<
               {getChainNetworkName?.(selectedCurrency.coinDenom)}
             </div>
           </div>
-        </div>
+        </button>
       )}
 
       {isSelectOpen && (
@@ -131,7 +131,7 @@ export const TokenSelect: FunctionComponent<
             />
           </div>
 
-          <div className="token-item-list overflow-y-scroll max-h-80">
+          <ul className="token-item-list overflow-y-scroll max-h-80">
             {searchedTokens.map((token, index) => {
               const currency =
                 token instanceof CoinPretty ? token.currency : token;
@@ -147,7 +147,7 @@ export const TokenSelect: FunctionComponent<
               const showChannel = coinDenom.includes("channel");
 
               return (
-                <div
+                <li
                   key={index}
                   className="flex justify-between items-center rounded-2xl py-2.5 px-3 my-1 hover:bg-card cursor-pointer mr-3"
                   onClick={(e) => {
@@ -156,7 +156,7 @@ export const TokenSelect: FunctionComponent<
                     setIsSelectOpen(false);
                   }}
                 >
-                  <div className="flex items-center justify-between w-full">
+                  <button className="flex items-center justify-between text-left w-full">
                     <div className="flex items-center">
                       {coinImageUrl && (
                         <div className="w-9 h-9 rounded-full mr-3">
@@ -170,7 +170,7 @@ export const TokenSelect: FunctionComponent<
                       )}
                       <div>
                         <h6 className="text-white-full">{justDenom}</h6>
-                        <div className="text-iconDefault md:caption font-semibold">
+                        <div className="text-iconDefault text-left md:caption font-semibold">
                           {showChannel ? channel : networkName}
                         </div>
                       </div>
@@ -179,11 +179,11 @@ export const TokenSelect: FunctionComponent<
                       {token instanceof CoinPretty &&
                         token.trim(true).hideDenom(true).toString()}
                     </div>
-                  </div>
-                </div>
+                  </button>
+                </li>
               );
             })}
-          </div>
+          </ul>
         </div>
       )}
     </div>
