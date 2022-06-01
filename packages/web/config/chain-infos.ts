@@ -5,8 +5,8 @@ import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 const chainInfos = (
   [
     {
-      rpc: "https://rpc-osmosis.keplr.app", // test: "https://testnet-rpc.osmosis.zone"
-      rest: "https://lcd-osmosis.keplr.app", // test: "https://testnet-rest.osmosis.zone"
+      rpc: "https://rpc-osmosis.keplr.app/", // test: "http://rpc-test.osmosis.zone/"
+      rest: "https://lcd-osmosis.keplr.app/", // test: "http://lcd-test.osmosis.zone/"
       chainId: "osmosis-1", // test: "osmo-test-4"
       chainName: "Osmosis",
       bip44: {
@@ -67,36 +67,36 @@ const chainInfos = (
       rpc: "https://rpc-columbus.keplr.app",
       rest: "https://lcd-columbus.keplr.app",
       chainId: "columbus-5",
-      chainName: "Terra",
+      chainName: "Terra Classic",
       bip44: {
         coinType: 330,
       },
       bech32Config: Bech32Address.defaultBech32Config("terra"),
       currencies: [
         {
-          coinDenom: "LUNA",
+          coinDenom: "LUNC",
           coinMinimalDenom: "uluna",
           coinDecimals: 6,
           coinGeckoId: "terra-luna",
-          coinImageUrl: "/tokens/luna.png",
+          coinImageUrl: "/tokens/lunc.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
         {
-          coinDenom: "UST",
+          coinDenom: "USTC",
           coinMinimalDenom: "uusd",
           coinDecimals: 6,
           coinGeckoId: "terrausd",
-          coinImageUrl: "/tokens/ust.png",
+          coinImageUrl: "/tokens/ustc.png",
           isFeeCurrency: true,
           pegMechanism: "algorithmic",
         },
         {
-          coinDenom: "KRT",
+          coinDenom: "KRTC",
           coinMinimalDenom: "ukrw",
           coinDecimals: 6,
           coinGeckoId: "terra-krw",
-          coinImageUrl: "/tokens/krt.png",
+          coinImageUrl: "/tokens/krtc.png",
           pegMechanism: "algorithmic",
         },
       ],
@@ -1359,6 +1359,43 @@ const chainInfos = (
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/rizon/txs/{txHash}",
+    },
+    {
+      rpc: "https://rpc-kava.keplr.app",
+      rest: "https://lcd-kava.keplr.app",
+      chainId: "kava_2222-10",
+      chainName: "Kava",
+      bip44: {
+        coinType: 459,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("kava"),
+      currencies: [
+        {
+          coinDenom: "KAVA",
+          coinMinimalDenom: "ukava",
+          coinDecimals: 6,
+          coinGeckoId: "kava",
+          coinImageUrl: "/tokens/kava.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+        {
+          coinDenom: "HARD",
+          coinMinimalDenom: "hard",
+          coinDecimals: 6,
+          coinGeckoId: "kava-lend",
+          coinImageUrl: "/tokens/hard.svg",
+        },
+        {
+          coinDenom: "SWP",
+          coinMinimalDenom: "swp",
+          coinDecimals: 6,
+          coinGeckoId: "kava-swap",
+          coinImageUrl: "/tokens/swp.svg",
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/kava/txs/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);

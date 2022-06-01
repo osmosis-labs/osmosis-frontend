@@ -128,7 +128,7 @@ const ChainAssets: FunctionComponent = observer(() => {
       const currency = balance.balance.currency;
       // IBC multihop currency
       const modifiedCurrency =
-        mode === "deposit" && balance.sourceMinimalDenom
+        mode === "deposit" && balance.depositingSrcMinDenom
           ? {
               coinDecimals: currency.coinDecimals,
               coinGeckoId: currency.coinGeckoId,
@@ -141,7 +141,7 @@ const ChainAssets: FunctionComponent = observer(() => {
                 coinDecimals: currency.coinDecimals,
                 coinImageUrl: currency.coinImageUrl,
                 coinDenom: currency.coinDenom,
-                coinMinimalDenom: balance.sourceMinimalDenom,
+                coinMinimalDenom: balance.depositingSrcMinDenom,
               },
             }
           : currency;

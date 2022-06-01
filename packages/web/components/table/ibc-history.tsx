@@ -13,6 +13,7 @@ import { useStore } from "../../stores";
 import { Table, BaseCell } from ".";
 import { Breakpoint, CustomClasses } from "../types";
 import { truncateString } from "../utils";
+import { useWindowSize } from "../../hooks";
 
 export const IbcHistoryTable: FunctionComponent<CustomClasses> = observer(
   ({ className }) => {
@@ -36,12 +37,17 @@ export const IbcHistoryTable: FunctionComponent<CustomClasses> = observer(
           headerTrClassName="!h-12 body2 md:caption"
           tBodyClassName="body2 md:caption"
           columnDefs={[
-            { display: "Transaction Hash", displayCell: TxHashDisplayCell },
+            {
+              display: "Transaction Hash",
+              className: "md:!pl-2",
+              displayCell: TxHashDisplayCell,
+            },
             { display: "Type" },
             { display: "Amount" },
             {
               display: "Status",
               collapseAt: Breakpoint.SM,
+              className: "md:!pr-2",
               displayCell: StatusDisplayCell,
             },
           ]}
@@ -78,6 +84,7 @@ const TxHashDisplayCell: FunctionComponent<
   BaseCell & { sourceChainId?: string }
 > = ({ value, sourceChainId }) => {
   const { chainStore } = useStore();
+  const { isMobile } = useWindowSize();
 
   return value && sourceChainId ? (
     <a
@@ -88,7 +95,7 @@ const TxHashDisplayCell: FunctionComponent<
       target="_blank"
       rel="noopener noreferrer"
     >
-      {truncateString(value, 8)}{" "}
+      {truncateString(value, isMobile ? 4 : 8)}{" "}
       <Image
         alt="external link"
         src="/icons/link-deco.svg"
@@ -132,7 +139,7 @@ const StatusDisplayCell: FunctionComponent<
             width={24}
             height={24}
           />
-          Success
+          <span className="md:hidden">Success</span>
         </div>
       );
     case "pending":
@@ -146,14 +153,14 @@ const StatusDisplayCell: FunctionComponent<
               height={24}
             />
           </div>
-          Pending
+          <span className="md:hidden">Pending</span>
         </div>
       );
     case "refunded":
       return (
         <div className="flex items-center gap-2">
           <Image alt="failed" src="/icons/error-x.svg" width={24} height={24} />
-          Refunded
+          <span className="md:hidden">Refunded</span>
         </div>
       );
     case "timeout":
@@ -167,7 +174,7 @@ const StatusDisplayCell: FunctionComponent<
               height={24}
             />
           </div>
-          Failed: Pending refund
+          <span className="md:hidden">Failed: Pending refund</span>
         </div>
       );
     default:

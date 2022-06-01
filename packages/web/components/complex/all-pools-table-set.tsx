@@ -76,12 +76,14 @@ export const AllPoolsTableSet: FunctionComponent<{
           .map((asset) => asset.amount.currency.coinDenom)
           .join("/"),
       })),
+    // eslint-disable-next-line
     [
       allPools,
       account.bech32Address,
       queriesOsmosis,
       priceStore,
       queriesExternal,
+      queriesExternal.queryGammPoolFeeMetrics.response,
     ]
   );
 

@@ -2,23 +2,29 @@ import Image from "next/image";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 import { Button } from "../../../components/buttons/button";
-import { useStore } from "../../../stores";
 import { AssetCell as Cell } from "./types";
 
 export const TransferButtonCell: FunctionComponent<
-  { type: "withdraw" | "deposit" } & Partial<Cell>
-> = ({ type, chainId, coinDenom, isUnstable, onWithdraw, onDeposit }) => {
-  const { assetsStore } = useStore();
-
-  const externalUrls = chainId
-    ? assetsStore.getExternalTranferUrl?.(chainId)
-    : undefined;
-
-  return type === "withdraw" ? (
+  {
+    type: "withdraw" | "deposit";
+    depositUrlOverride?: string;
+    withdrawUrlOverride?: string;
+  } & Partial<Cell>
+> = ({
+  type,
+  depositUrlOverride,
+  withdrawUrlOverride,
+  chainId,
+  coinDenom,
+  isUnstable,
+  onWithdraw,
+  onDeposit,
+}) =>
+  type === "withdraw" ? (
     chainId && coinDenom && onWithdraw ? (
       <TransferButton
         disabled={isUnstable}
-        externalUrl={externalUrls?.withdrawUrl}
+        externalUrl={withdrawUrlOverride}
         label="Withdraw"
         action={() => onWithdraw?.(chainId, coinDenom)}
       />
@@ -26,12 +32,11 @@ export const TransferButtonCell: FunctionComponent<
   ) : chainId && coinDenom && onDeposit ? (
     <TransferButton
       disabled={isUnstable}
-      externalUrl={externalUrls?.depositUrl}
+      externalUrl={depositUrlOverride}
       label="Deposit"
       action={() => onDeposit?.(chainId, coinDenom)}
     />
   ) : null;
-};
 
 const TransferButton: FunctionComponent<{
   externalUrl?: string;

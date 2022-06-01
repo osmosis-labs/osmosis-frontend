@@ -25,9 +25,9 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "uusdc",
     depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&token=usdc",
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uusdc",
     withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&token=usdc",
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uusdc",
     isVerified: true,
   },
   {
@@ -36,9 +36,9 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "weth-wei",
     depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&token=weth",
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=weth-wei",
     withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&token=weth",
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=weth-wei",
     isVerified: true,
   },
   {
@@ -47,9 +47,9 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "wbtc-satoshi",
     depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&token=wbtc",
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=wbtc-satoshi",
     withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&token=wbtc",
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=wbtc-satoshi",
     isVerified: true,
   },
   {
@@ -58,9 +58,9 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "dai-wei",
     depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&token=dai",
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=dai-wei",
     withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&token=dai",
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=dai-wei",
     isVerified: true,
   },
   {
@@ -78,6 +78,36 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-42",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "ujuno",
+    isVerified: true,
+  },
+  {
+    counterpartyChainId: "evmos_9001-2",
+    sourceChannelId: "channel-204",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "aevmos",
+    depositUrlOverride: "https://app.evmos.org/transfer",
+    withdrawUrlOverride: "https://app.evmos.org/transfer",
+    isVerified: true,
+  },
+  {
+    counterpartyChainId: "kava_2222-10",
+    sourceChannelId: "channel-143",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "ukava",
+    isVerified: true,
+  },
+  {
+    counterpartyChainId: "secret-4",
+    sourceChannelId: "channel-88",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "uscrt",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "columbus-5",
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
@@ -91,30 +121,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uusd",
     isUnstable: true,
-    isVerified: true,
-  },
-  {
-    counterpartyChainId: "secret-4",
-    sourceChannelId: "channel-88",
-    destChannelId: "channel-1",
-    coinMinimalDenom: "uscrt",
-    isVerified: true,
-  },
-  {
-    counterpartyChainId: "juno-1",
-    sourceChannelId: "channel-42",
-    destChannelId: "channel-0",
-    coinMinimalDenom: "ujuno",
-    isVerified: true,
-  },
-  {
-    counterpartyChainId: "juno-1",
-    sourceChannelId: "channel-169",
-    destChannelId: "channel-47",
-    coinMinimalDenom:
-      "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
-    ics20ContractAddress:
-      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
     isVerified: true,
   },
   {
@@ -376,13 +382,21 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: "evmos_9001-2",
-    sourceChannelId: "channel-204",
-    destChannelId: "channel-0",
-    coinMinimalDenom: "aevmos",
-    depositUrlOverride: "https://app.evmos.org/transfer",
-    withdrawUrlOverride: "https://app.evmos.org/transfer",
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
     isVerified: true,
+  },
+  {
+    counterpartyChainId: "columbus-5",
+    sourceChannelId: "channel-72",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "ukrw",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "shentu-2.2",
@@ -424,9 +438,9 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "uusdt",
     depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&token=usdt",
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uusdt",
     withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&token=usdt",
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uusdt",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -434,39 +448,49 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "frax-wei",
     depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&token=frax",
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=frax-wei",
     withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&token=frax",
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=frax-wei",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+    depositUrlOverride: "https://spacestation.zone/",
+    withdrawUrlOverride: "https://spacestation.zone/",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    depositUrlOverride: "https://spacestation.zone/",
+    withdrawUrlOverride: "https://spacestation.zone/",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    depositUrlOverride: "https://spacestation.zone/",
+    withdrawUrlOverride: "https://spacestation.zone/",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    depositUrlOverride: "https://spacestation.zone/",
+    withdrawUrlOverride: "https://spacestation.zone/",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    depositUrlOverride: "https://spacestation.zone/",
+    withdrawUrlOverride: "https://spacestation.zone/",
   },
   {
     counterpartyChainId: "juno-1",
@@ -536,6 +560,18 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-221",
     destChannelId: "channel-1",
     coinMinimalDenom: "uatolo",
+  },
+  {
+    counterpartyChainId: "kava_2222-10",
+    sourceChannelId: "channel-143",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "hard",
+  },
+  {
+    counterpartyChainId: "kava_2222-10",
+    sourceChannelId: "channel-143",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "swp",
   },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 

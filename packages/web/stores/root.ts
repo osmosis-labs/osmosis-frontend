@@ -30,6 +30,7 @@ import {
 import { ObservableAssets } from "./assets";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
 import { PoolPriceRoutes } from "../config";
+import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -96,6 +97,16 @@ export class RootStore {
         return {
           suggestChain: true,
           suggestChainFn: async (keplr, chainInfo) => {
+            if (keplr.mode === "mobile-web") {
+              // Can't suggest the chain on mobile web.
+              return;
+            }
+
+            if (keplr instanceof KeplrWalletConnectV1) {
+              // Can't suggest the chain using wallet connect.
+              return;
+            }
+
             await suggestChainFromWindow(keplr, chainInfo.raw);
           },
           autoInit: false,
@@ -149,20 +160,7 @@ export class RootStore {
       this.accountStore,
       this.queriesStore,
       this.priceStore,
-      this.chainStore.osmosis.chainId,
-      (chainId) => {
-        const info = IBCAssetInfos.find(
-          ({ counterpartyChainId: id }) => id === chainId
-        );
-        if (info) {
-          return {
-            depositUrl: info.depositUrlOverride,
-            withdrawUrl: info.withdrawUrlOverride,
-          };
-        } else {
-          return {};
-        }
-      }
+      this.chainStore.osmosis.chainId
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);

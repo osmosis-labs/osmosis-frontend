@@ -463,12 +463,14 @@ const Pool: FunctionComponent = observer(() => {
   // sections
   const showLiquidityMiningSection =
     (pool && queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id)) ||
-    (userAvailableValue && userAvailableValue.toDec().gt(new Dec(0))) ||
     (externalGuages && externalGuages.length > 0);
 
   const showPoolBondingTables =
-    (pool && queryOsmosis.queryIncentivizedPools.isIncentivized(pool.id)) ||
-    (userLockedAssets && userLockedAssets.length > 0) ||
+    showLiquidityMiningSection ||
+    (userLockedAssets &&
+      userLockedAssets?.some((lockedAsset) =>
+        lockedAsset.amount.toDec().gt(new Dec(0))
+      )) ||
     (userUnlockingAssets && userUnlockingAssets.length > 0);
 
   return (
@@ -585,6 +587,13 @@ const Pool: FunctionComponent = observer(() => {
             } else {
               const gauge = lockupGauges.find((gauge) => gauge.id === gaugeId);
               try {
+                if (
+                  !lockLPTokensConfig.sendCurrency.coinMinimalDenom.startsWith(
+                    "gamm"
+                  )
+                ) {
+                  throw new Error("Tried to lock non-gamm token");
+                }
                 if (gauge) {
                   await account.osmosis.sendLockTokensMsg(
                     gauge.duration.asSeconds(),
@@ -599,7 +608,6 @@ const Pool: FunctionComponent = observer(() => {
                   );
                 } else {
                   console.error("Gauge ID not found:", gaugeId);
-                  setShowLockLPTokenModal(false);
                 }
               } catch (e) {
                 console.error(e);
@@ -954,23 +962,32 @@ const Pool: FunctionComponent = observer(() => {
                         onClick={async () => {
                           if (!lockIds) return;
                           try {
-                            if (isSuperfluidDuration) {
-                              const blockGasLimitLockIds = lockIds.slice(0, 4);
+                            const blockGasLimitLockIds = lockIds.slice(0, 4);
 
-                              for (const lockId of blockGasLimitLockIds) {
-                                await queryOsmosis.querySyntheticLockupsByLockId
-                                  .get(lockId)
-                                  .waitFreshResponse();
-                              }
+                            // refresh locks
+                            for (const lockId of blockGasLimitLockIds) {
+                              await queryOsmosis.querySyntheticLockupsByLockId
+                                .get(lockId)
+                                .waitFreshResponse();
+                            }
 
+                            // make msg lock objects
+                            const locks = blockGasLimitLockIds.map(
+                              (lockId) => ({
+                                lockId,
+                                isSyntheticLock:
+                                  queryOsmosis.querySyntheticLockupsByLockId.get(
+                                    lockId
+                                  ).isSyntheticLock === true,
+                              })
+                            );
+
+                            if (
+                              isSuperfluidDuration ||
+                              locks.some((lock) => lock.isSyntheticLock)
+                            ) {
                               await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-                                blockGasLimitLockIds.map((lockId) => ({
-                                  lockId,
-                                  isSyntheticLock:
-                                    queryOsmosis.querySyntheticLockupsByLockId.get(
-                                      lockId
-                                    ).isSyntheticLock === true,
-                                }))
+                                locks
                               );
                             } else {
                               const blockGasLimitLockIds = lockIds.slice(0, 10);
