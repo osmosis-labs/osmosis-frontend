@@ -176,7 +176,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                                 )}
                                 <button
                                   className={classNames(
-                                    "py-1 px-1.5 my-1 text-xs rounded-md bg-white-faint",
+                                    "button py-1 px-1.5 my-1 text-xs rounded-md bg-white-faint",
                                     {
                                       "opacity-30": assetBalance
                                         ?.toDec()
@@ -194,7 +194,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                               {isMobile && (
                                 <button
                                   className={classNames(
-                                    "py-1 px-1.5 my-1 text-xs rounded-md bg-white-faint",
+                                    "button py-1 px-1.5 my-1 text-xs rounded-md bg-white-faint",
                                     {
                                       "opacity-30": assetBalance
                                         ?.toDec()
@@ -312,7 +312,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                       disabled={removeLiquidityConfig.poolShareWithPercentage
                         .toDec()
                         .equals(new Dec(0))}
-                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
+                      className="button w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
                     >
                       <p className="text-secondary-200">25%</p>
                     </button>
@@ -321,7 +321,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                       disabled={removeLiquidityConfig.poolShareWithPercentage
                         .toDec()
                         .equals(new Dec(0))}
-                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
+                      className="button w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
                     >
                       <p className="text-secondary-200">50%</p>
                     </button>
@@ -330,7 +330,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                       disabled={removeLiquidityConfig.poolShareWithPercentage
                         .toDec()
                         .equals(new Dec(0))}
-                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
+                      className="button w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
                     >
                       <p className="text-secondary-200">75%</p>
                     </button>
@@ -339,7 +339,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                       disabled={removeLiquidityConfig.poolShareWithPercentage
                         .toDec()
                         .equals(new Dec(0))}
-                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
+                      className="button w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
                     >
                       <p className="text-secondary-200">MAX</p>
                     </button>

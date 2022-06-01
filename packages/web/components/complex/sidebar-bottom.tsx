@@ -70,7 +70,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
                 e.preventDefault();
                 account.disconnect();
               }}
-              className="bg-transparent border border-opacity-30 border-secondary-200 h-9 w-full rounded-md py-2 px-1 flex items-center justify-center mb-5"
+              className="button bg-transparent border border-opacity-30 border-secondary-200 h-9 w-full rounded-md py-2 px-1 flex items-center justify-center mb-5"
             >
               <Image
                 src="/icons/sign-out-secondary.svg"
@@ -85,7 +85,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
           </div>
         ) : (
           <button
-            className="flex items-center justify-center w-full h-9 py-3.5 rounded-md bg-primary-200 mb-5"
+            className="button flex items-center justify-center w-full h-9 py-3.5 rounded-md bg-primary-200 mb-5"
             onClick={(e) => {
               e.preventDefault();
               account.init();
