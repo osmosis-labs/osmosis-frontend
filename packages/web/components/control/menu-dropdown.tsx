@@ -36,9 +36,9 @@ export const MenuDropdown: FunctionComponent<Props> = ({
     )}
   >
     {options.map(({ id, display }, index) => (
-      <span
+      <button
         className={classNames(
-          "px-2 cursor-pointer w-full hover:bg-white-faint",
+          "px-2 cursor-pointer w-full hover:bg-white-faint text-left",
           {
             "bg-white-faint text-white-full": id === selectedOptionId,
             "text-iconDefault": id !== selectedOptionId,
@@ -50,7 +50,7 @@ export const MenuDropdown: FunctionComponent<Props> = ({
         onClick={() => onSelect(id)}
       >
         {display}
-      </span>
+      </button>
     ))}
   </div>
 );
