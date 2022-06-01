@@ -16,6 +16,7 @@ import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { TabBox } from "../../components/control";
 import { useStore } from "../../stores";
+import { DataSorter } from "../../hooks/data/data-sorter";
 import {
   useWindowSize,
   useFilteredData,
@@ -29,6 +30,8 @@ import { POOLS_PER_PAGE } from "../../components/complex";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
 const TVL_FILTER_THRESHOLD = 1000;
+
+const LESS_SUPERFLUID_POOLS_COUNT = 6;
 
 const Pools: NextPage = observer(function () {
   const {
@@ -64,26 +67,31 @@ const Pools: NextPage = observer(function () {
   );
 
   const superfluidPoolIds = queryOsmosis.querySuperfluidPools.superfluidPoolIds;
-  const superfluidPools = superfluidPoolIds
-    ?.map((poolId) => queryOsmosis.queryGammPools.getPool(poolId))
-    .filter((pool): pool is ObservableQueryPool => pool !== undefined)
-    .map((superfluidPool) => ({
-      id: superfluidPool.id,
-      poolFeesMetrics:
-        queriesExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+  const superfluidPools = new DataSorter(
+    superfluidPoolIds
+      ?.map((poolId) => queryOsmosis.queryGammPools.getPool(poolId))
+      .filter((pool): pool is ObservableQueryPool => pool !== undefined)
+      .map((superfluidPool) => ({
+        id: superfluidPool.id,
+        poolFeesMetrics:
+          queriesExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+            superfluidPool.id,
+            priceStore
+          ),
+        apr: queryOsmosis.queryIncentivizedPools.computeMostAPY(
           superfluidPool.id,
           priceStore
         ),
-      apr: queryOsmosis.queryIncentivizedPools.computeMostAPY(
-        superfluidPool.id,
-        priceStore
-      ),
-      poolLiquidity: superfluidPool.computeTotalValueLocked(priceStore),
-      assets: superfluidPool.poolAssets.map((poolAsset) => ({
-        coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-        coinDenom: poolAsset.amount.currency.coinDenom,
-      })),
-    }));
+        poolLiquidity: superfluidPool.computeTotalValueLocked(priceStore),
+        assets: superfluidPool.poolAssets.map((poolAsset) => ({
+          coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+          coinDenom: poolAsset.amount.currency.coinDenom,
+        })),
+      })) ?? []
+  )
+    .process("poolLiquidity")
+    .reverse();
+  const [showMoreSfsPools, setShowMoreSfsPools] = useState(false);
 
   const osmoPrice = priceStore.calculatePrice(
     new CoinPretty(
@@ -443,9 +451,12 @@ const Pools: NextPage = observer(function () {
           <section className="bg-surface">
             <div className="max-w-container mx-auto p-10">
               <h5>Superfluid Pools</h5>
-              <div className="mt-5 grid grid-cards">
+              <div className="my-5 grid grid-cards">
                 {superfluidPools &&
-                  superfluidPools.map(
+                  (showMoreSfsPools
+                    ? superfluidPools
+                    : superfluidPools.slice(0, LESS_SUPERFLUID_POOLS_COUNT)
+                  ).map(
                     ({ id, apr, assets, poolFeesMetrics, poolLiquidity }) => (
                       <PoolCard
                         key={id}
@@ -493,6 +504,13 @@ const Pools: NextPage = observer(function () {
                     )
                   )}
               </div>
+              {superfluidPools.length > LESS_SUPERFLUID_POOLS_COUNT && (
+                <ShowMoreButton
+                  className="mx-auto"
+                  isOn={showMoreSfsPools}
+                  onToggle={() => setShowMoreSfsPools(!showMoreSfsPools)}
+                />
+              )}
             </div>
           </section>
           <section className="bg-surface shadow-separator">
