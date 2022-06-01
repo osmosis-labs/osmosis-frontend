@@ -654,7 +654,7 @@ const Pool: FunctionComponent = observer(() => {
                     await account.osmosis.sendSuperfluidDelegateMsg(
                       superfluid.upgradeableLPLockIds.lockIds,
                       validatorAddress,
-                      "",
+                      undefined,
                       () => setShowSuperfluidValidatorsModal(false)
                     );
                   } catch (e) {
@@ -673,7 +673,7 @@ const Pool: FunctionComponent = observer(() => {
                         },
                       ],
                       validatorAddress,
-                      "",
+                      undefined,
                       () => setShowSuperfluidValidatorsModal(false)
                     );
                     // TODO: clear/reset LP lock amount config ??

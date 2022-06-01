@@ -161,7 +161,7 @@ const Pools: NextPage = observer(function () {
                     currency: asset.amountConfig.sendCurrency,
                   },
                 })),
-                "",
+                undefined,
                 () => setIsCreatingPool(false)
               );
             } catch (e) {

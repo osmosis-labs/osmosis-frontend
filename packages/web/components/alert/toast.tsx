@@ -10,7 +10,6 @@ export function displayToast(
 ) {
   toastOptions = {
     ...{
-      toastId: "toast",
       position: "top-right",
       autoClose: 7000,
       hideProgressBar: true,

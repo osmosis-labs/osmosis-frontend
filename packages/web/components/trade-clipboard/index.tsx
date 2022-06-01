@@ -690,25 +690,13 @@ export const TradeClipboard: FunctionComponent<{
                       routes[0].poolId,
                       tokenIn,
                       routes[0].tokenOutCurrency,
-                      maxSlippage,
-                      undefined,
-                      (tx) => {
-                        toastOnFulfill((chainId) =>
-                          chainStore.getChain(chainId)
-                        )(chainId, tx);
-                      }
+                      maxSlippage
                     );
                   } else {
                     await account.osmosis.sendMultihopSwapExactAmountInMsg(
                       routes,
                       tokenIn,
-                      maxSlippage,
-                      undefined,
-                      (tx) => {
-                        toastOnFulfill((chainId) =>
-                          chainStore.getChain(chainId)
-                        )(chainId, tx);
-                      }
+                      maxSlippage
                     );
                   }
                   tradeTokenInConfig.setAmount("");
