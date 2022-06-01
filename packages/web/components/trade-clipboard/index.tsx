@@ -23,7 +23,7 @@ import {
   useWindowSize,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { Error as ErrorBox, toastOnFulfill } from "../alert";
+import { Error as ErrorBox } from "../alert";
 import { Button } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";

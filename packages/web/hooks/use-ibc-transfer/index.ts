@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   AccountSetBase,
   CosmosAccount,
@@ -11,12 +11,12 @@ import {
   OsmosisAccount,
   IBCTransferHistory,
   UncommitedHistory,
-  FakeFeeConfig,
 } from "@osmosis-labs/stores";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { useStore } from "../../stores";
 import { useCustomBech32Address } from "./use-custom-bech32address";
 import { IbcTransfer, CustomCounterpartyConfig } from ".";
+import { useFakeFeeConfig, useAmountConfig } from "..";
 
 /**
  * Convenience hook for handling IBC transfer state. Supports user setting custom & validated bech32 counterparty address when withdrawing.
@@ -57,27 +57,21 @@ export function useIbcTransfer({
   const account = accountStore.getAccount(chainId);
   const counterpartyAccount = accountStore.getAccount(counterpartyChainId);
 
-  const [feeConfig] = useState(
-    () =>
-      new FakeFeeConfig(
-        chainStore,
-        isWithdraw ? chainId : counterpartyChainId,
-        isWithdraw
-          ? account.cosmos.msgOpts.ibcTransfer.gas
-          : counterpartyAccount.cosmos.msgOpts.ibcTransfer.gas
-      )
+  const feeConfig = useFakeFeeConfig(
+    chainStore,
+    isWithdraw ? chainId : counterpartyChainId,
+    isWithdraw
+      ? account.cosmos.msgOpts.ibcTransfer.gas
+      : counterpartyAccount.cosmos.msgOpts.ibcTransfer.gas
   );
-  const [amountConfig] = useState(() => {
-    const config = new AmountConfig(
-      chainStore,
-      queriesStore,
-      isWithdraw ? chainId : counterpartyChainId,
-      isWithdraw ? account.bech32Address : counterpartyAccount.bech32Address,
-      feeConfig
-    );
-    config.setSendCurrency(isWithdraw ? currency : currency.originCurrency!);
-    return config;
-  });
+  const amountConfig = useAmountConfig(
+    chainStore,
+    queriesStore,
+    isWithdraw ? chainId : counterpartyChainId,
+    isWithdraw ? account.bech32Address : counterpartyAccount.bech32Address,
+    feeConfig,
+    isWithdraw ? currency : currency.originCurrency!
+  );
   const [customBech32Address, isCustomAddressValid, setCustomBech32Address] =
     useCustomBech32Address();
   const customCounterpartyConfig: CustomCounterpartyConfig | undefined =

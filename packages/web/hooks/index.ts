@@ -1,3 +1,4 @@
+export * from "./ui-config";
 export * from "./data";
 export * from "./window";
 export * from "./use-deterministic";

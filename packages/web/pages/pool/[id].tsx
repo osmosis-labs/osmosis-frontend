@@ -1,18 +1,13 @@
 import Head from "next/head";
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { AmountConfig } from "@keplr-wallet/hooks";
-import {
-  ObservableAddLiquidityConfig,
-  ObservableQueryGuageById,
-  ObservableRemoveLiquidityConfig,
-} from "@osmosis-labs/stores";
+import { ObservableQueryGuageById } from "@osmosis-labs/stores";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { Button } from "../../components/buttons";
 import {
   GoSuperfluidCard,
@@ -31,7 +26,12 @@ import {
   ChainInfos,
   UnPoolWhitelistedPoolIds,
 } from "../../config";
-import { useWindowSize } from "../../hooks";
+import {
+  useAddLiquidityConfig,
+  useAmountConfig,
+  useRemoveLiquidityConfig,
+  useWindowSize,
+} from "../../hooks";
 import {
   LockTokensModal,
   ManageLiquidityModal,
@@ -360,45 +360,28 @@ const Pool: FunctionComponent = observer(() => {
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
     useState(false);
   const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
-  const [addLiquidityConfig, removeLiquidityConfig, lockLPTokensConfig] =
-    useMemo(() => {
-      if (pool) {
-        const amountConfig = new AmountConfig(
-          chainStore,
-          queriesStore,
-          chainId,
-          bech32Address,
-          undefined
-        );
-        amountConfig.setSendCurrency(
-          queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id)
-        );
-        return [
-          new ObservableAddLiquidityConfig(
-            chainStore,
-            chainId,
-            pool.id,
-            bech32Address,
-            queriesStore,
-            queryOsmosis.queryGammPoolShare,
-            queryOsmosis.queryGammPools,
-            queriesStore.get(chainId).queryBalances
-          ),
-          new ObservableRemoveLiquidityConfig(
-            chainStore,
-            chainId,
-            pool.id,
-            bech32Address,
-            queriesStore,
-            queryOsmosis.queryGammPoolShare,
-            queryOsmosis.queryGammPools,
-            "50"
-          ),
-          amountConfig,
-        ];
-      }
-      return [undefined, undefined, undefined, undefined];
-    }, [pool, chainStore, chainId, bech32Address, queriesStore, queryOsmosis]);
+  const addLiquidityConfig = useAddLiquidityConfig(
+    chainStore,
+    chainId,
+    pool?.id ?? "",
+    bech32Address,
+    queriesStore
+  );
+  const removeLiquidityConfig = useRemoveLiquidityConfig(
+    chainStore,
+    chainId,
+    pool?.id ?? "",
+    bech32Address,
+    queriesStore
+  );
+  const lockLPTokensConfig = useAmountConfig(
+    chainStore,
+    queriesStore,
+    chainId,
+    bech32Address,
+    undefined,
+    pool ? queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id) : undefined
+  );
 
   const lockupGauges =
     queryOsmosis.queryLockableDurations.lockableDurations.map(

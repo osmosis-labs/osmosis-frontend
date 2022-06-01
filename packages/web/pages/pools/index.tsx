@@ -2,11 +2,8 @@ import type { NextPage } from "next";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import { useState, useMemo } from "react";
-import {
-  ObservableCreatePoolConfig,
-  ObservableQueryPool,
-} from "@osmosis-labs/stores";
+import { useState } from "react";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
 import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
@@ -22,6 +19,7 @@ import {
   useFilteredData,
   usePaginatedData,
   useSortedData,
+  useCreatePoolConfig,
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
@@ -106,22 +104,12 @@ const Pools: NextPage = observer(function () {
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
-  const createPoolConfig = useMemo(() => {
-    return new ObservableCreatePoolConfig(
-      chainStore,
-      chainId,
-      account.bech32Address,
-      queriesStore,
-      queriesStore.get(chainId).queryBalances
-    );
-    // eslint-disable-next-line
-  }, [
-    isCreatingPool, // re-init on modal open/close
+  const createPoolConfig = useCreatePoolConfig(
     chainStore,
     chainId,
     account.bech32Address,
-    queriesStore,
-  ]);
+    queriesStore
+  );
 
   // Mobile only - pools (superfluid) pools sorting/filtering
   const [showMoreMyPools, setShowMoreMyPools] = useState(false);
