@@ -137,7 +137,7 @@ export const LockTokensModal: FunctionComponent<
             labelButtons={[
               {
                 label: "MAX",
-                onClick: () => config.setFraction(1),
+                onClick: () => config.toggleIsMax(),
                 className: "!my-auto !h-6 !bg-primary-200 !caption",
               },
             ]}
@@ -168,7 +168,7 @@ const LockupItem: FunctionComponent<
   superfluidApr,
   isMobile = false,
 }) => (
-  <div
+  <button
     onClick={onSelect}
     className={classNames(
       {
@@ -223,5 +223,5 @@ const LockupItem: FunctionComponent<
         </div>
       </div>
     </div>
-  </div>
+  </button>
 );
