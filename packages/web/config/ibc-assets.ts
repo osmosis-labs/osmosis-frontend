@@ -556,6 +556,12 @@ export const IBCAssetInfos: (IBCAsset & {
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
   {
+    counterpartyChainId: 'phoenix-1',
+    sourceChannelId: 'channel-251',
+    destChannelId: 'channel-1',
+    coinMinimalDenom: 'uluna',
+  },
+  {
     counterpartyChainId: "titan-1",
     sourceChannelId: "channel-221",
     destChannelId: "channel-1",
