@@ -1,6 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import React, { PropsWithoutRef, useState, useCallback } from "react";
+import React, {
+  PropsWithoutRef,
+  useState,
+  useCallback,
+  FunctionComponent,
+} from "react";
 import classNames from "classnames";
 import { InfoTooltip } from "../tooltip";
 import { CustomClasses } from "../types";
@@ -73,39 +78,43 @@ export const Table = <TCell extends BaseCell>({
                 )}
                 onClick={() => colDef?.sort?.onClickHeader(colIndex)}
               >
-                <span>
-                  {colDef?.display ? (
-                    typeof colDef.display === "string" ? (
-                      colDef.display
+                <ClickableContent
+                  isButton={colDef?.sort?.onClickHeader !== undefined}
+                >
+                  <span>
+                    {colDef?.display ? (
+                      typeof colDef.display === "string" ? (
+                        colDef.display
+                      ) : (
+                        <>{colDef.display}</>
+                      )
                     ) : (
-                      <>{colDef.display}</>
-                    )
-                  ) : (
-                    ""
-                  )}
-                  {colDef?.sort && (
-                    <div className="inline pl-1 align-middle">
-                      {colDef?.sort?.currentDirection === "ascending" ? (
-                        <Image
-                          alt="ascending"
-                          src="/icons/sort-up.svg"
-                          height={16}
-                          width={16}
-                        />
-                      ) : colDef?.sort?.currentDirection === "descending" ? (
-                        <Image
-                          alt="descending"
-                          src="/icons/sort-down.svg"
-                          height={16}
-                          width={16}
-                        />
-                      ) : undefined}
-                    </div>
-                  )}
-                  {colDef.infoTooltip && (
-                    <InfoTooltip content={colDef.infoTooltip} />
-                  )}
-                </span>
+                      ""
+                    )}
+                    {colDef?.sort && (
+                      <div className="inline pl-1 align-middle">
+                        {colDef?.sort?.currentDirection === "ascending" ? (
+                          <Image
+                            alt="ascending"
+                            src="/icons/sort-up.svg"
+                            height={16}
+                            width={16}
+                          />
+                        ) : colDef?.sort?.currentDirection === "descending" ? (
+                          <Image
+                            alt="descending"
+                            src="/icons/sort-down.svg"
+                            height={16}
+                            width={16}
+                          />
+                        ) : undefined}
+                      </div>
+                    )}
+                    {colDef.infoTooltip && (
+                      <InfoTooltip content={colDef.infoTooltip} />
+                    )}
+                  </span>
+                </ClickableContent>
               </th>
             );
           })}
@@ -116,6 +125,8 @@ export const Table = <TCell extends BaseCell>({
           const rowDef =
             rowDefs && Array.isArray(rowDefs) ? rowDefs[rowIndex] : rowDefs;
           const rowHovered = rowsHovered[rowIndex] ?? false;
+          const rowIsButton =
+            rowDef !== undefined && rowDef.onClick && !rowDef.link;
 
           return (
             <tr
@@ -134,8 +145,8 @@ export const Table = <TCell extends BaseCell>({
               onMouseEnter={() => setRowHovered(rowIndex, true)}
               onMouseLeave={() => setRowHovered(rowIndex, false)}
               onClick={() => {
-                if (rowDef && rowDef.onClick && !rowDef.link) {
-                  rowDef.onClick(rowIndex);
+                if (rowIsButton) {
+                  rowDef.onClick?.(rowIndex);
                 }
               }}
             >
@@ -150,24 +161,26 @@ export const Table = <TCell extends BaseCell>({
 
                 return (
                   <td className={customClass} key={`${rowIndex}${columnIndex}`}>
-                    {rowDef?.link ? (
-                      <Link href={rowDef?.link}>
-                        <a
-                          className="focus:outline-none"
-                          tabIndex={columnIndex > 0 ? -1 : 0}
-                        >
-                          {DisplayCell ? (
-                            <DisplayCell rowHovered={rowHovered} {...cell} />
-                          ) : (
-                            cell.value
-                          )}
-                        </a>
-                      </Link>
-                    ) : DisplayCell ? (
-                      <DisplayCell rowHovered={rowHovered} {...cell} />
-                    ) : (
-                      cell.value
-                    )}
+                    <ClickableContent isButton={rowIsButton}>
+                      {rowDef?.link ? (
+                        <Link href={rowDef?.link}>
+                          <a
+                            className="focus:outline-none"
+                            tabIndex={columnIndex > 0 ? -1 : 0}
+                          >
+                            {DisplayCell ? (
+                              <DisplayCell rowHovered={rowHovered} {...cell} />
+                            ) : (
+                              cell.value
+                            )}
+                          </a>
+                        </Link>
+                      ) : DisplayCell ? (
+                        <DisplayCell rowHovered={rowHovered} {...cell} />
+                      ) : (
+                        cell.value
+                      )}
+                    </ClickableContent>
                   </td>
                 );
               })}
@@ -178,5 +191,11 @@ export const Table = <TCell extends BaseCell>({
     </table>
   );
 };
+
+/** Wrap non-link non-visual content in a button for Ax users. */
+const ClickableContent: FunctionComponent<{ isButton?: boolean }> = ({
+  isButton = false,
+  children,
+}) => (isButton ? <button>{children}</button> : <>{children}</>);
 
 export * from "./types";
