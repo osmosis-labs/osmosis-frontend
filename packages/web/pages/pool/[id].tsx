@@ -26,6 +26,7 @@ import { Overview } from "../../components/overview";
 import { BaseCell, ColumnDef, Table } from "../../components/table";
 import { DepoolingTable } from "../../components/table/depooling-table";
 import { truncateString } from "../../components/utils";
+import { toastOnFulfill } from "../../components/alert";
 import {
   ExternalIncentiveGaugeAllowList,
   ChainInfos,
@@ -524,7 +525,13 @@ const Pool: FunctionComponent = observer(() => {
                   },
                   undefined,
                   undefined,
-                  () => setShowManageLiquidityDialog(false)
+                  (tx) => {
+                    toastOnFulfill((chainId) => chainStore.getChain(chainId))(
+                      chainId,
+                      tx
+                    );
+                    setShowManageLiquidityDialog(false);
+                  }
                 );
               } else if (addLiquidityConfig.shareOutAmount) {
                 await account.osmosis.sendJoinPoolMsg(
@@ -532,7 +539,13 @@ const Pool: FunctionComponent = observer(() => {
                   addLiquidityConfig.shareOutAmount.toDec().toString(),
                   undefined,
                   undefined,
-                  () => setShowManageLiquidityDialog(false)
+                  (tx) => {
+                    toastOnFulfill((chainId) => chainStore.getChain(chainId))(
+                      chainId,
+                      tx
+                    );
+                    setShowManageLiquidityDialog(false);
+                  }
                 );
               }
             } catch (e) {
@@ -548,7 +561,13 @@ const Pool: FunctionComponent = observer(() => {
                   .toString(),
                 undefined,
                 undefined,
-                () => setShowManageLiquidityDialog(false)
+                (tx) => {
+                  toastOnFulfill((chainId) => chainStore.getChain(chainId))(
+                    chainId,
+                    tx
+                  );
+                  setShowManageLiquidityDialog(false);
+                }
               );
             } catch (e) {
               console.error(e);
@@ -612,7 +631,13 @@ const Pool: FunctionComponent = observer(() => {
                       },
                     ],
                     undefined,
-                    () => setShowLockLPTokenModal(false)
+                    (tx) => {
+                      toastOnFulfill((chainId) => chainStore.getChain(chainId))(
+                        chainId,
+                        tx
+                      );
+                      setShowLockLPTokenModal(false);
+                    }
                   );
                 } else {
                   console.error("Gauge ID not found:", gaugeId);
@@ -655,7 +680,12 @@ const Pool: FunctionComponent = observer(() => {
                       superfluid.upgradeableLPLockIds.lockIds,
                       validatorAddress,
                       "",
-                      () => setShowSuperfluidValidatorsModal(false)
+                      (tx) => {
+                        toastOnFulfill((chainId) =>
+                          chainStore.getChain(chainId)
+                        )(chainId, tx);
+                        setShowSuperfluidValidatorsModal(false);
+                      }
                     );
                   } catch (e) {
                     console.error(e);
@@ -674,7 +704,12 @@ const Pool: FunctionComponent = observer(() => {
                       ],
                       validatorAddress,
                       "",
-                      () => setShowSuperfluidValidatorsModal(false)
+                      (tx) => {
+                        toastOnFulfill((chainId) =>
+                          chainStore.getChain(chainId)
+                        )(chainId, tx);
+                        setShowSuperfluidValidatorsModal(false);
+                      }
                     );
                     // TODO: clear/reset LP lock amount config ??
                   } catch (e) {
@@ -912,7 +947,13 @@ const Pool: FunctionComponent = observer(() => {
 
                     try {
                       await account.osmosis.sendUnPoolWhitelistedPoolMsg(
-                        pool.id
+                        pool.id,
+                        undefined,
+                        (tx) => {
+                          toastOnFulfill((chainId) =>
+                            chainStore.getChain(chainId)
+                          )(chainId, tx);
+                        }
                       );
                     } catch (e) {
                       console.log(e);
@@ -987,12 +1028,24 @@ const Pool: FunctionComponent = observer(() => {
                                     queryOsmosis.querySyntheticLockupsByLockId.get(
                                       lockId
                                     ).isSyntheticLock === true,
-                                }))
+                                })),
+                                undefined,
+                                (tx) => {
+                                  toastOnFulfill((chainId) =>
+                                    chainStore.getChain(chainId)
+                                  )(chainId, tx);
+                                }
                               );
                             } else {
                               const blockGasLimitLockIds = lockIds.slice(0, 10);
                               await account.osmosis.sendBeginUnlockingMsg(
-                                blockGasLimitLockIds
+                                blockGasLimitLockIds,
+                                undefined,
+                                (tx) => {
+                                  toastOnFulfill((chainId) =>
+                                    chainStore.getChain(chainId)
+                                  )(chainId, tx);
+                                }
                               );
                             }
                           } catch (e) {
