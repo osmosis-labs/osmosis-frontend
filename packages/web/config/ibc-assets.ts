@@ -406,6 +406,12 @@ export const IBCAssetInfos: (IBCAsset & {
     isUnstable: true,
   },
   {
+    counterpartyChainId: "microtick-1",
+    sourceChannelId: "channel-39",
+    destChannelId: "channel-16",
+    coinMinimalDenom: "utick",
+  },
+  {
     counterpartyChainId: "shentu-2.2",
     sourceChannelId: "channel-146",
     destChannelId: "channel-8",
@@ -565,6 +571,12 @@ export const IBCAssetInfos: (IBCAsset & {
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
   {
+    counterpartyChainId: 'phoenix-1',
+    sourceChannelId: 'channel-251',
+    destChannelId: 'channel-1',
+    coinMinimalDenom: 'uluna',
+  },
+  {
     counterpartyChainId: "titan-1",
     sourceChannelId: "channel-221",
     destChannelId: "channel-1",
@@ -581,6 +593,14 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-143",
     destChannelId: "channel-1",
     coinMinimalDenom: "swp",
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "link-wei",
+    depositUrlOverride: "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=link-wei",
+    withdrawUrlOverride: "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=link-wei",
   },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 

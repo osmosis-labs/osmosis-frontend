@@ -1333,8 +1333,36 @@ const chainInfos = (
       explorerUrlToTx: "https://www.mintscan.io/evmos/txs/{txHash}",
     },
     {
-      rpc: "http://seed-1.mainnet.rizon.world:26657",
-      rest: "http://seed-1.mainnet.rizon.world:1317",
+      rpc: "https://rpc.terrav2.ccvalidators.com/",
+      rest: "https://phoenix-lcd.terra.dev/",
+      chainId: "phoenix-1",
+      chainName: "Terra 2.0",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("terra"),
+      currencies: [
+        {
+          coinDenom: "LUNA",
+          coinMinimalDenom: "uluna",
+          coinDecimals: 6,
+          coinGeckoId: "terra-luna-2",
+          coinImageUrl: "/tokens/luna.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.15,
+        average: 0.2,
+        high: 0.25,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      explorerUrlToTx: "https://finder.terra.money/phoenix-1/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpcapi.rizon.world/",
+      rest: "https://restapi.rizon.world/",
       chainId: "titan-1",
       chainName: "Rizon",
       bip44: {
@@ -1463,6 +1491,13 @@ chainInfos.push({
       coinDecimals: 8,
       coinGeckoId: "wrapped-bitcoin",
       coinImageUrl: "/tokens/wbtc.png",
+    },
+    {
+      coinDenom: "LINK",
+      coinMinimalDenom: "link-wei",
+      coinDecimals: 18,
+      coinGeckoId: "chainlink",
+      coinImageUrl: "/tokens/link.svg",
     },
   ],
   feeCurrencies: [
