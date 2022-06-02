@@ -1492,6 +1492,13 @@ chainInfos.push({
       coinGeckoId: "wrapped-bitcoin",
       coinImageUrl: "/tokens/wbtc.png",
     },
+    {
+      coinDenom: "LINK",
+      coinMinimalDenom: "link-wei",
+      coinDecimals: 18,
+      coinGeckoId: "chainlink",
+      coinImageUrl: "/tokens/link.svg",
+    },
   ],
   feeCurrencies: [
     {
