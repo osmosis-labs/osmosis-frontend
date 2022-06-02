@@ -905,11 +905,12 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'ujuno',
 	},
 	{
-		counterpartyChainId: 'juno-1',
-		sourceChannelId: 'channel-169',
-		destChannelId: 'channel-47',
-		coinMinimalDenom: 'cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr',
-		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+		counterpartyChainId: 'axelar-dojo-1',
+		sourceChannelId: 'channel-208',
+		destChannelId: 'channel-3',
+		coinMinimalDenom: 'link-wei',
+		depositUrlOverride: 'https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=link-wei',
+		withdrawUrlOverride: 'https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=link-wei',
 	},
 	{
 		counterpartyChainId: 'columbus-5',
@@ -1261,6 +1262,13 @@ export const IBCAssetInfos: {
 		counterpartyChainId: 'juno-1',
 		sourceChannelId: 'channel-169',
 		destChannelId: 'channel-47',
+		coinMinimalDenom: 'cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr',
+		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
+	},
+	{
+		counterpartyChainId: 'juno-1',
+		sourceChannelId: 'channel-169',
+		destChannelId: 'channel-47',
 		coinMinimalDenom: 'cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49',
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
@@ -1300,18 +1308,18 @@ export const IBCAssetInfos: {
 		ics20ContractAddress: 'juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn',
 	},
 	{
-    counterpartyChainId: 'phoenix-1',
+		counterpartyChainId: 'phoenix-1',
 		sourceChannelId: 'channel-251',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uluna',
 	},
-  {
-    counterpartyChainId: 'titan-1',
+	{
+		counterpartyChainId: 'titan-1',
 		sourceChannelId: 'channel-221',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'uatolo',
-  },
-  {
+	},
+	{
 		counterpartyChainId: 'kava_2222-10',
 		sourceChannelId: 'channel-143',
 		destChannelId: 'channel-1',
@@ -1342,7 +1350,7 @@ export const IBCAssetInfos: {
 		sourceChannelId: 'channel-252',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'el1',
-	},
+  }
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -3520,7 +3528,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
 		explorerUrlToTx: 'https://finder.terra.money/phoenix-1/tx/{txHash}',
 	},
-  {
+	{
 		rpc: 'https://rpcapi.rizon.world/',
 		rest: 'https://restapi.rizon.world/',
 		chainId: 'titan-1',
@@ -3531,11 +3539,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			coinDecimals: 6,
 			coinGeckoId: 'rizon',
 			coinImageUrl: window.location.origin + '/public/assets/tokens/atolo.png',
-    },
+		},
 		bip44: {
 			coinType: 118,
 		},
-    bech32Config: Bech32Address.defaultBech32Config('rizon'),
+		bech32Config: Bech32Address.defaultBech32Config('rizon'),
 		currencies: [
 			{
 				coinDenom: 'ATOLO',
@@ -3543,11 +3551,11 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinDecimals: 6,
 				coinGeckoId: 'rizon',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/atolo.png',
-      },
+			},
 		],
 		feeCurrencies: [
 			{
-        coinDenom: 'ATOLO',
+				coinDenom: 'ATOLO',
 				coinMinimalDenom: 'uatolo',
 				coinDecimals: 6,
 				coinGeckoId: 'rizon',
@@ -3562,8 +3570,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/rizon/txs/{txHash}',
 	},
-  {
-    rpc: 'https://rpc-kava.keplr.app',
+	{
+		rpc: 'https://rpc-kava.keplr.app',
 		rest: 'https://lcd-kava.keplr.app',
 		chainId: 'kava_2222-10',
 		chainName: 'Kava',
@@ -3654,5 +3662,5 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://ping.pub/genesisL1/tx/{txHash}',
-	}
+	},
 ];
