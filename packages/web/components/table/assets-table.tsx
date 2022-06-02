@@ -32,6 +32,7 @@ interface Props {
   ibcBalances: ((IBCBalance | IBCCW20ContractBalance) & {
     depositUrlOverride?: string;
     withdrawUrlOverride?: string;
+    sourceChainNameOverride?: string;
   })[];
   onWithdraw: (chainId: string, coinDenom: string) => void;
   onDeposit: (chainId: string, coinDenom: string) => void;
@@ -76,6 +77,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             fiatValue,
             depositUrlOverride,
             withdrawUrlOverride,
+            sourceChainNameOverride,
           } = ibcBalance;
           const value = fiatValue?.maxDecimals(2);
           const isCW20 = "ics20ContractAddress" in ibcBalance;
@@ -83,7 +85,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
           return {
             value: balance.toString(),
             currency: balance.currency,
-            chainName: chainName,
+            chainName: sourceChainNameOverride ? sourceChainNameOverride : chainName,
             chainId: chainId,
             coinDenom: balance.denom,
             coinImageUrl: balance.currency.coinImageUrl,
