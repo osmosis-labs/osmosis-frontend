@@ -1339,8 +1339,8 @@ export const IBCAssetInfos: {
   },
 	{
 		counterpartyChainId: 'genesis_29-2',
-		sourceChannelId: 'channel-235',
-		destChannelId: 'channel-0',
+		sourceChannelId: 'channel-252',
+		destChannelId: 'channel-1',
 		coinMinimalDenom: 'el1',
 	},
 ];
@@ -3628,7 +3628,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		bip44: {
 			coinType: 118,
 		},
-		bech32Config: Bech32Address.defaultBech32Config('l1'),
+		bech32Config: Bech32Address.defaultBech32Config('genesis'),
 		currencies: [
 			{
 				coinDenom: 'L1',
