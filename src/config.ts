@@ -1347,7 +1347,7 @@ export const IBCAssetInfos: {
   },
 	{
 		counterpartyChainId: 'genesis_29-2',
-		sourceChannelId: 'channel-252',
+		sourceChannelId: 'channel-253',
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'el1',
   }
