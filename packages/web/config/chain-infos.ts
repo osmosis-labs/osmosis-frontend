@@ -459,6 +459,7 @@ const chainInfos = (
         "ibc-go",
         "no-legacy-stdTx",
         "wasmd_0.24+",
+        "cosmwasm",
       ],
       explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
     },
