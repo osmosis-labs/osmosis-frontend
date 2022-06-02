@@ -14,6 +14,9 @@ export const IBCAssetInfos: (IBCAsset & {
   /** URL if the asset requires a custom withdrawal external link. Must include `https://...`. */
   withdrawUrlOverride?: string;
 
+  /** Alternative chain name to display as the source chain */
+  sourceChainNameOverride?: string;
+
   /** Related to showing assets on main (canonical) vs frontier (permissionless). Verified means that governance has
    *  voted on its incentivization or general approval (amongst other possibilities).
    */
@@ -28,7 +31,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uusdc",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uusdc",
-    sourceChainNameOverride: "Ethereum via Axelar",
+    sourceChainNameOverride: "Ethereum",
     isVerified: true,
   },
   {
@@ -40,7 +43,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=weth-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=weth-wei",
-    sourceChainNameOverride: "Ethereum via Axelar",
+    sourceChainNameOverride: "Ethereum",
     isVerified: true,
   },
   {
@@ -52,7 +55,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=wbtc-satoshi",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=wbtc-satoshi",
-    sourceChainNameOverride: "Ethereum via Axelar",
+    sourceChainNameOverride: "Ethereum",
     isVerified: true,
   },
   {
@@ -64,7 +67,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=dai-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=dai-wei",
-    sourceChainNameOverride: "Ethereum via Axelar",
+    sourceChainNameOverride: "Ethereum",
     isVerified: true,
   },
   {
@@ -445,7 +448,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uusdt",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uusdt",
-    sourceChainNameOverride: "Ethereum via Axelar",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -456,7 +459,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=frax-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=frax-wei",
-    sourceChainNameOverride: "Ethereum via Axelar",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
