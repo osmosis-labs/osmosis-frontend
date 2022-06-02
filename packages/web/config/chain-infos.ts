@@ -1361,8 +1361,8 @@ const chainInfos = (
       explorerUrlToTx: "https://finder.terra.money/phoenix-1/tx/{txHash}",
     },
     {
-      rpc: "http://seed-1.mainnet.rizon.world:26657",
-      rest: "http://seed-1.mainnet.rizon.world:1317",
+      rpc: "https://rpcapi.rizon.world/",
+      rest: "https://restapi.rizon.world/",
       chainId: "titan-1",
       chainName: "Rizon",
       bip44: {
