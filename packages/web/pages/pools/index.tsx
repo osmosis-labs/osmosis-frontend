@@ -187,6 +187,7 @@ const Pools: NextPage = observer(function () {
             label: "Reward distribution in",
             value: (
               <LeftTime
+                className="-mt-1 md:mt-0"
                 hour={epochRemainingHour}
                 minute={epochRemainingMinute}
                 isMobile={isMobile}
