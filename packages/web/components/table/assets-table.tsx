@@ -14,6 +14,7 @@ import {
   AssetNameCell,
   BalanceCell,
   TransferButtonCell,
+  UnbondNativeAssetCell,
   AssetCell as TableCell,
 } from "./cells";
 import { useStore } from "../../stores";
@@ -43,15 +44,30 @@ export const AssetsTable: FunctionComponent<Props> = ({
   onDeposit,
   onWithdraw,
 }) => {
-  const { chainStore } = useStore();
+  const { chainStore, queriesStore, accountStore } = useStore();
+  const { chainId } = chainStore.osmosis;
+  const queriesOsmosis = queriesStore.get(chainId).osmosis!;
+  const bech32Address = accountStore.getAccount(chainId).bech32Address;
+
   const { width, isMobile } = useWindowSize();
   const mergeWithdrawCol = width < 1000 && !isMobile;
+
+  const lockCoins = queriesOsmosis.queryLockedCoins
+    .get(bech32Address)
+    .lockedCoins.concat(
+      queriesOsmosis.queryUnlockingCoins.get(bech32Address).unlockingCoins
+    );
   // Assemble cells with all data needed for any place in the table.
   const cells: TableCell[] = useMemo(
     () => [
       // hardcode native Osmosis assets (OSMO, ION) at the top initially
       ...nativeBalances.map(({ balance, fiatValue }) => {
         const value = fiatValue?.maxDecimals(2);
+
+        const lockedNativeBalance = lockCoins.find(
+          (coin) =>
+            coin.currency.coinMinimalDenom === balance.currency.coinMinimalDenom
+        );
 
         return {
           value: balance.toString(),
@@ -65,6 +81,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             value && value.toDec().gt(new Dec(0))
               ? value.toString()
               : undefined,
+          lockedNativeBalance,
           isCW20: false,
         };
       }),
@@ -112,6 +129,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
       ),
     ],
     [
+      lockCoins,
       nativeBalances,
       chainStore.osmosis.chainId,
       ibcBalances,
@@ -381,7 +399,11 @@ export const AssetsTable: FunctionComponent<Props> = ({
                       displayCell: (cell) => (
                         <div>
                           <TransferButtonCell type="deposit" {...cell} />
-                          <TransferButtonCell type="withdraw" {...cell} />
+                          {"lockedNativeBalance" in cell ? (
+                            <UnbondNativeAssetCell {...cell} />
+                          ) : (
+                            <TransferButtonCell type="withdraw" {...cell} />
+                          )}
                         </div>
                       ),
                       className: "text-center max-w-[5rem]",
@@ -397,9 +419,12 @@ export const AssetsTable: FunctionComponent<Props> = ({
                     },
                     {
                       display: "Withdraw",
-                      displayCell: (cell) => (
-                        <TransferButtonCell type="withdraw" {...cell} />
-                      ),
+                      displayCell: (cell) =>
+                        "lockedNativeBalance" in cell ? (
+                          <UnbondNativeAssetCell {...cell} />
+                        ) : (
+                          <TransferButtonCell type="withdraw" {...cell} />
+                        ),
                       className: "text-center max-w-[5rem]",
                     },
                   ] as ColumnDef<TableCell>[])),

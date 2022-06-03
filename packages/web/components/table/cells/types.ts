@@ -1,5 +1,6 @@
 import { BaseCell } from "../types";
 import { Currency } from "@keplr-wallet/types";
+import { CoinPretty } from "@keplr-wallet/unit";
 
 export type AssetCell = BaseCell & {
   currency: Currency;
@@ -10,6 +11,7 @@ export type AssetCell = BaseCell & {
   amount: string;
   fiatValue?: string;
   isCW20: boolean;
+  lockedNativeBalance?: CoinPretty;
   /** Used by `useFilteredData` to provide user query terms to help users find this cell in the table.
    *  Be sure to add `"queryTags"` to the keys param.
    */
