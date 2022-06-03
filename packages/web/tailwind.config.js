@@ -143,12 +143,16 @@ module.exports = {
       h6: 600,
       subtitle1: 600,
       subtitle2: 400,
-      body1: 500,
-      body2: 500,
-      button: 700,
-      caption: 500,
+      body1: 400,
+      body2: 400,
+      button: 600,
+      caption: 400,
       overline: 400,
     },
+// body1: 500 -> 400
+// body2: 500 -> 400
+// button: 700 -> 600
+// caption: 500 -> 400
     backgroundImage: {
       none: "none",
       "gradients-socialLive":
