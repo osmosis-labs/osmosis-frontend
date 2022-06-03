@@ -593,6 +593,12 @@ export const IBCAssetInfos: (IBCAsset & {
     depositUrlOverride: "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=link-wei",
     withdrawUrlOverride: "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=link-wei",
   },
+  {
+    counterpartyChainId: "genesis_29-2",
+    sourceChannelId: "channel-253",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "el1",
+  }
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;
