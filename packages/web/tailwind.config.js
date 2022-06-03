@@ -142,7 +142,7 @@ module.exports = {
       h5: 600,
       h6: 600,
       subtitle1: 600,
-      subtitle2: 600,
+      subtitle2: 400,
       body1: 500,
       body2: 500,
       button: 700,
