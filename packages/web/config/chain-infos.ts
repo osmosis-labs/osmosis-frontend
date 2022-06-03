@@ -459,6 +459,7 @@ const chainInfos = (
         "ibc-go",
         "no-legacy-stdTx",
         "wasmd_0.24+",
+        "cosmwasm",
       ],
       explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
     },
@@ -994,21 +995,21 @@ const chainInfos = (
           coinImageUrl: "/tokens/pstake.png",
         },
         {
-          coinDenom: "g-WBTC",
+          coinDenom: "gWBTC",
           coinMinimalDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
           coinDecimals: 8,
           coinGeckoId: "wrapped-bitcoin",
           coinImageUrl: "/tokens/gwbtc.png",
         },
         {
-          coinDenom: "g-WETH",
+          coinDenom: "gWETH",
           coinMinimalDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
           coinDecimals: 18,
           coinGeckoId: "ethereum",
           coinImageUrl: "/tokens/gweth.png",
         },
         {
-          coinDenom: "g-USDC",
+          coinDenom: "gUSDC",
           coinMinimalDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
           coinDecimals: 6,
           coinGeckoId: "usd-coin",
@@ -1016,7 +1017,7 @@ const chainInfos = (
           pegMechanism: "collateralized",
         },
         {
-          coinDenom: "g-DAI",
+          coinDenom: "gDAI",
           coinMinimalDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
           coinDecimals: 18,
           coinGeckoId: "dai",
@@ -1024,7 +1025,7 @@ const chainInfos = (
           pegMechanism: "collateralized",
         },
         {
-          coinDenom: "g-USDT",
+          coinDenom: "gUSDT",
           coinMinimalDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
           coinDecimals: 6,
           coinGeckoId: "tether",
@@ -1333,8 +1334,36 @@ const chainInfos = (
       explorerUrlToTx: "https://www.mintscan.io/evmos/txs/{txHash}",
     },
     {
-      rpc: "http://seed-1.mainnet.rizon.world:26657",
-      rest: "http://seed-1.mainnet.rizon.world:1317",
+      rpc: "https://rpc.terrav2.ccvalidators.com/",
+      rest: "https://phoenix-lcd.terra.dev/",
+      chainId: "phoenix-1",
+      chainName: "Terra 2.0",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("terra"),
+      currencies: [
+        {
+          coinDenom: "LUNA",
+          coinMinimalDenom: "uluna",
+          coinDecimals: 6,
+          coinGeckoId: "terra-luna-2",
+          coinImageUrl: "/tokens/luna.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.15,
+        average: 0.2,
+        high: 0.25,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      explorerUrlToTx: "https://finder.terra.money/phoenix-1/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpcapi.rizon.world/",
+      rest: "https://restapi.rizon.world/",
       chainId: "titan-1",
       chainName: "Rizon",
       bip44: {
@@ -1396,6 +1425,34 @@ const chainInfos = (
       ],
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/kava/txs/{txHash}",
+    },
+    {
+      rpc: "https://26657.genesisl1.org",
+      rest: "https://api.genesisl1.org",
+      chainId: "genesis_29-2",
+      chainName: "GenesisL1",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("genesis"),
+      currencies: [
+        {
+          coinDenom: "L1",
+          coinMinimalDenom: "el1",
+          coinDecimals: 18,
+          //coinGeckoId: "pool:el1",
+          coinImageUrl: "/tokens/l1.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 999999999,
+        average: 1000000000,
+        high: 1000000001,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://ping.pub/genesisL1/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
@@ -1463,6 +1520,13 @@ chainInfos.push({
       coinDecimals: 8,
       coinGeckoId: "wrapped-bitcoin",
       coinImageUrl: "/tokens/wbtc.png",
+    },
+    {
+      coinDenom: "LINK",
+      coinMinimalDenom: "link-wei",
+      coinDecimals: 18,
+      coinGeckoId: "chainlink",
+      coinImageUrl: "/tokens/link.svg",
     },
   ],
   feeCurrencies: [

@@ -41,7 +41,7 @@
   .body2 {
     @apply text-body2 font-body2;
   }
-  button {
+  .button {
     @apply text-button font-button;
   }
   .caption {

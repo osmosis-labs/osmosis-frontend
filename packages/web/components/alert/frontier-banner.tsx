@@ -17,15 +17,17 @@ export const FrontierBanner: FunctionComponent = () => {
       }}
       className="fixed flex place-content-evenly right-3 top-3 py-3 text-white-high md:w-[330px] w-[596px] z-50 rounded-2xl"
     >
-      <div className="absolute w-[20px] -top-1.5 -left-1.5 cursor-pointer">
+      <button
+        className="absolute w-[20px] -top-1.5 -left-1.5 cursor-pointer"
+        onClick={() => setShowBanner(false)}
+      >
         <Image
           alt="close"
           src="/icons/close-circle.svg"
-          onClick={() => setShowBanner(false)}
           height={20}
           width={20}
         />
-      </div>
+      </button>
       <div className="flex items-center md:px-1 px-2 md:gap-1 gap-4">
         <div className="shrink-0">
           <Image

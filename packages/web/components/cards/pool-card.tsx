@@ -76,9 +76,9 @@ export const PoolCard: FunctionComponent<
     }
 
     return (
-      <div
+      <button
         className={classNames(
-          "w-full max-w-md p-px rounded-2xl hover:bg-enabledGold",
+          "w-full max-w-md p-px rounded-2xl hover:bg-enabledGold text-left",
           {
             "bg-card": !isSuperfluid,
             "bg-superfluid hover:bg-none": isSuperfluid,
@@ -115,7 +115,7 @@ export const PoolCard: FunctionComponent<
             ))}
           </div>
         </div>
-      </div>
+      </button>
     );
   }
 );

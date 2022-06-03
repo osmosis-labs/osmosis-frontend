@@ -125,7 +125,7 @@ export const InputBox: FunctionComponent<Props> = ({
                   <button
                     key={index}
                     className={classNames(
-                      "h-[1.375rem] border-2 border-primary-200 rounded-lg mt-2.5 bg-primary-200/30 select-none",
+                      "button h-[1.375rem] border-2 border-primary-200 rounded-lg mt-2.5 bg-primary-200/30 select-none",
                       {
                         "opacity-30": disabled || labelButtonDisabled,
                         "hover:bg-primary-200/60":
