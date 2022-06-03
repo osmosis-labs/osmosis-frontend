@@ -149,10 +149,6 @@ module.exports = {
       caption: 400,
       overline: 400,
     },
-// body1: 500 -> 400
-// body2: 500 -> 400
-// button: 700 -> 600
-// caption: 500 -> 400
     backgroundImage: {
       none: "none",
       "gradients-socialLive":
