@@ -1442,6 +1442,8 @@ const chainInfos = (
           coinDecimals: 18,
           //coinGeckoId: "pool:el1",
           coinImageUrl: "/tokens/l1.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
         },
       ],
       gasPriceStep: {
