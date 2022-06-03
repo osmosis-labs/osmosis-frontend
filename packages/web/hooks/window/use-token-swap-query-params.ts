@@ -59,7 +59,6 @@ export function useTokenSwapQueryParams(
       if (
         tradeConfig.sendCurrency.coinDenom !== "UNKNOWN" &&
         tradeConfig.outCurrency.coinDenom !== "UNKNOWN" &&
-        tradeConfig.sendableCurrencies.length >= tradeConfig.pools.length &&
         (tradeConfig.sendCurrency.coinDenom !== router.query.from ||
           tradeConfig.outCurrency.coinDenom !== router.query.to)
       ) {
@@ -74,9 +73,5 @@ export function useTokenSwapQueryParams(
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    tradeConfig?.sendCurrency,
-    tradeConfig?.outCurrency,
-    tradeConfig?.sendableCurrencies,
-  ]);
+  }, [tradeConfig?.sendCurrency, tradeConfig?.outCurrency]);
 }
