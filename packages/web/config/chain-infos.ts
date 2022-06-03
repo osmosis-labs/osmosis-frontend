@@ -1453,7 +1453,7 @@ const chainInfos = (
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://ping.pub/genesisL1/tx/{txHash}",
-    }
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 

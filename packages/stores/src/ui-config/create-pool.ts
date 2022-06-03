@@ -69,6 +69,11 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     return this._feeConfig;
   }
 
+  @action
+  setFeeConfig(config: IFeeConfig | undefined) {
+    this._feeConfig = config;
+  }
+
   get assets(): {
     percentage: string;
     amountConfig: AmountConfig;
@@ -85,6 +90,11 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
   get sender(): string {
     return this._sender;
+  }
+
+  @action
+  setSender(bech32Address: string) {
+    this._sender = bech32Address;
   }
 
   get queryBalances(): ObservableQueryBalances {

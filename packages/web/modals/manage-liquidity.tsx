@@ -171,7 +171,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                                 <span className="my-auto">Available</span>
                                 {assetBalance && (
                                   <span className="text-primary-50 my-auto">
-                                    {assetBalance.toString()}
+                                    {assetBalance.maxDecimals(6).toString()}
                                   </span>
                                 )}
                                 <button
@@ -190,7 +190,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                                 </button>
                               </div>
                             )}
-                            <div className="flex items-stretch gap-1">
+                            <div className="flex place-content-end gap-1">
                               {isMobile && (
                                 <button
                                   className={classNames(
@@ -211,7 +211,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                                 <InputBox
                                   style="no-border"
                                   type="number"
-                                  inputClassName="text-right md:w-16 w-full h-6 text-h6 font-h6 md:text-base"
+                                  inputClassName="text-right self-end md:w-16 w-full ml-auto h-6 text-h6 font-h6 md:text-base"
                                   currentValue={inputAmount}
                                   onInput={onInputAmount}
                                   placeholder=""

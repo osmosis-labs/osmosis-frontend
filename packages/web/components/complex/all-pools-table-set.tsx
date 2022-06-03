@@ -72,6 +72,9 @@ export const AllPoolsTableSet: FunctionComponent<{
         apr: queriesOsmosis.queryIncentivizedPools
           .computeMostAPY(pool.id, priceStore)
           .maxDecimals(2),
+        poolName: pool.poolAssets
+          .map((asset) => asset.amount.currency.coinDenom)
+          .join("/"),
       })),
     // eslint-disable-next-line
     [
@@ -134,7 +137,7 @@ export const AllPoolsTableSet: FunctionComponent<{
 
   const [query, setQuery, filteredPools] = useFilteredData(
     sortedAllPoolsWithMetrics,
-    ["pool.id", "pool.poolAssets.amount.currency.coinDenom"]
+    ["pool.id", "poolName"]
   );
 
   const [page, setPage, minPage, numPages, allData] = usePaginatedData(

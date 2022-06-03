@@ -2,11 +2,8 @@ import type { NextPage } from "next";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import { useState, useMemo } from "react";
-import {
-  ObservableCreatePoolConfig,
-  ObservableQueryPool,
-} from "@osmosis-labs/stores";
+import { useState } from "react";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
 import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
@@ -16,11 +13,13 @@ import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { TabBox } from "../../components/control";
 import { useStore } from "../../stores";
+import { DataSorter } from "../../hooks/data/data-sorter";
 import {
   useWindowSize,
   useFilteredData,
   usePaginatedData,
   useSortedData,
+  useCreatePoolConfig,
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
@@ -29,6 +28,8 @@ import { POOLS_PER_PAGE } from "../../components/complex";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
 const TVL_FILTER_THRESHOLD = 1000;
+
+const LESS_SUPERFLUID_POOLS_COUNT = 6;
 
 const Pools: NextPage = observer(function () {
   const {
@@ -64,26 +65,31 @@ const Pools: NextPage = observer(function () {
   );
 
   const superfluidPoolIds = queryOsmosis.querySuperfluidPools.superfluidPoolIds;
-  const superfluidPools = superfluidPoolIds
-    ?.map((poolId) => queryOsmosis.queryGammPools.getPool(poolId))
-    .filter((pool): pool is ObservableQueryPool => pool !== undefined)
-    .map((superfluidPool) => ({
-      id: superfluidPool.id,
-      poolFeesMetrics:
-        queriesExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+  const superfluidPools = new DataSorter(
+    superfluidPoolIds
+      ?.map((poolId) => queryOsmosis.queryGammPools.getPool(poolId))
+      .filter((pool): pool is ObservableQueryPool => pool !== undefined)
+      .map((superfluidPool) => ({
+        id: superfluidPool.id,
+        poolFeesMetrics:
+          queriesExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+            superfluidPool.id,
+            priceStore
+          ),
+        apr: queryOsmosis.queryIncentivizedPools.computeMostAPY(
           superfluidPool.id,
           priceStore
         ),
-      apr: queryOsmosis.queryIncentivizedPools.computeMostAPY(
-        superfluidPool.id,
-        priceStore
-      ),
-      poolLiquidity: superfluidPool.computeTotalValueLocked(priceStore),
-      assets: superfluidPool.poolAssets.map((poolAsset) => ({
-        coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-        coinDenom: poolAsset.amount.currency.coinDenom,
-      })),
-    }));
+        poolLiquidity: superfluidPool.computeTotalValueLocked(priceStore),
+        assets: superfluidPool.poolAssets.map((poolAsset) => ({
+          coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+          coinDenom: poolAsset.amount.currency.coinDenom,
+        })),
+      })) ?? []
+  )
+    .process("poolLiquidity")
+    .reverse();
+  const [showMoreSfsPools, setShowMoreSfsPools] = useState(false);
 
   const osmoPrice = priceStore.calculatePrice(
     new CoinPretty(
@@ -98,22 +104,12 @@ const Pools: NextPage = observer(function () {
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
-  const createPoolConfig = useMemo(() => {
-    return new ObservableCreatePoolConfig(
-      chainStore,
-      chainId,
-      account.bech32Address,
-      queriesStore,
-      queriesStore.get(chainId).queryBalances
-    );
-    // eslint-disable-next-line
-  }, [
-    isCreatingPool, // re-init on modal open/close
+  const createPoolConfig = useCreatePoolConfig(
     chainStore,
     chainId,
     account.bech32Address,
-    queriesStore,
-  ]);
+    queriesStore
+  );
 
   // Mobile only - pools (superfluid) pools sorting/filtering
   const [showMoreMyPools, setShowMoreMyPools] = useState(false);
@@ -153,7 +149,7 @@ const Pools: NextPage = observer(function () {
                     currency: asset.amountConfig.sendCurrency,
                   },
                 })),
-                "",
+                undefined,
                 () => setIsCreatingPool(false)
               );
             } catch (e) {
@@ -191,6 +187,7 @@ const Pools: NextPage = observer(function () {
             label: "Reward distribution in",
             value: (
               <LeftTime
+                className="-mt-1 md:mt-0"
                 hour={epochRemainingHour}
                 minute={epochRemainingMinute}
                 isMobile={isMobile}
@@ -443,9 +440,12 @@ const Pools: NextPage = observer(function () {
           <section className="bg-surface">
             <div className="max-w-container mx-auto p-10">
               <h5>Superfluid Pools</h5>
-              <div className="mt-5 grid grid-cards">
+              <div className="my-5 grid grid-cards">
                 {superfluidPools &&
-                  superfluidPools.map(
+                  (showMoreSfsPools
+                    ? superfluidPools
+                    : superfluidPools.slice(0, LESS_SUPERFLUID_POOLS_COUNT)
+                  ).map(
                     ({ id, apr, assets, poolFeesMetrics, poolLiquidity }) => (
                       <PoolCard
                         key={id}
@@ -493,6 +493,13 @@ const Pools: NextPage = observer(function () {
                     )
                   )}
               </div>
+              {superfluidPools.length > LESS_SUPERFLUID_POOLS_COUNT && (
+                <ShowMoreButton
+                  className="mx-auto"
+                  isOn={showMoreSfsPools}
+                  onToggle={() => setShowMoreSfsPools(!showMoreSfsPools)}
+                />
+              )}
             </div>
           </section>
           <section className="bg-surface shadow-separator">

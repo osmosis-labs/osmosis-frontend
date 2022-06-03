@@ -1,15 +1,17 @@
 import React, { FunctionComponent } from "react";
-import { MobileProps } from "./types";
+import classNames from "classnames";
+import { CustomClasses, MobileProps } from "./types";
 
 export const LeftTime: FunctionComponent<
   {
     day?: string;
     hour: string;
     minute: string;
-  } & MobileProps
-> = ({ day, hour, minute, isMobile = false }) => {
+  } & MobileProps &
+    CustomClasses
+> = ({ day, hour, minute, isMobile = false, className }) => {
   return (
-    <div className="md:text-xl text-2xl flex items-center">
+    <div className={classNames("flex items-center mb-1", className)}>
       {day && (
         <React.Fragment>
           <Time isMobile={isMobile}>{day}</Time>
@@ -43,7 +45,7 @@ const TimeLabel: FunctionComponent<MobileProps> = ({
 
 const Time: FunctionComponent<MobileProps> = ({ isMobile = false, children }) =>
   isMobile ? (
-    <h5 className="md:text-lg text-xl">{children}</h5>
+    <h5 className="md:text-xl text-2xl">{children}</h5>
   ) : (
-    <h4 className="md:text-lg text-xl">{children}</h4>
+    <h4 className="md:text-xl text-2xl">{children}</h4>
   );

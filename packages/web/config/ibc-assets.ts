@@ -392,10 +392,10 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: 'columbus-5',
-    sourceChannelId: 'channel-72',
-    destChannelId: 'channel-1',
-    coinMinimalDenom: 'ukrw',
+    counterpartyChainId: "columbus-5",
+    sourceChannelId: "channel-72",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "ukrw",
     isUnstable: true,
   },
   {
@@ -562,10 +562,10 @@ export const IBCAssetInfos: (IBCAsset & {
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
   {
-    counterpartyChainId: 'phoenix-1',
-    sourceChannelId: 'channel-251',
-    destChannelId: 'channel-1',
-    coinMinimalDenom: 'uluna',
+    counterpartyChainId: "phoenix-1",
+    sourceChannelId: "channel-251",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "uluna",
   },
   {
     counterpartyChainId: "titan-1",
@@ -590,15 +590,17 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "link-wei",
-    depositUrlOverride: "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=link-wei",
-    withdrawUrlOverride: "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=link-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=link-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=link-wei",
   },
   {
     counterpartyChainId: "genesis_29-2",
     sourceChannelId: "channel-253",
     destChannelId: "channel-1",
     coinMinimalDenom: "el1",
-  }
+  },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;

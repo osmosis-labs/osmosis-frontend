@@ -11,7 +11,7 @@ import {
 } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { Table, BaseCell } from ".";
-import { CustomClasses } from "../types";
+import { Breakpoint, CustomClasses } from "../types";
 import { truncateString } from "../utils";
 import { useWindowSize } from "../../hooks";
 
@@ -46,6 +46,7 @@ export const IbcHistoryTable: FunctionComponent<CustomClasses> = observer(
             { display: "Amount" },
             {
               display: "Status",
+              collapseAt: Breakpoint.SM,
               className: "md:!pr-2",
               displayCell: StatusDisplayCell,
             },

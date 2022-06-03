@@ -292,7 +292,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               labelButtons={[
                 {
                   label: "MAX",
-                  onClick: () => amountConfig.setFraction(1),
+                  onClick: () => amountConfig.toggleIsMax(),
                 },
               ]}
             />
