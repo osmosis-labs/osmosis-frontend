@@ -174,7 +174,7 @@ export const TradeClipboard: FunctionComponent<{
                         slippageConfig.select(slippage.index);
                       }}
                     >
-                      {slippage.slippage.toString()}
+                      <button>{slippage.slippage.toString()}</button>
                     </li>
                   );
                 })}
@@ -242,7 +242,7 @@ export const TradeClipboard: FunctionComponent<{
                 <button
                   type="button"
                   className={classNames(
-                    "text-white-full text-xs py-1 px-1.5 rounded-md ml-2",
+                    "button text-white-full text-xs py-1 px-1.5 rounded-md ml-2",
                     tradeTokenInConfig && tradeTokenInConfig.fraction === 1
                       ? "bg-primary-200"
                       : "bg-white-faint"
@@ -266,7 +266,7 @@ export const TradeClipboard: FunctionComponent<{
                 <button
                   type="button"
                   className={classNames(
-                    "text-white-full text-xs py-1 px-1.5 rounded-md ml-1",
+                    "button text-white-full text-xs py-1 px-1.5 rounded-md ml-1",
                     tradeTokenInConfig && tradeTokenInConfig.fraction === 0.5
                       ? "bg-primary-200"
                       : "bg-white-faint"

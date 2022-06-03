@@ -43,11 +43,8 @@ export const SortMenu: FunctionComponent<Props> = ({
           className
         )}
       >
-        <Image
-          alt="sort"
-          src="/icons/up-down-arrow.svg"
-          height={isMobile ? 12 : 18}
-          width={isMobile ? 12 : 18}
+        <button
+          className="flex items-center"
           onClick={(e) => {
             e.stopPropagation();
             if (onToggleSortDirection && selectedOption) {
@@ -56,9 +53,16 @@ export const SortMenu: FunctionComponent<Props> = ({
               setDropdownOpen(!dropdownOpen);
             }
           }}
-        />
-        <div
-          className="flex"
+        >
+          <Image
+            alt="sort"
+            src="/icons/up-down-arrow.svg"
+            height={isMobile ? 12 : 18}
+            width={isMobile ? 12 : 18}
+          />
+        </button>
+        <button
+          className="flex items-center"
           onClick={(e) => {
             e.stopPropagation();
             if (!disabled) {
@@ -79,7 +83,7 @@ export const SortMenu: FunctionComponent<Props> = ({
             height={isMobile ? 12 : 15}
             width={isMobile ? 12 : 15}
           />
-        </div>
+        </button>
       </div>
       {isMobile ? (
         <MenuOptionsModal

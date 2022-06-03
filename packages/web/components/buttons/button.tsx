@@ -23,7 +23,7 @@ export const Button: FunctionComponent<Props> = ({
 }) => (
   <button
     className={classNames(
-      "flex justify-center items-center rounded-lg base",
+      "button flex justify-center items-center rounded-lg base",
       {
         "opacity-50": disabled && !loading,
         "opacity-70": disabled && loading,

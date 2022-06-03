@@ -58,7 +58,7 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
               </div>
             </div>
           ))}
-          <div
+          <button
             className={classNames(
               "h-24 md:h-auto flex gap-5 md:p-2.5 px-7 items-center border border-white-faint rounded-2xl select-none",
               config.canAddAsset
@@ -87,7 +87,7 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
             ) : (
               <h6>Add new token</h6>
             )}
-          </div>
+          </button>
         </div>
       </StepBase>
     );
