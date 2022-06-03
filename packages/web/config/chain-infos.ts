@@ -1434,13 +1434,13 @@ const chainInfos = (
       bip44: {
         coinType: 118,
       },
-      bech32Config: Bech32Address.defaultBech32Config("l1"),
+      bech32Config: Bech32Address.defaultBech32Config("genesis"),
       currencies: [
         {
           coinDenom: "L1",
           coinMinimalDenom: "el1",
           coinDecimals: 18,
-          coinGeckoId: "pool:el1",
+          //coinGeckoId: "pool:el1",
           coinImageUrl: "/tokens/l1.svg",
         },
       ],
