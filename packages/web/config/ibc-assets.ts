@@ -691,6 +691,26 @@ export const IBCAssetInfos: (IBCAsset & {
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=xcn-wei",
   },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "wglmr-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=moonbeam&destination=osmosis&asset_denom=wglmr-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=moonbeam&asset_denom=wglmr-wei",
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "dot-planck",
+    depositUrlOverride:
+      "https://satellite.money/?source=moonbeam&destination=osmosis&asset_denom=dot-planck",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=moonbeam&asset_denom=dot-planck",
+  },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;
