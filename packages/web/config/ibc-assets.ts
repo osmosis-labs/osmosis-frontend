@@ -603,6 +603,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=link-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=link-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "genesis_29-2",
@@ -619,6 +620,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=aave-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=aave-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -629,6 +631,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=ape-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=ape-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -639,6 +642,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=axs-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=axs-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -649,6 +653,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=mkr-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=mkr-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -659,6 +664,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=rai-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=rai-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -669,6 +675,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=shib-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=shib-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -679,6 +686,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=steth-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=steth-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -689,6 +697,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uni-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uni-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -699,6 +708,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=xcn-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=xcn-wei",
+    sourceChainNameOverride: "Ethereum",
   },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
