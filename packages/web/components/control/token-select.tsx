@@ -1,7 +1,8 @@
+import Image from "next/image";
 import { FunctionComponent, useEffect, useRef } from "react";
 import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
-import Image from "next/image";
+import { useStore } from "../../stores";
 import { useBooleanWithWindowEvent, useFilteredData } from "../../hooks";
 import { MobileProps } from "../types";
 
@@ -12,7 +13,6 @@ export const TokenSelect: FunctionComponent<
     tokens: (CoinPretty | AppCurrency)[];
     onSelect: (tokenDenom: string) => void;
     sortByBalances?: boolean;
-    getChainNetworkName?: (coinDenom: string) => string | undefined;
     dropdownOpen?: boolean;
     setDropdownState?: (isOpen: boolean) => void;
   } & MobileProps
@@ -21,11 +21,12 @@ export const TokenSelect: FunctionComponent<
   tokens,
   onSelect,
   sortByBalances = false,
-  getChainNetworkName,
   isMobile = false,
   dropdownOpen,
   setDropdownState,
 }) => {
+  const { chainStore } = useStore();
+
   // parent overrideable state
   const [isSelectOpenLocal, setIsSelectOpenLocal] =
     useBooleanWithWindowEvent(false);
@@ -119,7 +120,8 @@ export const TokenSelect: FunctionComponent<
               )}
             </div>
             <div className="subtitle2 md:caption text-iconDefault">
-              {getChainNetworkName?.(selectedCurrency.coinDenom)}
+              {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
+                ?.chainName ?? ""}
             </div>
           </div>
         </button>
@@ -155,7 +157,8 @@ export const TokenSelect: FunctionComponent<
               const currency =
                 token instanceof CoinPretty ? token.currency : token;
               const { coinDenom, coinImageUrl } = currency;
-              const networkName = getChainNetworkName?.(coinDenom);
+              const networkName =
+                chainStore.getChainFromCurrency(coinDenom)?.chainName;
               const justDenom =
                 coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
               const channel =
@@ -191,7 +194,9 @@ export const TokenSelect: FunctionComponent<
                       <div>
                         <h6 className="text-white-full">{justDenom}</h6>
                         <div className="text-iconDefault text-left md:caption font-semibold">
-                          {showChannel ? channel : networkName}
+                          {showChannel
+                            ? `${networkName} ${channel}`
+                            : networkName}
                         </div>
                       </div>
                     </div>

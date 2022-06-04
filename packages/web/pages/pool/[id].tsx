@@ -486,13 +486,6 @@ const Pool: FunctionComponent = observer(() => {
           addLiquidityConfig={addLiquidityConfig}
           removeLiquidityConfig={removeLiquidityConfig}
           isSendingMsg={account.txTypeInProgress !== ""}
-          getChainNetworkName={(coinDenom) =>
-            ChainInfos.find((chain) =>
-              chain.currencies.find(
-                (currency) => currency.coinDenom === coinDenom
-              )
-            )?.chainName
-          }
           getFiatValue={(coin) => priceStore.calculatePrice(coin)}
           onAddLiquidity={async () => {
             try {

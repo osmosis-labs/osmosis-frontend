@@ -16,7 +16,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { ChainInfos, IS_FRONTIER } from "../../config";
+import { IS_FRONTIER } from "../../config";
 import {
   useBooleanWithWindowEvent,
   useTokenSwapQueryParams,
@@ -353,13 +353,6 @@ export const TradeClipboard: FunctionComponent<{
                     }
                     closeTokenSelectDropdowns();
                   }}
-                  getChainNetworkName={(coinDenom) =>
-                    ChainInfos.find((chain) =>
-                      chain.currencies.find(
-                        (currency) => currency.coinDenom === coinDenom
-                      )
-                    )?.chainName
-                  }
                   isMobile={isMobile}
                 />
               )}
@@ -473,13 +466,6 @@ export const TradeClipboard: FunctionComponent<{
                     }
                     closeTokenSelectDropdowns();
                   }}
-                  getChainNetworkName={(coinDenom) =>
-                    ChainInfos.find((chain) =>
-                      chain.currencies.find(
-                        (currency) => currency.coinDenom === coinDenom
-                      )
-                    )?.chainName
-                  }
                   isMobile={isMobile}
                 />
               )}

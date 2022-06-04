@@ -2,6 +2,7 @@ import { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { useStore } from "../stores";
 import { ModalBase, ModalBaseProps } from "./base";
 import { TabBox, Slider, CheckBox } from "../components/control/";
 import { Token } from "../components/assets";
@@ -17,7 +18,6 @@ import {
 
 export interface Props extends ModalBaseProps {
   addLiquidityConfig: ObservableAddLiquidityConfig;
-  getChainNetworkName?: (coinDenom: string) => string | undefined;
   getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   removeLiquidityConfig: ObservableRemoveLiquidityConfig;
   onAddLiquidity: () => void;
@@ -29,13 +29,14 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
   (props) => {
     const {
       addLiquidityConfig,
-      getChainNetworkName,
       getFiatValue,
       removeLiquidityConfig,
       onAddLiquidity,
       onRemoveLiquidity,
       isSendingMsg = false,
     } = props;
+
+    const { chainStore } = useStore();
     const { isMobile } = useWindowSize();
     const [selectedTabIndex, setSelectedTabIndex] = useState<0 | 1>(0);
 
@@ -121,9 +122,9 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                               ).moveDecimalPointRight(currency.coinDecimals)
                             )
                           : undefined;
-                      const networkName = getChainNetworkName?.(
+                      const networkName = chainStore.getChainFromCurrency(
                         currency.coinDenom
-                      );
+                      )?.chainName;
                       const assetBalance = addLiquidityConfig.isSingleAmountIn
                         ? addLiquidityConfig.singleAmountInBalance
                         : addLiquidityConfig.getSenderBalanceAt(index);
@@ -138,9 +139,9 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                               tokens={addLiquidityConfig.poolAssets.map(
                                 (poolAsset) => ({
                                   coinDenom: poolAsset.currency.coinDenom,
-                                  networkName: getChainNetworkName?.(
+                                  networkName: chainStore.getChainFromCurrency(
                                     poolAsset.currency.coinDenom
-                                  ),
+                                  )?.chainName,
                                   poolShare: poolAsset.weightFraction,
                                 })
                               )}
