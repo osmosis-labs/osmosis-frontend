@@ -171,12 +171,12 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                                 <span className="my-auto">Available</span>
                                 {assetBalance && (
                                   <span className="text-primary-50 my-auto">
-                                    {assetBalance.toString()}
+                                    {assetBalance.maxDecimals(6).toString()}
                                   </span>
                                 )}
                                 <button
                                   className={classNames(
-                                    "py-1 px-1.5 my-1 text-xs rounded-md bg-white-faint",
+                                    "button py-1 px-1.5 my-1 text-xs rounded-md bg-white-faint",
                                     {
                                       "opacity-30": assetBalance
                                         ?.toDec()
@@ -190,11 +190,11 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                                 </button>
                               </div>
                             )}
-                            <div className="flex items-stretch gap-1">
+                            <div className="flex place-content-end gap-1">
                               {isMobile && (
                                 <button
                                   className={classNames(
-                                    "py-1 px-1.5 my-1 text-xs rounded-md bg-white-faint",
+                                    "button py-1 px-1.5 my-1 text-xs rounded-md bg-white-faint",
                                     {
                                       "opacity-30": assetBalance
                                         ?.toDec()
@@ -211,7 +211,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                                 <InputBox
                                   style="no-border"
                                   type="number"
-                                  inputClassName="text-right md:w-16 w-full h-6 text-h6 font-h6 md:text-base"
+                                  inputClassName="text-right self-end md:w-16 w-full ml-auto h-6 text-h6 font-h6 md:text-base"
                                   currentValue={inputAmount}
                                   onInput={onInputAmount}
                                   placeholder=""
@@ -312,7 +312,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                       disabled={removeLiquidityConfig.poolShareWithPercentage
                         .toDec()
                         .equals(new Dec(0))}
-                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
+                      className="button w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
                     >
                       <p className="text-secondary-200">25%</p>
                     </button>
@@ -321,7 +321,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                       disabled={removeLiquidityConfig.poolShareWithPercentage
                         .toDec()
                         .equals(new Dec(0))}
-                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
+                      className="button w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
                     >
                       <p className="text-secondary-200">50%</p>
                     </button>
@@ -330,7 +330,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                       disabled={removeLiquidityConfig.poolShareWithPercentage
                         .toDec()
                         .equals(new Dec(0))}
-                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
+                      className="button w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
                     >
                       <p className="text-secondary-200">75%</p>
                     </button>
@@ -339,7 +339,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                       disabled={removeLiquidityConfig.poolShareWithPercentage
                         .toDec()
                         .equals(new Dec(0))}
-                      className="w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
+                      className="button w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
                     >
                       <p className="text-secondary-200">MAX</p>
                     </button>

@@ -70,6 +70,12 @@ export const TradeClipboard: FunctionComponent<{
   tradeTokenInConfig.setSender(account.bech32Address);
   tradeTokenInConfig.setPools(pools);
 
+  // auto focus from amount on token switch
+  const fromAmountInput = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    fromAmountInput.current?.focus();
+  }, [tradeTokenInConfig.sendCurrency]);
+
   useTokenSwapQueryParams(tradeTokenInConfig, allTokenBalances, isInModal);
 
   const showWarningSlippage = useMemo(
@@ -89,6 +95,25 @@ export const TradeClipboard: FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSettingOpen]);
 
+  // token select dropdown
+  const [showFromTokenSelectDropdown, setFromTokenSelectDropdownLocal] =
+    useBooleanWithWindowEvent(false);
+  const [showToTokenSelectDropdown, setToTokenSelectDropdownLocal] =
+    useBooleanWithWindowEvent(false);
+  const setOneTokenSelectOpen = (dropdown: "to" | "from") => {
+    if (dropdown === "to") {
+      setToTokenSelectDropdownLocal(true);
+      setFromTokenSelectDropdownLocal(false);
+    } else {
+      setFromTokenSelectDropdownLocal(true);
+      setToTokenSelectDropdownLocal(false);
+    }
+  };
+  const closeTokenSelectDropdowns = () => {
+    setFromTokenSelectDropdownLocal(false);
+    setToTokenSelectDropdownLocal(false);
+  };
+
   return (
     <div
       className={classNames(
@@ -104,7 +129,7 @@ export const TradeClipboard: FunctionComponent<{
               <div className="absolute inset-x-1/2 -translate-x-1/2 bottom-2 w-12 md:w-9 h-[1.875rem] md:h-[1.4rem] bg-[rgba(91,83,147,0.12)] rounded-md shadow-[rgba(0,0,0,0.25)_1px_1px_1px_inset]" />
             )}
             {IS_FRONTIER && (
-              <div className="absolute left-0 right-0 top-[20%] mx-auto h-[40px] w-[40px]">
+              <div className="absolute left-0 right-0 top-[20%] mx-auto h-[40px] w-[40px] md:h-[30px] md:w-[30px]">
                 <img alt="badge" src="/icons/frontier-osmo-badge.svg" />
               </div>
             )}
@@ -174,7 +199,7 @@ export const TradeClipboard: FunctionComponent<{
                         slippageConfig.select(slippage.index);
                       }}
                     >
-                      {slippage.slippage.toString()}
+                      <button>{slippage.slippage.toString()}</button>
                     </li>
                   );
                 })}
@@ -242,7 +267,7 @@ export const TradeClipboard: FunctionComponent<{
                 <button
                   type="button"
                   className={classNames(
-                    "text-white-full text-xs py-1 px-1.5 rounded-md ml-2",
+                    "button text-white-full text-xs py-1 px-1.5 rounded-md ml-2",
                     tradeTokenInConfig && tradeTokenInConfig.fraction === 1
                       ? "bg-primary-200"
                       : "bg-white-faint"
@@ -266,7 +291,7 @@ export const TradeClipboard: FunctionComponent<{
                 <button
                   type="button"
                   className={classNames(
-                    "text-white-full text-xs py-1 px-1.5 rounded-md ml-1",
+                    "button text-white-full text-xs py-1 px-1.5 rounded-md ml-1",
                     tradeTokenInConfig && tradeTokenInConfig.fraction === 0.5
                       ? "bg-primary-200"
                       : "bg-white-faint"
@@ -292,6 +317,15 @@ export const TradeClipboard: FunctionComponent<{
             <div className="flex items-center mt-3">
               {tradeTokenInConfig && (
                 <TokenSelect
+                  sortByBalances
+                  dropdownOpen={showFromTokenSelectDropdown}
+                  setDropdownState={(isOpen) => {
+                    if (isOpen) {
+                      setOneTokenSelectOpen("from");
+                    } else {
+                      closeTokenSelectDropdowns();
+                    }
+                  }}
                   tokens={allTokenBalances
                     .filter(
                       (tokenBalance) =>
@@ -317,6 +351,7 @@ export const TradeClipboard: FunctionComponent<{
                         tokenInBalance.balance.currency
                       );
                     }
+                    closeTokenSelectDropdowns();
                   }}
                   getChainNetworkName={(coinDenom) =>
                     ChainInfos.find((chain) =>
@@ -332,6 +367,7 @@ export const TradeClipboard: FunctionComponent<{
               {tradeTokenInConfig && (
                 <div className="flex flex-col items-end">
                   <input
+                    ref={fromAmountInput}
                     type="number"
                     className="font-h5 md:font-subtitle1 text-h5 md:text-subtitle1 text-white-full bg-transparent text-right focus:outline-none w-full"
                     placeholder="0"
@@ -401,6 +437,15 @@ export const TradeClipboard: FunctionComponent<{
             <div className="flex items-center mt-3">
               {tradeTokenInConfig && (
                 <TokenSelect
+                  dropdownOpen={showToTokenSelectDropdown}
+                  setDropdownState={(isOpen) => {
+                    if (isOpen) {
+                      setOneTokenSelectOpen("to");
+                    } else {
+                      closeTokenSelectDropdowns();
+                    }
+                  }}
+                  sortByBalances
                   tokens={allTokenBalances
                     .filter(
                       (tokenBalance) =>
@@ -426,6 +471,7 @@ export const TradeClipboard: FunctionComponent<{
                         tokenOutBalance.balance.currency
                       );
                     }
+                    closeTokenSelectDropdowns();
                   }}
                   getChainNetworkName={(coinDenom) =>
                     ChainInfos.find((chain) =>

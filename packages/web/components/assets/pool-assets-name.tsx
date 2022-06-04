@@ -16,6 +16,8 @@ export const PoolAssetsName: FunctionComponent<{
           .map((asset) =>
             asset.startsWith("ibc/")
               ? truncateString(asset)
+              : asset.includes("channel")
+              ? asset.split(" ")[0]
               : truncateString(asset, 16)
           )
           .join(size === "sm" ? "/" : " / ");

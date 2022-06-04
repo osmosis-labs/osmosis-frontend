@@ -20,7 +20,7 @@ export const GoSuperfluidCard: FunctionComponent<
       </div>
     </div>
     <button
-      className="bg-superfluid rounded-lg py-2 px-8 text-white-high font-semibold text-sm shadow-elevation-04dp"
+      className="button bg-superfluid rounded-lg py-2 px-8 text-white-high font-semibold text-sm shadow-elevation-04dp"
       type="button"
       onClick={goSuperfluid}
     >

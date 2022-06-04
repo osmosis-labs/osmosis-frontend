@@ -1,5 +1,4 @@
-import Image from "next/image";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState, useEffect } from "react";
 import classNames from "classnames";
 import { Disableable, CustomClasses } from "../types";
 import { ToggleProps } from "./types";
@@ -16,29 +15,38 @@ export const CheckBox: FunctionComponent<
   checkClassName,
   className,
   children,
-}) => (
-  <div>
+}) => {
+  const [showImg, setShowImg] = useState(false);
+  useEffect(() => {
+    setShowImg(true);
+  }, []);
+
+  return (
     <label
       className={classNames(
-        "relative flex items-center select-none",
+        "relative flex items-center gap-4 select-none",
         labelClassName
       )}
     >
-      {isOn && (
+      {isOn && showImg && (
         <div
           className={classNames(
-            "cursor-pointer h-full absolute h-5 w-5 z-20",
+            "cursor-pointer h-full absolute top-0 left-0 h-5 w-5 z-20",
             disabled ? "cursor-default opacity-50" : null,
             checkClassName
           )}
         >
-          <Image alt="" src="/icons/check-mark.svg" height={24} width={24} />
+          <img
+            className="absolute h-5 w-5 top-0 left-0"
+            alt=""
+            src="/icons/check-mark.svg"
+          />
         </div>
       )}
       <input
         type="checkbox"
         className={classNames(
-          "cursor-pointer h-5 w-5 appearance-none",
+          "absolute top-0 left-0 cursor-pointer h-5 w-5 appearance-none",
           "after:absolute after:h-5 after:w-5 after:rounded z-10", // box
           disabled
             ? isOn
@@ -53,7 +61,7 @@ export const CheckBox: FunctionComponent<
         disabled={disabled}
         onChange={() => onToggle(!isOn)}
       />
-      <div className="cursor-pointer pl-2 md:pl-px">{children}</div>
+      <div className="cursor-pointer pl-8 md:pl-6">{children}</div>
     </label>
-  </div>
-);
+  );
+};

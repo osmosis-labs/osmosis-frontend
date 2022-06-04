@@ -42,7 +42,7 @@ export const TabBox: FunctionComponent<
     <div className={classNames(className)}>
       <div className="flex py-4 whitespace-nowrap overflow-x-auto no-scrollbar">
         {tabs.map(({ title, className: tabClassName }, index) => (
-          <div
+          <button
             id={`tab-box-${index}`}
             ref={tabscrollRef}
             key={index}
@@ -67,7 +67,7 @@ export const TabBox: FunctionComponent<
             ) : (
               <>{title}</>
             )}
-          </div>
+          </button>
         ))}
       </div>
       <div>

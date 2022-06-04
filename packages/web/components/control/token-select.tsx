@@ -1,7 +1,7 @@
+import { FunctionComponent, useEffect, useRef } from "react";
 import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import Image from "next/image";
-import { FunctionComponent } from "react";
 import { useBooleanWithWindowEvent, useFilteredData } from "../../hooks";
 import { MobileProps } from "../types";
 
@@ -13,6 +13,8 @@ export const TokenSelect: FunctionComponent<
     onSelect: (tokenDenom: string) => void;
     sortByBalances?: boolean;
     getChainNetworkName?: (coinDenom: string) => string | undefined;
+    dropdownOpen?: boolean;
+    setDropdownState?: (isOpen: boolean) => void;
   } & MobileProps
 > = ({
   selectedTokenDenom,
@@ -21,8 +23,18 @@ export const TokenSelect: FunctionComponent<
   sortByBalances = false,
   getChainNetworkName,
   isMobile = false,
+  dropdownOpen,
+  setDropdownState,
 }) => {
-  const [isSelectOpen, setIsSelectOpen] = useBooleanWithWindowEvent(false);
+  // parent overrideable state
+  const [isSelectOpenLocal, setIsSelectOpenLocal] =
+    useBooleanWithWindowEvent(false);
+  const isSelectOpen =
+    dropdownOpen === undefined ? isSelectOpenLocal : dropdownOpen;
+  const setIsSelectOpen =
+    setDropdownState === undefined ? setIsSelectOpenLocal : setDropdownState;
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const selectedToken = tokens.find((token) =>
     (token instanceof CoinPretty ? token.denom : token.coinDenom).includes(
       selectedTokenDenom
@@ -54,18 +66,24 @@ export const TokenSelect: FunctionComponent<
   const selectedDenom =
     selectedCurrency?.coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
 
-  const hasNeedTokenSelect = tokens.length > 1;
+  const canSelectTokens = tokens.length > 1;
+
+  useEffect(() => {
+    if (isSelectOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isSelectOpen]);
 
   return (
     <div className="flex md:justify-start justify-center items-center relative">
       {selectedCurrency && (
-        <div
-          className={`flex items-center group ${
-            hasNeedTokenSelect ? "cursor-pointer" : ""
+        <button
+          className={`flex items-center text-left group ${
+            canSelectTokens ? "cursor-pointer" : ""
           }`}
           onClick={(e) => {
             e.stopPropagation();
-            if (hasNeedTokenSelect) {
+            if (canSelectTokens) {
               setIsSelectOpen(!isSelectOpen);
             }
           }}
@@ -86,7 +104,7 @@ export const TokenSelect: FunctionComponent<
           <div className="flex-shrink-0">
             <div className="flex items-center">
               {isMobile ? <h6>{selectedDenom}</h6> : <h5>{selectedDenom}</h5>}
-              {hasNeedTokenSelect && (
+              {canSelectTokens && (
                 <div className="w-5 ml-3 md:ml-2 pb-1">
                   <Image
                     className={`opacity-40 group-hover:opacity-100 transition-transform duration-100 ${
@@ -104,7 +122,7 @@ export const TokenSelect: FunctionComponent<
               {getChainNetworkName?.(selectedCurrency.coinDenom)}
             </div>
           </div>
-        </div>
+        </button>
       )}
 
       {isSelectOpen && (
@@ -122,6 +140,7 @@ export const TokenSelect: FunctionComponent<
               />
             </div>
             <input
+              ref={inputRef}
               type="text"
               className="px-4 subtitle2 text-white-full bg-transparent font-normal"
               placeholder="Search tokens"
@@ -131,7 +150,7 @@ export const TokenSelect: FunctionComponent<
             />
           </div>
 
-          <div className="token-item-list overflow-y-scroll max-h-80">
+          <ul className="token-item-list overflow-y-scroll max-h-80">
             {searchedTokens.map((token, index) => {
               const currency =
                 token instanceof CoinPretty ? token.currency : token;
@@ -147,16 +166,17 @@ export const TokenSelect: FunctionComponent<
               const showChannel = coinDenom.includes("channel");
 
               return (
-                <div
+                <li
                   key={index}
                   className="flex justify-between items-center rounded-2xl py-2.5 px-3 my-1 hover:bg-card cursor-pointer mr-3"
                   onClick={(e) => {
                     e.stopPropagation();
                     onSelect(coinDenom);
+                    setTokenSearch("");
                     setIsSelectOpen(false);
                   }}
                 >
-                  <div className="flex items-center justify-between w-full">
+                  <button className="flex items-center justify-between text-left w-full">
                     <div className="flex items-center">
                       {coinImageUrl && (
                         <div className="w-9 h-9 rounded-full mr-3">
@@ -170,7 +190,7 @@ export const TokenSelect: FunctionComponent<
                       )}
                       <div>
                         <h6 className="text-white-full">{justDenom}</h6>
-                        <div className="text-iconDefault md:caption font-semibold">
+                        <div className="text-iconDefault text-left md:caption font-semibold">
                           {showChannel ? channel : networkName}
                         </div>
                       </div>
@@ -179,11 +199,11 @@ export const TokenSelect: FunctionComponent<
                       {token instanceof CoinPretty &&
                         token.trim(true).hideDenom(true).toString()}
                     </div>
-                  </div>
-                </div>
+                  </button>
+                </li>
               );
             })}
-          </div>
+          </ul>
         </div>
       )}
     </div>

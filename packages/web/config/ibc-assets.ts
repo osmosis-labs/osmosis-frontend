@@ -399,10 +399,10 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: 'columbus-5',
-    sourceChannelId: 'channel-72',
-    destChannelId: 'channel-1',
-    coinMinimalDenom: 'ukrw',
+    counterpartyChainId: "columbus-5",
+    sourceChannelId: "channel-72",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "ukrw",
     isUnstable: true,
   },
   {
@@ -571,10 +571,10 @@ export const IBCAssetInfos: (IBCAsset & {
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
   {
-    counterpartyChainId: 'phoenix-1',
-    sourceChannelId: 'channel-251',
-    destChannelId: 'channel-1',
-    coinMinimalDenom: 'uluna',
+    counterpartyChainId: "phoenix-1",
+    sourceChannelId: "channel-251",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "uluna",
   },
   {
     counterpartyChainId: "titan-1",
@@ -599,8 +599,106 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "link-wei",
-    depositUrlOverride: "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=link-wei",
-    withdrawUrlOverride: "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=link-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=link-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=link-wei",
+  },
+  {
+    counterpartyChainId: "genesis_29-2",
+    sourceChannelId: "channel-253",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "el1",
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "aave-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=aave-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=aave-wei",
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "ape-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=ape-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=ape-wei",
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "axs-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=axs-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=axs-wei",
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "mkr-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=mkr-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=mkr-wei",
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "rai-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=rai-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=rai-wei",
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "shib-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=shib-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=shib-wei",
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "steth-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=steth-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=steth-wei",
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "uni-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uni-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uni-wei",
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "xcn-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=xcn-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=xcn-wei",
   },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 

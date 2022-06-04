@@ -46,7 +46,8 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
       )}
     >
       {!hideCloseButton && (
-        <div
+        <button
+          aria-label="close"
           className="absolute md:top-4 md:right-4 top-5 right-5 cursor-pointer z-50"
           onClick={onRequestClose}
         >
@@ -56,7 +57,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             width={isMobile ? 24 : 32}
             height={isMobile ? 24 : 32}
           />
-        </div>
+        </button>
       )}
       {typeof title === "string" ? (
         isMobile ? (

@@ -1,5 +1,6 @@
 import { FunctionComponent, useMemo } from "react";
 import { observer } from "mobx-react-lite";
+import { runInAction } from "mobx";
 import { InputBox } from "../../../input";
 import {
   PieChart,
@@ -55,46 +56,50 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
               (
                 { percentage, amountConfig: { sendCurrency, amount } },
                 index
-              ) => (
-                <div key={sendCurrency.coinDenom}>
-                  <div className="flex items-center place-content-between">
-                    <div className="flex items-center">
-                      <figure
-                        className="rounded-full w-4 h-4 md:w-2 md:h-2 mr-3 md:mr-1"
-                        style={{
-                          background: HIGHCHART_LEGEND_GRADIENTS[index],
-                        }}
-                      />
+              ) => {
+                const justCoinDenom = sendCurrency.coinDenom.includes("channel")
+                  ? sendCurrency.coinDenom.split(" ").slice(0, 1).join("")
+                  : sendCurrency.coinDenom;
+
+                return (
+                  <div key={sendCurrency.coinDenom}>
+                    <div className="flex items-center place-content-between">
+                      <div className="flex items-center">
+                        <figure
+                          className="rounded-full w-4 h-4 md:w-2 md:h-2 mr-3 md:mr-1"
+                          style={{
+                            background: HIGHCHART_LEGEND_GRADIENTS[index],
+                          }}
+                        />
+                        {isMobile ? (
+                          <span className="subtitle2">{justCoinDenom}</span>
+                        ) : (
+                          <h6>{justCoinDenom}</h6>
+                        )}
+                      </div>
                       {isMobile ? (
-                        <span className="subtitle2">
-                          {sendCurrency.coinDenom}
-                        </span>
+                        <span className="subtitle2">{amount.slice(0, 12)}</span>
                       ) : (
-                        <h6>{sendCurrency.coinDenom}</h6>
+                        <h6>{amount.slice(0, 12)}</h6>
                       )}
                     </div>
-                    {isMobile ? (
-                      <span className="subtitle2">{amount}</span>
-                    ) : (
-                      <h6>{amount}</h6>
-                    )}
-                  </div>
-                  <div className="flex items-center place-content-between">
-                    {"paths" in sendCurrency ? (
-                      <span className="subtitle2 md:caption md:text-sm text-iconDefault">
-                        {(sendCurrency as IBCCurrency).paths
-                          .map((path) => path.channelId)
-                          .join(", ")}
+                    <div className="flex items-center place-content-between">
+                      {"paths" in sendCurrency ? (
+                        <span className="subtitle2 md:caption md:text-sm text-iconDefault">
+                          {(sendCurrency as IBCCurrency).paths
+                            .map((path) => path.channelId)
+                            .join(", ")}
+                        </span>
+                      ) : (
+                        <br />
+                      )}
+                      <span className="body1 md:caption md:text-sm text-white-mid">
+                        {percentage}%
                       </span>
-                    ) : (
-                      <br />
-                    )}
-                    <span className="body1 md:caption md:text-sm text-white-mid">
-                      {percentage}%
-                    </span>
+                    </div>
                   </div>
-                </div>
-              )
+                );
+              }
             )}
           </div>
         </div>
@@ -117,7 +122,9 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
             className="after:!bg-transparent after:!border-2 after:!border-iconDefault"
             isOn={config.acknowledgeFee}
             onToggle={() => {
-              config.acknowledgeFee = !config.acknowledgeFee;
+              runInAction(() => {
+                config.acknowledgeFee = !config.acknowledgeFee;
+              });
             }}
           >
             {isMobile ? (

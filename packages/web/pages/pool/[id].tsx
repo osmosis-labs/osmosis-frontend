@@ -1,19 +1,13 @@
 import Head from "next/head";
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { AmountConfig } from "@keplr-wallet/hooks";
-import {
-  ObservableAddLiquidityConfig,
-  ObservableQueryGuageById,
-  ObservableRemoveLiquidityConfig,
-  ObservableTradeTokenInConfig,
-} from "@osmosis-labs/stores";
+import { ObservableQueryGuageById } from "@osmosis-labs/stores";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { Button } from "../../components/buttons";
 import {
   GoSuperfluidCard,
@@ -32,7 +26,12 @@ import {
   ChainInfos,
   UnPoolWhitelistedPoolIds,
 } from "../../config";
-import { useWindowSize } from "../../hooks";
+import {
+  useAddLiquidityConfig,
+  useAmountConfig,
+  useRemoveLiquidityConfig,
+  useWindowSize,
+} from "../../hooks";
 import {
   LockTokensModal,
   ManageLiquidityModal,
@@ -361,45 +360,28 @@ const Pool: FunctionComponent = observer(() => {
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
     useState(false);
   const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
-  const [addLiquidityConfig, removeLiquidityConfig, lockLPTokensConfig] =
-    useMemo(() => {
-      if (pool) {
-        const amountConfig = new AmountConfig(
-          chainStore,
-          queriesStore,
-          chainId,
-          bech32Address,
-          undefined
-        );
-        amountConfig.setSendCurrency(
-          queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id)
-        );
-        return [
-          new ObservableAddLiquidityConfig(
-            chainStore,
-            chainId,
-            pool.id,
-            bech32Address,
-            queriesStore,
-            queryOsmosis.queryGammPoolShare,
-            queryOsmosis.queryGammPools,
-            queriesStore.get(chainId).queryBalances
-          ),
-          new ObservableRemoveLiquidityConfig(
-            chainStore,
-            chainId,
-            pool.id,
-            bech32Address,
-            queriesStore,
-            queryOsmosis.queryGammPoolShare,
-            queryOsmosis.queryGammPools,
-            "50"
-          ),
-          amountConfig,
-        ];
-      }
-      return [undefined, undefined, undefined, undefined];
-    }, [pool, chainStore, chainId, bech32Address, queriesStore, queryOsmosis]);
+  const addLiquidityConfig = useAddLiquidityConfig(
+    chainStore,
+    chainId,
+    pool?.id ?? "",
+    bech32Address,
+    queriesStore
+  );
+  const removeLiquidityConfig = useRemoveLiquidityConfig(
+    chainStore,
+    chainId,
+    pool?.id ?? "",
+    bech32Address,
+    queriesStore
+  );
+  const lockLPTokensConfig = useAmountConfig(
+    chainStore,
+    queriesStore,
+    chainId,
+    bech32Address,
+    undefined,
+    pool ? queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id) : undefined
+  );
 
   const lockupGauges =
     queryOsmosis.queryLockableDurations.lockableDurations.map(
@@ -440,20 +422,6 @@ const Pool: FunctionComponent = observer(() => {
 
   // swap modal
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
-  const tradeTokenInConfig = useMemo(
-    () =>
-      pool
-        ? new ObservableTradeTokenInConfig(
-            chainStore,
-            queriesStore,
-            chainStore.osmosis.chainId,
-            account.bech32Address,
-            undefined,
-            [pool.pool]
-          )
-        : undefined,
-    [chainStore, queriesStore, account.bech32Address, pool]
-  );
 
   // unpool
   const showDepoolButton = (() => {
@@ -573,7 +541,7 @@ const Pool: FunctionComponent = observer(() => {
           }}
         />
       )}
-      {tradeTokenInConfig && pool && (
+      {pool && (
         <TradeTokens
           className="md:!p-0"
           title={
@@ -677,7 +645,7 @@ const Pool: FunctionComponent = observer(() => {
                     await account.osmosis.sendSuperfluidDelegateMsg(
                       superfluid.upgradeableLPLockIds.lockIds,
                       validatorAddress,
-                      "",
+                      undefined,
                       () => setShowSuperfluidValidatorsModal(false)
                     );
                   } catch (e) {
@@ -696,7 +664,7 @@ const Pool: FunctionComponent = observer(() => {
                         },
                       ],
                       validatorAddress,
-                      "",
+                      undefined,
                       () => setShowSuperfluidValidatorsModal(false)
                     );
                     // TODO: clear/reset LP lock amount config ??
@@ -713,7 +681,7 @@ const Pool: FunctionComponent = observer(() => {
           <MetricLoader className="h-7 w-64" isLoading={!pool}>
             <h5>
               {`Pool #${pool?.id} : ${pool?.poolAssets
-                .map((asset) => asset.amount.currency.coinDenom)
+                .map((asset) => asset.amount.currency.coinDenom.split(" ")[0])
                 .map((denom) => truncateString(denom))
                 .join(" / ")}`}
             </h5>
@@ -1177,54 +1145,74 @@ const Pool: FunctionComponent = observer(() => {
           ) : (
             <h5>Pool Catalyst</h5>
           )}
-          <div className="flex md:flex-col gap-5 my-5">
+          <div className="flex flex-wrap md:flex-col gap-5 my-5">
             {(userPoolAssets ?? [undefined, undefined]).map(
-              (userAsset, index) => (
-                <PoolCatalystCard
-                  key={index}
-                  colorKey={Number(pool?.id ?? "0") + index}
-                  isLoading={!pool || !userPoolAssets}
-                  className="md:w-full w-1/2 max-w-md"
-                  percentDec={userAsset?.ratio.toString()}
-                  tokenDenom={userAsset?.asset.currency.coinDenom}
-                  isMobile={isMobile}
-                  metrics={[
-                    {
-                      label: "Total amount",
-                      value: (
-                        <MetricLoader isLoading={!userPoolAssets}>
-                          {truncateString(
-                            pool?.poolAssets
-                              .find(
-                                (asset) =>
-                                  asset.amount.currency.coinDenom ===
-                                  userAsset?.asset.currency.coinDenom
-                              )
-                              ?.amount.maxDecimals(6)
-                              .trim(true)
-                              .toString() ?? "0",
-                            30
-                          )}
-                        </MetricLoader>
-                      ),
-                    },
-                    {
-                      label: "My amount",
-                      value: (
-                        <MetricLoader isLoading={!userPoolAssets}>
-                          {truncateString(
-                            userAsset?.asset
-                              .maxDecimals(6)
-                              .trim(true)
-                              .toString() ?? "",
-                            30
-                          )}
-                        </MetricLoader>
-                      ),
-                    },
-                  ]}
-                />
-              )
+              (userAsset, index) => {
+                const totalAmount = pool?.poolAssets
+                  .find(
+                    (asset) =>
+                      asset.amount.currency.coinDenom ===
+                      userAsset?.asset.currency.coinDenom
+                  )
+                  ?.amount.trim(true);
+                const myAmount = userAsset?.asset.maxDecimals(6).trim(true);
+
+                // only show "123,321,312 OSMO" or "0.2331223 OSMO", not both
+                const totalAmountAdjusted = totalAmount
+                  ? truncateString(
+                      totalAmount
+                        .maxDecimals(
+                          totalAmount.toDec().lte(new Dec(1))
+                            ? totalAmount.currency.coinDecimals
+                            : 0
+                        )
+                        .toString(),
+                      30
+                    )
+                  : "0";
+                const myAmountAdjusted = myAmount
+                  ? truncateString(
+                      myAmount
+                        .maxDecimals(
+                          myAmount.toDec().lte(new Dec(1))
+                            ? myAmount.currency.coinDecimals
+                            : 0
+                        )
+                        .toString(),
+                      30
+                    )
+                  : "0";
+
+                return (
+                  <PoolCatalystCard
+                    key={index}
+                    colorKey={Number(pool?.id ?? "0") + index}
+                    isLoading={!pool || !userPoolAssets}
+                    className="md:w-full w-1/2 max-w-md"
+                    percentDec={userAsset?.ratio.toString()}
+                    tokenDenom={userAsset?.asset.currency.coinDenom}
+                    isMobile={isMobile}
+                    metrics={[
+                      {
+                        label: "Total amount",
+                        value: (
+                          <MetricLoader isLoading={!userPoolAssets}>
+                            {totalAmountAdjusted}
+                          </MetricLoader>
+                        ),
+                      },
+                      {
+                        label: "My amount",
+                        value: (
+                          <MetricLoader isLoading={!userPoolAssets}>
+                            {myAmountAdjusted}
+                          </MetricLoader>
+                        ),
+                      },
+                    ]}
+                  />
+                );
+              }
             )}
           </div>
         </div>

@@ -18,6 +18,10 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
           {config.assets.map(({ percentage, amountConfig }) => {
             const currency = amountConfig.sendCurrency;
 
+            const justCoinDenom = currency.coinDenom.includes("channel")
+              ? currency.coinDenom.split(" ").slice(0, 1).join("")
+              : currency.coinDenom;
+
             return (
               <div
                 key={amountConfig.sendCurrency.coinDenom}
@@ -39,9 +43,9 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                   </div>
                   <div className="flex flex-col place-content-evenly">
                     {isMobile ? (
-                      <span className="subtitle2">{currency.coinDenom}</span>
+                      <span className="subtitle2">{justCoinDenom}</span>
                     ) : (
-                      <h5>{currency.coinDenom}</h5>
+                      <h5>{justCoinDenom}</h5>
                     )}
                     <div className="text-iconDefault text-sm md:text-xs md:caption font-semibold">
                       {percentage}%
@@ -55,6 +59,7 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                       {config.queryBalances
                         .getQueryBech32Address(config.sender)
                         .getBalanceFromCurrency(amountConfig.sendCurrency)
+                        .maxDecimals(6)
                         .toString()}
                     </span>
                     <Button
@@ -75,7 +80,7 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                       onInput={(value) => amountConfig.setAmount(value)}
                       placeholder=""
                     />
-                    {!isMobile && <h6>{currency.coinDenom}</h6>}
+                    {!isMobile && <h6>{justCoinDenom}</h6>}
                   </div>
                 </div>
               </div>

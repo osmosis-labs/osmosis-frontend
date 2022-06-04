@@ -40,7 +40,7 @@ export const PoolTokenSelect: FunctionComponent<
           className
         )}
       >
-        <div
+        <button
           className="relative flex md:gap-1 gap-3"
           onClick={() => setToggleOpen(!isToggleOpen)}
         >
@@ -61,7 +61,7 @@ export const PoolTokenSelect: FunctionComponent<
               width={isMobile ? 15 : 20}
             />
           </div>
-        </div>
+        </button>
       </div>
       {isToggleOpen && (
         <TokensDropdown
@@ -87,7 +87,7 @@ const TokensDropdown: FunctionComponent<
 > = ({ tokens, onSelect, isMobile = false }) => (
   <div className="absolute flex flex-col bg-card rounded-b-xl z-50 md:w-52 w-64">
     {tokens.map((token, index) => (
-      <div
+      <button
         className={classNames(
           "hover:bg-white-faint cursor-pointer p-5 md:p-2 border-t border-dashed border-white-faint",
           { "rounded-b-xl": index === tokens.length - 1 }
@@ -96,7 +96,7 @@ const TokensDropdown: FunctionComponent<
         onClick={() => onSelect(token.coinDenom)}
       >
         <Token {...token} ringColorIndex={index} isMobile={isMobile} />
-      </div>
+      </button>
     ))}
   </div>
 );
