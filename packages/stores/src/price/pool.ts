@@ -46,7 +46,11 @@ export class PoolFallbackPriceStore
     return result;
   }
 
-  getPrice(coinId: string, vsCurrency: string): number | undefined {
+  getPrice(coinId: string, vsCurrency?: string): number | undefined {
+    if (!vsCurrency) {
+      vsCurrency = this.defaultVsCurrency;
+    }
+
     try {
       const routes = this.intermediateRoutesMap;
       const route = routes.get(coinId);

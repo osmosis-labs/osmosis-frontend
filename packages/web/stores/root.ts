@@ -17,7 +17,6 @@ import {
   QueriesExternalStore,
   IBCTransferHistoryStore,
   OsmosisAccount,
-  IPriceStore,
   PoolFallbackPriceStore,
 } from "@osmosis-labs/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
@@ -44,7 +43,7 @@ export class RootStore {
     [CosmosAccount, CosmwasmAccount, OsmosisAccount]
   >;
 
-  public readonly priceStore: IPriceStore;
+  public readonly priceStore: PoolFallbackPriceStore;
 
   public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
 
