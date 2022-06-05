@@ -82,8 +82,6 @@ export const TokenSelect: FunctionComponent<
         return 0;
       });
 
-    console.log(dropdownTokens);
-
     const [searchValue, setTokenSearch, searchedTokens] = useFilteredData(
       dropdownTokens,
       [

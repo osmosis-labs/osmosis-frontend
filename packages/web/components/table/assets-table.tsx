@@ -66,6 +66,10 @@ export const AssetsTable: FunctionComponent<Props> = ({
             value && value.toDec().gt(new Dec(0))
               ? value.toString()
               : undefined,
+          fiatValueRaw:
+            value && value.toDec().gt(new Dec(0))
+              ? value?.toDec().toString()
+              : "0",
           isCW20: false,
         };
       }),
@@ -325,7 +329,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
                     display: "Network",
                   },
                   {
-                    id: "amount",
+                    id: "fiatValueRaw",
                     display: "Balance",
                   },
                 ]}
@@ -379,7 +383,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
               {
                 display: "Balance",
                 displayCell: BalanceCell,
-                sort: sortColumnWithKeys(["amount", "fiatValue"], "descending"),
+                sort: sortColumnWithKeys(["fiatValueRaw"], "descending"),
                 className: "text-right pr-24 lg:pr-8 1.5md:pr-1",
               },
               ...(mergeWithdrawCol
