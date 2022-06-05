@@ -2,24 +2,16 @@ import { WalletStatus } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Pool } from "@osmosis-labs/pools";
-import {
-  ObservableTradeTokenInConfig,
-  ObservableSlippageConfig,
-} from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import React, {
-  FunctionComponent,
-  useEffect,
-  useRef,
-  useMemo,
-  useState,
-} from "react";
+import React, { FunctionComponent, useEffect, useRef, useMemo } from "react";
 import { IS_FRONTIER } from "../../config";
 import {
   useBooleanWithWindowEvent,
+  useSlippageConfig,
   useTokenSwapQueryParams,
+  useTradeTokenInConfig,
   useWindowSize,
 } from "../../hooks";
 import { useStore } from "../../stores";
@@ -54,21 +46,14 @@ export const TradeClipboard: FunctionComponent<{
   const [isSettingOpen, setIsSettingOpen] = useBooleanWithWindowEvent(false);
   const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
 
-  const slippageConfig = useMemo(() => new ObservableSlippageConfig(), []);
-  const [tradeTokenInConfig] = useState(
-    () =>
-      new ObservableTradeTokenInConfig(
-        chainStore,
-        queriesStore,
-        chainId,
-        account.bech32Address,
-        undefined,
-        pools
-      )
+  const slippageConfig = useSlippageConfig();
+  const tradeTokenInConfig = useTradeTokenInConfig(
+    chainStore,
+    chainId,
+    account.bech32Address,
+    queriesStore,
+    pools
   );
-  tradeTokenInConfig.setChain(chainId);
-  tradeTokenInConfig.setSender(account.bech32Address);
-  tradeTokenInConfig.setPools(pools);
 
   // auto focus from amount on token switch
   const fromAmountInput = useRef<HTMLInputElement | null>(null);
