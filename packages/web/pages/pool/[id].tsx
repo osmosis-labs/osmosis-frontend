@@ -868,7 +868,7 @@ const Pool: FunctionComponent = observer(() => {
                       validatorName={validatorName}
                       validatorImgSrc={validatorImgSrc}
                       validatorCommission={validatorCommission?.toString()}
-                      delegation={amount.maxDecimals(2).trim(true).toString()}
+                      delegation={amount.trim(true).toString()}
                       apr={apr.maxDecimals(2).trim(true).toString()}
                       isMobile={isMobile}
                     />

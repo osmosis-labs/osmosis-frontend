@@ -6,6 +6,7 @@ import {
   IQueriesStore,
   AccountSetBaseSuper,
   CosmosAccount,
+  CosmosQueries,
 } from "@keplr-wallet/stores";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
@@ -15,6 +16,7 @@ import { OsmosisQueries } from "../queries";
 import { osmosis } from "./msg/proto";
 import * as Msgs from "./msg/make-msg";
 import { OsmosisMsgOpts, defaultMsgOpts } from "./types";
+import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/types";
 
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;
@@ -25,7 +27,7 @@ export const OsmosisAccount = {
     msgOptsCreator?: (
       chainId: string
     ) => DeepPartial<OsmosisMsgOpts> | undefined;
-    queriesStore: IQueriesStore<OsmosisQueries>;
+    queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
   }): (
     base: AccountSetBaseSuper & CosmosAccount,
     chainGetter: ChainGetter,
@@ -57,7 +59,9 @@ export class OsmosisAccountImpl {
     protected readonly base: AccountSetBaseSuper & CosmosAccount,
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
-    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly queriesStore: IQueriesStore<
+      CosmosQueries & OsmosisQueries
+    >,
     protected readonly _msgOpts: OsmosisMsgOpts
   ) {}
 
@@ -1056,6 +1060,14 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
+            .fetch();
+
+          queries.osmosis?.queryAccountLocked
+            .get(this.base.bech32Address)
+            .fetch();
+
+          queries.cosmos.queryValidators
+            .getQueryStatus(BondStatus.Bonded)
             .fetch();
 
           queries.osmosis?.querySuperfluidDelegations
