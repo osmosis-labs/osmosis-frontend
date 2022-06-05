@@ -161,7 +161,12 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     );
     const [query, setQuery, filteredPools] = useFilteredData(
       sortedAllPoolsWithMetrics,
-      ["pool.id", "poolName", "networkNames"]
+      [
+        "pool.id",
+        "poolName",
+        "networkNames",
+        "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
+      ]
     );
     const [page, setPage, minPage, numPages, allData] = usePaginatedData(
       filteredPools,
