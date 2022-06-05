@@ -23,7 +23,6 @@ import { DepoolingTable } from "../../components/table/depooling-table";
 import { truncateString } from "../../components/utils";
 import {
   ExternalIncentiveGaugeAllowList,
-  ChainInfos,
   UnPoolWhitelistedPoolIds,
 } from "../../config";
 import {
