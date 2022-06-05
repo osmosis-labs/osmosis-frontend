@@ -572,8 +572,8 @@ const Pool: FunctionComponent = observer(() => {
             superfluid.delegations.length > 0
           }
           onLockToken={async (gaugeId, electSuperfluid) => {
-            setShowLockLPTokenModal(false);
             if (electSuperfluid) {
+              setShowLockLPTokenModal(false);
               setShowSuperfluidValidatorsModal(true);
               // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
             } else {
