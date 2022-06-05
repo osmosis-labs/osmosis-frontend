@@ -93,7 +93,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                       </span>
                     </div>
                   )}
-                  <div className="flex flex-col gap-2.5">
+                  <div className="flex flex-col gap-2.5 max-h-96 overflow-y-auto">
                     {(addLiquidityConfig.isSingleAmountIn &&
                     addLiquidityConfig.singleAmountInAsset
                       ? [addLiquidityConfig.singleAmountInAsset]
@@ -142,6 +142,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                           {isPeggedCurrency && (
                             <Info
                               size="subtle"
+                              className="border-2 border-secondary-50/30"
                               message={`You are adding liquidity to ${
                                 currency!.originCurrency!.coinDenom
                               }, ${
