@@ -82,9 +82,17 @@ export const TokenSelect: FunctionComponent<
         return 0;
       });
 
+    console.log(dropdownTokens);
+
     const [searchValue, setTokenSearch, searchedTokens] = useFilteredData(
       dropdownTokens,
-      ["token.denom", "chainName", "token.currency.originCurrency.pegMechanism"]
+      [
+        "token.denom",
+        "token.currency.originCurrency.coinMinimalDenom",
+        "token.originCurrency.coinMinimalDenom",
+        "chainName",
+        "token.currency.originCurrency.pegMechanism",
+      ]
     );
     const selectedCurrency =
       selectedToken instanceof CoinPretty
