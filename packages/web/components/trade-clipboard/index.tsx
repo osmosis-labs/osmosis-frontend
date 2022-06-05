@@ -472,11 +472,15 @@ export const TradeClipboard: FunctionComponent<{
                       ? tradeTokenInConfig.expectedSwapResult.amount
                           .trim(true)
                           .shrink(true)
-                          .maxDecimals(6)
+                          .maxDecimals(
+                            Math.min(
+                              tradeTokenInConfig.expectedSwapResult.amount
+                                .currency.coinDecimals,
+                              8
+                            )
+                          )
+                          .hideDenom(true)
                           .toString()
-                          .split(" ")
-                          .slice(0, 2)
-                          .join(" ")
                       : "0"
                   }`}</h5>
                 </div>
