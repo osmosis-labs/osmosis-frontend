@@ -12,6 +12,8 @@ export type SimplifiedChainInfo = Omit<
     AppCurrency & {
       isStakeCurrency?: boolean;
       isFeeCurrency?: boolean;
+      /** For assets that are pegged/stablecoins. */
+      pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
     }
   >;
 };

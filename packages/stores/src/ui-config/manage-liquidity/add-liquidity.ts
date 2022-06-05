@@ -85,7 +85,11 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
         weight: IntPretty;
         weightFraction: RatePretty;
         amount: CoinPretty;
-        currency: Currency;
+        currency: Currency & {
+          originCurrency?: Currency & {
+            pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+          };
+        };
       }
     | undefined {
     return this.poolAssets.find(
@@ -237,7 +241,11 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     weight: IntPretty;
     weightFraction: RatePretty;
     amount: CoinPretty;
-    currency: Currency;
+    currency: Currency & {
+      originCurrency?: Currency & {
+        pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+      };
+    };
   }[] {
     const pool = this._queryPools.getPool(this._poolId);
     if (!pool) {
@@ -246,7 +254,11 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     return pool.poolAssets.map((asset) => {
       return {
         ...asset,
-        currency: asset.amount.currency,
+        currency: asset.amount.currency as Currency & {
+          originCurrency: Currency & {
+            pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+          };
+        },
       };
     });
   }
