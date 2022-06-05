@@ -24,23 +24,13 @@ export const PoolGaugeCard: FunctionComponent<
         <MetricLoader className="h-6 md:h-4" isLoading={isLoading}>
           {days ?? "0"} unbonding
           {superfluidApr && (
-            <>
-              {" "}
-              <div className="h-[24px] w-[24px] shrink-0">
-                <Image
-                  alt="superfluid"
-                  src="/icons/superfluid-osmo.svg"
-                  height={24}
-                  width={24}
-                />
-              </div>
-              <InfoTooltip
-                className="flex shrink-0"
-                style="secondary-200"
-                size={{ height: 23, width: 23 }}
-                content="Superfluid Staking lets you secure the network and receive additional rewards paid out in OSMO."
-              />
-            </>
+            <InfoTooltip
+              className="flex shrink-0"
+              style="secondary-200"
+              iconSrcOverride="/icons/superfluid-osmo.svg"
+              size={{ height: 23, width: 23 }}
+              content="Superfluid Staking lets you secure the network and receive additional rewards paid out in OSMO."
+            />
           )}
         </MetricLoader>
       </UnbondingPeriodHeader>
