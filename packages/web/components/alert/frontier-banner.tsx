@@ -29,7 +29,7 @@ export const FrontierBanner: FunctionComponent = () => {
         />
       </button>
       <div className="flex items-center md:px-1 px-2 md:gap-1 gap-4">
-        <div className="shrink-0">
+        <div className="pt-1.5 mx-2 shrink-0">
           <Image
             alt="info"
             src="/icons/info-white-emphasis.svg"
