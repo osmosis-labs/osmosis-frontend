@@ -125,6 +125,13 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             poolName: pool.poolAssets
               .map((asset) => asset.amount.currency.coinDenom)
               .join("/"),
+            networkNames: pool.poolAssets
+              .map(
+                (asset) =>
+                  chainStore.getChainFromCurrency(asset.amount.denom)
+                    ?.chainName ?? ""
+              )
+              .join(" "),
           };
         }),
       [
@@ -154,7 +161,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     );
     const [query, setQuery, filteredPools] = useFilteredData(
       sortedAllPoolsWithMetrics,
-      ["pool.id", "poolName"]
+      ["pool.id", "poolName", "networkNames"]
     );
     const [page, setPage, minPage, numPages, allData] = usePaginatedData(
       filteredPools,

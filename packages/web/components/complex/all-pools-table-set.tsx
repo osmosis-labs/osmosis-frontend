@@ -75,6 +75,13 @@ export const AllPoolsTableSet: FunctionComponent<{
         poolName: pool.poolAssets
           .map((asset) => asset.amount.currency.coinDenom)
           .join("/"),
+        networkNames: pool.poolAssets
+          .map(
+            (asset) =>
+              chainStore.getChainFromCurrency(asset.amount.denom)?.chainName ??
+              ""
+          )
+          .join(" "),
       })),
     // eslint-disable-next-line
     [
@@ -137,7 +144,7 @@ export const AllPoolsTableSet: FunctionComponent<{
 
   const [query, setQuery, filteredPools] = useFilteredData(
     sortedAllPoolsWithMetrics,
-    ["pool.id", "poolName"]
+    ["pool.id", "poolName", "networkNames"]
   );
 
   const [page, setPage, minPage, numPages, allData] = usePaginatedData(
