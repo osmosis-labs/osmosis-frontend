@@ -1,5 +1,6 @@
 import { ChainInfoWithExplorer } from "../stores/chain";
 import { AppCurrency } from "@keplr-wallet/types";
+import { PeggedCurrency } from "../stores/assets";
 
 /** All currency attributes (stake and fee) are defined once in the `currencies` list.
  *  Maintains the option to skip this conversion and keep the verbose `ChainInfo` type.
@@ -9,12 +10,11 @@ export type SimplifiedChainInfo = Omit<
   "stakeCurrency" | "feeCurrencies"
 > & {
   currencies: Array<
-    AppCurrency & {
-      isStakeCurrency?: boolean;
-      isFeeCurrency?: boolean;
-      /** For assets that are pegged/stablecoins. */
-      pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
-    }
+    AppCurrency &
+      PeggedCurrency & {
+        isStakeCurrency?: boolean;
+        isFeeCurrency?: boolean;
+      }
   >;
 };
 

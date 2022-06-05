@@ -51,6 +51,14 @@ export const TokenSelect: FunctionComponent<
             token instanceof CoinPretty ? token.denom : token.coinDenom
           ).includes(selectedTokenDenom)
       )
+      .map((token) => ({
+        token,
+        // filter by chain name
+        chainName:
+          chainStore.getChainFromCurrency(
+            token instanceof CoinPretty ? token.denom : token.coinDenom
+          )?.chainName ?? "",
+      }))
       .sort((a, b) => {
         if (!(a instanceof CoinPretty) || !(b instanceof CoinPretty)) return 0;
 
@@ -76,7 +84,7 @@ export const TokenSelect: FunctionComponent<
 
     const [searchValue, setTokenSearch, searchedTokens] = useFilteredData(
       dropdownTokens,
-      ["denom"]
+      ["token.denom", "chainName", "token.currency.originCurrency.pegMechanism"]
     );
     const selectedCurrency =
       selectedToken instanceof CoinPretty
@@ -173,10 +181,11 @@ export const TokenSelect: FunctionComponent<
             <ul className="token-item-list overflow-y-scroll max-h-80">
               {searchedTokens.map((token, index) => {
                 const currency =
-                  token instanceof CoinPretty ? token.currency : token;
+                  token.token instanceof CoinPretty
+                    ? token.token.currency
+                    : token.token;
                 const { coinDenom, coinImageUrl } = currency;
-                const networkName =
-                  chainStore.getChainFromCurrency(coinDenom)?.chainName;
+                const networkName = token.chainName;
                 const justDenom =
                   coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
                 const channel =
