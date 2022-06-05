@@ -27,7 +27,7 @@ export const TokenSelect: FunctionComponent<
     dropdownOpen,
     setDropdownState,
   }) => {
-    const { chainStore } = useStore();
+    const { chainStore, priceStore } = useStore();
 
     // parent overrideable state
     const [isSelectOpenLocal, setIsSelectOpenLocal] =
@@ -53,8 +53,24 @@ export const TokenSelect: FunctionComponent<
       )
       .sort((a, b) => {
         if (!(a instanceof CoinPretty) || !(b instanceof CoinPretty)) return 0;
-        if (a.toDec().gt(b.toDec()) && sortByBalances) return -1;
-        if (a.toDec().lt(b.toDec()) && sortByBalances) return 1;
+
+        const aFiatValue = priceStore.calculatePrice(a);
+        const bFiatValue = priceStore.calculatePrice(b);
+
+        if (
+          aFiatValue &&
+          bFiatValue &&
+          aFiatValue.toDec().gt(bFiatValue.toDec()) &&
+          sortByBalances
+        )
+          return -1;
+        if (
+          aFiatValue &&
+          bFiatValue &&
+          aFiatValue.toDec().lt(bFiatValue.toDec()) &&
+          sortByBalances
+        )
+          return 1;
         return 0;
       });
 
