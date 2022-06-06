@@ -1149,14 +1149,13 @@ const Pool: FunctionComponent = observer(() => {
                   ?.amount.trim(true);
                 const myAmount = userAsset?.asset.maxDecimals(6).trim(true);
 
-                // only show "123,321,312 OSMO" or "0.2331223 OSMO", not both
                 const totalAmountAdjusted = totalAmount
                   ? truncateString(
                       totalAmount
                         .maxDecimals(
                           totalAmount.toDec().lte(new Dec(1))
                             ? totalAmount.currency.coinDecimals
-                            : 0
+                            : 6
                         )
                         .toString(),
                       30
@@ -1168,7 +1167,7 @@ const Pool: FunctionComponent = observer(() => {
                         .maxDecimals(
                           myAmount.toDec().lte(new Dec(1))
                             ? myAmount.currency.coinDecimals
-                            : 0
+                            : 6
                         )
                         .toString(),
                       30

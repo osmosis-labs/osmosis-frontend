@@ -102,7 +102,7 @@ export const TradeClipboard: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "relative rounded-2xl bg-card border-2 md:border-0 border-cardInner p-2.5 md:p-0",
+        "relative rounded-2xl bg-card border-2 md:border-0 border-cardInner p-2.5 md:p-0 shadow-elevation-08dp",
         containerClassName
       )}
     >
