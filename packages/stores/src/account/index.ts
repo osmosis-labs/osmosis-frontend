@@ -131,20 +131,24 @@ export class OsmosisAccountImpl {
         aminoMsgs: [msg],
         protoMsgs: [
           {
-            typeUrl: "/osmosis.gamm.v1beta1.MsgCreateBalancerPool",
-            value: osmosis.gamm.v1beta1.MsgCreateBalancerPool.encode({
-              sender: msg.value.sender,
-              poolParams: {
-                swapFee: this.changeDecStringToProtoBz(
-                  msg.value.poolParams.swapFee
-                ),
-                exitFee: this.changeDecStringToProtoBz(
-                  msg.value.poolParams.exitFee
-                ),
-              },
-              poolAssets: msg.value.poolAssets,
-              futurePoolGovernor: msg.value.future_pool_governor,
-            }).finish(),
+            typeUrl:
+              "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool",
+            value:
+              osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool.encode(
+                {
+                  sender: msg.value.sender,
+                  poolParams: {
+                    swapFee: this.changeDecStringToProtoBz(
+                      msg.value.poolParams.swapFee
+                    ),
+                    exitFee: this.changeDecStringToProtoBz(
+                      msg.value.poolParams.exitFee
+                    ),
+                  },
+                  poolAssets: msg.value.poolAssets,
+                  futurePoolGovernor: msg.value.future_pool_governor,
+                }
+              ).finish(),
           },
         ],
       },
