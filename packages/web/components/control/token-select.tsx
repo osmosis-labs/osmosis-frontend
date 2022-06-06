@@ -113,7 +113,6 @@ export const TokenSelect: FunctionComponent<
           setIsSelectOpen(false);
         }
       };
-      console.log("add listener");
       if (typeof document !== "undefined") {
         document.addEventListener("keydown", listener);
         return () => document.removeEventListener("keydown", listener);
