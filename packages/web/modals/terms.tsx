@@ -21,7 +21,7 @@ export const TermsModal: FunctionComponent<
     <ModalBase {...props} onRequestClose={() => undefined} hideCloseButton>
       <div>
         <div className="max-w-modal">
-          <div className="max-h-terms overflow-y-scroll bg-background rounded-2xl p-5 mb-8">
+          <div className="max-h-terms md:max-h-[16rem] overflow-y-scroll bg-background rounded-2xl p-5 mb-8">
             <div className="text-white-mid text-xs md:caption">
               Osmosis is a decentralized peer-to-peer blockchain that people can
               use to create liquidity and trade IBC enabled tokens. The Osmosis
@@ -59,7 +59,7 @@ export const TermsModal: FunctionComponent<
               )}
             </div>
           </div>
-          <div className="flex justify-center items-center text-white-high text-sm md:text-base mb-6">
+          <div className="flex justify-center items-center text-white-high text-base md:text-sm mb-6">
             <CheckBox
               className="mr-3"
               isOn={agree}

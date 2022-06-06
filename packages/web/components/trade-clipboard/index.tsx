@@ -665,13 +665,39 @@ export const TradeClipboard: FunctionComponent<{
                       routes[0].poolId,
                       tokenIn,
                       routes[0].tokenOutCurrency,
-                      maxSlippage
+                      maxSlippage,
+                      "",
+                      {
+                        amount: [
+                          {
+                            denom:
+                              chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+                            amount: "0",
+                          },
+                        ],
+                      },
+                      {
+                        preferNoSetFee: true,
+                      }
                     );
                   } else {
                     await account.osmosis.sendMultihopSwapExactAmountInMsg(
                       routes,
                       tokenIn,
-                      maxSlippage
+                      maxSlippage,
+                      "",
+                      {
+                        amount: [
+                          {
+                            denom:
+                              chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+                            amount: "0",
+                          },
+                        ],
+                      },
+                      {
+                        preferNoSetFee: true,
+                      }
                     );
                   }
                   tradeTokenInConfig.setAmount("");
