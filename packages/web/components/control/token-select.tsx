@@ -107,6 +107,18 @@ export const TokenSelect: FunctionComponent<
       }
     }, [isSelectOpen]);
 
+    useEffect(() => {
+      const listener = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          setIsSelectOpen(false);
+        }
+      };
+      if (typeof document !== "undefined") {
+        document.addEventListener("keydown", listener);
+        return () => document.removeEventListener("keydown", listener);
+      }
+    }, [isSelectOpen, setIsSelectOpen]);
+
     return (
       <div className="flex md:justify-start justify-center items-center relative">
         {selectedCurrency && (
