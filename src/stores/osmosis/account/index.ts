@@ -239,8 +239,8 @@ export class OsmosisAccount {
 				aminoMsgs: [msg],
 				protoMsgs: [
 					{
-						type_url: '/osmosis.gamm.v1beta1.MsgCreateBalancerPool',
-						value: osmosis.gamm.v1beta1.MsgCreateBalancerPool.encode({
+						type_url: '/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool',
+						value: osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool.encode({
 							sender: msg.value.sender,
 							poolParams: {
 								swapFee: this.changeDecStringToProtoBz(msg.value.poolParams.swapFee),
