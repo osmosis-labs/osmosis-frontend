@@ -80,6 +80,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     return this._isSingleAmountIn;
   }
 
+  @computed
   get singleAmountInAsset():
     | {
         weight: IntPretty;
