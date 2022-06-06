@@ -105,6 +105,9 @@ export const TradeClipboard: FunctionComponent<{
         "relative rounded-2xl bg-card border-2 md:border-0 border-cardInner p-2.5 md:p-0 shadow-elevation-08dp",
         containerClassName
       )}
+      style={{
+        marginBottom: "env(safe-area-inset-bottom)",
+      }}
     >
       <div className="rounded-xl bg-cardInner px-5 md:px-3 pt-5 md:pt-4 pb-6 md:pb-4">
         {!isInModal && (
