@@ -8,13 +8,14 @@ import {
   CosmosAccount,
 } from "@keplr-wallet/stores";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
-import { Currency } from "@keplr-wallet/types";
+import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
 import { WeightedPoolEstimates } from "@osmosis-labs/math";
 import { Pool } from "@osmosis-labs/pools";
 import { OsmosisQueries } from "../queries";
 import { osmosis } from "./msg/proto";
 import * as Msgs from "./msg/make-msg";
 import { OsmosisMsgOpts, defaultMsgOpts } from "./types";
+import { StdFee } from "@cosmjs/launchpad";
 
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;
@@ -435,6 +436,8 @@ export class OsmosisAccountImpl {
     tokenIn: { currency: Currency; amount: string },
     maxSlippage: string = "0",
     memo: string = "",
+    stdFee: Partial<StdFee> = {},
+    signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
     const queries = this.queries;
@@ -528,12 +531,14 @@ export class OsmosisAccountImpl {
       },
       memo,
       {
-        amount: [],
-        gas: (
-          this._msgOpts.swapExactAmountIn.gas * Math.max(routes.length, 1)
-        ).toString(),
+        amount: stdFee.amount ?? [],
+        gas:
+          stdFee.gas ??
+          (
+            this._msgOpts.swapExactAmountIn.gas * Math.max(routes.length, 1)
+          ).toString(),
       },
-      undefined,
+      signOptions,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
@@ -577,6 +582,8 @@ export class OsmosisAccountImpl {
     tokenOutCurrency: Currency,
     maxSlippage: string = "0",
     memo: string = "",
+    stdFee: Partial<StdFee> = {},
+    signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
     const queries = this.queries;
@@ -649,10 +656,10 @@ export class OsmosisAccountImpl {
       },
       memo,
       {
-        amount: [],
-        gas: this._msgOpts.swapExactAmountIn.gas.toString(),
+        amount: stdFee.amount ?? [],
+        gas: stdFee.gas ?? this._msgOpts.swapExactAmountIn.gas.toString(),
       },
-      undefined,
+      signOptions,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
