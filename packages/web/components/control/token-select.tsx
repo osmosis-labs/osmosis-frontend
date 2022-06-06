@@ -113,11 +113,12 @@ export const TokenSelect: FunctionComponent<
           setIsSelectOpen(false);
         }
       };
+      console.log("add listener");
       if (typeof document !== "undefined") {
         document.addEventListener("keydown", listener);
         return () => document.removeEventListener("keydown", listener);
       }
-    }, [isSelectOpen, setIsSelectOpen]);
+    }, [setIsSelectOpen]);
 
     return (
       <div className="flex md:justify-start justify-center items-center relative">
