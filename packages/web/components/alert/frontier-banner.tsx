@@ -1,33 +1,13 @@
 import Image from "next/image";
-import { FunctionComponent, useState, useEffect } from "react";
+import { FunctionComponent } from "react";
 import { IS_FRONTIER } from "../../config";
-
-const LOCALSTORAGE_KEY = "show_frontier_banner";
+import { useLocalStorageState } from "../../hooks";
 
 export const FrontierBanner: FunctionComponent = () => {
-  const [showBanner, setShowBannerLocal] = useState(IS_FRONTIER);
-
-  const setShowBanner = (show: boolean) => {
-    if (typeof window !== "undefined" && window.localStorage) {
-      window.localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(show));
-    }
-    setShowBannerLocal(show);
-  };
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const shouldShow = window.localStorage.getItem(LOCALSTORAGE_KEY);
-
-      if (shouldShow) {
-        try {
-          const show = JSON.parse(shouldShow);
-          setShowBannerLocal(show);
-        } catch {
-          console.error("Problem parsing", LOCALSTORAGE_KEY);
-        }
-      }
-    }
-  }, []);
+  const [showBanner, setShowBanner] = useLocalStorageState(
+    "show_frontier_banner",
+    IS_FRONTIER
+  );
 
   if (!showBanner) {
     return null;
