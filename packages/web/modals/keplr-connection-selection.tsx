@@ -60,6 +60,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
             Protocol Disclaimer
           </a>
         </Link>
+        .
       </p>
     </div>
   </ModalBase>
