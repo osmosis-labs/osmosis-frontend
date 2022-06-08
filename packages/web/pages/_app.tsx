@@ -30,7 +30,6 @@ const TemporalChainHaltModal: FunctionComponent = () => {
       className="!max-w-[34rem]"
       isOpen={isOpen}
       onRequestClose={() => setIsOpen(false)}
-      hideCloseButton={true}
     >
       <h6 className="mb-3">Announcement</h6>
       <div className="bg-background rounded-2xl p-5">
