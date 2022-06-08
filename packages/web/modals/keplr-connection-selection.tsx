@@ -1,6 +1,7 @@
+import Link from "next/link";
+import Image from "next/image";
 import React, { FunctionComponent } from "react";
 import { ModalBase, ModalBaseProps } from "./base";
-import Image from "next/image";
 
 export const KeplrConnectionSelectModal: FunctionComponent<
   ModalBaseProps & {
@@ -12,7 +13,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
     isOpen={isOpen}
     onRequestClose={onRequestClose}
     className="max-w-[30.625rem]"
-    title={<h6 className="mt-1 mb-4">Connect Wallet</h6>}
+    title={<h6 className="mb-4">Connect Wallet</h6>}
   >
     <button
       className="bg-background rounded-2xl p-5 flex items-center"
@@ -50,5 +51,16 @@ export const KeplrConnectionSelectModal: FunctionComponent<
         <p className="body2 text-iconDefault mt-1">Keplr Mobile</p>
       </div>
     </button>
+    <div className="mt-5 p-5 rounded-2xl bg-card">
+      <p className="caption text-white-mid">
+        By connecting a wallet, you acknowledge that you have read and
+        understand the Osmosis{" "}
+        <Link href="/disclaimer" passHref>
+          <a className="underline" target="_blank" rel="noopener noreferrer">
+            Protocol Disclaimer
+          </a>
+        </Link>
+      </p>
+    </div>
   </ModalBase>
 );
