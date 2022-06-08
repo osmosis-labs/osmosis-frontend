@@ -36,7 +36,7 @@ const TemporalChainHaltModal: FunctionComponent = () => {
         <p className="text-white-emphasis">
           The chain has temporarily halted due to technical issues caused during
           the recent update. The bug has been fixed and devs and validators are
-          preparing for restoring the chain.
+          preparing to restore the chain.
         </p>
       </div>
     </ModalBase>
