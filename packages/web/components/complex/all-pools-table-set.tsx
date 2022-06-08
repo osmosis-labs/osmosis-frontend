@@ -9,7 +9,7 @@ import {
   useWindowSize,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { CheckBox, MenuToggle, PageList, SortMenu } from "../control";
+import { Switch, MenuToggle, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { RowDef, Table } from "../table";
 import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
@@ -364,7 +364,17 @@ export const AllPoolsTableSet: FunctionComponent<{
           selectedOptionId={activeOptionId}
           onSelect={selectOption}
         />
-        <div className="flex gap-8 lg:w-full lg:place-content-between">
+        <div className="flex flex-wrap gap-8 place-content-end">
+          <Switch
+            isOn={isPoolTvlFiltered}
+            onToggle={setIsPoolTvlFiltered}
+            className="mr-2"
+          >
+            {`Show pools less than ${new PricePretty(
+              priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+              TVL_FILTER_THRESHOLD
+            ).toString()}`}
+          </Switch>
           <SearchBox
             currentValue={query}
             onInput={setQuery}
@@ -387,7 +397,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         rowDefs={tableRows}
         data={tableData}
       />
-      <div className="relative flex place-content-around">
+      <div className="flex items-center place-content-center">
         <PageList
           currentValue={page}
           max={numPages}
@@ -395,18 +405,6 @@ export const AllPoolsTableSet: FunctionComponent<{
           onInput={setPage}
           editField
         />
-        <div className="absolute right-2 bottom-1 text-body2 flex items-center">
-          <CheckBox
-            isOn={isPoolTvlFiltered}
-            onToggle={setIsPoolTvlFiltered}
-            className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
-          >
-            {`Show pools less than ${new PricePretty(
-              priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-              TVL_FILTER_THRESHOLD
-            ).toString()}`}
-          </CheckBox>
-        </div>
       </div>
     </>
   );

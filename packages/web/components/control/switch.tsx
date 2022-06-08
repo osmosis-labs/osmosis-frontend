@@ -6,7 +6,7 @@ import { ToggleProps } from "./types";
 export const Switch: FunctionComponent<
   ToggleProps & Disableable & CustomClasses
 > = ({ isOn, onToggle, disabled = false, className, children }) => (
-  <label className="flex items-center gap-2 caption md:caption">
+  <label className="flex shrink-0 items-center gap-2 caption md:caption">
     <input
       type="checkbox"
       className={classNames(

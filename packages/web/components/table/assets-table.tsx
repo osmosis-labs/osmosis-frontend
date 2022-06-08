@@ -303,9 +303,16 @@ export const AssetsTable: FunctionComponent<Props> = ({
             </div>
           </div>
         ) : (
-          <div className="flex flex-wrap place-content-between">
+          <div className="flex gap-8 flex-wrap place-content-between">
             <h5 className="shrink-0">Osmosis Assets</h5>
             <div className="flex gap-5">
+              <Switch
+                className="mr-2"
+                isOn={hideZeroBalances}
+                onToggle={() => setHideZeroBalances(!hideZeroBalances)}
+              >
+                Hide zero balances
+              </Switch>
               <SearchBox
                 currentValue={query}
                 onInput={(query) => {
@@ -431,17 +438,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
               isOn={showAllAssets}
               onToggle={() => setShowAllAssets(!showAllAssets)}
             />
-          )}
-          {!isMobile && (
-            <div className="flex gap-2 absolute body2 right-24 lg:right-12 1.5md:right-6 bottom-1">
-              <CheckBox
-                className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
-                isOn={hideZeroBalances}
-                onToggle={() => setHideZeroBalances(!hideZeroBalances)}
-              >
-                Hide zero balances
-              </CheckBox>
-            </div>
           )}
         </div>
         <IbcHistoryTable className="mt-8 md:w-screen md:-mx-4" />
