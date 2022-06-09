@@ -126,6 +126,33 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   @action
   setIsSingleAmountIn(value: boolean) {
     this._isSingleAmountIn = value;
+
+    if (value === true) {
+      // set to OSMO if possible
+      const osmoIndex = this.poolAssetConfigs.findIndex(
+        (poolAssetConfig) => poolAssetConfig.sendCurrency.coinDenom === "OSMO"
+      );
+      if (osmoIndex !== -1) {
+        this.setSingleAmountInConfigIndex(osmoIndex);
+        return;
+      }
+
+      // set to highest amount
+      let maxAmount = new Dec(0);
+      let maxIndex = -1;
+      this.poolAssetConfigs.forEach((poolAssetConfig, index) => {
+        try {
+          const curAmt = new Dec(poolAssetConfig.amount);
+          if (curAmt.gt(maxAmount)) {
+            maxAmount = curAmt;
+            maxIndex = index;
+          }
+        } catch {}
+      });
+      if (maxIndex !== -1) {
+        this.setSingleAmountInConfigIndex(maxIndex);
+      }
+    }
   }
 
   @action
