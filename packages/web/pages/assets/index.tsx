@@ -27,7 +27,6 @@ const Assets: NextPage = observer(() => {
   return (
     <main className="bg-background">
       <AssetsOverview />
-      {!isMobile && <PoolAssets />}
       <ChainAssets />
       <section className="bg-surface py-2">
         <DepoolingTable
@@ -35,6 +34,7 @@ const Assets: NextPage = observer(() => {
           tableClassName="md:w-screen md:-mx-5"
         />
       </section>
+      {!isMobile && <PoolAssets />}
     </main>
   );
 });
@@ -92,6 +92,8 @@ const PoolAssets: FunctionComponent = observer(() => {
     .get(chainId)
     .osmosis!.queryGammPoolShare.getOwnPools(bech32Address);
   const [showAllPools, setShowAllPools] = useState(false);
+
+  if (ownedPoolIds.length === 0) return null;
 
   return (
     <section className="bg-background">
