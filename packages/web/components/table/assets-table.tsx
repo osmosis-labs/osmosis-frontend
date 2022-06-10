@@ -7,7 +7,7 @@ import {
   CoinBalance,
 } from "../../stores/assets";
 import { SearchBox } from "../input";
-import { CheckBox, SortMenu } from "../control";
+import { SortMenu } from "../control";
 import { Table } from ".";
 import { SortDirection } from "../types";
 import {
