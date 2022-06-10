@@ -274,7 +274,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
             <h6>Assets</h6>
             <div className="flex gap-3 items-center place-content-between">
               <Switch
-                className="overline"
                 isOn={hideZeroBalances}
                 onToggle={() => setHideZeroBalances(!hideZeroBalances)}
               >
@@ -303,44 +302,45 @@ export const AssetsTable: FunctionComponent<Props> = ({
             </div>
           </div>
         ) : (
-          <div className="flex gap-8 flex-wrap place-content-between">
-            <h5 className="shrink-0">Osmosis Assets</h5>
-            <div className="flex gap-5">
+          <div className="flex flex-col gap-5">
+            <h5>Assets</h5>
+            <div className="flex place-content-between">
               <Switch
-                className="mr-2"
                 isOn={hideZeroBalances}
                 onToggle={() => setHideZeroBalances(!hideZeroBalances)}
               >
                 Hide zero balances
               </Switch>
-              <SearchBox
-                currentValue={query}
-                onInput={(query) => {
-                  setHideZeroBalances(false);
-                  setQuery(query);
-                }}
-                placeholder="Filter by symbol"
-              />
-              <SortMenu
-                selectedOptionId={sortKey}
-                onSelect={setSortKey}
-                onToggleSortDirection={toggleSortDirection}
-                options={[
-                  {
-                    id: "coinDenom",
-                    display: "Symbol",
-                  },
-                  {
-                    /** These ids correspond to keys in `Cell` type and are later used for sorting. */
-                    id: "chainName",
-                    display: "Network",
-                  },
-                  {
-                    id: "fiatValueRaw",
-                    display: "Balance",
-                  },
-                ]}
-              />
+              <div className="flex items-center gap-5">
+                <SearchBox
+                  currentValue={query}
+                  onInput={(query) => {
+                    setHideZeroBalances(false);
+                    setQuery(query);
+                  }}
+                  placeholder="Filter by symbol"
+                />
+                <SortMenu
+                  selectedOptionId={sortKey}
+                  onSelect={setSortKey}
+                  onToggleSortDirection={toggleSortDirection}
+                  options={[
+                    {
+                      id: "coinDenom",
+                      display: "Symbol",
+                    },
+                    {
+                      /** These ids correspond to keys in `Cell` type and are later used for sorting. */
+                      id: "chainName",
+                      display: "Network",
+                    },
+                    {
+                      id: "fiatValueRaw",
+                      display: "Balance",
+                    },
+                  ]}
+                />
+              </div>
             </div>
           </div>
         )}

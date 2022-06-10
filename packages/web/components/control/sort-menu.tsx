@@ -70,7 +70,7 @@ export const SortMenu: FunctionComponent<Props> = ({
             }
           }}
         >
-          <span className="block m-auto md:mx-1 mx-2 leading-loose text-secondary-200 min-w-[3.75rem] select-none text-center text-ellipsis overflow-hidden md:caption">
+          <span className="block m-auto md:mx-1 mx-2 leading-loose text-secondary-200 min-w-[3.75rem] select-none text-center text-ellipsis font-semibold overflow-hidden md:caption">
             {selectedOption
               ? selectedOption.display
               : isMobile
