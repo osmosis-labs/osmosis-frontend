@@ -5,8 +5,8 @@ import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 const chainInfos = (
   [
     {
-      rpc: "http://165.22.18.184:26657/", // test: "http://rpc-test.osmosis.zone/"
-      rest: "http://165.22.18.184:1317/", // test: "http://lcd-test.osmosis.zone/"
+      rpc: "https://165.22.18.184:26657/", // test: "http://rpc-test.osmosis.zone/"
+      rest: "https://165.22.18.184:1317/", // test: "http://lcd-test.osmosis.zone/"
       chainId: "osmo-relaunch", // test: "osmo-test-4"
       chainName: "Osmosis",
       bip44: {
