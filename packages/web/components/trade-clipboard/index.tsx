@@ -121,12 +121,13 @@ export const TradeClipboard: FunctionComponent<{
           </div>
         )}
 
-        <div className="relative flex justify-end w-full h-11 mb-[1.125rem] md:mb-2">
+        <div className="relative flex justify-end w-full h-11 md:h-[38px] mb-[1.125rem] md:mb-2">
           <button
-            className="relative"
+            className="relative h-11 md:h-[38px]"
             onClick={(e) => {
               e.stopPropagation();
               setIsSettingOpen(!isSettingOpen);
+              closeTokenSelectDropdowns();
             }}
           >
             <Image
@@ -156,7 +157,7 @@ export const TradeClipboard: FunctionComponent<{
           </button>
           {isSettingOpen && (
             <div
-              className="absolute bottom-[-0.5rem] right-0 translate-y-full bg-card border border-white-faint rounded-2xl p-[1.875rem] md:p-5 z-20 w-full max-w-[23.875rem]"
+              className="absolute bottom-[-0.5rem] right-0 translate-y-full bg-card border border-white-faint rounded-2xl p-[1.875rem] md:p-5 z-50 w-full max-w-[23.875rem]"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="subtitle1 text-white-emphasis">
