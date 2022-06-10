@@ -179,7 +179,7 @@ export const TokenSelect: FunctionComponent<
             <div className="flex items-center h-9 pl-4 mb-3 rounded-2xl bg-card">
               <div className="w-[1.125rem] h-[1.125rem] shrink-0">
                 <Image
-                  src="/icons/search.svg"
+                  src="/icons/search-hollow.svg"
                   alt="search"
                   width={18}
                   height={18}
