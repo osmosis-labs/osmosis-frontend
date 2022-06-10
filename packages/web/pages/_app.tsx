@@ -5,7 +5,6 @@ import type { AppProps } from "next/app";
 import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
 import { MainLayout } from "../components/layouts";
-import { Terms } from "../components/terms";
 import { FrontierBanner } from "../components/alert/frontier-banner";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
@@ -48,7 +47,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     <GetKeplrProvider>
       <StoreProvider>
         <IbcNotifier />
-        <Terms />
         <TemporalChainHaltModal />
         <FrontierBanner />
         <MainLayout
