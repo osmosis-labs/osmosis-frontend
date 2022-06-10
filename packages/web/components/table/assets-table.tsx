@@ -85,7 +85,9 @@ export const AssetsTable: FunctionComponent<Props> = ({
           return {
             value: balance.toString(),
             currency: balance.currency,
-            chainName: sourceChainNameOverride ? sourceChainNameOverride : chainName,
+            chainName: sourceChainNameOverride
+              ? sourceChainNameOverride
+              : chainName,
             chainId: chainId,
             coinDenom: balance.denom,
             coinImageUrl: balance.currency.coinImageUrl,
@@ -155,11 +157,11 @@ export const AssetsTable: FunctionComponent<Props> = ({
         onClickHeader: isSorting
           ? toggleSortDirection
           : () => {
-            if (firstKey) {
-              setSortKey(firstKey);
-              setSortDirection(onClickSortDirection);
-            }
-          },
+              if (firstKey) {
+                setSortKey(firstKey);
+                setSortDirection(onClickSortDirection);
+              }
+            },
       };
     },
     [sortKey, sortDirection, toggleSortDirection, setSortKey, setSortDirection]
@@ -342,20 +344,20 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 ]}
                 onClick={
                   assetData.chainId === undefined ||
-                    (assetData.chainId &&
-                      assetData.chainId === chainStore.osmosis.chainId)
+                  (assetData.chainId &&
+                    assetData.chainId === chainStore.osmosis.chainId)
                     ? undefined
                     : () => {
-                      setPreTransferToken(
-                        new CoinPretty(
-                          assetData.currency,
-                          assetData.amount.replace(",", "")
-                        ).moveDecimalPointRight(
-                          assetData.currency.coinDecimals
-                        )
-                      );
-                      setShowPreTransfer(true);
-                    }
+                        setPreTransferToken(
+                          new CoinPretty(
+                            assetData.currency,
+                            assetData.amount.replace(",", "")
+                          ).moveDecimalPointRight(
+                            assetData.currency.coinDecimals
+                          )
+                        );
+                        setShowPreTransfer(true);
+                      }
                 }
                 showArrow
               />
@@ -378,33 +380,33 @@ export const AssetsTable: FunctionComponent<Props> = ({
               },
               ...(mergeWithdrawCol
                 ? ([
-                  {
-                    display: "Transfer",
-                    displayCell: (cell) => (
-                      <div>
-                        <TransferButtonCell type="deposit" {...cell} />
-                        <TransferButtonCell type="withdraw" {...cell} />
-                      </div>
-                    ),
-                    className: "text-center max-w-[5rem]",
-                  },
-                ] as ColumnDef<TableCell>[])
+                    {
+                      display: "Transfer",
+                      displayCell: (cell) => (
+                        <div>
+                          <TransferButtonCell type="deposit" {...cell} />
+                          <TransferButtonCell type="withdraw" {...cell} />
+                        </div>
+                      ),
+                      className: "text-center max-w-[5rem]",
+                    },
+                  ] as ColumnDef<TableCell>[])
                 : ([
-                  {
-                    display: "Deposit",
-                    displayCell: (cell) => (
-                      <TransferButtonCell type="deposit" {...cell} />
-                    ),
-                    className: "text-center max-w-[5rem]",
-                  },
-                  {
-                    display: "Withdraw",
-                    displayCell: (cell) => (
-                      <TransferButtonCell type="withdraw" {...cell} />
-                    ),
-                    className: "text-center max-w-[5rem]",
-                  },
-                ] as ColumnDef<TableCell>[])),
+                    {
+                      display: "Deposit",
+                      displayCell: (cell) => (
+                        <TransferButtonCell type="deposit" {...cell} />
+                      ),
+                      className: "text-center max-w-[5rem]",
+                    },
+                    {
+                      display: "Withdraw",
+                      displayCell: (cell) => (
+                        <TransferButtonCell type="withdraw" {...cell} />
+                      ),
+                      className: "text-center max-w-[5rem]",
+                    },
+                  ] as ColumnDef<TableCell>[])),
             ]}
             data={tableData.map((cell) => [
               cell,
