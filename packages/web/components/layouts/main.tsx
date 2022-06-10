@@ -103,7 +103,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                           </div>
                           <p
                             className={classNames(
-                              "ml-2.5 text-base overflow-x-hidden font-bold transition-all max-w-24",
+                              "ml-2.5 text-base overflow-x-hidden font-semibold transition-all max-w-24",
                               selected
                                 ? "text-white-high"
                                 : "text-iconDefault group-hover:text-white-mid"
