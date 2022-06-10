@@ -56,7 +56,7 @@ export class RootStore {
     getKeplr: () => Promise<Keplr | undefined> = () =>
       Promise.resolve(undefined)
   ) {
-    this.chainStore = new ChainStore(ChainInfos, "osmosis");
+    this.chainStore = new ChainStore(ChainInfos, "osmo-relaunch");
 
     const eventListener = (() => {
       // On client-side (web browser), use the global window object.
