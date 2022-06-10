@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ChainGetter,
   QueriesStore,
@@ -14,25 +14,36 @@ import {
 /** Maintains a single instance of `ObservableTradeTokenInConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `bech32Address`, `pools` on render.
  *  `percentage` default: `"50"`.
+ * `requeryIntervalMs` specifies how often to refetch pool data based on current tokens.
  */
 export function useTradeTokenInConfig(
   chainGetter: ChainGetter,
   osmosisChainId: string,
   bech32Address: string,
   queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, OsmosisQueries]>,
-  pools: Pool[]
+  pools: Pool[],
+  requeryIntervalMs = 8000
 ) {
   const [config] = useState(
     () =>
       new ObservableTradeTokenInConfig(
         chainGetter,
         queriesStore,
+        queriesStore.get(osmosisChainId).osmosis!.queryGammPools,
         osmosisChainId,
         bech32Address,
         undefined,
         pools
       )
   );
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      config.requery();
+    }, requeryIntervalMs);
+    return () => clearInterval(interval);
+  });
+
   config.setChain(osmosisChainId);
   config.setSender(bech32Address);
   config.setPools(pools);
