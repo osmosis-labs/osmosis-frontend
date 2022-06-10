@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { useRouter } from "next/router";
 import { FunctionComponent, ReactElement } from "react";
+import { useWindowSize } from "../../hooks";
 import { PoolAssetInfo } from "../assets";
 import { AssetCard } from "../cards";
 import {
@@ -38,6 +39,7 @@ export const CompactPoolTableDisplay: FunctionComponent<{
   minTvlToggleProps,
 }) => {
   const router = useRouter();
+  const { width } = useWindowSize();
 
   return (
     <div className="flex flex-col gap-5 p-5 pb-8">
@@ -73,15 +75,15 @@ export const CompactPoolTableDisplay: FunctionComponent<{
         ))}
       </div>
       <div
-        className={classNames("flex items-center flex-wrap gap-2 p-4", {
-          "place-content-between xs:justify-center ":
-            minTvlToggleProps !== undefined && pageListProps !== undefined,
-          "place-content-around":
-            minTvlToggleProps === undefined || pageListProps === undefined,
-        })}
+        className={classNames(
+          "flex items-center flex-wrap gap-2 py-4",
+          width < 345 ? "xs:justify-center" : "place-content-between"
+        )}
       >
         {minTvlToggleProps && (
-          <Switch {...minTvlToggleProps}>{minTvlToggleProps.label}</Switch>
+          <Switch containerClassName="mt-1.5" {...minTvlToggleProps}>
+            {minTvlToggleProps.label}
+          </Switch>
         )}
         {pageListProps && pageListProps.max > 1 && (
           <PageList {...pageListProps} editField={false} />
