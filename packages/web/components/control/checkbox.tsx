@@ -6,13 +6,18 @@ import { ToggleProps } from "./types";
 export const CheckBox: FunctionComponent<
   ToggleProps &
     Disableable &
-    CustomClasses & { labelClassName?: string; checkClassName?: string }
+    CustomClasses & {
+      labelClassName?: string;
+      checkClassName?: string;
+      checkboxAlignedToTop?: boolean;
+    }
 > = ({
   isOn,
   onToggle: onToggle,
   disabled = false,
   labelClassName,
   checkClassName,
+  checkboxAlignedToTop = true,
   className,
   children,
 }) => {
@@ -31,13 +36,17 @@ export const CheckBox: FunctionComponent<
       {isOn && showImg && (
         <div
           className={classNames(
-            "cursor-pointer h-full absolute top-0 left-0 h-5 w-5 z-20",
+            "cursor-pointer h-full absolute left-0 h-5 w-5 z-20",
             disabled ? "cursor-default opacity-50" : null,
-            checkClassName
+            checkClassName,
+            checkboxAlignedToTop ? "top-0" : null
           )}
         >
           <img
-            className="absolute h-5 w-5 top-0 left-0"
+            className={classNames(
+              "absolute h-5 w-5 left-0",
+              checkboxAlignedToTop ? "top-0" : null
+            )}
             alt=""
             src="/icons/check-mark.svg"
           />
@@ -46,7 +55,7 @@ export const CheckBox: FunctionComponent<
       <input
         type="checkbox"
         className={classNames(
-          "absolute top-0 left-0 cursor-pointer h-5 w-5 appearance-none",
+          "absolute left-0 cursor-pointer h-5 w-5 appearance-none",
           "after:absolute after:h-5 after:w-5 after:rounded z-10", // box
           disabled
             ? isOn
@@ -55,7 +64,8 @@ export const CheckBox: FunctionComponent<
             : isOn
             ? "after:bg-primary-200" // not disabled AND on
             : "after:border-2 after:border-primary-200",
-          className
+          className,
+          checkboxAlignedToTop ? "top-0" : null
         )}
         checked={isOn}
         disabled={disabled}
