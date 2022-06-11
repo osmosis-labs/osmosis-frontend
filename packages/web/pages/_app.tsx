@@ -83,7 +83,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     },
   ];
 
-  if (IS_FRONTIER) {
+  if (!IS_FRONTIER) {
     sidemenuOptions.push({
       label: "Frontier",
       link: "https://frontier.osmosis.zone",
