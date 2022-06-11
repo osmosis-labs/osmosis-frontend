@@ -54,9 +54,7 @@ export const CompactPoolTableDisplay: FunctionComponent<{
           className={classNames("flex items-center place-content-between", {})}
         >
           {minTvlToggleProps && (
-            <Switch containerClassName="mt-1.5" {...minTvlToggleProps}>
-              {minTvlToggleProps.label}
-            </Switch>
+            <Switch {...minTvlToggleProps}>{minTvlToggleProps.label}</Switch>
           )}
           {sortMenuProps && <SortMenu {...sortMenuProps} />}
         </div>
