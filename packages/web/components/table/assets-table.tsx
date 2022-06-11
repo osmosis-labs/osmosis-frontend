@@ -25,6 +25,7 @@ import { Button } from "../buttons";
 import { PreTransferModal } from "../../modals";
 import { IbcHistoryTable } from "./ibc-history";
 import { ColumnDef } from "./types";
+import { Switch } from "../control";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -264,6 +265,13 @@ export const AssetsTable: FunctionComponent<Props> = ({
             />
             <h6>Assets</h6>
             <div className="flex gap-3 items-center place-content-between">
+              <Switch
+                className="overline"
+                isOn={hideZeroBalances}
+                onToggle={() => setHideZeroBalances(!hideZeroBalances)}
+              >
+                Hide zero balances
+              </Switch>
               <SortMenu
                 selectedOptionId={sortKey}
                 onSelect={setSortKey}
