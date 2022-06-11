@@ -44,13 +44,22 @@ export const CompactPoolTableDisplay: FunctionComponent<{
       {searchBoxProps && (
         <SearchBox className="!rounded !w-full h-11" {...searchBoxProps} />
       )}
-      <div className="flex items-center place-content-between">
+      <div className="flex flex-col gap-4">
         {typeof title === "string" ? (
           <span className="subtitle2">{title}</span>
         ) : (
           <>{title}</>
         )}
-        {sortMenuProps && <SortMenu {...sortMenuProps} />}
+        <div
+          className={classNames("flex items-center place-content-between", {})}
+        >
+          {minTvlToggleProps && (
+            <Switch containerClassName="mt-1.5" {...minTvlToggleProps}>
+              {minTvlToggleProps.label}
+            </Switch>
+          )}
+          {sortMenuProps && <SortMenu {...sortMenuProps} />}
+        </div>
       </div>
       <div className="flex flex-col gap-3">
         {pools.map(({ id, assets, metrics, isSuperfluid }) => (
