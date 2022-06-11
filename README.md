@@ -67,3 +67,4 @@ yarn build:frontier && yarn start:frontier
 ```
 
 Otherwise the non-frontier commands can be used with the env var set to true.
+Test
