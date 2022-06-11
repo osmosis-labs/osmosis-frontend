@@ -44,6 +44,53 @@ const TemporalChainHaltModal: FunctionComponent = () => {
 };
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const sidemenuOptions = [
+    {
+      label: "Trade",
+      link: "/",
+      icon: IS_FRONTIER ? "/icons/trade-white.svg" : "/icons/trade.svg",
+      iconSelected: "/icons/trade-selected.svg",
+      selectionTest: /\/$/,
+    },
+    {
+      label: "Pools",
+      link: "/pools",
+      icon: IS_FRONTIER ? "/icons/pool-white.svg" : "/icons/pool.svg",
+      iconSelected: "/icons/pool-selected.svg",
+      selectionTest: /\/pools/,
+    },
+    {
+      label: "Assets",
+      link: "/assets",
+      icon: IS_FRONTIER ? "/icons/asset-white.svg" : "/icons/asset.svg",
+      iconSelected: "/icons/asset-selected.svg",
+      selectionTest: /\/assets/,
+    },
+    {
+      label: "Stake",
+      link: "https://wallet.keplr.app/#/osmosis/stake",
+      icon: IS_FRONTIER ? "/icons/ticket-white.svg" : "/icons/ticket.svg",
+    },
+    {
+      label: "Vote",
+      link: "https://wallet.keplr.app/#/osmosis/governance",
+      icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
+    },
+    {
+      label: "Info",
+      link: "https://info.osmosis.zone",
+      icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
+    },
+  ];
+
+  if (IS_FRONTIER) {
+    sidemenuOptions.push({
+      label: "Frontier",
+      link: "https://frontier.osmosis.zone",
+      icon: "/icons/frontier-osmo-badge-white.svg",
+    });
+  }
+
   return (
     <GetKeplrProvider>
       <StoreProvider>
@@ -51,48 +98,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Terms />
         <TemporalChainHaltModal />
         <FrontierBanner />
-        <MainLayout
-          menus={[
-            {
-              label: "Trade",
-              link: "/",
-              icon: IS_FRONTIER ? "/icons/trade-white.svg" : "/icons/trade.svg",
-              iconSelected: "/icons/trade-selected.svg",
-              selectionTest: /\/$/,
-            },
-            {
-              label: "Pools",
-              link: "/pools",
-              icon: IS_FRONTIER ? "/icons/pool-white.svg" : "/icons/pool.svg",
-              iconSelected: "/icons/pool-selected.svg",
-              selectionTest: /\/pools/,
-            },
-            {
-              label: "Assets",
-              link: "/assets",
-              icon: IS_FRONTIER ? "/icons/asset-white.svg" : "/icons/asset.svg",
-              iconSelected: "/icons/asset-selected.svg",
-              selectionTest: /\/assets/,
-            },
-            {
-              label: "Stake",
-              link: "https://wallet.keplr.app/#/osmosis/stake",
-              icon: IS_FRONTIER
-                ? "/icons/ticket-white.svg"
-                : "/icons/ticket.svg",
-            },
-            {
-              label: "Vote",
-              link: "https://wallet.keplr.app/#/osmosis/governance",
-              icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
-            },
-            {
-              label: "Info",
-              link: "https://info.osmosis.zone",
-              icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
-            },
-          ]}
-        >
+        <MainLayout menus={sidemenuOptions}>
           <Component {...pageProps} />
           <ToastContainer transition={Bounce} />
         </MainLayout>
