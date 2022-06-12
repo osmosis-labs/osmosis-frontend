@@ -57,7 +57,7 @@ export const TokenSelect: FunctionComponent<
 
   const [searchValue, setTokenSearch, searchedTokens] = useFilteredData(
     dropdownTokens,
-    ["denom"]
+    ["denom", "coinDenom"]
   );
   const selectedCurrency =
     selectedToken instanceof CoinPretty
