@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import React, { FunctionComponent } from "react";
 import { ModalBase, ModalBaseProps } from "./base";
