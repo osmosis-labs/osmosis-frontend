@@ -5,7 +5,6 @@ import type { AppProps } from "next/app";
 import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
 import { MainLayout } from "../components/layouts";
-import { Terms } from "../components/terms";
 import { FrontierBanner } from "../components/alert/frontier-banner";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
@@ -14,34 +13,11 @@ import utc from "dayjs/plugin/utc";
 import { GetKeplrProvider } from "../hooks";
 import { IbcNotifier } from "../stores/ibc-notifier";
 import { IS_FRONTIER } from "../config";
-import { FunctionComponent, useState } from "react";
-import { ModalBase } from "../modals";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 dayjs.extend(utc);
 enableStaticRendering(typeof window === "undefined");
-
-const TemporalChainHaltModal: FunctionComponent = () => {
-  const [isOpen, setIsOpen] = useState(true);
-
-  return (
-    <ModalBase
-      className="!max-w-[34rem]"
-      isOpen={isOpen}
-      onRequestClose={() => setIsOpen(false)}
-    >
-      <h6 className="mb-3">Announcement</h6>
-      <div className="bg-background rounded-2xl p-5">
-        <p className="text-white-emphasis">
-          The chain has temporarily halted due to technical issues caused during
-          the recent update. The bug has been fixed and devs and validators are
-          preparing to restore the chain.
-        </p>
-      </div>
-    </ModalBase>
-  );
-};
 
 function MyApp({ Component, pageProps }: AppProps) {
   const sidemenuOptions = [
@@ -95,8 +71,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     <GetKeplrProvider>
       <StoreProvider>
         <IbcNotifier />
-        <Terms />
-        <TemporalChainHaltModal />
         <FrontierBanner />
         <MainLayout menus={sidemenuOptions}>
           <Component {...pageProps} />
