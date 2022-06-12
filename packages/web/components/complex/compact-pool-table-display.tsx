@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import { useRouter } from "next/router";
 import { FunctionComponent, ReactElement } from "react";
-import { useWindowSize } from "../../hooks";
 import { PoolAssetInfo } from "../assets";
 import { AssetCard } from "../cards";
 import {
@@ -39,20 +38,26 @@ export const CompactPoolTableDisplay: FunctionComponent<{
   minTvlToggleProps,
 }) => {
   const router = useRouter();
-  const { width } = useWindowSize();
 
   return (
     <div className="flex flex-col gap-5 p-5 pb-8">
       {searchBoxProps && (
         <SearchBox className="!rounded !w-full h-11" {...searchBoxProps} />
       )}
-      <div className="flex items-center place-content-between">
+      <div className="flex flex-col gap-4">
         {typeof title === "string" ? (
           <span className="subtitle2">{title}</span>
         ) : (
           <>{title}</>
         )}
-        {sortMenuProps && <SortMenu {...sortMenuProps} />}
+        <div
+          className={classNames("flex items-center place-content-between", {})}
+        >
+          {minTvlToggleProps && (
+            <Switch {...minTvlToggleProps}>{minTvlToggleProps.label}</Switch>
+          )}
+          {sortMenuProps && <SortMenu {...sortMenuProps} />}
+        </div>
       </div>
       <div className="flex flex-col gap-3">
         {pools.map(({ id, assets, metrics, isSuperfluid }) => (
@@ -74,17 +79,7 @@ export const CompactPoolTableDisplay: FunctionComponent<{
           />
         ))}
       </div>
-      <div
-        className={classNames(
-          "flex items-center flex-wrap gap-2 py-4",
-          width < 345 ? "xs:justify-center" : "place-content-between"
-        )}
-      >
-        {minTvlToggleProps && (
-          <Switch containerClassName="mt-1.5" {...minTvlToggleProps}>
-            {minTvlToggleProps.label}
-          </Switch>
-        )}
+      <div className="flex items-center justify-center flex-wrap gap-2 py-4">
         {pageListProps && pageListProps.max > 1 && (
           <PageList {...pageListProps} editField={false} />
         )}
