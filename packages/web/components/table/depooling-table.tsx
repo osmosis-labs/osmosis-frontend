@@ -4,6 +4,7 @@ import moment from "dayjs";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { useWindowSize } from "../../hooks";
+import { Info } from "../alert";
 import { Table } from ".";
 import { UnPoolWhitelistedPoolIds } from "../../config";
 import { CustomClasses } from "../types";
@@ -57,12 +58,10 @@ export const DepoolingTable: FunctionComponent<
         <h6>Depoolings</h6>
       )}
       {poolId && (
-        <div className="w-full p-2 rounded-lg border border-secondary-200">
-          <span className="subtitle1 text-white-mid md:caption">
-            Note: Depooling asset balance shown is a total across all pools, not
-            on a per-pool basis
-          </span>
-        </div>
+        <Info
+          size="subtle"
+          message="Note: Depooling asset balance shown is a total across all pools, not on a per-pool basis"
+        />
       )}
       <Table
         className={classNames("w-full md:caption", tableClassName)}

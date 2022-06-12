@@ -1,3 +1,4 @@
+import { action, computed, makeObservable, observable, override } from "mobx";
 import {
   AmountConfig,
   IFeeConfig,
@@ -18,7 +19,7 @@ import {
   Pool,
   RoutePathWithAmount,
 } from "@osmosis-labs/pools";
-import { action, computed, makeObservable, observable, override } from "mobx";
+import { ObservableQueryPools } from "../queries";
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
@@ -34,6 +35,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   constructor(
     chainGetter: ChainGetter,
     queriesStore: IQueriesStore,
+    protected readonly observableQueryPools: ObservableQueryPools,
     initialChainId: string,
     sender: string,
     feeConfig: IFeeConfig | undefined,
@@ -44,10 +46,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     this._pools = pools;
 
     makeObservable(this);
-  }
-
-  get pools(): Pool[] {
-    return this._pools;
   }
 
   @action
@@ -71,6 +69,46 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     } else {
       this._outCurrencyMinimalDenom = undefined;
     }
+  }
+
+  @action
+  switchInAndOut() {
+    // give back the swap fee amount
+    const outAmount = this.expectedSwapResult.amount;
+    if (outAmount.toDec().isZero()) {
+      this.setAmount("");
+    } else {
+      this.setAmount(
+        outAmount
+          .shrink(true)
+          .maxDecimals(6)
+          .trim(true)
+          .hideDenom(true)
+          .toString()
+      );
+    }
+
+    // Since changing in and out affects each other, it is important to use the stored value.
+    const prevInCurrency = this.sendCurrency.coinMinimalDenom;
+    const prevOutCurrency = this.outCurrency.coinMinimalDenom;
+
+    this._inCurrencyMinimalDenom = prevOutCurrency;
+    this._outCurrencyMinimalDenom = prevInCurrency;
+  }
+
+  get pools(): Pool[] {
+    return this._pools;
+  }
+
+  @action
+  requery() {
+    const relevantPoolsIds = this.optimizedRoutePaths
+      .map((route) => route.pools.map((pool) => pool.id))
+      .flat();
+
+    relevantPoolsIds.forEach((poolId) => {
+      this.observableQueryPools.getPool(poolId)?.fetch();
+    });
   }
 
   @override
@@ -156,33 +194,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         return currencyMap.has(coinDenom);
       })
       .map((coinDenom) => {
+        // eslint-disable-next-line
         return currencyMap.get(coinDenom)!;
       });
-  }
-
-  @action
-  switchInAndOut() {
-    // give back the swap fee amount
-    const outAmount = this.expectedSwapResult.amount;
-    if (outAmount.toDec().isZero()) {
-      this.setAmount("");
-    } else {
-      this.setAmount(
-        outAmount
-          .shrink(true)
-          .maxDecimals(6)
-          .trim(true)
-          .hideDenom(true)
-          .toString()
-      );
-    }
-
-    // Since changing in and out affects each other, it is important to use the stored value.
-    const prevInCurrency = this.sendCurrency.coinMinimalDenom;
-    const prevOutCurrency = this.outCurrency.coinMinimalDenom;
-
-    this._inCurrencyMinimalDenom = prevOutCurrency;
-    this._outCurrencyMinimalDenom = prevInCurrency;
   }
 
   @computed

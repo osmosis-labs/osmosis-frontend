@@ -214,7 +214,6 @@
 }
 
 .Toastify__toast--default {
-  background: #2d2755 !important;
   max-width: 360px !important;
   min-width: 360px !important;
   border-radius: 16px !important;

@@ -10,8 +10,16 @@ export const InfoTooltip: FunctionComponent<
     CustomClasses & {
       style?: "iconDefault" | "secondary-200";
       size?: { height: number; width: number };
+      iconSrcOverride?: string;
     }
-> = ({ content, trigger, style = "iconDefault", size, className }) => (
+> = ({
+  content,
+  trigger,
+  style = "iconDefault",
+  size,
+  iconSrcOverride,
+  className,
+}) => (
   <Tippy
     className="bg-surface border border-secondary-200/30 md:p-1 p-2 rounded-lg text-body2"
     content={content}
@@ -24,7 +32,9 @@ export const InfoTooltip: FunctionComponent<
       <Image
         alt="info"
         src={
-          style === "secondary-200"
+          iconSrcOverride
+            ? iconSrcOverride
+            : style === "secondary-200"
             ? "/icons/info-secondary-200.svg"
             : "/icons/info.svg"
         }

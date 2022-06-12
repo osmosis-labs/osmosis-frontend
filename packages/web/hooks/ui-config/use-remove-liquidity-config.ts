@@ -11,7 +11,7 @@ import {
 } from "@osmosis-labs/stores";
 
 /** Maintains a single instance of `ObservableRemoveLiquidityConfig` for React view lifecycle.
- *  Updates `osmosisChainId`, `poolId`, `bech32Address`, `queryOsmosis.queryGammPoolShare`, and `percentage` on render.
+ *  Updates `osmosisChainId`, `poolId`, `bech32Address`, and `queryOsmosis.queryGammPoolShare` on render.
  *  `percentage` default: `"50"`.
  */
 export function useRemoveLiquidityConfig(
@@ -20,26 +20,26 @@ export function useRemoveLiquidityConfig(
   poolId: string,
   bech32Address: string,
   queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, OsmosisQueries]>,
-  percentage = "50"
+  initialPercent = "50"
 ) {
   const queryOsmosis = queriesStore.get(osmosisChainId).osmosis!;
-  const [config] = useState(
-    () =>
-      new ObservableRemoveLiquidityConfig(
-        chainGetter,
-        osmosisChainId,
-        poolId,
-        bech32Address,
-        queriesStore,
-        queryOsmosis.queryGammPoolShare,
-        queryOsmosis.queryGammPools,
-        percentage
-      )
-  );
+  const [config] = useState(() => {
+    const c = new ObservableRemoveLiquidityConfig(
+      chainGetter,
+      osmosisChainId,
+      poolId,
+      bech32Address,
+      queriesStore,
+      queryOsmosis.queryGammPoolShare,
+      queryOsmosis.queryGammPools,
+      initialPercent
+    );
+    c.setPercentage(initialPercent);
+    return c;
+  });
   config.setChain(osmosisChainId);
   config.setSender(bech32Address);
   config.setPoolId(poolId);
   config.setQueryPoolShare(queryOsmosis.queryGammPoolShare);
-  config.setPercentage(percentage);
   return config;
 }

@@ -7,7 +7,7 @@ import {
   CoinBalance,
 } from "../../stores/assets";
 import { SearchBox } from "../input";
-import { CheckBox, SortMenu } from "../control";
+import { SortMenu } from "../control";
 import { Table } from ".";
 import { SortDirection } from "../types";
 import {
@@ -66,6 +66,10 @@ export const AssetsTable: FunctionComponent<Props> = ({
             value && value.toDec().gt(new Dec(0))
               ? value.toString()
               : undefined,
+          fiatValueRaw:
+            value && value.toDec().gt(new Dec(0))
+              ? value?.toDec().toString()
+              : "0",
           isCW20: false,
         };
       }),
@@ -81,6 +85,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
           } = ibcBalance;
           const value = fiatValue?.maxDecimals(2);
           const isCW20 = "ics20ContractAddress" in ibcBalance;
+          const pegMechanism = balance.currency.originCurrency?.pegMechanism;
 
           return {
             value: balance.toString(),
@@ -105,7 +110,10 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 ? value?.toDec().toString()
                 : "0",
             isCW20,
-            queryTags: [...(isCW20 ? ["CW20"] : [])],
+            queryTags: [
+              ...(isCW20 ? ["CW20"] : []),
+              ...(pegMechanism ? ["stable", pegMechanism] : []),
+            ],
             isUnstable: ibcBalance.isUnstable === true,
             depositUrlOverride,
             withdrawUrlOverride,
@@ -266,7 +274,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
             <h6>Assets</h6>
             <div className="flex gap-3 items-center place-content-between">
               <Switch
-                className="overline"
                 isOn={hideZeroBalances}
                 onToggle={() => setHideZeroBalances(!hideZeroBalances)}
               >
@@ -295,47 +302,45 @@ export const AssetsTable: FunctionComponent<Props> = ({
             </div>
           </div>
         ) : (
-          <div className="flex flex-wrap place-content-between">
-            <h5 className="shrink-0">Osmosis Assets</h5>
-            <div className="flex gap-4 pt-5">
-              {!isMobile && (
-                <CheckBox
-                  className="w-10 mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
-                  isOn={hideZeroBalances}
-                  onToggle={() => setHideZeroBalances(!hideZeroBalances)}
-                  checkboxAlignedToTop={false}
-                >
-                  {!hideZeroBalances ? "Hide" : "Show"} zero balances
-                </CheckBox>
-              )}
-              <SearchBox
-                currentValue={query}
-                onInput={(query) => {
-                  setHideZeroBalances(false);
-                  setQuery(query);
-                }}
-                placeholder="Filter by symbol"
-              />
-              <SortMenu
-                selectedOptionId={sortKey}
-                onSelect={setSortKey}
-                onToggleSortDirection={toggleSortDirection}
-                options={[
-                  {
-                    id: "coinDenom",
-                    display: "Symbol",
-                  },
-                  {
-                    /** These ids correspond to keys in `Cell` type and are later used for sorting. */
-                    id: "chainName",
-                    display: "Network",
-                  },
-                  {
-                    id: "amount",
-                    display: "Balance",
-                  },
-                ]}
-              />
+          <div className="flex flex-col gap-5">
+            <h5>Assets</h5>
+            <div className="flex place-content-between">
+              <Switch
+                isOn={hideZeroBalances}
+                onToggle={() => setHideZeroBalances(!hideZeroBalances)}
+              >
+                Hide zero balances
+              </Switch>
+              <div className="flex items-center gap-5">
+                <SearchBox
+                  currentValue={query}
+                  onInput={(query) => {
+                    setHideZeroBalances(false);
+                    setQuery(query);
+                  }}
+                  placeholder="Filter by symbol"
+                />
+                <SortMenu
+                  selectedOptionId={sortKey}
+                  onSelect={setSortKey}
+                  onToggleSortDirection={toggleSortDirection}
+                  options={[
+                    {
+                      id: "coinDenom",
+                      display: "Symbol",
+                    },
+                    {
+                      /** These ids correspond to keys in `Cell` type and are later used for sorting. */
+                      id: "chainName",
+                      display: "Network",
+                    },
+                    {
+                      id: "fiatValueRaw",
+                      display: "Balance",
+                    },
+                  ]}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -385,7 +390,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
               {
                 display: "Balance",
                 displayCell: BalanceCell,
-                sort: sortColumnWithKeys(["amount", "fiatValue"], "descending"),
+                sort: sortColumnWithKeys(["fiatValueRaw"], "descending"),
                 className: "text-right pr-24 lg:pr-8 1.5md:pr-1",
               },
               ...(mergeWithdrawCol

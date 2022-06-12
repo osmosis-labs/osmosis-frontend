@@ -43,16 +43,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
       <React.Fragment>
         {showFixedLogo && (
           <div className="z-50 fixed w-sidebar px-5 pt-6">
-            <Image
-              src={
-                IS_FRONTIER
-                  ? "/osmosis-logo-frontier.svg"
-                  : "/osmosis-logo-main.svg"
-              }
-              alt="osmosis logo"
-              width={178}
-              height={48}
-            />
+            <OsmosisFullLogo onClick={() => router.push("/")} />
           </div>
         )}
         <div
@@ -65,16 +56,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
         >
           {showBlockLogo && (
             <div className="z-50 w-sidebar mx-auto">
-              <Image
-                src={
-                  IS_FRONTIER
-                    ? "/osmosis-logo-frontier.svg"
-                    : "/osmosis-logo-main.svg"
-                }
-                alt="osmosis logo"
-                width={165}
-                height={45}
-              />
+              <OsmosisFullLogo onClick={() => router.push("/")} />
             </div>
           )}
           <div className="h-full flex flex-col justify-between">
@@ -121,7 +103,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                           </div>
                           <p
                             className={classNames(
-                              "ml-2.5 text-base overflow-x-hidden font-bold transition-all max-w-24",
+                              "ml-2.5 text-base overflow-x-hidden font-semibold transition-all max-w-24",
                               selected
                                 ? "text-white-high"
                                 : "text-iconDefault group-hover:text-white-mid"
@@ -181,4 +163,20 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
       </React.Fragment>
     );
   }
+);
+
+const OsmosisFullLogo: FunctionComponent<{ onClick?: () => void }> = ({
+  onClick,
+}) => (
+  <Image
+    className="hover:cursor-pointer"
+    src={IS_FRONTIER ? "/osmosis-logo-frontier.svg" : "/osmosis-logo-main.svg"}
+    alt="osmosis logo"
+    width={178}
+    height={48}
+    onClick={(e) => {
+      e.stopPropagation();
+      onClick?.();
+    }}
+  />
 );
