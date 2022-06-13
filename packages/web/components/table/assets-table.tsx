@@ -18,7 +18,7 @@ import {
 } from "./cells";
 import { useStore } from "../../stores";
 import { useSortedData, useFilteredData } from "../../hooks/data";
-import { useWindowSize } from "../../hooks/window";
+import { useLocalStorageState, useWindowSize } from "../../hooks/window";
 import { ShowMoreButton } from "../buttons/show-more";
 import { AssetCard } from "../cards";
 import { Switch } from "../control";
@@ -177,7 +177,10 @@ export const AssetsTable: FunctionComponent<Props> = ({
 
   // User toggles for showing 10+ pools and assets with > 0 fiat value
   const [showAllAssets, setShowAllAssets] = useState(false);
-  const [hideZeroBalances, setHideZeroBalances] = useState(false);
+  const [hideZeroBalances, setHideZeroBalances] = useLocalStorageState(
+    "assets_hide_zero_balances",
+    false
+  );
 
   // Filter data based on user's input in the search box.
   const [query, setQuery, filteredSortedCells] = useFilteredData(
