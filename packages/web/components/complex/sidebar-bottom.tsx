@@ -193,14 +193,19 @@ const Links: FunctionComponent = () => (
         />
       </a>
     </div>
-    <p className="py-2 text-caption text-white-high text-center">
+    <p className="flex items-center place-content-around py-2 text-caption text-white-high">
       <a
-        className="opacity-30 hover:opacity-40"
-        href="https://www.coingecko.com"
+        className="flex items-center gap-1"
+        href="https://support.osmosis.zone/"
         target="_blank"
         rel="noreferrer"
       >
-        Price Data by CoinGecko
+        <span className="opacity-30 hover:opacity-40">
+          Get Support DAO Help
+        </span>
+        <div className="w-[12px] pt-0.5 opacity-60">
+          <Image alt="link" src="/icons/link-deco.svg" height={10} width={10} />
+        </div>
       </a>
     </p>
   </>
