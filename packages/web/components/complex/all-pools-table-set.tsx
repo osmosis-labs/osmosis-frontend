@@ -328,7 +328,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         searchBoxProps={{
           currentValue: query,
           onInput: setQuery,
-          placeholder: "Filter by symbol",
+          placeholder: "Search pools",
         }}
         sortMenuProps={{
           options: tableCols,
@@ -378,7 +378,7 @@ export const AllPoolsTableSet: FunctionComponent<{
           <SearchBox
             currentValue={query}
             onInput={setQuery}
-            placeholder="Filter by name"
+            placeholder="Search pools"
             className="!w-64"
           />
           <SortMenu

@@ -321,7 +321,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
                     setHideZeroBalances(false);
                     setQuery(query);
                   }}
-                  placeholder="Filter by symbol"
+                  placeholder="Search assets"
                 />
                 <SortMenu
                   selectedOptionId={sortKey}
