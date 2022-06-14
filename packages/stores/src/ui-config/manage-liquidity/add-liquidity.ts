@@ -95,9 +95,8 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     | undefined {
     return this.poolAssets.find(
       (asset) =>
-        this.isSingleAmountIn &&
-        asset.currency.coinDenom ===
-          this.singleAmountInConfig?.sendCurrency.coinDenom
+        asset.currency.coinMinimalDenom ===
+        this.singleAmountInConfig?.sendCurrency.coinMinimalDenom
     );
   }
 
@@ -223,6 +222,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     }
   }
 
+  @computed
   get singleAmountInBalance(): CoinPretty | undefined {
     if (!this.singleAmountInAsset) return;
 

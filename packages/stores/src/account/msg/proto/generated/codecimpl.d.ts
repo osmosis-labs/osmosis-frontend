@@ -945,89 +945,6 @@ export namespace osmosis {
   namespace gamm {
     /** Namespace v1beta1. */
     namespace v1beta1 {
-      /** Properties of a PoolAsset. */
-      interface IPoolAsset {
-        /** PoolAsset token */
-        token?: cosmos.base.v1beta1.ICoin | null;
-
-        /** PoolAsset weight */
-        weight?: string | null;
-      }
-
-      /** Represents a PoolAsset. */
-      class PoolAsset implements IPoolAsset {
-        /**
-         * Constructs a new PoolAsset.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.IPoolAsset);
-
-        /** PoolAsset token. */
-        public token?: cosmos.base.v1beta1.ICoin | null;
-
-        /** PoolAsset weight. */
-        public weight: string;
-
-        /**
-         * Creates a new PoolAsset instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns PoolAsset instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.IPoolAsset
-        ): osmosis.gamm.v1beta1.PoolAsset;
-
-        /**
-         * Encodes the specified PoolAsset message. Does not implicitly {@link osmosis.gamm.v1beta1.PoolAsset.verify|verify} messages.
-         * @param m PoolAsset message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.IPoolAsset,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a PoolAsset message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns PoolAsset
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.PoolAsset;
-
-        /**
-         * Creates a PoolAsset message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns PoolAsset
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.PoolAsset;
-
-        /**
-         * Creates a plain object from a PoolAsset message. Also converts values to other types if specified.
-         * @param m PoolAsset
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.PoolAsset,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this PoolAsset to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-      }
-
       /** Represents a Msg */
       class Msg extends $protobuf.rpc.Service {
         /**
@@ -1288,174 +1205,6 @@ export namespace osmosis {
           error: Error | null,
           response?: osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse
         ) => void;
-      }
-
-      /** Properties of a MsgCreateBalancerPool. */
-      interface IMsgCreateBalancerPool {
-        /** MsgCreateBalancerPool sender */
-        sender?: string | null;
-
-        /** MsgCreateBalancerPool poolParams */
-        poolParams?: osmosis.gamm.v1beta1.IPoolParams | null;
-
-        /** MsgCreateBalancerPool poolAssets */
-        poolAssets?: osmosis.gamm.v1beta1.IPoolAsset[] | null;
-
-        /** MsgCreateBalancerPool futurePoolGovernor */
-        futurePoolGovernor?: string | null;
-      }
-
-      /** Represents a MsgCreateBalancerPool. */
-      class MsgCreateBalancerPool implements IMsgCreateBalancerPool {
-        /**
-         * Constructs a new MsgCreateBalancerPool.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.IMsgCreateBalancerPool);
-
-        /** MsgCreateBalancerPool sender. */
-        public sender: string;
-
-        /** MsgCreateBalancerPool poolParams. */
-        public poolParams?: osmosis.gamm.v1beta1.IPoolParams | null;
-
-        /** MsgCreateBalancerPool poolAssets. */
-        public poolAssets: osmosis.gamm.v1beta1.IPoolAsset[];
-
-        /** MsgCreateBalancerPool futurePoolGovernor. */
-        public futurePoolGovernor: string;
-
-        /**
-         * Creates a new MsgCreateBalancerPool instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns MsgCreateBalancerPool instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.IMsgCreateBalancerPool
-        ): osmosis.gamm.v1beta1.MsgCreateBalancerPool;
-
-        /**
-         * Encodes the specified MsgCreateBalancerPool message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgCreateBalancerPool.verify|verify} messages.
-         * @param m MsgCreateBalancerPool message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.IMsgCreateBalancerPool,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a MsgCreateBalancerPool message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns MsgCreateBalancerPool
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.MsgCreateBalancerPool;
-
-        /**
-         * Creates a MsgCreateBalancerPool message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns MsgCreateBalancerPool
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.MsgCreateBalancerPool;
-
-        /**
-         * Creates a plain object from a MsgCreateBalancerPool message. Also converts values to other types if specified.
-         * @param m MsgCreateBalancerPool
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.MsgCreateBalancerPool,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this MsgCreateBalancerPool to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-      }
-
-      /** Properties of a MsgCreateBalancerPoolResponse. */
-      interface IMsgCreateBalancerPoolResponse {}
-
-      /** Represents a MsgCreateBalancerPoolResponse. */
-      class MsgCreateBalancerPoolResponse
-        implements IMsgCreateBalancerPoolResponse
-      {
-        /**
-         * Constructs a new MsgCreateBalancerPoolResponse.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.IMsgCreateBalancerPoolResponse);
-
-        /**
-         * Creates a new MsgCreateBalancerPoolResponse instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns MsgCreateBalancerPoolResponse instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.IMsgCreateBalancerPoolResponse
-        ): osmosis.gamm.v1beta1.MsgCreateBalancerPoolResponse;
-
-        /**
-         * Encodes the specified MsgCreateBalancerPoolResponse message. Does not implicitly {@link osmosis.gamm.v1beta1.MsgCreateBalancerPoolResponse.verify|verify} messages.
-         * @param m MsgCreateBalancerPoolResponse message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.IMsgCreateBalancerPoolResponse,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a MsgCreateBalancerPoolResponse message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns MsgCreateBalancerPoolResponse
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.MsgCreateBalancerPoolResponse;
-
-        /**
-         * Creates a MsgCreateBalancerPoolResponse message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns MsgCreateBalancerPoolResponse
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.MsgCreateBalancerPoolResponse;
-
-        /**
-         * Creates a plain object from a MsgCreateBalancerPoolResponse message. Also converts values to other types if specified.
-         * @param m MsgCreateBalancerPoolResponse
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.MsgCreateBalancerPoolResponse,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this MsgCreateBalancerPoolResponse to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
       }
 
       /** Properties of a MsgJoinPool. */
@@ -1969,7 +1718,10 @@ export namespace osmosis {
       }
 
       /** Properties of a MsgSwapExactAmountInResponse. */
-      interface IMsgSwapExactAmountInResponse {}
+      interface IMsgSwapExactAmountInResponse {
+        /** MsgSwapExactAmountInResponse tokenOutAmount */
+        tokenOutAmount?: string | null;
+      }
 
       /** Represents a MsgSwapExactAmountInResponse. */
       class MsgSwapExactAmountInResponse
@@ -1980,6 +1732,9 @@ export namespace osmosis {
          * @param [p] Properties to set
          */
         constructor(p?: osmosis.gamm.v1beta1.IMsgSwapExactAmountInResponse);
+
+        /** MsgSwapExactAmountInResponse tokenOutAmount. */
+        public tokenOutAmount: string;
 
         /**
          * Creates a new MsgSwapExactAmountInResponse instance using the specified properties.
@@ -2220,7 +1975,10 @@ export namespace osmosis {
       }
 
       /** Properties of a MsgSwapExactAmountOutResponse. */
-      interface IMsgSwapExactAmountOutResponse {}
+      interface IMsgSwapExactAmountOutResponse {
+        /** MsgSwapExactAmountOutResponse tokenInAmount */
+        tokenInAmount?: string | null;
+      }
 
       /** Represents a MsgSwapExactAmountOutResponse. */
       class MsgSwapExactAmountOutResponse
@@ -2231,6 +1989,9 @@ export namespace osmosis {
          * @param [p] Properties to set
          */
         constructor(p?: osmosis.gamm.v1beta1.IMsgSwapExactAmountOutResponse);
+
+        /** MsgSwapExactAmountOutResponse tokenInAmount. */
+        public tokenInAmount: string;
 
         /**
          * Creates a new MsgSwapExactAmountOutResponse instance using the specified properties.
@@ -2388,7 +2149,10 @@ export namespace osmosis {
       }
 
       /** Properties of a MsgJoinSwapExternAmountInResponse. */
-      interface IMsgJoinSwapExternAmountInResponse {}
+      interface IMsgJoinSwapExternAmountInResponse {
+        /** MsgJoinSwapExternAmountInResponse shareOutAmount */
+        shareOutAmount?: string | null;
+      }
 
       /** Represents a MsgJoinSwapExternAmountInResponse. */
       class MsgJoinSwapExternAmountInResponse
@@ -2401,6 +2165,9 @@ export namespace osmosis {
         constructor(
           p?: osmosis.gamm.v1beta1.IMsgJoinSwapExternAmountInResponse
         );
+
+        /** MsgJoinSwapExternAmountInResponse shareOutAmount. */
+        public shareOutAmount: string;
 
         /**
          * Creates a new MsgJoinSwapExternAmountInResponse instance using the specified properties.
@@ -2564,7 +2331,10 @@ export namespace osmosis {
       }
 
       /** Properties of a MsgJoinSwapShareAmountOutResponse. */
-      interface IMsgJoinSwapShareAmountOutResponse {}
+      interface IMsgJoinSwapShareAmountOutResponse {
+        /** MsgJoinSwapShareAmountOutResponse tokenInAmount */
+        tokenInAmount?: string | null;
+      }
 
       /** Represents a MsgJoinSwapShareAmountOutResponse. */
       class MsgJoinSwapShareAmountOutResponse
@@ -2577,6 +2347,9 @@ export namespace osmosis {
         constructor(
           p?: osmosis.gamm.v1beta1.IMsgJoinSwapShareAmountOutResponse
         );
+
+        /** MsgJoinSwapShareAmountOutResponse tokenInAmount. */
+        public tokenInAmount: string;
 
         /**
          * Creates a new MsgJoinSwapShareAmountOutResponse instance using the specified properties.
@@ -2740,7 +2513,10 @@ export namespace osmosis {
       }
 
       /** Properties of a MsgExitSwapShareAmountInResponse. */
-      interface IMsgExitSwapShareAmountInResponse {}
+      interface IMsgExitSwapShareAmountInResponse {
+        /** MsgExitSwapShareAmountInResponse tokenOutAmount */
+        tokenOutAmount?: string | null;
+      }
 
       /** Represents a MsgExitSwapShareAmountInResponse. */
       class MsgExitSwapShareAmountInResponse
@@ -2751,6 +2527,9 @@ export namespace osmosis {
          * @param [p] Properties to set
          */
         constructor(p?: osmosis.gamm.v1beta1.IMsgExitSwapShareAmountInResponse);
+
+        /** MsgExitSwapShareAmountInResponse tokenOutAmount. */
+        public tokenOutAmount: string;
 
         /**
          * Creates a new MsgExitSwapShareAmountInResponse instance using the specified properties.
@@ -2908,7 +2687,10 @@ export namespace osmosis {
       }
 
       /** Properties of a MsgExitSwapExternAmountOutResponse. */
-      interface IMsgExitSwapExternAmountOutResponse {}
+      interface IMsgExitSwapExternAmountOutResponse {
+        /** MsgExitSwapExternAmountOutResponse shareInAmount */
+        shareInAmount?: string | null;
+      }
 
       /** Represents a MsgExitSwapExternAmountOutResponse. */
       class MsgExitSwapExternAmountOutResponse
@@ -2921,6 +2703,9 @@ export namespace osmosis {
         constructor(
           p?: osmosis.gamm.v1beta1.IMsgExitSwapExternAmountOutResponse
         );
+
+        /** MsgExitSwapExternAmountOutResponse shareInAmount. */
+        public shareInAmount: string;
 
         /**
          * Creates a new MsgExitSwapExternAmountOutResponse instance using the specified properties.
@@ -3166,6 +2951,89 @@ export namespace osmosis {
         public toJSON(): { [k: string]: any };
       }
 
+      /** Properties of a PoolAsset. */
+      interface IPoolAsset {
+        /** PoolAsset token */
+        token?: cosmos.base.v1beta1.ICoin | null;
+
+        /** PoolAsset weight */
+        weight?: string | null;
+      }
+
+      /** Represents a PoolAsset. */
+      class PoolAsset implements IPoolAsset {
+        /**
+         * Constructs a new PoolAsset.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.gamm.v1beta1.IPoolAsset);
+
+        /** PoolAsset token. */
+        public token?: cosmos.base.v1beta1.ICoin | null;
+
+        /** PoolAsset weight. */
+        public weight: string;
+
+        /**
+         * Creates a new PoolAsset instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns PoolAsset instance
+         */
+        public static create(
+          properties?: osmosis.gamm.v1beta1.IPoolAsset
+        ): osmosis.gamm.v1beta1.PoolAsset;
+
+        /**
+         * Encodes the specified PoolAsset message. Does not implicitly {@link osmosis.gamm.v1beta1.PoolAsset.verify|verify} messages.
+         * @param m PoolAsset message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.gamm.v1beta1.IPoolAsset,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a PoolAsset message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns PoolAsset
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.gamm.v1beta1.PoolAsset;
+
+        /**
+         * Creates a PoolAsset message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns PoolAsset
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.gamm.v1beta1.PoolAsset;
+
+        /**
+         * Creates a plain object from a PoolAsset message. Also converts values to other types if specified.
+         * @param m PoolAsset
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.gamm.v1beta1.PoolAsset,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this PoolAsset to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
       /** Properties of a Pool. */
       interface IPool {
         /** Pool address */
@@ -3277,6 +3145,252 @@ export namespace osmosis {
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
+      }
+    }
+
+    /** Namespace poolmodels. */
+    namespace poolmodels {
+      /** Namespace balancer. */
+      namespace balancer {
+        /** Namespace v1beta1. */
+        namespace v1beta1 {
+          /** Represents a Msg */
+          class Msg extends $protobuf.rpc.Service {
+            /**
+             * Constructs a new Msg service.
+             * @param rpcImpl RPC implementation
+             * @param [requestDelimited=false] Whether requests are length-delimited
+             * @param [responseDelimited=false] Whether responses are length-delimited
+             */
+            constructor(
+              rpcImpl: $protobuf.RPCImpl,
+              requestDelimited?: boolean,
+              responseDelimited?: boolean
+            );
+
+            /**
+             * Creates new Msg service using the specified rpc implementation.
+             * @param rpcImpl RPC implementation
+             * @param [requestDelimited=false] Whether requests are length-delimited
+             * @param [responseDelimited=false] Whether responses are length-delimited
+             * @returns RPC service. Useful where requests and/or responses are streamed.
+             */
+            public static create(
+              rpcImpl: $protobuf.RPCImpl,
+              requestDelimited?: boolean,
+              responseDelimited?: boolean
+            ): Msg;
+
+            /**
+             * Calls CreateBalancerPool.
+             * @param request MsgCreateBalancerPool message or plain object
+             * @param callback Node-style callback called with the error, if any, and MsgCreateBalancerPoolResponse
+             */
+            public createBalancerPool(
+              request: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgCreateBalancerPool,
+              callback: osmosis.gamm.poolmodels.balancer.v1beta1.Msg.CreateBalancerPoolCallback
+            ): void;
+
+            /**
+             * Calls CreateBalancerPool.
+             * @param request MsgCreateBalancerPool message or plain object
+             * @returns Promise
+             */
+            public createBalancerPool(
+              request: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgCreateBalancerPool
+            ): Promise<osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPoolResponse>;
+          }
+
+          namespace Msg {
+            /**
+             * Callback as used by {@link osmosis.gamm.poolmodels.balancer.v1beta1.Msg#createBalancerPool}.
+             * @param error Error, if any
+             * @param [response] MsgCreateBalancerPoolResponse
+             */
+            type CreateBalancerPoolCallback = (
+              error: Error | null,
+              response?: osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPoolResponse
+            ) => void;
+          }
+
+          /** Properties of a MsgCreateBalancerPool. */
+          interface IMsgCreateBalancerPool {
+            /** MsgCreateBalancerPool sender */
+            sender?: string | null;
+
+            /** MsgCreateBalancerPool poolParams */
+            poolParams?: osmosis.gamm.v1beta1.IPoolParams | null;
+
+            /** MsgCreateBalancerPool poolAssets */
+            poolAssets?: osmosis.gamm.v1beta1.IPoolAsset[] | null;
+
+            /** MsgCreateBalancerPool futurePoolGovernor */
+            futurePoolGovernor?: string | null;
+          }
+
+          /** Represents a MsgCreateBalancerPool. */
+          class MsgCreateBalancerPool implements IMsgCreateBalancerPool {
+            /**
+             * Constructs a new MsgCreateBalancerPool.
+             * @param [p] Properties to set
+             */
+            constructor(
+              p?: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgCreateBalancerPool
+            );
+
+            /** MsgCreateBalancerPool sender. */
+            public sender: string;
+
+            /** MsgCreateBalancerPool poolParams. */
+            public poolParams?: osmosis.gamm.v1beta1.IPoolParams | null;
+
+            /** MsgCreateBalancerPool poolAssets. */
+            public poolAssets: osmosis.gamm.v1beta1.IPoolAsset[];
+
+            /** MsgCreateBalancerPool futurePoolGovernor. */
+            public futurePoolGovernor: string;
+
+            /**
+             * Creates a new MsgCreateBalancerPool instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns MsgCreateBalancerPool instance
+             */
+            public static create(
+              properties?: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgCreateBalancerPool
+            ): osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool;
+
+            /**
+             * Encodes the specified MsgCreateBalancerPool message. Does not implicitly {@link osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool.verify|verify} messages.
+             * @param m MsgCreateBalancerPool message or plain object to encode
+             * @param [w] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(
+              m: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgCreateBalancerPool,
+              w?: $protobuf.Writer
+            ): $protobuf.Writer;
+
+            /**
+             * Decodes a MsgCreateBalancerPool message from the specified reader or buffer.
+             * @param r Reader or buffer to decode from
+             * @param [l] Message length if known beforehand
+             * @returns MsgCreateBalancerPool
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(
+              r: $protobuf.Reader | Uint8Array,
+              l?: number
+            ): osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool;
+
+            /**
+             * Creates a MsgCreateBalancerPool message from a plain object. Also converts values to their respective internal types.
+             * @param d Plain object
+             * @returns MsgCreateBalancerPool
+             */
+            public static fromObject(d: {
+              [k: string]: any;
+            }): osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool;
+
+            /**
+             * Creates a plain object from a MsgCreateBalancerPool message. Also converts values to other types if specified.
+             * @param m MsgCreateBalancerPool
+             * @param [o] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(
+              m: osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool,
+              o?: $protobuf.IConversionOptions
+            ): { [k: string]: any };
+
+            /**
+             * Converts this MsgCreateBalancerPool to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+          }
+
+          /** Properties of a MsgCreateBalancerPoolResponse. */
+          interface IMsgCreateBalancerPoolResponse {
+            /** MsgCreateBalancerPoolResponse poolId */
+            poolId?: Long | null;
+          }
+
+          /** Represents a MsgCreateBalancerPoolResponse. */
+          class MsgCreateBalancerPoolResponse
+            implements IMsgCreateBalancerPoolResponse
+          {
+            /**
+             * Constructs a new MsgCreateBalancerPoolResponse.
+             * @param [p] Properties to set
+             */
+            constructor(
+              p?: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgCreateBalancerPoolResponse
+            );
+
+            /** MsgCreateBalancerPoolResponse poolId. */
+            public poolId: Long;
+
+            /**
+             * Creates a new MsgCreateBalancerPoolResponse instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns MsgCreateBalancerPoolResponse instance
+             */
+            public static create(
+              properties?: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgCreateBalancerPoolResponse
+            ): osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPoolResponse;
+
+            /**
+             * Encodes the specified MsgCreateBalancerPoolResponse message. Does not implicitly {@link osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPoolResponse.verify|verify} messages.
+             * @param m MsgCreateBalancerPoolResponse message or plain object to encode
+             * @param [w] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(
+              m: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgCreateBalancerPoolResponse,
+              w?: $protobuf.Writer
+            ): $protobuf.Writer;
+
+            /**
+             * Decodes a MsgCreateBalancerPoolResponse message from the specified reader or buffer.
+             * @param r Reader or buffer to decode from
+             * @param [l] Message length if known beforehand
+             * @returns MsgCreateBalancerPoolResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(
+              r: $protobuf.Reader | Uint8Array,
+              l?: number
+            ): osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPoolResponse;
+
+            /**
+             * Creates a MsgCreateBalancerPoolResponse message from a plain object. Also converts values to their respective internal types.
+             * @param d Plain object
+             * @returns MsgCreateBalancerPoolResponse
+             */
+            public static fromObject(d: {
+              [k: string]: any;
+            }): osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPoolResponse;
+
+            /**
+             * Creates a plain object from a MsgCreateBalancerPoolResponse message. Also converts values to other types if specified.
+             * @param m MsgCreateBalancerPoolResponse
+             * @param [o] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(
+              m: osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPoolResponse,
+              o?: $protobuf.IConversionOptions
+            ): { [k: string]: any };
+
+            /**
+             * Converts this MsgCreateBalancerPoolResponse to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+          }
+        }
       }
     }
   }
@@ -3663,6 +3777,25 @@ export namespace osmosis {
       public beginUnlocking(
         request: osmosis.lockup.IMsgBeginUnlocking
       ): Promise<osmosis.lockup.MsgBeginUnlockingResponse>;
+
+      /**
+       * Calls ExtendLockup.
+       * @param request MsgExtendLockup message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgExtendLockupResponse
+       */
+      public extendLockup(
+        request: osmosis.lockup.IMsgExtendLockup,
+        callback: osmosis.lockup.Msg.ExtendLockupCallback
+      ): void;
+
+      /**
+       * Calls ExtendLockup.
+       * @param request MsgExtendLockup message or plain object
+       * @returns Promise
+       */
+      public extendLockup(
+        request: osmosis.lockup.IMsgExtendLockup
+      ): Promise<osmosis.lockup.MsgExtendLockupResponse>;
     }
 
     namespace Msg {
@@ -3694,6 +3827,16 @@ export namespace osmosis {
       type BeginUnlockingCallback = (
         error: Error | null,
         response?: osmosis.lockup.MsgBeginUnlockingResponse
+      ) => void;
+
+      /**
+       * Callback as used by {@link osmosis.lockup.Msg#extendLockup}.
+       * @param error Error, if any
+       * @param [response] MsgExtendLockupResponse
+       */
+      type ExtendLockupCallback = (
+        error: Error | null,
+        response?: osmosis.lockup.MsgExtendLockupResponse
       ) => void;
     }
 
@@ -4180,6 +4323,172 @@ export namespace osmosis {
 
       /**
        * Converts this MsgBeginUnlockingResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgExtendLockup. */
+    interface IMsgExtendLockup {
+      /** MsgExtendLockup owner */
+      owner?: string | null;
+
+      /** MsgExtendLockup ID */
+      ID?: Long | null;
+
+      /** MsgExtendLockup duration */
+      duration?: google.protobuf.IDuration | null;
+    }
+
+    /** Represents a MsgExtendLockup. */
+    class MsgExtendLockup implements IMsgExtendLockup {
+      /**
+       * Constructs a new MsgExtendLockup.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IMsgExtendLockup);
+
+      /** MsgExtendLockup owner. */
+      public owner: string;
+
+      /** MsgExtendLockup ID. */
+      public ID: Long;
+
+      /** MsgExtendLockup duration. */
+      public duration?: google.protobuf.IDuration | null;
+
+      /**
+       * Creates a new MsgExtendLockup instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgExtendLockup instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IMsgExtendLockup
+      ): osmosis.lockup.MsgExtendLockup;
+
+      /**
+       * Encodes the specified MsgExtendLockup message. Does not implicitly {@link osmosis.lockup.MsgExtendLockup.verify|verify} messages.
+       * @param m MsgExtendLockup message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IMsgExtendLockup,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgExtendLockup message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgExtendLockup
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.MsgExtendLockup;
+
+      /**
+       * Creates a MsgExtendLockup message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgExtendLockup
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.MsgExtendLockup;
+
+      /**
+       * Creates a plain object from a MsgExtendLockup message. Also converts values to other types if specified.
+       * @param m MsgExtendLockup
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.MsgExtendLockup,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgExtendLockup to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgExtendLockupResponse. */
+    interface IMsgExtendLockupResponse {
+      /** MsgExtendLockupResponse success */
+      success?: boolean | null;
+    }
+
+    /** Represents a MsgExtendLockupResponse. */
+    class MsgExtendLockupResponse implements IMsgExtendLockupResponse {
+      /**
+       * Constructs a new MsgExtendLockupResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IMsgExtendLockupResponse);
+
+      /** MsgExtendLockupResponse success. */
+      public success: boolean;
+
+      /**
+       * Creates a new MsgExtendLockupResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgExtendLockupResponse instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IMsgExtendLockupResponse
+      ): osmosis.lockup.MsgExtendLockupResponse;
+
+      /**
+       * Encodes the specified MsgExtendLockupResponse message. Does not implicitly {@link osmosis.lockup.MsgExtendLockupResponse.verify|verify} messages.
+       * @param m MsgExtendLockupResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IMsgExtendLockupResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgExtendLockupResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgExtendLockupResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.MsgExtendLockupResponse;
+
+      /**
+       * Creates a MsgExtendLockupResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgExtendLockupResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.MsgExtendLockupResponse;
+
+      /**
+       * Creates a plain object from a MsgExtendLockupResponse message. Also converts values to other types if specified.
+       * @param m MsgExtendLockupResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.MsgExtendLockupResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgExtendLockupResponse to JSON.
        * @returns JSON object
        */
       public toJSON(): { [k: string]: any };
@@ -4719,6 +5028,25 @@ export namespace osmosis {
       public lockAndSuperfluidDelegate(
         request: osmosis.superfluid.IMsgLockAndSuperfluidDelegate
       ): Promise<osmosis.superfluid.MsgLockAndSuperfluidDelegateResponse>;
+
+      /**
+       * Calls UnPoolWhitelistedPool.
+       * @param request MsgUnPoolWhitelistedPool message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgUnPoolWhitelistedPoolResponse
+       */
+      public unPoolWhitelistedPool(
+        request: osmosis.superfluid.IMsgUnPoolWhitelistedPool,
+        callback: osmosis.superfluid.Msg.UnPoolWhitelistedPoolCallback
+      ): void;
+
+      /**
+       * Calls UnPoolWhitelistedPool.
+       * @param request MsgUnPoolWhitelistedPool message or plain object
+       * @returns Promise
+       */
+      public unPoolWhitelistedPool(
+        request: osmosis.superfluid.IMsgUnPoolWhitelistedPool
+      ): Promise<osmosis.superfluid.MsgUnPoolWhitelistedPoolResponse>;
     }
 
     namespace Msg {
@@ -4760,6 +5088,16 @@ export namespace osmosis {
       type LockAndSuperfluidDelegateCallback = (
         error: Error | null,
         response?: osmosis.superfluid.MsgLockAndSuperfluidDelegateResponse
+      ) => void;
+
+      /**
+       * Callback as used by {@link osmosis.superfluid.Msg#unPoolWhitelistedPool}.
+       * @param error Error, if any
+       * @param [response] MsgUnPoolWhitelistedPoolResponse
+       */
+      type UnPoolWhitelistedPoolCallback = (
+        error: Error | null,
+        response?: osmosis.superfluid.MsgUnPoolWhitelistedPoolResponse
       ) => void;
     }
 

@@ -28,9 +28,9 @@ export const SearchBox: FunctionComponent<Props> = ({
     <Image alt="search" src="/icons/search-hollow.svg" height={14} width={14} />
     <label className="grow shrink h-full">
       <input
-        className="w-full h-full appearance-none bg-transparent"
+        className="w-full h-full appearance-none bg-transparent placeholder:text-white-disabled"
         value={currentValue}
-        placeholder={placeholder ?? ""}
+        placeholder={placeholder}
         autoComplete="off"
         onInput={(e: any) => onInput(e.target.value)}
         onClick={(e: any) => e.target.select()}
