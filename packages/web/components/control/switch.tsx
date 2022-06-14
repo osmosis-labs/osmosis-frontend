@@ -15,7 +15,10 @@ export const Switch: FunctionComponent<
 }) => (
   <label
     className={classNames(
-      "flex shrink-0 items-center gap-2 subtitle2 md:caption cursor-pointer select-none",
+      "flex shrink-0 items-center gap-2 subtitle2 md:caption select-none",
+      {
+        "cursor-pointer": !disabled,
+      },
       containerClassName
     )}
   >
@@ -34,6 +37,6 @@ export const Switch: FunctionComponent<
       disabled={disabled}
       onChange={(e) => onToggle(e.target.checked)}
     />
-    {children}
+    <div className={disabled ? "opacity-30" : undefined}>{children}</div>
   </label>
 );

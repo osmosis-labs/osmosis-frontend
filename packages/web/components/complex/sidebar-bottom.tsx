@@ -193,7 +193,7 @@ const Links: FunctionComponent = () => (
         />
       </a>
     </div>
-    <p className="flex items-center place-content-around py-2 text-caption text-white-high">
+    <div className="flex items-center place-content-around py-2 text-caption text-white-high">
       <a
         className="flex items-center gap-1"
         href="https://support.osmosis.zone/"
@@ -207,6 +207,6 @@ const Links: FunctionComponent = () => (
           <Image alt="link" src="/icons/link-deco.svg" height={10} width={10} />
         </div>
       </a>
-    </p>
+    </div>
   </>
 );

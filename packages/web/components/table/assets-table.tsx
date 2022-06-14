@@ -181,6 +181,9 @@ export const AssetsTable: FunctionComponent<Props> = ({
     "assets_hide_zero_balances",
     false
   );
+  const canHideZeroBalances = cells.some(
+    (cell) => cell.value && cell.value !== "0"
+  );
 
   // Filter data based on user's input in the search box.
   const [query, setQuery, filteredSortedCells] = useFilteredData(
@@ -278,6 +281,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             <div className="flex gap-3 items-center place-content-between">
               <Switch
                 isOn={hideZeroBalances}
+                disabled={canHideZeroBalances}
                 onToggle={() => setHideZeroBalances(!hideZeroBalances)}
               >
                 Hide zero balances
@@ -310,6 +314,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             <div className="flex place-content-between">
               <Switch
                 isOn={hideZeroBalances}
+                disabled={canHideZeroBalances}
                 onToggle={() => setHideZeroBalances(!hideZeroBalances)}
               >
                 Hide zero balances
