@@ -25,6 +25,7 @@
     ]
   },
   "devDependencies": {
+    "@keplr-wallet/provider-mock": "^0.10.4",
     "@types/ws": "^7.4.1",
     "eventemitter3": "^4.0.7",
     "ws": "^7.4.5"
@@ -37,7 +38,6 @@
     "@keplr-wallet/stores": "^0.10.4",
     "@keplr-wallet/types": "^0.10.4",
     "@keplr-wallet/unit": "^0.10.4",
-    "@keplr-wallet/provider-mock": "^0.10.4",
     "@osmosis-labs/pools": "0.0.1",
     "@osmosis-labs/math": "0.0.1",
     "axios": "^0.21.1",
