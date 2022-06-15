@@ -1,9 +1,13 @@
 import Image from "next/image";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import { IS_FRONTIER } from "../../config";
+import { useLocalStorageState } from "../../hooks";
 
 export const FrontierBanner: FunctionComponent = () => {
-  const [showBanner, setShowBanner] = useState(IS_FRONTIER);
+  const [showBanner, setShowBanner] = useLocalStorageState(
+    "show_frontier_banner",
+    IS_FRONTIER
+  );
 
   if (!showBanner) {
     return null;
@@ -29,7 +33,7 @@ export const FrontierBanner: FunctionComponent = () => {
         />
       </button>
       <div className="flex items-center md:px-1 px-2 md:gap-1 gap-4">
-        <div className="shrink-0">
+        <div className="pt-1.5 mx-2 shrink-0">
           <Image
             alt="info"
             src="/icons/info-white-emphasis.svg"

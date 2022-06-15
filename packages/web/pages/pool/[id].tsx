@@ -23,7 +23,6 @@ import { DepoolingTable } from "../../components/table/depooling-table";
 import { truncateString } from "../../components/utils";
 import {
   ExternalIncentiveGaugeAllowList,
-  ChainInfos,
   UnPoolWhitelistedPoolIds,
 } from "../../config";
 import {
@@ -486,13 +485,6 @@ const Pool: FunctionComponent = observer(() => {
           addLiquidityConfig={addLiquidityConfig}
           removeLiquidityConfig={removeLiquidityConfig}
           isSendingMsg={account.txTypeInProgress !== ""}
-          getChainNetworkName={(coinDenom) =>
-            ChainInfos.find((chain) =>
-              chain.currencies.find(
-                (currency) => currency.coinDenom === coinDenom
-              )
-            )?.chainName
-          }
           getFiatValue={(coin) => priceStore.calculatePrice(coin)}
           onAddLiquidity={async () => {
             try {
@@ -580,8 +572,8 @@ const Pool: FunctionComponent = observer(() => {
             superfluid.delegations.length > 0
           }
           onLockToken={async (gaugeId, electSuperfluid) => {
-            setShowLockLPTokenModal(false);
             if (electSuperfluid) {
+              setShowLockLPTokenModal(false);
               setShowSuperfluidValidatorsModal(true);
               // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
             } else {
@@ -876,7 +868,7 @@ const Pool: FunctionComponent = observer(() => {
                       validatorName={validatorName}
                       validatorImgSrc={validatorImgSrc}
                       validatorCommission={validatorCommission?.toString()}
-                      delegation={amount.maxDecimals(2).trim(true).toString()}
+                      delegation={amount.trim(true).toString()}
                       apr={apr.maxDecimals(2).trim(true).toString()}
                       isMobile={isMobile}
                     />
@@ -1157,14 +1149,13 @@ const Pool: FunctionComponent = observer(() => {
                   ?.amount.trim(true);
                 const myAmount = userAsset?.asset.maxDecimals(6).trim(true);
 
-                // only show "123,321,312 OSMO" or "0.2331223 OSMO", not both
                 const totalAmountAdjusted = totalAmount
                   ? truncateString(
                       totalAmount
                         .maxDecimals(
                           totalAmount.toDec().lte(new Dec(1))
                             ? totalAmount.currency.coinDecimals
-                            : 0
+                            : 6
                         )
                         .toString(),
                       30
@@ -1176,7 +1167,7 @@ const Pool: FunctionComponent = observer(() => {
                         .maxDecimals(
                           myAmount.toDec().lte(new Dec(1))
                             ? myAmount.currency.coinDecimals
-                            : 0
+                            : 6
                         )
                         .toString(),
                       30

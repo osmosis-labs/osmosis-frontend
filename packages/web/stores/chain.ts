@@ -1,7 +1,10 @@
 import { computed, makeObservable, observable } from "mobx";
+import { computedFn } from "mobx-utils";
 import { AppCurrency } from "@keplr-wallet/types";
-import { ChainStore as BaseChainStore } from "@keplr-wallet/stores";
-
+import {
+  ChainStore as BaseChainStore,
+  ChainInfoInner,
+} from "@keplr-wallet/stores";
 import { ChainInfo } from "@keplr-wallet/types";
 
 export interface ChainInfoWithExplorer extends ChainInfo {
@@ -52,4 +55,24 @@ export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
 
     throw new Error("osmosis chain not set");
   }
+
+  /** Fetch raw ChainInfo from coin denom. Trims channel info. */
+  getChainFromCurrency: (
+    coinDenom: string
+  ) => ChainInfoInner<ChainInfoWithExplorer> | undefined = computedFn(
+    (coinDenom) => {
+      const justDenom = coinDenom.split(" ")[0]; // remove channel info
+      for (const chain of this.chainInfos) {
+        if (chain.raw.stakeCurrency.coinDenom === justDenom) {
+          return chain;
+        }
+        const chainCurrency = chain.raw.currencies.find(
+          (c) => c.coinDenom === justDenom
+        );
+        if (chainCurrency) {
+          return chain;
+        }
+      }
+    }
+  );
 }
