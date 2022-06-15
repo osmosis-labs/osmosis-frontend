@@ -201,7 +201,7 @@ const Links: FunctionComponent = () => (
         rel="noreferrer"
       >
         <span className="opacity-30 hover:opacity-40">
-          Get Support DAO Help
+          Get Support Lab Help
         </span>
         <div className="w-[12px] pt-0.5 opacity-60">
           <Image alt="link" src="/icons/link-deco.svg" height={10} width={10} />
