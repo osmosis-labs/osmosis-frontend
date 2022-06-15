@@ -1,6 +1,6 @@
 {
   "name": "@osmosis-labs/math",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "build/index.js",
   "typings": "types/index.d.ts",
   "author": "osmosis-labs",
@@ -36,9 +36,8 @@
       "prettier --check"
     ]
   },
-  "devDependencies": {},
   "dependencies": {
-    "@keplr-wallet/unit": "^0.10.4",
-    "@keplr-wallet/types": "^0.10.4"
+    "@keplr-wallet/types": "^0.10.4",
+    "@keplr-wallet/unit": "^0.10.4"
   }
 }
