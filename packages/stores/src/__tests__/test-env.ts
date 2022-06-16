@@ -14,6 +14,7 @@ import {
   CosmosAccount,
   CosmwasmAccount,
   ChainStore,
+  WalletStatus,
 } from "@keplr-wallet/stores";
 import { ChainInfo } from "@keplr-wallet/types";
 import { MemoryKVStore } from "@keplr-wallet/common";
@@ -21,13 +22,13 @@ import { MockKeplr } from "@keplr-wallet/provider-mock";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { OsmosisQueries, OsmosisAccount } from "..";
 
-export const chainId = "localnet-1";
+export const chainId = "localosmosis";
 
 export const TestChainInfos: ChainInfo[] = [
   {
     rpc: "http://127.0.0.1:26657",
     rest: "http://127.0.0.1:1317",
-    chainId: "localnet-1",
+    chainId: chainId,
     chainName: "OSMOSIS",
     stakeCurrency: {
       coinDenom: "OSMO",
@@ -42,6 +43,11 @@ export const TestChainInfos: ChainInfo[] = [
       {
         coinDenom: "OSMO",
         coinMinimalDenom: "uosmo",
+        coinDecimals: 6,
+      },
+      {
+        coinDenom: "ION",
+        coinMinimalDenom: "uion",
         coinDecimals: 6,
       },
       {
@@ -133,7 +139,7 @@ export class RootStore {
         }
       },
       TestChainInfos,
-      "health nest provide snow total tissue intact loyal cargo must credit wrist"
+      "notice oak worry limit wrap speak medal online prefer cluster roof addict wrist behave treat actual wasp year salad speed social layer crew genius"
     );
 
     this.chainStore = new ChainStore(TestChainInfos);
@@ -264,10 +270,14 @@ export async function initLocalnet(): Promise<void> {
 
   await new Promise<void>((resolve, reject) => {
     exec(
-      `sh ${__dirname}/../../localnet/run-localnet.sh`,
+      // change osmosisd version in /localnet/Dockerfile
+      // comment to speed up test time
+      //`docker build --tag osmosis/localnet ./localnet &&
+      `docker rm --force osmosis_localnet && 
+       docker run -d -p 1317:1317 -p 26657:26657 -p 9090:9090 --user root --name osmosis_localnet osmosis/localnet`,
       (error, _stdout, _stderr) => {
         if (error) {
-          reject(new Error(`error: ${error.message}`));
+          reject(new Error(`run localnet error: ${error.message}`));
           return;
         }
 
@@ -298,6 +308,19 @@ export async function initLocalnet(): Promise<void> {
   }
 }
 
+export async function removeLocalnet() {
+  await new Promise<void>((resolve, reject) => {
+    exec(`docker rm --force osmosis_localnet`, (error, _stdout, _stderr) => {
+      if (error) {
+        reject(new Error(`remove localnet error: ${error.message}`));
+        return;
+      }
+
+      resolve();
+    });
+  });
+}
+
 export async function waitAccountLoaded(account: AccountSetBase) {
   if (account.isReadyToSendTx) {
     return;
@@ -305,14 +328,13 @@ export async function waitAccountLoaded(account: AccountSetBase) {
 
   return new Promise<void>((resolve) => {
     const disposer = autorun(() => {
-      if (account.isReadyToSendTx) {
+      if (
+        account.isReadyToSendTx &&
+        account.walletStatus === WalletStatus.Loaded
+      ) {
         resolve();
         disposer();
       }
     });
   });
-}
-
-export function createTestStore() {
-  return new RootStore();
 }

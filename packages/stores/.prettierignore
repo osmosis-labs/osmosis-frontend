@@ -3,4 +3,3 @@ build/*
 .prettierignore
 .eslintignore
 localnet
-Dockerfile
