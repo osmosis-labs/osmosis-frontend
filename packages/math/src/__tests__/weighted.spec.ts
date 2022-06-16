@@ -1,5 +1,5 @@
 import assert from "assert";
-import { WeightedPoolMath } from "./weighted";
+import { WeightedPoolMath } from "../weighted";
 import { Dec } from "@keplr-wallet/unit";
 
 const powPrecision = new Dec("0.00000001");
