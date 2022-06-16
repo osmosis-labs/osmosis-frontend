@@ -2,3 +2,4 @@ build/*
 types/*
 
 **/generated/**
+README.md
