@@ -15,6 +15,7 @@ export class QueriesExternalStore extends HasMapStore<QueriesExternal> {
   }
 }
 
+/** Root store for queries external to any chain. */
 export class QueriesExternal {
   public readonly queryGammPoolFeeMetrics: DeepReadonly<ObservableQueryPoolFeesMetrics>;
 

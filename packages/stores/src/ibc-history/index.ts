@@ -14,6 +14,7 @@ import {
 } from "./types";
 import { PollingStatusSubscription } from "./polling-status-subscription";
 
+/** Stores IBC sending, pending, and failure transactions state for some time period. */
 export class IBCTransferHistoryStore {
   /*
    * The tx takes more time to be commited after the tx broadcasted.
