@@ -4,26 +4,22 @@ import {
   chainId,
   deepContained,
   getEventFromTx,
-  initLocalnet,
   RootStore,
   waitAccountLoaded,
 } from "../../__tests__/test-env";
 import { WeightedPoolEstimates } from "@osmosis-labs/math";
 
-jest.setTimeout(60000);
+jest.setTimeout(100 * 1000);
 
 describe("Join Pool Tx", () => {
   let { accountStore, queriesStore } = new RootStore();
+  let poolId: string | undefined; // relies on `jest --runInBand` to work properly
 
   beforeEach(async () => {
     // Init new localnet per test
-    await initLocalnet();
-
-    const stores = new RootStore();
-    accountStore = stores.accountStore;
-    queriesStore = stores.queriesStore;
-
     const account = accountStore.getAccount(chainId);
+    account.cosmos.broadcastMode = "block";
+
     await waitAccountLoaded(account);
 
     // And prepare the pool
@@ -31,17 +27,6 @@ describe("Join Pool Tx", () => {
       account.osmosis.sendCreatePoolMsg(
         "0",
         [
-          {
-            weight: "100",
-            token: {
-              currency: {
-                coinDenom: "ATOM",
-                coinMinimalDenom: "uatom",
-                coinDecimals: 6,
-              },
-              amount: "100",
-            },
-          },
           {
             weight: "200",
             token: {
@@ -57,8 +42,8 @@ describe("Join Pool Tx", () => {
             weight: "300",
             token: {
               currency: {
-                coinDenom: "Foo",
-                coinMinimalDenom: "ufoo",
+                coinDenom: "ION",
+                coinMinimalDenom: "uion",
                 coinDecimals: 6,
               },
               amount: "100",
@@ -72,8 +57,16 @@ describe("Join Pool Tx", () => {
       );
     });
 
-    // let pools load
-    await queriesStore.get(chainId).osmosis!.queryGammPools.waitResponse();
+    // refresh stores
+    await queriesStore
+      .get(chainId)
+      .osmosis!.queryGammNumPools.waitFreshResponse();
+    await queriesStore.get(chainId).osmosis!.queryGammPools.waitFreshResponse();
+
+    // set poolId
+    const numPools =
+      queriesStore.get(chainId).osmosis!.queryGammNumPools.numPools;
+    poolId = numPools.toString();
   });
 
   test("with no max slippage", async () => {
@@ -81,11 +74,10 @@ describe("Join Pool Tx", () => {
 
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
 
-    const poolId = "1";
     const shareOutAmount = "1";
     const maxSlippage = "0";
 
-    const queryPool = queriesOsmosis.queryGammPools.getPool(poolId)!;
+    const queryPool = queriesOsmosis.queryGammPools.getPool(poolId!)!;
     await queryPool.waitFreshResponse();
     const estimated = WeightedPoolEstimates.estimateJoinSwap(
       queryPool.pool,
@@ -101,16 +93,12 @@ describe("Join Pool Tx", () => {
       18
     );
 
-    const tx = await new Promise<any>((resolve) => {
-      account.osmosis.sendJoinPoolMsg(
-        poolId,
-        shareOutAmount,
-        maxSlippage,
-        "",
-        (tx) => {
+    const tx = await new Promise<any>((resolve, rejects) => {
+      account.osmosis
+        .sendJoinPoolMsg(poolId!, shareOutAmount, maxSlippage, "", (tx) => {
           resolve(tx);
-        }
-      );
+        })
+        .catch((e) => rejects(e));
     });
 
     deepContained(
@@ -138,7 +126,11 @@ describe("Join Pool Tx", () => {
               .map((tokenIn) => {
                 const amount = tokenIn
                   .toDec()
-                  .mul(DecUtils.getPrecisionDec(tokenIn.currency.coinDecimals))
+                  .mul(
+                    DecUtils.getTenExponentNInPrecisionRange(
+                      tokenIn.currency.coinDecimals
+                    )
+                  )
                   .truncate();
 
                 return amount.toString() + tokenIn.currency.coinMinimalDenom;
@@ -149,9 +141,9 @@ describe("Join Pool Tx", () => {
           {
             key: "amount",
             value: `${new Dec(shareOutAmount)
-              .mul(DecUtils.getPrecisionDec(18))
+              .mul(DecUtils.getTenExponentNInPrecisionRange(18))
               .truncate()
-              .toString()}gamm/pool/${poolId}`,
+              .toString()}gamm/pool/${poolId!}`,
           },
         ]),
       },
@@ -162,13 +154,12 @@ describe("Join Pool Tx", () => {
   test("with slippage", async () => {
     const account = accountStore.getAccount(chainId);
 
-    const poolId = "1";
     const shareOutAmount = "1";
     const maxSlippage = "0.1";
 
     const queryPool = queriesStore
       .get(chainId)
-      .osmosis!.queryGammPools.getPool(poolId)!;
+      .osmosis!.queryGammPools.getPool(poolId!)!;
     await queryPool.waitFreshResponse();
     const estimated = WeightedPoolEstimates.estimateJoinSwap(
       queryPool.pool,
@@ -185,16 +176,12 @@ describe("Join Pool Tx", () => {
       18
     );
 
-    const tx = await new Promise<any>((resolve) => {
-      account.osmosis.sendJoinPoolMsg(
-        poolId,
-        shareOutAmount,
-        maxSlippage,
-        "",
-        (tx) => {
+    const tx = await new Promise<any>((resolve, rejects) => {
+      account.osmosis
+        .sendJoinPoolMsg(poolId!, shareOutAmount, maxSlippage, "", (tx) => {
           resolve(tx);
-        }
-      );
+        })
+        .catch((e) => rejects(e));
     });
 
     deepContained(
@@ -222,7 +209,11 @@ describe("Join Pool Tx", () => {
               .map((tokenIn) => {
                 const amount = tokenIn
                   .toDec()
-                  .mul(DecUtils.getPrecisionDec(tokenIn.currency.coinDecimals))
+                  .mul(
+                    DecUtils.getTenExponentNInPrecisionRange(
+                      tokenIn.currency.coinDecimals
+                    )
+                  )
                   .truncate();
 
                 return amount.toString() + tokenIn.currency.coinMinimalDenom;
@@ -233,9 +224,9 @@ describe("Join Pool Tx", () => {
           {
             key: "amount",
             value: `${new Dec(shareOutAmount)
-              .mul(DecUtils.getPrecisionDec(18))
+              .mul(DecUtils.getTenExponentNInPrecisionRange(18))
               .truncate()
-              .toString()}gamm/pool/${poolId}`,
+              .toString()}gamm/pool/${poolId!}`,
           },
         ]),
       },
