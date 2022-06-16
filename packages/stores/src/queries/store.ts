@@ -64,6 +64,7 @@ export const OsmosisQueries = {
   },
 };
 
+/** Root queries store for all Osmosis queries. */
 export class OsmosisQueriesImpl {
   public readonly queryGammPools: DeepReadonly<ObservableQueryPools>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
