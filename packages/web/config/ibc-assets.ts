@@ -120,7 +120,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
     isUnstable: true,
-    isVerified: true,
   },
   {
     counterpartyChainId: "columbus-5",
@@ -128,7 +127,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uusd",
     isUnstable: true,
-    isVerified: true,
   },
   {
     counterpartyChainId: "stargaze-1",
