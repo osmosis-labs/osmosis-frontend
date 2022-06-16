@@ -145,6 +145,12 @@ export declare class OsmosisAccountImpl {
      * @param onFulfill Callback to handle tx fullfillment.
      */
     sendBeginUnlockingMsg(lockIds: string[], memo?: string, onFulfill?: (tx: any) => void): Promise<void>;
+    /**
+     * https://docs.osmosis.zone/developing/osmosis-core/modules/spec-superfluid.html#superfluid-unbond-lock
+     * @param locks IDs and whether the lock is synthetic
+     * @param memo Transaction memo.
+     * @param onFulfill Callback to handle tx fullfillment.
+     */
     sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(locks: {
         lockId: string;
         isSyntheticLock: boolean;

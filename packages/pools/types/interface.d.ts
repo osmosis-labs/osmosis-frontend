@@ -1,4 +1,5 @@
 import { Dec, Int } from "@keplr-wallet/unit";
+/** Interface for raw pool data and basic operations on that data. */
 export interface Pool {
     get id(): string;
     get totalWeight(): Int;

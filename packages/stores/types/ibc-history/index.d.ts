@@ -2,6 +2,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter } from "@keplr-wallet/stores";
 import { UncommitedHistory, IBCTransferHistory, IBCTransferHistoryStatus } from "./types";
 import { PollingStatusSubscription } from "./polling-status-subscription";
+/** Stores IBC sending, pending, and failure transactions state for some time period. */
 export declare class IBCTransferHistoryStore {
     protected readonly kvStore: KVStore;
     protected readonly chainGetter: ChainGetter;

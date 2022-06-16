@@ -17,6 +17,7 @@ export interface OsmosisQueries {
 export declare const OsmosisQueries: {
     use(osmosisChainId: string): (queriesSetBase: QueriesSetBase, kvStore: KVStore, chainId: string, chainGetter: ChainGetter) => OsmosisQueries;
 };
+/** Root queries store for all Osmosis queries. */
 export declare class OsmosisQueriesImpl {
     readonly queryGammPools: DeepReadonly<ObservableQueryPools>;
     readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;

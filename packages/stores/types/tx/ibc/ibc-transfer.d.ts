@@ -2,7 +2,7 @@ import { IBCCurrency } from "@keplr-wallet/types";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { IBCTransferHistory, UncommitedHistory } from "../../ibc-history";
 import { IbcTransferSender, IbcTransferCounterparty } from "./types";
-/** Use to perform a standard IBC transfer from `sender` to `counterparty`. Supports CW20 transfers. */
+/** Use to perform a standard IBC transfer from `sender` to `counterparty`. Supports CW20 transfers (deposits). */
 export declare function basicIbcTransfer(
 /** Where the tokens originate. */
 sender: IbcTransferSender, 

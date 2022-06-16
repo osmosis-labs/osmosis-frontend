@@ -1,5 +1,6 @@
 import { Pool } from "./interface";
 import { Dec, Int } from "@keplr-wallet/unit";
+/** Raw query response representation of pool. */
 export interface WeightedPoolRaw {
     id: string;
     poolParams: {
@@ -40,6 +41,7 @@ export interface WeightedPoolRaw {
         }
     ];
 }
+/** Implementation of Pool interface w/ related calculations. */
 export declare class WeightedPool implements Pool {
     readonly raw: WeightedPoolRaw;
     constructor(raw: WeightedPoolRaw);

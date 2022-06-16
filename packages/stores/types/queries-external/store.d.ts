@@ -7,6 +7,7 @@ export declare class QueriesExternalStore extends HasMapStore<QueriesExternal> {
     constructor(kvStore: KVStore);
     get(): QueriesExternal;
 }
+/** Root store for queries external to any chain. */
 export declare class QueriesExternal {
     readonly queryGammPoolFeeMetrics: DeepReadonly<ObservableQueryPoolFeesMetrics>;
     constructor(kvStore: KVStore);

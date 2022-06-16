@@ -1,4 +1,5 @@
 import { AxiosInstance, AxiosRequestConfig } from "axios";
+/** Polls a `/status` endpoint on a given Axios RPC config and publishes to an arbitrary set of subsribers. */
 export declare class PollingStatusSubscription {
     protected readonly rpc: string;
     protected readonly rpcConfig?: AxiosRequestConfig | undefined;

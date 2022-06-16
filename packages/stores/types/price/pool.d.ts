@@ -5,7 +5,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { ObservableQueryPools } from "../queries";
 import { IntermediateRoute, IPriceStore } from "./types";
 /**
- * PoolFallbackPriceStore permits the some currencies that are not listed on coingecko
+ * PoolFallbackPriceStore permits the some currencies that are not listed on CoinGecko
  * to use the spot price of the pool as the intermediate.
  */
 export declare class PoolFallbackPriceStore extends CoinGeckoPriceStore implements IPriceStore {
