@@ -1,3 +1,4 @@
+import Image from "next/image";
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 import { enableStaticRendering } from "mobx-react-lite";
@@ -5,7 +6,7 @@ import type { AppProps } from "next/app";
 import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
 import { MainLayout } from "../components/layouts";
-import { FrontierBanner } from "../components/alert/frontier-banner";
+import { TempBanner } from "../components/alert/temp-banner";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -24,7 +25,55 @@ function MyApp({ Component, pageProps }: AppProps) {
     <GetKeplrProvider>
       <StoreProvider>
         <IbcNotifier />
-        <FrontierBanner />
+        {IS_FRONTIER && (
+          <TempBanner
+            localStorageKey="show_frontier_banner"
+            title="You're viewing all permissionless assets"
+            message={
+              <>
+                You{"'"}re viewing all permissionless assets.{" "}
+                <a
+                  className="flex gap-2 items-center"
+                  href="https://app.osmosis.zone/"
+                  target="_self"
+                >
+                  Click here to return to the main app.{" "}
+                  <Image
+                    alt="link"
+                    src="/icons/external-link-white.svg"
+                    height={10}
+                    width={10}
+                  />
+                </a>
+              </>
+            }
+          />
+        )}
+        {!IS_FRONTIER && (
+          <TempBanner
+            localStorageKey="show_luna_moved_frontier"
+            title="LUNC and USTC have moved to Osmosis Frontier"
+            message={
+              <>
+                They no longer receiving chain incentives and have extremely low
+                liquidity. Find them on
+                <a
+                  className="flex gap-2 items-center"
+                  href="https://frontier.osmosis.zone/"
+                  target="_self"
+                >
+                  frontier.osmosis.zone{" "}
+                  <Image
+                    alt="link"
+                    src="/icons/external-link-white.svg"
+                    height={10}
+                    width={10}
+                  />
+                </a>
+              </>
+            }
+          />
+        )}
         <MainLayout
           menus={[
             {

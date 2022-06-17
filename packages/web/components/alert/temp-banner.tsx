@@ -1,12 +1,18 @@
 import Image from "next/image";
-import { FunctionComponent } from "react";
+import { FunctionComponent, ReactElement } from "react";
+import classNames from "classnames";
 import { IS_FRONTIER } from "../../config";
 import { useLocalStorageState } from "../../hooks";
 
-export const FrontierBanner: FunctionComponent = () => {
+/** Banner that displays a message once until  */
+export const TempBanner: FunctionComponent<{
+  title: string | ReactElement;
+  message: string | ReactElement;
+  localStorageKey: string;
+}> = ({ title, message, localStorageKey }) => {
   const [showBanner, setShowBanner] = useLocalStorageState(
-    "show_frontier_banner",
-    IS_FRONTIER
+    localStorageKey,
+    true
   );
 
   if (!showBanner) {
@@ -17,9 +23,17 @@ export const FrontierBanner: FunctionComponent = () => {
     <div
       style={{
         zIndex: 1000,
-        backgroundImage: "linear-gradient(to bottom, #F8C259 0%, #B38203 100%)",
+        backgroundImage: IS_FRONTIER
+          ? "linear-gradient(to bottom, #F8C259 0%, #B38203 100%)"
+          : undefined,
       }}
-      className="fixed flex place-content-evenly right-3 top-3 py-3 text-white-high md:w-[330px] w-[596px] z-50 rounded-2xl"
+      className={classNames(
+        "fixed flex place-content-evenly right-3 top-3 py-3 text-white-high md:w-[330px] w-[596px] rounded-2xl",
+        {
+          "border border-enabledGold": !IS_FRONTIER,
+          "bg-background": !IS_FRONTIER,
+        }
+      )}
     >
       <button
         className="absolute w-[20px] -top-1.5 -left-1.5 cursor-pointer"
@@ -42,24 +56,13 @@ export const FrontierBanner: FunctionComponent = () => {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <h6 className="md:subtitle1">
-            You{"'"}ve entered the Osmosis Frontier
-          </h6>
+          {typeof title === "string" ? (
+            <h6 className="md:subtitle1">{title}</h6>
+          ) : (
+            <>{title}</>
+          )}
           <div className="text-xs font-body flex flex-wrap gap-1">
-            You{"'"}re viewing all permissionless assets.{" "}
-            <a
-              className="flex gap-2 items-center"
-              href="https://app.osmosis.zone/"
-              target="_self"
-            >
-              Click here to return to the main app.{" "}
-              <Image
-                alt="link"
-                src="/icons/external-link-white.svg"
-                height={10}
-                width={10}
-              />
-            </a>
+            {message}
           </div>
         </div>
       </div>
