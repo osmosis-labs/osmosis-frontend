@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { IS_FRONTIER } from "../../config";
 import { useLocalStorageState } from "../../hooks";
 
-/** Banner that displays a message once until  */
+/** Banner that displays a message once per closing to localStorage.  */
 export const TempBanner: FunctionComponent<{
   title: string | ReactElement;
   message: string | ReactElement;
@@ -61,9 +61,7 @@ export const TempBanner: FunctionComponent<{
           ) : (
             <>{title}</>
           )}
-          <div className="text-xs font-body flex flex-wrap gap-1">
-            {message}
-          </div>
+          <div className="text-xs font-body gap-1">{message}</div>
         </div>
       </div>
     </div>

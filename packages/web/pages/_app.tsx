@@ -33,7 +33,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               <>
                 You{"'"}re viewing all permissionless assets.{" "}
                 <a
-                  className="flex gap-2 items-center"
+                  className="items-center"
                   href="https://app.osmosis.zone/"
                   target="_self"
                 >
@@ -55,10 +55,10 @@ function MyApp({ Component, pageProps }: AppProps) {
             title="LUNC and USTC have moved to Osmosis Frontier"
             message={
               <>
-                They no longer receiving chain incentives and have extremely low
-                liquidity. Find them on
+                LUNC and USTC are no longer receiving chain incentives and have
+                extremely low liquidity. They are still available on{" "}
                 <a
-                  className="flex gap-2 items-center"
+                  className="block underline inline"
                   href="https://frontier.osmosis.zone/"
                   target="_self"
                 >
