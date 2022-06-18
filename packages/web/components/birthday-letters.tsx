@@ -5,6 +5,7 @@ export const BirthdayLettersSvg: FunctionComponent = () => {
   return (
     <g>
       <SvgImagePop
+        className="bounce4"
         x="95"
         y="180"
         width="75"
@@ -12,6 +13,7 @@ export const BirthdayLettersSvg: FunctionComponent = () => {
         href="/bday-letters/b.svg"
       />
       <SvgImagePop
+        className="bounce6"
         x="145"
         y="160"
         width="65"
@@ -19,6 +21,7 @@ export const BirthdayLettersSvg: FunctionComponent = () => {
         href="/bday-letters/i.svg"
       />
       <SvgImagePop
+        className="bounce"
         x="195"
         y="145"
         width="75"
@@ -26,6 +29,7 @@ export const BirthdayLettersSvg: FunctionComponent = () => {
         href="/bday-letters/r.svg"
       />
       <SvgImagePop
+        className="bounce5"
         x="250"
         y="150"
         width="75"
@@ -33,6 +37,7 @@ export const BirthdayLettersSvg: FunctionComponent = () => {
         href="/bday-letters/t.svg"
       />
       <SvgImagePop
+        className="bounce4"
         x="310"
         y="160"
         width="75"
@@ -40,6 +45,7 @@ export const BirthdayLettersSvg: FunctionComponent = () => {
         href="/bday-letters/h.svg"
       />
       <SvgImagePop
+        className="bounce6"
         x="380"
         y="150"
         width="75"
@@ -47,6 +53,7 @@ export const BirthdayLettersSvg: FunctionComponent = () => {
         href="/bday-letters/d.svg"
       />
       <SvgImagePop
+        className="bounce"
         x="440"
         y="140"
         width="75"
@@ -54,6 +61,7 @@ export const BirthdayLettersSvg: FunctionComponent = () => {
         href="/bday-letters/a.svg"
       />
       <SvgImagePop
+        className="bounce5"
         x="510"
         y="180"
         width="75"

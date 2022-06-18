@@ -259,6 +259,18 @@
   animation: bounce 3s infinite;
 }
 
+.bounce4 {
+  animation: bounce 4s infinite;
+}
+
+.bounce5 {
+  animation: bounce 5s infinite;
+}
+
+.bounce6 {
+  animation: bounce 6s infinite;
+}
+
 @keyframes bounce {
   0% {
     transform: translateY(0);
