@@ -21,6 +21,7 @@ export const SvgImagePop: FunctionComponent<React.SVGProps<SVGImageElement>> = (
   return (
     <image
       {...props}
+      className="hover:-translate-y-1"
       style={{ cursor: "pointer" }}
       onClick={() => {
         const audio = new Audio(
