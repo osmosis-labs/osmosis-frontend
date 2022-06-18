@@ -9,13 +9,15 @@ export const TempBanner: FunctionComponent<{
   title: string | ReactElement;
   message: string | ReactElement;
   localStorageKey: string;
-}> = ({ title, message, localStorageKey }) => {
+  /** Ignore localstorage and always show banner. */
+  shouldPersist?: boolean;
+}> = ({ title, message, localStorageKey, shouldPersist = false }) => {
   const [showBanner, setShowBanner] = useLocalStorageState(
     localStorageKey,
     true
   );
 
-  if (!showBanner) {
+  if (!showBanner && !shouldPersist) {
     return null;
   }
 
