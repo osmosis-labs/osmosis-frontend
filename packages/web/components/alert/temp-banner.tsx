@@ -28,29 +28,36 @@ export const TempBanner: FunctionComponent<{
           : undefined,
       }}
       className={classNames(
-        "fixed flex place-content-evenly right-3 top-3 py-3 text-white-high md:w-[330px] w-[596px] rounded-2xl",
+        "fixed flex place-content-evenly right-3 top-3 text-white-high md:w-[330px] w-[596px] rounded-2xl",
         {
           "border border-enabledGold": !IS_FRONTIER,
           "bg-background": !IS_FRONTIER,
-        }
+        },
+        IS_FRONTIER ? "py-3" : "py-2"
       )}
     >
-      <button
-        className="absolute w-[20px] -top-1.5 -left-1.5 cursor-pointer"
-        onClick={() => setShowBanner(false)}
-      >
-        <Image
-          alt="close"
-          src="/icons/close-circle.svg"
-          height={20}
-          width={20}
-        />
-      </button>
+      {IS_FRONTIER && (
+        <button
+          className="absolute w-[20px] -top-1.5 -left-1.5 cursor-pointer"
+          onClick={() => setShowBanner(false)}
+        >
+          <Image
+            alt="close"
+            src="/icons/close-circle.svg"
+            height={20}
+            width={20}
+          />
+        </button>
+      )}
       <div className="flex items-center md:px-1 px-2 md:gap-1 gap-4">
         <div className="pt-1.5 mx-2 shrink-0">
           <Image
             alt="info"
-            src="/icons/info-white-emphasis.svg"
+            src={
+              IS_FRONTIER
+                ? "/icons/info-white-emphasis.svg"
+                : "/icons/info-secondary-200.svg"
+            }
             height={20}
             width={20}
           />
@@ -61,8 +68,27 @@ export const TempBanner: FunctionComponent<{
           ) : (
             <>{title}</>
           )}
-          <div className="text-xs font-body gap-1">{message}</div>
+          <div
+            className={classNames("text-xs font-body gap-1", {
+              "text-white-mid": !IS_FRONTIER,
+            })}
+          >
+            {message}
+          </div>
         </div>
+        {!IS_FRONTIER && (
+          <button
+            className="shrink-0 w-[40px] cursor-pointer"
+            onClick={() => setShowBanner(false)}
+          >
+            <Image
+              alt="close"
+              src="/icons/close-circle-large.svg"
+              height={40}
+              width={40}
+            />
+          </button>
+        )}
       </div>
     </div>
   );

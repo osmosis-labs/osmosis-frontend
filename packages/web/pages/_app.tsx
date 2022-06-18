@@ -55,21 +55,22 @@ function MyApp({ Component, pageProps }: AppProps) {
             title="LUNC and USTC have moved to Osmosis Frontier"
             message={
               <>
-                LUNC and USTC are no longer receiving chain incentives and have
-                extremely low liquidity. They are still available on{" "}
+                These assets have been removed from app.osmosis.zone. Find LUNC
+                and USTC on{" "}
                 <a
-                  className="block underline inline"
+                  className="block underline inline mr-1"
                   href="https://frontier.osmosis.zone/"
                   target="_self"
                 >
-                  frontier.osmosis.zone{" "}
-                  <Image
-                    alt="link"
-                    src="/icons/external-link-white.svg"
-                    height={10}
-                    width={10}
-                  />
+                  frontier.osmosis.zone.
                 </a>
+                <Image
+                  className="opacity-50"
+                  alt="link"
+                  src="/icons/external-link-white.svg"
+                  height={10}
+                  width={10}
+                />
               </>
             }
           />
