@@ -249,7 +249,7 @@ const Pixels: NextPage = observer(function () {
 
   return (
     <main>
-      <div className="w-full h-screen">
+      <div className="w-full h-screen bg-background">
         <TransformWrapper
           initialScale={2}
           centerZoomedOut={true}
