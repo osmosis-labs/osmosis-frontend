@@ -204,12 +204,33 @@ const Pixels: NextPage = observer(function () {
   const permission = queryOsmoPixels.queryPermission.get(account.bech32Address)
     .response?.data;
 
+  const [remainingBlocks, setRemainingBlocks] = useState(0);
+
+  useEffect(() => {
+    const remainingBlocks = permission?.remainingBlocks ?? 0;
+    setRemainingBlocks(remainingBlocks);
+
+    const intervalId = setInterval(() => {
+      setRemainingBlocks((b) => {
+        if (b > 0) {
+          return b - 1;
+        }
+        return b;
+      });
+      // 6.5s
+    }, 6500);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [permission?.remainingBlocks]);
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (account.bech32Address) {
         queryOsmoPixels.queryPermission.get(account.bech32Address).fetch();
       }
-    }, 12500);
+    }, 15000);
 
     return () => {
       clearInterval(intervalId);
@@ -270,7 +291,7 @@ const Pixels: NextPage = observer(function () {
                     onDoubleClick={() => {}}
                   />
                 </TransformComponent>
-                {permission && permission.remainingBlocks > 0 ? (
+                {permission && remainingBlocks > 0 ? (
                   <div
                     className="absolute pointer-events-none h-auto bottom-[40px] z-[11]"
                     style={{
@@ -286,12 +307,12 @@ const Pixels: NextPage = observer(function () {
                           width={24}
                         />
                       </div>
-                      {`${permission.remainingBlocks} blocks remaining`}
+                      {`${remainingBlocks} blocks remaining`}
                     </div>
                   </div>
                 ) : null}
                 {permission &&
-                permission.remainingBlocks <= 0 &&
+                remainingBlocks <= 0 &&
                 permission.permission !== "not_eligible" &&
                 permission.permission !== "none" ? (
                   <Palette
