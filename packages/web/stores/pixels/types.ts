@@ -6,6 +6,12 @@ export type ResponsePixels = {
     | undefined;
 };
 
+export type ResponseStatus = {
+  initialBlock: number;
+  numDots: number;
+  numAccounts: number;
+};
+
 export type ResponsePermission = {
   permission: "not_eligible" | "none" | "gray_color" | "multi_color";
   remainingBlocks: number;

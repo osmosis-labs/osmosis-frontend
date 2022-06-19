@@ -1,5 +1,5 @@
 import { ObservableQuery, ObservableQueryMap } from "@keplr-wallet/stores";
-import { ResponsePermission, ResponsePixels } from "./types";
+import { ResponsePermission, ResponsePixels, ResponseStatus } from "./types";
 import { KVStore } from "@keplr-wallet/common";
 import Axios from "axios";
 
@@ -12,6 +12,18 @@ export class ObservableQueryPixels extends ObservableQuery<ResponsePixels> {
     });
 
     super(kvStore, instance, "/pixels");
+  }
+}
+
+export class ObservableQueryStatus extends ObservableQuery<ResponseStatus> {
+  constructor(kvStore: KVStore, baseURL: string) {
+    const instance = Axios.create({
+      ...{
+        baseURL: baseURL,
+      },
+    });
+
+    super(kvStore, instance, "/status");
   }
 }
 
@@ -46,9 +58,11 @@ export class ObservableQueryPermission extends ObservableQueryMap {
 export class OsmoPixelsQueries {
   public readonly queryPixels: ObservableQueryPixels;
   public readonly queryPermission: ObservableQueryPermission;
+  public readonly queryStatus: ObservableQueryStatus;
 
   constructor(kvStore: KVStore, baseURL: string) {
     this.queryPixels = new ObservableQueryPixels(kvStore, baseURL);
     this.queryPermission = new ObservableQueryPermission(kvStore, baseURL);
+    this.queryStatus = new ObservableQueryStatus(kvStore, baseURL);
   }
 }

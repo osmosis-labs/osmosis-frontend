@@ -61,6 +61,83 @@ const PixelsRuleModal: FunctionComponent<ModalBaseProps> = (props) => {
   );
 };
 
+const ShareModal: FunctionComponent<
+  Omit<ModalBaseProps, "isOpen"> & {
+    shareInfo:
+      | {
+          numDots: number;
+          numAccounts: number;
+        }
+      | undefined;
+  }
+> = (props) => {
+  const [isCopied, setIsCopied] = useState(false);
+
+  useEffect(() => {
+    if (isCopied) {
+      const timeoutId = setTimeout(() => {
+        setIsCopied(false);
+      }, 3000);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [isCopied]);
+
+  return (
+    <ModalBase {...props} isOpen={props.shareInfo != null}>
+      <div className="flex justify-center text-2xl mb-2">👋</div>
+      <div className="my-5">
+        <p className="text-lg text-center">
+          {`${(
+            props.shareInfo?.numDots ?? 0
+          ).toLocaleString()} dots has been placed and ${(
+            props.shareInfo?.numAccounts ?? 0
+          ).toLocaleString()} wallets have participated`}
+        </p>
+      </div>
+      <div className="mb-5">
+        <p className="text-center text-white-disabled">
+          Share this link to others so they can participate
+        </p>
+      </div>
+      <div className="flex justify-center">
+        <Button
+          className="w-[200px] px-0"
+          size="lg"
+          type="outline"
+          onClick={async () => {
+            await navigator.clipboard.writeText(
+              window.location.origin + "/pixels"
+            );
+
+            setIsCopied(true);
+          }}
+        >
+          <div className="flex items-center justify-center">
+            {isCopied ? (
+              "Copied!"
+            ) : (
+              <React.Fragment>
+                <div className="flex items-center justify-center mr-1">
+                  <Image
+                    alt=""
+                    src="/icons/copy-white.svg"
+                    height={28}
+                    width={28}
+                  />
+                </div>
+                Copy link
+              </React.Fragment>
+            )}
+          </div>
+        </Button>
+      </div>
+    </ModalBase>
+  );
+};
+
 const Pixels: NextPage = observer(function () {
   const { chainStore, accountStore, queryOsmoPixels } = useStore();
 
@@ -272,6 +349,13 @@ const Pixels: NextPage = observer(function () {
   }, [queryOsmoPixels.queryPixels]);
 
   const [showRules, setShowRules] = useState(false);
+  const [showShareModal, setShowShareModal] = useState<
+    | {
+        numDots: number;
+        numAccounts: number;
+      }
+    | undefined
+  >(undefined);
 
   return (
     <main>
@@ -280,6 +364,10 @@ const Pixels: NextPage = observer(function () {
         onRequestClose={() => {
           setShowRules(false);
         }}
+      />
+      <ShareModal
+        shareInfo={showShareModal}
+        onRequestClose={() => setShowShareModal(undefined)}
       />
       <div className="w-full h-screen bg-background">
         <div
@@ -406,12 +494,45 @@ const Pixels: NextPage = observer(function () {
                               // Since the backend processes the block after it is created, it is difficult to perfectly sync.
                               // Therefore, add slight delay.
                               setTimeout(() => {
-                                setPixelIndex([-1, -1]);
+                                Promise.all([
+                                  queryOsmoPixels.queryPixels.waitFreshResponse(),
+                                  queryOsmoPixels.queryPermission
+                                    .get(account.bech32Address)
+                                    .waitFreshResponse(),
+                                ])
+                                  .then(() => {
+                                    setPixelIndex([-1, -1]);
 
-                                queryOsmoPixels.queryPixels.fetch();
-                                queryOsmoPixels.queryPermission
-                                  .get(account.bech32Address)
-                                  .fetch();
+                                    const permission =
+                                      queryOsmoPixels.queryPermission.get(
+                                        account.bech32Address
+                                      ).response;
+
+                                    // If the remaining block is not 0 after sending tx,
+                                    // it is assumed that a dot is drawn and show the share modal to user.
+                                    if (
+                                      permission &&
+                                      permission.data.remainingBlocks > 0
+                                    ) {
+                                      queryOsmoPixels.queryStatus
+                                        .waitFreshResponse()
+                                        .then(() => {
+                                          const status =
+                                            queryOsmoPixels.queryStatus
+                                              .response;
+                                          if (status) {
+                                            setShowShareModal({
+                                              numDots: status.data.numDots,
+                                              numAccounts:
+                                                status.data.numAccounts,
+                                            });
+                                          }
+                                        });
+                                    }
+                                  })
+                                  .catch((e) => {
+                                    console.log(e);
+                                  });
                               }, 1000);
                             },
                           }
