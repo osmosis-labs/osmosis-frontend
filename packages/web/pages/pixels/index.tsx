@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { NextPage } from "next";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import Palette from "../../components/pixels/pallete";
@@ -9,6 +15,8 @@ import { DecUtils } from "@keplr-wallet/unit";
 import { Hash } from "@keplr-wallet/crypto";
 import { Buffer } from "buffer/";
 import Image from "next/image";
+import { ModalBase, ModalBaseProps } from "../../modals";
+import { Button } from "../../components/buttons";
 
 export const GAME_CONFIG = {
   PIXEL_SIZE: 25,
@@ -36,6 +44,22 @@ export const COLOR_SET = [
   "#FF99AA",
   "#9C6926",
 ];
+
+const PixelsRuleModal: FunctionComponent<ModalBaseProps> = (props) => {
+  return (
+    <ModalBase {...props} isOpen={props.isOpen} title="Rules">
+      <div className="my-5">
+        <p>
+          🧪 Only users with more than 1 OSMO on birthday epoch can participate
+        </p>
+        <p>Stake to the lower 2/3 validators to unlock more colors</p>
+        <p>
+          ⏱ Once you place a pixel, you must wait 50 blocks to place another
+        </p>
+      </div>
+    </ModalBase>
+  );
+};
 
 const Pixels: NextPage = observer(function () {
   const { chainStore, accountStore, queryOsmoPixels } = useStore();
@@ -247,9 +271,33 @@ const Pixels: NextPage = observer(function () {
     };
   }, [queryOsmoPixels.queryPixels]);
 
+  const [showRules, setShowRules] = useState(false);
+
   return (
     <main>
+      <PixelsRuleModal
+        isOpen={showRules}
+        onRequestClose={() => {
+          setShowRules(false);
+        }}
+      />
       <div className="w-full h-screen bg-background">
+        <div
+          className="absolute pointer-events-none h-auto top-0 z-[11]"
+          style={{
+            width: `calc(100% - ${GAME_CONFIG.SIDE_BAR_WIDTH}px)`,
+          }}
+        >
+          <Button
+            className="pointer-events-auto mt-[2.25rem] ml-[3rem] w-[1.25rem]"
+            size="lg"
+            onClick={() => {
+              setShowRules(true);
+            }}
+          >
+            Rules
+          </Button>
+        </div>
         <TransformWrapper
           initialScale={2}
           centerZoomedOut={true}

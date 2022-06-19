@@ -104,7 +104,7 @@ const Palette = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              Redelegate to smaller validators to unlock color
+              Redelegate to bottom 2/3 validators to unlock color
               <div className="flex items-center justify-center ml-2">
                 <Image
                   alt="link"
