@@ -3,6 +3,7 @@ import React, { useState } from "react";
 type PaletteProps = {
   colorSet: string[];
 
+  sidebarWidth: number;
   maxColors: number;
   x: number;
   y: number;
@@ -13,6 +14,8 @@ type PaletteProps = {
 
 const Palette = ({
   colorSet,
+
+  sidebarWidth,
   maxColors,
   x,
   y,
@@ -28,7 +31,12 @@ const Palette = ({
   };
 
   return (
-    <div className="absolute pointer-events-none w-full h-auto bottom-[40px] z-[11]">
+    <div
+      className="absolute pointer-events-none h-auto bottom-[40px] z-[11]"
+      style={{
+        width: `calc(100% - ${sidebarWidth}px)`,
+      }}
+    >
       <div
         className="w-[524px] h-[172px] rounded-[16px] bg-card p-[20px] mx-auto border border-2 border-enabledGold"
         style={{

@@ -224,6 +224,7 @@ const Pixels: NextPage = observer(function () {
                 </TransformComponent>
                 <Palette
                   colorSet={COLOR_SET}
+                  sidebarWidth={GAME_CONFIG.SIDE_BAR_WIDTH}
                   maxColors={16}
                   x={pixelIndex[0]}
                   y={pixelIndex[1]}
