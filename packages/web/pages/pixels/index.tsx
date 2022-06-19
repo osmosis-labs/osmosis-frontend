@@ -2,6 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { NextPage } from "next";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import Palette from "../../components/pixels/pallete";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
+import { WalletStatus } from "@keplr-wallet/stores";
+import { DecUtils } from "@keplr-wallet/unit";
 
 export const GAME_CONFIG = {
   PIXEL_SIZE: 25,
@@ -30,7 +34,11 @@ export const COLOR_SET = [
   "#9C6926",
 ];
 
-const Pixels: NextPage = function () {
+const Pixels: NextPage = observer(function () {
+  const { chainStore, accountStore } = useStore();
+
+  const account = accountStore.getAccount(chainStore.osmosis.chainId);
+
   const [pixelList] = useState(() =>
     Array.from(Array(GAME_CONFIG.PIXEL_WIDTH), () =>
       Array.from(
@@ -49,24 +57,24 @@ const Pixels: NextPage = function () {
   // canvas
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const loadImg = useCallback(() => {
-    const pixelCanvas = canvasRef.current?.getContext("2d");
-    if (!pixelCanvas) {
-      return;
-    }
-
-    for (let i = 0; i < pixelList.length; i++) {
-      for (let j = 0; j < pixelList[i].length; j++) {
-        pixelCanvas.fillStyle = pixelList[i][j];
-        pixelCanvas.fillRect(
-          i * GAME_CONFIG.PIXEL_SIZE,
-          j * GAME_CONFIG.PIXEL_SIZE,
-          GAME_CONFIG.PIXEL_SIZE,
-          GAME_CONFIG.PIXEL_SIZE
-        );
-      }
-    }
-  }, []);
+  // const loadImg = useCallback(() => {
+  //   const pixelCanvas = canvasRef.current?.getContext("2d");
+  //   if (!pixelCanvas) {
+  //     return;
+  //   }
+  //
+  //   for (let i = 0; i < pixelList.length; i++) {
+  //     for (let j = 0; j < pixelList[i].length; j++) {
+  //       pixelCanvas.fillStyle = pixelList[i][j];
+  //       pixelCanvas.fillRect(
+  //         i * GAME_CONFIG.PIXEL_SIZE,
+  //         j * GAME_CONFIG.PIXEL_SIZE,
+  //         GAME_CONFIG.PIXEL_SIZE,
+  //         GAME_CONFIG.PIXEL_SIZE
+  //       );
+  //     }
+  //   }
+  // }, []);
 
   const getZoomCoordinate = () => {
     let pixel = 8000 / GAME_CONFIG.PIXEL_HEIGHT;
@@ -168,9 +176,7 @@ const Pixels: NextPage = function () {
     if (canvasRef.current) {
       canvasRef.current.style.backgroundColor = "#fff";
     }
-
-    loadImg();
-  }, [loadImg]);
+  }, []);
 
   return (
     <main>
@@ -205,6 +211,7 @@ const Pixels: NextPage = function () {
                     />
                   ) : null}
                   <canvas
+                    className="ring-2 ring-black"
                     style={{
                       width: GAME_CONFIG.CANVAS_SIZE,
                       height: GAME_CONFIG.CANVAS_SIZE,
@@ -221,7 +228,42 @@ const Pixels: NextPage = function () {
                   x={pixelIndex[0]}
                   y={pixelIndex[1]}
                   setColorIndex={setColorIndex}
-                  clickDone={() => {}}
+                  clickDone={async () => {
+                    if (account.walletStatus !== WalletStatus.Loaded) {
+                      await account.init();
+                    }
+
+                    if (account.walletStatus !== WalletStatus.Loaded) {
+                      throw new Error("Failed to load account");
+                    }
+
+                    try {
+                      await account.sendToken(
+                        DecUtils.getTenExponentN(
+                          -chainStore.osmosis.stakeCurrency.coinDecimals
+                        ).toString(),
+                        chainStore.osmosis.stakeCurrency,
+                        account.bech32Address,
+                        `osmopixel (${pixelIndex[0]},${pixelIndex[1]},${colorIndex})`,
+                        {
+                          amount: [
+                            {
+                              denom:
+                                chainStore.osmosis.stakeCurrency
+                                  .coinMinimalDenom,
+                              amount: "0",
+                            },
+                          ],
+                        },
+                        {
+                          preferNoSetFee: true,
+                          preferNoSetMemo: true,
+                        }
+                      );
+                    } catch (e) {
+                      console.log(e);
+                    }
+                  }}
                   doneEnabled={pixelIndex[0] >= 0 && pixelIndex[1] >= 0}
                 />
               </React.Fragment>
@@ -231,6 +273,6 @@ const Pixels: NextPage = function () {
       </div>
     </main>
   );
-};
+});
 
 export default Pixels;
