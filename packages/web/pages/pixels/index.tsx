@@ -8,6 +8,7 @@ import { WalletStatus } from "@keplr-wallet/stores";
 import { DecUtils } from "@keplr-wallet/unit";
 import { Hash } from "@keplr-wallet/crypto";
 import { Buffer } from "buffer/";
+import Image from "next/image";
 
 export const GAME_CONFIG = {
   PIXEL_SIZE: 25,
@@ -203,6 +204,28 @@ const Pixels: NextPage = observer(function () {
   const permission = queryOsmoPixels.queryPermission.get(account.bech32Address)
     .response?.data;
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (account.bech32Address) {
+        queryOsmoPixels.queryPermission.get(account.bech32Address).fetch();
+      }
+    }, 12500);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [account.bech32Address, queryOsmoPixels.queryPermission]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      queryOsmoPixels.queryPixels.fetch();
+    }, 25000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [queryOsmoPixels.queryPixels]);
+
   return (
     <main>
       <div className="w-full h-screen">
@@ -247,7 +270,28 @@ const Pixels: NextPage = observer(function () {
                     onDoubleClick={() => {}}
                   />
                 </TransformComponent>
+                {permission && permission.remainingBlocks > 0 ? (
+                  <div
+                    className="absolute pointer-events-none h-auto bottom-[40px] z-[11]"
+                    style={{
+                      width: `calc(100% - ${GAME_CONFIG.SIDE_BAR_WIDTH}px)`,
+                    }}
+                  >
+                    <div className="w-[200px] h-[36px] rounded-[12px] bg-card mx-auto flex items-center justify-center font-subtitle1 text-sm">
+                      <div className="mr-1 flex items-center justify-center ">
+                        <Image
+                          alt=""
+                          src="/icons/loading.svg"
+                          height={24}
+                          width={24}
+                        />
+                      </div>
+                      {`${permission.remainingBlocks} blocks remaining`}
+                    </div>
+                  </div>
+                ) : null}
                 {permission &&
+                permission.remainingBlocks <= 0 &&
                 permission.permission !== "not_eligible" &&
                 permission.permission !== "none" ? (
                   <Palette
@@ -296,6 +340,9 @@ const Pixels: NextPage = observer(function () {
                                 setPixelIndex([-1, -1]);
 
                                 queryOsmoPixels.queryPixels.fetch();
+                                queryOsmoPixels.queryPermission
+                                  .get(account.bech32Address)
+                                  .fetch();
                               }, 1000);
                             },
                           }
