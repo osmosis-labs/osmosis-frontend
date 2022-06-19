@@ -824,10 +824,10 @@ export const IBCAssetInfos: {
 		coinMinimalDenom: 'uregen',
 	},
 	{
-		counterpartyChainId: 'saage-internal-testnet-1.3',
-		sourceChannelId: 'channel-207',
+		counterpartyChainId: 'sit-5',
+		sourceChannelId: 'channel-278',
 		destChannelId: 'channel-0',
-		coinMinimalDenom: 'usaage',
+		coinMinimalDenom: 'usge',
 	},
 	{
 		counterpartyChainId: 'imversed-test-1',
@@ -1352,33 +1352,33 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 	{
 		rpc: 'https://sentry.testnet.saage.io:26657',
 		rest: 'https://sentry.testnet.saage.io:1317',
-		chainId: 'saage-internal-testnet-1.3',
-		chainName: 'saagetestnet',
+		chainId: 'sit-5',
+		chainName: 'saagetestnet5',
 		stakeCurrency: {
 			coinDenom: 'SGE',
-			coinMinimalDenom: 'usaage',
+			coinMinimalDenom: 'usge',
 			coinDecimals: 6,
 			coinImageUrl: window.location.origin + '/public/assets/tokens/saage.png',
-			coinGeckoId: 'pool:usaage',
+			coinGeckoId: 'pool:usge',
 		},
 		bip44: { coinType: 909 },
-		bech32Config: Bech32Address.defaultBech32Config('saage'),
+		bech32Config: Bech32Address.defaultBech32Config('sge'),
 		currencies: [
 			{
 				coinDenom: 'SGE',
-				coinMinimalDenom: 'usaage',
+				coinMinimalDenom: 'usge',
 				coinDecimals: 6,
 				coinImageUrl: window.location.origin + '/public/assets/tokens/saage.png',
-				coinGeckoId: 'pool:usaage',
+				coinGeckoId: 'pool:usge',
 			},
 		],
 		feeCurrencies: [
 			{
 				coinDenom: 'SGE',
-				coinMinimalDenom: 'usaage',
+				coinMinimalDenom: 'usge',
 				coinDecimals: 6,
 				coinImageUrl: window.location.origin + '/public/assets/tokens/saage.png',
-				coinGeckoId: 'pool:usaage',
+				coinGeckoId: 'pool:usge',
 			},
 		],
 		gasPriceStep: {
@@ -1387,9 +1387,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 			high: 0.025,
 		},
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
-		explorerUrlToTx: 'http://blockexplorer-1.testnet.saage.io/transactions/{txHash}',
+		explorerUrlToTx: 'https://blockexplorer-1.testnet.saage.io/transactions/{txHash}',
 	},
-
 	{
 		rpc: 'https://tx-endpoint-test.imversed.com:443',
 		rest: 'https://query-endpoint-test.imversed.com:443',
