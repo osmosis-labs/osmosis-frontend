@@ -52,7 +52,7 @@ const PixelsRuleModal: FunctionComponent<ModalBaseProps> = (props) => {
         <p>
           🧪 Only users with more than 1 OSMO on birthday epoch can participate
         </p>
-        <p>Stake to the lower 2/3 validators to unlock more colors</p>
+        <p>🎨 Stake to the lower 2/3 validators to unlock more colors</p>
         <p>
           ⏱ Once you place a pixel, you must wait 50 blocks to place another
         </p>
