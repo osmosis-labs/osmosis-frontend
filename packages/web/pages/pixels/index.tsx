@@ -120,14 +120,12 @@ const ShareModal: FunctionComponent<
               "Copied!"
             ) : (
               <React.Fragment>
-                <div className="flex items-center justify-center mr-1">
-                  <Image
-                    alt=""
-                    src="/icons/copy-white.svg"
-                    height={28}
-                    width={28}
-                  />
-                </div>
+                <Image
+                  alt=""
+                  src="/icons/copy-white.svg"
+                  height={28}
+                  width={28}
+                />
                 Copy link
               </React.Fragment>
             )}
