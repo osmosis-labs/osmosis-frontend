@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Image from "next/image";
 
 type PaletteProps = {
   colorSet: string[];
@@ -95,6 +96,26 @@ const Palette = ({
             </React.Fragment>
           ))}
         </div>
+        {maxColors < 5 ? (
+          <div className="relative">
+            <a
+              className="absolute flex flex-row items-center justify-center w-full rounded-lg text-subtitle1 text-sm bottom-[6px] text-center bg-primary-200 py-[8px]"
+              href="https://wallet.keplr.app/#/osmosis/stake"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Redelegate to smaller validators to unlock color
+              <div className="flex items-center justify-center ml-2">
+                <Image
+                  alt="link"
+                  src="/icons/link-deco-real-white.svg"
+                  height={14}
+                  width={14}
+                />
+              </div>
+            </a>
+          </div>
+        ) : null}
       </div>
     </div>
   );
