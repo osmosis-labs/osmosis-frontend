@@ -30,6 +30,7 @@ import { ObservableAssets } from "./assets";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
 import { PoolPriceRoutes } from "../config";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
+import { OsmoPixelsQueries } from "./pixels";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -51,6 +52,8 @@ export class RootStore {
 
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
+
+  public readonly queryOsmoPixels: OsmoPixelsQueries;
 
   constructor(
     getKeplr: () => Promise<Keplr | undefined> = () =>
@@ -201,6 +204,11 @@ export class RootStore {
             : "Unknown"
         })`;
       }
+    );
+
+    this.queryOsmoPixels = new OsmoPixelsQueries(
+      makeIndexedKVStore("query_osmo_pixels"),
+      "http://localhost:4000"
     );
   }
 }

@@ -6,6 +6,8 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { DecUtils } from "@keplr-wallet/unit";
+import { Hash } from "@keplr-wallet/crypto";
+import { Buffer } from "buffer/";
 
 export const GAME_CONFIG = {
   PIXEL_SIZE: 25,
@@ -35,18 +37,10 @@ export const COLOR_SET = [
 ];
 
 const Pixels: NextPage = observer(function () {
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, accountStore, queryOsmoPixels } = useStore();
 
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
 
-  const [pixelList] = useState(() =>
-    Array.from(Array(GAME_CONFIG.PIXEL_WIDTH), () =>
-      Array.from(
-        Array(GAME_CONFIG.PIXEL_HEIGHT),
-        () => COLOR_SET[Math.floor(Math.random() * COLOR_SET.length)]
-      )
-    )
-  );
   const [pixelIndex, setPixelIndex] = useState([-1, -1]);
   const [focusScale] = useState(4);
 
@@ -57,24 +51,52 @@ const Pixels: NextPage = observer(function () {
   // canvas
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // const loadImg = useCallback(() => {
-  //   const pixelCanvas = canvasRef.current?.getContext("2d");
-  //   if (!pixelCanvas) {
-  //     return;
-  //   }
-  //
-  //   for (let i = 0; i < pixelList.length; i++) {
-  //     for (let j = 0; j < pixelList[i].length; j++) {
-  //       pixelCanvas.fillStyle = pixelList[i][j];
-  //       pixelCanvas.fillRect(
-  //         i * GAME_CONFIG.PIXEL_SIZE,
-  //         j * GAME_CONFIG.PIXEL_SIZE,
-  //         GAME_CONFIG.PIXEL_SIZE,
-  //         GAME_CONFIG.PIXEL_SIZE
-  //       );
-  //     }
-  //   }
-  // }, []);
+  const lastDrawnPixelsData = useRef<string>("");
+
+  useEffect(() => {
+    if (queryOsmoPixels.queryPixels.response) {
+      const resHash = Buffer.from(
+        Hash.sha256(
+          Buffer.from(JSON.stringify(queryOsmoPixels.queryPixels.response.data))
+        )
+      ).toString("hex");
+
+      if (lastDrawnPixelsData.current === resHash) {
+        return;
+      }
+
+      const pixelCanvas = canvasRef.current?.getContext("2d");
+      if (!pixelCanvas) {
+        return;
+      }
+
+      const pixels = queryOsmoPixels.queryPixels.response.data;
+
+      for (const xStr of Object.keys(pixels)) {
+        const x = parseInt(xStr);
+        if (!Number.isNaN(x)) {
+          const yPixels = pixels[x] ?? {};
+          for (const yStr of Object.keys(yPixels)) {
+            const y = parseInt(yStr);
+            if (!Number.isNaN(y)) {
+              const color = yPixels[y];
+              if (color != null && color >= 0 && color < COLOR_SET.length) {
+                pixelCanvas.fillStyle = COLOR_SET[color];
+                pixelCanvas.fillRect(
+                  x * GAME_CONFIG.PIXEL_SIZE,
+                  y * GAME_CONFIG.PIXEL_SIZE,
+                  GAME_CONFIG.PIXEL_SIZE,
+                  GAME_CONFIG.PIXEL_SIZE
+                );
+              }
+            }
+          }
+        }
+      }
+
+      lastDrawnPixelsData.current = resHash;
+    }
+  }, [queryOsmoPixels.queryPixels.response]);
 
   const getZoomCoordinate = () => {
     let pixel = 8000 / GAME_CONFIG.PIXEL_HEIGHT;
@@ -178,6 +200,9 @@ const Pixels: NextPage = observer(function () {
     }
   }, []);
 
+  const permission = queryOsmoPixels.queryPermission.get(account.bech32Address)
+    .response?.data;
+
   return (
     <main>
       <div className="w-full h-screen">
@@ -222,51 +247,66 @@ const Pixels: NextPage = observer(function () {
                     onDoubleClick={() => {}}
                   />
                 </TransformComponent>
-                <Palette
-                  colorSet={COLOR_SET}
-                  sidebarWidth={GAME_CONFIG.SIDE_BAR_WIDTH}
-                  maxColors={16}
-                  x={pixelIndex[0]}
-                  y={pixelIndex[1]}
-                  setColorIndex={setColorIndex}
-                  clickDone={async () => {
-                    if (account.walletStatus !== WalletStatus.Loaded) {
-                      await account.init();
-                    }
+                {permission &&
+                permission.permission !== "not_eligible" &&
+                permission.permission !== "none" ? (
+                  <Palette
+                    colorSet={COLOR_SET}
+                    sidebarWidth={GAME_CONFIG.SIDE_BAR_WIDTH}
+                    maxColors={permission.permission === "multi_color" ? 16 : 4}
+                    x={pixelIndex[0]}
+                    y={pixelIndex[1]}
+                    setColorIndex={setColorIndex}
+                    clickDone={async () => {
+                      if (account.walletStatus !== WalletStatus.Loaded) {
+                        await account.init();
+                      }
 
-                    if (account.walletStatus !== WalletStatus.Loaded) {
-                      throw new Error("Failed to load account");
-                    }
+                      if (account.walletStatus !== WalletStatus.Loaded) {
+                        throw new Error("Failed to load account");
+                      }
 
-                    try {
-                      await account.sendToken(
-                        DecUtils.getTenExponentN(
-                          -chainStore.osmosis.stakeCurrency.coinDecimals
-                        ).toString(),
-                        chainStore.osmosis.stakeCurrency,
-                        account.bech32Address,
-                        `osmopixel (${pixelIndex[0]},${pixelIndex[1]},${colorIndex})`,
-                        {
-                          amount: [
-                            {
-                              denom:
-                                chainStore.osmosis.stakeCurrency
-                                  .coinMinimalDenom,
-                              amount: "0",
+                      try {
+                        await account.sendToken(
+                          DecUtils.getTenExponentN(
+                            -chainStore.osmosis.stakeCurrency.coinDecimals
+                          ).toString(),
+                          chainStore.osmosis.stakeCurrency,
+                          account.bech32Address,
+                          `osmopixel (${pixelIndex[0]},${pixelIndex[1]},${colorIndex})`,
+                          {
+                            amount: [
+                              {
+                                denom:
+                                  chainStore.osmosis.stakeCurrency
+                                    .coinMinimalDenom,
+                                amount: "0",
+                              },
+                            ],
+                          },
+                          {
+                            preferNoSetFee: true,
+                            preferNoSetMemo: true,
+                          },
+                          {
+                            onFulfill: () => {
+                              // Since the backend processes the block after it is created, it is difficult to perfectly sync.
+                              // Therefore, add slight delay.
+                              setTimeout(() => {
+                                setPixelIndex([-1, -1]);
+
+                                queryOsmoPixels.queryPixels.fetch();
+                              }, 1000);
                             },
-                          ],
-                        },
-                        {
-                          preferNoSetFee: true,
-                          preferNoSetMemo: true,
-                        }
-                      );
-                    } catch (e) {
-                      console.log(e);
-                    }
-                  }}
-                  doneEnabled={pixelIndex[0] >= 0 && pixelIndex[1] >= 0}
-                />
+                          }
+                        );
+                      } catch (e) {
+                        console.log(e);
+                      }
+                    }}
+                    doneEnabled={pixelIndex[0] >= 0 && pixelIndex[1] >= 0}
+                  />
+                ) : null}
               </React.Fragment>
             );
           }}
