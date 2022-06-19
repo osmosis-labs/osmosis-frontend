@@ -208,7 +208,7 @@ export class RootStore {
 
     this.queryOsmoPixels = new OsmoPixelsQueries(
       makeIndexedKVStore("query_osmo_pixels"),
-      "http://localhost:4000"
+      "https://pixels-osmosis.keplr.app"
     );
   }
 }
