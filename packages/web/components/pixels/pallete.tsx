@@ -8,6 +8,7 @@ type PaletteProps = {
   maxColors: number;
   x: number;
   y: number;
+  colorIndex: number;
   setColorIndex: (index: number) => void;
   doneEnabled: boolean;
   clickDone: Function;
@@ -20,14 +21,12 @@ const Palette = ({
   maxColors,
   x,
   y,
+  colorIndex,
   setColorIndex,
   doneEnabled,
   clickDone,
 }: PaletteProps) => {
-  const [selectedColor, setSelectedColor] = useState(0);
-
   const colorOnClick = (index: number) => {
-    setSelectedColor(index);
     setColorIndex(index);
   };
 
@@ -71,7 +70,7 @@ const Palette = ({
           {colorSet.map((color, idx) => (
             <React.Fragment key={idx}>
               {maxColors > idx ? (
-                idx === selectedColor ? (
+                idx === colorIndex ? (
                   <div
                     className="cursor-pointer w-[36px] h-[36px] rounded-full border-0 m-auto flex items-center justify-center"
                     style={{ backgroundColor: color }}

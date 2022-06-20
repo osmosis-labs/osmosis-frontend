@@ -139,27 +139,34 @@ const Pixels: NextPage = observer(function () {
 
   const tempMousePosition = useRef([0, 0]);
 
+  const firstQueryEffectChecker = useRef(false);
   useEffect(() => {
-    if (
-      router.query.x &&
-      router.query.y &&
-      Number(router.query.x) - 1 >= 0 &&
-      Number(router.query.y) - 1 >= 0
-    ) {
+    if (!!router.query.x && !!router.query.y && !!router.query.color) {
       const numX = Number(router.query.x) - 1;
       const numY = Number(router.query.y) - 1;
       if (isNumber(numX) && isNumber(numY)) {
         setPixelIndex([Number(numX), Number(numY)]);
       }
+
+      const numColor = Number(router.query.color);
+      if (isNumber(numColor)) {
+        setColorIndex(numColor);
+      }
     }
-  }, [router.query.x, router.query.y]);
+  }, [router.query.x, router.query.y, router.query.color]);
+
   useEffect(() => {
-    if (pixelIndex[0] >= 0 && pixelIndex[1] >= 0) {
-      router.replace(
-        `${router.pathname}?x=${pixelIndex[0] + 1}&y=${pixelIndex[1] + 1}`
-      );
+    if (firstQueryEffectChecker.current) {
+      if (pixelIndex[0] >= 0 && pixelIndex[1] >= 0 && colorIndex >= 0) {
+        const pathNameWithQueryParams = `${router.pathname}?x=${
+          pixelIndex[0] + 1
+        }&y=${pixelIndex[1] + 1}&color=${colorIndex}`;
+        router.replace(pathNameWithQueryParams);
+      }
+    } else {
+      firstQueryEffectChecker.current = true;
     }
-  }, [pixelIndex]);
+  }, [pixelIndex, colorIndex]);
 
   // canvas
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -500,6 +507,7 @@ const Pixels: NextPage = observer(function () {
                     maxColors={permission.permission === "multi_color" ? 16 : 4}
                     x={pixelIndex[0]}
                     y={pixelIndex[1]}
+                    colorIndex={colorIndex}
                     setColorIndex={setColorIndex}
                     clickDone={async () => {
                       if (account.walletStatus !== WalletStatus.Loaded) {
