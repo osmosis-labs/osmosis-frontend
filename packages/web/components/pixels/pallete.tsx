@@ -1,5 +1,6 @@
 import Image from "next/image";
 import React from "react";
+import { Button } from "../buttons";
 
 type PaletteProps = {
   colorSet: string[];
@@ -38,13 +39,13 @@ const Palette = ({
       }}
     >
       <div
-        className="w-[524px] h-[172px] rounded-[16px] bg-card p-[20px] mx-auto border border-2 border-enabledGold"
+        className="w-full max-w-[424px] rounded-[16px] bg-card p-[20px] mx-auto border border-2 border-enabledGold"
         style={{
           pointerEvents: "all",
         }}
       >
-        <div className="flex justify-between w-full h-auto mb-[5px]">
-          <div className="font-subtitle1 text-sm my-auto">
+        <div className="flex justify-between h-auto mx-2 mb-[5px]">
+          <div className="font-subtitle1 my-auto">
             {doneEnabled ? `(${x + 1}, ${y + 1})` : " "}
           </div>
           <div
@@ -53,11 +54,11 @@ const Palette = ({
             } font-subtitle1 text-base my-auto`}
             onClick={() => {
               if (doneEnabled) {
-                clickDone();
+                // clickDone();
               }
             }}
           >
-            Done
+            Share Location
           </div>
         </div>
         <div
@@ -71,22 +72,22 @@ const Palette = ({
             <React.Fragment key={idx}>
               {maxColors > idx ? (
                 idx === colorIndex ? (
-                  <div
-                    className="cursor-pointer w-[36px] h-[36px] rounded-full border-0 m-auto flex items-center justify-center"
-                    style={{ backgroundColor: color }}
-                  >
-                    <div className="w-[32px] h-[32px] rounded-full border-2 border-black m-auto" />
+                  <div className="cursor-pointer w-[36px] h-[36px] rounded-full border-0 m-auto flex items-center justify-center bg-white-full">
+                    <div
+                      className="w-[32px] h-[32px] rounded-full border-2 border-black m-auto"
+                      style={{ backgroundColor: color }}
+                    />
                   </div>
                 ) : (
                   <div
-                    className="cursor-pointer w-[36px] h-[36px] rounded-full border-0 m-auto"
+                    className="cursor-pointer w-[28px] h-[28px] rounded-full border-0 m-auto"
                     onClick={() => colorOnClick(idx)}
                     style={{ backgroundColor: color }}
                   />
                 )
               ) : (
                 <div
-                  className="w-[36px] h-[36px] rounded-full bg-transparent m-auto"
+                  className="w-[28px] h-[28px] rounded-full bg-transparent m-auto"
                   style={{
                     border: "1px dashed rgba(255, 255, 255, 0.4)",
                   }}
@@ -115,6 +116,17 @@ const Palette = ({
             </a>
           </div>
         ) : null}
+        <Button
+          size="sm"
+          className="w-full mt-4 !py-2"
+          onClick={() => {
+            if (doneEnabled) {
+              clickDone();
+            }
+          }}
+        >
+          🌜 fkn sned it 🌛
+        </Button>
       </div>
     </div>
   );
