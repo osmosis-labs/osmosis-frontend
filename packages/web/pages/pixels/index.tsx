@@ -52,14 +52,27 @@ export const COLOR_SET = [
 
 const PixelsRuleModal: FunctionComponent<ModalBaseProps> = (props) => {
   return (
-    <ModalBase {...props} isOpen={props.isOpen} title="Rules">
-      <div className="my-5">
-        <p>
-          🧪 Only users with more than 1 OSMO on birthday epoch can participate
+    <ModalBase
+      {...props}
+      isOpen={props.isOpen}
+      title={<div className="text-lg text-center">📚 Rulebook</div>}
+    >
+      <div className="mt-6 font-normal">
+        <p className="mb-3">
+          🔬 The account must have been active at June 20, 17:20 UTC to be
+          eligible
         </p>
-        <p>🎨 Stake to the lower 2/3 validators to unlock more colors</p>
-        <p>
-          ⏱ Once you place a pixel, you must wait 50 blocks to place another
+
+        <p className="mb-3">🪙 Start staking OSMO to participate</p>
+        <p className="mb-3">
+          🎨 Stake to smaller validators to unlock more colors
+        </p>
+        <p className="mb-3">
+          {" "}
+          ⏱ Once you place a pixel, you must wait 30 blocks to place another
+        </p>
+        <p className="mb-3">
+          ⚔️ But remember, other people can place their pixel over your pixel
         </p>
       </div>
     </ModalBase>
@@ -70,8 +83,11 @@ const ShareModal: FunctionComponent<
   Omit<ModalBaseProps, "isOpen"> & {
     shareInfo:
       | {
-          numDots: number;
-          numAccounts: number;
+          numDots?: number;
+          numAccounts?: number;
+          x?: number;
+          y?: number;
+          colorIndex?: number;
         }
       | undefined;
   }
@@ -90,16 +106,30 @@ const ShareModal: FunctionComponent<
     }
   }, [isCopied]);
 
+  if (!props.shareInfo) {
+    return null;
+  }
+
   return (
     <ModalBase {...props} isOpen={props.shareInfo != null}>
-      <div className="flex justify-center text-2xl mb-2">👋</div>
+      <div className="flex justify-center text-2xl mb-2">{`${
+        props.shareInfo.numAccounts ? "👋" : "🎨"
+      }`}</div>
       <div className="my-5">
-        <p className="text-lg text-center">
-          {`${(
-            props.shareInfo?.numAccounts ?? 0
-          ).toLocaleString()} wallets have placed ${(
-            props.shareInfo?.numDots ?? 0
-          ).toLocaleString()} pixels so far`}
+        <p className="flex justify-center items-center text-lg text-center">
+          {props.shareInfo.numAccounts
+            ? `${(
+                props.shareInfo.numAccounts ?? 0
+              ).toLocaleString()} wallets have placed ${(
+                props.shareInfo.numDots ?? 0
+              ).toLocaleString()} pixels so far`
+            : `(${props.shareInfo.x}, ${props.shareInfo.y})`}
+          {props.shareInfo.colorIndex && (
+            <div
+              className="ml-2 w-[28px] h-[28px] rounded-full border-0"
+              style={{ backgroundColor: COLOR_SET[props.shareInfo.colorIndex] }}
+            />
+          )}
         </p>
       </div>
       <div className="mb-5">
@@ -113,9 +143,10 @@ const ShareModal: FunctionComponent<
           type="outline"
           className="flex items-center"
           onClick={async () => {
-            await navigator.clipboard.writeText(
-              window.location.origin + "/pixels"
-            );
+            const copingLink = props.shareInfo?.colorIndex
+              ? window.location.href
+              : window.location.origin + "/pixels";
+            await navigator.clipboard.writeText(copingLink);
 
             setIsCopied(true);
           }}
@@ -440,11 +471,22 @@ const Pixels: NextPage = observer(function () {
   const [showRules, setShowRules] = useState(false);
   const [showShareModal, setShowShareModal] = useState<
     | {
-        numDots: number;
-        numAccounts: number;
+        numDots?: number;
+        numAccounts?: number;
+        x?: number;
+        y?: number;
+        colorIndex?: number;
       }
     | undefined
   >(undefined);
+
+  useEffect(() => {
+    const isRulesRead = !!localStorage.getItem("pixel-rules");
+    if (!isRulesRead) {
+      setShowRules(true);
+      localStorage.setItem("pixel-rules", "read");
+    }
+  }, []);
 
   const status = queryOsmoPixels.queryStatus;
 
@@ -454,6 +496,7 @@ const Pixels: NextPage = observer(function () {
         isOpen={showRules}
         onRequestClose={() => {
           setShowRules(false);
+          localStorage.setItem("pixel-rules", "read");
         }}
       />
       <ShareModal
@@ -723,6 +766,13 @@ const Pixels: NextPage = observer(function () {
                       }
                     }}
                     doneEnabled={pixelIndex[0] >= 0 && pixelIndex[1] >= 0}
+                    openShareModal={() =>
+                      setShowShareModal({
+                        x: pixelIndex[0] + 1,
+                        y: pixelIndex[1] + 1,
+                        colorIndex,
+                      })
+                    }
                   />
                 ) : null}
               </React.Fragment>

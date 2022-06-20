@@ -13,6 +13,7 @@ type PaletteProps = {
   setColorIndex: (index: number) => void;
   doneEnabled: boolean;
   clickDone: Function;
+  openShareModal: () => void;
 };
 
 const Palette = ({
@@ -26,6 +27,7 @@ const Palette = ({
   setColorIndex,
   doneEnabled,
   clickDone,
+  openShareModal,
 }: PaletteProps) => {
   const colorOnClick = (index: number) => {
     setColorIndex(index);
@@ -53,9 +55,7 @@ const Palette = ({
               doneEnabled ? "text-secondary-200" : "text-secondary-600"
             } font-subtitle1 text-base my-auto`}
             onClick={() => {
-              if (doneEnabled) {
-                // clickDone();
-              }
+              openShareModal();
             }}
           >
             Share Location
