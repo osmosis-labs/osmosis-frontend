@@ -30,7 +30,7 @@ export class WeightedPoolMath {
     slippage: Dec
   ): Int {
     const effectivePrice = spotPriceBefore.mul(slippage.add(new Dec(1)));
-    return new Dec(tokenOut).mul(effectivePrice).truncate();
+    return new Dec(tokenOut).mul(effectivePrice).roundUp();
   }
 
   public static calcSlippageSlope(
@@ -671,7 +671,7 @@ class WeightedPoolEstimates_Raw {
       new Dec(outPoolAsset.weight),
       new Dec(tokenOut.amount),
       swapFee
-    ).truncate();
+    ).roundUp();
 
     const spotPriceAfter = WeightedPoolMath.calcSpotPrice(
       new Dec(inPoolAsset.amount).add(new Dec(tokenInAmount)),

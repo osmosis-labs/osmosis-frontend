@@ -618,6 +618,7 @@ export class OsmosisAccountImpl {
         const outPoolAsset = queryPool.getPoolAsset(
           tokenOutCurrency.coinMinimalDenom
         );
+
         const msg = Msgs.Amino.makeSwapExactAmountInMsg(
           {
             // ...pool, <= does not work w/ getters
@@ -753,17 +754,7 @@ export class OsmosisAccountImpl {
           this._msgOpts.swapExactAmountOut,
           this.base.bech32Address,
           tokenInCurrency,
-          {
-            currency: tokenOut.currency,
-            amount: new Dec(tokenOut.amount)
-              .mul(
-                DecUtils.getTenExponentNInPrecisionRange(
-                  tokenOut.currency.coinDecimals
-                )
-              )
-              .truncate()
-              .toString(),
-          },
+          tokenOut,
           maxSlippage
         );
 
