@@ -428,50 +428,18 @@ const Pixels: NextPage = observer(function () {
           {({ zoomOut, zoomIn, setTransform }) => {
             return (
               <React.Fragment>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "end",
-                    alignItems: "center",
-                    position: "absolute",
-                    top: "36px",
-                    zIndex: "1000",
-                    width: "80%",
-                    height: "48px",
-                    backgroundColor: "transparent",
-                  }}
-                >
-                  <div
-                    style={{
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "48px",
-                      height: "48px",
-                      borderRadius: "8px",
-                    }}
-                    className={"bg-primary-200"}
-                    onClick={() => zoomOut()}
-                  >
+                <div style={{display: 'flex', flexDirection: 'row',
+                  justifyContent: 'end', alignItems: 'center', position: 'absolute',
+                  top: '36px', zIndex: '1000', pointerEvents: 'none',
+                  width: '80%', height: '48px', backgroundColor: 'transparent'}}>
+                  <div style={{cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: '48px', height: '48px', borderRadius: '8px', pointerEvents: 'all'}} className={'bg-primary-200'} onClick={() => zoomOut()}>
                     -
                   </div>
 
-                  <div style={{ width: "10px" }} />
-                  <div
-                    style={{
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "48px",
-                      height: "48px",
-                      borderRadius: "8px",
-                    }}
-                    className={"bg-primary-200"}
-                    onClick={() => zoomIn()}
-                  >
+                  <div style={{width: '10px'}}/>
+                  <div style={{cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: '48px', height: '48px', borderRadius: '8px', pointerEvents: 'all'}} className={'bg-primary-200'} onClick={() => zoomIn()}>
                     +
                   </div>
                 </div>
