@@ -1113,7 +1113,7 @@ const chainInfos = (
         "https://scan.carbon.network/transaction/{txHash}?net=main",
     },
     {
-      rpc: "https://public.api.injective.network",
+      rpc: "https://tm.injective.network",
       rest: "https://public.lcd.injective.network",
       chainId: "injective-1",
       chainName: "Injective",
