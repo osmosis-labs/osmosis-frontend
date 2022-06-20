@@ -90,7 +90,7 @@ const Home: NextPage = observer(function () {
       <div className="absolute w-full h-full bg-home-bg-pattern bg-repeat-x bg-cover">
         <svg
           className="absolute w-full h-full lg:hidden"
-          viewBox="-100 50 1300 900"
+          viewBox="0 0 1300 900"
           height="900"
           preserveAspectRatio={"xMidYMid slice"}
         >
