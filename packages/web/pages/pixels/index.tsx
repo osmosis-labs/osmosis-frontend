@@ -153,7 +153,6 @@ const Pixels: NextPage = observer(function () {
       }
     }
   }, [router.query.x, router.query.y]);
-
   useEffect(() => {
     if (pixelIndex[0] >= 0 && pixelIndex[1] >= 0) {
       router.replace(
@@ -463,7 +462,7 @@ const Pixels: NextPage = observer(function () {
                     </div>
                   )}
                 {permission && permission.permission === "not_eligible" && (
-                  <div className="absolute pointer-events-none h-auto bottom-[40px] left-1/2 translate-x-1/2 rounded-lg z-[11] py-1.5 px-3.5 bg-error flex items-center">
+                  <div className="absolute pointer-events-none h-auto bottom-[40px] left-1/2 rounded-lg z-[11] py-1.5 px-3.5 bg-error flex items-center">
                     <Image
                       alt="error"
                       src="/icons/info-white-emphasis.svg"
@@ -472,6 +471,24 @@ const Pixels: NextPage = observer(function () {
                     />
                     <span className="ml-2.5">You are not eligible</span>
                   </div>
+                )}
+                {permission && permission.permission === "none" && (
+                  <a
+                    className="absolute h-auto bottom-[40px] left-1/2 rounded-lg z-[11] py-1.5 px-3.5 bg-primary-200 flex items-center"
+                    href="https://wallet.keplr.app/#/osmosis/stake"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <span className="mr-2.5">
+                      Stake OSMO here to participate
+                    </span>
+                    <Image
+                      src={"/icons/link-deco-real-white.svg"}
+                      alt="link"
+                      width={12}
+                      height={12}
+                    />
+                  </a>
                 )}
                 {permission &&
                 remainingBlocks <= 0 &&
