@@ -67,8 +67,11 @@ const ShareModal: FunctionComponent<
   Omit<ModalBaseProps, "isOpen"> & {
     shareInfo:
       | {
-          numDots: number;
-          numAccounts: number;
+          numDots?: number;
+          numAccounts?: number;
+          x?: number;
+          y?: number;
+          colorIndex?: number;
         }
       | undefined;
   }
@@ -87,16 +90,30 @@ const ShareModal: FunctionComponent<
     }
   }, [isCopied]);
 
+  if (!props.shareInfo) {
+    return null;
+  }
+
   return (
     <ModalBase {...props} isOpen={props.shareInfo != null}>
-      <div className="flex justify-center text-2xl mb-2">👋</div>
+      <div className="flex justify-center text-2xl mb-2">{`${
+        props.shareInfo.numAccounts ? "👋" : "🎨"
+      }`}</div>
       <div className="my-5">
-        <p className="text-lg text-center">
-          {`${(
-            props.shareInfo?.numAccounts ?? 0
-          ).toLocaleString()} wallets have placed ${(
-            props.shareInfo?.numDots ?? 0
-          ).toLocaleString()} pixels so far`}
+        <p className="flex justify-center items-center text-lg text-center">
+          {props.shareInfo.numAccounts
+            ? `${(
+                props.shareInfo.numAccounts ?? 0
+              ).toLocaleString()} wallets have placed ${(
+                props.shareInfo.numDots ?? 0
+              ).toLocaleString()} pixels so far`
+            : `(${props.shareInfo.x}, ${props.shareInfo.y})`}
+          {props.shareInfo.colorIndex && (
+            <div
+              className="ml-2 w-[28px] h-[28px] rounded-full border-0"
+              style={{ backgroundColor: COLOR_SET[props.shareInfo.colorIndex] }}
+            />
+          )}
         </p>
       </div>
       <div className="mb-5">
@@ -110,9 +127,10 @@ const ShareModal: FunctionComponent<
           type="outline"
           className="flex items-center"
           onClick={async () => {
-            await navigator.clipboard.writeText(
-              window.location.origin + "/pixels"
-            );
+            const copingLink = props.shareInfo?.colorIndex
+              ? window.location.href
+              : window.location.origin + "/pixels";
+            await navigator.clipboard.writeText(copingLink);
 
             setIsCopied(true);
           }}
@@ -389,8 +407,11 @@ const Pixels: NextPage = observer(function () {
   const [showRules, setShowRules] = useState(false);
   const [showShareModal, setShowShareModal] = useState<
     | {
-        numDots: number;
-        numAccounts: number;
+        numDots?: number;
+        numAccounts?: number;
+        x?: number;
+        y?: number;
+        colorIndex?: number;
       }
     | undefined
   >(undefined);
@@ -673,6 +694,13 @@ const Pixels: NextPage = observer(function () {
                       }
                     }}
                     doneEnabled={pixelIndex[0] >= 0 && pixelIndex[1] >= 0}
+                    openShareModal={() =>
+                      setShowShareModal({
+                        x: pixelIndex[0] + 1,
+                        y: pixelIndex[1] + 1,
+                        colorIndex,
+                      })
+                    }
                   />
                 ) : null}
               </React.Fragment>
