@@ -439,26 +439,40 @@ const Pixels: NextPage = observer(function () {
                     onDoubleClick={() => {}}
                   />
                 </TransformComponent>
-                {permission && remainingBlocks > 0 ? (
-                  <div
-                    className="absolute pointer-events-none h-auto bottom-[40px] z-[11]"
-                    style={{
-                      width: `calc(100% - ${GAME_CONFIG.SIDE_BAR_WIDTH}px)`,
-                    }}
-                  >
-                    <div className="w-[200px] h-[36px] rounded-[12px] bg-card mx-auto flex items-center justify-center font-subtitle1 text-sm">
-                      <div className="mr-1 flex items-center justify-center ">
-                        <Image
-                          alt=""
-                          src="/icons/loading.svg"
-                          height={24}
-                          width={24}
-                        />
+                {permission &&
+                  remainingBlocks > 0 &&
+                  permission.permission !== "not_eligible" &&
+                  permission.permission !== "none" && (
+                    <div
+                      className="absolute pointer-events-none h-auto bottom-[40px] z-[11]"
+                      style={{
+                        width: `calc(100% - ${GAME_CONFIG.SIDE_BAR_WIDTH}px)`,
+                      }}
+                    >
+                      <div className="w-[200px] h-[36px] rounded-[12px] bg-card mx-auto flex items-center justify-center font-subtitle1 text-sm">
+                        <div className="mr-1 flex items-center justify-center ">
+                          <Image
+                            alt=""
+                            src="/icons/loading.svg"
+                            height={24}
+                            width={24}
+                          />
+                        </div>
+                        {`${remainingBlocks} blocks remaining`}
                       </div>
-                      {`${remainingBlocks} blocks remaining`}
                     </div>
+                  )}
+                {permission && permission.permission === "not_eligible" && (
+                  <div className="absolute pointer-events-none h-auto bottom-[40px] left-1/2 translate-x-1/2 rounded-lg z-[11] py-1.5 px-3.5 bg-error flex items-center">
+                    <Image
+                      alt="error"
+                      src="/icons/info-white-emphasis.svg"
+                      height={16}
+                      width={16}
+                    />
+                    <span className="ml-2.5">You are not eligible</span>
                   </div>
-                ) : null}
+                )}
                 {permission &&
                 remainingBlocks <= 0 &&
                 permission.permission !== "not_eligible" &&
