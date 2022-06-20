@@ -1,5 +1,5 @@
-import React, { useState } from "react";
 import Image from "next/image";
+import React from "react";
 
 type PaletteProps = {
   colorSet: string[];
