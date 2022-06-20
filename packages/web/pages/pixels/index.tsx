@@ -6,7 +6,11 @@ import React, {
   useState,
 } from "react";
 import { NextPage } from "next";
-import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
+import {
+  ReactZoomPanPinchRef,
+  TransformComponent,
+  TransformWrapper,
+} from "react-zoom-pan-pinch";
 import Palette from "../../components/pixels/pallete";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
@@ -18,14 +22,13 @@ import Image from "next/image";
 import { ModalBase, ModalBaseProps } from "../../modals";
 import { Button } from "../../components/buttons";
 import { useRouter } from "next/router";
-import { isNumber } from "../../hooks/data/types";
 
 export const GAME_CONFIG = {
   PIXEL_SIZE: 30,
   PIXEL_WIDTH: 250,
   PIXEL_HEIGHT: 250,
   SIDE_BAR_WIDTH: 206,
-  CANVAS_SIZE: 2000,
+  CANVAS_SIZE: 30 * 250,
 };
 
 export const COLOR_SET = [
@@ -134,6 +137,8 @@ const ShareModal: FunctionComponent<
   );
 };
 
+const focusScale = 1;
+
 const Pixels: NextPage = observer(function () {
   const { chainStore, accountStore, queryOsmoPixels } = useStore();
   const router = useRouter();
@@ -141,53 +146,78 @@ const Pixels: NextPage = observer(function () {
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
 
   const [pixelIndex, setPixelIndex] = useState([-1, -1]);
-  const [focusScale] = useState(4);
 
   const [colorIndex, setColorIndex] = useState(0);
 
   const tempMousePosition = useRef([0, 0]);
 
-  const initPos = () => {
-    let pixel = 4000 / GAME_CONFIG.PIXEL_HEIGHT;
-    const ranX = Math.floor(Math.random() * 200) + 10;
-    const ranY = Math.floor(Math.random() * 200) + 10;
-
-    const x = -(ranX * pixel);
-    const y = -(ranY * pixel);
-
-    return { x: x, y: y };
-  };
-
-  const firstQueryEffectChecker = useRef(false);
+  const initOnce = useRef(false);
 
   useEffect(() => {
-    if (!!router.query.x && !!router.query.y && !!router.query.color) {
-      const numX = Number(router.query.x) - 1;
-      const numY = Number(router.query.y) - 1;
-      if (isNumber(numX) && isNumber(numY)) {
-        setPixelIndex([Number(numX), Number(numY)]);
+    if (router.isReady && !initOnce.current) {
+      if (
+        router.query.x &&
+        router.query.y &&
+        typeof router.query.x === "string" &&
+        typeof router.query.y === "string"
+      ) {
+        const numX = parseInt(router.query.x) - 1;
+        const numY = parseInt(router.query.y) - 1;
+        if (!Number.isNaN(numX) && !Number.isNaN(numY)) {
+          setPixelIndex([numX, numY]);
+
+          if (transformWrapperRef.current) {
+            const coordinate = getZoomCoordinate(numX, numY, focusScale);
+
+            transformWrapperRef.current.setTransform(
+              coordinate.x,
+              coordinate.y,
+              coordinate.scale
+            );
+          }
+        }
+      } else {
+        // If can't get valid x,y from query string,
+        // move the user to random position.
+        // However, it is difficult to deal with here because of the issues caused by hydration of nextjs.
+        // For now, temporarily use setTimeout to solve it.
+        setTimeout(() => {
+          if (transformWrapperRef.current) {
+            const x = Math.floor(Math.random() * GAME_CONFIG.PIXEL_WIDTH);
+            const y = Math.floor(Math.random() * GAME_CONFIG.PIXEL_HEIGHT);
+
+            const coordinate = getZoomCoordinate(x, y, focusScale);
+
+            transformWrapperRef.current.setTransform(
+              coordinate.x,
+              coordinate.y,
+              coordinate.scale
+            );
+          }
+        }, 10);
       }
 
-      const numColor = Number(router.query.color);
-      if (isNumber(numColor)) {
-        setColorIndex(numColor);
+      if (router.query.color && typeof router.query.color === "string") {
+        const numColor = parseInt(router.query.color);
+        if (!Number.isNaN(numColor)) {
+          setColorIndex(numColor);
+        }
       }
+
+      initOnce.current = true;
     }
-  }, [router.query.x, router.query.y, router.query.color]);
+  }, [router.isReady, router.query]);
 
   useEffect(() => {
-    if (firstQueryEffectChecker.current) {
-      if (pixelIndex[0] >= 0 && pixelIndex[1] >= 0 && colorIndex >= 0) {
-        const pathNameWithQueryParams = `${router.pathname}?x=${
-          pixelIndex[0] + 1
-        }&y=${pixelIndex[1] + 1}&color=${colorIndex}`;
-        router.replace(pathNameWithQueryParams);
-      }
-    } else {
-      firstQueryEffectChecker.current = true;
+    if (pixelIndex[0] >= 0 && pixelIndex[1] >= 0 && colorIndex >= 0) {
+      const pathNameWithQueryParams = `${router.pathname}?x=${
+        pixelIndex[0] + 1
+      }&y=${pixelIndex[1] + 1}&color=${colorIndex}`;
+      router.replace(pathNameWithQueryParams);
     }
   }, [pixelIndex, colorIndex]);
 
+  const transformWrapperRef = useRef<ReactZoomPanPinchRef | null>(null);
   // canvas
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -238,14 +268,31 @@ const Pixels: NextPage = observer(function () {
     }
   }, [queryOsmoPixels.queryPixels.response]);
 
-  const getZoomCoordinate = () => {
-    let pixel = 8000 / GAME_CONFIG.PIXEL_HEIGHT;
-    const viewWidth = (window.innerWidth - GAME_CONFIG.SIDE_BAR_WIDTH) / 72;
-    const viewHeight = window.innerHeight / 88;
+  const getZoomCoordinate = (x: number, y: number, scale?: number) => {
+    if (
+      canvasRef.current &&
+      transformWrapperRef.current &&
+      transformWrapperRef.current.instance.wrapperComponent
+    ) {
+      const wrapperRect =
+        transformWrapperRef.current.instance.wrapperComponent.getBoundingClientRect();
 
-    const x = -(pixelIndex[0] * pixel - viewWidth * pixel);
-    const y = -(pixelIndex[1] * pixel - viewHeight * pixel);
-    return { x: x, y: y };
+      const currentScale = transformWrapperRef.current.state.scale;
+      if (!scale) {
+        scale = currentScale;
+      }
+
+      return {
+        x:
+          -((x + 0.5) * GAME_CONFIG.PIXEL_SIZE) * scale + wrapperRect.width / 2,
+        y:
+          -((y + 0.5) * GAME_CONFIG.PIXEL_SIZE) * scale +
+          wrapperRect.height / 2,
+        scale,
+      };
+    }
+
+    return { x: 0, y: 0, scale: 1 };
   };
 
   const getMousePos = (e: {
@@ -309,8 +356,12 @@ const Pixels: NextPage = observer(function () {
       tempMousePosition.current[0] === cursorX &&
       tempMousePosition.current[1] === cursorY
     ) {
-      const coordinate = getZoomCoordinate();
-      setTransform(coordinate.x, coordinate.y, focusScale);
+      const coordinate = getZoomCoordinate(
+        pixelIndex[0],
+        pixelIndex[1],
+        focusScale
+      );
+      setTransform(coordinate.x, coordinate.y, coordinate.scale);
     }
   };
 
@@ -433,13 +484,12 @@ const Pixels: NextPage = observer(function () {
           )} pixels placed`}
         </div>
         <TransformWrapper
-          initialScale={2}
+          ref={transformWrapperRef}
+          initialScale={1}
           centerZoomedOut={true}
-          minScale={0.4}
+          minScale={0.2}
           limitToBounds={true}
-          initialPositionX={initPos().x}
           maxScale={12}
-          initialPositionY={initPos().y}
         >
           {({ zoomOut, zoomIn, setTransform }) => {
             return (
@@ -501,9 +551,9 @@ const Pixels: NextPage = observer(function () {
                     <div
                       className="absolute top-0 left-0"
                       style={{
-                        width: "8px",
-                        height: "8px",
-                        outline: "solid #5D5FEF 1px",
+                        width: `${GAME_CONFIG.PIXEL_SIZE}px`,
+                        height: `${GAME_CONFIG.PIXEL_SIZE}px`,
+                        outline: "solid #5D5FEF 6px",
                         backgroundColor: COLOR_SET[colorIndex],
                         transform: `translate(${pixelIndex[0] * 100}%, ${
                           pixelIndex[1] * 100
