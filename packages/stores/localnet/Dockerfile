@@ -8,7 +8,11 @@ RUN mkdir -p /osmosis/.osmosisd/config && \
   mv ./LocalOsmosis/data /osmosis/.osmosisd/ && \
   mv ./LocalOsmosis/priv_validator_state.json /osmosis/.osmosisd/data
 
+#enable swagger
+RUN sed -i 's/swagger = false/swagger = true/g' /osmosis/.osmosisd/config/app.toml
 
+# use debug version for utils, like sh
+#FROM osmolabs/osmosis-dev:v9.0.0-debug
 FROM osmolabs/osmosis:9.0.0
 
 COPY --from=config /osmosis/.osmosisd/config /osmosis/.osmosisd/config

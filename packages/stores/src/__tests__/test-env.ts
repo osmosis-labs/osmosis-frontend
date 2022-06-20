@@ -232,6 +232,9 @@ function deepContainedArray(array1: any, array2: any): boolean {
   return true;
 }
 
+/** Recursive pattern match of raw values between two arbitrary objects.
+ *  Throws on mismatch.
+ */
 export function deepContained(obj1: any, obj2: any) {
   if (Array.isArray(obj1) || Array.isArray(obj2)) {
     if (!deepContainedArray(obj1, obj2)) {
@@ -290,7 +293,7 @@ export async function initLocalnet(): Promise<void> {
     baseURL: "http://localhost:1317",
   });
 
-  // Wait untile the genesis block processed
+  // Wait until the genesis block processed
   while (true) {
     await delay(500);
     try {
