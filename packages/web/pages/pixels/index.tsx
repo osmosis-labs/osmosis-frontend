@@ -11,7 +11,7 @@ import Palette from "../../components/pixels/pallete";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { WalletStatus } from "@keplr-wallet/stores";
-import { DecUtils } from "@keplr-wallet/unit";
+import { Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { Hash } from "@keplr-wallet/crypto";
 import { Buffer } from "buffer/";
 import Image from "next/image";
@@ -387,6 +387,8 @@ const Pixels: NextPage = observer(function () {
     | undefined
   >(undefined);
 
+  const status = queryOsmoPixels.queryStatus;
+
   return (
     <main>
       <PixelsRuleModal
@@ -415,6 +417,12 @@ const Pixels: NextPage = observer(function () {
           >
             Rules
           </Button>
+        </div>
+
+        <div className="absolute pointer-events-none top-10 left-1/2 z-[11]  py-2 px-8 bg-primary-200 flex items-center rounded-lg">
+          {`${new IntPretty(
+            new Dec(status.response?.data.numDots ?? 0)
+          )} dots placed`}
         </div>
         <TransformWrapper
           initialScale={2}
