@@ -545,7 +545,7 @@ const Pixels: NextPage = observer(function () {
                     alignItems: "center",
                     position: "absolute",
                     top: "36px",
-                    zIndex: "1000",
+                    zIndex: "49",
                     pointerEvents: "none",
                     width: "80%",
                     height: "48px",
