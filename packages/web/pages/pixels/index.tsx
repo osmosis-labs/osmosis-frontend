@@ -93,22 +93,22 @@ const ShareModal: FunctionComponent<
       <div className="my-5">
         <p className="text-lg text-center">
           {`${(
-            props.shareInfo?.numDots ?? 0
-          ).toLocaleString()} dots has been placed and ${(
             props.shareInfo?.numAccounts ?? 0
-          ).toLocaleString()} wallets have participated`}
+          ).toLocaleString()} wallets have placed ${(
+            props.shareInfo?.numDots ?? 0
+          ).toLocaleString()} pixels so far`}
         </p>
       </div>
       <div className="mb-5">
         <p className="text-center text-white-disabled">
-          Share this link to others so they can participate
+          Share this link to fellow Osmonauts so they can join the fun.
         </p>
       </div>
       <div className="flex justify-center">
         <Button
-          className="w-[200px] px-0"
           size="lg"
           type="outline"
+          className="flex items-center"
           onClick={async () => {
             await navigator.clipboard.writeText(
               window.location.origin + "/pixels"
@@ -117,8 +117,16 @@ const ShareModal: FunctionComponent<
             setIsCopied(true);
           }}
         >
-          <div className="flex items-center justify-center">
-            {isCopied ? "Copied!" : "Copy link"}
+          <div className="flex flex-shrink-0 items-center">
+            <Image
+              alt="copy"
+              src="/icons/copy-white.svg"
+              height={20}
+              width={20}
+            />
+            <span className="ml-2 flex-shrink-0">
+              {isCopied ? "Copied!" : "Copy link"}
+            </span>
           </div>
         </Button>
       </div>
@@ -422,7 +430,7 @@ const Pixels: NextPage = observer(function () {
         <div className="absolute pointer-events-none top-10 left-1/2 z-[11]  py-2 px-8 bg-primary-200 flex items-center rounded-lg">
           {`${new IntPretty(
             new Dec(status.response?.data.numDots ?? 0)
-          )} dots placed`}
+          )} pixels placed`}
         </div>
         <TransformWrapper
           initialScale={2}
@@ -436,18 +444,53 @@ const Pixels: NextPage = observer(function () {
           {({ zoomOut, zoomIn, setTransform }) => {
             return (
               <React.Fragment>
-                <div style={{display: 'flex', flexDirection: 'row',
-                  justifyContent: 'end', alignItems: 'center', position: 'absolute',
-                  top: '36px', zIndex: '1000', pointerEvents: 'none',
-                  width: '80%', height: '48px', backgroundColor: 'transparent'}}>
-                  <div style={{cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    width: '48px', height: '48px', borderRadius: '8px', pointerEvents: 'all'}} className={'bg-primary-200'} onClick={() => zoomOut()}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "end",
+                    alignItems: "center",
+                    position: "absolute",
+                    top: "36px",
+                    zIndex: "1000",
+                    pointerEvents: "none",
+                    width: "80%",
+                    height: "48px",
+                    backgroundColor: "transparent",
+                  }}
+                >
+                  <div
+                    style={{
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "8px",
+                      pointerEvents: "all",
+                    }}
+                    className={"bg-primary-200"}
+                    onClick={() => zoomOut()}
+                  >
                     -
                   </div>
 
-                  <div style={{width: '10px'}}/>
-                  <div style={{cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    width: '48px', height: '48px', borderRadius: '8px', pointerEvents: 'all'}} className={'bg-primary-200'} onClick={() => zoomIn()}>
+                  <div style={{ width: "10px" }} />
+                  <div
+                    style={{
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "8px",
+                      pointerEvents: "all",
+                    }}
+                    className={"bg-primary-200"}
+                    onClick={() => zoomIn()}
+                  >
                     +
                   </div>
                 </div>
