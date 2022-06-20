@@ -21,9 +21,9 @@ import { useRouter } from "next/router";
 import { isNumber } from "../../hooks/data/types";
 
 export const GAME_CONFIG = {
-  PIXEL_SIZE: 25,
-  PIXEL_WIDTH: 500,
-  PIXEL_HEIGHT: 500,
+  PIXEL_SIZE: 30,
+  PIXEL_WIDTH: 250,
+  PIXEL_HEIGHT: 250,
   SIDE_BAR_WIDTH: 206,
   CANVAS_SIZE: 2000,
 };
@@ -139,6 +139,17 @@ const Pixels: NextPage = observer(function () {
 
   const tempMousePosition = useRef([0, 0]);
 
+  const initPos = () => {
+    let pixel = 4000 / GAME_CONFIG.PIXEL_HEIGHT;
+    const ranX = Math.floor(Math.random() * 200) + 10;
+    const ranY = Math.floor(Math.random() * 200) + 10;
+
+    const x = -(ranX * pixel);
+    const y = -(ranY * pixel);
+
+    return {x: x, y: y};
+  }
+
   useEffect(() => {
     if (
       router.query.x &&
@@ -213,8 +224,8 @@ const Pixels: NextPage = observer(function () {
 
   const getZoomCoordinate = () => {
     let pixel = 8000 / GAME_CONFIG.PIXEL_HEIGHT;
-    const viewWidth = (window.innerWidth - GAME_CONFIG.SIDE_BAR_WIDTH) / 33;
-    const viewHeight = window.innerHeight / 36;
+    const viewWidth = (window.innerWidth - GAME_CONFIG.SIDE_BAR_WIDTH) / 72;
+    const viewHeight = window.innerHeight / 88;
 
     const x = -(pixelIndex[0] * pixel - viewWidth * pixel);
     const y = -(pixelIndex[1] * pixel - viewHeight * pixel);
@@ -401,12 +412,27 @@ const Pixels: NextPage = observer(function () {
           initialScale={2}
           centerZoomedOut={true}
           minScale={0.4}
-          limitToBounds={true}
-          maxScale={10}
+          limitToBounds={true} initialPositionX={initPos().x}
+          maxScale={12} initialPositionY={initPos().y}
         >
-          {({ setTransform }) => {
+          {({ zoomOut, zoomIn, setTransform }) => {
             return (
               <React.Fragment>
+                <div style={{display: 'flex', flexDirection: 'row',
+                  justifyContent: 'end', alignItems: 'center', position: 'absolute',
+                  top: '36px', zIndex: '1000',
+                  width: '80%', height: '48px', backgroundColor: 'transparent'}}>
+                  <div style={{cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: '48px', height: '48px', borderRadius: '8px'}} className={'bg-primary-200'} onClick={() => zoomOut()}>
+                    -
+                  </div>
+
+                  <div style={{width: '10px'}}/>
+                  <div style={{cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: '48px', height: '48px', borderRadius: '8px'}} className={'bg-primary-200'} onClick={() => zoomIn()}>
+                    +
+                  </div>
+                </div>
                 <TransformComponent
                   wrapperStyle={{ width: "100%", height: "100%" }}
                 >
@@ -414,8 +440,8 @@ const Pixels: NextPage = observer(function () {
                     <div
                       className="absolute top-0 left-0"
                       style={{
-                        width: "4px",
-                        height: "4px",
+                        width: "8px",
+                        height: "8px",
                         outline: "solid #5D5FEF 1px",
                         backgroundColor: COLOR_SET[colorIndex],
                         transform: `translate(${pixelIndex[0] * 100}%, ${
