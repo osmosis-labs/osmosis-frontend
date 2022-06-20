@@ -1,4 +1,5 @@
 import React, { FunctionComponent, useState, useEffect } from "react";
+import classNames from "classnames";
 
 export const SvgImagePop: FunctionComponent<React.SVGProps<SVGImageElement>> = (
   props
@@ -21,7 +22,7 @@ export const SvgImagePop: FunctionComponent<React.SVGProps<SVGImageElement>> = (
   return (
     <image
       {...props}
-      className="hover:-translate-y-1"
+      className={classNames("hover:!-translate-y-1", props.className)}
       style={{ cursor: "pointer" }}
       onClick={() => {
         const audio = new Audio(
