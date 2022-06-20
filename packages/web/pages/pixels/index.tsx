@@ -17,6 +17,8 @@ import { Buffer } from "buffer/";
 import Image from "next/image";
 import { ModalBase, ModalBaseProps } from "../../modals";
 import { Button } from "../../components/buttons";
+import { useRouter } from "next/router";
+import { isNumber } from "../../hooks/data/types";
 
 export const GAME_CONFIG = {
   PIXEL_SIZE: 25,
@@ -126,6 +128,7 @@ const ShareModal: FunctionComponent<
 
 const Pixels: NextPage = observer(function () {
   const { chainStore, accountStore, queryOsmoPixels } = useStore();
+  const router = useRouter();
 
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
 
@@ -135,6 +138,29 @@ const Pixels: NextPage = observer(function () {
   const [colorIndex, setColorIndex] = useState(0);
 
   const tempMousePosition = useRef([0, 0]);
+
+  useEffect(() => {
+    if (
+      router.query.x &&
+      router.query.y &&
+      Number(router.query.x) - 1 >= 0 &&
+      Number(router.query.y) - 1 >= 0
+    ) {
+      const numX = Number(router.query.x) - 1;
+      const numY = Number(router.query.y) - 1;
+      if (isNumber(numX) && isNumber(numY)) {
+        setPixelIndex([Number(numX), Number(numY)]);
+      }
+    }
+  }, [router.query.x, router.query.y]);
+
+  useEffect(() => {
+    if (pixelIndex[0] >= 0 && pixelIndex[1] >= 0) {
+      router.replace(
+        `${router.pathname}?x=${pixelIndex[0] + 1}&y=${pixelIndex[1] + 1}`
+      );
+    }
+  }, [pixelIndex]);
 
   // canvas
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
