@@ -143,7 +143,7 @@ const ShareModal: FunctionComponent<
           type="outline"
           className="flex items-center"
           onClick={async () => {
-            const copingLink = props.shareInfo?.colorIndex
+            const copingLink = typeof props.shareInfo?.colorIndex !== 'undefined'
               ? window.location.href
               : window.location.origin + "/pixels";
             await navigator.clipboard.writeText(copingLink);
