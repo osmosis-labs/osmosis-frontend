@@ -29,8 +29,8 @@ export const KeplrConnectionSelectModal: FunctionComponent<
         height={64}
       />
       <div className="flex flex-col text-left ml-5">
-        <h6>Keplr Wallet</h6>
-        <p className="body2 text-iconDefault mt-1">Keplr Browser Extension</p>
+        <a href="https://chrome.google.com/webstore/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap" target="_blank"><h6>Keplr Wallet</h6></a>
+        <p className="body2 text-iconDefault mt-1"><a href="https://chrome.google.com/webstore/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap" target="_blank">Keplr Browser Extension</a></p>
       </div>
     </button>
     <button
