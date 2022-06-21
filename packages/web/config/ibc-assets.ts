@@ -397,6 +397,17 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "injective-1",
+    sourceChannelId: "channel-122",
+    destChannelId: "channel-8",
+    coinMinimalDenom: "inj",
+    depositUrlOverride:
+      "https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj",
+    withdrawUrlOverride:
+      "https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "columbus-5",
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
@@ -432,16 +443,6 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
-  },
-  {
-    counterpartyChainId: "injective-1",
-    sourceChannelId: "channel-122",
-    destChannelId: "channel-8",
-    coinMinimalDenom: "inj",
-    depositUrlOverride:
-      "https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj",
-    withdrawUrlOverride:
-      "https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
