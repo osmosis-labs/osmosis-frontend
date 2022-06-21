@@ -275,8 +275,8 @@ export async function initLocalnet(): Promise<void> {
     exec(
       // change osmosisd version in /localnet/Dockerfile
       // comment to speed up test time
-      //`docker build --tag osmosis/localnet ./localnet &&
-      `docker rm --force osmosis_localnet && 
+      `docker build --tag osmosis/localnet ./localnet &&
+       docker rm --force osmosis_localnet && 
        docker run -d -p 1317:1317 -p 26657:26657 -p 9090:9090 --user root --name osmosis_localnet osmosis/localnet`,
       (error, _stdout, _stderr) => {
         if (error) {
