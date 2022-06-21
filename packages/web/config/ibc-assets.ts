@@ -573,6 +573,8 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-251",
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
+    depositUrlOverride: "https://bridge.terra.money",
+    withdrawUrlOverride: "https://bridge.terra.money",
   },
   {
     counterpartyChainId: "titan-1",
