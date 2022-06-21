@@ -124,7 +124,7 @@ const ShareModal: FunctionComponent<
                 props.shareInfo.numDots ?? 0
               ).toLocaleString()} pixels so far`
             : `(${props.shareInfo.x}, ${props.shareInfo.y})`}
-          {props.shareInfo.colorIndex && (
+          {typeof props.shareInfo.colorIndex !== 'undefined' && (
             <div
               className="ml-2 w-[28px] h-[28px] rounded-full border-0"
               style={{ backgroundColor: COLOR_SET[props.shareInfo.colorIndex] }}
