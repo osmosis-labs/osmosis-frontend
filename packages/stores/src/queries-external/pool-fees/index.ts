@@ -12,6 +12,7 @@ import {
   PoolFees,
 } from "./types";
 
+/** Queries Imperator pool fee history data. */
 export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<PoolFees> {
   constructor(kvStore: KVStore) {
     super(kvStore, "/fees/v1/pools");

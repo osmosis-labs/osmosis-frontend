@@ -1238,6 +1238,12 @@ export class OsmosisAccountImpl {
     );
   }
 
+  /**
+   * https://docs.osmosis.zone/developing/osmosis-core/modules/spec-superfluid.html#superfluid-unbond-lock
+   * @param locks IDs and whether the lock is synthetic
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fullfillment.
+   */
   async sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
     locks: {
       lockId: string;

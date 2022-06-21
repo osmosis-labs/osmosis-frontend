@@ -1,6 +1,6 @@
 {
   "name": "@osmosis-labs/web",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -22,9 +22,9 @@
     "@keplr-wallet/types": "^0.10.4",
     "@keplr-wallet/unit": "^0.10.4",
     "@keplr-wallet/wc-client": "^0.10.4",
-    "@osmosis-labs/pools": "0.0.1",
     "@next/bundle-analyzer": "^12.1.6",
-    "@osmosis-labs/stores": "0.0.1",
+    "@osmosis-labs/pools": "^0.0.3",
+    "@osmosis-labs/stores": "^0.0.3",
     "@tippyjs/react": "^4.2.6",
     "@walletconnect/browser-utils": "^1.7.0",
     "@walletconnect/client": "^1.7.0",
@@ -47,6 +47,7 @@
     "react-input-autosize": "^3.0.0",
     "react-modal": "^3.14.4",
     "react-toastify": "^7.0.4",
+    "react-zoom-pan-pinch": "^2.1.3",
     "sha.js": "^2.4.11",
     "sharp": "^0.30.4"
   },

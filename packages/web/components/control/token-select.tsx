@@ -60,10 +60,14 @@ export const TokenSelect: FunctionComponent<
           )?.chainName ?? "",
       }))
       .sort((a, b) => {
-        if (!(a instanceof CoinPretty) || !(b instanceof CoinPretty)) return 0;
+        if (
+          !(a.token instanceof CoinPretty) ||
+          !(b.token instanceof CoinPretty)
+        )
+          return 0;
 
-        const aFiatValue = priceStore.calculatePrice(a);
-        const bFiatValue = priceStore.calculatePrice(b);
+        const aFiatValue = priceStore.calculatePrice(a.token);
+        const bFiatValue = priceStore.calculatePrice(b.token);
 
         if (
           aFiatValue &&
@@ -197,13 +201,11 @@ export const TokenSelect: FunctionComponent<
             </div>
 
             <ul className="token-item-list overflow-y-scroll max-h-80">
-              {searchedTokens.map((token, index) => {
+              {searchedTokens.map((t, index) => {
                 const currency =
-                  token.token instanceof CoinPretty
-                    ? token.token.currency
-                    : token.token;
+                  t.token instanceof CoinPretty ? t.token.currency : t.token;
                 const { coinDenom, coinImageUrl } = currency;
-                const networkName = token.chainName;
+                const networkName = t.chainName;
                 const justDenom =
                   coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
                 const channel =
@@ -212,6 +214,10 @@ export const TokenSelect: FunctionComponent<
                     : undefined;
 
                 const showChannel = coinDenom.includes("channel");
+                const fiatValue =
+                  t.token instanceof CoinPretty && !t.token.toDec().isZero()
+                    ? priceStore.calculatePrice(t.token)?.toString()
+                    : undefined;
 
                 return (
                   <li
@@ -245,10 +251,18 @@ export const TokenSelect: FunctionComponent<
                           </div>
                         </div>
                       </div>
-                      <div className="md:text-sm">
-                        {token instanceof CoinPretty &&
-                          token.trim(true).hideDenom(true).toString()}
-                      </div>
+                      {t.token instanceof CoinPretty && (
+                        <div className="flex flex-col text-right">
+                          <span className="body1 text-white-high">
+                            {t.token.trim(true).hideDenom(true).toString()}
+                          </span>
+                          {fiatValue && (
+                            <span className="body2 text-iconDefault">
+                              {fiatValue}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </button>
                   </li>
                 );

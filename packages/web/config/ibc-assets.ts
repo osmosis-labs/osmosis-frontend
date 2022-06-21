@@ -120,7 +120,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
     isUnstable: true,
-    isVerified: true,
   },
   {
     counterpartyChainId: "columbus-5",
@@ -128,7 +127,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uusd",
     isUnstable: true,
-    isVerified: true,
   },
   {
     counterpartyChainId: "stargaze-1",
@@ -399,6 +397,13 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "injective-1",
+    sourceChannelId: "channel-122",
+    destChannelId: "channel-8",
+    coinMinimalDenom: "inj",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "columbus-5",
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
@@ -434,12 +439,6 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
-  },
-  {
-    counterpartyChainId: "injective-1",
-    sourceChannelId: "channel-122",
-    destChannelId: "channel-8",
-    coinMinimalDenom: "inj",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -571,6 +570,8 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-251",
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
+    depositUrlOverride: "https://bridge.terra.money",
+    withdrawUrlOverride: "https://bridge.terra.money",
   },
   {
     counterpartyChainId: "titan-1",
