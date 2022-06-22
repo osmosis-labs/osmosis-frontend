@@ -19,7 +19,6 @@ import {
   Pool,
   RoutePathWithAmount,
 } from "@osmosis-labs/pools";
-import { ObservableQueryPools } from "../queries";
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
@@ -35,7 +34,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   constructor(
     chainGetter: ChainGetter,
     queriesStore: IQueriesStore,
-    protected readonly observableQueryPools: ObservableQueryPools,
     initialChainId: string,
     sender: string,
     feeConfig: IFeeConfig | undefined,
@@ -98,17 +96,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   get pools(): Pool[] {
     return this._pools;
-  }
-
-  @action
-  requery() {
-    const relevantPoolsIds = this.optimizedRoutePaths
-      .map((route) => route.pools.map((pool) => pool.id))
-      .flat();
-
-    relevantPoolsIds.forEach((poolId) => {
-      this.observableQueryPools.getPool(poolId)?.fetch();
-    });
   }
 
   @override
