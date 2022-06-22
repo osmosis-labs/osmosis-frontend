@@ -2,6 +2,7 @@ import React, {
   createContext,
   FunctionComponent,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -194,11 +195,6 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
         eventListener.on("select_extension", () => {
           setIsExtensionSelectionModalOpen(false);
 
-          if (!keplrFromWindow) {
-            setIsExtensionNotInstalled(true);
-            return;
-          }
-
           getKeplrFromWindow().then((keplr) => {
             lastUsedKeplrRef.current = keplr;
             setConnectionType("extension");
@@ -260,6 +256,14 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
         }
       });
     })();
+  });
+
+  useEffect(() => {
+    getKeplrFromWindow().then((keplr) => {
+      if (!keplr) {
+        setIsExtensionNotInstalled(true);
+      }
+    });
   });
 
   return (
