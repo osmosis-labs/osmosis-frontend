@@ -253,6 +253,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       slippage: new RatePretty(0).ready(false),
     };
 
+    console.log("path len", paths.length);
+
     if (paths.length === 0) {
       return zero;
     }
@@ -261,6 +263,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
     const result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
+
+    console.log(result.amount.toString(), result.slippage.toString());
 
     if (!result.amount.gt(new Int(0))) {
       this.setError(new Error("Not enough liquidity"));
