@@ -76,56 +76,32 @@ function MyApp({ Component, pageProps }: AppProps) {
     <GetKeplrProvider>
       <StoreProvider>
         <IbcNotifier />
-        {IS_FRONTIER && (
-          <TempBanner
-            localStorageKey="show_frontier_banner"
-            title="You're viewing all permissionless assets"
-            message={
-              <>
-                You{"'"}re viewing all permissionless assets.{" "}
-                <a
-                  className="items-center"
-                  href="https://app.osmosis.zone/"
-                  target="_self"
-                >
-                  Click here to return to the main app.{" "}
-                  <Image
-                    alt="link"
-                    src="/icons/external-link-white.svg"
-                    height={10}
-                    width={10}
-                  />
-                </a>
-              </>
-            }
-          />
-        )}
-        {!IS_FRONTIER && (
-          <TempBanner
-            localStorageKey="show_luna_moved_frontier"
-            title="LUNC and USTC have moved to Osmosis Frontier"
-            message={
-              <>
-                These assets have been removed from app.osmosis.zone. Find LUNC
-                and USTC on{" "}
-                <a
-                  className="block underline inline mr-1"
-                  href="https://frontier.osmosis.zone/"
-                  target="_self"
-                >
-                  frontier.osmosis.zone.
-                </a>
-                <Image
-                  className="opacity-50"
-                  alt="link"
-                  src="/icons/external-link-white.svg"
-                  height={10}
-                  width={10}
-                />
-              </>
-            }
-          />
-        )}
+        <TempBanner
+          localStorageKey="ack_is_testnet"
+          title="Welcome to the Osmosis Testnet."
+          message={
+            <>
+              Head over to{" "}
+              <a
+                className="inline underline mr-1"
+                href="https://faucet.osmosis.zone/"
+                rel="noreferrer"
+                target="_blank"
+              >
+                faucet.osmosis.zone
+              </a>
+              <Image
+                className="opacity-50"
+                alt="link"
+                src="/icons/external-link-white.svg"
+                height={10}
+                width={10}
+              />{" "}
+              to get some tokens to play with. Practice good citizenry, don{"'"}
+              t abuse this service--the number of available tokens is limited.
+            </>
+          }
+        />
         <MainLayout menus={menus}>
           <Component {...pageProps} />
           <ToastContainer
