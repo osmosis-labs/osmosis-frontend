@@ -86,7 +86,9 @@ export class RootStore {
     [CosmosAccount, CosmwasmAccount, OsmosisAccount]
   >;
 
-  constructor() {
+  constructor(
+    mnemonic = "notice oak worry limit wrap speak medal online prefer cluster roof addict wrist behave treat actual wasp year salad speed social layer crew genius"
+  ) {
     const mockKeplr = new MockKeplr(
       async (chainId: string, tx: StdTx | Uint8Array) => {
         const chainInfo = TestChainInfos.find(
@@ -139,7 +141,7 @@ export class RootStore {
         }
       },
       TestChainInfos,
-      "notice oak worry limit wrap speak medal online prefer cluster roof addict wrist behave treat actual wasp year salad speed social layer crew genius"
+      mnemonic
     );
 
     this.chainStore = new ChainStore(TestChainInfos);
@@ -290,7 +292,7 @@ export async function initLocalnet(): Promise<void> {
   });
 
   const instance = Axios.create({
-    baseURL: "http://localhost:1317",
+    baseURL: "http://127.0.0.1:1317",
   });
 
   // Wait until the genesis block processed
