@@ -7,6 +7,7 @@ import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
 import { MainLayout } from "../components/layouts";
 import { TempBanner } from "../components/alert/temp-banner";
+import { OgpMeta } from "../components/ogp-meta";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -75,6 +76,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <GetKeplrProvider>
       <StoreProvider>
+        <OgpMeta />
         <IbcNotifier />
         {IS_FRONTIER && (
           <TempBanner
