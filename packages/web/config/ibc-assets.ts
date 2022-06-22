@@ -23,6 +23,19 @@ export const IBCAssetInfos: (IBCAsset & {
   isVerified?: boolean;
 })[] = [
   {
+    counterpartyChainId: "sit-5",
+    sourceChannelId: "channel-278",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "usge",
+    isVerified: true,
+  },
+  {
+    counterpartyChainId: "imversed-test-1",
+    sourceChannelId: "channel-221",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "nimv",
+  },
+  {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
