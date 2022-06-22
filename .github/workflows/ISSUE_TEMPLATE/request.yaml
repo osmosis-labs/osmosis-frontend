@@ -1,0 +1,41 @@
+name: Feature Request
+description: Create a proposal to request/define a new feature
+title: "[Feature Request]: "
+labels: ["feature request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for opening an issue!
+        
+        Before smashing the submit button please review the template.
+        Word of caution, poorly thought-out proposals may be rejected 
+        without deliberation.
+
+        Also, please also ensure that this is not a duplicate issue :)
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Short, concise description of the proposed feature.
+      placeholder: A clear and concise description of what the 🐞 is.
+    validations:
+      required: true
+  - type: textarea
+    id: problemdef
+    attributes:
+      label: Problem Definition
+      description: Detail the feature!
+      placeholder: 
+      What problems may be addressed by introducing this feature?
+      What benefits does Tendermint stand to gain by including this feature?
+      Are there any disadvantages of including this feature? 
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Detailed description of requirements of implementation
+    validations:
+      required: true

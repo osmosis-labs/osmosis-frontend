@@ -1,51 +1,69 @@
-# Osmosis Web Interface
-Frontend React app for Osmosis AMM.
+# Osmosis Frontend 👩‍🔬⚗️🧪
 
-## Install global dependencies
-To run or build the app, first, need to install `Node.js` and `Yarn` globally;
+![osmosis-banner-1200w](https://user-images.githubusercontent.com/4606373/167008669-fb3cafa8-e66e-4cdf-8599-3308039cc58c.png)
 
-First Install Node (recommend 14.x.x LTS version) from;
+## Development 💻
 
-https://nodejs.org/
+Our [frontend](https://app.osmosis.zone) is built with the following tools:
 
-Then install Yarn;
+- [TypeScript](https://www.typescriptlang.org/): type checking
+- [React](https://reactjs.org/): ui
+- [Tailwind CSS](https://tailwindcss.com/): styling, theming
+- [Next.js](https://nextjs.org/): scaffolding/SSR/CDN/SEO
+  - We deploy on [Vercel](https://vercel.com/solutions/nextjs?utm_source=next-site&utm_medium=banner&utm_campaign=next-website) for optimization (CDN, regions)
+- [lerna](https://lerna.js.org/): code organization; mono-repo management and libs release
+
+## Deployment 🚀
+
+Start web server
+
 ```bash
-npm install -g yarn
-# OR
-sudo npm install -g yarn
+yarn && yarn build && yarn start
 ```
 
-## Install project dependencies
-First clone the repo;
-```bash
-git clone https://github.com/osmosis-labs/osmosis-frontend.git && cd osmosis-frontend
-```
+### Contributing 👨‍💻
 
-Then install project dependencies;
+We welcome and encourage contributions! We recommend looking for [issues labeled with "good-first-issue"](https://github.com/osmosis-labs/osmosis-frontend/contribute).
+
+Make sure [node](https://nodejs.org/en/) >= 16 and [yarn](https://yarnpkg.com/getting-started/install) is installed.
+
+1. Install deps
+
 ```bash
 yarn
 ```
 
-## Build
-To build the static assets;
+2. Build app
+
 ```bash
-yarn build:css && yarn build
+yarn build
 ```
-This should produce `prod` folder with static assets.
 
-Currently, Osmosis frontend app is SPA with entry point: `prod/index.html`
+3.  Run local server at [`localhost:3000`](localhost:3000)
 
-## Development
-To spin up the local dev server;
 ```bash
-yarn build:css && yarn dev
+yarn dev
 ```
-The app should be live at http://localhost:8081
 
+## Frontier 🤠
 
-## License
+To reduce duplicated effort, `master` branch is used to deploy the frontier app as well. The frontier deployment has `NEXT_PUBLIC_IS_FRONTIER` env var set to `true`. If making
+updates to frontier, please target the master branch. Frontier assets are configured in `packages/web/config/ibc-assets.ts`.
 
-This work is dual-licensed under Apache 2.0 and MIT.
-You can choose between one of them if you use this work.
+### Develop
 
-`SPDX-License-Identifier: Apache-2.0 OR MIT`
+To develop with frontier configuration, use:
+
+```bash
+yarn build:frontier && yarn dev:frontier
+```
+
+### Deploy
+
+To deploy frontier (the env var will be set for you):
+
+```bash
+yarn build:frontier && yarn start:frontier
+```
+
+Otherwise the non-frontier commands can be used with the env var set to true.
