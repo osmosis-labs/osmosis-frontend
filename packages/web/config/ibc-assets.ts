@@ -34,6 +34,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-221",
     destChannelId: "channel-1",
     coinMinimalDenom: "nimv",
+    isVerified: true,
   },
   {
     counterpartyChainId: "axelar-dojo-1",
