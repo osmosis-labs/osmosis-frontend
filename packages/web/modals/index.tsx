@@ -8,4 +8,3 @@ export * from "./wallet-connect";
 export * from "./menu-options";
 export * from "./pre-transfer";
 export * from "./trade-tokens";
-export * from "./install-keplr";

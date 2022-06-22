@@ -10,7 +10,6 @@ import { getKeplrFromWindow } from "@keplr-wallet/stores";
 import {
   KeplrConnectionSelectModal,
   KeplrWalletConnectQRModal,
-  KeplrInstallModal,
 } from "../../modals";
 import EventEmitter from "eventemitter3";
 import { BroadcastMode, StdTx } from "@cosmjs/launchpad";
@@ -80,8 +79,7 @@ export const GetKeplrContext = createContext<{
 export const GetKeplrProvider: FunctionComponent = ({ children }) => {
   const [isExtensionSelectionModalOpen, setIsExtensionSelectionModalOpen] =
     useState(false);
-  const [isInstallExtensionModalOpen, setIsInstallExtensionModalOpen] =
-    useState(false);
+  const [isExtentionNotInstalled, setIsExtensionNotInstalled] = useState(false);
   const [wcUri, setWCUri] = useState("");
 
   const lastUsedKeplrRef = useRef<Keplr | undefined>();
@@ -188,7 +186,7 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
         });
 
         eventListener.on("keplr_install_modal_close", () => {
-          setIsInstallExtensionModalOpen(false);
+          setIsExtensionNotInstalled(false);
           reject();
           cleanUp();
         });
@@ -197,7 +195,7 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
           setIsExtensionSelectionModalOpen(false);
 
           if (!keplrFromWindow) {
-            setIsInstallExtensionModalOpen(true);
+            setIsExtensionNotInstalled(true);
             return;
           }
 
@@ -283,6 +281,9 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
     >
       <KeplrConnectionSelectModal
         isOpen={isExtensionSelectionModalOpen}
+        overrideWithKeplrInstallLink={
+          isExtentionNotInstalled ? "https://www.keplr.app/" : undefined
+        }
         onRequestClose={() => {
           eventListener.emit("extension_selection_modal_close");
         }}
@@ -292,12 +293,6 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
         onSelectWalletConnect={() => {
           eventListener.emit("select_wallet_connect");
         }}
-      />
-      <KeplrInstallModal
-        onRequestClose={() => {
-          eventListener.emit("keplr_install_modal_close");
-        }}
-        isOpen={isInstallExtensionModalOpen}
       />
       <KeplrWalletConnectQRModal
         isOpen={wcUri.length > 0}
