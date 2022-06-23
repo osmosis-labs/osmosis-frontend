@@ -124,7 +124,7 @@ const ShareModal: FunctionComponent<
                 props.shareInfo.numDots ?? 0
               ).toLocaleString()} pixels so far`
             : `(${props.shareInfo.x}, ${props.shareInfo.y})`}
-          {typeof props.shareInfo.colorIndex !== 'undefined' && (
+          {typeof props.shareInfo.colorIndex !== "undefined" && (
             <div
               className="ml-2 w-[28px] h-[28px] rounded-full border-0"
               style={{ backgroundColor: COLOR_SET[props.shareInfo.colorIndex] }}
@@ -143,9 +143,10 @@ const ShareModal: FunctionComponent<
           type="outline"
           className="flex items-center"
           onClick={async () => {
-            const copingLink = typeof props.shareInfo?.colorIndex !== 'undefined'
-              ? window.location.href
-              : window.location.origin + "/pixels";
+            const copingLink =
+              typeof props.shareInfo?.colorIndex !== "undefined"
+                ? window.location.href
+                : window.location.origin + "/pixels";
             await navigator.clipboard.writeText(copingLink);
 
             setIsCopied(true);
