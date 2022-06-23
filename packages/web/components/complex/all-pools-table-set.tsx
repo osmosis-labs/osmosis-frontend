@@ -1,7 +1,14 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservablePoolWithFeeMetrics } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState, useMemo, useCallback } from "react";
+import {
+  FunctionComponent,
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import {
   useFilteredData,
   usePaginatedData,
@@ -274,6 +281,43 @@ export const AllPoolsTableSet: FunctionComponent<{
       queriesOsmosis,
     ]
   );
+
+  // auto expand searchable pools set when user is actively searching
+  const didAutoSwitchActiveSet = useRef(false);
+  const didAutoSwitchTVLFilter = useRef(false);
+  useEffect(() => {
+    console.log("check result count");
+
+    // first expand to all pools, then to low TVL pools
+    // remember if we switched for user
+    if (query !== "" && filteredPools.length < POOLS_PER_PAGE) {
+      if (activeOptionId === "all-pools") {
+        if (!isPoolTvlFiltered) didAutoSwitchTVLFilter.current = true;
+        setIsPoolTvlFiltered(true);
+      } else {
+        if (activeOptionId === "incentivized-pools")
+          didAutoSwitchActiveSet.current = true;
+        setActiveOptionId("all-pools");
+      }
+    }
+
+    // reset filter states when query cleared only if auto switched
+    if (query === "" && didAutoSwitchActiveSet.current) {
+      setActiveOptionId("incentivized-pools");
+      didAutoSwitchActiveSet.current = false;
+    }
+    if (query === "" && didAutoSwitchTVLFilter.current) {
+      setIsPoolTvlFiltered(false);
+      didAutoSwitchTVLFilter.current = false;
+    }
+  }, [
+    query,
+    filteredPools,
+    isPoolTvlFiltered,
+    activeOptionId,
+    setIsPoolTvlFiltered,
+    setActiveOptionId,
+  ]);
 
   if (isMobile) {
     return (
