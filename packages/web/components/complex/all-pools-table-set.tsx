@@ -286,10 +286,8 @@ export const AllPoolsTableSet: FunctionComponent<{
   const didAutoSwitchActiveSet = useRef(false);
   const didAutoSwitchTVLFilter = useRef(false);
   useEffect(() => {
-    console.log("check result count");
-
     // first expand to all pools, then to low TVL pools
-    // remember if we switched for user
+    // remember if/what we switched for user
     if (query !== "" && filteredPools.length < POOLS_PER_PAGE) {
       if (activeOptionId === "all-pools") {
         if (!isPoolTvlFiltered) didAutoSwitchTVLFilter.current = true;
