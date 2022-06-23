@@ -98,6 +98,14 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     return this._pools;
   }
 
+  @computed
+  protected get currencyMap(): Map<string, AppCurrency> {
+    return this.sendableCurrencies.reduce<Map<string, AppCurrency>>(
+      (previous, current) => previous.set(current.coinMinimalDenom, current),
+      new Map()
+    );
+  }
+
   @override
   get sendCurrency(): AppCurrency {
     if (this.sendableCurrencies.length === 0) {
@@ -140,14 +148,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     }
 
     return this.sendableCurrencies[1];
-  }
-
-  @computed
-  protected get currencyMap(): Map<string, AppCurrency> {
-    return this.sendableCurrencies.reduce<Map<string, AppCurrency>>(
-      (previous, current) => previous.set(current.coinMinimalDenom, current),
-      new Map()
-    );
   }
 
   @computed
@@ -253,8 +253,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       slippage: new RatePretty(0).ready(false),
     };
 
-    console.log("path len", paths.length);
-
     if (paths.length === 0) {
       return zero;
     }
@@ -263,8 +261,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
     const result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
-
-    console.log(result.amount.toString(), result.slippage.toString());
 
     if (!result.amount.gt(new Int(0))) {
       this.setError(new Error("Not enough liquidity"));

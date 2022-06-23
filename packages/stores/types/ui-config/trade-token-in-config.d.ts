@@ -14,9 +14,9 @@ export declare class ObservableTradeTokenInConfig extends AmountConfig {
     setOutCurrency(currency: AppCurrency | undefined): void;
     switchInAndOut(): void;
     get pools(): Pool[];
+    protected get currencyMap(): Map<string, AppCurrency>;
     get sendCurrency(): AppCurrency;
     get outCurrency(): AppCurrency;
-    protected get currencyMap(): Map<string, AppCurrency>;
     get sendableCurrencies(): AppCurrency[];
     protected get optimizedRoutes(): OptimizedRoutes;
     get optimizedRoutePaths(): RoutePathWithAmount[];
