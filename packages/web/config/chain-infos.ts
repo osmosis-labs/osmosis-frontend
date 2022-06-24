@@ -1448,6 +1448,34 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://ping.pub/genesisL1/tx/{txHash}",
     },
+    {
+      rpc: "https://tx-endpoint-canary.imversed.com",
+      rest: "https://query-endpoint-canary.imversed.com",
+      chainId: "imversed_5555555-1",
+      chainName: "Imversed",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("imv"),
+      currencies: [
+        {
+          coinDenom: "IMV",
+          coinMinimalDenom: "aimv",
+          coinDecimals: 18,
+          coinGeckoId: "pool:aimv",
+          coinImageUrl: "/tokens/imv.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.001,
+        average: 0.001,
+        high: 0.001,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://tex-c.imversed.com/transactions/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 

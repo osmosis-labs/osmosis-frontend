@@ -711,6 +711,13 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=xcn-wei",
     sourceChainNameOverride: "Ethereum",
   },
+  {
+    counterpartyChainId: "imversed_5555555-1",
+    sourceChannelId: "channel-257",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "aimv",
+    isVerified: false,
+  },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;
