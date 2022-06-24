@@ -252,39 +252,3 @@
 .highcharts-background {
   fill-opacity: 0;
 }
-
-/** Bounce animation */
-
-.bounce {
-  animation: bounce 3s infinite;
-}
-
-.bounce4 {
-  animation: bounce 4s infinite;
-}
-
-.bounce5 {
-  animation: bounce 5s infinite;
-}
-
-.bounce6 {
-  animation: bounce 6s infinite;
-}
-
-@keyframes bounce {
-  0% {
-    transform: translateY(0);
-  }
-  25% {
-    transform: translateY(5px);
-  }
-  50% {
-    transform: translateY(0);
-  }
-  75% {
-    transform: translateY(-5px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
