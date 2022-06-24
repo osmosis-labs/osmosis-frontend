@@ -140,6 +140,29 @@ export const SidebarBottom: FunctionComponent = observer(() => {
 
 const Links: FunctionComponent = () => (
   <>
+    <div className="flex items-center place-content-evenly py-1 text-caption text-white-high">
+      <a href="https://frontier.osmosis.zone" target="_blank" rel="noreferrer">
+        Find more <br /> assets at <br />
+        <span
+          style={{
+            background: "-webkit-linear-gradient(#F8C259, #B38203)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            fontWeight: 700,
+          }}
+        >
+          Osmosis Frontier
+        </span>
+      </a>
+      <div className="w-[12px]">
+        <Image
+          alt="link"
+          src="/icons/link-deco-white.svg"
+          height={12}
+          width={12}
+        />
+      </div>
+    </div>
     <div className="flex place-content-between transition-all overflow-x-hidden w-full">
       <a
         href="https://twitter.com/osmosiszone"
@@ -193,7 +216,7 @@ const Links: FunctionComponent = () => (
         />
       </a>
     </div>
-    <div className="flex items-center place-content-around py-2 text-caption text-white-high">
+    <div className="flex items-center place-content-around pt-1 text-caption text-white-high">
       <a
         className="flex items-center gap-1"
         href="https://support.osmosis.zone/"
