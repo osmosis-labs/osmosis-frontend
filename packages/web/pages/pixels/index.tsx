@@ -393,13 +393,15 @@ const Pixels: NextPage = observer(function () {
                     onDoubleClick={() => {}}
                   />
                 </TransformComponent>
-                <div className="absolute pointer-events-none bottom-[40px] left-1/2 z-[11] py-2 px-8 bg-primary-200 flex items-center rounded-lg">
-                  Pixels has ended. Thank you for playing.
-                </div>
               </React.Fragment>
             );
           }}
         </TransformWrapper>
+        <div className="relative">
+          <div className="absolute pointer-events-none bottom-[40px] left-1/2 -translate-x-1/2 z-[11] py-2 px-8 bg-primary-200 flex items-center rounded-lg">
+            Pixels has ended. Thank you for playing.
+          </div>
+        </div>
       </div>
     </main>
   );
