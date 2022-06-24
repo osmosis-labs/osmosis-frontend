@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { NextPage } from "next";
 import {
   ReactZoomPanPinchRef,
@@ -16,9 +10,6 @@ import { useStore } from "../../stores";
 import { Dec, IntPretty } from "@keplr-wallet/unit";
 import { Hash } from "@keplr-wallet/crypto";
 import { Buffer } from "buffer/";
-import Image from "next/image";
-import { ModalBase, ModalBaseProps } from "../../modals";
-import { Button } from "../../components/buttons";
 import { useRouter } from "next/router";
 
 export const GAME_CONFIG = {
@@ -48,132 +39,11 @@ export const COLOR_SET = [
   "#9C6926",
 ];
 
-const PixelsRuleModal: FunctionComponent<ModalBaseProps> = (props) => {
-  return (
-    <ModalBase
-      {...props}
-      isOpen={props.isOpen}
-      title={<div className="text-lg text-center">📚 Rulebook</div>}
-    >
-      <div className="mt-6 font-normal">
-        <p className="mb-3">
-          🔬 The account must have been active at June 20, 17:20 UTC to be
-          eligible
-        </p>
-
-        <p className="mb-3">🪙 Start staking OSMO to participate</p>
-        <p className="mb-3">
-          🎨 Stake to smaller validators to unlock more colors
-        </p>
-        <p className="mb-3">
-          {" "}
-          ⏱ Once you place a pixel, you must wait 30 blocks to place another
-        </p>
-        <p className="mb-3">
-          ⚔️ But remember, other people can place their pixel over your pixel
-        </p>
-      </div>
-    </ModalBase>
-  );
-};
-
-const ShareModal: FunctionComponent<
-  Omit<ModalBaseProps, "isOpen"> & {
-    shareInfo:
-      | {
-          numDots?: number;
-          numAccounts?: number;
-          x?: number;
-          y?: number;
-          colorIndex?: number;
-        }
-      | undefined;
-  }
-> = (props) => {
-  const [isCopied, setIsCopied] = useState(false);
-
-  useEffect(() => {
-    if (isCopied) {
-      const timeoutId = setTimeout(() => {
-        setIsCopied(false);
-      }, 3000);
-
-      return () => {
-        clearTimeout(timeoutId);
-      };
-    }
-  }, [isCopied]);
-
-  if (!props.shareInfo) {
-    return null;
-  }
-
-  return (
-    <ModalBase {...props} isOpen={props.shareInfo != null}>
-      <div className="flex justify-center text-2xl mb-2">{`${
-        props.shareInfo.numAccounts ? "👋" : "🎨"
-      }`}</div>
-      <div className="my-5">
-        <p className="flex justify-center items-center text-lg text-center">
-          {props.shareInfo.numAccounts
-            ? `${(
-                props.shareInfo.numAccounts ?? 0
-              ).toLocaleString()} wallets have placed ${(
-                props.shareInfo.numDots ?? 0
-              ).toLocaleString()} pixels so far`
-            : `(${props.shareInfo.x}, ${props.shareInfo.y})`}
-          {typeof props.shareInfo.colorIndex !== "undefined" && (
-            <div
-              className="ml-2 w-[28px] h-[28px] rounded-full border-0"
-              style={{ backgroundColor: COLOR_SET[props.shareInfo.colorIndex] }}
-            />
-          )}
-        </p>
-      </div>
-      <div className="mb-5">
-        <p className="text-center text-white-disabled">
-          Share this link to fellow Osmonauts so they can join the fun.
-        </p>
-      </div>
-      <div className="flex justify-center">
-        <Button
-          size="lg"
-          type="outline"
-          className="flex items-center"
-          onClick={async () => {
-            const copingLink =
-              typeof props.shareInfo?.colorIndex !== "undefined"
-                ? window.location.href
-                : window.location.origin + "/pixels";
-            await navigator.clipboard.writeText(copingLink);
-
-            setIsCopied(true);
-          }}
-        >
-          <div className="flex flex-shrink-0 items-center">
-            <Image
-              alt="copy"
-              src="/icons/copy-white.svg"
-              height={20}
-              width={20}
-            />
-            <span className="ml-2 flex-shrink-0">
-              {isCopied ? "Copied!" : "Copy link"}
-            </span>
-          </div>
-        </Button>
-      </div>
-    </ModalBase>
-  );
-};
-
 const focusScale = 1;
 
 const Pixels: NextPage = observer(function () {
-  const { chainStore, accountStore, queryOsmoPixels } = useStore();
+  const { queryOsmoPixels } = useStore();
   const router = useRouter();
-
-  const account = accountStore.getAccount(chainStore.osmosis.chainId);
 
   const [pixelIndex, setPixelIndex] = useState([-1, -1]);
 
@@ -421,63 +291,10 @@ const Pixels: NextPage = observer(function () {
     }
   }, []);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (account.bech32Address) {
-        queryOsmoPixels.queryPermission.get(account.bech32Address).fetch();
-      }
-    }, 15000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [account.bech32Address, queryOsmoPixels.queryPermission]);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      queryOsmoPixels.queryPixels.fetch();
-    }, 25000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [queryOsmoPixels.queryPixels]);
-
-  const [showRules, setShowRules] = useState(false);
-  const [showShareModal, setShowShareModal] = useState<
-    | {
-        numDots?: number;
-        numAccounts?: number;
-        x?: number;
-        y?: number;
-        colorIndex?: number;
-      }
-    | undefined
-  >(undefined);
-
-  useEffect(() => {
-    const isRulesRead = !!localStorage.getItem("pixel-rules");
-    if (!isRulesRead) {
-      setShowRules(true);
-      localStorage.setItem("pixel-rules", "read");
-    }
-  }, []);
-
   const status = queryOsmoPixels.queryStatus;
 
   return (
     <main>
-      <PixelsRuleModal
-        isOpen={showRules}
-        onRequestClose={() => {
-          setShowRules(false);
-          localStorage.setItem("pixel-rules", "read");
-        }}
-      />
-      <ShareModal
-        shareInfo={showShareModal}
-        onRequestClose={() => setShowShareModal(undefined)}
-      />
       <div className="w-full h-screen bg-background">
         <div className="absolute pointer-events-none top-10 left-1/2 z-[11]  py-2 px-8 bg-primary-200 flex items-center rounded-lg">
           {`${new IntPretty(
@@ -576,14 +393,9 @@ const Pixels: NextPage = observer(function () {
                     onDoubleClick={() => {}}
                   />
                 </TransformComponent>
-                <a
-                  className="absolute h-auto bottom-[40px] left-1/2 rounded-lg z-[11] py-1.5 px-3.5 bg-primary-200 flex items-center"
-                  href="https://wallet.keplr.app/#/osmosis/stake"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <span>Pixels has ended. Thank you for playing.</span>
-                </a>
+                <div className="absolute pointer-events-none bottom-[40px] left-1/2 z-[11] py-2 px-8 bg-primary-200 flex items-center rounded-lg">
+                  Pixels has ended. Thank you for playing.
+                </div>
               </React.Fragment>
             );
           }}
