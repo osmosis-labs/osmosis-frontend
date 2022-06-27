@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
-import { GetKeplrProvider, useWindowSize } from "../hooks";
+import { GetKeplrProvider } from "../hooks";
 import { IbcNotifier } from "../stores/ibc-notifier";
 import { IS_FRONTIER } from "../config";
 
@@ -21,8 +21,6 @@ dayjs.extend(utc);
 enableStaticRendering(typeof window === "undefined");
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const { isMobile } = useWindowSize();
-
   const menus = [
     {
       label: "Trade",
@@ -61,16 +59,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
     },
   ];
-
-  if (!IS_FRONTIER && !isMobile) {
-    menus.push({
-      label: "Pixel",
-      link: "/pixels",
-      icon: "/icons/osmopixel.png",
-      iconSelected: "/icons/osmopixel.png",
-      selectionTest: /\/pixels/,
-    });
-  }
 
   return (
     <GetKeplrProvider>
