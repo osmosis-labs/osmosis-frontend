@@ -399,14 +399,17 @@ export const AllPoolsTableSet: FunctionComponent<{
 
   return (
     <>
-      <h5>All Pools</h5>
-      <div className="mt-5 flex flex-wrap gap-3 items-center justify-between">
-        <MenuToggle
-          options={poolsMenuOptions}
-          selectedOptionId={activeOptionId}
-          onSelect={selectOption}
-        />
-        <div className="flex flex-wrap gap-8 place-content-end">
+      <div className="flex flex-col gap-3 mt-5">
+        <div className="flex items-center place-content-between">
+          <h5>All Pools</h5>
+          <MenuToggle
+            className="inline"
+            options={poolsMenuOptions}
+            selectedOptionId={activeOptionId}
+            onSelect={selectOption}
+          />
+        </div>
+        <div className="flex flex-wrap gap-4 place-content-between">
           <Switch
             isOn={isPoolTvlFiltered}
             onToggle={setIsPoolTvlFiltered}
@@ -417,20 +420,22 @@ export const AllPoolsTableSet: FunctionComponent<{
               TVL_FILTER_THRESHOLD
             ).toString()}`}
           </Switch>
-          <SearchBox
-            currentValue={query}
-            onInput={setQuery}
-            placeholder="Search pools"
-            className="!w-64"
-          />
-          <SortMenu
-            options={tableCols}
-            selectedOptionId={sortKeyPath}
-            onSelect={(id) =>
-              id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id)
-            }
-            onToggleSortDirection={toggleSortDirection}
-          />
+          <div className="flex flex-wrap items-center gap-8 lg:w-full lg:place-content-between">
+            <SearchBox
+              currentValue={query}
+              onInput={setQuery}
+              placeholder="Search pools"
+              className="!w-64"
+            />
+            <SortMenu
+              options={tableCols}
+              selectedOptionId={sortKeyPath}
+              onSelect={(id) =>
+                id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id)
+              }
+              onToggleSortDirection={toggleSortDirection}
+            />
+          </div>
         </div>
       </div>
       <Table<PoolCompositionCell & MetricLoaderCell>
