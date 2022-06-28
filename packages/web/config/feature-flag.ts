@@ -251,34 +251,34 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "573": [
     {
-      gaugeId: "2582",
+      gaugeId: "4362",
       denom:
         "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
     },
     {
-      gaugeId: "2583",
+      gaugeId: "4363",
       denom:
         "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
     },
     {
-      gaugeId: "2584",
+      gaugeId: "4364",
       denom:
         "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
     },
   ],
   "574": [
     {
-      gaugeId: "2585",
+      gaugeId: "4365",
       denom:
         "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
     },
     {
-      gaugeId: "2586",
+      gaugeId: "4366",
       denom:
         "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
     },
     {
-      gaugeId: "2587",
+      gaugeId: "4367",
       denom:
         "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
     },
