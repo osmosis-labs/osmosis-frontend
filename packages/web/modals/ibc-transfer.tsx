@@ -31,13 +31,11 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       customCounterpartyConfig,
     ] = useIbcTransfer(props);
     const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
-    const [wasCustomWithdrawAddrEntered, setCustomWithdrawAddrEntered] =
-      useState(false); // address is locked in for modal lifecycle if user presses enter
     const [didVerifyWithdrawRisk, setDidVerifyWithdrawRisk] = useState(false);
     const isCustomWithdrawValid =
       !customCounterpartyConfig ||
       customCounterpartyConfig?.bech32Address === "" || // if not changed, it's valid since it's from Keplr
-      (customCounterpartyConfig.isValid && wasCustomWithdrawAddrEntered);
+      customCounterpartyConfig.isValid;
 
     const { showModalBase, accountActionButton } =
       useConnectWalletModalRedirect(
@@ -70,7 +68,12 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
         props.onRequestClose
       );
 
-    // Mobile only - copy to clipboard
+    console.log(
+      customCounterpartyConfig,
+      customCounterpartyConfig?.bech32Address
+    );
+
+    // Mobile only - brief copy to clipboard notification
     const [showCopied, setShowCopied] = useState(false);
     useEffect(() => {
       if (showCopied) {
@@ -163,13 +166,16 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                       className="w-full"
                       style="no-border"
                       currentValue={customCounterpartyConfig.bech32Address}
-                      onInput={customCounterpartyConfig.setBech32Address}
+                      onInput={(value) => {
+                        setDidVerifyWithdrawRisk(false);
+                        customCounterpartyConfig.setBech32Address(value);
+                      }}
                       labelButtons={[
                         {
                           label: "Enter",
                           onClick: () => {
                             setIsEditingWithdrawAddr(false);
-                            setCustomWithdrawAddrEntered(true);
+                            setDidVerifyWithdrawRisk(false);
                           },
                           disabled:
                             !customCounterpartyConfig.isValid ||
@@ -185,8 +191,8 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                           navigator.clipboard
                             .writeText(
                               isWithdraw
-                                ? wasCustomWithdrawAddrEntered &&
-                                  customCounterpartyConfig
+                                ? customCounterpartyConfig &&
+                                  customCounterpartyConfig.bech32Address !== ""
                                   ? customCounterpartyConfig.bech32Address
                                   : counterpartyAccount.bech32Address
                                 : account.bech32Address
@@ -198,8 +204,8 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                       <p className="text-white-disabled truncate overflow-ellipsis">
                         {Bech32Address.shortenAddress(
                           isWithdraw
-                            ? wasCustomWithdrawAddrEntered &&
-                              customCounterpartyConfig
+                            ? customCounterpartyConfig &&
+                              customCounterpartyConfig.bech32Address !== ""
                               ? customCounterpartyConfig.bech32Address
                               : counterpartyAccount.bech32Address
                             : account.bech32Address,
@@ -219,7 +225,8 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   <div className="flex items-center place-content-end">
                     {isEditingWithdrawAddr && (
                       <CheckBox
-                        className="pt-0.5 after:!bg-transparent after:!border-2 after:!border-white-full"
+                        className="after:!bg-transparent after:!border-2 after:!border-white-full"
+                        checkClassName="flex items-center"
                         isOn={didVerifyWithdrawRisk}
                         onToggle={() => {
                           setDidVerifyWithdrawRisk(!didVerifyWithdrawRisk);
@@ -232,26 +239,26 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     )}
                   </div>
                 </div>
-                {customCounterpartyConfig &&
-                  !isEditingWithdrawAddr &&
-                  !wasCustomWithdrawAddrEntered && (
-                    <Button
-                      className="h-6 !w-fit text-caption"
-                      size="xs"
-                      color="primary"
-                      type="outline"
-                      onClick={() => {
-                        setIsEditingWithdrawAddr(true);
-                        if (!wasCustomWithdrawAddrEntered) {
-                          customCounterpartyConfig.setBech32Address(
-                            counterpartyAccount.bech32Address
-                          );
-                        }
-                      }}
-                    >
-                      Edit
-                    </Button>
-                  )}
+                {customCounterpartyConfig && !isEditingWithdrawAddr && (
+                  <Button
+                    className="h-6 !w-fit text-caption"
+                    size="xs"
+                    color="primary"
+                    type="outline"
+                    onClick={() => {
+                      setIsEditingWithdrawAddr(true);
+
+                      // prepopulate with Keplr counterparty address
+                      if (customCounterpartyConfig?.bech32Address === "") {
+                        customCounterpartyConfig.setBech32Address(
+                          counterpartyAccount.bech32Address
+                        );
+                      }
+                    }}
+                  >
+                    Edit
+                  </Button>
+                )}
               </div>
             </div>
           </section>
