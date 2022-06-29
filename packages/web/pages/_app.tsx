@@ -88,32 +88,6 @@ function MyApp({ Component, pageProps }: AppProps) {
             }
           />
         )}
-        {!IS_FRONTIER && (
-          <TempBanner
-            localStorageKey="show_luna_moved_frontier"
-            title="LUNC and USTC have moved to Osmosis Frontier"
-            message={
-              <>
-                These assets have been removed from app.osmosis.zone. Find LUNC
-                and USTC on{" "}
-                <a
-                  className="block underline inline mr-1"
-                  href="https://frontier.osmosis.zone/"
-                  target="_self"
-                >
-                  frontier.osmosis.zone.
-                </a>
-                <Image
-                  className="opacity-50"
-                  alt="link"
-                  src="/icons/external-link-white.svg"
-                  height={10}
-                  width={10}
-                />
-              </>
-            }
-          />
-        )}
         <MainLayout menus={menus}>
           <Component {...pageProps} />
           <ToastContainer
