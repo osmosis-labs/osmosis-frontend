@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
-import { GetKeplrProvider, useWindowSize } from "../hooks";
+import { GetKeplrProvider } from "../hooks";
 import { IbcNotifier } from "../stores/ibc-notifier";
 import { IS_FRONTIER } from "../config";
 
@@ -21,8 +21,6 @@ dayjs.extend(utc);
 enableStaticRendering(typeof window === "undefined");
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const { isMobile } = useWindowSize();
-
   const menus = [
     {
       label: "Trade",
@@ -62,16 +60,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     },
   ];
 
-  if (!IS_FRONTIER && !isMobile) {
-    menus.push({
-      label: "Pixel",
-      link: "/pixels",
-      icon: "/icons/osmopixel.png",
-      iconSelected: "/icons/osmopixel.png",
-      selectionTest: /\/pixels/,
-    });
-  }
-
   return (
     <GetKeplrProvider>
       <StoreProvider>
@@ -90,26 +78,6 @@ function MyApp({ Component, pageProps }: AppProps) {
                   target="_self"
                 >
                   Click here to return to the main app
-                </a>
-                .
-              </>
-            }
-          />
-        )}
-        {!IS_FRONTIER && (
-          <TempBanner
-            localStorageKey="show_luna_moved_frontier"
-            title="LUNC and USTC have moved to Osmosis Frontier"
-            message={
-              <>
-                These assets have been removed from app.osmosis.zone. Find LUNC
-                and USTC on{" "}
-                <a
-                  className="underline inline"
-                  href="https://frontier.osmosis.zone/"
-                  target="_self"
-                >
-                  frontier.osmosis.zone
                 </a>
                 .
               </>
