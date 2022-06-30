@@ -31,6 +31,7 @@ import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
 import { PoolPriceRoutes } from "../config";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { OsmoPixelsQueries } from "./pixels";
+const semver = require("semver");
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -99,13 +100,19 @@ export class RootStore {
         return {
           suggestChain: true,
           suggestChainFn: async (keplr, chainInfo) => {
-            if (keplr.mode === "mobile-web") {
+            if (
+              keplr.mode === "mobile-web" &&
+              // In keplr mobile below 0.10.9, there is no receiver for the suggest chain.
+              // Therefore, it cannot be processed because it takes infinite pending.
+              // As of 0.10.10, experimental support was added.
+              !semver.satisfies(keplr.version, ">=0.10.10")
+            ) {
               // Can't suggest the chain on mobile web.
               return;
             }
 
             if (keplr instanceof KeplrWalletConnectV1) {
-              // Can't suggest the chain using wallet connect.
+              // Still, can't suggest the chain using wallet connect.
               return;
             }
 
