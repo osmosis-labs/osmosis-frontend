@@ -216,8 +216,8 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                       )}
                     </div>
                   )}
-                  <div className="flex items-center place-content-end">
-                    {isEditingWithdrawAddr && (
+                  {isEditingWithdrawAddr && (
+                    <div className="flex items-center place-content-end">
                       <CheckBox
                         className="pt-0.5 after:!bg-transparent after:!border-2 after:!border-white-full"
                         isOn={didVerifyWithdrawRisk}
@@ -229,8 +229,8 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                           I verify I am not sending to an exchange address.
                         </span>
                       </CheckBox>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
                 {customCounterpartyConfig &&
                   !isEditingWithdrawAddr &&
