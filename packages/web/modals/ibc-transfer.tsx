@@ -68,11 +68,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
         props.onRequestClose
       );
 
-    console.log(
-      customCounterpartyConfig,
-      customCounterpartyConfig?.bech32Address
-    );
-
     // Mobile only - brief copy to clipboard notification
     const [showCopied, setShowCopied] = useState(false);
     useEffect(() => {
