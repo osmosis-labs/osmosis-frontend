@@ -12,7 +12,6 @@ import {
 } from "../../hooks";
 import { SidebarBottom } from "../complex/sidebar-bottom";
 import { IS_FRONTIER } from "../../config";
-import useScript from "../../hooks/useScript";
 
 export type MainLayoutMenu = {
   label: string;
