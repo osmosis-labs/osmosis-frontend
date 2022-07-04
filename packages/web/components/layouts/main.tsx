@@ -27,16 +27,6 @@ export interface MainLayoutProps {
 
 export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
   ({ children, menus }) => {
-    if (typeof window !== "undefined") {
-      var _mtm = (window._mtm = window._mtm || []);
-      _mtm.push({ "mtm.startTime": new Date().getTime(), event: "mtm.Start" });
-      var d = document,
-        g = d.createElement("script"),
-        s = d.getElementsByTagName("script")[0];
-      g.async = true;
-      g.src = "https://analyze.osmosis.zone/js/container_8mBRCFIi.js";
-      s.parentNode.insertBefore(g, s);
-    }
     const router = useRouter();
 
     const { height, isMobile } = useWindowSize();
