@@ -1,7 +1,8 @@
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
-import { enableStaticRendering } from "mobx-react-lite";
+import Script from "next/script";
 import type { AppProps } from "next/app";
+import { enableStaticRendering } from "mobx-react-lite";
 import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
 import { MainLayout } from "../components/layouts";
@@ -62,6 +63,24 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <GetKeplrProvider>
+      {IS_FRONTIER && (
+        <Script id="matomo-tag-manager">
+          {`var _paq = window._paq = window._paq || [];
+        /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+        _paq.push(["setCookieDomain", "*.osmosis.zone"]);
+        _paq.push(["setDoNotTrack", true]);
+        _paq.push(["disableCookies"]);
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        (function() {
+          var u="//analyze.osmosis.zone/";
+          _paq.push(['setTrackerUrl', u+'matomo.php']);
+          _paq.push(['setSiteId', '4']);
+          var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+          g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+        })();`}
+        </Script>
+      )}
       <StoreProvider>
         <OgpMeta />
         <IbcNotifier />
