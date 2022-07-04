@@ -1,6 +1,6 @@
 {
   "name": "@osmosis-labs/stores",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "main": "build/index.js",
   "typings": "types/index.d.ts",
   "author": "osmosis-labs",
@@ -47,8 +47,8 @@
     "@keplr-wallet/stores": "^0.10.4",
     "@keplr-wallet/types": "^0.10.4",
     "@keplr-wallet/unit": "^0.10.4",
-    "@osmosis-labs/math": "^0.0.3",
-    "@osmosis-labs/pools": "^0.0.3",
+    "@osmosis-labs/math": "^1.0.0",
+    "@osmosis-labs/pools": "^1.0.0",
     "axios": "^0.21.1",
     "buffer": "^6.0.3",
     "dayjs": "^1.10.7",
