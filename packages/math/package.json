@@ -1,6 +1,6 @@
 {
   "name": "@osmosis-labs/math",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "main": "build/index.js",
   "typings": "types/index.d.ts",
   "author": "osmosis-labs",
