@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { useStore } from "../../stores";
+import { TokenSelectModal } from "../../modals";
 import { useBooleanWithWindowEvent, useFilteredData } from "../../hooks";
 import { MobileProps } from "../types";
 
@@ -175,100 +176,114 @@ export const TokenSelect: FunctionComponent<
           </button>
         )}
 
-        {isSelectOpen && (
-          <div
-            className="absolute bottom-0 md:-left-3 -left-4 translate-y-full md:p-1 p-3.5 bg-surface rounded-b-2xl z-50 w-[28.5rem] sm:w-[calc(100vw-24px)] md:max-w-[454px]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center h-9 pl-4 mb-3 rounded-2xl bg-card">
-              <div className="w-[1.125rem] h-[1.125rem] shrink-0">
-                <Image
-                  src="/icons/search-hollow.svg"
-                  alt="search"
-                  width={18}
-                  height={18}
+        {isMobile ? (
+          <TokenSelectModal
+            isOpen={isSelectOpen}
+            onRequestClose={() => {
+              setTokenSearch("");
+              setIsSelectOpen(false);
+            }}
+            currentValue={searchValue}
+            onInput={(v) => setTokenSearch(v)}
+            tokens={searchedTokens}
+            onSelect={onSelect}
+          />
+        ) : (
+          isSelectOpen && (
+            <div
+              className="absolute bottom-0 md:-left-3 -left-4 translate-y-full md:p-1 p-3.5 bg-surface rounded-b-2xl z-50 w-[28.5rem] sm:w-[calc(100vw-24px)] md:max-w-[454px]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center h-9 pl-4 mb-3 rounded-2xl bg-card">
+                <div className="w-[1.125rem] h-[1.125rem] shrink-0">
+                  <Image
+                    src="/icons/search-hollow.svg"
+                    alt="search"
+                    width={18}
+                    height={18}
+                  />
+                </div>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  className="px-4 subtitle2 text-white-full bg-transparent font-normal"
+                  placeholder="Search tokens"
+                  onClick={(e) => e.stopPropagation()}
+                  value={searchValue}
+                  onInput={(e: any) => setTokenSearch(e.target.value)}
                 />
               </div>
-              <input
-                ref={inputRef}
-                type="text"
-                className="px-4 subtitle2 text-white-full bg-transparent font-normal"
-                placeholder="Search tokens"
-                onClick={(e) => e.stopPropagation()}
-                value={searchValue}
-                onInput={(e: any) => setTokenSearch(e.target.value)}
-              />
-            </div>
 
-            <ul className="token-item-list overflow-y-scroll max-h-80">
-              {searchedTokens.map((t, index) => {
-                const currency =
-                  t.token instanceof CoinPretty ? t.token.currency : t.token;
-                const { coinDenom, coinImageUrl } = currency;
-                const networkName = t.chainName;
-                const justDenom =
-                  coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
-                const channel =
-                  "paths" in currency
-                    ? (currency as IBCCurrency).paths[0].channelId
-                    : undefined;
+              <ul className="token-item-list overflow-y-scroll max-h-80">
+                {searchedTokens.map((t, index) => {
+                  const currency =
+                    t.token instanceof CoinPretty ? t.token.currency : t.token;
+                  const { coinDenom, coinImageUrl } = currency;
+                  const networkName = t.chainName;
+                  const justDenom =
+                    coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
+                  const channel =
+                    "paths" in currency
+                      ? (currency as IBCCurrency).paths[0].channelId
+                      : undefined;
 
-                const showChannel = coinDenom.includes("channel");
-                const fiatValue =
-                  t.token instanceof CoinPretty && !t.token.toDec().isZero()
-                    ? priceStore.calculatePrice(t.token)?.toString()
-                    : undefined;
+                  const showChannel = coinDenom.includes("channel");
+                  const fiatValue =
+                    t.token instanceof CoinPretty && !t.token.toDec().isZero()
+                      ? priceStore.calculatePrice(t.token)?.toString()
+                      : undefined;
 
-                return (
-                  <li
-                    key={index}
-                    className="flex justify-between items-center rounded-2xl py-2.5 px-3 my-1 hover:bg-card cursor-pointer mr-3"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSelect(coinDenom);
-                      setTokenSearch("");
-                      setIsSelectOpen(false);
-                    }}
-                  >
-                    <button className="flex items-center justify-between text-left w-full">
-                      <div className="flex items-center">
-                        {coinImageUrl && (
-                          <div className="w-9 h-9 rounded-full mr-3">
-                            <Image
-                              src={coinImageUrl}
-                              alt="token icon"
-                              width={36}
-                              height={36}
-                            />
+                  return (
+                    <li
+                      key={index}
+                      className="flex justify-between items-center rounded-2xl py-2.5 px-3 my-1 hover:bg-card cursor-pointer mr-3"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelect(coinDenom);
+                        setTokenSearch("");
+                        setIsSelectOpen(false);
+                      }}
+                    >
+                      <button className="flex items-center justify-between text-left w-full">
+                        <div className="flex items-center">
+                          {coinImageUrl && (
+                            <div className="w-9 h-9 rounded-full mr-3">
+                              <Image
+                                src={coinImageUrl}
+                                alt="token icon"
+                                width={36}
+                                height={36}
+                              />
+                            </div>
+                          )}
+                          <div>
+                            <h6 className="text-white-full">{justDenom}</h6>
+                            <div className="text-iconDefault text-left md:caption font-semibold">
+                              {showChannel
+                                ? `${networkName} ${channel}`
+                                : networkName}
+                            </div>
+                          </div>
+                        </div>
+                        {t.token instanceof CoinPretty && (
+                          <div className="flex flex-col text-right">
+                            <span className="body1 text-white-high">
+                              {t.token.trim(true).hideDenom(true).toString()}
+                            </span>
+                            {fiatValue && (
+                              <span className="body2 text-iconDefault">
+                                {fiatValue}
+                              </span>
+                            )}
                           </div>
                         )}
-                        <div>
-                          <h6 className="text-white-full">{justDenom}</h6>
-                          <div className="text-iconDefault text-left md:caption font-semibold">
-                            {showChannel
-                              ? `${networkName} ${channel}`
-                              : networkName}
-                          </div>
-                        </div>
-                      </div>
-                      {t.token instanceof CoinPretty && (
-                        <div className="flex flex-col text-right">
-                          <span className="body1 text-white-high">
-                            {t.token.trim(true).hideDenom(true).toString()}
-                          </span>
-                          {fiatValue && (
-                            <span className="body2 text-iconDefault">
-                              {fiatValue}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )
         )}
       </div>
     );

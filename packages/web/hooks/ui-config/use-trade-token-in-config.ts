@@ -29,7 +29,6 @@ export function useTradeTokenInConfig(
       new ObservableTradeTokenInConfig(
         chainGetter,
         queriesStore,
-        queriesStore.get(osmosisChainId).osmosis!.queryGammPools,
         osmosisChainId,
         bech32Address,
         undefined,
@@ -37,12 +36,27 @@ export function useTradeTokenInConfig(
       )
   );
 
+  // refresh relevant pool data every `requeryIntervalMs` period
   useEffect(() => {
     const interval = setInterval(() => {
-      config.requery();
+      const poolIds = config.optimizedRoutePaths
+        .map((route) => route.pools.map((pool) => pool.id))
+        .flat();
+
+      poolIds.forEach((poolId) => {
+        queriesStore
+          .get(osmosisChainId)
+          .osmosis!.queryGammPools.getPool(poolId)
+          ?.fetch();
+      });
     }, requeryIntervalMs);
     return () => clearInterval(interval);
-  });
+  }, [
+    config.optimizedRoutePaths,
+    osmosisChainId,
+    queriesStore,
+    requeryIntervalMs,
+  ]);
 
   config.setChain(osmosisChainId);
   config.setSender(bech32Address);

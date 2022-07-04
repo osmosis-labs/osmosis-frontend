@@ -1,4 +1,3 @@
-import Image from "next/image";
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 import { enableStaticRendering } from "mobx-react-lite";
@@ -7,6 +6,7 @@ import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
 import { MainLayout } from "../components/layouts";
 import { TempBanner } from "../components/alert/temp-banner";
+import { OgpMeta } from "../components/ogp-meta";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -63,6 +63,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <GetKeplrProvider>
       <StoreProvider>
+        <OgpMeta />
         <IbcNotifier />
         {IS_FRONTIER && (
           <TempBanner
@@ -72,18 +73,13 @@ function MyApp({ Component, pageProps }: AppProps) {
               <>
                 You{"'"}re viewing all permissionless assets.{" "}
                 <a
-                  className="items-center"
+                  className="items-center underline"
                   href="https://app.osmosis.zone/"
                   target="_self"
                 >
-                  Click here to return to the main app.{" "}
-                  <Image
-                    alt="link"
-                    src="/icons/external-link-white.svg"
-                    height={10}
-                    width={10}
-                  />
+                  Click here to return to the main app
                 </a>
+                .
               </>
             }
           />

@@ -26,7 +26,7 @@ export const PoolGaugeBonusCard: FunctionComponent<
     )}
     <p className="font-caption text-lg text-secondary-200 md:subtitle2">
       <MetricLoader className="h-6 md:h-4" isLoading={isLoading || !bonusValue}>
-        {isMobile ? "Bonus:" : "Total Bonus:"} {bonusValue ?? "0"}
+        {isMobile ? "Bonus:" : "Remaining:"} {bonusValue ?? "0"}
       </MetricLoader>
     </p>
     {isMobile && remainingEpochs && !isLoading && (

@@ -577,16 +577,23 @@ export const TradeClipboard: FunctionComponent<{
             </div>
           </div>
         )}
-        {tradeTokenInConfig && tradeTokenInConfig.error && (
-          <ErrorBox
-            className="!w-full flex !justify-center items-center mt-4"
-            iconSize={isMobile ? "sm" : "md"}
-            message={tradeTokenInConfig.error?.message ?? ""}
-          />
-        )}
+        {tradeTokenInConfig &&
+          tradeTokenInConfig.error &&
+          account.walletStatus === WalletStatus.Loaded && (
+            <ErrorBox
+              className="!w-full flex !justify-center items-center mt-4"
+              iconSize={isMobile ? "sm" : "md"}
+              message={tradeTokenInConfig.error?.message ?? ""}
+            />
+          )}
         {tradeTokenInConfig && (
           <Button
-            color={showWarningSlippage ? "error" : "primary"}
+            color={
+              showWarningSlippage &&
+              account.walletStatus === WalletStatus.Loaded
+                ? "error"
+                : "primary"
+            }
             className="mt-[1.125rem] flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
             disabled={
               account.walletStatus === WalletStatus.Loaded &&

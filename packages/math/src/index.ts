@@ -1,2 +1,2 @@
-export * from "./weighted";
+export * from "./pool";
 export * from "./utils";

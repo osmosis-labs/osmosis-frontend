@@ -597,10 +597,16 @@ const chainInfos = (
       ],
       gasPriceStep: {
         low: 0.025,
-        average: 0.030,
-        high: 0.050,
+        average: 0.03,
+        high: 0.05,
       },
-      features: ["stargate", "ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
+      features: [
+        "stargate",
+        "ibc-transfer",
+        "ibc-go",
+        "wasmd_0.24+",
+        "cosmwasm",
+      ],
       explorerUrlToTx: "https://www.mintscan.io/ki-chain/txs/{txHash}",
     },
     {

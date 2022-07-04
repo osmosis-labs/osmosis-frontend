@@ -219,10 +219,7 @@ const Pool: FunctionComponent = observer(() => {
         return {
           duration: observableGauge.lockupDuration.humanize(),
           rewardAmount: currency
-            ? new CoinPretty(
-                currency,
-                observableGauge.getCoin(currency)
-              ).moveDecimalPointRight(currency.coinDecimals)
+            ? observableGauge.getRemainingCoin(currency)
             : undefined,
           remainingEpochs: observableGauge.remainingEpoch,
         };

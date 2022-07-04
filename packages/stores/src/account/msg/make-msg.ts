@@ -2,7 +2,7 @@ import { MsgOpt } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { Dec, DecUtils, Int, Coin } from "@keplr-wallet/unit";
 import { Msg } from "@cosmjs/launchpad";
-import { WeightedPoolMath, WeightedPoolEstimates } from "@osmosis-labs/math";
+import * as WeightedPoolMath from "@osmosis-labs/math";
 
 /**
  * Helpers for constructing Amino messages for Osmosis.
@@ -31,7 +31,7 @@ export class Amino {
     }[],
     maxSlippage: string = "0"
   ) {
-    const estimated = WeightedPoolEstimates.estimateMultihopSwapExactAmountIn(
+    const estimated = WeightedPoolMath.estimateMultihopSwapExactAmountIn(
       {
         currency: tokenIn.currency,
         amount: new Dec(tokenIn.amount)
@@ -115,7 +115,7 @@ export class Amino {
       .truncate();
     const coin = new Coin(tokenIn.currency.coinMinimalDenom, inUAmount);
 
-    const estimated = WeightedPoolEstimates.estimateSwapExactAmountIn(
+    const estimated = WeightedPoolMath.estimateSwapExactAmountIn(
       pool,
       coin,
       tokenOutCurrency
@@ -177,7 +177,7 @@ export class Amino {
       .truncate();
     const coin = new Coin(tokenOut.currency.coinMinimalDenom, outUAmount);
 
-    const estimated = WeightedPoolEstimates.estimateSwapExactAmountOut(
+    const estimated = WeightedPoolMath.estimateSwapExactAmountOut(
       pool,
       coin,
       tokenInCurrency
