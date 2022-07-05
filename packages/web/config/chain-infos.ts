@@ -1460,8 +1460,8 @@ const chainInfos = (
       explorerUrlToTx: "https://ping.pub/genesisL1/tx/{txHash}",
     },
     {
-      rpc: "https://kujira-rpc.polkachu.com",
-      rest: "https://kujira-api.polkachu.com",
+      rpc: "https://rpc-kujira.whispernode.com",
+      rest: "https://lcd-kujira.whispernode.com",
       chainId: "kaiyo-1",
       chainName: "Kujira",
       bip44: {
