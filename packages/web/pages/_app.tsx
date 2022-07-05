@@ -68,7 +68,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       // only testing matomo on frontier for now
       init({
         url: "https://analyze.osmosis.zone/",
-        siteId: IS_FRONTIER ? "fronter" : "app",
+        siteId: IS_FRONTIER ? "frontier" : "app",
       });
     }
   }, []);
