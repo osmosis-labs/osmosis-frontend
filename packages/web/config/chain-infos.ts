@@ -1460,8 +1460,8 @@ const chainInfos = (
       explorerUrlToTx: "https://ping.pub/genesisL1/tx/{txHash}",
     },
     {
-      rpc: "https://rpc.harpoon.kujira.setten.io",
-      rest: "https://lcd.harpoon.kujira.setten.io",
+      rpc: "https://rpc.kaiyo.kujira.setten.io",
+      rest: "https://lcd.kaiyo.kujira.setten.io",
       chainId: "kaiyo-1",
       chainName: "Kujira",
       bip44: {
