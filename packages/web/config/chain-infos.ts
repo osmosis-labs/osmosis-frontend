@@ -1459,6 +1459,33 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://ping.pub/genesisL1/tx/{txHash}",
     },
+    {
+      rpc: "https://rpc.kaiyo.kujira.setten.io",
+      rest: "https://lcd.kaiyo.kujira.setten.io",
+      chainId: "kaiyo-1",
+      chainName: "Kujira",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("kujira"),
+      currencies: [
+        {
+          coinDenom: "KUJI",
+          coinMinimalDenom: "ukuji",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/kuji.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.01,
+        average: 0.025,
+        high: 0.03,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://finder.kujira.app/kaiyo-1/tx/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
