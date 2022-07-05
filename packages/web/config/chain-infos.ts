@@ -1460,8 +1460,8 @@ const chainInfos = (
       explorerUrlToTx: "https://ping.pub/genesisL1/tx/{txHash}",
     },
     {
-      rpc: "https://rpc-kujira.whispernode.com",
-      rest: "https://lcd-kujira.whispernode.com",
+      rpc: "https://rpc-harpoon.kujira.app",
+      rest: "https://lcd.kaiyo.kujira.setten.io",
       chainId: "kaiyo-1",
       chainName: "Kujira",
       bip44: {
@@ -1479,9 +1479,9 @@ const chainInfos = (
         },
       ],
       gasPriceStep: {
-        low: 0.025,
-        average: 0.035,
-        high: 0.04,
+        low: 0.020,
+        average: 0.025,
+        high: 0.03,
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://finder.kujira.app/kaiyo-1/tx/{txHash}",
