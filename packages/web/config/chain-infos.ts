@@ -1470,7 +1470,7 @@ const chainInfos = (
       bech32Config: Bech32Address.defaultBech32Config("kujira"),
       currencies: [
         {
-          coinDenom: "kuji",
+          coinDenom: "KUJI",
           coinMinimalDenom: "ukuji",
           coinDecimals: 6,
           coinImageUrl: "/tokens/kuji.png",
