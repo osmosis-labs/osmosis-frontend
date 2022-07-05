@@ -1460,8 +1460,8 @@ const chainInfos = (
       explorerUrlToTx: "https://ping.pub/genesisL1/tx/{txHash}",
     },
     {
-      rpc: "https://rpc-kujira.ecostake.com",
-      rest: "https://rest-kujira.ecostake.com",
+      rpc: "https://kujira-rpc.polkachu.com",
+      rest: "https://kujira-api.polkachu.com",
       chainId: "kaiyo-1",
       chainName: "Kujira",
       bip44: {
@@ -1480,8 +1480,8 @@ const chainInfos = (
       ],
       gasPriceStep: {
         low: 0.025,
-        average: 0.025,
-        high: 0.035,
+        average: 0.035,
+        high: 0.04,
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://finder.kujira.app/kaiyo-1/tx/{txHash}",
