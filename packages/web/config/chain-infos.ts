@@ -1460,8 +1460,8 @@ const chainInfos = (
       explorerUrlToTx: "https://ping.pub/genesisL1/tx/{txHash}",
     },
     {
-      rpc: "https://rpc-harpoon.kujira.app",
-      rest: "https://lcd.kaiyo.kujira.setten.io",
+      rpc: "https://rpc.harpoon.kujira.setten.io",
+      rest: "https://lcd.harpoon.kujira.setten.io",
       chainId: "kaiyo-1",
       chainName: "Kujira",
       bip44: {
@@ -1479,7 +1479,7 @@ const chainInfos = (
         },
       ],
       gasPriceStep: {
-        low: 0.020,
+        low: 0.01,
         average: 0.025,
         high: 0.03,
       },
