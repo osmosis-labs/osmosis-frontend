@@ -1,6 +1,7 @@
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 import { useEffect } from "react";
+import Head from "next/head";
 import type { AppProps } from "next/app";
 import { enableStaticRendering } from "mobx-react-lite";
 import { ToastContainer, Bounce } from "react-toastify";
@@ -76,6 +77,15 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <GetKeplrProvider>
       <StoreProvider>
+        <Head>
+          {/* metamask Osmosis app icon */}
+          <link
+            rel="shortcut icon"
+            href={`${
+              typeof window !== "undefined" ? window.origin : ""
+            }/osmosis-logo-wc.png`}
+          />
+        </Head>
         <OgpMeta />
         <IbcNotifier />
         {IS_FRONTIER && (
