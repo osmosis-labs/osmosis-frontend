@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { utf8ToHex } from "../../components/utils";
+import { toHex } from "web3-utils";
 import { useLocalStorageState } from "../../hooks";
 import type { EthereumProvider } from "../../window";
 import { ChainNames, Client, Methods, Transaction } from "./types";
@@ -53,7 +53,7 @@ export function useMetaMask(): Client {
     disable: () => {
       setAddress(null);
     },
-    sendTx: (method: Methods, txParams: Transaction) => {
+    send: (method: Methods, txParams: Transaction) => {
       if (!address) {
         return Promise.reject("Can't send request: account not connected");
       }
@@ -66,7 +66,7 @@ export function useMetaMask(): Client {
             : {
                 from: address,
                 ...txParams,
-                value: utf8ToHex(txParams.value),
+                value: txParams.value ? toHex(txParams.value) : undefined,
               },
         });
       });

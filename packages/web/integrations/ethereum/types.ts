@@ -3,7 +3,7 @@ export type Transaction =
       /** Hex address. */
       to?: string;
       /** Amount in gwei. To be converted to hex. */
-      value: string;
+      value?: string;
       data?: string;
     }
   | unknown[];
@@ -17,7 +17,7 @@ export type Client = {
   chain?: string;
   enable: () => void;
   disable: () => void;
-  sendTx: (methods: Methods, ethTx: Transaction) => Promise<unknown>;
+  send: (methods: Methods, ethTx: Transaction) => Promise<unknown>;
 };
 
 /* Ethereum chains: https://docs.metamask.io/guide/ethereum-provider.html#chain-ids */

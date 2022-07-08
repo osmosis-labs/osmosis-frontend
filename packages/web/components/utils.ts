@@ -40,13 +40,3 @@ export function truncateString(str: string, num = 8) {
   }
   return str.slice(0, num) + "...";
 }
-
-export function utf8ToHex(str: string) {
-  return Array.from(str)
-    .map((c) =>
-      c.charCodeAt(0) < 128
-        ? c.charCodeAt(0).toString(16)
-        : encodeURIComponent(c).replace(/\%/g, "").toLowerCase()
-    )
-    .join("");
-}

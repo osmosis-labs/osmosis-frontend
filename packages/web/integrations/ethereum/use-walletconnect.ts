@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import WalletConnect from "@walletconnect/client";
+import { toHex } from "web3-utils";
 import { useLocalStorageState } from "../../hooks";
 import { Client, ChainNames } from "./types";
 
 export function useWalletConnect(
-  setQrCodeModalUri: (uri?: string) => void
+  setQrCodeModalUri: (uri?: string) => void,
+  bridge = "https://bridge.walletconnect.org"
 ): Client {
   const [connector] = useState(
     () =>
       new WalletConnect({
-        bridge: "https://bridge.walletconnect.org",
+        bridge,
         qrcodeModal: {
           open: (uri) => setQrCodeModalUri(uri),
           close: () => setQrCodeModalUri(undefined),
@@ -28,13 +30,13 @@ export function useWalletConnect(
   useEffect(() => {
     const setAccounts = (error: any, payload: any) => {
       if (error) {
+        console.error("WalletConnect ERROR:", error);
         return; // TODO: handle errors
       }
 
-      console.log("payload", payload, { error });
       const { accounts, chainId } = payload.params[0];
       setAddress(accounts[0]);
-      setChainId(chainId);
+      setChainId(toHex(chainId));
     };
 
     connector.on("connect", setAccounts);
@@ -46,16 +48,23 @@ export function useWalletConnect(
     accountAddress: address ?? undefined,
     chain: chainId ? ChainNames[chainId] : undefined,
     enable: () => {
-      connector.createSession().then(() => connector.connect());
+      if (!connector.connected) {
+        connector.createSession().then(() => connector.connect());
+      } else {
+        console.warn("WalletConnect: Already connected");
+      }
     },
     disable: () => {
       withConnectedClient(connector, address, async (conn) => {
         conn.killSession().then(() => setAddress(null));
       });
     },
-    sendTx: (_methods, ethTx) => {
+    send: (method, ethTx) => {
       return withConnectedClient(connector, address, (conn, addr) => {
-        return conn.sendTransaction({ ...ethTx, from: addr });
+        return conn.sendCustomRequest({
+          method,
+          params: Array.isArray(ethTx) ? ethTx : [{ ...ethTx, from: addr }],
+        });
       });
     },
   };
