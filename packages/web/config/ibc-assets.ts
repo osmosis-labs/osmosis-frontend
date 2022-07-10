@@ -722,6 +722,8 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-262",
     destChannelId: "channel-8",
     coinMinimalDenom: "aechelon",
+    depositUrlOverride: "https://app.ech.network/ibc",
+    withdrawUrlOverride: "https://app.ech.network/ibc",
     isVerified: true,
   },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
