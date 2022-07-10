@@ -717,6 +717,12 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "ukuji",
   },
+  {
+    counterpartyChainId: "echelon_3000-3",
+    sourceChannelId: "channel-250",
+    destChannelId: "channel-6",
+    coinMinimalDenom: "aechelon",
+  },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;

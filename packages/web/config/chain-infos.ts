@@ -1339,6 +1339,34 @@ const chainInfos = (
       explorerUrlToTx: "https://www.mintscan.io/evmos/txs/{txHash}",
     },
     {
+      rpc: "https://rpc-echelon.whispernode.com/",
+      rest: "https://lcd-echelon.whispernode.com/",
+      chainId: "echelon_3000-3",
+      chainName: "Echelon",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("echelon"),
+      currencies: [
+        {
+          coinDenom: "ECH",
+          coinMinimalDenom: "aechelon",
+          coinDecimals: 18,
+          coinGeckoId: "echelon",
+          coinImageUrl: "/tokens/ech.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 10000000000,
+        average: 25000000000,
+        high: 40000000000,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://ping.pub/echelon/tx/{txHash}",
+    },
+    {
       rpc: "https://rpc.terrav2.ccvalidators.com/",
       rest: "https://phoenix-lcd.terra.dev/",
       chainId: "phoenix-1",
