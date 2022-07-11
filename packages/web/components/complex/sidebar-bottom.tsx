@@ -150,7 +150,7 @@ const Links: FunctionComponent = () => (
         <Image src="/icons/twitter.svg" alt="twitter" width={32} height={32} />
       </a>
       <a
-        href="https://medium.com/@Osmosis"
+        href="https://medium.com/osmosis"
         target="_blank"
         className="opacity-80 hover:opacity-100 cursor-pointer px-1 m-auto"
         rel="noreferrer"
