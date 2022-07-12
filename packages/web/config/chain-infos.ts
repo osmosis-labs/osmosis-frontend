@@ -1137,7 +1137,7 @@ const chainInfos = (
         average: 5000000000,
         high: 10000000000,
       },
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx:
         "https://explorer.injective.network/transaction/{txHash}",
     },
