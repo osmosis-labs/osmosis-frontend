@@ -1486,6 +1486,40 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://finder.kujira.app/kaiyo-1/tx/{txHash}",
     },
+    {
+      rpc: "https://rpc.mainnet-1.tgrade.confio.run",
+      rest: "https://api.mainnet-1.tgrade.confio.run",
+      chainId: "tgrade-mainnet-1",
+      chainName: "Tgrade",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("tgrade"),
+      currencies: [
+        {
+          coinDenom: "TGD",
+          coinMinimalDenom: "utgd",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/tgrade.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.05,
+        average: 0.075,
+        high: 0.1,
+      },
+      features: [
+        "stargate",
+        "ibc-transfer",
+        "ibc-go",
+        "no-legacy-stdTx",
+        "wasmd_0.24+",
+        "cosmwasm",
+      ],
+      explorerUrlToTx: "https://tgrade.aneka.io/txs/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
