@@ -712,6 +712,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-263",
     destChannelId: "channel-0",
     coinMinimalDenom: "utgd",
+    isVerified: true,
   },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
