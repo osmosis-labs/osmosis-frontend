@@ -723,6 +723,12 @@ export const IBCAssetInfos: (IBCAsset & {
     depositUrlOverride: "https://app.ech.network/ibc",
     withdrawUrlOverride: "https://app.ech.network/ibc",
   },
+  {
+    counterpartyChainId: "odin-mainnet-freya",
+    sourceChannelId: "channel-3",
+    destChannelId: "channel-258",
+    coinMinimalDenom: "loki",
+  },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;
