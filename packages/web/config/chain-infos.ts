@@ -1703,7 +1703,7 @@ chainInfos.push({
   features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
   explorerUrlToTx: "https://axelarscan.io/tx/{txHash}",
   },
-{
+  {
       rpc: "https://node.odin-freya-website.odinprotocol.io/mainnet/a/",
       rest: "https://node.odin-freya-website.odinprotocol.io/mainnet/a/api/",
       chainId: "odin-mainnet-freya",
