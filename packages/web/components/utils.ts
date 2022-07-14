@@ -40,3 +40,36 @@ export function truncateString(str: string, num = 8) {
   }
   return str.slice(0, num) + "...";
 }
+
+/** Resolves a promise once desired results have been polled. */
+export function poll<TData>({
+  fn,
+  validate,
+  interval = 1_500,
+  maxAttempts = 50,
+}: {
+  fn: () => Promise<TData>;
+  validate: (data: TData) => boolean;
+  interval?: number;
+  maxAttempts?: number;
+}) {
+  let attempts = 0;
+
+  const executePoll = async (
+    resolve: (data: TData) => void,
+    reject: (error: Error) => void
+  ) => {
+    const result = await fn();
+    attempts++;
+
+    if (validate(result)) {
+      return resolve(result);
+    } else if (maxAttempts && attempts === maxAttempts) {
+      return reject(new Error(`Exceeded max attempts: ${maxAttempts}`));
+    } else {
+      setTimeout(executePoll, interval, resolve, reject);
+    }
+  };
+
+  return new Promise(executePoll);
+}

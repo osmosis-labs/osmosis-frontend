@@ -7,7 +7,6 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import {
   IBCTransferHistory,
   IBCTransferHistoryStatus,
-  UncommitedHistory,
 } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { Table, BaseCell } from ".";
@@ -15,24 +14,74 @@ import { Breakpoint, CustomClasses } from "../types";
 import { truncateString } from "../utils";
 import { useWindowSize } from "../../hooks";
 
-export const IbcHistoryTable: FunctionComponent<CustomClasses> = observer(
+type History = {
+  txHash: string;
+  createdAtMs: number;
+  explorerUrl: string;
+  amount: string;
+  status: IBCTransferHistoryStatus | "failed";
+  isWithdraw: boolean;
+};
+
+export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
   ({ className }) => {
-    const { chainStore, ibcTransferHistoryStore, accountStore } = useStore();
+    const {
+      chainStore,
+      nonIbcBridgeHistoryStore,
+      ibcTransferHistoryStore,
+      accountStore,
+    } = useStore();
 
     const { chainId } = chainStore.osmosis;
     const { bech32Address } = accountStore.getAccount(chainId);
 
-    const histories =
-      ibcTransferHistoryStore.getHistoriesAndUncommitedHistoriesByAccount(
-        bech32Address
-      );
+    const histories: History[] = nonIbcBridgeHistoryStore.histories
+      .map(({ key, explorerUrl, createdAt, amount, status, isWithdraw }) => ({
+        txHash: key,
+        createdAtMs: createdAt.getTime(),
+        explorerUrl,
+        amount,
+        status: (status === "success" ? "complete" : status) as
+          | IBCTransferHistoryStatus
+          | "failed",
+        isWithdraw,
+      }))
+      .concat(
+        ibcTransferHistoryStore
+          .getHistoriesAndUncommitedHistoriesByAccount(bech32Address)
+          .map((history) => {
+            const { txHash, createdAt, amount, sourceChainId, destChainId } =
+              history;
+            const status =
+              typeof (history as IBCTransferHistory).status !== "undefined"
+                ? (history as IBCTransferHistory).status
+                : ("pending" as IBCTransferHistoryStatus);
+            return {
+              txHash,
+              createdAtMs: new Date(createdAt).getTime(),
+              explorerUrl: chainStore
+                .getChain(sourceChainId)
+                .raw.explorerUrlToTx.replace("{txHash}", txHash.toUpperCase()),
+              amount: new CoinPretty(amount.currency, amount.amount)
+                .moveDecimalPointRight(amount.currency.coinDecimals)
+                .maxDecimals(6)
+                .trim(true)
+                .toString(),
+              status,
+              isWithdraw:
+                ChainIdHelper.parse(chainId).identifier !==
+                ChainIdHelper.parse(destChainId).identifier,
+            };
+          })
+      )
+      .sort((a, b) => b.createdAtMs - a.createdAtMs); // descending by most recent
 
     return histories.length > 0 ? (
       <>
         <div className="text-h5 font-h5 md:text-h6 md:font-h6 mt-8">
           Transfer History
         </div>
-        <Table<BaseCell & (IBCTransferHistory | UncommitedHistory)>
+        <Table<BaseCell & History>
           className={classNames("w-full", className)}
           headerTrClassName="!h-12 body2 md:caption"
           tBodyClassName="body2 md:caption"
@@ -55,22 +104,11 @@ export const IbcHistoryTable: FunctionComponent<CustomClasses> = observer(
             { ...history, value: history.txHash }, // Tx Hash
             {
               // Type
-              value:
-                ChainIdHelper.parse(chainId).identifier ===
-                ChainIdHelper.parse(history.destChainId).identifier
-                  ? "Deposit"
-                  : "Withdraw",
+              value: history.isWithdraw ? "Withdraw" : "Deposit",
             },
             {
               // Amount
-              value: new CoinPretty(
-                history.amount.currency,
-                history.amount.amount
-              )
-                .moveDecimalPointRight(history.amount.currency.coinDecimals)
-                .maxDecimals(6)
-                .trim(true)
-                .toString(),
+              value: history.amount,
             },
             { ...history }, // Status
           ])}
@@ -81,17 +119,14 @@ export const IbcHistoryTable: FunctionComponent<CustomClasses> = observer(
 );
 
 const TxHashDisplayCell: FunctionComponent<
-  BaseCell & { sourceChainId?: string }
-> = ({ value, sourceChainId }) => {
-  const { chainStore } = useStore();
+  BaseCell & { explorerUrl?: string }
+> = ({ value, explorerUrl }) => {
   const { isMobile } = useWindowSize();
 
-  return value && sourceChainId ? (
+  return value && explorerUrl ? (
     <a
       className="flex items-center gap-2"
-      href={chainStore
-        .getChain(sourceChainId)
-        .raw.explorerUrlToTx.replace("{txHash}", value.toUpperCase())}
+      href={explorerUrl}
       target="_blank"
       rel="noopener noreferrer"
     >
@@ -109,7 +144,7 @@ const TxHashDisplayCell: FunctionComponent<
 };
 
 const StatusDisplayCell: FunctionComponent<
-  BaseCell & { status?: IBCTransferHistoryStatus }
+  BaseCell & { status?: IBCTransferHistoryStatus | "failed" }
 > = ({ status }) => {
   if (status == null) {
     // Uncommitted history has no status.
@@ -175,6 +210,13 @@ const StatusDisplayCell: FunctionComponent<
             />
           </div>
           <span className="md:hidden">Failed: Pending refund</span>
+        </div>
+      );
+    case "failed":
+      return (
+        <div className="flex items-center gap-2">
+          <Image alt="failed" src="/icons/error-x.svg" width={24} height={24} />
+          <span className="md:hidden">Failed</span>
         </div>
       );
     default:

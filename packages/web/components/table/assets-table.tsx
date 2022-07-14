@@ -24,7 +24,7 @@ import { AssetCard } from "../cards";
 import { Switch } from "../control";
 import { Button } from "../buttons";
 import { PreTransferModal } from "../../modals";
-import { IbcHistoryTable } from "./ibc-history";
+import { TransferHistoryTable } from "./transfer-history";
 import { ColumnDef } from "./types";
 
 interface Props {
@@ -446,7 +446,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             />
           )}
         </div>
-        <IbcHistoryTable className="mt-8 md:w-screen md:-mx-4" />
+        <TransferHistoryTable className="mt-8 md:w-screen md:-mx-4" />
       </div>
     </section>
   );

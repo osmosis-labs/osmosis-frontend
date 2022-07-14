@@ -16,6 +16,7 @@ import {
   LPCurrencyRegistrar,
   QueriesExternalStore,
   IBCTransferHistoryStore,
+  NonIbcBridgeHistoryStore,
   OsmosisAccount,
   PoolFallbackPriceStore,
 } from "@osmosis-labs/stores";
@@ -26,6 +27,7 @@ import {
   toastOnBroadcast,
   toastOnFulfill,
 } from "../components/alert";
+import { AxelarTransferStatusSource } from "../integrations/axelar";
 import { ObservableAssets } from "./assets";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
 import { PoolPriceRoutes } from "../config";
@@ -48,6 +50,7 @@ export class RootStore {
   public readonly priceStore: PoolFallbackPriceStore;
 
   public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
+  public readonly nonIbcBridgeHistoryStore: NonIbcBridgeHistoryStore;
 
   public readonly assetsStore: ObservableAssets;
 
@@ -161,6 +164,10 @@ export class RootStore {
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
       makeIndexedKVStore("ibc_transfer_history"),
       this.chainStore
+    );
+    this.nonIbcBridgeHistoryStore = new NonIbcBridgeHistoryStore(
+      makeLocalStorageKVStore("nonibc_transfer_history"),
+      [new AxelarTransferStatusSource()]
     );
 
     this.assetsStore = new ObservableAssets(
