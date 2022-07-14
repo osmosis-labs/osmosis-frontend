@@ -725,8 +725,8 @@ export const IBCAssetInfos: (IBCAsset & {
   },
   {
     counterpartyChainId: "odin-mainnet-freya",
-    sourceChannelId: "channel-3",
-    destChannelId: "channel-258",
+    sourceChannelId: "channel-258",
+    destChannelId: "channel-3",
     coinMinimalDenom: "loki",
   },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
