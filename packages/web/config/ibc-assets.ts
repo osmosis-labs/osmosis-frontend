@@ -724,7 +724,7 @@ export const IBCAssetInfos: (IBCAsset & {
     withdrawUrlOverride: "https://app.ech.network/ibc",
   },
   {
-    counterpartyChainId: "tgrade-mainnet-1",
+    counterpartyChainId: "odin-mainnet-freya",
     sourceChannelId: "channel-3",
     destChannelId: "channel-258",
     coinMinimalDenom: "loki",
