@@ -682,17 +682,6 @@ export const IBCAssetInfos: (IBCAsset & {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
-    coinMinimalDenom: "steth-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=steth-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=steth-wei",
-    sourceChainNameOverride: "Ethereum",
-  },
-  {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
     coinMinimalDenom: "uni-wei",
     depositUrlOverride:
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uni-wei",
@@ -716,6 +705,14 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-259",
     destChannelId: "channel-3",
     coinMinimalDenom: "ukuji",
+    isVerified: true,
+  },
+  {
+    counterpartyChainId: "tgrade-mainnet-1",
+    sourceChannelId: "channel-263",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "utgd",
+    isVerified: true,
   },
   {
     counterpartyChainId: "echelon_3000-3",
