@@ -738,6 +738,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=moonbeam&destination=osmosis&asset_denom=wglmr-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=moonbeam&asset_denom=wglmr-wei",
+    sourceChainNameOverride: "Moonbeam",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -748,6 +749,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=moonbeam&destination=osmosis&asset_denom=dot-planck",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=moonbeam&asset_denom=dot-planck",
+    sourceChainNameOverride: "Moonbeam",
   },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
