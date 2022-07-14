@@ -1702,6 +1702,41 @@ chainInfos.push({
   },
   features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
   explorerUrlToTx: "https://axelarscan.io/tx/{txHash}",
+  },
+  {
+      rpc: "https://node.odin-freya-website.odinprotocol.io/mainnet/a/",
+      rest: "https://node.odin-freya-website.odinprotocol.io/mainnet/a/api/",
+      chainId: "odin-mainnet-freya",
+      chainName: "Odin",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("odin"),
+      currencies: [
+        {
+          coinDenom: "ODIN",
+          coinMinimalDenom: "loki",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/odin.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.025,
+        average: 0.05,
+        high: 0.06,
+      },
+      features: [
+        "stargate",
+        "ibc-transfer",
+        "ibc-go",
+        "no-legacy-stdTx",
+        "wasmd_0.24+",
+        "cosmwasm",
+      ],
+      explorerUrlToTx: "https://scan.odinprotocol.io/transactions/{txHash}",
+    },);
 });
 
 export const ChainInfos: ChainInfoWithExplorer[] = chainInfos;
