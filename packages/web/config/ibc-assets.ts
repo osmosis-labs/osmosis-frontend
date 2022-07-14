@@ -655,6 +655,7 @@ export const IBCAssetInfos: (IBCAsset & {
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=mkr-wei",
     sourceChainNameOverride: "Ethereum",
+    isVerified: true,
   },
   {
     counterpartyChainId: "axelar-dojo-1",
