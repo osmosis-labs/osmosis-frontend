@@ -2,24 +2,16 @@ import { WalletStatus } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Pool } from "@osmosis-labs/pools";
-import {
-  ObservableTradeTokenInConfig,
-  ObservableSlippageConfig,
-} from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import React, {
-  FunctionComponent,
-  useEffect,
-  useRef,
-  useMemo,
-  useState,
-} from "react";
-import { ChainInfos, IS_FRONTIER } from "../../config";
+import React, { FunctionComponent, useEffect, useRef, useMemo } from "react";
+import { IS_FRONTIER } from "../../config";
 import {
   useBooleanWithWindowEvent,
+  useSlippageConfig,
   useTokenSwapQueryParams,
+  useTradeTokenInConfig,
   useWindowSize,
 } from "../../hooks";
 import { useStore } from "../../stores";
@@ -54,21 +46,14 @@ export const TradeClipboard: FunctionComponent<{
   const [isSettingOpen, setIsSettingOpen] = useBooleanWithWindowEvent(false);
   const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
 
-  const slippageConfig = useMemo(() => new ObservableSlippageConfig(), []);
-  const [tradeTokenInConfig] = useState(
-    () =>
-      new ObservableTradeTokenInConfig(
-        chainStore,
-        queriesStore,
-        chainId,
-        account.bech32Address,
-        undefined,
-        pools
-      )
+  const slippageConfig = useSlippageConfig();
+  const tradeTokenInConfig = useTradeTokenInConfig(
+    chainStore,
+    chainId,
+    account.bech32Address,
+    queriesStore,
+    pools
   );
-  tradeTokenInConfig.setChain(chainId);
-  tradeTokenInConfig.setSender(account.bech32Address);
-  tradeTokenInConfig.setPools(pools);
 
   // auto focus from amount on token switch
   const fromAmountInput = useRef<HTMLInputElement | null>(null);
@@ -117,7 +102,7 @@ export const TradeClipboard: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "relative rounded-2xl bg-card border-2 md:border-0 border-cardInner p-2.5 md:p-0",
+        "relative rounded-2xl bg-card border-2 md:border-0 border-cardInner p-2.5 md:p-0 shadow-elevation-08dp",
         containerClassName
       )}
     >
@@ -136,12 +121,13 @@ export const TradeClipboard: FunctionComponent<{
           </div>
         )}
 
-        <div className="relative flex justify-end w-full h-11 mb-[1.125rem] md:mb-2">
+        <div className="relative flex justify-end w-full h-11 md:h-[38px] mb-[1.125rem] md:mb-2">
           <button
-            className="relative"
+            className="relative h-11 md:h-[38px]"
             onClick={(e) => {
               e.stopPropagation();
               setIsSettingOpen(!isSettingOpen);
+              closeTokenSelectDropdowns();
             }}
           >
             <Image
@@ -171,7 +157,7 @@ export const TradeClipboard: FunctionComponent<{
           </button>
           {isSettingOpen && (
             <div
-              className="absolute bottom-[-0.5rem] right-0 translate-y-full bg-card border border-white-faint rounded-2xl p-[1.875rem] md:p-5 z-20 w-full max-w-[23.875rem]"
+              className="absolute bottom-[-0.5rem] right-0 translate-y-full bg-card border border-white-faint rounded-2xl p-[1.875rem] md:p-5 z-50 w-full max-w-[23.875rem]"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="subtitle1 text-white-emphasis">
@@ -353,13 +339,6 @@ export const TradeClipboard: FunctionComponent<{
                     }
                     closeTokenSelectDropdowns();
                   }}
-                  getChainNetworkName={(coinDenom) =>
-                    ChainInfos.find((chain) =>
-                      chain.currencies.find(
-                        (currency) => currency.coinDenom === coinDenom
-                      )
-                    )?.chainName
-                  }
                   isMobile={isMobile}
                 />
               )}
@@ -473,13 +452,6 @@ export const TradeClipboard: FunctionComponent<{
                     }
                     closeTokenSelectDropdowns();
                   }}
-                  getChainNetworkName={(coinDenom) =>
-                    ChainInfos.find((chain) =>
-                      chain.currencies.find(
-                        (currency) => currency.coinDenom === coinDenom
-                      )
-                    )?.chainName
-                  }
                   isMobile={isMobile}
                 />
               )}
@@ -501,11 +473,15 @@ export const TradeClipboard: FunctionComponent<{
                       ? tradeTokenInConfig.expectedSwapResult.amount
                           .trim(true)
                           .shrink(true)
-                          .maxDecimals(6)
+                          .maxDecimals(
+                            Math.min(
+                              tradeTokenInConfig.expectedSwapResult.amount
+                                .currency.coinDecimals,
+                              8
+                            )
+                          )
+                          .hideDenom(true)
                           .toString()
-                          .split(" ")
-                          .slice(0, 2)
-                          .join(" ")
                       : "0"
                   }`}</h5>
                 </div>
@@ -601,16 +577,23 @@ export const TradeClipboard: FunctionComponent<{
             </div>
           </div>
         )}
-        {tradeTokenInConfig && tradeTokenInConfig.error && (
-          <ErrorBox
-            className="!w-full flex !justify-center items-center mt-4"
-            iconSize={isMobile ? "sm" : "md"}
-            message={tradeTokenInConfig.error?.message ?? ""}
-          />
-        )}
+        {tradeTokenInConfig &&
+          tradeTokenInConfig.error &&
+          account.walletStatus === WalletStatus.Loaded && (
+            <ErrorBox
+              className="!w-full flex !justify-center items-center mt-4"
+              iconSize={isMobile ? "sm" : "md"}
+              message={tradeTokenInConfig.error?.message ?? ""}
+            />
+          )}
         {tradeTokenInConfig && (
           <Button
-            color={showWarningSlippage ? "error" : "primary"}
+            color={
+              showWarningSlippage &&
+              account.walletStatus === WalletStatus.Loaded
+                ? "error"
+                : "primary"
+            }
             className="mt-[1.125rem] flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
             disabled={
               account.walletStatus === WalletStatus.Loaded &&
@@ -690,13 +673,39 @@ export const TradeClipboard: FunctionComponent<{
                       routes[0].poolId,
                       tokenIn,
                       routes[0].tokenOutCurrency,
-                      maxSlippage
+                      maxSlippage,
+                      "",
+                      {
+                        amount: [
+                          {
+                            denom:
+                              chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+                            amount: "0",
+                          },
+                        ],
+                      },
+                      {
+                        preferNoSetFee: true,
+                      }
                     );
                   } else {
                     await account.osmosis.sendMultihopSwapExactAmountInMsg(
                       routes,
                       tokenIn,
-                      maxSlippage
+                      maxSlippage,
+                      "",
+                      {
+                        amount: [
+                          {
+                            denom:
+                              chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+                            amount: "0",
+                          },
+                        ],
+                      },
+                      {
+                        preferNoSetFee: true,
+                      }
                     );
                   }
                   tradeTokenInConfig.setAmount("");

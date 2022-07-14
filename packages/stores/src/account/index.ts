@@ -6,15 +6,18 @@ import {
   IQueriesStore,
   AccountSetBaseSuper,
   CosmosAccount,
+  CosmosQueries,
 } from "@keplr-wallet/stores";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
-import { Currency } from "@keplr-wallet/types";
-import { WeightedPoolEstimates } from "@osmosis-labs/math";
+import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
+import * as WeightedPoolEstimates from "@osmosis-labs/math";
 import { Pool } from "@osmosis-labs/pools";
 import { OsmosisQueries } from "../queries";
 import { osmosis } from "./msg/proto";
 import * as Msgs from "./msg/make-msg";
 import { OsmosisMsgOpts, defaultMsgOpts } from "./types";
+import { StdFee } from "@cosmjs/launchpad";
+import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/types";
 
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;
@@ -25,7 +28,7 @@ export const OsmosisAccount = {
     msgOptsCreator?: (
       chainId: string
     ) => DeepPartial<OsmosisMsgOpts> | undefined;
-    queriesStore: IQueriesStore<OsmosisQueries>;
+    queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
   }): (
     base: AccountSetBaseSuper & CosmosAccount,
     chainGetter: ChainGetter,
@@ -57,7 +60,9 @@ export class OsmosisAccountImpl {
     protected readonly base: AccountSetBaseSuper & CosmosAccount,
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
-    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly queriesStore: IQueriesStore<
+      CosmosQueries & OsmosisQueries
+    >,
     protected readonly _msgOpts: OsmosisMsgOpts
   ) {}
 
@@ -130,20 +135,24 @@ export class OsmosisAccountImpl {
         aminoMsgs: [msg],
         protoMsgs: [
           {
-            typeUrl: "/osmosis.gamm.v1beta1.MsgCreateBalancerPool",
-            value: osmosis.gamm.v1beta1.MsgCreateBalancerPool.encode({
-              sender: msg.value.sender,
-              poolParams: {
-                swapFee: this.changeDecStringToProtoBz(
-                  msg.value.poolParams.swapFee
-                ),
-                exitFee: this.changeDecStringToProtoBz(
-                  msg.value.poolParams.exitFee
-                ),
-              },
-              poolAssets: msg.value.poolAssets,
-              futurePoolGovernor: msg.value.future_pool_governor,
-            }).finish(),
+            typeUrl:
+              "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool",
+            value:
+              osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool.encode(
+                {
+                  sender: msg.value.sender,
+                  poolParams: {
+                    swapFee: this.changeDecStringToProtoBz(
+                      msg.value.poolParams.swapFee
+                    ),
+                    exitFee: this.changeDecStringToProtoBz(
+                      msg.value.poolParams.exitFee
+                    ),
+                  },
+                  poolAssets: msg.value.poolAssets,
+                  futurePoolGovernor: msg.value.future_pool_governor,
+                }
+              ).finish(),
           },
         ],
       },
@@ -435,6 +444,8 @@ export class OsmosisAccountImpl {
     tokenIn: { currency: Currency; amount: string },
     maxSlippage: string = "0",
     memo: string = "",
+    stdFee: Partial<StdFee> = {},
+    signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
     const queries = this.queries;
@@ -528,12 +539,14 @@ export class OsmosisAccountImpl {
       },
       memo,
       {
-        amount: [],
-        gas: (
-          this._msgOpts.swapExactAmountIn.gas * Math.max(routes.length, 1)
-        ).toString(),
+        amount: stdFee.amount ?? [],
+        gas:
+          stdFee.gas ??
+          (
+            this._msgOpts.swapExactAmountIn.gas * Math.max(routes.length, 1)
+          ).toString(),
       },
-      undefined,
+      signOptions,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
@@ -577,6 +590,8 @@ export class OsmosisAccountImpl {
     tokenOutCurrency: Currency,
     maxSlippage: string = "0",
     memo: string = "",
+    stdFee: Partial<StdFee> = {},
+    signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
     const queries = this.queries;
@@ -649,10 +664,10 @@ export class OsmosisAccountImpl {
       },
       memo,
       {
-        amount: [],
-        gas: this._msgOpts.swapExactAmountIn.gas.toString(),
+        amount: stdFee.amount ?? [],
+        gas: stdFee.gas ?? this._msgOpts.swapExactAmountIn.gas.toString(),
       },
-      undefined,
+      signOptions,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
@@ -1058,6 +1073,14 @@ export class OsmosisAccountImpl {
             .getQueryBech32Address(this.base.bech32Address)
             .fetch();
 
+          queries.osmosis?.queryAccountLocked
+            .get(this.base.bech32Address)
+            .fetch();
+
+          queries.cosmos.queryValidators
+            .getQueryStatus(BondStatus.Bonded)
+            .fetch();
+
           queries.osmosis?.querySuperfluidDelegations
             .getQuerySuperfluidDelegations(this.base.bech32Address)
             .fetch();
@@ -1215,6 +1238,12 @@ export class OsmosisAccountImpl {
     );
   }
 
+  /**
+   * https://docs.osmosis.zone/developing/osmosis-core/modules/spec-superfluid.html#superfluid-unbond-lock
+   * @param locks IDs and whether the lock is synthetic
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fullfillment.
+   */
   async sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
     locks: {
       lockId: string;

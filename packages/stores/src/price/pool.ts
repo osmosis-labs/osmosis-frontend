@@ -7,7 +7,7 @@ import { ObservableQueryPools } from "../queries";
 import { IntermediateRoute, IPriceStore } from "./types";
 
 /**
- * PoolFallbackPriceStore permits the some currencies that are not listed on coingecko
+ * PoolFallbackPriceStore permits the some currencies that are not listed on CoinGecko
  * to use the spot price of the pool as the intermediate.
  */
 export class PoolFallbackPriceStore
@@ -46,7 +46,11 @@ export class PoolFallbackPriceStore
     return result;
   }
 
-  getPrice(coinId: string, vsCurrency: string): number | undefined {
+  getPrice(coinId: string, vsCurrency?: string): number | undefined {
+    if (!vsCurrency) {
+      vsCurrency = this.defaultVsCurrency;
+    }
+
     try {
       const routes = this.intermediateRoutesMap;
       const route = routes.get(coinId);

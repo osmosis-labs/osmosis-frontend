@@ -1,3 +1,4 @@
+import { action, computed, makeObservable, observable, override } from "mobx";
 import {
   AmountConfig,
   IFeeConfig,
@@ -18,7 +19,6 @@ import {
   Pool,
   RoutePathWithAmount,
 } from "@osmosis-labs/pools";
-import { action, computed, makeObservable, observable, override } from "mobx";
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
@@ -46,10 +46,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     makeObservable(this);
   }
 
-  get pools(): Pool[] {
-    return this._pools;
-  }
-
   @action
   setPools(pools: Pool[]) {
     this._pools = pools;
@@ -71,6 +67,43 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     } else {
       this._outCurrencyMinimalDenom = undefined;
     }
+  }
+
+  @action
+  switchInAndOut() {
+    // give back the swap fee amount
+    const outAmount = this.expectedSwapResult.amount;
+    if (outAmount.toDec().isZero()) {
+      this.setAmount("");
+    } else {
+      this.setAmount(
+        outAmount
+          .shrink(true)
+          .maxDecimals(6)
+          .trim(true)
+          .hideDenom(true)
+          .toString()
+      );
+    }
+
+    // Since changing in and out affects each other, it is important to use the stored value.
+    const prevInCurrency = this.sendCurrency.coinMinimalDenom;
+    const prevOutCurrency = this.outCurrency.coinMinimalDenom;
+
+    this._inCurrencyMinimalDenom = prevOutCurrency;
+    this._outCurrencyMinimalDenom = prevInCurrency;
+  }
+
+  get pools(): Pool[] {
+    return this._pools;
+  }
+
+  @computed
+  protected get currencyMap(): Map<string, AppCurrency> {
+    return this.sendableCurrencies.reduce<Map<string, AppCurrency>>(
+      (previous, current) => previous.set(current.coinMinimalDenom, current),
+      new Map()
+    );
   }
 
   @override
@@ -118,14 +151,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   @computed
-  protected get currencyMap(): Map<string, AppCurrency> {
-    return this.sendableCurrencies.reduce<Map<string, AppCurrency>>(
-      (previous, current) => previous.set(current.coinMinimalDenom, current),
-      new Map()
-    );
-  }
-
-  @computed
   get sendableCurrencies(): AppCurrency[] {
     if (this.pools.length === 0) {
       return [];
@@ -156,33 +181,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         return currencyMap.has(coinDenom);
       })
       .map((coinDenom) => {
+        // eslint-disable-next-line
         return currencyMap.get(coinDenom)!;
       });
-  }
-
-  @action
-  switchInAndOut() {
-    // give back the swap fee amount
-    const outAmount = this.expectedSwapResult.amount;
-    if (outAmount.toDec().isZero()) {
-      this.setAmount("");
-    } else {
-      this.setAmount(
-        outAmount
-          .shrink(true)
-          .maxDecimals(6)
-          .trim(true)
-          .hideDenom(true)
-          .toString()
-      );
-    }
-
-    // Since changing in and out affects each other, it is important to use the stored value.
-    const prevInCurrency = this.sendCurrency.coinMinimalDenom;
-    const prevOutCurrency = this.outCurrency.coinMinimalDenom;
-
-    this._inCurrencyMinimalDenom = prevOutCurrency;
-    this._outCurrencyMinimalDenom = prevInCurrency;
   }
 
   @computed

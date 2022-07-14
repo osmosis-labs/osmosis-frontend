@@ -1,7 +1,14 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservablePoolWithFeeMetrics } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState, useMemo, useCallback } from "react";
+import {
+  FunctionComponent,
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import {
   useFilteredData,
   usePaginatedData,
@@ -9,7 +16,7 @@ import {
   useWindowSize,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { CheckBox, MenuToggle, PageList, SortMenu } from "../control";
+import { Switch, MenuToggle, PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { RowDef, Table } from "../table";
 import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
@@ -75,6 +82,13 @@ export const AllPoolsTableSet: FunctionComponent<{
         poolName: pool.poolAssets
           .map((asset) => asset.amount.currency.coinDenom)
           .join("/"),
+        networkNames: pool.poolAssets
+          .map(
+            (asset) =>
+              chainStore.getChainFromCurrency(asset.amount.denom)?.chainName ??
+              ""
+          )
+          .join(" "),
       })),
     // eslint-disable-next-line
     [
@@ -137,7 +151,12 @@ export const AllPoolsTableSet: FunctionComponent<{
 
   const [query, setQuery, filteredPools] = useFilteredData(
     sortedAllPoolsWithMetrics,
-    ["pool.id", "poolName"]
+    [
+      "pool.id",
+      "poolName",
+      "networkNames",
+      "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
+    ]
   );
 
   const [page, setPage, minPage, numPages, allData] = usePaginatedData(
@@ -263,6 +282,41 @@ export const AllPoolsTableSet: FunctionComponent<{
     ]
   );
 
+  // auto expand searchable pools set when user is actively searching
+  const didAutoSwitchActiveSet = useRef(false);
+  const didAutoSwitchTVLFilter = useRef(false);
+  useEffect(() => {
+    // first expand to all pools, then to low TVL pools
+    // remember if/what we switched for user
+    if (query !== "" && filteredPools.length < POOLS_PER_PAGE) {
+      if (activeOptionId === "all-pools") {
+        if (!isPoolTvlFiltered) didAutoSwitchTVLFilter.current = true;
+        setIsPoolTvlFiltered(true);
+      } else {
+        if (activeOptionId === "incentivized-pools")
+          didAutoSwitchActiveSet.current = true;
+        setActiveOptionId("all-pools");
+      }
+    }
+
+    // reset filter states when query cleared only if auto switched
+    if (query === "" && didAutoSwitchActiveSet.current) {
+      setActiveOptionId("incentivized-pools");
+      didAutoSwitchActiveSet.current = false;
+    }
+    if (query === "" && didAutoSwitchTVLFilter.current) {
+      setIsPoolTvlFiltered(false);
+      didAutoSwitchTVLFilter.current = false;
+    }
+  }, [
+    query,
+    filteredPools,
+    isPoolTvlFiltered,
+    activeOptionId,
+    setIsPoolTvlFiltered,
+    setActiveOptionId,
+  ]);
+
   if (isMobile) {
     return (
       <CompactPoolTableDisplay
@@ -316,7 +370,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         searchBoxProps={{
           currentValue: query,
           onInput: setQuery,
-          placeholder: "Filter by symbol",
+          placeholder: "Search pools",
         }}
         sortMenuProps={{
           options: tableCols,
@@ -345,28 +399,43 @@ export const AllPoolsTableSet: FunctionComponent<{
 
   return (
     <>
-      <h5>All Pools</h5>
-      <div className="mt-5 flex flex-wrap gap-3 items-center justify-between">
-        <MenuToggle
-          options={poolsMenuOptions}
-          selectedOptionId={activeOptionId}
-          onSelect={selectOption}
-        />
-        <div className="flex gap-8 lg:w-full lg:place-content-between">
-          <SearchBox
-            currentValue={query}
-            onInput={setQuery}
-            placeholder="Filter by name"
-            className="!w-64"
+      <div className="flex flex-col gap-3 mt-5">
+        <div className="flex items-center place-content-between">
+          <h5>All Pools</h5>
+          <MenuToggle
+            className="inline"
+            options={poolsMenuOptions}
+            selectedOptionId={activeOptionId}
+            onSelect={selectOption}
           />
-          <SortMenu
-            options={tableCols}
-            selectedOptionId={sortKeyPath}
-            onSelect={(id) =>
-              id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id)
-            }
-            onToggleSortDirection={toggleSortDirection}
-          />
+        </div>
+        <div className="flex flex-wrap gap-4 place-content-between">
+          <Switch
+            isOn={isPoolTvlFiltered}
+            onToggle={setIsPoolTvlFiltered}
+            className="mr-2"
+          >
+            {`Show pools less than ${new PricePretty(
+              priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+              TVL_FILTER_THRESHOLD
+            ).toString()}`}
+          </Switch>
+          <div className="flex flex-wrap items-center gap-8 lg:w-full lg:place-content-between">
+            <SearchBox
+              currentValue={query}
+              onInput={setQuery}
+              placeholder="Search pools"
+              className="!w-64"
+            />
+            <SortMenu
+              options={tableCols}
+              selectedOptionId={sortKeyPath}
+              onSelect={(id) =>
+                id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id)
+              }
+              onToggleSortDirection={toggleSortDirection}
+            />
+          </div>
         </div>
       </div>
       <Table<PoolCompositionCell & MetricLoaderCell>
@@ -375,7 +444,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         rowDefs={tableRows}
         data={tableData}
       />
-      <div className="relative flex place-content-around">
+      <div className="flex items-center place-content-center">
         <PageList
           currentValue={page}
           max={numPages}
@@ -383,18 +452,6 @@ export const AllPoolsTableSet: FunctionComponent<{
           onInput={setPage}
           editField
         />
-        <div className="absolute right-2 bottom-1 text-body2 flex items-center">
-          <CheckBox
-            isOn={isPoolTvlFiltered}
-            onToggle={setIsPoolTvlFiltered}
-            className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
-          >
-            {`Show pools less than ${new PricePretty(
-              priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-              TVL_FILTER_THRESHOLD
-            ).toString()}`}
-          </CheckBox>
-        </div>
       </div>
     </>
   );

@@ -48,7 +48,7 @@ yarn dev
 ## Frontier 🤠
 
 To reduce duplicated effort, `master` branch is used to deploy the frontier app as well. The frontier deployment has `NEXT_PUBLIC_IS_FRONTIER` env var set to `true`. If making
-updates to frontier, please target the master branch. Frontier assets are configured in `packages/web/config/ibc-assets.ts`, and must have `isVerified: false` (or `undefined`) to be included in frontier.
+updates to frontier, please target the master branch. Frontier assets are configured in `packages/web/config/ibc-assets.ts`.
 
 ### Develop
 

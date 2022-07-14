@@ -25,12 +25,12 @@ export interface OsmosisMsgOpts {
 
 export const defaultMsgOpts: OsmosisMsgOpts = {
   createPool: {
-    type: "osmosis/gamm/create-pool",
-    gas: 250000,
+    type: "osmosis/gamm/create-balancer-pool",
+    gas: 350000,
   },
   joinPool: {
     type: "osmosis/gamm/join-pool",
-    gas: 140000,
+    gas: 240000,
     shareCoinDecimals: 18,
   },
   joinSwapExternAmountIn: {
@@ -40,7 +40,7 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
   },
   exitPool: {
     type: "osmosis/gamm/exit-pool",
-    gas: 140000,
+    gas: 280000,
     shareCoinDecimals: 18,
   },
   swapExactAmountIn: {
@@ -53,7 +53,7 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
   },
   lockTokens: {
     type: "osmosis/lockup/lock-tokens",
-    gas: 250000,
+    gas: 450000,
   },
   superfluidDelegate: {
     type: "osmosis/superfluid-delegate",

@@ -1,33 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function useLocalStorageState<T>(
   key: string,
   initialValue: T
 ): [T, (value: T) => void] {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    if (typeof window === "undefined") {
-      return initialValue;
-    }
-    try {
-      const item = window.localStorage.getItem(key);
+  const [storedValue, setStoredValue] = useState<T>(initialValue);
 
-      return item !== null ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      console.error(error);
-      return initialValue;
-    }
-  });
+  // init from localstorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const rawItem = window.localStorage.getItem(key);
 
-  const setValue = (value: T | Function) => {
-    try {
-      const valueToStore =
-        value instanceof Function ? value(storedValue) : value;
-
-      setStoredValue(valueToStore);
-
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      if (rawItem) {
+        try {
+          const item = JSON.parse(rawItem);
+          setStoredValue(item);
+        } catch {
+          console.error("Problem parsing localStorage item at key: ", key);
+        }
       }
+    }
+  }, [key, setStoredValue]);
+
+  const setValue = (value: T) => {
+    try {
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(key, JSON.stringify(value));
+      }
+
+      setStoredValue(value);
     } catch (error) {
       console.error(error);
     }

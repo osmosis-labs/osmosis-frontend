@@ -262,6 +262,9 @@ module.exports = {
         "2xlinset": "0.938rem", // 1 px smaller than rounded-2xl
       },
     },
+    // fontWeight: {
+    //   bold: 600, // font-bold
+    // },
   },
   plugins: [],
 };

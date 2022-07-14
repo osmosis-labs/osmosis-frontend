@@ -7,7 +7,7 @@ import {
   CoinBalance,
 } from "../../stores/assets";
 import { SearchBox } from "../input";
-import { CheckBox, SortMenu } from "../control";
+import { SortMenu } from "../control";
 import { Table } from ".";
 import { SortDirection } from "../types";
 import {
@@ -18,7 +18,7 @@ import {
 } from "./cells";
 import { useStore } from "../../stores";
 import { useSortedData, useFilteredData } from "../../hooks/data";
-import { useWindowSize } from "../../hooks/window";
+import { useLocalStorageState, useWindowSize } from "../../hooks/window";
 import { ShowMoreButton } from "../buttons/show-more";
 import { AssetCard } from "../cards";
 import { Switch } from "../control";
@@ -32,6 +32,7 @@ interface Props {
   ibcBalances: ((IBCBalance | IBCCW20ContractBalance) & {
     depositUrlOverride?: string;
     withdrawUrlOverride?: string;
+    sourceChainNameOverride?: string;
   })[];
   onWithdraw: (chainId: string, coinDenom: string) => void;
   onDeposit: (chainId: string, coinDenom: string) => void;
@@ -65,6 +66,10 @@ export const AssetsTable: FunctionComponent<Props> = ({
             value && value.toDec().gt(new Dec(0))
               ? value.toString()
               : undefined,
+          fiatValueRaw:
+            value && value.toDec().gt(new Dec(0))
+              ? value?.toDec().toString()
+              : "0",
           isCW20: false,
         };
       }),
@@ -76,14 +81,18 @@ export const AssetsTable: FunctionComponent<Props> = ({
             fiatValue,
             depositUrlOverride,
             withdrawUrlOverride,
+            sourceChainNameOverride,
           } = ibcBalance;
           const value = fiatValue?.maxDecimals(2);
           const isCW20 = "ics20ContractAddress" in ibcBalance;
+          const pegMechanism = balance.currency.originCurrency?.pegMechanism;
 
           return {
             value: balance.toString(),
             currency: balance.currency,
-            chainName: chainName,
+            chainName: sourceChainNameOverride
+              ? sourceChainNameOverride
+              : chainName,
             chainId: chainId,
             coinDenom: balance.denom,
             coinImageUrl: balance.currency.coinImageUrl,
@@ -101,7 +110,10 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 ? value?.toDec().toString()
                 : "0",
             isCW20,
-            queryTags: [...(isCW20 ? ["CW20"] : [])],
+            queryTags: [
+              ...(isCW20 ? ["CW20"] : []),
+              ...(pegMechanism ? ["stable", pegMechanism] : []),
+            ],
             isUnstable: ibcBalance.isUnstable === true,
             depositUrlOverride,
             withdrawUrlOverride,
@@ -165,7 +177,11 @@ export const AssetsTable: FunctionComponent<Props> = ({
 
   // User toggles for showing 10+ pools and assets with > 0 fiat value
   const [showAllAssets, setShowAllAssets] = useState(false);
-  const [hideZeroBalances, setHideZeroBalances] = useState(false);
+  const [hideZeroBalances, setHideZeroBalances] = useLocalStorageState(
+    "assets_hide_zero_balances",
+    false
+  );
+  const canHideZeroBalances = cells.some((cell) => cell.amount !== "0");
 
   // Filter data based on user's input in the search box.
   const [query, setQuery, filteredSortedCells] = useFilteredData(
@@ -262,8 +278,8 @@ export const AssetsTable: FunctionComponent<Props> = ({
             <h6>Assets</h6>
             <div className="flex gap-3 items-center place-content-between">
               <Switch
-                className="overline"
                 isOn={hideZeroBalances}
+                disabled={!canHideZeroBalances}
                 onToggle={() => setHideZeroBalances(!hideZeroBalances)}
               >
                 Hide zero balances
@@ -291,37 +307,46 @@ export const AssetsTable: FunctionComponent<Props> = ({
             </div>
           </div>
         ) : (
-          <div className="flex flex-wrap place-content-between">
-            <h5 className="shrink-0">Osmosis Assets</h5>
-            <div className="flex gap-5">
-              <SearchBox
-                currentValue={query}
-                onInput={(query) => {
-                  setHideZeroBalances(false);
-                  setQuery(query);
-                }}
-                placeholder="Filter by symbol"
-              />
-              <SortMenu
-                selectedOptionId={sortKey}
-                onSelect={setSortKey}
-                onToggleSortDirection={toggleSortDirection}
-                options={[
-                  {
-                    id: "coinDenom",
-                    display: "Symbol",
-                  },
-                  {
-                    /** These ids correspond to keys in `Cell` type and are later used for sorting. */
-                    id: "chainName",
-                    display: "Network",
-                  },
-                  {
-                    id: "amount",
-                    display: "Balance",
-                  },
-                ]}
-              />
+          <div className="flex flex-col gap-5">
+            <h5>Assets</h5>
+            <div className="flex place-content-between">
+              <Switch
+                isOn={hideZeroBalances}
+                disabled={!canHideZeroBalances}
+                onToggle={() => setHideZeroBalances(!hideZeroBalances)}
+              >
+                Hide zero balances
+              </Switch>
+              <div className="flex items-center gap-5">
+                <SearchBox
+                  currentValue={query}
+                  onInput={(query) => {
+                    setHideZeroBalances(false);
+                    setQuery(query);
+                  }}
+                  placeholder="Search assets"
+                />
+                <SortMenu
+                  selectedOptionId={sortKey}
+                  onSelect={setSortKey}
+                  onToggleSortDirection={toggleSortDirection}
+                  options={[
+                    {
+                      id: "coinDenom",
+                      display: "Symbol",
+                    },
+                    {
+                      /** These ids correspond to keys in `Cell` type and are later used for sorting. */
+                      id: "chainName",
+                      display: "Network",
+                    },
+                    {
+                      id: "fiatValueRaw",
+                      display: "Balance",
+                    },
+                  ]}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -371,7 +396,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
               {
                 display: "Balance",
                 displayCell: BalanceCell,
-                sort: sortColumnWithKeys(["amount", "fiatValue"], "descending"),
+                sort: sortColumnWithKeys(["fiatValueRaw"], "descending"),
                 className: "text-right pr-24 lg:pr-8 1.5md:pr-1",
               },
               ...(mergeWithdrawCol
@@ -419,17 +444,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
               isOn={showAllAssets}
               onToggle={() => setShowAllAssets(!showAllAssets)}
             />
-          )}
-          {!isMobile && (
-            <div className="flex gap-2 absolute body2 right-24 lg:right-12 1.5md:right-6 bottom-1">
-              <CheckBox
-                className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
-                isOn={hideZeroBalances}
-                onToggle={() => setHideZeroBalances(!hideZeroBalances)}
-              >
-                Hide zero balances
-              </CheckBox>
-            </div>
           )}
         </div>
         <IbcHistoryTable className="mt-8 md:w-screen md:-mx-4" />

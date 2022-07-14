@@ -184,6 +184,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
             className="h-14 md:w-full w-96 mt-3 mx-auto"
             size="lg"
             disabled={selectedValidatorAddress === null || isSendingMsg}
+            loading={isSendingMsg}
             onClick={() => {
               if (selectedValidatorAddress !== null) {
                 onSelectValidator(selectedValidatorAddress);

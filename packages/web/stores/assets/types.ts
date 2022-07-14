@@ -1,3 +1,4 @@
+import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 
 export interface IBCAsset {
@@ -19,7 +20,9 @@ export interface IBCAsset {
 }
 
 export interface CoinBalance {
-  balance: CoinPretty;
+  balance: CoinPretty & {
+    currency: PeggedCurrency;
+  };
   fiatValue?: PricePretty;
 }
 
@@ -27,6 +30,13 @@ export interface IBCChainIdentity {
   chainId: string;
   chainName: string;
 }
+
+export type PeggedCurrency = AppCurrency & {
+  originCurrency?: AppCurrency & {
+    /** For assets that are pegged/stablecoins. */
+    pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+  };
+};
 
 export interface IBCBalance extends CoinBalance {
   chainInfo: IBCChainIdentity;

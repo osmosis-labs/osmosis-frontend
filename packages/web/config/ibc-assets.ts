@@ -14,6 +14,9 @@ export const IBCAssetInfos: (IBCAsset & {
   /** URL if the asset requires a custom withdrawal external link. Must include `https://...`. */
   withdrawUrlOverride?: string;
 
+  /** Alternative chain name to display as the source chain */
+  sourceChainNameOverride?: string;
+
   /** Related to showing assets on main (canonical) vs frontier (permissionless). Verified means that governance has
    *  voted on its incentivization or general approval (amongst other possibilities).
    */
@@ -28,6 +31,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uusdc",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uusdc",
+    sourceChainNameOverride: "Ethereum",
     isVerified: true,
   },
   {
@@ -39,6 +43,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=weth-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=weth-wei",
+    sourceChainNameOverride: "Ethereum",
     isVerified: true,
   },
   {
@@ -50,6 +55,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=wbtc-satoshi",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=wbtc-satoshi",
+    sourceChainNameOverride: "Ethereum",
     isVerified: true,
   },
   {
@@ -61,6 +67,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=dai-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=dai-wei",
+    sourceChainNameOverride: "Ethereum",
     isVerified: true,
   },
   {
@@ -113,7 +120,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
     isUnstable: true,
-    isVerified: true,
   },
   {
     counterpartyChainId: "columbus-5",
@@ -121,7 +127,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uusd",
     isUnstable: true,
-    isVerified: true,
   },
   {
     counterpartyChainId: "stargaze-1",
@@ -392,6 +397,17 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "injective-1",
+    sourceChannelId: "channel-122",
+    destChannelId: "channel-8",
+    coinMinimalDenom: "inj",
+    depositUrlOverride:
+      "https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj",
+    withdrawUrlOverride:
+      "https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "columbus-5",
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
@@ -429,16 +445,6 @@ export const IBCAssetInfos: (IBCAsset & {
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
   {
-    counterpartyChainId: "injective-1",
-    sourceChannelId: "channel-122",
-    destChannelId: "channel-8",
-    coinMinimalDenom: "inj",
-    depositUrlOverride:
-      "https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj",
-    withdrawUrlOverride:
-      "https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj",
-  },
-  {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
@@ -447,6 +453,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uusdt",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uusdt",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -457,6 +464,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=frax-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=frax-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
@@ -566,6 +574,8 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-251",
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
+    depositUrlOverride: "https://bridge.terra.money",
+    withdrawUrlOverride: "https://bridge.terra.money",
   },
   {
     counterpartyChainId: "titan-1",
@@ -594,6 +604,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=link-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=link-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "genesis_29-2",
@@ -610,6 +621,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=aave-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=aave-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -620,6 +632,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=ape-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=ape-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -630,6 +643,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=axs-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=axs-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -640,6 +654,8 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=mkr-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=mkr-wei",
+    sourceChainNameOverride: "Ethereum",
+    isVerified: true,
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -650,6 +666,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=rai-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=rai-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -660,16 +677,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=shib-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=shib-wei",
-  },
-  {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
-    coinMinimalDenom: "steth-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=steth-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=steth-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -680,6 +688,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uni-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uni-wei",
+    sourceChainNameOverride: "Ethereum",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -690,6 +699,35 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=xcn-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=xcn-wei",
+    sourceChainNameOverride: "Ethereum",
+  },
+  {
+    counterpartyChainId: "kaiyo-1",
+    sourceChannelId: "channel-259",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "ukuji",
+    isVerified: true,
+  },
+  {
+    counterpartyChainId: "tgrade-mainnet-1",
+    sourceChannelId: "channel-263",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "utgd",
+    isVerified: true,
+  },
+  {
+    counterpartyChainId: "echelon_3000-3",
+    sourceChannelId: "channel-262",
+    destChannelId: "channel-8",
+    coinMinimalDenom: "aechelon",
+    depositUrlOverride: "https://app.ech.network/ibc",
+    withdrawUrlOverride: "https://app.ech.network/ibc",
+  },
+  {
+    counterpartyChainId: "odin-mainnet-freya",
+    sourceChannelId: "channel-3",
+    destChannelId: "channel-258",
+    coinMinimalDenom: "loki",
   },
   {
     counterpartyChainId: "axelar-dojo-1",

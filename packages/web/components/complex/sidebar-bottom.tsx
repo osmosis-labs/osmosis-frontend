@@ -150,7 +150,7 @@ const Links: FunctionComponent = () => (
         <Image src="/icons/twitter.svg" alt="twitter" width={32} height={32} />
       </a>
       <a
-        href="https://medium.com/@Osmosis"
+        href="https://medium.com/osmosis"
         target="_blank"
         className="opacity-80 hover:opacity-100 cursor-pointer px-1 m-auto"
         rel="noreferrer"
@@ -193,15 +193,20 @@ const Links: FunctionComponent = () => (
         />
       </a>
     </div>
-    <p className="py-2 text-caption text-white-high text-center">
+    <div className="flex items-center place-content-around py-2 text-caption text-white-high">
       <a
-        className="opacity-30 hover:opacity-40"
-        href="https://www.coingecko.com"
+        className="flex items-center gap-1"
+        href="https://support.osmosis.zone/"
         target="_blank"
         rel="noreferrer"
       >
-        Price Data by CoinGecko
+        <span className="opacity-30 hover:opacity-40">
+          Get Support Lab Help
+        </span>
+        <div className="w-[12px] pt-0.5 opacity-60">
+          <Image alt="link" src="/icons/link-deco.svg" height={10} width={10} />
+        </div>
       </a>
-    </p>
+    </div>
   </>
 );

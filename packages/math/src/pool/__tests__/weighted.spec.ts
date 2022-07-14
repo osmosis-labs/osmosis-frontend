@@ -1,12 +1,13 @@
 import assert from "assert";
-import { WeightedPoolMath } from "./weighted";
+import * as WeightedPoolMath from "../weighted";
+import { pow } from "../../utils";
 import { Dec } from "@keplr-wallet/unit";
 
 const powPrecision = new Dec("0.00000001");
 
 describe("Test osmosis math", () => {
   test("Test pow", () => {
-    const s = WeightedPoolMath.pow(new Dec("1.68"), new Dec("0.32"));
+    const s = pow(new Dec("1.68"), new Dec("0.32"));
     const expected = new Dec("1.18058965");
     assert.strictEqual(
       expected.sub(s).abs().lte(powPrecision),

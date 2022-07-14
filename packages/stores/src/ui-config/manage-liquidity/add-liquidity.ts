@@ -80,19 +80,23 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     return this._isSingleAmountIn;
   }
 
+  @computed
   get singleAmountInAsset():
     | {
         weight: IntPretty;
         weightFraction: RatePretty;
         amount: CoinPretty;
-        currency: Currency;
+        currency: Currency & {
+          originCurrency?: Currency & {
+            pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+          };
+        };
       }
     | undefined {
     return this.poolAssets.find(
       (asset) =>
-        this.isSingleAmountIn &&
-        asset.currency.coinDenom ===
-          this.singleAmountInConfig?.sendCurrency.coinDenom
+        asset.currency.coinMinimalDenom ===
+        this.singleAmountInConfig?.sendCurrency.coinMinimalDenom
     );
   }
 
@@ -121,6 +125,33 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   @action
   setIsSingleAmountIn(value: boolean) {
     this._isSingleAmountIn = value;
+
+    if (value === true) {
+      // set to OSMO if possible
+      const osmoIndex = this.poolAssetConfigs.findIndex(
+        (poolAssetConfig) => poolAssetConfig.sendCurrency.coinDenom === "OSMO"
+      );
+      if (osmoIndex !== -1) {
+        this.setSingleAmountInConfigIndex(osmoIndex);
+        return;
+      }
+
+      // set to highest amount
+      let maxAmount = new Dec(0);
+      let maxIndex = -1;
+      this.poolAssetConfigs.forEach((poolAssetConfig, index) => {
+        try {
+          const curAmt = new Dec(poolAssetConfig.amount);
+          if (curAmt.gt(maxAmount)) {
+            maxAmount = curAmt;
+            maxIndex = index;
+          }
+        } catch {}
+      });
+      if (maxIndex !== -1) {
+        this.setSingleAmountInConfigIndex(maxIndex);
+      }
+    }
   }
 
   @action
@@ -191,6 +222,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     }
   }
 
+  @computed
   get singleAmountInBalance(): CoinPretty | undefined {
     if (!this.singleAmountInAsset) return;
 
@@ -237,7 +269,11 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     weight: IntPretty;
     weightFraction: RatePretty;
     amount: CoinPretty;
-    currency: Currency;
+    currency: Currency & {
+      originCurrency?: Currency & {
+        pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+      };
+    };
   }[] {
     const pool = this._queryPools.getPool(this._poolId);
     if (!pool) {
@@ -246,7 +282,11 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     return pool.poolAssets.map((asset) => {
       return {
         ...asset,
-        currency: asset.amount.currency,
+        currency: asset.amount.currency as Currency & {
+          originCurrency: Currency & {
+            pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+          };
+        },
       };
     });
   }

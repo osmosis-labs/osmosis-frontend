@@ -27,6 +27,9 @@ export class ObservableAssets {
 
       /** URL if the asset requires a custom withdrawal external link. Must include `https://...`. */
       withdrawUrlOverride?: string;
+
+      /** Alternative chain name to display as the source chain */
+      sourceChainNameOverride?: string;
     })[],
     protected readonly chainStore: ChainStore,
     protected readonly accountStore: {
@@ -79,6 +82,7 @@ export class ObservableAssets {
     depositingSrcMinDenom?: string;
     depositUrlOverride?: string;
     withdrawUrlOverride?: string;
+    sourceChainNameOverride?: string;
   })[] {
     return this.ibcAssets.map((ibcAsset) => {
       const chainInfo = this.chainStore.getChain(ibcAsset.counterpartyChainId);
@@ -134,6 +138,7 @@ export class ObservableAssets {
         depositingSrcMinDenom?: string;
         depositUrlOverride?: string;
         withdrawUrlOverride?: string;
+        sourceChainNameOverride?: string;
       } = {
         chainInfo: chainInfo,
         balance,
@@ -144,6 +149,7 @@ export class ObservableAssets {
         depositingSrcMinDenom: sourceDenom,
         depositUrlOverride: ibcAsset.depositUrlOverride,
         withdrawUrlOverride: ibcAsset.withdrawUrlOverride,
+        sourceChainNameOverride: ibcAsset.sourceChainNameOverride,
       };
 
       if (ibcAsset.ics20ContractAddress) {
