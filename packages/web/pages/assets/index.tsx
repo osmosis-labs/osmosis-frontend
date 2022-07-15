@@ -18,6 +18,7 @@ import { Metric } from "../../components/types";
 import { MetricLoader } from "../../components/loaders";
 import { IbcTransferModal } from "../../modals/ibc-transfer";
 import { useWindowSize } from "../../hooks";
+import { BridgeTransferModal } from "../../modals/bridge-transfer";
 
 const INIT_POOL_CARD_COUNT = 6;
 
@@ -108,8 +109,11 @@ const ChainAssets: FunctionComponent = observer(() => {
     assetsStore: { nativeBalances, ibcBalances },
   } = useStore();
 
-  const [transferModal, setTransferModal] = useState<ComponentProps<
+  const [ibcTransferModal, setIbcTransferModal] = useState<ComponentProps<
     typeof IbcTransferModal
+  > | null>(null);
+  const [bridgeTransferModal, setBridgeTransferModal] = useState<ComponentProps<
+    typeof BridgeTransferModal
   > | null>(null);
 
   const openTransferModal = useCallback(
@@ -121,57 +125,66 @@ const ChainAssets: FunctionComponent = observer(() => {
       );
 
       if (!balance) {
-        setTransferModal(null);
+        setIbcTransferModal(null);
         return;
       }
 
-      const currency = balance.balance.currency;
-      // IBC multihop currency
-      const modifiedCurrency =
-        mode === "deposit" && balance.depositingSrcMinDenom
-          ? {
-              coinDecimals: currency.coinDecimals,
-              coinGeckoId: currency.coinGeckoId,
-              coinImageUrl: currency.coinImageUrl,
-              coinDenom: currency.coinDenom,
-              coinMinimalDenom: "",
-              paths: (currency as IBCCurrency).paths.slice(0, 1),
-              originChainId: balance.chainInfo.chainId,
-              originCurrency: {
+      if (balance.originBridgeInfo) {
+        setBridgeTransferModal({
+          isOpen: true,
+          onRequestClose: () => setBridgeTransferModal(null),
+          ...balance.originBridgeInfo,
+        });
+      } else {
+        const currency = balance.balance.currency;
+        // IBC multihop currency
+        const modifiedCurrency =
+          mode === "deposit" && balance.depositingSrcMinDenom
+            ? {
                 coinDecimals: currency.coinDecimals,
+                coinGeckoId: currency.coinGeckoId,
                 coinImageUrl: currency.coinImageUrl,
                 coinDenom: currency.coinDenom,
-                coinMinimalDenom: balance.depositingSrcMinDenom,
-              },
-            }
-          : currency;
+                coinMinimalDenom: "",
+                paths: (currency as IBCCurrency).paths.slice(0, 1),
+                originChainId: balance.chainInfo.chainId,
+                originCurrency: {
+                  coinDecimals: currency.coinDecimals,
+                  coinImageUrl: currency.coinImageUrl,
+                  coinDenom: currency.coinDenom,
+                  coinMinimalDenom: balance.depositingSrcMinDenom,
+                },
+              }
+            : currency;
 
-      const {
-        chainInfo: { chainId: counterpartyChainId },
-        sourceChannelId,
-        destChannelId,
-      } = balance;
+        const {
+          chainInfo: { chainId: counterpartyChainId },
+          sourceChannelId,
+          destChannelId,
+        } = balance;
 
-      setTransferModal({
-        isOpen: true,
-        onRequestClose: () => setTransferModal(null),
-        currency: modifiedCurrency as IBCCurrency,
-        counterpartyChainId: counterpartyChainId,
-        sourceChannelId,
-        destChannelId,
-        isWithdraw: mode === "withdraw",
-        ics20ContractAddress:
-          "ics20ContractAddress" in balance
-            ? balance.ics20ContractAddress
-            : undefined,
-      });
+        setIbcTransferModal({
+          isOpen: true,
+          onRequestClose: () => setIbcTransferModal(null),
+          currency: modifiedCurrency as IBCCurrency,
+          counterpartyChainId: counterpartyChainId,
+          sourceChannelId,
+          destChannelId,
+          isWithdraw: mode === "withdraw",
+          ics20ContractAddress:
+            "ics20ContractAddress" in balance
+              ? balance.ics20ContractAddress
+              : undefined,
+        });
+      }
     },
-    [ibcBalances, setTransferModal]
+    [ibcBalances, setIbcTransferModal]
   );
 
   return (
     <>
-      {transferModal && <IbcTransferModal {...transferModal} />}
+      {ibcTransferModal && <IbcTransferModal {...ibcTransferModal} />}
+      {bridgeTransferModal && <BridgeTransferModal {...bridgeTransferModal} />}
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}

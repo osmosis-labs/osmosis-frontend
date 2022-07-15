@@ -150,6 +150,7 @@ export class ObservableAssets {
         depositUrlOverride: ibcAsset.depositUrlOverride,
         withdrawUrlOverride: ibcAsset.withdrawUrlOverride,
         sourceChainNameOverride: ibcAsset.sourceChainNameOverride,
+        originBridgeInfo: ibcAsset.originBridgeInfo,
       };
 
       if (ibcAsset.ics20ContractAddress) {

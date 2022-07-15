@@ -1,4 +1,4 @@
-import { FunctionComponent, useState, useEffect } from "react";
+import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../stores";
 import { Transfer } from "../components/complex/transfer";

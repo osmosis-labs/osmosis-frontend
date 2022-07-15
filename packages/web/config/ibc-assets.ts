@@ -27,12 +27,14 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "uusdc",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uusdc",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uusdc",
     sourceChainNameOverride: "Ethereum",
     isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      method: "deposit-address" as const,
+      sourceChains: ["Ethereum" as const],
+      tokenMinDenom: "uusdc",
+    },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -718,6 +720,16 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "ukuji",
     isVerified: true,
   },
-].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
+].filter((ibcAsset) => {
+  // validate IBC asset config
+  if (
+    (ibcAsset.depositUrlOverride || ibcAsset.depositUrlOverride) &&
+    ibcAsset.originBridgeInfo
+  ) {
+    throw new Error("Can't have URL overrides and origin bridge config");
+  }
+
+  return IS_FRONTIER ? true : ibcAsset.isVerified;
+});
 
 export default IBCAssetInfos;
