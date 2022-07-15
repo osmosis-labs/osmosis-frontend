@@ -71,6 +71,30 @@ const Home: NextPage = observer(function () {
                 break;
               }
             }
+
+            // only pools with at least 10,000 USDC
+            if (
+              "originChainId" in asset.amount.currency &&
+              asset.amount.currency.coinMinimalDenom ===
+                "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858"
+            ) {
+              if (asset.amount.toDec().gt(new Dec(10_000))) {
+                hasEnoughAssets = true;
+                break;
+              }
+            }
+
+            // only pools with at least 10,000 DAI
+            if (
+              "originChainId" in asset.amount.currency &&
+              asset.amount.currency.coinMinimalDenom ===
+                "ibc/0CD3A0285E1341859B5E86B6AB7682F023D03E97607CCC1DC95706411D866DF7"
+            ) {
+              if (asset.amount.toDec().gt(new Dec(10_000))) {
+                hasEnoughAssets = true;
+                break;
+              }
+            }
           }
 
           if (hasEnoughAssets) {
