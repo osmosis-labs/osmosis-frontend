@@ -62,9 +62,15 @@ export async function getTransferStatus(
   sendTxHash: string,
   origin = "https://api.axelarscan.io"
 ): Promise<TransferStatus> {
-  const response = await fetch(
-    `${origin}/cross-chain/transfers-status?txHash=${sendTxHash}`
-  );
-  const data = await response.json();
-  return data as TransferStatus;
+  try {
+    const response = await fetch(
+      `${origin}/cross-chain/transfers-status?txHash=${sendTxHash}`
+    );
+    const data = await response.json();
+
+    return data as TransferStatus;
+  } catch {
+    console.error("Failed to fetch transfer status for tx hash: ", sendTxHash);
+    return [];
+  }
 }

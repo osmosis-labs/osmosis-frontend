@@ -2,35 +2,33 @@ import Image from "next/image";
 import { FunctionComponent, useState, useEffect } from "react";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { useWindowSize } from "../hooks";
-import { InputProps } from "./types";
-import { Button } from "../components/buttons";
-import { InputBox } from "../components/input";
-import { CheckBox } from "../components/control";
-import { Error } from "./alert";
+import { useWindowSize } from "../../hooks";
+import { InputProps } from "../types";
+import { Button } from "../buttons";
+import { InputBox } from "../input";
+import { CheckBox } from "../control";
+import { Error } from "../alert";
 
 // WIP, waiting for finalization on new transfer modal design
 
 /** Standard display for prompting the bridging of arbitrary assets. */
 export const Transfer: FunctionComponent<
   {
-    isWithdraw?: string;
+    isWithdraw?: boolean;
     transferPath: [
-      { fromAddress: string; networkName: string; iconUrl?: string },
+      { address: string; networkName: string; iconUrl?: string },
       { bridgeName: string; bridgeIconUrl?: string } | undefined,
-      { toAddress: string; networkName: string; iconUrl?: string }
+      { address: string; networkName: string; iconUrl?: string }
     ];
     availableBalance: CoinPretty;
     transferFee?: CoinPretty;
-    withdrawAddressConfig: {
-      isEditing: boolean;
+    withdrawAddressConfig?: {
       customAddress: string;
       isValid: boolean;
-      setCustomAddress: (bech32Address: string) => string;
-      enter: () => void;
+      setCustomAddress: (bech32Address: string) => void;
     };
     errorMessage?: string;
-    toggleIsMax: () => string;
+    toggleIsMax: () => void;
   } & InputProps<string>
 > = ({
   isWithdraw,
@@ -44,6 +42,7 @@ export const Transfer: FunctionComponent<
 }) => {
   const { isMobile } = useWindowSize();
 
+  const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
   const [didVerifyWithdrawRisk, setDidVerifyWithdrawRisk] = useState(false);
 
   // Mobile only - brief copy to clipboard notification
@@ -69,7 +68,6 @@ export const Transfer: FunctionComponent<
           </span>
         )}
       </div>
-      <h6 className="md:mb-3 mb-4 md:text-base text-lg">IBC Transfer</h6>
       <section className="flex flex-col items-center">
         <div className="w-full flex-1 md:p-3 p-4 border border-white-faint rounded-2xl">
           <p className="text-white-high">From</p>
@@ -78,16 +76,13 @@ export const Transfer: FunctionComponent<
             onClick={() => {
               if (isMobile) {
                 navigator.clipboard
-                  .writeText(from.fromAddress)
+                  .writeText(from.address)
                   .then(() => setShowCopied(true));
               }
             }}
           >
             <p className="text-white-disabled truncate overflow-ellipsis">
-              {Bech32Address.shortenAddress(
-                from.fromAddress,
-                isMobile ? 20 : 100
-              )}
+              {Bech32Address.shortenAddress(from.address, isMobile ? 20 : 100)}
             </p>
             {isMobile && (
               <Image alt="copy" src="/icons/copy.svg" height={20} width={20} />
@@ -106,7 +101,7 @@ export const Transfer: FunctionComponent<
           <p className="text-white-high">To</p>
           <div className="flex gap-2 place-content-between">
             <div className="w-full flex flex-col gap-5">
-              {withdrawAddressConfig?.isEditing && (
+              {withdrawAddressConfig && isEditingWithdrawAddr && (
                 <div className="flex md:gap-1 gap-3 place-content-evenly border border-secondary-200 rounded-xl p-1 mt-2">
                   <div className="flex items-center w-[16px] shrink-0">
                     <Image
@@ -122,7 +117,7 @@ export const Transfer: FunctionComponent<
                   </p>
                 </div>
               )}
-              {withdrawAddressConfig ? (
+              {withdrawAddressConfig && isEditingWithdrawAddr ? (
                 <InputBox
                   className="w-full"
                   style="no-border"
@@ -134,7 +129,9 @@ export const Transfer: FunctionComponent<
                   labelButtons={[
                     {
                       label: "Enter",
-                      onClick: withdrawAddressConfig.enter,
+                      onClick: () => {
+                        setIsEditingWithdrawAddr(false);
+                      },
                       disabled:
                         !withdrawAddressConfig.isValid ||
                         !didVerifyWithdrawRisk,
@@ -147,14 +144,14 @@ export const Transfer: FunctionComponent<
                   onClick={() => {
                     if (isMobile) {
                       navigator.clipboard
-                        .writeText(from.fromAddress)
+                        .writeText(from.address)
                         .then(() => setShowCopied(true));
                     }
                   }}
                 >
                   <p className="text-white-disabled truncate overflow-ellipsis">
                     {Bech32Address.shortenAddress(
-                      to.toAddress,
+                      to.address,
                       isMobile ? 20 : 100
                     )}
                   </p>
@@ -168,7 +165,7 @@ export const Transfer: FunctionComponent<
                   )}
                 </div>
               )}
-              {withdrawAddressConfig.isEditing && (
+              {withdrawAddressConfig && isEditingWithdrawAddr && (
                 <div className="flex items-center place-content-end">
                   <CheckBox
                     className="after:!bg-transparent after:!border-2 after:!border-white-full"
@@ -185,13 +182,15 @@ export const Transfer: FunctionComponent<
                 </div>
               )}
             </div>
-            {withdrawAddressConfig && !withdrawAddressConfig.isEditing && (
+            {withdrawAddressConfig && !isEditingWithdrawAddr && (
               <Button
                 className="h-6 !w-fit text-caption"
                 size="xs"
                 color="primary"
                 type="outline"
-                onClick={withdrawAddressConfig.enter}
+                onClick={() => {
+                  setIsEditingWithdrawAddr(true);
+                }}
               >
                 Edit
               </Button>
