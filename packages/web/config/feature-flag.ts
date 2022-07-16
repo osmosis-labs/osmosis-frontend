@@ -882,4 +882,11 @@ export const ExternalIncentiveGaugeAllowList: {
         "ibc/A0CC0CF735BFB30E730C70019D4218A1244FF383503FF7579C9201AB93CA9293",
     },
   ],
+  "747": [
+    {
+      gaugeId: "4700",
+      denom:
+        "ibc/49C2B2C444B7C5F0066657A4DBF19D676E0D185FF721CFD3E14FA253BCB9BC04",
+    },
+  ],
 };
