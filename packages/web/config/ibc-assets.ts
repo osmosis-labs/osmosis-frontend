@@ -31,6 +31,7 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChains: ["Ethereum" as const],
       tokenMinDenom: "uusdc",

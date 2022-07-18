@@ -17,19 +17,238 @@ import { PoolCard } from "../../components/cards/";
 import { Metric } from "../../components/types";
 import { MetricLoader } from "../../components/loaders";
 import { IbcTransferModal } from "../../modals/ibc-transfer";
-import { useWindowSize } from "../../hooks";
 import { BridgeTransferModal } from "../../modals/bridge-transfer";
+import { useMetaMask, useWalletConnect } from "../../integrations/ethereum";
+import { SourceChainKey } from "../../integrations/bridge-info";
+import { Client, WalletKey } from "../../integrations/wallets";
+import { useWindowSize } from "../../hooks";
+import { TransferAssetSelectModal } from "../../modals/transfer-asset-select";
 
 const INIT_POOL_CARD_COUNT = 6;
 
 const Assets: NextPage = observer(() => {
   const { isMobile } = useWindowSize();
+  const {
+    assetsStore: { nativeBalances, ibcBalances },
+  } = useStore();
+
+  // bridge transfer modal states
+  const [ibcTransferModal, setIbcTransferModal] = useState<ComponentProps<
+    typeof IbcTransferModal
+  > | null>(null);
+  const [bridgeTransferModal, setBridgeTransferModal] = useState<ComponentProps<
+    typeof BridgeTransferModal
+  > | null>(null);
+  const [assetSelectModal, setAssetSelectModal] = useState<ComponentProps<
+    typeof TransferAssetSelectModal
+  > | null>(null);
+
+  const [_showWcUri, setShowWcUri] = useState<string | null>(null);
+  // eth client wallets
+  const metamask = useMetaMask();
+  const walletConnectEth = useWalletConnect((uri) => setShowWcUri(uri ?? null));
+
+  /** Aggregate of non-Keplr wallet clients. */
+
+  const ibcTransfer = useCallback(
+    (mode: "deposit" | "withdraw", balance: typeof ibcBalances[0]) => {
+      const currency = balance.balance.currency;
+      // IBC multihop currency
+      const modifiedCurrency =
+        mode === "deposit" && balance.depositingSrcMinDenom
+          ? {
+              coinDecimals: currency.coinDecimals,
+              coinGeckoId: currency.coinGeckoId,
+              coinImageUrl: currency.coinImageUrl,
+              coinDenom: currency.coinDenom,
+              coinMinimalDenom: "",
+              paths: (currency as IBCCurrency).paths.slice(0, 1),
+              originChainId: balance.chainInfo.chainId,
+              originCurrency: {
+                coinDecimals: currency.coinDecimals,
+                coinImageUrl: currency.coinImageUrl,
+                coinDenom: currency.coinDenom,
+                coinMinimalDenom: balance.depositingSrcMinDenom,
+              },
+            }
+          : currency;
+
+      const {
+        chainInfo: { chainId: counterpartyChainId },
+        sourceChannelId,
+        destChannelId,
+      } = balance;
+
+      setIbcTransferModal({
+        isOpen: true,
+        onRequestClose: () => setIbcTransferModal(null),
+        currency: modifiedCurrency as IBCCurrency,
+        counterpartyChainId: counterpartyChainId,
+        sourceChannelId,
+        destChannelId,
+        isWithdraw: mode === "withdraw",
+        ics20ContractAddress:
+          "ics20ContractAddress" in balance
+            ? balance.ics20ContractAddress
+            : undefined,
+      });
+    },
+    [setIbcTransferModal]
+  );
+
+  const selectAsset = useCallback(
+    (
+      mode: "deposit" | "withdraw",
+      denom: string,
+      walletClients: Client[],
+      /** `undefined` if IBC asset. */
+      walletKey?: WalletKey,
+      /** `undefined` if IBC asset. */
+      sourceChainKey?: SourceChainKey
+    ) => {
+      const assetSelectBal = ibcBalances.find(
+        ({ balance }) => balance.currency.coinDenom === denom
+      );
+      const client = walletClients.find(({ key }) => key === walletKey);
+      if (
+        assetSelectBal &&
+        assetSelectBal.originBridgeInfo &&
+        client &&
+        walletKey &&
+        sourceChainKey
+      ) {
+        // bridge transfer without initial token known
+        setBridgeTransferModal({
+          isOpen: true,
+          onRequestClose: () => setBridgeTransferModal(null),
+          ...assetSelectBal.originBridgeInfo,
+          client,
+          balance: assetSelectBal,
+          sourceChainKey,
+        });
+      } else if (assetSelectBal) {
+        ibcTransfer(mode, assetSelectBal);
+      }
+      setAssetSelectModal(null);
+    },
+    [ibcBalances, setBridgeTransferModal, ibcTransfer]
+  );
+
+  const openTransferModal = useCallback(
+    (mode: "deposit" | "withdraw", chainId: string, coinDenom: string) => {
+      const balance = ibcBalances.find(
+        (bal) =>
+          bal.chainInfo.chainId === chainId &&
+          bal.balance.currency.coinDenom === coinDenom
+      );
+
+      if (!balance) {
+        setIbcTransferModal(null);
+        setBridgeTransferModal(null);
+        console.error(
+          "Chain ID and coin denom couldn't be used to find IBC asset"
+        );
+        return;
+      }
+
+      if (balance.originBridgeInfo) {
+        // bridge integration
+        const walletClients = [metamask, walletConnectEth] as Client[];
+        const applicableWallets = walletClients.filter(({ key }) =>
+          balance.originBridgeInfo!.wallets.includes(key)
+        );
+        const dependentConnectedWallet = applicableWallets.find(
+          (wallet) => wallet.isConnected
+        );
+
+        if (dependentConnectedWallet && dependentConnectedWallet.chain) {
+          setBridgeTransferModal({
+            isOpen: true,
+            onRequestClose: () => setBridgeTransferModal(null),
+            balance,
+            client: dependentConnectedWallet,
+            // assume selected chain is desired source network
+            sourceChainKey: dependentConnectedWallet.chain as SourceChainKey,
+          });
+        } else if (applicableWallets.length > 0) {
+          setAssetSelectModal({
+            isOpen: true,
+            isWithdraw: mode === "withdraw",
+            onRequestClose: () => setAssetSelectModal(null),
+            tokens: ibcBalances.map(({ balance, originBridgeInfo }) => ({
+              token: balance,
+              originBridgeInfo,
+            })),
+            initialToken: {
+              token: balance.balance.currency,
+              originBridgeInfo: balance.originBridgeInfo,
+            },
+            onSelectAsset: (denom, walletKey, networkKey) =>
+              selectAsset(mode, denom, walletClients, walletKey, networkKey),
+            walletClients,
+          });
+        } else {
+          console.warn(
+            "No nonKeplr wallets found for this bridge asset:",
+            balance.balance.currency.coinDenom
+          );
+        }
+      } else {
+        ibcTransfer(mode, balance);
+      }
+    },
+    [
+      ibcBalances,
+      setIbcTransferModal,
+      metamask,
+      walletConnectEth,
+      ibcTransfer,
+      selectAsset,
+    ]
+  );
+
+  /** Always show the asset select modal, giving user opportunity to
+   * switch wallets, or transfer the most relevant asset.
+   */
+  const handleTransferIntent = useCallback(
+    (intent: "deposit" | "withdraw") => {
+      const walletClients = [metamask, walletConnectEth] as Client[];
+      setAssetSelectModal({
+        isOpen: true,
+        isWithdraw: intent === "withdraw",
+        onRequestClose: () => setAssetSelectModal(null),
+        tokens: ibcBalances.map(({ balance, originBridgeInfo }) => ({
+          token: balance,
+          originBridgeInfo,
+        })),
+        onSelectAsset: (denom, walletKey, networkKey) =>
+          selectAsset(intent, denom, walletClients, walletKey, networkKey),
+        walletClients,
+      });
+    },
+    [ibcBalances, metamask, walletConnectEth, selectAsset]
+  );
 
   return (
     <main className="bg-background">
-      <AssetsOverview />
+      <AssetsOverview
+        onDepositIntent={() => handleTransferIntent("deposit")}
+        onWithdrawIntent={() => handleTransferIntent("withdraw")}
+      />
+      {assetSelectModal && <TransferAssetSelectModal {...assetSelectModal} />}
+      {ibcTransferModal && <IbcTransferModal {...ibcTransferModal} />}
+      {bridgeTransferModal && <BridgeTransferModal {...bridgeTransferModal} />}
+      <AssetsTable
+        nativeBalances={nativeBalances}
+        ibcBalances={ibcBalances}
+        onDeposit={(chainId, coinDenom) =>
+          openTransferModal("deposit", chainId, coinDenom)
+        }
+        onWithdraw={(chainId, coinDenom) =>
+          openTransferModal("withdraw", chainId, coinDenom)
+        }
+      />
       {!isMobile && <PoolAssets />}
-      <ChainAssets />
       <section className="bg-surface py-2">
         <DepoolingTable
           className="p-10 md:p-5 max-w-container mx-auto"
@@ -40,7 +259,10 @@ const Assets: NextPage = observer(() => {
   );
 });
 
-const AssetsOverview: FunctionComponent = observer(() => {
+const AssetsOverview: FunctionComponent<{
+  onWithdrawIntent: () => void;
+  onDepositIntent: () => void;
+}> = observer(({ onDepositIntent, onWithdrawIntent }) => {
   const { assetsStore } = useStore();
   const { isMobile } = useWindowSize();
 
@@ -62,6 +284,10 @@ const AssetsOverview: FunctionComponent = observer(() => {
   return (
     <Overview
       title={isMobile ? "My Osmosis Assets" : <h4>My Osmosis Assets</h4>}
+      titleButtons={[
+        { label: "Deposit", onClick: onDepositIntent },
+        { label: "Withdraw", onClick: onWithdrawIntent },
+      ]}
       primaryOverviewLabels={[
         {
           label: "Total Assets",
@@ -101,101 +327,6 @@ const PoolAssets: FunctionComponent = observer(() => {
         <PoolCards {...{ showAllPools, ownedPoolIds, setShowAllPools }} />
       </div>
     </section>
-  );
-});
-
-const ChainAssets: FunctionComponent = observer(() => {
-  const {
-    assetsStore: { nativeBalances, ibcBalances },
-  } = useStore();
-
-  const [ibcTransferModal, setIbcTransferModal] = useState<ComponentProps<
-    typeof IbcTransferModal
-  > | null>(null);
-  const [bridgeTransferModal, setBridgeTransferModal] = useState<ComponentProps<
-    typeof BridgeTransferModal
-  > | null>(null);
-
-  const openTransferModal = useCallback(
-    (mode: "deposit" | "withdraw", chainId: string, coinDenom: string) => {
-      const balance = ibcBalances.find(
-        (bal) =>
-          bal.chainInfo.chainId === chainId &&
-          bal.balance.currency.coinDenom === coinDenom
-      );
-
-      if (!balance) {
-        setIbcTransferModal(null);
-        return;
-      }
-
-      if (balance.originBridgeInfo) {
-        setBridgeTransferModal({
-          isOpen: true,
-          onRequestClose: () => setBridgeTransferModal(null),
-          ...balance.originBridgeInfo,
-        });
-      } else {
-        const currency = balance.balance.currency;
-        // IBC multihop currency
-        const modifiedCurrency =
-          mode === "deposit" && balance.depositingSrcMinDenom
-            ? {
-                coinDecimals: currency.coinDecimals,
-                coinGeckoId: currency.coinGeckoId,
-                coinImageUrl: currency.coinImageUrl,
-                coinDenom: currency.coinDenom,
-                coinMinimalDenom: "",
-                paths: (currency as IBCCurrency).paths.slice(0, 1),
-                originChainId: balance.chainInfo.chainId,
-                originCurrency: {
-                  coinDecimals: currency.coinDecimals,
-                  coinImageUrl: currency.coinImageUrl,
-                  coinDenom: currency.coinDenom,
-                  coinMinimalDenom: balance.depositingSrcMinDenom,
-                },
-              }
-            : currency;
-
-        const {
-          chainInfo: { chainId: counterpartyChainId },
-          sourceChannelId,
-          destChannelId,
-        } = balance;
-
-        setIbcTransferModal({
-          isOpen: true,
-          onRequestClose: () => setIbcTransferModal(null),
-          currency: modifiedCurrency as IBCCurrency,
-          counterpartyChainId: counterpartyChainId,
-          sourceChannelId,
-          destChannelId,
-          isWithdraw: mode === "withdraw",
-          ics20ContractAddress:
-            "ics20ContractAddress" in balance
-              ? balance.ics20ContractAddress
-              : undefined,
-        });
-      }
-    },
-    [ibcBalances, setIbcTransferModal]
-  );
-
-  return (
-    <>
-      {ibcTransferModal && <IbcTransferModal {...ibcTransferModal} />}
-      {bridgeTransferModal && <BridgeTransferModal {...bridgeTransferModal} />}
-      <AssetsTable
-        nativeBalances={nativeBalances}
-        ibcBalances={ibcBalances}
-        onDeposit={(chainId, coinDenom) =>
-          openTransferModal("deposit", chainId, coinDenom)
-        }
-        onWithdraw={(chainId, coinDenom) =>
-          openTransferModal("withdraw", chainId, coinDenom)
-        }
-      />
-    </>
   );
 });
 

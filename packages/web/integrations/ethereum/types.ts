@@ -1,26 +1,20 @@
+import { Client } from "../wallets";
+
 export type Transaction =
   | {
       /** Hex address. */
       to?: string;
-      /** Amount in gwei. To be converted to hex. */
+      /** Amount in gwei. To be converted to hex. Use a big number lib to do operations on amounts. */
       value?: string;
       data?: string;
     }
   | unknown[];
 
-export type Methods = "eth_getBalance" | "eth_sendTransaction" | "eth_call";
+export type Method = "eth_getBalance" | "eth_sendTransaction" | "eth_call";
 
-export type Client = {
-  /** `undefined` if not connected. Stored in `localStorage`. */
-  accountAddress?: string;
-  /** Human readable chain, falls back to hex ID (`0x...`) if unknown. */
-  chain?: string;
-  enable: () => void;
-  disable: () => void;
-  send: (methods: Methods, ethTx: Transaction) => Promise<unknown>;
-};
+export type EthClient = Client<{ method: Method; ethTx: Transaction }>;
 
-/* Ethereum chains: https://docs.metamask.io/guide/ethereum-provider.html#chain-ids */
+/** Ethereum chains: https://docs.metamask.io/guide/ethereum-provider.html#chain-ids */
 export const ChainNames: { [chainId: string]: string } = {
   "0x1": "Ethereum",
   "0x3": "Ropsten Test Network",

@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import WalletConnect from "@walletconnect/client";
 import { toHex } from "web3-utils";
 import { useLocalStorageState } from "../../hooks";
-import { Client, ChainNames } from "./types";
+import { EthClient, ChainNames } from "./types";
 
 export function useWalletConnect(
   setQrCodeModalUri: (uri?: string) => void,
   bridge = "https://bridge.walletconnect.org"
-): Client {
+): EthClient {
   const [connector] = useState(
     () =>
       new WalletConnect({
@@ -45,21 +45,33 @@ export function useWalletConnect(
   }, [connector, setAddress, setChainId]);
 
   return {
+    key: "walletconnect",
     accountAddress: address ?? undefined,
     chain: chainId ? ChainNames[chainId] : undefined,
+    isConnected: !!address,
+    displayInfo: {
+      iconUrl: "/icons/walletconnect.svg",
+      displayName: "WalletConnect",
+    },
     enable: () => {
-      if (!connector.connected) {
-        connector.createSession().then(() => connector.connect());
-      } else {
-        console.warn("WalletConnect: Already connected");
-      }
+      return new Promise<void>((resolve, reject) => {
+        if (!connector.connected) {
+          connector
+            .createSession()
+            .then(() => connector.connect().then(() => resolve()))
+            .catch(reject);
+        } else {
+          console.warn("WalletConnect: Already connected");
+          resolve();
+        }
+      });
     },
     disable: () => {
       withConnectedClient(connector, address, async (conn) => {
         conn.killSession().then(() => setAddress(null));
       });
     },
-    send: (method, ethTx) => {
+    send: ({ method, ethTx }) => {
       return withConnectedClient(connector, address, (conn, addr) => {
         return conn.sendCustomRequest({
           method,
