@@ -1,11 +1,11 @@
-import { FunctionComponent, ReactElement } from "react";
+import { ComponentProps, FunctionComponent, ReactElement } from "react";
+import classNames from "classnames";
 import { useWindowSize } from "../../hooks";
 import { OverviewLabelValue } from "./overview-label-value";
 import { Button } from "../buttons/button";
-import { ButtonProps } from "../buttons/types";
-import { Metric } from "../types";
+import { CustomClasses, Metric } from "../types";
 
-interface LabelButton extends ButtonProps {
+interface LabelButton extends ComponentProps<typeof Button>, CustomClasses {
   label: string;
 }
 
@@ -67,15 +67,15 @@ export const Overview: FunctionComponent<Props> = ({
               <>{title}</>
             )}
             <div className="flex flex-wrap md:gap-2 gap-5">
-              {titleButtons?.slice(0, 2).map(({ label, onClick }, index) => (
+              {titleButtons?.slice(0, 2).map((props, index) => (
                 <Button
-                  className="md:px-1"
                   key={index}
                   color="primary"
                   size="sm"
-                  onClick={onClick}
+                  {...props}
+                  className={classNames("md:px-1", props.className)}
                 >
-                  <span className="md:caption">{label}</span>
+                  <span className="md:caption">{props.label}</span>
                 </Button>
               ))}
             </div>

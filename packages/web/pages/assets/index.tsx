@@ -249,7 +249,7 @@ const Assets: NextPage = observer(() => {
         }
       />
       {!isMobile && <PoolAssets />}
-      <section className="bg-surface py-2">
+      <section className="bg-surface">
         <DepoolingTable
           className="p-10 md:p-5 max-w-container mx-auto"
           tableClassName="md:w-screen md:-mx-5"
@@ -285,8 +285,16 @@ const AssetsOverview: FunctionComponent<{
     <Overview
       title={isMobile ? "My Osmosis Assets" : <h4>My Osmosis Assets</h4>}
       titleButtons={[
-        { label: "Deposit", onClick: onDepositIntent },
-        { label: "Withdraw", onClick: onWithdrawIntent },
+        {
+          label: "Deposit",
+          onClick: onDepositIntent,
+        },
+        {
+          label: "Withdraw",
+          type: "outline",
+          className: "bg-primary-200/30",
+          onClick: onWithdrawIntent,
+        },
       ]}
       primaryOverviewLabels={[
         {
@@ -322,7 +330,7 @@ const PoolAssets: FunctionComponent = observer(() => {
 
   return (
     <section className="bg-background">
-      <div className="max-w-container mx-auto md:px-4 px-10 py-5">
+      <div className="max-w-container mx-auto md:px-4 p-10">
         <h5>My Pools</h5>
         <PoolCards {...{ showAllPools, ownedPoolIds, setShowAllPools }} />
       </div>
