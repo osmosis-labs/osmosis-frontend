@@ -52,7 +52,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           onClick={onRequestClose}
         >
           <Image
-            src={isMobile ? "/icons/close-dark.svg" : "/icons/close.svg"}
+            src={"/icons/close-dark.svg"}
             alt="close icon"
             width={isMobile ? 24 : 32}
             height={isMobile ? 24 : 32}

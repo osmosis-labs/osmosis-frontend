@@ -60,17 +60,40 @@ export const TransferAssetSelectModal: FunctionComponent<
     string | null
   >("transfer_asset_select_last", null);
 
+  const [selectedSourceChainKey, setSelectedSourceChainKey] = useState(() => {
+    // set from initiallySelectedToken
+    if (
+      initiallySelectedToken &&
+      initiallySelectedToken.originBridgeInfo &&
+      typeof initiallySelectedToken.originBridgeInfo.sourceChains !==
+        "undefined" &&
+      initiallySelectedToken.originBridgeInfo.sourceChains.length > 0
+    ) {
+      // axelar
+      return initiallySelectedToken.originBridgeInfo.sourceChains[0];
+    }
+    return null;
+  });
   const [selectedTokenDenom, setSelectedTokenDenom] = useState(() => {
     if (initiallySelectedToken) {
       return initiallySelectedToken.token.coinDenom;
     } else {
       // highest balance or first in list
-      return (
+      const denom =
         new DataSorter([...tokens.map((t) => t.token)])
           .process()
           .find((t) => t.currency.coinDenom === lastSelectedDenom)?.denom ||
-        tokens[0].token.denom
+        tokens[0].token.denom;
+
+      // set chain-select to recommended selected token
+      const { sourceChains } = tokens.find(
+        ({ token }) => token.currency.coinDenom === denom
+      )?.originBridgeInfo || { sourceChains: [] };
+      setSelectedSourceChainKey(
+        sourceChains.length > 0 ? sourceChains[0] : null
       );
+
+      return denom;
     }
   });
   const selectedToken = useMemo(
@@ -93,19 +116,6 @@ export const TransferAssetSelectModal: FunctionComponent<
     () => applicableWallets.find((w) => w.key === selectedWalletKey),
     [applicableWallets, selectedWalletKey]
   );
-  const [selectedSourceChainKey, setSelectedSourceChainKey] = useState(() => {
-    if (
-      initiallySelectedToken &&
-      initiallySelectedToken.originBridgeInfo &&
-      typeof initiallySelectedToken.originBridgeInfo.sourceChains !==
-        "undefined" &&
-      initiallySelectedToken.originBridgeInfo.sourceChains.length > 0
-    ) {
-      // axelar
-      return initiallySelectedToken.originBridgeInfo.sourceChains[0];
-    }
-    return null;
-  });
   const setValidSourceChain = useCallback(
     (selectedSourceChainKey: string) => {
       if (selectedToken && selectedToken.originBridgeInfo) {

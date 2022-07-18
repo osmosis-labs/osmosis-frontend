@@ -209,7 +209,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
   ) ?? {};
 
   return (
-    <section className="min-h-screen md:bg-background bg-surface">
+    <section className="md:bg-background bg-surface">
       {showPreTransfer && (
         <PreTransferModal
           isOpen={showPreTransfer}
