@@ -70,7 +70,7 @@ export const TransferAssetSelectModal: FunctionComponent<
       initiallySelectedToken.originBridgeInfo.sourceChains.length > 0
     ) {
       // axelar
-      return initiallySelectedToken.originBridgeInfo.sourceChains[0];
+      return initiallySelectedToken.originBridgeInfo.sourceChains[0].id;
     }
     return null;
   });
@@ -90,7 +90,7 @@ export const TransferAssetSelectModal: FunctionComponent<
         ({ token }) => token.currency.coinDenom === denom
       )?.originBridgeInfo || { sourceChains: [] };
       setSelectedSourceChainKey(
-        sourceChains.length > 0 ? sourceChains[0] : null
+        sourceChains.length > 0 ? sourceChains[0].id : null
       );
 
       return denom;
@@ -121,9 +121,9 @@ export const TransferAssetSelectModal: FunctionComponent<
       if (selectedToken && selectedToken.originBridgeInfo) {
         if (
           typeof selectedToken.originBridgeInfo.sourceChains !== "undefined" &&
-          selectedToken.originBridgeInfo.sourceChains.includes(
-            selectedSourceChainKey as SourceChain
-          )
+          selectedToken.originBridgeInfo.sourceChains
+            .map((sc) => sc.id)
+            .includes(selectedSourceChainKey as SourceChain)
         ) {
           // axelar
           setSelectedSourceChainKey(

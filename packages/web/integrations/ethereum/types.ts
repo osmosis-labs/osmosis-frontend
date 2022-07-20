@@ -6,13 +6,13 @@ export type Transaction =
       to?: string;
       /** Amount in gwei. To be converted to hex. Use a big number lib to do operations on amounts. */
       value?: string;
-      data?: string;
+      data?: string | unknown[];
     }
   | unknown[];
 
 export type Method = "eth_getBalance" | "eth_sendTransaction" | "eth_call";
 
-export type EthClient = Client<{ method: Method; ethTx: Transaction }>;
+export type EthClient = Client<{ method: Method; params: Transaction }>;
 
 /** Ethereum chains: https://docs.metamask.io/guide/ethereum-provider.html#chain-ids */
 export const ChainNames: { [chainId: string]: string } = {

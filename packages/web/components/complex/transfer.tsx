@@ -14,13 +14,13 @@ import { Error } from "../alert";
 /** Standard display for prompting the bridging of arbitrary assets. */
 export const Transfer: FunctionComponent<
   {
-    isWithdraw?: boolean;
+    isWithdraw: boolean;
     transferPath: [
       { address: string; networkName: string; iconUrl?: string },
       { bridgeName: string; bridgeIconUrl?: string } | undefined,
       { address: string; networkName: string; iconUrl?: string }
     ];
-    availableBalance: CoinPretty;
+    availableBalance?: CoinPretty;
     transferFee?: CoinPretty;
     withdrawAddressConfig?: {
       customAddress: string;
@@ -60,7 +60,6 @@ export const Transfer: FunctionComponent<
       <div className="relative md:mb-5 mb-10 flex items-center w-full">
         <h5 className="md:text-lg text-xl">
           {isWithdraw ? "Withdraw" : "Deposit"}
-          {}
         </h5>
         {showCopied && (
           <span className="absolute inset-[45%] -top-0 w-fit h-fit rounded-full px-1.5 subtitle2 border-2 border-primary-200 bg-primary-200/60">
@@ -202,16 +201,18 @@ export const Transfer: FunctionComponent<
         Amount To {isWithdraw ? "Withdraw" : "Deposit"}
       </h6>
       <div className="md:mt-3 mt-4 w-full md:p-0 p-5 md:border-0 border border-secondary-50 border-opacity-60 rounded-2xl">
-        <p className="md:text-sm text-base mb-2">
-          Available balance:{" "}
-          <span className="text-primary-50">
-            {availableBalance
-              .upperCase(true)
-              .trim(true)
-              .maxDecimals(6)
-              .toString()}
-          </span>
-        </p>
+        {availableBalance && (
+          <p className="md:text-sm text-base mb-2">
+            Available balance:{" "}
+            <span className="text-primary-50">
+              {availableBalance
+                .upperCase(true)
+                .trim(true)
+                .maxDecimals(6)
+                .toString()}
+            </span>
+          </p>
+        )}
         <InputBox
           type="number"
           className="text-h6"

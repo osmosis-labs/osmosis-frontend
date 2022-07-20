@@ -33,7 +33,12 @@ export const IBCAssetInfos: (IBCAsset & {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChains: ["Ethereum" as const],
+      sourceChains: [
+        {
+          id: "Ethereum" as const,
+          erc20ContractAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        },
+      ],
       tokenMinDenom: "uusdc",
     },
   },

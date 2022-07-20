@@ -6,8 +6,13 @@ export interface AxelarBridgeConfig {
    *  See this FigJam for axlUSDC case:
    *  https://www.figma.com/file/utRjpBIvD7sRm31vxif7hF/Bridge-Integration-Diagram?node-id=340%3A935
    */
-  sourceChains: SourceChain[];
-  /** Ex: `uusdc`.
+  sourceChains: {
+    id: SourceChain;
+    /** Address of origin ERC20 token for that origin chain. Leave blank to prefer native ETH currency if `id` is not a Cosmos chain in `ChainInfo`.
+     */
+    erc20ContractAddress?: string;
+  }[];
+  /** Ex: `uusdc`. NOTE: Will get currency info from `originCurrency` on the IBC balance (from registrar).
    *  See: https://docs.axelar.dev/resources/mainnet#assets
    */
   tokenMinDenom: string;
@@ -28,3 +33,14 @@ export type SourceChain =
   | "terra"
   | "secret"
   | "kujira";
+
+/** Maps axelar chain ids => cosmos chain ids */
+export const SourceChainCosmosChainIdMap: { [sourceChain: string]: string } = {
+  cosmos: "cosmoshub-4",
+  emoney: "emoney-3",
+  juno: "juno-1",
+  injective: "injective-1",
+  terra: "phoenix-1", // TERRA 2.0
+  secret: "secret-4",
+  kujira: "kaiyo-1",
+};

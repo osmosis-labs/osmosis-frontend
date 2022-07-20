@@ -18,11 +18,11 @@ import { Metric } from "../../components/types";
 import { MetricLoader } from "../../components/loaders";
 import { IbcTransferModal } from "../../modals/ibc-transfer";
 import { BridgeTransferModal } from "../../modals/bridge-transfer";
+import { TransferAssetSelectModal } from "../../modals/transfer-asset-select";
 import { useMetaMask, useWalletConnect } from "../../integrations/ethereum";
 import { SourceChainKey } from "../../integrations/bridge-info";
 import { Client, WalletKey } from "../../integrations/wallets";
 import { useWindowSize } from "../../hooks";
-import { TransferAssetSelectModal } from "../../modals/transfer-asset-select";
 
 const INIT_POOL_CARD_COUNT = 6;
 
@@ -122,6 +122,7 @@ const Assets: NextPage = observer(() => {
           isOpen: true,
           onRequestClose: () => setBridgeTransferModal(null),
           ...assetSelectBal.originBridgeInfo,
+          isWithdraw: mode === "withdraw",
           client,
           balance: assetSelectBal,
           sourceChainKey,
@@ -165,6 +166,7 @@ const Assets: NextPage = observer(() => {
           setBridgeTransferModal({
             isOpen: true,
             onRequestClose: () => setBridgeTransferModal(null),
+            isWithdraw: mode === "withdraw",
             balance,
             client: dependentConnectedWallet,
             // assume selected chain is desired source network
@@ -284,18 +286,22 @@ const AssetsOverview: FunctionComponent<{
   return (
     <Overview
       title={isMobile ? "My Osmosis Assets" : <h4>My Osmosis Assets</h4>}
-      titleButtons={[
-        {
-          label: "Deposit",
-          onClick: onDepositIntent,
-        },
-        {
-          label: "Withdraw",
-          type: "outline",
-          className: "bg-primary-200/30",
-          onClick: onWithdrawIntent,
-        },
-      ]}
+      titleButtons={
+        isMobile
+          ? undefined
+          : [
+              {
+                label: "Deposit",
+                onClick: onDepositIntent,
+              },
+              {
+                label: "Withdraw",
+                type: "outline",
+                className: "bg-primary-200/30",
+                onClick: onWithdrawIntent,
+              },
+            ]
+      }
       primaryOverviewLabels={[
         {
           label: "Total Assets",

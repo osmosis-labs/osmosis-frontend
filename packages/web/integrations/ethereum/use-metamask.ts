@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { toHex } from "web3-utils";
+import { toHex, isAddress } from "web3-utils";
 import { useLocalStorageState } from "../../hooks";
 import type { EthereumProvider } from "../../window";
 import { ChainNames, EthClient } from "./types";
@@ -22,12 +22,11 @@ export function useMetaMask(): EthClient {
         setAddress(account);
       };
 
-      const closeConnection = () => {
-        setAddress(null);
-      };
       eth.on("accountsChanged", handleAccountChanged);
       eth.on("chainChanged", (chainId) => setChainId(chainId));
-      eth.on("close", closeConnection);
+      eth.on("disconnect", () => {
+        setAddress(null);
+      });
     });
 
     return () => {
@@ -73,39 +72,46 @@ export function useMetaMask(): EthClient {
       setAddress(null);
       setChainId(null);
     },
-    send: ({ method, ethTx }) => {
-      if (!address) {
+    send: ({ method, params: ethTx }) => {
+      if (!address || !isAddress(address)) {
         return Promise.reject(
           "Metamask: can't send request, account not connected"
         );
       }
 
-      withEthInWindow((ethereum) => {
-        return ethereum.request({
-          method,
-          params: Array.isArray(ethTx)
-            ? ethTx
-            : {
-                from: address,
-                ...ethTx,
-                value: ethTx.value ? toHex(ethTx.value) : undefined,
-              },
-        });
-      });
-
-      return Promise.reject(
-        "Metamask: failed to send message: ethereum not in window"
+      return (
+        withEthInWindow((ethereum) => {
+          return ethereum.request({
+            method,
+            params: Array.isArray(ethTx)
+              ? ethTx
+              : [
+                  {
+                    from: address,
+                    ...ethTx,
+                    value: ethTx.value ? toHex(ethTx.value) : undefined,
+                  },
+                ],
+          });
+        }) ||
+        Promise.reject(
+          "Metamask: failed to send message: ethereum not in window"
+        )
       );
     },
   };
 }
 
-function withEthInWindow(doTask: (eth: EthereumProvider) => void) {
+function withEthInWindow<T>(
+  doTask: (eth: EthereumProvider) => T | undefined,
+  defaultRet?: T
+) {
   if (
     typeof window !== "undefined" &&
     typeof window.ethereum !== "undefined" &&
     window.ethereum.isMetaMask
   ) {
-    doTask(window.ethereum);
+    return doTask(window.ethereum);
   }
+  return defaultRet;
 }

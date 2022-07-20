@@ -10,11 +10,13 @@ const AxelarTransfer = dynamic(
   () => import("../integrations/axelar/transfer"),
   { ssr: false }
 );
+
 /** Modal that lets user transfer via non-IBC bridges. */
 export const BridgeTransferModal: FunctionComponent<
   ModalBaseProps & {
+    isWithdraw: boolean;
     balance: IBCBalance;
-    /** Selected network ke. */
+    /** Selected network key. */
     sourceChainKey: SourceChainKey;
     client: Client;
   }
@@ -24,7 +26,7 @@ export const BridgeTransferModal: FunctionComponent<
     return null;
   }
   const { bridge } = balance.originBridgeInfo;
-  // TODO: switch on which bridge is being used
+
   return (
     <ModalBase {...props}>
       {(() => {
@@ -32,8 +34,9 @@ export const BridgeTransferModal: FunctionComponent<
           case "axelar":
             return (
               <AxelarTransfer
-                isWithdraw={true}
+                isWithdraw={props.isWithdraw}
                 client={client as EthClient}
+                osmosisBalance={balance}
                 {...balance.originBridgeInfo}
                 selectedSourceChainKey={sourceChainKey}
               />

@@ -71,7 +71,7 @@ export function useWalletConnect(
         conn.killSession().then(() => setAddress(null));
       });
     },
-    send: ({ method, ethTx }) => {
+    send: ({ method, params: ethTx }) => {
       return withConnectedClient(connector, address, (conn, addr) => {
         return conn.sendCustomRequest({
           method,

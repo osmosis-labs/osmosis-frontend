@@ -13,7 +13,9 @@
     "pre-commit": "lint-staged"
   },
   "dependencies": {
+    "@axelar-network/axelarjs-sdk": "^0.6.13",
     "@cosmjs/launchpad": "^0.26.5",
+    "@ethersproject/abi": "^5.6.4",
     "@keplr-wallet/common": "^0.10.4",
     "@keplr-wallet/cosmos": "^0.10.4",
     "@keplr-wallet/crypto": "^0.10.4",
