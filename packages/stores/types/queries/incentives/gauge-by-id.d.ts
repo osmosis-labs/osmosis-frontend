@@ -1,7 +1,7 @@
 import { ObservableChainQueryMap, ChainGetter, ObservableChainQuery, QueryResponse } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
 import { GaugeById } from "./types";
-import { AppCurrency } from "@keplr-wallet/types";
+import type { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 export declare class ObservableQueryGuageById extends ObservableChainQuery<GaugeById> {

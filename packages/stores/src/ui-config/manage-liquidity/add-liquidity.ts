@@ -12,7 +12,7 @@ import {
   Int,
   RatePretty,
 } from "@keplr-wallet/unit";
-import { Currency } from "@keplr-wallet/types";
+import type { Currency } from "@keplr-wallet/types";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import {
   ObservableQueryPools,

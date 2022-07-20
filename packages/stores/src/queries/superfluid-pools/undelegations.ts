@@ -10,7 +10,7 @@ import {
 } from "./types";
 import { makeObservable } from "mobx";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { Currency } from "@keplr-wallet/types";
+import type { Currency } from "@keplr-wallet/types";
 import { computedFn } from "mobx-utils";
 import dayjs from "dayjs";
 

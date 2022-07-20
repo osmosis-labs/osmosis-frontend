@@ -1,4 +1,4 @@
-import { ChainInfo, AppCurrency } from "@keplr-wallet/types";
+import type { ChainInfo, AppCurrency } from "@keplr-wallet/types";
 import { ChainStore } from "@keplr-wallet/stores";
 export declare class LPCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
     protected readonly chainStore: ChainStore<C>;

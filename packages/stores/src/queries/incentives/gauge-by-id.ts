@@ -8,7 +8,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { GaugeById } from "./types";
 import { computed } from "mobx";
 import { computedFn } from "mobx-utils";
-import { AppCurrency } from "@keplr-wallet/types";
+import type { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";

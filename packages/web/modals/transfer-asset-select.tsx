@@ -7,7 +7,7 @@ import {
   useMemo,
   useCallback,
 } from "react";
-import { AppCurrency } from "@keplr-wallet/types";
+import type { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { TokenSelect } from "../components/control";
 import { NonKeplrWalletCard } from "../components/cards";

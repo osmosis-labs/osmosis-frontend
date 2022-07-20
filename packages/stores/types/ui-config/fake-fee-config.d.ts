@@ -1,7 +1,7 @@
 import { FeeType, IFeeConfig, TxChainSetter } from "@keplr-wallet/hooks";
 import { ChainGetter, CoinPrimitive } from "@keplr-wallet/stores";
 import { CoinPretty } from "@keplr-wallet/unit";
-import { Currency } from "@keplr-wallet/types";
+import type { Currency } from "@keplr-wallet/types";
 import { StdFee } from "@cosmjs/launchpad";
 /**
  * FakeFeeConfig is used to set the fee with the high gas price step.

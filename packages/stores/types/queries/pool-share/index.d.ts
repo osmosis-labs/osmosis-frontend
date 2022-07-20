@@ -1,5 +1,5 @@
 import { ObservableQueryBalances } from "@keplr-wallet/stores";
-import { Currency, FiatCurrency } from "@keplr-wallet/types";
+import type { Currency, FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 import { ObservableQueryAccountLocked, ObservableQueryAccountLockedCoins, ObservableQueryAccountUnlockingCoins } from "../lockup";

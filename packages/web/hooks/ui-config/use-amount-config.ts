@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { AmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
-import { AppCurrency } from "@keplr-wallet/types";
+import type { AppCurrency } from "@keplr-wallet/types";
 
 /** Maintains a single instance of `AmountConfig` for React view lifecycle.
  *  Updates `chainId`, `sender`, `sendCurrency`, and `feeConfig` on render.

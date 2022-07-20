@@ -1,4 +1,4 @@
-import { AppCurrency } from "@keplr-wallet/types";
+import type { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { OriginBridgeInfo } from "../../integrations/bridge-info";
 

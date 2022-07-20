@@ -10,7 +10,7 @@ import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Duration } from "dayjs/plugin/duration";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { AppCurrency } from "@keplr-wallet/types";
+import type { AppCurrency } from "@keplr-wallet/types";
 
 export class ObservableQueryAccountLockedInner extends ObservableChainQuery<AccountLockedLongerDuration> {
   constructor(

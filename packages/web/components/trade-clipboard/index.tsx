@@ -1,5 +1,5 @@
 import { WalletStatus } from "@keplr-wallet/stores";
-import { Currency } from "@keplr-wallet/types";
+import type { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Pool } from "@osmosis-labs/pools";
 import classNames from "classnames";

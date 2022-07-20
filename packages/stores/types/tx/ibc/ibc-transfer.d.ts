@@ -1,4 +1,4 @@
-import { IBCCurrency } from "@keplr-wallet/types";
+import type { IBCCurrency } from "@keplr-wallet/types";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { IBCTransferHistory, UncommitedHistory } from "../../ibc-history";
 import { IbcTransferSender, IbcTransferCounterparty } from "./types";

@@ -6,7 +6,7 @@ import {
   ComponentProps,
   useCallback,
 } from "react";
-import { IBCCurrency } from "@keplr-wallet/types";
+import type { IBCCurrency } from "@keplr-wallet/types";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { useStore } from "../../stores/";
 import { Overview } from "../../components/overview";

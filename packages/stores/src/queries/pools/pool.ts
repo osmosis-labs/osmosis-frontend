@@ -4,7 +4,7 @@ import {
   QueryResponse,
 } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
-import { Currency } from "@keplr-wallet/types";
+import type { Currency } from "@keplr-wallet/types";
 import {
   CoinPretty,
   DecUtils,

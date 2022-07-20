@@ -1,7 +1,7 @@
 import { DeepPartial } from "utility-types";
 import { ChainGetter, IQueriesStore, AccountSetBaseSuper, CosmosAccount, CosmosQueries } from "@keplr-wallet/stores";
 import { Coin, CoinPretty } from "@keplr-wallet/unit";
-import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
+import type { Currency, KeplrSignOptions } from "@keplr-wallet/types";
 import { OsmosisQueries } from "../queries";
 import { OsmosisMsgOpts } from "./types";
 import { StdFee } from "@cosmjs/launchpad";

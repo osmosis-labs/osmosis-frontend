@@ -1,6 +1,6 @@
 import { AmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
-import { AppCurrency } from "@keplr-wallet/types";
+import type { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, IntPretty, RatePretty } from "@keplr-wallet/unit";
 import { OptimizedRoutes, Pool, RoutePathWithAmount } from "@osmosis-labs/pools";
 export declare class ObservableTradeTokenInConfig extends AmountConfig {

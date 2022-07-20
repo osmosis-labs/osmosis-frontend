@@ -2,7 +2,7 @@ import { ChainGetter } from "@keplr-wallet/stores";
 import { ObservableQuerySuperfluidParams } from "../superfluid-pools/params";
 import { ObservableQuerySuperfluidAssetMultiplier } from "../superfluid-pools/asset-multiplier";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { AppCurrency } from "@keplr-wallet/types";
+import type { AppCurrency } from "@keplr-wallet/types";
 import { ObservableQueryPools } from "../pools";
 export declare class ObservableQuerySuperfluidOsmoEquivalent {
     protected readonly chainId: string;

@@ -1,6 +1,6 @@
 import { ObservableQueryBalances, ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { IntPretty, CoinPretty, RatePretty } from "@keplr-wallet/unit";
-import { Currency } from "@keplr-wallet/types";
+import type { Currency } from "@keplr-wallet/types";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { ObservableQueryPools, ObservableQueryGammPoolShare } from "../../queries";
 import { ManageLiquidityConfigBase } from "./base";
