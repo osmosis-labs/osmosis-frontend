@@ -1,5 +1,5 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
-import type { FiatCurrency } from "@keplr-wallet/types";
+import { FiatCurrency } from "@keplr-wallet/types";
 export interface IPriceStore {
     defaultVsCurrency: string;
     calculatePrice(coin: CoinPretty, vsCurrency?: string): PricePretty | undefined;

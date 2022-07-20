@@ -1,5 +1,5 @@
 import { Dec, Int, IntPretty, Coin, CoinPretty } from "@keplr-wallet/unit";
-import type { Currency } from "@keplr-wallet/types";
+import { Currency } from "@keplr-wallet/types";
 export declare function estimateJoinSwapExternAmountIn(poolAsset: {
     amount: Int;
     weight: Int;

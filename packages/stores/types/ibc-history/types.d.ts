@@ -1,4 +1,4 @@
-import type { AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency } from "@keplr-wallet/types";
 export interface UncommitedHistory {
     readonly txHash: string;
     readonly sourceChainId: string;

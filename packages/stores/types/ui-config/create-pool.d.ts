@@ -1,7 +1,7 @@
 import { TxChainSetter, IFeeConfig } from "@keplr-wallet/hooks";
 import { ObservableQueryBalances, ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { AmountConfig } from "@keplr-wallet/hooks";
-import type { AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency } from "@keplr-wallet/types";
 import { RatePretty } from "@keplr-wallet/unit";
 export interface CreatePoolConfigOpts {
     minAssetsCount: number;

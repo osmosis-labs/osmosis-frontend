@@ -6,7 +6,7 @@ import {
   Coin,
   CoinPretty,
 } from "@keplr-wallet/unit";
-import type { Currency } from "@keplr-wallet/types";
+import { Currency } from "@keplr-wallet/types";
 import {
   calcSpotPrice,
   calcInGivenOut,

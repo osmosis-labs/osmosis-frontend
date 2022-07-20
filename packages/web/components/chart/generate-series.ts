@@ -1,5 +1,5 @@
 import { PointOptionsObject, SeriesPieOptions } from "highcharts";
-import type { AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency } from "@keplr-wallet/types";
 import { HIGHCHART_GRADIENTS } from "./gradients";
 
 export const generateSeries = (

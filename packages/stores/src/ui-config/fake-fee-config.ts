@@ -8,7 +8,7 @@ import {
 } from "@keplr-wallet/hooks";
 import { ChainGetter, CoinPrimitive } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
-import type { Currency } from "@keplr-wallet/types";
+import { Currency } from "@keplr-wallet/types";
 import { StdFee } from "@cosmjs/launchpad";
 
 /**

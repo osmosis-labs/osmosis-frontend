@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import { CoinPretty } from "@keplr-wallet/unit";
-import type { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
+import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
 import { InputProps } from "../components/types";
 import { ModalBase, ModalBaseProps } from "./base";
 

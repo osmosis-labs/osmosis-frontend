@@ -1,5 +1,5 @@
 import { MsgOpt } from "@keplr-wallet/stores";
-import type { Currency } from "@keplr-wallet/types";
+import { Currency } from "@keplr-wallet/types";
 import { Dec, Int } from "@keplr-wallet/unit";
 import { Msg } from "@cosmjs/launchpad";
 /**

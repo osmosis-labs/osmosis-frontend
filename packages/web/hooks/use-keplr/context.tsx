@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import type { Keplr } from "@keplr-wallet/types";
+import { Keplr } from "@keplr-wallet/types";
 import { getKeplrFromWindow } from "@keplr-wallet/stores";
 import {
   KeplrConnectionSelectModal,

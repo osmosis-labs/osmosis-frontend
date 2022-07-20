@@ -3,7 +3,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { AccountLockedLongerDuration } from "./types";
 import { Duration } from "dayjs/plugin/duration";
 import { CoinPretty } from "@keplr-wallet/unit";
-import type { AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency } from "@keplr-wallet/types";
 export declare class ObservableQueryAccountLockedInner extends ObservableChainQuery<AccountLockedLongerDuration> {
     protected readonly bech32Address: string;
     constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, bech32Address: string);

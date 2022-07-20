@@ -9,7 +9,7 @@ import {
   CosmosQueries,
 } from "@keplr-wallet/stores";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
-import type { Currency, KeplrSignOptions } from "@keplr-wallet/types";
+import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
 import * as WeightedPoolEstimates from "@osmosis-labs/math";
 import { Pool } from "@osmosis-labs/pools";
 import { OsmosisQueries } from "../queries";

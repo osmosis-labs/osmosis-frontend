@@ -1,4 +1,4 @@
-import type { IBCCurrency } from "@keplr-wallet/types";
+import { IBCCurrency } from "@keplr-wallet/types";
 
 export interface IbcTransfer {
   currency: IBCCurrency;

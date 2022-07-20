@@ -1,6 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
-import type { FiatCurrency } from "@keplr-wallet/types";
+import { FiatCurrency } from "@keplr-wallet/types";
 import { RatePretty } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 import { ObservableQueryEpochs } from "../epochs";

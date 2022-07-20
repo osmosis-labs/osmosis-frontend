@@ -9,7 +9,7 @@ import {
 } from "../../../chart";
 import { StepProps } from "./types";
 import { StepBase } from "./step-base";
-import type { IBCCurrency } from "@keplr-wallet/types";
+import { IBCCurrency } from "@keplr-wallet/types";
 import { CheckBox } from "../../../control";
 import { POOL_CREATION_FEE } from ".";
 import { useWindowSize } from "../../../../hooks";

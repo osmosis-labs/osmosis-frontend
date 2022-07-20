@@ -1,10 +1,11 @@
 import { computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
-import type { AppCurrency, ChainInfo } from "@keplr-wallet/types";
+import { AppCurrency } from "@keplr-wallet/types";
 import {
   ChainStore as BaseChainStore,
   ChainInfoInner,
 } from "@keplr-wallet/stores";
+import { ChainInfo } from "@keplr-wallet/types";
 
 export interface ChainInfoWithExplorer extends ChainInfo {
   /** Formed as "https://explorer.com/{txHash}" */

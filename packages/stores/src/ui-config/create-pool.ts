@@ -6,7 +6,7 @@ import {
   IQueriesStore,
 } from "@keplr-wallet/stores";
 import { AmountConfig } from "@keplr-wallet/hooks";
-import type { AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency } from "@keplr-wallet/types";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { CREATE_POOL_MAX_ASSETS } from ".";
 

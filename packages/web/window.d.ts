@@ -17,11 +17,11 @@ interface EthereumProvider {
   };
   isMetaMask: boolean;
   on(
-    event: "disconnect" | "accountsChanged" | "chainChanged" | "networkChanged",
+    event: "close" | "accountsChanged" | "chainChanged" | "networkChanged",
     callback: (payload: any) => void
   ): void;
   once(
-    event: "disconnect" | "accountsChanged" | "chainChanged" | "networkChanged",
+    event: "close" | "accountsChanged" | "chainChanged" | "networkChanged",
     callback: (payload: any) => void
   ): void;
   removeAllListeners(): void;

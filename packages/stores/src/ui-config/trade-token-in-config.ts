@@ -5,7 +5,7 @@ import {
   InsufficientAmountError,
 } from "@keplr-wallet/hooks";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
-import type { AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency } from "@keplr-wallet/types";
 import {
   CoinPretty,
   Dec,

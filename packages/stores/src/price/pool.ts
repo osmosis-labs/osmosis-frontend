@@ -1,6 +1,6 @@
 import { makeObservable, observable, computed } from "mobx";
 import { CoinGeckoPriceStore, ChainGetter } from "@keplr-wallet/stores";
-import type { FiatCurrency } from "@keplr-wallet/types";
+import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { KVStore } from "@keplr-wallet/common";
 import { ObservableQueryPools } from "../queries";

@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, ObservableChainQuery, ObservableChainQueryMap } from "@keplr-wallet/stores";
 import { SuperfluidUndelegation, SuperfluidUndelegationsResponse } from "./types";
-import type { Currency } from "@keplr-wallet/types";
+import { Currency } from "@keplr-wallet/types";
 export declare class ObservableQuerySuperfluidUndelegationsInner extends ObservableChainQuery<SuperfluidUndelegationsResponse> {
     protected readonly delegatorBech32Address: string;
     constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, delegatorBech32Address: string);

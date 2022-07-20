@@ -1,4 +1,4 @@
-import type { AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Int } from "@keplr-wallet/unit";
 
 const regexLegacySignatureVerificationFailed =

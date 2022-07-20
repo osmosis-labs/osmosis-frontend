@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { FunctionComponent, useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
-import type { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
+import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { useStore } from "../../stores";
 import { TokenSelectModal } from "../../modals";

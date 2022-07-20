@@ -1,4 +1,4 @@
-import type { ChainInfo, Keplr } from "@keplr-wallet/types";
+import { ChainInfo, Keplr } from "@keplr-wallet/types";
 
 /** Suggests a chain to Keplr from the browser window.
  *

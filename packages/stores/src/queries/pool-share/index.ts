@@ -1,5 +1,5 @@
 import { ObservableQueryBalances } from "@keplr-wallet/stores";
-import type { AppCurrency, Currency, FiatCurrency } from "@keplr-wallet/types";
+import { AppCurrency, Currency, FiatCurrency } from "@keplr-wallet/types";
 import {
   CoinPretty,
   Dec,

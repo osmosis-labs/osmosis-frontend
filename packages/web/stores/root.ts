@@ -20,7 +20,7 @@ import {
   OsmosisAccount,
   PoolFallbackPriceStore,
 } from "@osmosis-labs/stores";
-import type { AppCurrency, Keplr } from "@keplr-wallet/types";
+import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import { suggestChainFromWindow } from "../hooks/use-keplr/utils";
 import {
   toastOnBroadcastFailed,
