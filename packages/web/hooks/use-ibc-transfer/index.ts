@@ -148,13 +148,13 @@ export function useIbcTransfer({
             channelId: sourceChannelId,
           },
           {
-            account: counterpartyAccount,
+            account:
+              customBech32Address !== ""
+                ? customBech32Address
+                : counterpartyAccount,
             chainId: counterpartyChainId,
             channelId: destChannelId,
-            bech32AddressOverride:
-              customBech32Address !== "" ? customBech32Address : undefined,
           },
-          currency,
           amountConfig,
           onBroadcasted,
           onFulfill
@@ -181,7 +181,6 @@ export function useIbcTransfer({
             chainId,
             channelId: sourceChannelId,
           },
-          currency,
           amountConfig,
           onBroadcasted,
           onFulfill

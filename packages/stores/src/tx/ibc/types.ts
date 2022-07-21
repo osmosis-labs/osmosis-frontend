@@ -8,6 +8,7 @@ export interface IbcTransferSender {
   account: AccountSetBase & CosmosAccount;
   chainId: string;
   channelId: string;
+
   /** If provided, the transfer is assumed to be CW20 token. */
   contractTransfer?: {
     contractAddress: string;
@@ -18,8 +19,8 @@ export interface IbcTransferSender {
 
 export type IbcTransferCounterparty = Omit<
   IbcTransferSender,
-  "contractTransfer"
+  "account" | "contractTransfer"
 > & {
   /** If provided, will override the counterparty account address. */
-  bech32AddressOverride?: string;
+  account: (AccountSetBase & CosmosAccount) | string;
 };

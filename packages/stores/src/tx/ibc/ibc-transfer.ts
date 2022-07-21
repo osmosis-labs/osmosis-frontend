@@ -1,4 +1,3 @@
-import { IBCCurrency } from "@keplr-wallet/types";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { Buffer } from "buffer";
 import { IBCTransferHistory, UncommitedHistory } from "../../ibc-history";
@@ -10,18 +9,23 @@ export async function basicIbcTransfer(
   sender: IbcTransferSender,
   /** Where the tokens should end up. */
   counterparty: IbcTransferCounterparty,
-  currency: IBCCurrency,
   amountConfig: AmountConfig,
   /** Handle when the IBC trasfer successfully broadcast to relayers. */
   onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void,
   /** Handle IBC transfer events containing `send_packet` event type. */
   onFulfill?: (event: Omit<IBCTransferHistory, "status" | "createdAt">) => void
 ) {
-  if (!sender.account.isReadyToSendTx || !counterparty.account.bech32Address)
+  if (
+    !sender.account.isReadyToSendTx ||
+    (!(typeof counterparty.account === "string") &&
+      !counterparty.account.bech32Address)
+  )
     return;
 
   const recipient =
-    counterparty.bech32AddressOverride || counterparty.account.bech32Address;
+    typeof counterparty.account === "string"
+      ? counterparty.account
+      : counterparty.account.bech32Address;
 
   // process & report ibc transfer events
   const decodedTxEvents = {
@@ -111,14 +115,6 @@ export async function basicIbcTransfer(
   if (sender.contractTransfer) {
     const { contractAddress, cosmwasmAccount, ics20ContractAddress } =
       sender.contractTransfer;
-    if (
-      !currency.originCurrency ||
-      !("contractAddress" in currency.originCurrency)
-    ) {
-      throw new Error(
-        "IBC is requested to be used via cosmwam, but the provided currency does not have a contract address"
-      );
-    }
 
     const msg = {
       channel: sender.channelId,
