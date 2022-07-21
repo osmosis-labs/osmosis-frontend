@@ -3,7 +3,7 @@ import { FunctionComponent, useState, useEffect } from "react";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { useWindowSize } from "../../hooks";
-import { InputProps } from "../types";
+import { Disableable, InputProps } from "../types";
 import { Button } from "../buttons";
 import { InputBox } from "../input";
 import { CheckBox } from "../control";
@@ -15,6 +15,7 @@ import { Error } from "../alert";
 export const Transfer: FunctionComponent<
   {
     isWithdraw: boolean;
+    /** If there is a bridge it is assumed there is a nonKeplr wallet and the switch button will be shown. */
     transferPath: [
       { address: string; networkName: string; iconUrl?: string },
       { bridgeName: string; bridgeIconUrl?: string } | undefined,
@@ -29,7 +30,8 @@ export const Transfer: FunctionComponent<
     };
     errorMessage?: string;
     toggleIsMax: () => void;
-  } & InputProps<string>
+  } & InputProps<string> &
+    Disableable
 > = ({
   isWithdraw,
   transferPath: [from, _bridge, to],
@@ -39,6 +41,7 @@ export const Transfer: FunctionComponent<
   withdrawAddressConfig,
   errorMessage,
   toggleIsMax,
+  disabled,
 }) => {
   const { isMobile } = useWindowSize();
 
@@ -121,6 +124,7 @@ export const Transfer: FunctionComponent<
                   className="w-full"
                   style="no-border"
                   currentValue={withdrawAddressConfig.customAddress || ""}
+                  disabled={disabled}
                   onInput={(value) => {
                     setDidVerifyWithdrawRisk(false);
                     withdrawAddressConfig.setCustomAddress(value);
@@ -187,6 +191,7 @@ export const Transfer: FunctionComponent<
                 size="xs"
                 color="primary"
                 type="outline"
+                disabled={disabled}
                 onClick={() => {
                   setIsEditingWithdrawAddr(true);
                 }}
@@ -219,10 +224,12 @@ export const Transfer: FunctionComponent<
           inputClassName="text-right"
           style="no-border"
           currentValue={currentValue}
+          disabled={disabled}
           onInput={onInput}
           labelButtons={[
             {
               label: "MAX",
+              disabled: availableBalance?.toDec().isZero(),
               onClick: () => toggleIsMax(),
             },
           ]}

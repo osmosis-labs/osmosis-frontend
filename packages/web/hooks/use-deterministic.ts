@@ -1,5 +1,5 @@
 import { sha256 } from "sha.js";
-import { Buffer } from "buffer/";
+import { Buffer } from "buffer";
 import { useMemo } from "react";
 
 /**

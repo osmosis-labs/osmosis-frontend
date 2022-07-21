@@ -36,7 +36,7 @@ export const BridgeTransferModal: FunctionComponent<
               <AxelarTransfer
                 isWithdraw={props.isWithdraw}
                 client={client as EthClient}
-                osmosisBalance={balance}
+                balanceOnOsmosis={balance}
                 {...balance.originBridgeInfo}
                 selectedSourceChainKey={sourceChainKey}
               />

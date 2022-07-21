@@ -1,6 +1,6 @@
 import { action, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
-import { hexToNumberString } from "web3-utils";
+import { hexToNumberString, isAddress } from "web3-utils";
 import { CoinPretty, Int } from "@keplr-wallet/unit";
 import { HasMapStore } from "@keplr-wallet/stores";
 import type { Currency } from "@keplr-wallet/types";
@@ -33,17 +33,19 @@ class ObservableErc20Query {
 
   @action
   protected async fetchBalance(erc20Address: string) {
-    const res = (await this.queryFn({
-      method: "eth_call",
-      params: [
-        {
-          to: erc20Address,
-          data: Erc20Abi.encodeFunctionData("balanceOf", [this.hexAddress]),
-        },
-        "latest",
-      ],
-    })) as string;
-    this.balances.set(erc20Address, new Int(hexToNumberString(res)));
+    if (isAddress(this.hexAddress)) {
+      const res = (await this.queryFn({
+        method: "eth_call",
+        params: [
+          {
+            to: erc20Address,
+            data: Erc20Abi.encodeFunctionData("balanceOf", [this.hexAddress]),
+          },
+          "latest",
+        ],
+      })) as string;
+      this.balances.set(erc20Address, new Int(hexToNumberString(res)));
+    }
   }
 }
 
@@ -59,7 +61,7 @@ export class ObservableErc20Queries extends HasMapStore<ObservableErc20Query> {
     );
   }
 
-  getQueryEthHexAddress(hexAddress: string): ObservableErc20Query {
-    return this.get(hexAddress);
+  getQueryEthHexAddress(hexAddress: string): ObservableErc20Query | undefined {
+    if (isAddress(hexAddress)) return this.get(hexAddress);
   }
 }
