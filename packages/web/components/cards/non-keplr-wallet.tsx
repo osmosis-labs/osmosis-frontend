@@ -22,7 +22,7 @@ export const NonKeplrWalletCard: FunctionComponent<
     className={classNames(
       "flex flex-col gap-4 rounded-2xl bg-background py-8",
       {
-        "bg-primary-700": isSelected,
+        "bg-primary-600": isSelected,
         "opacity-30": disabled,
       },
       className

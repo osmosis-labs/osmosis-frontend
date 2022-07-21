@@ -7,6 +7,7 @@ import {
   useMemo,
   useCallback,
 } from "react";
+import { observer } from "mobx-react-lite";
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { TokenSelect } from "../components/control";
@@ -43,10 +44,9 @@ export const TransferAssetSelectModal: FunctionComponent<
       /** `undefined` if IBC asset. */
       sourceChainKey?: SourceChainKey
     ) => void;
-    /** Will connect desired wallet whilst disconnecting all others. */
     walletClients: Client[];
   }
-> = (props) => {
+> = observer((props) => {
   const {
     isWithdraw,
     tokens,
@@ -273,4 +273,4 @@ export const TransferAssetSelectModal: FunctionComponent<
       {accountActionButton}
     </ModalBase>
   );
-};
+});

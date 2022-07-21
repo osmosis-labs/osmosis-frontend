@@ -12,7 +12,8 @@ export type Transaction =
 
 export type Method = "eth_getBalance" | "eth_sendTransaction" | "eth_call";
 
-export type EthClient = Client<{ method: Method; params: Transaction }>;
+export interface EthClient
+  extends Client<{ method: Method; params: Transaction }> {}
 
 /** Ethereum chains: https://docs.metamask.io/guide/ethereum-provider.html#chain-ids */
 export const ChainNames: { [chainId: string]: string } = {

@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 import { FunctionComponent, Suspense } from "react";
+import { observer } from "mobx-react-lite";
 import { TransferPlaceholder } from "../components/complex/transfer";
 import type { SourceChainKey } from "../integrations/bridge-info";
 import type { EthClient } from "../integrations/ethereum";
@@ -21,7 +22,7 @@ export const BridgeTransferModal: FunctionComponent<
     sourceChainKey: SourceChainKey;
     client: Client;
   }
-> = (props) => {
+> = observer((props) => {
   const { balance, sourceChainKey, client } = props;
   if (!balance.originBridgeInfo) {
     return null;
@@ -53,4 +54,4 @@ export const BridgeTransferModal: FunctionComponent<
       })()}
     </ModalBase>
   );
-};
+});

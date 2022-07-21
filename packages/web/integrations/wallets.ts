@@ -7,14 +7,15 @@ export type WalletDisplay = {
 };
 
 /** Generalized non-Keplr wallet client. */
-export type Client<TTxSend = unknown> = {
+export interface Client<TTxSend = unknown> {
   key: WalletKey;
   accountAddress?: string;
   /** Human readable chain, falls back to hex ID (`0x...`) if unknown. */
-  chain?: string;
+  chainId?: string;
   isConnected: boolean;
   displayInfo: WalletDisplay;
   enable: () => Promise<void>;
   disable: () => void;
   send: (send: TTxSend) => Promise<unknown>;
-};
+  isSending: boolean;
+}
