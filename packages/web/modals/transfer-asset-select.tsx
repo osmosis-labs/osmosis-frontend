@@ -11,7 +11,6 @@ import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { TokenSelect } from "../components/control";
 import { NonKeplrWalletCard } from "../components/cards";
-import { Button } from "../components/buttons";
 import { displayToast, ToastType } from "../components/alert";
 import type {
   OriginBridgeInfo,
@@ -23,7 +22,7 @@ import type {
 } from "../integrations/axelar";
 import { WalletKey, Client } from "../integrations/wallets";
 import { DataSorter } from "../hooks/data/data-sorter";
-import { useLocalStorageState } from "../hooks";
+import { useConnectWalletModalRedirect, useLocalStorageState } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
 
 /** Intermediate step to allow a user to select & config an asset before deposit/withdraw. */
@@ -136,6 +135,74 @@ export const TransferAssetSelectModal: FunctionComponent<
   );
   setValidSourceChain; // TODO add dropdown mechanism
 
+  const {
+    showModalBase,
+    accountActionButton,
+    walletConnected: keplrConnected,
+  } = useConnectWalletModalRedirect(
+    {
+      className: "h-14 md:w-full w-96 mt-3 mx-auto !px-1",
+      size: "lg",
+      disabled: selectedToken?.originBridgeInfo && !selectedWallet,
+      onClick: async () => {
+        if (
+          selectedToken?.originBridgeInfo && // is bridge asset
+          selectedWallet &&
+          selectedSourceChainKey &&
+          !selectedWallet.isConnected
+        ) {
+          // connect wallet
+          try {
+            await selectedWallet.enable();
+
+            onSelectAsset(
+              selectedTokenDenom,
+              selectedWallet!.key,
+              selectedSourceChainKey
+            );
+          } catch (e) {
+            displayToast({ message: "Request rejected" }, ToastType.ERROR);
+            props.onRequestClose();
+          }
+        } else if (selectedWallet) {
+          // next for bridge asset
+          if (!selectedSourceChainKey) {
+            console.error("No chain selected");
+            return;
+          }
+
+          onSelectAsset(
+            selectedTokenDenom,
+            selectedWallet.key,
+            selectedSourceChainKey
+          );
+        } else {
+          onSelectAsset(selectedTokenDenom);
+        }
+        setLastSelectedDenom(selectedTokenDenom);
+      },
+      children: (
+        <>
+          {selectedWallet && !selectedWallet.isConnected ? (
+            <h6 className="flex items-center gap-3">
+              <Image
+                alt="wallet"
+                src="/icons/wallet.svg"
+                height={24}
+                width={24}
+              />
+              Connect Wallet
+            </h6>
+          ) : (
+            "Next"
+          )}
+        </>
+      ),
+    },
+    props.onRequestClose,
+    "Connect Native Wallet"
+  );
+
   // sync initially selected token to last transferred token
   const setToLocalStorageValue = useRef<boolean | null>(null);
   useEffect(() => {
@@ -153,6 +220,7 @@ export const TransferAssetSelectModal: FunctionComponent<
   return (
     <ModalBase
       {...props}
+      isOpen={props.isOpen && showModalBase}
       title={`${isWithdraw ? "Withdraw" : "Deposit"} Asset`}
     >
       <div className="flex flex-col gap-5 my-5">
@@ -179,13 +247,16 @@ export const TransferAssetSelectModal: FunctionComponent<
       </div>
       {selectedToken?.originBridgeInfo && applicableWallets.length > 0 && (
         <div>
-          <h6>Connect Wallet</h6>
+          <h6 className={keplrConnected ? undefined : "opacity-30"}>
+            Connect Wallet
+          </h6>
           <div className="grid grid-cols-2 gap-4 my-5">
             {applicableWallets.map((wallet, index) => (
               <NonKeplrWalletCard
                 key={index}
                 className="py-12"
                 {...wallet.displayInfo}
+                disabled={!keplrConnected}
                 isSelected={wallet.key === selectedWalletKey}
                 onClick={() => {
                   applicableWallets
@@ -199,62 +270,7 @@ export const TransferAssetSelectModal: FunctionComponent<
           </div>
         </div>
       )}
-      <Button
-        className="h-14 w-96 mx-auto mt-4"
-        size="lg"
-        disabled={selectedToken?.originBridgeInfo && !selectedWallet}
-        onClick={async () => {
-          if (
-            selectedToken?.originBridgeInfo && // is bridge asset
-            selectedWallet &&
-            selectedSourceChainKey &&
-            !selectedWallet.isConnected
-          ) {
-            // connect wallet
-            try {
-              await selectedWallet.enable();
-
-              onSelectAsset(
-                selectedTokenDenom,
-                selectedWallet!.key,
-                selectedSourceChainKey
-              );
-            } catch (e) {
-              displayToast({ message: "Request rejected" }, ToastType.ERROR);
-              props.onRequestClose();
-            }
-          } else if (selectedWallet) {
-            // next for bridge asset
-            if (!selectedSourceChainKey) {
-              console.error("No chain selected");
-              return;
-            }
-
-            onSelectAsset(
-              selectedTokenDenom,
-              selectedWallet.key,
-              selectedSourceChainKey
-            );
-          } else {
-            onSelectAsset(selectedTokenDenom);
-          }
-          setLastSelectedDenom(selectedTokenDenom);
-        }}
-      >
-        {selectedWallet && !selectedWallet.isConnected ? (
-          <h6 className="flex items-center gap-3">
-            <Image
-              alt="wallet"
-              src="/icons/wallet.svg"
-              height={24}
-              width={24}
-            />
-            Connect Wallet
-          </h6>
-        ) : (
-          "Next"
-        )}
-      </Button>
+      {accountActionButton}
     </ModalBase>
   );
 };

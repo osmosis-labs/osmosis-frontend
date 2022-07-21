@@ -7,6 +7,7 @@ import {
   useCallback,
 } from "react";
 import { IBCCurrency } from "@keplr-wallet/types";
+import { WalletStatus } from "@keplr-wallet/stores";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { useStore } from "../../stores/";
 import { Overview } from "../../components/overview";
@@ -30,7 +31,12 @@ const Assets: NextPage = observer(() => {
   const { isMobile } = useWindowSize();
   const {
     assetsStore: { nativeBalances, ibcBalances },
+    chainStore: {
+      osmosis: { chainId },
+    },
+    accountStore,
   } = useStore();
+  const account = accountStore.getAccount(chainId);
 
   // bridge transfer modal states
   const [ibcTransferModal, setIbcTransferModal] = useState<ComponentProps<
@@ -162,14 +168,18 @@ const Assets: NextPage = observer(() => {
           (wallet) => wallet.isConnected
         );
 
-        if (dependentConnectedWallet && dependentConnectedWallet.chain) {
+        if (
+          dependentConnectedWallet &&
+          dependentConnectedWallet.chain &&
+          account.walletStatus === WalletStatus.Loaded
+        ) {
           setBridgeTransferModal({
             isOpen: true,
             onRequestClose: () => setBridgeTransferModal(null),
             isWithdraw: mode === "withdraw",
             balance,
             client: dependentConnectedWallet,
-            // assume selected chain is desired source network
+            // assume selected chain is desired source/dest network
             sourceChainKey: dependentConnectedWallet.chain as SourceChainKey,
           });
         } else if (applicableWallets.length > 0) {
@@ -204,6 +214,7 @@ const Assets: NextPage = observer(() => {
       setIbcTransferModal,
       metamask,
       walletConnectEth,
+      account.walletStatus,
       ibcTransfer,
       selectAsset,
     ]
@@ -333,6 +344,10 @@ const PoolAssets: FunctionComponent = observer(() => {
     .get(chainId)
     .osmosis!.queryGammPoolShare.getOwnPools(bech32Address);
   const [showAllPools, setShowAllPools] = useState(false);
+
+  if (ownedPoolIds.length === 0) {
+    return null;
+  }
 
   return (
     <section className="bg-background">

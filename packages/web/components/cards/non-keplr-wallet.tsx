@@ -3,11 +3,12 @@ import classNames from "classnames";
 import { FunctionComponent } from "react";
 import { WalletDisplay } from "../../integrations/wallets";
 import { ButtonProps } from "../buttons/types";
-import { CustomClasses } from "../types";
+import { CustomClasses, Disableable } from "../types";
 
 export const NonKeplrWalletCard: FunctionComponent<
   WalletDisplay & { isSelected?: boolean } & Partial<ButtonProps> &
-    CustomClasses
+    CustomClasses &
+    Disableable
 > = ({
   iconUrl,
   displayName,
@@ -15,15 +16,18 @@ export const NonKeplrWalletCard: FunctionComponent<
   isSelected = false,
   onClick,
   className,
+  disabled,
 }) => (
   <button
     className={classNames(
       "flex flex-col gap-4 rounded-2xl bg-background py-8",
       {
         "bg-primary-700": isSelected,
+        "opacity-30": disabled,
       },
       className
     )}
+    disabled={disabled}
     onClick={onClick}
   >
     <div
