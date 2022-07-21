@@ -1727,7 +1727,7 @@ chainInfos.push({
       coinImageUrl: "/tokens/glmr.svg",
     },
     {
-      coinDenom: "xcDOT",
+      coinDenom: "DOT",
       coinMinimalDenom: "dot-planck",
       coinDecimals: 18,
       coinGeckoId: "polkadot",
