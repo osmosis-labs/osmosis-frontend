@@ -731,8 +731,8 @@ export const IBCAssetInfos: (IBCAsset & {
   },
   {
     counterpartyChainId: "kichain-2",
-    sourceChannelId: "channel-18",
-    destChannelId: "channel-261",
+    sourceChannelId: "channel-261",
+    destChannelId: "channel-18",
     coinMinimalDenom:
       "cw20:ki1dt3lk455ed360pna38fkhqn0p8y44qndsr77qu73ghyaz2zv4whq83mwdy",
     ics20ContractAddress:
