@@ -8,6 +8,7 @@ import { Button } from "../buttons";
 import { InputBox } from "../input";
 import { CheckBox } from "../control";
 import { Error } from "../alert";
+import { MetricLoader } from "../loaders";
 
 // WIP, waiting for finalization on new transfer modal design
 
@@ -241,3 +242,87 @@ export const Transfer: FunctionComponent<
     </div>
   );
 };
+
+/** Use as a suspense drop-in while loading a bundle or data. Maintains the same structure/dimensions as the Transfer component. */
+export const TransferPlaceholder: FunctionComponent<{
+  isWithdraw: boolean;
+}> = ({ isWithdraw }) => (
+  <>
+    <div className="text-white-high">
+      <div className="relative md:mb-5 mb-10 flex items-center w-full">
+        <h5 className="md:text-lg text-xl">
+          {isWithdraw ? "Withdraw" : "Deposit"}
+        </h5>
+      </div>
+      <section className="flex flex-col items-center">
+        <div className="w-full flex-1 md:p-3 p-4 border border-white-faint rounded-2xl">
+          <p className="text-white-high">From</p>
+          <div className="flex items-center gap-3">
+            <div className="text-white-disabled truncate overflow-ellipsis">
+              <MetricLoader className="w-96" isLoading={true} />
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-center items-center w-10 my-2">
+          <Image
+            alt="arrow"
+            src={"/icons/arrow-down.svg"}
+            height={20}
+            width={20}
+          />
+        </div>
+        <div className="w-full flex-1 md:p-3 p-4 border border-white-faint rounded-2xl">
+          <p className="text-white-high">To</p>
+          <div className="flex gap-2 place-content-between">
+            <div className="w-full flex flex-col gap-5">
+              <div className="flex items-center gap-3">
+                <div className="text-white-disabled truncate overflow-ellipsis">
+                  <MetricLoader className="w-96" isLoading={true} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <h6 className="md:text-base text-lg mt-7">
+        Amount To {isWithdraw ? "Withdraw" : "Deposit"}
+      </h6>
+      <div className="md:mt-3 mt-4 w-full md:p-0 p-5 md:border-0 border border-secondary-50 border-opacity-60 rounded-2xl">
+        <div className="flex items-center gap-2 md:text-sm text-base mb-2">
+          Available balance:{" "}
+          <span className="text-primary-50">
+            <MetricLoader className="w-14" isLoading={true} />
+          </span>
+        </div>
+        <InputBox
+          type="number"
+          className="text-h6"
+          inputClassName="text-right"
+          style="no-border"
+          currentValue=""
+          disabled={true}
+          onInput={console.log}
+          labelButtons={[
+            {
+              label: "MAX",
+              disabled: true,
+              onClick: console.log,
+            },
+          ]}
+        />
+      </div>
+    </div>
+    <div className="w-full md:mt-6 mt-9 flex items-center justify-center">
+      <Button
+        className="md:w-full w-2/3 md:p-4 p-6 rounded-2xl"
+        disabled={true}
+        loading={true}
+        onClick={console.log}
+      >
+        <h6 className="md:text-base text-lg">
+          {isWithdraw ? "Withdraw" : "Deposit"}
+        </h6>
+      </Button>
+    </div>
+  </>
+);

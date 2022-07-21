@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
-import { FunctionComponent } from "react";
+import { FunctionComponent, Suspense } from "react";
+import { TransferPlaceholder } from "../components/complex/transfer";
 import type { SourceChainKey } from "../integrations/bridge-info";
 import type { EthClient } from "../integrations/ethereum";
 import type { Client } from "../integrations/wallets";
@@ -8,7 +9,7 @@ import { ModalBaseProps, ModalBase } from "./base";
 
 const AxelarTransfer = dynamic(
   () => import("../integrations/axelar/transfer"),
-  { ssr: false }
+  { suspense: true, ssr: false }
 );
 
 /** Modal that lets user transfer via non-IBC bridges. */
@@ -33,13 +34,17 @@ export const BridgeTransferModal: FunctionComponent<
         switch (bridge) {
           case "axelar":
             return (
-              <AxelarTransfer
-                isWithdraw={props.isWithdraw}
-                client={client as EthClient}
-                balanceOnOsmosis={balance}
-                {...balance.originBridgeInfo}
-                selectedSourceChainKey={sourceChainKey}
-              />
+              <Suspense
+                fallback={<TransferPlaceholder isWithdraw={props.isWithdraw} />}
+              >
+                <AxelarTransfer
+                  isWithdraw={props.isWithdraw}
+                  client={client as EthClient}
+                  balanceOnOsmosis={balance}
+                  {...balance.originBridgeInfo}
+                  selectedSourceChainKey={sourceChainKey}
+                />
+              </Suspense>
             );
             break;
           default:
