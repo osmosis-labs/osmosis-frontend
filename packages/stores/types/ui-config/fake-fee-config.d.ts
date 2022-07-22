@@ -12,6 +12,7 @@ import { StdFee } from "@cosmjs/launchpad";
  */
 export declare class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
     protected _gas: number;
+    protected _shouldZero: boolean;
     constructor(chainGetter: ChainGetter, initialChainId: string, gas: number);
     get gas(): number;
     get fee(): CoinPretty | undefined;
@@ -19,6 +20,8 @@ export declare class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
     get feeCurrency(): Currency | undefined;
     feeType: FeeType | undefined;
     get error(): Error | undefined;
+    get shouldZero(): boolean;
+    setShouldZero(value: boolean): void;
     readonly getFeePrimitive: () => CoinPrimitive | undefined;
     getFeeTypePretty(_feeType: FeeType): CoinPretty;
     setFeeType(_feeType: FeeType | undefined): void;
