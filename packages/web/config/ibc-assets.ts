@@ -729,6 +729,15 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "loki",
   },
+  {
+    counterpartyChainId: "kichain-2",
+    sourceChannelId: "channel-261",
+    destChannelId: "channel-18",
+    coinMinimalDenom:
+      "cw20:ki1dt3lk455ed360pna38fkhqn0p8y44qndsr77qu73ghyaz2zv4whq83mwdy",
+    ics20ContractAddress:
+      "ki1hzz0s0ucrhdp6tue2lxk3c03nj6f60qy463we7lgx0wudd72ctmsd9kgha",
+  },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;
