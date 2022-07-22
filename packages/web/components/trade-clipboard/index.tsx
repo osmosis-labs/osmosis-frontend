@@ -9,6 +9,7 @@ import React, { FunctionComponent, useEffect, useRef, useMemo } from "react";
 import { IS_FRONTIER } from "../../config";
 import {
   useBooleanWithWindowEvent,
+  useFakeFeeConfig,
   useSlippageConfig,
   useTokenSwapQueryParams,
   useTradeTokenInConfig,
@@ -54,6 +55,37 @@ export const TradeClipboard: FunctionComponent<{
     queriesStore,
     pools
   );
+  // Some validators allow 0 fee tx.
+  // Therefore, users can send tx at 0 fee even though they have no OSMO,
+  // Users who have OSMO pay a fee by default so that tx is processed faster.
+  let preferZeroFee = true;
+  const queryOsmo = queries.queryBalances.getQueryBech32Address(
+    account.bech32Address
+  ).stakable;
+  if (
+    // If user has an OSMO 0.001 or higher, he pay the fee by default.
+    queryOsmo.balance.toDec().gt(DecUtils.getTenExponentN(-3))
+  ) {
+    preferZeroFee = false;
+  }
+  const gasForecasted = (() => {
+    if (
+      tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
+      tradeTokenInConfig.optimizedRoutePaths[0].pools.length <= 1
+    ) {
+      return 250000;
+    }
+
+    return 250000 * tradeTokenInConfig.optimizedRoutePaths[0].pools.length;
+  })();
+
+  const feeConfig = useFakeFeeConfig(
+    chainStore,
+    chainStore.osmosis.chainId,
+    gasForecasted,
+    preferZeroFee
+  );
+  tradeTokenInConfig.setFeeConfig(feeConfig);
 
   // auto focus from amount on token switch
   const fromAmountInput = useRef<HTMLInputElement | null>(null);
@@ -685,7 +717,7 @@ export const TradeClipboard: FunctionComponent<{
                         ],
                       },
                       {
-                        preferNoSetFee: true,
+                        preferNoSetFee: preferZeroFee,
                       }
                     );
                   } else {
@@ -704,7 +736,7 @@ export const TradeClipboard: FunctionComponent<{
                         ],
                       },
                       {
-                        preferNoSetFee: true,
+                        preferNoSetFee: preferZeroFee,
                       }
                     );
                   }

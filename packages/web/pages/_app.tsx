@@ -47,12 +47,12 @@ function MyApp({ Component, pageProps }: AppProps) {
     },
     {
       label: "Stake",
-      link: "https://wallet.keplr.app/#/osmosis/stake",
+      link: "https://wallet.keplr.app/chains/osmosis",
       icon: IS_FRONTIER ? "/icons/ticket-white.svg" : "/icons/ticket.svg",
     },
     {
       label: "Vote",
-      link: "https://wallet.keplr.app/#/osmosis/governance",
+      link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
       icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
     },
     {

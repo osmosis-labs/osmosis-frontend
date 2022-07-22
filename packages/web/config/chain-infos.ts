@@ -594,6 +594,17 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "ki1dt3lk455ed360pna38fkhqn0p8y44qndsr77qu73ghyaz2zv4whq83mwdy",
+          coinDenom: "LVN",
+          coinMinimalDenom:
+            "cw20:ki1dt3lk455ed360pna38fkhqn0p8y44qndsr77qu73ghyaz2zv4whq83mwdy:LVN",
+          coinDecimals: 6,
+          coinGeckoId: "lvn",
+          coinImageUrl: "/tokens/lvn.png",
+        },
       ],
       gasPriceStep: {
         low: 0.025,
