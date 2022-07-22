@@ -882,16 +882,16 @@ export const ExternalIncentiveGaugeAllowList: {
         "ibc/A0CC0CF735BFB30E730C70019D4218A1244FF383503FF7579C9201AB93CA9293",
     },
   ],
+  "722": [
+    {
+      gaugeId: "21737",
+      denom:
+        "ibc/6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A",
+    },
+  ],
   "747": [
     {
       gaugeId: "4700",
-      denom:
-        "ibc/49C2B2C444B7C5F0066657A4DBF19D676E0D185FF721CFD3E14FA253BCB9BC04",
-    },
-  ],
-  "748": [
-    {
-      gaugeId: "21736",
       denom:
         "ibc/49C2B2C444B7C5F0066657A4DBF19D676E0D185FF721CFD3E14FA253BCB9BC04",
     },
