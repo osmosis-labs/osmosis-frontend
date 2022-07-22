@@ -1730,6 +1730,20 @@ chainInfos.push({
       coinGeckoId: "chain-2",
       coinImageUrl: "/tokens/xcn.svg",
     },
+    {
+      coinDenom: "WGLMR",
+      coinMinimalDenom: "wglmr-wei",
+      coinDecimals: 18,
+      coinGeckoId: "wrapped-moonbeam",
+      coinImageUrl: "/tokens/glmr.svg",
+    },
+    {
+      coinDenom: "DOT",
+      coinMinimalDenom: "dot-planck",
+      coinDecimals: 18,
+      coinGeckoId: "polkadot",
+      coinImageUrl: "/tokens/dot.svg",
+    },
   ],
   feeCurrencies: [
     {
