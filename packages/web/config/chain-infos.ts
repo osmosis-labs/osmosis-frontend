@@ -1740,7 +1740,7 @@ chainInfos.push({
     {
       coinDenom: "DOT",
       coinMinimalDenom: "dot-planck",
-      coinDecimals: 18,
+      coinDecimals: 10,
       coinGeckoId: "polkadot",
       coinImageUrl: "/tokens/dot.svg",
     },
