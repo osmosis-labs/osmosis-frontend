@@ -1047,8 +1047,8 @@ const chainInfos = (
       explorerUrlToTx: "https://www.mintscan.io/konstellation/txs/{txHash}",
     },
     {
-      rpc: "https://rpc.aphrodite.main.network.umee.cc",
-      rest: "https://api.aphrodite.main.network.umee.cc",
+      rpc: "https://rpc-umee.keplr.app",
+      rest: "https://lcd-umee.keplr.app",
       chainId: "umee-1",
       chainName: "Umee",
       bip44: {
