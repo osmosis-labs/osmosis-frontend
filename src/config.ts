@@ -2007,6 +2007,15 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 				coinGeckoId: 'pool:joe',
 				coinImageUrl: window.location.origin + '/public/assets/tokens/joe.png',
 			},
+			{
+				type: 'cw20',
+				contractAddress: 'juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se',
+				coinDenom: 'GLTO',
+				coinMinimalDenom: 'cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se:GLTO',
+				coinDecimals: 6,
+				coinGeckoId: 'pool:glto',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/glto.png',
+			},
 		],
 		feeCurrencies: [
 			{
