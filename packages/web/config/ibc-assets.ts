@@ -90,6 +90,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "ujuno",
     isVerified: true,
+    isUnstable: true,
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -369,6 +370,7 @@ export const IBCAssetInfos: (IBCAsset & {
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
     isVerified: true,
+    isUnstable: true,
   },
   {
     counterpartyChainId: "carbon-1",
@@ -407,6 +409,7 @@ export const IBCAssetInfos: (IBCAsset & {
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
     isVerified: true,
+    isUnstable: true,
   },
   {
     counterpartyChainId: "injective-1",
@@ -446,6 +449,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "juno-1",
@@ -455,6 +459,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -526,6 +531,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "pio-mainnet-1",
@@ -547,6 +553,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "juno-1",
@@ -556,6 +563,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "meme-1",
@@ -571,6 +579,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "juno-1",
@@ -580,6 +589,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "phoenix-1",
