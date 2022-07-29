@@ -460,6 +460,17 @@ const chainInfos = (
           // coinGeckoId: "pool:glto",
           coinImageUrl: "/tokens/glto.svg",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1gz8cf86zr4vw9cjcyyv432vgdaecvr9n254d3uwwkx9rermekddsxzageh",
+          coinDenom: "GLTO",
+          coinMinimalDenom:
+            "cw20:juno1gz8cf86zr4vw9cjcyyv432vgdaecvr9n254d3uwwkx9rermekddsxzageh:GKEY",
+          coinDecimals: 6,
+          // coinGeckoId: "pool:gkey",
+          coinImageUrl: "/tokens/gkey.svg",
+        },
       ],
       features: [
         "stargate",
