@@ -449,6 +449,28 @@ const chainInfos = (
           coinGeckoId: "pool:joe",
           coinImageUrl: "/tokens/joe.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
+          coinDenom: "GLTO",
+          coinMinimalDenom:
+            "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se:GLTO",
+          coinDecimals: 6,
+          // coinGeckoId: "pool:glto",
+          coinImageUrl: "/tokens/glto.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1gz8cf86zr4vw9cjcyyv432vgdaecvr9n254d3uwwkx9rermekddsxzageh",
+          coinDenom: "GKEY",
+          coinMinimalDenom:
+            "cw20:juno1gz8cf86zr4vw9cjcyyv432vgdaecvr9n254d3uwwkx9rermekddsxzageh:GKEY",
+          coinDecimals: 6,
+          // coinGeckoId: "pool:gkey",
+          coinImageUrl: "/tokens/gkey.svg",
+        },
       ],
       features: [
         "stargate",
