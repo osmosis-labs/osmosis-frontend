@@ -457,7 +457,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se:GLTO",
           coinDecimals: 6,
-          // coinGeckoId: "pool:glto",
+          coinGeckoId: "pool:glto",
           coinImageUrl: "/tokens/glto.svg",
         },
         {
