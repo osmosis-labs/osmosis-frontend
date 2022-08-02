@@ -1,4 +1,10 @@
-import { observable, computed, action, runInAction } from "mobx";
+import {
+  runInAction,
+  makeObservable,
+  observable,
+  action,
+  computed,
+} from "mobx";
 import { computedFn } from "mobx-utils";
 import { toHex, isAddress } from "web3-utils";
 import type { EthereumProvider } from "../../window";
@@ -6,16 +12,16 @@ import { WalletDisplay, WalletKey } from "../wallets";
 import { ChainNames, EthClient } from "./types";
 
 export class ObservableMetamask implements EthClient {
-  key: WalletKey = "metamask";
+  readonly key: WalletKey = "metamask";
 
-  displayInfo: WalletDisplay = {
+  readonly displayInfo: WalletDisplay = {
     iconUrl: "/icons/metamask-fox.svg",
     displayName: "Metamask",
     caption: "Metamask browser extension",
   };
 
   @observable
-  accountAddress: string | undefined;
+  protected _accountAddress: string | undefined;
 
   @observable
   protected _chainId: string | undefined;
@@ -24,10 +30,16 @@ export class ObservableMetamask implements EthClient {
   protected _isSending: boolean = false;
 
   constructor() {
+    makeObservable(this);
+
     withEthInWindow((eth) => {
       const handleAccountChanged = ([account]: (string | undefined)[]) => {
         runInAction(() => {
-          this.accountAddress = account;
+          this._accountAddress = account;
+
+          if (!account) {
+            this._chainId = undefined;
+          }
         });
       };
 
@@ -41,17 +53,19 @@ export class ObservableMetamask implements EthClient {
     });
   }
 
+  get accountAddress(): string | undefined {
+    return this._accountAddress;
+  }
+
   @computed
   get chainId(): string | undefined {
     return this._chainId ? ChainNames[this._chainId] : undefined;
   }
 
-  @computed
   get isConnected(): boolean {
-    return this.accountAddress !== undefined && this._chainId !== undefined;
+    return this.accountAddress !== undefined;
   }
 
-  @computed
   get isSending(): boolean {
     return this._isSending;
   }
@@ -72,7 +86,7 @@ export class ObservableMetamask implements EthClient {
         .then((accounts) => {
           window.ethereum.request({ method: "eth_chainId" }).then((chainId) => {
             this._chainId = chainId as string;
-            this.accountAddress = (accounts as string[])[0];
+            this._accountAddress = (accounts as string[])[0];
             resolve();
           });
         })
@@ -82,7 +96,7 @@ export class ObservableMetamask implements EthClient {
 
   @action
   disable() {
-    this.accountAddress = undefined;
+    this._accountAddress = undefined;
     this._chainId = undefined;
     withEthInWindow((eth) => eth.removeAllListeners());
   }
@@ -96,7 +110,7 @@ export class ObservableMetamask implements EthClient {
 
     return (
       withEthInWindow(async (ethereum) => {
-        this._isSending = true;
+        runInAction(() => (this._isSending = true));
         const resp = await ethereum.request({
           method,
           params: Array.isArray(ethTx)
@@ -109,7 +123,7 @@ export class ObservableMetamask implements EthClient {
                 },
               ],
         });
-        this._isSending = false;
+        runInAction(() => (this._isSending = false));
         return resp;
       }) ||
       Promise.reject("Metamask: failed to send message: ethereum not in window")
@@ -128,5 +142,6 @@ function withEthInWindow<T>(
   ) {
     return doTask(window.ethereum);
   }
+  console.warn("MetaMask: no window.ethereum found");
   return defaultRet;
 }

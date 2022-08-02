@@ -1,4 +1,10 @@
-import { observable, computed, action, runInAction } from "mobx";
+import {
+  observable,
+  computed,
+  action,
+  runInAction,
+  makeObservable,
+} from "mobx";
 import { computedFn } from "mobx-utils";
 import WalletConnect from "@walletconnect/client";
 import { toHex, isAddress } from "web3-utils";
@@ -67,6 +73,8 @@ export class ObservableWalletConnect implements EthClient {
         this._chainId = undefined;
       })
     );
+
+    makeObservable(this);
   }
 
   @computed
@@ -76,7 +84,7 @@ export class ObservableWalletConnect implements EthClient {
 
   @computed
   get isConnected(): boolean {
-    return this.accountAddress !== undefined && this._chainId !== undefined;
+    return this.accountAddress !== undefined;
   }
 
   @computed

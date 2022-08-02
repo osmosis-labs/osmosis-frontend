@@ -20,7 +20,10 @@ import { MetricLoader } from "../../components/loaders";
 import { IbcTransferModal } from "../../modals/ibc-transfer";
 import { BridgeTransferModal } from "../../modals/bridge-transfer";
 import { TransferAssetSelectModal } from "../../modals/transfer-asset-select";
-import { useMetaMask, useWalletConnect } from "../../integrations/ethereum";
+import {
+  ObservableMetamask,
+  ObservableWalletConnect,
+} from "../../integrations/ethereum";
 import { SourceChainKey } from "../../integrations/bridge-info";
 import { Client, WalletKey } from "../../integrations/wallets";
 import { useWindowSize } from "../../hooks";
@@ -49,13 +52,11 @@ const Assets: NextPage = observer(() => {
     typeof TransferAssetSelectModal
   > | null>(null);
 
-  const [_showWcUri, setShowWcUri] = useState<string | null>(null);
-  // eth client wallets
-  const metamask = useMetaMask();
-  const walletConnectEth = useWalletConnect((uri) => setShowWcUri(uri ?? null));
+  // observable eth client wallets
+  const [metamask] = useState(() => new ObservableMetamask());
+  const [walletConnectEth] = useState(() => new ObservableWalletConnect());
 
   /** Aggregate of non-Keplr wallet clients. */
-
   const ibcTransfer = useCallback(
     (mode: "deposit" | "withdraw", balance: typeof ibcBalances[0]) => {
       const currency = balance.balance.currency;
@@ -102,11 +103,10 @@ const Assets: NextPage = observer(() => {
     [setIbcTransferModal]
   );
 
-  const selectAsset = useCallback(
+  const selectAssetForTransfer = useCallback(
     (
-      mode: "deposit" | "withdraw",
+      direction: "deposit" | "withdraw",
       denom: string,
-      walletClients: Client[],
       /** `undefined` if IBC asset. */
       walletKey?: WalletKey,
       /** `undefined` if IBC asset. */
@@ -115,7 +115,9 @@ const Assets: NextPage = observer(() => {
       const assetSelectBal = ibcBalances.find(
         ({ balance }) => balance.currency.coinDenom === denom
       );
-      const client = walletClients.find(({ key }) => key === walletKey);
+      const client = [metamask, walletConnectEth].find(
+        ({ key }) => key === walletKey
+      ) as Client;
       if (
         assetSelectBal &&
         assetSelectBal.originBridgeInfo &&
@@ -128,21 +130,27 @@ const Assets: NextPage = observer(() => {
           isOpen: true,
           onRequestClose: () => setBridgeTransferModal(null),
           ...assetSelectBal.originBridgeInfo,
-          isWithdraw: mode === "withdraw",
+          isWithdraw: direction === "withdraw",
           client,
           balance: assetSelectBal,
           sourceChainKey,
         });
       } else if (assetSelectBal) {
-        ibcTransfer(mode, assetSelectBal);
+        ibcTransfer(direction, assetSelectBal);
       }
       setAssetSelectModal(null);
     },
-    [ibcBalances, setBridgeTransferModal, ibcTransfer]
+    [
+      ibcBalances,
+      metamask,
+      walletConnectEth,
+      setBridgeTransferModal,
+      ibcTransfer,
+    ]
   );
 
   const openTransferModal = useCallback(
-    (mode: "deposit" | "withdraw", chainId: string, coinDenom: string) => {
+    (direction: "deposit" | "withdraw", chainId: string, coinDenom: string) => {
       const balance = ibcBalances.find(
         (bal) =>
           bal.chainInfo.chainId === chainId &&
@@ -170,22 +178,21 @@ const Assets: NextPage = observer(() => {
 
         if (
           dependentConnectedWallet &&
-          dependentConnectedWallet.chain &&
           account.walletStatus === WalletStatus.Loaded
         ) {
           setBridgeTransferModal({
             isOpen: true,
             onRequestClose: () => setBridgeTransferModal(null),
-            isWithdraw: mode === "withdraw",
+            isWithdraw: direction === "withdraw",
             balance,
             client: dependentConnectedWallet,
             // assume selected chain is desired source/dest network
-            sourceChainKey: dependentConnectedWallet.chain as SourceChainKey,
+            sourceChainKey: dependentConnectedWallet?.chainId as SourceChainKey,
           });
         } else if (applicableWallets.length > 0) {
           setAssetSelectModal({
             isOpen: true,
-            isWithdraw: mode === "withdraw",
+            isWithdraw: direction === "withdraw",
             onRequestClose: () => setAssetSelectModal(null),
             tokens: ibcBalances.map(({ balance, originBridgeInfo }) => ({
               token: balance,
@@ -196,7 +203,7 @@ const Assets: NextPage = observer(() => {
               originBridgeInfo: balance.originBridgeInfo,
             },
             onSelectAsset: (denom, walletKey, networkKey) =>
-              selectAsset(mode, denom, walletClients, walletKey, networkKey),
+              selectAssetForTransfer(direction, denom, walletKey, networkKey),
             walletClients,
           });
         } else {
@@ -206,7 +213,7 @@ const Assets: NextPage = observer(() => {
           );
         }
       } else {
-        ibcTransfer(mode, balance);
+        ibcTransfer(direction, balance);
       }
     },
     [
@@ -216,7 +223,7 @@ const Assets: NextPage = observer(() => {
       walletConnectEth,
       account.walletStatus,
       ibcTransfer,
-      selectAsset,
+      selectAssetForTransfer,
     ]
   );
 
@@ -235,11 +242,11 @@ const Assets: NextPage = observer(() => {
           originBridgeInfo,
         })),
         onSelectAsset: (denom, walletKey, networkKey) =>
-          selectAsset(intent, denom, walletClients, walletKey, networkKey),
+          selectAssetForTransfer(intent, denom, walletKey, networkKey),
         walletClients,
       });
     },
-    [ibcBalances, metamask, walletConnectEth, selectAsset]
+    [ibcBalances, metamask, walletConnectEth, selectAssetForTransfer]
   );
 
   return (

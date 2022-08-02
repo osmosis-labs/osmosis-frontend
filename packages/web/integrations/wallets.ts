@@ -8,14 +8,14 @@ export type WalletDisplay = {
 
 /** Generalized non-Keplr wallet client. */
 export interface Client<TTxSend = unknown> {
-  key: WalletKey;
-  accountAddress?: string;
+  readonly key: WalletKey;
+  readonly accountAddress?: string;
   /** Human readable chain, falls back to hex ID (`0x...`) if unknown. */
-  chainId?: string;
-  isConnected: boolean;
-  displayInfo: WalletDisplay;
+  readonly chainId?: string;
+  readonly isConnected: boolean;
+  readonly displayInfo: WalletDisplay;
   enable: () => Promise<void>;
   disable: () => void;
   send: (send: TTxSend) => Promise<unknown>;
-  isSending: boolean;
+  readonly isSending: boolean;
 }

@@ -22,7 +22,10 @@ export function useTransferFeeQuery(
     const queryTransferFee = async () => {
       const api = new AxelarQueryAPI({ environment });
       const amount = Number(
-        new CoinPretty(currency, amountMinDenom).toCoin().amount
+        new CoinPretty(
+          currency,
+          amountMinDenom === "" ? "0" : amountMinDenom
+        ).toCoin().amount
       );
       if (!isNaN(amount)) {
         return await api.getTransferFee(
@@ -38,11 +41,13 @@ export function useTransferFeeQuery(
       setIsLoading(true);
       queryTransferFee()
         .then((resp) => {
-          console.log({ resp });
           setTransferFee(resp?.fee.amount || null);
           setIsLoading(false);
         })
-        .catch((e) => console.error("useTransferFeeQuery", e));
+        .catch((e) => {
+          console.error("useTransferFeeQuery", e);
+          setIsLoading(false);
+        });
     }
   }, [
     environment,
@@ -55,9 +60,7 @@ export function useTransferFeeQuery(
 
   return {
     transferFee:
-      transferFee !== null && !isLoading
-        ? new CoinPretty(currency, amountMinDenom)
-        : undefined,
+      transferFee !== null ? new CoinPretty(currency, transferFee) : undefined,
     isLoading,
   };
 }
