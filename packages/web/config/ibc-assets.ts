@@ -102,7 +102,6 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://satellite.money/?source=osmosis&destination=moonbeam&asset_denom=dot-planck",
     sourceChainNameOverride: "Moonbeam",
     isVerified: true,
-    isUnstable: true,
   },
   {
     counterpartyChainId: "evmos_9001-2",
@@ -762,7 +761,6 @@ export const IBCAssetInfos: (IBCAsset & {
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=moonbeam&asset_denom=wglmr-wei",
     sourceChainNameOverride: "Moonbeam",
-    isUnstable: true,
   },
   {
     counterpartyChainId: "juno-1",
