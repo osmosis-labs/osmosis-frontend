@@ -1679,6 +1679,7 @@ const chainInfos = (
           coinDenom: "ODIN",
           coinMinimalDenom: "loki",
           coinDecimals: 6,
+          coinGeckoId: "pool:odin",
           coinImageUrl: "/tokens/odin.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
