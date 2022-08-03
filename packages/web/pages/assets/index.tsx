@@ -182,8 +182,6 @@ const Assets: NextPage = observer(() => {
           (wallet) => wallet.isConnected
         );
 
-        console.log("chainid", dependentConnectedWallet?.chainId);
-
         if (
           dependentConnectedWallet &&
           dependentConnectedWallet.chainId &&
@@ -207,17 +205,13 @@ const Assets: NextPage = observer(() => {
               token: balance,
               originBridgeInfo,
             })),
-            initialToken: {
-              token: balance.balance.currency,
-              originBridgeInfo: balance.originBridgeInfo,
-            },
             onSelectAsset: (denom, walletKey, networkKey) =>
               selectAssetForTransfer(direction, denom, walletKey, networkKey),
             walletClients,
           });
         } else {
           console.warn(
-            "No nonKeplr wallets found for this bridge asset:",
+            "No non-Keplr wallets found for this bridged asset:",
             balance.balance.currency.coinDenom
           );
         }

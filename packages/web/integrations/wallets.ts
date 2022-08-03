@@ -3,7 +3,6 @@ export type WalletKey = "metamask" | "walletconnect";
 export type WalletDisplay = {
   iconUrl: string;
   displayName: string;
-  caption?: string;
 };
 
 /** Generalized non-Keplr wallet client. */

@@ -6,12 +6,7 @@ export interface AxelarBridgeConfig {
    *  See this FigJam for axlUSDC case:
    *  https://www.figma.com/file/utRjpBIvD7sRm31vxif7hF/Bridge-Integration-Diagram?node-id=340%3A935
    */
-  sourceChains: {
-    id: SourceChain;
-    /** Address of origin ERC20 token for that origin chain. Leave blank to prefer native ETH currency if `id` is not a Cosmos chain in `ChainInfo`.
-     */
-    erc20ContractAddress?: string;
-  }[];
+  sourceChains: SourceChainConfig[];
   /** Ex: `uusdc`. NOTE: Will get currency info from `originCurrency` on the IBC balance (from registrar).
    *  See: https://docs.axelar.dev/resources/mainnet#assets
    */
@@ -25,6 +20,7 @@ export type SourceChain =
   | "Fantom"
   | "Polygon"
   | "Moonbeam"
+  | "BNB Chain"
   | "cosmos" // IBC counterparty chains, would require IBC transfer to counterparty address
   | "emoney"
   | "juno"
@@ -43,4 +39,60 @@ export const SourceChainCosmosChainIdMap: { [sourceChain: string]: string } = {
   terra: "phoenix-1", // TERRA 2.0
   secret: "secret-4",
   kujira: "kaiyo-1",
+};
+
+export type SourceChainConfig = {
+  /** Axelar-defined identifier. */
+  id: SourceChain;
+  /** Address of origin ERC20 token for that origin chain. Leave blank to prefer native ETH currency if `id` is not a Cosmos chain in `ChainInfo`.
+   */
+  erc20ContractAddress?: string;
+
+  /** For IBC transfer from CosmosCounterparty->Axelar */
+  ibcConfig?: {
+    /** on cosmos counterparty */
+    sourceChannelId: string;
+    /** on Axelar */
+    destChannelId: string;
+  };
+
+  logoUrl: string;
+};
+
+/** https://axelarscan.io/assets */
+export const SourceChainConfigs: {
+  [asset: string]: { [chain: string]: SourceChainConfig };
+} = {
+  usdc: {
+    ethereum: {
+      id: "Ethereum" as const,
+      erc20ContractAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      logoUrl: "/networks/ethereum.svg",
+    },
+    bnbChain: {
+      id: "BNB Chain" as const,
+      erc20ContractAddress: "0x4268B8F0B87b6Eae5d897996E6b845ddbD99Adf3",
+      logoUrl: "/networks/binance.png",
+    },
+    avalanche: {
+      id: "Avalanche" as const,
+      erc20ContractAddress: "0xfaB550568C688d5D8A52C7d794cb93Edc26eC0eC",
+      logoUrl: "/networks/avalanche.svg",
+    },
+    polygon: {
+      id: "Polygon" as const,
+      erc20ContractAddress: "0x750e4C4984a9e0f12978eA6742Bc1c5D248f40ed",
+      logoUrl: "/networks/polygon.svg",
+    },
+    fantom: {
+      id: "Fantom" as const,
+      erc20ContractAddress: "0x1B6382DBDEa11d97f24495C9A90b7c88469134a4",
+      logoUrl: "/networks/fantom.svg",
+    },
+    moonbeam: {
+      id: "Moonbeam" as const,
+      erc20ContractAddress: "0xCa01a1D0993565291051daFF390892518ACfAD3A",
+      logoUrl: "/networks/moonbeam.svg",
+    },
+  },
 };

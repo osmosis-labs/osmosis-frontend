@@ -1,14 +1,6 @@
 import Image from "next/image";
-import {
-  FunctionComponent,
-  useEffect,
-  useState,
-  useRef,
-  useMemo,
-  useCallback,
-} from "react";
+import { FunctionComponent, useState, useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { TokenSelect } from "../components/control";
 import { NonKeplrWalletCard } from "../components/cards";
@@ -17,14 +9,11 @@ import type {
   OriginBridgeInfo,
   SourceChainKey,
 } from "../integrations/bridge-info";
-import type {
-  SourceChain as AxelarSourceChain,
-  SourceChain,
-} from "../integrations/axelar";
+import type { SourceChain } from "../integrations/axelar";
 import { WalletKey, Client } from "../integrations/wallets";
-import { DataSorter } from "../hooks/data/data-sorter";
-import { useConnectWalletModalRedirect, useLocalStorageState } from "../hooks";
+import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
+import classNames from "classnames";
 
 /** Intermediate step to allow a user to select & config an asset before deposit/withdraw. */
 export const TransferAssetSelectModal: FunctionComponent<
@@ -35,8 +24,6 @@ export const TransferAssetSelectModal: FunctionComponent<
       token: CoinPretty;
       originBridgeInfo?: OriginBridgeInfo;
     }[];
-    /** Leave undefined to auto-select most relevant asset. */
-    initialToken?: { token: AppCurrency; originBridgeInfo?: OriginBridgeInfo };
     onSelectAsset: (
       denom: string,
       /** `undefined` if IBC asset. */
@@ -47,58 +34,49 @@ export const TransferAssetSelectModal: FunctionComponent<
     walletClients: Client[];
   }
 > = observer((props) => {
-  const {
-    isWithdraw,
-    tokens,
-    initialToken: initiallySelectedToken,
-    onSelectAsset,
-    walletClients,
-  } = props;
-  // for user convenience, remember last transferred token
-  const [lastSelectedDenom, setLastSelectedDenom] = useLocalStorageState<
-    string | null
-  >("transfer_asset_select_last", null);
+  const { isWithdraw, tokens, onSelectAsset, walletClients } = props;
 
-  const [selectedSourceChainKey, setSelectedSourceChainKey] = useState(() => {
-    // set from initiallySelectedToken
-    if (
-      initiallySelectedToken &&
-      initiallySelectedToken.originBridgeInfo &&
-      typeof initiallySelectedToken.originBridgeInfo.sourceChains !==
-        "undefined" &&
-      initiallySelectedToken.originBridgeInfo.sourceChains.length > 0
-    ) {
-      // axelar
-      return initiallySelectedToken.originBridgeInfo.sourceChains[0].id;
-    }
-    return null;
-  });
+  const [selectedSourceChainKey, setSelectedSourceChainKey] =
+    useState<SourceChain | null>(null);
   const [selectedTokenDenom, setSelectedTokenDenom] = useState(() => {
-    if (initiallySelectedToken) {
-      return initiallySelectedToken.token.coinDenom;
-    } else {
-      // highest balance or first in list
-      const denom =
-        new DataSorter([...tokens.map((t) => t.token)])
-          .process()
-          .find((t) => t.currency.coinDenom === lastSelectedDenom)?.denom ||
-        tokens[0].token.denom;
+    // highest balance or first in list
+    const denom = isWithdraw
+      ? tokens.find(
+          ({
+            token: {
+              currency: { coinDenom },
+            },
+          }) => coinDenom === "ATOM"
+        )?.token.denom
+      : tokens.find(
+          ({
+            token: {
+              currency: { coinDenom },
+            },
+          }) => coinDenom === "USDC"
+        )?.token.denom;
 
-      // set chain-select to recommended selected token
-      const { sourceChains } = tokens.find(
-        ({ token }) => token.currency.coinDenom === denom
-      )?.originBridgeInfo || { sourceChains: [] };
-      setSelectedSourceChainKey(
-        sourceChains.length > 0 ? sourceChains[0].id : null
-      );
+    // set chain-select to recommended selected token
+    const { sourceChains } = tokens.find(
+      ({ token }) => token.currency.coinDenom === denom
+    )?.originBridgeInfo || { sourceChains: [] };
+    setSelectedSourceChainKey(
+      sourceChains.length > 0 ? sourceChains[0].id : null
+    );
 
-      return denom;
-    }
+    return denom || tokens[0].token.denom;
   });
   const selectedToken = useMemo(
     () => tokens.find((t) => t.token.denom === selectedTokenDenom),
     [tokens, selectedTokenDenom]
   );
+  const selectedNetwork = useMemo(() => {
+    if (selectedToken?.originBridgeInfo) {
+      return selectedToken.originBridgeInfo.sourceChains.find(
+        ({ id }) => id === selectedSourceChainKey
+      );
+    }
+  }, [selectedToken, selectedSourceChainKey]);
   const applicableWallets = useMemo(() => {
     if (!selectedToken?.originBridgeInfo) {
       return [];
@@ -115,25 +93,9 @@ export const TransferAssetSelectModal: FunctionComponent<
     () => applicableWallets.find((w) => w.key === selectedWalletKey),
     [applicableWallets, selectedWalletKey]
   );
-  const setValidSourceChain = useCallback(
-    (selectedSourceChainKey: string) => {
-      if (selectedToken && selectedToken.originBridgeInfo) {
-        if (
-          typeof selectedToken.originBridgeInfo.sourceChains !== "undefined" &&
-          selectedToken.originBridgeInfo.sourceChains
-            .map((sc) => sc.id)
-            .includes(selectedSourceChainKey as SourceChain)
-        ) {
-          // axelar
-          setSelectedSourceChainKey(
-            selectedSourceChainKey as AxelarSourceChain
-          );
-        }
-      }
-    },
-    [selectedToken, setSelectedSourceChainKey]
-  );
-  setValidSourceChain; // TODO add dropdown mechanism
+
+  const [isSourceChainDropdownOpen, setSourceChainDropdownOpen] =
+    useState(false);
 
   const {
     showModalBase,
@@ -153,6 +115,8 @@ export const TransferAssetSelectModal: FunctionComponent<
         ) {
           // connect wallet
           try {
+            walletClients.forEach((client) => client.disable());
+
             await selectedWallet.enable();
 
             onSelectAsset(
@@ -179,7 +143,6 @@ export const TransferAssetSelectModal: FunctionComponent<
         } else {
           onSelectAsset(selectedTokenDenom);
         }
-        setLastSelectedDenom(selectedTokenDenom);
       },
       children: (
         <>
@@ -203,19 +166,7 @@ export const TransferAssetSelectModal: FunctionComponent<
     "Connect Native Wallet"
   );
 
-  // sync initially selected token to last transferred token
-  const setToLocalStorageValue = useRef<boolean | null>(null);
-  useEffect(() => {
-    if (
-      !initiallySelectedToken &&
-      lastSelectedDenom &&
-      setToLocalStorageValue.current !== null &&
-      !setToLocalStorageValue.current
-    ) {
-      setSelectedTokenDenom(lastSelectedDenom);
-      setToLocalStorageValue.current = true;
-    }
-  }, [lastSelectedDenom, setSelectedTokenDenom, initiallySelectedToken]);
+  // TODO: push wallet connect errors as toasts. i.e. request reject
 
   return (
     <ModalBase
@@ -233,15 +184,57 @@ export const TransferAssetSelectModal: FunctionComponent<
             selectedTokenDenom={selectedTokenDenom}
           />
         </div>
-        {selectedToken?.originBridgeInfo && (
-          <div className="w-full flex items-center place-content-between border border-white-faint rounded-2xl p-4">
-            <span className="text-white-mid">Network</span>
-            <span className="text-white-disabled">
-              {selectedSourceChainKey
-                ? selectedSourceChainKey
-                : "todo: add dropdown"}
-            </span>
-            {/* // TODO: support network select */}
+        {selectedToken?.originBridgeInfo && selectedNetwork && (
+          <div
+            className={classNames(
+              "relative w-full flex items-center place-content-between border border-white-faint p-4",
+              {
+                "rounded-2xl": !isSourceChainDropdownOpen,
+                "rounded-l-2xl rounded-tr-2xl": isSourceChainDropdownOpen,
+              }
+            )}
+          >
+            <span className="text-white-mid subtitle2">Network</span>
+            <div
+              className="flex items-center gap-2 cursor-pointer"
+              onClick={() =>
+                setSourceChainDropdownOpen(!isSourceChainDropdownOpen)
+              }
+            >
+              <Network {...selectedNetwork} />
+              <Image
+                alt="dropdown icon"
+                src="/icons/chevron-down-disabled.svg"
+                height={7}
+                width={12}
+              />
+            </div>
+            {isSourceChainDropdownOpen && (
+              <div
+                style={{ borderTopStyle: "dashed" }}
+                className="absolute top-[100%] -right-[1px] border border-white-faint rounded-b-2xl z-50 bg-surface"
+              >
+                {selectedToken.originBridgeInfo.sourceChains
+                  .filter(({ id }) => id !== selectedNetwork.id)
+                  .map((sourceChain, index, scArr) => (
+                    <div
+                      key={index}
+                      className={classNames(
+                        "cursor-pointer px-4 py-1.5 hover:bg-card",
+                        {
+                          "rounded-b-2xl": scArr.length - 1 === index,
+                        }
+                      )}
+                      onClick={() => {
+                        setSelectedSourceChainKey(sourceChain.id);
+                        setSourceChainDropdownOpen(false);
+                      }}
+                    >
+                      <Network {...sourceChain} />
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -274,3 +267,13 @@ export const TransferAssetSelectModal: FunctionComponent<
     </ModalBase>
   );
 });
+
+const Network: FunctionComponent<{ id: string; logoUrl: string }> = ({
+  id: displayName,
+  logoUrl,
+}) => (
+  <div className="flex items-center gap-2">
+    <Image alt="network logo" src={logoUrl} height={24} width={24} />
+    <span className="subtitle2">{displayName}</span>
+  </div>
+);

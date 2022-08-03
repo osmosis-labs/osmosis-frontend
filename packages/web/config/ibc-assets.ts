@@ -1,4 +1,5 @@
 import { IBCAsset } from "../stores/assets";
+import { SourceChainConfigs as AxelarSourceChainConfigs } from "../integrations/axelar";
 
 export const IS_FRONTIER = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
 export const UNSTABLE_MSG = "Transfers are disabled due to instability";
@@ -34,10 +35,12 @@ export const IBCAssetInfos: (IBCAsset & {
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChains: [
-        {
-          id: "Ethereum" as const,
-          erc20ContractAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-        },
+        AxelarSourceChainConfigs.usdc.ethereum,
+        AxelarSourceChainConfigs.usdc.bnbChain,
+        AxelarSourceChainConfigs.usdc.avalanche,
+        AxelarSourceChainConfigs.usdc.polygon,
+        AxelarSourceChainConfigs.usdc.fantom,
+        AxelarSourceChainConfigs.usdc.moonbeam,
       ],
       tokenMinDenom: "uusdc",
     },
