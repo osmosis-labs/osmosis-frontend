@@ -8,10 +8,7 @@ import React, {
 } from "react";
 import { Keplr } from "@keplr-wallet/types";
 import { getKeplrFromWindow } from "@keplr-wallet/stores";
-import {
-  KeplrConnectionSelectModal,
-  KeplrWalletConnectQRModal,
-} from "../../modals";
+import { KeplrConnectionSelectModal, WalletConnectQRModal } from "../../modals";
 import EventEmitter from "eventemitter3";
 import { BroadcastMode, StdTx } from "@cosmjs/launchpad";
 import Axios from "axios";
@@ -298,7 +295,7 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
           eventListener.emit("select_wallet_connect");
         }}
       />
-      <KeplrWalletConnectQRModal
+      <WalletConnectQRModal
         isOpen={wcUri.length > 0}
         onRequestClose={() => {
           eventListener.emit("wc_modal_close");

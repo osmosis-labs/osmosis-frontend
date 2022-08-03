@@ -27,6 +27,8 @@ import {
 import { SourceChainKey } from "../../integrations/bridge-info";
 import { Client, WalletKey } from "../../integrations/wallets";
 import { useWindowSize } from "../../hooks";
+import { makeLocalStorageKVStore } from "../../stores/kv-store";
+import { WalletConnectQRModal } from "../../modals";
 
 const INIT_POOL_CARD_COUNT = 6;
 
@@ -53,8 +55,12 @@ const Assets: NextPage = observer(() => {
   > | null>(null);
 
   // observable eth client wallets
-  const [metamask] = useState(() => new ObservableMetamask());
-  const [walletConnectEth] = useState(() => new ObservableWalletConnect());
+  const [metamask] = useState(
+    () => new ObservableMetamask(makeLocalStorageKVStore("metamask"))
+  );
+  const [walletConnectEth] = useState(
+    () => new ObservableWalletConnect(makeLocalStorageKVStore("wc-eth"))
+  );
 
   /** Aggregate of non-Keplr wallet clients. */
   const ibcTransfer = useCallback(
@@ -176,8 +182,11 @@ const Assets: NextPage = observer(() => {
           (wallet) => wallet.isConnected
         );
 
+        console.log("chainid", dependentConnectedWallet?.chainId);
+
         if (
           dependentConnectedWallet &&
+          dependentConnectedWallet.chainId &&
           account.walletStatus === WalletStatus.Loaded
         ) {
           setBridgeTransferModal({
@@ -187,7 +196,7 @@ const Assets: NextPage = observer(() => {
             balance,
             client: dependentConnectedWallet,
             // assume selected chain is desired source/dest network
-            sourceChainKey: dependentConnectedWallet?.chainId as SourceChainKey,
+            sourceChainKey: dependentConnectedWallet.chainId as SourceChainKey,
           });
         } else if (applicableWallets.length > 0) {
           setAssetSelectModal({
@@ -258,6 +267,13 @@ const Assets: NextPage = observer(() => {
       {assetSelectModal && <TransferAssetSelectModal {...assetSelectModal} />}
       {ibcTransferModal && <IbcTransferModal {...ibcTransferModal} />}
       {bridgeTransferModal && <BridgeTransferModal {...bridgeTransferModal} />}
+      {walletConnectEth.sessionConnectUri && (
+        <WalletConnectQRModal
+          isOpen={true}
+          uri={walletConnectEth.sessionConnectUri || ""}
+          onRequestClose={() => {}}
+        />
+      )}
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}

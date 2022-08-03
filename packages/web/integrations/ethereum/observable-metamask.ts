@@ -7,9 +7,12 @@ import {
 } from "mobx";
 import { computedFn } from "mobx-utils";
 import { toHex, isAddress } from "web3-utils";
+import { KVStore } from "@keplr-wallet/common";
 import type { EthereumProvider } from "../../window";
 import { WalletDisplay, WalletKey } from "../wallets";
 import { ChainNames, EthClient } from "./types";
+
+const CONNECTED_ACCOUNT_KEY = "metamask-connected-account";
 
 export class ObservableMetamask implements EthClient {
   readonly key: WalletKey = "metamask";
@@ -29,18 +32,16 @@ export class ObservableMetamask implements EthClient {
   @observable
   protected _isSending: boolean = false;
 
-  constructor() {
+  constructor(protected readonly kvStore?: KVStore) {
     makeObservable(this);
 
     withEthInWindow((eth) => {
       const handleAccountChanged = ([account]: (string | undefined)[]) => {
-        runInAction(() => {
-          this._accountAddress = account;
+        this.accountAddress = account;
 
-          if (!account) {
-            this._chainId = undefined;
-          }
-        });
+        if (!account) {
+          this._chainId = undefined;
+        }
       };
 
       eth.on("accountsChanged", handleAccountChanged);
@@ -50,11 +51,30 @@ export class ObservableMetamask implements EthClient {
         });
       });
       eth.on("disconnect", () => handleAccountChanged([undefined]));
+
+      // set from cache
+      kvStore
+        ?.get<string | null>(CONNECTED_ACCOUNT_KEY)
+        .then((existingAccount) => {
+          if (existingAccount) {
+            this.accountAddress = existingAccount;
+
+            // req current chain
+            eth.request({ method: "eth_chainId" }).then((chainId) => {
+              runInAction(() => (this._chainId = chainId as string));
+            });
+          }
+        });
     });
   }
 
   get accountAddress(): string | undefined {
     return this._accountAddress;
+  }
+
+  protected set accountAddress(address: string | undefined) {
+    runInAction(() => (this._accountAddress = address));
+    this.kvStore?.set(CONNECTED_ACCOUNT_KEY, address || null);
   }
 
   @computed
@@ -86,7 +106,7 @@ export class ObservableMetamask implements EthClient {
         .then((accounts) => {
           window.ethereum.request({ method: "eth_chainId" }).then((chainId) => {
             this._chainId = chainId as string;
-            this._accountAddress = (accounts as string[])[0];
+            this.accountAddress = (accounts as string[])[0];
             resolve();
           });
         })
@@ -96,7 +116,7 @@ export class ObservableMetamask implements EthClient {
 
   @action
   disable() {
-    this._accountAddress = undefined;
+    this.accountAddress = undefined;
     this._chainId = undefined;
     withEthInWindow((eth) => eth.removeAllListeners());
   }

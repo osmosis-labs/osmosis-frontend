@@ -8,8 +8,12 @@ import {
 import { computedFn } from "mobx-utils";
 import WalletConnect from "@walletconnect/client";
 import { toHex, isAddress } from "web3-utils";
+import { KVStore } from "@keplr-wallet/common";
 import { WalletDisplay, WalletKey } from "../wallets";
 import { ChainNames, EthClient } from "./types";
+
+const CONNECTED_ACCOUNT_KEY = "wc-eth-connected-account";
+const CONNECTED_ACCOUNT_CHAINID = "wc-eth-connected-chainId";
 
 export class ObservableWalletConnect implements EthClient {
   key: WalletKey = "walletconnect";
@@ -21,7 +25,7 @@ export class ObservableWalletConnect implements EthClient {
   };
 
   @observable
-  accountAddress: string | undefined;
+  protected _accountAddress: string | undefined;
 
   @observable
   protected _chainId: string | undefined;
@@ -29,13 +33,13 @@ export class ObservableWalletConnect implements EthClient {
   @observable
   protected _isSending: boolean = false;
 
-  /** For use in a QR code or via mobile intent. */
+  /** For use in a QR code or via mobile intent. Becomse `undefined` once connected. */
   @observable
   sessionConnectUri: string | undefined;
 
   protected _walletConnect: WalletConnect;
 
-  constructor(bridgeUrl?: string) {
+  constructor(protected readonly kvStore?: KVStore, bridgeUrl?: string) {
     this._walletConnect = new WalletConnect({
       bridge: bridgeUrl || "https://bridge.walletconnect.org",
       qrcodeModal: {
@@ -61,7 +65,7 @@ export class ObservableWalletConnect implements EthClient {
           console.warn("WalletConnect WARN: address received invalid");
         }
 
-        this._chainId = toHex(chainId as string);
+        this.chainId = toHex(chainId as string);
       });
     };
 
@@ -70,11 +74,36 @@ export class ObservableWalletConnect implements EthClient {
     this._walletConnect.on("disconnect", () =>
       runInAction(() => {
         this.accountAddress = undefined;
-        this._chainId = undefined;
+        this.chainId = undefined;
       })
     );
 
+    // set from cache
+    kvStore
+      ?.get<string | null>(CONNECTED_ACCOUNT_KEY)
+      .then((existingAccount) => {
+        if (existingAccount) {
+          this.accountAddress = existingAccount;
+        }
+      });
+    kvStore
+      ?.get<string | null>(CONNECTED_ACCOUNT_CHAINID)
+      .then((existingChainId) => {
+        if (existingChainId) {
+          this.chainId = existingChainId;
+        }
+      });
+
     makeObservable(this);
+  }
+
+  get accountAddress(): string | undefined {
+    return this._accountAddress;
+  }
+
+  protected set accountAddress(address: string | undefined) {
+    runInAction(() => (this._accountAddress = address));
+    this.kvStore?.set(CONNECTED_ACCOUNT_KEY, address || null);
   }
 
   @computed
@@ -82,12 +111,15 @@ export class ObservableWalletConnect implements EthClient {
     return this._chainId ? ChainNames[this._chainId] : undefined;
   }
 
-  @computed
+  protected set chainId(chainId: string | undefined) {
+    runInAction(() => (this._chainId = chainId));
+    this.kvStore?.set(CONNECTED_ACCOUNT_CHAINID, chainId || null);
+  }
+
   get isConnected(): boolean {
     return this.accountAddress !== undefined;
   }
 
-  @computed
   get isSending(): boolean {
     return this._isSending;
   }
@@ -115,7 +147,7 @@ export class ObservableWalletConnect implements EthClient {
       async (conn) => {
         conn.killSession().then(() => {
           this.accountAddress = undefined;
-          this._chainId = undefined;
+          this.chainId = undefined;
         });
       }
     );

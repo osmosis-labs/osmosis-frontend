@@ -9,7 +9,7 @@ import {
 } from "@walletconnect/browser-utils";
 import { Button } from "../components/buttons";
 
-export const KeplrWalletConnectQRModal: FunctionComponent<
+export const WalletConnectQRModal: FunctionComponent<
   ModalBaseProps & {
     uri: string;
   }
