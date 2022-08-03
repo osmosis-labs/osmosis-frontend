@@ -220,7 +220,7 @@ export const TransferAssetSelectModal: FunctionComponent<
                     <div
                       key={index}
                       className={classNames(
-                        "cursor-pointer px-4 py-1.5 hover:bg-card",
+                        "cursor-pointer px-6 py-1.5 hover:bg-card",
                         {
                           "rounded-b-2xl": scArr.length - 1 === index,
                         }
@@ -273,7 +273,7 @@ const Network: FunctionComponent<{ id: string; logoUrl: string }> = ({
   logoUrl,
 }) => (
   <div className="flex items-center gap-2">
-    <Image alt="network logo" src={logoUrl} height={24} width={24} />
+    <Image alt="network logo" src={logoUrl} height={28} width={28} />
     <span className="subtitle2">{displayName}</span>
   </div>
 );

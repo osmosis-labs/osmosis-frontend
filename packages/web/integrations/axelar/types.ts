@@ -13,14 +13,14 @@ export interface AxelarBridgeConfig {
   tokenMinDenom: string;
 }
 
-/** See: https://docs.axelar.dev/resources/mainnet */
+/** See: https://docs.axelar.dev/dev/build/chain-names/mainnet */
 export type SourceChain =
   | "Ethereum"
   | "Avalanche"
   | "Fantom"
   | "Polygon"
   | "Moonbeam"
-  | "BNB Chain"
+  | "Binance"
   | "cosmos" // IBC counterparty chains, would require IBC transfer to counterparty address
   | "emoney"
   | "juno"
@@ -70,9 +70,9 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
     bnbChain: {
-      id: "BNB Chain" as const,
+      id: "Binance" as const,
       erc20ContractAddress: "0x4268B8F0B87b6Eae5d897996E6b845ddbD99Adf3",
-      logoUrl: "/networks/binance.png",
+      logoUrl: "/networks/binance.svg",
     },
     avalanche: {
       id: "Avalanche" as const,
