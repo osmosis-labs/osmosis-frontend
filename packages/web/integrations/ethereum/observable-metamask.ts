@@ -19,8 +19,7 @@ export class ObservableMetamask implements EthClient {
 
   readonly displayInfo: WalletDisplay = {
     iconUrl: "/icons/metamask-fox.svg",
-    displayName: "Metamask",
-    caption: "Metamask browser extension",
+    displayName: "MetaMask",
   };
 
   @observable
@@ -162,6 +161,8 @@ function withEthInWindow<T>(
   ) {
     return doTask(window.ethereum);
   }
-  console.warn("MetaMask: no window.ethereum found");
+  if (typeof window !== "undefined") {
+    console.warn("MetaMask: no window.ethereum found");
+  }
   return defaultRet;
 }

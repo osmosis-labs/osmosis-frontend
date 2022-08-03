@@ -21,7 +21,6 @@ export class ObservableWalletConnect implements EthClient {
   displayInfo: WalletDisplay = {
     iconUrl: "/icons/walletconnect.svg",
     displayName: "WalletConnect",
-    caption: "Ethereum via WalletConnect",
   };
 
   @observable

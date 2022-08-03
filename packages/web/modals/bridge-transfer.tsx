@@ -21,7 +21,7 @@ export const BridgeTransferModal: FunctionComponent<
     client: Client;
   }
 > = (props) => {
-  const { balance, sourceChainKey, client } = props;
+  const { balance, sourceChainKey, client, onRequestClose } = props;
   if (!balance.originBridgeInfo) {
     return null;
   }
@@ -36,12 +36,12 @@ export const BridgeTransferModal: FunctionComponent<
               <AxelarTransfer
                 isWithdraw={props.isWithdraw}
                 client={client as EthClient}
-                osmosisBalance={balance}
+                balanceOnOsmosis={balance}
                 {...balance.originBridgeInfo}
                 selectedSourceChainKey={sourceChainKey}
+                onRequestClose={onRequestClose}
               />
             );
-            break;
           default:
             return null;
         }

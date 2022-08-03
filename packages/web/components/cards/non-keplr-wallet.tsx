@@ -12,7 +12,7 @@ export const NonKeplrWalletCard: FunctionComponent<
 > = ({
   iconUrl,
   displayName,
-  caption,
+
   isSelected = false,
   onClick,
   className,
@@ -39,7 +39,6 @@ export const NonKeplrWalletCard: FunctionComponent<
     </div>
     <div className="mx-auto">
       <h6>{displayName}</h6>
-      {caption && <span className="body2 text-iconDefault">{caption}</span>}
     </div>
   </button>
 );

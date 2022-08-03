@@ -14,13 +14,19 @@ export async function transfer(
   sendFn: SendFn,
   amount: string,
   erc20Address: string,
+  fromAddress: string,
   toAddress: string
 ): Promise<unknown> {
-  if (isAddress(erc20Address) && isAddress(toAddress)) {
+  if (
+    isAddress(fromAddress) &&
+    isAddress(erc20Address) &&
+    isAddress(toAddress)
+  ) {
     return sendFn({
-      method: "eth_call",
+      method: "eth_sendTransaction",
       params: [
         {
+          from: fromAddress,
           to: erc20Address,
           data: Erc20Abi.encodeFunctionData("transfer", [
             toAddress,
