@@ -1,8 +1,4 @@
 import { Interface } from "@ethersproject/abi";
-import { EthClient } from "../types";
-
-/** Async function that can be used to perform queries on any EVM chain. */
-export type QueryFn = Pick<EthClient, "send">["send"];
 
 /** ABI spec for interfacing with ERC20 token contracts on EVM chains.
  *  Source: https://ethereumdev.io/abi-for-erc20-contract-on-ethereum/
@@ -108,7 +104,7 @@ export const Erc20Abi = new Interface([
         type: "address",
       },
     ],
-    name: "balanceOf",
+    name: "balanceOf", // balanceOf
     outputs: [
       {
         name: "balance",

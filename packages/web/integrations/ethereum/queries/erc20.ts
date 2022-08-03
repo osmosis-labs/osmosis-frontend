@@ -4,7 +4,8 @@ import { hexToNumberString, isAddress } from "web3-utils";
 import { CoinPretty, Int } from "@keplr-wallet/unit";
 import { HasMapStore } from "@keplr-wallet/stores";
 import type { Currency } from "@keplr-wallet/types";
-import { QueryFn, Erc20Abi } from "./types";
+import { SendFn } from "../types";
+import { Erc20Abi } from "./types";
 
 /** Queries any erc20 contract address for a particular user hexAddress. */
 class ObservableErc20Query {
@@ -13,7 +14,7 @@ class ObservableErc20Query {
 
   constructor(
     protected readonly hexAddress: string,
-    protected readonly queryFn: QueryFn,
+    protected readonly queryFn: SendFn,
     protected readonly currency: Currency
   ) {
     makeObservable(this);
@@ -51,10 +52,7 @@ class ObservableErc20Query {
 
 /** Queries erc20s for user hexAddresses. */
 export class ObservableErc20Queries extends HasMapStore<ObservableErc20Query> {
-  constructor(
-    readonly queryFn: QueryFn,
-    protected readonly currency: Currency
-  ) {
+  constructor(readonly queryFn: SendFn, protected readonly currency: Currency) {
     super(
       (hexAddress: string) =>
         new ObservableErc20Query(hexAddress, queryFn, currency)
