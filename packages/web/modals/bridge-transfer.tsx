@@ -21,20 +21,27 @@ export const BridgeTransferModal: FunctionComponent<
     client: Client;
   }
 > = (props) => {
-  const { balance, sourceChainKey, client, onRequestClose } = props;
+  const { isWithdraw, balance, sourceChainKey, client, onRequestClose } = props;
   if (!balance.originBridgeInfo) {
     return null;
   }
   const { bridge } = balance.originBridgeInfo;
 
   return (
-    <ModalBase {...props}>
+    <ModalBase
+      {...props}
+      title={
+        isWithdraw
+          ? `Withdraw ${balance.balance.currency.coinDenom}`
+          : `Deposit ${balance.balance.currency.coinDenom}`
+      }
+    >
       {(() => {
         switch (bridge) {
           case "axelar":
             return (
               <AxelarTransfer
-                isWithdraw={props.isWithdraw}
+                isWithdraw={isWithdraw}
                 client={client as EthClient}
                 balanceOnOsmosis={balance}
                 {...balance.originBridgeInfo}

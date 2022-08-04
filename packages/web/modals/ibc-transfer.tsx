@@ -60,7 +60,15 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       );
 
     return (
-      <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
+      <ModalBase
+        {...props}
+        isOpen={props.isOpen && showModalBase}
+        title={
+          isWithdraw
+            ? `Withdraw ${currency.coinDenom}`
+            : `Deposit ${currency.coinDenom}`
+        }
+      >
         <Transfer
           isWithdraw={isWithdraw}
           transferPath={

@@ -9,6 +9,7 @@ setAppElement("body");
 export interface ModalBaseProps {
   isOpen: boolean;
   onRequestClose: () => void;
+  onRequestBack?: () => void;
   title?: string | ReactElement;
   className?: string;
   bodyOpenClassName?: string;
@@ -19,6 +20,7 @@ export interface ModalBaseProps {
 export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   isOpen,
   onRequestClose,
+  onRequestBack,
   title,
   className,
   bodyOpenClassName,
@@ -45,6 +47,19 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         className
       )}
     >
+      {onRequestBack && (
+        <button
+          aria-label="back"
+          className="absolute md:top-4 md:left-4 top-5 left-5 cursor-pointer z-50"
+          onClick={onRequestBack}
+        >
+          <Image
+            alt="back button"
+            src="/icons/chevron-left.svg"
+            height={isMobile ? 24 : 32}
+          />
+        </button>
+      )}
       {!hideCloseButton && (
         <button
           aria-label="close"
@@ -59,15 +74,17 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           />
         </button>
       )}
-      {typeof title === "string" ? (
-        isMobile ? (
-          <h6>{title}</h6>
+      <div className="text-center">
+        {typeof title === "string" ? (
+          isMobile ? (
+            <h6>{title}</h6>
+          ) : (
+            <h5>{title}</h5>
+          )
         ) : (
-          <h5>{title}</h5>
-        )
-      ) : (
-        <>{title}</>
-      )}
+          <>{title}</>
+        )}
+      </div>
       {children}
     </ReactModal>
   );
