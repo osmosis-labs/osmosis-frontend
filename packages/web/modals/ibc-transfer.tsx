@@ -112,14 +112,15 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                 }
               : undefined
           }
-          errorMessage={
-            amountConfig.error ? amountConfig.error.message : undefined
-          }
+          // errorMessage={ TODO: self-manage errors console.log
+          //   amountConfig.error ? amountConfig.error.message : undefined
+          // }
           toggleIsMax={() => amountConfig.toggleIsMax()}
           currentValue={amountConfig.amount}
           onInput={(value) => amountConfig.setAmount(value)}
+          waitTime="3 minutes"
         />
-        <div className="w-full md:mt-6 mt-9 flex items-center justify-center">
+        <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
           {accountActionButton}
         </div>
       </ModalBase>

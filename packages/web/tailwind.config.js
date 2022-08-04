@@ -261,10 +261,10 @@ module.exports = {
         xlinset: "0.688rem", // 1px smaller than rounded-xl
         "2xlinset": "0.938rem", // 1 px smaller than rounded-2xl
       },
+      transitionProperty: {
+        width: "width",
+      },
     },
-    // fontWeight: {
-    //   bold: 600, // font-bold
-    // },
   },
   plugins: [],
 };
