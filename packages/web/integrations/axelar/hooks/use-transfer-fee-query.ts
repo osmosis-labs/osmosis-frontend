@@ -13,14 +13,17 @@ export function useTransferFeeQuery(
   tokenMinDenom: string,
   amountMinDenom: string,
   currency: AppCurrency,
-  environment = Environment.MAINNET
+  environment = Environment.MAINNET,
+  inputDebounceMs = 1400
 ): { transferFee?: CoinPretty; isLoading: boolean } {
   const [transferFee, setTransferFee] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const queryTransferFee = async () => {
-      const api = new AxelarQueryAPI({ environment });
+      const api = new AxelarQueryAPI({
+        environment,
+      });
       const amount = Number(
         new CoinPretty(
           currency,
@@ -37,18 +40,24 @@ export function useTransferFeeQuery(
       }
       return null;
     };
+    let timeout: NodeJS.Timeout | undefined;
     if (amountMinDenom !== "") {
       setIsLoading(true);
-      queryTransferFee()
-        .then((resp) => {
-          setTransferFee(resp?.fee.amount || null);
-          setIsLoading(false);
-        })
-        .catch((e) => {
-          console.error("useTransferFeeQuery", e);
-          setIsLoading(false);
-        });
+      // debounce query on user typing
+      timeout = setTimeout(() => {
+        queryTransferFee()
+          .then((resp) => {
+            setTransferFee(resp?.fee.amount || null);
+          })
+          .catch((e) => {
+            console.error("useTransferFeeQuery", e);
+          })
+          .finally(() => setIsLoading(false));
+      }, inputDebounceMs);
     }
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
   }, [
     environment,
     sourceChain,
@@ -56,6 +65,7 @@ export function useTransferFeeQuery(
     tokenMinDenom,
     amountMinDenom,
     currency,
+    inputDebounceMs,
   ]);
 
   return {

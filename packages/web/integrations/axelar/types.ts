@@ -22,21 +22,21 @@ export type SourceChain =
   | "Moonbeam"
   | "Binance"
   | "cosmos" // IBC counterparty chains, would require IBC transfer to counterparty address
-  | "emoney"
+  | "e-money"
   | "juno"
   | "crescent"
   | "injective"
-  | "terra"
+  | "terra-2"
   | "secret"
   | "kujira";
 
 /** Maps axelar chain ids => cosmos chain ids */
 export const SourceChainCosmosChainIdMap: { [sourceChain: string]: string } = {
   cosmos: "cosmoshub-4",
-  emoney: "emoney-3",
+  "e-money": "emoney-3",
   juno: "juno-1",
   injective: "injective-1",
-  terra: "phoenix-1", // TERRA 2.0
+  "terra-2": "phoenix-1", // TERRA 2.0
   secret: "secret-4",
   kujira: "kaiyo-1",
 };
