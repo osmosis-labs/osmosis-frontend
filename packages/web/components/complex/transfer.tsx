@@ -26,7 +26,7 @@ export const Transfer: FunctionComponent<
     selectedWalletDisplay?: WalletDisplay;
     onRequestSwitchWallet?: () => void;
     availableBalance?: CoinPretty;
-    withdrawAddressConfig?: {
+    editWithdrawAddrConfig?: {
       customAddress: string;
       isValid: boolean;
       setCustomAddress: (bech32Address: string) => void;
@@ -45,7 +45,7 @@ export const Transfer: FunctionComponent<
   availableBalance,
   currentValue,
   onInput,
-  withdrawAddressConfig,
+  editWithdrawAddrConfig,
   toggleIsMax,
   transferFee,
   waitTime,
@@ -108,8 +108,12 @@ export const Transfer: FunctionComponent<
           <div className="flex gap-2 mx-auto">
             {!isEditingWithdrawAddr &&
               Bech32Address.shortenAddress(
-                to.address,
-                !to.address.startsWith("osmo") && selectedWalletDisplay
+                editWithdrawAddrConfig &&
+                  editWithdrawAddrConfig.customAddress !== ""
+                  ? editWithdrawAddrConfig.customAddress
+                  : to.address,
+                (!to.address.startsWith("osmo") && selectedWalletDisplay) || // make room for btns
+                  editWithdrawAddrConfig
                   ? 18
                   : 24
               )}
@@ -119,11 +123,14 @@ export const Transfer: FunctionComponent<
                 onClick={() => onRequestSwitchWallet?.()}
               />
             )}
-            {isWithdraw && withdrawAddressConfig && !isEditingWithdrawAddr && (
+            {isWithdraw && editWithdrawAddrConfig && !isEditingWithdrawAddr && (
               <Button
                 className="border border-primary-50 hover:border-primary-50/60 text-primary-50 hover:text-primary-50/60"
                 type="outline"
-                onClick={() => setIsEditingWithdrawAddr(true)}
+                onClick={() => {
+                  setIsEditingWithdrawAddr(true);
+                  editWithdrawAddrConfig.setCustomAddress(to.address);
+                }}
               >
                 Edit
               </Button>
@@ -132,18 +139,18 @@ export const Transfer: FunctionComponent<
               <InputBox
                 className="w-full"
                 style="no-border"
-                currentValue={withdrawAddressConfig!.customAddress}
+                currentValue={editWithdrawAddrConfig!.customAddress}
                 onInput={(value) => {
                   setDidVerifyWithdrawRisk(false);
-                  withdrawAddressConfig!.setCustomAddress(value);
+                  editWithdrawAddrConfig!.setCustomAddress(value);
                 }}
                 labelButtons={[
                   {
                     label: "Enter",
                     className:
-                      "bg-primary-50 hover:bg-primary-50/60 border-0 rounded-md",
+                      "bg-primary-50 hover:bg-primary-50 border-0 rounded-md",
                     onClick: () => setIsEditingWithdrawAddr(false),
-                    disabled: !withdrawAddressConfig!.isValid,
+                    disabled: !editWithdrawAddrConfig!.isValid,
                   },
                 ]}
               />
@@ -155,15 +162,17 @@ export const Transfer: FunctionComponent<
         <div className="flex flex-col gap-3">
           <div className="flex items-baseline place-content-between">
             <h6>Select Amount</h6>
-            <div className="text-xs text-white-high caption">
-              Available on {from.networkName}:{" "}
-              <span
-                className="text-primary-50 cursor-pointer"
-                onClick={() => toggleIsMax()}
-              >
-                {availableBalance?.trim(true).toString() || ""}
-              </span>
-            </div>
+            {availableBalance && (
+              <div className="text-xs text-white-high caption">
+                Available on {from.networkName}:{" "}
+                <span
+                  className="text-primary-50 cursor-pointer"
+                  onClick={() => toggleIsMax()}
+                >
+                  {availableBalance.trim(true).toString()}
+                </span>
+              </div>
+            )}
           </div>
           <InputBox
             type="number"

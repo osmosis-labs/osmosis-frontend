@@ -103,7 +103,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   )
                   .getBalanceFromCurrency(currency.originCurrency!)
           }
-          withdrawAddressConfig={
+          editWithdrawAddrConfig={
             customCounterpartyConfig
               ? {
                   customAddress: customCounterpartyConfig.bech32Address,
