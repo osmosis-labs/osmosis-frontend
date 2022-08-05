@@ -43,7 +43,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         overlayClassName
       )}
       className={classNames(
-        "absolute text-center outline-none md:w-[90%] w-full md:p-4 p-8 bg-surface rounded-2xl z-50 flex flex-col max-w-modal",
+        "absolute outline-none md:w-[90%] w-full md:p-4 p-8 bg-surface rounded-2xl z-50 flex flex-col max-w-modal",
         className
       )}
     >
@@ -51,7 +51,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         {onRequestBack && (
           <button
             aria-label="back"
-            className="md:top-4 md:left-4 top-5 left-5 cursor-pointer z-50"
+            className="absolute md:top-6 md:left-6 top-8 left-8 cursor-pointer z-50"
             onClick={onRequestBack}
           >
             <Image
@@ -72,7 +72,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         {!hideCloseButton && (
           <button
             aria-label="close"
-            className="md:top-4 md:right-4 top-5 right-5 cursor-pointer z-50"
+            className="absolute md:top-6 md:right-6 top-8 right-8 cursor-pointer z-50"
             onClick={onRequestClose}
           >
             <Image

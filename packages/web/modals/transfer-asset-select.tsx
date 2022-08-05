@@ -5,6 +5,7 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import { TokenSelect } from "../components/control";
 import { NonKeplrWalletCard } from "../components/cards";
 import { displayToast, ToastType } from "../components/alert";
+import { CustomClasses } from "../components/types";
 import type {
   OriginBridgeInfo,
   SourceChainKey,
@@ -187,7 +188,7 @@ export const TransferAssetSelectModal: FunctionComponent<
         {selectedToken?.originBridgeInfo && selectedNetwork && (
           <div
             className={classNames(
-              "relative w-full flex items-center place-content-between border border-white-faint p-4",
+              "relative w-full flex items-center place-content-between border border-white-faint p-4 transition-borderRadius",
               {
                 "rounded-2xl": !isSourceChainDropdownOpen,
                 "rounded-l-2xl rounded-tr-2xl": isSourceChainDropdownOpen,
@@ -202,12 +203,18 @@ export const TransferAssetSelectModal: FunctionComponent<
               }
             >
               <Network {...selectedNetwork} />
-              <Image
-                alt="dropdown icon"
-                src="/icons/chevron-down-disabled.svg"
-                height={7}
-                width={12}
-              />
+              <div
+                className={classNames("my-auto transition", {
+                  "rotate-180": isSourceChainDropdownOpen,
+                })}
+              >
+                <Image
+                  alt="dropdown icon"
+                  src="/icons/chevron-down-disabled.svg"
+                  height={7}
+                  width={12}
+                />
+              </div>
             </div>
             {isSourceChainDropdownOpen && (
               <div
@@ -268,11 +275,10 @@ export const TransferAssetSelectModal: FunctionComponent<
   );
 });
 
-const Network: FunctionComponent<{ id: string; logoUrl: string }> = ({
-  id: displayName,
-  logoUrl,
-}) => (
-  <div className="flex items-center gap-2">
+const Network: FunctionComponent<
+  { id: string; logoUrl: string } & CustomClasses
+> = ({ id: displayName, logoUrl, className }) => (
+  <div className={classNames("flex items-center gap-2 select-none", className)}>
     <Image alt="network logo" src={logoUrl} height={28} width={28} />
     <span className="subtitle2">{displayName}</span>
   </div>

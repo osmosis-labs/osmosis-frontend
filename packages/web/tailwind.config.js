@@ -263,6 +263,7 @@ module.exports = {
       },
       transitionProperty: {
         width: "width",
+        borderRadius: "border-radius",
       },
     },
   },
