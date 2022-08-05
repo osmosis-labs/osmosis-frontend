@@ -230,7 +230,9 @@ const Assets: NextPage = observer(() => {
     ]
   );
 
-  /** Always show the asset select modal, giving user opportunity to
+  /** ### Global Deposit/Withdraw at top of page
+   *
+   * Always show the asset select modal, giving user opportunity to
    * switch wallets, or transfer the most relevant asset.
    */
   const handleTransferIntent = useCallback(
