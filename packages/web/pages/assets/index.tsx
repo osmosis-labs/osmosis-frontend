@@ -114,7 +114,7 @@ const Assets: NextPage = observer(() => {
    * Always show the asset select modal, giving user opportunity to
    * switch wallets, or transfer the most relevant asset.
    */
-  const handleTransferIntent = useCallback(
+  const setupAssetSelectModal = useCallback(
     (
       intent: "deposit" | "withdraw",
       onSelectAsset: (
@@ -169,11 +169,11 @@ const Assets: NextPage = observer(() => {
           onRequestClose: () => setBridgeTransferModal(null),
           onRequestSwitchWallet: () => {
             setBridgeTransferModal(null);
-            handleTransferIntent(direction, selectAssetForTransfer);
+            setupAssetSelectModal(direction, selectAssetForTransfer);
           },
           onRequestBack: () => {
             setBridgeTransferModal(null);
-            handleTransferIntent(direction, selectAssetForTransfer);
+            setupAssetSelectModal(direction, selectAssetForTransfer);
           },
           ...assetSelectBal.originBridgeInfo,
           isWithdraw: direction === "withdraw",
@@ -190,7 +190,7 @@ const Assets: NextPage = observer(() => {
       ibcBalances,
       metamask,
       walletConnectEth,
-      handleTransferIntent,
+      setupAssetSelectModal,
       setAssetSelectModal,
       setBridgeTransferModal,
       ibcTransfer,
@@ -234,11 +234,11 @@ const Assets: NextPage = observer(() => {
             onRequestClose: () => setBridgeTransferModal(null),
             onRequestSwitchWallet: () => {
               setBridgeTransferModal(null);
-              handleTransferIntent(direction, selectAssetForTransfer);
+              setupAssetSelectModal(direction, selectAssetForTransfer);
             },
             onRequestBack: () => {
               setBridgeTransferModal(null);
-              handleTransferIntent(direction, selectAssetForTransfer);
+              setupAssetSelectModal(direction, selectAssetForTransfer);
             },
             isWithdraw: direction === "withdraw",
             balance,
@@ -275,7 +275,7 @@ const Assets: NextPage = observer(() => {
       walletConnectEth,
       account.walletStatus,
       setIbcTransferModal,
-      handleTransferIntent,
+      setupAssetSelectModal,
       setAssetSelectModal,
       ibcTransfer,
       selectAssetForTransfer,
@@ -286,10 +286,10 @@ const Assets: NextPage = observer(() => {
     <main className="bg-background">
       <AssetsOverview
         onDepositIntent={() =>
-          handleTransferIntent("deposit", selectAssetForTransfer)
+          setupAssetSelectModal("deposit", selectAssetForTransfer)
         }
         onWithdrawIntent={() =>
-          handleTransferIntent("withdraw", selectAssetForTransfer)
+          setupAssetSelectModal("withdraw", selectAssetForTransfer)
         }
       />
       {assetSelectModal && <TransferAssetSelectModal {...assetSelectModal} />}
