@@ -19,9 +19,17 @@ export const BridgeTransferModal: FunctionComponent<
     /** Selected network key. */
     sourceChainKey: SourceChainKey;
     client: Client;
+    onRequestSwitchWallet: () => void;
   }
 > = (props) => {
-  const { isWithdraw, balance, sourceChainKey, client, onRequestClose } = props;
+  const {
+    isWithdraw,
+    balance,
+    sourceChainKey,
+    client,
+    onRequestClose,
+    onRequestSwitchWallet,
+  } = props;
   if (!balance.originBridgeInfo) {
     return null;
   }
@@ -47,6 +55,7 @@ export const BridgeTransferModal: FunctionComponent<
                 {...balance.originBridgeInfo}
                 selectedSourceChainKey={sourceChainKey}
                 onRequestClose={onRequestClose}
+                onRequestSwitchWallet={onRequestSwitchWallet}
               />
             );
           default:

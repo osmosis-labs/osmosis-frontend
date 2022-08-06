@@ -204,14 +204,14 @@ export const TransferAssetSelectModal: FunctionComponent<
             >
               <Network {...selectedNetwork} />
               <div
-                className={classNames("my-auto transition", {
+                className={classNames("flex items-center transition", {
                   "rotate-180": isSourceChainDropdownOpen,
                 })}
               >
                 <Image
                   alt="dropdown icon"
                   src="/icons/chevron-down-disabled.svg"
-                  height={7}
+                  height={22}
                   width={12}
                 />
               </div>

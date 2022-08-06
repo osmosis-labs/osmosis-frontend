@@ -109,6 +109,38 @@ const Assets: NextPage = observer(() => {
     [setIbcTransferModal]
   );
 
+  /** ### Global Deposit/Withdraw at top of page
+   *
+   * Always show the asset select modal, giving user opportunity to
+   * switch wallets, or transfer the most relevant asset.
+   */
+  const handleTransferIntent = useCallback(
+    (
+      intent: "deposit" | "withdraw",
+      onSelectAsset: (
+        direction: "deposit" | "withdraw",
+        denom: string,
+        walletKey?: WalletKey,
+        sourceChainKey?: SourceChainKey
+      ) => void
+    ) => {
+      const walletClients = [metamask, walletConnectEth] as Client[];
+      setAssetSelectModal({
+        isOpen: true,
+        isWithdraw: intent === "withdraw",
+        onRequestClose: () => setAssetSelectModal(null),
+        tokens: ibcBalances.map(({ balance, originBridgeInfo }) => ({
+          token: balance,
+          originBridgeInfo,
+        })),
+        onSelectAsset: (denom, walletKey, networkKey) =>
+          onSelectAsset(intent, denom, walletKey, networkKey),
+        walletClients,
+      });
+    },
+    [ibcBalances, metamask, walletConnectEth]
+  );
+
   const selectAssetForTransfer = useCallback(
     (
       direction: "deposit" | "withdraw",
@@ -135,6 +167,14 @@ const Assets: NextPage = observer(() => {
         setBridgeTransferModal({
           isOpen: true,
           onRequestClose: () => setBridgeTransferModal(null),
+          onRequestSwitchWallet: () => {
+            setBridgeTransferModal(null);
+            handleTransferIntent(direction, selectAssetForTransfer);
+          },
+          onRequestBack: () => {
+            setBridgeTransferModal(null);
+            handleTransferIntent(direction, selectAssetForTransfer);
+          },
           ...assetSelectBal.originBridgeInfo,
           isWithdraw: direction === "withdraw",
           client,
@@ -150,6 +190,8 @@ const Assets: NextPage = observer(() => {
       ibcBalances,
       metamask,
       walletConnectEth,
+      handleTransferIntent,
+      setAssetSelectModal,
       setBridgeTransferModal,
       ibcTransfer,
     ]
@@ -190,6 +232,14 @@ const Assets: NextPage = observer(() => {
           setBridgeTransferModal({
             isOpen: true,
             onRequestClose: () => setBridgeTransferModal(null),
+            onRequestSwitchWallet: () => {
+              setBridgeTransferModal(null);
+              handleTransferIntent(direction, selectAssetForTransfer);
+            },
+            onRequestBack: () => {
+              setBridgeTransferModal(null);
+              handleTransferIntent(direction, selectAssetForTransfer);
+            },
             isWithdraw: direction === "withdraw",
             balance,
             client: dependentConnectedWallet,
@@ -221,44 +271,26 @@ const Assets: NextPage = observer(() => {
     },
     [
       ibcBalances,
-      setIbcTransferModal,
       metamask,
       walletConnectEth,
       account.walletStatus,
+      setIbcTransferModal,
+      handleTransferIntent,
+      setAssetSelectModal,
       ibcTransfer,
       selectAssetForTransfer,
     ]
   );
 
-  /** ### Global Deposit/Withdraw at top of page
-   *
-   * Always show the asset select modal, giving user opportunity to
-   * switch wallets, or transfer the most relevant asset.
-   */
-  const handleTransferIntent = useCallback(
-    (intent: "deposit" | "withdraw") => {
-      const walletClients = [metamask, walletConnectEth] as Client[];
-      setAssetSelectModal({
-        isOpen: true,
-        isWithdraw: intent === "withdraw",
-        onRequestClose: () => setAssetSelectModal(null),
-        tokens: ibcBalances.map(({ balance, originBridgeInfo }) => ({
-          token: balance,
-          originBridgeInfo,
-        })),
-        onSelectAsset: (denom, walletKey, networkKey) =>
-          selectAssetForTransfer(intent, denom, walletKey, networkKey),
-        walletClients,
-      });
-    },
-    [ibcBalances, metamask, walletConnectEth, selectAssetForTransfer]
-  );
-
   return (
     <main className="bg-background">
       <AssetsOverview
-        onDepositIntent={() => handleTransferIntent("deposit")}
-        onWithdrawIntent={() => handleTransferIntent("withdraw")}
+        onDepositIntent={() =>
+          handleTransferIntent("deposit", selectAssetForTransfer)
+        }
+        onWithdrawIntent={() =>
+          handleTransferIntent("withdraw", selectAssetForTransfer)
+        }
       />
       {assetSelectModal && <TransferAssetSelectModal {...assetSelectModal} />}
       {ibcTransferModal && <IbcTransferModal {...ibcTransferModal} />}
