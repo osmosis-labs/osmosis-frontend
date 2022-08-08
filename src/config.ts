@@ -1337,6 +1337,12 @@ export const IBCAssetInfos: {
 		destChannelId: 'channel-1',
 		coinMinimalDenom: 'swp',
 	},
+	{
+		counterpartyChainId: 'crescent-1',
+		sourceChannelId: 'channel-297',
+		destChannelId: 'channel-9',
+		coinMinimalDenom: 'ucre',
+	},
 ];
 
 export const EmbedChainInfos: ChainInfoWithExplorer[] = [
@@ -3606,5 +3612,47 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
 		],
 		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
 		explorerUrlToTx: 'https://www.mintscan.io/kava/txs/{txHash}',
+	},
+	{
+		rpc: 'https://mainnet.crescent.network:26657',
+		rest: 'https://mainnet.crescent.network:1317',
+		chainId: 'crescent-1',
+		chainName: 'Crescent',
+		stakeCurrency: {
+			coinDenom: 'CRE',
+			coinMinimalDenom: 'ucre',
+			coinDecimals: 6,
+			coinGeckoId: 'crescent-network',
+			coinImageUrl: window.location.origin + '/public/assets/tokens/cre.png',
+		},
+		bip44: {
+			coinType: 118,
+		},
+		bech32Config: Bech32Address.defaultBech32Config('cre'),
+		currencies: [
+			{
+				coinDenom: 'CRE',
+				coinMinimalDenom: 'ucre',
+				coinDecimals: 6,
+				coinGeckoId: 'crescent-network',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/cre.png',
+			},
+		],
+		feeCurrencies: [
+			{
+				coinDenom: 'CRE',
+				coinMinimalDenom: 'ucre',
+				coinDecimals: 6,
+				coinGeckoId: 'cre',
+				coinImageUrl: window.location.origin + '/public/assets/tokens/cre.png',
+			},
+		],
+		gasPriceStep: {
+			low: 0.01,
+			average: 0.02,
+			high: 0.1,
+		},
+		features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+		explorerUrlToTx: 'https://www.mintscan.io/crescent/txs/{txHash}',
 	},
 ];
