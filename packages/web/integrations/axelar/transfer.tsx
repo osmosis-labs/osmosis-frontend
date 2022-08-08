@@ -1,17 +1,21 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useState, useEffect } from "react";
+import { CoinPretty } from "@keplr-wallet/unit";
+import { basicIbcTransfer } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { AxelarAssetTransfer, Environment } from "@axelar-network/axelarjs-sdk";
-import { isAddress } from "web3-utils";
+import { useFakeFeeConfig, useAmountConfig } from "../../hooks";
 import { IBCBalance } from "../../stores/assets";
 import { useStore } from "../../stores";
 import { Transfer } from "../../components/complex/transfer";
 import { Button } from "../../components/buttons";
+import { displayToast, ToastType } from "../../components/alert";
 import { ObservableErc20Queries } from "../ethereum/queries";
-import { EthClient } from "../ethereum";
+import { EthClient, transfer as erc20Transfer } from "../ethereum";
+import { useDepositAddress, useTransferFeeQuery } from "./hooks";
 import {
   AxelarBridgeConfig,
   SourceChain,
   SourceChainCosmosChainIdMap,
+  waitBySourceChain,
 } from ".";
 
 /** Axelar-specific bridge transfer integration UI. */
@@ -19,45 +23,84 @@ const AxelarTransfer: FunctionComponent<
   {
     isWithdraw: boolean;
     client: EthClient;
-    osmosisBalance: IBCBalance;
+    balanceOnOsmosis: IBCBalance;
     selectedSourceChainKey: SourceChain;
+    onRequestClose: () => void;
+    onRequestSwitchWallet: () => void;
   } & AxelarBridgeConfig
 > = observer(
   ({
     isWithdraw,
     client,
-    osmosisBalance,
+    balanceOnOsmosis,
     selectedSourceChainKey,
-    sourceChains,
+    onRequestClose,
+    onRequestSwitchWallet,
     tokenMinDenom,
+    sourceChains,
   }) => {
     const { chainStore, accountStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
-    const { bech32Address } = accountStore.getAccount(chainId);
-    const originCurrency = osmosisBalance.balance.currency.originCurrency!;
+    const osmosisAccount = accountStore.getAccount(chainId);
+    const { bech32Address } = osmosisAccount;
+    const originCurrency = balanceOnOsmosis.balance.currency.originCurrency!;
     const [erc20Queries] = useState(
       () => new ObservableErc20Queries(client.send, originCurrency)
     );
-    const userErc20Queries = erc20Queries.getQueryEthHexAddress(
-      client.accountAddress || ""
-    );
+    const userErc20Queries = client.accountAddress
+      ? erc20Queries.getQueryEthHexAddress(client.accountAddress)
+      : undefined;
     const erc20ContractAddress = sourceChains.find(
-      (sc) => sc.id === selectedSourceChainKey
-    )?.erc20ContractAddress; // TODO: if erc20Address is null, it's supposed to be a counterparty cosmos chain i.e. kujira
-    const erc20Balance = erc20ContractAddress
-      ? userErc20Queries.getBalance(erc20ContractAddress)
-      : queriesStore
-          .get(SourceChainCosmosChainIdMap[selectedSourceChainKey])
-          .queryBalances.getQueryBech32Address(
-            accountStore.getAccount(
-              SourceChainCosmosChainIdMap[selectedSourceChainKey]
-            ).bech32Address
-          )
-          .getBalanceFromCurrency(originCurrency);
+      ({ id }) => id === selectedSourceChainKey
+    )?.erc20ContractAddress;
 
-    // custom amount validation, since `useAmountConfig` needs to query Cosmos SDK chain balances (not evm balances)
-    const [amount, setAmount] = useState("");
-    const [isMax, setIsMax] = useState(false);
+    // if counterparty is a cosmos chain
+    const counterpartyCosmosChainId: string | undefined =
+      SourceChainCosmosChainIdMap[selectedSourceChainKey];
+    const counterpartyCosmosAccount = counterpartyCosmosChainId
+      ? accountStore.getAccount(counterpartyCosmosChainId)
+      : undefined;
+    const ibcConfig = sourceChains.find(
+      ({ id }) => id === selectedSourceChainKey
+    )?.ibcConfig;
+    //    init & user approve counterparty cosmos account in Keplr
+    useEffect(() => {
+      counterpartyCosmosAccount?.init();
+    }, [counterpartyCosmosAccount]);
+
+    // get balance from eth contract or axelar-supported cosmos chain
+    const counterpartyBal = erc20ContractAddress
+      ? userErc20Queries?.getBalance(erc20ContractAddress)
+      : (() => {
+          if (!counterpartyCosmosChainId) {
+            return;
+          }
+
+          return queriesStore
+            .get(counterpartyCosmosChainId)
+            .queryBalances.getQueryBech32Address(
+              accountStore.getAccount(counterpartyCosmosChainId).bech32Address
+            )
+            .getBalanceFromCurrency(originCurrency);
+        })();
+
+    // DEPOSITING: custom amount validation, since `useAmountConfig` needs to query counterparty Cosmos SDK chain balances (not evm balances)
+    const [depositAmount, setDepositAmount] = useState("");
+    const [isDepositAmtMax, setDepositAmountMax] = useState(false);
+
+    // WITHDRAWING: is an IBC transfer Osmosis->Axelar
+    const feeConfig = useFakeFeeConfig(
+      chainStore,
+      chainId,
+      osmosisAccount.cosmos.msgOpts.ibcTransfer.gas
+    );
+    const withdrawAmountConfig = useAmountConfig(
+      chainStore,
+      queriesStore,
+      chainId,
+      bech32Address,
+      feeConfig
+    );
 
     // chain path info whether withdrawing or depositing
     const osmosisPath = {
@@ -68,49 +111,44 @@ const AxelarTransfer: FunctionComponent<
     const counterpartyPath = {
       address: client.accountAddress || "",
       networkName: selectedSourceChainKey,
-      iconUrl: osmosisBalance.balance.currency.originCurrency?.coinImageUrl,
+      iconUrl: balanceOnOsmosis.balance.currency.originCurrency?.coinImageUrl,
     };
 
-    // axelar deposit address state & generation
-    const [depositAddress, setDepositAddress] = useState<string | null>(null);
-    useEffect(() => {
-      const genAddress = async () => {
-        const sdk = new AxelarAssetTransfer({
-          environment: Environment.TESTNET,
-        });
-        try {
-          if (client.accountAddress && !depositAddress) {
-            console.log(
-              isWithdraw ? "withdraw" : "deposit",
-              `fromChain ${isWithdraw ? "osmosis" : selectedSourceChainKey}`,
-              `toChain ${isWithdraw ? selectedSourceChainKey : "osmosis"}`,
-              `Address ${isWithdraw ? client.accountAddress : bech32Address}`,
-              tokenMinDenom
-            );
+    const sourceChain = isWithdraw ? "osmosis" : selectedSourceChainKey;
+    const destChain = isWithdraw ? selectedSourceChainKey : "osmosis";
+    const address = isWithdraw ? client.accountAddress : bech32Address;
+    const currency = isWithdraw
+      ? balanceOnOsmosis.balance.currency
+      : originCurrency;
+    /** Amount, with decimals. e.g. 1.2 USDC */
+    const amount = isWithdraw ? withdrawAmountConfig.amount : depositAmount;
 
-            return await sdk.getDepositAddress(
-              isWithdraw ? "osmosis" : selectedSourceChainKey,
-              isWithdraw ? selectedSourceChainKey : "osmosis",
-              isWithdraw ? client.accountAddress : bech32Address,
-              "uausdc" //tokenMinDenom
-            );
-          }
-        } catch (e) {
-          console.error(e);
-          //TODO add error handling generally
-        }
-        return null;
-      };
-      genAddress().then((address) => {
-        if (!depositAddress) {
-          setDepositAddress(address);
-        }
-      });
-    }, []);
+    const availableBalance = isWithdraw
+      ? balanceOnOsmosis.balance
+      : erc20ContractAddress
+      ? counterpartyBal
+      : undefined;
 
-    const canDoDeposit = depositAddress !== null;
+    const { depositAddress } = useDepositAddress(
+      sourceChain,
+      destChain,
+      address,
+      tokenMinDenom,
+      true
+    );
+    const { transferFee } = useTransferFeeQuery(
+      sourceChain,
+      destChain,
+      tokenMinDenom,
+      amount,
+      currency
+    );
 
-    console.log(depositAddress);
+    // TODO: add transfer time (look at satellite.money)
+    // TODO: add network check & error states (client must match prop)
+
+    const isFormLoading = depositAddress === undefined;
+    const userCanInteract = !isFormLoading;
 
     return (
       <>
@@ -121,47 +159,126 @@ const AxelarTransfer: FunctionComponent<
             undefined,
             isWithdraw ? counterpartyPath : osmosisPath,
           ]}
+          selectedWalletDisplay={client.displayInfo}
+          onRequestSwitchWallet={onRequestSwitchWallet}
           currentValue={amount}
-          onInput={(value) => setAmount(value)}
-          availableBalance={
+          onInput={(value) =>
             isWithdraw
-              ? osmosisBalance.balance
-              : erc20ContractAddress
-              ? erc20Balance
-              : undefined
+              ? withdrawAmountConfig.setAmount(value)
+              : setDepositAmount(value)
           }
+          availableBalance={availableBalance}
           toggleIsMax={() => {
-            if (isMax) {
-              setAmount("0");
-              setIsMax(false);
+            if (isWithdraw) {
+              withdrawAmountConfig.toggleIsMax();
             } else {
+              if (isDepositAmtMax) {
+                setDepositAmount("0");
+                setDepositAmountMax(false);
+              } else {
+                // TODO: set to max amt manually
+              }
             }
           }}
+          transferFee={transferFee}
+          waitTime={waitBySourceChain(selectedSourceChainKey)}
+          disabled={!userCanInteract}
         />
-        <div className="w-full md:mt-6 mt-9 flex items-center justify-center">
+
+        <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
           <Button
             className="md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl"
-            disabled={!canDoDeposit}
+            disabled={!userCanInteract || depositAmount === ""}
             loading={!depositAddress}
             onClick={async () => {
-              try {
-                if (depositAddress) {
-                  console.log(
-                    "addresses",
-                    depositAddress,
-                    isAddress(depositAddress),
-                    amount
-                  );
-                  await client.send({
-                    method: "eth_sendTransaction",
-                    params: { to: depositAddress, value: amount },
-                  });
-                }
-              } catch (e) {
-                // TODO: code 4001 = User denied
+              if (depositAddress) {
+                if (isWithdraw) {
+                  // IBC transfer to generated axelar address
+                  try {
+                    await basicIbcTransfer(
+                      {
+                        account: osmosisAccount,
+                        chainId,
+                        channelId: balanceOnOsmosis.sourceChannelId,
+                      },
+                      {
+                        account: depositAddress,
+                        chainId: "axelar-dojo-1",
+                        channelId: balanceOnOsmosis.destChannelId,
+                      },
+                      withdrawAmountConfig
+                    );
+                  } catch (e) {
+                    // TODO: problem or rejected
+                    console.error(e);
+                  }
+                } else {
+                  // isDeposit
 
-                console.error(e);
+                  // IBC transfer to axelar from Cosmos counterparty
+                  if (
+                    counterpartyCosmosChainId &&
+                    counterpartyCosmosAccount &&
+                    ibcConfig
+                  ) {
+                    try {
+                      await basicIbcTransfer(
+                        {
+                          account: counterpartyCosmosAccount,
+                          chainId: counterpartyCosmosChainId,
+                          channelId: ibcConfig.sourceChannelId,
+                        },
+                        {
+                          account: depositAddress,
+                          chainId: "axelar-dojo-1",
+                          channelId: balanceOnOsmosis.destChannelId,
+                        },
+                        withdrawAmountConfig
+                      );
+                    } catch (e) {
+                      // TODO: problem or rejected
+                      console.error(e);
+                    }
+                  } else if (erc20ContractAddress) {
+                    // erc20 transfer to deposit address on EVM
+                    try {
+                      await erc20Transfer(
+                        client.send,
+                        new CoinPretty(originCurrency, depositAmount)
+                          .moveDecimalPointRight(originCurrency.coinDecimals)
+                          .toCoin().amount,
+                        erc20ContractAddress,
+                        client.accountAddress!,
+                        depositAddress
+                      );
+                    } catch (e: any) {
+                      if (e.code === 4001) {
+                        // User denied
+                        displayToast(
+                          { message: "Request rejected" },
+                          ToastType.ERROR
+                        );
+                      } else if (e.code === 4100) {
+                        // wallet is not logged in (but is connected)
+                        displayToast(
+                          {
+                            message: `Please log into ${client.displayInfo.displayName}`,
+                          },
+                          ToastType.LOADING
+                        );
+                        return; // don't close modal
+                      } else {
+                        console.error(e);
+                      }
+                    }
+                  } else {
+                    console.error(
+                      "Axelar asset and/or network not configured properly."
+                    );
+                  }
+                }
               }
+              onRequestClose();
             }}
           >
             <h6 className="md:text-base text-lg">

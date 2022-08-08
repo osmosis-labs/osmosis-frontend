@@ -2,13 +2,14 @@ import { FunctionComponent, useState, useEffect } from "react";
 import classNames from "classnames";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { useWindowSize } from "../../hooks";
+// import { useWindowSize } from "../../hooks";
 import { Disableable, InputProps, LoadingProps } from "../types";
 import { Button } from "../buttons";
 import { SwitchWalletButton } from "../buttons/switch-wallet";
 import { InputBox } from "../input";
 import { WalletDisplay } from "../../integrations/wallets";
-import { CheckBox } from "../control";
+import { BridgeVisualization } from "../assets/bridge-visual";
+// import { CheckBox } from "../control";
 
 /** Standard display for prompting the bridging of arbitrary assets. */
 export const Transfer: FunctionComponent<
@@ -39,7 +40,7 @@ export const Transfer: FunctionComponent<
     Disableable
 > = ({
   isWithdraw,
-  transferPath: [from, _bridge, to],
+  transferPath: [from, bridge, to],
   selectedWalletDisplay,
   onRequestSwitchWallet,
   availableBalance,
@@ -49,12 +50,11 @@ export const Transfer: FunctionComponent<
   toggleIsMax,
   transferFee,
   waitTime,
-  disabled,
 }) => {
-  const { isMobile } = useWindowSize();
+  // const { isMobile } = useWindowSize();
 
   const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
-  const [didVerifyWithdrawRisk, setDidVerifyWithdrawRisk] = useState(false);
+  const [_didVerifyWithdrawRisk, setDidVerifyWithdrawRisk] = useState(false);
 
   // Mobile only - brief copy to clipboard notification
   const [showCopied, setShowCopied] = useState(false);
@@ -68,7 +68,7 @@ export const Transfer: FunctionComponent<
 
   return (
     <div className="flex flex-col gap-11">
-      {/* TODO: add animated bridge graphic */}
+      <BridgeVisualization transferPath={[from, bridge, to]} />
       <div className="flex gap-4 body1 text-iconDefault">
         <div
           className={classNames(

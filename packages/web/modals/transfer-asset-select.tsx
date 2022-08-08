@@ -163,7 +163,7 @@ export const TransferAssetSelectModal: FunctionComponent<
       ),
     },
     props.onRequestClose,
-    "Connect Native Wallet"
+    "Connect Wallet"
   );
 
   return (
@@ -182,7 +182,7 @@ export const TransferAssetSelectModal: FunctionComponent<
             selectedTokenDenom={selectedTokenDenom}
           />
         </div>
-        {selectedToken?.originBridgeInfo && selectedNetwork && (
+        {selectedToken?.originBridgeInfo && selectedNetwork && keplrConnected && (
           <div
             className={classNames(
               "relative w-full flex items-center place-content-between border border-white-faint p-4 transition-borderRadius",
@@ -242,27 +242,29 @@ export const TransferAssetSelectModal: FunctionComponent<
           </div>
         )}
       </div>
-      {selectedToken?.originBridgeInfo && applicableWallets.length > 0 && (
-        <div>
-          <h6 className={keplrConnected ? undefined : "opacity-30"}>
-            Connect Wallet
-          </h6>
-          <div className="grid grid-cols-2 gap-4 my-5">
-            {applicableWallets.map((wallet, index) => (
-              <NonKeplrWalletCard
-                key={index}
-                className="py-12"
-                {...wallet.displayInfo}
-                disabled={!keplrConnected}
-                isSelected={wallet.key === selectedWalletKey}
-                onClick={() => {
-                  setSelectedWalletKey(wallet.key);
-                }}
-              />
-            ))}
+      {selectedToken?.originBridgeInfo &&
+        applicableWallets.length > 0 &&
+        keplrConnected && (
+          <div>
+            <h6 className={keplrConnected ? undefined : "opacity-30"}>
+              Connect Wallet
+            </h6>
+            <div className="grid grid-cols-2 gap-4 my-5">
+              {applicableWallets.map((wallet, index) => (
+                <NonKeplrWalletCard
+                  key={index}
+                  className="py-12"
+                  {...wallet.displayInfo}
+                  disabled={!keplrConnected}
+                  isSelected={wallet.key === selectedWalletKey}
+                  onClick={() => {
+                    setSelectedWalletKey(wallet.key);
+                  }}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
       {accountActionButton}
     </ModalBase>
   );
