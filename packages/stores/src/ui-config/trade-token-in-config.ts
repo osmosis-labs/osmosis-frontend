@@ -232,7 +232,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     effectivePriceOutOverIn: IntPretty;
     tokenInFeeAmount: CoinPretty;
     swapFee: RatePretty;
-    slippage: RatePretty;
+    priceImpact: RatePretty;
   } {
     const paths = this.optimizedRoutePaths;
     this.setError(undefined);
@@ -250,7 +250,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         false
       ),
       swapFee: new RatePretty(0).ready(false),
-      slippage: new RatePretty(0).ready(false),
+      priceImpact: new RatePretty(0).ready(false),
     };
 
     if (paths.length === 0) {
@@ -317,7 +317,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         result.tokenInFeeAmount
       ).locale(false),
       swapFee: new RatePretty(result.swapFee),
-      slippage: new RatePretty(result.slippage),
+      priceImpact: new RatePretty(result.priceImpact),
     };
   }
 

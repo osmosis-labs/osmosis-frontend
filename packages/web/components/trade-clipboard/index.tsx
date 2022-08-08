@@ -95,13 +95,12 @@ export const TradeClipboard: FunctionComponent<{
 
   useTokenSwapQueryParams(tradeTokenInConfig, allTokenBalances, isInModal);
 
-  const showWarningSlippage = useMemo(
+  const showPriceImpactWarning = useMemo(
     () =>
-      slippageConfig.slippage
+      tradeTokenInConfig.expectedSwapResult.priceImpact
         .toDec()
-        .lt(tradeTokenInConfig.expectedSwapResult.slippage.toDec()) ||
-      tradeTokenInConfig.expectedSwapResult.slippage.toDec().gt(new Dec(0.1)),
-    [slippageConfig.slippage, tradeTokenInConfig.expectedSwapResult.slippage]
+        .gt(new Dec(0.1)),
+    [tradeTokenInConfig.expectedSwapResult.priceImpact]
   );
 
   useEffect(() => {
@@ -595,13 +594,13 @@ export const TradeClipboard: FunctionComponent<{
                 className={classNames(
                   "subtitle2 md:caption md:text-wireframes-lightGrey",
                   {
-                    "text-white-high": !showWarningSlippage,
-                    "text-error": showWarningSlippage,
+                    "text-white-high": !showPriceImpactWarning,
+                    "text-error": showPriceImpactWarning,
                   }
                 )}
               >
-                {tradeTokenInConfig.expectedSwapResult.slippage.isReady
-                  ? tradeTokenInConfig.expectedSwapResult.slippage.toString()
+                {tradeTokenInConfig.expectedSwapResult.priceImpact.isReady
+                  ? tradeTokenInConfig.expectedSwapResult.priceImpact.toString()
                   : tradeTokenInConfig.amount === ""
                   ? "0"
                   : "--"}
@@ -621,7 +620,7 @@ export const TradeClipboard: FunctionComponent<{
         {tradeTokenInConfig && (
           <Button
             color={
-              showWarningSlippage &&
+              showPriceImpactWarning &&
               account.walletStatus === WalletStatus.Loaded
                 ? "error"
                 : "primary"
@@ -749,7 +748,7 @@ export const TradeClipboard: FunctionComponent<{
             }}
           >
             {account.walletStatus === WalletStatus.Loaded ? (
-              showWarningSlippage ? (
+              showPriceImpactWarning ? (
                 "Swap Anyway"
               ) : (
                 "Swap"

@@ -4,25 +4,25 @@ import { pow } from "../utils";
 const oneDec = new Dec(1);
 const twoDec = new Dec(2);
 
-export function calcSlippageTokenIn(
+export function calcPriceImpactTokenIn(
   spotPriceBefore: Dec,
   tokenIn: Int,
-  slippage: Dec
+  priceImpact: Dec
 ): Int {
-  const effectivePrice = spotPriceBefore.mul(slippage.add(new Dec(1)));
+  const effectivePrice = spotPriceBefore.mul(priceImpact.add(new Dec(1)));
   return new Dec(tokenIn).quo(effectivePrice).truncate();
 }
 
-export function calcSlippageTokenOut(
+export function calcPriceImpactTokenOut(
   spotPriceBefore: Dec,
   tokenOut: Int,
-  slippage: Dec
+  priceImpact: Dec
 ): Int {
-  const effectivePrice = spotPriceBefore.mul(slippage.add(new Dec(1)));
+  const effectivePrice = spotPriceBefore.mul(priceImpact.add(new Dec(1)));
   return new Dec(tokenOut).mul(effectivePrice).truncate();
 }
 
-export function calcSlippageSlope(
+export function calcPriceImpactSlope(
   tokenBalanceIn: Dec,
   tokenWeightIn: Dec,
   tokenWeightOut: Dec,

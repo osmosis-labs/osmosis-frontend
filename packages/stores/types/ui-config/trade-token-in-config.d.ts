@@ -32,7 +32,7 @@ export declare class ObservableTradeTokenInConfig extends AmountConfig {
         effectivePriceOutOverIn: IntPretty;
         tokenInFeeAmount: CoinPretty;
         swapFee: RatePretty;
-        slippage: RatePretty;
+        priceImpact: RatePretty;
     };
     get error(): Error | undefined;
     setError(error: Error | undefined): void;

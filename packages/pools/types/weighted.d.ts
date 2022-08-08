@@ -78,7 +78,7 @@ export declare class WeightedPool implements Pool {
         afterSpotPriceOutOverIn: Dec;
         effectivePriceInOverOut: Dec;
         effectivePriceOutOverIn: Dec;
-        slippage: Dec;
+        priceImpact: Dec;
     };
     getTokenOutByTokenIn(tokenIn: {
         denom: string;
@@ -91,7 +91,7 @@ export declare class WeightedPool implements Pool {
         afterSpotPriceOutOverIn: Dec;
         effectivePriceInOverOut: Dec;
         effectivePriceOutOverIn: Dec;
-        slippage: Dec;
+        priceImpact: Dec;
     };
     getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;
     getLimitAmountByTokenIn(denom: string): Int;

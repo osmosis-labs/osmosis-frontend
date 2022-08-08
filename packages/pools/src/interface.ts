@@ -49,7 +49,7 @@ export interface Pool {
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
     effectivePriceOutOverIn: Dec;
-    slippage: Dec;
+    priceImpact: Dec;
   };
   getTokenInByTokenOut(
     tokenOut: {
@@ -65,7 +65,7 @@ export interface Pool {
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
     effectivePriceOutOverIn: Dec;
-    slippage: Dec;
+    priceImpact: Dec;
   };
 
   getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;
