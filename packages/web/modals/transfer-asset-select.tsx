@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FunctionComponent, useState, useMemo } from "react";
+import { FunctionComponent, useState, useMemo, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { TokenSelect } from "../components/control";
@@ -37,36 +37,35 @@ export const TransferAssetSelectModal: FunctionComponent<
 > = observer((props) => {
   const { isWithdraw, tokens, onSelectAsset, walletClients } = props;
 
+  const [selectedTokenDenom, setSelectedTokenDenom] = useState(
+    () =>
+      (isWithdraw
+        ? tokens.find(
+            ({
+              token: {
+                currency: { coinDenom },
+              },
+            }) => coinDenom === "ATOM"
+          )?.token.denom
+        : tokens.find(
+            ({
+              token: {
+                currency: { coinDenom },
+              },
+            }) => coinDenom === "USDC"
+          )?.token.denom) || tokens[0].token.denom
+  );
   const [selectedSourceChainKey, setSelectedSourceChainKey] =
     useState<SourceChain | null>(null);
-  const [selectedTokenDenom, setSelectedTokenDenom] = useState(() => {
-    // highest balance or first in list
-    const denom = isWithdraw
-      ? tokens.find(
-          ({
-            token: {
-              currency: { coinDenom },
-            },
-          }) => coinDenom === "ATOM"
-        )?.token.denom
-      : tokens.find(
-          ({
-            token: {
-              currency: { coinDenom },
-            },
-          }) => coinDenom === "USDC"
-        )?.token.denom;
-
-    // set chain-select to recommended selected token
+  useEffect(() => {
+    // set network-select to selected token
     const { sourceChains } = tokens.find(
-      ({ token }) => token.currency.coinDenom === denom
+      ({ token }) => token.currency.coinDenom === selectedTokenDenom
     )?.originBridgeInfo || { sourceChains: [] };
     setSelectedSourceChainKey(
       sourceChains.length > 0 ? sourceChains[0].id : null
     );
-
-    return denom || tokens[0].token.denom;
-  });
+  }, [tokens, selectedTokenDenom, setSelectedSourceChainKey]);
   const selectedToken = useMemo(
     () => tokens.find((t) => t.token.denom === selectedTokenDenom),
     [tokens, selectedTokenDenom]
@@ -167,8 +166,6 @@ export const TransferAssetSelectModal: FunctionComponent<
     "Connect Native Wallet"
   );
 
-  // TODO: push wallet connect errors as toasts. i.e. request reject
-
   return (
     <ModalBase
       {...props}
@@ -259,10 +256,6 @@ export const TransferAssetSelectModal: FunctionComponent<
                 disabled={!keplrConnected}
                 isSelected={wallet.key === selectedWalletKey}
                 onClick={() => {
-                  applicableWallets
-                    .filter((w) => w.isConnected)
-                    .forEach((w) => w.disable);
-
                   setSelectedWalletKey(wallet.key);
                 }}
               />
