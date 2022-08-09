@@ -1735,6 +1735,33 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/crescent/txs/{txHash}",
     },
+    {
+      rpc: "https://rpc.helios-1.lumenex.io",
+      rest: "https://api.helios-1.lumenex.io",
+      chainId: "LumenX",
+      chainName: "LumenX",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("lumen"),
+      currencies: [
+        {
+          coinDenom: "LUMEN",
+          coinMinimalDenom: "ulumen",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/lumen.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.01,
+        average: 0.025,
+        high: 0.03,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://scope.helios-1.lumenex.io/lumenx/tx/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
