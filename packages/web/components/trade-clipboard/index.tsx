@@ -425,7 +425,7 @@ export const TradeClipboard: FunctionComponent<{
         </button>
 
         <div className="bg-surface rounded-xl md:rounded-xl p-4 md:p-3 mt-[1.125rem] md:mt-3 relative">
-          <div className="flex items-center mt-3">
+          <div className="flex items-center place-content-between mt-3">
             {tradeTokenInConfig && (
               <TokenSelect
                 dropdownOpen={showToTokenSelectDropdown}
@@ -467,7 +467,6 @@ export const TradeClipboard: FunctionComponent<{
                 isMobile={isMobile}
               />
             )}
-            <div className="flex-1" />
             {tradeTokenInConfig && (
               <div className="flex flex-col items-end">
                 <h5
@@ -496,6 +495,13 @@ export const TradeClipboard: FunctionComponent<{
                         .toString()
                     : "0"
                 }`}</h5>
+                <div className="subtitle2 md:font-caption md:text-caption text-white-disabled">
+                  {`≈ ${
+                    priceStore.calculatePrice(
+                      tradeTokenInConfig.expectedSwapResult.amount
+                    ) || "0"
+                  }`}
+                </div>
               </div>
             )}
           </div>
@@ -504,12 +510,15 @@ export const TradeClipboard: FunctionComponent<{
 
       {tradeTokenInConfig && (
         <div className="mt-[1.125rem] rounded-lg bg-card py-3 px-4 md:px-3">
-          <div
-            className={classNames("flex items-center place-content-between", {
-              "cursor-pointer":
-                tradeTokenInConfig.amount !== "" &&
-                tradeTokenInConfig.amount !== "0",
-            })}
+          <button
+            className={classNames(
+              "w-full flex items-center place-content-between",
+              {
+                "cursor-pointer":
+                  tradeTokenInConfig.amount !== "" &&
+                  tradeTokenInConfig.amount !== "0",
+              }
+            )}
             onClick={() => {
               if (
                 tradeTokenInConfig.amount !== "" &&
@@ -546,7 +555,7 @@ export const TradeClipboard: FunctionComponent<{
               height={isMobile ? 14 : 18}
               width={isMobile ? 14 : 18}
             />
-          </div>
+          </button>
           <div
             className={classNames("flex justify-between mt-2.5", {
               hidden: !showEstimateDetails,
