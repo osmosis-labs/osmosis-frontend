@@ -780,6 +780,12 @@ export const IBCAssetInfos: (IBCAsset & {
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
+  {
+    counterpartyChainId: "crescent-1",
+    sourceChannelId: "channel-297",
+    destChannelId: "channel-9",
+    coinMinimalDenom: "ucre",
+  },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;
