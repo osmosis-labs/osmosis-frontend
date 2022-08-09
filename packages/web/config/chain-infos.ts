@@ -1684,6 +1684,13 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
+        {
+          coinDenom: "GEO",
+          coinMinimalDenom: "mGeo",
+          coinDecimals: 6,
+          coinGeckoId: "geodb",
+          coinImageUrl: "/tokens/geo.svg",
+        },
       ],
       gasPriceStep: {
         low: 0.025,
