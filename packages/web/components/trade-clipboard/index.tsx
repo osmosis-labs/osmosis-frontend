@@ -409,10 +409,10 @@ export const TradeClipboard: FunctionComponent<{
           }}
         >
           <div className="w-full h-full rounded-full flex items-center bg-card shadow-elevation-04dp">
-            <div className="m-auto mt-3.5">
+            <div className="m-auto mt-3.5 md:mt-2">
               <Image
-                width={isMobile ? 12 : 20}
-                height={isMobile ? 12 : 20}
+                width={isMobile ? 16 : 20}
+                height={isMobile ? 16 : 20}
                 src={
                   IS_FRONTIER
                     ? "/icons/down-arrow.svg"
