@@ -599,9 +599,7 @@ export const TradeClipboard: FunctionComponent<{
                 {(minAmountLessSlippage.toDec().lt(new Dec(1))
                   ? minAmountLessSlippage
                   : minAmountLessSlippage.maxDecimals(2).trim(true)
-                )
-                  .hideDenom(true)
-                  .toString()}
+                ).toString()}
               </span>
               <span>
                 {`≈ ${priceStore.calculatePrice(minAmountLessSlippage) || "0"}`}
