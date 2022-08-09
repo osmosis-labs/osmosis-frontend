@@ -1714,7 +1714,7 @@ const chainInfos = (
           coinDenom: "CRE",
           coinMinimalDenom: "ucre",
           coinDecimals: 6,
-          coinGeckoId: "crescent-network",
+          coinGeckoId: "pool:ucre",
           coinImageUrl: "/tokens/cre.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
