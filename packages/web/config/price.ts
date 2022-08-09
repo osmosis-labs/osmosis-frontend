@@ -386,7 +386,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
    },
   {
     alternativeCoinId: "pool:ucre",
-    poolId: "785",
+    poolId: "786",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-297" }],
       "ucre"
