@@ -495,7 +495,7 @@ export const TradeClipboard: FunctionComponent<{
                         .toString()
                     : "0"
                 }`}</h5>
-                <div className="subtitle2 md:font-caption md:text-caption text-white-disabled">
+                <div className="caption text-white-disabled">
                   {`≈ ${
                     priceStore.calculatePrice(
                       tradeTokenInConfig.expectedSwapResult.amount
@@ -582,7 +582,7 @@ export const TradeClipboard: FunctionComponent<{
               { hidden: !showEstimateDetails }
             )}
           >
-            <div className="caption text-white-high md:text-wireframes-lightGrey">
+            <div className="caption text-white-high">
               Minimum recieved after slippage{" "}
               {`(${slippageConfig.slippage.trim(true).toString()})`}
             </div>
