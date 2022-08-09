@@ -1700,6 +1700,34 @@ const chainInfos = (
       ],
       explorerUrlToTx: "https://scan.odinprotocol.io/transactions/{txHash}",
     },
+    {
+      rpc: "https://mainnet.crescent.network:26657",
+      rest: "https://mainnet.crescent.network:1317",
+      chainId: "crescent-1",
+      chainName: "Crescent",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("cre"),
+      currencies: [
+        {
+          coinDenom: "CRE",
+          coinMinimalDenom: "ucre",
+          coinDecimals: 6,
+          coinGeckoId: "crescent-network",
+          coinImageUrl: "/tokens/cre.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.01,
+        average: 0.02,
+        high: 0.1,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/crescent/txs/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
