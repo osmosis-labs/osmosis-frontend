@@ -1631,6 +1631,7 @@ const chainInfos = (
           coinDenom: "TGD",
           coinMinimalDenom: "utgd",
           coinDecimals: 6,
+          coinGeckoId: "pool:utgd",
           coinImageUrl: "/tokens/tgrade.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
