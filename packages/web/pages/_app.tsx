@@ -25,7 +25,7 @@ enableStaticRendering(typeof window === "undefined");
 function MyApp({ Component, pageProps }: AppProps) {
   const menus = [
     {
-      label: "Trade",
+      label: "Swap",
       link: "/",
       icon: IS_FRONTIER ? "/icons/trade-white.svg" : "/icons/trade.svg",
       iconSelected: "/icons/trade-selected.svg",
