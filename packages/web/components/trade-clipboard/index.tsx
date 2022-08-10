@@ -152,6 +152,8 @@ export const TradeClipboard: FunctionComponent<{
     ]
   );
 
+  const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
+
   return (
     <div
       className={classNames(
@@ -402,6 +404,8 @@ export const TradeClipboard: FunctionComponent<{
 
         <button
           className="absolute flex items-center inset-1/2 -translate-x-1/3 -translate-y-1/4 w-12 md:w-9 h-12 md:h-9 z-30"
+          onMouseEnter={() => setHoveringSwitchButton(true)}
+          onMouseLeave={() => setHoveringSwitchButton(false)}
           onClick={(e) => {
             e.preventDefault();
 
@@ -409,7 +413,14 @@ export const TradeClipboard: FunctionComponent<{
           }}
         >
           <div className="w-full h-full rounded-full flex items-center bg-card shadow-elevation-04dp">
-            <div className="m-auto mt-3.5 md:mt-2">
+            <div
+              className={classNames(
+                "m-auto mt-3.5 md:mt-2 transition-transform",
+                {
+                  "rotate-180 -translate-y-2": isHoveringSwitchButton,
+                }
+              )}
+            >
               <Image
                 width={isMobile ? 16 : 20}
                 height={isMobile ? 16 : 20}
