@@ -793,6 +793,12 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-9",
     coinMinimalDenom: "ucre",
   },
+  {
+    counterpartyChainId: "LumenX",
+    sourceChannelId: "channel-286",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "ulumen",
+  },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;
