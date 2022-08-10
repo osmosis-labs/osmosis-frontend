@@ -8,7 +8,7 @@ import { TokenSelectModal } from "../../modals";
 import { useBooleanWithWindowEvent, useFilteredData } from "../../hooks";
 import { MobileProps } from "../types";
 
-/** Will display balances if provided CoinPretty objects. Assumes denoms are unique. */
+/** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelect: FunctionComponent<
   {
     selectedTokenDenom: string;
@@ -191,7 +191,7 @@ export const TokenSelect: FunctionComponent<
         ) : (
           isSelectOpen && (
             <div
-              className="absolute bottom-0 md:-left-3 -left-4 translate-y-full md:p-1 p-3.5 bg-surface rounded-b-2xl z-50 w-[28.5rem] sm:w-[calc(100vw-24px)] md:max-w-[454px]"
+              className="absolute bottom-0 md:-left-3 -left-4 translate-y-full md:p-1 p-3.5 bg-surface rounded-b-2xl z-50 w-[26.4rem] sm:w-[calc(100vw-24px)] md:max-w-[454px]"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center h-9 pl-4 mb-3 rounded-2xl bg-card">
