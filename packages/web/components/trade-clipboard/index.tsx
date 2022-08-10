@@ -16,7 +16,6 @@ import {
   useWindowSize,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { Error as ErrorBox } from "../alert";
 import { Button } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
@@ -89,10 +88,13 @@ export const TradeClipboard: FunctionComponent<{
 
   // show details
   const [showEstimateDetails, setShowEstimateDetails] = useState(false);
+  const isEstimateDetailRelevant = !(
+    tradeTokenInConfig.amount === "" || tradeTokenInConfig.amount === "0"
+  );
   useEffect(() => {
     // auto collapse on input clear
-    if (tradeTokenInConfig.amount === "") setShowEstimateDetails(false);
-  }, [tradeTokenInConfig.amount]);
+    if (isEstimateDetailRelevant) setShowEstimateDetails(false);
+  }, [isEstimateDetailRelevant]);
 
   // auto focus from amount on token switch
   const fromAmountInput = useRef<HTMLInputElement | null>(null);
@@ -137,18 +139,23 @@ export const TradeClipboard: FunctionComponent<{
     setToTokenSelectDropdownLocal(false);
   };
 
-  const minAmountLessSlippage = useMemo(
+  // trade metrics
+  const minOutAmountLessSlippage = useMemo(
     () =>
-      new CoinPretty(
-        tradeTokenInConfig.outCurrency,
-        tradeTokenInConfig.expectedSwapResult.amount
-          .toDec()
-          .mul(new Dec(1).sub(slippageConfig.slippage.toDec()))
-      ).moveDecimalPointRight(tradeTokenInConfig.outCurrency.coinDecimals),
+      tradeTokenInConfig.expectedSwapResult.amount
+        .toDec()
+        .mul(new Dec(1).sub(slippageConfig.slippage.toDec())),
+    [tradeTokenInConfig.expectedSwapResult.amount, slippageConfig.slippage]
+  );
+  const spotPrice = useMemo(
+    () =>
+      tradeTokenInConfig.expectedSwapResult.beforeSpotPriceWithoutSwapFeeOutOverIn
+        .trim(true)
+        .maxDecimals(tradeTokenInConfig.outCurrency.coinDecimals),
     [
+      tradeTokenInConfig.expectedSwapResult
+        .beforeSpotPriceWithoutSwapFeeOutOverIn,
       tradeTokenInConfig.outCurrency,
-      tradeTokenInConfig.expectedSwapResult.amount,
-      slippageConfig.slippage,
     ]
   );
 
@@ -324,7 +331,7 @@ export const TradeClipboard: FunctionComponent<{
               </button>
             </div>
           </div>
-          <div className="flex items-center mt-3">
+          <div className="flex items-center place-content-between mt-3">
             {tradeTokenInConfig && (
               <TokenSelect
                 sortByBalances
@@ -366,7 +373,6 @@ export const TradeClipboard: FunctionComponent<{
                 isMobile={isMobile}
               />
             )}
-            <div className="flex-1" />
             {tradeTokenInConfig && (
               <div className="flex flex-col items-end">
                 <input
@@ -382,7 +388,7 @@ export const TradeClipboard: FunctionComponent<{
                   }}
                   value={tradeTokenInConfig.amount}
                 />
-                <div className="subtitle2 md:font-caption md:text-caption text-white-disabled">{`≈ ${
+                <div className="caption text-white-disabled">{`≈ ${
                   tradeTokenInConfig.amount &&
                   new Dec(tradeTokenInConfig.amount).gt(new Dec(0))
                     ? priceStore.calculatePrice(
@@ -553,47 +559,54 @@ export const TradeClipboard: FunctionComponent<{
             className={classNames(
               "w-full flex items-center place-content-between",
               {
-                "cursor-pointer":
-                  tradeTokenInConfig.amount !== "" &&
-                  tradeTokenInConfig.amount !== "0",
+                "cursor-pointer": isEstimateDetailRelevant,
               }
             )}
             onClick={() => {
-              if (
-                tradeTokenInConfig.amount !== "" &&
-                tradeTokenInConfig.amount !== "0"
-              )
+              if (isEstimateDetailRelevant)
                 setShowEstimateDetails(!showEstimateDetails);
             }}
           >
-            <div className="subtitle2">
+            <div
+              className={classNames("subtitle2 transition-all", {
+                "text-white-disabled": !isEstimateDetailRelevant,
+              })}
+            >
               {`1 ${
                 tradeTokenInConfig.sendCurrency.coinDenom !== "UNKNOWN"
                   ? tradeTokenInConfig.sendCurrency.coinDenom
                   : ""
-              } ≈ ${tradeTokenInConfig.expectedSwapResult.beforeSpotPriceWithoutSwapFeeOutOverIn
-                .trim(true)
-                .maxDecimals(3)
-                .toString()} ${
+              } ≈ ${
+                spotPrice.toDec().lt(new Dec(1))
+                  ? spotPrice.toString()
+                  : spotPrice.maxDecimals(6).toString()
+              } ${
                 tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN"
                   ? tradeTokenInConfig.outCurrency.coinDenom
                   : ""
               }`}
             </div>
-            <Image
-              className={`group-hover:opacity-100 transition-all ${
-                showEstimateDetails ? "rotate-180" : "rotate-0"
-              } ${
-                tradeTokenInConfig.amount === "" ||
-                tradeTokenInConfig.amount === "0"
-                  ? "opacity-0"
-                  : "opacity-40"
-              }`}
-              alt="show estimates"
-              src="/icons/chevron-down.svg"
-              height={isMobile ? 14 : 18}
-              width={isMobile ? 14 : 18}
-            />
+            <div className="flex items-center gap-2">
+              <Image
+                className={classNames(
+                  "transition-opacity",
+                  showPriceImpactWarning ? "opacity-100" : "opacity-0"
+                )}
+                alt="alert circle"
+                src="/icons/alert-circle.svg"
+                height={24}
+                width={24}
+              />
+              <Image
+                className={`group-hover:opacity-100 transition-all ${
+                  showEstimateDetails ? "rotate-180" : "rotate-0"
+                } ${isEstimateDetailRelevant ? "opacity-40" : "opacity-0"}`}
+                alt="show estimates"
+                src="/icons/chevron-down.svg"
+                height={isMobile ? 14 : 18}
+                width={isMobile ? 14 : 18}
+              />
+            </div>
           </button>
           <div
             className={classNames("flex justify-between mt-2.5", {
@@ -608,10 +621,15 @@ export const TradeClipboard: FunctionComponent<{
           <div
             className={classNames("flex justify-between mt-2.5", {
               hidden: !showEstimateDetails,
+              "text-error": showPriceImpactWarning,
             })}
           >
             <div className="caption">Price Impact</div>
-            <div className="caption text-wireframes-lightGrey">
+            <div
+              className={classNames("caption text-wireframes-lightGrey", {
+                "text-error": showPriceImpactWarning,
+              })}
+            >
               {`-${tradeTokenInConfig.expectedSwapResult.priceImpact.toString()}`}
             </div>
           </div>
@@ -630,18 +648,32 @@ export const TradeClipboard: FunctionComponent<{
                 "caption flex flex-col text-right gap-0.5 text-wireframes-lightGrey",
                 {
                   "text-white-high": !showPriceImpactWarning,
-                  "text-error": showPriceImpactWarning,
                 }
               )}
             >
               <span>
-                {(minAmountLessSlippage.toDec().lt(new Dec(1))
-                  ? minAmountLessSlippage
-                  : minAmountLessSlippage.maxDecimals(2).trim(true)
+                {new CoinPretty(
+                  tradeTokenInConfig.outCurrency,
+                  minOutAmountLessSlippage.mul(
+                    DecUtils.getTenExponentNInPrecisionRange(
+                      tradeTokenInConfig.outCurrency.coinDecimals
+                    )
+                  )
                 ).toString()}
               </span>
               <span>
-                {`≈ ${priceStore.calculatePrice(minAmountLessSlippage) || "0"}`}
+                {`≈ ${
+                  priceStore.calculatePrice(
+                    new CoinPretty(
+                      tradeTokenInConfig.outCurrency,
+                      minOutAmountLessSlippage.mul(
+                        DecUtils.getTenExponentNInPrecisionRange(
+                          tradeTokenInConfig.outCurrency.coinDecimals
+                        )
+                      )
+                    )
+                  ) || "0"
+                }`}
               </span>
             </div>
           </div>
@@ -650,7 +682,10 @@ export const TradeClipboard: FunctionComponent<{
               hidden: !showEstimateDetails,
             })}
           >
-            <div className="caption">Swap Fee</div>
+            <div className="caption">
+              Swap Fee (
+              {tradeTokenInConfig.expectedSwapResult.swapFee.toString()})
+            </div>
             <div className="caption text-wireframes-lightGrey">
               {`≈ ${
                 priceStore.calculatePrice(
@@ -661,20 +696,12 @@ export const TradeClipboard: FunctionComponent<{
           </div>
         </div>
       )}
-      {tradeTokenInConfig &&
-        tradeTokenInConfig.error &&
-        account.walletStatus === WalletStatus.Loaded && (
-          <ErrorBox
-            className="!w-full flex !justify-center items-center mt-4"
-            iconSize={isMobile ? "sm" : "md"}
-            message={tradeTokenInConfig.error?.message ?? ""}
-          />
-        )}
       {tradeTokenInConfig && (
         <Button
           color={
-            showPriceImpactWarning &&
-            account.walletStatus === WalletStatus.Loaded
+            (showPriceImpactWarning &&
+              account.walletStatus === WalletStatus.Loaded) ||
+            tradeTokenInConfig.error
               ? "error"
               : "primary"
           }
@@ -799,7 +826,9 @@ export const TradeClipboard: FunctionComponent<{
           }}
         >
           {account.walletStatus === WalletStatus.Loaded ? (
-            showPriceImpactWarning ? (
+            tradeTokenInConfig.error ? (
+              tradeTokenInConfig.error.message
+            ) : showPriceImpactWarning ? (
               "Swap Anyway"
             ) : (
               "Swap"
