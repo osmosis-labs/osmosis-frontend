@@ -609,89 +609,82 @@ export const TradeClipboard: FunctionComponent<{
             </div>
           </button>
           <div
-            className={classNames("flex justify-between mt-2.5", {
+            className={classNames("flex flex-col gap-4 py-3", {
               hidden: !showEstimateDetails,
             })}
           >
-            <div className="caption">Expected Output</div>
-            <div className="caption text-wireframes-lightGrey">
-              {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
+            <div className="flex justify-between">
+              <div className="caption text-white-high">
+                Minimum recieved after slippage{" "}
+                {`(${slippageConfig.slippage.trim(true).toString()})`}
+              </div>
+              <div
+                className={classNames(
+                  "caption flex flex-col text-right gap-0.5 text-wireframes-lightGrey",
+                  {
+                    "text-white-high": !showPriceImpactWarning,
+                  }
+                )}
+              >
+                <span>
+                  {new CoinPretty(
+                    tradeTokenInConfig.outCurrency,
+                    minOutAmountLessSlippage.mul(
+                      DecUtils.getTenExponentNInPrecisionRange(
+                        tradeTokenInConfig.outCurrency.coinDecimals
+                      )
+                    )
+                  ).toString()}
+                </span>
+                <span>
+                  {`≈ ${
+                    priceStore.calculatePrice(
+                      new CoinPretty(
+                        tradeTokenInConfig.outCurrency,
+                        minOutAmountLessSlippage.mul(
+                          DecUtils.getTenExponentNInPrecisionRange(
+                            tradeTokenInConfig.outCurrency.coinDecimals
+                          )
+                        )
+                      )
+                    ) || "0"
+                  }`}
+                </span>
+              </div>
             </div>
-          </div>
-          <div
-            className={classNames("flex justify-between mt-2.5", {
-              hidden: !showEstimateDetails,
-              "text-error": showPriceImpactWarning,
-            })}
-          >
-            <div className="caption">Price Impact</div>
+            <div className="flex justify-between">
+              <div className="caption">
+                Swap Fee (
+                {tradeTokenInConfig.expectedSwapResult.swapFee.toString()})
+              </div>
+              <div className="caption text-wireframes-lightGrey">
+                {`≈ ${
+                  priceStore.calculatePrice(
+                    tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
+                  ) ?? "0"
+                } `}
+              </div>
+            </div>
+            <hr className="text-white-faint" />
+            <div className="flex justify-between">
+              <div className="caption">Expected Output</div>
+              <div className="caption text-wireframes-lightGrey">
+                {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
+              </div>
+            </div>
             <div
-              className={classNames("caption text-wireframes-lightGrey", {
+              className={classNames("flex justify-between", {
                 "text-error": showPriceImpactWarning,
               })}
             >
-              {`-${tradeTokenInConfig.expectedSwapResult.priceImpact.toString()}`}
-            </div>
-          </div>
-          <div
-            className={classNames(
-              "flex justify-between pt-4 mt-4 border-t border-white-faint",
-              { hidden: !showEstimateDetails }
-            )}
-          >
-            <div className="caption text-white-high">
-              Minimum recieved after slippage{" "}
-              {`(${slippageConfig.slippage.trim(true).toString()})`}
-            </div>
-            <div
-              className={classNames(
-                "caption flex flex-col text-right gap-0.5 text-wireframes-lightGrey",
-                {
-                  "text-white-high": !showPriceImpactWarning,
-                }
-              )}
-            >
-              <span>
-                {new CoinPretty(
-                  tradeTokenInConfig.outCurrency,
-                  minOutAmountLessSlippage.mul(
-                    DecUtils.getTenExponentNInPrecisionRange(
-                      tradeTokenInConfig.outCurrency.coinDecimals
-                    )
-                  )
-                ).toString()}
-              </span>
-              <span>
-                {`≈ ${
-                  priceStore.calculatePrice(
-                    new CoinPretty(
-                      tradeTokenInConfig.outCurrency,
-                      minOutAmountLessSlippage.mul(
-                        DecUtils.getTenExponentNInPrecisionRange(
-                          tradeTokenInConfig.outCurrency.coinDecimals
-                        )
-                      )
-                    )
-                  ) || "0"
-                }`}
-              </span>
-            </div>
-          </div>
-          <div
-            className={classNames("flex justify-between mt-2.5", {
-              hidden: !showEstimateDetails,
-            })}
-          >
-            <div className="caption">
-              Swap Fee (
-              {tradeTokenInConfig.expectedSwapResult.swapFee.toString()})
-            </div>
-            <div className="caption text-wireframes-lightGrey">
-              {`≈ ${
-                priceStore.calculatePrice(
-                  tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
-                ) ?? "0"
-              } `}
+              <div className="caption">Price Impact</div>
+              <div
+                className={classNames("caption text-wireframes-lightGrey", {
+                  "text-error": showPriceImpactWarning,
+                })}
+              >
+                {`-${tradeTokenInConfig.expectedSwapResult.priceImpact.toString()}`}
+              </div>
             </div>
           </div>
         </div>
@@ -699,9 +692,8 @@ export const TradeClipboard: FunctionComponent<{
       {tradeTokenInConfig && (
         <Button
           color={
-            (showPriceImpactWarning &&
-              account.walletStatus === WalletStatus.Loaded) ||
-            tradeTokenInConfig.error
+            showPriceImpactWarning &&
+            account.walletStatus === WalletStatus.Loaded
               ? "error"
               : "primary"
           }
