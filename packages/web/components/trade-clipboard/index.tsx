@@ -403,7 +403,13 @@ export const TradeClipboard: FunctionComponent<{
         </div>
 
         <button
-          className="absolute flex items-center inset-1/2 -translate-x-1/3 -translate-y-1/4 w-12 md:w-9 h-12 md:h-9 z-30"
+          className={classNames(
+            "absolute flex items-center inset-1/2 -translate-x-1/3 -translate-y-1/4 transition-all duration-500 z-30",
+            {
+              "w-10 md:w-8 h-10 md:h-8": !isHoveringSwitchButton,
+              "w-11 md:w-9 h-11 md:h-9": isHoveringSwitchButton,
+            }
+          )}
           onMouseEnter={() => setHoveringSwitchButton(true)}
           onMouseLeave={() => setHoveringSwitchButton(false)}
           onClick={(e) => {
@@ -412,25 +418,47 @@ export const TradeClipboard: FunctionComponent<{
             tradeTokenInConfig && tradeTokenInConfig.switchInAndOut();
           }}
         >
-          <div className="w-full h-full rounded-full flex items-center bg-card shadow-elevation-04dp">
-            <div
-              className={classNames(
-                "m-auto mt-3.5 md:mt-2 transition-transform",
-                {
-                  "rotate-180 -translate-y-2": isHoveringSwitchButton,
-                }
-              )}
-            >
-              <Image
-                width={isMobile ? 16 : 20}
-                height={isMobile ? 16 : 20}
-                src={
-                  IS_FRONTIER
-                    ? "/icons/down-arrow.svg"
-                    : "/icons/down-arrow.svg"
-                }
-                alt="hexagon border icon"
-              />
+          <div
+            className={classNames(
+              "w-full h-full rounded-full flex items-center shadow-elevation-04dp",
+              {
+                "bg-card": !isHoveringSwitchButton,
+                "bg-[#4E477C]": isHoveringSwitchButton,
+              }
+            )}
+          >
+            <div className="relative w-full h-full">
+              <div
+                className={classNames(
+                  "absolute left-2.5 top-3 transition-all duration-500",
+                  {
+                    "opacity-0": isHoveringSwitchButton,
+                  }
+                )}
+              >
+                <Image
+                  width={isMobile ? 16 : 20}
+                  height={isMobile ? 16 : 20}
+                  src={"/icons/down-arrow.svg"}
+                  alt="switch"
+                />
+              </div>
+              <div
+                className={classNames(
+                  "absolute left-3 top-1.5 transition-all duration-500 ease-bounce",
+                  {
+                    "opacity-100 rotate-180": isHoveringSwitchButton,
+                    "opacity-0": !isHoveringSwitchButton,
+                  }
+                )}
+              >
+                <Image
+                  width={isMobile ? 16 : 20}
+                  height={isMobile ? 16 : 20}
+                  src={"/icons/swap.svg"}
+                  alt="switch"
+                />
+              </div>
             </div>
           </div>
         </button>
@@ -553,12 +581,12 @@ export const TradeClipboard: FunctionComponent<{
               }`}
             </div>
             <Image
-              className={`group-hover:opacity-100 transition-transform ${
+              className={`group-hover:opacity-100 transition-all ${
                 showEstimateDetails ? "rotate-180" : "rotate-0"
               } ${
                 tradeTokenInConfig.amount === "" ||
                 tradeTokenInConfig.amount === "0"
-                  ? "opacity-20"
+                  ? "opacity-0"
                   : "opacity-40"
               }`}
               alt="show estimates"
