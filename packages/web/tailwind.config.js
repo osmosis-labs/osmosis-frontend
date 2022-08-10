@@ -253,7 +253,7 @@ module.exports = {
         xlinset: "0.688rem", // 1px smaller than rounded-xl
         "2xlinset": "0.938rem", // 1 px smaller than rounded-2xl
       },
-      trainsitionTimingFunction: {
+      transitionTimingFunction: {
         bounce: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
       },
     },
