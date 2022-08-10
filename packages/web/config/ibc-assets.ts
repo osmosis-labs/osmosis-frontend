@@ -618,6 +618,7 @@ export const IBCAssetInfos: (IBCAsset & {
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=link-wei",
     sourceChainNameOverride: "Ethereum",
+    isVerified: true,
   },
   {
     counterpartyChainId: "genesis_29-2",
