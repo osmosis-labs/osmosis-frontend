@@ -1604,6 +1604,7 @@ const chainInfos = (
           coinDenom: "KUJI",
           coinMinimalDenom: "ukuji",
           coinDecimals: 6,
+          coinGeckoId: "kujira",
           coinImageUrl: "/tokens/kuji.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
