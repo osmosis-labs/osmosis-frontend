@@ -160,6 +160,32 @@ export const TradeClipboard: FunctionComponent<{
 
   const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
 
+  // to & from box switch animation
+  const [isAnimatingSwitch, setIsAnimatingSwitch] = useState(false);
+  useEffect(() => {
+    let timeout: NodeJS.Timeout | undefined;
+    let timeout2: NodeJS.Timeout | undefined;
+    const duration = 300;
+    console.log("isAnimatingSwitch changed");
+
+    if (isAnimatingSwitch) {
+      console.log("Will turn off animation");
+
+      timeout = setTimeout(() => {
+        console.log("Turn animation off");
+        setIsAnimatingSwitch(false);
+      }, duration);
+      timeout2 = setTimeout(() => {
+        tradeTokenInConfig.switchInAndOut();
+      }, duration / 2);
+    }
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [isAnimatingSwitch, tradeTokenInConfig]);
+
+  console.log(isAnimatingSwitch);
+
   return (
     <div
       className={classNames(
@@ -265,7 +291,16 @@ export const TradeClipboard: FunctionComponent<{
       </div>
 
       <div className="relative flex flex-col gap-3">
-        <div className="bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5">
+        <div
+          className="bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all ease-inOutBack duration-300"
+          style={
+            isAnimatingSwitch
+              ? {
+                  transform: "translateY(50px)",
+                }
+              : undefined
+          }
+        >
           <div className="flex items-center place-content-between">
             <div className="flex">
               <span className="caption text-sm md:text-xs text-white-full">
@@ -420,7 +455,9 @@ export const TradeClipboard: FunctionComponent<{
           onClick={(e) => {
             e.preventDefault();
 
-            tradeTokenInConfig && tradeTokenInConfig.switchInAndOut();
+            // tradeTokenInConfig && tradeTokenInConfig.switchInAndOut();
+            // TODO: switch when 1/2 done
+            setIsAnimatingSwitch(true);
           }}
         >
           <div
@@ -468,7 +505,16 @@ export const TradeClipboard: FunctionComponent<{
           </div>
         </button>
 
-        <div className="bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5">
+        <div
+          className="bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all ease-inOutBack duration-300"
+          style={
+            isAnimatingSwitch
+              ? {
+                  transform: "translateY(-60px)",
+                }
+              : undefined
+          }
+        >
           <div className="flex items-center place-content-between">
             {tradeTokenInConfig && (
               <TokenSelect
