@@ -166,25 +166,18 @@ export const TradeClipboard: FunctionComponent<{
     let timeout: NodeJS.Timeout | undefined;
     let timeout2: NodeJS.Timeout | undefined;
     const duration = 300;
-    console.log("isAnimatingSwitch changed");
 
     if (isAnimatingSwitch) {
-      console.log("Will turn off animation");
-
-      timeout = setTimeout(() => {
-        console.log("Turn animation off");
-        setIsAnimatingSwitch(false);
-      }, duration);
+      timeout = setTimeout(() => setIsAnimatingSwitch(false), duration);
       timeout2 = setTimeout(() => {
         tradeTokenInConfig.switchInAndOut();
       }, duration / 2);
     }
     return () => {
       if (timeout) clearTimeout(timeout);
+      if (timeout2) clearTimeout(timeout2);
     };
   }, [isAnimatingSwitch, tradeTokenInConfig]);
-
-  console.log(isAnimatingSwitch);
 
   return (
     <div
