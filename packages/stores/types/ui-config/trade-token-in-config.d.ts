@@ -34,6 +34,8 @@ export declare class ObservableTradeTokenInConfig extends AmountConfig {
         swapFee: RatePretty;
         priceImpact: RatePretty;
     };
+    /** Calculated spot price with amount of 1 token in. */
+    get beforeSpotPriceWithoutSwapFeeOutOverIn(): IntPretty;
     get error(): Error | undefined;
     setError(error: Error | undefined): void;
 }

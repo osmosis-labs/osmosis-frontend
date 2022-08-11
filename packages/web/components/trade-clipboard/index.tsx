@@ -149,12 +149,11 @@ export const TradeClipboard: FunctionComponent<{
   );
   const spotPrice = useMemo(
     () =>
-      tradeTokenInConfig.expectedSwapResult.beforeSpotPriceWithoutSwapFeeOutOverIn
+      tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn
         .trim(true)
         .maxDecimals(tradeTokenInConfig.outCurrency.coinDecimals),
     [
-      tradeTokenInConfig.expectedSwapResult
-        .beforeSpotPriceWithoutSwapFeeOutOverIn,
+      tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn,
       tradeTokenInConfig.outCurrency,
     ]
   );
