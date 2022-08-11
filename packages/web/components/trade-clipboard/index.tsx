@@ -171,7 +171,7 @@ export const TradeClipboard: FunctionComponent<{
       timeout = setTimeout(() => setIsAnimatingSwitch(false), duration);
       timeout2 = setTimeout(() => {
         tradeTokenInConfig.switchInAndOut();
-      }, duration / 2);
+      }, duration / 3);
     }
     return () => {
       if (timeout) clearTimeout(timeout);
@@ -289,7 +289,7 @@ export const TradeClipboard: FunctionComponent<{
           style={
             isAnimatingSwitch
               ? {
-                  transform: "translateY(50px)",
+                  transform: "translateY(60px)",
                 }
               : undefined
           }
@@ -448,8 +448,6 @@ export const TradeClipboard: FunctionComponent<{
           onClick={(e) => {
             e.preventDefault();
 
-            // tradeTokenInConfig && tradeTokenInConfig.switchInAndOut();
-            // TODO: switch when 1/2 done
             setIsAnimatingSwitch(true);
           }}
         >
@@ -503,7 +501,7 @@ export const TradeClipboard: FunctionComponent<{
           style={
             isAnimatingSwitch
               ? {
-                  transform: "translateY(-60px)",
+                  transform: "translateY(-65px)",
                 }
               : undefined
           }
