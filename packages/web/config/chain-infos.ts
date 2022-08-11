@@ -1778,6 +1778,36 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://scope.helios-1.lumenex.io/lumenx/tx/{txHash}",
     },
+    {
+      rpc: 'https://rpc.orai.io',
+      rest: 'https://lcd.orai.io',
+      chainId: 'Oraichain',
+      chainName: 'Oraichain',
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config('orai'),
+      currencies: [
+        {
+
+          coinDenom: 'ORAI',
+          coinMinimalDenom: 'orai',
+          coinDecimals: 6,
+          coinGeckoId: 'oraichain-token',
+          coinImageUrl:
+            '/tokens/orai.svg',
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        }
+      ],
+      gasPriceStep: {
+        low: 0,
+        average: 0.00025,
+        high: 0.0004,
+      },
+      features: ['stargate', 'ibc-transfer', 'cosmwasm'],
+      explorerUrlToTx: "https://scan.orai.io/txs/{txHash}",
+    }
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
