@@ -93,7 +93,7 @@ export const TradeClipboard: FunctionComponent<{
   );
   useEffect(() => {
     // auto collapse on input clear
-    if (isEstimateDetailRelevant) setShowEstimateDetails(false);
+    if (!isEstimateDetailRelevant) setShowEstimateDetails(false);
   }, [isEstimateDetailRelevant]);
 
   // auto focus from amount on token switch
