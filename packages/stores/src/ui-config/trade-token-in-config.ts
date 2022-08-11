@@ -339,8 +339,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         this.outCurrency.coinMinimalDenom,
         5
       );
-    } catch (e) {
-      console.log(e);
+    } catch {
       return new IntPretty(0).ready(false);
     }
 
