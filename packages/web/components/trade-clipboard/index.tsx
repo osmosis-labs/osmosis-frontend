@@ -265,7 +265,7 @@ export const TradeClipboard: FunctionComponent<{
       </div>
 
       <div className="relative flex flex-col gap-3">
-        <div className="relative bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5">
+        <div className="bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5">
           <div className="flex items-center place-content-between">
             <div className="flex">
               <span className="caption text-sm md:text-xs text-white-full">
@@ -409,7 +409,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <button
           className={classNames(
-            "absolute flex items-center inset-1/2 -translate-x-[50%] -translate-y-9 transition-all duration-500 ease-bounce z-30",
+            "absolute flex items-center left-[45%] top-[116px] transition-all duration-500 ease-bounce z-30",
             {
               "w-10 md:w-8 h-10 md:h-8": !isHoveringSwitchButton,
               "w-11 md:w-9 h-11 md:h-9": isHoveringSwitchButton,
@@ -468,7 +468,7 @@ export const TradeClipboard: FunctionComponent<{
           </div>
         </button>
 
-        <div className="relative bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5">
+        <div className="bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5">
           <div className="flex items-center place-content-between">
             {tradeTokenInConfig && (
               <TokenSelect
