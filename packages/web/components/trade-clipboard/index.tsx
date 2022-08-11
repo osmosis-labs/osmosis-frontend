@@ -613,6 +613,40 @@ export const TradeClipboard: FunctionComponent<{
               hidden: !showEstimateDetails,
             })}
           >
+            <div
+              className={classNames("flex justify-between", {
+                "text-error": showPriceImpactWarning,
+              })}
+            >
+              <div className="caption">Price Impact</div>
+              <div
+                className={classNames("caption text-wireframes-lightGrey", {
+                  "text-error": showPriceImpactWarning,
+                })}
+              >
+                {`-${tradeTokenInConfig.expectedSwapResult.priceImpact.toString()}`}
+              </div>
+            </div>
+            <div className="flex justify-between">
+              <div className="caption">
+                Swap Fee (
+                {tradeTokenInConfig.expectedSwapResult.swapFee.toString()})
+              </div>
+              <div className="caption text-wireframes-lightGrey">
+                {`≈ ${
+                  priceStore.calculatePrice(
+                    tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
+                  ) ?? "0"
+                } `}
+              </div>
+            </div>
+            <hr className="text-white-faint" />
+            <div className="flex justify-between">
+              <div className="caption">Expected Output</div>
+              <div className="caption text-wireframes-lightGrey">
+                {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
+              </div>
+            </div>
             <div className="flex justify-between">
               <div className="caption text-white-high">
                 Minimum received after slippage{" "}
@@ -650,40 +684,6 @@ export const TradeClipboard: FunctionComponent<{
                     ) || "0"
                   }`}
                 </span>
-              </div>
-            </div>
-            <div className="flex justify-between">
-              <div className="caption">
-                Swap Fee (
-                {tradeTokenInConfig.expectedSwapResult.swapFee.toString()})
-              </div>
-              <div className="caption text-wireframes-lightGrey">
-                {`≈ ${
-                  priceStore.calculatePrice(
-                    tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
-                  ) ?? "0"
-                } `}
-              </div>
-            </div>
-            <hr className="text-white-faint" />
-            <div className="flex justify-between">
-              <div className="caption">Expected Output</div>
-              <div className="caption text-wireframes-lightGrey">
-                {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
-              </div>
-            </div>
-            <div
-              className={classNames("flex justify-between", {
-                "text-error": showPriceImpactWarning,
-              })}
-            >
-              <div className="caption">Price Impact</div>
-              <div
-                className={classNames("caption text-wireframes-lightGrey", {
-                  "text-error": showPriceImpactWarning,
-                })}
-              >
-                {`-${tradeTokenInConfig.expectedSwapResult.priceImpact.toString()}`}
               </div>
             </div>
           </div>
