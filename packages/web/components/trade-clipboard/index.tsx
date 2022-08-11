@@ -164,14 +164,14 @@ export const TradeClipboard: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "relative rounded-[18px] bg-cardInner px-5 md:px-3 pt-5 md:pt-4 pb-6 md:pb-4",
+        "relative rounded-[18px] flex flex-col gap-8 bg-cardInner px-5 md:px-3 pt-12 md:pt-4 pb-7 md:pb-4",
         containerClassName
       )}
     >
-      <div className="relative flex items-center justify-end w-full h-11 md:h-[38px] mb-[1.125rem] md:mb-2">
+      <div className="relative flex items-center justify-end w-full h-10 md:h-9">
         <h6 className="w-full text-center">Swap</h6>
         <button
-          className="absolute right-3 top-1 h-11 md:h-[38px]"
+          className="absolute right-3 top-1 h-10 md:h-9"
           onClick={(e) => {
             e.stopPropagation();
             setIsSettingOpen(!isSettingOpen);
@@ -265,8 +265,8 @@ export const TradeClipboard: FunctionComponent<{
         )}
       </div>
 
-      <div className="relative">
-        <div className="bg-surface rounded-xl md:rounded-xl px-4 md:px-3 pt-3 md:pt-2.5 pb-4 md:pb-2.5 relative">
+      <div className="relative flex flex-col gap-3">
+        <div className="relative bg-surface rounded-xl md:rounded-xl px-4 md:px-3 pt-3 md:pt-2.5 pb-4 md:pb-2.5">
           <div className="flex items-center place-content-between">
             <div className="flex">
               <span className="caption text-sm md:text-xs text-white-full">
@@ -410,7 +410,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <button
           className={classNames(
-            "absolute flex items-center inset-1/2 -translate-x-[50%] -translate-y-1/4 transition-all duration-500 ease-bounce z-30",
+            "absolute flex items-center inset-1/2 -translate-x-[50%] -translate-y-9 transition-all duration-500 ease-bounce z-30",
             {
               "w-10 md:w-8 h-10 md:h-8": !isHoveringSwitchButton,
               "w-11 md:w-9 h-11 md:h-9": isHoveringSwitchButton,
@@ -469,7 +469,7 @@ export const TradeClipboard: FunctionComponent<{
           </div>
         </button>
 
-        <div className="bg-surface rounded-xl md:rounded-xl p-4 md:p-3 mt-[1.125rem] md:mt-3 relative">
+        <div className="relative bg-surface rounded-xl md:rounded-xl p-4 md:p-3">
           <div className="flex items-center place-content-between mt-3">
             {tradeTokenInConfig && (
               <TokenSelect
@@ -551,144 +551,144 @@ export const TradeClipboard: FunctionComponent<{
             )}
           </div>
         </div>
-      </div>
 
-      {tradeTokenInConfig && (
-        <div className="mt-[1.125rem] rounded-lg bg-card py-3 px-4 md:px-3">
-          <button
-            className={classNames(
-              "w-full flex items-center place-content-between",
-              {
-                "cursor-pointer": isEstimateDetailRelevant,
-              }
-            )}
-            onClick={() => {
-              if (isEstimateDetailRelevant)
-                setShowEstimateDetails(!showEstimateDetails);
-            }}
-          >
-            <div
-              className={classNames("subtitle2 transition-all", {
-                "text-white-disabled": !isEstimateDetailRelevant,
-              })}
+        {tradeTokenInConfig && (
+          <div className="rounded-lg bg-card py-3 px-4 md:px-3">
+            <button
+              className={classNames(
+                "w-full flex items-center place-content-between",
+                {
+                  "cursor-pointer": isEstimateDetailRelevant,
+                }
+              )}
+              onClick={() => {
+                if (isEstimateDetailRelevant)
+                  setShowEstimateDetails(!showEstimateDetails);
+              }}
             >
-              {`1 ${
-                tradeTokenInConfig.sendCurrency.coinDenom !== "UNKNOWN"
-                  ? tradeTokenInConfig.sendCurrency.coinDenom
-                  : ""
-              } ≈ ${
-                spotPrice.toDec().lt(new Dec(1))
-                  ? spotPrice.toString()
-                  : spotPrice.maxDecimals(6).toString()
-              } ${
-                tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN"
-                  ? tradeTokenInConfig.outCurrency.coinDenom
-                  : ""
-              }`}
-            </div>
-            <div className="flex items-center gap-2">
-              <Image
-                className={classNames(
-                  "transition-opacity",
-                  showPriceImpactWarning ? "opacity-100" : "opacity-0"
-                )}
-                alt="alert circle"
-                src="/icons/alert-circle.svg"
-                height={24}
-                width={24}
-              />
-              <Image
-                className={`group-hover:opacity-100 transition-all ${
-                  showEstimateDetails ? "rotate-180" : "rotate-0"
-                } ${isEstimateDetailRelevant ? "opacity-40" : "opacity-0"}`}
-                alt="show estimates"
-                src="/icons/chevron-down.svg"
-                height={isMobile ? 14 : 18}
-                width={isMobile ? 14 : 18}
-              />
-            </div>
-          </button>
-          <div
-            className={classNames("flex flex-col gap-4 py-3", {
-              hidden: !showEstimateDetails,
-            })}
-          >
-            <div
-              className={classNames("flex justify-between", {
-                "text-error": showPriceImpactWarning,
-              })}
-            >
-              <div className="caption">Price Impact</div>
               <div
-                className={classNames("caption text-wireframes-lightGrey", {
+                className={classNames("subtitle2 transition-all", {
+                  "text-white-disabled": !isEstimateDetailRelevant,
+                })}
+              >
+                {`1 ${
+                  tradeTokenInConfig.sendCurrency.coinDenom !== "UNKNOWN"
+                    ? tradeTokenInConfig.sendCurrency.coinDenom
+                    : ""
+                } ≈ ${
+                  spotPrice.toDec().lt(new Dec(1))
+                    ? spotPrice.toString()
+                    : spotPrice.maxDecimals(6).toString()
+                } ${
+                  tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN"
+                    ? tradeTokenInConfig.outCurrency.coinDenom
+                    : ""
+                }`}
+              </div>
+              <div className="flex items-center gap-2">
+                <Image
+                  className={classNames(
+                    "transition-opacity",
+                    showPriceImpactWarning ? "opacity-100" : "opacity-0"
+                  )}
+                  alt="alert circle"
+                  src="/icons/alert-circle.svg"
+                  height={24}
+                  width={24}
+                />
+                <Image
+                  className={`group-hover:opacity-100 transition-all ${
+                    showEstimateDetails ? "rotate-180" : "rotate-0"
+                  } ${isEstimateDetailRelevant ? "opacity-40" : "opacity-0"}`}
+                  alt="show estimates"
+                  src="/icons/chevron-down.svg"
+                  height={isMobile ? 14 : 18}
+                  width={isMobile ? 14 : 18}
+                />
+              </div>
+            </button>
+            <div
+              className={classNames("flex flex-col gap-4 py-3", {
+                hidden: !showEstimateDetails,
+              })}
+            >
+              <div
+                className={classNames("flex justify-between", {
                   "text-error": showPriceImpactWarning,
                 })}
               >
-                {`-${tradeTokenInConfig.expectedSwapResult.priceImpact.toString()}`}
+                <div className="caption">Price Impact</div>
+                <div
+                  className={classNames("caption text-wireframes-lightGrey", {
+                    "text-error": showPriceImpactWarning,
+                  })}
+                >
+                  {`-${tradeTokenInConfig.expectedSwapResult.priceImpact.toString()}`}
+                </div>
               </div>
-            </div>
-            <div className="flex justify-between">
-              <div className="caption">
-                Swap Fee (
-                {tradeTokenInConfig.expectedSwapResult.swapFee.toString()})
-              </div>
-              <div className="caption text-wireframes-lightGrey">
-                {`≈ ${
-                  priceStore.calculatePrice(
-                    tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
-                  ) ?? "0"
-                } `}
-              </div>
-            </div>
-            <hr className="text-white-faint" />
-            <div className="flex justify-between">
-              <div className="caption">Expected Output</div>
-              <div className="caption text-wireframes-lightGrey">
-                {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
-              </div>
-            </div>
-            <div className="flex justify-between">
-              <div className="caption text-white-high">
-                Minimum received after slippage{" "}
-                {`(${slippageConfig.slippage.trim(true).toString()})`}
-              </div>
-              <div
-                className={classNames(
-                  "caption flex flex-col text-right gap-0.5 text-wireframes-lightGrey",
-                  {
-                    "text-white-high": !showPriceImpactWarning,
-                  }
-                )}
-              >
-                <span>
-                  {new CoinPretty(
-                    tradeTokenInConfig.outCurrency,
-                    minOutAmountLessSlippage.mul(
-                      DecUtils.getTenExponentNInPrecisionRange(
-                        tradeTokenInConfig.outCurrency.coinDecimals
-                      )
-                    )
-                  ).toString()}
-                </span>
-                <span>
+              <div className="flex justify-between">
+                <div className="caption">
+                  Swap Fee (
+                  {tradeTokenInConfig.expectedSwapResult.swapFee.toString()})
+                </div>
+                <div className="caption text-wireframes-lightGrey">
                   {`≈ ${
                     priceStore.calculatePrice(
-                      new CoinPretty(
-                        tradeTokenInConfig.outCurrency,
-                        minOutAmountLessSlippage.mul(
-                          DecUtils.getTenExponentNInPrecisionRange(
-                            tradeTokenInConfig.outCurrency.coinDecimals
-                          )
+                      tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
+                    ) ?? "0"
+                  } `}
+                </div>
+              </div>
+              <hr className="text-white-faint" />
+              <div className="flex justify-between">
+                <div className="caption">Expected Output</div>
+                <div className="caption text-wireframes-lightGrey">
+                  {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
+                </div>
+              </div>
+              <div className="flex justify-between">
+                <div className="caption text-white-high">
+                  Minimum received after slippage{" "}
+                  {`(${slippageConfig.slippage.trim(true).toString()})`}
+                </div>
+                <div
+                  className={classNames(
+                    "caption flex flex-col text-right gap-0.5 text-wireframes-lightGrey",
+                    {
+                      "text-white-high": !showPriceImpactWarning,
+                    }
+                  )}
+                >
+                  <span>
+                    {new CoinPretty(
+                      tradeTokenInConfig.outCurrency,
+                      minOutAmountLessSlippage.mul(
+                        DecUtils.getTenExponentNInPrecisionRange(
+                          tradeTokenInConfig.outCurrency.coinDecimals
                         )
                       )
-                    ) || "0"
-                  }`}
-                </span>
+                    ).toString()}
+                  </span>
+                  <span>
+                    {`≈ ${
+                      priceStore.calculatePrice(
+                        new CoinPretty(
+                          tradeTokenInConfig.outCurrency,
+                          minOutAmountLessSlippage.mul(
+                            DecUtils.getTenExponentNInPrecisionRange(
+                              tradeTokenInConfig.outCurrency.coinDecimals
+                            )
+                          )
+                        )
+                      ) || "0"
+                    }`}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
       {tradeTokenInConfig && (
         <Button
           color={
@@ -697,7 +697,7 @@ export const TradeClipboard: FunctionComponent<{
               ? "error"
               : "primary"
           }
-          className="mt-[1.125rem] flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
+          className="flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
           disabled={
             account.walletStatus === WalletStatus.Loaded &&
             (tradeTokenInConfig.error !== undefined ||
