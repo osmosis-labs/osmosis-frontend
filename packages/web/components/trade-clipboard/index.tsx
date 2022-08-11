@@ -552,7 +552,12 @@ export const TradeClipboard: FunctionComponent<{
         </div>
 
         {tradeTokenInConfig && (
-          <div className="rounded-lg bg-card py-3 px-4 md:px-3">
+          <div
+            className={classNames(
+              "rounded-lg bg-card px-4 md:px-3",
+              showEstimateDetails ? "py-6" : "py-[10px]"
+            )}
+          >
             <button
               className={classNames(
                 "w-full flex items-center place-content-between",
@@ -607,7 +612,7 @@ export const TradeClipboard: FunctionComponent<{
               </div>
             </button>
             <div
-              className={classNames("flex flex-col gap-4 py-3", {
+              className={classNames("flex flex-col gap-4 pt-5", {
                 hidden: !showEstimateDetails,
               })}
             >
