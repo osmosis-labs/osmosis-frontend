@@ -159,7 +159,7 @@ const Home: NextPage = observer(function () {
       </div>
       <div className="w-full h-full flex items-center overflow-x-hidden overflow-y-auto">
         <TradeClipboard
-          containerClassName="w-[28.9rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
+          containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
           pools={pools}
         />
       </div>
