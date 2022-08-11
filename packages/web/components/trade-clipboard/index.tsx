@@ -265,7 +265,7 @@ export const TradeClipboard: FunctionComponent<{
       </div>
 
       <div className="relative flex flex-col gap-3">
-        <div className="relative bg-surface rounded-xl md:rounded-xl px-4 md:px-3 pt-3 md:pt-2.5 pb-4 md:pb-2.5">
+        <div className="relative bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5">
           <div className="flex items-center place-content-between">
             <div className="flex">
               <span className="caption text-sm md:text-xs text-white-full">
@@ -468,8 +468,8 @@ export const TradeClipboard: FunctionComponent<{
           </div>
         </button>
 
-        <div className="relative bg-surface rounded-xl md:rounded-xl p-4 md:p-3">
-          <div className="flex items-center place-content-between mt-3">
+        <div className="relative bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5">
+          <div className="flex items-center place-content-between">
             {tradeTokenInConfig && (
               <TokenSelect
                 dropdownOpen={showToTokenSelectDropdown}
@@ -623,9 +623,12 @@ export const TradeClipboard: FunctionComponent<{
               >
                 <div className="caption">Price Impact</div>
                 <div
-                  className={classNames("caption text-wireframes-lightGrey", {
-                    "text-error": showPriceImpactWarning,
-                  })}
+                  className={classNames(
+                    "caption",
+                    showPriceImpactWarning
+                      ? "text-error"
+                      : "text-wireframes-lightGrey"
+                  )}
                 >
                   {`-${tradeTokenInConfig.expectedSwapResult.priceImpact.toString()}`}
                 </div>
