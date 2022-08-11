@@ -613,12 +613,6 @@ export const TradeClipboard: FunctionComponent<{
               hidden: !showEstimateDetails,
             })}
           >
-            <div className="flex justify-between">
-              <div className="caption">Expected Output</div>
-              <div className="caption text-wireframes-lightGrey">
-                {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
-              </div>
-            </div>
             <div
               className={classNames("flex justify-between", {
                 "text-error": showPriceImpactWarning,
@@ -647,6 +641,12 @@ export const TradeClipboard: FunctionComponent<{
               </div>
             </div>
             <hr className="text-white-faint" />
+            <div className="flex justify-between">
+              <div className="caption">Expected Output</div>
+              <div className="caption text-wireframes-lightGrey">
+                {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
+              </div>
+            </div>
             <div className="flex justify-between">
               <div className="caption text-white-high">
                 Minimum recieved after slippage{" "}
