@@ -615,7 +615,7 @@ export const TradeClipboard: FunctionComponent<{
           >
             <div className="flex justify-between">
               <div className="caption text-white-high">
-                Minimum recieved after slippage{" "}
+                Minimum received after slippage{" "}
                 {`(${slippageConfig.slippage.trim(true).toString()})`}
               </div>
               <div
