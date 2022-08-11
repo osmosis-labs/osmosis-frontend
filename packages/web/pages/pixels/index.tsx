@@ -115,7 +115,7 @@ const Pixels: NextPage = observer(function () {
       }&y=${pixelIndex[1] + 1}&color=${colorIndex}`;
       router.replace(pathNameWithQueryParams);
     }
-  }, [pixelIndex, colorIndex]);
+  }, [pixelIndex, colorIndex, router]);
 
   const transformWrapperRef = useRef<ReactZoomPanPinchRef | null>(null);
   // canvas

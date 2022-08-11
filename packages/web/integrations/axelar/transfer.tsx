@@ -144,7 +144,6 @@ const AxelarTransfer: FunctionComponent<
       currency
     );
 
-    // TODO: add transfer time (look at satellite.money)
     // TODO: add network check & error states (client must match prop)
 
     const isFormLoading = depositAddress === undefined;
@@ -169,14 +168,17 @@ const AxelarTransfer: FunctionComponent<
           }
           availableBalance={availableBalance}
           toggleIsMax={() => {
+            console.log(availableBalance);
             if (isWithdraw) {
               withdrawAmountConfig.toggleIsMax();
             } else {
               if (isDepositAmtMax) {
                 setDepositAmount("0");
                 setDepositAmountMax(false);
-              } else {
-                // TODO: set to max amt manually
+              } else if (availableBalance) {
+                setDepositAmount(
+                  availableBalance.hideDenom(true).trim(true).toString()
+                );
               }
             }
           }}
@@ -259,12 +261,14 @@ const AxelarTransfer: FunctionComponent<
                           ToastType.ERROR
                         );
                       } else if (e.code === 4100) {
+                        // assuming EVM wallet error codes are standard
+
                         // wallet is not logged in (but is connected)
                         displayToast(
                           {
                             message: `Please log into ${client.displayInfo.displayName}`,
                           },
-                          ToastType.LOADING
+                          ToastType.ERROR
                         );
                         return; // don't close modal
                       } else {

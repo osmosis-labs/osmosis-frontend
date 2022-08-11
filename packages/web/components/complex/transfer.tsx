@@ -165,12 +165,13 @@ export const Transfer: FunctionComponent<
             {availableBalance && (
               <div className="text-xs text-white-high caption">
                 Available on {from.networkName}:{" "}
-                <span
-                  className="text-primary-50 cursor-pointer"
+                <button
+                  className="text-primary-50 cursor-pointer disabled:cursor-default"
+                  disabled={availableBalance.toDec().isZero()}
                   onClick={() => toggleIsMax()}
                 >
                   {availableBalance.trim(true).toString()}
-                </span>
+                </button>
               </div>
             )}
           </div>
