@@ -2,13 +2,11 @@ import { FunctionComponent, useState, useEffect } from "react";
 import classNames from "classnames";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-// import { useWindowSize } from "../../hooks";
 import { Disableable, InputProps, LoadingProps } from "../types";
 import { Button } from "../buttons";
 import { SwitchWalletButton } from "../buttons/switch-wallet";
 import { InputBox } from "../input";
 import { WalletDisplay } from "../../integrations/wallets";
-// import { CheckBox } from "../control";
 
 /** Standard display for prompting the bridging of arbitrary assets. */
 export const Transfer: FunctionComponent<
@@ -39,7 +37,7 @@ export const Transfer: FunctionComponent<
     Disableable
 > = ({
   isWithdraw,
-  transferPath: [from, bridge, to],
+  transferPath: [from, _bridge, to],
   selectedWalletDisplay,
   onRequestSwitchWallet,
   availableBalance,
@@ -50,8 +48,6 @@ export const Transfer: FunctionComponent<
   transferFee,
   waitTime,
 }) => {
-  // const { isMobile } = useWindowSize();
-
   const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
   const [_didVerifyWithdrawRisk, setDidVerifyWithdrawRisk] = useState(false);
 
