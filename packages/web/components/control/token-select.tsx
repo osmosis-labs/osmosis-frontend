@@ -188,7 +188,7 @@ export const TokenSelect: FunctionComponent<
         ) : (
           isSelectOpen && (
             <div
-              className="absolute bottom-0 md:-left-3 -left-4 translate-y-full md:p-1 p-3.5 bg-surface rounded-b-2xl z-50 w-[24.5rem] sm:w-[calc(100vw-24px)] md:max-w-[454px]"
+              className="absolute -bottom-1.5 md:-left-3 -left-4 translate-y-full md:p-1 p-3.5 bg-surface rounded-b-2xl z-50 w-[24.5rem] sm:w-[calc(100vw-50px)] md:max-w-[400px]"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center h-9 pl-4 mb-3 rounded-2xl bg-card">
