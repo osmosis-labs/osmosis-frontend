@@ -8,7 +8,6 @@ import { Button } from "../buttons";
 import { SwitchWalletButton } from "../buttons/switch-wallet";
 import { InputBox } from "../input";
 import { WalletDisplay } from "../../integrations/wallets";
-import { BridgeVisualization } from "../assets/bridge-visual";
 // import { CheckBox } from "../control";
 
 /** Standard display for prompting the bridging of arbitrary assets. */
@@ -68,7 +67,6 @@ export const Transfer: FunctionComponent<
 
   return (
     <div className="flex flex-col gap-11">
-      <BridgeVisualization transferPath={[from, bridge, to]} />
       <div className="flex gap-4 body1 text-iconDefault">
         <div
           className={classNames(
