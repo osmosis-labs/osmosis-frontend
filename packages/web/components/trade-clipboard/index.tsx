@@ -440,7 +440,8 @@ export const TradeClipboard: FunctionComponent<{
             "absolute flex items-center left-[45%] top-[116px] transition-all duration-500 ease-bounce z-30",
             {
               "w-10 md:w-8 h-10 md:h-8": !isHoveringSwitchButton,
-              "w-11 md:w-9 h-11 md:h-9": isHoveringSwitchButton,
+              "w-11 md:w-9 h-11 md:h-9 -translate-x-[2px]":
+                isHoveringSwitchButton,
             }
           )}
           onMouseEnter={() => setHoveringSwitchButton(true)}
