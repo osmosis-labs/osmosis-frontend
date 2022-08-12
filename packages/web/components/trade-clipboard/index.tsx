@@ -520,12 +520,21 @@ export const TradeClipboard: FunctionComponent<{
           style={
             isAnimatingSwitch
               ? {
-                  transform: "translateY(-62px) scaleY(1.2)",
+                  transform: "translateY(-62px) scaleY(1.4)",
                 }
               : undefined
           }
         >
-          <div className="flex items-center place-content-between">
+          <div
+            className="flex items-center place-content-between transition-transform duration-300"
+            style={
+              isAnimatingSwitch
+                ? {
+                    transform: "scaleY(0.6)",
+                  }
+                : undefined
+            }
+          >
             {tradeTokenInConfig && (
               <TokenSelect
                 dropdownOpen={showToTokenSelectDropdown}
