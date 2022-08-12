@@ -192,10 +192,10 @@ export const TradeClipboard: FunctionComponent<{
         containerClassName
       )}
     >
-      <div className="relative flex items-center justify-end w-full h-10 md:h-9">
+      <div className="relative flex items-center justify-end w-full">
         <h6 className="w-full text-center">Swap</h6>
         <button
-          className="absolute right-3 top-1 h-10 md:h-9"
+          className="absolute right-3 top-0"
           onClick={(e) => {
             e.stopPropagation();
             setIsSettingOpen(!isSettingOpen);

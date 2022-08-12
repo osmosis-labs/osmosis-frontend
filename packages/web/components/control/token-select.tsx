@@ -139,7 +139,7 @@ export const TokenSelect: FunctionComponent<
             }}
           >
             {selectedCurrency.coinImageUrl && (
-              <div className="w-[50px] h-[50px] md:h-7 md:w-7 rounded-full overflow-hidden shrink-0 mx-1">
+              <div className="w-[50px] h-[50px] md:h-7 md:w-7 rounded-full overflow-hidden shrink-0 mr-1">
                 <Image
                   src={selectedCurrency.coinImageUrl}
                   alt="token icon"
