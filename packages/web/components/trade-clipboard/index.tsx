@@ -520,7 +520,7 @@ export const TradeClipboard: FunctionComponent<{
           style={
             isAnimatingSwitch
               ? {
-                  transform: "translateY(-62px) scaleY(1.4)",
+                  transform: "translateY(-53px) scaleY(1.4)",
                 }
               : undefined
           }
