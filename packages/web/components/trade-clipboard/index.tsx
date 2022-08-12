@@ -162,17 +162,23 @@ export const TradeClipboard: FunctionComponent<{
 
   // to & from box switch animation
   const [isAnimatingSwitch, setIsAnimatingSwitch] = useState(false);
+  const [switchOutBack, setSwitchOutBack] = useState(false);
   useEffect(() => {
     let timeout: NodeJS.Timeout | undefined;
     let timeout2: NodeJS.Timeout | undefined;
     const duration = 300;
 
     if (isAnimatingSwitch) {
-      timeout = setTimeout(() => setIsAnimatingSwitch(false), duration);
+      timeout = setTimeout(() => {
+        setIsAnimatingSwitch(false);
+        setSwitchOutBack(false);
+      }, duration);
       timeout2 = setTimeout(() => {
         tradeTokenInConfig.switchInAndOut();
+        setSwitchOutBack(true);
       }, duration / 3);
     }
+
     return () => {
       if (timeout) clearTimeout(timeout);
       if (timeout2) clearTimeout(timeout2);
@@ -285,7 +291,13 @@ export const TradeClipboard: FunctionComponent<{
 
       <div className="relative flex flex-col gap-3">
         <div
-          className="bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all ease-inOutBack duration-300"
+          className={classNames(
+            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all duration-300",
+            !switchOutBack ? "ease-outBack" : "ease-inBack",
+            {
+              "opacity-30": isAnimatingSwitch,
+            }
+          )}
           style={
             isAnimatingSwitch
               ? {
@@ -498,11 +510,17 @@ export const TradeClipboard: FunctionComponent<{
         </button>
 
         <div
-          className="bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all ease-inOutBack duration-300"
+          className={classNames(
+            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all duration-300",
+            !switchOutBack ? "ease-outBack" : "ease-inBack",
+            {
+              "opacity-30": isAnimatingSwitch,
+            }
+          )}
           style={
             isAnimatingSwitch
               ? {
-                  transform: "translateY(-62px)",
+                  transform: "translateY(-62px) scaleY(1.2)",
                 }
               : undefined
           }
@@ -592,7 +610,7 @@ export const TradeClipboard: FunctionComponent<{
         {tradeTokenInConfig && (
           <div
             className={classNames(
-              "rounded-lg bg-card px-4 md:px-3",
+              "rounded-lg bg-card px-4 md:px-3 transition-all ease-inOutBack",
               showEstimateDetails ? "py-6" : "py-[10px]"
             )}
           >
