@@ -306,7 +306,14 @@ export const TradeClipboard: FunctionComponent<{
               : undefined
           }
         >
-          <div className="flex items-center place-content-between">
+          <div
+            className={classNames(
+              "flex items-center place-content-between transition-opacity duration-300",
+              {
+                "opacity-0": isAnimatingSwitch,
+              }
+            )}
+          >
             <div className="flex">
               <span className="caption text-sm md:text-xs text-white-full">
                 Available
