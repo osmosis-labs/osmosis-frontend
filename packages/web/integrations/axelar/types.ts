@@ -11,6 +11,11 @@ export interface AxelarBridgeConfig {
    *  See: https://docs.axelar.dev/resources/mainnet#assets
    */
   tokenMinDenom: string;
+
+  /** Amount of Axelar transfer fee in `originCurrency`.
+   *  TODO: use `useTransferFeeQuery` should fees become dynamic and once APIs become production ready.
+   */
+  transferFeeMinAmount: string;
 }
 
 /** See: https://docs.axelar.dev/dev/build/chain-names/mainnet */
@@ -48,7 +53,7 @@ export type SourceChainConfig = {
    */
   erc20ContractAddress?: string;
 
-  /** For IBC transfer from CosmosCounterparty->Axelar */
+  /** For IBC transfer from CosmosCounterparty<->via Axelar<->Osmosis */
   ibcConfig?: {
     /** on cosmos counterparty */
     sourceChannelId: string;

@@ -43,6 +43,7 @@ export const IBCAssetInfos: (IBCAsset & {
         AxelarSourceChainConfigs.usdc.moonbeam,
       ],
       tokenMinDenom: "uusdc",
+      transferFeeMinAmount: "20500000", // From https://axelar-lcd.quickapi.com/axelar/nexus/v1beta1/transfer_fee?source_chain=ethereum&destination_chain=osmosis&amount=123uusdc
     },
   },
   {

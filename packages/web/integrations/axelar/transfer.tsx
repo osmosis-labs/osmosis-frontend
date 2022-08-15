@@ -1,5 +1,5 @@
 import { FunctionComponent, useState, useEffect } from "react";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { useFakeFeeConfig, useAmountConfig } from "../../hooks";
@@ -10,7 +10,7 @@ import { Button } from "../../components/buttons";
 import { displayToast, ToastType } from "../../components/alert";
 import { ObservableErc20Queries } from "../ethereum/queries";
 import { EthClient, transfer as erc20Transfer } from "../ethereum";
-import { useDepositAddress, useTransferFeeQuery } from "./hooks";
+import { useDepositAddress } from "./hooks";
 import {
   AxelarBridgeConfig,
   SourceChain,
@@ -37,6 +37,7 @@ const AxelarTransfer: FunctionComponent<
     onRequestClose,
     onRequestSwitchWallet,
     tokenMinDenom,
+    transferFeeMinAmount,
     sourceChains,
   }) => {
     const { chainStore, accountStore, queriesStore } = useStore();
@@ -117,9 +118,7 @@ const AxelarTransfer: FunctionComponent<
     const sourceChain = isWithdraw ? "osmosis" : selectedSourceChainKey;
     const destChain = isWithdraw ? selectedSourceChainKey : "osmosis";
     const address = isWithdraw ? client.accountAddress : bech32Address;
-    const currency = isWithdraw
-      ? balanceOnOsmosis.balance.currency
-      : originCurrency;
+
     /** Amount, with decimals. e.g. 1.2 USDC */
     const amount = isWithdraw ? withdrawAmountConfig.amount : depositAmount;
 
@@ -136,18 +135,11 @@ const AxelarTransfer: FunctionComponent<
       tokenMinDenom,
       true
     );
-    const { transferFee } = useTransferFeeQuery(
-      sourceChain,
-      destChain,
-      tokenMinDenom,
-      amount,
-      currency
-    );
 
     const isFormLoading = depositAddress === undefined;
-    const wrongWalletConnected = client.chainId !== selectedSourceChainKey;
-    const userCanInteract = !isFormLoading && !wrongWalletConnected;
-    const buttonErrorMessage = wrongWalletConnected
+    const wrontChainSelected = client.chainId !== selectedSourceChainKey;
+    const userCanInteract = !isFormLoading && !wrontChainSelected;
+    const buttonErrorMessage = wrontChainSelected
       ? `Wrong network in ${client.displayInfo.displayName}`
       : undefined;
 
@@ -184,7 +176,9 @@ const AxelarTransfer: FunctionComponent<
               }
             }
           }}
-          transferFee={transferFee}
+          transferFee={
+            new CoinPretty(originCurrency, new Dec(transferFeeMinAmount))
+          }
           waitTime={waitBySourceChain(selectedSourceChainKey)}
           disabled={!userCanInteract}
         />
