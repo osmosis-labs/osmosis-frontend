@@ -623,300 +623,294 @@ export const TradeClipboard: FunctionComponent<{
           </div>
         </div>
 
-        {tradeTokenInConfig && (
-          <div
+        <div
+          className={classNames(
+            "relative rounded-lg bg-card px-4 md:px-3 transition-all ease-inOutBack duration-500 overflow-clip",
+            showEstimateDetails ? "h-56 py-6" : "h-11 py-[10px]"
+          )}
+        >
+          <button
             className={classNames(
-              "rounded-lg bg-card px-4 md:px-3 transition-all ease-inOutBack",
-              showEstimateDetails ? "py-6" : "py-[10px]"
+              "w-full flex items-center place-content-between",
+              {
+                "cursor-pointer": isEstimateDetailRelevant,
+              }
             )}
+            onClick={() => {
+              if (isEstimateDetailRelevant)
+                setShowEstimateDetails(!showEstimateDetails);
+            }}
           >
-            <button
-              className={classNames(
-                "w-full flex items-center place-content-between",
-                {
-                  "cursor-pointer": isEstimateDetailRelevant,
-                }
-              )}
-              onClick={() => {
-                if (isEstimateDetailRelevant)
-                  setShowEstimateDetails(!showEstimateDetails);
-              }}
-            >
-              <div
-                className={classNames("subtitle2 transition-all", {
-                  "text-white-disabled": !isEstimateDetailRelevant,
-                })}
-              >
-                {`1 ${
-                  tradeTokenInConfig.sendCurrency.coinDenom !== "UNKNOWN"
-                    ? tradeTokenInConfig.sendCurrency.coinDenom
-                    : ""
-                } ≈ ${
-                  spotPrice.toDec().lt(new Dec(1))
-                    ? spotPrice.toString()
-                    : spotPrice.maxDecimals(6).toString()
-                } ${
-                  tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN"
-                    ? tradeTokenInConfig.outCurrency.coinDenom
-                    : ""
-                }`}
-              </div>
-              <div className="flex items-center gap-2">
-                <Image
-                  className={classNames(
-                    "transition-opacity",
-                    showPriceImpactWarning ? "opacity-100" : "opacity-0"
-                  )}
-                  alt="alert circle"
-                  src="/icons/alert-circle.svg"
-                  height={24}
-                  width={24}
-                />
-                <Image
-                  className={`group-hover:opacity-100 transition-all ${
-                    showEstimateDetails ? "rotate-180" : "rotate-0"
-                  } ${isEstimateDetailRelevant ? "opacity-40" : "opacity-0"}`}
-                  alt="show estimates"
-                  src="/icons/chevron-down.svg"
-                  height={isMobile ? 14 : 18}
-                  width={isMobile ? 14 : 18}
-                />
-              </div>
-            </button>
             <div
-              className={classNames("flex flex-col gap-4 pt-5", {
-                hidden: !showEstimateDetails,
+              className={classNames("subtitle2 transition-all", {
+                "text-white-disabled": !isEstimateDetailRelevant,
               })}
             >
+              {`1 ${
+                tradeTokenInConfig.sendCurrency.coinDenom !== "UNKNOWN"
+                  ? tradeTokenInConfig.sendCurrency.coinDenom
+                  : ""
+              } ≈ ${
+                spotPrice.toDec().lt(new Dec(1))
+                  ? spotPrice.toString()
+                  : spotPrice.maxDecimals(6).toString()
+              } ${
+                tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN"
+                  ? tradeTokenInConfig.outCurrency.coinDenom
+                  : ""
+              }`}
+            </div>
+            <div className="flex items-center gap-2">
+              <Image
+                className={classNames(
+                  "transition-opacity",
+                  showPriceImpactWarning ? "opacity-100" : "opacity-0"
+                )}
+                alt="alert circle"
+                src="/icons/alert-circle.svg"
+                height={24}
+                width={24}
+              />
+              <Image
+                className={`group-hover:opacity-100 transition-all ${
+                  showEstimateDetails ? "rotate-180" : "rotate-0"
+                } ${isEstimateDetailRelevant ? "opacity-40" : "opacity-0"}`}
+                alt="show estimates"
+                src="/icons/chevron-down.svg"
+                height={isMobile ? 14 : 18}
+                width={isMobile ? 14 : 18}
+              />
+            </div>
+          </button>
+          <div
+            className={classNames(
+              "absolute w-[358px] md:w-[380px] flex flex-col gap-4 pt-5 transition-opacity duration-300",
+              showEstimateDetails ? "opacity-100" : "opacity-0"
+            )}
+          >
+            <div
+              className={classNames("flex justify-between", {
+                "text-error": showPriceImpactWarning,
+              })}
+            >
+              <div className="caption">Price Impact</div>
               <div
-                className={classNames("flex justify-between", {
-                  "text-error": showPriceImpactWarning,
-                })}
+                className={classNames(
+                  "caption",
+                  showPriceImpactWarning
+                    ? "text-error"
+                    : "text-wireframes-lightGrey"
+                )}
               >
-                <div className="caption">Price Impact</div>
-                <div
-                  className={classNames(
-                    "caption",
-                    showPriceImpactWarning
-                      ? "text-error"
-                      : "text-wireframes-lightGrey"
-                  )}
-                >
-                  {`-${tradeTokenInConfig.expectedSwapResult.priceImpact.toString()}`}
-                </div>
+                {`-${tradeTokenInConfig.expectedSwapResult.priceImpact.toString()}`}
               </div>
-              <div className="flex justify-between">
-                <div className="caption">
-                  Swap Fee (
-                  {tradeTokenInConfig.expectedSwapResult.swapFee.toString()})
-                </div>
-                <div className="caption text-wireframes-lightGrey">
+            </div>
+            <div className="flex justify-between">
+              <div className="caption">
+                Swap Fee (
+                {tradeTokenInConfig.expectedSwapResult.swapFee.toString()})
+              </div>
+              <div className="caption text-wireframes-lightGrey">
+                {`≈ ${
+                  priceStore.calculatePrice(
+                    tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
+                  ) ?? "0"
+                } `}
+              </div>
+            </div>
+            <hr className="text-white-faint" />
+            <div className="flex justify-between">
+              <div className="caption">Expected Output</div>
+              <div className="caption text-wireframes-lightGrey">
+                {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
+              </div>
+            </div>
+            <div className="flex justify-between">
+              <div className="caption text-white-high">
+                Minimum received after slippage{" "}
+                {`(${slippageConfig.slippage.trim(true).toString()})`}
+              </div>
+              <div
+                className={classNames(
+                  "caption flex flex-col text-right gap-0.5 text-wireframes-lightGrey",
+                  {
+                    "text-white-high": !showPriceImpactWarning,
+                  }
+                )}
+              >
+                <span>
+                  {new CoinPretty(
+                    tradeTokenInConfig.outCurrency,
+                    minOutAmountLessSlippage.mul(
+                      DecUtils.getTenExponentNInPrecisionRange(
+                        tradeTokenInConfig.outCurrency.coinDecimals
+                      )
+                    )
+                  ).toString()}
+                </span>
+                <span>
                   {`≈ ${
                     priceStore.calculatePrice(
-                      tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
-                    ) ?? "0"
-                  } `}
-                </div>
-              </div>
-              <hr className="text-white-faint" />
-              <div className="flex justify-between">
-                <div className="caption">Expected Output</div>
-                <div className="caption text-wireframes-lightGrey">
-                  {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
-                </div>
-              </div>
-              <div className="flex justify-between">
-                <div className="caption text-white-high">
-                  Minimum received after slippage{" "}
-                  {`(${slippageConfig.slippage.trim(true).toString()})`}
-                </div>
-                <div
-                  className={classNames(
-                    "caption flex flex-col text-right gap-0.5 text-wireframes-lightGrey",
-                    {
-                      "text-white-high": !showPriceImpactWarning,
-                    }
-                  )}
-                >
-                  <span>
-                    {new CoinPretty(
-                      tradeTokenInConfig.outCurrency,
-                      minOutAmountLessSlippage.mul(
-                        DecUtils.getTenExponentNInPrecisionRange(
-                          tradeTokenInConfig.outCurrency.coinDecimals
-                        )
-                      )
-                    ).toString()}
-                  </span>
-                  <span>
-                    {`≈ ${
-                      priceStore.calculatePrice(
-                        new CoinPretty(
-                          tradeTokenInConfig.outCurrency,
-                          minOutAmountLessSlippage.mul(
-                            DecUtils.getTenExponentNInPrecisionRange(
-                              tradeTokenInConfig.outCurrency.coinDecimals
-                            )
+                      new CoinPretty(
+                        tradeTokenInConfig.outCurrency,
+                        minOutAmountLessSlippage.mul(
+                          DecUtils.getTenExponentNInPrecisionRange(
+                            tradeTokenInConfig.outCurrency.coinDecimals
                           )
                         )
-                      ) || "0"
-                    }`}
-                  </span>
-                </div>
+                      )
+                    ) || "0"
+                  }`}
+                </span>
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
-      {tradeTokenInConfig && (
-        <Button
-          color={
-            showPriceImpactWarning &&
-            account.walletStatus === WalletStatus.Loaded
-              ? "error"
-              : "primary"
+      <Button
+        color={
+          showPriceImpactWarning && account.walletStatus === WalletStatus.Loaded
+            ? "error"
+            : "primary"
+        }
+        className="flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
+        disabled={
+          account.walletStatus === WalletStatus.Loaded &&
+          (tradeTokenInConfig.error !== undefined ||
+            tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
+            account.txTypeInProgress !== "")
+        }
+        loading={account.txTypeInProgress !== ""}
+        onClick={async () => {
+          if (account.walletStatus !== WalletStatus.Loaded) {
+            return account.init();
           }
-          className="flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
-          disabled={
-            account.walletStatus === WalletStatus.Loaded &&
-            (tradeTokenInConfig.error !== undefined ||
-              tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
-              account.txTypeInProgress !== "")
-          }
-          loading={account.txTypeInProgress !== ""}
-          onClick={async () => {
-            if (account.walletStatus !== WalletStatus.Loaded) {
-              return account.init();
-            }
 
-            if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
-              const routes: {
-                poolId: string;
-                tokenOutCurrency: Currency;
-              }[] = [];
+          if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
+            const routes: {
+              poolId: string;
+              tokenOutCurrency: Currency;
+            }[] = [];
 
-              for (
-                let i = 0;
-                i < tradeTokenInConfig.optimizedRoutePaths[0].pools.length;
-                i++
-              ) {
-                const pool = tradeTokenInConfig.optimizedRoutePaths[0].pools[i];
-                const tokenOutCurrency =
-                  chainStore.osmosisObservable.currencies.find(
-                    (cur) =>
-                      cur.coinMinimalDenom ===
-                      tradeTokenInConfig.optimizedRoutePaths[0].tokenOutDenoms[
-                        i
-                      ]
-                  );
-
-                if (!tokenOutCurrency) {
-                  tradeTokenInConfig.setError(
-                    new Error(
-                      `Failed to find currency ${tradeTokenInConfig.optimizedRoutePaths[0].tokenOutDenoms[i]}`
-                    )
-                  );
-                  return;
-                }
-
-                routes.push({
-                  poolId: pool.id,
-                  tokenOutCurrency,
-                });
-              }
-
-              const tokenInCurrency =
+            for (
+              let i = 0;
+              i < tradeTokenInConfig.optimizedRoutePaths[0].pools.length;
+              i++
+            ) {
+              const pool = tradeTokenInConfig.optimizedRoutePaths[0].pools[i];
+              const tokenOutCurrency =
                 chainStore.osmosisObservable.currencies.find(
                   (cur) =>
                     cur.coinMinimalDenom ===
-                    tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom
+                    tradeTokenInConfig.optimizedRoutePaths[0].tokenOutDenoms[i]
                 );
 
-              if (!tokenInCurrency) {
+              if (!tokenOutCurrency) {
                 tradeTokenInConfig.setError(
                   new Error(
-                    `Failed to find currency ${tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom}`
+                    `Failed to find currency ${tradeTokenInConfig.optimizedRoutePaths[0].tokenOutDenoms[i]}`
                   )
                 );
                 return;
               }
 
-              const tokenIn = {
-                currency: tokenInCurrency,
-                amount: tradeTokenInConfig.amount,
-              };
-              const maxSlippage = slippageConfig.slippage.symbol("").toString();
-
-              try {
-                if (routes.length === 1) {
-                  await account.osmosis.sendSwapExactAmountInMsg(
-                    routes[0].poolId,
-                    tokenIn,
-                    routes[0].tokenOutCurrency,
-                    maxSlippage,
-                    "",
-                    {
-                      amount: [
-                        {
-                          denom:
-                            chainStore.osmosis.stakeCurrency.coinMinimalDenom,
-                          amount: "0",
-                        },
-                      ],
-                    },
-                    {
-                      preferNoSetFee: preferZeroFee,
-                    }
-                  );
-                } else {
-                  await account.osmosis.sendMultihopSwapExactAmountInMsg(
-                    routes,
-                    tokenIn,
-                    maxSlippage,
-                    "",
-                    {
-                      amount: [
-                        {
-                          denom:
-                            chainStore.osmosis.stakeCurrency.coinMinimalDenom,
-                          amount: "0",
-                        },
-                      ],
-                    },
-                    {
-                      preferNoSetFee: preferZeroFee,
-                    }
-                  );
-                }
-                tradeTokenInConfig.setAmount("");
-                tradeTokenInConfig.setFraction(undefined);
-              } catch (e) {
-                console.error(e);
-              }
+              routes.push({
+                poolId: pool.id,
+                tokenOutCurrency,
+              });
             }
-          }}
-        >
-          {account.walletStatus === WalletStatus.Loaded ? (
-            tradeTokenInConfig.error ? (
-              tradeTokenInConfig.error.message
-            ) : showPriceImpactWarning ? (
-              "Swap Anyway"
-            ) : (
-              "Swap"
-            )
+
+            const tokenInCurrency =
+              chainStore.osmosisObservable.currencies.find(
+                (cur) =>
+                  cur.coinMinimalDenom ===
+                  tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom
+              );
+
+            if (!tokenInCurrency) {
+              tradeTokenInConfig.setError(
+                new Error(
+                  `Failed to find currency ${tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom}`
+                )
+              );
+              return;
+            }
+
+            const tokenIn = {
+              currency: tokenInCurrency,
+              amount: tradeTokenInConfig.amount,
+            };
+            const maxSlippage = slippageConfig.slippage.symbol("").toString();
+
+            try {
+              if (routes.length === 1) {
+                await account.osmosis.sendSwapExactAmountInMsg(
+                  routes[0].poolId,
+                  tokenIn,
+                  routes[0].tokenOutCurrency,
+                  maxSlippage,
+                  "",
+                  {
+                    amount: [
+                      {
+                        denom:
+                          chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+                        amount: "0",
+                      },
+                    ],
+                  },
+                  {
+                    preferNoSetFee: preferZeroFee,
+                  }
+                );
+              } else {
+                await account.osmosis.sendMultihopSwapExactAmountInMsg(
+                  routes,
+                  tokenIn,
+                  maxSlippage,
+                  "",
+                  {
+                    amount: [
+                      {
+                        denom:
+                          chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+                        amount: "0",
+                      },
+                    ],
+                  },
+                  {
+                    preferNoSetFee: preferZeroFee,
+                  }
+                );
+              }
+              tradeTokenInConfig.setAmount("");
+              tradeTokenInConfig.setFraction(undefined);
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        }}
+      >
+        {account.walletStatus === WalletStatus.Loaded ? (
+          tradeTokenInConfig.error ? (
+            tradeTokenInConfig.error.message
+          ) : showPriceImpactWarning ? (
+            "Swap Anyway"
           ) : (
-            <div className="flex items-center gap-1">
-              <Image
-                alt="wallet"
-                src="/icons/wallet.svg"
-                height={24}
-                width={24}
-              />
-              <span>Connect Wallet</span>
-            </div>
-          )}
-        </Button>
-      )}
+            "Swap"
+          )
+        ) : (
+          <div className="flex items-center gap-1">
+            <Image
+              alt="wallet"
+              src="/icons/wallet.svg"
+              height={24}
+              width={24}
+            />
+            <span>Connect Wallet</span>
+          </div>
+        )}
+      </Button>
     </div>
   );
 });
