@@ -409,7 +409,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     poolId: "787",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-258" }],
-      "mgeo"
+      "mGeo"
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "osmosis",
