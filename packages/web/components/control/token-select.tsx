@@ -149,7 +149,7 @@ export const TokenSelect: FunctionComponent<
               </div>
             )}
             <div className="relative flex flex-col">
-              <div className="absolute -bottom-2.5 flex items-center">
+              <div className="absolute -bottom-2.5 md:-bottom-2 flex items-center">
                 {isMobile ? <h6>{selectedDenom}</h6> : <h5>{selectedDenom}</h5>}
                 {canSelectTokens && (
                   <div className="w-5 ml-3 md:ml-2">
@@ -165,7 +165,7 @@ export const TokenSelect: FunctionComponent<
                   </div>
                 )}
               </div>
-              <div className="absolute top-1 w-24 subtitle2 md:caption text-iconDefault">
+              <div className="absolute top-1 md:top-1.5 w-24 subtitle2 md:caption text-iconDefault">
                 {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
                   ?.chainName ?? ""}
               </div>
