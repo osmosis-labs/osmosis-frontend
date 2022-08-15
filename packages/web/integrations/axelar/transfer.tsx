@@ -144,10 +144,12 @@ const AxelarTransfer: FunctionComponent<
       currency
     );
 
-    // TODO: add network check & error states (client must match prop)
-
     const isFormLoading = depositAddress === undefined;
-    const userCanInteract = !isFormLoading;
+    const wrongWalletConnected = client.chainId !== selectedSourceChainKey;
+    const userCanInteract = !isFormLoading && !wrongWalletConnected;
+    const buttonErrorMessage = wrongWalletConnected
+      ? `Wrong network in ${client.displayInfo.displayName}`
+      : undefined;
 
     return (
       <>
@@ -286,7 +288,11 @@ const AxelarTransfer: FunctionComponent<
             }}
           >
             <h6 className="md:text-base text-lg">
-              {isWithdraw ? "Withdraw" : "Deposit"}
+              {buttonErrorMessage
+                ? buttonErrorMessage
+                : isWithdraw
+                ? "Withdraw"
+                : "Deposit"}
             </h6>
           </Button>
         </div>
