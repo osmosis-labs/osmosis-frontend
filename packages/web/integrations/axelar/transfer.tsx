@@ -112,7 +112,7 @@ const AxelarTransfer: FunctionComponent<
     const counterpartyPath = {
       address: client.accountAddress || "",
       networkName: selectedSourceChainKey,
-      iconUrl: balanceOnOsmosis.balance.currency.originCurrency?.coinImageUrl,
+      iconUrl: originCurrency.coinImageUrl,
     };
 
     const sourceChain = isWithdraw ? "osmosis" : selectedSourceChainKey;
