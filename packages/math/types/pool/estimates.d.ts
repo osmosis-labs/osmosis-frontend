@@ -50,7 +50,7 @@ export declare function estimateSwapExactAmountIn(pool: {
     tokenOut: CoinPretty;
     spotPriceBefore: IntPretty;
     spotPriceAfter: IntPretty;
-    slippage: IntPretty;
+    priceImpact: IntPretty;
     raw: ReturnType<typeof estimateSwapExactAmountIn_Raw>;
 };
 export declare function estimateSwapExactAmountOut(pool: {
@@ -69,7 +69,7 @@ export declare function estimateSwapExactAmountOut(pool: {
     tokenIn: CoinPretty;
     spotPriceBefore: IntPretty;
     spotPriceAfter: IntPretty;
-    slippage: IntPretty;
+    priceImpact: IntPretty;
     raw: ReturnType<typeof estimateSwapExactAmountOut_Raw>;
 };
 export declare function estimateMultihopSwapExactAmountIn(tokenIn: {
@@ -95,7 +95,7 @@ export declare function estimateMultihopSwapExactAmountIn(tokenIn: {
     spotPriceBeforeRaw: Dec;
     spotPriceBefore: IntPretty;
     spotPriceAfter: IntPretty;
-    slippage: IntPretty;
+    priceImpact: IntPretty;
 };
 declare function estimateSwapExactAmountIn_Raw(inPoolAsset: {
     amount: Int;
@@ -107,7 +107,7 @@ declare function estimateSwapExactAmountIn_Raw(inPoolAsset: {
     tokenOutAmount: Int;
     spotPriceBefore: Dec;
     spotPriceAfter: Dec;
-    slippage: Dec;
+    priceImpact: Dec;
 };
 declare function estimateSwapExactAmountOut_Raw(inPoolAsset: {
     amount: Int;
@@ -119,6 +119,6 @@ declare function estimateSwapExactAmountOut_Raw(inPoolAsset: {
     tokenInAmount: Int;
     spotPriceBefore: Dec;
     spotPriceAfter: Dec;
-    slippage: Dec;
+    priceImpact: Dec;
 };
 export {};

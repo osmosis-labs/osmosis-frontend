@@ -30,6 +30,6 @@ export declare class OptimizedRoutes {
         effectivePriceOutOverIn: Dec;
         tokenInFeeAmount: Int;
         swapFee: Dec;
-        slippage: Dec;
+        priceImpact: Dec;
     };
 }
