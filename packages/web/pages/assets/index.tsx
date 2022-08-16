@@ -6,6 +6,7 @@ import {
   ComponentProps,
   useCallback,
 } from "react";
+import { PricePretty } from "@keplr-wallet/unit";
 import { IBCCurrency } from "@keplr-wallet/types";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { useStore } from "../../stores/";
@@ -252,6 +253,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
         return [
           pool,
+          tvl.mul(actualShareRatio).moveDecimalPointRight(2),
           [
             queriesOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
@@ -303,13 +305,22 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                     .toString(),
                 },
           ],
-        ] as [ObservableQueryPool, Metric[]];
+        ] as [ObservableQueryPool, PricePretty, Metric[]];
       })
-      .filter((p): p is [ObservableQueryPool, Metric[]] => p !== undefined);
+      .filter(
+        (p): p is [ObservableQueryPool, PricePretty, Metric[]] =>
+          p !== undefined
+      )
+      .sort(([, aFiatValue], [, bFiatValue]) => {
+        // desc by fiat value
+        if (aFiatValue.toDec().gt(bFiatValue.toDec())) return -1;
+        if (aFiatValue.toDec().lt(bFiatValue.toDec())) return 1;
+        return 0;
+      });
 
     return (
       <>
-        {pools.map(([pool, metrics]) => (
+        {pools.map(([pool, _, metrics]) => (
           <PoolCard
             key={pool.id}
             poolId={pool.id}

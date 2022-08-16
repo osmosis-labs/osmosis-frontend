@@ -44,13 +44,20 @@ export const CompactPoolTableDisplay: FunctionComponent<{
       {searchBoxProps && (
         <SearchBox className="!rounded !w-full h-11" {...searchBoxProps} />
       )}
-      <div className="flex items-center place-content-between">
+      <div className="flex flex-col gap-4">
         {typeof title === "string" ? (
           <span className="subtitle2">{title}</span>
         ) : (
           <>{title}</>
         )}
-        {sortMenuProps && <SortMenu {...sortMenuProps} />}
+        <div
+          className={classNames("flex items-center place-content-between", {})}
+        >
+          {minTvlToggleProps && (
+            <Switch {...minTvlToggleProps}>{minTvlToggleProps.label}</Switch>
+          )}
+          {sortMenuProps && <SortMenu {...sortMenuProps} />}
+        </div>
       </div>
       <div className="flex flex-col gap-3">
         {pools.map(({ id, assets, metrics, isSuperfluid }) => (
@@ -72,17 +79,7 @@ export const CompactPoolTableDisplay: FunctionComponent<{
           />
         ))}
       </div>
-      <div
-        className={classNames("flex items-center flex-wrap gap-2 p-4", {
-          "place-content-between xs:justify-center ":
-            minTvlToggleProps !== undefined && pageListProps !== undefined,
-          "place-content-around":
-            minTvlToggleProps === undefined || pageListProps === undefined,
-        })}
-      >
-        {minTvlToggleProps && (
-          <Switch {...minTvlToggleProps}>{minTvlToggleProps.label}</Switch>
-        )}
+      <div className="flex items-center justify-center flex-wrap gap-2 py-4">
         {pageListProps && pageListProps.max > 1 && (
           <PageList {...pageListProps} editField={false} />
         )}

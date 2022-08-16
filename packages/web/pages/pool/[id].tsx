@@ -193,7 +193,7 @@ const Pool: FunctionComponent = observer(() => {
       )
       .flat();
     externalGuages = (ExternalIncentiveGaugeAllowList[pool.id] ?? [])
-      .map(({ gaugeId, denom }, _i, gauges) => {
+      .map(({ gaugeId, denom }) => {
         const observableGauge = queryOsmosis.queryGauge.get(gaugeId);
         const currency = chainStore
           .getChain(chainStore.osmosis.chainId)
@@ -203,26 +203,10 @@ const Pool: FunctionComponent = observer(() => {
           return;
         }
 
-        // first gauge is main gauge, and must be longest
-        const mainGauge =
-          gauges.length > 0
-            ? queryOsmosis.queryGauge.get(gauges[0].gaugeId)
-            : undefined;
-        if (
-          mainGauge &&
-          mainGauge.lockupDuration.asMilliseconds() >
-            observableGauge.lockupDuration.asMilliseconds()
-        ) {
-          return;
-        }
-
         return {
           duration: observableGauge.lockupDuration.humanize(),
           rewardAmount: currency
-            ? new CoinPretty(
-                currency,
-                observableGauge.getCoin(currency)
-              ).moveDecimalPointRight(currency.coinDecimals)
+            ? observableGauge.getRemainingCoin(currency)
             : undefined,
           remainingEpochs: observableGauge.remainingEpoch,
         };
@@ -236,6 +220,7 @@ const Pool: FunctionComponent = observer(() => {
           remainingEpochs: number;
         } => gauge !== undefined
       );
+
     const lockableDurations =
       queryOsmosis.queryLockableDurations.lockableDurations;
     guages = lockableDurations.map((duration) => {
@@ -536,11 +521,6 @@ const Pool: FunctionComponent = observer(() => {
       {pool && (
         <TradeTokens
           className="md:!p-0"
-          title={
-            <h5 className="md:absolute md:text-h6 md:font-h6 top-[1.375rem] left-3 z-40">
-              Swap Tokens
-            </h5>
-          }
           hideCloseButton={isMobile}
           isOpen={showTradeTokenModal}
           onRequestClose={() => setShowTradeTokenModal(false)}

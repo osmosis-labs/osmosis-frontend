@@ -33,7 +33,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
     const [_, isScrolledTop] = useWindowScroll();
     const [showSidebar, setShowSidebar] = useBooleanWithWindowEvent(false);
 
-    const smallVerticalScreen = height < 800;
+    const smallVerticalScreen = height < 850;
 
     const showFixedLogo = !smallVerticalScreen || (isMobile && !showSidebar);
 
@@ -56,7 +56,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
         >
           {showBlockLogo && (
             <div className="z-50 w-sidebar mx-auto">
-              <OsmosisFullLogo onClick={() => router.push("/")} />
+              <OsmosisFullLogo width={166} onClick={() => router.push("/")} />
             </div>
           )}
           <div className="h-full flex flex-col justify-between">
@@ -103,7 +103,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                           </div>
                           <p
                             className={classNames(
-                              "ml-2.5 text-base overflow-x-hidden font-bold transition-all max-w-24",
+                              "ml-2.5 text-base overflow-x-hidden font-semibold transition-all max-w-24",
                               selected
                                 ? "text-white-high"
                                 : "text-iconDefault group-hover:text-white-mid"
@@ -165,15 +165,17 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
   }
 );
 
-const OsmosisFullLogo: FunctionComponent<{ onClick?: () => void }> = ({
-  onClick,
-}) => (
+const OsmosisFullLogo: FunctionComponent<{
+  width?: number;
+  height?: number;
+  onClick?: () => void;
+}> = ({ width = 178, height = 48, onClick }) => (
   <Image
     className="hover:cursor-pointer"
     src={IS_FRONTIER ? "/osmosis-logo-frontier.svg" : "/osmosis-logo-main.svg"}
     alt="osmosis logo"
-    width={178}
-    height={48}
+    width={width}
+    height={height}
     onClick={(e) => {
       e.stopPropagation();
       onClick?.();

@@ -10,7 +10,7 @@ import {
 } from "@keplr-wallet/stores";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
-import { WeightedPoolEstimates } from "@osmosis-labs/math";
+import * as WeightedPoolEstimates from "@osmosis-labs/math";
 import { Pool } from "@osmosis-labs/pools";
 import { OsmosisQueries } from "../queries";
 import { osmosis } from "./msg/proto";
@@ -1229,6 +1229,12 @@ export class OsmosisAccountImpl {
     );
   }
 
+  /**
+   * https://docs.osmosis.zone/developing/osmosis-core/modules/spec-superfluid.html#superfluid-unbond-lock
+   * @param locks IDs and whether the lock is synthetic
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fullfillment.
+   */
   async sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
     locks: {
       lockId: string;

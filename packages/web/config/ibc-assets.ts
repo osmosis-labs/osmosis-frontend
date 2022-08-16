@@ -92,6 +92,18 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "dot-planck",
+    depositUrlOverride:
+      "https://satellite.money/?source=moonbeam&destination=osmosis&asset_denom=dot-planck",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=moonbeam&asset_denom=dot-planck",
+    sourceChainNameOverride: "Moonbeam",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "evmos_9001-2",
     sourceChannelId: "channel-204",
     destChannelId: "channel-0",
@@ -120,7 +132,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
     isUnstable: true,
-    isVerified: true,
   },
   {
     counterpartyChainId: "columbus-5",
@@ -128,7 +139,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uusd",
     isUnstable: true,
-    isVerified: true,
   },
   {
     counterpartyChainId: "stargaze-1",
@@ -399,6 +409,17 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "injective-1",
+    sourceChannelId: "channel-122",
+    destChannelId: "channel-8",
+    coinMinimalDenom: "inj",
+    depositUrlOverride:
+      "https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj",
+    withdrawUrlOverride:
+      "https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "columbus-5",
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
@@ -410,6 +431,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-39",
     destChannelId: "channel-16",
     coinMinimalDenom: "utick",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "shentu-2.2",
@@ -434,16 +456,6 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
-  },
-  {
-    counterpartyChainId: "injective-1",
-    sourceChannelId: "channel-122",
-    destChannelId: "channel-8",
-    coinMinimalDenom: "inj",
-    depositUrlOverride:
-      "https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj",
-    withdrawUrlOverride:
-      "https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -575,6 +587,8 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-251",
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
+    depositUrlOverride: "https://bridge.terra.money",
+    withdrawUrlOverride: "https://bridge.terra.money",
   },
   {
     counterpartyChainId: "titan-1",
@@ -604,6 +618,7 @@ export const IBCAssetInfos: (IBCAsset & {
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=link-wei",
     sourceChainNameOverride: "Ethereum",
+    isVerified: true,
   },
   {
     counterpartyChainId: "genesis_29-2",
@@ -654,6 +669,7 @@ export const IBCAssetInfos: (IBCAsset & {
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=mkr-wei",
     sourceChainNameOverride: "Ethereum",
+    isVerified: true,
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -681,17 +697,6 @@ export const IBCAssetInfos: (IBCAsset & {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
-    coinMinimalDenom: "steth-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=steth-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=steth-wei",
-    sourceChainNameOverride: "Ethereum",
-  },
-  {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
     coinMinimalDenom: "uni-wei",
     depositUrlOverride:
       "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uni-wei",
@@ -709,6 +714,96 @@ export const IBCAssetInfos: (IBCAsset & {
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=xcn-wei",
     sourceChainNameOverride: "Ethereum",
+  },
+  {
+    counterpartyChainId: "kaiyo-1",
+    sourceChannelId: "channel-259",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "ukuji",
+    isVerified: true,
+  },
+  {
+    counterpartyChainId: "tgrade-mainnet-1",
+    sourceChannelId: "channel-263",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "utgd",
+    isVerified: true,
+  },
+  {
+    counterpartyChainId: "echelon_3000-3",
+    sourceChannelId: "channel-262",
+    destChannelId: "channel-8",
+    coinMinimalDenom: "aechelon",
+    depositUrlOverride: "https://app.ech.network/ibc",
+    withdrawUrlOverride: "https://app.ech.network/ibc",
+  },
+  {
+    counterpartyChainId: "odin-mainnet-freya",
+    sourceChannelId: "channel-258",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "loki",
+  },
+  {
+    counterpartyChainId: "odin-mainnet-freya",
+    sourceChannelId: "channel-258",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "mGeo",
+  },
+  {
+    counterpartyChainId: "kichain-2",
+    sourceChannelId: "channel-261",
+    destChannelId: "channel-18",
+    coinMinimalDenom:
+      "cw20:ki1dt3lk455ed360pna38fkhqn0p8y44qndsr77qu73ghyaz2zv4whq83mwdy",
+    ics20ContractAddress:
+      "ki1hzz0s0ucrhdp6tue2lxk3c03nj6f60qy463we7lgx0wudd72ctmsd9kgha",
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "wglmr-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=moonbeam&destination=osmosis&asset_denom=wglmr-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=moonbeam&asset_denom=wglmr-wei",
+    sourceChainNameOverride: "Moonbeam",
+  },
+  {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1gz8cf86zr4vw9cjcyyv432vgdaecvr9n254d3uwwkx9rermekddsxzageh",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
+    counterpartyChainId: "crescent-1",
+    sourceChannelId: "channel-297",
+    destChannelId: "channel-9",
+    coinMinimalDenom: "ucre",
+  },
+  {
+    counterpartyChainId: "LumenX",
+    sourceChannelId: "channel-286",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "ulumen",
+  },
+  {
+    counterpartyChainId: "Oraichain",
+    sourceChannelId: "channel-216",
+    destChannelId: "channel-13",
+    coinMinimalDenom: "orai",
   },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 

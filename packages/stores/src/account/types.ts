@@ -40,7 +40,7 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
   },
   exitPool: {
     type: "osmosis/gamm/exit-pool",
-    gas: 140000,
+    gas: 280000,
     shareCoinDecimals: 18,
   },
   swapExactAmountIn: {

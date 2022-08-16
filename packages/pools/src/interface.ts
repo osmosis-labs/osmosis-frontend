@@ -1,5 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
+/** Interface for raw pool data and basic operations on that data. */
 export interface Pool {
   get id(): string;
 
@@ -48,7 +49,7 @@ export interface Pool {
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
     effectivePriceOutOverIn: Dec;
-    slippage: Dec;
+    priceImpact: Dec;
   };
   getTokenInByTokenOut(
     tokenOut: {
@@ -64,7 +65,7 @@ export interface Pool {
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
     effectivePriceOutOverIn: Dec;
-    slippage: Dec;
+    priceImpact: Dec;
   };
 
   getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;

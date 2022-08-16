@@ -8,7 +8,7 @@ import {
 } from "../../__tests__/test-env";
 import { Dec, Int, Coin, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
-import { WeightedPoolEstimates } from "@osmosis-labs/math";
+import { estimateSwapExactAmountOut } from "@osmosis-labs/math";
 import { ObservableQueryPool } from "src/queries";
 
 // https://docs.osmosis.zone/developing/osmosis-core/modules/spec-gamm.html#swap-exact-amount-out
@@ -226,7 +226,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
     );
 
     const doubleSlippage = new IntPretty(
-      estimated.slippage.toDec().mul(new Dec(2))
+      estimated.priceImpact.toDec().mul(new Dec(2))
     )
       .locale(false)
       .maxDecimals(4)
@@ -314,7 +314,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
       tokenOut
     );
 
-    expect(estimated.slippage.toDec().gt(new Dec(0))).toBeTruthy();
+    expect(estimated.priceImpact.toDec().gt(new Dec(0))).toBeTruthy();
 
     const tx = await new Promise<any>((resolve, reject) => {
       account.osmosis
@@ -322,7 +322,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
           queryPool!.id,
           tokenInCurrency,
           tokenOut,
-          estimated.slippage.maxDecimals(18).toString(),
+          estimated.priceImpact.maxDecimals(18).toString(),
           "",
           (tx) => {
             resolve(tx);
@@ -373,7 +373,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
     );
   });
 
-  test("should fail with more max slippage than calculated slippage", async () => {
+  test("should fail with more max price impact than calculated price impact", async () => {
     const account = accountStore.getAccount(chainId);
 
     const tokenInCurrency = {
@@ -396,11 +396,13 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
       tokenOut
     );
 
-    const added = new IntPretty(estimated.slippage.toDec().sub(new Dec("0.01")))
+    const added = new IntPretty(
+      estimated.priceImpact.toDec().sub(new Dec("0.01"))
+    )
       .locale(false)
       .maxDecimals(4);
 
-    expect(estimated.slippage.toDec().gt(new Dec(0))).toBeTruthy();
+    expect(estimated.priceImpact.toDec().gt(new Dec(0))).toBeTruthy();
     expect(added.toDec().gt(new Dec(0))).toBeTruthy();
 
     await expect(
@@ -432,7 +434,7 @@ async function estimateSwapExactOut(
   const outPoolAsset = queryPool!.getPoolAsset(
     tokenOut.currency.coinMinimalDenom
   );
-  return WeightedPoolEstimates.estimateSwapExactAmountOut(
+  return estimateSwapExactAmountOut(
     {
       inPoolAsset: {
         ...inPoolAsset.amount.currency,

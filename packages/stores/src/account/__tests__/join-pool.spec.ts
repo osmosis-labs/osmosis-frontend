@@ -7,7 +7,7 @@ import {
   RootStore,
   waitAccountLoaded,
 } from "../../__tests__/test-env";
-import { WeightedPoolEstimates } from "@osmosis-labs/math";
+import { estimateJoinSwap } from "@osmosis-labs/math";
 
 jest.setTimeout(100 * 1000);
 
@@ -79,7 +79,7 @@ describe("Join Pool Tx", () => {
 
     const queryPool = queriesOsmosis.queryGammPools.getPool(poolId!)!;
     await queryPool.waitFreshResponse();
-    const estimated = WeightedPoolEstimates.estimateJoinSwap(
+    const estimated = estimateJoinSwap(
       queryPool.pool,
       queryPool.pool.poolAssets,
       (coin) =>
@@ -161,7 +161,7 @@ describe("Join Pool Tx", () => {
       .get(chainId)
       .osmosis!.queryGammPools.getPool(poolId!)!;
     await queryPool.waitFreshResponse();
-    const estimated = WeightedPoolEstimates.estimateJoinSwap(
+    const estimated = estimateJoinSwap(
       queryPool.pool,
       queryPool.pool.poolAssets,
       (coin) =>

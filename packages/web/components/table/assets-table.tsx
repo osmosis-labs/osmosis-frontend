@@ -18,7 +18,7 @@ import {
 } from "./cells";
 import { useStore } from "../../stores";
 import { useSortedData, useFilteredData } from "../../hooks/data";
-import { useWindowSize } from "../../hooks/window";
+import { useLocalStorageState, useWindowSize } from "../../hooks/window";
 import { ShowMoreButton } from "../buttons/show-more";
 import { AssetCard } from "../cards";
 import { Switch } from "../control";
@@ -177,7 +177,11 @@ export const AssetsTable: FunctionComponent<Props> = ({
 
   // User toggles for showing 10+ pools and assets with > 0 fiat value
   const [showAllAssets, setShowAllAssets] = useState(false);
-  const [hideZeroBalances, setHideZeroBalances] = useState(false);
+  const [hideZeroBalances, setHideZeroBalances] = useLocalStorageState(
+    "assets_hide_zero_balances",
+    false
+  );
+  const canHideZeroBalances = cells.some((cell) => cell.amount !== "0");
 
   // Filter data based on user's input in the search box.
   const [query, setQuery, filteredSortedCells] = useFilteredData(
@@ -274,8 +278,8 @@ export const AssetsTable: FunctionComponent<Props> = ({
             <h6>Assets</h6>
             <div className="flex gap-3 items-center place-content-between">
               <Switch
-                className="overline"
                 isOn={hideZeroBalances}
+                disabled={!canHideZeroBalances}
                 onToggle={() => setHideZeroBalances(!hideZeroBalances)}
               >
                 Hide zero balances
@@ -303,44 +307,46 @@ export const AssetsTable: FunctionComponent<Props> = ({
             </div>
           </div>
         ) : (
-          <div className="flex gap-8 flex-wrap place-content-between">
-            <h5 className="shrink-0">Osmosis Assets</h5>
-            <div className="flex gap-5">
+          <div className="flex flex-col gap-5">
+            <h5>Assets</h5>
+            <div className="flex place-content-between">
               <Switch
-                className="mr-2"
                 isOn={hideZeroBalances}
+                disabled={!canHideZeroBalances}
                 onToggle={() => setHideZeroBalances(!hideZeroBalances)}
               >
                 Hide zero balances
               </Switch>
-              <SearchBox
-                currentValue={query}
-                onInput={(query) => {
-                  setHideZeroBalances(false);
-                  setQuery(query);
-                }}
-                placeholder="Filter by symbol"
-              />
-              <SortMenu
-                selectedOptionId={sortKey}
-                onSelect={setSortKey}
-                onToggleSortDirection={toggleSortDirection}
-                options={[
-                  {
-                    id: "coinDenom",
-                    display: "Symbol",
-                  },
-                  {
-                    /** These ids correspond to keys in `Cell` type and are later used for sorting. */
-                    id: "chainName",
-                    display: "Network",
-                  },
-                  {
-                    id: "fiatValueRaw",
-                    display: "Balance",
-                  },
-                ]}
-              />
+              <div className="flex items-center gap-5">
+                <SearchBox
+                  currentValue={query}
+                  onInput={(query) => {
+                    setHideZeroBalances(false);
+                    setQuery(query);
+                  }}
+                  placeholder="Search assets"
+                />
+                <SortMenu
+                  selectedOptionId={sortKey}
+                  onSelect={setSortKey}
+                  onToggleSortDirection={toggleSortDirection}
+                  options={[
+                    {
+                      id: "coinDenom",
+                      display: "Symbol",
+                    },
+                    {
+                      /** These ids correspond to keys in `Cell` type and are later used for sorting. */
+                      id: "chainName",
+                      display: "Network",
+                    },
+                    {
+                      id: "fiatValueRaw",
+                      display: "Balance",
+                    },
+                  ]}
+                />
+              </div>
             </div>
           </div>
         )}

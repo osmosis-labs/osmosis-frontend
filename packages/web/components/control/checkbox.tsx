@@ -31,7 +31,7 @@ export const CheckBox: FunctionComponent<
       {isOn && showImg && (
         <div
           className={classNames(
-            "cursor-pointer h-full absolute top-0 left-0 h-5 w-5 z-20",
+            "cursor-pointer absolute top-0 left-0 h-5 w-5 z-20",
             disabled ? "cursor-default opacity-50" : null,
             checkClassName
           )}
