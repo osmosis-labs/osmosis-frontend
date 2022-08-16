@@ -32,7 +32,7 @@ export const BridgeAnimation: FunctionComponent<
     if (!animData) {
       loadData();
     }
-  }, []);
+  });
 
   return (
     <div className={classNames("relative h-[110px]", className)}>
