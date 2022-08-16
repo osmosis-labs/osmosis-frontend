@@ -185,6 +185,28 @@ export const TradeClipboard: FunctionComponent<{
     };
   }, [isAnimatingSwitch, tradeTokenInConfig]);
 
+  // amount fiat value
+  const inAmountValue =
+    tradeTokenInConfig.amount !== "" &&
+    new Dec(tradeTokenInConfig.amount).gt(new Dec(0))
+      ? priceStore.calculatePrice(
+          new CoinPretty(
+            tradeTokenInConfig.sendCurrency,
+            new Dec(tradeTokenInConfig.amount).mul(
+              DecUtils.getTenExponentNInPrecisionRange(
+                tradeTokenInConfig.sendCurrency.coinDecimals
+              )
+            )
+          )
+        )
+      : undefined;
+  const outAmountValue =
+    (!tradeTokenInConfig.expectedSwapResult.amount.toDec().isZero() &&
+      priceStore.calculatePrice(
+        tradeTokenInConfig.expectedSwapResult.amount
+      )) ||
+    undefined;
+
   return (
     <div
       className={classNames(
@@ -332,16 +354,12 @@ export const TradeClipboard: FunctionComponent<{
               <button
                 className={classNames(
                   "button text-primary-50 hover:bg-primary-50/30 border border-primary-50 text-xs py-1 px-1.5 rounded-md",
-                  tradeTokenInConfig && tradeTokenInConfig.fraction === 1
+                  tradeTokenInConfig.fraction === 1
                     ? "bg-primary-50/40"
                     : "bg-transparent"
                 )}
                 onClick={(e) => {
                   e.preventDefault();
-
-                  if (!tradeTokenInConfig) {
-                    return;
-                  }
 
                   if (tradeTokenInConfig.fraction !== 1) {
                     tradeTokenInConfig.setFraction(1);
@@ -355,16 +373,12 @@ export const TradeClipboard: FunctionComponent<{
               <button
                 className={classNames(
                   "button text-primary-50 hover:bg-primary-50/30 border border-primary-50 text-xs py-1 px-1.5 rounded-md",
-                  tradeTokenInConfig && tradeTokenInConfig.fraction === 0.5
+                  tradeTokenInConfig.fraction === 0.5
                     ? "bg-primary-50/40"
                     : "bg-transparent"
                 )}
                 onClick={(e) => {
                   e.preventDefault();
-
-                  if (!tradeTokenInConfig) {
-                    return;
-                  }
 
                   if (tradeTokenInConfig.fraction !== 0.5) {
                     tradeTokenInConfig.setFraction(0.5);
@@ -378,79 +392,66 @@ export const TradeClipboard: FunctionComponent<{
             </div>
           </div>
           <div className="flex items-center place-content-between mt-3">
-            {tradeTokenInConfig && (
-              <TokenSelect
-                sortByBalances
-                dropdownOpen={showFromTokenSelectDropdown}
-                setDropdownState={(isOpen) => {
-                  if (isOpen) {
-                    setOneTokenSelectOpen("from");
-                  } else {
-                    closeTokenSelectDropdowns();
-                  }
-                }}
-                tokens={allTokenBalances
-                  .filter(
-                    (tokenBalance) =>
-                      tokenBalance.balance.currency.coinDenom !==
-                      tradeTokenInConfig.outCurrency.coinDenom
-                  )
-                  .filter((tokenBalance) =>
-                    tradeTokenInConfig.sendableCurrencies.some(
-                      (sendableCurrency) =>
-                        sendableCurrency.coinDenom ===
-                        tokenBalance.balance.currency.coinDenom
-                    )
-                  )
-                  .map((tokenBalance) => tokenBalance.balance)}
-                selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
-                onSelect={(tokenDenom: string) => {
-                  const tokenInBalance = allTokenBalances.find(
-                    (tokenBalance) =>
-                      tokenBalance.balance.currency.coinDenom === tokenDenom
-                  );
-                  if (tokenInBalance) {
-                    tradeTokenInConfig.setSendCurrency(
-                      tokenInBalance.balance.currency
-                    );
-                  }
+            <TokenSelect
+              sortByBalances
+              dropdownOpen={showFromTokenSelectDropdown}
+              setDropdownState={(isOpen) => {
+                if (isOpen) {
+                  setOneTokenSelectOpen("from");
+                } else {
                   closeTokenSelectDropdowns();
+                }
+              }}
+              tokens={allTokenBalances
+                .filter(
+                  (tokenBalance) =>
+                    tokenBalance.balance.currency.coinDenom !==
+                    tradeTokenInConfig.outCurrency.coinDenom
+                )
+                .filter((tokenBalance) =>
+                  tradeTokenInConfig.sendableCurrencies.some(
+                    (sendableCurrency) =>
+                      sendableCurrency.coinDenom ===
+                      tokenBalance.balance.currency.coinDenom
+                  )
+                )
+                .map((tokenBalance) => tokenBalance.balance)}
+              selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
+              onSelect={(tokenDenom: string) => {
+                const tokenInBalance = allTokenBalances.find(
+                  (tokenBalance) =>
+                    tokenBalance.balance.currency.coinDenom === tokenDenom
+                );
+                if (tokenInBalance) {
+                  tradeTokenInConfig.setSendCurrency(
+                    tokenInBalance.balance.currency
+                  );
+                }
+                closeTokenSelectDropdowns();
+              }}
+              isMobile={isMobile}
+            />
+            <div className="flex flex-col items-end">
+              <input
+                ref={fromAmountInput}
+                type="number"
+                className="font-h5 md:font-subtitle1 text-h5 md:text-subtitle1 text-white-full bg-transparent text-right focus:outline-none w-full placeholder:text-white-disabled"
+                placeholder="0"
+                onChange={(e) => {
+                  e.preventDefault();
+                  if (Number(e.target.value) <= Number.MAX_SAFE_INTEGER) {
+                    tradeTokenInConfig.setAmount(e.target.value);
+                  }
                 }}
-                isMobile={isMobile}
+                value={tradeTokenInConfig.amount}
               />
-            )}
-            {tradeTokenInConfig && (
-              <div className="flex flex-col items-end">
-                <input
-                  ref={fromAmountInput}
-                  type="number"
-                  className="font-h5 md:font-subtitle1 text-h5 md:text-subtitle1 text-white-full bg-transparent text-right focus:outline-none w-full"
-                  placeholder="0"
-                  onChange={(e) => {
-                    e.preventDefault();
-                    if (Number(e.target.value) <= Number.MAX_SAFE_INTEGER) {
-                      tradeTokenInConfig.setAmount(e.target.value);
-                    }
-                  }}
-                  value={tradeTokenInConfig.amount}
-                />
-                <div className="caption text-white-disabled">{`≈ ${
-                  tradeTokenInConfig.amount &&
-                  new Dec(tradeTokenInConfig.amount).gt(new Dec(0))
-                    ? priceStore.calculatePrice(
-                        new CoinPretty(
-                          tradeTokenInConfig.sendCurrency,
-                          new Dec(tradeTokenInConfig.amount).mul(
-                            DecUtils.getTenExponentNInPrecisionRange(
-                              tradeTokenInConfig.sendCurrency.coinDecimals
-                            )
-                          )
-                        )
-                      )
-                    : "0"
-                }`}</div>
-              </div>
-            )}
+              <div
+                className={classNames(
+                  "caption text-white-disabled transition-opacity duration-300",
+                  inAmountValue ? "opacity-100" : "opacity-0"
+                )}
+              >{`≈ ${inAmountValue || "0"}`}</div>
+            </div>
           </div>
         </div>
 
@@ -542,84 +543,80 @@ export const TradeClipboard: FunctionComponent<{
                 : undefined
             }
           >
-            {tradeTokenInConfig && (
-              <TokenSelect
-                dropdownOpen={showToTokenSelectDropdown}
-                setDropdownState={(isOpen) => {
-                  if (isOpen) {
-                    setOneTokenSelectOpen("to");
-                  } else {
-                    closeTokenSelectDropdowns();
-                  }
-                }}
-                sortByBalances
-                tokens={allTokenBalances
-                  .filter(
-                    (tokenBalance) =>
-                      tokenBalance.balance.currency.coinDenom !==
-                      tradeTokenInConfig.sendCurrency.coinDenom
-                  )
-                  .filter((tokenBalance) =>
-                    tradeTokenInConfig.sendableCurrencies.some(
-                      (sendableCurrency) =>
-                        sendableCurrency.coinDenom ===
-                        tokenBalance.balance.currency.coinDenom
-                    )
-                  )
-                  .map((tokenBalance) => tokenBalance.balance)}
-                selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
-                onSelect={(tokenDenom: string) => {
-                  const tokenOutBalance = allTokenBalances.find(
-                    (tokenBalance) =>
-                      tokenBalance.balance.currency.coinDenom === tokenDenom
-                  );
-                  if (tokenOutBalance) {
-                    tradeTokenInConfig.setOutCurrency(
-                      tokenOutBalance.balance.currency
-                    );
-                  }
+            <TokenSelect
+              dropdownOpen={showToTokenSelectDropdown}
+              setDropdownState={(isOpen) => {
+                if (isOpen) {
+                  setOneTokenSelectOpen("to");
+                } else {
                   closeTokenSelectDropdowns();
-                }}
-                isMobile={isMobile}
-              />
-            )}
-            {tradeTokenInConfig && (
-              <div className="flex flex-col items-end">
-                <h5
-                  className={classNames(
-                    "text-right md:subtitle1",
-                    tradeTokenInConfig.expectedSwapResult.amount
-                      .toDec()
-                      .isPositive()
-                      ? "text-white-full"
-                      : "text-white-disabled"
-                  )}
-                >{`≈ ${
-                  tradeTokenInConfig.expectedSwapResult.amount.denom !==
-                  "UNKNOWN"
-                    ? tradeTokenInConfig.expectedSwapResult.amount
-                        .trim(true)
-                        .shrink(true)
-                        .maxDecimals(
-                          Math.min(
-                            tradeTokenInConfig.expectedSwapResult.amount
-                              .currency.coinDecimals,
-                            8
-                          )
+                }
+              }}
+              sortByBalances
+              tokens={allTokenBalances
+                .filter(
+                  (tokenBalance) =>
+                    tokenBalance.balance.currency.coinDenom !==
+                    tradeTokenInConfig.sendCurrency.coinDenom
+                )
+                .filter((tokenBalance) =>
+                  tradeTokenInConfig.sendableCurrencies.some(
+                    (sendableCurrency) =>
+                      sendableCurrency.coinDenom ===
+                      tokenBalance.balance.currency.coinDenom
+                  )
+                )
+                .map((tokenBalance) => tokenBalance.balance)}
+              selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
+              onSelect={(tokenDenom: string) => {
+                const tokenOutBalance = allTokenBalances.find(
+                  (tokenBalance) =>
+                    tokenBalance.balance.currency.coinDenom === tokenDenom
+                );
+                if (tokenOutBalance) {
+                  tradeTokenInConfig.setOutCurrency(
+                    tokenOutBalance.balance.currency
+                  );
+                }
+                closeTokenSelectDropdowns();
+              }}
+              isMobile={isMobile}
+            />
+            <div className="flex flex-col items-end">
+              <h5
+                className={classNames(
+                  "text-right md:subtitle1",
+                  tradeTokenInConfig.expectedSwapResult.amount
+                    .toDec()
+                    .isPositive()
+                    ? "text-white-full"
+                    : "text-white-disabled"
+                )}
+              >{`≈ ${
+                tradeTokenInConfig.expectedSwapResult.amount.denom !== "UNKNOWN"
+                  ? tradeTokenInConfig.expectedSwapResult.amount
+                      .trim(true)
+                      .shrink(true)
+                      .maxDecimals(
+                        Math.min(
+                          tradeTokenInConfig.expectedSwapResult.amount.currency
+                            .coinDecimals,
+                          8
                         )
-                        .hideDenom(true)
-                        .toString()
-                    : "0"
-                }`}</h5>
-                <div className="caption text-white-disabled">
-                  {`≈ ${
-                    priceStore.calculatePrice(
-                      tradeTokenInConfig.expectedSwapResult.amount
-                    ) || "0"
-                  }`}
-                </div>
+                      )
+                      .hideDenom(true)
+                      .toString()
+                  : "0"
+              }`}</h5>
+              <div
+                className={classNames(
+                  "caption text-white-disabled transition-opacity duration-300",
+                  outAmountValue ? "opacity-100" : "opacity-0"
+                )}
+              >
+                {`≈ ${outAmountValue || "0"}`}
               </div>
-            )}
+            </div>
           </div>
         </div>
 
@@ -663,7 +660,7 @@ export const TradeClipboard: FunctionComponent<{
             <div className="flex items-center gap-2">
               <Image
                 className={classNames(
-                  "transition-opacity",
+                  "transition-opacity duration-300",
                   showPriceImpactWarning ? "opacity-100" : "opacity-0"
                 )}
                 alt="alert circle"
@@ -672,7 +669,7 @@ export const TradeClipboard: FunctionComponent<{
                 width={24}
               />
               <Image
-                className={`group-hover:opacity-100 transition-all ${
+                className={`group-hover:opacity-100 transition-all duration-300 ${
                   showEstimateDetails ? "rotate-180" : "rotate-0"
                 } ${isEstimateDetailRelevant ? "opacity-40" : "opacity-0"}`}
                 alt="show estimates"
@@ -682,12 +679,7 @@ export const TradeClipboard: FunctionComponent<{
               />
             </div>
           </button>
-          <div
-            className={classNames(
-              "absolute w-[358px] md:w-[380px] flex flex-col gap-4 pt-5 transition-opacity duration-300",
-              showEstimateDetails ? "opacity-100" : "opacity-0"
-            )}
-          >
+          <div className="absolute w-[358px] md:w-[380px] flex flex-col gap-4 pt-5">
             <div
               className={classNames("flex justify-between", {
                 "text-error": showPriceImpactWarning,
