@@ -713,7 +713,7 @@ export const TradeClipboard: FunctionComponent<{
             <hr className="text-white-faint" />
             <div className="flex justify-between">
               <div className="caption">Expected Output</div>
-              <div className="caption text-wireframes-lightGrey">
+              <div className="caption text-wireframes-lightGrey whitespace-nowrap">
                 {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
               </div>
             </div>
@@ -730,7 +730,7 @@ export const TradeClipboard: FunctionComponent<{
                   }
                 )}
               >
-                <span>
+                <span className="whitespace-nowrap">
                   {new CoinPretty(
                     tradeTokenInConfig.outCurrency,
                     minOutAmountLessSlippage.mul(
