@@ -149,7 +149,7 @@ const AxelarTransfer: FunctionComponent<
           isWithdraw={isWithdraw}
           transferPath={[
             isWithdraw ? osmosisPath : counterpartyPath,
-            undefined,
+            { bridgeName: "Axelar", bridgeIconUrl: "/icons/axelar.svg" },
             isWithdraw ? counterpartyPath : osmosisPath,
           ]}
           selectedWalletDisplay={client.displayInfo}

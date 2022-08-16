@@ -7,6 +7,7 @@ import { Button } from "../buttons";
 import { SwitchWalletButton } from "../buttons/switch-wallet";
 import { InputBox } from "../input";
 import { WalletDisplay } from "../../integrations/wallets";
+import { BridgeAnimation } from "../animation/bridge";
 
 /** Standard display for prompting the bridging of arbitrary assets. */
 export const Transfer: FunctionComponent<
@@ -37,7 +38,7 @@ export const Transfer: FunctionComponent<
     Disableable
 > = ({
   isWithdraw,
-  transferPath: [from, _bridge, to],
+  transferPath: [from, bridge, to],
   selectedWalletDisplay,
   onRequestSwitchWallet,
   availableBalance,
@@ -63,6 +64,7 @@ export const Transfer: FunctionComponent<
 
   return (
     <div className="flex flex-col gap-11">
+      <BridgeAnimation transferPath={[from, bridge, to]} />
       <div className="flex gap-4 body1 text-iconDefault">
         <div
           className={classNames(
