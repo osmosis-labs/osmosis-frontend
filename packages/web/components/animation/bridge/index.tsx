@@ -3,9 +3,11 @@ import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
 import classNames from "classnames";
 import { CustomClasses, LoadingProps } from "../../types";
+import { Animation as AnimationProps } from "../types";
 
 const Lottie = dynamic(() => import("react-lottie"), { ssr: false });
 
+/** Illustrates a bespoke or IBC bridge transfer for user info. */
 export const BridgeAnimation: FunctionComponent<
   {
     transferPath: [
@@ -16,8 +18,14 @@ export const BridgeAnimation: FunctionComponent<
       ),
       { address: string; networkName: string; iconUrl?: string }
     ];
-  } & CustomClasses
-> = ({ transferPath: [from, bridge, to], className }) => {
+  } & AnimationProps &
+    CustomClasses
+> = (props) => {
+  const {
+    transferPath: [from, bridge, to],
+    className,
+  } = props;
+
   // constants
   const overlayedIconSize = { height: 45, width: 45 };
 
@@ -67,8 +75,7 @@ export const BridgeAnimation: FunctionComponent<
           }}
           height={bridge ? 100 : 85}
           width={400}
-          isPaused={false}
-          isStopped={false}
+          {...props}
         />
       </div>
       {from.iconUrl && (
