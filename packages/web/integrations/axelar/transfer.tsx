@@ -143,6 +143,8 @@ const AxelarTransfer: FunctionComponent<
       ? `Wrong network in ${client.displayInfo.displayName}`
       : undefined;
 
+    console.log(client.chainId, counterpartyBal?.toString());
+
     return (
       <>
         <Transfer
@@ -253,7 +255,10 @@ const AxelarTransfer: FunctionComponent<
                       if (e.code === 4001) {
                         // User denied
                         displayToast(
-                          { message: "Request rejected" },
+                          {
+                            message: "Transaction Failed",
+                            caption: "Request rejected",
+                          },
                           ToastType.ERROR
                         );
                       } else if (e.code === 4100) {
@@ -262,7 +267,8 @@ const AxelarTransfer: FunctionComponent<
                         // wallet is not logged in (but is connected)
                         displayToast(
                           {
-                            message: `Please log into ${client.displayInfo.displayName}`,
+                            message: "Action Unavailable",
+                            caption: `Please log into ${client.displayInfo.displayName}`,
                           },
                           ToastType.ERROR
                         );

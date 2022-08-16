@@ -51,7 +51,7 @@ export function useDepositAddress(
             resolve();
           })
           .catch((e) => {
-            reject(`useDepositAddress: ${e}`);
+            reject(`useDepositAddress: ${e.message}`);
           });
       }),
     [generateAddress, setDepositAddress]

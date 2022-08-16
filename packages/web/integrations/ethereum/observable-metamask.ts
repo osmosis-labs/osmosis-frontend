@@ -78,7 +78,9 @@ export class ObservableMetamask implements EthClient {
 
   @computed
   get chainId(): string | undefined {
-    return this._chainId ? ChainNames[this._chainId] : undefined;
+    return this._chainId
+      ? ChainNames[this._chainId] || this._chainId
+      : undefined;
   }
 
   get isConnected(): boolean {

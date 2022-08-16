@@ -32,4 +32,5 @@ export const ChainNames: { [chainId: string]: string } = {
   "0x504": "Moonbeam",
   "0x2329": "Evmos",
   "0xa86a": "Avalance C-Chain",
+  "0x4e454152": "Aurora",
 };
