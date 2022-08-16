@@ -2,25 +2,26 @@
 # yarn lockfile v1
 
 
-"@axelar-network/axelarjs-sdk@^0.7.1":
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.7.2.tgz#6b6691dba3f18f9af799320e13d16013f19b47b5"
-  integrity sha512-VKnTcM+1Ljc/pZ/Nt34KMV4cmFA2RPCCWbzwrtwI9P1W2NSwAt6iJ404Hc6MALXN6cs8xejp5hcWSXRVv9mGrA==
+"@axelar-network/axelarjs-sdk@^0.6.14":
+  version "0.6.18"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.6.18.tgz#132d3195c4373383eb02ab313dca45c1790b4659"
+  integrity sha512-p4VaPC9W7hTJDezlbQrYDKhMZ71GWwdQE5VdjxYC9aLD1OQ6TFVCmrZIMT+jEEY24byXGM7M4xcdCEfCnjNVXQ==
   dependencies:
-    "@axelar-network/axelarjs-types" "^0.22.1"
+    "@axelar-network/axelarjs-types" "^0.0.3"
     "@cosmjs/stargate" "^0.28.4"
     "@types/uuid" "^8.3.1"
     bech32 "^2.0.0"
     clone-deep "^4.0.1"
     cross-fetch "^3.1.5"
+    eslint-plugin-import "^2.25.4"
     ethers "^5.4.7"
     socket.io-client "^4.2.0"
     uuid "^8.3.2"
 
-"@axelar-network/axelarjs-types@^0.22.1":
-  version "0.22.1"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-types/-/axelarjs-types-0.22.1.tgz#8deb8903c1419de1a47b86a060348fe1b5c7f1fb"
-  integrity sha512-AzKYqNBia5f+LNQpcKQJ5iPEPheYGv+SuPDslErtuYFZimU5ZKHG1TPcx2EqgKedWr0EP7bI10Qdhu5trmnr/A==
+"@axelar-network/axelarjs-types@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-types/-/axelarjs-types-0.0.3.tgz#46b189f1afb9358628df49e76b3c31cb552fc258"
+  integrity sha512-Y3CgKAHOnVyU/0JFulUyZkSxeVkMEvt4eTbrXy8bx3GCAhqx7rc45fz2VJPVr1f24lFwEAGGc5VbeGrXZodssw==
   dependencies:
     long "^4.0.0"
     protobufjs "~6.11.2"
