@@ -77,12 +77,14 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   {
                     address: account.bech32Address,
                     networkName: chainStore.getChain(osmosisChainId).chainName,
+                    iconUrl: "/tokens/osmo.svg",
                   },
                   undefined,
                   {
                     address: counterpartyAccount.bech32Address,
                     networkName:
                       chainStore.getChain(counterpartyChainId).chainName,
+                    iconUrl: currency.coinImageUrl,
                   },
                 ]
               : [
@@ -90,11 +92,13 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     address: counterpartyAccount.bech32Address,
                     networkName:
                       chainStore.getChain(counterpartyChainId).chainName,
+                    iconUrl: currency.coinImageUrl,
                   },
                   undefined,
                   {
                     address: account.bech32Address,
                     networkName: chainStore.getChain(osmosisChainId).chainName,
+                    iconUrl: "/tokens/osmo.svg",
                   },
                 ]
           }
