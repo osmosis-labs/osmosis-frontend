@@ -1,17 +1,23 @@
+import classNames from "classnames";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
-import { LoadingProps } from "../../types";
+import { CustomClasses, LoadingProps } from "../../types";
 
 const Lottie = dynamic(() => import("react-lottie"), { ssr: false });
 
-export const BridgeAnimation: FunctionComponent<{
-  transferPath: [
-    { address: string; networkName: string; iconUrl?: string },
-    ({ bridgeName: string; bridgeIconUrl?: string } & LoadingProps) | undefined,
-    { address: string; networkName: string; iconUrl?: string }
-  ];
-}> = ({ transferPath: [from, bridge, to] }) => {
+export const BridgeAnimation: FunctionComponent<
+  {
+    transferPath: [
+      { address: string; networkName: string; iconUrl?: string },
+      (
+        | ({ bridgeName: string; bridgeIconUrl?: string } & LoadingProps)
+        | undefined
+      ),
+      { address: string; networkName: string; iconUrl?: string }
+    ];
+  } & CustomClasses
+> = ({ transferPath: [from, bridge, to], className }) => {
   // constants
   const overlayedIconSize = { height: 45, width: 45 };
 
@@ -29,19 +35,19 @@ export const BridgeAnimation: FunctionComponent<{
   }, []);
 
   return (
-    <div className="relative h-[130px]">
-      <span className="absolute left-[94px] top-[25px]">
+    <div className={classNames("relative h-[110px]", className)}>
+      <span className="absolute left-[94px] top-[10px]">
         From {from.networkName}
       </span>
       {bridge?.bridgeName && (
-        <span className="absolute left-[270px] top-[25px]">
+        <span className="absolute left-[270px] top-[10px]">
           via {bridge.bridgeName}
         </span>
       )}
-      <span className="absolute left-[420px] top-[25px]">
+      <span className="absolute left-[420px] top-[10px]">
         To {to.networkName}
       </span>
-      <div className="absolute left-[105px] top-[40px]">
+      <div className="absolute left-[105px] top-[20px]">
         <Lottie
           options={{
             loop: true,
@@ -54,12 +60,12 @@ export const BridgeAnimation: FunctionComponent<{
         />
       </div>
       {from.iconUrl && (
-        <div className="absolute left-[127px] top-[69px]">
+        <div className="absolute left-[127px] top-[48px]">
           <Image alt="token icon" src={from.iconUrl} {...overlayedIconSize} />
         </div>
       )}
       {bridge?.bridgeIconUrl && (
-        <div className="absolute left-[286px] top-[69px]">
+        <div className="absolute left-[286px] top-[48px]">
           <Image
             alt="token icon"
             src={bridge?.bridgeIconUrl}
@@ -68,7 +74,7 @@ export const BridgeAnimation: FunctionComponent<{
         </div>
       )}
       {to.iconUrl && (
-        <div className="absolute left-[440px] top-[69px]">
+        <div className="absolute left-[440px] top-[48px]">
           <Image alt="token icon" src={to.iconUrl} {...overlayedIconSize} />
         </div>
       )}

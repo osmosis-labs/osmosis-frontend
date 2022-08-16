@@ -64,7 +64,7 @@ export const Transfer: FunctionComponent<
 
   return (
     <div className="flex flex-col gap-11">
-      <BridgeAnimation transferPath={[from, bridge, to]} />
+      <BridgeAnimation className="mt-4" transferPath={[from, bridge, to]} />
       <div className="flex gap-4 body1 text-iconDefault">
         <div
           className={classNames(
