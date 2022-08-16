@@ -622,7 +622,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <div
           className={classNames(
-            "relative rounded-lg bg-card px-4 md:px-3 transition-all ease-inOutBack duration-500 overflow-clip",
+            "relative rounded-lg bg-card px-4 md:px-3 transition-all ease-inOutBack duration-500 overflow-hidden",
             showEstimateDetails ? "h-56 py-6" : "h-11 py-[10px]"
           )}
         >
