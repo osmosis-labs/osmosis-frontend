@@ -457,7 +457,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <button
           className={classNames(
-            "absolute flex items-center left-[45%] top-[116px] transition-all duration-500 ease-bounce z-30",
+            "absolute flex items-center left-[45%] top-[116px] md:top-[84px] transition-all duration-500 ease-bounce z-30",
             {
               "w-10 md:w-8 h-10 md:h-8": !isHoveringSwitchButton,
               "w-11 md:w-9 h-11 md:h-9 -translate-x-[2px]":
@@ -484,7 +484,7 @@ export const TradeClipboard: FunctionComponent<{
             <div className="relative w-full h-full">
               <div
                 className={classNames(
-                  "absolute left-[10.5px] top-[11px] transition-all duration-500 ease-bounce",
+                  "absolute left-[10.5px] md:left-2 top-[11px] md:top-2 transition-all duration-500 ease-bounce",
                   {
                     "opacity-0 rotate-180": isHoveringSwitchButton,
                   }
@@ -499,7 +499,7 @@ export const TradeClipboard: FunctionComponent<{
               </div>
               <div
                 className={classNames(
-                  "absolute left-[12px] top-1.5 transition-all duration-500 ease-bounce",
+                  "absolute left-[12px] top-1.5 md:left-[10px] md:top-[4px] transition-all duration-500 ease-bounce",
                   {
                     "opacity-100 rotate-180": isHoveringSwitchButton,
                     "opacity-0": !isHoveringSwitchButton,
@@ -679,7 +679,12 @@ export const TradeClipboard: FunctionComponent<{
               />
             </div>
           </button>
-          <div className="absolute w-[358px] md:w-[380px] flex flex-col gap-4 pt-5">
+          <div
+            className={classNames(
+              "absolute flex flex-col gap-4 pt-5",
+              isInModal ? "w-[94%]" : "w-[358px] md:w-[94%]"
+            )}
+          >
             <div
               className={classNames("flex justify-between", {
                 "text-error": showPriceImpactWarning,
