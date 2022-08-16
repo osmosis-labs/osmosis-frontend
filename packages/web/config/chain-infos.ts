@@ -1704,7 +1704,7 @@ const chainInfos = (
           coinDenom: "GEO",
           coinMinimalDenom: "mGeo",
           coinDecimals: 6,
-          coinGeckoId: "geodb",
+          coinGeckoId: "pool:geo",
           coinImageUrl: "/tokens/geo.svg",
         },
       ],
