@@ -1,6 +1,6 @@
 {
   "name": "@osmosis-labs/pools",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "build/index.js",
   "typings": "types/index.d.ts",
   "author": "osmosis-labs",
@@ -39,6 +39,6 @@
   },
   "dependencies": {
     "@keplr-wallet/unit": "^0.10.4",
-    "@osmosis-labs/math": "^1.0.0"
+    "@osmosis-labs/math": "^2.0.0"
   }
 }
