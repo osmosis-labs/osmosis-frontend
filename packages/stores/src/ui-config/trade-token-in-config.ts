@@ -356,7 +356,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         new Dec(1).sub(estimate.swapFee)
       );
 
-    if (!multiplicationInOverOut.gt(new Dec(0))) {
+    // low price vs in asset
+    if (
+      beforeSpotPriceWithoutSwapFeeInOverOutDec.isZero() ||
+      multiplicationInOverOut.isZero()
+    ) {
       return new IntPretty(0).ready(false);
     }
 
