@@ -314,7 +314,7 @@ export const TradeClipboard: FunctionComponent<{
       <div className="relative flex flex-col gap-3">
         <div
           className={classNames(
-            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all duration-300",
+            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
             !switchOutBack ? "ease-outBack" : "ease-inBack",
             {
               "opacity-30": isAnimatingSwitch,
@@ -330,7 +330,7 @@ export const TradeClipboard: FunctionComponent<{
         >
           <div
             className={classNames(
-              "flex items-center place-content-between transition-opacity duration-300",
+              "flex items-center place-content-between transition-opacity",
               {
                 "opacity-0": isAnimatingSwitch,
               }
@@ -447,7 +447,7 @@ export const TradeClipboard: FunctionComponent<{
               />
               <div
                 className={classNames(
-                  "caption text-white-disabled transition-opacity duration-300",
+                  "caption text-white-disabled transition-opacity",
                   inAmountValue ? "opacity-100" : "opacity-0"
                 )}
               >{`≈ ${inAmountValue || "0"}`}</div>
@@ -519,7 +519,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <div
           className={classNames(
-            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all duration-300",
+            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
             !switchOutBack ? "ease-outBack" : "ease-inBack",
             {
               "opacity-30": isAnimatingSwitch,
@@ -534,7 +534,7 @@ export const TradeClipboard: FunctionComponent<{
           }
         >
           <div
-            className="flex items-center place-content-between transition-transform duration-300"
+            className="flex items-center place-content-between transition-transform"
             style={
               isAnimatingSwitch
                 ? {
@@ -610,7 +610,7 @@ export const TradeClipboard: FunctionComponent<{
               }`}</h5>
               <div
                 className={classNames(
-                  "caption text-white-disabled transition-opacity duration-300",
+                  "caption text-white-disabled transition-opacity",
                   outAmountValue ? "opacity-100" : "opacity-0"
                 )}
               >
@@ -622,7 +622,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <div
           className={classNames(
-            "relative rounded-lg bg-card px-4 md:px-3 transition-all ease-inOutBack duration-500 overflow-hidden",
+            "relative rounded-lg bg-card px-4 md:px-3 transition-all ease-inOutBack duration-300 overflow-hidden",
             showEstimateDetails ? "h-56 py-6" : "h-11 py-[10px]"
           )}
         >
@@ -660,7 +660,7 @@ export const TradeClipboard: FunctionComponent<{
             <div className="flex items-center gap-2">
               <Image
                 className={classNames(
-                  "transition-opacity duration-300",
+                  "transition-opacity",
                   showPriceImpactWarning ? "opacity-100" : "opacity-0"
                 )}
                 alt="alert circle"
@@ -669,7 +669,7 @@ export const TradeClipboard: FunctionComponent<{
                 width={24}
               />
               <Image
-                className={`group-hover:opacity-100 transition-all duration-300 ${
+                className={`group-hover:opacity-100 transition-all ${
                   showEstimateDetails ? "rotate-180" : "rotate-0"
                 } ${isEstimateDetailRelevant ? "opacity-40" : "opacity-0"}`}
                 alt="show estimates"
