@@ -212,7 +212,7 @@ export const Transfer: FunctionComponent<
                   setDidVerifyWithdrawRisk(!didVerifyWithdrawRisk)
                 }
               >
-                I verify that {"I'm"} not sending to an exchange address
+                I verify that {"I'm"} not sending to an exchange address.
               </CheckBox>
             </div>
           </GradientView>
