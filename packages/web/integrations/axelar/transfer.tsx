@@ -132,8 +132,7 @@ const AxelarTransfer: FunctionComponent<
       sourceChain,
       destChain,
       address,
-      tokenMinDenom,
-      true
+      tokenMinDenom
     );
 
     const isFormLoading = depositAddress === undefined;

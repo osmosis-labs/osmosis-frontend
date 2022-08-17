@@ -17,17 +17,17 @@ export function useDepositAddress(
   const [isLoading, setIsLoading] = useState(false);
 
   const generateAddress = useCallback(async () => {
-    const sdk = new AxelarAssetTransfer({ environment });
     if (address && depositAddress === null) {
       setIsLoading(true);
-      const newAddress = await sdk.getDepositAddress(
-        sourceChain,
-        destChain,
-        address,
-        tokenMinDenom
-      );
-      setIsLoading(false);
-      return newAddress;
+      new AxelarAssetTransfer({ environment })
+        .getDepositAddress(sourceChain, destChain, address, tokenMinDenom)
+        .then((generatedAddress) => {
+          return generatedAddress;
+        })
+        .catch((e: any) => {
+          console.error("useDepositAddress > getDepositAddress:", e.message);
+        })
+        .finally(() => setIsLoading(false));
     }
     return null;
   }, [
