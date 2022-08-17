@@ -11,34 +11,31 @@ import { Button } from "../buttons";
 import { CheckBox } from "../control";
 import { Disableable, InputProps, LoadingProps } from "../types";
 
+export type TransferProps = {
+  isWithdraw: boolean;
+  /** If there is a bridge it is assumed there is a nonKeplr wallet and the switch button will be shown. */
+  transferPath: [
+    { address: string; networkName: string; iconUrl?: string },
+    ({ bridgeName: string; bridgeIconUrl?: string } & LoadingProps) | undefined,
+    { address: string; networkName: string; iconUrl?: string }
+  ];
+  selectedWalletDisplay?: WalletDisplay;
+  onRequestSwitchWallet?: () => void;
+  availableBalance?: CoinPretty;
+  editWithdrawAddrConfig?: {
+    customAddress: string;
+    isValid: boolean;
+    setCustomAddress: (bech32Address: string) => void;
+  };
+  toggleIsMax: () => void;
+  transferFee?: CoinPretty;
+  /** Required, can be hardcoded estimate. */
+  waitTime: string;
+} & InputProps<string> &
+  Disableable;
+
 /** Standard display for prompting the bridging of arbitrary assets. */
-export const Transfer: FunctionComponent<
-  {
-    isWithdraw: boolean;
-    /** If there is a bridge it is assumed there is a nonKeplr wallet and the switch button will be shown. */
-    transferPath: [
-      { address: string; networkName: string; iconUrl?: string },
-      (
-        | ({ bridgeName: string; bridgeIconUrl?: string } & LoadingProps)
-        | undefined
-      ),
-      { address: string; networkName: string; iconUrl?: string }
-    ];
-    selectedWalletDisplay?: WalletDisplay;
-    onRequestSwitchWallet?: () => void;
-    availableBalance?: CoinPretty;
-    editWithdrawAddrConfig?: {
-      customAddress: string;
-      isValid: boolean;
-      setCustomAddress: (bech32Address: string) => void;
-    };
-    toggleIsMax: () => void;
-    transferFee?: CoinPretty;
-    /** Required, can be hardcoded estimate. */
-    waitTime: string;
-  } & InputProps<string> &
-    Disableable
-> = ({
+export const Transfer: FunctionComponent<TransferProps> = ({
   isWithdraw,
   transferPath: [from, bridge, to],
   selectedWalletDisplay,
