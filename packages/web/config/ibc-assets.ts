@@ -804,7 +804,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-216",
     destChannelId: "channel-13",
     coinMinimalDenom: "orai",
-  }
+  },
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
 export default IBCAssetInfos;
