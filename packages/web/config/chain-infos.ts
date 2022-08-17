@@ -449,6 +449,28 @@ const chainInfos = (
           coinGeckoId: "pool:joe",
           coinImageUrl: "/tokens/joe.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
+          coinDenom: "GLTO",
+          coinMinimalDenom:
+            "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se:GLTO",
+          coinDecimals: 6,
+          coinGeckoId: "pool:glto",
+          coinImageUrl: "/tokens/glto.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1gz8cf86zr4vw9cjcyyv432vgdaecvr9n254d3uwwkx9rermekddsxzageh",
+          coinDenom: "GKEY",
+          coinMinimalDenom:
+            "cw20:juno1gz8cf86zr4vw9cjcyyv432vgdaecvr9n254d3uwwkx9rermekddsxzageh:GKEY",
+          coinDecimals: 6,
+          // coinGeckoId: "pool:gkey",
+          coinImageUrl: "/tokens/gkey.svg",
+        },
       ],
       features: [
         "stargate",
@@ -571,6 +593,104 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
+        {
+          coinDenom: "CLAY",
+          coinMinimalDenom: "ft2D8E7041556CE93E1EFD66C07C45D551A6AAAE09",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ft2D8E7041556CE93E1EFD66C07C45D551A6AAAE09.png",
+        },
+        {
+          coinDenom: "FASANO",
+          coinMinimalDenom: "ft25B30C386CDDEBD1413D5AE1180956AE9EB3B9F7",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ft25B30C386CDDEBD1413D5AE1180956AE9EB3B9F7.png",
+        },
+        {
+          coinDenom: "D9X",
+          coinMinimalDenom: "ft575B10B0CEE2C164D9ED6A96313496F164A9607C",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ft575B10B0CEE2C164D9ED6A96313496F164A9607C.png",
+        },
+        {
+          coinDenom: "FONTI",
+          coinMinimalDenom: "ft56664FC98A2CF5F4FBAC3566D1A11D891AD88305",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ft56664FC98A2CF5F4FBAC3566D1A11D891AD88305.png",
+        },
+        {
+          coinDenom: "BJKS",
+          coinMinimalDenom: "ft52EEB0EE509AC546ED92EAC8591F731F213DDD16",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ft52EEB0EE509AC546ED92EAC8591F731F213DDD16.png",
+        },
+        {
+          coinDenom: "RWNE",
+          coinMinimalDenom: "ftE4903ECC861CA45F2C2BC7EAB8255D2E6E87A33A",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ftE4903ECC861CA45F2C2BC7EAB8255D2E6E87A33A.png",
+        },
+        {
+          coinDenom: "ENMODA",
+          coinMinimalDenom: "ft85AE1716C5E39EA6D64BBD7898C3899A7B500626",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ft85AE1716C5E39EA6D64BBD7898C3899A7B500626.png",
+        },
+        {
+          coinDenom: "404DR",
+          coinMinimalDenom: "ft99091610CCC66F4277C66D14AF2BC4C5EE52E27A",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ft99091610CCC66F4277C66D14AF2BC4C5EE52E27A.png",
+        },
+        {
+          coinDenom: "N43",
+          coinMinimalDenom: "ft387C1C279D962ED80C09C1D592A92C4275FD7C5D",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ft387C1C279D962ED80C09C1D592A92C4275FD7C5D.png",
+        },
+        {
+          coinDenom: "LOBO",
+          coinMinimalDenom: "ft24C9FA4F10B0F235F4A815B15FC774E046A2B2EB",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ft24C9FA4F10B0F235F4A815B15FC774E046A2B2EB.png",
+        },
+        {
+          coinDenom: "VIBRA",
+          coinMinimalDenom: "ft7020C2A8E984EEBCBB383E91CD6FBB067BB2272B",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ft7020C2A8E984EEBCBB383E91CD6FBB067BB2272B.png",
+        },
+        {
+          coinDenom: "KARINA",
+          coinMinimalDenom: "ft2DD67F5D99E9A141142B48474FA7B6B3FF00A3FE",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ft2DD67F5D99E9A141142B48474FA7B6B3FF00A3FE.png",
+        },
+        {
+          coinDenom: "TESTA",
+          coinMinimalDenom: "ft4B030260D99E3ABE2B604EA2B33BAF3C085CDA12",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ft4B030260D99E3ABE2B604EA2B33BAF3C085CDA12.png",
+        },
+        {
+          coinDenom: "CMQZ",
+          coinMinimalDenom: "ftD4B6290EDEE1EC7B97AB5A1DC6C177EFD08ADCC3",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ftD4B6290EDEE1EC7B97AB5A1DC6C177EFD08ADCC3.png",
+        },
       ],
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://explorebitsong.com/transactions/{txHash}",
@@ -593,6 +713,17 @@ const chainInfos = (
           coinImageUrl: "/tokens/xki.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "ki1dt3lk455ed360pna38fkhqn0p8y44qndsr77qu73ghyaz2zv4whq83mwdy",
+          coinDenom: "LVN",
+          coinMinimalDenom:
+            "cw20:ki1dt3lk455ed360pna38fkhqn0p8y44qndsr77qu73ghyaz2zv4whq83mwdy:LVN",
+          coinDecimals: 6,
+          coinGeckoId: "lvn",
+          coinImageUrl: "/tokens/lvn.png",
         },
       ],
       gasPriceStep: {
@@ -952,8 +1083,8 @@ const chainInfos = (
       explorerUrlToTx: "https://www.mintscan.io/konstellation/txs/{txHash}",
     },
     {
-      rpc: "https://rpc.aphrodite.main.network.umee.cc",
-      rest: "https://api.aphrodite.main.network.umee.cc",
+      rpc: "https://rpc-umee.keplr.app",
+      rest: "https://lcd-umee.keplr.app",
       chainId: "umee-1",
       chainName: "Umee",
       bip44: {
@@ -1473,6 +1604,7 @@ const chainInfos = (
           coinDenom: "KUJI",
           coinMinimalDenom: "ukuji",
           coinDecimals: 6,
+          coinGeckoId: "kujira",
           coinImageUrl: "/tokens/kuji.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -1485,6 +1617,194 @@ const chainInfos = (
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://finder.kujira.app/kaiyo-1/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpc.mainnet-1.tgrade.confio.run",
+      rest: "https://api.mainnet-1.tgrade.confio.run",
+      chainId: "tgrade-mainnet-1",
+      chainName: "Tgrade",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("tgrade"),
+      currencies: [
+        {
+          coinDenom: "TGD",
+          coinMinimalDenom: "utgd",
+          coinDecimals: 6,
+          coinGeckoId: "pool:utgd",
+          coinImageUrl: "/tokens/tgrade.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.05,
+        average: 0.075,
+        high: 0.1,
+      },
+      features: [
+        "stargate",
+        "ibc-transfer",
+        "ibc-go",
+        "no-legacy-stdTx",
+        "wasmd_0.24+",
+        "cosmwasm",
+      ],
+      explorerUrlToTx: "https://tgrade.aneka.io/txs/{txHash}",
+    },
+    {
+      rpc: "https://rpc-echelon.whispernode.com/",
+      rest: "https://lcd-echelon.whispernode.com/",
+      chainId: "echelon_3000-3",
+      chainName: "Echelon",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("echelon"),
+      currencies: [
+        {
+          coinDenom: "ECH",
+          coinMinimalDenom: "aechelon",
+          coinDecimals: 18,
+          coinGeckoId: "echelon",
+          coinImageUrl: "/tokens/ech.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 10000000000,
+        average: 25000000000,
+        high: 40000000000,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://ping.pub/echelon/tx/{txHash}",
+    },
+    {
+      rpc: "https://node.odin-freya-website.odinprotocol.io/mainnet/a/",
+      rest: "https://node.odin-freya-website.odinprotocol.io/mainnet/a/api/",
+      chainId: "odin-mainnet-freya",
+      chainName: "Odin",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("odin"),
+      currencies: [
+        {
+          coinDenom: "ODIN",
+          coinMinimalDenom: "loki",
+          coinDecimals: 6,
+          coinGeckoId: "pool:odin",
+          coinImageUrl: "/tokens/odin.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+        {
+          coinDenom: "GEO",
+          coinMinimalDenom: "mGeo",
+          coinDecimals: 6,
+          coinGeckoId: "pool:geo",
+          coinImageUrl: "/tokens/geo.svg",
+        },
+      ],
+      gasPriceStep: {
+        low: 0.025,
+        average: 0.05,
+        high: 0.06,
+      },
+      features: [
+        "stargate",
+        "ibc-transfer",
+        "ibc-go",
+        "no-legacy-stdTx",
+        "wasmd_0.24+",
+        "cosmwasm",
+      ],
+      explorerUrlToTx: "https://scan.odinprotocol.io/transactions/{txHash}",
+    },
+    {
+      rpc: "https://mainnet.crescent.network:26657",
+      rest: "https://mainnet.crescent.network:1317",
+      chainId: "crescent-1",
+      chainName: "Crescent",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("cre"),
+      currencies: [
+        {
+          coinDenom: "CRE",
+          coinMinimalDenom: "ucre",
+          coinDecimals: 6,
+          coinGeckoId: "pool:ucre",
+          coinImageUrl: "/tokens/cre.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.01,
+        average: 0.02,
+        high: 0.1,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/crescent/txs/{txHash}",
+    },
+    {
+      rpc: "https://rpc.helios-1.lumenex.io",
+      rest: "https://api.helios-1.lumenex.io",
+      chainId: "LumenX",
+      chainName: "LumenX",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("lumen"),
+      currencies: [
+        {
+          coinDenom: "LUMEN",
+          coinMinimalDenom: "ulumen",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/lumen.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.01,
+        average: 0.025,
+        high: 0.03,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://scope.helios-1.lumenex.io/lumenx/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpc.orai.io",
+      rest: "https://lcd.orai.io",
+      chainId: "Oraichain",
+      chainName: "Oraichain",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("orai"),
+      currencies: [
+        {
+          coinDenom: "ORAI",
+          coinMinimalDenom: "orai",
+          coinDecimals: 6,
+          coinGeckoId: "oraichain-token",
+          coinImageUrl: "/tokens/orai.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0,
+        average: 0.00025,
+        high: 0.0004,
+      },
+      features: ["stargate", "ibc-transfer", "cosmwasm"],
+      explorerUrlToTx: "https://scan.orai.io/txs/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
@@ -1622,6 +1942,20 @@ chainInfos.push({
       coinDecimals: 18,
       coinGeckoId: "chain-2",
       coinImageUrl: "/tokens/xcn.svg",
+    },
+    {
+      coinDenom: "WGLMR",
+      coinMinimalDenom: "wglmr-wei",
+      coinDecimals: 18,
+      coinGeckoId: "wrapped-moonbeam",
+      coinImageUrl: "/tokens/glmr.svg",
+    },
+    {
+      coinDenom: "DOT",
+      coinMinimalDenom: "dot-planck",
+      coinDecimals: 10,
+      coinGeckoId: "polkadot",
+      coinImageUrl: "/tokens/dot.svg",
     },
   ],
   feeCurrencies: [

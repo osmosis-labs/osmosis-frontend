@@ -50,7 +50,7 @@ export declare class ObservableQueryPool extends ObservableChainQuery<{
         afterSpotPriceOutOverIn: IntPretty;
         effectivePriceInOverOut: IntPretty;
         effectivePriceOutOverIn: IntPretty;
-        slippage: RatePretty;
+        priceImpact: RatePretty;
     };
     protected readonly getTokenOutByTokenInComputedFn: (tokenInDenom: string, tokenInAmount: string, tokenOutDenom: string) => {
         amount: CoinPretty;
@@ -58,7 +58,7 @@ export declare class ObservableQueryPool extends ObservableChainQuery<{
         afterSpotPriceOutOverIn: IntPretty;
         effectivePriceInOverOut: IntPretty;
         effectivePriceOutOverIn: IntPretty;
-        slippage: RatePretty;
+        priceImpact: RatePretty;
     };
     getTokenInByTokenOut(tokenOut: {
         denom: string;
@@ -69,7 +69,7 @@ export declare class ObservableQueryPool extends ObservableChainQuery<{
         afterSpotPriceOutOverIn: IntPretty;
         effectivePriceInOverOut: IntPretty;
         effectivePriceOutOverIn: IntPretty;
-        slippage: RatePretty;
+        priceImpact: RatePretty;
     };
     protected readonly getTokenInByTokenOutComputedFn: (tokenOutDenom: string, tokenOutAmount: string, tokenInDenom: string) => {
         amount: CoinPretty;
@@ -77,7 +77,7 @@ export declare class ObservableQueryPool extends ObservableChainQuery<{
         afterSpotPriceOutOverIn: IntPretty;
         effectivePriceInOverOut: IntPretty;
         effectivePriceOutOverIn: IntPretty;
-        slippage: RatePretty;
+        priceImpact: RatePretty;
     };
     readonly computeTotalValueLocked: (priceStore: IPriceStore) => PricePretty;
 }

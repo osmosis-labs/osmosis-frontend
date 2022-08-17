@@ -100,7 +100,7 @@ const Palette = ({
           <div className="relative">
             <a
               className="absolute flex flex-row items-center justify-center w-full rounded-lg text-subtitle1 tracking-tighter text-xs bottom-[6px] text-center py-[8px]"
-              href="https://wallet.keplr.app/#/osmosis/stake"
+              href="https://wallet.keplr.app/chains/osmosis"
               target="_blank"
               rel="noopener noreferrer"
             >

@@ -143,8 +143,6 @@ const AxelarTransfer: FunctionComponent<
       ? `Wrong network in ${client.displayInfo.displayName}`
       : undefined;
 
-    console.log(client.chainId, counterpartyBal?.toString());
-
     return (
       <>
         <Transfer
@@ -164,7 +162,6 @@ const AxelarTransfer: FunctionComponent<
           }
           availableBalance={availableBalance}
           toggleIsMax={() => {
-            console.log(availableBalance);
             if (isWithdraw) {
               withdrawAmountConfig.toggleIsMax();
             } else {
