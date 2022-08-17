@@ -2,12 +2,14 @@ import { FunctionComponent, useState, useEffect } from "react";
 import classNames from "classnames";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { Disableable, InputProps, LoadingProps } from "../types";
-import { Button } from "../buttons";
-import { SwitchWalletButton } from "../buttons/switch-wallet";
-import { InputBox } from "../input";
 import { WalletDisplay } from "../../integrations/wallets";
 import { BridgeAnimation } from "../animation/bridge";
+import { SwitchWalletButton } from "../buttons/switch-wallet";
+import { GradientView } from "../assets/gradient-view";
+import { InputBox } from "../input";
+import { Button } from "../buttons";
+import { CheckBox } from "../control";
+import { Disableable, InputProps, LoadingProps } from "../types";
 
 /** Standard display for prompting the bridging of arbitrary assets. */
 export const Transfer: FunctionComponent<
@@ -50,7 +52,7 @@ export const Transfer: FunctionComponent<
   waitTime,
 }) => {
   const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
-  const [_didVerifyWithdrawRisk, setDidVerifyWithdrawRisk] = useState(false);
+  const [didVerifyWithdrawRisk, setDidVerifyWithdrawRisk] = useState(false);
 
   // Mobile only - brief copy to clipboard notification
   const [showCopied, setShowCopied] = useState(false);
@@ -182,20 +184,39 @@ export const Transfer: FunctionComponent<
             onInput={onInput}
           />
         </div>
-        {
-          <div className="flex flex-col gap-2.5 p-2.5 my-2 caption text-wireframes-lightGrey border border-white-faint rounded-lg">
-            {transferFee && (
-              <div className="flex items-center place-content-between">
-                <span>Transfer Fee</span>
-                <span>{transferFee!.trim(true).toString()}</span>
-              </div>
-            )}
+        <div className="flex flex-col gap-2.5 p-2.5 my-2 caption text-wireframes-lightGrey border border-white-faint rounded-lg">
+          {transferFee && (
             <div className="flex items-center place-content-between">
-              <span>Estimated Time</span>
-              <span>{waitTime}</span>
+              <span>Transfer Fee</span>
+              <span>{transferFee!.trim(true).toString()}</span>
             </div>
+          )}
+          <div className="flex items-center place-content-between">
+            <span>Estimated Time</span>
+            <span>{waitTime}</span>
           </div>
-        }
+        </div>
+        {editWithdrawAddrConfig && editWithdrawAddrConfig.customAddress !== "" && (
+          <GradientView className="flex flex-col gap-2 body2 md:caption text-center bg-surface">
+            <span>
+              Withdrawing to a centralized exchange can result in lost funds.
+            </span>
+            <div className="mx-auto">
+              <CheckBox
+                isOn={didVerifyWithdrawRisk}
+                className="after:border-superfluid checked:after:bg-superfluid after:rounded-[10px] after:h-6 after:w-6 -top-0.5"
+                checkClassName="-top-0.5 h-6 w-6 bg-superfluid rounded-[10px]"
+                checkMarkClassName="top-[3px] left-0.5 h-6 w-6"
+                checkMarkIconUrl="/icons/check-mark-surface.svg"
+                onToggle={() =>
+                  setDidVerifyWithdrawRisk(!didVerifyWithdrawRisk)
+                }
+              >
+                I verify that {"I'm"} not sending to an exchange address
+              </CheckBox>
+            </div>
+          </GradientView>
+        )}
       </div>
     </div>
   );
