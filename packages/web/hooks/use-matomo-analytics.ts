@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { push } from "@socialgouv/matomo-next";
+import { init as initMatomo, push } from "@socialgouv/matomo-next";
+import { INIT_CONFIG, IS_FRONTIER } from "../config";
 
 /** [Category, Action, Name?, Value?] */
 export type UserEvent =
@@ -10,16 +11,28 @@ export type UserEvent =
 /** Do-it-all hook for logging custom events on page load or  */
 export function useMatomoAnalytics({
   onLoadEvent,
-}: { onLoadEvent?: UserEvent } = {}): {
+  init,
+}: {
+  /** Log this event when the component mounts once. */
+  onLoadEvent?: UserEvent;
+  /** Init analytics environment. Done once per user session. */
+  init?: true;
+} = {}): {
   trackEvent(event: UserEvent): void;
 } {
   function trackEvent(event: UserEvent) {
-    console.log("Event", ...event);
-
     push(["trackEvent", ...event]);
   }
 
   useEffect(() => {
+    if (init) {
+      // matomo analytics
+      if (IS_FRONTIER) {
+        // only testing matomo on frontier for now
+        initMatomo(INIT_CONFIG);
+      }
+    }
+
     if (onLoadEvent) {
       trackEvent(onLoadEvent);
     }

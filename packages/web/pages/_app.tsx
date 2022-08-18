@@ -1,10 +1,8 @@
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
-import { useEffect } from "react";
 import type { AppProps } from "next/app";
 import { enableStaticRendering } from "mobx-react-lite";
 import { ToastContainer, Bounce } from "react-toastify";
-import init from "@socialgouv/matomo-next";
 import { StoreProvider } from "../stores";
 import { MainLayout } from "../components/layouts";
 import { TempBanner } from "../components/alert/temp-banner";
@@ -13,7 +11,7 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
-import { GetKeplrProvider } from "../hooks";
+import { GetKeplrProvider, useMatomoAnalytics } from "../hooks";
 import { IbcNotifier } from "../stores/ibc-notifier";
 import { IS_FRONTIER } from "../config";
 
@@ -62,16 +60,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     },
   ];
 
-  // matomo analytics
-  useEffect(() => {
-    if (IS_FRONTIER) {
-      // only testing matomo on frontier for now
-      init({
-        url: "https://analyze.osmosis.zone/",
-        siteId: "4",
-      });
-    }
-  }, []);
+  useMatomoAnalytics({ init: true });
 
   return (
     <GetKeplrProvider>

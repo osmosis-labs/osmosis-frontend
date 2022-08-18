@@ -1,6 +1,15 @@
 import { UserEvent } from "../hooks";
 import { SortDirection } from "../components/types";
 
+/** # User Events Constants
+ *  Logged to Matomo analytics at https://analyze.osmosis.zone/
+ */
+
+export const INIT_CONFIG = {
+  url: "https://analyze.osmosis.zone/",
+  siteId: "4",
+};
+
 // Should be in sync with: https://www.notion.so/osmosiszone/8bbbabce67fa4c4289989632633b9052?v=7123ab7319054d9aa63ba9e40b6d6c51
 // For maintainability - all event logs should be in high level component
 
@@ -31,4 +40,25 @@ export const MakeAssetsPageEvents: EventConfigMaker = {
   sortAssets(direction: SortDirection): UserEvent {
     return [AssetsCategory, "SortAssets", direction];
   },
+};
+
+// pool detail page
+const PoolCategory = "Pool";
+export const PoolDetailEvents: EventConfig = {
+  startManageLiquidity: [PoolCategory, "StartManageLiquidity"],
+  setSingleAssetLiquidity: [PoolCategory, "SetSingleAssetLiquidity"],
+  addLiquiditySuccess: [PoolCategory, "AddLiquidity", "success"],
+  addLiquidityFailure: [PoolCategory, "AddLiquidity", "failure"],
+  removeLiquiditySuccess: [PoolCategory, "RemoveLiquidity", "success"],
+  removeLiquidityFailure: [PoolCategory, "RemoveLiquidity", "failure"],
+  startSwapTokens: [PoolCategory, "StartsSwapPool"],
+  poolSwapSuccess: [PoolCategory, "SwapPool", "success"],
+  poolSwapFailure: [PoolCategory, "SwapPool", "failure"],
+  gammTokenUnlockSuccess: [PoolCategory, "GAMMUnlock", "success"],
+  gammTokenUnlockFailure: [PoolCategory, "GAMMUnlock", "failure"],
+  gammTokenLockSuccess: [PoolCategory, "GAMMLock", "success"],
+  gammTokenLockFailure: [PoolCategory, "GAMMLock", "failure"],
+  goSuperfluid: [PoolCategory, "ElectSuperfluid"],
+  superfluidStakeSuccess: [PoolCategory, "SuperfluidStake", "success"],
+  superfluidStakeFailure: [PoolCategory, "SuperfluidStake", "failure"],
 };
