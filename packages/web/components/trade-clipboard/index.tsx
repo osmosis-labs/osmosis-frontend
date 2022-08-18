@@ -1,12 +1,25 @@
-import { FunctionComponent, useEffect, useRef, useState, useMemo } from "react";
+import {
+  FunctionComponent,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { Pool } from "@osmosis-labs/pools";
 import { isError } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { IS_FRONTIER, PoolDetailEvents } from "../../config";
+import {
+  IS_FRONTIER,
+  PoolDetailEvents,
+  SwapPageEvents,
+  MakeSwapPageEvents,
+} from "../../config";
 import {
   useBooleanWithWindowEvent,
   useFakeFeeConfig,
@@ -89,7 +102,16 @@ export const TradeClipboard: FunctionComponent<{
   tradeTokenInConfig.setFeeConfig(feeConfig);
 
   // show details
-  const [showEstimateDetails, setShowEstimateDetails] = useState(false);
+  const [showEstimateDetails, do_setShowEstimateDetails] = useState(false);
+  const setShowEstimateDetails = useCallback(
+    (isOpen: boolean) => {
+      if (isOpen) {
+        trackEvent(SwapPageEvents.openSwapDetails);
+      }
+      do_setShowEstimateDetails(isOpen);
+    },
+    [do_setShowEstimateDetails]
+  );
   const isEstimateDetailRelevant = !(
     tradeTokenInConfig.amount === "" || tradeTokenInConfig.amount === "0"
   );
@@ -300,7 +322,17 @@ export const TradeClipboard: FunctionComponent<{
                   }`}
                   style="no-border"
                   currentValue={slippageConfig.manualSlippageStr}
-                  onInput={(value) => slippageConfig.setManualSlippage(value)}
+                  onInput={(value) => {
+                    trackEvent(
+                      MakeSwapPageEvents.setSlippageTolerance(
+                        tradeTokenInConfig.optimizedRoutePaths
+                          .flatMap((route) => route.pools)
+                          .map(({ id }) => id),
+                        slippageConfig.slippage.toString()
+                      )
+                    );
+                    slippageConfig.setManualSlippage(value);
+                  }}
                   onFocus={() => slippageConfig.setIsManualSlippage(true)}
                   inputRef={manualSlippageInputRef}
                   isAutosize
@@ -363,6 +395,7 @@ export const TradeClipboard: FunctionComponent<{
                   e.preventDefault();
 
                   if (tradeTokenInConfig.fraction !== 1) {
+                    trackEvent(SwapPageEvents.swapMaxAmount);
                     tradeTokenInConfig.setFraction(1);
                   } else {
                     tradeTokenInConfig.setFraction(undefined);
@@ -382,6 +415,7 @@ export const TradeClipboard: FunctionComponent<{
                   e.preventDefault();
 
                   if (tradeTokenInConfig.fraction !== 0.5) {
+                    trackEvent(SwapPageEvents.swapHalfAmount);
                     tradeTokenInConfig.setFraction(0.5);
                   } else {
                     tradeTokenInConfig.setFraction(undefined);
@@ -846,10 +880,14 @@ export const TradeClipboard: FunctionComponent<{
                 if (isError(tx)) trackEvent(PoolDetailEvents.poolSwapFailure);
                 else trackEvent(PoolDetailEvents.poolSwapSuccess);
               } else {
+                const inToken = [
+                  tokenIn.currency.coinMinimalDenom,
+                  tradeTokenInConfig.amount,
+                ];
                 // is on swap page
-                if (isError(tx)) {
-                  // TODO: add swap page events
-                }
+                if (isError(tx))
+                  trackEvent(MakeSwapPageEvents.swapFailure(...inToken));
+                else trackEvent(MakeSwapPageEvents.swapSuccess(...inToken));
               }
             };
 
@@ -893,7 +931,10 @@ export const TradeClipboard: FunctionComponent<{
                   {
                     preferNoSetFee: preferZeroFee,
                   },
-                  trackSwapEvent
+                  (tx) => {
+                    trackEvent(SwapPageEvents.multiHopSwap);
+                    trackSwapEvent(tx);
+                  }
                 );
               }
               tradeTokenInConfig.setAmount("");

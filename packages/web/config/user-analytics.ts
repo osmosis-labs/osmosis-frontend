@@ -66,3 +66,27 @@ export const PoolDetailEvents: EventConfig = {
   unpoolSuccess: [PoolCategory, "UnPool", "success"],
   unpoolFailure: [PoolCategory, "UnPool", "failure"],
 };
+
+// swap page
+const SwapCategory = "Swap";
+export const SwapPageEvents: EventConfig = {
+  multiHopSwap: [SwapCategory, "MultiHopSwap"],
+  openSwapDetails: [SwapCategory, "OpenSwapDetails"],
+  swapMaxAmount: [SwapCategory, "SwapMaxAmount"],
+  swapHalfAmount: [SwapCategory, "SwapHalfAmount"],
+};
+export const MakeSwapPageEvents: EventConfigMaker = {
+  swapSuccess(denom: string, amount: string) {
+    return [SwapCategory, "Swap", "success", amount + " " + denom];
+  },
+  swapFailure(denom: string, amount: string) {
+    return [SwapCategory, "Swap", "failure", amount + " " + denom];
+  },
+  setSlippageTolerance(poolIds: string[], toleranceDec: string) {
+    return [
+      SwapCategory,
+      "SetSlippageTolerance",
+      poolIds.join(" ") + " " + toleranceDec,
+    ];
+  },
+};
