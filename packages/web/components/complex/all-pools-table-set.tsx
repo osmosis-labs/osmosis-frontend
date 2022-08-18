@@ -90,7 +90,6 @@ export const AllPoolsTableSet: FunctionComponent<{
           )
           .join(" "),
       })),
-    // eslint-disable-next-line
     [
       allPools,
       account.bech32Address,

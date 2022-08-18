@@ -117,7 +117,6 @@ export const TradeClipboard: FunctionComponent<{
       // Whenever the setting opened, give a focus to the input if the manual slippage setting mode is on.
       manualSlippageInputRef.current?.focus();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSettingOpen]);
 
   // token select dropdown

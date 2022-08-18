@@ -337,7 +337,6 @@ const Pool: FunctionComponent = observer(() => {
     if (poolExists === false) {
       router.push("/pools");
     }
-    // eslint-disable-next-line
   }, [poolExists]);
 
   // Manage liquidity + bond LP tokens (modals) state
