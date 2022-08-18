@@ -13,17 +13,17 @@ export const INIT_CONFIG = {
 // Should be in sync with: https://www.notion.so/osmosiszone/8bbbabce67fa4c4289989632633b9052?v=7123ab7319054d9aa63ba9e40b6d6c51
 // For maintainability - all event logs should be in high level component
 
-type EventConfig = {
+type EventsConfig = {
   [key: string]: UserEvent;
 };
 
-type EventConfigMaker = {
+type EventConfigMakers = {
   [key: string]: (...any: any) => UserEvent;
 };
 
 // assets page
 const AssetsCategory = "Assets";
-export const AssetsPageEvents: EventConfig = {
+export const AssetsPageEvents: EventsConfig = {
   startSearchAssets: [AssetsCategory, "StartSearch"],
   // sortAssets below w/ direction
   rowStartDeposit: [AssetsCategory, "RowTransfer", "deposit"],
@@ -36,7 +36,7 @@ export const AssetsPageEvents: EventConfig = {
   hideZeroBalances: [AssetsCategory, "ShowZeroBalances", "false"],
   showZeroBalances: [AssetsCategory, "ShowZeroBalances", "true"],
 };
-export const MakeAssetsPageEvents: EventConfigMaker = {
+export const MakeAssetsPageEvents: EventConfigMakers = {
   sortAssets(direction: SortDirection): UserEvent {
     return [AssetsCategory, "SortAssets", direction];
   },
@@ -44,7 +44,7 @@ export const MakeAssetsPageEvents: EventConfigMaker = {
 
 // pool detail page
 const PoolCategory = "Pool";
-export const PoolDetailEvents: EventConfig = {
+export const PoolDetailEvents: EventsConfig = {
   startManageLiquidity: [PoolCategory, "StartManageLiquidity"],
   setSingleAssetLiquidity: [PoolCategory, "SetSingleAssetLiquidity"],
   addLiquiditySuccess: [PoolCategory, "AddLiquidity", "success"],
@@ -69,13 +69,13 @@ export const PoolDetailEvents: EventConfig = {
 
 // swap page
 const SwapCategory = "Swap";
-export const SwapPageEvents: EventConfig = {
+export const SwapPageEvents: EventsConfig = {
   multiHopSwap: [SwapCategory, "MultiHopSwap"],
   openSwapDetails: [SwapCategory, "OpenSwapDetails"],
   swapMaxAmount: [SwapCategory, "SwapMaxAmount"],
   swapHalfAmount: [SwapCategory, "SwapHalfAmount"],
 };
-export const MakeSwapPageEvents: EventConfigMaker = {
+export const MakeSwapPageEvents: EventConfigMakers = {
   swapSuccess(denom: string, amount: string) {
     return [SwapCategory, "Swap", "success", amount + " " + denom];
   },
@@ -89,4 +89,16 @@ export const MakeSwapPageEvents: EventConfigMaker = {
       poolIds.join(" ") + " " + toleranceDec,
     ];
   },
+};
+
+// pools page
+const PoolsCategory = "Pools";
+export const PoolsPageEvents: EventsConfig = {
+  startCreatePool: [PoolsCategory, "StartCreatePool"],
+  createPoolSuccess: [PoolsCategory, "CreatePoolSuccess", "success"],
+  createPoolFailure: [PoolsCategory, "CreatePool", "failure"],
+  showLowTvlPools: [PoolsCategory, "ShowLowTVLPools"],
+  showAllPools: [PoolsCategory, "ShowAllPools"],
+  sortPools: [PoolsCategory, "SortPools"],
+  startPoolsSearch: [PoolsCategory, "StartPoolsSearch"],
 };

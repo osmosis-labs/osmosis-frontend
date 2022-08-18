@@ -9,11 +9,13 @@ import {
   useEffect,
   useRef,
 } from "react";
+import { PoolsPageEvents } from "../../config";
 import {
   useFilteredData,
   usePaginatedData,
   useSortedData,
   useWindowSize,
+  useMatomoAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { Switch, MenuToggle, PageList, SortMenu } from "../control";
@@ -42,14 +44,24 @@ export const AllPoolsTableSet: FunctionComponent<{
     accountStore,
   } = useStore();
   const { isMobile } = useWindowSize();
+  const { trackEvent } = useMatomoAnalytics();
 
   const [activeOptionId, setActiveOptionId] = useState(tableSet);
   const selectOption = (optionId: string) => {
+    if (optionId === "all-pools") trackEvent(PoolsPageEvents.showAllPools);
+
     if (optionId === "incentivized-pools" || optionId === "all-pools") {
       setActiveOptionId(optionId);
     }
   };
-  const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
+  const [isPoolTvlFiltered, do_setIsPoolTvlFiltered] = useState(false);
+  const setIsPoolTvlFiltered = useCallback(
+    (isFiltered: boolean) => {
+      if (isFiltered) trackEvent(PoolsPageEvents.showLowTvlPools);
+      do_setIsPoolTvlFiltered(isFiltered);
+    },
+    [do_setIsPoolTvlFiltered]
+  );
 
   const { chainId } = chainStore.osmosis;
   const queriesOsmosis = queriesStore.get(chainId).osmosis!;
@@ -141,12 +153,19 @@ export const AllPoolsTableSet: FunctionComponent<{
   const initialSortDirection = "descending";
   const [
     sortKeyPath,
-    setSortKeyPath,
+    do_setSortKeyPath,
     sortDirection,
     setSortDirection,
     toggleSortDirection,
     sortedAllPoolsWithMetrics,
   ] = useSortedData(tvlFilteredPools, initialKeyPath, initialSortDirection);
+  const setSortKeyPath = useCallback(
+    (terms: string) => {
+      trackEvent(PoolsPageEvents.sortPools);
+      do_setSortKeyPath(terms);
+    },
+    [do_setSortKeyPath]
+  );
 
   const [query, setQuery, filteredPools] = useFilteredData(
     sortedAllPoolsWithMetrics,
@@ -369,6 +388,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         searchBoxProps={{
           currentValue: query,
           onInput: setQuery,
+          onFocus: () => trackEvent(PoolsPageEvents.startPoolsSearch),
           placeholder: "Search pools",
         }}
         sortMenuProps={{
@@ -423,6 +443,7 @@ export const AllPoolsTableSet: FunctionComponent<{
             <SearchBox
               currentValue={query}
               onInput={setQuery}
+              onFocus={() => trackEvent(PoolsPageEvents.startPoolsSearch)}
               placeholder="Search pools"
               className="!w-64"
             />
