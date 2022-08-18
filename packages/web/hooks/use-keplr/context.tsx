@@ -196,12 +196,12 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
         });
 
         eventListener.on("select_extension", () => {
-          trackEvent(NavBarEvents.connectKeplrSuccess);
           setIsExtensionSelectionModalOpen(false);
 
           getKeplrFromWindow().then((keplr) => {
             lastUsedKeplrRef.current = keplr;
             setConnectionType("extension");
+            trackEvent(NavBarEvents.connectKeplrSuccess);
             resolve(keplr);
             cleanUp();
           });

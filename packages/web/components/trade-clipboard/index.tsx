@@ -286,6 +286,14 @@ export const TradeClipboard: FunctionComponent<{
                       e.preventDefault();
 
                       slippageConfig.select(slippage.index);
+
+                      trackEvent(
+                        MakeSwapPageEvents.setSlippageTolerance(
+                          tradeTokenInConfig.sendCurrency.coinDenom,
+                          tradeTokenInConfig.outCurrency.coinDenom,
+                          slippageConfig.slippage.toString()
+                        )
+                      );
                     }}
                   >
                     <button>{slippage.slippage.toString()}</button>
@@ -323,15 +331,15 @@ export const TradeClipboard: FunctionComponent<{
                   style="no-border"
                   currentValue={slippageConfig.manualSlippageStr}
                   onInput={(value) => {
+                    slippageConfig.setManualSlippage(value);
+
                     trackEvent(
                       MakeSwapPageEvents.setSlippageTolerance(
-                        tradeTokenInConfig.optimizedRoutePaths
-                          .flatMap((route) => route.pools)
-                          .map(({ id }) => id),
+                        tradeTokenInConfig.sendCurrency.coinDenom,
+                        tradeTokenInConfig.outCurrency.coinDenom,
                         slippageConfig.slippage.toString()
                       )
                     );
-                    slippageConfig.setManualSlippage(value);
                   }}
                   onFocus={() => slippageConfig.setIsManualSlippage(true)}
                   inputRef={manualSlippageInputRef}
