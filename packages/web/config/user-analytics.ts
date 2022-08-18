@@ -1,5 +1,4 @@
 import { UserEvent } from "../hooks";
-import { SortDirection } from "../components/types";
 
 /** # User Events Constants
  *  Logged to Matomo analytics at https://analyze.osmosis.zone/
@@ -35,11 +34,7 @@ export const AssetsPageEvents: EventsConfig = {
   editWithdrawAddress: [AssetsCategory, "EditWithdrawAddress"],
   hideZeroBalances: [AssetsCategory, "ShowZeroBalances", "false"],
   showZeroBalances: [AssetsCategory, "ShowZeroBalances", "true"],
-};
-export const MakeAssetsPageEvents: EventConfigMakers = {
-  sortAssets(direction: SortDirection): UserEvent {
-    return [AssetsCategory, "SortAssets", direction];
-  },
+  sortAssets: [AssetsCategory, "SortAssets"],
 };
 
 // pool detail page

@@ -1,10 +1,6 @@
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import {
-  initialAssetsSort,
-  AssetsPageEvents,
-  MakeAssetsPageEvents,
-} from "../../config";
+import { initialAssetsSort, AssetsPageEvents } from "../../config";
 import {
   IBCBalance,
   IBCCW20ContractBalance,
@@ -167,7 +163,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
   ] = useSortedData(cells);
   const setSortKey = useCallback(
     (term: string) => {
-      trackEvent(MakeAssetsPageEvents.sortAssets(sortDirection));
+      trackEvent(AssetsPageEvents.sortAssets);
       do_setSortKey(term);
     },
     [trackEvent, sortDirection, do_setSortKey]

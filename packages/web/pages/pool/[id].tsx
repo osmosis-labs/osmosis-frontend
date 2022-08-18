@@ -417,8 +417,15 @@ const Pool: FunctionComponent = observer(() => {
       }
     );
 
-  const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
+  const [showSuperfluidValidatorModal, do_setShowSuperfluidValidatorsModal] =
     useState(false);
+  const setShowSuperfluidValidatorsModal = useCallback(
+    (show: boolean) => {
+      trackEvent(PoolDetailEvents.goSuperfluid);
+      do_setShowLockLPTokenModal(show);
+    },
+    [do_setShowSuperfluidValidatorsModal]
+  );
 
   // swap modal
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
@@ -588,7 +595,6 @@ const Pool: FunctionComponent = observer(() => {
           }
           onLockToken={async (gaugeId, electSuperfluid) => {
             if (electSuperfluid) {
-              trackEvent(PoolDetailEvents.goSuperfluid);
               setShowLockLPTokenModal(false);
               setShowSuperfluidValidatorsModal(true);
               // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
@@ -660,7 +666,13 @@ const Pool: FunctionComponent = observer(() => {
                       superfluid.upgradeableLPLockIds.lockIds,
                       validatorAddress,
                       undefined,
-                      () => setShowSuperfluidValidatorsModal(false)
+                      (tx) => {
+                        if (isError(tx))
+                          trackEvent(PoolDetailEvents.superfluidStakeFailure);
+                        else
+                          trackEvent(PoolDetailEvents.superfluidStakeSuccess);
+                        setShowSuperfluidValidatorsModal(false);
+                      }
                     );
                   } catch (e) {
                     console.error(e);
@@ -920,14 +932,10 @@ const Pool: FunctionComponent = observer(() => {
               ) : (
                 <h6>My Bondings</h6>
               )}
-              {showDepoolButton && (
+              {showDepoolButton && pool && (
                 <Button
                   className="h-8 px-2"
                   onClick={async () => {
-                    if (!pool) {
-                      return;
-                    }
-
                     try {
                       await account.osmosis.sendUnPoolWhitelistedPoolMsg(
                         pool.id,
@@ -939,7 +947,7 @@ const Pool: FunctionComponent = observer(() => {
                         }
                       );
                     } catch (e) {
-                      console.log(e);
+                      console.error(e);
                     }
                   }}
                   loading={account.txTypeInProgress === "unPoolWhitelistedPool"}
@@ -1020,12 +1028,34 @@ const Pool: FunctionComponent = observer(() => {
                               locks.some((lock) => lock.isSyntheticLock)
                             ) {
                               await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-                                locks
+                                locks,
+                                undefined,
+                                (tx) => {
+                                  if (isError(tx))
+                                    trackEvent(
+                                      PoolDetailEvents.gammTokenUnlockFailure
+                                    );
+                                  else
+                                    trackEvent(
+                                      PoolDetailEvents.gammTokenUnlockSuccess
+                                    );
+                                }
                               );
                             } else {
                               const blockGasLimitLockIds = lockIds.slice(0, 10);
                               await account.osmosis.sendBeginUnlockingMsg(
-                                blockGasLimitLockIds
+                                blockGasLimitLockIds,
+                                undefined,
+                                (tx) => {
+                                  if (isError(tx))
+                                    trackEvent(
+                                      PoolDetailEvents.gammTokenUnlockFailure
+                                    );
+                                  else
+                                    trackEvent(
+                                      PoolDetailEvents.gammTokenUnlockSuccess
+                                    );
+                                }
                               );
                             }
                           } catch (e) {
