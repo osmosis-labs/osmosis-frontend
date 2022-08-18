@@ -103,3 +103,23 @@ export const PoolsPageEvents: EventsConfig = {
   sortPools: [PoolsCategory, "SortPools"],
   startPoolsSearch: [PoolsCategory, "StartPoolsSearch"],
 };
+
+// nav bar
+const NavBarCategory = "NavBar";
+export const NavBarEvents: EventsConfig = {
+  startConnectWallet: [NavBarCategory, "StartConnectWallet"],
+  cancelConnectWallet: [NavBarCategory, "CancelConnectWallet"],
+  disconnectWallet: [NavBarCategory, "DisconnectWallet"],
+  installKeplrLink: [NavBarCategory, "InstallKeplrLink"],
+  connectKeplrSuccess: [NavBarCategory, "ConnectKeplrSuccess"],
+  connectWalletConnectSuccess: [NavBarCategory, "ConnectWalletConnectSuccess"],
+  supportLabLink: [NavBarCategory, "SupportLabLink"],
+  twitterLink: [NavBarCategory, "TwitterLink"],
+  mediumLink: [NavBarCategory, "MediumLink"],
+  commonwealthLink: [NavBarCategory, "CommonwealthLink"],
+  discordLink: [NavBarCategory, "DiscordLink"],
+  telegramLink: [NavBarCategory, "TelegramLink"],
+  stakeLink: [NavBarCategory, "StakeLink"],
+  voteLink: [NavBarCategory, "VoteLink"],
+  infoLink: [NavBarCategory, "InfoLink"],
+};
