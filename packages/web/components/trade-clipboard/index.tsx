@@ -439,7 +439,7 @@ export const TradeClipboard: FunctionComponent<{
                 placeholder="0"
                 onChange={(e) => {
                   e.preventDefault();
-                  if (Number(e.target.value) <= Number.MAX_SAFE_INTEGER) {
+                  if (e.target.value.length < 17) {
                     tradeTokenInConfig.setAmount(e.target.value);
                   }
                 }}
@@ -534,7 +534,7 @@ export const TradeClipboard: FunctionComponent<{
           }
         >
           <div
-            className="flex items-center place-content-between transition-transform"
+            className="flex items-center place-content-between transition-all"
             style={
               isAnimatingSwitch
                 ? {
