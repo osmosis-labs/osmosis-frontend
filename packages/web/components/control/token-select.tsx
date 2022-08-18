@@ -7,6 +7,7 @@ import { useStore } from "../../stores";
 import { TokenSelectModal } from "../../modals";
 import { useBooleanWithWindowEvent, useFilteredData } from "../../hooks";
 import { MobileProps } from "../types";
+import classNames from "classnames";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelect: FunctionComponent<
@@ -165,7 +166,7 @@ export const TokenSelect: FunctionComponent<
                   </div>
                 )}
               </div>
-              <div className="absolute top-1 md:top-1.5 w-24 subtitle2 md:caption text-iconDefault">
+              <div className="absolute top-1 md:top-1.5 w-28 subtitle2 md:caption text-iconDefault">
                 {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
                   ?.chainName ?? ""}
               </div>
@@ -264,7 +265,15 @@ export const TokenSelect: FunctionComponent<
                         </div>
                         {t.token instanceof CoinPretty && (
                           <div className="flex flex-col text-right">
-                            <span className="body1 text-white-high">
+                            <span
+                              className={classNames(
+                                "text-white-high",
+                                t.token.trim(true).hideDenom(true).toString()
+                                  .length > 16 && t.token.toDec().isPositive()
+                                  ? "body1 text-xs"
+                                  : "body1"
+                              )}
+                            >
                               {t.token.trim(true).hideDenom(true).toString()}
                             </span>
                             {fiatValue && (
