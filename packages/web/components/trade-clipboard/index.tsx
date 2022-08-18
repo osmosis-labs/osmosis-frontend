@@ -2,11 +2,11 @@ import { FunctionComponent, useEffect, useRef, useState, useMemo } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import { Pool } from "@osmosis-labs/pools";
+import { isError } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { IS_FRONTIER } from "../../config";
+import { IS_FRONTIER, PoolDetailEvents } from "../../config";
 import {
   useBooleanWithWindowEvent,
   useFakeFeeConfig,
@@ -14,6 +14,7 @@ import {
   useTokenSwapQueryParams,
   useTradeTokenInConfig,
   useWindowSize,
+  useMatomoAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { Button } from "../buttons";
@@ -37,6 +38,7 @@ export const TradeClipboard: FunctionComponent<{
   } = useStore();
   const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();
+  const { trackEvent } = useMatomoAnalytics();
 
   const allTokenBalances = nativeBalances.concat(ibcBalances);
 
@@ -838,6 +840,19 @@ export const TradeClipboard: FunctionComponent<{
             };
             const maxSlippage = slippageConfig.slippage.symbol("").toString();
 
+            const trackSwapEvent = (tx: any) => {
+              if (isInModal) {
+                // Is in pool detail page
+                if (isError(tx)) trackEvent(PoolDetailEvents.poolSwapFailure);
+                else trackEvent(PoolDetailEvents.poolSwapSuccess);
+              } else {
+                // is on swap page
+                if (isError(tx)) {
+                  // TODO: add swap page events
+                }
+              }
+            };
+
             try {
               if (routes.length === 1) {
                 await account.osmosis.sendSwapExactAmountInMsg(
@@ -857,7 +872,8 @@ export const TradeClipboard: FunctionComponent<{
                   },
                   {
                     preferNoSetFee: preferZeroFee,
-                  }
+                  },
+                  trackSwapEvent
                 );
               } else {
                 await account.osmosis.sendMultihopSwapExactAmountInMsg(
@@ -876,7 +892,8 @@ export const TradeClipboard: FunctionComponent<{
                   },
                   {
                     preferNoSetFee: preferZeroFee,
-                  }
+                  },
+                  trackSwapEvent
                 );
               }
               tradeTokenInConfig.setAmount("");

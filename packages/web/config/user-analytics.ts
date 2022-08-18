@@ -49,6 +49,8 @@ export const PoolDetailEvents: EventConfig = {
   setSingleAssetLiquidity: [PoolCategory, "SetSingleAssetLiquidity"],
   addLiquiditySuccess: [PoolCategory, "AddLiquidity", "success"],
   addLiquidityFailure: [PoolCategory, "AddLiquidity", "failure"],
+  addSingleLiquiditySuccess: [PoolCategory, "AddSingleLiquidity", "success"],
+  addSingleLiquidityFailure: [PoolCategory, "AddSingleLiquidity", "failure"],
   removeLiquiditySuccess: [PoolCategory, "RemoveLiquidity", "success"],
   removeLiquidityFailure: [PoolCategory, "RemoveLiquidity", "failure"],
   startSwapTokens: [PoolCategory, "StartsSwapPool"],
@@ -61,4 +63,6 @@ export const PoolDetailEvents: EventConfig = {
   goSuperfluid: [PoolCategory, "ElectSuperfluid"],
   superfluidStakeSuccess: [PoolCategory, "SuperfluidStake", "success"],
   superfluidStakeFailure: [PoolCategory, "SuperfluidStake", "failure"],
+  unpoolSuccess: [PoolCategory, "UnPool", "success"],
+  unpoolFailure: [PoolCategory, "UnPool", "failure"],
 };

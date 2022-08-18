@@ -8,7 +8,7 @@ export type UserEvent =
   | [string, string, string]
   | [string, string];
 
-/** Do-it-all hook for logging custom events on page load or  */
+/** Do-it-all hook for initting Matomo and logging custom events on page load or at any time. */
 export function useMatomoAnalytics({
   onLoadEvent,
   init,
