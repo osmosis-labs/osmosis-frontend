@@ -2,6 +2,11 @@ import { ChainInfoWithExplorer } from "../stores/chain";
 import { AppCurrency } from "@keplr-wallet/types";
 import { PeggedCurrency } from "../stores/assets";
 
+import { assets, chains } from 'chain-registry';
+import { chainRegistryChainToKeplr } from '@chain-registry/keplr';
+import { ChainInfo } from '@keplr-wallet/types';
+
+
 /** All currency attributes (stake and fee) are defined once in the `currencies` list.
  *  Maintains the option to skip this conversion and keep the verbose `ChainInfo` type.
  */
@@ -17,6 +22,33 @@ export type SimplifiedChainInfo = Omit<
       }
   >;
 };
+
+export function getAllChainInfos(chain_names: string[]){
+  for (const chainname of chain_names) {
+
+    // chainRegistryChainToKeplr(chain, assets);
+
+    const chain = chains.find(({chain_name})=>chain_name===chainname);
+
+    if (chain) {
+      const config: ChainInfo = chainRegistryChainToKeplr(chain, assets);
+
+    }
+
+    // const asset = assets.find(({chain_name})=>chain_name==='osmosis');
+
+
+    
+    // const config: ChainInfo = chainRegistryChainToKeplr(chain, assets);
+
+    // // you can add options as well to choose endpoints 
+    // const config: ChainInfo = chainRegistryChainToKeplr(chain, assets, {
+    //     getExplorer: () => 'https://myexplorer.com',
+    //     getRestEndpoint: (chain) => chain.apis?.rest[1]?.address
+    //     getRpcEndpoint: (chain) => chain.apis?.rpc[1]?.address
+    // });
+  }
+}
 
 /** Convert a less redundant chain info schema into one that is accepted by Keplr's suggestChain: `ChainInfo`. */
 export function createKeplrChainInfos(

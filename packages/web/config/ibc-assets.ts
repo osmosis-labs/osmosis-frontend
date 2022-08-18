@@ -1,7 +1,61 @@
 import { IBCAsset } from "../stores/assets";
+import { assets, chains } from 'chain-registry';
+import { chainRegistryChainToKeplr } from '@chain-registry/keplr';
+import { ChainInfo } from '@keplr-wallet/types';
+
+
 
 export const IS_FRONTIER = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
 export const UNSTABLE_MSG = "Transfers are disabled due to instability";
+
+export type AssetlistAsset = {
+  originCurrency?: AppCurrency & {
+    /** For assets that are pegged/stablecoins. */
+    pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+  };
+};
+
+export async function generateIBCAssetsFromAssetlist(
+  assetlist_url: string
+):  Promise<IBCAsset & {
+  /** URL if the asset requires a custom deposit external link. Must include `https://...`. */
+  depositUrlOverride?: string;
+
+  /** URL if the asset requires a custom withdrawal external link. Must include `https://...`. */
+  withdrawUrlOverride?: string;
+
+  /** Alternative chain name to display as the source chain */
+  sourceChainNameOverride?: string;
+
+  /** Related to showing assets on main (canonical) vs frontier (permissionless). Verified means that governance has
+   *  voted on its incentivization or general approval (amongst other possibilities).
+   */
+  isVerified?: boolean;
+}> {
+
+  let assetlist = await axios.get(assetlist_url)
+  
+
+
+  const posBals = ibcBalances.filter((b) => b.fiatValueRaw !== "0");
+  const posBalsSorted = posBals.sort((a, b) => {
+    if (!a.fiatValueRaw || !b.fiatValueRaw) return 0;
+    const aDec = new Dec(a.fiatValueRaw);
+    const bDec = new Dec(b.fiatValueRaw);
+    if (aDec.gt(bDec)) {
+      return -1;
+    } else if (aDec.lt(bDec)) {
+      return 1;
+    }
+    return 0;
+  });
+
+  return [
+    ...posBalsSorted,
+    ...ibcBalances.filter((b) => b.fiatValueRaw === "0"),
+  ];
+}
+
 
 /**
  * Determine the channel info per the chain.
