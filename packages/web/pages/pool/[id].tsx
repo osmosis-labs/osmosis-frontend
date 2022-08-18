@@ -351,7 +351,15 @@ const Pool: FunctionComponent = observer(() => {
     }
     do_setShowManageLiquidityDialog(isOpen);
   }, []);
-  const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
+  const [showLockLPTokenModal, do_setShowLockLPTokenModal] = useState(false);
+  const setShowLockLPTokenModal = useCallback(
+    (show: boolean) => {
+      if (show) trackEvent(PoolDetailEvents.startLockTokens);
+      do_setShowLockLPTokenModal(show);
+    },
+    [do_setShowLockLPTokenModal]
+  );
+
   const addLiquidityConfig = useAddLiquidityConfig(
     chainStore,
     chainId,

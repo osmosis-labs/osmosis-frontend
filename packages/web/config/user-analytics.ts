@@ -58,6 +58,7 @@ export const PoolDetailEvents: EventsConfig = {
   poolSwapFailure: [PoolCategory, "SwapPool", "failure"],
   gammTokenUnlockSuccess: [PoolCategory, "GAMMUnlock", "success"],
   gammTokenUnlockFailure: [PoolCategory, "GAMMUnlock", "failure"],
+  startLockTokens: [PoolCategory, "StartLockTokens"],
   gammTokenLockSuccess: [PoolCategory, "GAMMLock", "success"],
   gammTokenLockFailure: [PoolCategory, "GAMMLock", "failure"],
   goSuperfluid: [PoolCategory, "ElectSuperfluid"],
