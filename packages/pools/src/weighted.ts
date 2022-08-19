@@ -169,7 +169,7 @@ export class WeightedPool implements Pool {
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
     effectivePriceOutOverIn: Dec;
-    slippage: Dec;
+    priceImpact: Dec;
   } {
     const inPoolAsset = this.getPoolAsset(tokenInDenom);
     const outPoolAsset = this.getPoolAsset(tokenOut.denom);
@@ -204,7 +204,7 @@ export class WeightedPool implements Pool {
     }
 
     const effectivePrice = new Dec(tokenInAmount).quo(new Dec(tokenOut.amount));
-    const slippage = effectivePrice
+    const priceImpact = effectivePrice
       .quo(beforeSpotPriceInOverOut)
       .sub(new Dec("1"));
 
@@ -218,7 +218,7 @@ export class WeightedPool implements Pool {
       afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
       effectivePriceInOverOut: effectivePrice,
       effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePrice),
-      slippage: slippage,
+      priceImpact,
     };
   }
 
@@ -233,7 +233,7 @@ export class WeightedPool implements Pool {
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
     effectivePriceOutOverIn: Dec;
-    slippage: Dec;
+    priceImpact: Dec;
   } {
     const inPoolAsset = this.getPoolAsset(tokenIn.denom);
     const outPoolAsset = this.getPoolAsset(tokenOutDenom);
@@ -264,7 +264,7 @@ export class WeightedPool implements Pool {
         afterSpotPriceOutOverIn: new Dec(0),
         effectivePriceInOverOut: new Dec(0),
         effectivePriceOutOverIn: new Dec(0),
-        slippage: new Dec(0),
+        priceImpact: new Dec(0),
       };
     }
 
@@ -281,7 +281,7 @@ export class WeightedPool implements Pool {
     }
 
     const effectivePrice = new Dec(tokenIn.amount).quo(new Dec(tokenOutAmount));
-    const slippage = effectivePrice
+    const priceImpact = effectivePrice
       .quo(beforeSpotPriceInOverOut)
       .sub(new Dec("1"));
 
@@ -295,7 +295,7 @@ export class WeightedPool implements Pool {
       afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
       effectivePriceInOverOut: effectivePrice,
       effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePrice),
-      slippage: slippage,
+      priceImpact,
     };
   }
 

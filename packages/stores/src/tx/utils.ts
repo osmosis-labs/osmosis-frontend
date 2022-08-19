@@ -9,3 +9,11 @@ export function isSlippageError(tx: any): boolean {
   }
   return false;
 }
+
+export function isError(tx: any) {
+  if (tx && typeof tx.code !== "undefined") {
+    return true;
+  }
+
+  return false;
+}

@@ -98,7 +98,6 @@ const Home: NextPage = observer(function () {
           }
 
           if (hasEnoughAssets) {
-            console.log(`${pool.id} will be included to swap router`);
             poolsPassed.current.set(pool.id, true);
           }
 
@@ -159,7 +158,7 @@ const Home: NextPage = observer(function () {
       </div>
       <div className="w-full h-full flex items-center overflow-x-hidden overflow-y-auto">
         <TradeClipboard
-          containerClassName="w-[32.5rem] md:w-[29.9rem] md:mt-mobile-header ml-auto mr-[10%] lg:mx-auto"
+          containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
           pools={pools}
         />
       </div>

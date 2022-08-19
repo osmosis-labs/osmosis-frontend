@@ -3,11 +3,13 @@ import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { PricePretty, Dec } from "@keplr-wallet/unit";
+import { useMatomoAnalytics } from "../../hooks";
 import { useStore } from "../../stores";
-import { IS_FRONTIER } from "../../config";
+import { IS_FRONTIER, NavBarEvents } from "../../config";
 
 export const SidebarBottom: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { trackEvent } = useMatomoAnalytics();
 
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
   const queries = queriesStore.get(chainStore.osmosis.chainId);
@@ -68,6 +70,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
             <button
               onClick={(e) => {
                 e.preventDefault();
+                trackEvent(NavBarEvents.disconnectWallet);
                 account.disconnect();
               }}
               className="button bg-transparent border border-opacity-30 border-secondary-200 h-9 w-full rounded-md py-2 px-1 flex items-center justify-center mb-5"
@@ -88,6 +91,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
             className="button flex items-center justify-center w-full h-9 py-3.5 rounded-md bg-primary-200 mb-5"
             onClick={(e) => {
               e.preventDefault();
+              trackEvent(NavBarEvents.startConnectWallet);
               account.init();
             }}
           >
@@ -132,81 +136,103 @@ export const SidebarBottom: FunctionComponent = observer(() => {
           </div>
         </p>
       ) : (
-        <Links />
+        <>
+          <div className="flex place-content-between transition-all overflow-x-hidden w-full">
+            <a
+              href="https://twitter.com/osmosiszone"
+              target="_blank"
+              className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
+              rel="noreferrer"
+              onClick={() => trackEvent(NavBarEvents.twitterLink)}
+            >
+              <Image
+                src="/icons/twitter.svg"
+                alt="twitter"
+                width={32}
+                height={32}
+              />
+            </a>
+            <a
+              href="https://medium.com/osmosis"
+              target="_blank"
+              className="opacity-80 hover:opacity-100 cursor-pointer px-1 m-auto"
+              rel="noreferrer"
+              onClick={() => trackEvent(NavBarEvents.mediumLink)}
+            >
+              <Image
+                src="/icons/medium.svg"
+                alt="medium"
+                width={36}
+                height={36}
+              />
+            </a>
+            <a
+              href="https://gov.osmosis.zone/"
+              target="_blank"
+              className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
+              rel="noreferrer"
+              onClick={() => trackEvent(NavBarEvents.commonwealthLink)}
+            >
+              <Image
+                className="w-9 h-9"
+                src="/icons/commonwealth.svg"
+                alt="commonwealth"
+                width={32}
+                height={32}
+              />
+            </a>
+            <a
+              href="https://discord.gg/osmosis"
+              target="_blank"
+              className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
+              rel="noreferrer"
+              onClick={() => trackEvent(NavBarEvents.discordLink)}
+            >
+              <Image
+                src="/icons/discord.svg"
+                alt="discord"
+                width={36}
+                height={36}
+              />
+            </a>
+            <a
+              href="https://t.me/osmosis_chat"
+              target="_blank"
+              className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
+              rel="noreferrer"
+              onClick={() => trackEvent(NavBarEvents.telegramLink)}
+            >
+              <Image
+                src="/icons/telegram.svg"
+                alt="telegram"
+                width={36}
+                height={36}
+              />
+            </a>
+          </div>
+          <div className="flex items-center place-content-around py-2 text-caption text-white-high">
+            <a
+              className="flex items-center gap-1"
+              href="https://support.osmosis.zone/"
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => trackEvent(NavBarEvents.supportLabLink)}
+            >
+              <span className="opacity-30 hover:opacity-40">
+                Get Support Lab Help
+              </span>
+              <div className="w-[12px] pt-0.5 opacity-60">
+                <Image
+                  alt="link"
+                  src="/icons/link-deco.svg"
+                  height={10}
+                  width={10}
+                />
+              </div>
+            </a>
+          </div>
+        </>
       )}
     </div>
   );
 });
-
-const Links: FunctionComponent = () => (
-  <>
-    <div className="flex place-content-between transition-all overflow-x-hidden w-full">
-      <a
-        href="https://twitter.com/osmosiszone"
-        target="_blank"
-        className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
-        rel="noreferrer"
-      >
-        <Image src="/icons/twitter.svg" alt="twitter" width={32} height={32} />
-      </a>
-      <a
-        href="https://medium.com/osmosis"
-        target="_blank"
-        className="opacity-80 hover:opacity-100 cursor-pointer px-1 m-auto"
-        rel="noreferrer"
-      >
-        <Image src="/icons/medium.svg" alt="medium" width={36} height={36} />
-      </a>
-      <a
-        href="https://gov.osmosis.zone/"
-        target="_blank"
-        className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
-        rel="noreferrer"
-      >
-        <Image
-          className="w-9 h-9"
-          src="/icons/commonwealth.svg"
-          alt="commonwealth"
-          width={32}
-          height={32}
-        />
-      </a>
-      <a
-        href="https://discord.gg/osmosis"
-        target="_blank"
-        className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
-        rel="noreferrer"
-      >
-        <Image src="/icons/discord.svg" alt="discord" width={36} height={36} />
-      </a>
-      <a
-        href="https://t.me/osmosis_chat"
-        target="_blank"
-        className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
-        rel="noreferrer"
-      >
-        <Image
-          src="/icons/telegram.svg"
-          alt="telegram"
-          width={36}
-          height={36}
-        />
-      </a>
-    </div>
-    <div className="flex items-center place-content-around py-2 text-caption text-white-high">
-      <a
-        className="flex items-center gap-1"
-        href="https://support.osmosis.zone/"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <span className="opacity-30 hover:opacity-40">
-          Get Support Lab Help
-        </span>
-        <div className="w-[12px] pt-0.5 opacity-60">
-          <Image alt="link" src="/icons/link-deco.svg" height={10} width={10} />
-        </div>
-      </a>
-    </div>
-  </>
-);
