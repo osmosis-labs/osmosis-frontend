@@ -1957,6 +1957,13 @@ chainInfos.push({
       coinGeckoId: "polkadot",
       coinImageUrl: "/tokens/dot.svg",
     },
+    {
+      coinDenom: "MATIC",
+      coinMinimalDenom: "matic-wei",
+      coinDecimals: 18,
+      coinGeckoId: "matic-network",
+      coinImageUrl: "/tokens/matic.svg",
+    },
   ],
   feeCurrencies: [
     {
