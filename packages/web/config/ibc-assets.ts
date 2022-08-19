@@ -104,6 +104,18 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "wmatic-wei",
+    depositUrlOverride:
+      "https://satellite.money/?source=polygon&destination=osmosis&asset_denom=wmatic-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=polygon&asset_denom=wmatic-wei",
+    sourceChainNameOverride: "Polygon",
+    isVerified: false,
+  },
+  {
     counterpartyChainId: "evmos_9001-2",
     sourceChannelId: "channel-204",
     destChannelId: "channel-0",
