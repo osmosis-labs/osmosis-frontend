@@ -5815,6 +5815,11 @@ hmac-drbg@^1.0.1:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
 
+hoist-non-react-statics@^2.3.1:
+  version "2.5.5"
+  resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.5.tgz#c5903cf409c0dfd908f388e619d86b9c1174cb47"
+  integrity sha512-rqcy4pJo55FTTLWt+bU8ukscqHeE/e9KWvsOW2b/a3afxQZhwkQdT1rPPCJ0rYXdj4vNcasY8zHTH+jF/qStxw==
+
 hoist-non-react-statics@^3.1.0:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
@@ -8869,6 +8874,13 @@ react-modal@^3.14.4:
     prop-types "^15.7.2"
     react-lifecycles-compat "^3.0.0"
     warning "^4.0.3"
+
+react-multi-lang@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/react-multi-lang/-/react-multi-lang-2.1.1.tgz#9a52ae23610bfe9b3b5727454aedf458174dc480"
+  integrity sha512-5SfYOXHFh5Bh6xiuOzRMZmUvbT1mxUJqlSKnyR8Yl87QLdu9BmI6hhzFzceIXnqC6r+7/3Qw70GRC4FaDlI4cw==
+  dependencies:
+    hoist-non-react-statics "^2.3.1"
 
 react-refresh@0.8.3:
   version "0.8.3"

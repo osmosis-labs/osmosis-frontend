@@ -16,11 +16,24 @@ import utc from "dayjs/plugin/utc";
 import { GetKeplrProvider } from "../hooks";
 import { IbcNotifier } from "../stores/ibc-notifier";
 import { IS_FRONTIER } from "../config";
+import {
+  setDefaultLanguage,
+  setLanguage,
+  setTranslations,
+} from "react-multi-lang";
+
+import en from "../localizations/en.json";
+import fr from "../localizations/fr.json";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 dayjs.extend(utc);
 enableStaticRendering(typeof window === "undefined");
+
+const SUPPORTED_LANGUAGES = ["en", "fr"];
+const DEFAULT_LANGUAGE = "en";
+setTranslations({ en, fr });
+setDefaultLanguage(DEFAULT_LANGUAGE);
 
 function MyApp({ Component, pageProps }: AppProps) {
   const menus = [
@@ -70,6 +83,20 @@ function MyApp({ Component, pageProps }: AppProps) {
         url: "https://analyze.osmosis.zone/",
         siteId: "4",
       });
+    }
+  }, []);
+
+  // Localization
+  useEffect(() => {
+    // get user language from navigator
+    let navigatorLanguage = window.navigator.language;
+    // formats can get: 'en-US', 'fr-FR', 'en-FR', 'fr', 'en', ...
+    let userLanguage = SUPPORTED_LANGUAGES.find((language) =>
+      navigatorLanguage.includes(language)
+    );
+    // default language is en, change only if it's different
+    if (userLanguage && userLanguage != DEFAULT_LANGUAGE) {
+      setLanguage(userLanguage);
     }
   }, []);
 
