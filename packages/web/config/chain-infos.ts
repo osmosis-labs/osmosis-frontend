@@ -3,6 +3,7 @@ import { Bech32Address } from "@keplr-wallet/cosmos";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 
 
+
 const chainInfos = (
   [
     {

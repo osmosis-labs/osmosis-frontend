@@ -33,7 +33,6 @@ export async function generateIBCAssetsFromAssetlist(
   isVerified?: boolean;
 }> {
 
-  let assetlist = await axios.get(assetlist_url)
   
 
 

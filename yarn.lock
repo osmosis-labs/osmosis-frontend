@@ -353,15 +353,16 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@chain-registry/keplr@^0.4.5":
-  version "0.4.5"
-  resolved "https://registry.yarnpkg.com/@chain-registry/keplr/-/keplr-0.4.5.tgz#a0c55c03484187444b47746a31a5ca148503ac58"
-  integrity sha512-iYrxcrzkLaMCqREG3p+vXJIAGmdGnWRN+sa23gf6PZ8a/kuSJliDhxH5WzUdXBWIAbQG7XAzzAU8uoslM6xbfg==
+"@chain-registry/keplr@0.4.7":
+  version "0.4.7"
+  resolved "https://registry.yarnpkg.com/@chain-registry/keplr/-/keplr-0.4.7.tgz#bbd2e0fa8ef15f9937b6dea4dfd226aa6141ea40"
+  integrity sha512-R2qtD1JJ7ZHFqbYsCQxtCM9iU5sW4SUnP75UI09xhFj8s462njRl3sRO5Rp6W9ETBHjBf0cyHnOdE2TdxrQeHA==
   dependencies:
     "@babel/runtime" "^7.18.3"
     "@chain-registry/types" "^0.4.0"
     "@keplr-wallet/cosmos" "^0.10.3"
     "@keplr-wallet/crypto" "^0.10.11"
+    semver "^7.3.7"
 
 "@chain-registry/types@^0.4.0":
   version "0.4.0"

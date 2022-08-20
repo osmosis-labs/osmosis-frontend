@@ -32,7 +32,6 @@ export function getAllChainInfos(chain_names: string[]){
 
     if (chain) {
       const config: ChainInfo = chainRegistryChainToKeplr(chain, assets);
-
     }
 
     // const asset = assets.find(({chain_name})=>chain_name==='osmosis');
