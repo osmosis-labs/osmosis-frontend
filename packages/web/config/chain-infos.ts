@@ -1958,11 +1958,11 @@ chainInfos.push({
       coinImageUrl: "/tokens/dot.svg",
     },
     {
-      coinDenom: "MATIC",
-      coinMinimalDenom: "matic-wei",
+      coinDenom: "WMATIC",
+      coinMinimalDenom: "wmatic-wei",
       coinDecimals: 18,
-      coinGeckoId: "matic-network",
-      coinImageUrl: "/tokens/matic.svg",
+      coinGeckoId: "wmatic",
+      coinImageUrl: "/tokens/wmatic.svg",
     },
   ],
   feeCurrencies: [
