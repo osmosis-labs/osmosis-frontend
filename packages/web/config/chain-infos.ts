@@ -1806,6 +1806,33 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "cosmwasm"],
       explorerUrlToTx: "https://scan.orai.io/txs/{txHash}",
     },
+    {
+      rpc: "http://164.90.154.41:26657",
+      rest: "http://164.90.154.41:1317",
+      chainId: "canto_7700-2",
+      chainName: "Canto",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("canto"),
+      currencies: [
+        {
+          coinDenom: "CANTO",
+          coinMinimalDenom: "acanto",
+          coinDecimals: 18,
+          coinImageUrl: "/tokens/canto.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 10000000000,
+        average: 25000000000,
+        high: 40000000000,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://cosmos.explorer.canto.io/transactions/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
