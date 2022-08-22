@@ -136,9 +136,9 @@ const AxelarTransfer: FunctionComponent<
     );
 
     const isFormLoading = depositAddress === undefined;
-    const wrontChainSelected = client.chainId !== selectedSourceChainKey;
-    const userCanInteract = !isFormLoading && !wrontChainSelected;
-    const buttonErrorMessage = wrontChainSelected
+    const correctChainSelected = client.chainId === selectedSourceChainKey;
+    const userCanInteract = !isFormLoading && correctChainSelected;
+    const buttonErrorMessage = !correctChainSelected
       ? `Wrong network in ${client.displayInfo.displayName}`
       : undefined;
 
