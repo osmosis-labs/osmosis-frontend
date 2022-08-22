@@ -22,7 +22,7 @@ export function useDepositAddress(
       new AxelarAssetTransfer({ environment })
         .getDepositAddress(sourceChain, destChain, address, tokenMinDenom)
         .then((generatedAddress) => {
-          return generatedAddress;
+          setDepositAddress(generatedAddress);
         })
         .catch((e: any) => {
           console.error("useDepositAddress > getDepositAddress:", e.message);
@@ -58,10 +58,10 @@ export function useDepositAddress(
   );
 
   useEffect(() => {
-    if (address && generateOnMount) {
+    if (address && generateOnMount && !depositAddress) {
       doGen().catch((e) => console.error(e));
     }
-  }, [address, generateOnMount, doGen]);
+  }, [address, generateOnMount, depositAddress, doGen]);
 
   return {
     depositAddress: depositAddress || undefined,

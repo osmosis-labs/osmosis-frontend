@@ -257,6 +257,7 @@ const AxelarTransfer: FunctionComponent<
                           },
                           ToastType.ERROR
                         );
+                        return;
                       } else if (e.code === 4100) {
                         // assuming EVM wallet error codes are standard
 
