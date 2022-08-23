@@ -140,16 +140,17 @@ export class ObservableWalletConnect implements EthClient {
 
   @action
   disable() {
-    withConnectedClient(
-      this._walletConnect,
-      this.accountAddress,
-      async (conn) => {
-        conn.killSession().then(() => {
-          this.accountAddress = undefined;
-          this.chainId = undefined;
-        });
-      }
-    );
+    if (this._walletConnect.connected) {
+      this._walletConnect.killSession().then(() => {
+        this.accountAddress = undefined;
+        this.chainId = undefined;
+        this.sessionConnectUri = undefined;
+      });
+    } else {
+      this.accountAddress = undefined;
+      this.chainId = undefined;
+      this.sessionConnectUri = undefined;
+    }
   }
 
   send = computedFn(({ method, params: ethTx }) => {

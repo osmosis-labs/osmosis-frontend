@@ -300,7 +300,7 @@ const Assets: NextPage = observer(() => {
         <WalletConnectQRModal
           isOpen={true}
           uri={walletConnectEth.sessionConnectUri || ""}
-          onRequestClose={() => {}}
+          onRequestClose={() => walletConnectEth.disable()}
         />
       )}
       <AssetsTable
