@@ -72,7 +72,12 @@ export class ObservableMetamask implements EthClient {
   }
 
   protected set accountAddress(address: string | undefined) {
-    runInAction(() => (this._accountAddress = address));
+    runInAction(() => {
+      this._accountAddress = address;
+      if (this.accountAddress === undefined) {
+        this._chainId = undefined;
+      }
+    });
     this.kvStore?.set(CONNECTED_ACCOUNT_KEY, address || null);
   }
 
@@ -119,7 +124,6 @@ export class ObservableMetamask implements EthClient {
   disable() {
     this.accountAddress = undefined;
     this._chainId = undefined;
-    withEthInWindow((eth) => eth.removeAllListeners());
   }
 
   send = computedFn(({ method, params: ethTx }) => {

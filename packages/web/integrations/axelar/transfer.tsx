@@ -144,6 +144,19 @@ const AxelarTransfer: FunctionComponent<
       ? `Wrong network in ${client.displayInfo.displayName}`
       : undefined;
 
+    useEffect(() => {
+      if (!client.isConnected) {
+        displayToast(
+          {
+            message: "Transaction Failed",
+            caption: `${client.displayInfo.displayName} disconnected`,
+          },
+          ToastType.ERROR
+        );
+        onRequestClose();
+      }
+    }, [client.isConnected, client.displayInfo.displayName, onRequestClose]);
+
     return (
       <>
         <Transfer
