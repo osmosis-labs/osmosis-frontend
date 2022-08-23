@@ -38,6 +38,15 @@ const Disclaimer: NextPage = () => (
         cryptocurrencies, tokens, or anything else of value.
       </div>
     </div>
+    <div className="max-w-container mx-auto p-5 md:h-full overflow-y-auto">
+      <div className="text-center md:pt-20">
+        <span>Osmosis Privacy Policy</span>
+      </div>
+      <div className="p-4 my-5 mx-auto rounded-xl max-w-lg bg-card text-white-mid text-xs md:caption">
+        By using this app you consent to anonymous usage analytics data being
+        collected to improve the overall user experience.
+      </div>
+    </div>
   </section>
 );
 
