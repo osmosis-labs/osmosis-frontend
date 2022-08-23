@@ -35,9 +35,9 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
 
     const smallVerticalScreen = height < 850;
 
-    const showFixedLogo = !smallVerticalScreen || (isMobile && !showSidebar);
+    const showFixedLogo = !smallVerticalScreen || isMobile;
 
-    const showBlockLogo = smallVerticalScreen;
+    const showBlockLogo = smallVerticalScreen && !isMobile;
 
     return (
       <React.Fragment>
@@ -47,12 +47,9 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
           </div>
         )}
         <div
-          className={classNames(
-            "z-40 fixed w-sidebar h-full bg-card flex flex-col px-5 py-6 overflow-x-hidden overflow-y-auto",
-            {
-              hidden: !showSidebar && isMobile,
-            }
-          )}
+          className={`${
+            !showSidebar && isMobile ? "-translate-x-full" : ""
+          } z-40 motion-reduce:transition-non transform transition ease-in-out delay-75 duration-700 fixed w-sidebar h-full bg-card flex flex-col px-5 py-6 overflow-x-hidden overflow-y-auto`}
         >
           {showBlockLogo && (
             <div className="z-50 w-sidebar mx-auto">
