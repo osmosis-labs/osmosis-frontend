@@ -100,7 +100,8 @@ const AxelarTransfer: FunctionComponent<
       queriesStore,
       chainId,
       bech32Address,
-      feeConfig
+      feeConfig,
+      balanceOnOsmosis.balance.currency
     );
 
     // chain path info whether withdrawing or depositing
@@ -184,7 +185,7 @@ const AxelarTransfer: FunctionComponent<
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
           <Button
             className="md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl"
-            disabled={!userCanInteract || depositAmount === ""}
+            disabled={!userCanInteract || amount === ""}
             loading={!depositAddress}
             onClick={async () => {
               if (depositAddress) {
@@ -207,6 +208,7 @@ const AxelarTransfer: FunctionComponent<
                   } catch (e) {
                     // TODO: problem or rejected
                     console.error(e);
+                    return;
                   }
                 } else {
                   // isDeposit
