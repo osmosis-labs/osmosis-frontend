@@ -211,9 +211,9 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             <div className="mx-auto">
               <CheckBox
                 isOn={didVerifyWithdrawRisk}
-                className="after:border-superfluid checked:after:bg-superfluid after:rounded-[10px] after:h-6 after:w-6 -top-0.5"
+                className="after:!border-superfluid checked:after:bg-superfluid after:rounded-[10px] after:h-6 after:w-6 -top-0.5"
                 checkClassName="-top-0.5 h-6 w-6 bg-superfluid rounded-[10px]"
-                checkMarkClassName="top-[3px] left-0.5 h-6 w-6"
+                checkMarkClassName="top-[1px] left-[0.5px] h-6 w-6"
                 checkMarkIconUrl="/icons/check-mark-surface.svg"
                 onToggle={() =>
                   setDidVerifyWithdrawRisk(!didVerifyWithdrawRisk)
