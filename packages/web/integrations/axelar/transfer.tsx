@@ -17,6 +17,7 @@ import {
   SourceChainCosmosChainIdMap,
   waitBySourceChain,
 } from ".";
+import classNames from "classnames";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<
@@ -149,7 +150,11 @@ const AxelarTransfer: FunctionComponent<
           isWithdraw={isWithdraw}
           transferPath={[
             isWithdraw ? osmosisPath : counterpartyPath,
-            { bridgeName: "Axelar", bridgeIconUrl: "/icons/axelar.svg" },
+            {
+              bridgeName: "Axelar",
+              bridgeIconUrl: "/icons/axelar.svg",
+              isLoading: isFormLoading,
+            },
             isWithdraw ? counterpartyPath : osmosisPath,
           ]}
           selectedWalletDisplay={client.displayInfo}
@@ -184,9 +189,11 @@ const AxelarTransfer: FunctionComponent<
 
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
           <Button
-            className="md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl"
+            className={classNames(
+              "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl transition-opacity duration-300",
+              { "opacity-30": isFormLoading }
+            )}
             disabled={!userCanInteract || amount === ""}
-            loading={!depositAddress}
             onClick={async () => {
               if (depositAddress) {
                 if (isWithdraw) {

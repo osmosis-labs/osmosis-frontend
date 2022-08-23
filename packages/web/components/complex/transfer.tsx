@@ -67,7 +67,12 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         className={bridge ? "mt-4 -mb-2" : "mt-6 -mb-4"}
         transferPath={[from, bridge, to]}
       />
-      <div className="flex gap-4 body1 text-iconDefault">
+      <div
+        className={classNames(
+          "flex gap-4 body1 text-iconDefault transition-opacity duration-300",
+          { "opacity-30": bridge?.isLoading }
+        )}
+      >
         <div
           className={classNames(
             "flex w-full text-center border border-white-faint rounded-2xl p-4 transition-width",
@@ -156,7 +161,12 @@ export const Transfer: FunctionComponent<TransferProps> = ({
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-4">
+      <div
+        className={classNames(
+          "flex flex-col gap-4 transition-opacity duration-300",
+          { "opacity-30": bridge?.isLoading }
+        )}
+      >
         <div className="flex flex-col gap-3">
           <div className="flex items-baseline place-content-between">
             <h6>Select Amount</h6>

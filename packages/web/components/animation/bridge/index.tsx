@@ -28,59 +28,92 @@ export const BridgeAnimation: FunctionComponent<
   const overlayedIconSize = { height: 45, width: 45 };
 
   // dynamic load JSON animation data - keep base bundle small
+  const [loadingAnimData, setLoadingAnimData] = useState<object | null>(null);
   const [animData, setAnimData] = useState<object | null>(null);
   useEffect(() => {
-    const loadData = async () => {
-      const data = bridge
-        ? await import("./lottie-bridge.json")
-        : await import("./lottie-ibc.json");
-      setAnimData(data);
-    };
+    if (!loadingAnimData && bridge) {
+      (async () =>
+        setLoadingAnimData(await import("./lottie-bridge-loading.json")))();
+    }
 
     if (!animData) {
-      loadData();
+      (async () => {
+        const data = bridge
+          ? await import("./lottie-bridge.json")
+          : await import("./lottie-ibc.json");
+        setAnimData(data);
+      })();
     }
-  }, [animData, bridge]);
+  }, [loadingAnimData, animData, bridge]);
 
   return (
     <div className={classNames("relative h-[110px]", className)}>
       <span
         className={classNames(
-          "absolute",
-          bridge ? "left-[94px] top-[10px]" : "left-[116px]"
+          "absolute transition-opacity duration-300",
+          bridge ? "left-[94px] top-[10px]" : "left-[116px]",
+          { "opacity-30": bridge?.isLoading }
         )}
       >
         From {from.networkName}
       </span>
       {bridge?.bridgeName && (
-        <span className="absolute left-[270px] top-[10px]">
-          via {bridge.bridgeName}
+        <span
+          className={classNames(
+            "absolute top-[10px]",
+            bridge?.isLoading ? "left-[250px]" : "left-[270px]",
+            {
+              "animate-pulse duration-700": bridge?.isLoading,
+            }
+          )}
+        >
+          {bridge?.isLoading ? "Loading" : "via"} {bridge.bridgeName}
         </span>
       )}
       <span
         className={classNames(
-          "absolute",
-          bridge ? "left-[420px] top-[10px]" : "left-[400px]"
+          "absolute transition-opacity duration-300",
+          bridge ? "left-[420px] top-[10px]" : "left-[405px]",
+          { "opacity-30": bridge?.isLoading }
         )}
       >
         To {to.networkName}
       </span>
       <div className="absolute left-[105px] top-[20px]">
-        <Lottie
-          options={{
-            loop: true,
-            animationData: animData,
-          }}
-          height={bridge ? 100 : 85}
-          width={400}
-          {...props}
-        />
+        <div
+          className={classNames("transition-opacity duration-300", {
+            "opacity-30": bridge?.isLoading,
+          })}
+        >
+          <Lottie
+            options={{
+              loop: true,
+              animationData: animData,
+            }}
+            height={bridge ? 100 : 85}
+            width={400}
+            {...props}
+            isPaused={bridge?.isLoading || props.isPaused}
+          />
+        </div>
+        {bridge?.isLoading && (
+          <div className="absolute left-[120px] -top-[26px]">
+            <Lottie
+              options={{
+                loop: true,
+                animationData: loadingAnimData,
+              }}
+              {...props}
+            />
+          </div>
+        )}
       </div>
       {from.iconUrl && (
         <div
           className={classNames(
-            "absolute",
-            bridge ? "left-[123px] top-[48px]" : "left-[139px] top-[40px]"
+            "absolute transition-opacity duration-300",
+            bridge ? "left-[123px] top-[48px]" : "left-[139px] top-[40px]",
+            { "opacity-30": bridge?.isLoading }
           )}
         >
           <Image alt="token icon" src={from.iconUrl} {...overlayedIconSize} />
@@ -98,8 +131,9 @@ export const BridgeAnimation: FunctionComponent<
       {to.iconUrl && (
         <div
           className={classNames(
-            "absolute",
-            bridge ? "left-[440px] top-[48px]" : "left-[424px] top-[40px]"
+            "absolute transition-opacity duration-300",
+            bridge ? "left-[440px] top-[48px]" : "left-[424px] top-[40px]",
+            { "opacity-30": bridge?.isLoading }
           )}
         >
           <Image alt="token icon" src={to.iconUrl} {...overlayedIconSize} />
