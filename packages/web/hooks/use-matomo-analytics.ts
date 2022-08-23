@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { init as initMatomo, push } from "@socialgouv/matomo-next";
-import { INIT_CONFIG, IS_FRONTIER } from "../config";
+import { INIT_CONFIG } from "../config";
 
 /** [Category, Action, Name?, Value?] */
 export type UserEvent =
@@ -26,11 +26,7 @@ export function useMatomoAnalytics({
 
   useEffect(() => {
     if (init) {
-      // matomo analytics
-      if (IS_FRONTIER) {
-        // only testing matomo on frontier for now
-        initMatomo(INIT_CONFIG);
-      }
+      initMatomo(INIT_CONFIG);
     }
 
     if (onLoadEvent) {
