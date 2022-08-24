@@ -107,7 +107,9 @@ export class ObservableWalletConnect implements EthClient {
 
   @computed
   get chainId(): string | undefined {
-    return this._chainId ? ChainNames[this._chainId] : undefined;
+    return this._chainId
+      ? ChainNames[this._chainId] || this._chainId
+      : undefined;
   }
 
   protected set chainId(chainId: string | undefined) {

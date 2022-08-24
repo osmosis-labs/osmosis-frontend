@@ -19,6 +19,7 @@ type History = {
   createdAtMs: number;
   explorerUrl: string;
   amount: string;
+  reason?: string;
   status: IBCTransferHistoryStatus | "failed";
   isWithdraw: boolean;
 };
@@ -36,16 +37,27 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
     const { bech32Address } = accountStore.getAccount(chainId);
 
     const histories: History[] = nonIbcBridgeHistoryStore.histories
-      .map(({ key, explorerUrl, createdAt, amount, status, isWithdraw }) => ({
-        txHash: key,
-        createdAtMs: createdAt.getTime(),
-        explorerUrl,
-        amount,
-        status: (status === "success" ? "complete" : status) as
-          | IBCTransferHistoryStatus
-          | "failed",
-        isWithdraw,
-      }))
+      .map(
+        ({
+          key,
+          explorerUrl,
+          createdAt,
+          amount,
+          status,
+          reason,
+          isWithdraw,
+        }) => ({
+          txHash: key,
+          createdAtMs: createdAt.getTime(),
+          explorerUrl,
+          amount,
+          reason,
+          status: (status === "success" ? "complete" : status) as
+            | IBCTransferHistoryStatus
+            | "failed",
+          isWithdraw,
+        })
+      )
       .concat(
         ibcTransferHistoryStore
           .getHistoriesAndUncommitedHistoriesByAccount(bech32Address)
@@ -67,6 +79,7 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
                 .maxDecimals(6)
                 .trim(true)
                 .toString(),
+              reason: undefined,
               status,
               isWithdraw:
                 ChainIdHelper.parse(chainId).identifier !==
@@ -144,8 +157,8 @@ const TxHashDisplayCell: FunctionComponent<
 };
 
 const StatusDisplayCell: FunctionComponent<
-  BaseCell & { status?: IBCTransferHistoryStatus | "failed" }
-> = ({ status }) => {
+  BaseCell & { status?: IBCTransferHistoryStatus | "failed"; reason?: string }
+> = ({ status, reason }) => {
   if (status == null) {
     // Uncommitted history has no status.
     // Show pending for uncommitted history..
@@ -216,7 +229,7 @@ const StatusDisplayCell: FunctionComponent<
       return (
         <div className="flex items-center gap-2">
           <Image alt="failed" src="/icons/error-x.svg" width={24} height={24} />
-          <span className="md:hidden">Failed</span>
+          <span className="md:hidden">Failed{reason && `: ${reason}`}</span>
         </div>
       );
     default:

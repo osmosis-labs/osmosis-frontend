@@ -8,6 +8,7 @@ declare type TxSnapshot = {
     prefixedKey: string;
     amount: string;
     status: TxStatus;
+    reason?: string;
     isWithdraw: boolean;
 };
 /** Stores and tracks status for non-IBC bridge transfers.
@@ -28,6 +29,7 @@ export declare class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
         createdAt: Date;
         sourceName?: string;
         status: TxStatus;
+        reason?: string;
         amount: string;
         explorerUrl: string;
         isWithdraw: boolean;
@@ -39,7 +41,7 @@ export declare class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
      * @param isWithdraw Indicates if this is a withdraw from Osmosis.
      */
     pushTxNow(prefixedKey: string, amount: string, isWithdraw: boolean): void;
-    receiveNewTxStatus(prefixedKey: string, status: TxStatus): void;
+    receiveNewTxStatus(prefixedKey: string, status: TxStatus, reason: string | undefined): void;
     /** Use persisted tx snapshots to resume Tx monitoring.
      *  Removes expired snapshots.
      */

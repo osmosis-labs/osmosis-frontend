@@ -18,6 +18,7 @@ type TxSnapshot = {
   prefixedKey: string;
   amount: string;
   status: TxStatus;
+  reason?: string;
   isWithdraw: boolean;
 };
 
@@ -65,6 +66,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
     createdAt: Date;
     sourceName?: string;
     status: TxStatus;
+    reason?: string;
     amount: string;
     explorerUrl: string;
     isWithdraw: boolean;
@@ -75,6 +77,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
       sourceName?: string;
       status: TxStatus;
       amount: string;
+      reason?: string;
       explorerUrl: string;
       isWithdraw: boolean;
     }[] = [];
@@ -91,6 +94,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
           sourceName: statusSource.sourceDisplayName,
           status: snapshot.status,
           amount: snapshot.amount,
+          reason: snapshot.reason,
           explorerUrl: statusSource.makeExplorerUrl(key),
           isWithdraw: snapshot.isWithdraw,
         });
@@ -127,7 +131,11 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
   }
 
   @action
-  receiveNewTxStatus(prefixedKey: string, status: TxStatus) {
+  receiveNewTxStatus(
+    prefixedKey: string,
+    status: TxStatus,
+    reason: string | undefined
+  ) {
     const snapshot = this.snapshots.find(
       (snapshot) => snapshot.prefixedKey === prefixedKey
     );
@@ -138,6 +146,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
     }
 
     snapshot.status = status;
+    snapshot.reason = reason;
   }
 
   /** Use persisted tx snapshots to resume Tx monitoring.

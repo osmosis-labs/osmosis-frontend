@@ -18,7 +18,11 @@ export interface ITxStatusSource {
 
 export interface ITxStatusReceiver {
   /** Key with prefix (`keyPrefix`) included. */
-  receiveNewTxStatus(prefixedKey: string, status: TxStatus): void;
+  receiveNewTxStatus(
+    prefixedKey: string,
+    status: TxStatus,
+    displayReason?: string
+  ): void;
 }
 
 export type TxStatus = "success" | "pending" | "failed";

@@ -30,6 +30,10 @@ export type TransferStatus = Array<{
     sender_chain: string;
     /** i.e. `"osmosis"` */
     recipient_chain: string;
+    /** Transferring a balance at or below fee const.
+     *  Calculate fee constants here: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
+     */
+    insufficient_fee?: true;
   };
   /** Axelarscan: VOTE CONFIRM */
   vote?: TransferStep;
