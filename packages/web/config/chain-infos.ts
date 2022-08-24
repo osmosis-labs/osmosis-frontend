@@ -1,7 +1,8 @@
 import { ChainInfoWithExplorer } from "../stores/chain";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
-import { IS_TESTNET } from ".";
+
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
 const chainInfos = (
   [

@@ -8,7 +8,7 @@ import {
   IBCCurrencyRegsitrar,
   QueriesStore,
 } from "@keplr-wallet/stores";
-import { ChainInfos, IBCAssetInfos, IS_TESTNET } from "../config";
+import { ChainInfos, IBCAssetInfos } from "../config";
 import EventEmitter from "eventemitter3";
 import { ChainStore, ChainInfoWithExplorer } from "./chain";
 import {
@@ -34,6 +34,7 @@ import { PoolPriceRoutes } from "../config";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { OsmoPixelsQueries } from "./pixels";
 const semver = require("semver");
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
 export class RootStore {
   public readonly chainStore: ChainStore;

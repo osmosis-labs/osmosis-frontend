@@ -1,4 +1,4 @@
-import { IS_TESTNET } from "../../config";
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
 export interface AxelarBridgeConfig {
   /** Currently just via deposit address, future could be gateway contract call. */

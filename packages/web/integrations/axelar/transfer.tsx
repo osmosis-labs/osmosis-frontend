@@ -6,7 +6,6 @@ import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
 import { useFakeFeeConfig, useAmountConfig } from "../../hooks";
 import { IBCBalance } from "../../stores/assets";
-import { IS_TESTNET } from "../../config";
 import { useStore } from "../../stores";
 import { Transfer } from "../../components/complex/transfer";
 import { Button } from "../../components/buttons";
@@ -44,7 +43,7 @@ const AxelarTransfer: FunctionComponent<
     tokenMinDenom,
     transferFeeMinAmount,
     sourceChains,
-    isTestNet = IS_TESTNET,
+    isTestNet = process.env.NEXT_PUBLIC_IS_TESTNET === "true",
   }) => {
     const { chainStore, accountStore, queriesStore, nonIbcBridgeHistoryStore } =
       useStore();
