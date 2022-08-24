@@ -14,7 +14,7 @@ const chainInfos = (
         ? "https://lcd-test.osmosis.zone/"
         : "https://lcd-osmosis.keplr.app/",
       chainId: IS_TESTNET ? "osmo-test-4" : "osmosis-1",
-      chainName: IS_TESTNET ? "Osmosis Testnet" : "Osmosis",
+      chainName: "Osmosis",
       bip44: {
         coinType: 118,
       },

@@ -95,7 +95,16 @@ const AxelarTransfer: FunctionComponent<
         })();
 
     // DEPOSITING: custom amount validation, since `useAmountConfig` needs to query counterparty Cosmos SDK chain balances (not evm balances)
-    const [depositAmount, setDepositAmount] = useState("");
+    const [depositAmount, do_setDepositAmount] = useState("");
+    const setDepositAmount = useCallback(
+      (amount: string) => {
+        if (amount.startsWith(".")) {
+          amount = "0" + amount;
+        }
+        do_setDepositAmount(amount);
+      },
+      [do_setDepositAmount]
+    );
     const [isDepositAmtMax, setDepositAmountMax] = useState(false);
 
     // WITHDRAWING: is an IBC transfer Osmosis->Axelar
