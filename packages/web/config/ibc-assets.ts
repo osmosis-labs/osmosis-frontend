@@ -837,7 +837,7 @@ export const IBCAssetInfos: (IBCAsset & {
   return IS_FRONTIER ? true : ibcAsset.isVerified;
 });
 
-if (IS_TESTNET) {
+if (IS_TESTNET && typeof window === "undefined") {
   console.warn(
     "Reminder: clear browser cache between testnet/mainnet config change."
   );

@@ -62,8 +62,6 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
   protected makeResultStatusFromTransferStatus(
     transferStatus: TransferStatus
   ): { status: "success" | "failed"; reason?: string } | undefined {
-    // console.log({ transferStatus });
-
     // could be { message: "Internal Server Error" } TODO: display server errors or connection issues to user
     if (
       !Array.isArray(transferStatus) ||
@@ -75,8 +73,6 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
     const [data] = transferStatus;
 
     // insufficient fee
-    console.log({ data });
-
     if (data.source && data.source.insufficient_fee) {
       return { status: "failed", reason: "Insufficient fee" };
     }

@@ -155,8 +155,6 @@ const AxelarTransfer: FunctionComponent<
         isTestNet ? Environment.TESTNET : Environment.MAINNET
       );
 
-    console.log(sourceChain, destChain);
-
     const correctChainSelected = client.chainId === selectedSourceChainKey;
     const userCanInteract = !isDepositAddressLoading && correctChainSelected;
     const buttonErrorMessage = !correctChainSelected
