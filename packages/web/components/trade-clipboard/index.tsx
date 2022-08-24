@@ -482,7 +482,7 @@ export const TradeClipboard: FunctionComponent<{
                 placeholder="0"
                 onChange={(e) => {
                   e.preventDefault();
-                  if (Number(e.target.value) <= Number.MAX_SAFE_INTEGER) {
+                  if (Number(e.target.value) <= Number.MAX_SAFE_INTEGER && e.target.value.length < 17) {
                     tradeTokenInConfig.setAmount(e.target.value);
                   }
                 }}
