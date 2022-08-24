@@ -1,4 +1,4 @@
-import { FunctionComponent, useState, useEffect } from "react";
+import { FunctionComponent, useState, useEffect, useCallback } from "react";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
@@ -15,9 +15,11 @@ import {
   AxelarBridgeConfig,
   SourceChain,
   SourceChainCosmosChainIdMap,
+  EthClientChainIds_AxelarChainIdsMap,
   waitBySourceChain,
 } from ".";
 import classNames from "classnames";
+import { Environment } from "@axelar-network/axelarjs-sdk";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<
@@ -28,6 +30,7 @@ const AxelarTransfer: FunctionComponent<
     selectedSourceChainKey: SourceChain;
     onRequestClose: () => void;
     onRequestSwitchWallet: () => void;
+    isTestNet?: boolean;
   } & AxelarBridgeConfig
 > = observer(
   ({
@@ -40,8 +43,10 @@ const AxelarTransfer: FunctionComponent<
     tokenMinDenom,
     transferFeeMinAmount,
     sourceChains,
+    isTestNet = true,
   }) => {
-    const { chainStore, accountStore, queriesStore } = useStore();
+    const { chainStore, accountStore, queriesStore, nonIbcBridgeHistoryStore } =
+      useStore();
     const { chainId } = chainStore.osmosis;
     const osmosisAccount = accountStore.getAccount(chainId);
     const { bech32Address } = osmosisAccount;
@@ -55,6 +60,9 @@ const AxelarTransfer: FunctionComponent<
     const erc20ContractAddress = sourceChains.find(
       ({ id }) => id === selectedSourceChainKey
     )?.erc20ContractAddress;
+    const axelarChainId =
+      chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
+      "axelar-dojo-1";
 
     // if counterparty is a cosmos chain
     const counterpartyCosmosChainId: string | undefined =
@@ -106,6 +114,9 @@ const AxelarTransfer: FunctionComponent<
     );
 
     // chain path info whether withdrawing or depositing
+    const axelarSelectedCounterpartyChainId =
+      EthClientChainIds_AxelarChainIdsMap[selectedSourceChainKey] ||
+      selectedSourceChainKey;
     const osmosisPath = {
       address: bech32Address,
       networkName: chainStore.osmosis.chainName,
@@ -113,12 +124,16 @@ const AxelarTransfer: FunctionComponent<
     };
     const counterpartyPath = {
       address: client.accountAddress || "",
-      networkName: selectedSourceChainKey,
+      networkName: axelarSelectedCounterpartyChainId,
       iconUrl: originCurrency.coinImageUrl,
     };
 
-    const sourceChain = isWithdraw ? "osmosis" : selectedSourceChainKey;
-    const destChain = isWithdraw ? selectedSourceChainKey : "osmosis";
+    const sourceChain = isWithdraw
+      ? "osmosis"
+      : axelarSelectedCounterpartyChainId;
+    const destChain = isWithdraw
+      ? axelarSelectedCounterpartyChainId
+      : "osmosis";
     const address = isWithdraw ? client.accountAddress : bech32Address;
 
     /** Amount, with decimals. e.g. 1.2 USDC */
@@ -130,19 +145,34 @@ const AxelarTransfer: FunctionComponent<
       ? counterpartyBal
       : undefined;
 
-    const { depositAddress } = useDepositAddress(
-      sourceChain,
-      destChain,
-      address,
-      tokenMinDenom
-    );
+    const { depositAddress, isLoading: isDepositAddressLoading } =
+      useDepositAddress(
+        sourceChain,
+        destChain,
+        address,
+        tokenMinDenom,
+        undefined,
+        isTestNet ? Environment.TESTNET : Environment.MAINNET
+      );
 
-    const isFormLoading = depositAddress === undefined;
+    console.log(sourceChain, destChain);
+
     const correctChainSelected = client.chainId === selectedSourceChainKey;
-    const userCanInteract = !isFormLoading && correctChainSelected;
+    const userCanInteract = !isDepositAddressLoading && correctChainSelected;
     const buttonErrorMessage = !correctChainSelected
       ? `Wrong network in ${client.displayInfo.displayName}`
       : undefined;
+
+    const trackTransferStatus = useCallback(
+      (txHash: string) => {
+        nonIbcBridgeHistoryStore.pushTxNow(
+          `axelar${txHash}`,
+          amount,
+          isWithdraw
+        );
+      },
+      [nonIbcBridgeHistoryStore, amount, isWithdraw]
+    );
 
     useEffect(() => {
       if (!client.isConnected) {
@@ -166,7 +196,7 @@ const AxelarTransfer: FunctionComponent<
             {
               bridgeName: "Axelar",
               bridgeIconUrl: "/icons/axelar.svg",
-              isLoading: isFormLoading,
+              isLoading: isDepositAddressLoading,
             },
             isWithdraw ? counterpartyPath : osmosisPath,
           ]}
@@ -204,7 +234,7 @@ const AxelarTransfer: FunctionComponent<
           <Button
             className={classNames(
               "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl transition-opacity duration-300",
-              { "opacity-30": isFormLoading }
+              { "opacity-30": isDepositAddressLoading }
             )}
             disabled={!userCanInteract || amount === ""}
             onClick={async () => {
@@ -220,10 +250,12 @@ const AxelarTransfer: FunctionComponent<
                       },
                       {
                         account: depositAddress,
-                        chainId: "axelar-dojo-1",
+                        chainId: axelarChainId,
                         channelId: balanceOnOsmosis.destChannelId,
                       },
-                      withdrawAmountConfig
+                      withdrawAmountConfig,
+                      undefined,
+                      (event) => trackTransferStatus(event.txHash)
                     );
                   } catch (e) {
                     // TODO: problem or rejected
@@ -248,10 +280,12 @@ const AxelarTransfer: FunctionComponent<
                         },
                         {
                           account: depositAddress,
-                          chainId: "axelar-dojo-1",
+                          chainId: axelarChainId,
                           channelId: balanceOnOsmosis.destChannelId,
                         },
-                        withdrawAmountConfig
+                        withdrawAmountConfig,
+                        () => {},
+                        (event) => trackTransferStatus(event.txHash)
                       );
                     } catch (e) {
                       // TODO: problem or rejected
@@ -268,7 +302,7 @@ const AxelarTransfer: FunctionComponent<
                         erc20ContractAddress,
                         client.accountAddress!,
                         depositAddress
-                      );
+                      ).then((txHash) => trackTransferStatus(txHash as string));
                     } catch (e: any) {
                       if (e.code === 4001) {
                         // User denied
