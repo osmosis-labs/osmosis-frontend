@@ -63,7 +63,7 @@ export class RootStore {
     getKeplr: () => Promise<Keplr | undefined> = () =>
       Promise.resolve(undefined)
   ) {
-    this.chainStore = new ChainStore(ChainInfos, "osmosis");
+    this.chainStore = new ChainStore(ChainInfos, "osmosis"); // test: "osmo-test-4"
 
     const eventListener = (() => {
       // On client-side (web browser), use the global window object.
@@ -167,7 +167,11 @@ export class RootStore {
     );
     this.nonIbcBridgeHistoryStore = new NonIbcBridgeHistoryStore(
       makeLocalStorageKVStore("nonibc_transfer_history"),
-      [new AxelarTransferStatusSource()]
+      [
+        new AxelarTransferStatusSource(),
+        // test: "https://testnet.axelarscan.io/",
+        // test: "https://testnet.api.axelarscan.io/"
+      ]
     );
 
     this.assetsStore = new ObservableAssets(

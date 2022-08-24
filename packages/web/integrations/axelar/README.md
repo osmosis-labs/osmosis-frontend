@@ -4,7 +4,7 @@ This folder contains all files related to the user transfer of assets via Axelar
 
 ## Testing
 
-> 💡 Complete the following steps to use the frontend to bridge a particular test asset between Ethereum (Ropsten), Axelar (testnet1), and Osmosis (osmo-test-4) testnets. Many of the testnet config values should be commented next to the mainnet values.
+> 💡 Complete the following steps to use the frontend to bridge a particular test asset between Ethereum (Ropsten), Axelar (testnet1), and Osmosis (osmo-test-4) testnets. Testnet config values should be commented next to the mainnet values.
 
 1. **Configure test chain infos:** in chain-infos.ts: set Osmosis and [Axelar endpoints](https://docs.axelar.dev/resources) and chain IDs to test values.
 2. **Configure the root store**: in web/root.ts:

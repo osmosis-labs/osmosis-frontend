@@ -24,9 +24,9 @@ export const IBCAssetInfos: (IBCAsset & {
   isVerified?: boolean;
 })[] = [
   {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
+    counterpartyChainId: "axelar-dojo-1", // test: "axelar-testnet-lisbon-3"
+    sourceChannelId: "channel-208", // test: channel-312
+    destChannelId: "channel-22", // test: channel-22
     coinMinimalDenom: "uusdc",
     sourceChainNameOverride: "Ethereum",
     isVerified: true,
@@ -42,8 +42,8 @@ export const IBCAssetInfos: (IBCAsset & {
         AxelarSourceChainConfigs.usdc.fantom,
         AxelarSourceChainConfigs.usdc.moonbeam,
       ],
-      tokenMinDenom: "uusdc",
-      transferFeeMinAmount: "20500000", // From https://axelar-lcd.quickapi.com/axelar/nexus/v1beta1/transfer_fee?source_chain=ethereum&destination_chain=osmosis&amount=123uusdc
+      tokenMinDenom: "uusdc", // test: "uausdc"
+      transferFeeMinAmount: "20500000", // From https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
     },
   },
   {

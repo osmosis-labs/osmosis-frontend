@@ -11,14 +11,16 @@ export interface AxelarBridgeConfig {
    *  See: https://docs.axelar.dev/resources/mainnet#assets
    */
   tokenMinDenom: string;
-
   /** Amount of Axelar transfer fee in `originCurrency`.
    *  TODO: use `useTransferFeeQuery` should fees become dynamic and once APIs become production ready.
+   *  See calculator tool on Axelar docs to get current fee constants: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee.
    */
   transferFeeMinAmount: string;
 }
 
-/** See: https://docs.axelar.dev/dev/build/chain-names/mainnet */
+/** See: https://docs.axelar.dev/dev/build/chain-names/mainnet
+ *  Testnet: https://axelartest-lcd.quickapi.com/axelar/nexus/v1beta1/chains?status=1
+ */
 export type SourceChain =
   | "Ethereum"
   | "Avalanche"
@@ -46,6 +48,12 @@ export const SourceChainCosmosChainIdMap: { [sourceChain: string]: string } = {
   kujira: "kaiyo-1",
 };
 
+export const EthClientChainIds_AxelarChainIdsMap: {
+  [ethClientChainIds: string]: SourceChain;
+} = {
+  "Ropsten Test Network": "Ethereum",
+};
+
 export type SourceChainConfig = {
   /** Axelar-defined identifier. */
   id: SourceChain;
@@ -70,8 +78,8 @@ export const SourceChainConfigs: {
 } = {
   usdc: {
     ethereum: {
-      id: "Ethereum" as const,
-      erc20ContractAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      id: "Ethereum" as const, // test: "Ropsten Test Network"
+      erc20ContractAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // test: 0x526f0A95EDC3DF4CBDB7bb37d4F7Ed451dB8e369 'aUSDC'
       logoUrl: "/networks/ethereum.svg",
     },
     bnbChain: {

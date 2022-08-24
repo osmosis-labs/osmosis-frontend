@@ -1811,9 +1811,9 @@ const chainInfos = (
 
 // Add normal chain infos in case of `currencies` not containing the stake or fee currency.
 chainInfos.push({
-  rpc: "https://rpc-axelar.keplr.app",
-  rest: "https://lcd-axelar.keplr.app",
-  chainId: "axelar-dojo-1",
+  rpc: "https://rpc-axelar.keplr.app", // test: "https://axelartest-rpc.quickapi.com/" source: https://docs.axelar.dev/resources
+  rest: "https://lcd-axelar.keplr.app", // test: "https://axelartest-lcd.quickapi.com/"
+  chainId: "axelar-dojo-1", // test: "axelar-testnet-lisbon-3"
   chainName: "Axelar",
   stakeCurrency: {
     coinDenom: "AXL",
