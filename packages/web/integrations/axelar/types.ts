@@ -1,3 +1,5 @@
+import { IS_TESTNET } from "../../config";
+
 export interface AxelarBridgeConfig {
   /** Currently just via deposit address, future could be gateway contract call. */
   method: "deposit-address";
@@ -48,6 +50,7 @@ export const SourceChainCosmosChainIdMap: { [sourceChain: string]: string } = {
   kujira: "kaiyo-1",
 };
 
+/** Maps eth client chainIDs => axelar chain ids */
 export const EthClientChainIds_AxelarChainIdsMap: {
   [ethClientChainIds: string]: SourceChain;
 } = {
@@ -78,8 +81,12 @@ export const SourceChainConfigs: {
 } = {
   usdc: {
     ethereum: {
-      id: "Ethereum" as const, // test: "Ropsten Test Network"
-      erc20ContractAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // test: 0x526f0A95EDC3DF4CBDB7bb37d4F7Ed451dB8e369 'aUSDC'
+      id: IS_TESTNET
+        ? ("Ropsten Test Network" as SourceChain)
+        : ("Ethereum" as const),
+      erc20ContractAddress: IS_TESTNET
+        ? "0x526f0A95EDC3DF4CBDB7bb37d4F7Ed451dB8e369"
+        : "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // test: 'aUSDC' on metamask/etherscan
       logoUrl: "/networks/ethereum.svg",
     },
     bnbChain: {

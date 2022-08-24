@@ -8,7 +8,7 @@ import {
   IBCCurrencyRegsitrar,
   QueriesStore,
 } from "@keplr-wallet/stores";
-import { ChainInfos, IBCAssetInfos } from "../config";
+import { ChainInfos, IBCAssetInfos, IS_TESTNET } from "../config";
 import EventEmitter from "eventemitter3";
 import { ChainStore, ChainInfoWithExplorer } from "./chain";
 import {
@@ -63,7 +63,10 @@ export class RootStore {
     getKeplr: () => Promise<Keplr | undefined> = () =>
       Promise.resolve(undefined)
   ) {
-    this.chainStore = new ChainStore(ChainInfos, "osmosis"); // test: "osmo-test-4"
+    this.chainStore = new ChainStore(
+      ChainInfos,
+      IS_TESTNET ? "osmo-test-4" : "osmosis"
+    );
 
     const eventListener = (() => {
       // On client-side (web browser), use the global window object.
@@ -168,9 +171,10 @@ export class RootStore {
     this.nonIbcBridgeHistoryStore = new NonIbcBridgeHistoryStore(
       makeLocalStorageKVStore("nonibc_transfer_history"),
       [
-        new AxelarTransferStatusSource(),
-        // test: "https://testnet.axelarscan.io/",
-        // test: "https://testnet.api.axelarscan.io/"
+        new AxelarTransferStatusSource(
+          IS_TESTNET ? "https://testnet.axelarscan.io" : undefined,
+          IS_TESTNET ? "https://testnet.api.axelarscan.io" : undefined
+        ),
       ]
     );
 

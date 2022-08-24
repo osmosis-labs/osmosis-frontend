@@ -1,9 +1,12 @@
 import { FunctionComponent, useState, useEffect, useCallback } from "react";
+import { observer } from "mobx-react-lite";
+import classNames from "classnames";
+import { Environment } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
-import { observer } from "mobx-react-lite";
 import { useFakeFeeConfig, useAmountConfig } from "../../hooks";
 import { IBCBalance } from "../../stores/assets";
+import { IS_TESTNET } from "../../config";
 import { useStore } from "../../stores";
 import { Transfer } from "../../components/complex/transfer";
 import { Button } from "../../components/buttons";
@@ -18,8 +21,6 @@ import {
   EthClientChainIds_AxelarChainIdsMap,
   waitBySourceChain,
 } from ".";
-import classNames from "classnames";
-import { Environment } from "@axelar-network/axelarjs-sdk";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<
@@ -43,7 +44,7 @@ const AxelarTransfer: FunctionComponent<
     tokenMinDenom,
     transferFeeMinAmount,
     sourceChains,
-    isTestNet = true,
+    isTestNet = IS_TESTNET,
   }) => {
     const { chainStore, accountStore, queriesStore, nonIbcBridgeHistoryStore } =
       useStore();

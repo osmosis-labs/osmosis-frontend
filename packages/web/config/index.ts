@@ -11,3 +11,5 @@ export * from "./ibc-assets";
 
 export * from "./initial-assets-sort";
 export * from "./price";
+
+export const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";

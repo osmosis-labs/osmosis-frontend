@@ -1,5 +1,6 @@
 import { IBCAsset } from "../stores/assets";
 import { SourceChainConfigs as AxelarSourceChainConfigs } from "../integrations/axelar";
+import { IS_TESTNET } from ".";
 
 export const IS_FRONTIER = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
 export const UNSTABLE_MSG = "Transfers are disabled due to instability";
@@ -24,9 +25,11 @@ export const IBCAssetInfos: (IBCAsset & {
   isVerified?: boolean;
 })[] = [
   {
-    counterpartyChainId: "axelar-dojo-1", // test: "axelar-testnet-lisbon-3"
-    sourceChannelId: "channel-208", // test: channel-312
-    destChannelId: "channel-22", // test: channel-22
+    counterpartyChainId: IS_TESTNET
+      ? "axelar-testnet-lisbon-3"
+      : "axelar-dojo-1",
+    sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
+    destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
     coinMinimalDenom: "uusdc",
     sourceChainNameOverride: "Ethereum",
     isVerified: true,
@@ -42,7 +45,7 @@ export const IBCAssetInfos: (IBCAsset & {
         AxelarSourceChainConfigs.usdc.fantom,
         AxelarSourceChainConfigs.usdc.moonbeam,
       ],
-      tokenMinDenom: "uusdc", // test: "uausdc"
+      tokenMinDenom: IS_TESTNET ? "uausdc" : "uusdc", // test: "uausdc"
       transferFeeMinAmount: "20500000", // From https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
     },
   },
@@ -826,7 +829,18 @@ export const IBCAssetInfos: (IBCAsset & {
     throw new Error("Can't have URL overrides and origin bridge config");
   }
 
+  // remove outstanding mainnet Axelar assets when using testnets
+  if (IS_TESTNET && ibcAsset.counterpartyChainId === "axelar-dojo-1") {
+    return false;
+  }
+
   return IS_FRONTIER ? true : ibcAsset.isVerified;
 });
+
+if (IS_TESTNET) {
+  console.warn(
+    "Reminder: clear browser cache between testnet/mainnet config change."
+  );
+}
 
 export default IBCAssetInfos;
