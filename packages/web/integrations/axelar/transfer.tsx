@@ -174,11 +174,11 @@ const AxelarTransfer: FunctionComponent<
       (txHash: string) => {
         nonIbcBridgeHistoryStore.pushTxNow(
           `axelar${txHash}`,
-          amount,
+          new CoinPretty(originCurrency, amount).trim(true).toString(),
           isWithdraw
         );
       },
-      [nonIbcBridgeHistoryStore, amount, isWithdraw]
+      [nonIbcBridgeHistoryStore, originCurrency, amount, isWithdraw]
     );
 
     useEffect(() => {

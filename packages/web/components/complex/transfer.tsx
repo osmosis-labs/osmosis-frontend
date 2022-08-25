@@ -143,6 +143,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                 className="w-full"
                 style="no-border"
                 currentValue={editWithdrawAddrConfig!.customAddress}
+                disabled={bridge?.isLoading}
                 onInput={(value) => {
                   setDidVerifyWithdrawRisk(false);
                   editWithdrawAddrConfig!.setCustomAddress(value);

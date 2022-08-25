@@ -21,7 +21,7 @@ export declare class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
     protected readonly historyExpireDays: number;
     /** Volatile store of tx statuses. `prefixedKey => TxSnapshot` */
     protected snapshots: TxSnapshot[];
-    private isRestored;
+    private isRestoredFromLocalStorage;
     constructor(kvStore: KVStore, txStatusSources?: ITxStatusSource[], historyExpireDays?: number);
     addStatusSource(source: ITxStatusSource): void;
     get histories(): {

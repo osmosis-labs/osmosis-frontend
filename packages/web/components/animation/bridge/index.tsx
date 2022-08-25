@@ -57,13 +57,30 @@ export const BridgeAnimation: FunctionComponent<
       >
         From {from.networkName}
       </span>
+      <style jsx>
+        {`
+          .pulse {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+          }
+
+          @keyframes pulse {
+            0%,
+            100% {
+              opacity: 1;
+            }
+            50% {
+              opacity: 0.5;
+            }
+          }
+        `}
+      </style>
       {bridge?.bridgeName && (
         <span
           className={classNames(
             "absolute top-[10px]",
             bridge?.isLoading ? "left-[250px]" : "left-[270px]",
             {
-              "animate-pulse duration-700": bridge?.isLoading,
+              pulse: bridge?.isLoading,
             }
           )}
         >

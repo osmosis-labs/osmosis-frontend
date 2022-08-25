@@ -33,7 +33,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
   @observable
   protected snapshots: TxSnapshot[] = [];
   @observable
-  private isRestored = false;
+  private isRestoredFromLocalStorage = false;
 
   constructor(
     protected readonly kvStore: KVStore,
@@ -48,7 +48,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
 
     // persist snapshots on change
     autorun(() => {
-      if (this.isRestored) {
+      if (this.isRestoredFromLocalStorage) {
         this.kvStore.set(STORE_KEY, toJS(this.snapshots));
       }
     });
@@ -175,7 +175,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
     });
 
     runInAction(() => {
-      this.isRestored = true;
+      this.isRestoredFromLocalStorage = true;
     });
   }
 
