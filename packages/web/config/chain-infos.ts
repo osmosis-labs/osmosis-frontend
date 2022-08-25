@@ -1962,7 +1962,7 @@ chainInfos.push({
       coinMinimalDenom: "wmatic-wei",
       coinDecimals: 18,
       coinGeckoId: "wmatic",
-      coinImageUrl: "/tokens/wmatic.svg",
+      coinImageUrl: "/tokens/matic.svg",
     },
   ],
   feeCurrencies: [
