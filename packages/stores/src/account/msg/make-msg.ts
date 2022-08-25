@@ -48,11 +48,10 @@ export class Amino {
     const maxSlippageDec = new Dec(maxSlippage).quo(
       DecUtils.getTenExponentNInPrecisionRange(2)
     );
-    // TODO: Compare the computed slippage and wanted max slippage?
 
     const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
       ? new Int(1)
-      : WeightedPoolMath.calcSlippageTokenIn(
+      : WeightedPoolMath.calcPriceImpactTokenIn(
           estimated.spotPriceBeforeRaw,
           new Dec(tokenIn.amount)
             .mul(
@@ -127,7 +126,7 @@ export class Amino {
 
     const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
       ? new Int(1)
-      : WeightedPoolMath.calcSlippageTokenIn(
+      : WeightedPoolMath.calcPriceImpactTokenIn(
           estimated.raw.spotPriceBefore,
           inUAmount,
           maxSlippageDec
@@ -186,12 +185,11 @@ export class Amino {
     const maxSlippageDec = new Dec(maxSlippage).quo(
       DecUtils.getTenExponentNInPrecisionRange(2)
     );
-    // TODO: Compare the computed slippage and wanted max slippage?)
 
     const tokenInMaxAmount = maxSlippageDec.equals(new Dec(0))
       ? // TODO: Set exact 2^128 - 1
         new Int(1_000_000_000_000)
-      : WeightedPoolMath.calcSlippageTokenOut(
+      : WeightedPoolMath.calcPriceImpactTokenOut(
           estimated.raw.spotPriceBefore,
           outUAmount,
           maxSlippageDec

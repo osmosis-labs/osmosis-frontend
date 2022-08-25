@@ -7,8 +7,9 @@ import { useStore } from "../../stores";
 import { TokenSelectModal } from "../../modals";
 import { useBooleanWithWindowEvent, useFilteredData } from "../../hooks";
 import { MobileProps } from "../types";
+import classNames from "classnames";
 
-/** Will display balances if provided CoinPretty objects. Assumes denoms are unique. */
+/** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelect: FunctionComponent<
   {
     selectedTokenDenom: string;
@@ -128,7 +129,7 @@ export const TokenSelect: FunctionComponent<
       <div className="flex md:justify-start justify-center items-center relative">
         {selectedCurrency && (
           <button
-            className={`flex items-center text-left group ${
+            className={`flex items-center gap-2 text-left ${
               canSelectTokens ? "cursor-pointer" : ""
             }`}
             onClick={(e) => {
@@ -138,24 +139,21 @@ export const TokenSelect: FunctionComponent<
               }
             }}
           >
-            <div className="w-14 h-14 md:h-9 md:w-9 rounded-full border border-enabledGold flex items-center justify-center shrink-0 mr-3 md:mr-2">
-              {selectedCurrency.coinImageUrl && (
-                <div className="w-11 h-11 md:h-7 md:w-7 rounded-full overflow-hidden">
-                  <Image
-                    src={selectedCurrency.coinImageUrl}
-                    alt="token icon"
-                    className="rounded-full"
-                    width={isMobile ? 30 : 44}
-                    height={isMobile ? 30 : 44}
-                  />
-                </div>
-              )}
-            </div>
-            <div className="flex-shrink-0">
-              <div className="flex items-center">
+            {selectedCurrency.coinImageUrl && (
+              <div className="w-[50px] h-[50px] md:h-7 md:w-7 rounded-full overflow-hidden shrink-0 mr-1">
+                <Image
+                  src={selectedCurrency.coinImageUrl}
+                  alt="token icon"
+                  width={isMobile ? 30 : 50}
+                  height={isMobile ? 30 : 50}
+                />
+              </div>
+            )}
+            <div className="relative flex flex-col">
+              <div className="absolute -bottom-2.5 md:-bottom-2 flex items-center">
                 {isMobile ? <h6>{selectedDenom}</h6> : <h5>{selectedDenom}</h5>}
                 {canSelectTokens && (
-                  <div className="w-5 ml-3 md:ml-2 pb-1">
+                  <div className="w-5 ml-3 md:ml-2">
                     <Image
                       className={`opacity-40 group-hover:opacity-100 transition-transform duration-100 ${
                         isSelectOpen ? "rotate-180" : "rotate-0"
@@ -168,7 +166,7 @@ export const TokenSelect: FunctionComponent<
                   </div>
                 )}
               </div>
-              <div className="subtitle2 md:caption text-iconDefault">
+              <div className="absolute top-1 md:top-1.5 w-28 subtitle2 md:caption text-iconDefault">
                 {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
                   ?.chainName ?? ""}
               </div>
@@ -191,7 +189,7 @@ export const TokenSelect: FunctionComponent<
         ) : (
           isSelectOpen && (
             <div
-              className="absolute bottom-0 md:-left-3 -left-4 translate-y-full md:p-1 p-3.5 bg-surface rounded-b-2xl z-50 w-[28.5rem] sm:w-[calc(100vw-24px)] md:max-w-[454px]"
+              className="absolute -bottom-1.5 md:-left-3 -left-4 translate-y-full md:p-1 p-3.5 bg-surface rounded-b-2xl z-50 w-[24.5rem] sm:w-[calc(100vw-50px)] md:max-w-[400px]"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center h-9 pl-4 mb-3 rounded-2xl bg-card">
@@ -267,7 +265,15 @@ export const TokenSelect: FunctionComponent<
                         </div>
                         {t.token instanceof CoinPretty && (
                           <div className="flex flex-col text-right">
-                            <span className="body1 text-white-high">
+                            <span
+                              className={classNames(
+                                "text-white-high",
+                                t.token.trim(true).hideDenom(true).toString()
+                                  .length > 16 && t.token.toDec().isPositive()
+                                  ? "body1 text-xs"
+                                  : "body1"
+                              )}
+                            >
                               {t.token.trim(true).hideDenom(true).toString()}
                             </span>
                             {fiatValue && (

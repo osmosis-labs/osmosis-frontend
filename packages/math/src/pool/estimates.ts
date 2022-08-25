@@ -120,7 +120,7 @@ export function estimateSwapExactAmountIn(
   tokenOut: CoinPretty;
   spotPriceBefore: IntPretty;
   spotPriceAfter: IntPretty;
-  slippage: IntPretty;
+  priceImpact: IntPretty;
   raw: ReturnType<typeof estimateSwapExactAmountIn_Raw>;
 } {
   const estimated = estimateSwapExactAmountIn_Raw(
@@ -138,7 +138,7 @@ export function estimateSwapExactAmountIn(
     .maxDecimals(4)
     .trim(true);
 
-  const slippage = new IntPretty(estimated.slippage)
+  const priceImpact = new IntPretty(estimated.priceImpact)
     .moveDecimalPointRight(2)
     .maxDecimals(4)
     .trim(true);
@@ -147,7 +147,7 @@ export function estimateSwapExactAmountIn(
     tokenOut,
     spotPriceBefore,
     spotPriceAfter,
-    slippage,
+    priceImpact,
     raw: estimated,
   };
 }
@@ -169,7 +169,7 @@ export function estimateSwapExactAmountOut(
   tokenIn: CoinPretty;
   spotPriceBefore: IntPretty;
   spotPriceAfter: IntPretty;
-  slippage: IntPretty;
+  priceImpact: IntPretty;
   raw: ReturnType<typeof estimateSwapExactAmountOut_Raw>;
 } {
   const estimated = estimateSwapExactAmountOut_Raw(
@@ -187,7 +187,7 @@ export function estimateSwapExactAmountOut(
     .maxDecimals(4)
     .trim(true);
 
-  const slippage = new IntPretty(estimated.slippage)
+  const priceImpact = new IntPretty(estimated.priceImpact)
     .moveDecimalPointRight(2)
     .maxDecimals(4)
     .trim(true);
@@ -196,7 +196,7 @@ export function estimateSwapExactAmountOut(
     tokenIn,
     spotPriceBefore,
     spotPriceAfter,
-    slippage,
+    priceImpact,
     raw: estimated,
   };
 }
@@ -221,7 +221,7 @@ export function estimateMultihopSwapExactAmountIn(
   spotPriceBeforeRaw: Dec;
   spotPriceBefore: IntPretty;
   spotPriceAfter: IntPretty;
-  slippage: IntPretty;
+  priceImpact: IntPretty;
 } {
   if (routes.length === 0) {
     throw new Error("Empty route");
@@ -271,7 +271,7 @@ export function estimateMultihopSwapExactAmountIn(
   const effectivePrice = new Dec(originalTokenIn.amount).quo(
     new Dec(tokenIn.amount)
   );
-  const slippage = effectivePrice
+  const priceImpact = effectivePrice
     .quo(spotPriceBefore.toDec())
     .sub(new Dec("1"));
 
@@ -285,7 +285,7 @@ export function estimateMultihopSwapExactAmountIn(
         DecUtils.getTenExponentNInPrecisionRange(tokenIn.currency.coinDecimals)
       )
     ),
-    slippage: new IntPretty(slippage)
+    priceImpact: new IntPretty(priceImpact)
       .moveDecimalPointRight(2)
       .maxDecimals(4)
       .trim(true),
@@ -301,7 +301,7 @@ function estimateSwapExactAmountIn_Raw(
   tokenOutAmount: Int;
   spotPriceBefore: Dec;
   spotPriceAfter: Dec;
-  slippage: Dec;
+  priceImpact: Dec;
 } {
   const spotPriceBefore = calcSpotPrice(
     new Dec(inPoolAsset.amount),
@@ -332,13 +332,13 @@ function estimateSwapExactAmountIn_Raw(
   }
 
   const effectivePrice = new Dec(tokenIn.amount).quo(new Dec(tokenOutAmount));
-  const slippage = effectivePrice.quo(spotPriceBefore).sub(new Dec("1"));
+  const priceImpact = effectivePrice.quo(spotPriceBefore).sub(new Dec("1"));
 
   return {
     tokenOutAmount,
     spotPriceBefore,
     spotPriceAfter,
-    slippage,
+    priceImpact,
   };
 }
 
@@ -351,7 +351,7 @@ function estimateSwapExactAmountOut_Raw(
   tokenInAmount: Int;
   spotPriceBefore: Dec;
   spotPriceAfter: Dec;
-  slippage: Dec;
+  priceImpact: Dec;
 } {
   const spotPriceBefore = calcSpotPrice(
     new Dec(inPoolAsset.amount),
@@ -383,13 +383,13 @@ function estimateSwapExactAmountOut_Raw(
   }
 
   const effectivePrice = new Dec(tokenInAmount).quo(new Dec(tokenOut.amount));
-  const slippage = effectivePrice.quo(spotPriceBefore).sub(new Dec("1"));
+  const priceImpact = effectivePrice.quo(spotPriceBefore).sub(new Dec("1"));
 
   return {
     tokenInAmount,
     spotPriceBefore,
     spotPriceAfter,
-    slippage,
+    priceImpact,
   };
 }
 

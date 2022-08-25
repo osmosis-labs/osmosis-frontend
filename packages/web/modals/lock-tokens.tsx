@@ -184,7 +184,7 @@ const LockupItem: FunctionComponent<
   >
     <div
       className={classNames(
-        "flex items-center rounded-2xlinset bg-surface h-full px-5 md:py-3.5 py-5 px-4",
+        "flex items-center rounded-2xlinset bg-surface h-full md:py-3.5 py-5 px-4",
         {
           "bg-superfluid-20": superfluidApr && isSelected,
         }
@@ -198,7 +198,7 @@ const LockupItem: FunctionComponent<
             : "border-iconDefault border"
         )}
       />
-      <div className="flex w-full place-content-between items-center items-left flex-col md:flex-row items-baseline">
+      <div className="flex w-full place-content-between items-center items-left flex-col md:flex-row">
         <div className="flex gap-1.5 items-center md:mx-1 mx-auto">
           {isMobile ? (
             <span className="subtitle1">{duration}</span>

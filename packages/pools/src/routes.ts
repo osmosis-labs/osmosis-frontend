@@ -279,7 +279,7 @@ export class OptimizedRoutes {
     effectivePriceOutOverIn: Dec;
     tokenInFeeAmount: Int;
     swapFee: Dec;
-    slippage: Dec;
+    priceImpact: Dec;
   } {
     if (paths.length === 0) {
       throw new Error("Paths are empty");
@@ -376,7 +376,7 @@ export class OptimizedRoutes {
       }
     }
 
-    const slippage = totalEffectivePriceInOverOut
+    const priceImpact = totalEffectivePriceInOverOut
       .quo(totalBeforeSpotPriceInOverOut)
       .sub(new Dec("1"));
 
@@ -398,7 +398,7 @@ export class OptimizedRoutes {
         new Dec(sumAmount).mulTruncate(new Dec(1).sub(totalSwapFee)).round()
       ),
       swapFee: totalSwapFee,
-      slippage,
+      priceImpact,
     };
   }
 }
