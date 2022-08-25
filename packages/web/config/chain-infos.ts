@@ -1840,8 +1840,8 @@ chainInfos.push({
   bech32Config: Bech32Address.defaultBech32Config("axelar"),
   currencies: [
     {
-      coinDenom: "USDC",
-      coinMinimalDenom: "uusdc",
+      coinDenom: IS_TESTNET ? "aUSDC" : "USDC",
+      coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
       coinDecimals: 6,
       coinGeckoId: "usd-coin",
       coinImageUrl: "/tokens/usdc.svg",
