@@ -10,7 +10,11 @@ export type Transaction =
     }
   | unknown[];
 
-export type Method = "eth_getBalance" | "eth_sendTransaction" | "eth_call";
+export type Method =
+  | "eth_getBalance"
+  | "eth_sendTransaction"
+  | "eth_call"
+  | string;
 
 export interface EthClient
   extends Client<{ method: Method; params: Transaction }> {}

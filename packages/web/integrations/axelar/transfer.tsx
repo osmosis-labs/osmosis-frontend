@@ -11,7 +11,11 @@ import { Transfer } from "../../components/complex/transfer";
 import { Button } from "../../components/buttons";
 import { displayToast, ToastType } from "../../components/alert";
 import { ObservableErc20Queries } from "../ethereum/queries";
-import { EthClient, transfer as erc20Transfer } from "../ethereum";
+import {
+  EthClient,
+  transfer as erc20Transfer,
+  useTransactionReceipt,
+} from "../ethereum";
 import { useDepositAddress } from "./hooks";
 import {
   AxelarBridgeConfig,
@@ -25,7 +29,7 @@ import {
 const AxelarTransfer: FunctionComponent<
   {
     isWithdraw: boolean;
-    client: EthClient;
+    ethWalletClient: EthClient;
     balanceOnOsmosis: IBCBalance;
     selectedSourceChainKey: SourceChain;
     onRequestClose: () => void;
@@ -35,7 +39,7 @@ const AxelarTransfer: FunctionComponent<
 > = observer(
   ({
     isWithdraw,
-    client,
+    ethWalletClient,
     balanceOnOsmosis,
     selectedSourceChainKey,
     onRequestClose,
@@ -52,10 +56,10 @@ const AxelarTransfer: FunctionComponent<
     const { bech32Address } = osmosisAccount;
     const originCurrency = balanceOnOsmosis.balance.currency.originCurrency!;
     const [erc20Queries] = useState(
-      () => new ObservableErc20Queries(client.send, originCurrency)
+      () => new ObservableErc20Queries(ethWalletClient.send, originCurrency)
     );
-    const userErc20Queries = client.accountAddress
-      ? erc20Queries.getQueryEthHexAddress(client.accountAddress)
+    const userErc20Queries = ethWalletClient.accountAddress
+      ? erc20Queries.getQueryEthHexAddress(ethWalletClient.accountAddress)
       : undefined;
     const erc20ContractAddress = sourceChains.find(
       ({ id }) => id === selectedSourceChainKey
@@ -132,7 +136,7 @@ const AxelarTransfer: FunctionComponent<
       iconUrl: "/tokens/osmo.svg",
     };
     const counterpartyPath = {
-      address: client.accountAddress || "",
+      address: ethWalletClient.accountAddress || "",
       networkName: axelarSelectedCounterpartyChainId,
       iconUrl: originCurrency.coinImageUrl,
     };
@@ -143,7 +147,7 @@ const AxelarTransfer: FunctionComponent<
     const destChain = isWithdraw
       ? axelarSelectedCounterpartyChainId
       : "osmosis";
-    const address = isWithdraw ? client.accountAddress : bech32Address;
+    const address = isWithdraw ? ethWalletClient.accountAddress : bech32Address;
 
     /** Amount, with decimals. e.g. 1.2 USDC */
     const amount = isWithdraw ? withdrawAmountConfig.amount : depositAmount;
@@ -164,12 +168,12 @@ const AxelarTransfer: FunctionComponent<
         isTestNet ? Environment.TESTNET : Environment.MAINNET
       );
 
-    const correctChainSelected = client.chainId === selectedSourceChainKey;
-    const userCanInteract = !isDepositAddressLoading && correctChainSelected;
-    const buttonErrorMessage = !correctChainSelected
-      ? `Wrong network in ${client.displayInfo.displayName}`
-      : undefined;
-
+    // track status of send transaction and/or Axelar transfer
+    const [inFlightEthTxHash, setEthTxHash] = useState<string | null>(null);
+    const { status: ethSendTxStatus } = useTransactionReceipt(
+      ethWalletClient.send,
+      inFlightEthTxHash || undefined
+    );
     const trackTransferStatus = useCallback(
       (txHash: string) => {
         if (amount !== "") {
@@ -181,23 +185,68 @@ const AxelarTransfer: FunctionComponent<
               .toString(),
             isWithdraw
           );
+          setEthTxHash(txHash);
         }
       },
       [nonIbcBridgeHistoryStore, originCurrency, amount, isWithdraw]
     );
+    useEffect(() => {
+      if (ethSendTxStatus && inFlightEthTxHash) {
+        displayToast(
+          {
+            message:
+              ethSendTxStatus === "pending"
+                ? "Transaction Broadcasting"
+                : ethSendTxStatus === "confirmed"
+                ? "Transaction Successful"
+                : "Transaction Failed",
+            caption:
+              ethSendTxStatus === "pending"
+                ? "Waiting for transaction to be included in the block"
+                : undefined,
+            learnMoreUrl:
+              ethSendTxStatus === "confirmed" || ethSendTxStatus === "failed"
+                ? isTestNet
+                  ? `https://ropsten.etherscan.io/tx/${inFlightEthTxHash}`
+                  : `https://etherscan.io/tx/${inFlightEthTxHash}`
+                : undefined,
+          },
+          ethSendTxStatus === "pending"
+            ? ToastType.LOADING
+            : ethSendTxStatus === "confirmed"
+            ? ToastType.SUCCESS
+            : ToastType.ERROR
+        );
+        if (ethSendTxStatus === "confirmed" || ethSendTxStatus === "failed") {
+          onRequestClose();
+        }
+      }
+    }, [ethSendTxStatus, isTestNet, inFlightEthTxHash, onRequestClose]);
 
     useEffect(() => {
-      if (!client.isConnected) {
+      if (!ethWalletClient.isConnected) {
         displayToast(
           {
             message: "Transaction Failed",
-            caption: `${client.displayInfo.displayName} disconnected`,
+            caption: `${ethWalletClient.displayInfo.displayName} disconnected`,
           },
           ToastType.ERROR
         );
         onRequestClose();
       }
-    }, [client.isConnected, client.displayInfo.displayName, onRequestClose]);
+    }, [
+      ethWalletClient.isConnected,
+      ethWalletClient.displayInfo.displayName,
+      onRequestClose,
+    ]);
+
+    const correctChainSelected =
+      ethWalletClient.chainId === selectedSourceChainKey;
+    const userCanInteract =
+      !isDepositAddressLoading && correctChainSelected && !inFlightEthTxHash;
+    const buttonErrorMessage = !correctChainSelected
+      ? `Wrong network in ${ethWalletClient.displayInfo.displayName}`
+      : undefined;
 
     return (
       <>
@@ -212,7 +261,7 @@ const AxelarTransfer: FunctionComponent<
             },
             isWithdraw ? counterpartyPath : osmosisPath,
           ]}
-          selectedWalletDisplay={client.displayInfo}
+          selectedWalletDisplay={ethWalletClient.displayInfo}
           onRequestSwitchWallet={onRequestSwitchWallet}
           currentValue={amount}
           onInput={(value) =>
@@ -307,12 +356,12 @@ const AxelarTransfer: FunctionComponent<
                     // erc20 transfer to deposit address on EVM
                     try {
                       await erc20Transfer(
-                        client.send,
+                        ethWalletClient.send,
                         new CoinPretty(originCurrency, depositAmount)
                           .moveDecimalPointRight(originCurrency.coinDecimals)
                           .toCoin().amount,
                         erc20ContractAddress,
-                        client.accountAddress!,
+                        ethWalletClient.accountAddress!,
                         depositAddress
                       ).then((txHash) => trackTransferStatus(txHash as string));
                     } catch (e: any) {
@@ -333,7 +382,7 @@ const AxelarTransfer: FunctionComponent<
                         displayToast(
                           {
                             message: "Action Unavailable",
-                            caption: `Please log into ${client.displayInfo.displayName}`,
+                            caption: `Please log into ${ethWalletClient.displayInfo.displayName}`,
                           },
                           ToastType.ERROR
                         );
@@ -349,7 +398,6 @@ const AxelarTransfer: FunctionComponent<
                   }
                 }
               }
-              onRequestClose();
             }}
           >
             <h6 className="md:text-base text-lg">
