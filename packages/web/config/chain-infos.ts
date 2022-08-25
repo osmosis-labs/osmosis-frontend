@@ -1558,6 +1558,13 @@ const chainInfos = (
           coinGeckoId: "kava-swap",
           coinImageUrl: "/tokens/swp.svg",
         },
+        {
+          coinDenom: "USDX",
+          coinMinimalDenom: "usdx",
+          coinDecimals: 6,
+          coinGeckoId: "usdx",
+          coinImageUrl: "/tokens/usdx.png",
+        },
       ],
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/kava/txs/{txHash}",
