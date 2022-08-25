@@ -172,11 +172,16 @@ const AxelarTransfer: FunctionComponent<
 
     const trackTransferStatus = useCallback(
       (txHash: string) => {
-        nonIbcBridgeHistoryStore.pushTxNow(
-          `axelar${txHash}`,
-          new CoinPretty(originCurrency, amount).trim(true).toString(),
-          isWithdraw
-        );
+        if (amount !== "") {
+          nonIbcBridgeHistoryStore.pushTxNow(
+            `axelar${txHash}`,
+            new CoinPretty(originCurrency, amount)
+              .moveDecimalPointRight(originCurrency.coinDecimals)
+              .trim(true)
+              .toString(),
+            isWithdraw
+          );
+        }
       },
       [nonIbcBridgeHistoryStore, originCurrency, amount, isWithdraw]
     );

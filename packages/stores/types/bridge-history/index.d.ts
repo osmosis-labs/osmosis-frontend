@@ -42,7 +42,7 @@ export declare class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
      */
     pushTxNow(prefixedKey: string, amount: string, isWithdraw: boolean): void;
     receiveNewTxStatus(prefixedKey: string, status: TxStatus, reason: string | undefined): void;
-    /** Use persisted tx snapshots to resume Tx monitoring.
+    /** Use persisted tx snapshots to resume Tx monitoring after browser first loads.
      *  Removes expired snapshots.
      */
     protected restoreSnapshots(): Promise<void>;

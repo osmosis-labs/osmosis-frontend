@@ -48,12 +48,6 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
 
     // persist snapshots on change
     autorun(() => {
-      console.log(
-        this.snapshots.map((s) => {
-          return [s.prefixedKey, s.amount, s.status];
-        })
-      );
-
       if (this.isRestoredFromLocalStorage) {
         this.kvStore.set(STORE_KEY, toJS(this.snapshots));
       }
@@ -146,11 +140,6 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
       (snapshot) => snapshot.prefixedKey === prefixedKey
     );
 
-    console.log(
-      prefixedKey,
-      this.snapshots.map((s) => s.prefixedKey)
-    );
-
     if (!snapshot) {
       console.error("Couldn't find tx snapshot when receiving tx status");
       return;
@@ -160,7 +149,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
     snapshot.reason = reason;
   }
 
-  /** Use persisted tx snapshots to resume Tx monitoring.
+  /** Use persisted tx snapshots to resume Tx monitoring after browser first loads.
    *  Removes expired snapshots.
    */
   protected async restoreSnapshots() {
