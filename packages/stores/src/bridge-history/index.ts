@@ -48,6 +48,12 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
 
     // persist snapshots on change
     autorun(() => {
+      console.log(
+        this.snapshots.map((s) => {
+          return [s.prefixedKey, s.amount, s.status];
+        })
+      );
+
       if (this.isRestoredFromLocalStorage) {
         this.kvStore.set(STORE_KEY, toJS(this.snapshots));
       }
@@ -138,6 +144,11 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
   ) {
     const snapshot = this.snapshots.find(
       (snapshot) => snapshot.prefixedKey === prefixedKey
+    );
+
+    console.log(
+      prefixedKey,
+      this.snapshots.map((s) => s.prefixedKey)
     );
 
     if (!snapshot) {

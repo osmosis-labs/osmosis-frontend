@@ -28,29 +28,22 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
       .catch((e) =>
         console.error(`Polling ${this.axelarApiBaseUrl} failed`, e)
       );
-
-    // initial status re-check before polls reach desired result
-    getTransferStatus(txHash, this.axelarApiBaseUrl).then((result) => {
-      const res = this.makeResultStatusFromTransferStatus(result);
-      this.statusReceiverDelegate?.receiveNewTxStatus(
-        `${this.keyPrefix}${txHash}`,
-        res?.status || "pending",
-        res?.reason
-      );
-    });
   }
 
   receiveConclusiveStatus(status: TransferStatus): void {
     const foundTxStatus = this.makeResultStatusFromTransferStatus(status);
 
-    if (foundTxStatus && status.length > 0 && status[0].source !== undefined) {
+    if (foundTxStatus && foundTxStatus.id) {
+      const { id, status, reason } = foundTxStatus;
       this.statusReceiverDelegate?.receiveNewTxStatus(
-        this.keyPrefix + status[0].source.id,
-        foundTxStatus.status,
-        foundTxStatus.reason
+        (this.keyPrefix + id).toLowerCase(),
+        status,
+        reason
       );
     } else {
-      console.error("Axelar transfer polled but neither succeeded or failed");
+      console.error(
+        "Axelar transfer finished poll but neither succeeded or failed"
+      );
     }
   }
 
@@ -61,7 +54,9 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
   /** Looking for conclusive status: success or failure. */
   protected makeResultStatusFromTransferStatus(
     transferStatus: TransferStatus
-  ): { status: "success" | "failed"; reason?: string } | undefined {
+  ):
+    | { id?: string; status: "success" | "failed"; reason?: string }
+    | undefined {
     // could be { message: "Internal Server Error" } TODO: display server errors or connection issues to user
     if (
       !Array.isArray(transferStatus) ||
@@ -74,7 +69,15 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
 
     // insufficient fee
     if (data.source && data.source.insufficient_fee) {
-      return { status: "failed", reason: "Insufficient fee" };
+      return {
+        id: data.source.id.toLowerCase(),
+        status: "failed",
+        reason: "Insufficient fee",
+      };
+    }
+
+    if (data.status === "executed") {
+      return { id: data.source?.id.toLowerCase(), status: "success" };
     }
 
     if (
@@ -87,10 +90,7 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
         data.confirm_deposit.status !== "success" ||
         data.ibc_send.status !== "success")
     ) {
-      return { status: "failed" };
-    } else if (data.ibc_send?.status === "success") {
-      // final ibc transfer is successful
-      return { status: "success" };
+      return { id: data.source?.id.toLowerCase(), status: "failed" };
     }
   }
 }

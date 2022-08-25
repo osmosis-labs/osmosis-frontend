@@ -56,6 +56,7 @@ export type TransferStatus = Array<{
     /** i.e. `osmo...` */
     recipient_address: string;
   };
+  status: "executed";
 }>;
 
 /** Fetch data about a deposit-address transfer.
