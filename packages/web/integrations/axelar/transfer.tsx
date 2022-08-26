@@ -14,7 +14,7 @@ import { ObservableErc20Queries } from "../ethereum/queries";
 import {
   EthClient,
   transfer as erc20Transfer,
-  useTransactionReceipt,
+  useTxReceiptState,
 } from "../ethereum";
 import { useDepositAddress } from "./hooks";
 import {
@@ -168,12 +168,8 @@ const AxelarTransfer: FunctionComponent<
         isTestNet ? Environment.TESTNET : Environment.MAINNET
       );
 
-    // track status of send transaction and/or Axelar transfer
-    const [inFlightEthTxHash, setEthTxHash] = useState<string | null>(null);
-    const { status: ethSendTxStatus } = useTransactionReceipt(
-      ethWalletClient.send,
-      inFlightEthTxHash || undefined
-    );
+    // track status of Axelar transfer
+    const { isEthTxPending } = useTxReceiptState(ethWalletClient);
     const trackTransferStatus = useCallback(
       (txHash: string) => {
         if (amount !== "") {
@@ -185,43 +181,13 @@ const AxelarTransfer: FunctionComponent<
               .toString(),
             isWithdraw
           );
-          setEthTxHash(txHash);
         }
       },
       [nonIbcBridgeHistoryStore, originCurrency, amount, isWithdraw]
     );
     useEffect(() => {
-      if (ethSendTxStatus && inFlightEthTxHash) {
-        displayToast(
-          {
-            message:
-              ethSendTxStatus === "pending"
-                ? "Transaction Broadcasting"
-                : ethSendTxStatus === "confirmed"
-                ? "Transaction Successful"
-                : "Transaction Failed",
-            caption:
-              ethSendTxStatus === "pending"
-                ? "Waiting for transaction to be included in the block"
-                : undefined,
-            learnMoreUrl:
-              ethSendTxStatus === "confirmed" || ethSendTxStatus === "failed"
-                ? isTestNet
-                  ? `https://ropsten.etherscan.io/tx/${inFlightEthTxHash}`
-                  : `https://etherscan.io/tx/${inFlightEthTxHash}`
-                : undefined,
-          },
-          ethSendTxStatus === "pending"
-            ? ToastType.LOADING
-            : ethSendTxStatus === "confirmed"
-            ? ToastType.SUCCESS
-            : ToastType.ERROR
-        );
-        if (ethSendTxStatus === "confirmed" || ethSendTxStatus === "failed") {
-          onRequestClose();
-        }
-      }
-    }, [ethSendTxStatus, isTestNet, inFlightEthTxHash, onRequestClose]);
+      if (isEthTxPending) onRequestClose();
+    }, [isEthTxPending, onRequestClose]);
 
     useEffect(() => {
       if (!ethWalletClient.isConnected) {
@@ -243,7 +209,7 @@ const AxelarTransfer: FunctionComponent<
     const correctChainSelected =
       ethWalletClient.chainId === selectedSourceChainKey;
     const userCanInteract =
-      !isDepositAddressLoading && correctChainSelected && !inFlightEthTxHash;
+      !isDepositAddressLoading && correctChainSelected && !isEthTxPending;
     const buttonErrorMessage = !correctChainSelected
       ? `Wrong network in ${ethWalletClient.displayInfo.displayName}`
       : undefined;
@@ -289,7 +255,7 @@ const AxelarTransfer: FunctionComponent<
           }
           waitTime={waitBySourceChain(selectedSourceChainKey)}
           disabled={!userCanInteract}
-          disablePanel={!!inFlightEthTxHash}
+          disablePanel={!!isEthTxPending}
         />
 
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">

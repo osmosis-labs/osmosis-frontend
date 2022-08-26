@@ -11,9 +11,11 @@ import { KVStore } from "@keplr-wallet/common";
 import type { EthereumProvider } from "../../window";
 import { WalletDisplay, WalletKey } from "../wallets";
 import { ChainNames, EthClient } from "./types";
+import { EventEmitter } from "eventemitter3";
+import { pollTransactionReceipt } from "./queries";
 
 const CONNECTED_ACCOUNT_KEY = "metamask-connected-account";
-
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 export class ObservableMetamask implements EthClient {
   readonly key: WalletKey = "metamask";
 
@@ -30,6 +32,8 @@ export class ObservableMetamask implements EthClient {
 
   @observable
   protected _isSending: boolean = false;
+
+  txStatusEventEmitter = new EventEmitter<"pending" | "confirmed" | "failed">();
 
   constructor(protected readonly kvStore?: KVStore) {
     makeObservable(this);
@@ -148,12 +152,24 @@ export class ObservableMetamask implements EthClient {
                 },
               ],
         });
+        if (method === "eth_sendTransaction") {
+          this.txStatusEventEmitter.emit("pending");
+          const txHash = resp as string;
+          pollTransactionReceipt(this.send, txHash, (status) =>
+            this.txStatusEventEmitter.emit(status, txHash)
+          );
+        }
         runInAction(() => (this._isSending = false));
         return resp;
       }) ||
       Promise.reject("Metamask: failed to send message: ethereum not in window")
     );
   });
+
+  makeExplorerUrl = (txHash: string): string =>
+    IS_TESTNET
+      ? `https://ropsten.etherscan.io/tx/${txHash}`
+      : `https://etherscan.io/tx/${txHash}`;
 }
 
 function withEthInWindow<T>(

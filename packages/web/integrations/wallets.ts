@@ -1,9 +1,13 @@
+import EventEmitter from "eventemitter3";
+
 export type WalletKey = "metamask" | "walletconnect";
 
 export type WalletDisplay = {
   iconUrl: string;
   displayName: string;
 };
+
+export type GeneralTxEvent = "pending" | "confirmed" | "failed";
 
 /** Generalized non-Keplr wallet client. */
 export interface Client<TTxSend = unknown> {
@@ -17,4 +21,9 @@ export interface Client<TTxSend = unknown> {
   disable: () => void;
   send: (send: TTxSend) => Promise<unknown>;
   readonly isSending: boolean;
+  readonly txStatusEventEmitter?: EventEmitter<
+    GeneralTxEvent,
+    { txHash?: string }
+  >;
+  makeExplorerUrl?: (txHash: string) => string;
 }

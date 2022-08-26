@@ -25,8 +25,12 @@ import {
   ObservableMetamask,
   ObservableWalletConnect,
 } from "../../integrations/ethereum";
-import { SourceChainKey } from "../../integrations/bridge-info";
-import { Client, WalletKey } from "../../integrations/wallets";
+import {
+  SourceChainKey,
+  Client,
+  WalletKey,
+  useTxEventToasts,
+} from "../../integrations";
 import { useWindowSize } from "../../hooks";
 import { makeLocalStorageKVStore } from "../../stores/kv-store";
 import { WalletConnectQRModal } from "../../modals";
@@ -282,6 +286,8 @@ const Assets: NextPage = observer(() => {
       selectAssetForTransfer,
     ]
   );
+
+  useTxEventToasts(bridgeTransferModal?.client);
 
   return (
     <main className="bg-background">
