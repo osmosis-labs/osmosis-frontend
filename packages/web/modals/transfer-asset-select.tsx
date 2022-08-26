@@ -1,20 +1,17 @@
 import Image from "next/image";
 import { FunctionComponent, useState, useMemo, useEffect } from "react";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { TokenSelect } from "../components/control";
-import { NonKeplrWalletCard } from "../components/cards";
-import { displayToast, ToastType } from "../components/alert";
 import { CustomClasses } from "../components/types";
 import type {
   OriginBridgeInfo,
   SourceChainKey,
 } from "../integrations/bridge-info";
 import type { SourceChain } from "../integrations/axelar";
-import { WalletKey, Client } from "../integrations/wallets";
-import { useConnectWalletModalRedirect } from "../hooks";
+import { useConnectWalletModalRedirect, useWindowSize } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
-import classNames from "classnames";
 
 /** Intermediate step to allow a user to select & config an asset before deposit/withdraw. */
 export const TransferAssetSelectModal: FunctionComponent<
@@ -28,14 +25,12 @@ export const TransferAssetSelectModal: FunctionComponent<
     onSelectAsset: (
       denom: string,
       /** `undefined` if IBC asset. */
-      walletKey?: WalletKey,
-      /** `undefined` if IBC asset. */
       sourceChainKey?: SourceChainKey
     ) => void;
-    walletClients: Client[];
   }
 > = observer((props) => {
-  const { isWithdraw, tokens, onSelectAsset, walletClients } = props;
+  const { isWithdraw, tokens, onSelectAsset } = props;
+  const { isMobile } = useWindowSize();
 
   const [selectedTokenDenom, setSelectedTokenDenom] = useState(
     () =>
@@ -77,22 +72,6 @@ export const TransferAssetSelectModal: FunctionComponent<
       );
     }
   }, [selectedToken, selectedSourceChainKey]);
-  const applicableWallets = useMemo(() => {
-    if (!selectedToken?.originBridgeInfo) {
-      return [];
-    }
-
-    return walletClients.filter(({ key }) =>
-      selectedToken.originBridgeInfo!.wallets.includes(key)
-    );
-  }, [selectedToken, walletClients]);
-  const [selectedWalletKey, setSelectedWalletKey] = useState<string | null>(
-    () => applicableWallets.find((w) => w.isConnected)?.key || null
-  );
-  const selectedWallet = useMemo(
-    () => applicableWallets.find((w) => w.key === selectedWalletKey),
-    [applicableWallets, selectedWalletKey]
-  );
 
   const [isSourceChainDropdownOpen, setSourceChainDropdownOpen] =
     useState(false);
@@ -105,62 +84,8 @@ export const TransferAssetSelectModal: FunctionComponent<
     {
       className: "h-14 md:w-full w-96 mt-3 mx-auto !px-1",
       size: "lg",
-      disabled: selectedToken?.originBridgeInfo && !selectedWallet,
-      onClick: async () => {
-        if (
-          selectedToken?.originBridgeInfo && // is bridge asset
-          selectedWallet &&
-          selectedSourceChainKey &&
-          !selectedWallet.isConnected
-        ) {
-          // connect wallet
-          try {
-            walletClients.forEach((client) => client.disable());
-
-            await selectedWallet.enable();
-
-            onSelectAsset(
-              selectedTokenDenom,
-              selectedWallet!.key,
-              selectedSourceChainKey
-            );
-          } catch (e) {
-            displayToast({ message: "Request rejected" }, ToastType.ERROR);
-            props.onRequestClose();
-          }
-        } else if (selectedWallet) {
-          // next for bridge asset
-          if (!selectedSourceChainKey) {
-            console.error("No chain selected");
-            return;
-          }
-
-          onSelectAsset(
-            selectedTokenDenom,
-            selectedWallet.key,
-            selectedSourceChainKey
-          );
-        } else {
-          onSelectAsset(selectedTokenDenom);
-        }
-      },
-      children: (
-        <>
-          {selectedWallet && !selectedWallet.isConnected ? (
-            <h6 className="flex items-center gap-3">
-              <Image
-                alt="wallet"
-                src="/icons/wallet.svg"
-                height={24}
-                width={24}
-              />
-              Connect Wallet
-            </h6>
-          ) : (
-            "Next"
-          )}
-        </>
-      ),
+      onClick: () => onSelectAsset(selectedTokenDenom, selectedNetwork?.id),
+      children: <span>Next</span>,
     },
     props.onRequestClose,
     "Connect Wallet"
@@ -173,13 +98,14 @@ export const TransferAssetSelectModal: FunctionComponent<
       title={`${isWithdraw ? "Withdraw" : "Deposit"} Asset`}
     >
       <div className="flex flex-col gap-5 my-5">
-        <div className="flex items-centerw-full border border-white-faint rounded-2xl p-4">
+        <div className="flex items-centerw-full border border-white-faint rounded-2xl p-4 md:py-6">
           <TokenSelect
             tokens={tokens.map(({ token }) => token)}
             onSelect={(denom) => {
               setSelectedTokenDenom(denom);
             }}
             selectedTokenDenom={selectedTokenDenom}
+            isMobile={isMobile}
           />
         </div>
         {selectedToken?.originBridgeInfo && selectedNetwork && keplrConnected && (
@@ -242,29 +168,6 @@ export const TransferAssetSelectModal: FunctionComponent<
           </div>
         )}
       </div>
-      {selectedToken?.originBridgeInfo &&
-        applicableWallets.length > 0 &&
-        keplrConnected && (
-          <div>
-            <h6 className={keplrConnected ? undefined : "opacity-30"}>
-              Connect Wallet
-            </h6>
-            <div className="grid grid-cols-2 gap-4 my-5">
-              {applicableWallets.map((wallet, index) => (
-                <NonKeplrWalletCard
-                  key={index}
-                  className="py-12"
-                  {...wallet.displayInfo}
-                  disabled={!keplrConnected}
-                  isSelected={wallet.key === selectedWalletKey}
-                  onClick={() => {
-                    setSelectedWalletKey(wallet.key);
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        )}
       {accountActionButton}
     </ModalBase>
   );

@@ -40,6 +40,8 @@ export class ObservableMetamask implements EthClient {
 
     withEthInWindow((eth) => {
       const handleAccountChanged = ([account]: (string | undefined)[]) => {
+        console.log("set account", account);
+
         this.accountAddress = account;
 
         if (!account) {

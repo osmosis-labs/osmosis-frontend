@@ -43,7 +43,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         overlayClassName
       )}
       className={classNames(
-        "absolute outline-none md:w-[90%] w-full md:p-4 p-8 bg-surface rounded-2xl z-50 flex flex-col max-w-modal",
+        "absolute outline-none md:w-[90%] w-full p-8 md:pt-8 md:pb-5 md:px-4 bg-surface rounded-2xl z-50 flex flex-col max-w-modal",
         className
       )}
     >
@@ -51,14 +51,14 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         {onRequestBack && (
           <button
             aria-label="back"
-            className="absolute md:top-6 md:left-6 top-8 left-8 cursor-pointer z-50"
+            className="absolute md:top-7 md:left-7 top-8 left-8 cursor-pointer z-50"
             onClick={onRequestBack}
           >
             <Image
               alt="back button"
               src="/icons/chevron-left.svg"
-              height={isMobile ? 24 : 32}
-              width={isMobile ? 24 : 32}
+              height={32}
+              width={32}
             />
           </button>
         )}
@@ -72,14 +72,14 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         {!hideCloseButton && (
           <button
             aria-label="close"
-            className="absolute md:top-6 md:right-6 top-8 right-8 cursor-pointer z-50"
+            className="absolute md:top-7 md:right-7 top-8 right-8 cursor-pointer z-50"
             onClick={onRequestClose}
           >
             <Image
               src={"/icons/close-dark.svg"}
               alt="close icon"
-              width={isMobile ? 24 : 32}
-              height={isMobile ? 24 : 32}
+              width={32}
+              height={32}
             />
           </button>
         )}

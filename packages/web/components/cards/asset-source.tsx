@@ -1,18 +1,22 @@
 import Image from "next/image";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
-import { WalletDisplay } from "../../integrations/wallets";
 import { ButtonProps } from "../buttons/types";
 import { CustomClasses, Disableable } from "../types";
 
-export const NonKeplrWalletCard: FunctionComponent<
-  WalletDisplay & { isSelected?: boolean } & Partial<ButtonProps> &
+export type Source = {
+  id: string;
+  iconUrl: string;
+  displayName: string;
+};
+
+export const AssetSource: FunctionComponent<
+  Source & { isSelected?: boolean } & Partial<ButtonProps> &
     CustomClasses &
     Disableable
 > = ({
   iconUrl,
   displayName,
-
   isSelected = false,
   onClick,
   className,
