@@ -31,6 +31,7 @@ export type TransferProps = {
   transferFee?: CoinPretty;
   /** Required, can be hardcoded estimate. */
   waitTime: string;
+  disablePanel?: boolean;
 } & InputProps<string> &
   Disableable;
 
@@ -47,6 +48,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   toggleIsMax,
   transferFee,
   waitTime,
+  disablePanel = false,
 }) => {
   const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
   const [didVerifyWithdrawRisk, setDidVerifyWithdrawRisk] = useState(false);
@@ -61,6 +63,8 @@ export const Transfer: FunctionComponent<TransferProps> = ({
     }
   }, [showCopied, setShowCopied]);
 
+  const disablePanel_ = disablePanel || bridge?.isLoading || false;
+
   return (
     <div className="flex flex-col gap-11">
       <BridgeAnimation
@@ -70,7 +74,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
       <div
         className={classNames(
           "flex gap-4 body1 text-iconDefault transition-opacity duration-300",
-          { "opacity-30": bridge?.isLoading }
+          { "opacity-30": disablePanel_ }
         )}
       >
         <div
@@ -143,7 +147,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                 className="w-full"
                 style="no-border"
                 currentValue={editWithdrawAddrConfig!.customAddress}
-                disabled={bridge?.isLoading}
+                disabled={disablePanel_}
                 onInput={(value) => {
                   setDidVerifyWithdrawRisk(false);
                   editWithdrawAddrConfig!.setCustomAddress(value);
@@ -165,7 +169,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
       <div
         className={classNames(
           "flex flex-col gap-4 transition-opacity duration-300",
-          { "opacity-30": bridge?.isLoading }
+          { "opacity-30": disablePanel_ }
         )}
       >
         <div className="flex flex-col gap-3">

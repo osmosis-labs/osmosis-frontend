@@ -289,6 +289,7 @@ const AxelarTransfer: FunctionComponent<
           }
           waitTime={waitBySourceChain(selectedSourceChainKey)}
           disabled={!userCanInteract}
+          disablePanel={!!inFlightEthTxHash}
         />
 
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
