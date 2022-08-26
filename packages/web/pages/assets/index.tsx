@@ -304,8 +304,7 @@ const Assets: NextPage = observer(() => {
         if (
           alreadyConnectedWallet &&
           alreadyConnectedWallet.chainId &&
-          account.walletStatus === WalletStatus.Loaded &&
-          !isMobile
+          account.walletStatus === WalletStatus.Loaded
         ) {
           setBridgeTransferModal({
             isOpen: true,
@@ -361,7 +360,6 @@ const Assets: NextPage = observer(() => {
       metamask,
       walletConnectEth,
       account.walletStatus,
-      isMobile,
       setIbcTransferModal,
       setupAssetSelectModal,
       ibcTransfer,

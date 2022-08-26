@@ -9,6 +9,7 @@ import { GradientView } from "../assets/gradient-view";
 import { InputBox } from "../input";
 import { Button } from "../buttons";
 import { CheckBox } from "../control";
+import { useWindowSize } from "../../hooks";
 import { Disableable, InputProps, LoadingProps } from "../types";
 
 export type TransferProps = {
@@ -35,7 +36,7 @@ export type TransferProps = {
 } & InputProps<string> &
   Disableable;
 
-/** Standard display for prompting the bridging of arbitrary assets. */
+/** Presentation component for prompting the bridging of arbitrary assets, with an extension for editing withdraw address. */
 export const Transfer: FunctionComponent<TransferProps> = ({
   isWithdraw,
   transferPath: [from, bridge, to],
@@ -50,6 +51,8 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   waitTime,
   disablePanel = false,
 }) => {
+  const { isMobile } = useWindowSize();
+
   const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
   const [didVerifyWithdrawRisk, setDidVerifyWithdrawRisk] = useState(false);
 
@@ -174,10 +177,14 @@ export const Transfer: FunctionComponent<TransferProps> = ({
       >
         <div className="flex flex-col gap-3">
           <div className="flex items-baseline place-content-between">
-            <h6>Select Amount</h6>
+            {isMobile ? (
+              <span className="subtitle1">Select Amount</span>
+            ) : (
+              <h6>Select Amount</h6>
+            )}
             {availableBalance && (
               <div className="text-xs text-white-high caption">
-                Available on {from.networkName}:{" "}
+                Available{!isMobile && `on ${from.networkName}`}:{" "}
                 <button
                   className="text-primary-50 cursor-pointer disabled:cursor-default"
                   disabled={availableBalance.toDec().isZero()}
