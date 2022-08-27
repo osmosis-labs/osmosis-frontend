@@ -1558,6 +1558,13 @@ const chainInfos = (
           coinGeckoId: "kava-swap",
           coinImageUrl: "/tokens/swp.svg",
         },
+        {
+          coinDenom: "USDX",
+          coinMinimalDenom: "usdx",
+          coinDecimals: 6,
+          coinGeckoId: "usdx",
+          coinImageUrl: "/tokens/usdx.png",
+        },
       ],
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/kava/txs/{txHash}",
@@ -1805,6 +1812,34 @@ const chainInfos = (
       },
       features: ["stargate", "ibc-transfer", "cosmwasm"],
       explorerUrlToTx: "https://scan.orai.io/txs/{txHash}",
+    },
+    {
+      rpc: "https://rpc.cudos.org",
+      rest: "https://rest.cudos.org",
+      chainId: "cudos-1",
+      chainName: "Cudos",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("cudos"),
+      currencies: [
+        {
+          coinDenom: "CUDOS",
+          coinMinimalDenom: "acudos",
+          coinDecimals: 18,
+          coinGeckoId: "cudos",
+          coinImageUrl: "/tokens/cudos.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 5000000000000,
+        average: 10000000000000,
+        high: 20000000000000,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://explorer.cudos.org/transactions/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
