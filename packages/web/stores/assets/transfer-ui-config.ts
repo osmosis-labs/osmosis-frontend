@@ -1,5 +1,4 @@
 import { makeObservable, observable, action } from "mobx";
-import { computedFn } from "mobx-utils";
 import { ComponentProps } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { AccountSetBase } from "@keplr-wallet/stores";
@@ -13,9 +12,9 @@ import {
 import {
   ObservableMetamask,
   ObservableWalletConnect,
-  EthClient,
+  EthWallet,
 } from "../../integrations/ethereum";
-import { Client, SourceChainKey, OriginBridgeInfo } from "../../integrations";
+import { Wallet, SourceChainKey } from "../../integrations";
 import { makeLocalStorageKVStore } from "../../stores/kv-store";
 import { IBCBalance, ObservableAssets } from ".";
 
@@ -82,7 +81,7 @@ export class ObservableTransferUIConfig {
     makeLocalStorageKVStore("wc-eth")
   );
 
-  protected get _ethClientWallets(): EthClient[] {
+  protected get _ethClientWallets(): EthWallet[] {
     return [this.metamask, this.walletConnectEth];
   }
 
@@ -152,7 +151,7 @@ export class ObservableTransferUIConfig {
       // bridge integration
       const applicableWallets = this._ethClientWallets.filter(({ key }) =>
         balance.originBridgeInfo!.wallets.includes(key)
-      ) as Client[];
+      ) as Wallet[];
       const alreadyConnectedWallet = applicableWallets.find(
         (wallet) => wallet.isConnected
       );
@@ -175,7 +174,7 @@ export class ObservableTransferUIConfig {
         this.setupSelectNonIbcWalletModal(direction, balance);
       } else {
         console.warn(
-          "No non-Keplr wallets or asset source found for this bridged asset:",
+          "No non-Keplr wallets found for this bridged asset:",
           balance.balance.currency.coinDenom
         );
       }
@@ -259,8 +258,13 @@ export class ObservableTransferUIConfig {
     balanceOnOsmosis: IBCBalance,
     onBack?: () => void
   ) {
-    const { applicableWalletClients, alreadyConnectedWallet } =
-      this.getRelevantWalletClients(balanceOnOsmosis.originBridgeInfo!);
+    const applicableWalletClients = this._ethClientWallets as Wallet[];
+    const applicableWallets = applicableWalletClients.filter(({ key }) =>
+      balanceOnOsmosis.originBridgeInfo!.wallets.includes(key)
+    );
+    const alreadyConnectedWallet = applicableWallets.find(
+      (wallet) => wallet.isConnected
+    );
 
     this._connectNonIbcWalletModal = {
       isOpen: true,
@@ -279,6 +283,8 @@ export class ObservableTransferUIConfig {
         if (selectedWallet) {
           // enable then call back
           selectedWallet.enable().then(() => {
+            console.log("setup bridge");
+
             this.setupBridgeTransferModal(
               direction,
               balanceOnOsmosis,
@@ -293,6 +299,8 @@ export class ObservableTransferUIConfig {
               }
             );
           });
+        } else {
+          console.error("Given wallet key doesn't match any wallet");
         }
         this._connectNonIbcWalletModal = undefined;
       },
@@ -303,7 +311,7 @@ export class ObservableTransferUIConfig {
   protected setupBridgeTransferModal(
     direction: TransferDir,
     balanceOnOsmosis: IBCBalance,
-    connectedWalletClient: Client,
+    connectedWalletClient: Wallet,
     onRequestSwitchWallet: () => void,
     onRequestBack?: () => void
   ) {
@@ -333,18 +341,4 @@ export class ObservableTransferUIConfig {
       this._ibcTransferModal =
         undefined;
   }
-
-  private getRelevantWalletClients = computedFn(
-    (originBridgeInfo: OriginBridgeInfo) => {
-      const applicableWalletClients = this._ethClientWallets as Client[];
-      const applicableWallets = applicableWalletClients.filter(({ key }) =>
-        originBridgeInfo!.wallets.includes(key)
-      );
-      const alreadyConnectedWallet = applicableWallets.find(
-        (wallet) => wallet.isConnected
-      );
-
-      return { applicableWalletClients, alreadyConnectedWallet };
-    }
-  );
 }

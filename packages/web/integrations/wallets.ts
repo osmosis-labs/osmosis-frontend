@@ -9,8 +9,8 @@ export type WalletDisplay = {
 
 export type GeneralTxEvent = "pending" | "confirmed" | "failed";
 
-/** Generalized non-Keplr wallet client. */
-export interface Client<TTxSend = unknown> {
+/** Generalized non-Keplr wallet & client. */
+export interface Wallet<TTxSend = unknown> {
   readonly key: WalletKey;
   readonly accountAddress?: string;
   /** Human readable chain, falls back to hex ID (`0x...`) if unknown. */

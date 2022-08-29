@@ -10,13 +10,13 @@ import { toHex, isAddress } from "web3-utils";
 import { KVStore } from "@keplr-wallet/common";
 import type { EthereumProvider } from "../../window";
 import { WalletDisplay, WalletKey } from "../wallets";
-import { ChainNames, EthClient } from "./types";
+import { ChainNames, EthWallet } from "./types";
 import { EventEmitter } from "eventemitter3";
 import { pollTransactionReceipt } from "./queries";
 
 const CONNECTED_ACCOUNT_KEY = "metamask-connected-account";
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
-export class ObservableMetamask implements EthClient {
+export class ObservableMetamask implements EthWallet {
   readonly key: WalletKey = "metamask";
 
   readonly displayInfo: WalletDisplay = {
@@ -40,8 +40,6 @@ export class ObservableMetamask implements EthClient {
 
     withEthInWindow((eth) => {
       const handleAccountChanged = ([account]: (string | undefined)[]) => {
-        console.log("set account", account);
-
         this.accountAddress = account;
 
         if (!account) {
@@ -90,7 +88,7 @@ export class ObservableMetamask implements EthClient {
   @computed
   get chainId(): string | undefined {
     return this._chainId
-      ? ChainNames[this._chainId] || this._chainId
+      ? ChainNames[this._chainId] ?? this._chainId
       : undefined;
   }
 

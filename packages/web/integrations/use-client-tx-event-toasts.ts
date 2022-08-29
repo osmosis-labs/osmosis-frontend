@@ -3,10 +3,10 @@ import {
   displayToast as do_displayToast,
   ToastType,
 } from "../components/alert";
-import { Client, GeneralTxEvent } from "./wallets";
+import { Wallet, GeneralTxEvent } from "./wallets";
 
 /** Displays toasts messages for a non-inter chain client. Presents block explorer urls. */
-export function useTxEventToasts(client?: Client) {
+export function useTxEventToasts(client?: Wallet) {
   useEffect(() => {
     const displayToast = (status: GeneralTxEvent, txHash?: string) =>
       do_displayToast(

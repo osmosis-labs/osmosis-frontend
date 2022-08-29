@@ -10,12 +10,12 @@ import WalletConnect from "@walletconnect/client";
 import { toHex, isAddress } from "web3-utils";
 import { KVStore } from "@keplr-wallet/common";
 import { WalletDisplay, WalletKey } from "../wallets";
-import { ChainNames, EthClient } from "./types";
+import { ChainNames, EthWallet } from "./types";
 
 const CONNECTED_ACCOUNT_KEY = "wc-eth-connected-account";
 const CONNECTED_ACCOUNT_CHAINID = "wc-eth-connected-chainId";
 
-export class ObservableWalletConnect implements EthClient {
+export class ObservableWalletConnect implements EthWallet {
   key: WalletKey = "walletconnect";
 
   displayInfo: WalletDisplay = {
@@ -108,7 +108,7 @@ export class ObservableWalletConnect implements EthClient {
   @computed
   get chainId(): string | undefined {
     return this._chainId
-      ? ChainNames[this._chainId] || this._chainId
+      ? ChainNames[this._chainId] ?? this._chainId
       : undefined;
   }
 

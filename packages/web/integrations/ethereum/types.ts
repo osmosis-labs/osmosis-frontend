@@ -1,4 +1,4 @@
-import { Client } from "../wallets";
+import { Wallet } from "../wallets";
 
 export type Transaction =
   | {
@@ -16,10 +16,10 @@ export type Method =
   | "eth_call"
   | string;
 
-export interface EthClient
-  extends Client<{ method: Method; params: Transaction }> {}
+export interface EthWallet
+  extends Wallet<{ method: Method; params: Transaction }> {}
 
-export type SendFn = Pick<EthClient, "send">["send"];
+export type SendFn = Pick<EthWallet, "send">["send"];
 
 /** Ethereum chains: https://docs.metamask.io/guide/ethereum-provider.html#chain-ids */
 export const ChainNames: { [chainId: string]: string } = {

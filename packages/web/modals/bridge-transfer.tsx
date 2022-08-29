@@ -1,8 +1,8 @@
 import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
 import type { SourceChainKey } from "../integrations/bridge-info";
-import type { EthClient } from "../integrations/ethereum";
-import type { Client } from "../integrations/wallets";
+import type { EthWallet } from "../integrations/ethereum";
+import type { Wallet } from "../integrations/wallets";
 import { IBCBalance } from "../stores/assets";
 import { ModalBaseProps, ModalBase } from "./base";
 
@@ -18,7 +18,7 @@ export const BridgeTransferModal: FunctionComponent<
     balance: IBCBalance;
     /** Selected network key. */
     sourceChainKey: SourceChainKey;
-    client: Client;
+    client: Wallet;
     onRequestSwitchWallet: () => void;
   }
 > = (props) => {
@@ -50,7 +50,7 @@ export const BridgeTransferModal: FunctionComponent<
             return (
               <AxelarTransfer
                 isWithdraw={isWithdraw}
-                ethWalletClient={client as EthClient}
+                ethWalletClient={client as EthWallet}
                 balanceOnOsmosis={balance}
                 {...balance.originBridgeInfo}
                 selectedSourceChainKey={sourceChainKey}

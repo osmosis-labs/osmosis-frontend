@@ -12,7 +12,7 @@ import { Button } from "../../components/buttons";
 import { displayToast, ToastType } from "../../components/alert";
 import { ObservableErc20Queries } from "../ethereum/queries";
 import {
-  EthClient,
+  EthWallet,
   transfer as erc20Transfer,
   useTxReceiptState,
 } from "../ethereum";
@@ -29,7 +29,7 @@ import {
 const AxelarTransfer: FunctionComponent<
   {
     isWithdraw: boolean;
-    ethWalletClient: EthClient;
+    ethWalletClient: EthWallet;
     balanceOnOsmosis: IBCBalance;
     selectedSourceChainKey: SourceChain;
     onRequestClose: () => void;

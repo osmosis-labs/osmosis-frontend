@@ -12,7 +12,7 @@ export const ConnectNonIbcWallet: FunctionComponent<
   }
 > = (props) => {
   const [selectedSourceId, setSelectedSourceId] = useState<string | null>(
-    props.initiallySelectedSourceId || null
+    props.initiallySelectedSourceId ?? null
   );
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { EthClient } from "./types";
+import { EthWallet } from "./types";
 
-export function useTxReceiptState(client: EthClient): {
+export function useTxReceiptState(client: EthWallet): {
   isEthTxPending: boolean;
 } {
   const [isEthTxPending, setIsEthTxPending] = useState(false);
