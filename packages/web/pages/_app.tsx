@@ -41,38 +41,38 @@ function MyApp({ Component, pageProps }: AppProps) {
   const t = useTranslation();
   const menus = [
     {
-      label: "Swap",
+      label: t("menu.swap"),
       link: "/",
       icon: IS_FRONTIER ? "/icons/trade-white.svg" : "/icons/trade.svg",
       iconSelected: "/icons/trade-selected.svg",
       selectionTest: /\/$/,
     },
     {
-      label: "Pools",
+      label: t("menu.pools"),
       link: "/pools",
       icon: IS_FRONTIER ? "/icons/pool-white.svg" : "/icons/pool.svg",
       iconSelected: "/icons/pool-selected.svg",
       selectionTest: /\/pools/,
     },
     {
-      label: "Assets",
+      label: t("menu.assets"),
       link: "/assets",
       icon: IS_FRONTIER ? "/icons/asset-white.svg" : "/icons/asset.svg",
       iconSelected: "/icons/asset-selected.svg",
       selectionTest: /\/assets/,
     },
     {
-      label: "Stake",
+      label: t("menu.stake"),
       link: "https://wallet.keplr.app/chains/osmosis",
       icon: IS_FRONTIER ? "/icons/ticket-white.svg" : "/icons/ticket.svg",
     },
     {
-      label: "Vote",
+      label: t("menu.vote"),
       link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
       icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
     },
     {
-      label: "Info",
+      label: t("menu.info"),
       link: "https://info.osmosis.zone",
       icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
     },

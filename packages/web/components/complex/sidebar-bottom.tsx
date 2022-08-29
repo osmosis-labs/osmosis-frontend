@@ -5,10 +5,12 @@ import { WalletStatus } from "@keplr-wallet/stores";
 import { PricePretty, Dec } from "@keplr-wallet/unit";
 import { useStore } from "../../stores";
 import { IS_FRONTIER } from "../../config";
+import { t, useTranslation } from "react-multi-lang";
+import { Formatted } from "../localization";
 
 export const SidebarBottom: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
-
+  const t = useTranslation();
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
   const queries = queriesStore.get(chainStore.osmosis.chainId);
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
@@ -79,7 +81,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
                 height={20}
               />
               <p className="text-sm max-w-24 ml-3 text-secondary-200 font-semibold overflow-x-hidden truncate transition-all">
-                Sign Out
+                {t("menu.signOut")}
               </p>
             </button>
           </div>
@@ -98,7 +100,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
               height={20}
             />
             <span className="ml-2.5 text-white-high font-semibold">
-              Connect Wallet
+              {t("menu.connectWallet")}
             </span>
           </button>
         )}
@@ -110,17 +112,25 @@ export const SidebarBottom: FunctionComponent = observer(() => {
             target="_blank"
             rel="noreferrer"
           >
-            Learn More <br /> About the <br />
-            <span
-              style={{
-                background: "-webkit-linear-gradient(#F8C259, #B38203)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                fontWeight: 700,
+            <Formatted
+              translationKey="menu.learnMoreFrontier"
+              components={{
+                "<br/>": <br />,
+                "<br2/>": <br />,
+                "<name>": (
+                  <span
+                    style={{
+                      background: "-webkit-linear-gradient(#F8C259, #B38203)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {" "}
+                  </span>
+                ),
               }}
-            >
-              Osmosis Frontier
-            </span>
+            />
           </a>
           <div className="w-[12px]">
             <Image
@@ -200,9 +210,7 @@ const Links: FunctionComponent = () => (
         target="_blank"
         rel="noreferrer"
       >
-        <span className="opacity-30 hover:opacity-40">
-          Get Support Lab Help
-        </span>
+        <span className="opacity-30 hover:opacity-40">{t("menu.help")}</span>
         <div className="w-[12px] pt-0.5 opacity-60">
           <Image alt="link" src="/icons/link-deco.svg" height={10} width={10} />
         </div>

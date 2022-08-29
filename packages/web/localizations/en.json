@@ -5,6 +5,18 @@
       "linkText":"You're viewing all permissionless assets. <link>Click here to return to the main app</link>."
     }
   },
+  "menu":{
+    "swap":"Swap",
+    "pools":"Pools",
+    "assets":"Assets",
+    "stake":"Stake",
+    "vote":"Vote",
+    "info":"Info",
+    "connectWallet": "Connect wallet",
+    "signOut": "Sign Out",
+    "help": "Get Support Lab Help",
+    "learnMoreFrontier":"Learn More<br/>About the <br2/> <name>Osmosis Frontier</name>"
+  },
   "404":{
     "title":"Not found"
   },

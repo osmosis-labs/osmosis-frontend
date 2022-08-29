@@ -5,6 +5,18 @@
       "linkText": "Vous consultez tous les éléments sans autorisation.<link>Cliquez ici pour revenir au site principal</link>."
     }
   },
+  "menu":{
+    "swap":"Swap",
+    "pools":"Pools",
+    "assets":"Assets",
+    "stake":"Stake",
+    "vote":"Voter",
+    "info":"Info",
+    "connectWallet": "Connecter le portefeuille",
+    "signOut": "Se déconnecter",
+    "help": "Obtenir de l'aide",
+    "learnMoreFrontier":"En apprendre<br/>plus sur<br2/> <name>Osmosis Frontier</name>"
+  },
   "404":{
     "title":"Page non trouvée"
   },

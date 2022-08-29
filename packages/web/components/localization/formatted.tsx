@@ -22,6 +22,29 @@ interface FormattedProps {
   values?: Values;
 }
 
+// Return orphan formatted with start index and length (used to build the final component)
+const getOrphanFormatted = ({
+  key,
+  translation,
+}: {
+  key: string;
+  translation: string;
+}): null | StringFormatted => {
+  const startTag = key;
+  const regEx = new RegExp(`${startTag}`);
+  let matchTag = translation.match(regEx);
+  // Check if component is in translation
+  if (matchTag && matchTag.length > 0 && matchTag.index) {
+    return {
+      key,
+      startIndex: matchTag.index,
+      length: matchTag[0].length,
+      string: "",
+    };
+  }
+  return null;
+};
+
 // Return string formatted with start index and length (used to build the final component)
 const getStringFormatted = ({
   key,
@@ -32,9 +55,8 @@ const getStringFormatted = ({
 }): null | StringFormatted => {
   const startTag = key;
   const endTagReg = key[0] + "/" + key.slice(1); // add "/" for closed tag
-  let componentTextTranslatedReg = translation.match(
-    new RegExp(`${startTag}.*${endTagReg}`)
-  );
+  const regEx = new RegExp(`${startTag}.*${endTagReg}`);
+  let componentTextTranslatedReg = translation.match(regEx);
   // Check if component is in translation
   if (
     componentTextTranslatedReg &&
@@ -68,6 +90,20 @@ const getFormattedComponent = ({
   component: ReactElement;
 }): null | ComponentFormatted => {
   let children = null;
+  // Is orphan tag without props, e.g. <br/>
+  if (key.includes("/")) {
+    let orphanFormatted = getOrphanFormatted({ key, translation });
+    if (orphanFormatted === null) return null;
+    return {
+      element: cloneElement(component, {
+        ...component.props,
+        key,
+      }),
+      startIndex: orphanFormatted.startIndex,
+      length: orphanFormatted.length,
+      key,
+    };
+  }
   // Check if child is a string or a orphan tag (like <a ... />)
   if (
     typeof component.props.children === "string" ||
