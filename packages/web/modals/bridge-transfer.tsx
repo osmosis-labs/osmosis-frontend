@@ -18,7 +18,7 @@ export const BridgeTransferModal: FunctionComponent<
     balance: IBCBalance;
     /** Selected network key. */
     sourceChainKey: SourceChainKey;
-    client: Wallet;
+    walletClient: Wallet;
     onRequestSwitchWallet: () => void;
   }
 > = (props) => {
@@ -26,11 +26,12 @@ export const BridgeTransferModal: FunctionComponent<
     isWithdraw,
     balance,
     sourceChainKey,
-    client,
+    walletClient,
     onRequestClose,
     onRequestSwitchWallet,
   } = props;
   if (!balance.originBridgeInfo) {
+    console.error("BridgeTransferModal given unconfigured IBC balance/asset");
     return null;
   }
   const { bridge } = balance.originBridgeInfo;
@@ -50,7 +51,7 @@ export const BridgeTransferModal: FunctionComponent<
             return (
               <AxelarTransfer
                 isWithdraw={isWithdraw}
-                ethWalletClient={client as EthWallet}
+                ethWalletClient={walletClient as EthWallet}
                 balanceOnOsmosis={balance}
                 {...balance.originBridgeInfo}
                 selectedSourceChainKey={sourceChainKey}

@@ -26,7 +26,7 @@ export class ObservableTransferUIConfig {
   // * requesting to switch wallet from bespoke bridge transfer modal
   // * clicking back button
   // * transferring from the global deposit/withdraw buttons
-  // * transferring by clicking on a table row
+  // * transferring by clicking on an asset table row
 
   @observable
   protected _ibcTransferModal:
@@ -255,8 +255,7 @@ export class ObservableTransferUIConfig {
   @action
   protected setupSelectNonIbcWalletModal(
     direction: TransferDir,
-    balanceOnOsmosis: IBCBalance,
-    onBack?: () => void
+    balanceOnOsmosis: IBCBalance
   ) {
     const applicableWalletClients = this._ethClientWallets as Wallet[];
     const applicableWallets = applicableWalletClients.filter(({ key }) =>
@@ -271,7 +270,6 @@ export class ObservableTransferUIConfig {
       initiallySelectedSourceId: alreadyConnectedWallet?.key,
       isWithdraw: direction === "withdraw",
       onRequestClose: () => this.closeAllModals(),
-      onRequestBack: onBack,
       sources: applicableWalletClients.map((wallet) => ({
         id: wallet.key,
         ...wallet.displayInfo,
@@ -283,8 +281,6 @@ export class ObservableTransferUIConfig {
         if (selectedWallet) {
           // enable then call back
           selectedWallet.enable().then(() => {
-            console.log("setup bridge");
-
             this.setupBridgeTransferModal(
               direction,
               balanceOnOsmosis,
@@ -298,11 +294,12 @@ export class ObservableTransferUIConfig {
                 this.setupSelectNonIbcWalletModal(direction, balanceOnOsmosis);
               }
             );
+            this.closeAllModals();
           });
         } else {
           console.error("Given wallet key doesn't match any wallet");
+          this._connectNonIbcWalletModal = undefined;
         }
-        this._connectNonIbcWalletModal = undefined;
       },
     };
   }
@@ -327,7 +324,7 @@ export class ObservableTransferUIConfig {
       onRequestSwitchWallet,
       onRequestBack,
       balance: balanceOnOsmosis,
-      client: connectedWalletClient,
+      walletClient: connectedWalletClient,
       // assume selected chain is desired source/dest network
       sourceChainKey: connectedWalletClient.chainId as SourceChainKey,
     };

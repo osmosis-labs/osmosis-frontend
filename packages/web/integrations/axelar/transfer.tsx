@@ -189,30 +189,150 @@ const AxelarTransfer: FunctionComponent<
       if (isEthTxPending) onRequestClose();
     }, [isEthTxPending, onRequestClose]);
 
+    // detect user disconnecting wallet
+    const [userDisconnectedWallet, setUserDisconnectedWallet] = useState(false);
     useEffect(() => {
       if (!ethWalletClient.isConnected) {
-        displayToast(
-          {
-            message: "Transaction Failed",
-            caption: `${ethWalletClient.displayInfo.displayName} disconnected`,
-          },
-          ToastType.ERROR
-        );
-        onRequestClose();
+        setUserDisconnectedWallet(true);
+      }
+      if (ethWalletClient.isConnected && userDisconnectedWallet) {
+        setUserDisconnectedWallet(false);
+      }
+    }, [ethWalletClient.isConnected, userDisconnectedWallet]);
+
+    const transfer = useCallback(async () => {
+      if (depositAddress) {
+        if (isWithdraw) {
+          // IBC transfer to generated axelar address
+          try {
+            await basicIbcTransfer(
+              {
+                account: osmosisAccount,
+                chainId,
+                channelId: balanceOnOsmosis.sourceChannelId,
+              },
+              {
+                account: depositAddress,
+                chainId: axelarChainId,
+                channelId: balanceOnOsmosis.destChannelId,
+              },
+              withdrawAmountConfig,
+              undefined,
+              (event) => trackTransferStatus(event.txHash)
+            );
+          } catch (e) {
+            // TODO: real problem or rejected
+            console.error(e);
+            return;
+          }
+        } else {
+          // isDeposit
+
+          // IBC transfer to axelar from Cosmos counterparty
+          if (
+            counterpartyCosmosChainId &&
+            counterpartyCosmosAccount &&
+            ibcConfig
+          ) {
+            try {
+              await basicIbcTransfer(
+                {
+                  account: counterpartyCosmosAccount,
+                  chainId: counterpartyCosmosChainId,
+                  channelId: ibcConfig.sourceChannelId,
+                },
+                {
+                  account: depositAddress,
+                  chainId: axelarChainId,
+                  channelId: balanceOnOsmosis.destChannelId,
+                },
+                withdrawAmountConfig,
+                () => {},
+                (event) => trackTransferStatus(event.txHash)
+              );
+            } catch (e) {
+              // TODO: problem or rejected
+              console.error(e);
+            }
+          } else if (erc20ContractAddress) {
+            // erc20 transfer to deposit address on EVM
+            try {
+              await erc20Transfer(
+                ethWalletClient.send,
+                new CoinPretty(originCurrency, depositAmount)
+                  .moveDecimalPointRight(originCurrency.coinDecimals)
+                  .toCoin().amount,
+                erc20ContractAddress,
+                ethWalletClient.accountAddress!,
+                depositAddress
+              ).then((txHash) => trackTransferStatus(txHash as string));
+            } catch (e: any) {
+              if (e.code === 4001) {
+                // User denied
+                displayToast(
+                  {
+                    message: "Transaction Failed",
+                    caption: "Request rejected",
+                  },
+                  ToastType.ERROR
+                );
+                return;
+              } else if (e.code === 4100) {
+                // assuming EVM wallet error codes are standard
+
+                // wallet is not logged in (but is connected)
+                displayToast(
+                  {
+                    message: "Action Unavailable",
+                    caption: `Please log into ${ethWalletClient.displayInfo.displayName}`,
+                  },
+                  ToastType.ERROR
+                );
+                return; // don't close modal
+              } else {
+                console.error(e);
+              }
+            }
+          } else {
+            console.error(
+              "Axelar asset and/or network not configured properly."
+            );
+          }
+        }
       }
     }, [
-      ethWalletClient.isConnected,
+      axelarChainId,
+      chainId,
+      balanceOnOsmosis.sourceChannelId,
+      balanceOnOsmosis.destChannelId,
+      counterpartyCosmosAccount,
+      counterpartyCosmosChainId,
+      depositAddress,
+      depositAmount,
+      erc20ContractAddress,
+      ethWalletClient.accountAddress,
+      ethWalletClient.send,
       ethWalletClient.displayInfo.displayName,
-      onRequestClose,
+      ibcConfig,
+      isWithdraw,
+      originCurrency,
+      osmosisAccount,
+      trackTransferStatus,
+      withdrawAmountConfig,
     ]);
 
     const correctChainSelected =
       ethWalletClient.chainId === selectedSourceChainKey;
     const userCanInteract =
-      !isDepositAddressLoading && correctChainSelected && !isEthTxPending;
-    const buttonErrorMessage = !correctChainSelected
+      userDisconnectedWallet ||
+      (!isDepositAddressLoading && correctChainSelected && !isEthTxPending);
+    const buttonErrorMessage = userDisconnectedWallet
+      ? `Reconnect ${ethWalletClient.displayInfo.displayName}`
+      : !correctChainSelected
       ? `Wrong network in ${ethWalletClient.displayInfo.displayName}`
       : undefined;
+
+    console.log(userCanInteract);
 
     return (
       <>
@@ -255,116 +375,20 @@ const AxelarTransfer: FunctionComponent<
           }
           waitTime={waitBySourceChain(selectedSourceChainKey)}
           disabled={!userCanInteract}
-          disablePanel={!!isEthTxPending}
+          disablePanel={!!isEthTxPending || userDisconnectedWallet}
         />
-
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
           <Button
             className={classNames(
               "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl transition-opacity duration-300",
               { "opacity-30": isDepositAddressLoading }
             )}
-            disabled={!userCanInteract || amount === ""}
-            onClick={async () => {
-              if (depositAddress) {
-                if (isWithdraw) {
-                  // IBC transfer to generated axelar address
-                  try {
-                    await basicIbcTransfer(
-                      {
-                        account: osmosisAccount,
-                        chainId,
-                        channelId: balanceOnOsmosis.sourceChannelId,
-                      },
-                      {
-                        account: depositAddress,
-                        chainId: axelarChainId,
-                        channelId: balanceOnOsmosis.destChannelId,
-                      },
-                      withdrawAmountConfig,
-                      undefined,
-                      (event) => trackTransferStatus(event.txHash)
-                    );
-                  } catch (e) {
-                    // TODO: problem or rejected
-                    console.error(e);
-                    return;
-                  }
-                } else {
-                  // isDeposit
-
-                  // IBC transfer to axelar from Cosmos counterparty
-                  if (
-                    counterpartyCosmosChainId &&
-                    counterpartyCosmosAccount &&
-                    ibcConfig
-                  ) {
-                    try {
-                      await basicIbcTransfer(
-                        {
-                          account: counterpartyCosmosAccount,
-                          chainId: counterpartyCosmosChainId,
-                          channelId: ibcConfig.sourceChannelId,
-                        },
-                        {
-                          account: depositAddress,
-                          chainId: axelarChainId,
-                          channelId: balanceOnOsmosis.destChannelId,
-                        },
-                        withdrawAmountConfig,
-                        () => {},
-                        (event) => trackTransferStatus(event.txHash)
-                      );
-                    } catch (e) {
-                      // TODO: problem or rejected
-                      console.error(e);
-                    }
-                  } else if (erc20ContractAddress) {
-                    // erc20 transfer to deposit address on EVM
-                    try {
-                      await erc20Transfer(
-                        ethWalletClient.send,
-                        new CoinPretty(originCurrency, depositAmount)
-                          .moveDecimalPointRight(originCurrency.coinDecimals)
-                          .toCoin().amount,
-                        erc20ContractAddress,
-                        ethWalletClient.accountAddress!,
-                        depositAddress
-                      ).then((txHash) => trackTransferStatus(txHash as string));
-                    } catch (e: any) {
-                      if (e.code === 4001) {
-                        // User denied
-                        displayToast(
-                          {
-                            message: "Transaction Failed",
-                            caption: "Request rejected",
-                          },
-                          ToastType.ERROR
-                        );
-                        return;
-                      } else if (e.code === 4100) {
-                        // assuming EVM wallet error codes are standard
-
-                        // wallet is not logged in (but is connected)
-                        displayToast(
-                          {
-                            message: "Action Unavailable",
-                            caption: `Please log into ${ethWalletClient.displayInfo.displayName}`,
-                          },
-                          ToastType.ERROR
-                        );
-                        return; // don't close modal
-                      } else {
-                        console.error(e);
-                      }
-                    }
-                  } else {
-                    console.error(
-                      "Axelar asset and/or network not configured properly."
-                    );
-                  }
-                }
-              }
+            disabled={
+              !userCanInteract || (!userDisconnectedWallet && amount === "")
+            }
+            onClick={() => {
+              if (userDisconnectedWallet) ethWalletClient.enable();
+              else transfer();
             }}
           >
             <h6 className="md:text-base text-lg">

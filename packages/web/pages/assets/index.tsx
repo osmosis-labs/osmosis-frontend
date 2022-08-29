@@ -40,7 +40,7 @@ const Assets: NextPage = observer(() => {
     () => new ObservableTransferUIConfig(assetsStore, account)
   );
 
-  useTxEventToasts(transferConfig.bridgeTransferModal?.client);
+  useTxEventToasts(transferConfig.bridgeTransferModal?.walletClient);
 
   return (
     <main className="bg-background">
