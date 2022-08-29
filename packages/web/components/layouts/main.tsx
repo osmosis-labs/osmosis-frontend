@@ -46,11 +46,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
             <OsmosisFullLogo onClick={() => router.push("/")} />
           </div>
         )}
-        <Drawer
-          // isOpen={showSidebar && isMobile}
-          showSidebar={showSidebar}
-          isMobile={isMobile}
-        >
+        <Drawer showSidebar={showSidebar} isMobile={isMobile}>
           {showBlockLogo && (
             <div className="grow-0 z-50 w-sidebar mx-auto">
               <OsmosisFullLogo width={166} onClick={() => router.push("/")} />
@@ -180,19 +176,15 @@ const OsmosisFullLogo: FunctionComponent<{
   />
 );
 
-interface DrawerProps {
-  children: ReactNode;
-  showSidebar: boolean;
-  isMobile: boolean;
-  setIsOpen?: (value: boolean) => void;
-}
-
-const Drawer: React.FC<DrawerProps> = ({
+const Drawer = ({
   children,
   showSidebar,
   isMobile,
-  setIsOpen = () => console.log("close"),
-}: DrawerProps) => {
+}: {
+  children: ReactNode;
+  showSidebar: boolean;
+  isMobile: boolean;
+}) => {
   if (!isMobile)
     return (
       <article className="fixed flex flex-col inset-y-0 z-40 bg-card px-2 py-6 w-sidebar">
@@ -203,7 +195,7 @@ const Drawer: React.FC<DrawerProps> = ({
   return (
     <main
       className={
-        " fixed overflow-hidden z-40 bg-backdrop inset-0 transform ease-in-out w-full h-full" +
+        "fixed overflow-hidden z-40 bg-backdrop inset-0 transform ease-in-out w-full h-full" +
         (showSidebar && isMobile
           ? " transition-opacity opacity-100 duration-300 translate-x-0 "
           : " transition-all delay-150 opacity-0 -translate-x-full  ")
@@ -211,20 +203,14 @@ const Drawer: React.FC<DrawerProps> = ({
     >
       <section
         className={
-          " max-w-lg left-0 absolute bg-white h-full delay-300 duration-150 ease-in-out transition-all transform bg-card flex flex-col px-5 py-6 overflow-x-hidden overflow-y-auto   " +
+          "max-w-lg left-0 absolute bg-white h-full delay-300 duration-150 ease-in-out transition-all transform bg-card flex flex-col px-5 py-6 overflow-x-hidden overflow-y-auto" +
           (showSidebar && isMobile
-            ? "shadow-xl translate-x-0 "
+            ? " shadow-xl translate-x-0"
             : " -translate-x-full")
         }
       >
         <article className="relative pt-8 h-full">{children}</article>
       </section>
-      <section
-        className=" w-screen h-full cursor-pointer "
-        onClick={() => {
-          setIsOpen(false);
-        }}
-      ></section>
     </main>
   );
 };
