@@ -108,7 +108,7 @@ const Pools: NextPage = observer(function () {
   const [isCreatingPool, do_setIsCreatingPool] = useState(false);
   const setIsCreatingPool = useCallback(
     (isCreating: boolean) => {
-      if (isCreating) trackEvent(PoolsPageEvents.startCreatingPool);
+      if (isCreating) trackEvent(PoolsPageEvents.startCreatePool);
 
       do_setIsCreatingPool(isCreating);
     },
