@@ -3,7 +3,7 @@ import { AssetSource, Source } from "../components/cards";
 import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
 
-export const ConnectAssetSource: FunctionComponent<
+export const ConnectNonIbcWallet: FunctionComponent<
   ModalBaseProps & {
     initiallySelectedSourceId?: string;
     isWithdraw: boolean;
@@ -19,6 +19,8 @@ export const ConnectAssetSource: FunctionComponent<
     {
       className: "h-14 md:w-full w-96 mt-3 mx-auto !px-1",
       size: "lg",
+      disabled:
+        props.initiallySelectedSourceId === undefined && !selectedSourceId,
       onClick: () => {
         if (selectedSourceId) props.onSelectSource(selectedSourceId);
       },

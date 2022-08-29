@@ -1,4 +1,6 @@
 export * from "./base";
+export * from "./bridge-transfer";
+export * from "./connect-non-ibc-wallet";
 export * from "./ibc-transfer";
 export * from "./keplr-connection-selection";
 export * from "./lock-tokens";
@@ -8,4 +10,5 @@ export * from "./menu-options";
 export * from "./pre-transfer";
 export * from "./token-select";
 export * from "./trade-tokens";
+export * from "./transfer-asset-select";
 export * from "./wallet-connect";
