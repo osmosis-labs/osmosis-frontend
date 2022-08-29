@@ -71,7 +71,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   return (
     <div className="flex flex-col gap-11">
       <BridgeAnimation
-        className={bridge ? "mt-4 -mb-2" : "mt-6 -mb-4"}
+        className={bridge ? "mt-4 -mb-2 md:-mb-6" : "mt-6 -mb-4"}
         transferPath={[from, bridge, to]}
       />
       <div
@@ -89,22 +89,26 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             }
           )}
         >
-          <div className="flex gap-2 mx-auto">
-            {Bech32Address.shortenAddress(
-              from.address,
-              isEditingWithdrawAddr
-                ? 12
-                : !from.address.startsWith("osmo") && selectedWalletDisplay
-                ? 18
-                : 24
-            )}
-            {!from.address.startsWith("osmo") && selectedWalletDisplay && (
-              <SwitchWalletButton
-                selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
-                onClick={() => onRequestSwitchWallet?.()}
-              />
-            )}
-          </div>
+          {!(isMobile && isEditingWithdrawAddr) && (
+            <div className="flex items-center gap-2 mx-auto md:caption">
+              {Bech32Address.shortenAddress(
+                from.address,
+                isEditingWithdrawAddr
+                  ? 12 // can't be on mobile
+                  : !from.address.startsWith("osmo") && selectedWalletDisplay
+                  ? isMobile
+                    ? 10
+                    : 18 // more space for switch wallet button
+                  : 24
+              )}
+              {!from.address.startsWith("osmo") && selectedWalletDisplay && (
+                <SwitchWalletButton
+                  selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
+                  onClick={() => onRequestSwitchWallet?.()}
+                />
+              )}
+            </div>
+          )}
         </div>
         <div
           className={classNames(
@@ -115,7 +119,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             }
           )}
         >
-          <div className="flex gap-2 mx-auto">
+          <div className="flex items-center gap-2 mx-auto md:caption">
             {!isEditingWithdrawAddr &&
               Bech32Address.shortenAddress(
                 editWithdrawAddrConfig &&
@@ -124,7 +128,11 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                   : to.address,
                 (!to.address.startsWith("osmo") && selectedWalletDisplay) || // make room for btns
                   editWithdrawAddrConfig
-                  ? 18
+                  ? isMobile
+                    ? 10
+                    : 18
+                  : isMobile
+                  ? 10
                   : 24
               )}
             {!to.address.startsWith("osmo") && selectedWalletDisplay && (
@@ -184,7 +192,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             )}
             {availableBalance && (
               <div className="text-xs text-white-high caption">
-                Available{!isMobile && `on ${from.networkName}`}:{" "}
+                Available{!isMobile && ` on ${from.networkName}`}:{" "}
                 <button
                   className="text-primary-50 cursor-pointer disabled:cursor-default"
                   disabled={availableBalance.toDec().isZero()}
