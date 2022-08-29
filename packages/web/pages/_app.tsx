@@ -20,10 +20,12 @@ import {
   setDefaultLanguage,
   setLanguage,
   setTranslations,
+  useTranslation,
 } from "react-multi-lang";
 
 import en from "../localizations/en.json";
 import fr from "../localizations/fr.json";
+import { Formatted } from "../components/localization";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
@@ -36,6 +38,7 @@ setTranslations({ en, fr });
 setDefaultLanguage(DEFAULT_LANGUAGE);
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const t = useTranslation();
   const menus = [
     {
       label: "Swap",
@@ -108,18 +111,22 @@ function MyApp({ Component, pageProps }: AppProps) {
         {IS_FRONTIER && (
           <TempBanner
             localStorageKey="show_frontier_banner"
-            title="You're viewing all permissionless assets"
+            title={t("app.banner.title")}
             message={
               <>
-                You{"'"}re viewing all permissionless assets.{" "}
-                <a
-                  className="items-center underline"
-                  href="https://app.osmosis.zone/"
-                  target="_self"
-                >
-                  Click here to return to the main app
-                </a>
-                .
+                <Formatted
+                  translationKey="app.banner.linkText"
+                  components={{
+                    "<text>": <p className="items-center" />,
+                    "<link>": (
+                      <a
+                        className="items-center underline"
+                        href="https://app.osmosis.zone/"
+                        target="_self"
+                      />
+                    ),
+                  }}
+                />
               </>
             }
           />

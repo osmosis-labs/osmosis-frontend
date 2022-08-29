@@ -1,5 +1,8 @@
 {
   "app": {
-    "hello": "Bonjour"
+    "banner": {
+      "title": "Vous consultez tous les éléments sans autorisation",
+      "linkText": "Vous consultez tous les éléments sans autorisation.<link>Cliquez ici pour revenir au site principal</link>."
+    }
   }
 }

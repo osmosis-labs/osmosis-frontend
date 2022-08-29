@@ -1,5 +1,8 @@
 {
   "app": {
-    "hello": "Hello"
+    "banner": {
+      "title":"You're viewing all permissionless assets",
+      "linkText":"You're viewing all permissionless assets. <link>Click here to return to the main app</link>."
+    }
   }
 }
