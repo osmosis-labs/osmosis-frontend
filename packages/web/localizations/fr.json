@@ -4,5 +4,11 @@
       "title": "Vous consultez tous les éléments sans autorisation",
       "linkText": "Vous consultez tous les éléments sans autorisation.<link>Cliquez ici pour revenir au site principal</link>."
     }
+  },
+  "404":{
+    "title":"Page non trouvée"
+  },
+  "500":{
+    "title":"Erreur serveur"
   }
 }

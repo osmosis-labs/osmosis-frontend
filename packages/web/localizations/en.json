@@ -4,5 +4,11 @@
       "title":"You're viewing all permissionless assets",
       "linkText":"You're viewing all permissionless assets. <link>Click here to return to the main app</link>."
     }
+  },
+  "404":{
+    "title":"Not found"
+  },
+  "500":{
+    "title":"Server error"
   }
 }
