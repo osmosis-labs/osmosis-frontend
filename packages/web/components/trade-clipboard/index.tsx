@@ -242,7 +242,10 @@ export const TradeClipboard: FunctionComponent<{
         .trim(true)
         .shrink(true)
         .maxDecimals(
-          tradeTokenInConfig.expectedSwapResult.amount.currency.coinDecimals
+          Math.min(
+            tradeTokenInConfig.expectedSwapResult.amount.currency.coinDecimals,
+            8
+          )
         )
         .hideDenom(true)
         .toString(),
@@ -499,14 +502,17 @@ export const TradeClipboard: FunctionComponent<{
                 type="number"
                 className={classNames(
                   "md:text-subtitle1 text-white-full bg-transparent text-right focus:outline-none w-full placeholder:text-white-disabled",
-                  tradeTokenInConfig.amount.length >= 12
+                  tradeTokenInConfig.amount.length >= 14
                     ? "caption"
                     : "font-h5 md:font-subtitle1 text-h5"
                 )}
                 placeholder="0"
                 onChange={(e) => {
                   e.preventDefault();
-                  if (Number(e.target.value) <= Number.MAX_SAFE_INTEGER) {
+                  if (
+                    Number(e.target.value) <= Number.MAX_SAFE_INTEGER &&
+                    e.target.value.length <= (isMobile ? 19 : 26)
+                  ) {
                     tradeTokenInConfig.setAmount(e.target.value);
                   }
                 }}
@@ -652,8 +658,7 @@ export const TradeClipboard: FunctionComponent<{
             <div className="flex flex-col items-end w-full">
               <h5
                 className={classNames(
-                  "text-right",
-                  swapResultAmount.length > 14 ? "caption" : "md:subtitle1",
+                  "text-right md:subtitle1",
                   tradeTokenInConfig.expectedSwapResult.amount
                     .toDec()
                     .isPositive()
