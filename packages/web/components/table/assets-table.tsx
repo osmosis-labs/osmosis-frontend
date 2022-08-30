@@ -70,7 +70,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
             value && value.toDec().gt(new Dec(0))
               ? value?.toDec().toString()
               : "0",
-          isCW20: false,
         };
       }),
       ...initialAssetsSort(
@@ -84,7 +83,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
             sourceChainNameOverride,
           } = ibcBalance;
           const value = fiatValue?.maxDecimals(2);
-          const isCW20 = "ics20ContractAddress" in ibcBalance;
           const pegMechanism = balance.currency.originCurrency?.pegMechanism;
 
           return {
@@ -109,11 +107,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
               value && value.toDec().gt(new Dec(0))
                 ? value?.toDec().toString()
                 : "0",
-            isCW20,
-            queryTags: [
-              ...(isCW20 ? ["CW20"] : []),
-              ...(pegMechanism ? ["stable", pegMechanism] : []),
-            ],
+            queryTags: [...(pegMechanism ? ["stable", pegMechanism] : [])],
             isUnstable: ibcBalance.isUnstable === true,
             depositUrlOverride,
             withdrawUrlOverride,
