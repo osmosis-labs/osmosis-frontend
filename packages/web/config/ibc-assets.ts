@@ -507,18 +507,18 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChainName: "juno",
     isVerified: true,
   },
-  {
-    counterpartyChainId: "injective-1",
-    sourceChannelId: "channel-122",
-    destChannelId: "channel-8",
-    coinMinimalDenom: "inj",
-    sourceChainName: "injective",
-    depositUrlOverride:
-      "https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj",
-    withdrawUrlOverride:
-      "https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj",
-    isVerified: true,
-  },
+  // {
+  //   counterpartyChainId: "injective-1",
+  //   sourceChannelId: "channel-122",
+  //   destChannelId: "channel-8",
+  //   coinMinimalDenom: "inj",
+  //   sourceChainName: "injective",
+  //   depositUrlOverride:
+  //     "https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj",
+  //   withdrawUrlOverride:
+  //     "https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj",
+  //   isVerified: true,
+  // },
   {
     counterpartyChainId: "columbus-5",
     sourceChannelId: "channel-72",
