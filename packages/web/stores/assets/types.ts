@@ -8,6 +8,7 @@ export interface IBCAsset {
   // Destination channel id from Osmosis chain
   destChannelId: string;
   coinMinimalDenom: string;
+  sourceChainName: string;
   // In some reasons, ibc channel is in unstable status.
   // Disable the deposit, withdraw button and show the tooltip.
   isUnstable?: boolean;

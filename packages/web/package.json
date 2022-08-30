@@ -13,7 +13,7 @@
     "pre-commit": "lint-staged"
   },
   "dependencies": {
-    "@chain-registry/keplr": "0.4.7",
+    "@chain-registry/keplr": "^0.6.1",
     "@chain-registry/types": "^0.4.0",
     "@cosmjs/launchpad": "^0.26.5",
     "@keplr-wallet/common": "^0.10.4",
@@ -34,7 +34,7 @@
     "@walletconnect/types": "^1.7.0",
     "axios": "^0.21.4",
     "buffer": "^6.0.3",
-    "chain-registry": "0.6.1",
+    "chain-registry": "^0.8.1",
     "classnames": "^2.3.1",
     "dayjs": "^1.10.7",
     "eventemitter3": "^4.0.7",

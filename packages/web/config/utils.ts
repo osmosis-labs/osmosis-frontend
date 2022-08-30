@@ -5,6 +5,8 @@ import { PeggedCurrency } from "../stores/assets";
 import { assets, chains } from 'chain-registry';
 import { chainRegistryChainToKeplr } from '@chain-registry/keplr';
 import { ChainInfo } from '@keplr-wallet/types';
+import IBCAssetInfos from "./ibc-assets";
+
 
 
 /** All currency attributes (stake and fee) are defined once in the `currencies` list.
@@ -23,30 +25,36 @@ export type SimplifiedChainInfo = Omit<
   >;
 };
 
-export function getAllChainInfos(chain_names: string[]){
-  for (const chainname of chain_names) {
+export function getAllChainInfosFromAssets() : ChainInfoWithExplorer[] {
 
-    // chainRegistryChainToKeplr(chain, assets);
-
-    const chain = chains.find(({chain_name})=>chain_name===chainname);
-
-    if (chain) {
-      const config: ChainInfo = chainRegistryChainToKeplr(chain, assets);
-    }
-
-    // const asset = assets.find(({chain_name})=>chain_name==='osmosis');
-
-
-    
-    // const config: ChainInfo = chainRegistryChainToKeplr(chain, assets);
-
-    // // you can add options as well to choose endpoints 
-    // const config: ChainInfo = chainRegistryChainToKeplr(chain, assets, {
-    //     getExplorer: () => 'https://myexplorer.com',
-    //     getRestEndpoint: (chain) => chain.apis?.rest[1]?.address
-    //     getRpcEndpoint: (chain) => chain.apis?.rpc[1]?.address
-    // });
+  let seen_chain_names = new Set<string>();
+  var chain_infos: ChainInfoWithExplorer[] = []
+  
+  const osmosis = chains.find(({chain_name})=>chain_name==="osmosis");
+  if (osmosis) {
+    chain_infos.push(chainRegistryChainToKeplr(osmosis, assets) as ChainInfoWithExplorer);
+    seen_chain_names.add("osmosis");
   }
+  
+  for (const asset of IBCAssetInfos) {
+    if(!seen_chain_names.has(asset.sourceChainName)){
+      seen_chain_names.add(asset.sourceChainName)
+
+      console.log(asset.sourceChainName);
+
+      const chain = chains.find(({chain_name})=>chain_name===asset.sourceChainName);
+      if (chain) {
+        chain_infos.push(chainRegistryChainToKeplr(chain, assets) as ChainInfoWithExplorer);
+      }
+      else {
+        console.log("could not find");
+      }
+    }
+  }
+
+  console.log(chain_infos);
+
+  return chain_infos
 }
 
 /** Convert a less redundant chain info schema into one that is accepted by Keplr's suggestChain: `ChainInfo`. */
