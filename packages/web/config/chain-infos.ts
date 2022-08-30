@@ -1855,7 +1855,7 @@ const chainInfos = (
           coinDenom: "BLD",
           coinMinimalDenom: "ubld",
           coinDecimals: 6,
-          // coinGeckoId: "cudos",
+          coinGeckoId: "agoric",
           coinImageUrl: "/tokens/bld.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
