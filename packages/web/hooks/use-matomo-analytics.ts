@@ -21,6 +21,11 @@ export function useMatomoAnalytics({
   trackEvent(event: UserEvent): void;
 } {
   function trackEvent(event: UserEvent) {
+    if (!Array.isArray(event)) {
+      console.error("UserEvent object is not an array");
+      return;
+    }
+
     push(["trackEvent", ...event]);
   }
 
