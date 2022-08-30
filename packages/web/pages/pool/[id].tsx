@@ -486,7 +486,7 @@ const Pool: FunctionComponent = observer(() => {
   const setShowSuperfluidValidatorsModal = useCallback(
     (show: boolean) => {
       trackEvent(PoolDetailEvents.goSuperfluid);
-      do_setShowLockLPTokenModal(show);
+      do_setShowSuperfluidValidatorsModal(show);
     },
     [do_setShowSuperfluidValidatorsModal]
   );
