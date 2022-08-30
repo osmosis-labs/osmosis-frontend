@@ -5,8 +5,29 @@
       "linkText": "Vous consultez tous les éléments sans autorisation.<link>Cliquez ici pour revenir au site principal</link>."
     }
   },
+  "swap":{
+    "title":"Échanger",
+    "settings":{
+      "title": "Paramètres de transaction",
+      "slippage": "Tolérance de glissement",
+      "slippageInfo":"Votre transaction sera annulée si le prix dépasse le pourcentage en votre défaveur."
+    },
+    "available": "Disponnible",
+    "MAX": "MAX",
+    "HALF": "MOITIÉ",
+    "button":"Échanger",
+    "buttonError":"Échanger quand même",
+    "buttonConnect": "Connecter le portefeuille",
+    "priceImpact":"Impact des prix",
+    "fee": "Frais d'échange ({fee})",
+    "expectedOutput":"Résultat attendu",
+    "minimumSlippage":"Minimum reçu après glissement ({slippage})",
+    "error":{
+      "findCurrency": "Impossible de trouver la devise {currency}"
+    }
+  },
   "menu":{
-    "swap":"Swap",
+    "swap":"Échanger",
     "pools":"Pools",
     "assets":"Assets",
     "stake":"Stake",

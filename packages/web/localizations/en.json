@@ -5,6 +5,27 @@
       "linkText":"You're viewing all permissionless assets. <link>Click here to return to the main app</link>."
     }
   },
+  "swap":{
+    "title":"Swap",
+    "settings":{
+      "title": "Transaction Settings",
+      "slippage": "Slippage tolerance",
+      "slippageInfo":"Your transaction will revert if the price changes unfavorably by more than this percentage."
+    },
+    "available": "Available",
+    "MAX": "MAX",
+    "HALF": "HALF",
+    "button":"Swap",
+    "buttonError":"Swap anyway",
+    "buttonConnect": "Connect wallet",
+    "priceImpact":"Price Impact",
+    "fee": "Swap Fee ({fee})",
+    "expectedOutput":"Expected Output",
+    "minimumSlippage":"Minimum received after slippage ({slippage})",
+    "error":{
+      "findCurrency": "Failed to find currency {currency}"
+    }
+  },
   "menu":{
     "swap":"Swap",
     "pools":"Pools",
