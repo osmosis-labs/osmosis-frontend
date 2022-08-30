@@ -26,6 +26,69 @@
       "findCurrency": "Failed to find currency {currency}"
     }
   },
+  "pools":{
+    "title":"Active Pools",
+    "priceOsmo": "OSMO Price",
+    "rewardDistribution": "Reward distribution in",
+    "myPools": "My Pools",
+    "APR":"APR",
+    "available":"Available",
+    "liquidity":"Pool Liquidity",
+    "bonded":"Bonded",
+    "poolId":"Pool #{id}",
+    "incentivized":"Incentivized Pools",
+    "all":"All Pools",
+    "superfluid":{
+      "title":"Superfluid Pools",
+      "APR": "APR",
+      "liquidity": "Pool Liquidity",
+      "fees7D": "Fees (7D)"
+    },
+    "allPools":{
+      "title":"All Pools",
+      "titleIncentivized":"Incentivized Pools",
+      "myLiquidity": "my liquidity",
+      "TVL": "TVL",
+      "APR": "APR",
+      "APRIncentivized": "7d Vol.",
+      "search":"Search pools",
+      "displayLowLiquidity":"Show pools less than {value}",
+      "sort":{
+        "poolName":"Pool Name",
+        "liquidity":"Liquidity",
+        "volume24h":"Volume (24H)",
+        "fees":"Fees (7D)",
+        "APRIncentivized":"APR",
+        "APR":"My Liquidity"
+      }
+    },
+    "externalIncentivized":{
+      "title":"External Incentive Pools",
+      "TVL":"TVL",
+      "APR":"APR",
+      "search":"Search by symbol",
+      "sort":{
+        "poolName":"Pool Name",
+        "liquidity":"Liquidity",
+        "APR":"APR",
+        "epochs":"Epochs Remaining",
+        "myLiquidity":"My Liquidity"
+      }
+    },
+    "createPool":{
+      "title":"Create New Pool",
+      "button":"Create New Pool"
+    }
+  },
+  "components":{
+    "show":{
+      "more":"More",
+      "less":"Less"
+    },
+    "table":{
+      "poolId":"Pool #{id}"
+    }
+  },
   "menu":{
     "swap":"Swap",
     "pools":"Pools",

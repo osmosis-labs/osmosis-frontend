@@ -17,6 +17,7 @@ import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
 import { Breakpoint } from "../types";
 import { CompactPoolTableDisplay } from "./compact-pool-table-display";
 import { POOLS_PER_PAGE } from ".";
+import { useTranslation } from "react-multi-lang";
 
 export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
   () => {
@@ -28,7 +29,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       accountStore,
     } = useStore();
     const { isMobile } = useWindowSize();
-
+    const t = useTranslation();
     const { chainId } = chainStore.osmosis;
     const queryExternal = queriesExternalStore.get();
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -206,35 +207,35 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       () => [
         {
           id: "pool.id",
-          display: "Pool Name",
+          display: t("pools.externalIncentivized.sort.poolName"),
           sort: makeSortMechanism("pool.id"),
           displayCell: PoolCompositionCell,
         },
         {
           id: "liquidity",
-          display: "Liquidity",
+          display: t("pools.externalIncentivized.sort.liquidity"),
           sort: makeSortMechanism("liquidity"),
         },
         {
           id: "apr",
-          display: "APR",
+          display: t("pools.externalIncentivized.sort.APR"),
           sort: makeSortMechanism("apr"),
           displayCell: MetricLoaderCell,
         },
         {
           id: "epochsRemaining",
-          display: "Epochs Remaining",
+          display: t("pools.externalIncentivized.sort.epochs"),
           sort: makeSortMechanism("epochsRemaining"),
           collapseAt: Breakpoint.XL,
         },
         {
           id: "myLiquidity",
-          display: "My Liquidity",
+          display: t("pools.externalIncentivized.sort.myLiquidity"),
           sort: makeSortMechanism("myLiquidity"),
           collapseAt: Breakpoint.LG,
         },
       ],
-      [makeSortMechanism]
+      [makeSortMechanism, t]
     );
 
     const tableRows: RowDef[] = useMemo(
@@ -275,7 +276,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     if (isMobile) {
       return (
         <CompactPoolTableDisplay
-          title="External Incentive Pool"
+          title={t("pools.externalIncentivized.title")}
           pools={allData.map((poolData) => ({
             id: poolData.pool.id,
             assets: poolData.pool.poolAssets.map(
@@ -298,13 +299,19 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
                       label: "",
                       value: poolData.apr?.toString() ?? "0%",
                     }
-                  : { label: "TVL", value: poolData.liquidity.toString() },
+                  : {
+                      label: t("pools.externalIncentivized.TVL"),
+                      value: poolData.liquidity.toString(),
+                    },
               ],
               ...[
                 sortKeyPath === "apr"
-                  ? { label: "TVL", value: poolData.liquidity.toString() }
+                  ? {
+                      label: t("pools.externalIncentivized.TVL"),
+                      value: poolData.liquidity.toString(),
+                    }
                   : {
-                      label: "APR",
+                      label: t("pools.externalIncentivized.APR"),
                       value: poolData.apr?.toString() ?? "0%",
                     },
               ],
@@ -316,7 +323,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
           searchBoxProps={{
             currentValue: query,
             onInput: setQuery,
-            placeholder: "Filtery by symbol",
+            placeholder: t("pools.externalIncentivized.search"),
           }}
           sortMenuProps={{
             options: tableCols,
@@ -343,7 +350,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             <SearchBox
               currentValue={query}
               onInput={setQuery}
-              placeholder="Filter by name"
+              placeholder={t("pools.externalIncentivized.search")}
               className="!w-64"
             />
             <SortMenu

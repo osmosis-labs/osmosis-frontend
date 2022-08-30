@@ -23,11 +23,7 @@ import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
 import { Breakpoint } from "../types";
 import { CompactPoolTableDisplay } from "./compact-pool-table-display";
 import { POOLS_PER_PAGE } from ".";
-
-const poolsMenuOptions = [
-  { id: "incentivized-pools", display: "Incentivized Pools" },
-  { id: "all-pools", display: "All Pools" },
-];
+import { useTranslation } from "react-multi-lang";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -42,6 +38,15 @@ export const AllPoolsTableSet: FunctionComponent<{
     accountStore,
   } = useStore();
   const { isMobile } = useWindowSize();
+  const t = useTranslation();
+
+  const poolsMenuOptions = [
+    {
+      id: "incentivized-pools",
+      display: t("pools.allPools.titleIncentivized"),
+    },
+    { id: "all-pools", display: t("pools.allPools.title") },
+  ];
 
   const [activeOptionId, setActiveOptionId] = useState(tableSet);
   const selectOption = (optionId: string) => {
@@ -197,38 +202,40 @@ export const AllPoolsTableSet: FunctionComponent<{
     () => [
       {
         id: "pool.id",
-        display: "Pool Name",
+        display: t("pools.allPools.sort.poolName"),
         sort: makeSortMechanism("pool.id"),
         displayCell: PoolCompositionCell,
       },
       {
         id: "liquidity",
-        display: "Liquidity",
+        display: t("pools.allPools.sort.liquidity"),
         sort: makeSortMechanism("liquidity"),
       },
       {
         id: "volume24h",
-        display: "Volume (24H)",
+        display: t("pools.allPools.sort.volume24h"),
         sort: makeSortMechanism("volume24h"),
 
         displayCell: MetricLoaderCell,
       },
       {
         id: "feesSpent7d",
-        display: "Fees (7D)",
+        display: t("pools.allPools.sort.fees"),
         sort: makeSortMechanism("feesSpent7d"),
         displayCell: MetricLoaderCell,
         collapseAt: Breakpoint.XL,
       },
       {
         id: isIncentivizedPools ? "apr" : "myLiquidity",
-        display: isIncentivizedPools ? "APR" : "My Liquidity",
+        display: isIncentivizedPools
+          ? t("pools.allPools.sort.APRIncentivized")
+          : t("pools.allPools.sort.APR"),
         sort: makeSortMechanism(isIncentivizedPools ? "apr" : "myLiquidity"),
         displayCell: isIncentivizedPools ? MetricLoaderCell : undefined,
         collapseAt: Breakpoint.LG,
       },
     ],
-    [makeSortMechanism, isIncentivizedPools]
+    [makeSortMechanism, isIncentivizedPools, t]
   );
 
   const tableRows: RowDef[] = useMemo(
@@ -320,7 +327,11 @@ export const AllPoolsTableSet: FunctionComponent<{
   if (isMobile) {
     return (
       <CompactPoolTableDisplay
-        title={isIncentivizedPools ? "Incentivized Pools" : "All Pools"}
+        title={
+          isIncentivizedPools
+            ? t("pools.allPools.titleIncentivized")
+            : t("pools.allPools.title")
+        }
         pools={allData.map((poolData) => ({
           id: poolData.pool.id,
           assets: poolData.pool.poolAssets.map(
@@ -346,17 +357,25 @@ export const AllPoolsTableSet: FunctionComponent<{
                 ? { label: "", value: poolData.apr?.toString() ?? "0%" }
                 : sortKeyPath === "myLiquidity"
                 ? {
-                    label: "my liquidity",
+                    label: t("pools.allPools.myLiquidity"),
                     value:
                       poolData.myLiquidity?.toString() ?? `0${fiat.symbol}`,
                   }
-                : { label: "TVL", value: poolData.liquidity.toString() },
+                : {
+                    label: t("pools.allPools.TVL"),
+                    value: poolData.liquidity.toString(),
+                  },
             ],
             ...[
               sortKeyPath === "apr"
-                ? { label: "TVL", value: poolData.liquidity.toString() }
+                ? {
+                    label: t("pools.allPools.TVL"),
+                    value: poolData.liquidity.toString(),
+                  }
                 : {
-                    label: isIncentivizedPools ? "APR" : "7d Vol.",
+                    label: isIncentivizedPools
+                      ? t("pools.allPools.APR")
+                      : t("pools.allPools.APRIncentivized"),
                     value: isIncentivizedPools
                       ? poolData.apr?.toString() ?? "0%"
                       : poolData.volume7d.toString(),
@@ -370,7 +389,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         searchBoxProps={{
           currentValue: query,
           onInput: setQuery,
-          placeholder: "Search pools",
+          placeholder: t("pools.allPools.search"),
         }}
         sortMenuProps={{
           options: tableCols,
@@ -388,10 +407,12 @@ export const AllPoolsTableSet: FunctionComponent<{
         minTvlToggleProps={{
           isOn: isPoolTvlFiltered,
           onToggle: setIsPoolTvlFiltered,
-          label: `Show pools less than ${new PricePretty(
-            priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-            TVL_FILTER_THRESHOLD
-          ).toString()}`,
+          label: t("pools.allPools.displayLowLiquidity", {
+            value: new PricePretty(
+              priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+              TVL_FILTER_THRESHOLD
+            ).toString(),
+          }),
         }}
       />
     );
@@ -401,7 +422,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     <>
       <div className="flex flex-col gap-3 mt-5">
         <div className="flex items-center place-content-between">
-          <h5>All Pools</h5>
+          <h5>{t("pools.allPools.title")}</h5>
           <MenuToggle
             className="inline"
             options={poolsMenuOptions}
@@ -415,16 +436,18 @@ export const AllPoolsTableSet: FunctionComponent<{
             onToggle={setIsPoolTvlFiltered}
             className="mr-2"
           >
-            {`Show pools less than ${new PricePretty(
-              priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-              TVL_FILTER_THRESHOLD
-            ).toString()}`}
+            {t("pools.allPools.displayLowLiquidity", {
+              value: new PricePretty(
+                priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+                TVL_FILTER_THRESHOLD
+              ).toString(),
+            })}
           </Switch>
           <div className="flex flex-wrap items-center gap-8 lg:w-full lg:place-content-between">
             <SearchBox
               currentValue={query}
               onInput={setQuery}
-              placeholder="Search pools"
+              placeholder={t("pools.allPools.search")}
               className="!w-64"
             />
             <SortMenu

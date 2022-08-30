@@ -26,6 +26,69 @@
       "findCurrency": "Impossible de trouver la devise {currency}"
     }
   },
+  "pools":{
+    "title":"Pools actives",
+    "priceOsmo": "Prix de l'OSMO",
+    "rewardDistribution": "Distribution de la récompence dans",
+    "myPools": "Mes Pools",
+    "APR":"TAP",
+    "available":"Disponnible",
+    "liquidity":"Liquidité Pool",
+    "bonded":"Cautionné",
+    "poolId":"Pool n°{id}",
+    "incentivized":"Pools conseillées",
+    "all":"Toutes les pools",
+    "superfluid":{
+      "title":"Pools superfluides",
+      "APR": "TAP",
+      "liquidity":"Liquidité Pool",
+      "fees7D": "Frais (7J)"
+    },
+    "allPools":{
+      "title":"Toutes les Pools",
+      "titleIncentivized":"Pools conseillées",
+      "myLiquidity": "ma liquidité",
+      "TVL": "VTV",
+      "APR": "TAP",
+      "APRIncentivized": "7j Vol.",
+      "search":"Rechercher dans les pools",
+      "displayLowLiquidity":"Afficher les pools avec moins de {value}",
+      "sort":{
+        "poolName":"Nom de la pool",
+        "liquidity":"Liquidité",
+        "volume24h":"Volume (24H)",
+        "fees":"Frais (7J)",
+        "APRIncentivized":"TAP",
+        "APR":"Ma liquidité"
+      }
+    },
+    "externalIncentivized":{
+      "title":"Pools externes conseillées",
+      "TVL":"VTV",
+      "APR":"TAP",
+      "search":"Rechercher par devise",
+      "sort":{
+        "poolName":"Nom de la pool",
+        "liquidity":"Liquidité",
+        "APR":"TAP",
+        "epochs":"Cycles restants",
+        "myLiquidity":"Ma liquidité"
+      }
+    },
+    "createPool":{
+      "title":"Créer une nouvelle Pool",
+      "button":"Créer une nouvelle Pool"
+    }
+  },
+  "components":{
+    "show":{
+      "more":"Plus",
+      "less":"Moins"
+    },
+    "table":{
+      "poolId":"Pool n°{id}"
+    }
+  },
   "menu":{
     "swap":"Échanger",
     "pools":"Pools",

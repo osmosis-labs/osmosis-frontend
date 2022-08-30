@@ -25,6 +25,7 @@ import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-t
 import { ShowMoreButton } from "../../components/buttons/show-more";
 import { UserAction } from "../../config";
 import { POOLS_PER_PAGE } from "../../components/complex";
+import { useTranslation } from "react-multi-lang";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
 const TVL_FILTER_THRESHOLD = 1000;
@@ -40,6 +41,7 @@ const Pools: NextPage = observer(function () {
     queriesExternalStore,
   } = useStore();
   const { isMobile } = useWindowSize();
+  const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -132,7 +134,7 @@ const Pools: NextPage = observer(function () {
         <CreatePoolModal
           isOpen={isCreatingPool}
           onRequestClose={() => setIsCreatingPool(false)}
-          title="Create New Pool"
+          title={t("pools.createPool.title")}
           createPoolConfig={createPoolConfig}
           isSendingMsg={account.txTypeInProgress !== ""}
           onCreatePool={async () => {
@@ -160,12 +162,12 @@ const Pools: NextPage = observer(function () {
         />
       )}
       <Overview
-        title="Active Pools"
+        title={t("pools.title")}
         titleButtons={
           UserAction.CreateNewPool
             ? [
                 {
-                  label: "Create New Pool",
+                  label: t("pools.createPool.button"),
                   onClick: () => setIsCreatingPool(true),
                 },
               ]
@@ -173,7 +175,7 @@ const Pools: NextPage = observer(function () {
         }
         primaryOverviewLabels={[
           {
-            label: "OSMO Price",
+            label: t("pools.priceOsmo"),
             value: (
               <MetricLoader
                 className="h-[2.5rem] !mt-0"
@@ -184,7 +186,7 @@ const Pools: NextPage = observer(function () {
             ),
           },
           {
-            label: "Reward distribution in",
+            label: t("pools.rewardDistribution"),
             value: (
               <LeftTime
                 className="-mt-1 md:mt-0"
@@ -199,9 +201,9 @@ const Pools: NextPage = observer(function () {
       <section className="bg-background">
         <div className="max-w-container mx-auto md:p-4 p-10 pb-[3.75rem]">
           {isMobile ? (
-            <span className="subtitle2">My Pools</span>
+            <span className="subtitle2">{t("pools.myPools")}</span>
           ) : (
-            <h5>My Pools</h5>
+            <h5>{t("pools.myPools")}</h5>
           )}
           <div className="flex flex-col gap-4">
             <div className="mt-5 grid grid-cards md:gap-3">
@@ -228,7 +230,7 @@ const Pools: NextPage = observer(function () {
 
                   let myPoolMetrics = [
                     {
-                      label: "APR",
+                      label: t("pools.APR"),
                       value: isMobile ? (
                         apr.maxDecimals(2).toString()
                       ) : (
@@ -242,7 +244,9 @@ const Pools: NextPage = observer(function () {
                       ),
                     },
                     {
-                      label: isMobile ? "Available" : "Pool Liquidity",
+                      label: isMobile
+                        ? t("pools.available")
+                        : t("pools.liquidity"),
                       value: isMobile ? (
                         (!myPool.totalShare.toDec().equals(new Dec(0))
                           ? myPool
@@ -273,7 +277,7 @@ const Pools: NextPage = observer(function () {
                       ),
                     },
                     {
-                      label: "Bonded",
+                      label: t("pools.bonded"),
                       value: isMobile ? (
                         myBonded.toString()
                       ) : (
@@ -329,15 +333,15 @@ const Pools: NextPage = observer(function () {
           <TabBox
             tabs={[
               {
-                title: "Incentivized Pools",
+                title: t("pools.incentivized"),
                 content: <AllPoolsTableSet tableSet="incentivized-pools" />,
               },
               {
-                title: "All Pools",
+                title: t("pools.all"),
                 content: <AllPoolsTableSet tableSet="all-pools" />,
               },
               {
-                title: "External Incentive Pools",
+                title: t("pools.externalIncentivized.title"),
                 content: <ExternalIncentivizedPoolsTableSet />,
               },
               {
@@ -439,7 +443,7 @@ const Pools: NextPage = observer(function () {
         <>
           <section className="bg-surface">
             <div className="max-w-container mx-auto p-10">
-              <h5>Superfluid Pools</h5>
+              <h5>{t("pools.superfluid.title")}</h5>
               <div className="my-5 grid grid-cards">
                 {superfluidPools &&
                   (showMoreSfsPools
@@ -453,7 +457,7 @@ const Pools: NextPage = observer(function () {
                         poolAssets={assets}
                         poolMetrics={[
                           {
-                            label: "APR",
+                            label: t("pools.superfluid.APR"),
                             value: (
                               <MetricLoader
                                 isLoading={
@@ -466,7 +470,7 @@ const Pools: NextPage = observer(function () {
                             ),
                           },
                           {
-                            label: "Pool Liquidity",
+                            label: t("pools.superfluid.liquidity"),
                             value: (
                               <MetricLoader
                                 isLoading={poolLiquidity.toDec().isZero()}
@@ -476,7 +480,7 @@ const Pools: NextPage = observer(function () {
                             ),
                           },
                           {
-                            label: "Fees (7D)",
+                            label: t("pools.superfluid.fees7D"),
                             value: (
                               <MetricLoader
                                 isLoading={poolFeesMetrics.feesSpent7d
