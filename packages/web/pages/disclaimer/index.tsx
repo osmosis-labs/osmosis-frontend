@@ -1,9 +1,9 @@
 import type { NextPage } from "next";
 
 const Disclaimer: NextPage = () => (
-  <section className="bg-background h-screen">
+  <section className="bg-background pt-20">
     <div className="max-w-container mx-auto p-5 md:h-full overflow-y-auto">
-      <div className="text-center md:pt-20">
+      <div className="text-center">
         <span>Osmosis Disclaimer</span>
       </div>
       <div className="p-4 my-5 mx-auto rounded-xl max-w-lg bg-card text-white-mid text-xs md:caption">
@@ -39,7 +39,7 @@ const Disclaimer: NextPage = () => (
       </div>
     </div>
     <div className="max-w-container mx-auto p-5 md:h-full overflow-y-auto">
-      <div className="text-center md:pt-20">
+      <div className="text-center">
         <span>Osmosis Privacy Policy</span>
       </div>
       <div className="p-4 my-5 mx-auto rounded-xl max-w-lg bg-card text-white-mid text-xs md:caption">
@@ -48,36 +48,33 @@ const Disclaimer: NextPage = () => (
       </div>
     </div>
     <div className="max-w-container mx-auto p-5 md:h-full overflow-y-auto">
-      <div className="text-center md:pt-20">
+      <div className="text-center">
         <span>Osmosis Rektdrop Disclaimer</span>
       </div>
       <div className="p-4 my-5 mx-auto rounded-xl max-w-lg bg-card text-white-mid text-xs md:caption">
-        On June 7, 2022, a software bug related to Osmosis liquidity pool 
-        led to an incorrect, excessive amount of LP shares to be distributed.  
-        While under no obligation to do so, Osmosis Foundation has decided
-        to take certain steps to compensate those affected by the exploit. 
-        On June 28, 2022, Osmosis will distribute tokens in-kind to losses 
-        to affected wallet addresses. Liquidity providers of affected pools
-        will receive tokens (or OSMO for non-liquid assets) sent to their
-        account equivalent to the amount affected by the bug.
-
-        In consideration for this payment, you agree to waive, release, 
-        covenant not to sue and forever discharge Osmosis Foundation Ltd., 
-        its vendors, affiliates and licensees, and their respective owners, 
-        corporate parents, subsidiaries, affiliates, licensees and the 
-        officers, shareholders, directors, employees, agents, representatives,
-        successors and assigns of each of these (collectively, “Releasees”)
-        from any and all claims, demands, causes of action, liabilities,
-        losses, injuries, damages, costs, and expenses (including, without 
-        limitation, reasonable attorneys’ fees) whatsoever that relate to,
-        arise out of, or are in any way connected to (i) the loss of funds,
-        or (ii) the services provided to you by the Releases, 
-        whether or not any such Claims may be based on or arise out of 
-        the negligent acts or omissions of any of the Releasees or otherwise.
-
-        If you do not accept the terms outlined above and/or do not wish
-        to accept the distributed funds, please contact inquiry@osmosis.team
-        and an Osmosis team member will help you return the funds.
+        On June 7, 2022, a software bug related to Osmosis liquidity pool led to
+        an incorrect, excessive amount of LP shares to be distributed. While
+        under no obligation to do so, Osmosis Foundation has decided to take
+        certain steps to compensate those affected by the exploit. On June 28,
+        2022, Osmosis will distribute tokens in-kind to losses to affected
+        wallet addresses. Liquidity providers of affected pools will receive
+        tokens (or OSMO for non-liquid assets) sent to their account equivalent
+        to the amount affected by the bug. In consideration for this payment,
+        you agree to waive, release, covenant not to sue and forever discharge
+        Osmosis Foundation Ltd., its vendors, affiliates and licensees, and
+        their respective owners, corporate parents, subsidiaries, affiliates,
+        licensees and the officers, shareholders, directors, employees, agents,
+        representatives, successors and assigns of each of these (collectively,
+        “Releasees”) from any and all claims, demands, causes of action,
+        liabilities, losses, injuries, damages, costs, and expenses (including,
+        without limitation, reasonable attorneys’ fees) whatsoever that relate
+        to, arise out of, or are in any way connected to (i) the loss of funds,
+        or (ii) the services provided to you by the Releases, whether or not any
+        such Claims may be based on or arise out of the negligent acts or
+        omissions of any of the Releasees or otherwise. If you do not accept the
+        terms outlined above and/or do not wish to accept the distributed funds,
+        please contact inquiry@osmosis.team and an Osmosis team member will help
+        you return the funds.
       </div>
     </div>
   </section>
