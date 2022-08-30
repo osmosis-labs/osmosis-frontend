@@ -1842,8 +1842,8 @@ const chainInfos = (
       explorerUrlToTx: "https://explorer.cudos.org/transactions/{txHash}",
     },
     {
-      rpc: "https://main.rpc.agoric.net:443",
-      rest: "https://main.api.agoric.net:443",
+      rpc: "https://main.rpc.agoric.net",
+      rest: "https://main.api.agoric.net",
       chainId: "agoric-3",
       chainName: "Agoric",
       bip44: {
