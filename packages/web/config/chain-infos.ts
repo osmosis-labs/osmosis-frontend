@@ -1841,6 +1841,36 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://explorer.cudos.org/transactions/{txHash}",
     },
+    {
+      rpc: "https://main.rpc.agoric.net:443",
+      rest: "https://main.api.agoric.net:443",
+      chainId: "agoric-3",
+      chainName: "Agoric",
+      bip44: {
+        coinType: 564,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("agoric"),
+      currencies: [
+        {
+          coinDenom: "BLD",
+          coinMinimalDenom: "ubld",
+          coinDecimals: 6,
+          // coinGeckoId: "cudos",
+          coinImageUrl: "/tokens/bld.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+        {
+          coinDenom: "IST",
+          coinMinimalDenom: "uist",
+          coinDecimals: 6,
+          // coinGeckoId: "cudos",
+          coinImageUrl: "/tokens/ist.png",
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://agoric.bigdipper.live/transactions/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
