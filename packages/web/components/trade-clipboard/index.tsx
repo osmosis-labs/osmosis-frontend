@@ -482,7 +482,10 @@ export const TradeClipboard: FunctionComponent<{
                 placeholder="0"
                 onChange={(e) => {
                   e.preventDefault();
-                  if (Number(e.target.value) <= Number.MAX_SAFE_INTEGER && e.target.value.length < 17) {
+                  if (
+                    Number(e.target.value) <= Number.MAX_SAFE_INTEGER &&
+                    e.target.value.length < 17
+                  ) {
                     tradeTokenInConfig.setAmount(e.target.value);
                   }
                 }}
@@ -507,13 +510,13 @@ export const TradeClipboard: FunctionComponent<{
                 isHoveringSwitchButton,
             }
           )}
-          onMouseEnter={() => setHoveringSwitchButton(true)}
-          onMouseLeave={() => setHoveringSwitchButton(false)}
-          onClick={(e) => {
-            e.preventDefault();
-
-            setIsAnimatingSwitch(true);
+          onMouseEnter={() => {
+            if (!isMobile) setHoveringSwitchButton(true);
           }}
+          onMouseLeave={() => {
+            if (!isMobile) setHoveringSwitchButton(false);
+          }}
+          onClick={() => setIsAnimatingSwitch(true)}
         >
           <div
             className={classNames(
@@ -527,7 +530,7 @@ export const TradeClipboard: FunctionComponent<{
             <div className="relative w-full h-full">
               <div
                 className={classNames(
-                  "absolute left-[10.5px] md:left-2 top-[11px] md:top-2 transition-all duration-500 ease-bounce",
+                  "absolute left-[10.5px] md:left-[8px] top-[11px] md:top-[7px] transition-all duration-500 ease-bounce",
                   {
                     "opacity-0 rotate-180": isHoveringSwitchButton,
                   }
