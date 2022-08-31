@@ -5,106 +5,230 @@
       "linkText": "Vous consultez tous les éléments sans autorisation.<link>Cliquez ici pour revenir au site principal</link>."
     }
   },
-  "swap":{
-    "title":"Échanger",
-    "settings":{
+  "swap": {
+    "title": "Échanger",
+    "settings": {
       "title": "Paramètres de transaction",
       "slippage": "Tolérance de glissement",
-      "slippageInfo":"Votre transaction sera annulée si le prix dépasse le pourcentage en votre défaveur."
+      "slippageInfo": "Votre transaction sera annulée si le prix dépasse le pourcentage en votre défaveur."
     },
     "available": "Disponnible",
     "MAX": "MAX",
     "HALF": "MOITIÉ",
-    "button":"Échanger",
-    "buttonError":"Échanger quand même",
+    "button": "Échanger",
+    "buttonError": "Échanger quand même",
     "buttonConnect": "Connecter le portefeuille",
-    "priceImpact":"Impact des prix",
+    "priceImpact": "Impact des prix",
     "fee": "Frais d'échange ({fee})",
-    "expectedOutput":"Résultat attendu",
-    "minimumSlippage":"Minimum reçu après glissement ({slippage})",
-    "error":{
+    "expectedOutput": "Résultat attendu",
+    "minimumSlippage": "Minimum reçu après glissement ({slippage})",
+    "error": {
       "findCurrency": "Impossible de trouver la devise {currency}"
     }
   },
-  "pools":{
-    "title":"Pools actives",
+  "pools": {
+    "title": "Pools actives",
     "priceOsmo": "Prix de l'OSMO",
     "rewardDistribution": "Distribution de la récompence dans",
     "myPools": "Mes Pools",
-    "APR":"TAP",
-    "available":"Disponnible",
-    "liquidity":"Liquidité Pool",
-    "bonded":"Cautionné",
-    "poolId":"Pool n°{id}",
-    "incentivized":"Pools conseillées",
-    "all":"Toutes les pools",
-    "superfluid":{
-      "title":"Pools superfluides",
+    "APR": "TAP",
+    "available": "Disponnible",
+    "liquidity": "Liquidité Pool",
+    "bonded": "Cautionné",
+    "poolId": "Pool n°{id}",
+    "incentivized": "Pools conseillées",
+    "all": "Toutes les pools",
+    "superfluid": {
+      "title": "Pools superfluides",
       "APR": "TAP",
-      "liquidity":"Liquidité Pool",
+      "liquidity": "Liquidité Pool",
       "fees7D": "Frais (7J)"
     },
-    "allPools":{
-      "title":"Toutes les Pools",
-      "titleIncentivized":"Pools conseillées",
+    "allPools": {
+      "title": "Toutes les Pools",
+      "titleIncentivized": "Pools conseillées",
       "myLiquidity": "ma liquidité",
       "TVL": "VTV",
       "APR": "TAP",
       "APRIncentivized": "7j Vol.",
-      "search":"Rechercher dans les pools",
-      "displayLowLiquidity":"Afficher les pools avec moins de {value}",
-      "sort":{
-        "poolName":"Nom de la pool",
-        "liquidity":"Liquidité",
-        "volume24h":"Volume (24H)",
-        "fees":"Frais (7J)",
-        "APRIncentivized":"TAP",
-        "APR":"Ma liquidité"
+      "search": "Rechercher dans les pools",
+      "displayLowLiquidity": "Afficher les pools avec moins de {value}",
+      "sort": {
+        "poolName": "Nom de la pool",
+        "liquidity": "Liquidité",
+        "volume24h": "Volume (24H)",
+        "fees": "Frais (7J)",
+        "APRIncentivized": "TAP",
+        "APR": "Ma liquidité"
       }
     },
-    "externalIncentivized":{
-      "title":"Pools externes conseillées",
-      "TVL":"VTV",
-      "APR":"TAP",
-      "search":"Rechercher par devise",
-      "sort":{
-        "poolName":"Nom de la pool",
-        "liquidity":"Liquidité",
-        "APR":"TAP",
-        "epochs":"Cycles restants",
-        "myLiquidity":"Ma liquidité"
+    "externalIncentivized": {
+      "title": "Pools externes conseillées",
+      "TVL": "VTV",
+      "APR": "TAP",
+      "search": "Rechercher par devise",
+      "sort": {
+        "poolName": "Nom de la pool",
+        "liquidity": "Liquidité",
+        "APR": "TAP",
+        "epochs": "Cycles restants",
+        "myLiquidity": "Ma liquidité"
       }
     },
-    "createPool":{
-      "title":"Créer une nouvelle Pool",
-      "button":"Créer une nouvelle Pool"
+    "createPool": {
+      "title": "Créer une nouvelle Pool",
+      "button": "Créer une nouvelle Pool"
     }
   },
-  "components":{
-    "show":{
-      "more":"Plus",
-      "less":"Moins"
+  "pool": {
+    "title": "Pool n°{id}",
+    "liquidityMining": "Minage de liquidité",
+    "liquidityMiningMobile": "Minage de liquidité",
+    "superfluidEnabled": "Superfluide délégation activée",
+    "liquidityMiningInfo": "Garantir la liquidité à diverses périodes minimales de désengagement pour obtenir des primes de liquidité d'OSMO et des commissions sur les frais d'échange.",
+    "availableLPToken": "Jeton FL disponnible",
+    "buttonStartEarning": "Commencer à gagner",
+    "superfluidStaking": "Jalonnement superfluide",
+    "superfluidStakingMobile": "Mon jalonnement superfluide",
+    "catalyst": {
+      "title": "Catalyseur de pool",
+      "titleMobile": "Catalyseur de pool",
+      "amount": "Montant total",
+      "myAmount": "Mon montant"
     },
-    "table":{
-      "poolId":"Pool n°{id}"
+    "superfluidUnlock": {
+      "title": "Détachements Superfluid",
+      "titleMobile": "Détachements Superfluid",
+      "validator": "Validateur",
+      "amount": "Montant",
+      "unbondingComplete": "Déblocage complet"
+    },
+    "unlock": {
+      "title": "Détachements",
+      "titleMobile": "Détachements",
+      "unbondingDuration": "Durée de déblocage",
+      "amount": "Montant",
+      "unbondingComplete": "Déblocage complet"
+    },
+    "depoolings": {
+      "title": "Retirer",
+      "titleMobile": "Retirer",
+      "note": "Note: Le soldde de l'actif de dépopulation indiqué est un total pour toutes les pools et non par pool.",
+      "amount": "Montant",
+      "unlock": "Déblocage complet"
+    },
+    "myBondings": {
+      "title": "Mes jalonnements",
+      "titleMobile": "Mes jalonnements",
+      "depoolButton": "Retirer les actions FL",
+      "unbondingDuration": "Durée de déblocage",
+      "currentAPR": "Actuel TAP",
+      "amount": "Montant",
+      "action": "Action",
+      "actionUnbond": "Débloquer tout",
+      "actionUnbondMobile": "Débloquer"
+    },
+    "superfluidValidatorCard": {
+      "myValidator": "Mon validateur superfluide",
+      "myDelegation": "Ma délégation superfluide",
+      "commission": "Commission - {commission}",
+      "APR": "~{apr} TAP"
+    },
+    "goSuperfluid": {
+      "title": "Jalonnement superfluide désactivé",
+      "titleMobile": "Vous n'utilisez pas le jalonnement superfluide",
+      "info": "Vous êtes éligible au jalonnement superfluide<br/>Choisissez un validateur superfluide pour obtenir des récompenses supplémentaires.",
+      "button": "Utiliser le superfluide"
+    },
+    "gauges": {
+      "time": "{time} pour délier",
+      "APR": "TAP",
+      "info": "Le jalonnement superfluide vous permet de sécuriser le réseau et de recevoir des récompenses supplémentaire payeées en OSMO",
+      "bonus": {
+        "title": "Récompence bonus de blocage",
+        "titleMobile": "{days} récompence bonus",
+        "info": "Le cautionnement de cette pool pendant {days} donnera droit à des primes de cautionnement supplémentaires pendant {remainingEpochs} jours.",
+        "remaining": "Restant:",
+        "remainingMobile": "Bonus:",
+        "remainingEpochs": "{remainingEpochs} jours restants"
+      }
+    },
+    "overview": {
+      "title": "Pool n°{id} : {name}",
+      "buttons": {
+        "addRemoveLiquidity": "Ajouter / Retirer de la liquidité",
+        "swap": "Échanger des jetons"
+      },
+      "liquidity": "Liquidité de la pool",
+      "myLiquidity": "Ma liquidité",
+      "bonded": "Délégué",
+      "swapFee": "Frais d'échange"
+    },
+    "lockToken": {
+      "title": "Déléguer des liquidités",
+      "unbondingPeriod": "Periode de déblocage",
+      "superfluidStake": "Superfluide jalonnage",
+      "amountToBond": "Montant à bloquer",
+      "availableToken": "Jeton de fournisseur de liquidité disponnible",
+      "inputMax": "MAX",
+      "buttonNext": "Suivant",
+      "buttonBond": "Déléguer"
+    },
+    "manageLiquidity": {
+      "title": "Gestion de la liquidité",
+      "tabAddLiquidity": "Ajouter de la Liquidity",
+      "tabRemoveLiquidity": "Retirer de la Liquidity",
+      "LPTokenBalance": "Solde de jeton FL:",
+      "available": "Disponnible",
+      "MAX": "MAX",
+      "autoSwap": "Échange automatique d'un seul actif",
+      "autoSwapInfo": "''Échange automatique d'un seul actif'' permet de vous fournir des liquidités en utilisant un seul actif. Cela aura un impact sur le prix de la pool de l'actif avec lequel pour fournissez la liquidité.",
+      "priceImpact": "Impact du prix"
+    },
+    "superfluidValidator": {
+      "title": "Sélection validateur superfluide",
+      "titleMobile": "Sélection validateur",
+      "choose": "Choisi ton validateur superfluide",
+      "search": "Rechercher par nom",
+      "bondedAmount": "Montant bloqué",
+      "estimation": "Estimation superfluide délégation",
+      "estimationMobile": "Est. délégation",
+      "estimationInfo": "La valeur de cette délégation fluctue et est estimée en fonction de la quantité d'OSMO dans la pool.",
+      "buttonBond": "Lier & Déléguer",
+      "columns": {
+        "validator": "Validateur",
+        "commission": "Commission"
+      }
     }
   },
-  "menu":{
-    "swap":"Échanger",
-    "pools":"Pools",
-    "assets":"Assets",
-    "stake":"Stake",
-    "vote":"Voter",
-    "info":"Info",
+  "components": {
+    "show": {
+      "more": "Plus",
+      "less": "Moins"
+    },
+    "table": {
+      "poolId": "Pool n°{id}"
+    }
+  },
+  "errors": {
+    "Amount is empty": "Le montant est vide"
+  },
+  "menu": {
+    "swap": "Échanger",
+    "pools": "Pools",
+    "assets": "Actifs",
+    "stake": "Stake",
+    "vote": "Voter",
+    "info": "Info",
     "connectWallet": "Connecter le portefeuille",
     "signOut": "Se déconnecter",
     "help": "Obtenir de l'aide",
-    "learnMoreFrontier":"En apprendre<br/>plus sur<br2/> <name>Osmosis Frontier</name>"
+    "learnMoreFrontier": "En apprendre<br/>plus sur<br2/> <name>Osmosis Frontier</name>"
   },
-  "404":{
-    "title":"Page non trouvée"
+  "404": {
+    "title": "Page non trouvée"
   },
-  "500":{
-    "title":"Erreur serveur"
+  "500": {
+    "title": "Erreur serveur"
   }
 }

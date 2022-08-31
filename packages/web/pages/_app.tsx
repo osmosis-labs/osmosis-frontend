@@ -24,7 +24,9 @@ import {
 } from "react-multi-lang";
 
 import en from "../localizations/en.json";
+import "../localizations/dayjs_locale_en.js";
 import fr from "../localizations/fr.json";
+import "../localizations/dayjs_locale_fr.js";
 import { Formatted } from "../components/localization";
 
 dayjs.extend(relativeTime);
@@ -99,6 +101,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     );
     // default language is en, change only if it's different
     if (userLanguage && userLanguage != DEFAULT_LANGUAGE) {
+      dayjs.locale(userLanguage);
       setLanguage(userLanguage);
     }
   }, []);

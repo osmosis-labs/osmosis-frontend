@@ -11,6 +11,7 @@ import { CheckBox } from "../components/control";
 import { ModalBase, ModalBaseProps } from "./base";
 import { MobileProps } from "../components/types";
 import { useConnectWalletModalRedirect } from "../hooks";
+import { useTranslation } from "react-multi-lang";
 
 export const LockTokensModal: FunctionComponent<
   ModalBaseProps & {
@@ -39,7 +40,7 @@ export const LockTokensModal: FunctionComponent<
     isSendingMsg,
     isMobile = false,
   } = props;
-
+  const t = useTranslation();
   const isSuperfluid = gauges.some(
     (gauge) => gauge.superfluidApr !== undefined
   );
@@ -74,8 +75,8 @@ export const LockTokensModal: FunctionComponent<
       },
       children:
         electSuperfluid && !hasSuperfluidValidator && highestGaugeSelected
-          ? "Next"
-          : "Bond" || undefined,
+          ? t("pool.lockToken.buttonNext")
+          : t("pool.lockToken.buttonBond") || undefined,
     },
     props.onRequestClose
   );
@@ -84,7 +85,9 @@ export const LockTokensModal: FunctionComponent<
     <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-col gap-2.5">
-          <span className="subitle1">Unbonding period</span>
+          <span className="subitle1">
+            {t("pool.lockToken.unbondingPeriod")}
+          </span>
           <div className="flex md:flex-col gap-4">
             {gauges.map(({ id, duration, apr, superfluidApr }, index) => (
               <LockupItem
@@ -109,7 +112,7 @@ export const LockTokensModal: FunctionComponent<
               isOn={electSuperfluid}
               onToggle={() => setElectSuperfluid(!electSuperfluid)}
             >
-              Superfluid Stake
+              {t("pool.lockToken.superfluidStake")}
             </CheckBox>
             <Image
               alt=""
@@ -120,10 +123,10 @@ export const LockTokensModal: FunctionComponent<
           </div>
         )}
         <div className="flex flex-col gap-2 md:border-0 border border-white-faint md:rounded-0 rounded-2xl md:p-px p-4">
-          <span className="subtitle1">Amount To Bond</span>
+          <span className="subtitle1">{t("pool.lockToken.amountToBond")}</span>
           {availableToken && (
             <div className="flex gap-1 caption">
-              <span>Available LP Token</span>
+              <span>{t("pool.lockToken.availableToken")}</span>
               <span className="text-primary-50">
                 {availableToken.trim(true).toString()}
               </span>
@@ -136,7 +139,7 @@ export const LockTokensModal: FunctionComponent<
             placeholder=""
             labelButtons={[
               {
-                label: "MAX",
+                label: t("pool.lockToken.inputMax"),
                 onClick: () => config.toggleIsMax(),
                 className: "!my-auto !h-6 !bg-primary-200 !caption",
               },
@@ -144,7 +147,12 @@ export const LockTokensModal: FunctionComponent<
           />
         </div>
         {config.error?.message !== undefined && (
-          <Error className="mx-auto" message={config.error?.message ?? ""} />
+          <Error
+            className="mx-auto"
+            message={
+              config.error?.message ? t(`errors.${config.error.message}`) : ""
+            }
+          />
         )}
         {accountActionButton}
       </div>

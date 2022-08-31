@@ -15,6 +15,7 @@ import {
   ObservableAddLiquidityConfig,
   ObservableRemoveLiquidityConfig,
 } from "@osmosis-labs/stores";
+import { useTranslation } from "react-multi-lang";
 
 export interface Props extends ModalBaseProps {
   addLiquidityConfig: ObservableAddLiquidityConfig;
@@ -35,7 +36,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
       onRemoveLiquidity,
       isSendingMsg = false,
     } = props;
-
+    const t = useTranslation();
     const { chainStore } = useStore();
     const { isMobile } = useWindowSize();
     const [selectedTabIndex, setSelectedTabIndex] = useState<0 | 1>(0);
@@ -56,7 +57,9 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                 .equals(new Dec(0))),
           onClick: selectedTabIndex === 0 ? onAddLiquidity : onRemoveLiquidity,
           children:
-            selectedTabIndex === 0 ? "Add Liquidity" : "Remove Liquidity",
+            selectedTabIndex === 0
+              ? t("pool.manageLiquidity.tabAddLiquidity")
+              : t("pool.manageLiquidity.tabRemoveLiquidity"),
         },
         props.onRequestClose
       );
@@ -76,13 +79,13 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
           }}
           tabs={[
             {
-              title: "Add Liquidity",
+              title: t("pool.manageLiquidity.tabAddLiquidity"),
               content: (
                 <div className="flex flex-col gap-3">
                   {!isMobile && (
                     <div className="flex gap-1 text-caption font-caption">
                       <span className="text-white-disabled">
-                        LP token balance:
+                        {t("pool.manageLiquidity.LPTokenBalance")}
                       </span>
                       <span className="text-secondary-200">
                         {addLiquidityConfig.poolShare.toDec().isZero()
@@ -195,7 +198,9 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                             <div className="flex flex-col gap-2">
                               {!isMobile && (
                                 <div className="flex gap-2 text-caption font-caption justify-end">
-                                  <span className="my-auto">Available</span>
+                                  <span className="my-auto">
+                                    {t("pool.manageLiquidity.available")}
+                                  </span>
                                   {assetBalance && (
                                     <span className="text-primary-50 my-auto">
                                       {assetBalance.maxDecimals(6).toString()}
@@ -213,7 +218,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                                     onClick={() => addLiquidityConfig.setMax()}
                                     disabled={assetBalance?.toDec().isZero()}
                                   >
-                                    MAX
+                                    {t("pool.manageLiquidity.MAX")}
                                   </button>
                                 </div>
                               )}
@@ -231,7 +236,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                                     onClick={() => addLiquidityConfig.setMax()}
                                     disabled={assetBalance?.toDec().isZero()}
                                   >
-                                    MAX
+                                    {t("pool.manageLiquidity.MAX")}
                                   </button>
                                 )}
                                 <div className="flex flex-col rounded-lg bg-background p-1">
@@ -271,17 +276,19 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                         )
                       }
                     >
-                      Auto-swap single asset
+                      {t("pool.manageLiquidity.autoSwap")}
                     </CheckBox>
                     <InfoTooltip
                       trigger="click mouseenter"
                       className="mx-2.5"
-                      content="'Auto-swap single asset' allows you to provide liquidity using one asset. This will impact the pool price of the asset you’re providing liquidity with."
+                      content={t("pool.manageLiquidity.autoSwapInfo")}
                     />
                   </div>
                   {addLiquidityConfig.singleAmountInPriceImpact && (
                     <div className="flex place-content-between p-4 bg-card border border-white-faint rounded-lg body1">
-                      <span className="text-white-mid">Price impact</span>
+                      <span className="text-white-mid">
+                        {t("pool.manageLiquidity.priceImpact")}
+                      </span>
                       <span>
                         {addLiquidityConfig.singleAmountInPriceImpact.toString()}
                       </span>
@@ -290,7 +297,11 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                   {addLiquidityConfig.error && (
                     <Error
                       className="mx-auto"
-                      message={addLiquidityConfig.error?.message ?? ""}
+                      message={
+                        addLiquidityConfig.error?.message
+                          ? t(`errors.${addLiquidityConfig.error.message}`)
+                          : ""
+                      }
                     />
                   )}
                   {accountActionButton}
@@ -298,7 +309,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
               ),
             },
             {
-              title: "Remove Liquidity",
+              title: t("pool.manageLiquidity.tabRemoveLiquidity"),
               content: (
                 <div className="flex flex-col text-center">
                   {isMobile ? (
@@ -369,7 +380,9 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                         .equals(new Dec(0))}
                       className="button w-full h-full rounded-md border border-secondary-200 flex justify-center items-center hover:opacity-75 disabled:opacity-30"
                     >
-                      <p className="text-secondary-200">MAX</p>
+                      <p className="text-secondary-200">
+                        {t("pool.manageLiquidity.MAX")}
+                      </p>
                     </button>
                   </div>
                   {accountActionButton}
