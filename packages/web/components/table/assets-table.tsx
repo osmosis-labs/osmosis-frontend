@@ -26,6 +26,7 @@ import { Button } from "../buttons";
 import { PreTransferModal } from "../../modals";
 import { IbcHistoryTable } from "./ibc-history";
 import { ColumnDef } from "./types";
+import { useTranslation } from "react-multi-lang";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -45,6 +46,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
   onWithdraw,
 }) => {
   const { chainStore } = useStore();
+  const t = useTranslation();
   const { width, isMobile } = useWindowSize();
   const mergeWithdrawCol = width < 1000 && !isMobile;
   // Assemble cells with all data needed for any place in the table.
@@ -256,14 +258,14 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 className="w-full h-10"
                 onClick={() => setShowPreTransfer(true)}
               >
-                Deposit
+                {t("assets.table.depositButton")}
               </Button>
               <Button
                 className="w-full h-10 bg-primary-200/30"
                 type="outline"
                 onClick={() => setShowPreTransfer(true)}
               >
-                Withdraw
+                {t("assets.table.withdrawButton")}
               </Button>
             </div>
             <SearchBox
@@ -273,16 +275,16 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 setHideZeroBalances(false);
                 setQuery(query);
               }}
-              placeholder="Filter by symbol"
+              placeholder={t("assets.table.search")}
             />
-            <h6>Assets</h6>
+            <h6>{t("assets.table.title")}</h6>
             <div className="flex gap-3 items-center place-content-between">
               <Switch
                 isOn={hideZeroBalances}
                 disabled={!canHideZeroBalances}
                 onToggle={() => setHideZeroBalances(!hideZeroBalances)}
               >
-                Hide zero balances
+                {t("assets.table.hideZero")}
               </Switch>
               <SortMenu
                 selectedOptionId={sortKey}
@@ -291,16 +293,16 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 options={[
                   {
                     id: "coinDenom",
-                    display: "Symbol",
+                    display: t("assets.table.sort.symbol"),
                   },
                   {
                     /** These ids correspond to keys in `Cell` type and are later used for sorting. */
                     id: "chainName",
-                    display: "Network",
+                    display: t("assets.table.sort.netword"),
                   },
                   {
                     id: "amount",
-                    display: "Balance",
+                    display: t("assets.table.sort.balance"),
                   },
                 ]}
               />
@@ -308,14 +310,14 @@ export const AssetsTable: FunctionComponent<Props> = ({
           </div>
         ) : (
           <div className="flex flex-col gap-5">
-            <h5>Assets</h5>
+            <h5>{t("assets.table.title")}</h5>
             <div className="flex place-content-between">
               <Switch
                 isOn={hideZeroBalances}
                 disabled={!canHideZeroBalances}
                 onToggle={() => setHideZeroBalances(!hideZeroBalances)}
               >
-                Hide zero balances
+                {t("assets.table.hideZero")}
               </Switch>
               <div className="flex items-center gap-5">
                 <SearchBox
@@ -324,7 +326,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
                     setHideZeroBalances(false);
                     setQuery(query);
                   }}
-                  placeholder="Search assets"
+                  placeholder={t("assets.table.search")}
                 />
                 <SortMenu
                   selectedOptionId={sortKey}
@@ -333,16 +335,16 @@ export const AssetsTable: FunctionComponent<Props> = ({
                   options={[
                     {
                       id: "coinDenom",
-                      display: "Symbol",
+                      display: t("assets.table.sort.symbol"),
                     },
                     {
                       /** These ids correspond to keys in `Cell` type and are later used for sorting. */
                       id: "chainName",
-                      display: "Network",
+                      display: t("assets.table.sort.netword"),
                     },
                     {
                       id: "fiatValueRaw",
-                      display: "Balance",
+                      display: t("assets.table.sort.balance"),
                     },
                   ]}
                 />
@@ -389,12 +391,12 @@ export const AssetsTable: FunctionComponent<Props> = ({
             className="w-full my-5"
             columnDefs={[
               {
-                display: "Asset / Chain",
+                display: t("assets.table.columns.assetChain"),
                 displayCell: AssetNameCell,
                 sort: sortColumnWithKeys(["coinDenom", "chainName"]),
               },
               {
-                display: "Balance",
+                display: t("assets.table.columns.balance"),
                 displayCell: BalanceCell,
                 sort: sortColumnWithKeys(["fiatValueRaw"], "descending"),
                 className: "text-right pr-24 lg:pr-8 1.5md:pr-1",
@@ -402,7 +404,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
               ...(mergeWithdrawCol
                 ? ([
                     {
-                      display: "Transfer",
+                      display: t("assets.table.columns.transfer"),
                       displayCell: (cell) => (
                         <div>
                           <TransferButtonCell type="deposit" {...cell} />
@@ -414,14 +416,14 @@ export const AssetsTable: FunctionComponent<Props> = ({
                   ] as ColumnDef<TableCell>[])
                 : ([
                     {
-                      display: "Deposit",
+                      display: t("assets.table.columns.deposit"),
                       displayCell: (cell) => (
                         <TransferButtonCell type="deposit" {...cell} />
                       ),
                       className: "text-center max-w-[5rem]",
                     },
                     {
-                      display: "Withdraw",
+                      display: t("assets.table.columns.withdraw"),
                       displayCell: (cell) => (
                         <TransferButtonCell type="withdraw" {...cell} />
                       ),

@@ -201,6 +201,77 @@
       }
     }
   },
+  "assets": {
+    "title": "Mes actifs Osmosis",
+    "totalAssets": "Actifs totaux",
+    "unbondedAssets": "Actifs non liés",
+    "bondedAssets": "Actifs liés",
+    "stakedAssets": "OSMO cautionné",
+    "myPools": "Mes Pools",
+    "poolCards": {
+      "APR": "TAP",
+      "FeeAPY": "Frais PAR",
+      "liquidity": "Liquidité Pool",
+      "bonded": "Liés",
+      "myLiquidity": "Ma liquidité"
+    },
+    "ibcTransfer": {
+      "titleWithdraw": "Retirer des actifs IBC",
+      "titleWithdrawMobile": "Retirer",
+      "titleDeposit": "Déposer des actifs IBC",
+      "titleDepositMobile": "Déposer",
+      "copied": "Copié !",
+      "IBCTransfer": "Transfert IBC",
+      "from": "Depuis",
+      "to": "à",
+      "warningLossFunds": "Attention: un retrait à l'adresse de l'échange central entraînera la perte des fonds.",
+      "buttonEnter": "Entrer",
+      "checkboxVerify": "Je vérifie que je n'envoie pas à une adresse d'échangeur",
+      "buttonEdit": "Éditer",
+      "amoutWithdraw": "Montant à retirer",
+      "amoutDeposit": "Montant à déposer",
+      "availableBalance": "Montant des fonds:",
+      "MAX": "MAX"
+    },
+    "table": {
+      "depositButton": "Déposer",
+      "withdrawButton": "Retirer",
+      "search": "Rechercher par devise",
+      "title": "Actifs",
+      "hideZero": "Cacher les fonds à zéro",
+      "preTransfer": {
+        "deposit": "Déposer",
+        "withdraw": "Retirer"
+      },
+      "columns": {
+        "assetChain": "Actif / Chaine",
+        "balance": "Fonds",
+        "transfer": "Transfert",
+        "deposit": "Déposer",
+        "withdraw": "Retirer"
+      },
+      "sort": {
+        "symbol": "Devise",
+        "netword": "Réseau",
+        "balance": "Fonds"
+      }
+    },
+    "historyTable": {
+      "title": "Historique des transferts",
+      "pending": "En cours",
+      "success": "Succès",
+      "refunded": "Rembourser",
+      "pendingRefunded": "Échec: remboursement en cours",
+      "colums": {
+        "transactionHash": "Hash Transaction",
+        "type": "Type",
+        "amount": "Montant",
+        "status": "Status",
+        "deposit": "Déposer",
+        "withdraw": "Retirer"
+      }
+    }
+  },
   "components": {
     "show": {
       "more": "Plus",
@@ -208,10 +279,16 @@
     },
     "table": {
       "poolId": "Pool n°{id}"
+    },
+    "sort": {
+      "SORT": "TRIER PAR",
+      "SORTMobile": "TRIER",
+      "mobileMenu": "Trier par"
     }
   },
   "errors": {
-    "Amount is empty": "Le montant est vide"
+    "Amount is empty": "Le montant est vide",
+    "Insufficient amount": "Montant insuffisant"
   },
   "menu": {
     "swap": "Échanger",

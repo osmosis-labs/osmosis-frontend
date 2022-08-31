@@ -14,10 +14,12 @@ import { Button } from "../components/buttons";
 import { InputBox } from "../components/input";
 import { CheckBox } from "../components/control";
 import { Error } from "../components/alert";
+import { useTranslation } from "react-multi-lang";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
     const { currency, counterpartyChainId, isWithdraw } = props;
+    const t = useTranslation();
     const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
     const { chainId: osmosisChainId } = chainStore.osmosis;
     const { isMobile } = useWindowSize();
@@ -61,7 +63,9 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           loading: inTransit,
           children: (
             <h6 className="md:text-base text-lg">
-              {isWithdraw ? "Withdraw" : "Deposit"}
+              {isWithdraw
+                ? t("assets.ibcTransfer.titleWithdraw")
+                : t("assets.ibcTransfer.titleDeposit")}
             </h6>
           ),
         },
@@ -83,19 +87,26 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
         <div className="text-white-high">
           <div className="relative md:mb-5 mb-10 flex items-center w-full">
             <h5 className="md:text-lg text-xl">
-              {isWithdraw ? "Withdraw" : "Deposit"}
-              {!isMobile && " IBC Asset"}
+              {isWithdraw
+                ? isMobile
+                  ? t("assets.ibcTransfer.titleWithdrawMobile")
+                  : t("assets.ibcTransfer.titleWithdraw")
+                : isMobile
+                ? t("assets.ibcTransfer.titleDepositMobile")
+                : t("assets.ibcTransfer.titleDeposit")}
             </h5>
             {showCopied && (
               <span className="absolute inset-[45%] -top-0 w-fit h-fit rounded-full px-1.5 subtitle2 border-2 border-primary-200 bg-primary-200/60">
-                Copied!
+                {t("assets.ibcTransfer.copied")}
               </span>
             )}
           </div>
-          <h6 className="md:mb-3 mb-4 md:text-base text-lg">IBC Transfer</h6>
+          <h6 className="md:mb-3 mb-4 md:text-base text-lg">
+            {t("assets.ibcTransfer.IBCTransfer")}
+          </h6>
           <section className="flex flex-col items-center">
             <div className="w-full flex-1 md:p-3 p-4 border border-white-faint rounded-2xl">
-              <p className="text-white-high">From</p>
+              <p className="text-white-high">{t("assets.ibcTransfer.from")}</p>
               <div
                 className="flex items-center gap-3"
                 onClick={() => {
@@ -137,7 +148,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               />
             </div>
             <div className="w-full flex-1 md:p-3 p-4 border border-white-faint rounded-2xl">
-              <p className="text-white-high">To</p>
+              <p className="text-white-high">{t("assets.ibcTransfer.to")}</p>
               <div className="flex gap-2 place-content-between">
                 <div className="w-full flex flex-col gap-5">
                   {isEditingWithdrawAddr && (
@@ -151,8 +162,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                         />
                       </div>
                       <p className="md:text-xs text-sm my-auto">
-                        Warning: Withdrawing to central exchange address will
-                        result in loss of funds.
+                        {t("assets.ibcTransfer.warningLossFunds")}
                       </p>
                     </div>
                   )}
@@ -167,7 +177,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                       }}
                       labelButtons={[
                         {
-                          label: "Enter",
+                          label: t("assets.ibcTransfer.buttonEnter"),
                           onClick: () => {
                             setIsEditingWithdrawAddr(false);
                             setDidVerifyWithdrawRisk(false);
@@ -228,7 +238,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                         }}
                       >
                         <span className="caption md:text-xs text-sm md:ml-1 ml-2">
-                          I verify I am not sending to an exchange address.
+                          {t("assets.ibcTransfer.checkboxVerify")}
                         </span>
                       </CheckBox>
                     </div>
@@ -251,18 +261,20 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                       }
                     }}
                   >
-                    Edit
+                    {t("assets.ibcTransfer.buttonEdit")}
                   </Button>
                 )}
               </div>
             </div>
           </section>
           <h6 className="md:text-base text-lg mt-7">
-            Amount To {isWithdraw ? "Withdraw" : "Deposit"}
+            {isWithdraw
+              ? t("assets.ibcTransfer.amoutWithdraw")
+              : t("assets.ibcTransfer.amoutDeposit")}
           </h6>
           <div className="md:mt-3 mt-4 w-full md:p-0 p-5 md:border-0 border border-secondary-50 border-opacity-60 rounded-2xl">
             <p className="md:text-sm text-base mb-2">
-              Available balance:{" "}
+              {t("assets.ibcTransfer.availableBalance")}{" "}
               <span className="text-primary-50">
                 {(isWithdraw
                   ? queriesStore
@@ -293,7 +305,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               onInput={(value) => amountConfig.setAmount(value)}
               labelButtons={[
                 {
-                  label: "MAX",
+                  label: t("assets.ibcTransfer.MAX"),
                   onClick: () => amountConfig.toggleIsMax(),
                 },
               ]}
@@ -301,7 +313,10 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           </div>
           <div className="flex items-center md:mt-1 mt-2">
             {amountConfig.error && (
-              <Error className="mx-auto" message={amountConfig.error.message} />
+              <Error
+                className="mx-auto"
+                message={t(`errors.${amountConfig.error.message}`)}
+              />
             )}
           </div>
           <div className="w-full md:mt-6 mt-9 flex items-center justify-center">

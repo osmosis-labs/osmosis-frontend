@@ -201,6 +201,77 @@
       }
     }
   },
+  "assets": {
+    "title": "My Osmosis Assets",
+    "totalAssets": "Total Assets",
+    "unbondedAssets": "Unbonded Assets",
+    "bondedAssets": "Bonded Assets",
+    "stakedAssets": "Staked OSMO",
+    "myPools": "My Pools",
+    "poolCards": {
+      "APR": "APR",
+      "FeeAPY": "Fee APY",
+      "liquidity": "Pool Liquidity",
+      "bonded": "Bonded",
+      "myLiquidity": "My Liquidity"
+    },
+    "ibcTransfer": {
+      "titleWithdraw": "Withdraw IBC Asset",
+      "titleWithdrawMobile": "Withdraw",
+      "titleDeposit": "Deposit IBC Asset",
+      "titleDepositMobile": "Deposit",
+      "copied": "Copied!",
+      "IBCTransfer": "IBC Transfer",
+      "from": "from",
+      "to": "to",
+      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds.",
+      "buttonEnter": "Enter",
+      "checkboxVerify": "I verify I am not sending to an exchange address.",
+      "buttonEdit": "Edit",
+      "amoutWithdraw": "Amount To Withdraw",
+      "amoutDeposit": "Amount To Deposit",
+      "availableBalance": "Available balance:",
+      "MAX": "MAX"
+    },
+    "table": {
+      "depositButton": "Deposit",
+      "withdrawButton": "Withdraw",
+      "search": "Filter by symbol",
+      "title": "Assets",
+      "hideZero": "Hide zero balances",
+      "preTransfer": {
+        "deposit": "Deposit",
+        "withdraw": "Withdraw"
+      },
+      "columns": {
+        "assetChain": "Asset / Chain",
+        "balance": "Balance",
+        "transfer": "Transfer",
+        "deposit": "Deposit",
+        "withdraw": "Withdraw"
+      },
+      "sort": {
+        "symbol": "Symbol",
+        "netword": "Network",
+        "balance": "Balance"
+      }
+    },
+    "historyTable": {
+      "title": "Transfer History",
+      "pending": "Pending",
+      "success": "Success",
+      "refunded": "Refunded",
+      "pendingRefunded": "Failed: Pending refund",
+      "colums": {
+        "transactionHash": "Transaction Hash",
+        "type": "Type",
+        "amount": "Amount",
+        "status": "Status",
+        "deposit": "Deposit",
+        "withdraw": "Withdraw"
+      }
+    }
+  },
   "components": {
     "show": {
       "more": "More",
@@ -208,10 +279,16 @@
     },
     "table": {
       "poolId": "Pool #{id}"
+    },
+    "sort": {
+      "SORT": "SORT BY",
+      "SORTMobile": "SORT",
+      "mobileMenu": "Sort By"
     }
   },
   "errors": {
-    "Amount is empty": "Amount is empty"
+    "Amount is empty": "Amount is empty",
+    "Insufficient amount": "Insufficient amount"
   },
   "menu": {
     "swap": "Swap",
