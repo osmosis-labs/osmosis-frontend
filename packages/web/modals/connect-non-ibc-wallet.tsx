@@ -1,18 +1,20 @@
 import { FunctionComponent, useState } from "react";
-import { AssetSource, Source } from "../components/cards";
+import { WalletCard } from "../components/cards";
+import { SourceChainKey, Wallet } from "../integrations";
 import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
 
 export const ConnectNonIbcWallet: FunctionComponent<
   ModalBaseProps & {
-    initiallySelectedSourceId?: string;
+    initiallySelectedWalletId?: string;
+    desiredSourceKey?: SourceChainKey;
     isWithdraw: boolean;
-    sources: Source[];
-    onSelectSource: (key: string) => void;
+    wallets: Wallet[];
+    onSelectWallet: (key: string) => void;
   }
 > = (props) => {
-  const [selectedSourceId, setSelectedSourceId] = useState<string | null>(
-    props.initiallySelectedSourceId ?? null
+  const [selectedWalletKey, setSelectedWalletId] = useState<string | null>(
+    props.initiallySelectedWalletId ?? null
   );
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
@@ -20,9 +22,9 @@ export const ConnectNonIbcWallet: FunctionComponent<
       className: "h-14 md:w-full w-96 mt-3 mx-auto !px-1",
       size: "lg",
       disabled:
-        props.initiallySelectedSourceId === undefined && !selectedSourceId,
+        props.initiallySelectedWalletId === undefined && !selectedWalletKey,
       onClick: () => {
-        if (selectedSourceId) props.onSelectSource(selectedSourceId);
+        if (selectedWalletKey) props.onSelectWallet(selectedWalletKey);
       },
       children: <span>Next</span>,
     },
@@ -37,12 +39,13 @@ export const ConnectNonIbcWallet: FunctionComponent<
       title={props.isWithdraw ? "Withdraw to" : "Deposit from"}
     >
       <div className="grid grid-cols-3 md:grid-cols-2 gap-4 m-4">
-        {props.sources.map((source, i) => (
-          <AssetSource
+        {props.wallets.map((wallet, i) => (
+          <WalletCard
             key={i}
-            {...source}
-            isSelected={source.id === selectedSourceId}
-            onClick={() => setSelectedSourceId(source.id)}
+            id={wallet.key}
+            {...wallet.displayInfo}
+            isSelected={wallet.key === selectedWalletKey}
+            onClick={() => setSelectedWalletId(wallet.key)}
           />
         ))}
       </div>

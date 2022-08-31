@@ -4,14 +4,14 @@ import { FunctionComponent } from "react";
 import { ButtonProps } from "../buttons/types";
 import { CustomClasses, Disableable } from "../types";
 
-export type Source = {
+export type Wallet = {
   id: string;
   iconUrl: string;
   displayName: string;
 };
 
-export const AssetSource: FunctionComponent<
-  Source & { isSelected?: boolean } & Partial<ButtonProps> &
+export const WalletCard: FunctionComponent<
+  Wallet & { isSelected?: boolean } & Partial<ButtonProps> &
     CustomClasses &
     Disableable
 > = ({
