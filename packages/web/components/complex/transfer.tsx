@@ -69,9 +69,9 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   const disablePanel_ = disablePanel || bridge?.isLoading || false;
 
   return (
-    <div className="flex flex-col gap-11">
+    <div className="flex flex-col gap-11 overflow-x-auto">
       <BridgeAnimation
-        className={bridge ? "mt-4 -mb-2 md:-mb-6" : "mt-6 -mb-4"}
+        className={`mx-auto ${bridge ? "mt-4 -mb-2 md:-mb-6" : "mt-6 -mb-4"}`}
         transferPath={[from, bridge, to]}
       />
       <div
