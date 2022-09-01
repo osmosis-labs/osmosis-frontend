@@ -288,7 +288,8 @@
   },
   "errors": {
     "Amount is empty": "Amount is empty",
-    "Insufficient amount": "Insufficient amount"
+    "Insufficient amount": "Insufficient amount",
+    "Amount is zero": "Amount is zero"
   },
   "menu": {
     "swap": "Swap",
@@ -307,5 +308,13 @@
   },
   "500": {
     "title": "Server error"
-  }
+  },
+  "Transaction Failed": "Transaction Failed",
+  "Transaction Successful": "Transaction Successful",
+  "Transaction Broadcasting": "Transaction Broadcasting",
+  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
+  "Waiting for transaction to be included in the block": "Waiting for transaction to be included in the block",
+  "view explorer": "view explorer",
+  "Unknown error": "Unknown error",
+  "Request rejected": "Request rejected"
 }

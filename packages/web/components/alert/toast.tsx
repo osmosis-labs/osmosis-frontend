@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
+import { useTranslation } from "react-multi-lang";
 import { toast, ToastOptions } from "react-toastify";
 import { Alert, ToastType } from "./types";
 
@@ -48,63 +49,72 @@ export function displayToast(
   }
 }
 
-const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
-  <div className="flex items-center md:gap-2 gap-3">
-    <div className="flex items-center animate-spin h-8 w-8 shrink-0">
-      <Image
-        alt="loading"
-        src="/icons/loading-blue.svg"
-        height={32}
-        width={32}
-      />
+const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => {
+  const t = useTranslation();
+  return (
+    <div className="flex items-center md:gap-2 gap-3">
+      <div className="flex items-center animate-spin h-8 w-8 shrink-0">
+        <Image
+          alt="loading"
+          src="/icons/loading-blue.svg"
+          height={32}
+          width={32}
+        />
+      </div>
+      <div className="text-white-high">
+        <h6 className="mb-2 md:text-base text-lg">{t(message)}</h6>
+        {caption && <p className="md:text-xs text-sm">{t(caption)}</p>}
+      </div>
     </div>
-    <div className="text-white-high">
-      <h6 className="mb-2 md:text-base text-lg">{message}</h6>
-      {caption && <p className="md:text-xs text-sm">{caption}</p>}
-    </div>
-  </div>
-);
+  );
+};
 
-const ErrorToast: FunctionComponent<Alert> = ({ message, caption }) => (
-  <div className="flex items-center md:gap-2 gap-3">
-    <div className="w-8 h-8 shrink-0">
-      <Image alt="failed" src="/icons/error-x.svg" height={32} width={32} />
+const ErrorToast: FunctionComponent<Alert> = ({ message, caption }) => {
+  const t = useTranslation();
+  return (
+    <div className="flex items-center md:gap-2 gap-3">
+      <div className="w-8 h-8 shrink-0">
+        <Image alt="failed" src="/icons/error-x.svg" height={32} width={32} />
+      </div>
+      <div className="text-white-high">
+        <h6 className="mb-2 md:text-base text-lg">{t(message)}</h6>
+        {caption && <p className="md:text-xs text-sm">{t(caption)}</p>}
+      </div>
     </div>
-    <div className="text-white-high">
-      <h6 className="mb-2 md:text-base text-lg">{message}</h6>
-      {caption && <p className="md:text-xs text-sm">{caption}</p>}
-    </div>
-  </div>
-);
+  );
+};
 
 const SuccessToast: FunctionComponent<Alert> = ({
   message,
   learnMoreUrl,
   learnMoreUrlCaption,
-}) => (
-  <div className="flex items-center md:gap-2 gap-3">
-    <div className="w-8 h-8 shrink-0">
-      <Image alt="b" src="/icons/check-circle.svg" height={32} width={32} />
+}) => {
+  const t = useTranslation();
+  return (
+    <div className="flex items-center md:gap-2 gap-3">
+      <div className="w-8 h-8 shrink-0">
+        <Image alt="b" src="/icons/check-circle.svg" height={32} width={32} />
+      </div>
+      <div className="text-white-high">
+        <h6 className="mb-2 md:text-base text-lg">{t(message)}</h6>
+        {learnMoreUrl && (
+          <a
+            target="__blank"
+            href={learnMoreUrl}
+            className="md:text-xs text-sm inline hover:opacity-75 cursor-pointer"
+          >
+            {learnMoreUrlCaption ?? t("Learn more")}
+            <div className="inline-block ml-2 mb-0.75">
+              <Image
+                alt="link"
+                src="/icons/link-deco.svg"
+                height={12}
+                width={12}
+              />
+            </div>
+          </a>
+        )}
+      </div>
     </div>
-    <div className="text-white-high">
-      <h6 className="mb-2 md:text-base text-lg">{message}</h6>
-      {learnMoreUrl && (
-        <a
-          target="__blank"
-          href={learnMoreUrl}
-          className="md:text-xs text-sm inline hover:opacity-75 cursor-pointer"
-        >
-          {learnMoreUrlCaption ?? "Learn more"}
-          <div className="inline-block ml-2 mb-0.75">
-            <Image
-              alt="link"
-              src="/icons/link-deco.svg"
-              height={12}
-              width={12}
-            />
-          </div>
-        </a>
-      )}
-    </div>
-  </div>
-);
+  );
+};

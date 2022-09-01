@@ -288,7 +288,8 @@
   },
   "errors": {
     "Amount is empty": "Le montant est vide",
-    "Insufficient amount": "Montant insuffisant"
+    "Insufficient amount": "Montant insuffisant",
+    "Amount is zero": "Le montant est de zéro."
   },
   "menu": {
     "swap": "Échanger",
@@ -307,5 +308,13 @@
   },
   "500": {
     "title": "Erreur serveur"
-  }
+  },
+  "Transaction Failed": "Échec de la transaction",
+  "Transaction Successful": "Succès de la transaction",
+  "Transaction Broadcasting": "Diffustion de la transaction",
+  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "L'échange a échoué. La liquitité n'est peut-être pas suffisante. Essayez d'ajuster le glissement autorisé.",
+  "Waiting for transaction to be included in the block": "Attente de l'inclusion de la transaction dans le bloc",
+  "view explorer": "Voir dans l'exploreur",
+  "Unknown error": "Erreur inconnue",
+  "Request rejected": "Demande rejetée"
 }
