@@ -141,12 +141,6 @@ const AxelarTransfer: FunctionComponent<
       iconUrl: originCurrency.coinImageUrl,
     };
 
-    console.log(
-      { selectedSourceChainKey },
-      { axelarSelectedCounterpartyChainId: selectedSourceChainKey },
-      `ethWalletClient.chainId: ${ethWalletClient.chainId}`
-    );
-
     const sourceChain = isWithdraw ? "osmosis" : selectedSourceChainKey;
     const destChain = isWithdraw ? selectedSourceChainKey : "osmosis";
     const address = isWithdraw ? ethWalletClient.accountAddress : bech32Address;
@@ -356,7 +350,7 @@ const AxelarTransfer: FunctionComponent<
               ? withdrawAmountConfig.setAmount(value)
               : setDepositAmount(value)
           }
-          availableBalance={availableBalance}
+          availableBalance={correctChainSelected ? availableBalance : undefined}
           toggleIsMax={() => {
             if (isWithdraw) {
               withdrawAmountConfig.toggleIsMax();
