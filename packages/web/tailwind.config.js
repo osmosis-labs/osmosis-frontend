@@ -84,6 +84,7 @@ module.exports = {
       cardInfoPlaceholder: "#3E3866",
       iconDefault: IS_FRONTIER ? "#8E867B" : "#8E83AA",
       error: IS_FRONTIER ? "#E91F4F" : "#EF3456",
+      success: IS_FRONTIER ? "#16A34A" : "#16A34A",
       enabledGold: "#C4A46A",
       pass: IS_FRONTIER ? "#64BC3B" : "#34EF52",
       missionError: "#EF3456",

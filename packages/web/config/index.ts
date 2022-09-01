@@ -11,3 +11,5 @@ export * from "./ibc-assets";
 
 export * from "./initial-assets-sort";
 export * from "./price";
+
+export * from "./autonomy";

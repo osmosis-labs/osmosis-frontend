@@ -5,3 +5,4 @@ export * from "./use-fake-fee-config";
 export * from "./use-remove-liquidity-config";
 export * from "./use-slippage-config";
 export * from "./use-trade-token-in-config";
+export * from "./use-order-token-in-config";

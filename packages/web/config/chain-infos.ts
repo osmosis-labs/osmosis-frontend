@@ -40,6 +40,42 @@ const chainInfos = (
       explorerUrlToTx: "https://www.mintscan.io/osmosis/txs/{txHash}",
     },
     {
+      rpc: "https://testnet-rpc.osmosis.zone/",
+      rest: "https://testnet-rest.osmosis.zone/",
+      chainId: "osmo-test-4",
+      chainName: "Osmosis Testnet",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("osmo"),
+      currencies: [
+        {
+          coinDenom: "OSMO",
+          coinMinimalDenom: "uosmo",
+          coinDecimals: 6,
+          coinGeckoId: "osmosis",
+          coinImageUrl: "/tokens/osmo.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+        {
+          coinDenom: "ION",
+          coinMinimalDenom: "uion",
+          coinDecimals: 6,
+          coinGeckoId: "ion",
+          coinImageUrl: "/tokens/ion.png",
+        },
+      ],
+      gasPriceStep: {
+        low: 0,
+        average: 0,
+        high: 0.025,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx:
+        "https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}",
+    },
+    {
       rpc: "https://rpc-cosmoshub.keplr.app",
       rest: "https://lcd-cosmoshub.keplr.app",
       chainId: "cosmoshub-4",

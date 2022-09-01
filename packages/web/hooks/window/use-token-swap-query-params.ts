@@ -1,12 +1,15 @@
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
-import { ObservableTradeTokenInConfig } from "@osmosis-labs/stores";
+import {
+  ObservableOrderTokenInConfig,
+  ObservableTradeTokenInConfig,
+} from "@osmosis-labs/stores";
 import { CoinBalance } from "../../stores/assets";
 import { useStore } from "../../stores";
 
 /** Bidirectionally sets/gets window query params to/from `from=DENOM&to=DENOM` and sets in trade config object. */
 export function useTokenSwapQueryParams(
-  tradeConfig: ObservableTradeTokenInConfig,
+  tradeConfig: ObservableTradeTokenInConfig | ObservableOrderTokenInConfig,
   balances: CoinBalance[],
   isInModal = false
 ) {
@@ -76,9 +79,9 @@ export function useTokenSwapQueryParams(
             // first two assets in `sendableCurrencies` which will be inexhaustive. This will
             // loop through query params and set the config to the wrong, intially loaded assets.
             router.replace(
-              `/?from=${tradeConfig.sendCurrency.coinDenom.split(" ")[0]}&to=${
-                tradeConfig.outCurrency.coinDenom.split(" ")[0]
-              }`
+              `${router.pathname}/?from=${
+                tradeConfig.sendCurrency.coinDenom.split(" ")[0]
+              }&to=${tradeConfig.outCurrency.coinDenom.split(" ")[0]}`
             );
           }
         });

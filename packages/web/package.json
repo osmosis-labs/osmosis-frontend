@@ -13,6 +13,7 @@
     "pre-commit": "lint-staged"
   },
   "dependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.28.10",
     "@cosmjs/launchpad": "^0.26.5",
     "@keplr-wallet/common": "^0.10.4",
     "@keplr-wallet/cosmos": "^0.10.4",

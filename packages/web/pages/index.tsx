@@ -2,12 +2,18 @@ import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 import { TradeClipboard } from "../components/trade-clipboard";
+import { TradeClipboard as AutonomyTradeClipboard } from "../components/autonomy/trade";
+import OrderHistory from "../components/autonomy/order-history";
 import { useStore } from "../stores";
 import { IS_FRONTIER } from "../config";
 import { Dec } from "@keplr-wallet/unit";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
+import classNames from "classnames";
 
 const Home: NextPage = observer(function () {
+  const [tradeType, setTradeType] = useState<"Swap" | "Limit" | "StopLoss">(
+    "Swap"
+  );
   const { chainStore, queriesStore } = useStore();
   const { chainId } = chainStore.osmosis;
 
@@ -157,11 +163,59 @@ const Home: NextPage = observer(function () {
           </g>
         </svg>
       </div>
-      <div className="w-full h-full flex items-center overflow-x-hidden overflow-y-auto">
-        <TradeClipboard
-          containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
-          pools={pools}
-        />
+      <div
+        className={classNames(
+          "w-full h-full flex flex-col",
+          tradeType === "Swap"
+            ? "justify-center overflow-x-hidden overflow-y-auto"
+            : "overflow-y-auto overflow-x-hidden"
+        )}
+      >
+        <div
+          className={classNames(
+            "w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto mb-3 z-100",
+            tradeType !== "Swap" ? "mt-mobile-header" : ""
+          )}
+        >
+          <div className="relative rounded-[18px] flex flex-row gap-8 bg-cardInner px-5 md:px-3 py-4">
+            <div
+              className="flex-auto text-center font-bold px-4 py-2 cursor-pointer mr-3"
+              onClick={() => setTradeType("Swap")}
+            >
+              Swap
+            </div>
+            <div
+              className="flex-auto text-center font-bold px-4 py-2 cursor-pointer mr-3"
+              onClick={() => setTradeType("Limit")}
+            >
+              Limit Order
+            </div>
+            <div
+              className="flex-auto text-center font-bold px-4 py-2 cursor-pointer"
+              onClick={() => setTradeType("StopLoss")}
+            >
+              Stop Loss
+            </div>
+          </div>
+        </div>
+        {tradeType === "Swap" ? (
+          <TradeClipboard
+            containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
+            pools={pools}
+          />
+        ) : (
+          <>
+            <AutonomyTradeClipboard
+              pools={pools}
+              type={tradeType}
+              containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
+            />
+            <OrderHistory
+              orderType={tradeType}
+              containerClassName="w-[27rem] ml-auto mr-[15%] lg:mx-auto"
+            />
+          </>
+        )}
       </div>
     </main>
   );
