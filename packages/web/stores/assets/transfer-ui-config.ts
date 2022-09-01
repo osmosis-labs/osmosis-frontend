@@ -335,9 +335,10 @@ export class ObservableTransferUIConfig {
             );
           };
 
-          if (!selectedWallet.isConnected)
+          if (!selectedWallet.isConnected) {
+            wallets.forEach((wallet) => wallet.disable());
             selectedWallet.enable().then(openBridgeModal);
-          else openBridgeModal();
+          } else openBridgeModal();
         } else {
           console.error("Given wallet key doesn't match any wallet");
           this.closeAllModals();

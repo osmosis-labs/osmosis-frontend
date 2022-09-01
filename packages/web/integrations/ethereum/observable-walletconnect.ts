@@ -41,6 +41,15 @@ export class ObservableWalletConnect implements EthWallet {
   constructor(protected readonly kvStore?: KVStore, bridgeUrl?: string) {
     this._walletConnect = new WalletConnect({
       bridge: bridgeUrl || "https://bridge.walletconnect.org",
+      clientMeta: {
+        description: "Interchain Liquidity Lab",
+        icons:
+          typeof window !== "undefined"
+            ? [`${window.origin}/icons/OSMO.svg`]
+            : [],
+        name: "Osmosis",
+        url: "https://osmosis.zone/",
+      },
       qrcodeModal: {
         open: (uri) => runInAction(() => (this.sessionConnectUri = uri)),
         close: () => runInAction(() => (this.sessionConnectUri = undefined)),
@@ -170,6 +179,13 @@ export class ObservableWalletConnect implements EthWallet {
       }
     );
   });
+
+  displayError(e: any): string | undefined {
+    if (e.message === "User rejected the transaction") {
+      // User denied
+      return "Request rejected";
+    }
+  }
 }
 
 function withConnectedClient(

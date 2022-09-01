@@ -217,7 +217,7 @@ const AxelarTransfer: FunctionComponent<
               (event) => trackTransferStatus(event.txHash)
             );
           } catch (e) {
-            // TODO: real problem or rejected
+            // common Keplr errors are displayed as toasts from root store
             console.error(e);
             return;
           }
@@ -263,28 +263,17 @@ const AxelarTransfer: FunctionComponent<
                 depositAddress
               ).then((txHash) => trackTransferStatus(txHash as string));
             } catch (e: any) {
-              if (e.code === 4001) {
-                // User denied
+              const msg = ethWalletClient.displayError?.(e);
+              if (typeof msg === "string") {
                 displayToast(
                   {
                     message: "Transaction Failed",
-                    caption: "Request rejected",
+                    caption: msg,
                   },
                   ToastType.ERROR
                 );
-                return;
-              } else if (e.code === 4100) {
-                // assuming EVM wallet error codes are standard
-
-                // wallet is not logged in (but is connected)
-                displayToast(
-                  {
-                    message: "Action Unavailable",
-                    caption: `Please log into ${ethWalletClient.displayInfo.displayName}`,
-                  },
-                  ToastType.ERROR
-                );
-                return; // don't close modal
+              } else if (msg) {
+                displayToast(msg, ToastType.ERROR);
               } else {
                 console.error(e);
               }
@@ -306,9 +295,7 @@ const AxelarTransfer: FunctionComponent<
       depositAddress,
       depositAmount,
       erc20ContractAddress,
-      ethWalletClient.accountAddress,
-      ethWalletClient.send,
-      ethWalletClient.displayInfo.displayName,
+      ethWalletClient,
       ibcConfig,
       isWithdraw,
       originCurrency,
@@ -342,11 +329,13 @@ const AxelarTransfer: FunctionComponent<
             },
             isWithdraw ? counterpartyPath : osmosisPath,
           ]}
-          selectedWalletDisplay={ethWalletClient.displayInfo}
+          selectedWalletDisplay={
+            isWithdraw ? undefined : ethWalletClient.displayInfo
+          }
           onRequestSwitchWallet={onRequestSwitchWallet}
           currentValue={amount}
           onInput={(value) =>
-            isWithdraw
+            isWithdraw // withdrawals are an IBC transfer Osmosis->Axelar
               ? withdrawAmountConfig.setAmount(value)
               : setDepositAmount(value)
           }

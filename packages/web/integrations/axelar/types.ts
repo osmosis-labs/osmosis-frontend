@@ -62,6 +62,7 @@ export const EthClientChainIds_AxelarChainIdsMap: {
   "Ropsten Test Network": "Ethereum",
   "Avalanche C-Chain": "Avalanche",
   "Binance Smart Chain": "Binance",
+  "Fantom Opera": "Fantom",
 };
 
 export type SourceChainConfig = {

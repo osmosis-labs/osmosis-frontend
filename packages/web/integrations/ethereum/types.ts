@@ -33,6 +33,7 @@ export const ChainNames: { [chainId: string]: string } = {
   "0x38": "Binance Smart Chain",
   "0x64": "Gnosis",
   "0x89": "Polygon",
+  "0xfa": "Fantom Opera",
   "0x504": "Moonbeam",
   "0x2329": "Evmos",
   "0xa86a": "Avalanche C-Chain",

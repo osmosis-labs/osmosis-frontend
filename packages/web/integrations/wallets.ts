@@ -1,4 +1,5 @@
 import EventEmitter from "eventemitter3";
+import { Alert } from "../components/alert";
 
 export type WalletKey = "metamask" | "walletconnect";
 
@@ -20,6 +21,7 @@ export interface Wallet<TTxSend = unknown> {
   enable: () => Promise<void>;
   disable: () => void;
   send: (send: TTxSend) => Promise<unknown>;
+  displayError?: (e: any) => string | Alert | undefined;
   readonly isSending: boolean;
   readonly txStatusEventEmitter?: EventEmitter<
     GeneralTxEvent,

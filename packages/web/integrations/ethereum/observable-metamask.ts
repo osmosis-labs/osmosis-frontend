@@ -8,10 +8,11 @@ import {
 import { computedFn } from "mobx-utils";
 import { toHex, isAddress } from "web3-utils";
 import { KVStore } from "@keplr-wallet/common";
+import { EventEmitter } from "eventemitter3";
+import { Alert } from "../../components/alert";
 import type { EthereumProvider } from "../../window";
 import { WalletDisplay, WalletKey } from "../wallets";
 import { ChainNames, EthWallet } from "./types";
-import { EventEmitter } from "eventemitter3";
 import { pollTransactionReceipt } from "./queries";
 
 const CONNECTED_ACCOUNT_KEY = "metamask-connected-account";
@@ -33,17 +34,25 @@ export class ObservableMetamask implements EthWallet {
   @observable
   protected _isSending: boolean = false;
 
-  txStatusEventEmitter = new EventEmitter<"pending" | "confirmed" | "failed">();
+  readonly txStatusEventEmitter = new EventEmitter<
+    "pending" | "confirmed" | "failed"
+  >();
 
   constructor(protected readonly kvStore?: KVStore) {
     makeObservable(this);
 
     withEthInWindow((eth) => {
       const handleAccountChanged = ([account]: (string | undefined)[]) => {
+        // switching to a few certain networks in metamask causes an undefined address to come in.
+        // this causes the proxy to appear disconnected.
+        // this can't be differentiated from the disconnect event, and the user must reconnect.
+
         this.accountAddress = account;
 
         if (!account) {
-          this._chainId = undefined;
+          runInAction(() => {
+            this._chainId = undefined;
+          });
         }
       };
 
@@ -166,7 +175,23 @@ export class ObservableMetamask implements EthWallet {
     );
   });
 
-  makeExplorerUrl = (txHash: string): string =>
+  displayError(e: any): Alert | undefined {
+    if (e.code === 4001) {
+      // User denied
+      return {
+        message: "Transaction Failed",
+        caption: "Request rejected",
+      };
+    } else if (e.code === 4100) {
+      // wallet is not logged in (but is connected)
+      return {
+        message: "Action Unavailable",
+        caption: `Please log into MetaMask`,
+      };
+    }
+  }
+
+  makeExplorerUrl = (txHash: string) =>
     IS_TESTNET
       ? `https://ropsten.etherscan.io/tx/${txHash}`
       : `https://etherscan.io/tx/${txHash}`;
