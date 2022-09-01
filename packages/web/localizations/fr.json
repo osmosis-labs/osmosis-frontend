@@ -286,11 +286,6 @@
       "mobileMenu": "Trier par"
     }
   },
-  "errors": {
-    "Amount is empty": "Le montant est vide",
-    "Insufficient amount": "Montant insuffisant",
-    "Amount is zero": "Le montant est de zéro."
-  },
   "menu": {
     "swap": "Échanger",
     "pools": "Pools",
@@ -316,5 +311,8 @@
   "Waiting for transaction to be included in the block": "Attente de l'inclusion de la transaction dans le bloc",
   "view explorer": "Voir dans l'exploreur",
   "Unknown error": "Erreur inconnue",
-  "Request rejected": "Demande rejetée"
+  "Request rejected": "Demande rejetée",
+  "Amount is empty": "Le montant est vide",
+  "Insufficient amount": "Montant insuffisant",
+  "Amount is zero": "Le montant est de zéro."
 }

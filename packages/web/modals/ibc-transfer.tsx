@@ -315,7 +315,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             {amountConfig.error && (
               <Error
                 className="mx-auto"
-                message={t(`errors.${amountConfig.error.message}`)}
+                message={t(amountConfig.error.message)}
               />
             )}
           </div>

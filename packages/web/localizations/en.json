@@ -286,11 +286,6 @@
       "mobileMenu": "Sort By"
     }
   },
-  "errors": {
-    "Amount is empty": "Amount is empty",
-    "Insufficient amount": "Insufficient amount",
-    "Amount is zero": "Amount is zero"
-  },
   "menu": {
     "swap": "Swap",
     "pools": "Pools",
@@ -316,5 +311,8 @@
   "Waiting for transaction to be included in the block": "Waiting for transaction to be included in the block",
   "view explorer": "view explorer",
   "Unknown error": "Unknown error",
-  "Request rejected": "Request rejected"
+  "Request rejected": "Request rejected",
+  "Amount is empty": "Amount is empty",
+  "Insufficient amount": "Insufficient amount",
+  "Amount is zero": "Amount is zero"
 }

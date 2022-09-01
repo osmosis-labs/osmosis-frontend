@@ -299,7 +299,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                       className="mx-auto"
                       message={
                         addLiquidityConfig.error?.message
-                          ? t(`errors.${addLiquidityConfig.error.message}`)
+                          ? t(addLiquidityConfig.error.message)
                           : ""
                       }
                     />
