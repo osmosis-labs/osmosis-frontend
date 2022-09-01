@@ -3,7 +3,7 @@
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   reactStrictMode: true,
   images: {
-    domains: ["app.osmosis.zone", "raw.githubusercontent.com"],
+    domains: ['raw.githubusercontent.com', 'app.osmosis.zone'],
   },
   enabled: process.env.ANALYZE === "true",
 });
