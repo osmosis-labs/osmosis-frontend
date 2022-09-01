@@ -67,7 +67,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
     }
   }, [showCopied, setShowCopied]);
 
-  const disablePanel_ = disablePanel || bridge?.isLoading || false;
+  const panelDisabled = disablePanel || bridge?.isLoading || false;
 
   return (
     <div className="flex flex-col gap-11 overflow-x-auto">
@@ -78,7 +78,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
       <div
         className={classNames(
           "flex gap-4 body1 text-iconDefault transition-opacity duration-300",
-          { "opacity-30": disablePanel_ }
+          { "opacity-30": panelDisabled }
         )}
       >
         <div
@@ -90,7 +90,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             }
           )}
         >
-          {!(isMobile && isEditingWithdrawAddr) && (
+          {!(isMobile && isEditingWithdrawAddr) && !panelDisabled && (
             <div className="flex flex-wrap justify-center items-center gap-2 mx-auto md:caption">
               {Bech32Address.shortenAddress(
                 from.address,
@@ -124,6 +124,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         >
           <div className="flex flex-wrap justify-center items-center gap-2 mx-auto md:caption">
             {!isEditingWithdrawAddr &&
+              !panelDisabled &&
               Bech32Address.shortenAddress(
                 editWithdrawAddrConfig &&
                   editWithdrawAddrConfig.customAddress !== ""
@@ -144,24 +145,27 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                 onClick={() => onRequestSwitchWallet?.()}
               />
             )}
-            {isWithdraw && editWithdrawAddrConfig && !isEditingWithdrawAddr && (
-              <Button
-                className="border border-primary-50 hover:border-primary-50/60 text-primary-50 hover:text-primary-50/60"
-                type="outline"
-                onClick={() => {
-                  setIsEditingWithdrawAddr(true);
-                  editWithdrawAddrConfig.setCustomAddress(to.address);
-                }}
-              >
-                Edit
-              </Button>
-            )}
+            {isWithdraw &&
+              editWithdrawAddrConfig &&
+              !panelDisabled &&
+              !isEditingWithdrawAddr && (
+                <Button
+                  className="border border-primary-50 hover:border-primary-50/60 text-primary-50 hover:text-primary-50/60"
+                  type="outline"
+                  onClick={() => {
+                    setIsEditingWithdrawAddr(true);
+                    editWithdrawAddrConfig.setCustomAddress(to.address);
+                  }}
+                >
+                  Edit
+                </Button>
+              )}
             {isEditingWithdrawAddr && editWithdrawAddrConfig && (
               <InputBox
                 className="w-full"
                 style="no-border"
                 currentValue={editWithdrawAddrConfig.customAddress}
-                disabled={disablePanel_}
+                disabled={panelDisabled}
                 onInput={(value) => {
                   editWithdrawAddrConfig.setDidAckWithdrawRisk(false);
                   editWithdrawAddrConfig.setCustomAddress(value);
@@ -183,7 +187,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
       <div
         className={classNames(
           "flex flex-col gap-4 transition-opacity duration-300",
-          { "opacity-30": disablePanel_ }
+          { "opacity-30": panelDisabled }
         )}
       >
         <div className="flex flex-col gap-3">

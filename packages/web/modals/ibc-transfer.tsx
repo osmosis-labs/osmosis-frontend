@@ -31,7 +31,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       customCounterpartyConfig?.bech32Address === "" || // if not changed, it's valid since it's from Keplr
       (customCounterpartyConfig.isValid && didAckWithdrawRisk);
 
-    const { showModalBase, accountActionButton } =
+    const { showModalBase, accountActionButton, walletConnected } =
       useConnectWalletModalRedirect(
         {
           className: "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl",
@@ -129,6 +129,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                 }
               : undefined
           }
+          disablePanel={!walletConnected}
           // errorMessage={ TODO: self-manage errors console.log
           //   amountConfig.error ? amountConfig.error.message : undefined
           // }
