@@ -52,15 +52,19 @@ export const TransferAssetSelectModal: FunctionComponent<
   );
   const [selectedSourceChainKey, setSelectedSourceChainKey] =
     useState<SourceChain | null>(null);
+
+  // set network-select to selected token's defualt
   useEffect(() => {
-    // set network-select to selected token
-    const { sourceChains } = tokens.find(
+    const { sourceChains, defaultSourceChainId } = tokens.find(
       ({ token }) => token.currency.coinDenom === selectedTokenDenom
     )?.originBridgeInfo || { sourceChains: [] };
     setSelectedSourceChainKey(
-      sourceChains.length > 0 ? sourceChains[0].id : null
+      sourceChains.length > 0
+        ? defaultSourceChainId ?? sourceChains[0].id
+        : null
     );
   }, [tokens, selectedTokenDenom, setSelectedSourceChainKey]);
+
   const selectedToken = useMemo(
     () => tokens.find((t) => t.token.denom === selectedTokenDenom),
     [tokens, selectedTokenDenom]

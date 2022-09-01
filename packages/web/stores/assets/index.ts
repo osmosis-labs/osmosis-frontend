@@ -226,4 +226,5 @@ export class ObservableAssets {
   });
 }
 
+export * from "./transfer-ui-config";
 export * from "./types";

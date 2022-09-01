@@ -1,8 +1,9 @@
-import { makeObservable, observable, action } from "mobx";
+import { makeObservable, observable, action, runInAction } from "mobx";
 import { ComponentProps } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { AccountSetBase } from "@keplr-wallet/stores";
 import { IBCCurrency } from "@keplr-wallet/types";
+import { KVStore } from "@keplr-wallet/common";
 import {
   IbcTransferModal,
   BridgeTransferModal,
@@ -68,7 +69,8 @@ export class ObservableTransferUIConfig {
 
   constructor(
     protected readonly assetsStore: ObservableAssets,
-    protected readonly account: AccountSetBase
+    protected readonly account: AccountSetBase,
+    protected readonly kvStore: KVStore
   ) {
     makeObservable(this);
   }
@@ -77,6 +79,7 @@ export class ObservableTransferUIConfig {
   readonly metamask = new ObservableMetamask(
     makeLocalStorageKVStore("metamask")
   );
+  @observable
   readonly walletConnectEth = new ObservableWalletConnect(
     makeLocalStorageKVStore("wc-eth")
   );
@@ -85,7 +88,8 @@ export class ObservableTransferUIConfig {
     return [this.metamask, this.walletConnectEth];
   }
 
-  /** User wants to transfer asset, but the counterparty IBC chain and coinDenom are TBD. */
+  /** ### GLOBAL DEPOSIT/WITHDRAW BUTTONS AT TOP
+   *  User wants to transfer asset, but the counterparty IBC chain and coinDenom are TBD. */
   @action
   startTransfer(direction: TransferDir) {
     this.setupAssetSelectModal(direction, (denom, sourceChainKey) => {
@@ -107,11 +111,7 @@ export class ObservableTransferUIConfig {
           return;
         }
 
-        this.handleTransferIntent(
-          direction,
-          bridgedBalance.chainInfo.chainId,
-          denom
-        );
+        this.transferAsset(direction, bridgedBalance.chainInfo.chainId, denom);
       } else {
         // ibc transfer
         const ibcBalance = this.assetsStore.ibcBalances.find(
@@ -122,14 +122,15 @@ export class ObservableTransferUIConfig {
           return;
         }
 
-        this.setupIbcTransferModal(direction, ibcBalance);
+        this.launchIbcTransferModal(direction, ibcBalance);
       }
     });
   }
 
-  /** User wants to transfer asset with counterparty IBC chain and coinDenom known. */
+  /** ### DEPOSIT/WITHDRAW FROM TABLE ROW
+   *  User wants to transfer asset with counterparty IBC chain and coinDenom known. */
   @action
-  handleTransferIntent(
+  async transferAsset(
     direction: TransferDir,
     chainId: string,
     coinDenom: string
@@ -148,6 +149,11 @@ export class ObservableTransferUIConfig {
     }
 
     if (balance.originBridgeInfo) {
+      const sourceChainKey: SourceChainKey =
+        (await this.kvStore.get(makeAssetSrcNetworkPreferredKey(coinDenom))) ||
+        balance.originBridgeInfo?.defaultSourceChainId ||
+        balance.originBridgeInfo.sourceChains[0].id;
+
       // bridge integration
       const applicableWallets = this._ethClientWallets.filter(({ key }) =>
         balance.originBridgeInfo!.wallets.includes(key)
@@ -156,35 +162,36 @@ export class ObservableTransferUIConfig {
         (wallet) => wallet.isConnected
       );
 
-      if (
-        alreadyConnectedWallet &&
-        alreadyConnectedWallet.chainId &&
-        this.account.walletStatus === WalletStatus.Loaded
-      ) {
-        this.setupBridgeTransferModal(
-          direction,
-          balance,
-          alreadyConnectedWallet,
-          () => {
-            this.closeAllModals();
-            this.setupSelectNonIbcWalletModal(direction, balance);
-          }
-        );
-      } else if (applicableWallets.length > 0) {
-        this.setupSelectNonIbcWalletModal(direction, balance);
-      } else {
-        console.warn(
-          "No non-Keplr wallets found for this bridged asset:",
-          balance.balance.currency.coinDenom
-        );
-      }
+      if (this.account.walletStatus === WalletStatus.Loaded) {
+        if (alreadyConnectedWallet && alreadyConnectedWallet.chainId) {
+          this.launchBridgeTransferModal(
+            direction,
+            balance,
+            alreadyConnectedWallet,
+            sourceChainKey,
+            () => {
+              this.closeAllModals();
+              this.launchWalletSelectModal(direction, balance, sourceChainKey);
+            }
+          );
+        } else if (applicableWallets.length > 0) {
+          this.launchWalletSelectModal(direction, balance, sourceChainKey);
+        } else {
+          console.warn(
+            "No non-Keplr wallets found for this bridged asset:",
+            balance.balance.currency.coinDenom
+          );
+        }
+      } else console.error("Keplr not connected");
     } else {
-      this.setupIbcTransferModal(direction, balance);
+      this.launchIbcTransferModal(direction, balance);
     }
   }
 
+  // SECTION - methods for launching a particular modal
+
   @action
-  protected setupIbcTransferModal(
+  protected launchIbcTransferModal(
     direction: TransferDir,
     balance: typeof this.assetsStore.ibcBalances[0]
   ) {
@@ -230,35 +237,62 @@ export class ObservableTransferUIConfig {
     };
   }
 
-  @action
-  protected setupAssetSelectModal(
+  protected async setupAssetSelectModal(
     direction: "deposit" | "withdraw",
-    onSelectAsset: (denom: string, sourceChainKey?: SourceChainKey) => void
+    onSelectAsset: (
+      denom: string,
+      /** Is ibc transfer if `undefined`. */
+      sourceChainKey?: SourceChainKey
+    ) => void
   ) {
-    this._assetSelectModal = {
-      isOpen: true,
-      isWithdraw: direction === "withdraw",
-      onRequestClose: () => this.closeAllModals(),
-      tokens: this.assetsStore.ibcBalances.map(
-        ({ balance, originBridgeInfo }) => ({
-          token: balance,
-          originBridgeInfo,
-        })
-      ),
-      onSelectAsset: (denom, sourceChainKey) => {
-        this.closeAllModals();
-        onSelectAsset(denom, sourceChainKey);
-      },
-    };
+    const tokens = await Promise.all(
+      this.assetsStore.ibcBalances.map(
+        async ({ balance, originBridgeInfo }) => {
+          const defaultSourceChainId = await this.kvStore.get<
+            string | undefined
+          >(makeAssetSrcNetworkPreferredKey(balance.denom));
+
+          // override default source chain if prev selected by
+          if (originBridgeInfo && defaultSourceChainId)
+            originBridgeInfo.defaultSourceChainId =
+              (defaultSourceChainId as SourceChainKey) ?? undefined;
+
+          return {
+            token: balance,
+            originBridgeInfo,
+          };
+        }
+      )
+    );
+
+    runInAction(() => {
+      this._assetSelectModal = {
+        isOpen: true,
+        isWithdraw: direction === "withdraw",
+        onRequestClose: () => this.closeAllModals(),
+        tokens,
+        onSelectAsset: (denom, sourceChainKey) => {
+          this.closeAllModals();
+          if (sourceChainKey)
+            this.kvStore.set(
+              makeAssetSrcNetworkPreferredKey(denom),
+              sourceChainKey
+            );
+
+          onSelectAsset(denom, sourceChainKey);
+        },
+      };
+    });
   }
 
   @action
-  protected setupSelectNonIbcWalletModal(
+  protected launchWalletSelectModal(
     direction: TransferDir,
-    balanceOnOsmosis: IBCBalance
+    balanceOnOsmosis: IBCBalance,
+    sourceChainKey: SourceChainKey
   ) {
-    const applicableWalletClients = this._ethClientWallets as Wallet[];
-    const applicableWallets = applicableWalletClients.filter(({ key }) =>
+    const wallets = this._ethClientWallets as Wallet[];
+    const applicableWallets = wallets.filter(({ key }) =>
       balanceOnOsmosis.originBridgeInfo!.wallets.includes(key)
     );
     const alreadyConnectedWallet = applicableWallets.find(
@@ -267,48 +301,57 @@ export class ObservableTransferUIConfig {
 
     this._connectNonIbcWalletModal = {
       isOpen: true,
-      initiallySelectedSourceId: alreadyConnectedWallet?.key,
+      initiallySelectedWalletId: alreadyConnectedWallet?.key,
       isWithdraw: direction === "withdraw",
       onRequestClose: () => this.closeAllModals(),
-      sources: applicableWalletClients.map((wallet) => ({
-        id: wallet.key,
-        ...wallet.displayInfo,
-      })),
-      onSelectSource: (key) => {
-        const selectedWallet = applicableWalletClients.find(
-          (wallet) => wallet.key === key
-        );
-        if (selectedWallet) {
+      wallets,
+      onSelectWallet: (key) => {
+        const selectedWallet = wallets.find((wallet) => wallet.key === key);
+        if (selectedWallet !== undefined) {
           // enable then call back
-          selectedWallet.enable().then(() => {
-            this.setupBridgeTransferModal(
+          const openBridgeModal = () => {
+            this.closeAllModals();
+            this.launchBridgeTransferModal(
               direction,
               balanceOnOsmosis,
               selectedWallet,
+              sourceChainKey,
               () => {
                 this.closeAllModals();
-                this.setupSelectNonIbcWalletModal(direction, balanceOnOsmosis);
+                this.launchWalletSelectModal(
+                  direction,
+                  balanceOnOsmosis,
+                  sourceChainKey
+                );
               },
               () => {
                 this.closeAllModals();
-                this.setupSelectNonIbcWalletModal(direction, balanceOnOsmosis);
+                this.launchWalletSelectModal(
+                  direction,
+                  balanceOnOsmosis,
+                  sourceChainKey
+                );
               }
             );
-            this.closeAllModals();
-          });
+          };
+
+          if (!selectedWallet.isConnected)
+            selectedWallet.enable().then(openBridgeModal);
+          else openBridgeModal();
         } else {
           console.error("Given wallet key doesn't match any wallet");
-          this._connectNonIbcWalletModal = undefined;
+          this.closeAllModals();
         }
       },
     };
   }
 
   @action
-  protected setupBridgeTransferModal(
+  protected launchBridgeTransferModal(
     direction: TransferDir,
     balanceOnOsmosis: IBCBalance,
     connectedWalletClient: Wallet,
+    sourceChainKey: SourceChainKey,
     onRequestSwitchWallet: () => void,
     onRequestBack?: () => void
   ) {
@@ -325,8 +368,7 @@ export class ObservableTransferUIConfig {
       onRequestBack,
       balance: balanceOnOsmosis,
       walletClient: connectedWalletClient,
-      // assume selected chain is desired source/dest network
-      sourceChainKey: connectedWalletClient.chainId as SourceChainKey,
+      sourceChainKey,
     };
   }
 
@@ -338,4 +380,8 @@ export class ObservableTransferUIConfig {
       this._ibcTransferModal =
         undefined;
   }
+}
+
+function makeAssetSrcNetworkPreferredKey(denom: string): string {
+  return `asset-src-preferred-network-key--${denom}`;
 }

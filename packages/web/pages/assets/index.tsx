@@ -3,7 +3,9 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { useStore } from "../../stores/";
+import { makeLocalStorageKVStore } from "../../stores/kv-store";
+import { useStore } from "../../stores";
+import { ObservableTransferUIConfig } from "../../stores/assets";
 import { Overview } from "../../components/overview";
 import { AssetsTable } from "../../components/table/assets-table";
 import { DepoolingTable } from "../../components/table/depooling-table";
@@ -20,7 +22,6 @@ import { ConnectNonIbcWallet } from "../../modals/connect-non-ibc-wallet";
 import { useTxEventToasts } from "../../integrations";
 import { useWindowSize } from "../../hooks";
 import { WalletConnectQRModal } from "../../modals";
-import { ObservableTransferUIConfig } from "../../stores/assets/transfer-ui-config";
 
 const INIT_POOL_CARD_COUNT = 6;
 
@@ -37,7 +38,12 @@ const Assets: NextPage = observer(() => {
   const account = accountStore.getAccount(chainId);
 
   const [transferConfig] = useState(
-    () => new ObservableTransferUIConfig(assetsStore, account)
+    () =>
+      new ObservableTransferUIConfig(
+        assetsStore,
+        account,
+        makeLocalStorageKVStore("transfer-ui-config")
+      )
   );
 
   useTxEventToasts(transferConfig.bridgeTransferModal?.walletClient);
@@ -71,10 +77,10 @@ const Assets: NextPage = observer(() => {
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
         onDeposit={(chainId, coinDenom) =>
-          transferConfig.handleTransferIntent("deposit", chainId, coinDenom)
+          transferConfig.transferAsset("deposit", chainId, coinDenom)
         }
         onWithdraw={(chainId, coinDenom) =>
-          transferConfig.handleTransferIntent("withdraw", chainId, coinDenom)
+          transferConfig.transferAsset("withdraw", chainId, coinDenom)
         }
       />
       {!isMobile && <PoolAssets />}

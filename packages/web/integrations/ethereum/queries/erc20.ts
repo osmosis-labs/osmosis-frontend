@@ -12,11 +12,19 @@ class ObservableErc20Query {
   /** `erc20Address => balance` */
   balances: Map<string, Int> = observable.map();
 
+  /** Should be updated per network change in respective wallet, as a different
+   *  network is being queried.
+   */
+  @observable
+  public queryFn: SendFn;
+
   constructor(
     protected readonly hexAddress: string,
-    protected readonly queryFn: SendFn,
+    queryFn: SendFn,
     protected readonly currency: Currency
   ) {
+    this.queryFn = queryFn;
+
     makeObservable(this);
   }
 

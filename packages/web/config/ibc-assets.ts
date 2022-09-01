@@ -829,6 +829,10 @@ export const IBCAssetInfos: (IBCAsset & {
     throw new Error("Can't have URL overrides and origin bridge config");
   }
 
+  if (ibcAsset.originBridgeInfo?.sourceChains.length === 0) {
+    throw new Error("Must have at least one source chain");
+  }
+
   // remove outstanding mainnet Axelar assets when using testnets
   if (IS_TESTNET && ibcAsset.counterpartyChainId === "axelar-dojo-1") {
     return false;

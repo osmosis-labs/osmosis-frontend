@@ -20,7 +20,7 @@ import { useDepositAddress } from "./hooks";
 import {
   AxelarBridgeConfig,
   SourceChain,
-  SourceChainCosmosChainIdMap,
+  SourceChain_CosmosChainIdMap,
   EthClientChainIds_AxelarChainIdsMap,
   waitBySourceChain,
 } from ".";
@@ -61,6 +61,9 @@ const AxelarTransfer: FunctionComponent<
     const userErc20Queries = ethWalletClient.accountAddress
       ? erc20Queries.getQueryEthHexAddress(ethWalletClient.accountAddress)
       : undefined;
+    if (userErc20Queries) {
+      userErc20Queries.queryFn = ethWalletClient.send;
+    }
     const erc20ContractAddress = sourceChains.find(
       ({ id }) => id === selectedSourceChainKey
     )?.erc20ContractAddress;
@@ -70,7 +73,7 @@ const AxelarTransfer: FunctionComponent<
 
     // if counterparty is a cosmos chain
     const counterpartyCosmosChainId: string | undefined =
-      SourceChainCosmosChainIdMap[selectedSourceChainKey];
+      SourceChain_CosmosChainIdMap[selectedSourceChainKey];
     const counterpartyCosmosAccount = counterpartyCosmosChainId
       ? accountStore.getAccount(counterpartyCosmosChainId)
       : undefined;
@@ -127,9 +130,6 @@ const AxelarTransfer: FunctionComponent<
     );
 
     // chain path info whether withdrawing or depositing
-    const axelarSelectedCounterpartyChainId =
-      EthClientChainIds_AxelarChainIdsMap[selectedSourceChainKey] ||
-      selectedSourceChainKey;
     const osmosisPath = {
       address: bech32Address,
       networkName: chainStore.osmosis.chainName,
@@ -137,16 +137,18 @@ const AxelarTransfer: FunctionComponent<
     };
     const counterpartyPath = {
       address: ethWalletClient.accountAddress || "",
-      networkName: axelarSelectedCounterpartyChainId,
+      networkName: selectedSourceChainKey,
       iconUrl: originCurrency.coinImageUrl,
     };
 
-    const sourceChain = isWithdraw
-      ? "osmosis"
-      : axelarSelectedCounterpartyChainId;
-    const destChain = isWithdraw
-      ? axelarSelectedCounterpartyChainId
-      : "osmosis";
+    console.log(
+      { selectedSourceChainKey },
+      { axelarSelectedCounterpartyChainId: selectedSourceChainKey },
+      `ethWalletClient.chainId: ${ethWalletClient.chainId}`
+    );
+
+    const sourceChain = isWithdraw ? "osmosis" : selectedSourceChainKey;
+    const destChain = isWithdraw ? selectedSourceChainKey : "osmosis";
     const address = isWithdraw ? ethWalletClient.accountAddress : bech32Address;
 
     /** Amount, with decimals. e.g. 1.2 USDC */
@@ -322,7 +324,8 @@ const AxelarTransfer: FunctionComponent<
     ]);
 
     const correctChainSelected =
-      ethWalletClient.chainId === selectedSourceChainKey;
+      (EthClientChainIds_AxelarChainIdsMap[ethWalletClient.chainId as string] ??
+        ethWalletClient.chainId) === selectedSourceChainKey;
     const userCanInteract =
       userDisconnectedWallet ||
       (!isDepositAddressLoading && correctChainSelected && !isEthTxPending);
@@ -331,8 +334,6 @@ const AxelarTransfer: FunctionComponent<
       : !correctChainSelected
       ? `Wrong network in ${ethWalletClient.displayInfo.displayName}`
       : undefined;
-
-    console.log(userCanInteract);
 
     return (
       <>

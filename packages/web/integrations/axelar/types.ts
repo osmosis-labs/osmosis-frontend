@@ -9,6 +9,8 @@ export interface AxelarBridgeConfig {
    *  https://www.figma.com/file/utRjpBIvD7sRm31vxif7hF/Bridge-Integration-Diagram?node-id=340%3A935
    */
   sourceChains: SourceChainConfig[];
+  /** Default source chain to be selected. Defaults to first in `sourceChains` if left `undefined`. */
+  defaultSourceChainId?: SourceChain;
   /** Ex: `uusdc`. NOTE: Will get currency info from `originCurrency` on the IBC balance (from registrar).
    *  See: https://docs.axelar.dev/resources/mainnet#assets
    */
@@ -40,7 +42,7 @@ export type SourceChain =
   | "kujira";
 
 /** Maps axelar chain ids => cosmos chain ids */
-export const SourceChainCosmosChainIdMap: { [sourceChain: string]: string } = {
+export const SourceChain_CosmosChainIdMap: { [sourceChain: string]: string } = {
   cosmos: "cosmoshub-4",
   "e-money": "emoney-3",
   juno: "juno-1",
@@ -50,11 +52,16 @@ export const SourceChainCosmosChainIdMap: { [sourceChain: string]: string } = {
   kujira: "kaiyo-1",
 };
 
-/** Maps eth client chainIDs => axelar chain ids */
+/** Maps eth client chainIDs => axelar chain ids.
+ *
+ *  Values not included as keys are assumed to be the same.
+ */
 export const EthClientChainIds_AxelarChainIdsMap: {
   [ethClientChainIds: string]: SourceChain;
 } = {
   "Ropsten Test Network": "Ethereum",
+  "Avalanche C-Chain": "Avalanche",
+  "Binance Smart Chain": "Binance",
 };
 
 export type SourceChainConfig = {
