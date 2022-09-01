@@ -46,7 +46,7 @@ export const IBCAssetInfos: (IBCAsset & {
         AxelarSourceChainConfigs.usdc.moonbeam,
       ],
       tokenMinDenom: IS_TESTNET ? "uausdc" : "uusdc", // test: "uausdc"
-      transferFeeMinAmount: IS_TESTNET ? "150000" : "20500000", // From https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
+      transferFeeMinAmount: IS_TESTNET ? "150000" : "10500000", // From https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
     },
   },
   {
