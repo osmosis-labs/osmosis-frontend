@@ -40,7 +40,6 @@ export function useConnectWalletModalRedirect(
     ) {
       setShowSelf(true);
     }
-    // eslint-disable-next-line
   }, [osmosisAccount.walletStatus]);
 
   // prevent ibc-transfer dialog from randomly appearing if they connect wallet later
@@ -52,7 +51,6 @@ export function useConnectWalletModalRedirect(
         setShowSelf(true); // reset state to allow modal to be opened later
       });
     }
-    // eslint-disable-next-line
   }, [showSelf]);
 
   return {

@@ -27,7 +27,6 @@ export const AccountInitManagement: FunctionComponent = observer(
           account.init();
         }
       });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Init Osmosis account w/ desired connection type (wallet connect, extension)
@@ -44,7 +43,6 @@ export const AccountInitManagement: FunctionComponent = observer(
           account.init();
         }
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const listenWCDisconnectEventOnce = useRef(false);

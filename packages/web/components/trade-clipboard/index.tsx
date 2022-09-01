@@ -1,12 +1,25 @@
-import { FunctionComponent, useEffect, useRef, useState, useMemo } from "react";
+import {
+  FunctionComponent,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Pool } from "@osmosis-labs/pools";
+import { isError } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { IS_FRONTIER } from "../../config";
+import {
+  IS_FRONTIER,
+  PoolDetailEvents,
+  SwapPageEvents,
+  MakeSwapPageEvents,
+} from "../../config";
 import {
   useBooleanWithWindowEvent,
   useFakeFeeConfig,
@@ -14,6 +27,7 @@ import {
   useTokenSwapQueryParams,
   useTradeTokenInConfig,
   useWindowSize,
+  useMatomoAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { Button } from "../buttons";
@@ -37,6 +51,7 @@ export const TradeClipboard: FunctionComponent<{
   } = useStore();
   const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();
+  const { trackEvent } = useMatomoAnalytics();
 
   const allTokenBalances = nativeBalances.concat(ibcBalances);
 
@@ -87,7 +102,16 @@ export const TradeClipboard: FunctionComponent<{
   tradeTokenInConfig.setFeeConfig(feeConfig);
 
   // show details
-  const [showEstimateDetails, setShowEstimateDetails] = useState(false);
+  const [showEstimateDetails, do_setShowEstimateDetails] = useState(false);
+  const setShowEstimateDetails = useCallback(
+    (isOpen: boolean) => {
+      if (isOpen) {
+        trackEvent(SwapPageEvents.openSwapDetails);
+      }
+      do_setShowEstimateDetails(isOpen);
+    },
+    [do_setShowEstimateDetails]
+  );
   const isEstimateDetailRelevant = !(
     tradeTokenInConfig.amount === "" || tradeTokenInConfig.amount === "0"
   );
@@ -117,7 +141,6 @@ export const TradeClipboard: FunctionComponent<{
       // Whenever the setting opened, give a focus to the input if the manual slippage setting mode is on.
       manualSlippageInputRef.current?.focus();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSettingOpen]);
 
   // token select dropdown
@@ -263,6 +286,14 @@ export const TradeClipboard: FunctionComponent<{
                       e.preventDefault();
 
                       slippageConfig.select(slippage.index);
+
+                      trackEvent(
+                        MakeSwapPageEvents.setSlippageTolerance(
+                          tradeTokenInConfig.sendCurrency.coinDenom,
+                          tradeTokenInConfig.outCurrency.coinDenom,
+                          slippageConfig.slippage.toString()
+                        )
+                      );
                     }}
                   >
                     <button>{slippage.slippage.toString()}</button>
@@ -299,7 +330,17 @@ export const TradeClipboard: FunctionComponent<{
                   }`}
                   style="no-border"
                   currentValue={slippageConfig.manualSlippageStr}
-                  onInput={(value) => slippageConfig.setManualSlippage(value)}
+                  onInput={(value) => {
+                    slippageConfig.setManualSlippage(value);
+
+                    trackEvent(
+                      MakeSwapPageEvents.setSlippageTolerance(
+                        tradeTokenInConfig.sendCurrency.coinDenom,
+                        tradeTokenInConfig.outCurrency.coinDenom,
+                        slippageConfig.slippage.toString()
+                      )
+                    );
+                  }}
                   onFocus={() => slippageConfig.setIsManualSlippage(true)}
                   inputRef={manualSlippageInputRef}
                   isAutosize
@@ -314,7 +355,7 @@ export const TradeClipboard: FunctionComponent<{
       <div className="relative flex flex-col gap-3">
         <div
           className={classNames(
-            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all duration-300",
+            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
             !switchOutBack ? "ease-outBack" : "ease-inBack",
             {
               "opacity-30": isAnimatingSwitch,
@@ -330,7 +371,7 @@ export const TradeClipboard: FunctionComponent<{
         >
           <div
             className={classNames(
-              "flex items-center place-content-between transition-opacity duration-300",
+              "flex items-center place-content-between transition-opacity",
               {
                 "opacity-0": isAnimatingSwitch,
               }
@@ -362,6 +403,7 @@ export const TradeClipboard: FunctionComponent<{
                   e.preventDefault();
 
                   if (tradeTokenInConfig.fraction !== 1) {
+                    trackEvent(SwapPageEvents.swapMaxAmount);
                     tradeTokenInConfig.setFraction(1);
                   } else {
                     tradeTokenInConfig.setFraction(undefined);
@@ -381,6 +423,7 @@ export const TradeClipboard: FunctionComponent<{
                   e.preventDefault();
 
                   if (tradeTokenInConfig.fraction !== 0.5) {
+                    trackEvent(SwapPageEvents.swapHalfAmount);
                     tradeTokenInConfig.setFraction(0.5);
                   } else {
                     tradeTokenInConfig.setFraction(undefined);
@@ -439,7 +482,10 @@ export const TradeClipboard: FunctionComponent<{
                 placeholder="0"
                 onChange={(e) => {
                   e.preventDefault();
-                  if (Number(e.target.value) <= Number.MAX_SAFE_INTEGER) {
+                  if (
+                    Number(e.target.value) <= Number.MAX_SAFE_INTEGER &&
+                    e.target.value.length < 17
+                  ) {
                     tradeTokenInConfig.setAmount(e.target.value);
                   }
                 }}
@@ -447,7 +493,7 @@ export const TradeClipboard: FunctionComponent<{
               />
               <div
                 className={classNames(
-                  "caption text-white-disabled transition-opacity duration-300",
+                  "caption text-white-disabled transition-opacity",
                   inAmountValue ? "opacity-100" : "opacity-0"
                 )}
               >{`≈ ${inAmountValue || "0"}`}</div>
@@ -519,7 +565,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <div
           className={classNames(
-            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all duration-300",
+            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
             !switchOutBack ? "ease-outBack" : "ease-inBack",
             {
               "opacity-30": isAnimatingSwitch,
@@ -534,7 +580,7 @@ export const TradeClipboard: FunctionComponent<{
           }
         >
           <div
-            className="flex items-center place-content-between transition-transform duration-300"
+            className="flex items-center place-content-between transition-transform"
             style={
               isAnimatingSwitch
                 ? {
@@ -610,7 +656,7 @@ export const TradeClipboard: FunctionComponent<{
               }`}</h5>
               <div
                 className={classNames(
-                  "caption text-white-disabled transition-opacity duration-300",
+                  "caption text-white-disabled transition-opacity",
                   outAmountValue ? "opacity-100" : "opacity-0"
                 )}
               >
@@ -622,7 +668,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <div
           className={classNames(
-            "relative rounded-lg bg-card px-4 md:px-3 transition-all ease-inOutBack duration-500 overflow-hidden",
+            "relative rounded-lg bg-card px-4 md:px-3 transition-all ease-inOutBack duration-300 overflow-hidden",
             showEstimateDetails ? "h-56 py-6" : "h-11 py-[10px]"
           )}
         >
@@ -660,7 +706,7 @@ export const TradeClipboard: FunctionComponent<{
             <div className="flex items-center gap-2">
               <Image
                 className={classNames(
-                  "transition-opacity duration-300",
+                  "transition-opacity",
                   showPriceImpactWarning ? "opacity-100" : "opacity-0"
                 )}
                 alt="alert circle"
@@ -669,7 +715,7 @@ export const TradeClipboard: FunctionComponent<{
                 width={24}
               />
               <Image
-                className={`group-hover:opacity-100 transition-all duration-300 ${
+                className={`group-hover:opacity-100 transition-all ${
                   showEstimateDetails ? "rotate-180" : "rotate-0"
                 } ${isEstimateDetailRelevant ? "opacity-40" : "opacity-0"}`}
                 alt="show estimates"
@@ -839,6 +885,23 @@ export const TradeClipboard: FunctionComponent<{
             };
             const maxSlippage = slippageConfig.slippage.symbol("").toString();
 
+            const trackSwapEvent = (tx: any) => {
+              if (isInModal) {
+                // Is in pool detail page
+                if (isError(tx)) trackEvent(PoolDetailEvents.poolSwapFailure);
+                else trackEvent(PoolDetailEvents.poolSwapSuccess);
+              } else {
+                const inToken = [
+                  tokenIn.currency.coinMinimalDenom,
+                  tradeTokenInConfig.amount,
+                ];
+                // is on swap page
+                if (isError(tx))
+                  trackEvent(MakeSwapPageEvents.swapFailure(...inToken));
+                else trackEvent(MakeSwapPageEvents.swapSuccess(...inToken));
+              }
+            };
+
             try {
               if (routes.length === 1) {
                 await account.osmosis.sendSwapExactAmountInMsg(
@@ -858,7 +921,8 @@ export const TradeClipboard: FunctionComponent<{
                   },
                   {
                     preferNoSetFee: preferZeroFee,
-                  }
+                  },
+                  trackSwapEvent
                 );
               } else {
                 await account.osmosis.sendMultihopSwapExactAmountInMsg(
@@ -877,6 +941,10 @@ export const TradeClipboard: FunctionComponent<{
                   },
                   {
                     preferNoSetFee: preferZeroFee,
+                  },
+                  (tx) => {
+                    trackEvent(SwapPageEvents.multiHopSwap);
+                    trackSwapEvent(tx);
                   }
                 );
               }

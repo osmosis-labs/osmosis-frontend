@@ -1,11 +1,9 @@
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
-import { useEffect } from "react";
 import Head from "next/head";
 import type { AppProps } from "next/app";
 import { enableStaticRendering } from "mobx-react-lite";
 import { ToastContainer, Bounce } from "react-toastify";
-import init from "@socialgouv/matomo-next";
 import { StoreProvider } from "../stores";
 import { MainLayout } from "../components/layouts";
 import { TempBanner } from "../components/alert/temp-banner";
@@ -14,9 +12,9 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
-import { GetKeplrProvider } from "../hooks";
+import { GetKeplrProvider, useMatomoAnalytics } from "../hooks";
 import { IbcNotifier } from "../stores/ibc-notifier";
-import { IS_FRONTIER } from "../config";
+import { IS_FRONTIER, NavBarEvents } from "../config";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
@@ -50,29 +48,23 @@ function MyApp({ Component, pageProps }: AppProps) {
       label: "Stake",
       link: "https://wallet.keplr.app/chains/osmosis",
       icon: IS_FRONTIER ? "/icons/ticket-white.svg" : "/icons/ticket.svg",
+      userAnalyticsEvent: NavBarEvents.stakeLink,
     },
     {
       label: "Vote",
       link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
       icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
+      userAnalyticsEvent: NavBarEvents.voteLink,
     },
     {
       label: "Info",
       link: "https://info.osmosis.zone",
       icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
+      userAnalyticsEvent: NavBarEvents.infoLink,
     },
   ];
 
-  // matomo analytics
-  useEffect(() => {
-    if (IS_FRONTIER) {
-      // only testing matomo on frontier for now
-      init({
-        url: "https://analyze.osmosis.zone/",
-        siteId: "4",
-      });
-    }
-  }, []);
+  useMatomoAnalytics({ init: true });
 
   return (
     <GetKeplrProvider>
