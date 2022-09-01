@@ -90,7 +90,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
           )}
         >
           {!(isMobile && isEditingWithdrawAddr) && (
-            <div className="flex items-center gap-2 mx-auto md:caption">
+            <div className="flex flex-wrap justify-center items-center gap-2 mx-auto md:caption">
               {Bech32Address.shortenAddress(
                 from.address,
                 isEditingWithdrawAddr
@@ -99,6 +99,8 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                   ? isMobile
                     ? 10
                     : 18 // more space for switch wallet button
+                  : isMobile
+                  ? 14
                   : 24
               )}
               {!from.address.startsWith("osmo") && selectedWalletDisplay && (
@@ -119,7 +121,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             }
           )}
         >
-          <div className="flex items-center gap-2 mx-auto md:caption">
+          <div className="flex flex-wrap justify-center items-center gap-2 mx-auto md:caption">
             {!isEditingWithdrawAddr &&
               Bech32Address.shortenAddress(
                 editWithdrawAddrConfig &&
@@ -132,7 +134,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                     ? 10
                     : 18
                   : isMobile
-                  ? 10
+                  ? 14
                   : 24
               )}
             {!to.address.startsWith("osmo") && selectedWalletDisplay && (

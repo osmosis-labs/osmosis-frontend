@@ -61,7 +61,7 @@ export const BridgeAnimation: FunctionComponent<
     >
       <span
         className={classNames(
-          "absolute text-center transition-opacity duration-300 md:subtitle2",
+          "absolute text-center whitespace-nowrap transition-opacity duration-300 md:subtitle2",
           bridge
             ? "left-[94px] md:left-0 top-[10px]"
             : "left-[116px] md:left-0",
@@ -90,7 +90,7 @@ export const BridgeAnimation: FunctionComponent<
       {bridge?.bridgeName && (
         <span
           className={classNames(
-            "absolute text-center w-fit top-[10px] md:subtitle2",
+            "absolute text-center whitespace-nowrap w-fit top-[10px] md:subtitle2",
             bridge?.isLoading
               ? "left-[250px] md:left-[111px]"
               : "left-[270px] md:left-[126px]",
@@ -104,7 +104,7 @@ export const BridgeAnimation: FunctionComponent<
       )}
       <span
         className={classNames(
-          "absolute text-center w-fit transition-opacity duration-300 md:subtitle2",
+          "absolute text-center whitespace-nowrap w-fit transition-opacity duration-300 md:subtitle2",
           bridge
             ? "left-[420px] md:left-[218px] top-[10px]"
             : "left-[405px] md:left-[210px]",
