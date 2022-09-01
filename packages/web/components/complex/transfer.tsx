@@ -27,6 +27,8 @@ export type TransferProps = {
     customAddress: string;
     isValid: boolean;
     setCustomAddress: (bech32Address: string) => void;
+    didAckWithdrawRisk: boolean;
+    setDidAckWithdrawRisk: (did: boolean) => void;
   };
   toggleIsMax: () => void;
   transferFee?: CoinPretty;
@@ -54,7 +56,6 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   const { isMobile } = useWindowSize();
 
   const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
-  const [didVerifyWithdrawRisk, setDidVerifyWithdrawRisk] = useState(false);
 
   // Mobile only - brief copy to clipboard notification
   const [showCopied, setShowCopied] = useState(false);
@@ -155,15 +156,15 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                 Edit
               </Button>
             )}
-            {isEditingWithdrawAddr && (
+            {isEditingWithdrawAddr && editWithdrawAddrConfig && (
               <InputBox
                 className="w-full"
                 style="no-border"
-                currentValue={editWithdrawAddrConfig!.customAddress}
+                currentValue={editWithdrawAddrConfig.customAddress}
                 disabled={disablePanel_}
                 onInput={(value) => {
-                  setDidVerifyWithdrawRisk(false);
-                  editWithdrawAddrConfig!.setCustomAddress(value);
+                  editWithdrawAddrConfig.setDidAckWithdrawRisk(false);
+                  editWithdrawAddrConfig.setCustomAddress(value);
                 }}
                 labelButtons={[
                   {
@@ -171,7 +172,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                     className:
                       "bg-primary-50 hover:bg-primary-50 border-0 rounded-md",
                     onClick: () => setIsEditingWithdrawAddr(false),
-                    disabled: !editWithdrawAddrConfig!.isValid,
+                    disabled: !editWithdrawAddrConfig.isValid,
                   },
                 ]}
               />
@@ -232,13 +233,15 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             </span>
             <div className="mx-auto">
               <CheckBox
-                isOn={didVerifyWithdrawRisk}
+                isOn={editWithdrawAddrConfig.didAckWithdrawRisk}
                 className="after:!border-superfluid checked:after:bg-superfluid after:rounded-[10px] after:h-6 after:w-6 -top-0.5"
                 checkClassName="-top-0.5 h-6 w-6 bg-superfluid rounded-[10px]"
                 checkMarkClassName="top-[1px] left-[0.5px] h-6 w-6"
                 checkMarkIconUrl="/icons/check-mark-surface.svg"
                 onToggle={() =>
-                  setDidVerifyWithdrawRisk(!didVerifyWithdrawRisk)
+                  editWithdrawAddrConfig.setDidAckWithdrawRisk(
+                    !editWithdrawAddrConfig.didAckWithdrawRisk
+                  )
                 }
               >
                 I verify that {"I'm"} not sending to an exchange address{"."}

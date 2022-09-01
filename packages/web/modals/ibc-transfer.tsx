@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../stores";
 import { Transfer } from "../components/complex/transfer";
@@ -23,10 +23,13 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       transfer,
       customCounterpartyConfig,
     ] = useIbcTransfer(props);
+
+    const [didAckWithdrawRisk, setDidAckWithdrawRisk] = useState(false);
+
     const isCustomWithdrawValid =
       !customCounterpartyConfig ||
       customCounterpartyConfig?.bech32Address === "" || // if not changed, it's valid since it's from Keplr
-      customCounterpartyConfig.isValid;
+      (customCounterpartyConfig.isValid && didAckWithdrawRisk);
 
     const { showModalBase, accountActionButton } =
       useConnectWalletModalRedirect(
@@ -121,6 +124,8 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   customAddress: customCounterpartyConfig.bech32Address,
                   isValid: customCounterpartyConfig.isValid,
                   setCustomAddress: customCounterpartyConfig.setBech32Address,
+                  didAckWithdrawRisk,
+                  setDidAckWithdrawRisk,
                 }
               : undefined
           }
