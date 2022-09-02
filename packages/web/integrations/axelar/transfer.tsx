@@ -251,7 +251,9 @@ const AxelarTransfer: FunctionComponent<
 
     const correctChainSelected =
       (EthClientChainIds_AxelarChainIdsMap[ethWalletClient.chainId as string] ??
-        ethWalletClient.chainId) === selectedSourceChainKey;
+        ethWalletClient.chainId) ===
+      (EthClientChainIds_AxelarChainIdsMap[selectedSourceChainKey] ??
+        selectedSourceChainKey);
     const userCanInteract =
       userDisconnectedWallet ||
       (!isDepositAddressLoading && correctChainSelected && !isEthTxPending);

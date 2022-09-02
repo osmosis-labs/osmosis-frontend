@@ -2,6 +2,7 @@ import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
 import Lottie from "react-lottie";
 import classNames from "classnames";
+import { truncateString } from "../../utils";
 import { useWindowSize } from "../../../hooks";
 import { CustomClasses, LoadingProps } from "../../types";
 import { Animation as AnimationProps } from "../types";
@@ -25,6 +26,9 @@ export const BridgeAnimation: FunctionComponent<
     className,
   } = props;
   const { isMobile } = useWindowSize();
+
+  const longFromName = from.networkName.length > 7;
+  const longToName = to.networkName.length > 7;
 
   // constants
   const overlayedIconSize = isMobile
@@ -61,14 +65,24 @@ export const BridgeAnimation: FunctionComponent<
     >
       <span
         className={classNames(
-          "absolute text-center whitespace-nowrap transition-opacity duration-300 md:subtitle2",
+          "absolute text-center whitespace-nowrap transition-opacity duration-300",
+          longFromName || longToName
+            ? isMobile
+              ? "caption"
+              : "subtitle1"
+            : "md:subtitle2",
           bridge
-            ? "left-[94px] md:left-0 top-[10px]"
-            : "left-[116px] md:left-0",
+            ? longFromName
+              ? "left-[82px] md:-left-[4px] top-[10px]"
+              : "left-[94px] md:left-0 top-[10px]"
+            : longFromName
+            ? "left-[90px] md:-left-[4px]"
+            : "left-[122px] md:left-[10px]",
           { "opacity-30": bridge?.isLoading }
         )}
       >
-        From {from.networkName}
+        From{" "}
+        {truncateString(from.networkName, bridge ? (isMobile ? 10 : 12) : 18)}
       </span>
       <style jsx>
         {`
@@ -90,7 +104,12 @@ export const BridgeAnimation: FunctionComponent<
       {bridge?.bridgeName && (
         <span
           className={classNames(
-            "absolute text-center whitespace-nowrap w-fit top-[10px] md:subtitle2",
+            "absolute text-center whitespace-nowrap w-fit top-[10px]",
+            longFromName || longToName
+              ? isMobile
+                ? "caption"
+                : "subtitle1"
+              : "md:subtitle2",
             bridge?.isLoading
               ? "left-[250px] md:left-[111px]"
               : "left-[270px] md:left-[126px]",
@@ -104,14 +123,19 @@ export const BridgeAnimation: FunctionComponent<
       )}
       <span
         className={classNames(
-          "absolute text-center whitespace-nowrap w-fit transition-opacity duration-300 md:subtitle2",
+          "absolute text-center whitespace-nowrap w-fit transition-opacity duration-300",
+          longFromName || longToName
+            ? isMobile
+              ? "caption"
+              : "subtitle1"
+            : "md:subtitle2",
           bridge
-            ? "left-[420px] md:left-[218px] top-[10px]"
+            ? "left-[420px] md:left-[222px] top-[10px]"
             : "left-[405px] md:left-[210px]",
           { "opacity-30": bridge?.isLoading }
         )}
       >
-        To {to.networkName}
+        To {truncateString(to.networkName, bridge ? (isMobile ? 10 : 12) : 18)}
       </span>
       <div className="absolute left-[105px] md:left-[30px] top-[20px]">
         <div

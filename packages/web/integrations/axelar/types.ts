@@ -31,15 +31,7 @@ export type SourceChain =
   | "Fantom"
   | "Polygon"
   | "Moonbeam"
-  | "Binance"
-  | "cosmos" // IBC counterparty chains, would require IBC transfer to counterparty address
-  | "e-money"
-  | "juno"
-  | "crescent"
-  | "injective"
-  | "terra-2"
-  | "secret"
-  | "kujira";
+  | "Binance";
 
 /** Maps eth client chainIDs => axelar chain ids.
  *
