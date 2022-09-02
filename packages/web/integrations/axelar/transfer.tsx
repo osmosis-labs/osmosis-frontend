@@ -16,6 +16,7 @@ import {
   transfer as erc20Transfer,
   useTxReceiptState,
 } from "../ethereum";
+import { useGeneralAmountConfig } from "../use-general-amount-config";
 import { useDepositAddress } from "./hooks";
 import {
   AxelarBridgeConfig,
@@ -89,17 +90,11 @@ const AxelarTransfer: FunctionComponent<
     ]);
 
     // DEPOSITING: custom amount validation, since `useAmountConfig` needs to query counterparty Cosmos SDK chain balances (not evm balances)
-    const [depositAmount, do_setDepositAmount] = useState("");
-    const setDepositAmount = useCallback(
-      (amount: string) => {
-        if (amount.startsWith(".")) {
-          amount = "0" + amount;
-        }
-        do_setDepositAmount(amount);
-      },
-      [do_setDepositAmount]
-    );
-    const [isDepositAmtMax, setDepositAmountMax] = useState(false);
+    const {
+      amount: depositAmount,
+      setAmount: setDepositAmount,
+      toggleIsMax: toggleIsDepositAmtMax,
+    } = useGeneralAmountConfig({ balance: counterpartyBal ?? undefined });
 
     // WITHDRAWING: is an IBC transfer Osmosis->Axelar
     const feeConfig = useFakeFeeConfig(
@@ -183,7 +178,7 @@ const AxelarTransfer: FunctionComponent<
       }
     }, [ethWalletClient.isConnected, userDisconnectedWallet]);
 
-    const transfer = useCallback(async () => {
+    const doAxelarTransfer = useCallback(async () => {
       if (depositAddress) {
         if (isWithdraw) {
           // IBC transfer to generated axelar address
@@ -303,14 +298,7 @@ const AxelarTransfer: FunctionComponent<
             if (isWithdraw) {
               withdrawAmountConfig.toggleIsMax();
             } else {
-              if (isDepositAmtMax) {
-                setDepositAmount("0");
-                setDepositAmountMax(false);
-              } else if (availableBalance) {
-                setDepositAmount(
-                  availableBalance.hideDenom(true).trim(true).toString()
-                );
-              }
+              toggleIsDepositAmtMax();
             }
           }}
           transferFee={
@@ -331,7 +319,7 @@ const AxelarTransfer: FunctionComponent<
             }
             onClick={() => {
               if (userDisconnectedWallet) ethWalletClient.enable();
-              else transfer();
+              else doAxelarTransfer();
             }}
           >
             <h6 className="md:text-base text-lg">
