@@ -9,3 +9,5 @@ export const WRAPPER_ADDRESSES: { [chainId: string]: string } = {
   "osmo-test-4":
     "osmo1zkgtuakfpxw00m7rn0e2aphtxe34znr2ewajr04ch6h4usmcf6tqdhvejw",
 };
+export const ENABLE_AUTONOMY =
+  process.env.NEXT_PUBLIC_ENABLE_AUTONOMY === "enabled";
