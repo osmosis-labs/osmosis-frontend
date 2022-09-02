@@ -100,12 +100,14 @@ const Pool: FunctionComponent = observer(() => {
         delegations?: {
           validatorName?: string;
           validatorCommission?: RatePretty;
-          validatorImgSrc: string;
+          validatorImgSrc?: string;
+          inactive?: "inactive" | "jailed";
           apr: RatePretty;
           amount: CoinPretty;
         }[];
         undelegations?: {
           validatorName?: string;
+          inactive?: "inactive" | "jailed";
           amount: CoinPretty;
           endTime: Date;
         }[];
@@ -266,12 +268,38 @@ const Pool: FunctionComponent = observer(() => {
               .getQuerySuperfluidDelegations(bech32Address)
               .getDelegations(poolShareCurrency)
               ?.map(({ validator_address, amount }) => {
-                const queryValidators =
-                  queryCosmos.queryValidators.getQueryStatus(
+                let jailed = false;
+                let inactive = false;
+                let validator = queriesStore
+                  .get(chainId)
+                  .cosmos.queryValidators.getQueryStatus(
                     Staking.BondStatus.Bonded
-                  );
-                const validatorInfo =
-                  queryValidators.getValidator(validator_address);
+                  )
+                  .getValidator(validator_address);
+
+                if (!validator) {
+                  validator = queriesStore
+                    .get(chainId)
+                    .cosmos.queryValidators.getQueryStatus(
+                      Staking.BondStatus.Unbonded
+                    )
+                    .getValidator(validator_address);
+                  inactive = true;
+                  if (validator?.jailed) jailed = true;
+                }
+
+                let thumbnail: string | undefined;
+                if (validator) {
+                  thumbnail = queriesStore
+                    .get(chainId)
+                    .cosmos.queryValidators.getQueryStatus(
+                      inactive
+                        ? Staking.BondStatus.Unbonded
+                        : Staking.BondStatus.Bonded
+                    )
+                    .getValidatorThumbnail(validator_address);
+                }
+
                 let superfluidApr = queryCosmos.queryInflation.inflation.mul(
                   queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
                     pool.id
@@ -295,15 +323,19 @@ const Pool: FunctionComponent = observer(() => {
                 }
 
                 const commissionRateRaw =
-                  validatorInfo?.commission.commission_rates.rate;
+                  validator?.commission.commission_rates.rate;
 
                 return {
-                  validatorName: validatorInfo?.description.moniker,
+                  validatorName: validator?.description.moniker,
                   validatorCommission: commissionRateRaw
                     ? new RatePretty(new Dec(commissionRateRaw))
                     : undefined,
-                  validatorImgSrc:
-                    queryValidators.getValidatorThumbnail(validator_address),
+                  validatorImgSrc: thumbnail,
+                  inactive: jailed
+                    ? "jailed"
+                    : inactive
+                    ? "inactive"
+                    : undefined,
                   apr: new RatePretty(superfluidApr.moveDecimalPointLeft(2)),
                   amount:
                     queryOsmosis.querySuperfluidOsmoEquivalent.calculateOsmoEquivalent(
@@ -314,16 +346,48 @@ const Pool: FunctionComponent = observer(() => {
             undelegations: queryOsmosis.querySuperfluidUndelegations
               .getQuerySuperfluidDelegations(bech32Address)
               .getUndelegations(poolShareCurrency)
-              ?.map(({ validator_address, amount, end_time }) => ({
-                validatorName: queriesStore
+              ?.map(({ validator_address, amount, end_time }) => {
+                console.log(
+                  queriesStore
+                    .get(chainId)
+                    .cosmos.queryValidators.getQueryStatus(
+                      Staking.BondStatus.Unbonded
+                    )
+                    .getValidator(validator_address),
+                  validator_address
+                );
+
+                let jailed = false;
+                let inactive = false;
+                let validator = queriesStore
                   .get(chainId)
                   .cosmos.queryValidators.getQueryStatus(
                     Staking.BondStatus.Bonded
                   )
-                  .getValidator(validator_address)?.description.moniker,
-                amount,
-                endTime: end_time,
-              })),
+                  .getValidator(validator_address);
+
+                if (!validator) {
+                  validator = queriesStore
+                    .get(chainId)
+                    .cosmos.queryValidators.getQueryStatus(
+                      Staking.BondStatus.Unbonded
+                    )
+                    .getValidator(validator_address);
+                  inactive = true;
+                  if (validator?.jailed) jailed = true;
+                }
+
+                return {
+                  validatorName: validator?.description.moniker,
+                  inactive: jailed
+                    ? "jailed"
+                    : inactive
+                    ? "inactive"
+                    : undefined,
+                  amount,
+                  endTime: end_time,
+                };
+              }),
             superfluidLPShares: queryOsmosis.queryAccountLocked
               .get(bech32Address)
               .getLockedCoinWithDuration(
@@ -1186,9 +1250,15 @@ const Pool: FunctionComponent = observer(() => {
                 ]}
                 data={
                   superfluid.undelegations?.map(
-                    ({ validatorName, amount, endTime }) => [
+                    ({ validatorName, inactive, amount, endTime }) => [
                       {
-                        value: validatorName ?? "",
+                        value: `${validatorName ?? ""}${
+                          inactive
+                            ? inactive === "jailed"
+                              ? " (Jailed)"
+                              : " (Inactive)"
+                            : ""
+                        }`,
                       },
                       {
                         value: amount.maxDecimals(6).trim(true).toString(),
