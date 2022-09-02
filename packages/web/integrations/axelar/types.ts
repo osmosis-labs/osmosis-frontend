@@ -35,7 +35,7 @@ export type SourceChain =
 
 /** Maps eth client chainIDs => axelar chain ids.
  *
- *  Values not included as keys are assumed to be the same.
+ *  Values not included as keys are assumed to be the same across chainlist and Axelar.
  */
 export const EthClientChainIds_AxelarChainIdsMap: {
   [ethClientChainIds: string]: SourceChain;

@@ -55,6 +55,11 @@ const AxelarTransfer: FunctionComponent<
     const { bech32Address } = osmosisAccount;
     const originCurrency = balanceOnOsmosis.balance.currency.originCurrency!;
 
+    /** Chain key that Axelar accepts in APIs. */
+    const selectedSourceChainAxelarKey =
+      EthClientChainIds_AxelarChainIdsMap[selectedSourceChainKey] ??
+      selectedSourceChainKey;
+
     const erc20ContractAddress = sourceChains.find(
       ({ id }) => id === selectedSourceChainKey
     )?.erc20ContractAddress;
@@ -123,8 +128,8 @@ const AxelarTransfer: FunctionComponent<
       iconUrl: originCurrency.coinImageUrl,
     };
 
-    const sourceChain = isWithdraw ? "osmosis" : selectedSourceChainKey;
-    const destChain = isWithdraw ? selectedSourceChainKey : "osmosis";
+    const sourceChain = isWithdraw ? "osmosis" : selectedSourceChainAxelarKey;
+    const destChain = isWithdraw ? selectedSourceChainAxelarKey : "osmosis";
     const address = isWithdraw ? ethWalletClient.accountAddress : bech32Address;
 
     /** Amount, with decimals. e.g. 1.2 USDC */
@@ -240,6 +245,7 @@ const AxelarTransfer: FunctionComponent<
             );
           }
         }
+        onRequestClose();
       }
     }, [
       axelarChainId,
@@ -259,9 +265,7 @@ const AxelarTransfer: FunctionComponent<
 
     const correctChainSelected =
       (EthClientChainIds_AxelarChainIdsMap[ethWalletClient.chainId as string] ??
-        ethWalletClient.chainId) ===
-      (EthClientChainIds_AxelarChainIdsMap[selectedSourceChainKey] ??
-        selectedSourceChainKey);
+        ethWalletClient.chainId) === selectedSourceChainAxelarKey;
     const userCanInteract =
       userDisconnectedWallet ||
       (!isDepositAddressLoading && correctChainSelected && !isEthTxPending);
