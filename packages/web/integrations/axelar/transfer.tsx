@@ -10,7 +10,7 @@ import { useStore } from "../../stores";
 import { Transfer } from "../../components/complex/transfer";
 import { Button } from "../../components/buttons";
 import { displayToast, ToastType } from "../../components/alert";
-import { ObservableErc20Queries } from "../ethereum/queries";
+import { queryErc20Balance } from "../ethereum/queries";
 import {
   EthWallet,
   transfer as erc20Transfer,
@@ -54,15 +54,7 @@ const AxelarTransfer: FunctionComponent<
     const osmosisAccount = accountStore.getAccount(chainId);
     const { bech32Address } = osmosisAccount;
     const originCurrency = balanceOnOsmosis.balance.currency.originCurrency!;
-    const [erc20Queries] = useState(
-      () => new ObservableErc20Queries(ethWalletClient.send, originCurrency)
-    );
-    const userErc20Queries = ethWalletClient.accountAddress
-      ? erc20Queries.getQueryEthHexAddress(ethWalletClient.accountAddress)
-      : undefined;
-    if (userErc20Queries) {
-      userErc20Queries.queryFn = ethWalletClient.send;
-    }
+
     const erc20ContractAddress = sourceChains.find(
       ({ id }) => id === selectedSourceChainKey
     )?.erc20ContractAddress;
@@ -70,10 +62,26 @@ const AxelarTransfer: FunctionComponent<
       chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
       "axelar-dojo-1";
 
-    // get balance from eth contract or axelar-supported cosmos chain
-    const counterpartyBal = erc20ContractAddress
-      ? userErc20Queries?.getBalance(erc20ContractAddress)
-      : undefined;
+    // get balance from EVM contract
+    const [counterpartyBal, setCounterpartyBal] = useState<CoinPretty | null>(
+      null
+    );
+    useEffect(() => {
+      if (erc20ContractAddress && ethWalletClient.accountAddress) {
+        queryErc20Balance(
+          ethWalletClient.send,
+          erc20ContractAddress,
+          ethWalletClient.accountAddress
+        ).then((amount) =>
+          setCounterpartyBal(new CoinPretty(originCurrency, amount))
+        );
+      }
+    }, [
+      erc20ContractAddress,
+      ethWalletClient.send,
+      ethWalletClient.accountAddress,
+      originCurrency,
+    ]);
 
     // DEPOSITING: custom amount validation, since `useAmountConfig` needs to query counterparty Cosmos SDK chain balances (not evm balances)
     const [depositAmount, do_setDepositAmount] = useState("");
@@ -125,7 +133,7 @@ const AxelarTransfer: FunctionComponent<
     const availableBalance = isWithdraw
       ? balanceOnOsmosis.balance
       : erc20ContractAddress
-      ? counterpartyBal
+      ? counterpartyBal ?? undefined
       : undefined;
 
     const { depositAddress, isLoading: isDepositAddressLoading } =
