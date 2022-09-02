@@ -20,7 +20,6 @@ import { useDepositAddress } from "./hooks";
 import {
   AxelarBridgeConfig,
   SourceChain,
-  SourceChain_CosmosChainIdMap,
   EthClientChainIds_AxelarChainIdsMap,
   waitBySourceChain,
 } from ".";
@@ -71,35 +70,10 @@ const AxelarTransfer: FunctionComponent<
       chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
       "axelar-dojo-1";
 
-    // if counterparty is a cosmos chain
-    const counterpartyCosmosChainId: string | undefined =
-      SourceChain_CosmosChainIdMap[selectedSourceChainKey];
-    const counterpartyCosmosAccount = counterpartyCosmosChainId
-      ? accountStore.getAccount(counterpartyCosmosChainId)
-      : undefined;
-    const ibcConfig = sourceChains.find(
-      ({ id }) => id === selectedSourceChainKey
-    )?.ibcConfig;
-    //    init & user approve counterparty cosmos account in Keplr
-    useEffect(() => {
-      counterpartyCosmosAccount?.init();
-    }, [counterpartyCosmosAccount]);
-
     // get balance from eth contract or axelar-supported cosmos chain
     const counterpartyBal = erc20ContractAddress
       ? userErc20Queries?.getBalance(erc20ContractAddress)
-      : (() => {
-          if (!counterpartyCosmosChainId) {
-            return;
-          }
-
-          return queriesStore
-            .get(counterpartyCosmosChainId)
-            .queryBalances.getQueryBech32Address(
-              accountStore.getAccount(counterpartyCosmosChainId).bech32Address
-            )
-            .getBalanceFromCurrency(originCurrency);
-        })();
+      : undefined;
 
     // DEPOSITING: custom amount validation, since `useAmountConfig` needs to query counterparty Cosmos SDK chain balances (not evm balances)
     const [depositAmount, do_setDepositAmount] = useState("");
@@ -224,33 +198,7 @@ const AxelarTransfer: FunctionComponent<
         } else {
           // isDeposit
 
-          // IBC transfer to axelar from Cosmos counterparty
-          if (
-            counterpartyCosmosChainId &&
-            counterpartyCosmosAccount &&
-            ibcConfig
-          ) {
-            try {
-              await basicIbcTransfer(
-                {
-                  account: counterpartyCosmosAccount,
-                  chainId: counterpartyCosmosChainId,
-                  channelId: ibcConfig.sourceChannelId,
-                },
-                {
-                  account: depositAddress,
-                  chainId: axelarChainId,
-                  channelId: balanceOnOsmosis.destChannelId,
-                },
-                withdrawAmountConfig,
-                () => {},
-                (event) => trackTransferStatus(event.txHash)
-              );
-            } catch (e) {
-              // TODO: problem or rejected
-              console.error(e);
-            }
-          } else if (erc20ContractAddress) {
+          if (erc20ContractAddress) {
             // erc20 transfer to deposit address on EVM
             try {
               await erc20Transfer(
@@ -280,7 +228,7 @@ const AxelarTransfer: FunctionComponent<
             }
           } else {
             console.error(
-              "Axelar asset and/or network not configured properly."
+              "Axelar asset and/or network not configured properly. IBC transfers from counterparty Cosmos chains to Axelar deposit address are irrelevant."
             );
           }
         }
@@ -290,13 +238,10 @@ const AxelarTransfer: FunctionComponent<
       chainId,
       balanceOnOsmosis.sourceChannelId,
       balanceOnOsmosis.destChannelId,
-      counterpartyCosmosAccount,
-      counterpartyCosmosChainId,
       depositAddress,
       depositAmount,
       erc20ContractAddress,
       ethWalletClient,
-      ibcConfig,
       isWithdraw,
       originCurrency,
       osmosisAccount,
@@ -315,6 +260,12 @@ const AxelarTransfer: FunctionComponent<
       : !correctChainSelected
       ? `Wrong network in ${ethWalletClient.displayInfo.displayName}`
       : undefined;
+
+    console.log(
+      { selectedSourceChainKey },
+      ethWalletClient.chainId,
+      EthClientChainIds_AxelarChainIdsMap[ethWalletClient.chainId as string]
+    );
 
     return (
       <>

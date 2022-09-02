@@ -41,17 +41,6 @@ export type SourceChain =
   | "secret"
   | "kujira";
 
-/** Maps axelar chain ids => cosmos chain ids */
-export const SourceChain_CosmosChainIdMap: { [sourceChain: string]: string } = {
-  cosmos: "cosmoshub-4",
-  "e-money": "emoney-3",
-  juno: "juno-1",
-  injective: "injective-1",
-  "terra-2": "phoenix-1", // TERRA 2.0
-  secret: "secret-4",
-  kujira: "kaiyo-1",
-};
-
 /** Maps eth client chainIDs => axelar chain ids.
  *
  *  Values not included as keys are assumed to be the same.
