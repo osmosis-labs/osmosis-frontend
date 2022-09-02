@@ -271,12 +271,6 @@ const AxelarTransfer: FunctionComponent<
       ? `Wrong network in ${ethWalletClient.displayInfo.displayName}`
       : undefined;
 
-    console.log(
-      { selectedSourceChainKey },
-      ethWalletClient.chainId,
-      EthClientChainIds_AxelarChainIdsMap[ethWalletClient.chainId as string]
-    );
-
     return (
       <>
         <Transfer
