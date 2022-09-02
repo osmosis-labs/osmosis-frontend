@@ -21,7 +21,7 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
       fn: () => getTransferStatus(txHash, this.axelarApiBaseUrl),
       validate: (incomingStatus) =>
         makeResultedStatus(incomingStatus) !== undefined,
-      interval: 20_000,
+      interval: 30_000,
       maxAttempts: undefined, // unlimited attempts while tab is open or until success/fail
     })
       .then((s) => this.receiveConclusiveStatus(s))

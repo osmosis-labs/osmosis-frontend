@@ -48,9 +48,13 @@ export function poll<TData>({
   interval = 1_500,
   maxAttempts = 50,
 }: {
+  /** Polling function. */
   fn: () => Promise<TData>;
+  /** Determines if result meets end condition. */
   validate: (data: TData) => boolean;
+  /** Gap in MS. */
   interval?: number;
+  /** Max number of attempts before finished polling. Leave `undefined` for infinite. */
   maxAttempts?: number;
 }) {
   let attempts = 0;
