@@ -816,6 +816,31 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-143",
     destChannelId: "channel-1",
     coinMinimalDenom: "usdx",
+  },
+  {
+    counterpartyChainId: "agoric-3",
+    sourceChannelId: "channel-320",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "ubld",
+    isVerified: true,
+  },
+  {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   }
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 

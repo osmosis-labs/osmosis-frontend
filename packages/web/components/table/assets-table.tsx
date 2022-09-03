@@ -109,7 +109,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
               value && value.toDec().gt(new Dec(0))
                 ? value?.toDec().toString()
                 : "0",
-            isCW20,
             queryTags: [
               ...(isCW20 ? ["CW20"] : []),
               ...(pegMechanism ? ["stable", pegMechanism] : []),
