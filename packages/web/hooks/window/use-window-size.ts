@@ -19,7 +19,7 @@ export function useWindowSize(
   const [windowSize, setWindowSize] = useState<WindowSize>({
     width: 0,
     height: 0,
-    isMobile: false,
+    isMobile: true,
   });
   useEffect(() => {
     function handleResize() {

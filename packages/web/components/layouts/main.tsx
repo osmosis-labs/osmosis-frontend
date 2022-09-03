@@ -185,32 +185,34 @@ const Drawer = ({
   showSidebar: boolean;
   isMobile: boolean;
 }) => {
-  if (!isMobile)
+  if (isMobile === true) {
+    return (
+      <main
+        className={classNames(
+          "fixed overflow-hidden z-40 bg-backdrop inset-0 transform ease-in-out w-full h-full",
+          {
+            "transition-opacity opacity-100 duration-300 translate-x-0":
+              showSidebar,
+          }
+        )}
+      >
+        <section
+          className={classNames(
+            "-translate-x-full max-w-lg absolute bg-white h-full delay-300 duration-150 ease-in-out transition-all transform bg-card flex flex-col px-5 py-6 overflow-x-hidden overflow-y-auto",
+            {
+              "shadow-xl -translate-x-0": showSidebar,
+            }
+          )}
+        >
+          <article className="relative pt-8 h-full">{children}</article>
+        </section>
+      </main>
+    );
+  } else {
     return (
       <article className="fixed flex flex-col inset-y-0 z-40 bg-card px-2 py-6 w-sidebar">
         {children}
       </article>
     );
-
-  return (
-    <main
-      className={
-        "fixed overflow-hidden z-40 bg-backdrop inset-0 transform ease-in-out w-full h-full" +
-        (showSidebar && isMobile
-          ? " transition-opacity opacity-100 duration-300 translate-x-0 "
-          : " transition-all delay-150 opacity-0 -translate-x-full  ")
-      }
-    >
-      <section
-        className={
-          "max-w-lg left-0 absolute bg-white h-full delay-300 duration-150 ease-in-out transition-all transform bg-card flex flex-col px-5 py-6 overflow-x-hidden overflow-y-auto" +
-          (showSidebar && isMobile
-            ? " shadow-xl translate-x-0"
-            : " -translate-x-full")
-        }
-      >
-        <article className="relative pt-8 h-full">{children}</article>
-      </section>
-    </main>
-  );
+  }
 };
