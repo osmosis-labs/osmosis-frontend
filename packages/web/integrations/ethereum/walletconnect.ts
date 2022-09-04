@@ -9,8 +9,10 @@ import { computedFn } from "mobx-utils";
 import WalletConnect from "@walletconnect/client";
 import { toHex, isAddress } from "web3-utils";
 import { KVStore } from "@keplr-wallet/common";
+import { getKeyByValue } from "../../components/utils";
 import { WalletDisplay, WalletKey } from "../wallets";
-import { ChainNames, EthWallet } from "./types";
+import { ChainNames, EthWallet, SendFn } from "./types";
+import { switchToChain } from "./metamask-utils";
 
 const CONNECTED_ACCOUNT_KEY = "wc-eth-connected-account";
 const CONNECTED_ACCOUNT_CHAINID = "wc-eth-connected-chainId";
@@ -37,6 +39,10 @@ export class ObservableWalletConnect implements EthWallet {
   sessionConnectUri: string | undefined;
 
   protected _walletConnect: WalletConnect;
+
+  /** Eth format: `0x...` */
+  @observable
+  protected _preferredChainId: string | undefined;
 
   constructor(protected readonly kvStore?: KVStore, bridgeUrl?: string) {
     this._walletConnect = new WalletConnect({
@@ -135,6 +141,15 @@ export class ObservableWalletConnect implements EthWallet {
   }
 
   @action
+  setPreferredSourceChain(chainName: string) {
+    const ethChainId = getKeyByValue(ChainNames, chainName);
+
+    if (ethChainId) {
+      this._preferredChainId = ethChainId;
+    }
+  }
+
+  @action
   enable() {
     return new Promise<void>((resolve, reject) => {
       if (!this._walletConnect.connected) {
@@ -169,12 +184,30 @@ export class ObservableWalletConnect implements EthWallet {
       this._walletConnect,
       this.accountAddress,
       async (conn, addr) => {
-        this._isSending = true;
+        if (
+          this._preferredChainId &&
+          this._chainId !== this._preferredChainId
+        ) {
+          await switchToChain(
+            conn.sendCustomRequest as SendFn,
+            ChainNames[this._preferredChainId]
+          );
+        }
+
+        runInAction(() => (this._isSending = true));
         const resp = await conn.sendCustomRequest({
           method,
-          params: Array.isArray(ethTx) ? ethTx : [{ ...ethTx, from: addr }],
+          params: Array.isArray(ethTx)
+            ? ethTx
+            : [
+                {
+                  from: addr,
+                  ...ethTx,
+                  value: ethTx.value ? toHex(ethTx.value) : undefined,
+                },
+              ],
         });
-        this._isSending = false;
+        runInAction(() => (this._isSending = false));
         return resp;
       }
     );

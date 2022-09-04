@@ -21,6 +21,7 @@ export interface Wallet<TTxSend = unknown> {
   enable: () => Promise<void>;
   disable: () => void;
   send: (send: TTxSend) => Promise<unknown>;
+  /** Display various errors resulting from send function. */
   displayError?: (e: any) => string | Alert | undefined;
   readonly isSending: boolean;
   readonly txStatusEventEmitter?: EventEmitter<

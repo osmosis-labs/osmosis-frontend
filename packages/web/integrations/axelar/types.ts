@@ -27,6 +27,7 @@ export interface AxelarBridgeConfig {
  */
 export type SourceChain =
   | "Ethereum"
+  | "Ropsten Test Network"
   | "Avalanche"
   | "Fantom"
   | "Polygon"
@@ -71,7 +72,7 @@ export const SourceChainConfigs: {
   usdc: {
     ethereum: {
       id: IS_TESTNET
-        ? ("Ropsten Test Network" as SourceChain)
+        ? ("Ropsten Test Network" as const)
         : ("Ethereum" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x526f0A95EDC3DF4CBDB7bb37d4F7Ed451dB8e369"

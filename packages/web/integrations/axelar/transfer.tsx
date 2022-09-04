@@ -12,6 +12,7 @@ import { Button } from "../../components/buttons";
 import { displayToast, ToastType } from "../../components/alert";
 import { queryErc20Balance } from "../ethereum/queries";
 import {
+  ChainNames,
   EthWallet,
   transfer as erc20Transfer,
   useTxReceiptState,
@@ -24,6 +25,7 @@ import {
   EthClientChainIds_AxelarChainIdsMap,
   waitBySourceChain,
 } from ".";
+import { getKeyByValue } from "../../components/utils";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<
@@ -56,6 +58,25 @@ const AxelarTransfer: FunctionComponent<
     const { bech32Address } = osmosisAccount;
     const originCurrency = balanceOnOsmosis.balance.currency.originCurrency!;
 
+    useEffect(() => {
+      let hexChainId: string | undefined = getKeyByValue(
+        ChainNames,
+        selectedSourceChainKey
+      )
+        ? selectedSourceChainKey
+        : undefined;
+
+      if (!hexChainId) {
+        hexChainId = getKeyByValue(
+          EthClientChainIds_AxelarChainIdsMap,
+          selectedSourceChainKey
+        );
+      }
+      if (!hexChainId) return;
+
+      ethWalletClient.setPreferredSourceChain(hexChainId);
+    }, [selectedSourceChainKey, ethWalletClient]);
+
     /** Chain key that Axelar accepts in APIs. */
     const selectedSourceChainAxelarKey =
       EthClientChainIds_AxelarChainIdsMap[selectedSourceChainKey] ??
@@ -84,6 +105,7 @@ const AxelarTransfer: FunctionComponent<
       }
     }, [
       erc20ContractAddress,
+      ethWalletClient.chainId,
       ethWalletClient.send,
       ethWalletClient.accountAddress,
       originCurrency,
@@ -262,13 +284,12 @@ const AxelarTransfer: FunctionComponent<
       (EthClientChainIds_AxelarChainIdsMap[ethWalletClient.chainId as string] ??
         ethWalletClient.chainId) === selectedSourceChainAxelarKey;
     const userCanInteract =
-      userDisconnectedWallet ||
-      (!isDepositAddressLoading && correctChainSelected && !isEthTxPending);
+      userDisconnectedWallet || (!isDepositAddressLoading && !isEthTxPending);
     const buttonErrorMessage = userDisconnectedWallet
       ? `Reconnect ${ethWalletClient.displayInfo.displayName}`
-      : !correctChainSelected
-      ? `Wrong network in ${ethWalletClient.displayInfo.displayName}`
       : undefined;
+
+    console.log({ correctChainSelected }, selectedSourceChainAxelarKey);
 
     return (
       <>

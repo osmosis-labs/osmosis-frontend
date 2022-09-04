@@ -17,7 +17,10 @@ export type Method =
   | string;
 
 export interface EthWallet
-  extends Wallet<{ method: Method; params: Transaction }> {}
+  extends Wallet<{ method: Method; params: Transaction }> {
+  /** Set source chain user selected in app. Key should be from values of `ChainNames`. */
+  setPreferredSourceChain: (chainName: string) => void;
+}
 
 export type SendFn = Pick<EthWallet, "send">["send"];
 
@@ -39,3 +42,5 @@ export const ChainNames: { [chainId: string]: string } = {
   "0xa86a": "Avalanche C-Chain",
   "0x4e454152": "Aurora",
 };
+
+export const ChainNetworkConfigs: { [chainId: string]: object } = {};

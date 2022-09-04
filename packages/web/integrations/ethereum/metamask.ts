@@ -10,13 +10,15 @@ import { toHex, isAddress } from "web3-utils";
 import { KVStore } from "@keplr-wallet/common";
 import { EventEmitter } from "eventemitter3";
 import { Alert } from "../../components/alert";
-import type { EthereumProvider } from "../../window";
+import { getKeyByValue } from "../../components/utils";
 import { WalletDisplay, WalletKey } from "../wallets";
 import { ChainNames, EthWallet } from "./types";
+import { switchToChain, withEthInWindow } from "./metamask-utils";
 import { pollTransactionReceipt } from "./queries";
 
 const CONNECTED_ACCOUNT_KEY = "metamask-connected-account";
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
+
 export class ObservableMetamask implements EthWallet {
   readonly key: WalletKey = "metamask";
 
@@ -33,6 +35,10 @@ export class ObservableMetamask implements EthWallet {
 
   @observable
   protected _isSending: boolean = false;
+
+  /** Eth format: `0x...` */
+  @observable
+  protected _preferredChainId: string | undefined;
 
   readonly txStatusEventEmitter = new EventEmitter<
     "pending" | "confirmed" | "failed"
@@ -109,6 +115,16 @@ export class ObservableMetamask implements EthWallet {
     return this._isSending;
   }
 
+  /** Chain name is a value from `ChainNames` object. */
+  @action
+  setPreferredSourceChain(chainName: string) {
+    const ethChainId = getKeyByValue(ChainNames, chainName);
+
+    if (ethChainId) {
+      this._preferredChainId = ethChainId;
+    }
+  }
+
   @action
   enable(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
@@ -117,7 +133,7 @@ export class ObservableMetamask implements EthWallet {
         typeof window.ethereum === "undefined" ||
         !window.ethereum.isMetaMask
       ) {
-        reject("MetaMask: not installed");
+        reject("MetaMask enable: not installed");
       }
 
       window.ethereum
@@ -140,14 +156,30 @@ export class ObservableMetamask implements EthWallet {
   }
 
   send = computedFn(({ method, params: ethTx }) => {
-    if (!this.accountAddress || !isAddress(this.accountAddress)) {
+    if (!this.isConnected) {
       return Promise.reject(
         "Metamask: can't send request, account not connected"
       );
     }
+    if (this.accountAddress && !isAddress(this.accountAddress)) {
+      return Promise.reject("Metamask: invalid account address");
+    }
 
     return (
       withEthInWindow(async (ethereum) => {
+        if (
+          this._preferredChainId &&
+          this._chainId !== this._preferredChainId
+        ) {
+          const wasConnected = this.isConnected;
+          await switchToChain(
+            ethereum.request,
+            ChainNames[this._preferredChainId]
+          );
+          // metamask may clear address upon switching network
+          if (wasConnected) await this.enable();
+        }
+
         runInAction(() => (this._isSending = true));
         const resp = await ethereum.request({
           method,
@@ -195,21 +227,4 @@ export class ObservableMetamask implements EthWallet {
     IS_TESTNET
       ? `https://ropsten.etherscan.io/tx/${txHash}`
       : `https://etherscan.io/tx/${txHash}`;
-}
-
-function withEthInWindow<T>(
-  doTask: (eth: EthereumProvider) => T | undefined,
-  defaultRet?: T
-) {
-  if (
-    typeof window !== "undefined" &&
-    typeof window.ethereum !== "undefined" &&
-    window.ethereum.isMetaMask
-  ) {
-    return doTask(window.ethereum);
-  }
-  if (typeof window !== "undefined") {
-    console.warn("MetaMask: no window.ethereum found");
-  }
-  return defaultRet;
 }
