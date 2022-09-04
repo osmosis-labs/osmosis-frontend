@@ -171,13 +171,12 @@ export class ObservableMetamask implements EthWallet {
           this._preferredChainId &&
           this._chainId !== this._preferredChainId
         ) {
-          const wasConnected = this.isConnected;
           await switchToChain(
             ethereum.request,
             ChainNames[this._preferredChainId]
           );
           // metamask may clear address upon switching network
-          if (wasConnected) await this.enable();
+          await this.enable();
         }
 
         runInAction(() => (this._isSending = true));

@@ -9,6 +9,7 @@ import { IBCBalance } from "../../stores/assets";
 import { useStore } from "../../stores";
 import { Transfer } from "../../components/complex/transfer";
 import { Button } from "../../components/buttons";
+import { getKeyByValue } from "../../components/utils";
 import { displayToast, ToastType } from "../../components/alert";
 import { queryErc20Balance } from "../ethereum/queries";
 import {
@@ -25,7 +26,6 @@ import {
   EthClientChainIds_AxelarChainIdsMap,
   waitBySourceChain,
 } from ".";
-import { getKeyByValue } from "../../components/utils";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<

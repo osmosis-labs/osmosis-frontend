@@ -192,6 +192,8 @@ export class ObservableWalletConnect implements EthWallet {
             conn.sendCustomRequest as SendFn,
             ChainNames[this._preferredChainId]
           );
+          // metamask may clear address upon switching network
+          await this.enable();
         }
 
         runInAction(() => (this._isSending = true));
