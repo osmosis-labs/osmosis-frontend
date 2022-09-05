@@ -1891,6 +1891,57 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://agoric.bigdipper.live/transactions/{txHash}",
     },
+    {
+      rpc: "https://stride-rpc.polkachu.com/",
+      rest: "https://stride-api.polkachu.com/",
+      chainId: "stride-1",
+      chainName: "Stride",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("stride"),
+      currencies: [
+        {
+          coinDenom: "STRD",
+          coinMinimalDenom: "ustrd",
+          coinDecimals: 6,
+          //coinGeckoId: "stride",
+          coinImageUrl: "/tokens/strd.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+        {
+          coinDenom: "stATOM",
+          coinMinimalDenom: "stuatom",
+          coinDecimals: 6,
+          coinGeckoId: "cosmos",
+          coinImageUrl: "/tokens/statom.svg",
+        },
+        {
+          coinDenom: "stOSMO",
+          coinMinimalDenom: "stuosmo",
+          coinDecimals: 6,
+          coinGeckoId: "osmosis",
+          coinImageUrl: "/tokens/stosmo.svg",
+        },
+        {
+          coinDenom: "stJUNO",
+          coinMinimalDenom: "stujuno",
+          coinDecimals: 6,
+          coinGeckoId: "juno-network",
+          coinImageUrl: "/tokens/stjuno.svg",
+        },
+        {
+          coinDenom: "stSCRT",
+          coinMinimalDenom: "stuscrt",
+          coinDecimals: 6,
+          coinGeckoId: "secret",
+          coinImageUrl: "/tokens/stscrt.svg",
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
