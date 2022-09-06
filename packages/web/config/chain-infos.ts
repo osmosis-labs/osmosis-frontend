@@ -1939,6 +1939,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/stscrt.svg",
         },
       ],
+      gasPriceStep: {
+        low: 0,
+        average: 0,
+        high: 0.04,
+      },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
     },
