@@ -10,19 +10,23 @@ export function queryErc20Balance(
 ): Promise<Int> {
   return new Promise(async (resolve, reject) => {
     if (isAddress(accountAddress)) {
-      const res = (await queryFn({
-        method: "eth_call",
-        params: [
-          {
-            to: erc20Address,
-            data: Erc20Abi.encodeFunctionData("balanceOf", [accountAddress]),
-          },
-          "latest",
-        ],
-      })) as string;
-      resolve(new Int(hexToNumberString(res)));
+      try {
+        const res = (await queryFn({
+          method: "eth_call",
+          params: [
+            {
+              to: erc20Address,
+              data: Erc20Abi.encodeFunctionData("balanceOf", [accountAddress]),
+            },
+            "latest",
+          ],
+        })) as string;
+        resolve(new Int(hexToNumberString(res)));
+      } catch (e) {
+        reject(`queryErc20Balance: query failed: ${e}`);
+      }
     } else {
-      reject(new Error(`Invalid address ${accountAddress}`));
+      reject(`Invalid address ${accountAddress}`);
     }
   });
 }

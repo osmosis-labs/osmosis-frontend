@@ -30,6 +30,7 @@ export class ObservableMetamask implements EthWallet {
   @observable
   protected _accountAddress: string | undefined;
 
+  /** Eth format: `0x...` */
   @observable
   protected _chainId: string | undefined;
 
@@ -66,6 +67,14 @@ export class ObservableMetamask implements EthWallet {
       eth.on("chainChanged", (chainId: string) => {
         runInAction(() => {
           this._chainId = chainId;
+
+          // switching to a few certain networks in metamask causes an undefined address to come in.
+          // this causes the proxy to appear disconnected.
+          // this can't be differentiated from the disconnect event, and the user must reconnect.
+          if (this.accountAddress === undefined) {
+            // received chainChained from metamask, so we know the user connected prior
+            this.enable();
+          }
         });
       });
       eth.on("disconnect", () => handleAccountChanged([undefined]));
@@ -125,27 +134,22 @@ export class ObservableMetamask implements EthWallet {
     }
   }
 
-  @action
   enable(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      if (
-        typeof window === "undefined" ||
-        typeof window.ethereum === "undefined" ||
-        !window.ethereum.isMetaMask
-      ) {
-        reject("MetaMask enable: not installed");
-      }
-
-      window.ethereum
-        .request({ method: "eth_requestAccounts" })
-        .then((accounts) => {
-          window.ethereum.request({ method: "eth_chainId" }).then((chainId) => {
-            this._chainId = chainId as string;
-            this.accountAddress = (accounts as string[])[0];
-            resolve();
-          });
-        })
-        .catch(reject);
+      withEthInWindow((ethereum) => {
+        return ethereum
+          .request({ method: "eth_requestAccounts" })
+          .then((accounts) => {
+            ethereum.request({ method: "eth_chainId" }).then((chainId) => {
+              runInAction(() => {
+                this._chainId = chainId as string;
+                this.accountAddress = (accounts as string[])[0];
+              });
+              resolve();
+            });
+          })
+          .catch(reject);
+      }, Promise.reject("MetaMask:  failed to connect: no ethereum in window"));
     });
   }
 
@@ -158,25 +162,32 @@ export class ObservableMetamask implements EthWallet {
   send = computedFn(({ method, params: ethTx }) => {
     if (!this.isConnected) {
       return Promise.reject(
-        "Metamask: can't send request, account not connected"
+        "MetaMask: can't send request, account not connected"
       );
     }
     if (this.accountAddress && !isAddress(this.accountAddress)) {
-      return Promise.reject("Metamask: invalid account address");
+      return Promise.reject("MetaMask: invalid account address");
     }
 
     return (
       withEthInWindow(async (ethereum) => {
         if (
           this._preferredChainId &&
-          this._chainId !== this._preferredChainId
+          this._chainId !== this._preferredChainId &&
+          (method === "eth_sendTransaction" || method === "eth_call") // don't try to switch for queries
         ) {
-          await switchToChain(
-            ethereum.request,
-            ChainNames[this._preferredChainId]
-          );
-          // metamask may clear address upon switching network
-          await this.enable();
+          try {
+            await switchToChain(
+              ethereum.request,
+              ChainNames[this._preferredChainId]
+            );
+            // metamask may clear address upon switching network
+            await this.enable();
+          } catch (e) {
+            if (e === "switchToChain: switch in progress") {
+              return Promise.reject("MetaMask: Switch pending already");
+            }
+          }
         }
 
         runInAction(() => (this._isSending = true));
@@ -202,7 +213,7 @@ export class ObservableMetamask implements EthWallet {
         runInAction(() => (this._isSending = false));
         return resp;
       }) ||
-      Promise.reject("Metamask: failed to send message: ethereum not in window")
+      Promise.reject("MetaMask: failed to send message: ethereum not in window")
     );
   });
 
