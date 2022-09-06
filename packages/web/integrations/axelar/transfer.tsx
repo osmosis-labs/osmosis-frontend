@@ -90,17 +90,19 @@ const AxelarTransfer: FunctionComponent<
       "axelar-dojo-1";
 
     // get balance from EVM contract
-    const [counterpartyBal, setCounterpartyBal] = useState<CoinPretty | null>(
-      null
-    );
+    const [erc20Balance, setErc20Balance] = useState<CoinPretty | null>(null);
     useEffect(() => {
-      if (erc20ContractAddress && ethWalletClient.accountAddress) {
+      if (
+        erc20ContractAddress &&
+        ethWalletClient.accountAddress &&
+        !isWithdraw
+      ) {
         queryErc20Balance(
           ethWalletClient.send,
           erc20ContractAddress,
           ethWalletClient.accountAddress
         ).then((amount) =>
-          setCounterpartyBal(new CoinPretty(originCurrency, amount))
+          setErc20Balance(new CoinPretty(originCurrency, amount))
         );
       }
     }, [
@@ -116,7 +118,7 @@ const AxelarTransfer: FunctionComponent<
       amount: depositAmount,
       setAmount: setDepositAmount,
       toggleIsMax: toggleIsDepositAmtMax,
-    } = useGeneralAmountConfig({ balance: counterpartyBal ?? undefined });
+    } = useGeneralAmountConfig({ balance: erc20Balance ?? undefined });
 
     // WITHDRAWING: is an IBC transfer Osmosis->Axelar
     const feeConfig = useFakeFeeConfig(
@@ -155,18 +157,8 @@ const AxelarTransfer: FunctionComponent<
     const availableBalance = isWithdraw
       ? balanceOnOsmosis.balance
       : erc20ContractAddress
-      ? counterpartyBal ?? undefined
+      ? erc20Balance ?? undefined
       : undefined;
-
-    const { depositAddress, isLoading: isDepositAddressLoading } =
-      useDepositAddress(
-        sourceChain,
-        destChain,
-        address,
-        tokenMinDenom,
-        undefined,
-        isTestNet ? Environment.TESTNET : Environment.MAINNET
-      );
 
     // track status of Axelar transfer
     const { isEthTxPending } = useTxReceiptState(ethWalletClient);
@@ -190,15 +182,30 @@ const AxelarTransfer: FunctionComponent<
     }, [isEthTxPending, onRequestClose]);
 
     // detect user disconnecting wallet
-    const [userDisconnectedWallet, setUserDisconnectedWallet] = useState(false);
+    const [userDisconnectedEthWallet, setUserDisconnectedWallet] =
+      useState(false);
     useEffect(() => {
       if (!ethWalletClient.isConnected) {
         setUserDisconnectedWallet(true);
       }
-      if (ethWalletClient.isConnected && userDisconnectedWallet) {
+      if (ethWalletClient.isConnected && userDisconnectedEthWallet) {
         setUserDisconnectedWallet(false);
       }
-    }, [ethWalletClient.isConnected, userDisconnectedWallet]);
+    }, [ethWalletClient.isConnected, userDisconnectedEthWallet]);
+
+    const correctChainSelected =
+      (EthClientChainIds_AxelarChainIdsMap[ethWalletClient.chainId as string] ??
+        ethWalletClient.chainId) === selectedSourceChainAxelarKey;
+
+    const { depositAddress, isLoading: isDepositAddressLoading } =
+      useDepositAddress(
+        sourceChain,
+        destChain,
+        isWithdraw || correctChainSelected ? address : undefined,
+        tokenMinDenom,
+        undefined,
+        isTestNet ? Environment.TESTNET : Environment.MAINNET
+      );
 
     const doAxelarTransfer = useCallback(async () => {
       if (depositAddress) {
@@ -223,7 +230,6 @@ const AxelarTransfer: FunctionComponent<
           } catch (e) {
             // common Keplr errors are displayed as toasts from root store
             console.error(e);
-            return;
           }
         } else {
           // isDeposit
@@ -280,16 +286,14 @@ const AxelarTransfer: FunctionComponent<
       withdrawAmountConfig,
     ]);
 
-    const correctChainSelected =
-      (EthClientChainIds_AxelarChainIdsMap[ethWalletClient.chainId as string] ??
-        ethWalletClient.chainId) === selectedSourceChainAxelarKey;
     const userCanInteract =
-      userDisconnectedWallet || (!isDepositAddressLoading && !isEthTxPending);
-    const buttonErrorMessage = userDisconnectedWallet
+      (!isWithdraw && userDisconnectedEthWallet) ||
+      (!isDepositAddressLoading && !isEthTxPending);
+    const buttonErrorMessage = userDisconnectedEthWallet
       ? `Reconnect ${ethWalletClient.displayInfo.displayName}`
+      : !isWithdraw && !correctChainSelected
+      ? `Wrong network in ${ethWalletClient.displayInfo.displayName}`
       : undefined;
-
-    console.log({ correctChainSelected }, selectedSourceChainAxelarKey);
 
     return (
       <>
@@ -310,11 +314,13 @@ const AxelarTransfer: FunctionComponent<
           onRequestSwitchWallet={onRequestSwitchWallet}
           currentValue={amount}
           onInput={(value) =>
-            isWithdraw // withdrawals are an IBC transfer Osmosis->Axelar
+            isWithdraw
               ? withdrawAmountConfig.setAmount(value)
               : setDepositAmount(value)
           }
-          availableBalance={correctChainSelected ? availableBalance : undefined}
+          availableBalance={
+            isWithdraw || correctChainSelected ? availableBalance : undefined
+          }
           toggleIsMax={() => {
             if (isWithdraw) {
               withdrawAmountConfig.toggleIsMax();
@@ -327,7 +333,9 @@ const AxelarTransfer: FunctionComponent<
           }
           waitTime={waitBySourceChain(selectedSourceChainKey)}
           disabled={!userCanInteract}
-          disablePanel={!!isEthTxPending || userDisconnectedWallet}
+          disablePanel={
+            (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
+          }
         />
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
           <Button
@@ -336,10 +344,11 @@ const AxelarTransfer: FunctionComponent<
               { "opacity-30": isDepositAddressLoading }
             )}
             disabled={
-              !userCanInteract || (!userDisconnectedWallet && amount === "")
+              !userCanInteract || (!userDisconnectedEthWallet && amount === "")
             }
             onClick={() => {
-              if (userDisconnectedWallet) ethWalletClient.enable();
+              if (!isWithdraw && userDisconnectedEthWallet)
+                ethWalletClient.enable();
               else doAxelarTransfer();
             }}
           >

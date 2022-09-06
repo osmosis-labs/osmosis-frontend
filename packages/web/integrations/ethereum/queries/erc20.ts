@@ -26,7 +26,7 @@ export function queryErc20Balance(
         reject(`queryErc20Balance: query failed: ${e}`);
       }
     } else {
-      reject(`Invalid address ${accountAddress}`);
+      reject(`queryErc20Balance: invalid address ${accountAddress}`);
     }
   });
 }

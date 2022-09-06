@@ -72,7 +72,7 @@ export class ObservableMetamask implements EthWallet {
           // this causes the proxy to appear disconnected.
           // this can't be differentiated from the disconnect event, and the user must reconnect.
           if (this.accountAddress === undefined) {
-            // received chainChained from metamask, so we know the user connected prior
+            // received chainChanged from metamask, so we know the user connected prior
             this.enable();
           }
         });
@@ -149,7 +149,7 @@ export class ObservableMetamask implements EthWallet {
             });
           })
           .catch(reject);
-      }, Promise.reject("MetaMask:  failed to connect: no ethereum in window"));
+      }, Promise.reject("MetaMask: failed to connect: no ethereum in window"));
     });
   }
 
@@ -183,10 +183,16 @@ export class ObservableMetamask implements EthWallet {
             );
             // metamask may clear address upon switching network
             await this.enable();
-          } catch (e) {
+          } catch (e: any) {
             if (e === "switchToChain: switch in progress") {
               return Promise.reject("MetaMask: Switch pending already");
             }
+
+            return Promise.reject(
+              `MetaMask: Failed to switch: ${
+                typeof e.message === "undefined" ? e : e.message
+              }`
+            );
           }
         }
 
