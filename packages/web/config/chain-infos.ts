@@ -1915,7 +1915,7 @@ const chainInfos = (
           coinDenom: "stATOM",
           coinMinimalDenom: "stuatom",
           coinDecimals: 6,
-          // coinGeckoId: "cosmos",
+          coinGeckoId: "pool:stuatom",
           coinImageUrl: "/tokens/statom.svg",
         },
         {
