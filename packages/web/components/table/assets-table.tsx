@@ -1,5 +1,5 @@
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { initialAssetsSort, AssetsPageEvents } from "../../config";
 import {
   IBCBalance,
@@ -372,15 +372,9 @@ export const AssetsTable: FunctionComponent<Props> = ({
                     assetData.chainId === chainStore.osmosis.chainId)
                     ? undefined
                     : () => {
-                        setPreTransferToken(
-                          new CoinPretty(
-                            assetData.currency,
-                            assetData.amount.replace(",", "")
-                          ).moveDecimalPointRight(
-                            assetData.currency.coinDecimals
-                          )
-                        );
-                        setShowPreTransfer(true);
+                        if (assetData.chainId && assetData.coinDenom) {
+                          onDeposit(assetData.chainId, assetData.coinDenom);
+                        }
                       }
                 }
                 showArrow
