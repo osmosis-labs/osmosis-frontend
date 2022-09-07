@@ -76,6 +76,8 @@ const Assets: NextPage = observer(() => {
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
+        onDepositIntent={() => transferConfig.startTransfer("deposit")}
+        onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
         onDeposit={(chainId, coinDenom) =>
           transferConfig.transferAsset("deposit", chainId, coinDenom)
         }
