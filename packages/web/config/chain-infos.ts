@@ -495,9 +495,9 @@ const chainInfos = (
           type: "cw20",
           contractAddress:
             "juno159q8t5g02744lxq8lfmcn6f78qqulq9wn3y9w7lxjgkz4e0a6kvsfvapse",
-          coinDenom: "Solar",
+          coinDenom: "SOLAR",
           coinMinimalDenom:
-            "cw20:juno159q8t5g02744lxq8lfmcn6f78qqulq9wn3y9w7lxjgkz4e0a6kvsfvapse:Solar",
+            "cw20:juno159q8t5g02744lxq8lfmcn6f78qqulq9wn3y9w7lxjgkz4e0a6kvsfvapse:SOLAR",
           coinDecimals: 6,
           coinImageUrl: "/tokens/solar.png",
         },
