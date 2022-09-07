@@ -26,7 +26,7 @@ export const ConnectNonIbcWallet: FunctionComponent<
       onClick: () => {
         if (selectedWalletKey) props.onSelectWallet(selectedWalletKey);
       },
-      children: <span>Next</span>,
+      children: <h6 className="md:text-base text-lg">Next</h6>,
     },
     props.onRequestClose,
     "Connect Wallet"

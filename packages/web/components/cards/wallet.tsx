@@ -42,7 +42,7 @@ export const WalletCard: FunctionComponent<
       <Image src={iconUrl} width={52} height={52} alt="wallet logo" />
     </div>
     <div className="mx-auto">
-      <h6>{displayName}</h6>
+      <h6 className="md:caption">{displayName}</h6>
     </div>
   </button>
 );
