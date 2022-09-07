@@ -9,6 +9,7 @@ import { REGISTRY_ADDRESSES } from "../../config";
 import { useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
 import { TabBox } from "../control";
+import { Button } from "../buttons";
 import classNames from "classnames";
 
 interface StateResponse {
@@ -83,7 +84,6 @@ const OrderRow = ({ order }: { order: Order }) => {
         undefined,
         (e) => console.log(e)
       );
-      window.location.reload();
     } catch (err) {
       console.log(err);
     }
@@ -133,12 +133,15 @@ const OrderRow = ({ order }: { order: Order }) => {
             </div>
           </div>
           {order.status === "created" && (
-            <button
-              className="button px-3 py-1 md:px-1 bg-error rounded-lg"
+            <Button
+              color="error"
+              className="button px-3 py-1 md:px-1 rounded-lg"
+              loading={account.txTypeInProgress !== ""}
+              disabled={account.txTypeInProgress !== ""}
               onClick={handleCancelOrder}
             >
               Cancel
-            </button>
+            </Button>
           )}
         </div>
         <p className="font-bold mt-2">
