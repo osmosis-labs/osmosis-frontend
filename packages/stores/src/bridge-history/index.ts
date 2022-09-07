@@ -1,5 +1,4 @@
 import {
-  computed,
   observable,
   action,
   runInAction,
@@ -7,6 +6,7 @@ import {
   toJS,
   makeObservable,
 } from "mobx";
+import { computedFn } from "mobx-utils";
 import { KVStore } from "@keplr-wallet/common";
 import { TxStatus } from "./types";
 import { ITxStatusReceiver, ITxStatusSource } from "./types";
@@ -20,6 +20,7 @@ type TxSnapshot = {
   status: TxStatus;
   reason?: string;
   isWithdraw: boolean;
+  accountAddress: string;
 };
 
 const STORE_KEY = "nonibc_history_tx_snapshots";
@@ -60,17 +61,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
     this.txStatusSources.push(source);
   }
 
-  @computed
-  get histories(): {
-    key: string;
-    createdAt: Date;
-    sourceName?: string;
-    status: TxStatus;
-    reason?: string;
-    amount: string;
-    explorerUrl: string;
-    isWithdraw: boolean;
-  }[] {
+  getHistoriesByAccount = computedFn((accountAddress: string) => {
     const histories: {
       key: string;
       createdAt: Date;
@@ -85,7 +76,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
       const statusSource = this.txStatusSources.find((source) =>
         snapshot.prefixedKey.startsWith(source.keyPrefix)
       );
-      if (statusSource) {
+      if (statusSource && snapshot.accountAddress === accountAddress) {
         const key = snapshot.prefixedKey.slice(statusSource?.keyPrefix.length);
 
         histories.push({
@@ -102,16 +93,22 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
     });
 
     return histories;
-  }
+  });
 
   /**
    * Add transaction to be tracked starting now.
    * @param prefixedKey Identifier of transaction, with a prefix corresponding to a tx status source. Example: `axelar<tx hash>`
    * @param amount Human readable amount. (e.g. `12 ETH`)
    * @param isWithdraw Indicates if this is a withdraw from Osmosis.
+   * @param accountAddress The address of the user's account.
    */
   @action
-  pushTxNow(prefixedKey: string, amount: string, isWithdraw: boolean) {
+  pushTxNow(
+    prefixedKey: string,
+    amount: string,
+    isWithdraw: boolean,
+    accountAddress: string
+  ) {
     const statusSource = this.txStatusSources.find((source) =>
       prefixedKey.startsWith(source.keyPrefix)
     );
@@ -127,6 +124,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
       amount,
       status: "pending",
       isWithdraw,
+      accountAddress,
     });
   }
 

@@ -10,6 +10,7 @@ declare type TxSnapshot = {
     status: TxStatus;
     reason?: string;
     isWithdraw: boolean;
+    accountAddress: string;
 };
 /** Stores and tracks status for non-IBC bridge transfers.
  *  Supports querying state from arbitrary remote chains via dependency injection.
@@ -24,13 +25,13 @@ export declare class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
     private isRestoredFromLocalStorage;
     constructor(kvStore: KVStore, txStatusSources?: ITxStatusSource[], historyExpireDays?: number);
     addStatusSource(source: ITxStatusSource): void;
-    get histories(): {
+    getHistoriesByAccount: (accountAddress: string) => {
         key: string;
         createdAt: Date;
-        sourceName?: string;
+        sourceName?: string | undefined;
         status: TxStatus;
-        reason?: string;
         amount: string;
+        reason?: string | undefined;
         explorerUrl: string;
         isWithdraw: boolean;
     }[];
@@ -39,8 +40,9 @@ export declare class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
      * @param prefixedKey Identifier of transaction, with a prefix corresponding to a tx status source. Example: `axelar<tx hash>`
      * @param amount Human readable amount. (e.g. `12 ETH`)
      * @param isWithdraw Indicates if this is a withdraw from Osmosis.
+     * @param accountAddress The address of the user's account.
      */
-    pushTxNow(prefixedKey: string, amount: string, isWithdraw: boolean): void;
+    pushTxNow(prefixedKey: string, amount: string, isWithdraw: boolean, accountAddress: string): void;
     receiveNewTxStatus(prefixedKey: string, status: TxStatus, reason: string | undefined): void;
     /** Use persisted tx snapshots to resume Tx monitoring after browser first loads.
      *  Removes expired snapshots.

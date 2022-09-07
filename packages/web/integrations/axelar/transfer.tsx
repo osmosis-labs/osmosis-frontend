@@ -171,7 +171,8 @@ const AxelarTransfer: FunctionComponent<
               .moveDecimalPointRight(originCurrency.coinDecimals)
               .trim(true)
               .toString(),
-            isWithdraw
+            isWithdraw,
+            osmosisAccount.bech32Address // use osmosis account for account keys (vs any EVM account)
           );
         }
       },

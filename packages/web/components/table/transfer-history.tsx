@@ -36,7 +36,8 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
     const { chainId } = chainStore.osmosis;
     const { bech32Address } = accountStore.getAccount(chainId);
 
-    const histories: History[] = nonIbcBridgeHistoryStore.histories
+    const histories: History[] = nonIbcBridgeHistoryStore
+      .getHistoriesByAccount(bech32Address)
       .map(
         ({
           key,
