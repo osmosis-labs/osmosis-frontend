@@ -853,24 +853,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-391",
     destChannelId: "channel-0",
     coinMinimalDenom: "stuatom",
-  },
-  {
-    counterpartyChainId: "stride-1",
-    sourceChannelId: "channel-391",
-    destChannelId: "channel-0",
-    coinMinimalDenom: "stuosmo",
-  },
-  {
-    counterpartyChainId: "stride-1",
-    sourceChannelId: "channel-391",
-    destChannelId: "channel-0",
-    coinMinimalDenom: "stujuno",
-  },
-  {
-    counterpartyChainId: "stride-1",
-    sourceChannelId: "channel-391",
-    destChannelId: "channel-0",
-    coinMinimalDenom: "stuscrt",
   }
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
 
