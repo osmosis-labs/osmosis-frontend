@@ -2,10 +2,11 @@
 
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   reactStrictMode: true,
-  images: {
-    domains: ['raw.githubusercontent.com', 'app.osmosis.zone'],
-  },
   enabled: process.env.ANALYZE === "true",
 });
 
-module.exports = withBundleAnalyzer({});
+module.exports = withBundleAnalyzer({
+  images: {
+    domains: ["app.osmosis.zone", "raw.githubusercontent.com"],
+  },
+});
