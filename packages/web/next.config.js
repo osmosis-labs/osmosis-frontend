@@ -7,6 +7,6 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 module.exports = withBundleAnalyzer({
   images: {
-    domains: ["app.osmosis.zone", "raw.githubusercontent.com"],
+    domains: ["raw.githubusercontent.com"],
   },
 });
