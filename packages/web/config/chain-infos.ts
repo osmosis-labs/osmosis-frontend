@@ -77,7 +77,7 @@ const chainInfos = (
           coinMinimalDenom: "uluna",
           coinDecimals: 6,
           //coinGeckoId: "terra-luna",
-          coinGeckoId: "pool:uluna",
+          coinGeckoId: "pool:ulunc",
           coinImageUrl: "/tokens/lunc.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
