@@ -844,14 +844,14 @@ export const IBCAssetInfos: (IBCAsset & {
   },
   {
     counterpartyChainId: "stride-1",
-    sourceChannelId: "channel-391",
-    destChannelId: "channel-0",
+    sourceChannelId: "channel-326",
+    destChannelId: "channel-5",
     coinMinimalDenom: "ustrd",
   },
   {
     counterpartyChainId: "stride-1",
-    sourceChannelId: "channel-391",
-    destChannelId: "channel-0",
+    sourceChannelId: "channel-326",
+    destChannelId: "channel-5",
     coinMinimalDenom: "stuatom",
   }
 ].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
