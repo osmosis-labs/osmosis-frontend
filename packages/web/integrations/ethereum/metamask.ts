@@ -173,8 +173,7 @@ export class ObservableMetamask implements EthWallet {
       withEthInWindow(async (ethereum) => {
         if (
           this._preferredChainId &&
-          this._chainId !== this._preferredChainId &&
-          (method === "eth_sendTransaction" || method === "eth_call") // don't try to switch for queries
+          this._chainId !== this._preferredChainId
         ) {
           try {
             await switchToChain(

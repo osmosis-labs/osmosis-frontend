@@ -58,6 +58,7 @@ const AxelarTransfer: FunctionComponent<
     const { bech32Address } = osmosisAccount;
     const originCurrency = balanceOnOsmosis.balance.currency.originCurrency!;
 
+    // notify eth wallet of prev selected preferred chain
     useEffect(() => {
       let hexChainId: string | undefined = getKeyByValue(
         ChainNames,
@@ -107,7 +108,6 @@ const AxelarTransfer: FunctionComponent<
       }
     }, [
       erc20ContractAddress,
-      ethWalletClient.chainId,
       ethWalletClient.send,
       ethWalletClient.accountAddress,
       originCurrency,
@@ -286,9 +286,14 @@ const AxelarTransfer: FunctionComponent<
       withdrawAmountConfig,
     ]);
 
+    /** User can interact with any of the controls on the modal. */
     const userCanInteract =
-      (!isWithdraw && userDisconnectedEthWallet) ||
-      (!isDepositAddressLoading && !isEthTxPending);
+      (!isWithdraw &&
+        !userDisconnectedEthWallet &&
+        correctChainSelected &&
+        !isDepositAddressLoading &&
+        !isEthTxPending) ||
+      (isWithdraw && osmosisAccount.txTypeInProgress === "");
     const buttonErrorMessage = userDisconnectedEthWallet
       ? `Reconnect ${ethWalletClient.displayInfo.displayName}`
       : !isWithdraw && !correctChainSelected
@@ -344,7 +349,9 @@ const AxelarTransfer: FunctionComponent<
               { "opacity-30": isDepositAddressLoading }
             )}
             disabled={
-              !userCanInteract || (!userDisconnectedEthWallet && amount === "")
+              !userCanInteract ||
+              (!isWithdraw && !userDisconnectedEthWallet && amount === "") ||
+              (isWithdraw && amount === "")
             }
             onClick={() => {
               if (!isWithdraw && userDisconnectedEthWallet)
