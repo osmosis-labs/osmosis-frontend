@@ -8,7 +8,7 @@ export function pollTransactionReceipt(
   sendFn: SendFn,
   txHash: string,
   onReceiveStatus: (newStatus: ReceiptStatus) => void,
-  pollInterval = 10_000
+  pollInterval = 4_000
 ) {
   poll({
     fn: () => sendFn({ method: "eth_getTransactionReceipt", params: [txHash] }),

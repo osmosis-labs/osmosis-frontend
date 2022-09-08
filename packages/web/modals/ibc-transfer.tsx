@@ -130,9 +130,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               : undefined
           }
           disablePanel={!walletConnected}
-          // errorMessage={ TODO: self-manage errors console.log
-          //   amountConfig.error ? amountConfig.error.message : undefined
-          // }
           toggleIsMax={() => amountConfig.toggleIsMax()}
           currentValue={amountConfig.amount}
           onInput={(value) => amountConfig.setAmount(value)}
