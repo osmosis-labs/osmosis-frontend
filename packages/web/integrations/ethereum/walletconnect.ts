@@ -7,12 +7,11 @@ import {
 } from "mobx";
 import { computedFn } from "mobx-utils";
 import WalletConnect from "@walletconnect/client";
-import { toHex, isAddress } from "web3-utils";
+import { toHex, isAddress, numberToHex } from "web3-utils";
 import { KVStore } from "@keplr-wallet/common";
 import { getKeyByValue } from "../../components/utils";
 import { WalletDisplay, WalletKey } from "../wallets";
-import { ChainNames, EthWallet, SendFn } from "./types";
-import { switchToChain } from "./metamask-utils";
+import { ChainNames, EthWallet } from "./types";
 
 const CONNECTED_ACCOUNT_KEY = "wc-eth-connected-account";
 const CONNECTED_ACCOUNT_CHAINID = "wc-eth-connected-chainId";
@@ -188,12 +187,9 @@ export class ObservableWalletConnect implements EthWallet {
           this._preferredChainId &&
           this._chainId !== this._preferredChainId
         ) {
-          await switchToChain(
-            conn.sendCustomRequest as SendFn,
-            ChainNames[this._preferredChainId]
-          );
+          await this.switchToChain(ChainNames[this._preferredChainId]);
           // metamask may clear address upon switching network
-          await this.enable();
+          // await this.enable();
         }
 
         runInAction(() => (this._isSending = true));
@@ -220,6 +216,74 @@ export class ObservableWalletConnect implements EthWallet {
       // User denied
       return "Request rejected";
     }
+  }
+
+  protected switchToChain(chainName: string): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      const hexChainId = getKeyByValue(ChainNames, chainName);
+      try {
+        if (!hexChainId) {
+          throw new Error(`${chainName} not yet added to Axelar config`);
+        }
+
+        await this._walletConnect.sendCustomRequest({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: hexChainId }],
+        });
+        resolve();
+      } catch (e: any) {
+        // error about chain network not being added
+        if (typeof e === "string" && e.includes("wallet_addEthereumChain")) {
+          // 4902: chain not in metamask
+          const ethChains: any[] = await (
+            await fetch("https://chainid.network/chains.json")
+          ).json();
+
+          const chainConfig = ethChains.find(
+            (chain) => numberToHex(chain.chainId) === hexChainId
+          );
+
+          if (!chainConfig) {
+            throw new Error(
+              `ChainList does not contain config for chain ${hexChainId}`
+            );
+          }
+
+          const params = {
+            chainId: numberToHex(chainConfig.chainId), // A 0x-prefixed hexadecimal string
+            chainName: chainConfig.name,
+            nativeCurrency: {
+              name: chainConfig.nativeCurrency.name,
+              symbol: chainConfig.nativeCurrency.symbol, // 2-6 characters long
+              decimals: chainConfig.nativeCurrency.decimals,
+            },
+            rpcUrls: chainConfig.rpc,
+            blockExplorerUrls: [
+              chainConfig.explorers &&
+              chainConfig.explorers.length > 0 &&
+              chainConfig.explorers[0].url
+                ? chainConfig.explorers[0].url
+                : chainConfig.infoURL,
+            ],
+          };
+
+          await this._walletConnect.sendCustomRequest({
+            method: "wallet_addEthereumChain",
+            params: [params],
+          });
+
+          // try again
+          await this.switchToChain(chainName);
+        } else if (e.code === -32002) {
+          // -32002: Request of type 'wallet_switchEthereumChain' already pending
+          reject("switchToChain: switch in progress");
+        } else {
+          reject(`switchToChain: unexpected error: ${e}`);
+        }
+      }
+
+      reject("switchToChain: MetaMask not installed");
+    });
   }
 }
 
