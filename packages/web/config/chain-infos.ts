@@ -1714,6 +1714,12 @@ const chainInfos = (
           coinGeckoId: "pool:geo",
           coinImageUrl: "/tokens/geo.svg",
         },
+        {
+          coinDenom: "O9W",
+          coinMinimalDenom: "mO9W",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/o9w.svg",
+        },
       ],
       gasPriceStep: {
         low: 0.025,

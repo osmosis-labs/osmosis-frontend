@@ -750,6 +750,12 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "mGeo",
   },
   {
+    counterpartyChainId: "odin-mainnet-freya",
+    sourceChannelId: "channel-258",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "mO9W",
+  },
+  {
     counterpartyChainId: "kichain-2",
     sourceChannelId: "channel-261",
     destChannelId: "channel-18",
