@@ -198,13 +198,13 @@ const Drawer = ({
       >
         <section
           className={classNames(
-            "-translate-x-full max-w-lg absolute bg-white h-full delay-300 duration-150 ease-in-out transition-all transform bg-card flex flex-col px-5 py-6 overflow-x-hidden overflow-y-auto",
+            "-translate-x-full w-sidebar absolute bg-white h-full delay-300 duration-150 ease-in-out transition-all transform bg-card flex flex-col overflow-x-hidden overflow-y-auto",
             {
               "shadow-xl -translate-x-0": showSidebar,
             }
           )}
         >
-          <article className="relative pt-8 h-full">{children}</article>
+          <article className="relative h-full px-5 py-6">{children}</article>
         </section>
       </main>
     );
