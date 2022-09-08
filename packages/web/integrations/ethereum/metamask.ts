@@ -84,12 +84,7 @@ export class ObservableMetamask implements EthWallet {
         ?.get<string | null>(CONNECTED_ACCOUNT_KEY)
         .then((existingAccount) => {
           if (existingAccount) {
-            this.accountAddress = existingAccount;
-
-            // req current chain
-            eth.request({ method: "eth_chainId" }).then((chainId) => {
-              runInAction(() => (this._chainId = chainId as string));
-            });
+            this.enable();
           }
         });
     });
