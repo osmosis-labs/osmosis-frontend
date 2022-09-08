@@ -433,9 +433,10 @@ export class ObservableOrderTokenInConfig extends AmountConfig {
 
   @action
   setCurrentPrice() {
-    const { beforeSpotPriceWithoutSwapFeeOutOverIn } = this.expectedSwapResult;
+    const { amount } = this.expectedSwapResult;
     this.setPrice(
-      beforeSpotPriceWithoutSwapFeeOutOverIn
+      amount
+        .hideDenom(true)
         .trim(true)
         .maxDecimals(6)
         .toString()
@@ -460,11 +461,9 @@ export class ObservableOrderTokenInConfig extends AmountConfig {
 
   @computed
   get priceChangePercentage() {
-    const { beforeSpotPriceWithoutSwapFeeOutOverIn } = this.expectedSwapResult;
+    const { amount } = this.expectedSwapResult;
     const price = Number(this.price);
-    const marketPrice = Number(
-      beforeSpotPriceWithoutSwapFeeOutOverIn.toDec().toString()
-    );
+    const marketPrice = Number(amount.toDec().toString());
     if (price === 0) return 0;
     return ((price - marketPrice) / price) * 100;
   }
