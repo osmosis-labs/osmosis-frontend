@@ -42,14 +42,5 @@ export function useTxEventToasts(client?: Wallet) {
     client?.txStatusEventEmitter?.on("pending", handlePending);
     client?.txStatusEventEmitter?.on("confirmed", handleConfirmed);
     client?.txStatusEventEmitter?.on("failed", handleFailed);
-
-    return () => {
-      client?.txStatusEventEmitter?.removeListener("pending", handlePending);
-      client?.txStatusEventEmitter?.removeListener(
-        "confirmed",
-        handleConfirmed
-      );
-      client?.txStatusEventEmitter?.removeListener("failed", handleFailed);
-    };
   }, [client]);
 }
