@@ -204,7 +204,12 @@ const Drawer = ({
             }
           )}
         >
-          <article className="relative h-full px-5 py-6">{children}</article>
+          <article className="relative h-full flex flex-col px-5 py-6">
+            <div className="invisible grow-0">
+              <OsmosisFullLogo width={166} />
+            </div>
+            {children}
+          </article>
         </section>
       </main>
     );
