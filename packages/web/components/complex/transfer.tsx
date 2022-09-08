@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { WalletDisplay } from "../../integrations/wallets";
+import { truncateEthAddress } from "../../integrations/ethereum/metamask-utils";
 import { BridgeAnimation } from "../animation/bridge";
 import { SwitchWalletButton } from "../buttons/switch-wallet";
 import { GradientView } from "../assets/gradient-view";
@@ -69,6 +70,25 @@ export const Transfer: FunctionComponent<TransferProps> = ({
 
   const panelDisabled = disablePanel || bridge?.isLoading || false;
 
+  const maxFromChars = isEditingWithdrawAddr
+    ? 12 // can't be on mobile
+    : !from.address.startsWith("osmo") && selectedWalletDisplay
+    ? isMobile
+      ? 10
+      : 18 // more space for switch wallet button
+    : isMobile
+    ? 14
+    : 24;
+  const maxToChars =
+    (!to.address.startsWith("osmo") && selectedWalletDisplay) || // make room for btns
+    editWithdrawAddrConfig
+      ? isMobile
+        ? 10
+        : 18
+      : isMobile
+      ? 14
+      : 24;
+
   return (
     <div className="flex flex-col gap-11 overflow-x-auto">
       <BridgeAnimation
@@ -92,18 +112,9 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         >
           {!(isMobile && isEditingWithdrawAddr) && !panelDisabled && (
             <div className="flex flex-wrap justify-center items-center gap-2 mx-auto md:caption">
-              {Bech32Address.shortenAddress(
-                from.address,
-                isEditingWithdrawAddr
-                  ? 12 // can't be on mobile
-                  : !from.address.startsWith("osmo") && selectedWalletDisplay
-                  ? isMobile
-                    ? 10
-                    : 18 // more space for switch wallet button
-                  : isMobile
-                  ? 14
-                  : 24
-              )}
+              {from.address.startsWith("0x")
+                ? truncateEthAddress(from.address)
+                : Bech32Address.shortenAddress(from.address, maxFromChars)}
               {!from.address.startsWith("osmo") && selectedWalletDisplay && (
                 <SwitchWalletButton
                   selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
@@ -125,20 +136,15 @@ export const Transfer: FunctionComponent<TransferProps> = ({
           <div className="flex flex-wrap justify-center items-center gap-2 mx-auto md:caption">
             {!isEditingWithdrawAddr &&
               !panelDisabled &&
-              Bech32Address.shortenAddress(
-                editWithdrawAddrConfig &&
-                  editWithdrawAddrConfig.customAddress !== ""
-                  ? editWithdrawAddrConfig.customAddress
-                  : to.address,
-                (!to.address.startsWith("osmo") && selectedWalletDisplay) || // make room for btns
-                  editWithdrawAddrConfig
-                  ? isMobile
-                    ? 10
-                    : 18
-                  : isMobile
-                  ? 14
-                  : 24
-              )}
+              (to.address.startsWith("0x")
+                ? truncateEthAddress(to.address)
+                : Bech32Address.shortenAddress(
+                    editWithdrawAddrConfig &&
+                      editWithdrawAddrConfig.customAddress !== ""
+                      ? editWithdrawAddrConfig.customAddress
+                      : to.address,
+                    maxToChars
+                  ))}
             {!to.address.startsWith("osmo") && selectedWalletDisplay && (
               <SwitchWalletButton
                 selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
