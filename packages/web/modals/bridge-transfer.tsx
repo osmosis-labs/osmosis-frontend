@@ -4,12 +4,17 @@ import type { SourceChainKey } from "../integrations/bridge-info";
 import type { EthWallet } from "../integrations/ethereum";
 import type { Wallet } from "../integrations/wallets";
 import { IBCBalance } from "../stores/assets";
+import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBaseProps, ModalBase } from "./base";
 
 const AxelarTransfer = dynamic(
   () => import("../integrations/axelar/transfer"),
   { ssr: false }
 );
+
+export type BridgeIntegrationProps = {
+  connectCosmosWalletButtonOverride?: JSX.Element;
+};
 
 /** Modal that lets user transfer via non-IBC bridges. */
 export const BridgeTransferModal: FunctionComponent<
@@ -30,6 +35,18 @@ export const BridgeTransferModal: FunctionComponent<
     onRequestClose,
     onRequestSwitchWallet,
   } = props;
+  const {
+    showModalBase,
+    accountActionButton: connectWalletButton,
+    walletConnected,
+  } = useConnectWalletModalRedirect(
+    {
+      className: "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl",
+      onClick: () => {},
+    },
+    props.onRequestClose
+  );
+
   if (!balance.originBridgeInfo) {
     console.error("BridgeTransferModal given unconfigured IBC balance/asset");
     return null;
@@ -44,6 +61,7 @@ export const BridgeTransferModal: FunctionComponent<
           ? `Withdraw ${balance.balance.currency.coinDenom}`
           : `Deposit ${balance.balance.currency.coinDenom}`
       }
+      isOpen={props.isOpen && showModalBase}
     >
       {(() => {
         switch (bridge) {
@@ -57,6 +75,9 @@ export const BridgeTransferModal: FunctionComponent<
                 selectedSourceChainKey={sourceChainKey}
                 onRequestClose={onRequestClose}
                 onRequestSwitchWallet={onRequestSwitchWallet}
+                connectCosmosWalletButtonOverride={
+                  walletConnected ? undefined : connectWalletButton
+                }
               />
             );
           default:

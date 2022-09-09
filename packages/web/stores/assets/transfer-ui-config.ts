@@ -1,6 +1,5 @@
 import { makeObservable, observable, action, runInAction } from "mobx";
 import { ComponentProps } from "react";
-import { WalletStatus } from "@keplr-wallet/stores";
 import { AccountSetBase } from "@keplr-wallet/stores";
 import { IBCCurrency } from "@keplr-wallet/types";
 import { KVStore } from "@keplr-wallet/common";
@@ -162,27 +161,25 @@ export class ObservableTransferUIConfig {
         (wallet) => wallet.isConnected
       );
 
-      if (this.account.walletStatus === WalletStatus.Loaded) {
-        if (alreadyConnectedWallet && alreadyConnectedWallet.chainId) {
-          this.launchBridgeTransferModal(
-            direction,
-            balance,
-            alreadyConnectedWallet,
-            sourceChainKey,
-            () => {
-              this.closeAllModals();
-              this.launchWalletSelectModal(direction, balance, sourceChainKey);
-            }
-          );
-        } else if (applicableWallets.length > 0) {
-          this.launchWalletSelectModal(direction, balance, sourceChainKey);
-        } else {
-          console.warn(
-            "No non-Keplr wallets found for this bridged asset:",
-            balance.balance.currency.coinDenom
-          );
-        }
-      } else console.error("Keplr not connected");
+      if (alreadyConnectedWallet && alreadyConnectedWallet.chainId) {
+        this.launchBridgeTransferModal(
+          direction,
+          balance,
+          alreadyConnectedWallet,
+          sourceChainKey,
+          () => {
+            this.closeAllModals();
+            this.launchWalletSelectModal(direction, balance, sourceChainKey);
+          }
+        );
+      } else if (applicableWallets.length > 0) {
+        this.launchWalletSelectModal(direction, balance, sourceChainKey);
+      } else {
+        console.warn(
+          "No non-Keplr wallets found for this bridged asset:",
+          balance.balance.currency.coinDenom
+        );
+      }
     } else {
       this.launchIbcTransferModal(direction, balance);
     }

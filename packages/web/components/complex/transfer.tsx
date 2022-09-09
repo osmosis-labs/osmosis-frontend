@@ -22,6 +22,7 @@ export type TransferProps = {
     { address: string; networkName: string; iconUrl?: string }
   ];
   selectedWalletDisplay?: WalletDisplay;
+  isOsmosisAccountLoaded: boolean;
   onRequestSwitchWallet?: () => void;
   availableBalance?: CoinPretty;
   editWithdrawAddrConfig?: {
@@ -44,6 +45,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   isWithdraw,
   transferPath: [from, bridge, to],
   selectedWalletDisplay,
+  isOsmosisAccountLoaded,
   onRequestSwitchWallet,
   availableBalance,
   currentValue,
@@ -112,15 +114,30 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         >
           {!(isMobile && isEditingWithdrawAddr) && !panelDisabled && (
             <div className="flex flex-wrap justify-center items-center gap-2 mx-auto md:caption">
-              {from.address.startsWith("0x")
-                ? truncateEthAddress(from.address)
-                : Bech32Address.shortenAddress(from.address, maxFromChars)}
-              {!from.address.startsWith("osmo") && selectedWalletDisplay && (
-                <SwitchWalletButton
-                  selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
-                  onClick={() => onRequestSwitchWallet?.()}
-                />
+              {!from.address.startsWith("0x") || from.address.length === 0 ? (
+                isOsmosisAccountLoaded ? (
+                  Bech32Address.shortenAddress(
+                    editWithdrawAddrConfig &&
+                      editWithdrawAddrConfig.customAddress !== ""
+                      ? editWithdrawAddrConfig.customAddress
+                      : from.address,
+                    maxFromChars
+                  )
+                ) : (
+                  <i>Connect Wallet</i>
+                )
+              ) : (
+                truncateEthAddress(from.address)
               )}
+              {from.address.length > 0 &&
+                !from.address.startsWith("osmo") &&
+                selectedWalletDisplay && (
+                  <SwitchWalletButton
+                    selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
+                    onClick={() => onRequestSwitchWallet?.()}
+                    disabled={panelDisabled}
+                  />
+                )}
             </div>
           )}
         </div>
@@ -136,21 +153,30 @@ export const Transfer: FunctionComponent<TransferProps> = ({
           <div className="flex flex-wrap justify-center items-center gap-2 mx-auto md:caption">
             {!isEditingWithdrawAddr &&
               !panelDisabled &&
-              (to.address.startsWith("0x")
-                ? truncateEthAddress(to.address)
-                : Bech32Address.shortenAddress(
+              (!to.address.startsWith("0x") || to.address.length === 0 ? (
+                isOsmosisAccountLoaded ? (
+                  Bech32Address.shortenAddress(
                     editWithdrawAddrConfig &&
                       editWithdrawAddrConfig.customAddress !== ""
                       ? editWithdrawAddrConfig.customAddress
                       : to.address,
                     maxToChars
-                  ))}
-            {!to.address.startsWith("osmo") && selectedWalletDisplay && (
+                  )
+                ) : (
+                  <i>Connect Wallet</i>
+                )
+              ) : (
+                truncateEthAddress(to.address)
+              ))}
+            {to.address.length > 0 &&
+            !to.address.startsWith("osmo") &&
+            selectedWalletDisplay ? (
               <SwitchWalletButton
                 selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
                 onClick={() => onRequestSwitchWallet?.()}
+                disabled={panelDisabled}
               />
-            )}
+            ) : undefined}
             {isWithdraw &&
               editWithdrawAddrConfig &&
               !panelDisabled &&

@@ -105,6 +105,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   },
                 ]
           }
+          isOsmosisAccountLoaded={walletConnected}
           availableBalance={
             isWithdraw
               ? queriesStore

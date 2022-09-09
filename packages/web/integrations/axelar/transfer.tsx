@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { Environment } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { WalletStatus } from "@keplr-wallet/stores";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
 import { useFakeFeeConfig, useAmountConfig } from "../../hooks";
 import { IBCBalance } from "../../stores/assets";
@@ -11,6 +12,7 @@ import { Transfer } from "../../components/complex/transfer";
 import { Button } from "../../components/buttons";
 import { getKeyByValue } from "../../components/utils";
 import { displayToast, ToastType } from "../../components/alert";
+import { BridgeIntegrationProps } from "../../modals";
 import { queryErc20Balance } from "../ethereum/queries";
 import {
   ChainNames,
@@ -37,7 +39,8 @@ const AxelarTransfer: FunctionComponent<
     onRequestClose: () => void;
     onRequestSwitchWallet: () => void;
     isTestNet?: boolean;
-  } & AxelarBridgeConfig
+  } & BridgeIntegrationProps &
+    AxelarBridgeConfig
 > = observer(
   ({
     isWithdraw,
@@ -50,6 +53,7 @@ const AxelarTransfer: FunctionComponent<
     transferFeeMinAmount,
     sourceChains,
     isTestNet = process.env.NEXT_PUBLIC_IS_TESTNET === "true",
+    connectCosmosWalletButtonOverride,
   }) => {
     const { chainStore, accountStore, queriesStore, nonIbcBridgeHistoryStore } =
       useStore();
@@ -287,6 +291,8 @@ const AxelarTransfer: FunctionComponent<
       withdrawAmountConfig,
     ]);
 
+    console.log(osmosisAccount.walletStatus === WalletStatus.Loaded);
+
     /** User can interact with any of the controls on the modal. */
     const userCanInteract =
       (!isWithdraw &&
@@ -317,6 +323,9 @@ const AxelarTransfer: FunctionComponent<
           selectedWalletDisplay={
             isWithdraw ? undefined : ethWalletClient.displayInfo
           }
+          isOsmosisAccountLoaded={
+            osmosisAccount.walletStatus === WalletStatus.Loaded
+          }
           onRequestSwitchWallet={onRequestSwitchWallet}
           currentValue={amount}
           onInput={(value) =>
@@ -344,30 +353,32 @@ const AxelarTransfer: FunctionComponent<
           }
         />
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
-          <Button
-            className={classNames(
-              "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl transition-opacity duration-300",
-              { "opacity-30": isDepositAddressLoading }
-            )}
-            disabled={
-              !userCanInteract ||
-              (!isWithdraw && !userDisconnectedEthWallet && amount === "") ||
-              (isWithdraw && amount === "")
-            }
-            onClick={() => {
-              if (!isWithdraw && userDisconnectedEthWallet)
-                ethWalletClient.enable();
-              else doAxelarTransfer();
-            }}
-          >
-            <h6 className="md:text-base text-lg">
-              {buttonErrorMessage
-                ? buttonErrorMessage
-                : isWithdraw
-                ? "Withdraw"
-                : "Deposit"}
-            </h6>
-          </Button>
+          {connectCosmosWalletButtonOverride ?? (
+            <Button
+              className={classNames(
+                "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl transition-opacity duration-300",
+                { "opacity-30": isDepositAddressLoading }
+              )}
+              disabled={
+                !userCanInteract ||
+                (!isWithdraw && !userDisconnectedEthWallet && amount === "") ||
+                (isWithdraw && amount === "")
+              }
+              onClick={() => {
+                if (!isWithdraw && userDisconnectedEthWallet)
+                  ethWalletClient.enable();
+                else doAxelarTransfer();
+              }}
+            >
+              <h6 className="md:text-base text-lg">
+                {buttonErrorMessage
+                  ? buttonErrorMessage
+                  : isWithdraw
+                  ? "Withdraw"
+                  : "Deposit"}
+              </h6>
+            </Button>
+          )}
         </div>
       </>
     );
