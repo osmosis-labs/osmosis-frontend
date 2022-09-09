@@ -1,13 +1,13 @@
 import Head from "next/head";
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { ObservableQueryGuageById } from "@osmosis-labs/stores";
+import { ObservableQueryGuageById, isError } from "@osmosis-labs/stores";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useCallback, useEffect, useState } from "react";
 import { Button } from "../../components/buttons";
 import {
   GoSuperfluidCard,
@@ -24,12 +24,14 @@ import { truncateString } from "../../components/utils";
 import {
   ExternalIncentiveGaugeAllowList,
   UnPoolWhitelistedPoolIds,
+  PoolDetailEvents,
 } from "../../config";
 import {
   useAddLiquidityConfig,
   useAmountConfig,
   useRemoveLiquidityConfig,
   useWindowSize,
+  useMatomoAnalytics,
 } from "../../hooks";
 import {
   LockTokensModal,
@@ -43,6 +45,7 @@ const Pool: FunctionComponent = observer(() => {
   const router = useRouter();
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
   const { isMobile } = useWindowSize();
+  const { trackEvent } = useMatomoAnalytics();
 
   const { id: poolId } = router.query;
   const { chainId } = chainStore.osmosis;
@@ -97,12 +100,14 @@ const Pool: FunctionComponent = observer(() => {
         delegations?: {
           validatorName?: string;
           validatorCommission?: RatePretty;
-          validatorImgSrc: string;
+          validatorImgSrc?: string;
+          inactive?: "inactive" | "jailed";
           apr: RatePretty;
           amount: CoinPretty;
         }[];
         undelegations?: {
           validatorName?: string;
+          inactive?: "inactive" | "jailed";
           amount: CoinPretty;
           endTime: Date;
         }[];
@@ -263,12 +268,38 @@ const Pool: FunctionComponent = observer(() => {
               .getQuerySuperfluidDelegations(bech32Address)
               .getDelegations(poolShareCurrency)
               ?.map(({ validator_address, amount }) => {
-                const queryValidators =
-                  queryCosmos.queryValidators.getQueryStatus(
+                let jailed = false;
+                let inactive = false;
+                let validator = queriesStore
+                  .get(chainId)
+                  .cosmos.queryValidators.getQueryStatus(
                     Staking.BondStatus.Bonded
-                  );
-                const validatorInfo =
-                  queryValidators.getValidator(validator_address);
+                  )
+                  .getValidator(validator_address);
+
+                if (!validator) {
+                  validator = queriesStore
+                    .get(chainId)
+                    .cosmos.queryValidators.getQueryStatus(
+                      Staking.BondStatus.Unbonded
+                    )
+                    .getValidator(validator_address);
+                  inactive = true;
+                  if (validator?.jailed) jailed = true;
+                }
+
+                let thumbnail: string | undefined;
+                if (validator) {
+                  thumbnail = queriesStore
+                    .get(chainId)
+                    .cosmos.queryValidators.getQueryStatus(
+                      inactive
+                        ? Staking.BondStatus.Unbonded
+                        : Staking.BondStatus.Bonded
+                    )
+                    .getValidatorThumbnail(validator_address);
+                }
+
                 let superfluidApr = queryCosmos.queryInflation.inflation.mul(
                   queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
                     pool.id
@@ -292,15 +323,19 @@ const Pool: FunctionComponent = observer(() => {
                 }
 
                 const commissionRateRaw =
-                  validatorInfo?.commission.commission_rates.rate;
+                  validator?.commission.commission_rates.rate;
 
                 return {
-                  validatorName: validatorInfo?.description.moniker,
+                  validatorName: validator?.description.moniker,
                   validatorCommission: commissionRateRaw
                     ? new RatePretty(new Dec(commissionRateRaw))
                     : undefined,
-                  validatorImgSrc:
-                    queryValidators.getValidatorThumbnail(validator_address),
+                  validatorImgSrc: thumbnail,
+                  inactive: jailed
+                    ? "jailed"
+                    : inactive
+                    ? "inactive"
+                    : undefined,
                   apr: new RatePretty(superfluidApr.moveDecimalPointLeft(2)),
                   amount:
                     queryOsmosis.querySuperfluidOsmoEquivalent.calculateOsmoEquivalent(
@@ -311,16 +346,48 @@ const Pool: FunctionComponent = observer(() => {
             undelegations: queryOsmosis.querySuperfluidUndelegations
               .getQuerySuperfluidDelegations(bech32Address)
               .getUndelegations(poolShareCurrency)
-              ?.map(({ validator_address, amount, end_time }) => ({
-                validatorName: queriesStore
+              ?.map(({ validator_address, amount, end_time }) => {
+                console.log(
+                  queriesStore
+                    .get(chainId)
+                    .cosmos.queryValidators.getQueryStatus(
+                      Staking.BondStatus.Unbonded
+                    )
+                    .getValidator(validator_address),
+                  validator_address
+                );
+
+                let jailed = false;
+                let inactive = false;
+                let validator = queriesStore
                   .get(chainId)
                   .cosmos.queryValidators.getQueryStatus(
                     Staking.BondStatus.Bonded
                   )
-                  .getValidator(validator_address)?.description.moniker,
-                amount,
-                endTime: end_time,
-              })),
+                  .getValidator(validator_address);
+
+                if (!validator) {
+                  validator = queriesStore
+                    .get(chainId)
+                    .cosmos.queryValidators.getQueryStatus(
+                      Staking.BondStatus.Unbonded
+                    )
+                    .getValidator(validator_address);
+                  inactive = true;
+                  if (validator?.jailed) jailed = true;
+                }
+
+                return {
+                  validatorName: validator?.description.moniker,
+                  inactive: jailed
+                    ? "jailed"
+                    : inactive
+                    ? "inactive"
+                    : undefined,
+                  amount,
+                  endTime: end_time,
+                };
+              }),
             superfluidLPShares: queryOsmosis.queryAccountLocked
               .get(bech32Address)
               .getLockedCoinWithDuration(
@@ -337,13 +404,26 @@ const Pool: FunctionComponent = observer(() => {
     if (poolExists === false) {
       router.push("/pools");
     }
-    // eslint-disable-next-line
   }, [poolExists]);
 
   // Manage liquidity + bond LP tokens (modals) state
-  const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
+  const [showManageLiquidityDialog, do_setShowManageLiquidityDialog] =
     useState(false);
-  const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
+  const setShowManageLiquidityDialog = useCallback((isOpen: boolean) => {
+    if (isOpen) {
+      trackEvent(PoolDetailEvents.startManageLiquidity);
+    }
+    do_setShowManageLiquidityDialog(isOpen);
+  }, []);
+  const [showLockLPTokenModal, do_setShowLockLPTokenModal] = useState(false);
+  const setShowLockLPTokenModal = useCallback(
+    (show: boolean) => {
+      if (show) trackEvent(PoolDetailEvents.startLockTokens);
+      do_setShowLockLPTokenModal(show);
+    },
+    [do_setShowLockLPTokenModal]
+  );
+
   const addLiquidityConfig = useAddLiquidityConfig(
     chainStore,
     chainId,
@@ -401,8 +481,15 @@ const Pool: FunctionComponent = observer(() => {
       }
     );
 
-  const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
+  const [showSuperfluidValidatorModal, do_setShowSuperfluidValidatorsModal] =
     useState(false);
+  const setShowSuperfluidValidatorsModal = useCallback(
+    (show: boolean) => {
+      trackEvent(PoolDetailEvents.goSuperfluid);
+      do_setShowSuperfluidValidatorsModal(show);
+    },
+    [do_setShowSuperfluidValidatorsModal]
+  );
 
   // swap modal
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
@@ -486,7 +573,14 @@ const Pool: FunctionComponent = observer(() => {
                   },
                   undefined,
                   undefined,
-                  () => setShowManageLiquidityDialog(false)
+                  (tx) => {
+                    if (isError(tx))
+                      trackEvent(PoolDetailEvents.addSingleLiquidityFailure);
+                    else trackEvent(PoolDetailEvents.addSingleLiquiditySuccess);
+                    trackEvent(PoolDetailEvents.setSingleAssetLiquidity);
+
+                    setShowManageLiquidityDialog(false);
+                  }
                 );
               } else if (addLiquidityConfig.shareOutAmount) {
                 await account.osmosis.sendJoinPoolMsg(
@@ -494,7 +588,13 @@ const Pool: FunctionComponent = observer(() => {
                   addLiquidityConfig.shareOutAmount.toDec().toString(),
                   undefined,
                   undefined,
-                  () => setShowManageLiquidityDialog(false)
+                  (tx) => {
+                    if (isError(tx))
+                      trackEvent(PoolDetailEvents.addLiquidityFailure);
+                    else trackEvent(PoolDetailEvents.addLiquiditySuccess);
+
+                    setShowManageLiquidityDialog(false);
+                  }
                 );
               }
             } catch (e) {
@@ -510,7 +610,13 @@ const Pool: FunctionComponent = observer(() => {
                   .toString(),
                 undefined,
                 undefined,
-                () => setShowManageLiquidityDialog(false)
+                (tx) => {
+                  if (isError(tx))
+                    trackEvent(PoolDetailEvents.removeLiquidityFailure);
+                  else trackEvent(PoolDetailEvents.removeLiquiditySuccess);
+
+                  setShowManageLiquidityDialog(false);
+                }
               );
             } catch (e) {
               console.error(e);
@@ -576,7 +682,13 @@ const Pool: FunctionComponent = observer(() => {
                       },
                     ],
                     undefined,
-                    () => setShowLockLPTokenModal(false)
+                    (tx) => {
+                      if (isError(tx))
+                        trackEvent(PoolDetailEvents.gammTokenLockFailure);
+                      else trackEvent(PoolDetailEvents.gammTokenLockSuccess);
+
+                      setShowLockLPTokenModal(false);
+                    }
                   );
                 } else {
                   console.error("Gauge ID not found:", gaugeId);
@@ -618,7 +730,13 @@ const Pool: FunctionComponent = observer(() => {
                       superfluid.upgradeableLPLockIds.lockIds,
                       validatorAddress,
                       undefined,
-                      () => setShowSuperfluidValidatorsModal(false)
+                      (tx) => {
+                        if (isError(tx))
+                          trackEvent(PoolDetailEvents.superfluidStakeFailure);
+                        else
+                          trackEvent(PoolDetailEvents.superfluidStakeSuccess);
+                        setShowSuperfluidValidatorsModal(false);
+                      }
                     );
                   } catch (e) {
                     console.error(e);
@@ -637,7 +755,14 @@ const Pool: FunctionComponent = observer(() => {
                       ],
                       validatorAddress,
                       undefined,
-                      () => setShowSuperfluidValidatorsModal(false)
+                      (tx) => {
+                        if (isError(tx))
+                          trackEvent(PoolDetailEvents.superfluidStakeFailure);
+                        else
+                          trackEvent(PoolDetailEvents.superfluidStakeSuccess);
+
+                        setShowSuperfluidValidatorsModal(false);
+                      }
                     );
                     // TODO: clear/reset LP lock amount config ??
                   } catch (e) {
@@ -664,7 +789,13 @@ const Pool: FunctionComponent = observer(() => {
             label: "Add / Remove Liquidity",
             onClick: () => setShowManageLiquidityDialog(true),
           },
-          { label: "Swap Tokens", onClick: () => setShowTradeTokenModal(true) },
+          {
+            label: "Swap Tokens",
+            onClick: () => {
+              trackEvent(PoolDetailEvents.startSwapTokens);
+              setShowTradeTokenModal(true);
+            },
+          },
         ]}
         primaryOverviewLabels={[
           {
@@ -865,20 +996,22 @@ const Pool: FunctionComponent = observer(() => {
               ) : (
                 <h6>My Bondings</h6>
               )}
-              {showDepoolButton && (
+              {showDepoolButton && pool && (
                 <Button
                   className="h-8 px-2"
                   onClick={async () => {
-                    if (!pool) {
-                      return;
-                    }
-
                     try {
                       await account.osmosis.sendUnPoolWhitelistedPoolMsg(
-                        pool.id
+                        pool.id,
+                        undefined,
+                        (tx) => {
+                          if (isError(tx))
+                            trackEvent(PoolDetailEvents.unpoolFailure);
+                          else trackEvent(PoolDetailEvents.unpoolSuccess);
+                        }
                       );
                     } catch (e) {
-                      console.log(e);
+                      console.error(e);
                     }
                   }}
                   loading={account.txTypeInProgress === "unPoolWhitelistedPool"}
@@ -959,12 +1092,34 @@ const Pool: FunctionComponent = observer(() => {
                               locks.some((lock) => lock.isSyntheticLock)
                             ) {
                               await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-                                locks
+                                locks,
+                                undefined,
+                                (tx) => {
+                                  if (isError(tx))
+                                    trackEvent(
+                                      PoolDetailEvents.gammTokenUnlockFailure
+                                    );
+                                  else
+                                    trackEvent(
+                                      PoolDetailEvents.gammTokenUnlockSuccess
+                                    );
+                                }
                               );
                             } else {
                               const blockGasLimitLockIds = lockIds.slice(0, 10);
                               await account.osmosis.sendBeginUnlockingMsg(
-                                blockGasLimitLockIds
+                                blockGasLimitLockIds,
+                                undefined,
+                                (tx) => {
+                                  if (isError(tx))
+                                    trackEvent(
+                                      PoolDetailEvents.gammTokenUnlockFailure
+                                    );
+                                  else
+                                    trackEvent(
+                                      PoolDetailEvents.gammTokenUnlockSuccess
+                                    );
+                                }
                               );
                             }
                           } catch (e) {
@@ -1095,9 +1250,15 @@ const Pool: FunctionComponent = observer(() => {
                 ]}
                 data={
                   superfluid.undelegations?.map(
-                    ({ validatorName, amount, endTime }) => [
+                    ({ validatorName, inactive, amount, endTime }) => [
                       {
-                        value: validatorName ?? "",
+                        value: `${validatorName ?? ""}${
+                          inactive
+                            ? inactive === "jailed"
+                              ? " (Jailed)"
+                              : " (Inactive)"
+                            : ""
+                        }`,
                       },
                       {
                         value: amount.maxDecimals(6).trim(true).toString(),
