@@ -1749,6 +1749,7 @@ const chainInfos = (
           coinDenom: "O9W",
           coinMinimalDenom: "mO9W",
           coinDecimals: 6,
+          coinGeckoId: "pool:o9w",
           coinImageUrl: "/tokens/o9w.svg",
         },
       ],
