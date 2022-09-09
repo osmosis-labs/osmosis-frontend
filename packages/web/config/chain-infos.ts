@@ -5,9 +5,9 @@ import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 const chainInfos = (
   [
     {
-      rpc: "https://rpc-osmosis.keplr.app/", // test: "http://rpc-test.osmosis.zone/"
-      rest: "https://lcd-osmosis.keplr.app/", // test: "http://lcd-test.osmosis.zone/"
-      chainId: "osmosis-1", // test: "osmo-test-4"
+      rpc: "https://rpc-v12.dev-osmosis.zone/", // test: "http://rpc-test.osmosis.zone/"
+      rest: "https://lcd-v12.dev-osmosis.zone/", // test: "http://lcd-test.osmosis.zone/"
+      chainId: "localosmosis", // test: "osmo-test-4"
       chainName: "Osmosis",
       bip44: {
         coinType: 118,
