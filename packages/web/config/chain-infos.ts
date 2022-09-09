@@ -1923,7 +1923,7 @@ const chainInfos = (
           coinDenom: "STRD",
           coinMinimalDenom: "ustrd",
           coinDecimals: 6,
-          //coinGeckoId: "stride",
+          coinGeckoId: "pool:ustrd",
           coinImageUrl: "/tokens/strd.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
