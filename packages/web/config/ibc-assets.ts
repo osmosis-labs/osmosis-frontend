@@ -39,10 +39,6 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [
         AxelarSourceChainConfigs.usdc.ethereum,
-        AxelarSourceChainConfigs.usdc.bnbChain,
-        AxelarSourceChainConfigs.usdc.avalanche,
-        AxelarSourceChainConfigs.usdc.polygon,
-        AxelarSourceChainConfigs.usdc.fantom,
         AxelarSourceChainConfigs.usdc.moonbeam,
       ],
       tokenMinDenom: IS_TESTNET ? "uausdc" : "uusdc", // test: "uausdc"

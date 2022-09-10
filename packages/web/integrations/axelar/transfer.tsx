@@ -291,8 +291,6 @@ const AxelarTransfer: FunctionComponent<
       withdrawAmountConfig,
     ]);
 
-    console.log(osmosisAccount.walletStatus === WalletStatus.Loaded);
-
     /** User can interact with any of the controls on the modal. */
     const userCanInteract =
       (!isWithdraw &&
@@ -301,10 +299,20 @@ const AxelarTransfer: FunctionComponent<
         !isDepositAddressLoading &&
         !isEthTxPending) ||
       (isWithdraw && osmosisAccount.txTypeInProgress === "");
+    const isInsufficientFee =
+      amount !== "" &&
+      new CoinPretty(originCurrency, amount)
+        .moveDecimalPointRight(originCurrency.coinDecimals)
+        .toDec()
+        .lt(
+          new CoinPretty(originCurrency, new Dec(transferFeeMinAmount)).toDec()
+        );
     const buttonErrorMessage = userDisconnectedEthWallet
       ? `Reconnect ${ethWalletClient.displayInfo.displayName}`
       : !isWithdraw && !correctChainSelected
       ? `Wrong network in ${ethWalletClient.displayInfo.displayName}`
+      : isInsufficientFee
+      ? `Insufficient fee`
       : undefined;
 
     return (
@@ -362,7 +370,8 @@ const AxelarTransfer: FunctionComponent<
               disabled={
                 !userCanInteract ||
                 (!isWithdraw && !userDisconnectedEthWallet && amount === "") ||
-                (isWithdraw && amount === "")
+                (isWithdraw && amount === "") ||
+                isInsufficientFee
               }
               onClick={() => {
                 if (!isWithdraw && userDisconnectedEthWallet)

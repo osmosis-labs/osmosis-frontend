@@ -65,7 +65,9 @@ export type SourceChainConfig = {
   logoUrl: string;
 };
 
-/** https://axelarscan.io/assets */
+/** https://axelarscan.io/assets
+ *  Ensure that users bridge sufficient amounts from EthMainnet=>NonEthEvm via Axelar before enabling.
+ */
 export const SourceChainConfigs: {
   [asset: string]: { [chain: string]: SourceChainConfig };
 } = {
