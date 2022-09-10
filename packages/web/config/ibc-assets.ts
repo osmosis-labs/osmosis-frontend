@@ -37,10 +37,7 @@ export const IBCAssetInfos: (IBCAsset & {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChains: [
-        AxelarSourceChainConfigs.usdc.ethereum,
-        AxelarSourceChainConfigs.usdc.moonbeam,
-      ],
+      sourceChains: [AxelarSourceChainConfigs.usdc.ethereum],
       tokenMinDenom: IS_TESTNET ? "uausdc" : "uusdc", // test: "uausdc"
       transferFeeMinAmount: IS_TESTNET ? "150000" : "10500000", // From https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
     },

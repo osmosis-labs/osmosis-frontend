@@ -124,24 +124,35 @@ export const TransferAssetSelectModal: FunctionComponent<
           >
             <span className="text-white-mid subtitle2">Network</span>
             <div
-              className="flex items-center gap-2 cursor-pointer"
-              onClick={() =>
-                setSourceChainDropdownOpen(!isSourceChainDropdownOpen)
-              }
+              className={classNames("flex items-center gap-2", {
+                "cursor-pointer":
+                  selectedToken?.originBridgeInfo &&
+                  selectedToken.originBridgeInfo.sourceChains.length > 1,
+              })}
+              onClick={() => {
+                if (
+                  selectedToken?.originBridgeInfo &&
+                  selectedToken.originBridgeInfo.sourceChains.length > 1
+                )
+                  setSourceChainDropdownOpen(!isSourceChainDropdownOpen);
+              }}
             >
               <Network {...selectedNetwork} />
-              <div
-                className={classNames("flex items-center transition", {
-                  "rotate-180": isSourceChainDropdownOpen,
-                })}
-              >
-                <Image
-                  alt="dropdown icon"
-                  src="/icons/chevron-down-disabled.svg"
-                  height={22}
-                  width={12}
-                />
-              </div>
+              {selectedToken?.originBridgeInfo &&
+                selectedToken.originBridgeInfo.sourceChains.length > 1 && (
+                  <div
+                    className={classNames("flex items-center transition", {
+                      "rotate-180": isSourceChainDropdownOpen,
+                    })}
+                  >
+                    <Image
+                      alt="dropdown icon"
+                      src="/icons/chevron-down-disabled.svg"
+                      height={22}
+                      width={12}
+                    />
+                  </div>
+                )}
             </div>
             {isSourceChainDropdownOpen && (
               <div
