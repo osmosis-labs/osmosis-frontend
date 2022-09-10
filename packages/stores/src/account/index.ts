@@ -13,7 +13,7 @@ import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
 import * as WeightedPoolEstimates from "@osmosis-labs/math";
 import { Pool } from "@osmosis-labs/pools";
 import { OsmosisQueries } from "../queries";
-import { osmosis } from "./msg/proto";
+import { osmosis } from "@osmosis-labs/codegen";
 import * as Msgs from "./msg/make-msg";
 import { OsmosisMsgOpts, defaultMsgOpts } from "./types";
 import { StdFee } from "@cosmjs/launchpad";

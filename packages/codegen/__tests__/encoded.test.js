@@ -1,7 +1,7 @@
 import { coin } from '@cosmjs/amino';
 import Long from 'long';
 import { MsgJoinPool } from '../src/codegen/osmosis/gamm/v1beta1/tx';
-import { MessageComposer  } from '../src/codegen/osmosis/gamm/v1beta1/tx.registry';
+import { MessageComposer } from '../src/codegen/osmosis/gamm/v1beta1/tx.registry';
 import { osmosis } from '../src/codegen';
 
 it('encoded', async () => {
@@ -19,16 +19,15 @@ it('encoded', async () => {
         'ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228'
       )
     ]
-  })
+  });
 
   expect(msg.value instanceof Uint8Array).toBe(true);
   const decoded = MsgJoinPool.decode(msg.value);
   expect(decoded).toMatchSnapshot();
-
 });
 
 it('encoded.scoped', async () => {
-  const msg =  osmosis.gamm.v1beta1.MessageComposer.encoded.joinPool({
+  const msg = osmosis.gamm.v1beta1.MessageComposer.encoded.joinPool({
     poolId: Long.fromString('606'),
     sender: 'osmo1f4vxvvvvvvvvvv3luuddddddddddcccccccccc',
     shareOutAmount: '101010101',
@@ -42,10 +41,9 @@ it('encoded.scoped', async () => {
         'ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228'
       )
     ]
-  })
+  });
 
   expect(msg.value instanceof Uint8Array).toBe(true);
   const decoded = MsgJoinPool.decode(msg.value);
   expect(decoded).toMatchSnapshot();
-
 });

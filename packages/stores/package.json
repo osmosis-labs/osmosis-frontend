@@ -24,8 +24,7 @@
   },
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build",
-    "build": "tsc && yarn build:proto",
-    "build:proto": "mkdir -p build/account/msg/proto/generated && cp ./src/account/msg/proto/generated/* ./build/account/msg/proto/generated",
+    "build": "tsc",
     "dev": "tsc -w",
     "test:regression": "jest --passWithNoTests --runInBand",
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
@@ -55,6 +54,7 @@
     "@keplr-wallet/unit": "^0.10.4",
     "@osmosis-labs/math": "^2.0.0",
     "@osmosis-labs/pools": "^2.0.0",
+    "@osmosis-labs/codegen":"0.12.1",
     "axios": "^0.21.1",
     "buffer": "^6.0.3",
     "dayjs": "^1.10.7",

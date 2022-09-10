@@ -26,9 +26,11 @@ telescope({
       camelCase: true
     }
   }
-}).then(()=>{
-  console.log('✨ all done!');
-}).catch(e=>{
-  console.error(e);
-  process.exit(1);
-});
+})
+  .then(() => {
+    process.stdout.write('✨ all done!\n');
+  })
+  .catch((e) => {
+    process.stdout.write(e + '\n');
+    process.exit(1);
+  });
