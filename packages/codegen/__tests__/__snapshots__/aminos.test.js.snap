@@ -1,0 +1,172 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AminoConverter 1`] = `
+{
+  "pool_id": "606",
+  "sender": "osmo1f4vxvvvvvvvvvv3luuddddddddddcccccccccc",
+  "share_out_amount": "101010101",
+  "token_in_maxs": [
+    {
+      "amount": "10248",
+      "denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+    },
+    {
+      "amount": "64837969",
+      "denom": "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228",
+    },
+  ],
+}
+`;
+
+exports[`AminoConverter 2`] = `
+{
+  "poolId": Long {
+    "high": 0,
+    "low": 606,
+    "unsigned": false,
+  },
+  "sender": "osmo1f4vxvvvvvvvvvv3luuddddddddddcccccccccc",
+  "shareOutAmount": "101010101",
+  "tokenInMaxs": [
+    {
+      "amount": "10248",
+      "denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+    },
+    {
+      "amount": "64837969",
+      "denom": "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228",
+    },
+  ],
+}
+`;
+
+exports[`AminoConverter 3`] = `
+{
+  "pool_id": "606",
+  "sender": "osmo1f4vxvvvvvvvvvv3luuddddddddddcccccccccc",
+  "share_out_amount": "101010101",
+  "token_in_maxs": [
+    {
+      "amount": "10248",
+      "denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+    },
+    {
+      "amount": "64837969",
+      "denom": "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228",
+    },
+  ],
+}
+`;
+
+exports[`AminoConverter.MsgSwapExactAmountIn 1`] = `
+{
+  "routes": [
+    {
+      "pool_id": "606",
+      "token_out_denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+    },
+  ],
+  "sender": "osmo1f4vxvvvvvvvvvv3luuddddddddddcccccccccc",
+  "token_in": {
+    "amount": "10248",
+    "denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+  },
+  "token_out_min_amount": "1000000",
+}
+`;
+
+exports[`AminoConverter.MsgSwapExactAmountIn 2`] = `
+{
+  "routes": [
+    {
+      "poolId": Long {
+        "high": 0,
+        "low": 606,
+        "unsigned": false,
+      },
+      "tokenOutDenom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+    },
+  ],
+  "sender": "osmo1f4vxvvvvvvvvvv3luuddddddddddcccccccccc",
+  "tokenIn": {
+    "amount": "10248",
+    "denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+  },
+  "tokenOutMinAmount": "1000000",
+}
+`;
+
+exports[`AminoConverter.MsgSwapExactAmountIn 3`] = `
+{
+  "routes": [
+    {
+      "pool_id": "606",
+      "token_out_denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+    },
+  ],
+  "sender": "osmo1f4vxvvvvvvvvvv3luuddddddddddcccccccccc",
+  "token_in": {
+    "amount": "10248",
+    "denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+  },
+  "token_out_min_amount": "1000000",
+}
+`;
+
+exports[`AminoConverter.scoped 1`] = `
+{
+  "pool_id": "606",
+  "sender": "osmo1f4vxvvvvvvvvvv3luuddddddddddcccccccccc",
+  "share_out_amount": "101010101",
+  "token_in_maxs": [
+    {
+      "amount": "10248",
+      "denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+    },
+    {
+      "amount": "64837969",
+      "denom": "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228",
+    },
+  ],
+}
+`;
+
+exports[`AminoConverter.scoped 2`] = `
+{
+  "poolId": Long {
+    "high": 0,
+    "low": 606,
+    "unsigned": false,
+  },
+  "sender": "osmo1f4vxvvvvvvvvvv3luuddddddddddcccccccccc",
+  "shareOutAmount": "101010101",
+  "tokenInMaxs": [
+    {
+      "amount": "10248",
+      "denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+    },
+    {
+      "amount": "64837969",
+      "denom": "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228",
+    },
+  ],
+}
+`;
+
+exports[`AminoConverter.scoped 3`] = `
+{
+  "pool_id": "606",
+  "sender": "osmo1f4vxvvvvvvvvvv3luuddddddddddcccccccccc",
+  "share_out_amount": "101010101",
+  "token_in_maxs": [
+    {
+      "amount": "10248",
+      "denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+    },
+    {
+      "amount": "64837969",
+      "denom": "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228",
+    },
+  ],
+}
+`;

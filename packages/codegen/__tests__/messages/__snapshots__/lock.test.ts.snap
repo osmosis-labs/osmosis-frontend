@@ -1,0 +1,66 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AminoConverter.MsgLockTokens 1`] = `
+Object {
+  "coins": Array [
+    Object {
+      "amount": "10236850525923652977",
+      "denom": "gamm/pool/3",
+    },
+  ],
+  "duration": "1209600",
+  "owner": "osmo1RedactedAddress",
+}
+`;
+
+exports[`AminoConverter.MsgLockTokens 2`] = `
+Object {
+  "coins": Array [
+    Object {
+      "amount": "10236850525923652977",
+      "denom": "gamm/pool/3",
+    },
+  ],
+  "duration": "1209600",
+  "owner": "osmo1RedactedAddress",
+}
+`;
+
+exports[`AminoConverter.MsgLockTokens 3`] = `
+Object {
+  "coins": Array [
+    Object {
+      "amount": "10236850525923652977",
+      "denom": "gamm/pool/3",
+    },
+  ],
+  "duration": "1209600",
+  "owner": "osmo1RedactedAddress",
+}
+`;
+
+exports[`fromJSON 1`] = `
+Object {
+  "coins": Array [
+    Object {
+      "amount": "10236850525923652977",
+      "denom": "gamm/pool/3",
+    },
+  ],
+  "duration": "1209600",
+  "owner": "osmo1RedactedAddress",
+}
+`;
+
+exports[`toJSON 1`] = `
+{
+  "coins": [
+    {
+      "amount": "10236850525923652977",
+      "denom": "gamm/pool/3",
+    },
+  ],
+  "duration": "1209600",
+  "owner": "osmo1RedactedAddress",
+}
+`;
