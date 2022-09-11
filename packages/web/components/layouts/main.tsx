@@ -208,14 +208,14 @@ const Drawer = ({
             <div className="invisible grow-0">
               <OsmosisFullLogo width={166} />
             </div>
-            {children}
+            <div className="grow  overflow-y-scroll">{children}</div>
           </article>
         </section>
       </main>
     );
   } else {
     return (
-      <article className="fixed flex flex-col inset-y-0 z-40 bg-card px-5 py-6 w-sidebar">
+      <article className="fixed flex flex-col inset-y-0 z-40 bg-card px-5 py-6 w-sidebar overflow-x-hidden">
         {children}
       </article>
     );
