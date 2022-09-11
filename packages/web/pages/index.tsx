@@ -98,7 +98,6 @@ const Home: NextPage = observer(function () {
           }
 
           if (hasEnoughAssets) {
-            console.log(`${pool.id} will be included to swap router`);
             poolsPassed.current.set(pool.id, true);
           }
 

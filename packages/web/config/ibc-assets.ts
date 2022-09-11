@@ -750,6 +750,12 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "mGeo",
   },
   {
+    counterpartyChainId: "odin-mainnet-freya",
+    sourceChannelId: "channel-258",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "mO9W",
+  },
+  {
     counterpartyChainId: "kichain-2",
     sourceChannelId: "channel-261",
     destChannelId: "channel-18",
@@ -839,6 +845,27 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-47",
     coinMinimalDenom:
       "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
+    counterpartyChainId: "stride-1",
+    sourceChannelId: "channel-326",
+    destChannelId: "channel-5",
+    coinMinimalDenom: "ustrd",
+  },
+  {
+    counterpartyChainId: "stride-1",
+    sourceChannelId: "channel-326",
+    destChannelId: "channel-5",
+    coinMinimalDenom: "stuatom",
+  },
+  {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno159q8t5g02744lxq8lfmcn6f78qqulq9wn3y9w7lxjgkz4e0a6kvsfvapse",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   }

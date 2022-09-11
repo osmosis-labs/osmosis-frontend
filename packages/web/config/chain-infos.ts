@@ -76,7 +76,8 @@ const chainInfos = (
           coinDenom: "LUNC",
           coinMinimalDenom: "uluna",
           coinDecimals: 6,
-          coinGeckoId: "terra-luna",
+          //coinGeckoId: "terra-luna",
+          coinGeckoId: "pool:ulunc",
           coinImageUrl: "/tokens/lunc.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -490,6 +491,16 @@ const chainInfos = (
             "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3:BJUNO",
           coinDecimals: 6,
           coinImageUrl: "/tokens/bjuno.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno159q8t5g02744lxq8lfmcn6f78qqulq9wn3y9w7lxjgkz4e0a6kvsfvapse",
+          coinDenom: "SOLAR",
+          coinMinimalDenom:
+            "cw20:juno159q8t5g02744lxq8lfmcn6f78qqulq9wn3y9w7lxjgkz4e0a6kvsfvapse:SOLAR",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/solar.png",
         },
       ],
       features: [
@@ -1734,6 +1745,13 @@ const chainInfos = (
           coinGeckoId: "pool:geo",
           coinImageUrl: "/tokens/geo.svg",
         },
+        {
+          coinDenom: "O9W",
+          coinMinimalDenom: "mO9W",
+          coinDecimals: 6,
+          coinGeckoId: "pool:o9w",
+          coinImageUrl: "/tokens/o9w.svg",
+        },
       ],
       gasPriceStep: {
         low: 0.025,
@@ -1890,6 +1908,62 @@ const chainInfos = (
       ],
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://agoric.bigdipper.live/transactions/{txHash}",
+    },
+    {
+      rpc: "https://stride-rpc.polkachu.com/",
+      rest: "https://stride-api.polkachu.com/",
+      chainId: "stride-1",
+      chainName: "Stride",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("stride"),
+      currencies: [
+        {
+          coinDenom: "STRD",
+          coinMinimalDenom: "ustrd",
+          coinDecimals: 6,
+          coinGeckoId: "pool:ustrd",
+          coinImageUrl: "/tokens/strd.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+        {
+          coinDenom: "stATOM",
+          coinMinimalDenom: "stuatom",
+          coinDecimals: 6,
+          coinGeckoId: "pool:stuatom",
+          coinImageUrl: "/tokens/statom.svg",
+        },
+        {
+          coinDenom: "stOSMO",
+          coinMinimalDenom: "stuosmo",
+          coinDecimals: 6,
+          // coinGeckoId: "osmosis",
+          coinImageUrl: "/tokens/stosmo.svg",
+        },
+        {
+          coinDenom: "stJUNO",
+          coinMinimalDenom: "stujuno",
+          coinDecimals: 6,
+          // coinGeckoId: "juno-network",
+          coinImageUrl: "/tokens/stjuno.svg",
+        },
+        {
+          coinDenom: "stSCRT",
+          coinMinimalDenom: "stuscrt",
+          coinDecimals: 6,
+          // coinGeckoId: "secret",
+          coinImageUrl: "/tokens/stscrt.svg",
+        },
+      ],
+      gasPriceStep: {
+        low: 0,
+        average: 0,
+        high: 0.04,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
