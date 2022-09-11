@@ -4,13 +4,14 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { WalletDisplay } from "../../integrations/wallets";
 import { truncateEthAddress } from "../../integrations/ethereum/metamask-utils";
+import { useMatomoAnalytics, useWindowSize } from "../../hooks";
+import { AssetsPageEvents } from "../../config";
 import { BridgeAnimation } from "../animation/bridge";
 import { SwitchWalletButton } from "../buttons/switch-wallet";
 import { GradientView } from "../assets/gradient-view";
 import { InputBox } from "../input";
 import { Button } from "../buttons";
 import { CheckBox } from "../control";
-import { useWindowSize } from "../../hooks";
 import { Disableable, InputProps, LoadingProps } from "../types";
 
 export type TransferProps = {
@@ -57,6 +58,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   disablePanel = false,
 }) => {
   const { isMobile } = useWindowSize();
+  const { trackEvent } = useMatomoAnalytics();
 
   const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
 
@@ -186,6 +188,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                   type="outline"
                   onClick={() => {
                     setIsEditingWithdrawAddr(true);
+                    trackEvent(AssetsPageEvents.editWithdrawAddress);
                     editWithdrawAddrConfig.setCustomAddress(to.address);
                   }}
                 >
@@ -235,7 +238,14 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                 <button
                   className="text-primary-50 cursor-pointer disabled:cursor-default"
                   disabled={availableBalance.toDec().isZero()}
-                  onClick={() => toggleIsMax()}
+                  onClick={() => {
+                    trackEvent(
+                      isWithdraw
+                        ? AssetsPageEvents.withdrawMaxAmount
+                        : AssetsPageEvents.depositMaxAmount
+                    );
+                    toggleIsMax();
+                  }}
                 >
                   {availableBalance.trim(true).toString()}
                 </button>
