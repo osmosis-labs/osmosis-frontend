@@ -10,4 +10,6 @@ counterparty: IbcTransferCounterparty, amountConfig: AmountConfig,
 /** Handle when the IBC trasfer successfully broadcast to relayers. */
 onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void, 
 /** Handle IBC transfer events containing `send_packet` event type. */
-onFulfill?: (event: Omit<IBCTransferHistory, "status" | "createdAt">) => void): Promise<void>;
+onFulfill?: (event: Omit<IBCTransferHistory, "status" | "createdAt">) => void, 
+/** Initial tx failed. */
+onFailure?: (code: number) => void): Promise<void>;

@@ -47,7 +47,9 @@ export function useIbcTransfer({
       event: Omit<IBCTransferHistory, "status" | "createdAt">
     ) => void,
     /** Handle when the IBC trasfer successfully broadcast to relayers. */
-    onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void
+    onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void,
+    /** Initial tx failed. */
+    onFailure?: (code: number) => void
   ) => void,
   CustomCounterpartyConfig | undefined
 ] {
@@ -137,8 +139,9 @@ export function useIbcTransfer({
     onFulfill?: (
       event: Omit<IBCTransferHistory, "status" | "createdAt">
     ) => void,
-    onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void
-  ) => void = async (onFulfill, onBroadcasted) => {
+    onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void,
+    onFailure?: (code: number) => void
+  ) => void = async (onFulfill, onBroadcasted, onFailure) => {
     try {
       if (isWithdraw) {
         await basicIbcTransfer(
@@ -157,7 +160,8 @@ export function useIbcTransfer({
           },
           amountConfig,
           onBroadcasted,
-          onFulfill
+          onFulfill,
+          onFailure
         );
       } else {
         await basicIbcTransfer(
@@ -183,7 +187,8 @@ export function useIbcTransfer({
           },
           amountConfig,
           onBroadcasted,
-          onFulfill
+          onFulfill,
+          onFailure
         );
       }
     } catch (e) {

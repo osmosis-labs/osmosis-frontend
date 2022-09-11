@@ -6,7 +6,9 @@ import {
   IbcTransfer,
   useIbcTransfer,
   useConnectWalletModalRedirect,
+  useMatomoAnalytics,
 } from "../hooks";
+import { AssetsPageEvents } from "../config";
 import { ModalBase, ModalBaseProps } from ".";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
@@ -14,6 +16,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     const { currency, counterpartyChainId, isWithdraw } = props;
     const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
     const { chainId: osmosisChainId } = chainStore.osmosis;
+    const { trackEvent } = useMatomoAnalytics();
 
     const [
       account,
@@ -43,13 +46,21 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             inTransit ||
             !isCustomWithdrawValid,
           onClick: () =>
+            // failure events are handled by the root store
             transfer(
               (txFullfillEvent) => {
+                // success
                 ibcTransferHistoryStore.pushPendingHistory(txFullfillEvent);
+                if (txFullfillEvent) {
+                  trackEvent(AssetsPageEvents.ibcTransferSuccess);
+                }
                 props.onRequestClose();
               },
               (txBroadcastEvent) => {
                 ibcTransferHistoryStore.pushUncommitedHistory(txBroadcastEvent);
+              },
+              () => {
+                trackEvent(AssetsPageEvents.ibcTransferFailure);
               }
             ),
           loading: inTransit,

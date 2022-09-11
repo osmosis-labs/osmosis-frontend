@@ -13,7 +13,9 @@ export async function basicIbcTransfer(
   /** Handle when the IBC trasfer successfully broadcast to relayers. */
   onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void,
   /** Handle IBC transfer events containing `send_packet` event type. */
-  onFulfill?: (event: Omit<IBCTransferHistory, "status" | "createdAt">) => void
+  onFulfill?: (event: Omit<IBCTransferHistory, "status" | "createdAt">) => void,
+  /** Initial tx failed. */
+  onFailure?: (code: number) => void
 ) {
   if (
     !sender.account.isReadyToSendTx ||
@@ -107,6 +109,8 @@ export async function basicIbcTransfer(
             }
           }
         }
+      } else {
+        onFailure?.(tx.code as number);
       }
     },
   };
