@@ -11,7 +11,7 @@ export type WalletDisplay = {
 export type GeneralTxEvent = "pending" | "confirmed" | "failed";
 
 /** Generalized non-Keplr wallet & client. */
-export interface Wallet<TTxSend = unknown> {
+export interface Wallet<TTxSend = unknown, TSendingMsg = boolean> {
   readonly key: WalletKey;
   readonly accountAddress?: string;
   /** Human readable chain, falls back to hex ID (`0x...`) if unknown. */
@@ -23,7 +23,7 @@ export interface Wallet<TTxSend = unknown> {
   send: (send: TTxSend) => Promise<unknown>;
   /** Display various errors resulting from send function. */
   displayError?: (e: any) => string | Alert | undefined;
-  readonly isSending: boolean;
+  readonly isSending: TSendingMsg;
   readonly txStatusEventEmitter?: EventEmitter<
     GeneralTxEvent,
     { txHash?: string }
