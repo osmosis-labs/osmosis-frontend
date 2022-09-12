@@ -185,33 +185,40 @@ const Drawer = ({
   showSidebar: boolean;
   isMobile: boolean;
 }) => {
+  console.log({ showSidebar });
   if (isMobile === true) {
     return (
-      <main
-        className={classNames(
-          "fixed overflow-hidden z-40 bg-backdrop inset-0 transform ease-in-out w-full h-full",
-          {
-            "transition-opacity opacity-100 duration-300 translate-x-0":
-              showSidebar,
-          }
-        )}
-      >
-        <section
+      <>
+        <div
           className={classNames(
-            "-translate-x-full w-sidebar absolute bg-white h-full delay-300 duration-150 ease-in-out transition-all transform bg-card flex flex-col overflow-x-hidden overflow-y-auto",
+            "absolute z-40 inset-0 h-full transform w-full bg-backdrop -translate-x-full",
             {
-              "shadow-xl -translate-x-0": showSidebar,
+              "-translate-x-0": showSidebar,
+            }
+          )}
+        />
+        <main
+          className={classNames(
+            "-translate-x-full fixed overflow-hidden z-40 inset-0 duration-300 transform ease-in-out w-full h-full",
+            {
+              "-translate-x-0": showSidebar,
             }
           )}
         >
-          <article className="relative h-full flex flex-col px-5 py-6">
-            <div className="invisible grow-0">
-              <OsmosisFullLogo width={166} />
-            </div>
-            <div className="grow  overflow-y-scroll">{children}</div>
-          </article>
-        </section>
-      </main>
+          <section
+            className={classNames(
+              "w-sidebar shadow-xl absolute bg-white h-full delay-300 duration-150 ease-in-out transition-all transform bg-card flex flex-col overflow-x-hidden overflow-y-auto"
+            )}
+          >
+            <article className="relative h-full flex flex-col px-5 py-6">
+              <div className="invisible grow-0">
+                <OsmosisFullLogo width={166} />
+              </div>
+              <div className="grow  overflow-y-scroll">{children}</div>
+            </article>
+          </section>
+        </main>
+      </>
     );
   } else {
     return (
