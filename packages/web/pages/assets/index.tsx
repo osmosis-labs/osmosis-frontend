@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { makeLocalStorageKVStore } from "../../stores/kv-store";
@@ -19,7 +19,6 @@ import {
   TransferAssetSelectModal,
 } from "../../modals";
 import { ConnectNonIbcWallet } from "../../modals/connect-non-ibc-wallet";
-import { useTxEventToasts, Wallet } from "../../integrations";
 import { useWindowSize } from "../../hooks";
 import { WalletConnectQRModal } from "../../modals";
 
@@ -45,16 +44,6 @@ const Assets: NextPage = observer(() => {
         makeLocalStorageKVStore("transfer-ui-config")
       )
   );
-
-  // hold ref to last opened wallet and listen to tx events
-  const [lastOpenedWallet, setLastOpenedWallet] = useState<Wallet | null>(null);
-  const bridgeWallet = transferConfig.bridgeTransferModal?.walletClient;
-  useEffect(() => {
-    if (bridgeWallet && bridgeWallet) {
-      setLastOpenedWallet(bridgeWallet);
-    }
-  }, [bridgeWallet]);
-  useTxEventToasts(lastOpenedWallet ?? undefined);
 
   return (
     <main className="bg-background">

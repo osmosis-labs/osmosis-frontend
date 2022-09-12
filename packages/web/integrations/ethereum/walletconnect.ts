@@ -31,7 +31,7 @@ export class ObservableWalletConnect implements EthWallet {
   protected _chainId: string | undefined;
 
   @observable
-  protected _isSending: string | undefined;
+  protected _isSending: string | null = null;
 
   /** For use in a QR code or via mobile intent. Becomse `undefined` once connected. */
   @observable
@@ -135,7 +135,7 @@ export class ObservableWalletConnect implements EthWallet {
     return this.accountAddress !== undefined;
   }
 
-  get isSending(): string | undefined {
+  get isSending(): string | null {
     return this._isSending;
   }
 
@@ -205,7 +205,7 @@ export class ObservableWalletConnect implements EthWallet {
                 },
               ],
         });
-        runInAction(() => (this._isSending = undefined));
+        runInAction(() => (this._isSending = null));
         return resp;
       }
     );

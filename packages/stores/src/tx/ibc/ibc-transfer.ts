@@ -15,7 +15,7 @@ export async function basicIbcTransfer(
   /** Handle IBC transfer events containing `send_packet` event type. */
   onFulfill?: (event: Omit<IBCTransferHistory, "status" | "createdAt">) => void,
   /** Initial tx failed. */
-  onFailure?: (code: number) => void
+  onFailure?: (txHash: string, code: number) => void
 ) {
   if (
     !sender.account.isReadyToSendTx ||
@@ -110,7 +110,7 @@ export async function basicIbcTransfer(
           }
         }
       } else {
-        onFailure?.(tx.code as number);
+        onFailure?.(tx.hash, tx.code as number);
       }
     },
   };

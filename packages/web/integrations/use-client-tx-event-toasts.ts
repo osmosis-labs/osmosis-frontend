@@ -8,7 +8,9 @@ import { Wallet, GeneralTxEvent } from "./wallets";
 /** Displays toasts messages for a non-inter chain client. Presents block explorer urls.
  *  @param client Memoized ref to client.
  */
-export function useTxEventToasts(client?: Wallet) {
+export function useTxEventToasts(
+  client?: Pick<Wallet, "txStatusEventEmitter" | "makeExplorerUrl">
+) {
   const displayToast = useCallback(
     (status: GeneralTxEvent, txHash?: string) =>
       do_displayToast(

@@ -1,18 +1,23 @@
 import { Wallet } from "../wallets";
 
+type Method = "eth_getBalance" | "eth_sendTransaction" | "eth_call" | string;
+
 export interface EthWallet
-  extends Wallet<{
-    method: "eth_getBalance" | "eth_sendTransaction" | "eth_call" | string;
-    params:
-      | {
-          /** Hex address. */
-          to?: string;
-          /** Amount in gwei. To be converted to hex. Use a big number lib to do operations on amounts. */
-          value?: string;
-          data?: string | unknown[];
-        }
-      | unknown[];
-  }> {
+  extends Wallet<
+    {
+      method: Method;
+      params:
+        | {
+            /** Hex address. */
+            to?: string;
+            /** Amount in gwei. To be converted to hex. Use a big number lib to do operations on amounts. */
+            value?: string;
+            data?: string | unknown[];
+          }
+        | unknown[];
+    },
+    Method | null
+  > {
   /** Set source chain user selected in app. Key should be from values of `ChainNames`. */
   setPreferredSourceChain: (chainName: string) => void;
 }

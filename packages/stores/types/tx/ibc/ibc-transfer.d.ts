@@ -12,4 +12,4 @@ onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void,
 /** Handle IBC transfer events containing `send_packet` event type. */
 onFulfill?: (event: Omit<IBCTransferHistory, "status" | "createdAt">) => void, 
 /** Initial tx failed. */
-onFailure?: (code: number) => void): Promise<void>;
+onFailure?: (txHash: string, code: number) => void): Promise<void>;

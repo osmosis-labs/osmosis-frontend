@@ -35,7 +35,7 @@ export class ObservableMetamask implements EthWallet {
   protected _chainId: string | undefined;
 
   @observable
-  protected _isSending: string | undefined;
+  protected _isSending: string | null = null;
 
   /** Eth format: `0x...` */
   @observable
@@ -115,7 +115,7 @@ export class ObservableMetamask implements EthWallet {
     return this.accountAddress !== undefined;
   }
 
-  get isSending(): string | undefined {
+  get isSending(): string | null {
     return this._isSending;
   }
 
@@ -210,7 +210,7 @@ export class ObservableMetamask implements EthWallet {
             this.txStatusEventEmitter.emit(status, txHash)
           );
         }
-        runInAction(() => (this._isSending = undefined));
+        runInAction(() => (this._isSending = null));
         return resp;
       }) ||
       Promise.reject("MetaMask: failed to send message: ethereum not in window")

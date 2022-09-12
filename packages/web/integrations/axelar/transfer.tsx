@@ -14,6 +14,7 @@ import { getKeyByValue } from "../../components/utils";
 import { displayToast, ToastType } from "../../components/alert";
 import { BridgeIntegrationProps } from "../../modals";
 import { queryErc20Balance } from "../ethereum/queries";
+import { useTxEventToasts } from "../use-client-tx-event-toasts";
 import {
   ChainNames,
   EthWallet,
@@ -61,6 +62,8 @@ const AxelarTransfer: FunctionComponent<
     const osmosisAccount = accountStore.getAccount(chainId);
     const { bech32Address } = osmosisAccount;
     const originCurrency = balanceOnOsmosis.balance.currency.originCurrency!;
+
+    useTxEventToasts(ethWalletClient);
 
     // notify eth wallet of prev selected preferred chain
     useEffect(() => {
@@ -182,9 +185,6 @@ const AxelarTransfer: FunctionComponent<
       },
       [nonIbcBridgeHistoryStore, originCurrency, amount, isWithdraw]
     );
-    useEffect(() => {
-      if (isEthTxPending) onRequestClose();
-    }, [isEthTxPending, onRequestClose]);
 
     // detect user disconnecting wallet
     const [userDisconnectedEthWallet, setUserDisconnectedWallet] =
@@ -212,6 +212,8 @@ const AxelarTransfer: FunctionComponent<
         isTestNet ? Environment.TESTNET : Environment.MAINNET
       );
 
+    // start transfer
+    const [transferInitiated, setTransferInitiated] = useState(false);
     const doAxelarTransfer = useCallback(async () => {
       if (depositAddress) {
         if (isWithdraw) {
@@ -233,7 +235,7 @@ const AxelarTransfer: FunctionComponent<
               (event) => trackTransferStatus(event.txHash)
             );
           } catch (e) {
-            // common Keplr errors are displayed as toasts from root store
+            // errors are displayed as toasts from a handler in root store
             console.error(e);
           }
         } else {
@@ -273,8 +275,8 @@ const AxelarTransfer: FunctionComponent<
             );
           }
         }
-        onRequestClose();
       }
+      setTransferInitiated(true);
     }, [
       axelarChainId,
       chainId,
@@ -289,6 +291,21 @@ const AxelarTransfer: FunctionComponent<
       osmosisAccount,
       trackTransferStatus,
       withdrawAmountConfig,
+    ]);
+    // close modal when initial eth transaction is committed
+    const isSendTxPending = isWithdraw
+      ? osmosisAccount.txTypeInProgress !== ""
+      : isEthTxPending || ethWalletClient.isSending === "eth_sendTransaction";
+    useEffect(() => {
+      if (transferInitiated && !isSendTxPending) {
+        onRequestClose();
+      }
+    }, [
+      transferInitiated,
+      osmosisAccount.txTypeInProgress,
+      ethWalletClient.isSending,
+      isEthTxPending,
+      onRequestClose,
     ]);
 
     /** User can interact with any of the controls on the modal. */
@@ -381,13 +398,10 @@ const AxelarTransfer: FunctionComponent<
                 (!isWithdraw && !userDisconnectedEthWallet && amount === "") ||
                 (isWithdraw && amount === "") ||
                 isInsufficientFee ||
-                isInsufficientBal
+                isInsufficientBal ||
+                isSendTxPending
               }
-              loading={
-                isWithdraw
-                  ? osmosisAccount.txTypeInProgress !== ""
-                  : ethWalletClient.isSending
-              }
+              loading={isSendTxPending}
               onClick={() => {
                 if (!isWithdraw && userDisconnectedEthWallet)
                   ethWalletClient.enable();
