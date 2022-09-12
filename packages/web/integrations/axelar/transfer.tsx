@@ -307,12 +307,21 @@ const AxelarTransfer: FunctionComponent<
         .lt(
           new CoinPretty(originCurrency, new Dec(transferFeeMinAmount)).toDec()
         );
+    const isInsufficientBal =
+      amount !== "" &&
+      availableBalance &&
+      new CoinPretty(originCurrency, amount)
+        .moveDecimalPointRight(originCurrency.coinDecimals)
+        .toDec()
+        .gt(availableBalance.toDec());
     const buttonErrorMessage = userDisconnectedEthWallet
       ? `Reconnect ${ethWalletClient.displayInfo.displayName}`
       : !isWithdraw && !correctChainSelected
       ? `Wrong network in ${ethWalletClient.displayInfo.displayName}`
       : isInsufficientFee
-      ? `Insufficient fee`
+      ? "Insufficient fee"
+      : isInsufficientBal
+      ? "Insufficient balance"
       : undefined;
 
     return (
@@ -371,7 +380,13 @@ const AxelarTransfer: FunctionComponent<
                 !userCanInteract ||
                 (!isWithdraw && !userDisconnectedEthWallet && amount === "") ||
                 (isWithdraw && amount === "") ||
-                isInsufficientFee
+                isInsufficientFee ||
+                isInsufficientBal
+              }
+              loading={
+                isWithdraw
+                  ? osmosisAccount.txTypeInProgress !== ""
+                  : ethWalletClient.isSending
               }
               onClick={() => {
                 if (!isWithdraw && userDisconnectedEthWallet)
