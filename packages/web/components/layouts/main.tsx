@@ -9,6 +9,8 @@ import {
   useWindowSize,
   useWindowScroll,
   useBooleanWithWindowEvent,
+  UserEvent,
+  useMatomoAnalytics,
 } from "../../hooks";
 import { SidebarBottom } from "../complex/sidebar-bottom";
 import { IS_FRONTIER } from "../../config";
@@ -19,6 +21,7 @@ export type MainLayoutMenu = {
   icon: string;
   iconSelected?: string;
   selectionTest?: RegExp;
+  userAnalyticsEvent?: UserEvent;
 };
 
 export interface MainLayoutProps {
@@ -28,6 +31,7 @@ export interface MainLayoutProps {
 export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
   ({ children, menus }) => {
     const router = useRouter();
+    const { trackEvent } = useMatomoAnalytics();
 
     const { height, isMobile } = useWindowSize();
     const [_, isScrolledTop] = useWindowScroll();
@@ -55,7 +59,14 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
           <div className="grow h-full flex flex-col justify-between">
             <ul className="my-auto">
               {menus.map(
-                ({ label, link, icon, iconSelected, selectionTest }) => {
+                ({
+                  label,
+                  link,
+                  icon,
+                  iconSelected,
+                  selectionTest,
+                  userAnalyticsEvent,
+                }) => {
                   const selected = selectionTest
                     ? selectionTest.test(router.pathname)
                     : false;
@@ -73,6 +84,11 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                             }
                           )}
                           target={selectionTest ? "_self" : "_blank"}
+                          onClick={() => {
+                            if (userAnalyticsEvent) {
+                              trackEvent(userAnalyticsEvent);
+                            }
+                          }}
                         >
                           <div className="h-11 w-11 relative">
                             <Image
