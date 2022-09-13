@@ -120,13 +120,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             <div className="flex flex-wrap justify-center items-center gap-2 mx-auto md:caption">
               {!from.address.startsWith("0x") || from.address.length === 0 ? (
                 isOsmosisAccountLoaded ? (
-                  Bech32Address.shortenAddress(
-                    editWithdrawAddrConfig &&
-                      editWithdrawAddrConfig.customAddress !== ""
-                      ? editWithdrawAddrConfig.customAddress
-                      : from.address,
-                    maxFromChars
-                  )
+                  Bech32Address.shortenAddress(from.address, maxFromChars)
                 ) : (
                   <i>Connect Wallet</i>
                 )
