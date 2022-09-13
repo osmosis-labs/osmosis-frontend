@@ -50,7 +50,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
             <OsmosisFullLogo onClick={() => router.push("/")} />
           </div>
         )}
-        <Drawer showSidebar={showSidebar} isMobile={isMobile}>
+        <Drawer showSidebar={showSidebar} isMobile={isMobile} height={height}>
           {showBlockLogo && (
             <div className="grow-0 z-50 w-sidebar mx-auto">
               <OsmosisFullLogo width={166} onClick={() => router.push("/")} />
@@ -196,13 +196,17 @@ const Drawer = ({
   children,
   showSidebar,
   isMobile,
+  height,
 }: {
   children: ReactNode;
   showSidebar: boolean;
   isMobile: boolean;
+  height: number;
 }) => {
-  console.log({ showSidebar });
-  if (isMobile === true) {
+  const windowLoading = height <= 0;
+  if (windowLoading) {
+    return <div className="hidden">{children}</div>;
+  } else if (isMobile === true) {
     return (
       <>
         <div
@@ -226,11 +230,13 @@ const Drawer = ({
               "w-sidebar shadow-xl absolute bg-white h-full delay-300 duration-150 ease-in-out transition-all transform bg-card flex flex-col overflow-x-hidden overflow-y-auto"
             )}
           >
-            <article className="relative h-full flex flex-col px-5 py-6">
-              <div className="invisible grow-0">
-                <OsmosisFullLogo width={166} />
+            <article className="relative h-full flex flex-col">
+              <div className="w-sidebar text-center pt-5 bg-card grow-0">
+                <div className="invisible">
+                  <OsmosisFullLogo width={166} />
+                </div>
               </div>
-              <div className="grow  overflow-y-scroll">{children}</div>
+              <div className="grow px-5 overflow-y-scroll">{children}</div>
             </article>
           </section>
         </main>
