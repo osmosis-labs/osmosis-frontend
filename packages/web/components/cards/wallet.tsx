@@ -4,45 +4,55 @@ import { FunctionComponent } from "react";
 import { ButtonProps } from "../buttons/types";
 import { CustomClasses, Disableable } from "../types";
 
-export type Wallet = {
-  id: string;
-  iconUrl: string;
-  displayName: string;
-};
-
 export const WalletCard: FunctionComponent<
-  Wallet & { isSelected?: boolean } & Partial<ButtonProps> &
+  {
+    id: string;
+    iconUrl: string;
+    displayName: string;
+    isConnected?: boolean;
+    isInstalled?: boolean;
+    isSelected?: boolean;
+  } & Partial<ButtonProps> &
     CustomClasses &
     Disableable
 > = ({
   iconUrl,
   displayName,
   isSelected = false,
+  isConnected = false,
+  // isInstalled = true,
   onClick,
   className,
   disabled,
 }) => (
-  <button
-    className={classNames(
-      "flex flex-col gap-4 rounded-2xl bg-background py-8",
-      {
-        "bg-primary-600": isSelected,
-        "opacity-30": disabled,
-      },
-      className
-    )}
-    disabled={disabled}
-    onClick={onClick}
-  >
+  <button disabled={disabled} onClick={onClick}>
     <div
-      className={classNames("mx-auto transition", {
-        "-rotate-6 scale-110": isSelected,
+      className={classNames({
+        "p-0.5 bg-wosmongton-200 rounded-2xl": isConnected,
       })}
     >
-      <Image src={iconUrl} width={52} height={52} alt="wallet logo" />
-    </div>
-    <div className="mx-auto">
-      <h6 className="md:caption">{displayName}</h6>
+      <div
+        className={classNames(
+          "flex flex-col gap-4 bg-background py-8",
+          isConnected ? "rounded-2xlinset" : "rounded-2xl",
+          {
+            "bg-wosmongton-500": isSelected,
+            "opacity-30": disabled,
+          },
+          className
+        )}
+      >
+        <div
+          className={classNames("mx-auto transition", {
+            "-rotate-6 scale-110": isSelected,
+          })}
+        >
+          <Image src={iconUrl} width={52} height={52} alt="wallet logo" />
+        </div>
+        <div className="mx-auto">
+          <h6 className="md:caption">{displayName}</h6>
+        </div>
+      </div>
     </div>
   </button>
 );

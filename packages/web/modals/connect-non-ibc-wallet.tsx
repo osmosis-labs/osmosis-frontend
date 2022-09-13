@@ -44,6 +44,7 @@ export const ConnectNonIbcWallet: FunctionComponent<
             key={i}
             id={wallet.key}
             {...wallet.displayInfo}
+            isConnected={wallet.isConnected}
             isSelected={wallet.key === selectedWalletKey}
             onClick={() => setSelectedWalletId(wallet.key)}
           />

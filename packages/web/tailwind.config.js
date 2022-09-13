@@ -45,6 +45,10 @@ module.exports = {
             800: "#080559",
             900: "#02003F",
           },
+      wosmongton: {
+        200: "#B3B1FD",
+        500: "#5B57FA",
+      },
       primaryVariant: "#0A0674",
       secondary: IS_FRONTIER
         ? {
