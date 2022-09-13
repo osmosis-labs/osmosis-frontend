@@ -4,12 +4,18 @@ import { CustomClasses } from "../types";
 
 /** Wrap a view in a gradient border. */
 export const GradientView: FunctionComponent<
-  { gradientClassName?: string } & CustomClasses
-> = ({ gradientClassName = "bg-superfluid", className, children }) => (
+  { gradientClassName?: string; bgClassName?: string } & CustomClasses
+> = ({
+  gradientClassName = "bg-superfluid",
+  bgClassName = "bg-background",
+  className,
+  children,
+}) => (
   <div className={`rounded-xl p-[2px] ${gradientClassName}`}>
     <div
       className={classNames(
-        "rounded-xlinset bg-background px-4 py-[19px]",
+        "rounded-xlinset px-4 py-[19px] md:py-2 md:leading-3",
+        bgClassName,
         className
       )}
     >

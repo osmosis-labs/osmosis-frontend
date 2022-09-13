@@ -33,6 +33,7 @@ export type TransferProps = {
     didAckWithdrawRisk: boolean;
     setDidAckWithdrawRisk: (did: boolean) => void;
   };
+  warningMessage?: string;
   toggleIsMax: () => void;
   transferFee?: CoinPretty;
   /** Required, can be hardcoded estimate. */
@@ -52,6 +53,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   currentValue,
   onInput,
   editWithdrawAddrConfig,
+  warningMessage,
   toggleIsMax,
   transferFee,
   waitTime,
@@ -272,6 +274,15 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             <span>{waitTime}</span>
           </div>
         </div>
+        {warningMessage && (
+          <GradientView
+            className="text-center"
+            gradientClassName="bg-superfluid"
+            bgClassName="bg-surface"
+          >
+            <span className="body2 md:caption">{warningMessage}</span>
+          </GradientView>
+        )}
         {editWithdrawAddrConfig && editWithdrawAddrConfig.customAddress !== "" && (
           <GradientView className="flex flex-col gap-2 body2 md:caption text-center bg-surface">
             <span>

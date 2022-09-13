@@ -5,7 +5,11 @@ import { Environment } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
-import { useFakeFeeConfig, useAmountConfig } from "../../hooks";
+import {
+  useFakeFeeConfig,
+  useAmountConfig,
+  useLocalStorageState,
+} from "../../hooks";
 import { IBCBalance } from "../../stores/assets";
 import { useStore } from "../../stores";
 import { Transfer } from "../../components/complex/transfer";
@@ -212,6 +216,19 @@ const AxelarTransfer: FunctionComponent<
         isTestNet ? Environment.TESTNET : Environment.MAINNET
       );
 
+    // notify user they are withdrawing into a different account then they last deposited to
+    const [lastDepositAccountAddress, setLastDepositAccountAddress] =
+      useLocalStorageState<string | null>(
+        `axelar-last-deposit-addr-${tokenMinDenom}`,
+        null
+      );
+    const warnOfDifferentDepositAddress =
+      isWithdraw &&
+      ethWalletClient.isConnected &&
+      ethWalletClient.accountAddress
+        ? ethWalletClient.accountAddress !== lastDepositAccountAddress
+        : false;
+
     // start transfer
     const [transferInitiated, setTransferInitiated] = useState(false);
     const doAxelarTransfer = useCallback(async () => {
@@ -252,7 +269,10 @@ const AxelarTransfer: FunctionComponent<
                 erc20ContractAddress,
                 ethWalletClient.accountAddress!,
                 depositAddress
-              ).then((txHash) => trackTransferStatus(txHash as string));
+              ).then((txHash) => {
+                trackTransferStatus(txHash as string);
+                setLastDepositAccountAddress(ethWalletClient.accountAddress!);
+              });
             } catch (e: any) {
               const msg = ethWalletClient.displayError?.(e);
               if (typeof msg === "string") {
@@ -369,6 +389,11 @@ const AxelarTransfer: FunctionComponent<
           }
           availableBalance={
             isWithdraw || correctChainSelected ? availableBalance : undefined
+          }
+          warningMessage={
+            warnOfDifferentDepositAddress
+              ? `Warning: the selected account in ${ethWalletClient.displayInfo.displayName} differs from the account you last deposited with.`
+              : undefined
           }
           toggleIsMax={() => {
             if (isWithdraw) {
