@@ -58,7 +58,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const denomsInPool: string[] = [];
     // Try to register the Denom of Asset in the Pool in Response.(For IBC tokens)
-    for (const asset of response.data.pool.poolAssets) {
+    for (const asset of response.data.pool.pool_assets) {
       denomsInPool.push(asset.token.denom);
     }
 
