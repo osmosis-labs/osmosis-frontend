@@ -1,9 +1,11 @@
 import { FunctionComponent, useState } from "react";
+import { observer } from "mobx-react-lite";
 import { WalletCard } from "../components/cards";
 import { SourceChainKey, Wallet } from "../integrations";
 import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
 
+/** Prompts user to connect from a list of wallets. Will onboard a user for an uninstalled wallet if the functionality is available. */
 export const ConnectNonIbcWallet: FunctionComponent<
   ModalBaseProps & {
     initiallySelectedWalletId?: string;
@@ -12,10 +14,14 @@ export const ConnectNonIbcWallet: FunctionComponent<
     wallets: Wallet[];
     onSelectWallet: (key: string) => void;
   }
-> = (props) => {
+> = observer((props) => {
   const [selectedWalletKey, setSelectedWalletId] = useState<string | null>(
     props.initiallySelectedWalletId ?? null
   );
+
+  const selectedWallet = props.wallets.find((w) => w.key === selectedWalletKey);
+  const canOnboardSelectedWallet =
+    selectedWallet && !selectedWallet.isInstalled && selectedWallet.onboard;
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
@@ -24,9 +30,23 @@ export const ConnectNonIbcWallet: FunctionComponent<
       disabled:
         props.initiallySelectedWalletId === undefined && !selectedWalletKey,
       onClick: () => {
-        if (selectedWalletKey) props.onSelectWallet(selectedWalletKey);
+        if (canOnboardSelectedWallet) {
+          selectedWallet!.onboard?.();
+        } else if (selectedWalletKey) {
+          props.onSelectWallet(selectedWalletKey);
+        } else {
+          console.error(
+            "Wallet selection invalid state: selectedWalletKey undefined"
+          );
+        }
       },
-      children: <h6 className="md:text-base text-lg">Next</h6>,
+      children: (
+        <h6 className="md:text-base text-lg">
+          {canOnboardSelectedWallet
+            ? `Install ${selectedWallet.displayInfo.displayName}`
+            : "Next"}
+        </h6>
+      ),
     },
     props.onRequestClose,
     "Connect Wallet"
@@ -53,4 +73,4 @@ export const ConnectNonIbcWallet: FunctionComponent<
       {accountActionButton}
     </ModalBase>
   );
-};
+});

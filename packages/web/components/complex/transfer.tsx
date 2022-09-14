@@ -228,25 +228,30 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             ) : (
               <h6>Select Amount</h6>
             )}
-            {availableBalance && (
-              <div className="text-xs text-white-high caption">
-                Available{!isMobile && ` on ${from.networkName}`}:{" "}
-                <button
-                  className="text-primary-50 cursor-pointer disabled:cursor-default"
-                  disabled={availableBalance.toDec().isZero()}
-                  onClick={() => {
-                    trackEvent(
-                      isWithdraw
-                        ? AssetsPageEvents.withdrawMaxAmount
-                        : AssetsPageEvents.depositMaxAmount
-                    );
-                    toggleIsMax();
-                  }}
-                >
-                  {availableBalance.trim(true).toString()}
-                </button>
-              </div>
-            )}
+            <div
+              className={classNames(
+                "text-xs text-white-high caption transition-opacity",
+                availableBalance && availableBalance.isReady
+                  ? "opacity-100"
+                  : "opacity-0"
+              )}
+            >
+              Available{!isMobile && ` on ${from.networkName}`}:{" "}
+              <button
+                className="text-primary-50 cursor-pointer disabled:cursor-default"
+                disabled={availableBalance?.toDec().isZero()}
+                onClick={() => {
+                  trackEvent(
+                    isWithdraw
+                      ? AssetsPageEvents.withdrawMaxAmount
+                      : AssetsPageEvents.depositMaxAmount
+                  );
+                  toggleIsMax();
+                }}
+              >
+                {availableBalance?.trim(true).toString()}
+              </button>
+            </div>
           </div>
           <InputBox
             type="number"

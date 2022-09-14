@@ -41,6 +41,8 @@ export class ObservableMetamask implements EthWallet {
   @observable
   protected _preferredChainId: string | undefined;
 
+  protected _metamaskOnboarding: any | undefined;
+
   readonly txStatusEventEmitter = new EventEmitter<
     "pending" | "confirmed" | "failed"
   >();
@@ -113,6 +115,14 @@ export class ObservableMetamask implements EthWallet {
 
   get isConnected(): boolean {
     return this.accountAddress !== undefined;
+  }
+
+  get isInstalled(): boolean {
+    return (
+      withEthInWindow(() => {
+        return true;
+      }, false) ?? false
+    );
   }
 
   get isSending(): string | null {
@@ -237,4 +247,22 @@ export class ObservableMetamask implements EthWallet {
     IS_TESTNET
       ? `https://ropsten.etherscan.io/tx/${txHash}`
       : `https://etherscan.io/tx/${txHash}`;
+
+  // ONBOARDING
+
+  /** https://docs.metamask.io/guide/onboarding-library.html#examples */
+  async onboard() {
+    const MetaMaskOnboarding = (await import("@metamask/onboarding")).default;
+
+    if (MetaMaskOnboarding) {
+      this._metamaskOnboarding = new MetaMaskOnboarding();
+      this._metamaskOnboarding.startOnboarding();
+    } else {
+      console.error("MetaMask: onboarding code not available");
+    }
+  }
+
+  cancelOnboarding() {
+    this._metamaskOnboarding?.stopOnboarding();
+  }
 }

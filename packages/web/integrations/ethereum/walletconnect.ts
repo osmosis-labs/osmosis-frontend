@@ -135,6 +135,11 @@ export class ObservableWalletConnect implements EthWallet {
     return this.accountAddress !== undefined;
   }
 
+  get isInstalled(): boolean {
+    // we can always open a transient connection
+    return true;
+  }
+
   get isSending(): string | null {
     return this._isSending;
   }
@@ -188,8 +193,6 @@ export class ObservableWalletConnect implements EthWallet {
           this._chainId !== this._preferredChainId
         ) {
           await this.switchToChain(ChainNames[this._preferredChainId]);
-          // metamask may clear address upon switching network
-          // await this.enable();
         }
 
         runInAction(() => (this._isSending = method));
