@@ -3,5 +3,5 @@ export declare type Pools = {
     pools: WeightedPoolRaw[];
 };
 export declare type NumPools = {
-    numPools: string;
+    num_pools: string;
 };
