@@ -22,6 +22,7 @@ export type EventProperties = {
   isOn: boolean;
   tokenName: string;
   tokenAmount: number;
+  bridge: string;
   hasExternalUrl: boolean;
 };
 
@@ -114,9 +115,9 @@ export const EventName = {
     assetsListMoreClicked: "Assets: Assets list more clicked",
     assetsItemDepositClicked: "Assets: Assets item deposit clicked",
     assetsItemWithdrawClicked: "Assets: Assets item withdraw clicked",
-    depositIbcAssetStarted: "Deposit IBC asset: Deposit started",
-    depositIbcAssetCompleted: "Deposit IBC asset: Deposit completed",
-    withdrawIbcAssetStarted: "Withdraw IBC asset: Withdraw started",
-    withdrawIbcAssetCompleted: "Withdraw IBC asset: Withdraw completed",
+    depositAssetStarted: "Deposit asset: Deposit started",
+    depositAssetCompleted: "Deposit asset: Deposit completed",
+    withdrawAssetStarted: "Withdraw asset: Withdraw started",
+    withdrawAssetCompleted: "Withdraw asset: Withdraw completed",
   },
 };

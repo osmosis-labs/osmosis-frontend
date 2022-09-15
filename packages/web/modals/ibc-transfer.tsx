@@ -51,11 +51,12 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           onClick: () => {
             logEvent([
               isWithdraw
-                ? EventName.Assets.withdrawIbcAssetStarted
-                : EventName.Assets.depositIbcAssetStarted,
+                ? EventName.Assets.withdrawAssetStarted
+                : EventName.Assets.depositAssetStarted,
               {
                 tokenName: amountConfig.sendCurrency.coinDenom,
                 tokenAmount: Number(amountConfig.amount),
+                bridge: "IBC",
               },
             ]);
             // failure events are handled by the root store
@@ -71,11 +72,12 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               (txBroadcastEvent) => {
                 logEvent([
                   isWithdraw
-                    ? EventName.Assets.withdrawIbcAssetCompleted
-                    : EventName.Assets.depositIbcAssetCompleted,
+                    ? EventName.Assets.withdrawAssetCompleted
+                    : EventName.Assets.depositAssetCompleted,
                   {
                     tokenName: amountConfig.sendCurrency.coinDenom,
                     tokenAmount: Number(amountConfig.amount),
+                    bridge: "IBC",
                   },
                 ]);
                 ibcTransferHistoryStore.pushUncommitedHistory(txBroadcastEvent);
