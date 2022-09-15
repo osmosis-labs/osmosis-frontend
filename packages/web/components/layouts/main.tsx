@@ -236,7 +236,7 @@ const Drawer = ({
                   <OsmosisFullLogo width={166} />
                 </div>
               </div>
-              <div className="grow px-5 overflow-y-scroll">{children}</div>
+              <div className="grow px-5 py-6 overflow-y-scroll">{children}</div>
             </article>
           </section>
         </main>
