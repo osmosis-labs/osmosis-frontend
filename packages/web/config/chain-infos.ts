@@ -510,6 +510,16 @@ const chainInfos = (
           coinDecimals: 6,
           coinImageUrl: "/tokens/solar.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno19rqljkh95gh40s7qdx40ksx3zq5tm4qsmsrdz9smw668x9zdr3lqtg33mf",
+          coinDenom: "SEASY",
+          coinMinimalDenom:
+            "cw20:juno19rqljkh95gh40s7qdx40ksx3zq5tm4qsmsrdz9smw668x9zdr3lqtg33mf:SEASY",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/seasy.svg",
+        },
       ],
       features: [
         "stargate",
