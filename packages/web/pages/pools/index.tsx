@@ -12,6 +12,7 @@ import { LeftTime } from "../../components/left-time";
 import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { TabBox } from "../../components/control";
+import { priceFormatter } from "../../components/utils";
 import { useStore } from "../../stores";
 import { DataSorter } from "../../hooks/data/data-sorter";
 import {
@@ -300,7 +301,7 @@ const Pools: NextPage = observer(function () {
                         <MetricLoader
                           isLoading={poolLiquidity.toDec().isZero()}
                         >
-                          {poolLiquidity.toString()}
+                          {priceFormatter(poolLiquidity)}
                         </MetricLoader>
                       ),
                     },
@@ -312,7 +313,7 @@ const Pools: NextPage = observer(function () {
                         <MetricLoader
                           isLoading={poolLiquidity.toDec().isZero()}
                         >
-                          {myBonded.toString()}
+                          {priceFormatter(myBonded)}
                         </MetricLoader>
                       ),
                     },
@@ -505,7 +506,7 @@ const Pools: NextPage = observer(function () {
                               <MetricLoader
                                 isLoading={poolLiquidity.toDec().isZero()}
                               >
-                                {poolLiquidity.toString()}
+                                {priceFormatter(poolLiquidity)}
                               </MetricLoader>
                             ),
                           },

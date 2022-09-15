@@ -13,6 +13,7 @@ import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards/";
 import { Metric } from "../../components/types";
 import { MetricLoader } from "../../components/loaders";
+import { priceFormatter } from "../../components/utils";
 import {
   IbcTransferModal,
   BridgeTransferModal,
@@ -283,7 +284,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                 },
             {
               label: "Pool Liquidity",
-              value: pool.computeTotalValueLocked(priceStore).toString(),
+              value: priceFormatter(pool.computeTotalValueLocked(priceStore)),
             },
             queriesOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
