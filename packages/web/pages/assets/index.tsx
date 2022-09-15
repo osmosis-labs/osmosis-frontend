@@ -37,7 +37,7 @@ const Assets: NextPage = observer(() => {
   const { nativeBalances, ibcBalances } = assetsStore;
   const account = accountStore.getAccount(chainId);
 
-  const { logEvent, setUserProperty } = useAmplitudeAnalytics({
+  const { setUserProperty } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Assets.pageViewed],
   });
 
