@@ -1,7 +1,6 @@
 import Link from "next/link";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 import { PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { PoolAssetInfo } from "../assets/types";
