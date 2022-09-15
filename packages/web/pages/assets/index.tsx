@@ -87,26 +87,12 @@ const Assets: NextPage = observer(() => {
         ibcBalances={ibcBalances}
         onDepositIntent={() => transferConfig.startTransfer("deposit")}
         onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
-        onDeposit={(chainId, coinDenom, externalUrl) => {
-          logEvent([
-            EventName.Assets.assetsItemDepositClicked,
-            {
-              tokenName: coinDenom,
-              hasExternalUrl: !!externalUrl,
-            },
-          ]);
-          transferConfig.transferAsset("deposit", chainId, coinDenom);
-        }}
-        onWithdraw={(chainId, coinDenom, externalUrl) => {
-          logEvent([
-            EventName.Assets.assetsItemWithdrawClicked,
-            {
-              tokenName: coinDenom,
-              hasExternalUrl: !!externalUrl,
-            },
-          ]);
-          transferConfig.transferAsset("withdraw", chainId, coinDenom);
-        }}
+        onDeposit={(chainId, coinDenom) =>
+          transferConfig.transferAsset("deposit", chainId, coinDenom)
+        }
+        onWithdraw={(chainId, coinDenom) =>
+          transferConfig.transferAsset("withdraw", chainId, coinDenom)
+        }
       />
       {!isMobile && <PoolAssets />}
       <section className="bg-surface">
