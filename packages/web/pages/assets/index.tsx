@@ -111,7 +111,7 @@ const AssetsOverview: FunctionComponent<{
 }> = observer(({ onDepositIntent, onWithdrawIntent }) => {
   const { assetsStore } = useStore();
   const { isMobile } = useWindowSize();
-  const { setUserProperty } = useAmplitudeAnalytics();
+  const { logEvent, setUserProperty } = useAmplitudeAnalytics();
 
   const totalAssetsValue = assetsStore.calcValueOf([
     ...assetsStore.availableBalance,
@@ -149,13 +149,19 @@ const AssetsOverview: FunctionComponent<{
           : [
               {
                 label: "Deposit",
-                onClick: onDepositIntent,
+                onClick: () => {
+                  logEvent([EventName.Assets.depositClicked]);
+                  onDepositIntent();
+                },
               },
               {
                 label: "Withdraw",
                 type: "outline",
                 className: "bg-primary-200/30",
-                onClick: onWithdrawIntent,
+                onClick: () => {
+                  logEvent([EventName.Assets.withdrawClicked]);
+                  onWithdrawIntent();
+                },
               },
             ]
       }
