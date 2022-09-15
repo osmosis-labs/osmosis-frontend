@@ -47,7 +47,9 @@ export function useIbcTransfer({
       event: Omit<IBCTransferHistory, "status" | "createdAt">
     ) => void,
     /** Handle when the IBC trasfer successfully broadcast to relayers. */
-    onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void
+    onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void,
+    /** Initial tx failed. */
+    onFailure?: (txHash: string, code: number) => void
   ) => void,
   CustomCounterpartyConfig | undefined
 ] {
@@ -137,8 +139,9 @@ export function useIbcTransfer({
     onFulfill?: (
       event: Omit<IBCTransferHistory, "status" | "createdAt">
     ) => void,
-    onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void
-  ) => void = async (onFulfill, onBroadcasted) => {
+    onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void,
+    onFailure?: (txHash: string, code: number) => void
+  ) => void = async (onFulfill, onBroadcasted, onFailure) => {
     try {
       if (isWithdraw) {
         await basicIbcTransfer(
@@ -148,16 +151,17 @@ export function useIbcTransfer({
             channelId: sourceChannelId,
           },
           {
-            account: counterpartyAccount,
+            account:
+              customBech32Address !== ""
+                ? customBech32Address
+                : counterpartyAccount,
             chainId: counterpartyChainId,
             channelId: destChannelId,
-            bech32AddressOverride:
-              customBech32Address !== "" ? customBech32Address : undefined,
           },
-          currency,
           amountConfig,
           onBroadcasted,
-          onFulfill
+          onFulfill,
+          onFailure
         );
       } else {
         await basicIbcTransfer(
@@ -181,10 +185,10 @@ export function useIbcTransfer({
             chainId,
             channelId: sourceChannelId,
           },
-          currency,
           amountConfig,
           onBroadcasted,
-          onFulfill
+          onFulfill,
+          onFailure
         );
       }
     } catch (e) {

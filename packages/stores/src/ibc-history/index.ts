@@ -118,6 +118,7 @@ export class IBCTransferHistoryStore {
       );
     }
 
+    // eslint-disable-next-line
     return this.blockSubscriberMap.get(chainId)!;
   }
 
@@ -227,6 +228,7 @@ export class IBCTransferHistoryStore {
         (async () => {
           const { promise, unsubscriber } = this.traceTimeoutHeight(
             blockSubscriber,
+            // eslint-disable-next-line
             history.timeoutHeight!
           );
           timeoutUnsubscriber = unsubscriber;
@@ -246,6 +248,7 @@ export class IBCTransferHistoryStore {
         (async () => {
           const { promise, unsubscriber } = this.traceTimeoutTimestamp(
             blockSubscriber,
+            // eslint-disable-next-line
             history.timeoutTimestamp!
           );
           timeoutUnsubscriber = unsubscriber;
@@ -443,6 +446,7 @@ export class IBCTransferHistoryStore {
       return;
     }
 
+    // eslint-disable-next-line
     const history = this.historyMapByTxHash.get(txHash)!;
     const status = yield* toGenerator(this.traceHistroyStatus(history));
     if (history.status !== status) {
@@ -474,10 +478,18 @@ export class IBCTransferHistoryStore {
 
   @flow
   protected *restore() {
-    const uncommitedHistories = yield* toGenerator(
-      this.kvStore.get<UncommitedHistory[]>("uncommited_histories")
+    const strUncommittedHistories = yield* toGenerator(
+      this.kvStore.get<string>("uncommited_histories")
     );
-    if (uncommitedHistories) {
+
+    if (strUncommittedHistories) {
+      let uncommitedHistories;
+      try {
+        uncommitedHistories = JSON.parse(strUncommittedHistories);
+      } catch (e: any) {
+        console.error(e.message);
+        uncommitedHistories = [];
+      }
       this._uncommitedHistories = uncommitedHistories;
 
       for (const uncommited of this._uncommitedHistories) {
@@ -490,10 +502,19 @@ export class IBCTransferHistoryStore {
       this._uncommitedHistories = [];
     }
 
-    const histories = yield* toGenerator(
-      this.kvStore.get<IBCTransferHistory[]>("histories")
+    const historiesStr = yield* toGenerator(
+      this.kvStore.get<string>("histories")
     );
-    if (histories) {
+
+    if (historiesStr) {
+      let histories;
+      try {
+        histories = JSON.parse(historiesStr);
+      } catch (e: any) {
+        console.error(e.message);
+        histories = [];
+      }
+
       this._histories = histories;
 
       for (const history of this._histories) {
@@ -541,10 +562,10 @@ export class IBCTransferHistoryStore {
   }
 
   protected async save() {
-    await this.kvStore.set("histories", toJS(this._histories));
+    await this.kvStore.set("histories", JSON.stringify(toJS(this._histories)));
     await this.kvStore.set(
       "uncommited_histories",
-      toJS(this._uncommitedHistories)
+      JSON.stringify(toJS(this._uncommitedHistories))
     );
   }
 }
