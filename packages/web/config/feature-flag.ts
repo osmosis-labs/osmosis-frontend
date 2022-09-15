@@ -537,12 +537,12 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "613": [
     {
-      gaugeId: "4340",
+      gaugeId: "29538",
       denom:
         "ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD",
     },
     {
-      gaugeId: "4341",
+      gaugeId: "29537",
       denom:
         "ibc/E7B35499CFBEB0FF5778127ABA4FB2C4B79A6B8D3D831D4379C4048C238796BD",
     },
@@ -936,6 +936,11 @@ export const ExternalIncentiveGaugeAllowList: {
       denom:
         "ibc/9B6FBABA36BB4A3BF127AE5E96B572A5197FD9F3111D895D8919B07BC290764A",
     },
+    {
+      gaugeId: "29611",
+      denom:
+        "ibc/0CD46223FEABD2AEAAAF1F057D01E63BCA79B7D4BD6B68F1EB973A987344695D",
+    },
   ],
   "778": [
     {
@@ -974,6 +979,59 @@ export const ExternalIncentiveGaugeAllowList: {
       gaugeId: "29462",
       denom:
         "ibc/9B6FBABA36BB4A3BF127AE5E96B572A5197FD9F3111D895D8919B07BC290764A",
+    },
+  ],
+  "790": [
+    {
+      gaugeId: "29508",
+      denom:
+        "ibc/7C781B4C2082CD62129A972D47486D78EC17155C299270E3C89348EA026BEAF8",
+    },
+    {
+      gaugeId: "29509",
+      denom:
+        "ibc/7C781B4C2082CD62129A972D47486D78EC17155C299270E3C89348EA026BEAF8",
+    },
+    {
+      gaugeId: "29510",
+      denom:
+        "ibc/7C781B4C2082CD62129A972D47486D78EC17155C299270E3C89348EA026BEAF8",
+    },
+    {
+      gaugeId: "29508",
+      denom:
+        "ibc/52C57FCA7D6854AA178E7A183DDBE4EF322B904B1D719FC485F6FFBC1F72A19E",
+    },
+    {
+      gaugeId: "29509",
+      denom:
+        "ibc/52C57FCA7D6854AA178E7A183DDBE4EF322B904B1D719FC485F6FFBC1F72A19E",
+    },
+    {
+      gaugeId: "29510",
+      denom:
+        "ibc/52C57FCA7D6854AA178E7A183DDBE4EF322B904B1D719FC485F6FFBC1F72A19E",
+    },
+  ],
+  "796": [
+    {
+      gaugeId: "29545",
+      denom:
+        "ibc/E09ED39F390EC51FA9F3F69BEA08B5BBE6A48B3057B2B1C3467FAAE9E58B021B",
+    },
+  ],
+  "803": [
+    {
+      gaugeId: "29605",
+      denom:
+        "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
+    },
+  ],
+  "805": [
+    {
+      gaugeId: "29615",
+      denom:
+        "ibc/0CD46223FEABD2AEAAAF1F057D01E63BCA79B7D4BD6B68F1EB973A987344695D",
     },
   ],
 };
