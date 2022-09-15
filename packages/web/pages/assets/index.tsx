@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useState, useEffect } from "react";
 import { PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { makeLocalStorageKVStore } from "../../stores/kv-store";
@@ -19,8 +19,9 @@ import {
   TransferAssetSelectModal,
 } from "../../modals";
 import { ConnectNonIbcWallet } from "../../modals/connect-non-ibc-wallet";
-import { useWindowSize } from "../../hooks";
+import { useWindowSize, useAmplitudeAnalytics } from "../../hooks";
 import { WalletConnectQRModal } from "../../modals";
+import { EventName } from "../../config";
 
 const INIT_POOL_CARD_COUNT = 6;
 
@@ -36,6 +37,10 @@ const Assets: NextPage = observer(() => {
   const { nativeBalances, ibcBalances } = assetsStore;
   const account = accountStore.getAccount(chainId);
 
+  const { logEvent, setUserProperty } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Assets.pageViewed],
+  });
+
   const [transferConfig] = useState(
     () =>
       new ObservableTransferUIConfig(
@@ -44,6 +49,13 @@ const Assets: NextPage = observer(() => {
         makeLocalStorageKVStore("transfer-ui-config")
       )
   );
+
+  useEffect(() => {
+    setUserProperty(
+      "osmoBalance",
+      nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()
+    );
+  }, [nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()]);
 
   return (
     <main className="bg-background">
@@ -75,12 +87,26 @@ const Assets: NextPage = observer(() => {
         ibcBalances={ibcBalances}
         onDepositIntent={() => transferConfig.startTransfer("deposit")}
         onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
-        onDeposit={(chainId, coinDenom) =>
-          transferConfig.transferAsset("deposit", chainId, coinDenom)
-        }
-        onWithdraw={(chainId, coinDenom) =>
-          transferConfig.transferAsset("withdraw", chainId, coinDenom)
-        }
+        onDeposit={(chainId, coinDenom, externalUrl) => {
+          logEvent([
+            EventName.Assets.assetsItemDepositClicked,
+            {
+              tokenName: coinDenom,
+              hasExternalUrl: !!externalUrl,
+            },
+          ]);
+          transferConfig.transferAsset("deposit", chainId, coinDenom);
+        }}
+        onWithdraw={(chainId, coinDenom, externalUrl) => {
+          logEvent([
+            EventName.Assets.assetsItemWithdrawClicked,
+            {
+              tokenName: coinDenom,
+              hasExternalUrl: !!externalUrl,
+            },
+          ]);
+          transferConfig.transferAsset("withdraw", chainId, coinDenom);
+        }}
       />
       {!isMobile && <PoolAssets />}
       <section className="bg-surface">
@@ -99,6 +125,7 @@ const AssetsOverview: FunctionComponent<{
 }> = observer(({ onDepositIntent, onWithdrawIntent }) => {
   const { assetsStore } = useStore();
   const { isMobile } = useWindowSize();
+  const { setUserProperty } = useAmplitudeAnalytics();
 
   const totalAssetsValue = assetsStore.calcValueOf([
     ...assetsStore.availableBalance,
@@ -113,6 +140,18 @@ const AssetsOverview: FunctionComponent<{
   const stakedAssetsValue = assetsStore.calcValueOf([
     assetsStore.stakedBalance,
     assetsStore.unstakingBalance,
+  ]);
+
+  useEffect(() => {
+    setUserProperty("totalAssetsPrice", totalAssetsValue.toString());
+    setUserProperty("unbondedAssetsPrice", availableAssetsValue.toString());
+    setUserProperty("bondedAssetsPrice", bondedAssetsValue.toString());
+    setUserProperty("stakedOsmoPrice", stakedAssetsValue.toString());
+  }, [
+    totalAssetsValue.toString(),
+    availableAssetsValue.toString(),
+    bondedAssetsValue.toString(),
+    stakedAssetsValue.toString(),
   ]);
 
   return (
@@ -158,6 +197,7 @@ const AssetsOverview: FunctionComponent<{
 
 const PoolAssets: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore } = useStore();
+  const { setUserProperty } = useAmplitudeAnalytics();
 
   const { chainId } = chainStore.osmosis;
   const { bech32Address } = accountStore.getAccount(chainId);
@@ -165,6 +205,10 @@ const PoolAssets: FunctionComponent = observer(() => {
     .get(chainId)
     .osmosis!.queryGammPoolShare.getOwnPools(bech32Address);
   const [showAllPools, setShowAllPools] = useState(false);
+
+  useEffect(() => {
+    setUserProperty("myPoolsCount", ownedPoolIds.length);
+  }, [ownedPoolIds.length]);
 
   if (ownedPoolIds.length === 0) {
     return null;
@@ -184,26 +228,37 @@ const PoolCards: FunctionComponent<{
   showAllPools: boolean;
   ownedPoolIds: string[];
   setShowAllPools: (show: boolean) => void;
-}> = observer(({ showAllPools, ownedPoolIds, setShowAllPools }) => (
-  <>
-    <div className="my-5 grid grid-cards">
-      <PoolCardsDisplayer
-        poolIds={
-          showAllPools
-            ? ownedPoolIds
-            : ownedPoolIds.slice(0, INIT_POOL_CARD_COUNT)
-        }
-      />
-    </div>
-    {ownedPoolIds.length > INIT_POOL_CARD_COUNT && (
-      <ShowMoreButton
-        className="m-auto"
-        isOn={showAllPools}
-        onToggle={() => setShowAllPools(!showAllPools)}
-      />
-    )}
-  </>
-));
+}> = observer(({ showAllPools, ownedPoolIds, setShowAllPools }) => {
+  const { logEvent } = useAmplitudeAnalytics();
+  return (
+    <>
+      <div className="my-5 grid grid-cards">
+        <PoolCardsDisplayer
+          poolIds={
+            showAllPools
+              ? ownedPoolIds
+              : ownedPoolIds.slice(0, INIT_POOL_CARD_COUNT)
+          }
+        />
+      </div>
+      {ownedPoolIds.length > INIT_POOL_CARD_COUNT && (
+        <ShowMoreButton
+          className="m-auto"
+          isOn={showAllPools}
+          onToggle={() => {
+            logEvent([
+              EventName.Assets.assetsListMoreClicked,
+              {
+                isOn: !showAllPools,
+              },
+            ]);
+            setShowAllPools(!showAllPools);
+          }}
+        />
+      )}
+    </>
+  );
+});
 
 const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
   ({ poolIds }) => {
@@ -310,19 +365,41 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
         if (aFiatValue.toDec().lt(bFiatValue.toDec())) return 1;
         return 0;
       });
+    const { logEvent } = useAmplitudeAnalytics();
 
     return (
       <>
         {pools.map(([pool, _, metrics]) => (
-          <PoolCard
+          <div
             key={pool.id}
-            poolId={pool.id}
-            poolAssets={pool.poolAssets.map((asset) => asset.amount.currency)}
-            poolMetrics={metrics}
-            isSuperfluid={queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
-              pool.id
-            )}
-          />
+            onClick={() =>
+              logEvent([
+                EventName.Assets.myPoolsCardClicked,
+                {
+                  poolId: pool.id,
+                  poolName: pool.poolAssets
+                    .map((poolAsset) => poolAsset.amount.denom)
+                    .join(" / "),
+                  poolWeight: pool.poolAssets
+                    .map((poolAsset) => poolAsset.weightFraction.toString())
+                    .join(" / "),
+                  isSuperfluidPool:
+                    queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+                      pool.id
+                    ),
+                },
+              ])
+            }
+          >
+            <PoolCard
+              poolId={pool.id}
+              poolAssets={pool.poolAssets.map((asset) => asset.amount.currency)}
+              poolMetrics={metrics}
+              isSuperfluid={queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+                pool.id
+              )}
+            />
+          </div>
         ))}
       </>
     );

@@ -6,9 +6,10 @@ import {
   IbcTransfer,
   useIbcTransfer,
   useConnectWalletModalRedirect,
+  useAmplitudeAnalytics,
   useMatomoAnalytics,
 } from "../hooks";
-import { AssetsPageEvents } from "../config";
+import { AssetsPageEvents, EventName } from "../config";
 import { ModalBase, ModalBaseProps } from ".";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
@@ -16,7 +17,9 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     const { currency, counterpartyChainId, isWithdraw } = props;
     const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
     const { chainId: osmosisChainId } = chainStore.osmosis;
+
     const { trackEvent } = useMatomoAnalytics();
+    const { logEvent } = useAmplitudeAnalytics();
 
     const [
       account,
@@ -45,7 +48,16 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             amountConfig.error != undefined ||
             inTransit ||
             !isCustomWithdrawValid,
-          onClick: () =>
+          onClick: () => {
+            logEvent([
+              isWithdraw
+                ? EventName.Assets.withdrawIbcAssetStarted
+                : EventName.Assets.depositIbcAssetStarted,
+              {
+                tokenName: amountConfig.sendCurrency.coinDenom,
+                tokenAmount: Number(amountConfig.amount),
+              },
+            ]);
             // failure events are handled by the root store
             transfer(
               (txFullfillEvent) => {
@@ -57,12 +69,22 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                 props.onRequestClose();
               },
               (txBroadcastEvent) => {
+                logEvent([
+                  isWithdraw
+                    ? EventName.Assets.withdrawIbcAssetCompleted
+                    : EventName.Assets.depositIbcAssetCompleted,
+                  {
+                    tokenName: amountConfig.sendCurrency.coinDenom,
+                    tokenAmount: Number(amountConfig.amount),
+                  },
+                ]);
                 ibcTransferHistoryStore.pushUncommitedHistory(txBroadcastEvent);
               },
               () => {
                 trackEvent(AssetsPageEvents.ibcTransferFailure);
               }
-            ),
+            );
+          },
           loading: inTransit,
           children: (
             <h6 className="md:text-base text-lg">

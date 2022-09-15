@@ -14,12 +14,23 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import { GetKeplrProvider, useMatomoAnalytics } from "../hooks";
 import { IbcNotifier } from "../stores/ibc-notifier";
-import { IS_FRONTIER, NavBarEvents } from "../config";
+import {
+  AmplitudeEvent,
+  EventName,
+  IS_FRONTIER,
+  NavBarEvents,
+} from "../config";
+
+import * as amplitude from "@amplitude/analytics-browser";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 dayjs.extend(utc);
 enableStaticRendering(typeof window === "undefined");
+
+if (process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY !== undefined) {
+  amplitude.init(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY);
+}
 
 function MyApp({ Component, pageProps }: AppProps) {
   const menus = [
@@ -49,18 +60,21 @@ function MyApp({ Component, pageProps }: AppProps) {
       link: "https://wallet.keplr.app/chains/osmosis",
       icon: IS_FRONTIER ? "/icons/ticket-white.svg" : "/icons/ticket.svg",
       userAnalyticsEvent: NavBarEvents.stakeLink,
+      amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
     },
     {
       label: "Vote",
       link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
       icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
       userAnalyticsEvent: NavBarEvents.voteLink,
+      amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
     },
     {
       label: "Info",
       link: "https://info.osmosis.zone",
       icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
       userAnalyticsEvent: NavBarEvents.infoLink,
+      amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
     },
   ];
 

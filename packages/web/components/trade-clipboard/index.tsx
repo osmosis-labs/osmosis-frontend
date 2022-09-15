@@ -19,6 +19,7 @@ import {
   PoolDetailEvents,
   SwapPageEvents,
   MakeSwapPageEvents,
+  EventName,
 } from "../../config";
 import {
   useBooleanWithWindowEvent,
@@ -28,6 +29,7 @@ import {
   useTradeTokenInConfig,
   useWindowSize,
   useMatomoAnalytics,
+  useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { Button } from "../buttons";
@@ -52,6 +54,7 @@ export const TradeClipboard: FunctionComponent<{
   const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();
   const { trackEvent } = useMatomoAnalytics();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const allTokenBalances = nativeBalances.concat(ibcBalances);
 
@@ -266,6 +269,14 @@ export const TradeClipboard: FunctionComponent<{
           onClick={(e) => {
             e.stopPropagation();
             setIsSettingOpen(!isSettingOpen);
+            logEvent([
+              EventName.Swap.settingClicked,
+              {
+                fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                isOnHome: !isInModal,
+              },
+            ]);
             closeTokenSelectDropdowns();
           }}
         >
@@ -426,6 +437,14 @@ export const TradeClipboard: FunctionComponent<{
 
                   if (tradeTokenInConfig.fraction !== 1) {
                     trackEvent(SwapPageEvents.swapMaxAmount);
+                    logEvent([
+                      EventName.Swap.maxClicked,
+                      {
+                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+                      },
+                    ]);
                     tradeTokenInConfig.setFraction(1);
                   } else {
                     tradeTokenInConfig.setFraction(undefined);
@@ -446,6 +465,14 @@ export const TradeClipboard: FunctionComponent<{
 
                   if (tradeTokenInConfig.fraction !== 0.5) {
                     trackEvent(SwapPageEvents.swapHalfAmount);
+                    logEvent([
+                      EventName.Swap.halfClicked,
+                      {
+                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+                      },
+                    ]);
                     tradeTokenInConfig.setFraction(0.5);
                   } else {
                     tradeTokenInConfig.setFraction(undefined);
@@ -543,7 +570,17 @@ export const TradeClipboard: FunctionComponent<{
           onMouseLeave={() => {
             if (!isMobile) setHoveringSwitchButton(false);
           }}
-          onClick={() => setIsAnimatingSwitch(true)}
+          onClick={() => {
+            logEvent([
+              EventName.Swap.switchClicked,
+              {
+                fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                isOnHome: !isInModal,
+              },
+            ]);
+            setIsAnimatingSwitch(true);
+          }}
         >
           <div
             className={classNames(
@@ -844,6 +881,14 @@ export const TradeClipboard: FunctionComponent<{
           if (account.walletStatus !== WalletStatus.Loaded) {
             return account.init();
           }
+          logEvent([
+            EventName.Swap.swapClicked,
+            {
+              fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+              toToken: tradeTokenInConfig.outCurrency.coinDenom,
+              isOnHome: !isInModal,
+            },
+          ]);
 
           if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
             const routes: {

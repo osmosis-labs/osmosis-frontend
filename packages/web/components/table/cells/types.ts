@@ -15,8 +15,16 @@ export type AssetCell = BaseCell & {
    */
   queryTags?: string[];
   isUnstable?: boolean;
-  onWithdraw?: (chainId: string, coinDenom: string) => void;
-  onDeposit?: (chainId: string, coinDenom: string) => void;
+  onWithdraw?: (
+    chainId: string,
+    coinDenom: string,
+    externalUrl?: string
+  ) => void;
+  onDeposit?: (
+    chainId: string,
+    coinDenom: string,
+    externalUrl?: string
+  ) => void;
 };
 
 export interface ValidatorInfo extends BaseCell {
