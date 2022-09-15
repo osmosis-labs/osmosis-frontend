@@ -20,7 +20,8 @@ import { useKeplr } from "./hook";
  */
 export function useConnectWalletModalRedirect(
   actionButtonProps: ComponentProps<typeof Button>,
-  onRequestClose: () => void
+  onRequestClose: () => void,
+  connectWalletMessage = "Connect wallet"
 ) {
   const keplr = useKeplr();
   const { accountStore, chainStore } = useStore();
@@ -75,9 +76,10 @@ export function useConnectWalletModalRedirect(
               height={24}
               width={24}
             />
-            Connect Wallet
+            {connectWalletMessage}
           </h6>
         </Button>
       ),
+    walletConnected: osmosisAccount.walletStatus === WalletStatus.Loaded,
   };
 }

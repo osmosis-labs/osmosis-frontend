@@ -9,7 +9,7 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { Dec, IntPretty } from "@keplr-wallet/unit";
 import { Hash } from "@keplr-wallet/crypto";
-import { Buffer } from "buffer/";
+import { Buffer } from "buffer";
 import { useRouter } from "next/router";
 
 export const GAME_CONFIG = {
@@ -115,7 +115,7 @@ const Pixels: NextPage = observer(function () {
       }&y=${pixelIndex[1] + 1}&color=${colorIndex}`;
       router.replace(pathNameWithQueryParams);
     }
-  }, [pixelIndex, colorIndex]);
+  }, [pixelIndex, colorIndex, router]);
 
   const transformWrapperRef = useRef<ReactZoomPanPinchRef | null>(null);
   // canvas

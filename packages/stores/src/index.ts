@@ -1,4 +1,5 @@
 export * from "./account";
+export * from "./bridge-history";
 export * from "./queries";
 export * from "./queries-external";
 export * from "./ibc-history";

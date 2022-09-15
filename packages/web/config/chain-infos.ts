@@ -2,12 +2,18 @@ import { ChainInfoWithExplorer } from "../stores/chain";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
+
 const chainInfos = (
   [
     {
-      rpc: "https://rpc-osmosis.keplr.app/", // test: "http://rpc-test.osmosis.zone/"
-      rest: "https://lcd-osmosis.keplr.app/", // test: "http://lcd-test.osmosis.zone/"
-      chainId: "osmosis-1", // test: "osmo-test-4"
+      rpc: IS_TESTNET
+        ? "https://rpc-test.osmosis.zone/"
+        : "https://rpc-osmosis.keplr.app/",
+      rest: IS_TESTNET
+        ? "https://lcd-test.osmosis.zone/"
+        : "https://lcd-osmosis.keplr.app/",
+      chainId: IS_TESTNET ? "osmo-test-4" : "osmosis-1",
       chainName: "Osmosis",
       bip44: {
         coinType: 118,
@@ -37,7 +43,9 @@ const chainInfos = (
         high: 0.025,
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
-      explorerUrlToTx: "https://www.mintscan.io/osmosis/txs/{txHash}",
+      explorerUrlToTx: IS_TESTNET
+        ? "https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}"
+        : "https://www.mintscan.io/osmosis/txs/{txHash}",
     },
     {
       rpc: "https://rpc-cosmoshub.keplr.app",
@@ -1811,9 +1819,13 @@ const chainInfos = (
 
 // Add normal chain infos in case of `currencies` not containing the stake or fee currency.
 chainInfos.push({
-  rpc: "https://rpc-axelar.keplr.app",
-  rest: "https://lcd-axelar.keplr.app",
-  chainId: "axelar-dojo-1",
+  rpc: IS_TESTNET
+    ? "https://axelartest-rpc.quickapi.com/"
+    : "https://rpc-axelar.keplr.app", // source: https://docs.axelar.dev/resources
+  rest: IS_TESTNET
+    ? "https://axelartest-lcd.quickapi.com/"
+    : "https://lcd-axelar.keplr.app",
+  chainId: IS_TESTNET ? "axelar-testnet-lisbon-3" : "axelar-dojo-1",
   chainName: "Axelar",
   stakeCurrency: {
     coinDenom: "AXL",
@@ -1828,8 +1840,8 @@ chainInfos.push({
   bech32Config: Bech32Address.defaultBech32Config("axelar"),
   currencies: [
     {
-      coinDenom: "USDC",
-      coinMinimalDenom: "uusdc",
+      coinDenom: IS_TESTNET ? "aUSDC" : "USDC",
+      coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
       coinDecimals: 6,
       coinGeckoId: "usd-coin",
       coinImageUrl: "/tokens/usdc.svg",
@@ -1973,7 +1985,9 @@ chainInfos.push({
     high: 0.00009,
   },
   features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
-  explorerUrlToTx: "https://axelarscan.io/tx/{txHash}",
+  explorerUrlToTx: IS_TESTNET
+    ? "https://testnet.axelarscan.io/tx/{txHash}"
+    : "https://axelarscan.io/tx/{txHash}",
 });
 
 export const ChainInfos: ChainInfoWithExplorer[] = chainInfos;

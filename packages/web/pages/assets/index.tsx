@@ -1,15 +1,11 @@
 import type { NextPage } from "next";
 import { observer } from "mobx-react-lite";
-import {
-  FunctionComponent,
-  useState,
-  ComponentProps,
-  useCallback,
-} from "react";
+import { FunctionComponent, useState } from "react";
 import { PricePretty } from "@keplr-wallet/unit";
-import { IBCCurrency } from "@keplr-wallet/types";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { useStore } from "../../stores/";
+import { makeLocalStorageKVStore } from "../../stores/kv-store";
+import { useStore } from "../../stores";
+import { ObservableTransferUIConfig } from "../../stores/assets";
 import { Overview } from "../../components/overview";
 import { AssetsTable } from "../../components/table/assets-table";
 import { DepoolingTable } from "../../components/table/depooling-table";
@@ -17,20 +13,77 @@ import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards/";
 import { Metric } from "../../components/types";
 import { MetricLoader } from "../../components/loaders";
-import { IbcTransferModal } from "../../modals/ibc-transfer";
+import {
+  IbcTransferModal,
+  BridgeTransferModal,
+  TransferAssetSelectModal,
+} from "../../modals";
+import { ConnectNonIbcWallet } from "../../modals/connect-non-ibc-wallet";
 import { useWindowSize } from "../../hooks";
+import { WalletConnectQRModal } from "../../modals";
 
 const INIT_POOL_CARD_COUNT = 6;
 
 const Assets: NextPage = observer(() => {
   const { isMobile } = useWindowSize();
+  const {
+    assetsStore,
+    chainStore: {
+      osmosis: { chainId },
+    },
+    accountStore,
+  } = useStore();
+  const { nativeBalances, ibcBalances } = assetsStore;
+  const account = accountStore.getAccount(chainId);
+
+  const [transferConfig] = useState(
+    () =>
+      new ObservableTransferUIConfig(
+        assetsStore,
+        account,
+        makeLocalStorageKVStore("transfer-ui-config")
+      )
+  );
 
   return (
     <main className="bg-background">
-      <AssetsOverview />
+      <AssetsOverview
+        onDepositIntent={() => transferConfig.startTransfer("deposit")}
+        onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
+      />
+      {transferConfig.assetSelectModal && (
+        <TransferAssetSelectModal {...transferConfig.assetSelectModal} />
+      )}
+      {transferConfig.connectNonIbcWalletModal && (
+        <ConnectNonIbcWallet {...transferConfig.connectNonIbcWalletModal} />
+      )}
+      {transferConfig.ibcTransferModal && (
+        <IbcTransferModal {...transferConfig.ibcTransferModal} />
+      )}
+      {transferConfig.bridgeTransferModal && (
+        <BridgeTransferModal {...transferConfig.bridgeTransferModal} />
+      )}
+      {transferConfig.walletConnectEth.sessionConnectUri && (
+        <WalletConnectQRModal
+          isOpen={true}
+          uri={transferConfig.walletConnectEth.sessionConnectUri || ""}
+          onRequestClose={() => transferConfig.walletConnectEth.disable()}
+        />
+      )}
+      <AssetsTable
+        nativeBalances={nativeBalances}
+        ibcBalances={ibcBalances}
+        onDepositIntent={() => transferConfig.startTransfer("deposit")}
+        onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
+        onDeposit={(chainId, coinDenom) =>
+          transferConfig.transferAsset("deposit", chainId, coinDenom)
+        }
+        onWithdraw={(chainId, coinDenom) =>
+          transferConfig.transferAsset("withdraw", chainId, coinDenom)
+        }
+      />
       {!isMobile && <PoolAssets />}
-      <ChainAssets />
-      <section className="bg-surface py-2">
+      <section className="bg-surface">
         <DepoolingTable
           className="p-10 md:p-5 max-w-container mx-auto"
           tableClassName="md:w-screen md:-mx-5"
@@ -40,7 +93,10 @@ const Assets: NextPage = observer(() => {
   );
 });
 
-const AssetsOverview: FunctionComponent = observer(() => {
+const AssetsOverview: FunctionComponent<{
+  onWithdrawIntent: () => void;
+  onDepositIntent: () => void;
+}> = observer(({ onDepositIntent, onWithdrawIntent }) => {
   const { assetsStore } = useStore();
   const { isMobile } = useWindowSize();
 
@@ -62,6 +118,22 @@ const AssetsOverview: FunctionComponent = observer(() => {
   return (
     <Overview
       title={isMobile ? "My Osmosis Assets" : <h4>My Osmosis Assets</h4>}
+      titleButtons={
+        isMobile
+          ? undefined
+          : [
+              {
+                label: "Deposit",
+                onClick: onDepositIntent,
+              },
+              {
+                label: "Withdraw",
+                type: "outline",
+                className: "bg-primary-200/30",
+                onClick: onWithdrawIntent,
+              },
+            ]
+      }
       primaryOverviewLabels={[
         {
           label: "Total Assets",
@@ -94,96 +166,17 @@ const PoolAssets: FunctionComponent = observer(() => {
     .osmosis!.queryGammPoolShare.getOwnPools(bech32Address);
   const [showAllPools, setShowAllPools] = useState(false);
 
+  if (ownedPoolIds.length === 0) {
+    return null;
+  }
+
   return (
     <section className="bg-background">
-      <div className="max-w-container mx-auto md:px-4 px-10 py-5">
+      <div className="max-w-container mx-auto md:px-4 p-10">
         <h5>My Pools</h5>
         <PoolCards {...{ showAllPools, ownedPoolIds, setShowAllPools }} />
       </div>
     </section>
-  );
-});
-
-const ChainAssets: FunctionComponent = observer(() => {
-  const {
-    assetsStore: { nativeBalances, ibcBalances },
-  } = useStore();
-
-  const [transferModal, setTransferModal] = useState<ComponentProps<
-    typeof IbcTransferModal
-  > | null>(null);
-
-  const openTransferModal = useCallback(
-    (mode: "deposit" | "withdraw", chainId: string, coinDenom: string) => {
-      const balance = ibcBalances.find(
-        (bal) =>
-          bal.chainInfo.chainId === chainId &&
-          bal.balance.currency.coinDenom === coinDenom
-      );
-
-      if (!balance) {
-        setTransferModal(null);
-        return;
-      }
-
-      const currency = balance.balance.currency;
-      // IBC multihop currency
-      const modifiedCurrency =
-        mode === "deposit" && balance.depositingSrcMinDenom
-          ? {
-              coinDecimals: currency.coinDecimals,
-              coinGeckoId: currency.coinGeckoId,
-              coinImageUrl: currency.coinImageUrl,
-              coinDenom: currency.coinDenom,
-              coinMinimalDenom: "",
-              paths: (currency as IBCCurrency).paths.slice(0, 1),
-              originChainId: balance.chainInfo.chainId,
-              originCurrency: {
-                coinDecimals: currency.coinDecimals,
-                coinImageUrl: currency.coinImageUrl,
-                coinDenom: currency.coinDenom,
-                coinMinimalDenom: balance.depositingSrcMinDenom,
-              },
-            }
-          : currency;
-
-      const {
-        chainInfo: { chainId: counterpartyChainId },
-        sourceChannelId,
-        destChannelId,
-      } = balance;
-
-      setTransferModal({
-        isOpen: true,
-        onRequestClose: () => setTransferModal(null),
-        currency: modifiedCurrency as IBCCurrency,
-        counterpartyChainId: counterpartyChainId,
-        sourceChannelId,
-        destChannelId,
-        isWithdraw: mode === "withdraw",
-        ics20ContractAddress:
-          "ics20ContractAddress" in balance
-            ? balance.ics20ContractAddress
-            : undefined,
-      });
-    },
-    [ibcBalances, setTransferModal]
-  );
-
-  return (
-    <>
-      {transferModal && <IbcTransferModal {...transferModal} />}
-      <AssetsTable
-        nativeBalances={nativeBalances}
-        ibcBalances={ibcBalances}
-        onDeposit={(chainId, coinDenom) =>
-          openTransferModal("deposit", chainId, coinDenom)
-        }
-        onWithdraw={(chainId, coinDenom) =>
-          openTransferModal("withdraw", chainId, coinDenom)
-        }
-      />
-    </>
   );
 });
 

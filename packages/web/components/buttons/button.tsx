@@ -38,10 +38,10 @@ export const Button: FunctionComponent<Props> = ({
           color === "primary" && size === "xs" && type === "outline",
         [`${!disabled ? "hover:bg-secondary-100/60" : ""}`]:
           color === "secondary" && type === "outline" && size === "xs",
-        [`border border-2 border-primary-200 ${
+        [`border-2 border-primary-200 ${
           !disabled ? "hover:border-primary-100" : ""
         }`]: (color === "primary" || size !== "xs") && type === "outline",
-        [`border border-2 border-secondary-200 ${
+        [`border-2 border-secondary-200 ${
           !disabled ? "hover:border-secondary-100" : ""
         }`]: color === "secondary" && size === "xs" && type === "outline",
         "bg-error": color === "error",

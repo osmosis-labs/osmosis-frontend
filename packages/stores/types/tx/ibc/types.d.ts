@@ -10,7 +10,7 @@ export interface IbcTransferSender {
         ics20ContractAddress: string;
     };
 }
-export declare type IbcTransferCounterparty = Omit<IbcTransferSender, "contractTransfer"> & {
+export declare type IbcTransferCounterparty = Omit<IbcTransferSender, "account" | "contractTransfer"> & {
     /** If provided, will override the counterparty account address. */
-    bech32AddressOverride?: string;
+    account: (AccountSetBase & CosmosAccount) | string;
 };
