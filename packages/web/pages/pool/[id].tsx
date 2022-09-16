@@ -177,6 +177,7 @@ const Pool: FunctionComponent = observer(() => {
       UnPoolWhitelistedPoolIds[pool.id] !== undefined &&
       poolDetailStore?.userCanDepool) ||
     account.txTypeInProgress === "unPoolWhitelistedPool";
+
   const showLiquidityMiningSection =
     poolDetailStore?.isIncentivized ||
     (externalGuages && externalGuages.length > 0);
@@ -594,46 +595,44 @@ const Pool: FunctionComponent = observer(() => {
             </div>
           )}
         </div>
-        {superfluidPoolStore?.superfluid &&
-          superfluidPoolStore.superfluid.delegations &&
-          superfluidPoolStore?.superfluid.delegations.length > 0 && (
-            <div className="max-w-container mx-auto md:p-5 p-10 flex flex-col gap-4">
-              {isMobile ? (
-                <span className="subtitle2">My Superfluid Stake</span>
-              ) : (
-                <h5>Superfluid Staking</h5>
-              )}
-              {superfluidPoolStore.superfluid.upgradeableLpLockIds ? (
-                <GoSuperfluidCard
-                  goSuperfluid={() => setShowSuperfluidValidatorsModal(true)}
-                  isMobile={isMobile}
-                />
-              ) : (
-                superfluidPoolStore.superfluid.delegations.map(
-                  (
-                    {
-                      validatorName,
-                      validatorImgSrc,
-                      validatorCommission,
-                      amount,
-                      apr,
-                    },
-                    index
-                  ) => (
-                    <SuperfluidValidatorCard
-                      key={index}
-                      validatorName={validatorName}
-                      validatorImgSrc={validatorImgSrc}
-                      validatorCommission={validatorCommission?.toString()}
-                      delegation={amount.trim(true).toString()}
-                      apr={apr.maxDecimals(2).trim(true).toString()}
-                      isMobile={isMobile}
-                    />
-                  )
+        {superfluidPoolStore?.superfluid && (
+          <div className="max-w-container mx-auto md:p-5 p-10 flex flex-col gap-4">
+            {isMobile ? (
+              <span className="subtitle2">My Superfluid Stake</span>
+            ) : (
+              <h5>Superfluid Staking</h5>
+            )}
+            {superfluidPoolStore.superfluid.upgradeableLpLockIds ? (
+              <GoSuperfluidCard
+                goSuperfluid={() => setShowSuperfluidValidatorsModal(true)}
+                isMobile={isMobile}
+              />
+            ) : (
+              superfluidPoolStore.superfluid.delegations?.map(
+                (
+                  {
+                    validatorName,
+                    validatorImgSrc,
+                    validatorCommission,
+                    amount,
+                    apr,
+                  },
+                  index
+                ) => (
+                  <SuperfluidValidatorCard
+                    key={index}
+                    validatorName={validatorName}
+                    validatorImgSrc={validatorImgSrc}
+                    validatorCommission={validatorCommission?.toString()}
+                    delegation={amount.trim(true).toString()}
+                    apr={apr.maxDecimals(2).trim(true).toString()}
+                    isMobile={isMobile}
+                  />
                 )
-              )}
-            </div>
-          )}
+              )
+            )}
+          </div>
+        )}
         {showPoolBondingTables && (
           <div className="max-w-container mx-auto md:p-5 p-10">
             <div className="flex items-center place-content-between">
