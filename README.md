@@ -67,3 +67,17 @@ yarn build:frontier && yarn start:frontier
 ```
 
 Otherwise the non-frontier commands can be used with the env var set to true.
+
+### Testnet
+
+Dev:
+
+```bash
+yarn build:testnet && yarn dev:testnet
+```
+
+Deploy:
+
+```bash
+yarn build:testnet && yarn start:testnet
+```

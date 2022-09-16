@@ -150,10 +150,14 @@ export const TokenSelect: FunctionComponent<
               </div>
             )}
             <div className="relative flex flex-col">
-              <div className="absolute -bottom-2.5 md:-bottom-2 flex items-center">
-                {isMobile ? <h6>{selectedDenom}</h6> : <h5>{selectedDenom}</h5>}
+              <div className="absolute -bottom-2.5 md:-bottom- flex items-center">
+                {isMobile ? (
+                  <span className="subtitle1">{selectedDenom}</span>
+                ) : (
+                  <h5>{selectedDenom}</h5>
+                )}
                 {canSelectTokens && (
-                  <div className="w-5 ml-3 md:ml-2">
+                  <div className="w-5 ml-3 md:ml-2 md:pb-1.5">
                     <Image
                       className={`opacity-40 group-hover:opacity-100 transition-transform duration-100 ${
                         isSelectOpen ? "rotate-180" : "rotate-0"
