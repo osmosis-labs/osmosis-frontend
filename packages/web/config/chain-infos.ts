@@ -1328,7 +1328,7 @@ const chainInfos = (
         average: 0.0007,
         high: 0.0009,
       },
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx:
         "https://explorer.injective.network/transaction/{txHash}",
     },
@@ -1515,7 +1515,7 @@ const chainInfos = (
         average: 25000000000,
         high: 40000000000,
       },
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx: "https://www.mintscan.io/evmos/txs/{txHash}",
     },
     {
