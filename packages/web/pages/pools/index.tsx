@@ -187,7 +187,7 @@ const Pools: NextPage = observer(function () {
               );
             } catch (e) {
               setIsCreatingPool(false);
-              console.log(e);
+              console.error(e);
             }
           }}
         />

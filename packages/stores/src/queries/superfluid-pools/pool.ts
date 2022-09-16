@@ -98,8 +98,6 @@ export class ObservableQuerySuperfluidPool {
   get upgradeableLpLockIds() {
     if (!this.isSuperfluid) return;
 
-    console.log(this.queryPoolDetails.lockableDurations);
-
     if (this.queryPoolDetails.lockableDurations.length > 0) {
       return this.queries.queryAccountLocked
         .get(this.bech32Address)

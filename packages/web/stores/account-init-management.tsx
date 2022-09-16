@@ -92,7 +92,7 @@ export const AccountInitManagement: FunctionComponent = observer(
         keplr.getKeplr().then((keplrAPI) => {
           if (keplrAPI && keplrAPI instanceof KeplrWalletConnectV1) {
             keplrAPI.connector.killSession().catch((e) => {
-              console.log(e);
+              console.error(e);
             });
           }
 
