@@ -91,7 +91,7 @@ export class ObservableTransferUIConfig {
    *  User wants to transfer asset, but the counterparty IBC chain and coinDenom are TBD. */
   @action
   startTransfer(direction: TransferDir) {
-    this.setupAssetSelectModal(direction, (denom, sourceChainKey) => {
+    this.launchAssetSelectModal(direction, (denom, sourceChainKey) => {
       if (sourceChainKey) {
         // bridge integration
         const bridgedBalance = this.assetsStore.ibcBalances.find(
@@ -234,7 +234,7 @@ export class ObservableTransferUIConfig {
     };
   }
 
-  protected async setupAssetSelectModal(
+  protected async launchAssetSelectModal(
     direction: "deposit" | "withdraw",
     onSelectAsset: (
       denom: string,
@@ -242,24 +242,25 @@ export class ObservableTransferUIConfig {
       sourceChainKey?: SourceChainKey
     ) => void
   ) {
+    const inAppBridgeAssets = this.assetsStore.ibcBalances.filter(
+      (asset) => !asset.withdrawUrlOverride && !asset.depositUrlOverride
+    );
     const tokens = await Promise.all(
-      this.assetsStore.ibcBalances.map(
-        async ({ balance, originBridgeInfo }) => {
-          const defaultSourceChainId = await this.kvStore.get<
-            string | undefined
-          >(makeAssetSrcNetworkPreferredKey(balance.denom));
+      inAppBridgeAssets.map(async ({ balance, originBridgeInfo }) => {
+        const defaultSourceChainId = await this.kvStore.get<string | undefined>(
+          makeAssetSrcNetworkPreferredKey(balance.denom)
+        );
 
-          // override default source chain if prev selected by
-          if (originBridgeInfo && defaultSourceChainId)
-            originBridgeInfo.defaultSourceChainId =
-              (defaultSourceChainId as SourceChainKey) ?? undefined;
+        // override default source chain if prev selected by
+        if (originBridgeInfo && defaultSourceChainId)
+          originBridgeInfo.defaultSourceChainId =
+            (defaultSourceChainId as SourceChainKey) ?? undefined;
 
-          return {
-            token: balance,
-            originBridgeInfo,
-          };
-        }
-      )
+        return {
+          token: balance,
+          originBridgeInfo,
+        };
+      })
     );
 
     runInAction(() => {
