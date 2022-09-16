@@ -109,27 +109,21 @@ export class ObservableQuerySuperfluidPool {
   }
 
   @computed
-  get notDelegatedLockedSfsLpShares() {
+  get superfluid() {
     if (!this.isSuperfluid) return;
 
-    return (
+    const undelegatedLockedLpShares =
       (this.queries.querySuperfluidDelegations
         .getQuerySuperfluidDelegations(this.bech32Address)
         .getDelegations(this.queryPoolDetails.poolShareCurrency)?.length ===
         0 &&
         this.upgradeableLpLockIds &&
         this.upgradeableLpLockIds.lockIds.length > 0) ??
-      false
-    );
-  }
-
-  @computed
-  get superfluid() {
-    if (!this.isSuperfluid) return;
+      false;
 
     const upgradeableLpLockIds = this.upgradeableLpLockIds;
 
-    return this.notDelegatedLockedSfsLpShares
+    return undelegatedLockedLpShares
       ? { upgradeableLpLockIds }
       : {
           delegations: this.queries.querySuperfluidDelegations

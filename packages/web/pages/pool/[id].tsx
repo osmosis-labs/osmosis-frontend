@@ -82,28 +82,30 @@ const Pool: FunctionComponent = observer(() => {
   const [superfluidPoolStore, setSuperfluidPoolStore] =
     useState<ObservableQuerySuperfluidPool | null>(null);
   useEffect(() => {
-    if (poolExists && pool && !poolDetailStore)
-      setPoolDetailStore(
-        new ObservableQueryPoolDetails(
-          bech32Address,
-          fiat,
-          pool,
-          queryOsmosis,
-          priceStore
-        )
+    let newPoolDetailStore;
+    if (poolExists && pool && !poolDetailStore) {
+      newPoolDetailStore = new ObservableQueryPoolDetails(
+        bech32Address,
+        fiat,
+        pool,
+        queryOsmosis,
+        priceStore
       );
-    if (poolDetailStore && !superfluidPoolStore)
+    }
+    if (newPoolDetailStore && !superfluidPoolStore) {
+      setPoolDetailStore(newPoolDetailStore);
       setSuperfluidPoolStore(
         new ObservableQuerySuperfluidPool(
           bech32Address,
           fiat,
-          poolDetailStore,
+          newPoolDetailStore,
           queriesStore.get(chainId).cosmos.queryValidators,
           queriesStore.get(chainId).cosmos.queryInflation,
           queryOsmosis,
           priceStore
         )
       );
+    }
   }, [poolExists, pool, bech32Address, fiat, queryOsmosis, priceStore]);
 
   // Manage liquidity + bond LP tokens (modals) state
@@ -154,9 +156,7 @@ const Pool: FunctionComponent = observer(() => {
         duration: plugin.Duration;
         superfluidApr?: RatePretty;
       }[]
-    | undefined = superfluidPoolStore?.isSuperfluid
-    ? superfluidPoolStore.superfluidGauges
-    : poolDetailStore?.gauges;
+    | undefined = superfluidPoolStore?.superfluidGauges;
 
   const [showSuperfluidValidatorModal, do_setShowSuperfluidValidatorsModal] =
     useState(false);
@@ -579,7 +579,7 @@ const Pool: FunctionComponent = observer(() => {
           )}
           {lockupGauges && pool && (
             <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
-              {lockupGauges.map(({ duration, superfluidApr }, i) => (
+              {lockupGauges.map(({ duration, superfluidApr }) => (
                 <PoolGaugeCard
                   key={duration.humanize()}
                   days={duration.humanize()}
@@ -587,11 +587,7 @@ const Pool: FunctionComponent = observer(() => {
                     .computeAPY(pool.id, duration, priceStore, fiat)
                     .maxDecimals(2)
                     .toString()}
-                  superfluidApr={
-                    superfluidApr
-                      ? superfluidApr.maxDecimals(2).toString()
-                      : undefined
-                  }
+                  superfluidApr={superfluidApr?.maxDecimals(2).toString()}
                   isMobile={isMobile}
                 />
               ))}

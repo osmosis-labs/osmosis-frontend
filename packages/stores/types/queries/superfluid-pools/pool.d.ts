@@ -48,7 +48,6 @@ export declare class ObservableQuerySuperfluidPool {
         amount: import("@keplr-wallet/unit").CoinPretty;
         lockIds: string[];
     } | undefined;
-    get notDelegatedLockedSfsLpShares(): boolean | undefined;
     get superfluid(): {
         upgradeableLpLockIds: {
             amount: import("@keplr-wallet/unit").CoinPretty;
