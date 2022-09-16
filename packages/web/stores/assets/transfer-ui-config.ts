@@ -243,7 +243,10 @@ export class ObservableTransferUIConfig {
     ) => void
   ) {
     const inAppBridgeAssets = this.assetsStore.ibcBalances.filter(
-      (asset) => !asset.withdrawUrlOverride && !asset.depositUrlOverride
+      (asset) =>
+        !asset.withdrawUrlOverride &&
+        !asset.depositUrlOverride &&
+        !asset.isUnstable
     );
     const tokens = await Promise.all(
       inAppBridgeAssets.map(async ({ balance, originBridgeInfo }) => {
