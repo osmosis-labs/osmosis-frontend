@@ -9,7 +9,7 @@ import {
   ObservableQueryIncentivizedPools,
   ObservableQueryLockableDurations,
 } from "../pool-incentives";
-import { ObservableQueryGuage, ObservableQueryGuageById } from "../incentives";
+import { ObservableQueryGuage } from "../incentives";
 import {
   ObservableQueryAccountLocked,
   ObservableQueryAccountLockedCoins,
@@ -38,6 +38,16 @@ export class ObservableQueryPoolDetails {
   }
 
   @computed
+  get pool() {
+    return this.queryPool;
+  }
+
+  @computed
+  get poolShareCurrency() {
+    return this.queries.queryGammPoolShare.getShareCurrency(this.queryPool.id);
+  }
+
+  @computed
   get isIncentivized() {
     return this.queries.queryIncentivizedPools.isIncentivized(
       this.queryPool.id
@@ -55,23 +65,47 @@ export class ObservableQueryPoolDetails {
   }
 
   @computed
-  get lockupGauges() {
-    return this.queries.queryLockableDurations.lockableDurations.map(
-      (duration, index) => {
+  get longestDuration(): Duration {
+    return this.lockableDurations[this.lockableDurations.length - 1];
+  }
+
+  @computed
+  get gauges() {
+    return this.lockableDurations
+      .map((duration) => {
+        const guageId =
+          this.queries.queryIncentivizedPools.getIncentivizedGaugeId(
+            this.queryPool.id,
+            duration
+          );
+        if (!guageId) return;
+
+        const gauge = this.queries.queryGauge.get(guageId);
+
         const apr = this.queries.queryIncentivizedPools.computeAPY(
           this.queryPool.id,
-          duration,
+          gauge.lockupDuration,
           this.priceStore,
           this.fiatCurrency
         );
 
         return {
-          id: index.toString(),
-          apr,
+          id: guageId,
           duration,
+          apr,
+          isLoading: gauge.isFetching,
         };
-      }
-    );
+      })
+      .filter(
+        (
+          gauge
+        ): gauge is {
+          id: string;
+          duration: Duration;
+          apr: RatePretty;
+          isLoading: boolean;
+        } => gauge !== undefined
+      );
   }
 
   @computed
@@ -173,24 +207,6 @@ export class ObservableQueryPoolDetails {
         }[]
       )
       .flat();
-  }
-
-  @computed
-  get gauges() {
-    return this.lockableDurations
-      .map((duration) => {
-        const guageId =
-          this.queries.queryIncentivizedPools.getIncentivizedGaugeId(
-            this.queryPool.id,
-            duration
-          );
-        if (!guageId) return;
-
-        return this.queries.queryGauge.get(guageId);
-      })
-      .filter(
-        (gauge): gauge is ObservableQueryGuageById => gauge !== undefined
-      );
   }
 
   @computed

@@ -4,7 +4,7 @@ import { PricePretty, RatePretty, CoinPretty } from "@keplr-wallet/unit";
 import { IPriceStore } from "../../price";
 import { ObservableQueryGammPoolShare } from "../pool-share";
 import { ObservableQueryIncentivizedPools, ObservableQueryLockableDurations } from "../pool-incentives";
-import { ObservableQueryGuage, ObservableQueryGuageById } from "../incentives";
+import { ObservableQueryGuage } from "../incentives";
 import { ObservableQueryAccountLocked, ObservableQueryAccountLockedCoins, ObservableQueryAccountUnlockingCoins } from "../lockup";
 import { ObservableQueryPool } from "./pool";
 /** Convenience store for getting common details of a pool via many other query stores. */
@@ -31,13 +31,17 @@ export declare class ObservableQueryPoolDetails {
         queryGauge: ObservableQueryGuage;
         queryLockableDurations: ObservableQueryLockableDurations;
     }, priceStore: IPriceStore);
+    get pool(): ObservableQueryPool;
+    get poolShareCurrency(): import("@keplr-wallet/types").Currency;
     get isIncentivized(): boolean;
     get totalValueLocked(): PricePretty;
     get lockableDurations(): Duration[];
-    get lockupGauges(): {
+    get longestDuration(): Duration;
+    get gauges(): {
         id: string;
-        apr: RatePretty;
         duration: Duration;
+        apr: RatePretty;
+        isLoading: boolean;
     }[];
     get userLockedValue(): PricePretty;
     get userBondedValue(): PricePretty;
@@ -58,7 +62,6 @@ export declare class ObservableQueryPoolDetails {
         lockIds: string[];
         endTime: Date;
     }[];
-    get gauges(): ObservableQueryGuageById[];
     get userCanDepool(): boolean;
     queryExternalGauges: (allowedGauges: {
         gaugeId: string;

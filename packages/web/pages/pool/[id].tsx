@@ -56,7 +56,7 @@ const Pool: FunctionComponent = observer(() => {
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
   const pool = queryOsmosis.queryGammPools.getPool(poolId as string);
-  const { bech32Address } = accountStore.getAccount(chainId);
+  let { bech32Address } = accountStore.getAccount(chainId);
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
 
   // eject to pools page if pool does not exist
@@ -66,6 +66,8 @@ const Pool: FunctionComponent = observer(() => {
       router.push("/pools");
     }
   }, [poolExists]);
+
+  // bech32Address = "osmo10f9tj5sh4km2x6edu0xzd3tc6n02rvja4kxnnn";
 
   // initialize pool data stores once root pool store is loaded
   const [poolDetailStore, setPoolDetailStore] =
@@ -80,7 +82,7 @@ const Pool: FunctionComponent = observer(() => {
   const [superfluidPoolStore, setSuperfluidPoolStore] =
     useState<ObservableQuerySuperfluidPool | null>(null);
   useEffect(() => {
-    if (poolExists && pool) {
+    if (poolExists && pool && !poolDetailStore)
       setPoolDetailStore(
         new ObservableQueryPoolDetails(
           bech32Address,
@@ -90,18 +92,18 @@ const Pool: FunctionComponent = observer(() => {
           priceStore
         )
       );
+    if (poolDetailStore && !superfluidPoolStore)
       setSuperfluidPoolStore(
         new ObservableQuerySuperfluidPool(
           bech32Address,
           fiat,
-          pool,
+          poolDetailStore,
           queriesStore.get(chainId).cosmos.queryValidators,
           queriesStore.get(chainId).cosmos.queryInflation,
           queryOsmosis,
           priceStore
         )
       );
-    }
   }, [poolExists, pool, bech32Address, fiat, queryOsmosis, priceStore]);
 
   // Manage liquidity + bond LP tokens (modals) state
@@ -153,8 +155,8 @@ const Pool: FunctionComponent = observer(() => {
         superfluidApr?: RatePretty;
       }[]
     | undefined = superfluidPoolStore?.isSuperfluid
-    ? superfluidPoolStore.lockupGauges
-    : poolDetailStore?.lockupGauges;
+    ? superfluidPoolStore.superfluidGauges
+    : poolDetailStore?.gauges;
 
   const [showSuperfluidValidatorModal, do_setShowSuperfluidValidatorsModal] =
     useState(false);
@@ -331,7 +333,7 @@ const Pool: FunctionComponent = observer(() => {
             console.error(e);
           }
         } else if (
-          superfluidPoolStore.superfluid.superfluidLPShares &&
+          superfluidPoolStore.superfluid.superfluidLpShares &&
           lockLPTokensConfig
         ) {
           try {
@@ -363,7 +365,7 @@ const Pool: FunctionComponent = observer(() => {
       superfluidPoolStore?.superfluid,
       superfluidPoolStore?.superfluid?.upgradeableLpLockIds,
       superfluidPoolStore?.superfluid?.upgradeableLpLockIds?.lockIds,
-      superfluidPoolStore?.superfluid?.superfluidLPShares,
+      superfluidPoolStore?.superfluid?.superfluidLpShares,
       lockLPTokensConfig.sendCurrency,
       lockLPTokensConfig.amount,
     ]
@@ -575,23 +577,21 @@ const Pool: FunctionComponent = observer(() => {
               )}
             </div>
           )}
-          {pool && poolDetailStore?.gauges && poolDetailStore?.isIncentivized && (
+          {lockupGauges && pool && (
             <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
-              {poolDetailStore.gauges.map((guage, i) => (
+              {lockupGauges.map(({ duration, superfluidApr }, i) => (
                 <PoolGaugeCard
-                  key={i}
-                  days={guage.lockupDuration.humanize()}
+                  key={duration.humanize()}
+                  days={duration.humanize()}
                   apr={queryOsmosis.queryIncentivizedPools
-                    .computeAPY(pool.id, guage.lockupDuration, priceStore, fiat)
+                    .computeAPY(pool.id, duration, priceStore, fiat)
                     .maxDecimals(2)
                     .toString()}
-                  isLoading={
-                    guage.isFetching ||
-                    queryOsmosis.queryIncentivizedPools.isAprFetching
+                  superfluidApr={
+                    superfluidApr
+                      ? superfluidApr.maxDecimals(2).toString()
+                      : undefined
                   }
-                  superfluidApr={superfluidPoolStore?.superfluidApr
-                    .maxDecimals(2)
-                    .toString()}
                   isMobile={isMobile}
                 />
               ))}
