@@ -56,7 +56,7 @@ const Pool: FunctionComponent = observer(() => {
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
   const pool = queryOsmosis.queryGammPools.getPool(poolId as string);
-  let { bech32Address } = accountStore.getAccount(chainId);
+  const { bech32Address } = accountStore.getAccount(chainId);
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
 
   // eject to pools page if pool does not exist
@@ -66,8 +66,6 @@ const Pool: FunctionComponent = observer(() => {
       router.push("/pools");
     }
   }, [poolExists]);
-
-  // bech32Address = "osmo10f9tj5sh4km2x6edu0xzd3tc6n02rvja4kxnnn";
 
   // initialize pool data stores once root pool store is loaded
   const [poolDetailStore, setPoolDetailStore] =

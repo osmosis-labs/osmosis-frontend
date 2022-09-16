@@ -137,7 +137,7 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
             Math.abs(
               Number.parseInt(lock.duration.replace("s", "")) -
                 duration.asSeconds()
-            ) <= 60
+            ) <= 3_700
           );
         })
         .filter((lock) => {
