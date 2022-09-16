@@ -1,11 +1,13 @@
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
-import Lottie from "react-lottie";
 import classNames from "classnames";
 import { truncateString } from "../../utils";
 import { useWindowSize } from "../../../hooks";
 import { CustomClasses, LoadingProps } from "../../types";
 import { Animation as AnimationProps } from "../types";
+
+const Lottie = dynamic(() => import("react-lottie"), { ssr: false });
 
 /** Illustrates a bespoke or IBC bridge transfer for user info. */
 export const BridgeAnimation: FunctionComponent<
