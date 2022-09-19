@@ -867,7 +867,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-326",
     destChannelId: "channel-5",
     coinMinimalDenom: "stuatom",
-    isLiquidStaked: true,
+    liquidStakedLowLiquidityPoolIds: ["802"],
   },
   {
     counterpartyChainId: "juno-1",

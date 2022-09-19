@@ -241,7 +241,7 @@ const Pool: FunctionComponent = observer(() => {
     addLiquidityConfig.shareOutAmount,
   ]);
   const removeLiquidity = useCallback(async () => {
-    const hasLiquidStakedAsset =
+    const liquidStakedPoolIds =
       IBCAssetInfos.find((ibcAssetInfo) => {
         const chainConfig = chainStore.getChainFromCurrency(
           pool?.poolAssets.map((pa) => pa.amount.denom)[1]!
@@ -256,11 +256,12 @@ const Pool: FunctionComponent = observer(() => {
         );
 
         if (chainCurrency) {
-          return ibcAssetInfo.isLiquidStaked;
+          return ibcAssetInfo.liquidStakedLowLiquidityPoolIds;
         } else {
           return false;
         }
-      })?.isLiquidStaked ?? false;
+      })?.liquidStakedLowLiquidityPoolIds ?? [];
+    const hasLiquidStakedAsset = pool && liquidStakedPoolIds.includes(pool.id);
 
     try {
       await account.osmosis.sendExitPoolMsg(
