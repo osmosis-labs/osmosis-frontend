@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { t, useTranslation } from "react-multi-lang";
+import { useTranslation } from "react-multi-lang";
 import { Formatted } from "../localization";
 import { MobileProps } from "../types";
 
@@ -8,7 +8,7 @@ export const GoSuperfluidCard: FunctionComponent<
     goSuperfluid: () => void;
   } & MobileProps
 > = ({ goSuperfluid, isMobile = false }) => {
-  t = useTranslation();
+  const t = useTranslation();
   return (
     <div className="mt-5 bg-card p-5 rounded-2xl flex md:flex-col gap-2 items-center justify-between font-body">
       <div>

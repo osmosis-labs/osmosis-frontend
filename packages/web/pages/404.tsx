@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { NextPage } from "next";
-import { t, useTranslation } from "react-multi-lang";
+import { useTranslation } from "react-multi-lang";
 
 const Custom404: NextPage = () => {
   const t = useTranslation();
