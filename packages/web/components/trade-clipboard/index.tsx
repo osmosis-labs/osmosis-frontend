@@ -269,14 +269,6 @@ export const TradeClipboard: FunctionComponent<{
           onClick={(e) => {
             e.stopPropagation();
             setIsSettingOpen(!isSettingOpen);
-            logEvent([
-              EventName.Swap.settingClicked,
-              {
-                fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                isOnHome: !isInModal,
-              },
-            ]);
             closeTokenSelectDropdowns();
           }}
         >
@@ -320,6 +312,12 @@ export const TradeClipboard: FunctionComponent<{
 
                       slippageConfig.select(slippage.index);
 
+                      logEvent([
+                        EventName.Swap.slippageToleranceSet,
+                        {
+                          percentage: slippageConfig.slippage.toString(),
+                        },
+                      ]);
                       trackEvent(
                         MakeSwapPageEvents.setSlippageTolerance(
                           tradeTokenInConfig.sendCurrency.coinDenom,
@@ -366,6 +364,12 @@ export const TradeClipboard: FunctionComponent<{
                   onInput={(value) => {
                     slippageConfig.setManualSlippage(value);
 
+                    logEvent([
+                      EventName.Swap.slippageToleranceSet,
+                      {
+                        percentage: slippageConfig.slippage.toString(),
+                      },
+                    ]);
                     trackEvent(
                       MakeSwapPageEvents.setSlippageTolerance(
                         tradeTokenInConfig.sendCurrency.coinDenom,

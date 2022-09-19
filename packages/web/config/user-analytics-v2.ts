@@ -2,6 +2,7 @@ export type EventProperties = {
   fromToken: string;
   toToken: string;
   isOnHome: boolean;
+  percentage: string;
   poolId: string;
   poolName: string;
   poolWeight: string;
@@ -50,7 +51,7 @@ export const EventName = {
     pageViewed: "Swap: Page viewed",
     maxClicked: "Swap: Max clicked",
     halfClicked: "Swap: Half clicked",
-    settingClicked: "Swap: Setting clicked",
+    slippageToleranceSet: "Swap: Slippage tolerance set",
     switchClicked: "Swap: Switch clicked",
     swapClicked: "Swap: Swap clicked",
   },
