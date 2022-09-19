@@ -241,12 +241,8 @@ const AxelarTransfer: FunctionComponent<
             ? EventName.Assets.withdrawAssetStarted
             : EventName.Assets.depositAssetStarted,
           {
-            tokenName: isWithdraw
-              ? withdrawAmountConfig.sendCurrency.coinDenom
-              : originCurrency.coinDenom,
-            tokenAmount: isWithdraw
-              ? Number(withdrawAmountConfig.amount)
-              : Number(depositAmount),
+            tokenName: originCurrency.coinDenom,
+            tokenAmount: Number(amount),
             bridge: "axelar",
           },
         ]);
@@ -271,8 +267,8 @@ const AxelarTransfer: FunctionComponent<
                 logEvent([
                   EventName.Assets.withdrawAssetCompleted,
                   {
-                    tokenName: withdrawAmountConfig.sendCurrency.coinDenom,
-                    tokenAmount: Number(withdrawAmountConfig.amount),
+                    tokenName: originCurrency.coinDenom,
+                    tokenAmount: Number(amount),
                     bridge: "axelar",
                   },
                 ]);
@@ -303,7 +299,7 @@ const AxelarTransfer: FunctionComponent<
                   EventName.Assets.depositAssetCompleted,
                   {
                     tokenName: originCurrency.coinDenom,
-                    tokenAmount: Number(withdrawAmountConfig.amount),
+                    tokenAmount: Number(amount),
                     bridge: "axelar",
                   },
                 ]);
