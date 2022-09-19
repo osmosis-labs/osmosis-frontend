@@ -362,8 +362,14 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
     return (
       <>
         {pools.map(([pool, _, metrics]) => (
-          <div
+          <PoolCard
             key={pool.id}
+            poolId={pool.id}
+            poolAssets={pool.poolAssets.map((asset) => asset.amount.currency)}
+            poolMetrics={metrics}
+            isSuperfluid={queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+              pool.id
+            )}
             onClick={() =>
               logEvent([
                 EventName.Assets.myPoolsCardClicked,
@@ -382,16 +388,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                 },
               ])
             }
-          >
-            <PoolCard
-              poolId={pool.id}
-              poolAssets={pool.poolAssets.map((asset) => asset.amount.currency)}
-              poolMetrics={metrics}
-              isSuperfluid={queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
-                pool.id
-              )}
-            />
-          </div>
+          />
         ))}
       </>
     );

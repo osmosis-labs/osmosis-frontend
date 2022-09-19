@@ -336,8 +336,18 @@ const Pools: NextPage = observer(function () {
                   }
 
                   return (
-                    <div
+                    <PoolCard
                       key={myPoolId}
+                      poolId={myPoolId}
+                      poolAssets={myPool.poolAssets.map((poolAsset) => ({
+                        coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+                        coinDenom: poolAsset.amount.currency.coinDenom,
+                      }))}
+                      poolMetrics={myPoolMetrics}
+                      isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
+                        myPoolId
+                      )}
+                      mobileShowFirstLabel
                       onClick={() =>
                         logEvent([
                           EventName.Pools.myPoolsCardClicked,
@@ -361,20 +371,7 @@ const Pools: NextPage = observer(function () {
                           },
                         ])
                       }
-                    >
-                      <PoolCard
-                        poolId={myPoolId}
-                        poolAssets={myPool.poolAssets.map((poolAsset) => ({
-                          coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-                          coinDenom: poolAsset.amount.currency.coinDenom,
-                        }))}
-                        poolMetrics={myPoolMetrics}
-                        isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
-                          myPoolId
-                        )}
-                        mobileShowFirstLabel
-                      />
-                    </div>
+                    />
                   );
                 }
               })}
