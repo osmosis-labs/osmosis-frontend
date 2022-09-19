@@ -885,15 +885,6 @@ export const TradeClipboard: FunctionComponent<{
           if (account.walletStatus !== WalletStatus.Loaded) {
             return account.init();
           }
-          logEvent([
-            EventName.Swap.swapClicked,
-            {
-              fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-              toToken: tradeTokenInConfig.outCurrency.coinDenom,
-              isOnHome: !isInModal,
-            },
-          ]);
-
           if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
             const routes: {
               poolId: string;
@@ -968,6 +959,16 @@ export const TradeClipboard: FunctionComponent<{
             };
 
             try {
+              logEvent([
+                EventName.Swap.swapStarted,
+                {
+                  fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                  tokenAmount: Number(tokenIn.amount),
+                  toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                  isOnHome: !isInModal,
+                  isMultiHop: routes.length !== 1,
+                },
+              ]);
               if (routes.length === 1) {
                 await account.osmosis.sendSwapExactAmountInMsg(
                   routes[0].poolId,
@@ -987,7 +988,20 @@ export const TradeClipboard: FunctionComponent<{
                   {
                     preferNoSetFee: preferZeroFee,
                   },
-                  trackSwapEvent
+                  (tx) => {
+                    logEvent([
+                      EventName.Swap.swapCompleted,
+                      {
+                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                        tokenAmount: Number(tokenIn.amount),
+                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+
+                        isMultiHop: false,
+                      },
+                    ]);
+                    trackSwapEvent(tx);
+                  }
                 );
               } else {
                 await account.osmosis.sendMultihopSwapExactAmountInMsg(
@@ -1008,6 +1022,16 @@ export const TradeClipboard: FunctionComponent<{
                     preferNoSetFee: preferZeroFee,
                   },
                   (tx) => {
+                    logEvent([
+                      EventName.Swap.swapCompleted,
+                      {
+                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                        tokenAmount: Number(tokenIn.amount),
+                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+                        isMultiHop: true,
+                      },
+                    ]);
                     trackEvent(SwapPageEvents.multiHopSwap);
                     trackSwapEvent(tx);
                   }

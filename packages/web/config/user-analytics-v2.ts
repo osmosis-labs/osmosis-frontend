@@ -10,6 +10,7 @@ export type EventProperties = {
   toToken: string;
   isOnHome: boolean;
   percentage: string;
+  isMultiHop: boolean;
   poolId: string;
   poolName: string;
   poolWeight: string;
@@ -60,7 +61,8 @@ export const EventName = {
     halfClicked: "Swap: Half clicked",
     slippageToleranceSet: "Swap: Slippage tolerance set",
     switchClicked: "Swap: Switch clicked",
-    swapClicked: "Swap: Swap clicked",
+    swapStarted: "Swap: Swap started",
+    swapCompleted: "Swap: Swap completed",
   },
   // Events in Sidebar UI
   Sidebar: {
