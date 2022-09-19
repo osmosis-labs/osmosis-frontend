@@ -1,3 +1,10 @@
+/** # User Events Constants
+ *  Logged to Amplitude at https://analytics.amplitude.com/osmosis-zone/
+ */
+
+// Should be in sync with: https://docs.google.com/spreadsheets/d/18w8VwJmmRdb_E-XkE1UjkqhLxCyhqVVhWlzDgTtbRWo/edit?usp=sharing
+// For maintainability - all event logs should be in high level component
+
 export type EventProperties = {
   fromToken: string;
   toToken: string;

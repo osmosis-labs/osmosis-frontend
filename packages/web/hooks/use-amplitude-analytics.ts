@@ -7,11 +7,14 @@ import {
 } from "@amplitude/analytics-browser";
 import { AmplitudeEvent, EventProperties, UserProperties } from "../config";
 
+/** Do-it-all hook for initting Amplitude and logging custom events on page load or at any time. */
 export function useAmplitudeAnalytics({
   onLoadEvent,
   init,
 }: {
+  /** Log this event when the component mounts once. */
   onLoadEvent?: AmplitudeEvent;
+  /** Init analytics environment. Done once per user session. */
   init?: true;
 } = {}) {
   const logEvent = ([eventName, eventProperties]:
@@ -35,6 +38,7 @@ export function useAmplitudeAnalytics({
         amplitudeInit(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY);
       }
     }
+
     if (onLoadEvent) {
       logEvent(onLoadEvent);
     }
