@@ -28,7 +28,6 @@ import {
   ExternalIncentiveGaugeAllowList,
   UnPoolWhitelistedPoolIds,
   PoolDetailEvents,
-  LiquidStakedLowLiquidityPoolIds,
 } from "../../config";
 import {
   useAddLiquidityConfig,
@@ -511,6 +510,9 @@ const Pool: FunctionComponent = observer(() => {
               </MetricLoader>
             ),
           },
+          ...(pool && pool.exitFee.toDec().gt(new Dec(0))
+            ? [{ label: "Exit Fee", value: pool.exitFee.toString() }]
+            : []),
         ]}
         bgImageUrl="/images/osmosis-guy-in-lab.png"
       />
