@@ -145,7 +145,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           toggleIsMax={() => amountConfig.toggleIsMax()}
           currentValue={amountConfig.amount}
           onInput={(value) => amountConfig.setAmount(value)}
-          waitTime="3 minutes"
+          waitTime="20 seconds"
         />
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
           {accountActionButton}
