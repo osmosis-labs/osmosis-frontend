@@ -241,9 +241,6 @@ const Pool: FunctionComponent = observer(() => {
     addLiquidityConfig.shareOutAmount,
   ]);
   const removeLiquidity = useCallback(async () => {
-    const hasLiquidStakedAsset =
-      pool && LiquidStakedLowLiquidityPoolIds.includes(pool.id);
-
     try {
       await account.osmosis.sendExitPoolMsg(
         removeLiquidityConfig.poolId,
@@ -255,8 +252,7 @@ const Pool: FunctionComponent = observer(() => {
           else trackEvent(PoolDetailEvents.removeLiquiditySuccess);
 
           setShowManageLiquidityDialog(false);
-        },
-        hasLiquidStakedAsset
+        }
       );
     } catch (e) {
       console.error(e);

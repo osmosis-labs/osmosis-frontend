@@ -83,11 +83,11 @@ export function estimateExitSwap(
   pool: {
     totalShare: Int;
     poolAssets: { denom: string; amount: Int }[];
+    exitFee: Dec;
   },
   makeCoinPretty: (coin: Coin) => CoinPretty,
   shareInAmount: string,
-  shareCoinDecimals: number,
-  hasLiquidStakedAsset = false
+  shareCoinDecimals: number
 ): { tokenOuts: CoinPretty[] } {
   const estimated = estimateExitPool_Raw(
     pool.totalShare,
@@ -95,7 +95,7 @@ export function estimateExitSwap(
     new Dec(shareInAmount)
       .mul(DecUtils.getTenExponentNInPrecisionRange(shareCoinDecimals))
       .truncate(),
-    hasLiquidStakedAsset
+    pool.exitFee
   );
 
   const tokenOuts = estimated.tokenOuts.map(makeCoinPretty);
@@ -424,11 +424,18 @@ function estimateExitPool_Raw(
   totalShare: Int,
   poolAssets: { denom: string; amount: Int }[],
   shareInAmount: Int,
-  hasLiquidStakedAsset = false
+  exitFee: Dec
 ): {
   tokenOuts: Coin[];
 } {
   const tokenOuts: Coin[] = [];
+
+  if (exitFee.gte(new Dec(0))) {
+    // https://github.com/osmosis-labs/osmosis/blob/main/x/gamm/pool-models/internal/cfmm_common/lp.go#L25
+    shareInAmount = new Dec(shareInAmount)
+      .sub(new Dec(shareInAmount).mulTruncate(exitFee))
+      .round();
+  }
 
   const shareRatio = new Dec(shareInAmount).quo(new Dec(totalShare));
   if (shareRatio.lte(new Dec(0))) {
@@ -436,18 +443,7 @@ function estimateExitPool_Raw(
   }
 
   for (const poolAsset of poolAssets) {
-    let tokenOutAmount = shareRatio.mul(new Dec(poolAsset.amount)).truncate();
-
-    if (hasLiquidStakedAsset) {
-      // TODO: adjust actual calculation, vs estimated difference calculated from chain output / error message
-      // see: https://docs.google.com/spreadsheets/d/19R9u8Up4UYGh187yYeLIgSp5sUyGzmIfLs74cEkibQs/edit?usp=sharing
-
-      const adjustedOutAmount = new Dec(tokenOutAmount)
-        .sub(new Dec(tokenOutAmount).mul(new Dec(0.01005)))
-        .round();
-
-      tokenOutAmount = adjustedOutAmount;
-    }
+    const tokenOutAmount = shareRatio.mul(new Dec(poolAsset.amount)).truncate();
 
     tokenOuts.push(new Coin(poolAsset.denom, tokenOutAmount));
   }

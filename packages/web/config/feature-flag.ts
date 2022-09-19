@@ -31,13 +31,6 @@ export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
   "635": true,
 };
 
-/** Include pools of low liquidity that contain liquid staked assets.
- *
- *  Is a workaround.
- *  See: https://github.com/osmosis-labs/osmosis-frontend/issues/787
- */
-export const LiquidStakedLowLiquidityPoolIds: string[] = ["802"];
-
 /** Gauges to be rendered in pool's respective pool detail page. */
 export const ExternalIncentiveGaugeAllowList: {
   [poolId: string]: {
