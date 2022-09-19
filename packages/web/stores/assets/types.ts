@@ -21,9 +21,6 @@ export interface IBCAsset {
 
   /** Additional info to support non-IBC bridge integration. */
   originBridgeInfo?: OriginBridgeInfo;
-
-  /** Used for adjusting min amounts out in exit pool transactions for low-liquidity pools. */
-  liquidStakedLowLiquidityPoolIds?: string[];
 }
 
 export interface CoinBalance {
