@@ -109,7 +109,7 @@ export declare class OsmosisAccountImpl {
      * @param memo Transaction memo.
      * @param onFulfill Callback to handle tx fullfillment.
      */
-    sendExitPoolMsg(poolId: string, shareInAmount: string, maxSlippage?: string, memo?: string, onFulfill?: (tx: any) => void): Promise<void>;
+    sendExitPoolMsg(poolId: string, shareInAmount: string, maxSlippage?: string, memo?: string, onFulfill?: (tx: any) => void, hasLiquidStakedAsset?: boolean): Promise<void>;
     /**
      * https://docs.osmosis.zone/developing/modules/spec-lockup.html#lock-tokens
      * @param duration Duration, in seconds, to lock up the tokens.

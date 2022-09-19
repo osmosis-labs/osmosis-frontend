@@ -28,6 +28,7 @@ import {
   ExternalIncentiveGaugeAllowList,
   UnPoolWhitelistedPoolIds,
   PoolDetailEvents,
+  IBCAssetInfos,
 } from "../../config";
 import {
   useAddLiquidityConfig,
@@ -240,6 +241,27 @@ const Pool: FunctionComponent = observer(() => {
     addLiquidityConfig.shareOutAmount,
   ]);
   const removeLiquidity = useCallback(async () => {
+    const hasLiquidStakedAsset =
+      IBCAssetInfos.find((ibcAssetInfo) => {
+        const chainConfig = chainStore.getChainFromCurrency(
+          pool?.poolAssets.map((pa) => pa.amount.denom)[1]!
+        );
+
+        if (!chainConfig) {
+          return false;
+        }
+
+        const chainCurrency = chainConfig.currencyMap.get(
+          ibcAssetInfo.coinMinimalDenom
+        );
+
+        if (chainCurrency) {
+          return ibcAssetInfo.isLiquidStaked;
+        } else {
+          return false;
+        }
+      })?.isLiquidStaked ?? false;
+
     try {
       await account.osmosis.sendExitPoolMsg(
         removeLiquidityConfig.poolId,
@@ -251,7 +273,8 @@ const Pool: FunctionComponent = observer(() => {
           else trackEvent(PoolDetailEvents.removeLiquiditySuccess);
 
           setShowManageLiquidityDialog(false);
-        }
+        },
+        hasLiquidStakedAsset
       );
     } catch (e) {
       console.error(e);

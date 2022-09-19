@@ -824,7 +824,8 @@ export class OsmosisAccountImpl {
     shareInAmount: string,
     maxSlippage: string = "2.5",
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: any) => void,
+    hasLiquidStakedAsset = false
   ) {
     const queries = this.queries;
     const mkp = this.makeCoinPretty;
@@ -849,7 +850,8 @@ export class OsmosisAccountImpl {
           pool,
           mkp,
           shareInAmount,
-          this._msgOpts.exitPool.shareCoinDecimals
+          this._msgOpts.exitPool.shareCoinDecimals,
+          hasLiquidStakedAsset
         );
 
         const maxSlippageDec = new Dec(maxSlippage).quo(

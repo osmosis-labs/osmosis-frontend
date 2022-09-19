@@ -86,14 +86,16 @@ export function estimateExitSwap(
   },
   makeCoinPretty: (coin: Coin) => CoinPretty,
   shareInAmount: string,
-  shareCoinDecimals: number
+  shareCoinDecimals: number,
+  hasLiquidStakedAsset = false
 ): { tokenOuts: CoinPretty[] } {
   const estimated = estimateExitPool_Raw(
     pool.totalShare,
     pool.poolAssets,
     new Dec(shareInAmount)
       .mul(DecUtils.getTenExponentNInPrecisionRange(shareCoinDecimals))
-      .truncate()
+      .truncate(),
+    hasLiquidStakedAsset
   );
 
   const tokenOuts = estimated.tokenOuts.map(makeCoinPretty);
@@ -421,7 +423,8 @@ function estimateJoinPool_Raw(
 function estimateExitPool_Raw(
   totalShare: Int,
   poolAssets: { denom: string; amount: Int }[],
-  shareInAmount: Int
+  shareInAmount: Int,
+  hasLiquidStakedAsset = false
 ): {
   tokenOuts: Coin[];
 } {
@@ -433,7 +436,18 @@ function estimateExitPool_Raw(
   }
 
   for (const poolAsset of poolAssets) {
-    const tokenOutAmount = shareRatio.mul(new Dec(poolAsset.amount)).truncate();
+    let tokenOutAmount = shareRatio.mul(new Dec(poolAsset.amount)).truncate();
+
+    if (hasLiquidStakedAsset) {
+      // TODO: adjust actual calculation, vs estimated difference calculated from chain output / error message
+      // see: https://docs.google.com/spreadsheets/d/19R9u8Up4UYGh187yYeLIgSp5sUyGzmIfLs74cEkibQs/edit?usp=sharing
+
+      const adjustedOutAmount = new Dec(tokenOutAmount)
+        .sub(new Dec(tokenOutAmount).mul(new Dec(0.01005)))
+        .round();
+
+      tokenOutAmount = adjustedOutAmount;
+    }
 
     tokenOuts.push(new Coin(poolAsset.denom, tokenOutAmount));
   }

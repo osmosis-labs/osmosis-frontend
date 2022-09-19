@@ -31,7 +31,7 @@ export declare function estimateExitSwap(pool: {
         denom: string;
         amount: Int;
     }[];
-}, makeCoinPretty: (coin: Coin) => CoinPretty, shareInAmount: string, shareCoinDecimals: number): {
+}, makeCoinPretty: (coin: Coin) => CoinPretty, shareInAmount: string, shareCoinDecimals: number, hasLiquidStakedAsset?: boolean): {
     tokenOuts: CoinPretty[];
 };
 export declare function estimateSwapExactAmountIn(pool: {
