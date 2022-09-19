@@ -20,17 +20,12 @@ import {
   IS_FRONTIER,
   NavBarEvents,
 } from "../config";
-
-import * as amplitude from "@amplitude/analytics-browser";
+import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 dayjs.extend(utc);
 enableStaticRendering(typeof window === "undefined");
-
-if (process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY !== undefined) {
-  amplitude.init(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY);
-}
 
 function MyApp({ Component, pageProps }: AppProps) {
   const menus = [
@@ -79,6 +74,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   ];
 
   useMatomoAnalytics({ init: true });
+  useAmplitudeAnalytics({ init: true });
 
   return (
     <GetKeplrProvider>
