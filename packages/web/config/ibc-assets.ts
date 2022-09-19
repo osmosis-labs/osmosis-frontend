@@ -332,6 +332,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-17",
     coinMinimalDenom: "rowan",
     isVerified: true,
+    isUnstable: true,
   },
   {
     counterpartyChainId: "laozi-mainnet",
