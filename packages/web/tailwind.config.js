@@ -45,6 +45,10 @@ module.exports = {
             800: "#080559",
             900: "#02003F",
           },
+      wosmongton: {
+        200: "#B3B1FD",
+        500: "#5B57FA",
+      },
       primaryVariant: "#0A0674",
       secondary: IS_FRONTIER
         ? {
@@ -259,10 +263,11 @@ module.exports = {
         outBack: "cubic-bezier(0.46, 0.47, 0.4, 1.4)",
         inBack: "cubic-bezier(0.7, -0.4, 0.52, 0.51)",
       },
+      transitionProperty: {
+        width: "width",
+        borderRadius: "border-radius",
+      },
     },
-    // fontWeight: {
-    //   bold: 600, // font-bold
-    // },
   },
   plugins: [],
 };

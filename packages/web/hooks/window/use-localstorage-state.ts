@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 
+/** Stores and syncs to a value in `localStorage` at `key`.
+ *  Will `JSON.stringify` and `JSON.parse` value of type `T`.
+ *  Use `null` over `undefined` state.
+ */
 export function useLocalStorageState<T>(
   key: string,
   initialValue: T
