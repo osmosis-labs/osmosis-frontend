@@ -12,6 +12,7 @@ import { LeftTime } from "../../components/left-time";
 import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { TabBox } from "../../components/control";
+import { priceFormatter } from "../../components/utils";
 import { useStore } from "../../stores";
 import { DataSorter } from "../../hooks/data/data-sorter";
 import {
@@ -191,7 +192,7 @@ const Pools: NextPage = observer(function () {
               );
             } catch (e) {
               setIsCreatingPool(false);
-              console.log(e);
+              console.error(e);
             }
           }}
         />
@@ -308,7 +309,7 @@ const Pools: NextPage = observer(function () {
                         <MetricLoader
                           isLoading={poolLiquidity.toDec().isZero()}
                         >
-                          {poolLiquidity.toString()}
+                          {priceFormatter(poolLiquidity)}
                         </MetricLoader>
                       ),
                     },
@@ -320,7 +321,7 @@ const Pools: NextPage = observer(function () {
                         <MetricLoader
                           isLoading={poolLiquidity.toDec().isZero()}
                         >
-                          {myBonded.toString()}
+                          {priceFormatter(myBonded)}
                         </MetricLoader>
                       ),
                     },
@@ -512,8 +513,48 @@ const Pools: NextPage = observer(function () {
                     : superfluidPools.slice(0, LESS_SUPERFLUID_POOLS_COUNT)
                   ).map(
                     ({ id, apr, assets, poolFeesMetrics, poolLiquidity }) => (
-                      <div
+                      <PoolCard
                         key={id}
+                        poolId={id}
+                        poolAssets={assets}
+                        poolMetrics={[
+                          {
+                            label: "APR",
+                            value: (
+                              <MetricLoader
+                                isLoading={
+                                  queryOsmosis.queryIncentivizedPools
+                                    .isAprFetching
+                                }
+                              >
+                                {apr.maxDecimals(2).toString()}
+                              </MetricLoader>
+                            ),
+                          },
+                          {
+                            label: "Pool Liquidity",
+                            value: (
+                              <MetricLoader
+                                isLoading={poolLiquidity.toDec().isZero()}
+                              >
+                                {priceFormatter(poolLiquidity)}
+                              </MetricLoader>
+                            ),
+                          },
+                          {
+                            label: "Fees (7D)",
+                            value: (
+                              <MetricLoader
+                                isLoading={poolFeesMetrics.feesSpent7d
+                                  .toDec()
+                                  .isZero()}
+                              >
+                                {poolFeesMetrics.feesSpent7d.toString()}
+                              </MetricLoader>
+                            ),
+                          },
+                        ]}
+                        isSuperfluid
                         onClick={() =>
                           logEvent([
                             EventName.Pools.superfluidPoolsCardClicked,
@@ -528,50 +569,7 @@ const Pools: NextPage = observer(function () {
                             },
                           ])
                         }
-                      >
-                        <PoolCard
-                          poolId={id}
-                          poolAssets={assets}
-                          poolMetrics={[
-                            {
-                              label: "APR",
-                              value: (
-                                <MetricLoader
-                                  isLoading={
-                                    queryOsmosis.queryIncentivizedPools
-                                      .isAprFetching
-                                  }
-                                >
-                                  {apr.maxDecimals(2).toString()}
-                                </MetricLoader>
-                              ),
-                            },
-                            {
-                              label: "Pool Liquidity",
-                              value: (
-                                <MetricLoader
-                                  isLoading={poolLiquidity.toDec().isZero()}
-                                >
-                                  {poolLiquidity.toString()}
-                                </MetricLoader>
-                              ),
-                            },
-                            {
-                              label: "Fees (7D)",
-                              value: (
-                                <MetricLoader
-                                  isLoading={poolFeesMetrics.feesSpent7d
-                                    .toDec()
-                                    .isZero()}
-                                >
-                                  {poolFeesMetrics.feesSpent7d.toString()}
-                                </MetricLoader>
-                              ),
-                            },
-                          ]}
-                          isSuperfluid
-                        />
-                      </div>
+                      />
                     )
                   )}
               </div>
