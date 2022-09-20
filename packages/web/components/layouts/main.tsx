@@ -205,7 +205,7 @@ const Drawer = ({
 }) => {
   const windowLoading = height <= 0;
   if (windowLoading) {
-    return <div className="hidden">{children}</div>;
+    return null;
   } else if (isMobile === true) {
     return (
       <>
