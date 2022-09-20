@@ -4,11 +4,13 @@ import { useStore } from "./index";
 import { getKeplrFromWindow, WalletStatus } from "@keplr-wallet/stores";
 import { useKeplr } from "../hooks";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
+import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
 
 /** Manages the initialization of the Osmosis account. */
 export const AccountInitManagement: FunctionComponent = observer(
   ({ children }) => {
     const { chainStore, accountStore } = useStore();
+    const { setUserProperty } = useAmplitudeAnalytics();
 
     const keplr = useKeplr();
 
@@ -25,6 +27,7 @@ export const AccountInitManagement: FunctionComponent = observer(
       getKeplrFromWindow().then((keplr) => {
         if (keplr && keplr.mode === "mobile-web") {
           account.init();
+          setUserProperty("isWalletConnected", true);
         }
       });
     }, []);
@@ -41,6 +44,8 @@ export const AccountInitManagement: FunctionComponent = observer(
             keplr.setDefaultConnectionType("extension");
           }
           account.init();
+          setUserProperty("isWalletConnected", true);
+          setUserProperty("connectedWallet", value);
         }
       }
     }, []);
@@ -61,6 +66,7 @@ export const AccountInitManagement: FunctionComponent = observer(
                 chainStore.chainInfos.forEach((chainInfo) => {
                   if (accountStore.hasAccount(chainInfo.chainId)) {
                     accountStore.getAccount(chainInfo.chainId).disconnect();
+                    setUserProperty("isWalletConnected", false);
                   }
                 });
               });

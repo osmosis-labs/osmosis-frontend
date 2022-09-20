@@ -2,6 +2,42 @@
 # yarn lockfile v1
 
 
+"@amplitude/analytics-browser@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@amplitude/analytics-browser/-/analytics-browser-1.2.3.tgz#7324ffd2cffb8abafe9eeee4289f6a040446612a"
+  integrity sha512-cJWnqD9ipfGXIPlOIXTEyYWvJq1zcOlYvZaFltPLd1t+nICnEvuAJytqV9e4afQaIh3B5iDNyZVS32xFXBVJZQ==
+  dependencies:
+    "@amplitude/analytics-connector" "^1.4.5"
+    "@amplitude/analytics-core" "^0.8.1"
+    "@amplitude/analytics-types" "^0.8.1"
+    "@amplitude/ua-parser-js" "^0.7.31"
+    tslib "^2.3.1"
+
+"@amplitude/analytics-connector@^1.4.5":
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/@amplitude/analytics-connector/-/analytics-connector-1.4.5.tgz#07e9375101332bd8b6f15e39e70f31f287e87ad0"
+  integrity sha512-ELAP6ivg+13uSk+TOirGZE/92M+tTbeiQ/i7eXgDO4Hiy00Abf/UxO/rp9WovtxCyeFYTILrujEYxPv5cRQmFw==
+  dependencies:
+    "@amplitude/ua-parser-js" "0.7.31"
+
+"@amplitude/analytics-core@^0.8.1":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@amplitude/analytics-core/-/analytics-core-0.8.1.tgz#7e81cf00744388f4cb5ccb625a45f450a856031b"
+  integrity sha512-9H/dh8kB/MBg90f9a5eVKhO4+WQ+RJQ9Ae9Xf2SLZcHdfJ5IhRr3U/fuhorFhhHPWsCHbiCNoCwmJJghupuHFg==
+  dependencies:
+    "@amplitude/analytics-types" "^0.8.1"
+    tslib "^2.3.1"
+
+"@amplitude/analytics-types@^0.8.1":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@amplitude/analytics-types/-/analytics-types-0.8.1.tgz#2dd40cc52052cb4c5b4e3264aae20fd2f9e8fd43"
+  integrity sha512-DUzta7ZTMszzosPHS3hqagD3yRpXf0WJtJxdf54F+s70sXcSI0P7279yTvgx7K/TWJoZ3KXMkr0UTJbj3cdbhQ==
+
+"@amplitude/ua-parser-js@0.7.31", "@amplitude/ua-parser-js@^0.7.31":
+  version "0.7.31"
+  resolved "https://registry.yarnpkg.com/@amplitude/ua-parser-js/-/ua-parser-js-0.7.31.tgz#749bf7cb633cfcc7ff3c10805bad7c5f6fbdbc61"
+  integrity sha512-+z8UGRaj13Pt5NDzOnkTBy49HE2CX64jeL0ArB86HAtilpnfkPB7oqkigN7Lf2LxscMg4QhFD7mmCfedh3rqTg==
+
 "@axelar-network/axelarjs-sdk@^0.6.14":
   version "0.6.18"
   resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.6.18.tgz#132d3195c4373383eb02ab313dca45c1790b4659"
@@ -10980,6 +11016,11 @@ tslib@^2.1.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
   integrity sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==
+
+tslib@^2.3.1:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
+  integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
 
 tsutils@^3.21.0:
   version "3.21.0"
