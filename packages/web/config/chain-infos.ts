@@ -8,7 +8,7 @@ const chainInfos = (
       rpc: "https://rpc-v12.dev-osmosis.zone/", // test: "http://rpc-test.osmosis.zone/"
       rest: "https://lcd-v12.dev-osmosis.zone/", // test: "http://lcd-test.osmosis.zone/"
       chainId: "localosmosis", // test: "osmo-test-4"
-      chainName: "Osmosis",
+      chainName: "Osmosis (Testnet)",
       bip44: {
         coinType: 118,
       },
