@@ -2,13 +2,13 @@ import { ChainInfoWithExplorer } from "../stores/chain";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 
-// The following variables are defined on the .env file in order to automate environment creation.
+// The following variables are defined on the .env file in order to automate environment creation. 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
-const OSMOSIS_RPC = process.env.NEXT_PUBLIC_OSMOSIS_RPC || "https://rpc-cosmoshub.keplr.app";
-const OSMOSIS_REST = process.env.NEXT_PUBLIC_OSMOSIS_REST || "https://lcd-cosmoshub.keplr.app";
-const OSMOSIS_EXPLORER_URL = process.env.NEXT_PUBLIC_OSMOSIS_EXPLORER_URL || "https://www.mintscan.io/osmosis/txs/{txHash}";
-const OSMOSIS_CHAIN_ID = process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID || "osmosis";
-const OSMOSIS_CHAIN_NAME = process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_NAME || "Osmosis";
+const OSMOSIS_RPC = process.env.NEXT_PUBLIC_OSMOSIS_RPC;
+const OSMOSIS_REST = process.env.NEXT_PUBLIC_OSMOSIS_REST;
+const OSMOSIS_EXPLORER_URL = process.env.NEXT_PUBLIC_OSMOSIS_EXPLORER_URL;
+const OSMOSIS_CHAIN_ID = process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID;
+const OSMOSIS_CHAIN_NAME = process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_NAME;
 
 const chainInfos = (
   [
