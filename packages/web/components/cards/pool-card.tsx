@@ -15,6 +15,7 @@ export const PoolCard: FunctionComponent<
     poolMetrics: Metric[];
     isSuperfluid?: boolean;
     mobileShowFirstLabel?: boolean;
+    onClick?: () => void;
   } & CustomClasses
 > = observer(
   ({
@@ -23,6 +24,7 @@ export const PoolCard: FunctionComponent<
     poolMetrics,
     isSuperfluid,
     mobileShowFirstLabel = false,
+    onClick,
     className,
   }) => {
     const router = useRouter();
@@ -39,7 +41,10 @@ export const PoolCard: FunctionComponent<
             },
             className
           )}
-          onClick={() => router.push(`/pool/${poolId}`)}
+          onClick={() => {
+            onClick?.();
+            router.push(`/pool/${poolId}`);
+          }}
         >
           <div className="flex items-center place-content-between w-full h-full p-8 bg-card rounded-lginset">
             <div className="flex flex-col place-items-start gap-3">
