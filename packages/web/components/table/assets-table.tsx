@@ -193,6 +193,8 @@ export const AssetsTable: FunctionComponent<Props> = ({
         {
           sortedBy: term,
           sortDirection,
+
+          sortedOn: "dropdown",
         },
       ]);
       do_setSortKey(term);
@@ -223,11 +225,12 @@ export const AssetsTable: FunctionComponent<Props> = ({
         onClickHeader: isSorting
           ? () => {
               logEvent([
-                EventName.Assets.assetsTableSorted,
+                EventName.Assets.assetsListSorted,
                 {
                   sortedBy: firstKey,
                   sortDirection:
                     sortDirection === "descending" ? "ascending" : "descending",
+                  sortedOn: "table-head",
                 },
               ]);
               toggleSortDirection();
@@ -235,10 +238,11 @@ export const AssetsTable: FunctionComponent<Props> = ({
           : () => {
               if (firstKey) {
                 logEvent([
-                  EventName.Assets.assetsTableSorted,
+                  EventName.Assets.assetsListSorted,
                   {
                     sortedBy: firstKey,
                     sortDirection: onClickSortDirection,
+                    sortedOn: "table-head",
                   },
                 ]);
                 setSortKey(firstKey);
@@ -393,6 +397,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
                           sortDirection === "descending"
                             ? "ascending"
                             : "descending",
+                        sortedOn: "dropdown",
                       },
                     ]);
                     toggleSortDirection();

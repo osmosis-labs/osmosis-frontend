@@ -199,10 +199,11 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
                   case "ascending":
                     const newSortDirection = "descending";
                     logEvent([
-                      EventName.Pools.externalIncentivePoolsTableSorted,
+                      EventName.Pools.externalIncentivePoolsListSorted,
                       {
                         sortedBy: keyPath,
                         sortDirection: newSortDirection,
+                        sortedOn: "table-head",
                       },
                     ]);
                     setSortDirection(newSortDirection);
@@ -213,10 +214,11 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
                     if (sortKeyPath === initialKeyPath) {
                       const newSortDirection = "ascending";
                       logEvent([
-                        EventName.Pools.externalIncentivePoolsTableSorted,
+                        EventName.Pools.externalIncentivePoolsListSorted,
                         {
                           sortedBy: keyPath,
                           sortDirection: newSortDirection,
+                          sortedOn: "table-head",
                         },
                       ]);
                       setSortDirection(newSortDirection);
@@ -233,10 +235,11 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
               onClickHeader: () => {
                 const newSortDirection = "ascending";
                 logEvent([
-                  EventName.Pools.externalIncentivePoolsTableSorted,
+                  EventName.Pools.externalIncentivePoolsListSorted,
                   {
                     sortedBy: keyPath,
                     sortDirection: newSortDirection,
+                    sortedOn: "table-head",
                   },
                 ]);
                 setSortKeyPath(keyPath);
@@ -420,6 +423,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
                     {
                       sortedBy: id,
                       sortDirection: sortDirection,
+                      sortedOn: "dropdown",
                     },
                   ]);
                   setSortKeyPath(id);

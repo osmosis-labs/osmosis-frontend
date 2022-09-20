@@ -204,10 +204,11 @@ export const AllPoolsTableSet: FunctionComponent<{
                 case "ascending":
                   const newSortDirection = "descending";
                   logEvent([
-                    EventName.Pools.allPoolsTableSorted,
+                    EventName.Pools.allPoolsListSorted,
                     {
                       sortedBy: keyPath,
                       sortDirection: newSortDirection,
+                      sortedOn: "table",
                     },
                   ]);
                   setSortDirection(newSortDirection);
@@ -217,10 +218,12 @@ export const AllPoolsTableSet: FunctionComponent<{
                   if (sortKeyPath === initialKeyPath) {
                     const newSortDirection = "ascending";
                     logEvent([
-                      EventName.Pools.allPoolsTableSorted,
+                      EventName.Pools.allPoolsListSorted,
                       {
                         sortedBy: keyPath,
                         sortDirection: newSortDirection,
+
+                        sortedOn: "table",
                       },
                     ]);
                     setSortDirection(newSortDirection);
@@ -236,10 +239,12 @@ export const AllPoolsTableSet: FunctionComponent<{
             onClickHeader: () => {
               const newSortDirection = "ascending";
               logEvent([
-                EventName.Pools.allPoolsTableSorted,
+                EventName.Pools.allPoolsListSorted,
                 {
                   sortedBy: keyPath,
                   sortDirection: newSortDirection,
+
+                  sortedOn: "table",
                 },
               ]);
               setSortKeyPath(keyPath);
@@ -511,6 +516,7 @@ export const AllPoolsTableSet: FunctionComponent<{
                     {
                       sortedBy: id,
                       sortDirection: sortDirection,
+                      sortedOn: "dropdown",
                     },
                   ]);
                   setSortKeyPath(id);
@@ -525,6 +531,7 @@ export const AllPoolsTableSet: FunctionComponent<{
                       sortDirection === "ascending"
                         ? "descending"
                         : "ascending",
+                    sortedOn: "dropdown",
                   },
                 ]);
                 toggleSortDirection();

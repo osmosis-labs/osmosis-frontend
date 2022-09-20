@@ -17,6 +17,7 @@ export type EventProperties = {
   filteredBy: string;
   isFilterOn: boolean;
   sortedBy: string;
+  sortedOn: "table-head" | "dropdown";
   sortDirection: string;
   isSuperfluidPool: boolean;
   isSuperfluidEnabled: boolean;
@@ -86,13 +87,10 @@ export const EventName = {
     superfluidPoolsCardClicked: "Pools: Superfluid pools card clicked",
     allPoolsListFiltered: "Pools: All pools list filtered",
     allPoolsListSorted: "Pools: All pools list sorted",
-    allPoolsTableSorted: "Pools All pools table sorted",
     incentivizedPoolsItemClicked: "Pools: Incentivized pools item clicked",
     allPoolsItemClicked: "Pools: All pools item clicked",
     externalIncentivePoolsListSorted:
-      "Pools: External incentive pools item sorted",
-    externalIncentivePoolsTableSorted:
-      "Pools: External incentive pools table sorted",
+      "Pools: External incentive pools list sorted",
     externalIncentivePoolsItemClicked:
       "Pools: External incentive pools item clicked",
   },
@@ -123,7 +121,6 @@ export const EventName = {
     myPoolsMoreClicked: "Assets: My pools more clicked",
     assetsListFiltered: "Assets: Assets list filtered",
     assetsListSorted: "Assets: Assets list sorted",
-    assetsTableSorted: "Assets: Assets table sorted",
     assetsListMoreClicked: "Assets: Assets list more clicked",
     assetsItemDepositClicked: "Assets: Assets item deposit clicked",
     assetsItemWithdrawClicked: "Assets: Assets item withdraw clicked",
