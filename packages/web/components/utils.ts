@@ -1,5 +1,3 @@
-import { PricePretty, IntPretty } from "@keplr-wallet/unit";
-
 export function replaceAt<T>(
   what: T,
   where: Array<T>,
@@ -85,21 +83,4 @@ export function getKeyByValue(
   value: string
 ) {
   return Object.keys(object).find((key) => object[key] === value);
-}
-
-/** Formats a price as compact by default. i.e. $7.53M or $265K. Validate handled by `PricePretty`. */
-export function priceFormatter(
-  price: PricePretty,
-  opts: Intl.NumberFormatOptions = {
-    maximumSignificantDigits: 3,
-    notation: "compact",
-    compactDisplay: "short",
-    style: "currency",
-    currency: price.fiatCurrency.currency,
-  }
-): string {
-  const formatter = new Intl.NumberFormat(price.fiatCurrency.locale, opts);
-  return formatter.format(
-    Number(new IntPretty(price).maxDecimals(2).toString().split(",").join(""))
-  );
 }

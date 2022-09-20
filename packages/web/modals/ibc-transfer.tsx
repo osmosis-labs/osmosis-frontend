@@ -6,10 +6,9 @@ import {
   IbcTransfer,
   useIbcTransfer,
   useConnectWalletModalRedirect,
-  useAmplitudeAnalytics,
   useMatomoAnalytics,
 } from "../hooks";
-import { AssetsPageEvents, EventName } from "../config";
+import { AssetsPageEvents } from "../config";
 import { ModalBase, ModalBaseProps } from ".";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
@@ -17,9 +16,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     const { currency, counterpartyChainId, isWithdraw } = props;
     const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
     const { chainId: osmosisChainId } = chainStore.osmosis;
-
     const { trackEvent } = useMatomoAnalytics();
-    const { logEvent } = useAmplitudeAnalytics();
 
     const [
       account,
@@ -48,17 +45,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             amountConfig.error != undefined ||
             inTransit ||
             !isCustomWithdrawValid,
-          onClick: () => {
-            logEvent([
-              isWithdraw
-                ? EventName.Assets.withdrawAssetStarted
-                : EventName.Assets.depositAssetStarted,
-              {
-                tokenName: amountConfig.sendCurrency.coinDenom,
-                tokenAmount: Number(amountConfig.amount),
-                bridge: "IBC",
-              },
-            ]);
+          onClick: () =>
             // failure events are handled by the root store
             transfer(
               (txFullfillEvent) => {
@@ -70,23 +57,12 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                 props.onRequestClose();
               },
               (txBroadcastEvent) => {
-                logEvent([
-                  isWithdraw
-                    ? EventName.Assets.withdrawAssetCompleted
-                    : EventName.Assets.depositAssetCompleted,
-                  {
-                    tokenName: amountConfig.sendCurrency.coinDenom,
-                    tokenAmount: Number(amountConfig.amount),
-                    bridge: "IBC",
-                  },
-                ]);
                 ibcTransferHistoryStore.pushUncommitedHistory(txBroadcastEvent);
               },
               () => {
                 trackEvent(AssetsPageEvents.ibcTransferFailure);
               }
-            );
-          },
+            ),
           loading: inTransit,
           children: (
             <h6 className="md:text-base text-lg">
@@ -169,7 +145,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           toggleIsMax={() => amountConfig.toggleIsMax()}
           currentValue={amountConfig.amount}
           onInput={(value) => amountConfig.setAmount(value)}
-          waitTime="20 seconds"
+          waitTime="3 minutes"
         />
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
           {accountActionButton}

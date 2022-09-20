@@ -1,13 +1,11 @@
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
+import Lottie from "react-lottie";
 import classNames from "classnames";
 import { truncateString } from "../../utils";
 import { useWindowSize } from "../../../hooks";
 import { CustomClasses, LoadingProps } from "../../types";
 import { Animation as AnimationProps } from "../types";
-
-const Lottie = dynamic(() => import("react-lottie"), { ssr: false });
 
 /** Illustrates a bespoke or IBC bridge transfer for user info. */
 export const BridgeAnimation: FunctionComponent<
@@ -65,80 +63,63 @@ export const BridgeAnimation: FunctionComponent<
         className
       )}
     >
-      <div
+      <span
         className={classNames(
-          "absolute w-1/3 h-full text-center",
-          bridge ? "left-[8%] md:left-[2%]" : "left-[10%] md:left-[2.5%]"
+          "absolute text-center whitespace-nowrap transition-opacity duration-300",
+          longFromName || longToName
+            ? isMobile
+              ? "caption"
+              : "subtitle1"
+            : "md:subtitle2",
+          bridge
+            ? longFromName
+              ? "left-[82px] md:-left-[4px] top-[10px]"
+              : "left-[94px] md:left-0 top-[10px]"
+            : longFromName
+            ? "left-[90px] md:-left-[4px]"
+            : "left-[122px] md:left-[10px]",
+          { "opacity-30": bridge?.isLoading }
         )}
       >
-        <span
-          className={classNames(
-            "whitespace-nowrap transition-opacity duration-300",
-            longFromName || longToName
-              ? isMobile
-                ? "caption"
-                : "subtitle1"
-              : "md:subtitle2",
-            bridge
-              ? longFromName
-                ? "left-[82px] md:-left-[4px] top-[10px]"
-                : "left-[94px] md:left-0 top-[10px]"
-              : longFromName
-              ? "left-[90px] md:-left-[4px]"
-              : "left-[122px] md:left-[10px]",
-            { "opacity-30": bridge?.isLoading }
-          )}
-        >
-          From{" "}
-          {truncateString(from.networkName, bridge ? (isMobile ? 10 : 12) : 18)}
-        </span>
-      </div>
+        From{" "}
+        {truncateString(from.networkName, bridge ? (isMobile ? 10 : 12) : 18)}
+      </span>
       {bridge?.bridgeName && (
-        <div className="absolute w-1/3 h-full left-[35%] text-center">
-          <span
-            className={classNames(
-              "whitespace-nowrap w-fit top-[10px]",
-              longFromName || longToName
-                ? isMobile
-                  ? "caption"
-                  : "subtitle1"
-                : "md:subtitle2",
-              bridge?.isLoading
-                ? "left-[250px] md:left-[111px]"
-                : "left-[270px] md:left-[126px]",
-              {
-                pulse: bridge?.isLoading,
-              }
-            )}
-          >
-            {bridge?.isLoading ? "Loading" : "via"} {bridge.bridgeName}
-          </span>
-        </div>
-      )}
-      <div
-        className={classNames(
-          "absolute w-1/3 h-full text-center",
-          bridge ? "right-[6%] md:-right-[2.5%]" : "right-[10%] md:-right-[1%]"
-        )}
-      >
         <span
           className={classNames(
-            "whitespace-nowrap w-fit transition-opacity duration-300",
+            "absolute text-center whitespace-nowrap w-fit top-[10px]",
             longFromName || longToName
               ? isMobile
                 ? "caption"
                 : "subtitle1"
               : "md:subtitle2",
-            bridge
-              ? "left-[420px] md:left-[222px] top-[10px]"
-              : "left-[405px] md:left-[210px]",
-            { "opacity-30": bridge?.isLoading }
+            bridge?.isLoading
+              ? "left-[250px] md:left-[111px]"
+              : "left-[270px] md:left-[126px]",
+            {
+              pulse: bridge?.isLoading,
+            }
           )}
         >
-          To{" "}
-          {truncateString(to.networkName, bridge ? (isMobile ? 10 : 12) : 18)}
+          {bridge?.isLoading ? "Loading" : "via"} {bridge.bridgeName}
         </span>
-      </div>
+      )}
+      <span
+        className={classNames(
+          "absolute text-center whitespace-nowrap w-fit transition-opacity duration-300",
+          longFromName || longToName
+            ? isMobile
+              ? "caption"
+              : "subtitle1"
+            : "md:subtitle2",
+          bridge
+            ? "left-[420px] md:left-[222px] top-[10px]"
+            : "left-[405px] md:left-[210px]",
+          { "opacity-30": bridge?.isLoading }
+        )}
+      >
+        To {truncateString(to.networkName, bridge ? (isMobile ? 10 : 12) : 18)}
+      </span>
       <div className="absolute left-[105px] md:left-[30px] top-[20px]">
         <div
           className={classNames("transition-opacity duration-300", {

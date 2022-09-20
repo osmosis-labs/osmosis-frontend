@@ -19,7 +19,6 @@ import {
   PoolDetailEvents,
   SwapPageEvents,
   MakeSwapPageEvents,
-  EventName,
 } from "../../config";
 import {
   useBooleanWithWindowEvent,
@@ -29,7 +28,6 @@ import {
   useTradeTokenInConfig,
   useWindowSize,
   useMatomoAnalytics,
-  useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { Button } from "../buttons";
@@ -54,7 +52,6 @@ export const TradeClipboard: FunctionComponent<{
   const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();
   const { trackEvent } = useMatomoAnalytics();
-  const { logEvent } = useAmplitudeAnalytics();
 
   const allTokenBalances = nativeBalances.concat(ibcBalances);
 
@@ -312,12 +309,6 @@ export const TradeClipboard: FunctionComponent<{
 
                       slippageConfig.select(slippage.index);
 
-                      logEvent([
-                        EventName.Swap.slippageToleranceSet,
-                        {
-                          percentage: slippageConfig.slippage.toString(),
-                        },
-                      ]);
                       trackEvent(
                         MakeSwapPageEvents.setSlippageTolerance(
                           tradeTokenInConfig.sendCurrency.coinDenom,
@@ -364,12 +355,6 @@ export const TradeClipboard: FunctionComponent<{
                   onInput={(value) => {
                     slippageConfig.setManualSlippage(value);
 
-                    logEvent([
-                      EventName.Swap.slippageToleranceSet,
-                      {
-                        percentage: slippageConfig.slippage.toString(),
-                      },
-                    ]);
                     trackEvent(
                       MakeSwapPageEvents.setSlippageTolerance(
                         tradeTokenInConfig.sendCurrency.coinDenom,
@@ -441,14 +426,6 @@ export const TradeClipboard: FunctionComponent<{
 
                   if (tradeTokenInConfig.fraction !== 1) {
                     trackEvent(SwapPageEvents.swapMaxAmount);
-                    logEvent([
-                      EventName.Swap.maxClicked,
-                      {
-                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                        isOnHome: !isInModal,
-                      },
-                    ]);
                     tradeTokenInConfig.setFraction(1);
                   } else {
                     tradeTokenInConfig.setFraction(undefined);
@@ -469,14 +446,6 @@ export const TradeClipboard: FunctionComponent<{
 
                   if (tradeTokenInConfig.fraction !== 0.5) {
                     trackEvent(SwapPageEvents.swapHalfAmount);
-                    logEvent([
-                      EventName.Swap.halfClicked,
-                      {
-                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                        isOnHome: !isInModal,
-                      },
-                    ]);
                     tradeTokenInConfig.setFraction(0.5);
                   } else {
                     tradeTokenInConfig.setFraction(undefined);
@@ -574,17 +543,7 @@ export const TradeClipboard: FunctionComponent<{
           onMouseLeave={() => {
             if (!isMobile) setHoveringSwitchButton(false);
           }}
-          onClick={() => {
-            logEvent([
-              EventName.Swap.switchClicked,
-              {
-                fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                isOnHome: !isInModal,
-              },
-            ]);
-            setIsAnimatingSwitch(true);
-          }}
+          onClick={() => setIsAnimatingSwitch(true)}
         >
           <div
             className={classNames(
@@ -885,6 +844,7 @@ export const TradeClipboard: FunctionComponent<{
           if (account.walletStatus !== WalletStatus.Loaded) {
             return account.init();
           }
+
           if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
             const routes: {
               poolId: string;
@@ -959,16 +919,6 @@ export const TradeClipboard: FunctionComponent<{
             };
 
             try {
-              logEvent([
-                EventName.Swap.swapStarted,
-                {
-                  fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                  tokenAmount: Number(tokenIn.amount),
-                  toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                  isOnHome: !isInModal,
-                  isMultiHop: routes.length !== 1,
-                },
-              ]);
               if (routes.length === 1) {
                 await account.osmosis.sendSwapExactAmountInMsg(
                   routes[0].poolId,
@@ -988,20 +938,7 @@ export const TradeClipboard: FunctionComponent<{
                   {
                     preferNoSetFee: preferZeroFee,
                   },
-                  (tx) => {
-                    logEvent([
-                      EventName.Swap.swapCompleted,
-                      {
-                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                        tokenAmount: Number(tokenIn.amount),
-                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                        isOnHome: !isInModal,
-
-                        isMultiHop: false,
-                      },
-                    ]);
-                    trackSwapEvent(tx);
-                  }
+                  trackSwapEvent
                 );
               } else {
                 await account.osmosis.sendMultihopSwapExactAmountInMsg(
@@ -1022,16 +959,6 @@ export const TradeClipboard: FunctionComponent<{
                     preferNoSetFee: preferZeroFee,
                   },
                   (tx) => {
-                    logEvent([
-                      EventName.Swap.swapCompleted,
-                      {
-                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                        tokenAmount: Number(tokenIn.amount),
-                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                        isOnHome: !isInModal,
-                        isMultiHop: true,
-                      },
-                    ]);
                     trackEvent(SwapPageEvents.multiHopSwap);
                     trackSwapEvent(tx);
                   }

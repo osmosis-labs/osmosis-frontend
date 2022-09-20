@@ -83,7 +83,6 @@ export function estimateExitSwap(
   pool: {
     totalShare: Int;
     poolAssets: { denom: string; amount: Int }[];
-    exitFee: Dec;
   },
   makeCoinPretty: (coin: Coin) => CoinPretty,
   shareInAmount: string,
@@ -94,8 +93,7 @@ export function estimateExitSwap(
     pool.poolAssets,
     new Dec(shareInAmount)
       .mul(DecUtils.getTenExponentNInPrecisionRange(shareCoinDecimals))
-      .truncate(),
-    pool.exitFee
+      .truncate()
   );
 
   const tokenOuts = estimated.tokenOuts.map(makeCoinPretty);
@@ -423,19 +421,11 @@ function estimateJoinPool_Raw(
 function estimateExitPool_Raw(
   totalShare: Int,
   poolAssets: { denom: string; amount: Int }[],
-  shareInAmount: Int,
-  exitFee: Dec
+  shareInAmount: Int
 ): {
   tokenOuts: Coin[];
 } {
   const tokenOuts: Coin[] = [];
-
-  if (exitFee.gte(new Dec(0))) {
-    // https://github.com/osmosis-labs/osmosis/blob/main/x/gamm/pool-models/internal/cfmm_common/lp.go#L25
-    shareInAmount = new Dec(shareInAmount)
-      .sub(new Dec(shareInAmount).mulTruncate(exitFee))
-      .round();
-  }
 
   const shareRatio = new Dec(shareInAmount).quo(new Dec(totalShare));
   if (shareRatio.lte(new Dec(0))) {

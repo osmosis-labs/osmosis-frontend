@@ -102,7 +102,7 @@ export class PoolFallbackPriceStore
 
       return super.getPrice(coinId, vsCurrency);
     } catch (e: any) {
-      console.error(
+      console.log(
         `Failed to calculate price of (${coinId}, ${vsCurrency}): ${e?.message}`
       );
       return undefined;
