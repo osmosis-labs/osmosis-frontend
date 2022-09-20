@@ -2,7 +2,7 @@ import { ChainInfoWithExplorer } from "../stores/chain";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 
-// The following variables are defined on the .env file in order to automate environment creation. 
+// The following variables are defined on the .env file in order to automate environment creation.
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 const OSMOSIS_RPC = process.env.NEXT_PUBLIC_OSMOSIS_RPC;
 const OSMOSIS_REST = process.env.NEXT_PUBLIC_OSMOSIS_REST;
