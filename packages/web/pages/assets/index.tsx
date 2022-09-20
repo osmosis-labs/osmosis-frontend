@@ -158,7 +158,6 @@ const AssetsOverview: FunctionComponent<{
                 label: "Withdraw",
                 type: "outline",
                 className: "bg-primary-200/30",
-                onClick: onWithdrawIntent,
                 onClick: () => {
                   logEvent([EventName.Assets.withdrawClicked]);
                   onWithdrawIntent();
