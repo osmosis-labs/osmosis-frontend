@@ -130,7 +130,9 @@ export class ObservableQueryPoolDetails {
 
   @computed
   get userAvailableValue(): PricePretty {
-    return this.queryPool.totalShare.toDec().equals(new Dec(0))
+    console.log(!this.queryPool.totalShare.toDec().equals(new Dec(0)));
+
+    return !this.queryPool.totalShare.toDec().equals(new Dec(0))
       ? this.totalValueLocked.mul(
           this.queries.queryGammPoolShare
             .getAvailableGammShare(this.bech32Address, this.queryPool.id)

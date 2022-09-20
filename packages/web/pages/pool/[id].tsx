@@ -200,7 +200,7 @@ const Pool: FunctionComponent = observer(() => {
         poolId,
         poolName,
         poolWeight,
-        isSuperfluidPool,
+        isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
         isSingleAsset: addLiquidityConfig.isSingleAmountIn,
         providingLiquidity:
           addLiquidityConfig.isSingleAmountIn &&
@@ -245,7 +245,7 @@ const Pool: FunctionComponent = observer(() => {
                 poolId,
                 poolName,
                 poolWeight,
-                isSuperfluidPool,
+                isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
                 isSingleAsset: addLiquidityConfig.isSingleAmountIn,
                 providingLiquidity:
                   addLiquidityConfig.isSingleAmountIn &&
@@ -284,7 +284,7 @@ const Pool: FunctionComponent = observer(() => {
                 poolId,
                 poolName,
                 poolWeight,
-                isSuperfluidPool,
+                isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
                 isSingleAsset: addLiquidityConfig.isSingleAmountIn,
                 providingLiquidity:
                   addLiquidityConfig.isSingleAmountIn &&
@@ -327,7 +327,7 @@ const Pool: FunctionComponent = observer(() => {
         poolId,
         poolName,
         poolWeight,
-        isSuperfluidPool,
+        isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
         poolSharePercentage: removeLiquidityConfig.percentage,
       },
     ]);
@@ -347,7 +347,7 @@ const Pool: FunctionComponent = observer(() => {
               poolId,
               poolName,
               poolWeight,
-              isSuperfluidPool,
+              isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
               poolSharePercentage: removeLiquidityConfig.percentage,
             },
           ]);
@@ -373,7 +373,7 @@ const Pool: FunctionComponent = observer(() => {
           poolId,
           poolName,
           poolWeight,
-          isSuperfluidPool,
+          isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
           isSuperfluidEnabled: electSuperfluid,
           unbondingPeriod: gauge?.duration.asDays(),
         },
@@ -413,7 +413,8 @@ const Pool: FunctionComponent = observer(() => {
                     poolId,
                     poolName,
                     poolWeight,
-                    isSuperfluidPool,
+                    isSuperfluidPool:
+                      superfluidPoolStore?.isSuperfluid ?? false,
                     isSuperfluidEnabled: false,
                     unbondingPeriod: gauge?.duration.asDays(),
                   },
@@ -437,7 +438,7 @@ const Pool: FunctionComponent = observer(() => {
       account.osmosis,
     ]
   );
-  const selectSuperfluidValidator = useCallback(
+  const superfluidDelegateToValidator = useCallback(
     async (validatorAddress) => {
       if (superfluidPoolStore?.superfluid) {
         logEvent([
@@ -446,7 +447,7 @@ const Pool: FunctionComponent = observer(() => {
             poolId,
             poolName,
             poolWeight,
-            isSuperfluidPool,
+            isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
             unbondingPeriod: 14,
             validatorName: queryCosmos.queryValidators
               .getQueryStatus(Staking.BondStatus.Bonded)
@@ -471,7 +472,8 @@ const Pool: FunctionComponent = observer(() => {
                     poolId,
                     poolName,
                     poolWeight,
-                    isSuperfluidPool,
+                    isSuperfluidPool:
+                      superfluidPoolStore?.isSuperfluid ?? false,
                     unbondingPeriod: 14,
                     validatorName: queryCosmos.queryValidators
                       .getQueryStatus(Staking.BondStatus.Bonded)
@@ -509,7 +511,8 @@ const Pool: FunctionComponent = observer(() => {
                     poolId,
                     poolName,
                     poolWeight,
-                    isSuperfluidPool,
+                    isSuperfluidPool:
+                      superfluidPoolStore?.isSuperfluid ?? false,
                     unbondingPeriod: 14,
                     validatorName: queryCosmos.queryValidators
                       .getQueryStatus(Staking.BondStatus.Bonded)
@@ -543,12 +546,6 @@ const Pool: FunctionComponent = observer(() => {
   const poolWeight = pool?.poolAssets
     .map((poolAsset) => poolAsset.weightFraction.toString())
     .join(" / ");
-  let isSuperfluidPool: boolean | undefined;
-  if (pool) {
-    isSuperfluidPool = queryOsmosis.querySuperfluidPools.isSuperfluidPool(
-      pool?.id
-    );
-  }
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [
       EventName.PoolDetail.pageViewed,
@@ -556,10 +553,14 @@ const Pool: FunctionComponent = observer(() => {
         poolId,
         poolName,
         poolWeight,
-        ...(isSuperfluidPool !== undefined && { isSuperfluidPool }),
+        ...(superfluidPoolStore && {
+          isSuperfluidPool: superfluidPoolStore.isSuperfluid,
+        }),
       },
     ],
   });
+
+  // console.log(poolDetailStore?.userAvailableValue?.toString());
 
   return (
     <main>
@@ -628,7 +629,7 @@ const Pool: FunctionComponent = observer(() => {
           isOpen={showSuperfluidValidatorModal}
           onRequestClose={() => setShowSuperfluidValidatorsModal(false)}
           isSendingMsg={account.txTypeInProgress !== ""}
-          onSelectValidator={selectSuperfluidValidator}
+          onSelectValidator={superfluidDelegateToValidator}
         />
       )}
 
@@ -653,7 +654,7 @@ const Pool: FunctionComponent = observer(() => {
                   poolId,
                   poolName,
                   poolWeight,
-                  isSuperfluidPool,
+                  isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
                 },
               ]);
               setShowManageLiquidityDialog(true);
@@ -668,7 +669,7 @@ const Pool: FunctionComponent = observer(() => {
                   poolId,
                   poolName,
                   poolWeight,
-                  isSuperfluidPool,
+                  isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
                 },
               ]);
               trackEvent(PoolDetailEvents.startSwapTokens);
@@ -771,7 +772,8 @@ const Pool: FunctionComponent = observer(() => {
                         poolId,
                         poolName,
                         poolWeight,
-                        isSuperfluidPool,
+                        isSuperfluidPool:
+                          superfluidPoolStore?.isSuperfluid ?? false,
                       },
                     ]);
                     setShowLockLPTokenModal(true);
@@ -941,7 +943,8 @@ const Pool: FunctionComponent = observer(() => {
                               poolId,
                               poolName,
                               poolWeight,
-                              isSuperfluidPool,
+                              isSuperfluidPool:
+                                superfluidPoolStore?.isSuperfluid ?? false,
                               unbondingPeriod: duration?.asDays(),
                             },
                           ]);
@@ -988,7 +991,9 @@ const Pool: FunctionComponent = observer(() => {
                                       poolId,
                                       poolName,
                                       poolWeight,
-                                      isSuperfluidPool,
+                                      isSuperfluidPool:
+                                        superfluidPoolStore?.isSuperfluid ??
+                                        false,
                                       unbondingPeriod: duration?.asDays(),
                                     },
                                   ]);
@@ -1015,7 +1020,9 @@ const Pool: FunctionComponent = observer(() => {
                                       poolId,
                                       poolName,
                                       poolWeight,
-                                      isSuperfluidPool,
+                                      isSuperfluidPool:
+                                        superfluidPoolStore?.isSuperfluid ??
+                                        false,
                                       unbondingPeriod: duration?.asDays(),
                                     },
                                   ]);
