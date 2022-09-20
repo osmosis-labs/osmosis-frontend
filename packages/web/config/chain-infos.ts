@@ -2,19 +2,21 @@ import { ChainInfoWithExplorer } from "../stores/chain";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 
+// The following variables are defined on the .env file in order to automate environment creation.
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
+const OSMOSIS_RPC = process.env.NEXT_PUBLIC_OSMOSIS_RPC;
+const OSMOSIS_REST = process.env.NEXT_PUBLIC_OSMOSIS_REST;
+const OSMOSIS_EXPLORER_URL = process.env.NEXT_PUBLIC_OSMOSIS_EXPLORER_URL;
+const OSMOSIS_CHAIN_ID = process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID;
+const OSMOSIS_CHAIN_NAME = process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_NAME;
 
 const chainInfos = (
   [
     {
-      rpc: IS_TESTNET
-        ? "https://rpc-test.osmosis.zone/"
-        : "https://rpc-osmosis.keplr.app/",
-      rest: IS_TESTNET
-        ? "https://lcd-test.osmosis.zone/"
-        : "https://lcd-osmosis.keplr.app/",
-      chainId: IS_TESTNET ? "osmo-test-4" : "osmosis-1",
-      chainName: "Osmosis",
+      rpc: OSMOSIS_RPC,
+      rest: OSMOSIS_REST,
+      chainId: OSMOSIS_CHAIN_ID,
+      chainName: OSMOSIS_CHAIN_NAME,
       bip44: {
         coinType: 118,
       },
@@ -43,9 +45,7 @@ const chainInfos = (
         high: 0.025,
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
-      explorerUrlToTx: IS_TESTNET
-        ? "https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}"
-        : "https://www.mintscan.io/osmosis/txs/{txHash}",
+      explorerUrlToTx: OSMOSIS_EXPLORER_URL,
     },
     {
       rpc: "https://rpc-cosmoshub.keplr.app",
