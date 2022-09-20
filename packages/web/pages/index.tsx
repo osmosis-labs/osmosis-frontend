@@ -3,9 +3,10 @@ import type { NextPage } from "next";
 import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 import { TradeClipboard } from "../components/trade-clipboard";
 import { useStore } from "../stores";
-import { IS_FRONTIER } from "../config";
+import { EventName, IS_FRONTIER } from "../config";
 import { Dec } from "@keplr-wallet/unit";
 import { useMemo, useRef } from "react";
+import { useAmplitudeAnalytics } from "../hooks";
 
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore } = useStore();
@@ -106,6 +107,10 @@ const Home: NextPage = observer(function () {
         .map((pool) => pool.pool),
     [allPools]
   );
+
+  useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Swap.pageViewed],
+  });
 
   return (
     <main className="relative bg-background h-screen">
