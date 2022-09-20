@@ -20,7 +20,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
 
     const { trackEvent } = useMatomoAnalytics();
     const { logEvent } = useAmplitudeAnalytics();
-
+  
     const [
       account,
       counterpartyAccount,

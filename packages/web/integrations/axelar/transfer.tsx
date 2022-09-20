@@ -70,6 +70,7 @@ const AxelarTransfer: FunctionComponent<
     const originCurrency = balanceOnOsmosis.balance.currency.originCurrency!;
 
     useTxEventToasts(ethWalletClient);
+
     const { logEvent } = useAmplitudeAnalytics();
 
     // notify eth wallet of prev selected preferred chain

@@ -332,6 +332,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-17",
     coinMinimalDenom: "rowan",
     isVerified: true,
+    isUnstable: true,
   },
   {
     counterpartyChainId: "laozi-mainnet",
@@ -874,6 +875,15 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-47",
     coinMinimalDenom:
       "cw20:juno159q8t5g02744lxq8lfmcn6f78qqulq9wn3y9w7lxjgkz4e0a6kvsfvapse",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno19rqljkh95gh40s7qdx40ksx3zq5tm4qsmsrdz9smw668x9zdr3lqtg33mf",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },

@@ -131,7 +131,10 @@ export class RootStore {
       },
       CosmosAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator: () => ({ ibcTransfer: { gas: 130000 } }),
+        msgOptsCreator: (chainId) =>
+          chainId.startsWith("evmos_")
+            ? { ibcTransfer: { gas: 160000 } }
+            : { ibcTransfer: { gas: 130000 } },
         preTxEvents: {
           onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
             this.chainStore.getChain(chainId)
