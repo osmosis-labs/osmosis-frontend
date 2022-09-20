@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
+import { Staking } from "@keplr-wallet/stores";
 import {
   isError,
   ObservableQueryPoolDetails,
@@ -28,6 +29,7 @@ import {
   ExternalIncentiveGaugeAllowList,
   UnPoolWhitelistedPoolIds,
   PoolDetailEvents,
+  EventName,
 } from "../../config";
 import {
   useAddLiquidityConfig,
@@ -35,6 +37,7 @@ import {
   useRemoveLiquidityConfig,
   useWindowSize,
   useMatomoAnalytics,
+  useAmplitudeAnalytics,
 } from "../../hooks";
 import {
   LockTokensModal,
@@ -53,6 +56,7 @@ const Pool: FunctionComponent = observer(() => {
   const { id: poolId } = router.query;
   const { chainId } = chainStore.osmosis;
 
+  const queryCosmos = queriesStore.get(chainId).cosmos;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
   const pool = queryOsmosis.queryGammPools.getPool(poolId as string);
@@ -123,7 +127,6 @@ const Pool: FunctionComponent = observer(() => {
     },
     [do_setShowLockLPTokenModal]
   );
-
   const addLiquidityConfig = useAddLiquidityConfig(
     chainStore,
     chainId,
@@ -191,6 +194,33 @@ const Pool: FunctionComponent = observer(() => {
 
   // user actions
   const addLiquidity = useCallback(async () => {
+    logEvent([
+      EventName.PoolDetail.addLiquidityStarted,
+      {
+        poolId,
+        poolName,
+        poolWeight,
+        isSuperfluidPool,
+        isSingleAsset: addLiquidityConfig.isSingleAmountIn,
+        providingLiquidity:
+          addLiquidityConfig.isSingleAmountIn &&
+          addLiquidityConfig.singleAmountInConfig
+            ? {
+                [addLiquidityConfig.singleAmountInConfig?.sendCurrency
+                  .coinDenom]: Number(
+                  addLiquidityConfig.singleAmountInConfig.amount
+                ),
+              }
+            : addLiquidityConfig.poolAssetConfigs.reduce(
+                (acc, cur) => ({
+                  ...acc,
+                  [cur.sendCurrency.coinDenom]: Number(cur.amount),
+                }),
+                {}
+              ),
+      },
+    ]);
+
     try {
       if (
         addLiquidityConfig.isSingleAmountIn &&
@@ -209,6 +239,32 @@ const Pool: FunctionComponent = observer(() => {
               trackEvent(PoolDetailEvents.addSingleLiquidityFailure);
             else trackEvent(PoolDetailEvents.addSingleLiquiditySuccess);
             trackEvent(PoolDetailEvents.setSingleAssetLiquidity);
+            logEvent([
+              EventName.PoolDetail.addLiquidityCompleted,
+              {
+                poolId,
+                poolName,
+                poolWeight,
+                isSuperfluidPool,
+                isSingleAsset: addLiquidityConfig.isSingleAmountIn,
+                providingLiquidity:
+                  addLiquidityConfig.isSingleAmountIn &&
+                  addLiquidityConfig.singleAmountInConfig
+                    ? {
+                        [addLiquidityConfig.singleAmountInConfig?.sendCurrency
+                          .coinDenom]: Number(
+                          addLiquidityConfig.singleAmountInConfig.amount
+                        ),
+                      }
+                    : addLiquidityConfig.poolAssetConfigs.reduce(
+                        (acc, cur) => ({
+                          ...acc,
+                          [cur.sendCurrency.coinDenom]: Number(cur.amount),
+                        }),
+                        {}
+                      ),
+              },
+            ]);
 
             setShowManageLiquidityDialog(false);
           }
@@ -222,6 +278,31 @@ const Pool: FunctionComponent = observer(() => {
           (tx) => {
             if (isError(tx)) trackEvent(PoolDetailEvents.addLiquidityFailure);
             else trackEvent(PoolDetailEvents.addLiquiditySuccess);
+            logEvent([
+              EventName.PoolDetail.addLiquidityCompleted,
+              {
+                poolId,
+                poolName,
+                poolWeight,
+                isSuperfluidPool,
+                isSingleAsset: addLiquidityConfig.isSingleAmountIn,
+                providingLiquidity:
+                  addLiquidityConfig.isSingleAmountIn &&
+                  addLiquidityConfig.singleAmountInConfig
+                    ? {
+                        [addLiquidityConfig.singleAmountInConfig?.sendCurrency
+                          .coinDenom]:
+                          addLiquidityConfig.singleAmountInConfig.amount,
+                      }
+                    : addLiquidityConfig.poolAssetConfigs.reduce(
+                        (acc, cur) => ({
+                          ...acc,
+                          [cur.sendCurrency.coinDenom]: cur.amount,
+                        }),
+                        {}
+                      ),
+              },
+            ]);
 
             setShowManageLiquidityDialog(false);
           }
@@ -240,6 +321,17 @@ const Pool: FunctionComponent = observer(() => {
     addLiquidityConfig.shareOutAmount,
   ]);
   const removeLiquidity = useCallback(async () => {
+    logEvent([
+      EventName.PoolDetail.removeLiquidityStarted,
+      {
+        poolId,
+        poolName,
+        poolWeight,
+        isSuperfluidPool,
+        poolSharePercentage: removeLiquidityConfig.percentage,
+      },
+    ]);
+
     try {
       await account.osmosis.sendExitPoolMsg(
         removeLiquidityConfig.poolId,
@@ -249,6 +341,16 @@ const Pool: FunctionComponent = observer(() => {
         (tx) => {
           if (isError(tx)) trackEvent(PoolDetailEvents.removeLiquidityFailure);
           else trackEvent(PoolDetailEvents.removeLiquiditySuccess);
+          logEvent([
+            EventName.PoolDetail.removeLiquidityCompleted,
+            {
+              poolId,
+              poolName,
+              poolWeight,
+              isSuperfluidPool,
+              poolSharePercentage: removeLiquidityConfig.percentage,
+            },
+          ]);
 
           setShowManageLiquidityDialog(false);
         }
@@ -263,12 +365,25 @@ const Pool: FunctionComponent = observer(() => {
   ]);
   const lockToken = useCallback(
     async (gaugeId, electSuperfluid) => {
+      const gauge = lockupGauges?.find((gauge) => gauge.id === gaugeId);
+
+      logEvent([
+        EventName.PoolDetail.bondStarted,
+        {
+          poolId,
+          poolName,
+          poolWeight,
+          isSuperfluidPool,
+          isSuperfluidEnabled: electSuperfluid,
+          unbondingPeriod: gauge?.duration.asDays(),
+        },
+      ]);
+
       if (electSuperfluid) {
         setShowLockLPTokenModal(false);
         setShowSuperfluidValidatorsModal(true);
         // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
       } else {
-        const gauge = lockupGauges?.find((gauge) => gauge.id === gaugeId);
         try {
           if (!gauge) {
             throw new Error("Error getting gauge");
@@ -292,6 +407,17 @@ const Pool: FunctionComponent = observer(() => {
                 if (isError(tx))
                   trackEvent(PoolDetailEvents.gammTokenLockFailure);
                 else trackEvent(PoolDetailEvents.gammTokenLockSuccess);
+                logEvent([
+                  EventName.PoolDetail.bondCompleted,
+                  {
+                    poolId,
+                    poolName,
+                    poolWeight,
+                    isSuperfluidPool,
+                    isSuperfluidEnabled: false,
+                    unbondingPeriod: gauge?.duration.asDays(),
+                  },
+                ]);
 
                 setShowLockLPTokenModal(false);
               }
@@ -314,6 +440,20 @@ const Pool: FunctionComponent = observer(() => {
   const selectSuperfluidValidator = useCallback(
     async (validatorAddress) => {
       if (superfluidPoolStore?.superfluid) {
+        logEvent([
+          EventName.PoolDetail.superfluidStakeStarted,
+          {
+            poolId,
+            poolName,
+            poolWeight,
+            isSuperfluidPool,
+            unbondingPeriod: 14,
+            validatorName: queryCosmos.queryValidators
+              .getQueryStatus(Staking.BondStatus.Bonded)
+              .getValidator(validatorAddress)?.description.moniker,
+          },
+        ]);
+
         if (superfluidPoolStore.superfluid.upgradeableLpLockIds) {
           // is delegating existing locked shares
           try {
@@ -325,6 +465,20 @@ const Pool: FunctionComponent = observer(() => {
                 if (isError(tx))
                   trackEvent(PoolDetailEvents.superfluidStakeFailure);
                 else trackEvent(PoolDetailEvents.superfluidStakeSuccess);
+                logEvent([
+                  EventName.PoolDetail.superfluidStakeCompleted,
+                  {
+                    poolId,
+                    poolName,
+                    poolWeight,
+                    isSuperfluidPool,
+                    unbondingPeriod: 14,
+                    validatorName: queryCosmos.queryValidators
+                      .getQueryStatus(Staking.BondStatus.Bonded)
+                      .getValidator(validatorAddress)?.description.moniker,
+                  },
+                ]);
+
                 setShowSuperfluidValidatorsModal(false);
               }
             );
@@ -349,6 +503,19 @@ const Pool: FunctionComponent = observer(() => {
                 if (isError(tx))
                   trackEvent(PoolDetailEvents.superfluidStakeFailure);
                 else trackEvent(PoolDetailEvents.superfluidStakeSuccess);
+                logEvent([
+                  EventName.PoolDetail.superfluidStakeCompleted,
+                  {
+                    poolId,
+                    poolName,
+                    poolWeight,
+                    isSuperfluidPool,
+                    unbondingPeriod: 14,
+                    validatorName: queryCosmos.queryValidators
+                      .getQueryStatus(Staking.BondStatus.Bonded)
+                      .getValidator(validatorAddress)?.description.moniker,
+                  },
+                ]);
 
                 setShowSuperfluidValidatorsModal(false);
               }
@@ -369,6 +536,30 @@ const Pool: FunctionComponent = observer(() => {
       lockLPTokensConfig.amount,
     ]
   );
+
+  const poolName = pool?.poolAssets
+    .map((poolAsset) => poolAsset.amount.denom)
+    .join(" / ");
+  const poolWeight = pool?.poolAssets
+    .map((poolAsset) => poolAsset.weightFraction.toString())
+    .join(" / ");
+  let isSuperfluidPool: boolean | undefined;
+  if (pool) {
+    isSuperfluidPool = queryOsmosis.querySuperfluidPools.isSuperfluidPool(
+      pool?.id
+    );
+  }
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [
+      EventName.PoolDetail.pageViewed,
+      {
+        poolId,
+        poolName,
+        poolWeight,
+        ...(isSuperfluidPool !== undefined && { isSuperfluidPool }),
+      },
+    ],
+  });
 
   return (
     <main>
@@ -440,6 +631,7 @@ const Pool: FunctionComponent = observer(() => {
           onSelectValidator={selectSuperfluidValidator}
         />
       )}
+
       <Overview
         title={
           <MetricLoader className="h-7 w-64" isLoading={!pool}>
@@ -454,11 +646,31 @@ const Pool: FunctionComponent = observer(() => {
         titleButtons={[
           {
             label: "Add / Remove Liquidity",
-            onClick: () => setShowManageLiquidityDialog(true),
+            onClick: () => {
+              logEvent([
+                EventName.PoolDetail.addOrRemoveLiquidityClicked,
+                {
+                  poolId,
+                  poolName,
+                  poolWeight,
+                  isSuperfluidPool,
+                },
+              ]);
+              setShowManageLiquidityDialog(true);
+            },
           },
           {
             label: "Swap Tokens",
             onClick: () => {
+              logEvent([
+                EventName.PoolDetail.swapTokensClicked,
+                {
+                  poolId,
+                  poolName,
+                  poolWeight,
+                  isSuperfluidPool,
+                },
+              ]);
               trackEvent(PoolDetailEvents.startSwapTokens);
               setShowTradeTokenModal(true);
             },
@@ -552,7 +764,18 @@ const Pool: FunctionComponent = observer(() => {
                 </span>
                 <Button
                   className="h-8 lg:w-fit w-full md:caption"
-                  onClick={() => setShowLockLPTokenModal(true)}
+                  onClick={() => {
+                    logEvent([
+                      EventName.PoolDetail.startEarningClicked,
+                      {
+                        poolId,
+                        poolName,
+                        poolWeight,
+                        isSuperfluidPool,
+                      },
+                    ]);
+                    setShowLockLPTokenModal(true);
+                  }}
                 >
                   Start Earning
                 </Button>
@@ -700,6 +923,7 @@ const Pool: FunctionComponent = observer(() => {
                       amount,
                       lockIds,
                       isSuperfluidDuration,
+                      duration,
                     }) => (
                       <Button
                         className="md:ml-auto md:caption m-auto pr-0 !md:justify-right !justify-center"
@@ -711,6 +935,16 @@ const Pool: FunctionComponent = observer(() => {
                         }
                         onClick={async () => {
                           if (!lockIds) return;
+                          logEvent([
+                            EventName.PoolDetail.unbondAllStarted,
+                            {
+                              poolId,
+                              poolName,
+                              poolWeight,
+                              isSuperfluidPool,
+                              unbondingPeriod: duration?.asDays(),
+                            },
+                          ]);
                           try {
                             const blockGasLimitLockIds = lockIds.slice(0, 4);
 
@@ -748,6 +982,16 @@ const Pool: FunctionComponent = observer(() => {
                                     trackEvent(
                                       PoolDetailEvents.gammTokenUnlockSuccess
                                     );
+                                  logEvent([
+                                    EventName.PoolDetail.unbondAllCompleted,
+                                    {
+                                      poolId,
+                                      poolName,
+                                      poolWeight,
+                                      isSuperfluidPool,
+                                      unbondingPeriod: duration?.asDays(),
+                                    },
+                                  ]);
                                 }
                               );
                             } else {
@@ -764,6 +1008,17 @@ const Pool: FunctionComponent = observer(() => {
                                     trackEvent(
                                       PoolDetailEvents.gammTokenUnlockSuccess
                                     );
+
+                                  logEvent([
+                                    EventName.PoolDetail.unbondAllCompleted,
+                                    {
+                                      poolId,
+                                      poolName,
+                                      poolWeight,
+                                      isSuperfluidPool,
+                                      unbondingPeriod: duration?.asDays(),
+                                    },
+                                  ]);
                                 }
                               );
                             }

@@ -15,6 +15,7 @@ export const PoolCard: FunctionComponent<
     poolMetrics: Metric[];
     isSuperfluid?: boolean;
     mobileShowFirstLabel?: boolean;
+    onClick?: () => void;
   } & CustomClasses
 > = observer(
   ({
@@ -23,6 +24,7 @@ export const PoolCard: FunctionComponent<
     poolMetrics,
     isSuperfluid,
     mobileShowFirstLabel = false,
+    onClick,
     className,
   }) => {
     const { isMobile } = useWindowSize();
@@ -88,6 +90,9 @@ export const PoolCard: FunctionComponent<
               "bg-superfluid hover:bg-none": isSuperfluid,
             }
           )}
+          onClick={() => {
+            onClick?.();
+          }}
         >
           <div className="flex flex-col place-content-between w-full h-full px-[1.875rem] pt-7 pb-6 bg-card rounded-2xlinset cursor-pointer">
             <div className="flex items-center">
