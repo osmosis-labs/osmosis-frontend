@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { ButtonHTMLAttributes, FunctionComponent } from "react";
-import { CustomClasses, Disableable } from "../types";
+import { CustomClasses } from "../types";
 
 export const NewButton: FunctionComponent<
   {

@@ -14,7 +14,6 @@ import {
   useMatomoAnalytics,
   useAmplitudeAnalytics,
 } from "../../hooks";
-import { SidebarBottom } from "../complex/sidebar-bottom";
 import { AmplitudeEvent, IS_FRONTIER } from "../../config";
 
 export type MainLayoutMenu = {
@@ -160,7 +159,6 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                 }
               )}
             </ul>
-            <SidebarBottom />
           </div>
         </div>
         <div
