@@ -21,6 +21,10 @@ module.exports = {
         faint: "rgba(255, 255, 255, 0.12)",
       },
       transparent: "transparent",
+      osmoverse: {
+        700: "#3C356D",
+        900: "#140F34",
+      },
       primary: IS_FRONTIER
         ? {
             50: "#8A86FF",
@@ -95,7 +99,6 @@ module.exports = {
       black: "#000000",
       backdrop: "rgba(0, 0, 0, 0.3)",
       superfluid: "#8A86FF",
-      osmoverse: "#140F34",
     },
     fontSize: {
       xxs: "0.5rem",
