@@ -159,6 +159,7 @@ const Pool: FunctionComponent = observer(() => {
       }[]
     | undefined = superfluidPoolStore?.superfluidGauges;
 
+  // uniqued external gauges by duration
   if ((!lockupGauges || lockupGauges.length === 0) && externalGuages) {
     const gaugeDurationMap = new Map<
       number,
