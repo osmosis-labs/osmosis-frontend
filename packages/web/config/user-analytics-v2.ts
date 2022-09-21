@@ -116,7 +116,7 @@ export const EventName = {
   Assets: {
     pageViewed: "Assets: Page viewed",
     depositClicked: "Assets: Deposit clicked",
-    withdrawClicked: "Assets: Deposit clicked",
+    withdrawClicked: "Assets: Withdraw clicked",
     myPoolsCardClicked: "Assets: My pools card clicked",
     myPoolsMoreClicked: "Assets: My pools more clicked",
     assetsListFiltered: "Assets: Assets list filtered",
