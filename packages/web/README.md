@@ -45,3 +45,12 @@ On completion, two local html files containing visual bundle trees for client an
 ### Frontier
 
 Frontier mode is managed by the `NEXT_PUBLIC_IS_FRONTIER=true` env var, deployed from `master` branch.
+
+
+## Environment Variables
+Next.js comes with built-in support for environment variables, which allows you to do the following:
+
+Use .env.local to load environment variables
+Expose environment variables to the browser by prefixing with NEXT_PUBLIC_
+
+As of now we only use .env to load default public environment variables. More information about how this works [here](https://nextjs.org/docs/basic-features/environment-variables). 
