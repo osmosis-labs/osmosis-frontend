@@ -11,7 +11,13 @@ import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+} from "react";
 import { Button } from "../../components/buttons";
 import {
   GoSuperfluidCard,
@@ -150,34 +156,32 @@ const Pool: FunctionComponent = observer(() => {
     pool ? queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id) : undefined
   );
 
-  let lockupGauges:
-    | {
-        id: string;
-        apr?: RatePretty;
-        duration: Duration;
-        superfluidApr?: RatePretty;
-      }[]
-    | undefined = superfluidPoolStore?.superfluidGauges;
+  type Gauge = {
+    id: string;
+    apr?: RatePretty;
+    duration: Duration;
+    superfluidApr?: RatePretty;
+  };
+  const lockupGauges: Gauge[] | undefined = useMemo(() => {
+    const gaugeDurationMap = new Map<number, Gauge>();
 
-  // uniqued external gauges by duration
-  if ((!lockupGauges || lockupGauges.length === 0) && externalGuages) {
-    const gaugeDurationMap = new Map<
-      number,
-      {
-        id: string;
-        apr?: RatePretty;
-        duration: Duration;
-        superfluidApr?: RatePretty;
-      }
-    >();
-    externalGuages.forEach((extGauge) => {
-      gaugeDurationMap.set(extGauge.duration.asMilliseconds(), {
-        id: extGauge.id,
-        duration: extGauge.duration,
+    // uniqued external gauges by duration
+    if (externalGuages) {
+      externalGuages.forEach((extGauge) => {
+        gaugeDurationMap.set(extGauge.duration.asDays(), {
+          id: extGauge.id,
+          duration: extGauge.duration,
+        });
       });
+    }
+
+    // overwrite any external gauges with internal gauges w/ apr calcs
+    superfluidPoolStore?.superfluidGauges.forEach((gauge) => {
+      gaugeDurationMap.set(gauge.duration.asDays(), gauge);
     });
-    lockupGauges = Array.from(gaugeDurationMap.values());
-  }
+
+    return Array.from(gaugeDurationMap.values());
+  }, [externalGuages, superfluidPoolStore?.superfluidGauges]);
 
   const [showSuperfluidValidatorModal, do_setShowSuperfluidValidatorsModal] =
     useState(false);
