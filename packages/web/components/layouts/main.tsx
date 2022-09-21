@@ -70,8 +70,8 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
               <OsmosisFullLogo width={166} onClick={() => router.push("/")} />
             </div>
           )}
-          <div className="h-full flex flex-col justify-between">
-            <ul className="my-auto">
+          <div className="h-full pt-20">
+            <ul>
               {menus.map(
                 ({
                   label,
@@ -183,10 +183,10 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
           </div>
         </div>
         {showSidebar && (
-          <div className="fixed ml-sidebar md:ml-0 h-screen w-screen bg-black/30" />
+          <div className="fixed ml-sidebar md:ml-0 h-content w-screen bg-black/30" />
         )}
         <NavBar className="ml-sidebar" title={selectedMenuItem?.label ?? ""} />
-        <div className="ml-sidebar md:ml-0 h-screen">{children}</div>
+        <div className="ml-sidebar md:ml-0 h-content">{children}</div>
       </React.Fragment>
     );
   }

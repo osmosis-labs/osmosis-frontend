@@ -23,8 +23,6 @@ export const NavBar: FunctionComponent<
 
   const walletConnected = account.walletStatus === WalletStatus.Loaded;
 
-  const [settingsOpen, setSettingsOpen] = useState(false);
-
   const [hoverWalletInfo, setHoverWalletInfo] = useState(false);
 
   console.log(hoverWalletInfo);
@@ -33,14 +31,17 @@ export const NavBar: FunctionComponent<
     <>
       <div
         className={classNames(
-          "fixed z-[1000] flex place-content-between items-center bg-osmoverse-900 h-[88px] w-[calc(100vw_-_12.875rem)] px-8",
+          "fixed z-[1000] flex place-content-between items-center bg-osmoverse-900 h-navbar w-[calc(100vw_-_12.875rem)] px-8",
           className
         )}
       >
         <h4>{navBarStore.title || title}</h4>
 
         <div className="flex gap-3 items-center">
-          <Button iconUrl="/icons/setting.svg" />
+          <NavBarButton
+            iconUrl="/icons/setting.svg"
+            hoverIconUrl="/icons/setting-hover.svg"
+          />
           {!walletConnected ? (
             <NewButton
               onClick={() => {
@@ -55,17 +56,20 @@ export const NavBar: FunctionComponent<
             <NewButton
               className="w-[168px] h-10"
               mode="secondary"
-              onMouseLeave={() => {
-                console.log("leave");
-
+              onMouseLeave={() => setHoverWalletInfo(false)}
+              onClick={() => {
+                account.disconnect();
                 setHoverWalletInfo(false);
               }}
-              onClick={() => account.disconnect()}
             >
               <span className="mx-auto button">Disconnect</span>
             </NewButton>
           ) : (
-            <div className="flex items-center gap-3 px-2 py-1 rounded-xl border border-osmoverse-700">
+            <div
+              className="flex items-center gap-3 px-2 py-1 rounded-xl border border-osmoverse-700"
+              onMouseOver={() => setHoverWalletInfo(true)}
+              onClick={() => setHoverWalletInfo(true)}
+            >
               <Image
                 alt="wallet-icon"
                 src={navBarStore.walletInfo.logoUrl}
@@ -73,10 +77,7 @@ export const NavBar: FunctionComponent<
                 width={28}
               />
 
-              <div
-                onMouseOver={() => setHoverWalletInfo(true)}
-                className="flex leading-tight flex-col text-center"
-              >
+              <div className="flex leading-tight flex-col text-center">
                 <span className="text-button font-button">
                   {navBarStore.walletInfo.balance.toString()}
                 </span>
@@ -94,7 +95,7 @@ export const NavBar: FunctionComponent<
       {/* Back-layer element to occupy space for the caller */}
       <div
         className={classNames(
-          "bg-osmoverse-900 h-[88px]",
+          "bg-osmoverse-900 h-navbar",
           backElementClassNames
         )}
       />
@@ -102,8 +103,24 @@ export const NavBar: FunctionComponent<
   );
 });
 
-const Button: FunctionComponent<{ iconUrl: string }> = ({ iconUrl }) => (
-  <button className="flex bg-osmoverse-700 items-center px-3 py-2 rounded-xl">
-    <Image alt="settings" src={iconUrl} height={24} width={24} />
-  </button>
-);
+const NavBarButton: FunctionComponent<{
+  iconUrl: string;
+  hoverIconUrl: string;
+}> = ({ iconUrl, hoverIconUrl }) => {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <button
+      onMouseOver={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="flex bg-osmoverse-700 items-center px-3 py-2 rounded-xl hover:bg-osmoverse-600"
+    >
+      <Image
+        alt="settings"
+        src={hovered ? hoverIconUrl : iconUrl}
+        height={24}
+        width={24}
+      />
+    </button>
+  );
+};

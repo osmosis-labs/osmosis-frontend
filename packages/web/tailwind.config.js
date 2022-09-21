@@ -22,6 +22,7 @@ module.exports = {
       },
       transparent: "transparent",
       osmoverse: {
+        600: "#565081",
         700: "#3C356D",
         900: "#140F34",
       },
@@ -223,6 +224,10 @@ module.exports = {
       xs: { max: "420px" },
     },
     extend: {
+      height: {
+        navbar: "88px",
+        content: "calc(100vh - 88px)",
+      },
       width: {
         loader: {
           1: "3.75rem",

@@ -1,4 +1,4 @@
-import { observable, makeObservable, computed } from "mobx";
+import { observable, makeObservable, computed, runInAction } from "mobx";
 import {
   AccountStore,
   CosmosAccount,
@@ -11,14 +11,15 @@ import {
 import { CoinPretty } from "@keplr-wallet/unit";
 import { OsmosisAccount, OsmosisQueries } from "@osmosis-labs/stores";
 
+export type CallToAction = {
+  onClick: () => void;
+};
 export class NavBarStore {
   @observable
   title: string | undefined;
 
   @observable
-  protected _callToActionButtons: {
-    onClick: () => void;
-  }[] = [];
+  protected _callToActionButtons: CallToAction[] = [];
 
   constructor(
     protected readonly chainId: string,
@@ -31,6 +32,10 @@ export class NavBarStore {
     >
   ) {
     makeObservable(this);
+  }
+
+  set callToActionButtons(buttons: CallToAction[]) {
+    runInAction(() => (this._callToActionButtons = buttons));
   }
 
   @computed
