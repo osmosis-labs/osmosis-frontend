@@ -52,7 +52,9 @@ module.exports = {
           },
       wosmongton: {
         200: "#B3B1FD",
+        400: "#6A67EA",
         500: "#5B57FA",
+        700: "#462ADF",
       },
       primaryVariant: "#0A0674",
       secondary: IS_FRONTIER
