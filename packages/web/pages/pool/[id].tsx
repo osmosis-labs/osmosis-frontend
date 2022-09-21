@@ -126,13 +126,10 @@ const Pool: FunctionComponent = observer(() => {
     do_setShowManageLiquidityDialog(isOpen);
   }, []);
   const [showLockLPTokenModal, do_setShowLockLPTokenModal] = useState(false);
-  const setShowLockLPTokenModal = useCallback(
-    (show: boolean) => {
-      if (show) trackEvent(PoolDetailEvents.startLockTokens);
-      do_setShowLockLPTokenModal(show);
-    },
-    [do_setShowLockLPTokenModal]
-  );
+  const setShowLockLPTokenModal = useCallback((show: boolean) => {
+    if (show) trackEvent(PoolDetailEvents.startLockTokens);
+    do_setShowLockLPTokenModal(show);
+  }, []);
   const addLiquidityConfig = useAddLiquidityConfig(
     chainStore,
     chainId,
@@ -185,13 +182,10 @@ const Pool: FunctionComponent = observer(() => {
 
   const [showSuperfluidValidatorModal, do_setShowSuperfluidValidatorsModal] =
     useState(false);
-  const setShowSuperfluidValidatorsModal = useCallback(
-    (show: boolean) => {
-      trackEvent(PoolDetailEvents.goSuperfluid);
-      do_setShowSuperfluidValidatorsModal(show);
-    },
-    [do_setShowSuperfluidValidatorsModal]
-  );
+  const setShowSuperfluidValidatorsModal = useCallback((show: boolean) => {
+    trackEvent(PoolDetailEvents.goSuperfluid);
+    do_setShowSuperfluidValidatorsModal(show);
+  }, []);
 
   // swap modal
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
