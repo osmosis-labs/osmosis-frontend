@@ -367,6 +367,9 @@ export const TradeClipboard: FunctionComponent<{
                     logEvent([
                       EventName.Swap.slippageToleranceSet,
                       {
+                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
                         percentage: slippageConfig.slippage.toString(),
                       },
                     ]);
