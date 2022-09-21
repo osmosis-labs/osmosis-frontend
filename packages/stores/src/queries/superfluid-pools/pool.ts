@@ -94,7 +94,7 @@ export class ObservableQuerySuperfluidPool {
 
   @computed
   get upgradeableLpLockIds() {
-    if (!this.isSuperfluid) return;
+    if (!this.isSuperfluid || !this.queryPoolDetails.longestDuration) return;
 
     if (this.queryPoolDetails.lockableDurations.length > 0) {
       return this.queries.queryAccountLocked
@@ -108,7 +108,7 @@ export class ObservableQuerySuperfluidPool {
 
   @computed
   get superfluid() {
-    if (!this.isSuperfluid) return;
+    if (!this.isSuperfluid || !this.queryPoolDetails.longestDuration) return;
 
     const undelegatedLockedLpShares =
       (this.queries.querySuperfluidDelegations
