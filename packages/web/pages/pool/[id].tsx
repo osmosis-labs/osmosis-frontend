@@ -347,16 +347,6 @@ const Pool: FunctionComponent = observer(() => {
               .getQuerySuperfluidDelegations(bech32Address)
               .getUndelegations(poolShareCurrency)
               ?.map(({ validator_address, amount, end_time }) => {
-                console.log(
-                  queriesStore
-                    .get(chainId)
-                    .cosmos.queryValidators.getQueryStatus(
-                      Staking.BondStatus.Unbonded
-                    )
-                    .getValidator(validator_address),
-                  validator_address
-                );
-
                 let jailed = false;
                 let inactive = false;
                 let validator = queriesStore

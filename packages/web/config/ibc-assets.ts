@@ -1,5 +1,7 @@
 import { IBCAsset } from "../stores/assets";
+import { SourceChainConfigs as AxelarSourceChainConfigs } from "../integrations/axelar";
 
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 export const IS_FRONTIER = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
 export const UNSTABLE_MSG = "Transfers are disabled due to instability";
 
@@ -23,16 +25,22 @@ export const IBCAssetInfos: (IBCAsset & {
   isVerified?: boolean;
 })[] = [
   {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
-    coinMinimalDenom: "uusdc",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uusdc",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uusdc",
-    sourceChainNameOverride: "Ethereum",
+    counterpartyChainId: IS_TESTNET
+      ? "axelar-testnet-lisbon-3"
+      : "axelar-dojo-1",
+    sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
+    destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
+    coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
+    sourceChainNameOverride: IS_TESTNET ? "Ropsten Ethereum" : "Ethereum",
     isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.usdc.ethereum],
+      tokenMinDenom: IS_TESTNET ? "uausdc" : "uusdc", // test: "uausdc"
+      transferFeeMinAmount: IS_TESTNET ? "150000" : "10500000", // From https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
+    },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -868,7 +876,41 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno159q8t5g02744lxq8lfmcn6f78qqulq9wn3y9w7lxjgkz4e0a6kvsfvapse",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno19rqljkh95gh40s7qdx40ksx3zq5tm4qsmsrdz9smw668x9zdr3lqtg33mf",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+].filter((ibcAsset) => {
+  // validate IBC asset config
+  if (
+    (ibcAsset.depositUrlOverride || ibcAsset.depositUrlOverride) &&
+    ibcAsset.originBridgeInfo
+  ) {
+    throw new Error("Can't have URL overrides and origin bridge config");
   }
-].filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified));
+
+  if (ibcAsset.originBridgeInfo?.sourceChains.length === 0) {
+    throw new Error("Must have at least one source chain");
+  }
+
+  // remove outstanding mainnet Axelar assets when using testnets
+  if (IS_TESTNET && ibcAsset.counterpartyChainId === "axelar-dojo-1") {
+    return false;
+  }
+
+  return IS_FRONTIER ? true : ibcAsset.isVerified;
+});
+
+if (IS_TESTNET && typeof window === "undefined") {
+  console.warn(
+    "Reminder: clear browser cache between testnet/mainnet config change."
+  );
+}
 
 export default IBCAssetInfos;
