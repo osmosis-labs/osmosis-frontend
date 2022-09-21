@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import React, { FunctionComponent } from "react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { NavBar } from "../navbar";
 import {
   useWindowSize,
   useWindowScroll,
@@ -45,6 +46,10 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
     const showFixedLogo = !smallVerticalScreen || (isMobile && !showSidebar);
 
     const showBlockLogo = smallVerticalScreen;
+
+    const selectedMenuItem = menus.find(
+      ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
+    );
 
     return (
       <React.Fragment>
@@ -182,6 +187,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
         {showSidebar && (
           <div className="fixed ml-sidebar md:ml-0 h-screen w-screen bg-black/30" />
         )}
+        <NavBar className="ml-sidebar" title={selectedMenuItem?.label ?? ""} />
         <div className="ml-sidebar md:ml-0 h-screen">{children}</div>
       </React.Fragment>
     );
