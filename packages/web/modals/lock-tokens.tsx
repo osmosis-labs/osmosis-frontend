@@ -17,7 +17,7 @@ export const LockTokensModal: FunctionComponent<
     gauges: {
       id: string;
       duration: Duration;
-      apr: RatePretty;
+      apr?: RatePretty;
       superfluidApr?: RatePretty;
     }[];
     amountConfig: AmountConfig;
@@ -92,7 +92,7 @@ export const LockTokensModal: FunctionComponent<
                 duration={duration.humanize()}
                 isSelected={index === selectedGaugeIndex}
                 onSelect={() => setSelectedGaugeIndex(index)}
-                apr={apr.maxDecimals(2).trim(true).toString()}
+                apr={apr?.maxDecimals(2).trim(true).toString()}
                 superfluidApr={superfluidApr
                   ?.maxDecimals(0)
                   .trim(true)
@@ -157,7 +157,7 @@ const LockupItem: FunctionComponent<
     duration: string;
     isSelected: boolean;
     onSelect: () => void;
-    apr: string;
+    apr?: string;
     superfluidApr?: string;
   } & MobileProps
 > = ({
@@ -216,11 +216,13 @@ const LockupItem: FunctionComponent<
             )}
           </div>
         </div>
-        <div className="flex items-center md:text-right text-center md:mx-0 mx-auto gap-2">
-          <p className="subtitle2 md:m-0 mt-1 text-secondary-200 md:text-sm text-base">
-            {`${apr}${superfluidApr ? `+ ${superfluidApr}` : ""}`}
-          </p>
-        </div>
+        {apr && (
+          <div className="flex items-center md:text-right text-center md:mx-0 mx-auto gap-2">
+            <p className="subtitle2 md:m-0 mt-1 text-secondary-200 md:text-sm text-base">
+              {`${apr}${superfluidApr ? `+ ${superfluidApr}` : ""}`}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   </button>

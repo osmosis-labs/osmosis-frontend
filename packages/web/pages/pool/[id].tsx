@@ -150,14 +150,33 @@ const Pool: FunctionComponent = observer(() => {
     pool ? queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id) : undefined
   );
 
-  const lockupGauges:
+  let lockupGauges:
     | {
         id: string;
-        apr: RatePretty;
-        duration: plugin.Duration;
+        apr?: RatePretty;
+        duration: Duration;
         superfluidApr?: RatePretty;
       }[]
     | undefined = superfluidPoolStore?.superfluidGauges;
+
+  if ((!lockupGauges || lockupGauges.length === 0) && externalGuages) {
+    const gaugeDurationMap = new Map<
+      number,
+      {
+        id: string;
+        apr?: RatePretty;
+        duration: Duration;
+        superfluidApr?: RatePretty;
+      }
+    >();
+    externalGuages.forEach((extGauge) => {
+      gaugeDurationMap.set(extGauge.duration.asMilliseconds(), {
+        id: extGauge.id,
+        duration: extGauge.duration,
+      });
+    });
+    lockupGauges = Array.from(gaugeDurationMap.values());
+  }
 
   const [showSuperfluidValidatorModal, do_setShowSuperfluidValidatorsModal] =
     useState(false);
@@ -560,8 +579,6 @@ const Pool: FunctionComponent = observer(() => {
     ],
   });
 
-  // console.log(poolDetailStore?.userAvailableValue?.toString());
-
   return (
     <main>
       <Head>
@@ -785,7 +802,7 @@ const Pool: FunctionComponent = observer(() => {
             </div>
           )}
           {externalGuages && externalGuages.length > 0 && (
-            <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
+            <div className="flex lg:flex-col overflow-x-auto md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
               {externalGuages.map(
                 (
                   { rewardAmount, duration: durationDays, remainingEpochs },
@@ -796,7 +813,7 @@ const Pool: FunctionComponent = observer(() => {
                     bonusValue={
                       rewardAmount?.maxDecimals(0).trim(true).toString() ?? "0"
                     }
-                    days={durationDays}
+                    days={durationDays.humanize()}
                     remainingEpochs={remainingEpochs.toString()}
                     isMobile={isMobile}
                   />

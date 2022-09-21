@@ -54,10 +54,7 @@ export class ObservableQuerySuperfluidPool {
   @computed
   get superfluidGauges() {
     return this.queryPoolDetails.gauges.map((gaugeInfo) => {
-      const lastDuration =
-        this.queryPoolDetails.lockableDurations[
-          this.queryPoolDetails.lockableDurations.length - 1
-        ];
+      const lastDuration = this.queryPoolDetails.longestDuration;
       return {
         ...gaugeInfo,
         superfluidApr:
