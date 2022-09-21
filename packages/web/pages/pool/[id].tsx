@@ -158,8 +158,8 @@ const Pool: FunctionComponent = observer(() => {
 
   type Gauge = {
     id: string;
-    apr?: RatePretty;
     duration: Duration;
+    apr?: RatePretty;
     superfluidApr?: RatePretty;
   };
   const lockupGauges: Gauge[] | undefined = useMemo(() => {

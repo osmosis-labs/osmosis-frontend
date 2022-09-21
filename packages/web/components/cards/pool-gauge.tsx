@@ -14,7 +14,7 @@ export const PoolGaugeCard: FunctionComponent<
 > = ({ days, apr, isLoading = false, superfluidApr, isMobile = false }) => (
   <div
     className={classNames(
-      "w-full p-0.5 rounded-xl ",
+      "w-full p-0.5 rounded-xl",
       superfluidApr ? "bg-superfluid" : "bg-card" // vanilla tailwind does not support border gradients
     )}
   >

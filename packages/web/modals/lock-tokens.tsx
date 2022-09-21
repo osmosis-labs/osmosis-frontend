@@ -84,8 +84,11 @@ export const LockTokensModal: FunctionComponent<
     <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-col gap-2.5">
-          <span className="subitle1">Unbonding period</span>
-          <div className="flex md:flex-col gap-4">
+          <span className="subitle1">
+            Unbonding period
+            {gauges.length > 3 && !isMobile ? ` (${gauges.length})` : null}
+          </span>
+          <div className="flex md:flex-col gap-4 overflow-x-auto">
             {gauges.map(({ id, duration, apr, superfluidApr }, index) => (
               <LockupItem
                 key={id}
@@ -174,7 +177,7 @@ const LockupItem: FunctionComponent<
       {
         "shadow-elevation-08dp": isSelected,
       },
-      "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer",
+      "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer min-w-[190px]",
       superfluidApr
         ? "bg-superfluid"
         : isSelected
