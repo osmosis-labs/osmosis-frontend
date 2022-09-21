@@ -3,12 +3,21 @@ import { Bech32Address } from "@keplr-wallet/cosmos";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 
 // The following variables are defined on the .env file in order to automate environment creation.
-const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
+
 const OSMOSIS_RPC = process.env.NEXT_PUBLIC_OSMOSIS_RPC;
 const OSMOSIS_REST = process.env.NEXT_PUBLIC_OSMOSIS_REST;
 const OSMOSIS_EXPLORER_URL = process.env.NEXT_PUBLIC_OSMOSIS_EXPLORER_URL;
 const OSMOSIS_CHAIN_ID = process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID;
 const OSMOSIS_CHAIN_NAME = process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_NAME;
+
+const AXELAR_RPC:string = process.env.NEXT_PUBLIC_AXELAR_RPC || "https://rpc-axelar.keplr.app";
+const AXELAR_REST:string = process.env.NEXT_PUBLIC_AXELAR_REST || "https://lcd-axelar.keplr.app";
+const AXELAR_EXPLORER_URL = process.env.NEXT_PUBLIC_AXELAR_EXPLORER_URL || "https://axelarscan.io/tx/{txHash}";
+const AXELAR_CHAIN_ID:string = process.env.NEXT_PUBLIC_AXELAR_CHAIN_ID || "axelar-dojo-1";
+const AXELAR_CHAIN_NAME:string = process.env.NEXT_PUBLIC_AXELAR_CHAIN_NAME || "Axelar";
+const AXELAR_COIN_DENOM:string = process.env.NEXT_PUBLIC_AXELAR_COIN_DENOM || "USDC";
+const AXELAR_COIN_MINIMAL_DENOM:string = process.env.NEXT_PUBLIC_AXELAR_COIN_MINIMAL_DENOM || "uusdc";
+
 
 const chainInfos = (
   [
@@ -1989,14 +1998,10 @@ const chainInfos = (
 
 // Add normal chain infos in case of `currencies` not containing the stake or fee currency.
 chainInfos.push({
-  rpc: IS_TESTNET
-    ? "https://axelartest-rpc.quickapi.com/"
-    : "https://rpc-axelar.keplr.app", // source: https://docs.axelar.dev/resources
-  rest: IS_TESTNET
-    ? "https://axelartest-lcd.quickapi.com/"
-    : "https://lcd-axelar.keplr.app",
-  chainId: IS_TESTNET ? "axelar-testnet-lisbon-3" : "axelar-dojo-1",
-  chainName: "Axelar",
+  rpc: AXELAR_RPC,
+  rest: AXELAR_REST,
+  chainId: AXELAR_CHAIN_ID,
+  chainName: AXELAR_CHAIN_NAME,
   stakeCurrency: {
     coinDenom: "AXL",
     coinMinimalDenom: "uaxl",
@@ -2010,8 +2015,8 @@ chainInfos.push({
   bech32Config: Bech32Address.defaultBech32Config("axelar"),
   currencies: [
     {
-      coinDenom: IS_TESTNET ? "aUSDC" : "USDC",
-      coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
+      coinDenom: AXELAR_COIN_DENOM,
+      coinMinimalDenom: AXELAR_COIN_MINIMAL_DENOM,
       coinDecimals: 6,
       coinGeckoId: "usd-coin",
       coinImageUrl: "/tokens/usdc.svg",
@@ -2155,9 +2160,7 @@ chainInfos.push({
     high: 0.00009,
   },
   features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
-  explorerUrlToTx: IS_TESTNET
-    ? "https://testnet.axelarscan.io/tx/{txHash}"
-    : "https://axelarscan.io/tx/{txHash}",
+  explorerUrlToTx: AXELAR_EXPLORER_URL,
 });
 
 export const ChainInfos: ChainInfoWithExplorer[] = chainInfos;
