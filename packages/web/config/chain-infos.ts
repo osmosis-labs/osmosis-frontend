@@ -1955,6 +1955,13 @@ const chainInfos = (
           coinImageUrl: "/tokens/statom.svg",
         },
         {
+          coinDenom: "stSTARS",
+          coinMinimalDenom: "stustars",
+          coinDecimals: 6,
+          coinGeckoId: "pool:stustars",
+          coinImageUrl: "/tokens/ststars.svg",
+        },
+        {
           coinDenom: "stOSMO",
           coinMinimalDenom: "stuosmo",
           coinDecimals: 6,
