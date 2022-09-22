@@ -869,6 +869,12 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "stuatom",
   },
   {
+    counterpartyChainId: "stride-1",
+    sourceChannelId: "channel-326",
+    destChannelId: "channel-5",
+    coinMinimalDenom: "stustars",
+  },
+  {
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-169",
     destChannelId: "channel-47",
