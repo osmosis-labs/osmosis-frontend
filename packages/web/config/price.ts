@@ -465,7 +465,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "stustars"
     ),
     spotPriceDestDenom: DenomHelper.ibcDenom(
-      [{ portId: "transfer", channelId: "channel-0" }],
+      [{ portId: "transfer", channelId: "channel-75" }],
       "ustars"
     ),
     destCoinId: "stargaze",
