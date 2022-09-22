@@ -113,7 +113,7 @@
   }
 
   .grid-cards {
-    @apply grid-cols-3 gap-8 1.5xl:grid-cols-2 1.5md:grid-cols-1;
+    @apply grid-cols-4 gap-8 3xl:grid-cols-3 1.5xl:grid-cols-2 1.5md:grid-cols-1;
   }
 
   /* Chrome, Safari and Opera */

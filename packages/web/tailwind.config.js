@@ -199,6 +199,9 @@ module.exports = {
         "0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2)",
     },
     screens: {
+      "3xl": { max: "1792px" },
+      // => @media (max-width: 1792px) { ... }
+
       "2xl": { max: "1536px" },
       // => @media (max-width: 1536px) { ... }
 
