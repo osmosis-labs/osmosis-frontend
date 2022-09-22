@@ -29,7 +29,9 @@ export const Switch: FunctionComponent<
     )}
   >
     {labelPosition === "left" && (
-      <div className={disabled ? "opacity-30" : undefined}>{children}</div>
+      <div className={classNames("mr-3", disabled ? "opacity-30" : undefined)}>
+        {children}
+      </div>
     )}
     <input
       type="checkbox"
@@ -47,7 +49,9 @@ export const Switch: FunctionComponent<
       onChange={(e) => onToggle(e.target.checked)}
     />
     {labelPosition === "right" && (
-      <div className={disabled ? "opacity-30" : undefined}>{children}</div>
+      <div className={classNames("ml-3", disabled ? "opacity-30" : undefined)}>
+        {children}
+      </div>
     )}
   </label>
 );
