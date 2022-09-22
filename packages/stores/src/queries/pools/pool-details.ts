@@ -71,16 +71,17 @@ export class ObservableQueryPoolDetails {
 
   @computed
   get gauges() {
-    return this.lockableDurations
+    return this.queries.queryLockableDurations.lockableDurations
       .map((duration) => {
-        const guageId =
+        const gaugeId =
           this.queries.queryIncentivizedPools.getIncentivizedGaugeId(
             this.queryPool.id,
             duration
           );
-        if (!guageId) return;
 
-        const gauge = this.queries.queryGauge.get(guageId);
+        if (!gaugeId) return;
+
+        const gauge = this.queries.queryGauge.get(gaugeId);
 
         const apr = this.queries.queryIncentivizedPools.computeAPY(
           this.queryPool.id,
@@ -90,7 +91,7 @@ export class ObservableQueryPoolDetails {
         );
 
         return {
-          id: guageId,
+          id: gaugeId,
           duration,
           apr,
           isLoading: gauge.isFetching,
@@ -130,7 +131,7 @@ export class ObservableQueryPoolDetails {
 
   @computed
   get userAvailableValue(): PricePretty {
-    return this.queryPool.totalShare.toDec().equals(new Dec(0))
+    return !this.queryPool.totalShare.toDec().equals(new Dec(0))
       ? this.totalValueLocked.mul(
           this.queries.queryGammPoolShare
             .getAvailableGammShare(this.bech32Address, this.queryPool.id)
@@ -251,7 +252,8 @@ export class ObservableQueryPoolDetails {
           }
 
           return {
-            duration: observableGauge.lockupDuration.humanize(),
+            id: gaugeId,
+            duration: observableGauge.lockupDuration,
             rewardAmount: currency
               ? observableGauge.getRemainingCoin(currency)
               : undefined,
@@ -262,7 +264,8 @@ export class ObservableQueryPoolDetails {
           (
             gauge
           ): gauge is {
-            duration: string;
+            id: string;
+            duration: Duration;
             rewardAmount: CoinPretty | undefined;
             remainingEpochs: number;
           } => gauge !== undefined

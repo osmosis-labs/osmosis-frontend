@@ -51,13 +51,11 @@ export class ObservableQuerySuperfluidPool {
     );
   }
 
+  /** Wraps `gauges` member of pool detail store with potential superfluid APR info. */
   @computed
   get superfluidGauges() {
     return this.queryPoolDetails.gauges.map((gaugeInfo) => {
-      const lastDuration =
-        this.queryPoolDetails.lockableDurations[
-          this.queryPoolDetails.lockableDurations.length - 1
-        ];
+      const lastDuration = this.queryPoolDetails.longestDuration;
       return {
         ...gaugeInfo,
         superfluidApr:
@@ -96,7 +94,7 @@ export class ObservableQuerySuperfluidPool {
 
   @computed
   get upgradeableLpLockIds() {
-    if (!this.isSuperfluid) return;
+    if (!this.isSuperfluid || !this.queryPoolDetails.longestDuration) return;
 
     if (this.queryPoolDetails.lockableDurations.length > 0) {
       return this.queries.queryAccountLocked
@@ -110,7 +108,7 @@ export class ObservableQuerySuperfluidPool {
 
   @computed
   get superfluid() {
-    if (!this.isSuperfluid) return;
+    if (!this.isSuperfluid || !this.queryPoolDetails.longestDuration) return;
 
     const undelegatedLockedLpShares =
       (this.queries.querySuperfluidDelegations

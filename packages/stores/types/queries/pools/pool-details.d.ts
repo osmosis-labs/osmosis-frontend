@@ -67,7 +67,8 @@ export declare class ObservableQueryPoolDetails {
         gaugeId: string;
         denom: string;
     }[], findCurrency: (denom: string) => AppCurrency | undefined) => {
-        duration: string;
+        id: string;
+        duration: Duration;
         rewardAmount: CoinPretty | undefined;
         remainingEpochs: number;
     }[];

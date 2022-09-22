@@ -36,6 +36,7 @@ export declare class ObservableQuerySuperfluidPool {
         querySuperfluidOsmoEquivalent: ObservableQuerySuperfluidOsmoEquivalent;
     }, priceStore: IPriceStore);
     get isSuperfluid(): boolean;
+    /** Wraps `gauges` member of pool detail store with potential superfluid APR info. */
     get superfluidGauges(): {
         superfluidApr: RatePretty | undefined;
         id: string;

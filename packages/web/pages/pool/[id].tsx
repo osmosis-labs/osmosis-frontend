@@ -11,7 +11,13 @@ import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+} from "react";
 import { Button } from "../../components/buttons";
 import {
   GoSuperfluidCard,
@@ -120,13 +126,10 @@ const Pool: FunctionComponent = observer(() => {
     do_setShowManageLiquidityDialog(isOpen);
   }, []);
   const [showLockLPTokenModal, do_setShowLockLPTokenModal] = useState(false);
-  const setShowLockLPTokenModal = useCallback(
-    (show: boolean) => {
-      if (show) trackEvent(PoolDetailEvents.startLockTokens);
-      do_setShowLockLPTokenModal(show);
-    },
-    [do_setShowLockLPTokenModal]
-  );
+  const setShowLockLPTokenModal = useCallback((show: boolean) => {
+    if (show) trackEvent(PoolDetailEvents.startLockTokens);
+    do_setShowLockLPTokenModal(show);
+  }, []);
   const addLiquidityConfig = useAddLiquidityConfig(
     chainStore,
     chainId,
@@ -150,24 +153,39 @@ const Pool: FunctionComponent = observer(() => {
     pool ? queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id) : undefined
   );
 
-  const lockupGauges:
-    | {
-        id: string;
-        apr: RatePretty;
-        duration: plugin.Duration;
-        superfluidApr?: RatePretty;
-      }[]
-    | undefined = superfluidPoolStore?.superfluidGauges;
+  type Gauge = {
+    id: string;
+    duration: Duration;
+    apr?: RatePretty;
+    superfluidApr?: RatePretty;
+  };
+  const lockupGauges: Gauge[] | undefined = useMemo(() => {
+    const gaugeDurationMap = new Map<number, Gauge>();
+
+    // uniqued external gauges by duration
+    if (externalGuages) {
+      externalGuages.forEach((extGauge) => {
+        gaugeDurationMap.set(extGauge.duration.asDays(), {
+          id: extGauge.id,
+          duration: extGauge.duration,
+        });
+      });
+    }
+
+    // overwrite any external gauges with internal gauges w/ apr calcs
+    superfluidPoolStore?.superfluidGauges.forEach((gauge) => {
+      gaugeDurationMap.set(gauge.duration.asDays(), gauge);
+    });
+
+    return Array.from(gaugeDurationMap.values());
+  }, [externalGuages, superfluidPoolStore?.superfluidGauges]);
 
   const [showSuperfluidValidatorModal, do_setShowSuperfluidValidatorsModal] =
     useState(false);
-  const setShowSuperfluidValidatorsModal = useCallback(
-    (show: boolean) => {
-      trackEvent(PoolDetailEvents.goSuperfluid);
-      do_setShowSuperfluidValidatorsModal(show);
-    },
-    [do_setShowSuperfluidValidatorsModal]
-  );
+  const setShowSuperfluidValidatorsModal = useCallback((show: boolean) => {
+    trackEvent(PoolDetailEvents.goSuperfluid);
+    do_setShowSuperfluidValidatorsModal(show);
+  }, []);
 
   // swap modal
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
@@ -200,7 +218,7 @@ const Pool: FunctionComponent = observer(() => {
         poolId,
         poolName,
         poolWeight,
-        isSuperfluidPool,
+        isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
         isSingleAsset: addLiquidityConfig.isSingleAmountIn,
         providingLiquidity:
           addLiquidityConfig.isSingleAmountIn &&
@@ -245,7 +263,7 @@ const Pool: FunctionComponent = observer(() => {
                 poolId,
                 poolName,
                 poolWeight,
-                isSuperfluidPool,
+                isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
                 isSingleAsset: addLiquidityConfig.isSingleAmountIn,
                 providingLiquidity:
                   addLiquidityConfig.isSingleAmountIn &&
@@ -284,7 +302,7 @@ const Pool: FunctionComponent = observer(() => {
                 poolId,
                 poolName,
                 poolWeight,
-                isSuperfluidPool,
+                isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
                 isSingleAsset: addLiquidityConfig.isSingleAmountIn,
                 providingLiquidity:
                   addLiquidityConfig.isSingleAmountIn &&
@@ -327,7 +345,7 @@ const Pool: FunctionComponent = observer(() => {
         poolId,
         poolName,
         poolWeight,
-        isSuperfluidPool,
+        isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
         poolSharePercentage: removeLiquidityConfig.percentage,
       },
     ]);
@@ -347,7 +365,7 @@ const Pool: FunctionComponent = observer(() => {
               poolId,
               poolName,
               poolWeight,
-              isSuperfluidPool,
+              isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
               poolSharePercentage: removeLiquidityConfig.percentage,
             },
           ]);
@@ -373,7 +391,7 @@ const Pool: FunctionComponent = observer(() => {
           poolId,
           poolName,
           poolWeight,
-          isSuperfluidPool,
+          isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
           isSuperfluidEnabled: electSuperfluid,
           unbondingPeriod: gauge?.duration.asDays(),
         },
@@ -413,7 +431,8 @@ const Pool: FunctionComponent = observer(() => {
                     poolId,
                     poolName,
                     poolWeight,
-                    isSuperfluidPool,
+                    isSuperfluidPool:
+                      superfluidPoolStore?.isSuperfluid ?? false,
                     isSuperfluidEnabled: false,
                     unbondingPeriod: gauge?.duration.asDays(),
                   },
@@ -437,7 +456,7 @@ const Pool: FunctionComponent = observer(() => {
       account.osmosis,
     ]
   );
-  const selectSuperfluidValidator = useCallback(
+  const superfluidDelegateToValidator = useCallback(
     async (validatorAddress) => {
       if (superfluidPoolStore?.superfluid) {
         logEvent([
@@ -446,7 +465,7 @@ const Pool: FunctionComponent = observer(() => {
             poolId,
             poolName,
             poolWeight,
-            isSuperfluidPool,
+            isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
             unbondingPeriod: 14,
             validatorName: queryCosmos.queryValidators
               .getQueryStatus(Staking.BondStatus.Bonded)
@@ -471,7 +490,8 @@ const Pool: FunctionComponent = observer(() => {
                     poolId,
                     poolName,
                     poolWeight,
-                    isSuperfluidPool,
+                    isSuperfluidPool:
+                      superfluidPoolStore?.isSuperfluid ?? false,
                     unbondingPeriod: 14,
                     validatorName: queryCosmos.queryValidators
                       .getQueryStatus(Staking.BondStatus.Bonded)
@@ -509,7 +529,8 @@ const Pool: FunctionComponent = observer(() => {
                     poolId,
                     poolName,
                     poolWeight,
-                    isSuperfluidPool,
+                    isSuperfluidPool:
+                      superfluidPoolStore?.isSuperfluid ?? false,
                     unbondingPeriod: 14,
                     validatorName: queryCosmos.queryValidators
                       .getQueryStatus(Staking.BondStatus.Bonded)
@@ -543,12 +564,6 @@ const Pool: FunctionComponent = observer(() => {
   const poolWeight = pool?.poolAssets
     .map((poolAsset) => poolAsset.weightFraction.toString())
     .join(" / ");
-  let isSuperfluidPool: boolean | undefined;
-  if (pool) {
-    isSuperfluidPool = queryOsmosis.querySuperfluidPools.isSuperfluidPool(
-      pool?.id
-    );
-  }
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [
       EventName.PoolDetail.pageViewed,
@@ -556,7 +571,9 @@ const Pool: FunctionComponent = observer(() => {
         poolId,
         poolName,
         poolWeight,
-        ...(isSuperfluidPool !== undefined && { isSuperfluidPool }),
+        ...(superfluidPoolStore && {
+          isSuperfluidPool: superfluidPoolStore.isSuperfluid,
+        }),
       },
     ],
   });
@@ -628,7 +645,7 @@ const Pool: FunctionComponent = observer(() => {
           isOpen={showSuperfluidValidatorModal}
           onRequestClose={() => setShowSuperfluidValidatorsModal(false)}
           isSendingMsg={account.txTypeInProgress !== ""}
-          onSelectValidator={selectSuperfluidValidator}
+          onSelectValidator={superfluidDelegateToValidator}
         />
       )}
 
@@ -653,7 +670,7 @@ const Pool: FunctionComponent = observer(() => {
                   poolId,
                   poolName,
                   poolWeight,
-                  isSuperfluidPool,
+                  isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
                 },
               ]);
               setShowManageLiquidityDialog(true);
@@ -668,7 +685,7 @@ const Pool: FunctionComponent = observer(() => {
                   poolId,
                   poolName,
                   poolWeight,
-                  isSuperfluidPool,
+                  isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
                 },
               ]);
               trackEvent(PoolDetailEvents.startSwapTokens);
@@ -771,7 +788,8 @@ const Pool: FunctionComponent = observer(() => {
                         poolId,
                         poolName,
                         poolWeight,
-                        isSuperfluidPool,
+                        isSuperfluidPool:
+                          superfluidPoolStore?.isSuperfluid ?? false,
                       },
                     ]);
                     setShowLockLPTokenModal(true);
@@ -783,7 +801,7 @@ const Pool: FunctionComponent = observer(() => {
             </div>
           )}
           {externalGuages && externalGuages.length > 0 && (
-            <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
+            <div className="flex lg:flex-col overflow-x-auto md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
               {externalGuages.map(
                 (
                   { rewardAmount, duration: durationDays, remainingEpochs },
@@ -794,7 +812,7 @@ const Pool: FunctionComponent = observer(() => {
                     bonusValue={
                       rewardAmount?.maxDecimals(0).trim(true).toString() ?? "0"
                     }
-                    days={durationDays}
+                    days={durationDays.humanize()}
                     remainingEpochs={remainingEpochs.toString()}
                     isMobile={isMobile}
                   />
@@ -941,7 +959,8 @@ const Pool: FunctionComponent = observer(() => {
                               poolId,
                               poolName,
                               poolWeight,
-                              isSuperfluidPool,
+                              isSuperfluidPool:
+                                superfluidPoolStore?.isSuperfluid ?? false,
                               unbondingPeriod: duration?.asDays(),
                             },
                           ]);
@@ -988,7 +1007,9 @@ const Pool: FunctionComponent = observer(() => {
                                       poolId,
                                       poolName,
                                       poolWeight,
-                                      isSuperfluidPool,
+                                      isSuperfluidPool:
+                                        superfluidPoolStore?.isSuperfluid ??
+                                        false,
                                       unbondingPeriod: duration?.asDays(),
                                     },
                                   ]);
@@ -1015,7 +1036,9 @@ const Pool: FunctionComponent = observer(() => {
                                       poolId,
                                       poolName,
                                       poolWeight,
-                                      isSuperfluidPool,
+                                      isSuperfluidPool:
+                                        superfluidPoolStore?.isSuperfluid ??
+                                        false,
                                       unbondingPeriod: duration?.asDays(),
                                     },
                                   ]);
