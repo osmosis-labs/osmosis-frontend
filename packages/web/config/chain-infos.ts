@@ -2,30 +2,26 @@ import { ChainInfoWithExplorer } from "../stores/chain";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 
-// The following variables are defined on the .env file in order to automate environment creation.
-
-const OSMOSIS_RPC = process.env.NEXT_PUBLIC_OSMOSIS_RPC;
-const OSMOSIS_REST = process.env.NEXT_PUBLIC_OSMOSIS_REST;
-const OSMOSIS_EXPLORER_URL = process.env.NEXT_PUBLIC_OSMOSIS_EXPLORER_URL;
-const OSMOSIS_CHAIN_ID = process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID;
-const OSMOSIS_CHAIN_NAME = process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_NAME;
-
-const AXELAR_RPC:string = process.env.NEXT_PUBLIC_AXELAR_RPC || "https://rpc-axelar.keplr.app";
-const AXELAR_REST:string = process.env.NEXT_PUBLIC_AXELAR_REST || "https://lcd-axelar.keplr.app";
-const AXELAR_EXPLORER_URL = process.env.NEXT_PUBLIC_AXELAR_EXPLORER_URL || "https://axelarscan.io/tx/{txHash}";
-const AXELAR_CHAIN_ID:string = process.env.NEXT_PUBLIC_AXELAR_CHAIN_ID || "axelar-dojo-1";
-const AXELAR_CHAIN_NAME:string = process.env.NEXT_PUBLIC_AXELAR_CHAIN_NAME || "Axelar";
-const AXELAR_COIN_DENOM:string = process.env.NEXT_PUBLIC_AXELAR_COIN_DENOM || "USDC";
-const AXELAR_COIN_MINIMAL_DENOM:string = process.env.NEXT_PUBLIC_AXELAR_COIN_MINIMAL_DENOM || "uusdc";
-
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
+const RPC_OVERWRITE = process.env.NEXT_PUBLIC_RPC_OVERWRITE;
+const REST_OVERWRITE = process.env.NEXT_PUBLIC_REST_OVERWRITE;
+const EXPLORER_UR_OVERWRITE = process.env.NEXT_PUBLIC_EXPLORER_URL_OVERWRITE;
+const CHAIN_ID_OVERWRITE = process.env.NEXT_PUBLIC_CHAIN_ID_OVERWRITE;
+const CHAIN_NAME_OVERWRITE = process.env.NEXT_PUBLIC_CHAIN_NAME_OVERWRITE;
 
 const chainInfos = (
   [
     {
-      rpc: OSMOSIS_RPC,
-      rest: OSMOSIS_REST,
-      chainId: OSMOSIS_CHAIN_ID,
-      chainName: OSMOSIS_CHAIN_NAME,
+      rpc:
+        RPC_OVERWRITE ?? IS_TESTNET
+          ? "https://rpc-test.osmosis.zone/"
+          : "https://rpc-osmosis.keplr.app/",
+      rest:
+        REST_OVERWRITE ?? IS_TESTNET
+          ? "https://lcd-test.osmosis.zone/"
+          : "https://lcd-osmosis.keplr.app/",
+      chainId: CHAIN_ID_OVERWRITE ?? IS_TESTNET ? "osmo-test-4" : "osmosis-1",
+      chainName: CHAIN_NAME_OVERWRITE ?? "Osmosis",
       bip44: {
         coinType: 118,
       },
@@ -54,7 +50,10 @@ const chainInfos = (
         high: 0.025,
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
-      explorerUrlToTx: OSMOSIS_EXPLORER_URL,
+      explorerUrlToTx:
+        EXPLORER_UR_OVERWRITE ?? IS_TESTNET
+          ? "https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}"
+          : "https://www.mintscan.io/osmosis/txs/{txHash}",
     },
     {
       rpc: "https://rpc-cosmoshub.keplr.app",
@@ -1998,10 +1997,14 @@ const chainInfos = (
 
 // Add normal chain infos in case of `currencies` not containing the stake or fee currency.
 chainInfos.push({
-  rpc: AXELAR_RPC,
-  rest: AXELAR_REST,
-  chainId: AXELAR_CHAIN_ID,
-  chainName: AXELAR_CHAIN_NAME,
+  rpc: IS_TESTNET
+    ? "https://axelartest-rpc.quickapi.com/"
+    : "https://rpc-axelar.keplr.app", // source: https://docs.axelar.dev/resources
+  rest: IS_TESTNET
+    ? "https://axelartest-lcd.quickapi.com/"
+    : "https://lcd-axelar.keplr.app",
+  chainId: IS_TESTNET ? "axelar-testnet-lisbon-3" : "axelar-dojo-1",
+  chainName: "Axelar",
   stakeCurrency: {
     coinDenom: "AXL",
     coinMinimalDenom: "uaxl",
@@ -2015,8 +2018,8 @@ chainInfos.push({
   bech32Config: Bech32Address.defaultBech32Config("axelar"),
   currencies: [
     {
-      coinDenom: AXELAR_COIN_DENOM,
-      coinMinimalDenom: AXELAR_COIN_MINIMAL_DENOM,
+      coinDenom: IS_TESTNET ? "aUSDC" : "USDC",
+      coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
       coinDecimals: 6,
       coinGeckoId: "usd-coin",
       coinImageUrl: "/tokens/usdc.svg",
@@ -2160,7 +2163,9 @@ chainInfos.push({
     high: 0.00009,
   },
   features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
-  explorerUrlToTx: AXELAR_EXPLORER_URL,
+  explorerUrlToTx: IS_TESTNET
+    ? "https://testnet.axelarscan.io/tx/{txHash}"
+    : "https://axelarscan.io/tx/{txHash}",
 });
 
 export const ChainInfos: ChainInfoWithExplorer[] = chainInfos;

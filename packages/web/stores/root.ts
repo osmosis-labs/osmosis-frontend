@@ -35,7 +35,6 @@ import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { OsmoPixelsQueries } from "./pixels";
 const semver = require("semver");
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
-const OSMOSIS_CHAIN_ID = process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID || "osmosis";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -65,7 +64,12 @@ export class RootStore {
     getKeplr: () => Promise<Keplr | undefined> = () =>
       Promise.resolve(undefined)
   ) {
-    this.chainStore = new ChainStore(ChainInfos, OSMOSIS_CHAIN_ID);
+    this.chainStore = new ChainStore(
+      ChainInfos,
+      process.env.NEXT_PUBLIC_CHAIN_ID_OVERWRITE ?? IS_TESTNET
+        ? "osmo-test-4"
+        : "osmosis"
+    );
 
     const eventListener = (() => {
       // On client-side (web browser), use the global window object.
