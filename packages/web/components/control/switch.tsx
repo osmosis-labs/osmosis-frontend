@@ -25,12 +25,12 @@ export const Switch: FunctionComponent<
     <input
       type="checkbox"
       className={classNames(
-        "cursor-pointer w-7 h-[18px] rounded-full appearance-none bg-iconDefault transition duration-200 relative",
-        "after:h-4 after:w-4 after:rounded-full after:bg-white-high after:absolute after:left-px after:top-px after:transform after:scale-100 after:transition after:duration-200", // dot
+        "cursor-pointer w-7 h-[18px] rounded-full appearance-none bg-osmoverse-600 transition ease-inOutBack duration-200 relative",
+        "after:h-4 after:w-4 after:rounded-full after:bg-white-high after:absolute after:left-px after:top-px after:transform after:ease-inOutBack after:scale-100 after:transition after:duration-200", // dot
         "checked:after:transform checked:after:scale-100 checked:after:translate-x-2.5", // dot on transform
         disabled
-          ? "opacity-30 cursor-default bg-iconDefault"
-          : "checked:bg-primary-200",
+          ? "cursor-default after:bg-osmoverse-500 bg-osmoverse-600"
+          : "checked:bg-wosmongton-500",
         className
       )}
       checked={isOn}
