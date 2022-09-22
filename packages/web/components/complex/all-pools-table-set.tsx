@@ -57,7 +57,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     }
   };
   const [isPoolTvlFiltered, do_setIsPoolTvlFiltered] = useState(false);
-  const tvlFilterLabel = `Show pools less than ${new PricePretty(
+  const tvlFilterLabel = `Show pools < ${new PricePretty(
     priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
     TVL_FILTER_THRESHOLD
   ).toString()}`;
@@ -481,21 +481,24 @@ export const AllPoolsTableSet: FunctionComponent<{
       <div className="flex flex-col gap-3 mt-5">
         <div className="flex items-center place-content-between">
           <h5>All Pools</h5>
+          <Switch
+            isOn={isPoolTvlFiltered}
+            onToggle={setIsPoolTvlFiltered}
+            className="mr-2"
+            labelPosition="left"
+          >
+            <span className="subtitle1 text-osmoverse-200">
+              {tvlFilterLabel}
+            </span>
+          </Switch>
+        </div>
+        <div className="flex flex-wrap gap-4 place-content-between">
           <MenuToggle
             className="inline"
             options={poolsMenuOptions}
             selectedOptionId={activeOptionId}
             onSelect={selectOption}
           />
-        </div>
-        <div className="flex flex-wrap gap-4 place-content-between">
-          <Switch
-            isOn={isPoolTvlFiltered}
-            onToggle={setIsPoolTvlFiltered}
-            className="mr-2"
-          >
-            {tvlFilterLabel}
-          </Switch>
           <div className="flex flex-wrap items-center gap-8 lg:w-full lg:place-content-between">
             <SearchBox
               currentValue={query}

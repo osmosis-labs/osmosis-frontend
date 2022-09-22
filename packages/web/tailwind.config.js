@@ -23,10 +23,19 @@ module.exports = {
       transparent: "transparent",
       osmoverse: {
         100: "#E4E1FB",
+        200: "#CEC8F3",
+        300: "#B0AADC",
+        500: "#736CA3",
         600: "#565081",
         700: "#3C356D",
         800: "#282750",
         900: "#140F34",
+      },
+      wosmongton: {
+        200: "#B3B1FD",
+        400: "#6A67EA",
+        500: "#5B57FA",
+        700: "#462ADF",
       },
       primary: IS_FRONTIER
         ? {
@@ -53,12 +62,6 @@ module.exports = {
             800: "#080559",
             900: "#02003F",
           },
-      wosmongton: {
-        200: "#B3B1FD",
-        400: "#6A67EA",
-        500: "#5B57FA",
-        700: "#462ADF",
-      },
       primaryVariant: "#0A0674",
       secondary: IS_FRONTIER
         ? {

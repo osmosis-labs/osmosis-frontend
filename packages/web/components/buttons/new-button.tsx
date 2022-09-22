@@ -5,16 +5,18 @@ import { CustomClasses } from "../types";
 export const NewButton: FunctionComponent<
   {
     mode?: "primary" | "primary-warning" | "secondary";
+    size?: "sm" | "normal";
   } & CustomClasses &
     ButtonHTMLAttributes<HTMLButtonElement>
 > = (props) => {
-  const { mode = "primary", className, children } = props;
+  const { mode = "primary", size = "normal", className, children } = props;
 
   return (
     <button
       {...props}
       className={classNames(
-        "flex items-center text-center w-[400px] h-16 rounded-xl",
+        "flex items-center text-center rounded-xl disabled:text-osmoverse-100 py-2",
+        size === "sm" ? "px-5" : "px-6",
         {
           "bg-wosmongton-700 hover:bg-wosmongton-400": mode === "primary",
           "bg-transparent border hover:border-2": mode === "secondary",
@@ -22,7 +24,15 @@ export const NewButton: FunctionComponent<
         className
       )}
     >
-      {typeof children === "string" ? <h6>{children}</h6> : children}
+      {typeof children === "string" ? (
+        size === "sm" ? (
+          <span className="subtitle1 mx-auto">{children}</span>
+        ) : (
+          <h6 className="mx-auto">{children}</h6>
+        )
+      ) : (
+        children
+      )}
     </button>
   );
 };
