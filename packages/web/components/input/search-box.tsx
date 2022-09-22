@@ -15,7 +15,7 @@ export const SearchBox: FunctionComponent<
 }) => (
   <div
     className={classNames(
-      "flex flex-nowrap gap-3 justify-between w-max rounded-2xl py-[10px] px-5 border border-osmoverse-500",
+      "flex flex-nowrap gap-3 justify-between w-max rounded-xl py-[10px] px-5 border border-osmoverse-500",
       {
         "opacity-50": disabled,
       },

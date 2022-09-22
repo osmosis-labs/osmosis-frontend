@@ -61,20 +61,17 @@ export const AllPoolsTableSet: FunctionComponent<{
     priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
     TVL_FILTER_THRESHOLD
   ).toString()}`;
-  const setIsPoolTvlFiltered = useCallback(
-    (isFiltered: boolean) => {
-      logEvent([
-        EventName.Pools.allPoolsListFiltered,
-        {
-          filteredBy: tvlFilterLabel,
-          isFilterOn: isFiltered,
-        },
-      ]);
-      if (isFiltered) trackEvent(PoolsPageEvents.showLowTvlPools);
-      do_setIsPoolTvlFiltered(isFiltered);
-    },
-    [do_setIsPoolTvlFiltered]
-  );
+  const setIsPoolTvlFiltered = useCallback((isFiltered: boolean) => {
+    logEvent([
+      EventName.Pools.allPoolsListFiltered,
+      {
+        filteredBy: tvlFilterLabel,
+        isFilterOn: isFiltered,
+      },
+    ]);
+    if (isFiltered) trackEvent(PoolsPageEvents.showLowTvlPools);
+    do_setIsPoolTvlFiltered(isFiltered);
+  }, []);
 
   const { chainId } = chainStore.osmosis;
   const queriesOsmosis = queriesStore.get(chainId).osmosis!;
@@ -172,13 +169,10 @@ export const AllPoolsTableSet: FunctionComponent<{
     toggleSortDirection,
     sortedAllPoolsWithMetrics,
   ] = useSortedData(tvlFilteredPools, initialKeyPath, initialSortDirection);
-  const setSortKeyPath = useCallback(
-    (terms: string) => {
-      trackEvent(PoolsPageEvents.sortPools);
-      do_setSortKeyPath(terms);
-    },
-    [do_setSortKeyPath]
-  );
+  const setSortKeyPath = useCallback((terms: string) => {
+    trackEvent(PoolsPageEvents.sortPools);
+    do_setSortKeyPath(terms);
+  }, []);
 
   const [query, setQuery, filteredPools] = useFilteredData(
     sortedAllPoolsWithMetrics,
@@ -251,7 +245,7 @@ export const AllPoolsTableSet: FunctionComponent<{
               setSortDirection(newSortDirection);
             },
           },
-    [sortKeyPath, sortDirection, setSortDirection, setSortKeyPath]
+    [sortKeyPath, sortDirection]
   );
   const tableCols = useMemo(
     () => [
@@ -288,7 +282,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         collapseAt: Breakpoint.LG,
       },
     ],
-    [makeSortMechanism, isIncentivizedPools]
+    [isIncentivizedPools]
   );
 
   const tableRows: RowDef[] = useMemo(
@@ -388,14 +382,7 @@ export const AllPoolsTableSet: FunctionComponent<{
       setIsPoolTvlFiltered(false);
       didAutoSwitchTVLFilter.current = false;
     }
-  }, [
-    query,
-    filteredPools,
-    isPoolTvlFiltered,
-    activeOptionId,
-    setIsPoolTvlFiltered,
-    setActiveOptionId,
-  ]);
+  }, [query, filteredPools, isPoolTvlFiltered, activeOptionId]);
 
   if (isMobile) {
     return (
@@ -492,7 +479,7 @@ export const AllPoolsTableSet: FunctionComponent<{
             </span>
           </Switch>
         </div>
-        <div className="flex flex-wrap gap-4 place-content-between">
+        <div className="flex flex-wrap items-center gap-4 place-content-between">
           <MenuToggle
             className="inline"
             options={poolsMenuOptions}
