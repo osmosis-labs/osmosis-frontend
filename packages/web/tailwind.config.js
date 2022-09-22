@@ -24,6 +24,7 @@ module.exports = {
       osmoverse: {
         600: "#565081",
         700: "#3C356D",
+        800: "#282750",
         900: "#140F34",
       },
       primary: IS_FRONTIER
