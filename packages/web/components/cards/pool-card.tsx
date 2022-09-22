@@ -37,7 +37,7 @@ export const PoolCard: FunctionComponent<
         <Link href={`/pool/${poolId}`} passHref prefetch={false}>
           <a
             className={classNames(
-              "w-full h-32 p-px rounded-lg shadow-elevation-08dp",
+              "w-full min-w-[360px] h-32 p-px rounded-lg shadow-elevation-08dp",
               {
                 "bg-card": !isSuperfluid,
                 "bg-superfluid": isSuperfluid,

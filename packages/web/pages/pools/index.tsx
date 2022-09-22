@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { ObservableQueryPool, isError } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
@@ -38,6 +38,7 @@ const Pools: NextPage = observer(function () {
     priceStore,
     queriesStore,
     queriesExternalStore,
+    navBarStore,
   } = useStore();
   const { isMobile } = useWindowSize();
   const { trackEvent } = useMatomoAnalytics();
@@ -132,6 +133,13 @@ const Pools: NextPage = observer(function () {
   );
   /// show pools > $1k TVL
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
+
+  // set nav bar state
+  useEffect(() => {
+    navBarStore.callToActionButtons = [
+      { label: "Create new Pool", onClick: () => setIsCreatingPool(true) },
+    ];
+  }, []);
 
   return (
     <main className="bg-background px-8">

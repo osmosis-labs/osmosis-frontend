@@ -22,6 +22,7 @@ module.exports = {
       },
       transparent: "transparent",
       osmoverse: {
+        100: "#E4E1FB",
         600: "#565081",
         700: "#3C356D",
         800: "#282750",

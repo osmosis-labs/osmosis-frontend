@@ -12,6 +12,7 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import { OsmosisAccount, OsmosisQueries } from "@osmosis-labs/stores";
 
 export type CallToAction = {
+  label: string;
   onClick: () => void;
 };
 export class NavBarStore {
@@ -32,6 +33,10 @@ export class NavBarStore {
     >
   ) {
     makeObservable(this);
+  }
+
+  get callToActionButtons() {
+    return this._callToActionButtons;
   }
 
   set callToActionButtons(buttons: CallToAction[]) {

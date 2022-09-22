@@ -25,8 +25,6 @@ export const NavBar: FunctionComponent<
 
   const [hoverWalletInfo, setHoverWalletInfo] = useState(false);
 
-  console.log(hoverWalletInfo);
-
   return (
     <>
       <div
@@ -35,8 +33,18 @@ export const NavBar: FunctionComponent<
           className
         )}
       >
-        <h4>{navBarStore.title || title}</h4>
-
+        <div className="flex items-center gap-9">
+          <h4>{navBarStore.title || title}</h4>
+          {navBarStore.callToActionButtons.map((button, index) => (
+            <NewButton
+              mode={index > 0 ? "secondary" : undefined}
+              key={index}
+              {...button}
+            >
+              <span className="subtitle1 mx-auto">{button.label}</span>
+            </NewButton>
+          ))}
+        </div>
         <div className="flex gap-3 items-center">
           <NavBarButton
             iconUrl="/icons/setting.svg"
