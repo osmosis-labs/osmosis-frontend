@@ -15,7 +15,7 @@ export const MenuToggle: FunctionComponent<Props> = ({
   onSelect,
   className,
 }) => (
-  <div className="flex rounded-full bg-osmoverse-700">
+  <div className="flex h-fit rounded-full bg-osmoverse-700">
     {options.map(({ id, display }) => (
       <label
         key={id}

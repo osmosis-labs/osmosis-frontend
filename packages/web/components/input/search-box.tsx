@@ -3,33 +3,29 @@ import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { InputProps, Disableable, CustomClasses } from "../types";
 
-interface Props extends InputProps<string>, Disableable, CustomClasses {
-  state?: "error";
-}
-
-export const SearchBox: FunctionComponent<Props> = ({
+export const SearchBox: FunctionComponent<
+  InputProps<string> & Disableable & CustomClasses
+> = ({
   currentValue,
   onInput,
   onFocus,
   placeholder,
-  state = "enabled",
   disabled = false,
   className,
 }) => (
   <div
     className={classNames(
-      "flex flex-nowrap gap-3 justify-between w-max h-8 rounded-xl pr-1 pl-3 text-white-high border text-sm border-secondary-200",
+      "flex flex-nowrap gap-3 justify-between w-max rounded-2xl py-[10px] px-5 border border-osmoverse-500",
       {
-        "border-missionError": state === "error",
         "opacity-50": disabled,
       },
       className
     )}
   >
-    <Image alt="search" src="/icons/search-hollow.svg" height={14} width={14} />
-    <label className="grow shrink h-full">
+    <Image alt="search" src="/icons/search.svg" height={16} width={16} />
+    <label className="grow shrink">
       <input
-        className="w-full h-full appearance-none bg-transparent placeholder:text-white-disabled"
+        className="w-full h-full appearance-none bg-transparent placeholder:text-osmoverse-400 placeholder:body1"
         value={currentValue}
         placeholder={placeholder}
         autoComplete="off"
