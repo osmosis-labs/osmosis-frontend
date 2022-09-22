@@ -24,6 +24,6 @@ export const PoolAssetsName: FunctionComponent<{
   return size === "sm" ? (
     <span className={classNames("md:subtitle2", className)}>{assetsName}</span>
   ) : (
-    <h5 className={className}>{assetsName}</h5>
+    <h6 className={className}>{assetsName}</h6>
   );
 };
