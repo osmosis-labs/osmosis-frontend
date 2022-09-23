@@ -489,6 +489,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv:SEJUNO",
           coinDecimals: 6,
+          coinGeckoId: "pool:sejuno",
           coinImageUrl: "/tokens/sejuno.png",
         },
         {
@@ -519,6 +520,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno19rqljkh95gh40s7qdx40ksx3zq5tm4qsmsrdz9smw668x9zdr3lqtg33mf:SEASY",
           coinDecimals: 6,
+          coinGeckoId: "pool:seasy",
           coinImageUrl: "/tokens/seasy.svg",
         },
       ],
