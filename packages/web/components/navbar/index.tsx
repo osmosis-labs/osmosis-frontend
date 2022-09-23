@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FunctionComponent, useState } from "react";
+import { ButtonHTMLAttributes, FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { Bech32Address } from "@keplr-wallet/cosmos";
@@ -7,6 +7,8 @@ import { WalletStatus } from "@keplr-wallet/stores";
 import { NewButton } from "../buttons";
 import { useStore } from "../../stores";
 import { CustomClasses } from "../types";
+import { useBooleanWithWindowEvent } from "../../hooks";
+import { IUserSetting } from "../../stores/user-settings";
 
 export const NavBar: FunctionComponent<
   { title: string; backElementClassNames?: string } & CustomClasses
@@ -17,13 +19,17 @@ export const NavBar: FunctionComponent<
       osmosis: { chainId },
     },
     accountStore,
+    userSettings,
   } = useStore();
 
+  // wallet
   const account = accountStore.getAccount(chainId);
-
   const walletConnected = account.walletStatus === WalletStatus.Loaded;
-
   const [hoverWalletInfo, setHoverWalletInfo] = useState(false);
+
+  // settings button
+  const [settingsDropdownOpen, setSettingsDropdownOpen] =
+    useBooleanWithWindowEvent(false);
 
   return (
     <>
@@ -46,10 +52,19 @@ export const NavBar: FunctionComponent<
           ))}
         </div>
         <div className="flex gap-3 items-center">
-          <NavBarButton
-            iconUrl="/icons/setting.svg"
-            hoverIconUrl="/icons/setting-hover.svg"
-          />
+          <div className="relative">
+            <NavBarButton
+              iconUrl="/icons/setting.svg"
+              hoverIconUrl="/icons/setting-hover.svg"
+              onClick={() => {
+                // allow global event to close dropdown when clicking settings button
+                if (!settingsDropdownOpen) setSettingsDropdownOpen(true);
+              }}
+            />
+            {settingsDropdownOpen && (
+              <SettingsDropdown userSettings={userSettings.userSettings} />
+            )}
+          </div>
           {!walletConnected ? (
             <NewButton
               onClick={() => {
@@ -111,14 +126,18 @@ export const NavBar: FunctionComponent<
   );
 });
 
-const NavBarButton: FunctionComponent<{
-  iconUrl: string;
-  hoverIconUrl: string;
-}> = ({ iconUrl, hoverIconUrl }) => {
+const NavBarButton: FunctionComponent<
+  {
+    iconUrl: string;
+    hoverIconUrl: string;
+  } & ButtonHTMLAttributes<HTMLButtonElement>
+> = (props) => {
+  const { iconUrl, hoverIconUrl } = props;
   const [hovered, setHovered] = useState(false);
 
   return (
     <button
+      {...props}
       onMouseOver={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className="flex bg-osmoverse-700 items-center px-3 py-2 rounded-xl hover:bg-osmoverse-600"
@@ -132,3 +151,27 @@ const NavBarButton: FunctionComponent<{
     </button>
   );
 };
+
+const SettingsDropdown: FunctionComponent<{
+  userSettings: IUserSetting[];
+}> = observer(({ userSettings }) => (
+  <div
+    className="absolute top-[110%] left-[50%] -translate-x-1/2 flex flex-col gap-10 min-w-[385px] text-left bg-osmoverse-800 p-8 rounded-3xl"
+    onClick={(e) => e.stopPropagation()}
+  >
+    <h5>Settings</h5>
+    <div className="flex flex-col gap-7">
+      {userSettings.map((setting) => (
+        <div
+          className="flex items-center w-full place-content-between"
+          key={setting.id}
+        >
+          <span className="flex-nowrap subtitle1 text-osmoverse-100">
+            {setting.displayLabel}
+          </span>
+          {setting.controlComponent(setting.state as any, setting.setState)}
+        </div>
+      ))}
+    </div>
+  </div>
+));

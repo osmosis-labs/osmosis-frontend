@@ -73,7 +73,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
       ]);
       trackEvent(AssetsPageEvents.rowStartDeposit);
     },
-    [do_onDeposit]
+    []
   );
   const onWithdraw = useCallback(
     (...withdrawParams: Parameters<typeof do_onWithdraw>) => {
@@ -87,7 +87,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
       ]);
       trackEvent(AssetsPageEvents.rowStartWithdraw);
     },
-    [do_onWithdraw]
+    []
   );
 
   const mergeWithdrawCol = width < 1000 && !isMobile;
@@ -166,13 +166,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
         })
       ),
     ],
-    [
-      nativeBalances,
-      chainStore.osmosis.chainId,
-      ibcBalances,
-      onWithdraw,
-      onDeposit,
-    ]
+    [nativeBalances, chainStore.osmosis.chainId, ibcBalances]
   );
 
   // Sort data based on user's input either with the table column headers or the sort menu.
@@ -198,7 +192,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
       ]);
       do_setSortKey(term);
     },
-    [trackEvent, sortDirection, do_setSortKey]
+    [sortDirection]
   );
 
   // Table column def to determine how the first 2 column headers handle user click.
@@ -250,7 +244,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             },
       };
     },
-    [sortKey, sortDirection, toggleSortDirection, setSortKey, setSortDirection]
+    [sortKey, sortDirection]
   );
 
   // User toggles for showing 10+ pools and assets with > 0 fiat value

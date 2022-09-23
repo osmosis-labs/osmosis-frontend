@@ -34,6 +34,7 @@ import { PoolPriceRoutes } from "../config";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { OsmoPixelsQueries } from "./pixels";
 import { NavBarStore } from "./nav-bar";
+import { UserSettings, ShowDustUserSetting } from "./user-settings";
 const semver = require("semver");
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -62,6 +63,8 @@ export class RootStore {
   public readonly queryOsmoPixels: OsmoPixelsQueries;
 
   public readonly navBarStore: NavBarStore;
+
+  public readonly userSettings: UserSettings;
 
   constructor(
     getKeplr: () => Promise<Keplr | undefined> = () =>
@@ -245,5 +248,12 @@ export class RootStore {
       this.accountStore,
       this.queriesStore
     );
+
+    this.userSettings = new UserSettings([
+      new ShowDustUserSetting(
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
+          ?.symbol ?? "$"
+      ),
+    ]);
   }
 }

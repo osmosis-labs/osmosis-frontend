@@ -290,7 +290,6 @@ export const AllPoolsTableSet: FunctionComponent<{
       allData.map((poolWithFeeMetrics) => ({
         link: `/pool/${poolWithFeeMetrics.pool.id}`,
         onClick: () => {
-          console.log("pool table row clicked");
           logEvent([
             isIncentivizedPools
               ? EventName.Pools.incentivizedPoolsItemClicked
