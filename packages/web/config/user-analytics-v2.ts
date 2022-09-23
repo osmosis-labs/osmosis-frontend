@@ -60,7 +60,7 @@ export const EventName = {
     pageViewed: "Swap: Page viewed",
     maxClicked: "Swap: Max clicked",
     halfClicked: "Swap: Half clicked",
-    inputBoxClicked: "Swap: Input box clicked",
+    inputEntered: "Swap: Input entered",
     slippageToleranceSet: "Swap: Slippage tolerance set",
     switchClicked: "Swap: Switch clicked",
     swapStarted: "Swap: Swap started",
