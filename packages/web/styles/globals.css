@@ -89,7 +89,7 @@
   }
 
   thead > tr > th:first-child {
-    @apply md:rounded-none rounded-tl-2xl pl-8 pr-3 py-3;
+    @apply rounded-l-full md:rounded-none pl-8 pr-3 py-3;
   }
 
   thead > tr > th {
@@ -97,7 +97,7 @@
   }
 
   thead > tr > th:last-child {
-    @apply md:rounded-none rounded-tr-2xl pl-3 pr-8 py-3;
+    @apply rounded-r-full md:rounded-none pl-3 pr-8 py-3;
   }
 
   tbody > tr > td:first-child {

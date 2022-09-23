@@ -39,6 +39,7 @@ export class NavBarStore {
     return this._callToActionButtons;
   }
 
+  /** Use `useEffect` hook to apply currrent page's CTAs. */
   set callToActionButtons(buttons: CallToAction[]) {
     runInAction(() => (this._callToActionButtons = buttons));
   }

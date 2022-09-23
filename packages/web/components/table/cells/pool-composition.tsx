@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import Image from "next/image";
 import React, { FunctionComponent } from "react";
 import { BaseCell } from "..";
 import { PoolAssetsIcon, PoolAssetsName } from "../../assets";
@@ -10,7 +9,6 @@ export interface PoolCompositionCell extends BaseCell {
     coinImageUrl: string | undefined;
     coinDenom: string;
   }[];
-  isIncentivized?: boolean;
 }
 
 /** Displays pool composition as a cell in a table.
@@ -19,7 +17,7 @@ export interface PoolCompositionCell extends BaseCell {
  */
 export const PoolCompositionCell: FunctionComponent<
   Partial<PoolCompositionCell>
-> = ({ poolId, poolAssets, isIncentivized = false }) => (
+> = ({ poolId, poolAssets }) => (
   <div className="flex items-center">
     <PoolAssetsIcon assets={poolAssets} size="sm" />
     <div className="ml-4 mr-1 flex flex-col items-start text-white-full">
@@ -31,15 +29,5 @@ export const PoolCompositionCell: FunctionComponent<
         Pool #{poolId}
       </span>
     </div>
-    {isIncentivized && (
-      <div className="shrink-0">
-        <Image
-          alt="trade"
-          src="/icons/trade-green-check.svg"
-          height={24}
-          width={24}
-        />
-      </div>
-    )}
   </div>
 );

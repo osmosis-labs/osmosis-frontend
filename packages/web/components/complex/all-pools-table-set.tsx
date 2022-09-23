@@ -290,6 +290,7 @@ export const AllPoolsTableSet: FunctionComponent<{
       allData.map((poolWithFeeMetrics) => ({
         link: `/pool/${poolWithFeeMetrics.pool.id}`,
         onClick: () => {
+          console.log("pool table row clicked");
           logEvent([
             isIncentivizedPools
               ? EventName.Pools.incentivizedPoolsItemClicked
@@ -326,7 +327,6 @@ export const AllPoolsTableSet: FunctionComponent<{
           {
             poolId,
             poolAssets,
-            isIncentivized: incentivizedPoolIds.some((id) => id === poolId),
           },
           { value: poolWithMetrics.liquidity.toString() },
           {
@@ -531,7 +531,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         </div>
       </div>
       <Table<PoolCompositionCell & MetricLoaderCell>
-        className="mt-5 w-full lg:text-sm"
+        className="my-5 w-full lg:text-sm"
         columnDefs={tableCols}
         rowDefs={tableRows}
         data={tableData}

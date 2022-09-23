@@ -22,7 +22,9 @@ export const PoolAssetsName: FunctionComponent<{
           )
           .join(size === "sm" ? "/" : " / ");
   return size === "sm" ? (
-    <span className={classNames("md:subtitle2", className)}>{assetsName}</span>
+    <span className={classNames("subtitle1 md:subtitle2", className)}>
+      {assetsName}
+    </span>
   ) : (
     <h6 className={className}>{assetsName}</h6>
   );
