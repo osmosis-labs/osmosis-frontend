@@ -382,16 +382,6 @@ export const TradeClipboard: FunctionComponent<{
                     );
                   }}
                   onFocus={() => slippageConfig.setIsManualSlippage(true)}
-                  onClick={() =>
-                    logEvent([
-                      EventName.Swap.inputBoxClicked,
-                      {
-                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                        isOnHome: !isInModal,
-                      },
-                    ])
-                  }
                   inputRef={manualSlippageInputRef}
                   isAutosize
                 />
@@ -557,6 +547,14 @@ export const TradeClipboard: FunctionComponent<{
                     Number(e.target.value) <= Number.MAX_SAFE_INTEGER &&
                     e.target.value.length <= (isMobile ? 19 : 26)
                   ) {
+                    logEvent([
+                      EventName.Swap.inputEntered,
+                      {
+                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+                      },
+                    ]);
                     tradeTokenInConfig.setAmount(e.target.value);
                   }
                 }}

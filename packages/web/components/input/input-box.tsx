@@ -25,7 +25,6 @@ interface Props extends InputProps<string>, Disableable, CustomClasses {
   inputClassName?: string;
   isAutosize?: boolean;
   inputRef?: React.MutableRefObject<HTMLInputElement | null>;
-  onClick?: () => void;
 }
 
 export const InputBox: FunctionComponent<Props> = ({
@@ -43,7 +42,6 @@ export const InputBox: FunctionComponent<Props> = ({
   className,
   isAutosize,
   inputRef,
-  onClick,
 }) => {
   const [inputFocused, setInputFocused] = useState(false);
 
@@ -62,7 +60,6 @@ export const InputBox: FunctionComponent<Props> = ({
         },
         className
       )}
-      onClick={onClick}
     >
       <label className="grow shrink w-full" htmlFor="text-input">
         {isAutosize ? (
