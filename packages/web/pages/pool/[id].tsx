@@ -177,7 +177,9 @@ const Pool: FunctionComponent = observer(() => {
       gaugeDurationMap.set(gauge.duration.asDays(), gauge);
     });
 
-    return Array.from(gaugeDurationMap.values());
+    return Array.from(gaugeDurationMap.values()).sort(
+      (a, b) => a.duration.asDays() - b.duration.asDays()
+    );
   }, [externalGuages, superfluidPoolStore?.superfluidGauges]);
 
   const [showSuperfluidValidatorModal, do_setShowSuperfluidValidatorsModal] =
