@@ -485,9 +485,9 @@ const chainInfos = (
           type: "cw20",
           contractAddress:
             "juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv",
-          coinDenom: "SEJUNO",
+          coinDenom: "seJUNO",
           coinMinimalDenom:
-            "cw20:juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv:SEJUNO",
+            "cw20:juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv:seJUNO",
           coinDecimals: 6,
           coinGeckoId: "pool:sejuno",
           coinImageUrl: "/tokens/sejuno.png",
