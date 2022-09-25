@@ -159,17 +159,6 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     this._singleAmountInConfigIndex = index;
   }
 
-  @action
-  setSingleAmountInConfig(coinDenom: string) {
-    const poolAssetIndex = this.poolAssetConfigs.findIndex(
-      (assetConfig) => assetConfig.sendCurrency.coinDenom === coinDenom
-    );
-
-    if (poolAssetIndex !== -1) {
-      this.setSingleAmountInConfigIndex(poolAssetIndex);
-    }
-  }
-
   @computed
   get singleAmountInPriceImpact(): RatePretty | undefined {
     if (!this.isSingleAmountIn) {
