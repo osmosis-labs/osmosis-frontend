@@ -54,8 +54,8 @@ export const NavBar: FunctionComponent<
         <div className="flex gap-3 items-center">
           <div className="relative">
             <NavBarButton
-              iconUrl="/icons/setting.svg"
-              hoverIconUrl="/icons/setting-hover.svg"
+              iconurl="/icons/setting.svg"
+              hovericonurl="/icons/setting-hover.svg"
               onClick={() => {
                 // allow global event to close dropdown when clicking settings button
                 if (!settingsDropdownOpen) setSettingsDropdownOpen(true);
