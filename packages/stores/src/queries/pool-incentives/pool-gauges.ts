@@ -36,7 +36,7 @@ export class ObservableQueryPoolGaugeIds extends ObservableChainQuery<GaugeIdsWi
     | undefined {
     return this.response?.data.gauge_ids_with_duration.map(
       ({ gauge_id, duration }) => {
-        const seconds = parseInt(duration.slice(-1));
+        const seconds = parseInt(duration.slice(0, -1));
 
         return {
           gaugeId: gauge_id,

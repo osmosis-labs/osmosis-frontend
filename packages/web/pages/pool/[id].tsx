@@ -80,14 +80,14 @@ const Pool: FunctionComponent = observer(() => {
   // initialize pool data stores once root pool store is loaded
   const [poolDetailStore, setPoolDetailStore] =
     useState<ObservableQueryPoolDetails | null>(null);
-  const allowedExternalGauges =
+  const allowedGauges =
     pool && ExternalIncentiveGaugeAllowList[pool.id]
       ? poolDetailStore?.queryAllowedExternalGauges(
           (denom) => chainStore.getChain(chainId).findCurrency(denom),
           ExternalIncentiveGaugeAllowList[pool.id]
         ) ?? []
       : [];
-  const allExternalGauges = poolDetailStore?.allExternalGauges ?? [];
+  const allGauges = poolDetailStore?.allExternalGauges ?? [];
   const [superfluidPoolStore, setSuperfluidPoolStore] =
     useState<ObservableQuerySuperfluidPool | null>(null);
   useEffect(() => {
@@ -164,9 +164,9 @@ const Pool: FunctionComponent = observer(() => {
     const gaugeDurationMap = new Map<number, Gauge>();
 
     // uniqued external gauges by duration
-    if (allExternalGauges) {
-      allExternalGauges.forEach((extGauge) => {
-        gaugeDurationMap.set(extGauge.duration.asDays(), {
+    if (allGauges) {
+      allGauges.forEach((extGauge) => {
+        gaugeDurationMap.set(extGauge.duration.asSeconds(), {
           id: extGauge.id,
           duration: extGauge.duration,
         });
@@ -174,21 +174,21 @@ const Pool: FunctionComponent = observer(() => {
     }
 
     // overwrite any external gauges with internal gauges w/ apr calcs
-    superfluidPoolStore?.superfluidGauges.forEach((gauge) => {
-      gaugeDurationMap.set(gauge.duration.asDays(), gauge);
+    superfluidPoolStore?.gaugesWithSuperfluidApr.forEach((gauge) => {
+      gaugeDurationMap.set(gauge.duration.asSeconds(), gauge);
     });
 
     return Array.from(gaugeDurationMap.values()).sort(
-      (a, b) => a.duration.asDays() - b.duration.asDays()
+      (a, b) => a.duration.asSeconds() - b.duration.asSeconds()
     );
-  }, [allExternalGauges, superfluidPoolStore?.superfluidGauges]);
+  }, [allGauges, superfluidPoolStore?.gaugesWithSuperfluidApr]);
   const allowedLockupGauges = useMemo(() => {
     const gaugeDurationMap = new Map<number, Gauge>();
 
     // uniqued external gauges by duration
-    if (allowedExternalGauges) {
-      allowedExternalGauges.forEach((extGauge) => {
-        gaugeDurationMap.set(extGauge.duration.asDays(), {
+    if (allowedGauges) {
+      allowedGauges.forEach((extGauge) => {
+        gaugeDurationMap.set(extGauge.duration.asSeconds(), {
           id: extGauge.id,
           duration: extGauge.duration,
         });
@@ -196,14 +196,14 @@ const Pool: FunctionComponent = observer(() => {
     }
 
     // overwrite any external gauges with internal gauges w/ apr calcs
-    superfluidPoolStore?.superfluidGauges.forEach((gauge) => {
-      gaugeDurationMap.set(gauge.duration.asDays(), gauge);
+    superfluidPoolStore?.gaugesWithSuperfluidApr.forEach((gauge) => {
+      gaugeDurationMap.set(gauge.duration.asSeconds(), gauge);
     });
 
     return Array.from(gaugeDurationMap.values()).sort(
-      (a, b) => a.duration.asDays() - b.duration.asDays()
+      (a, b) => a.duration.asSeconds() - b.duration.asSeconds()
     );
-  }, []);
+  }, [allowedGauges, superfluidPoolStore?.gaugesWithSuperfluidApr]);
 
   const [showSuperfluidValidatorModal, do_setShowSuperfluidValidatorsModal] =
     useState(false);
@@ -224,8 +224,8 @@ const Pool: FunctionComponent = observer(() => {
 
   const showLiquidityMiningSection =
     poolDetailStore?.isIncentivized ||
-    (allowedExternalGauges && allowedExternalGauges.length > 0) ||
-    (allExternalGauges && allExternalGauges.length > 0) ||
+    (allowedGauges && allowedGauges.length > 0) ||
+    (allGauges && allGauges.length > 0) ||
     false;
 
   const showPoolBondingTables =
@@ -237,8 +237,6 @@ const Pool: FunctionComponent = observer(() => {
     (poolDetailStore?.userUnlockingAssets &&
       poolDetailStore.userUnlockingAssets.length > 0) ||
     false;
-
-  console.log(allowedExternalGauges, allExternalGauges);
 
   // user actions
   const addLiquidity = useCallback(async () => {
@@ -830,9 +828,9 @@ const Pool: FunctionComponent = observer(() => {
               </div>
             </div>
           )}
-          {allowedExternalGauges && allowedExternalGauges.length > 0 && (
+          {allowedGauges && allowedGauges.length > 0 && (
             <div className="flex lg:flex-col overflow-x-auto md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
-              {allowedExternalGauges.map(
+              {allowedGauges.map(
                 (
                   { rewardAmount, duration: durationDays, remainingEpochs },
                   index

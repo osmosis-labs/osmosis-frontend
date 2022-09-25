@@ -253,12 +253,12 @@ export class ObservableQueryPoolDetails {
     );
 
     return (
-      queryPoolGuageIds.gaugeIdsWithDuration?.map(({ gaugeId, duration }) => {
+      queryPoolGuageIds.gaugeIdsWithDuration?.map(({ gaugeId }) => {
         const observableGauge = this.queries.queryGauge.get(gaugeId);
 
         return {
           id: gaugeId,
-          duration,
+          duration: observableGauge.lockupDuration,
           remainingEpochs: observableGauge.remainingEpoch,
         };
       }) ?? []
