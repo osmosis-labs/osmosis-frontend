@@ -128,11 +128,11 @@ export const NavBar: FunctionComponent<
 
 const NavBarButton: FunctionComponent<
   {
-    iconUrl: string;
-    hoverIconUrl: string;
+    iconurl: string;
+    hovericonurl: string;
   } & ButtonHTMLAttributes<HTMLButtonElement>
 > = (props) => {
-  const { iconUrl, hoverIconUrl } = props;
+  const { iconurl, hovericonurl } = props;
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -144,7 +144,7 @@ const NavBarButton: FunctionComponent<
     >
       <Image
         alt="settings"
-        src={hovered ? hoverIconUrl : iconUrl}
+        src={hovered ? hovericonurl : iconurl}
         height={24}
         width={24}
       />
