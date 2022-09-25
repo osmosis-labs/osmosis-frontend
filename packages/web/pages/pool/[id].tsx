@@ -82,15 +82,12 @@ const Pool: FunctionComponent = observer(() => {
     useState<ObservableQueryPoolDetails | null>(null);
   const allowedExternalGauges =
     pool && ExternalIncentiveGaugeAllowList[pool.id]
-      ? poolDetailStore?.queryExternalGauges(
+      ? poolDetailStore?.queryAllowedExternalGauges(
           (denom) => chainStore.getChain(chainId).findCurrency(denom),
           ExternalIncentiveGaugeAllowList[pool.id]
         ) ?? []
       : [];
-  const allExternalGauges =
-    poolDetailStore?.queryExternalGauges((denom) =>
-      chainStore.getChain(chainId).findCurrency(denom)
-    ) ?? [];
+  const allExternalGauges = poolDetailStore?.allExternalGauges ?? [];
   const [superfluidPoolStore, setSuperfluidPoolStore] =
     useState<ObservableQuerySuperfluidPool | null>(null);
   useEffect(() => {

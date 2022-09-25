@@ -72,9 +72,9 @@ export declare class ObservableQueryPoolDetails {
         endTime: Date;
     }[];
     get userCanDepool(): boolean;
-    /** Fetched external gauges for pool. Leave `allowedGauges` empty to get all external gauges. */
-    readonly queryExternalGauges: (findCurrency?: ((denom: string) => AppCurrency | undefined) | undefined, allowedGauges?: {
+    get allExternalGauges(): ExternalGauge[];
+    readonly queryAllowedExternalGauges: (findCurrency: (denom: string) => AppCurrency | undefined, allowedGauges: {
         gaugeId: string;
         denom: string;
-    }[] | undefined) => ExternalGauge[];
+    }[]) => ExternalGauge[];
 }

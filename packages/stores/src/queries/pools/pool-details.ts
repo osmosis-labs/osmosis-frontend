@@ -247,52 +247,48 @@ export class ObservableQueryPoolDetails {
     return false;
   }
 
-  /** Fetched external gauges for pool. Leave `allowedGauges` empty to get all external gauges. */
-  readonly queryExternalGauges = computedFn(
+  get allExternalGauges(): ExternalGauge[] {
+    const queryPoolGuageIds = this.queries.queryPoolsGaugeIds.get(
+      this.queryPool.id
+    );
+
+    return (
+      queryPoolGuageIds.gaugeIdsWithDuration?.map(({ gaugeId, duration }) => {
+        const observableGauge = this.queries.queryGauge.get(gaugeId);
+
+        return {
+          id: gaugeId,
+          duration,
+          remainingEpochs: observableGauge.remainingEpoch,
+        };
+      }) ?? []
+    );
+  }
+
+  readonly queryAllowedExternalGauges = computedFn(
     (
-      findCurrency?: (denom: string) => AppCurrency | undefined,
-      allowedGauges?: { gaugeId: string; denom: string }[]
+      findCurrency: (denom: string) => AppCurrency | undefined,
+      allowedGauges: { gaugeId: string; denom: string }[]
     ): ExternalGauge[] => {
-      if (allowedGauges && findCurrency) {
-        return allowedGauges
-          .map(({ gaugeId, denom }) => {
-            const observableGauge = this.queries.queryGauge.get(gaugeId);
-            const currency = findCurrency(denom);
+      return allowedGauges
+        .map(({ gaugeId, denom }) => {
+          const observableGauge = this.queries.queryGauge.get(gaugeId);
+          const currency = findCurrency(denom);
 
-            if (observableGauge.remainingEpoch < 1) {
-              return;
-            }
+          if (observableGauge.remainingEpoch < 1) {
+            return;
+          }
 
-            return {
-              id: gaugeId,
-              duration: observableGauge.lockupDuration,
-              rewardAmount: currency
-                ? observableGauge.getRemainingCoin(currency)
-                : undefined,
-              remainingEpochs: observableGauge.remainingEpoch,
-            } as ExternalGauge;
-          })
-          .filter((gauge): gauge is ExternalGauge => gauge !== undefined);
-      } else {
-        // return all external gauges
-        const queryPoolGuageIds = this.queries.queryPoolsGaugeIds.get(
-          this.queryPool.id
-        );
-
-        return (
-          queryPoolGuageIds.gaugeIdsWithDuration?.map(
-            ({ gaugeId, duration }) => {
-              const observableGauge = this.queries.queryGauge.get(gaugeId);
-
-              return {
-                id: gaugeId,
-                duration,
-                remainingEpochs: observableGauge.remainingEpoch,
-              };
-            }
-          ) ?? []
-        );
-      }
+          return {
+            id: gaugeId,
+            duration: observableGauge.lockupDuration,
+            rewardAmount: currency
+              ? observableGauge.getRemainingCoin(currency)
+              : undefined,
+            remainingEpochs: observableGauge.remainingEpoch,
+          } as ExternalGauge;
+        })
+        .filter((gauge): gauge is ExternalGauge => gauge !== undefined);
     }
   );
 }
