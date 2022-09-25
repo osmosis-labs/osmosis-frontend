@@ -6,7 +6,6 @@ import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { makeLocalStorageKVStore } from "../../stores/kv-store";
 import { useStore } from "../../stores";
 import { ObservableTransferUIConfig } from "../../stores/assets";
-import { Overview } from "../../components/overview";
 import { AssetsTable } from "../../components/table/assets-table";
 import { DepoolingTable } from "../../components/table/depooling-table";
 import { ShowMoreButton } from "../../components/buttons/show-more";
@@ -34,13 +33,10 @@ const Assets: NextPage = observer(() => {
       osmosis: { chainId },
     },
     accountStore,
+    navBarStore,
   } = useStore();
   const { nativeBalances, ibcBalances } = assetsStore;
   const account = accountStore.getAccount(chainId);
-
-  const { setUserProperty } = useAmplitudeAnalytics({
-    onLoadEvent: [EventName.Assets.pageViewed],
-  });
 
   const [transferConfig] = useState(
     () =>
@@ -51,6 +47,10 @@ const Assets: NextPage = observer(() => {
       )
   );
 
+  // set up user analytics
+  const { logEvent, setUserProperty } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Assets.pageViewed],
+  });
   useEffect(() => {
     setUserProperty(
       "osmoBalance",
@@ -58,12 +58,29 @@ const Assets: NextPage = observer(() => {
     );
   }, [nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()]);
 
+  // set nav bar ctas
+  useEffect(() => {
+    navBarStore.callToActionButtons = [
+      {
+        label: "Deposit",
+        onClick: () => {
+          transferConfig.startTransfer("deposit");
+          logEvent([EventName.Assets.depositClicked]);
+        },
+      },
+      {
+        label: "Withdraw",
+        onClick: () => {
+          transferConfig.startTransfer("withdraw");
+          logEvent([EventName.Assets.withdrawClicked]);
+        },
+      },
+    ];
+  }, []);
+
   return (
-    <main className="bg-background">
-      <AssetsOverview
-        onDepositIntent={() => transferConfig.startTransfer("deposit")}
-        onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
-      />
+    <main className="flex flex-col gap-20 bg-background p-8">
+      <AssetsOverview />
       {transferConfig.assetSelectModal && (
         <TransferAssetSelectModal {...transferConfig.assetSelectModal} />
       )}
@@ -106,13 +123,8 @@ const Assets: NextPage = observer(() => {
   );
 });
 
-const AssetsOverview: FunctionComponent<{
-  onWithdrawIntent: () => void;
-  onDepositIntent: () => void;
-}> = observer(({ onDepositIntent, onWithdrawIntent }) => {
+const AssetsOverview: FunctionComponent = observer(() => {
   const { assetsStore } = useStore();
-  const { isMobile } = useWindowSize();
-  const { logEvent, setUserProperty } = useAmplitudeAnalytics();
 
   const totalAssetsValue = assetsStore.calcValueOf([
     ...assetsStore.availableBalance,
@@ -129,6 +141,8 @@ const AssetsOverview: FunctionComponent<{
     assetsStore.unstakingBalance,
   ]);
 
+  // set up user analytics
+  const { setUserProperty } = useAmplitudeAnalytics();
   useEffect(() => {
     setUserProperty("totalAssetsPrice", totalAssetsValue.toString());
     setUserProperty("unbondedAssetsPrice", availableAssetsValue.toString());
@@ -141,50 +155,19 @@ const AssetsOverview: FunctionComponent<{
     stakedAssetsValue.toString(),
   ]);
 
+  const Metric: FunctionComponent<Metric> = ({ label, value }) => (
+    <div className="flex flex-col gap-5">
+      <h6>{label}</h6>
+      <h2 className="text-wosmongton-100">{value}</h2>
+    </div>
+  );
+
   return (
-    <Overview
-      title={isMobile ? "My Osmosis Assets" : <h4>My Osmosis Assets</h4>}
-      titleButtons={
-        isMobile
-          ? undefined
-          : [
-              {
-                label: "Deposit",
-                onClick: () => {
-                  logEvent([EventName.Assets.depositClicked]);
-                  onDepositIntent();
-                },
-              },
-              {
-                label: "Withdraw",
-                type: "outline",
-                className: "bg-primary-200/30",
-                onClick: () => {
-                  logEvent([EventName.Assets.withdrawClicked]);
-                  onWithdrawIntent();
-                },
-              },
-            ]
-      }
-      primaryOverviewLabels={[
-        {
-          label: "Total Assets",
-          value: totalAssetsValue.toString(),
-        },
-        {
-          label: "Unbonded Assets",
-          value: availableAssetsValue.toString(),
-        },
-        {
-          label: "Bonded Assets",
-          value: bondedAssetsValue.toString(),
-        },
-        {
-          label: "Staked OSMO",
-          value: stakedAssetsValue.toString(),
-        },
-      ]}
-    />
+    <div className="w-full flex items-center gap-[100px] bg-osmoverse-800 rounded-[32px] px-20 py-10">
+      <Metric label="Total assets" value={totalAssetsValue.toString()} />
+      <Metric label="Bonded" value={bondedAssetsValue.toString()} />
+      <Metric label="Unbonded" value={availableAssetsValue.toString()} />
+    </div>
   );
 });
 
@@ -208,11 +191,9 @@ const PoolAssets: FunctionComponent = observer(() => {
   }
 
   return (
-    <section className="bg-background">
-      <div className="max-w-container mx-auto md:px-4 p-10">
-        <h5>My Pools</h5>
-        <PoolCards {...{ showAllPools, ownedPoolIds, setShowAllPools }} />
-      </div>
+    <section>
+      <h5>My Pools</h5>
+      <PoolCards {...{ showAllPools, ownedPoolIds, setShowAllPools }} />
     </section>
   );
 });

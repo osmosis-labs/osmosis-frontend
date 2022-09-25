@@ -41,15 +41,17 @@ export const NavBar: FunctionComponent<
       >
         <div className="flex items-center gap-9">
           <h4>{navBarStore.title || title}</h4>
-          {navBarStore.callToActionButtons.map((button, index) => (
-            <NewButton
-              mode={index > 0 ? "secondary" : undefined}
-              key={index}
-              {...button}
-            >
-              <span className="subtitle1 mx-auto">{button.label}</span>
-            </NewButton>
-          ))}
+          <div className="flex items-center gap-3">
+            {navBarStore.callToActionButtons.map((button, index) => (
+              <NewButton
+                mode={index > 0 ? "secondary" : undefined}
+                key={index}
+                {...button}
+              >
+                <span className="subtitle1 mx-auto">{button.label}</span>
+              </NewButton>
+            ))}
+          </div>
         </div>
         <div className="flex gap-3 items-center">
           <div className="relative">
