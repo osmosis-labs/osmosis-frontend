@@ -8,6 +8,7 @@ import { ObservableQueryGammPoolShare } from "../pool-share";
 import {
   ObservableQueryIncentivizedPools,
   ObservableQueryLockableDurations,
+  ObservableQueryPoolsGaugeIds,
 } from "../pool-incentives";
 import { ObservableQueryGuage } from "../incentives";
 import {
@@ -16,6 +17,14 @@ import {
   ObservableQueryAccountUnlockingCoins,
 } from "../lockup";
 import { ObservableQueryPool } from "./pool";
+
+/** Non OSMO gauge. */
+export type ExternalGauge = {
+  id: string;
+  duration: Duration;
+  rewardAmount?: CoinPretty;
+  remainingEpochs: number;
+};
 
 /** Convenience store for getting common details of a pool via many other query stores. */
 export class ObservableQueryPoolDetails {
@@ -31,6 +40,7 @@ export class ObservableQueryPoolDetails {
       queryUnlockingCoins: ObservableQueryAccountUnlockingCoins;
       queryGauge: ObservableQueryGuage;
       queryLockableDurations: ObservableQueryLockableDurations;
+      queryPoolsGaugeIds: ObservableQueryPoolsGaugeIds;
     },
     protected readonly priceStore: IPriceStore
   ) {
@@ -237,11 +247,29 @@ export class ObservableQueryPoolDetails {
     return false;
   }
 
-  queryExternalGauges = computedFn(
+  get allExternalGauges(): ExternalGauge[] {
+    const queryPoolGuageIds = this.queries.queryPoolsGaugeIds.get(
+      this.queryPool.id
+    );
+
+    return (
+      queryPoolGuageIds.gaugeIdsWithDuration?.map(({ gaugeId }) => {
+        const observableGauge = this.queries.queryGauge.get(gaugeId);
+
+        return {
+          id: gaugeId,
+          duration: observableGauge.lockupDuration,
+          remainingEpochs: observableGauge.remainingEpoch,
+        };
+      }) ?? []
+    );
+  }
+
+  readonly queryAllowedExternalGauges = computedFn(
     (
-      allowedGauges: { gaugeId: string; denom: string }[],
-      findCurrency: (denom: string) => AppCurrency | undefined
-    ) => {
+      findCurrency: (denom: string) => AppCurrency | undefined,
+      allowedGauges: { gaugeId: string; denom: string }[]
+    ): ExternalGauge[] => {
       return allowedGauges
         .map(({ gaugeId, denom }) => {
           const observableGauge = this.queries.queryGauge.get(gaugeId);
@@ -258,18 +286,9 @@ export class ObservableQueryPoolDetails {
               ? observableGauge.getRemainingCoin(currency)
               : undefined,
             remainingEpochs: observableGauge.remainingEpoch,
-          };
+          } as ExternalGauge;
         })
-        .filter(
-          (
-            gauge
-          ): gauge is {
-            id: string;
-            duration: Duration;
-            rewardAmount: CoinPretty | undefined;
-            remainingEpochs: number;
-          } => gauge !== undefined
-        );
+        .filter((gauge): gauge is ExternalGauge => gauge !== undefined);
     }
   );
 }

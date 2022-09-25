@@ -96,7 +96,6 @@ function MyApp({ Component, pageProps }: AppProps) {
             title="You're viewing all permissionless assets"
             message={
               <>
-                You{"'"}re viewing all permissionless assets.{" "}
                 <a
                   className="items-center underline"
                   href="https://app.osmosis.zone/"

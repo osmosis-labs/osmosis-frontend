@@ -96,6 +96,18 @@ const Home: NextPage = observer(function () {
                 break;
               }
             }
+
+            // only pools with at least 1,000,000 STARS
+            if (
+              "originChainId" in asset.amount.currency &&
+              asset.amount.currency.coinMinimalDenom ===
+                "ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4"
+            ) {
+              if (asset.amount.toDec().gt(new Dec(1_000_000))) {
+                hasEnoughAssets = true;
+                break;
+              }
+            }
           }
 
           if (hasEnoughAssets) {

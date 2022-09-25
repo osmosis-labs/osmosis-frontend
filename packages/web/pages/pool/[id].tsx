@@ -80,13 +80,14 @@ const Pool: FunctionComponent = observer(() => {
   // initialize pool data stores once root pool store is loaded
   const [poolDetailStore, setPoolDetailStore] =
     useState<ObservableQueryPoolDetails | null>(null);
-  const externalGuages =
+  const allowedGauges =
     pool && ExternalIncentiveGaugeAllowList[pool.id]
-      ? poolDetailStore?.queryExternalGauges(
-          ExternalIncentiveGaugeAllowList[pool.id],
-          (denom) => chainStore.getChain(chainId).findCurrency(denom)
-        )
-      : undefined;
+      ? poolDetailStore?.queryAllowedExternalGauges(
+          (denom) => chainStore.getChain(chainId).findCurrency(denom),
+          ExternalIncentiveGaugeAllowList[pool.id]
+        ) ?? []
+      : [];
+  const allGauges = poolDetailStore?.allExternalGauges ?? [];
   const [superfluidPoolStore, setSuperfluidPoolStore] =
     useState<ObservableQuerySuperfluidPool | null>(null);
   useEffect(() => {
@@ -159,13 +160,13 @@ const Pool: FunctionComponent = observer(() => {
     apr?: RatePretty;
     superfluidApr?: RatePretty;
   };
-  const lockupGauges: Gauge[] | undefined = useMemo(() => {
+  const allLockupGauges: Gauge[] | undefined = useMemo(() => {
     const gaugeDurationMap = new Map<number, Gauge>();
 
     // uniqued external gauges by duration
-    if (externalGuages) {
-      externalGuages.forEach((extGauge) => {
-        gaugeDurationMap.set(extGauge.duration.asDays(), {
+    if (allGauges) {
+      allGauges.forEach((extGauge) => {
+        gaugeDurationMap.set(extGauge.duration.asSeconds(), {
           id: extGauge.id,
           duration: extGauge.duration,
         });
@@ -173,12 +174,36 @@ const Pool: FunctionComponent = observer(() => {
     }
 
     // overwrite any external gauges with internal gauges w/ apr calcs
-    superfluidPoolStore?.superfluidGauges.forEach((gauge) => {
-      gaugeDurationMap.set(gauge.duration.asDays(), gauge);
+    superfluidPoolStore?.gaugesWithSuperfluidApr.forEach((gauge) => {
+      gaugeDurationMap.set(gauge.duration.asSeconds(), gauge);
     });
 
-    return Array.from(gaugeDurationMap.values());
-  }, [externalGuages, superfluidPoolStore?.superfluidGauges]);
+    return Array.from(gaugeDurationMap.values()).sort(
+      (a, b) => a.duration.asSeconds() - b.duration.asSeconds()
+    );
+  }, [allGauges, superfluidPoolStore?.gaugesWithSuperfluidApr]);
+  const allowedLockupGauges = useMemo(() => {
+    const gaugeDurationMap = new Map<number, Gauge>();
+
+    // uniqued external gauges by duration
+    if (allowedGauges) {
+      allowedGauges.forEach((extGauge) => {
+        gaugeDurationMap.set(extGauge.duration.asSeconds(), {
+          id: extGauge.id,
+          duration: extGauge.duration,
+        });
+      });
+    }
+
+    // overwrite any external gauges with internal gauges w/ apr calcs
+    superfluidPoolStore?.gaugesWithSuperfluidApr.forEach((gauge) => {
+      gaugeDurationMap.set(gauge.duration.asSeconds(), gauge);
+    });
+
+    return Array.from(gaugeDurationMap.values()).sort(
+      (a, b) => a.duration.asSeconds() - b.duration.asSeconds()
+    );
+  }, [allowedGauges, superfluidPoolStore?.gaugesWithSuperfluidApr]);
 
   const [showSuperfluidValidatorModal, do_setShowSuperfluidValidatorsModal] =
     useState(false);
@@ -199,7 +224,9 @@ const Pool: FunctionComponent = observer(() => {
 
   const showLiquidityMiningSection =
     poolDetailStore?.isIncentivized ||
-    (externalGuages && externalGuages.length > 0);
+    (allowedGauges && allowedGauges.length > 0) ||
+    (allGauges && allGauges.length > 0) ||
+    false;
 
   const showPoolBondingTables =
     showLiquidityMiningSection ||
@@ -208,7 +235,8 @@ const Pool: FunctionComponent = observer(() => {
         lockedAsset.amount.toDec().gt(new Dec(0))
       )) ||
     (poolDetailStore?.userUnlockingAssets &&
-      poolDetailStore.userUnlockingAssets.length > 0);
+      poolDetailStore.userUnlockingAssets.length > 0) ||
+    false;
 
   // user actions
   const addLiquidity = useCallback(async () => {
@@ -383,7 +411,7 @@ const Pool: FunctionComponent = observer(() => {
   ]);
   const lockToken = useCallback(
     async (gaugeId, electSuperfluid) => {
-      const gauge = lockupGauges?.find((gauge) => gauge.id === gaugeId);
+      const gauge = allLockupGauges?.find((gauge) => gauge.id === gaugeId);
 
       logEvent([
         EventName.PoolDetail.bondStarted,
@@ -450,7 +478,7 @@ const Pool: FunctionComponent = observer(() => {
       }
     },
     [
-      lockupGauges,
+      allLockupGauges,
       lockLPTokensConfig.sendCurrency,
       lockLPTokensConfig.amount,
       account.osmosis,
@@ -605,7 +633,7 @@ const Pool: FunctionComponent = observer(() => {
           pools={[pool.pool]}
         />
       )}
-      {lockLPTokensConfig && lockupGauges && (
+      {lockLPTokensConfig && allLockupGauges && (
         <LockTokensModal
           isOpen={showLockLPTokenModal}
           title="Liquidity Bonding"
@@ -621,7 +649,7 @@ const Pool: FunctionComponent = observer(() => {
                 )
               : undefined
           }
-          gauges={lockupGauges}
+          gauges={allLockupGauges}
           hasSuperfluidValidator={
             superfluidPoolStore?.superfluid?.delegations &&
             superfluidPoolStore.superfluid.delegations.length > 0
@@ -800,9 +828,9 @@ const Pool: FunctionComponent = observer(() => {
               </div>
             </div>
           )}
-          {externalGuages && externalGuages.length > 0 && (
+          {allowedGauges && allowedGauges.length > 0 && (
             <div className="flex lg:flex-col overflow-x-auto md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
-              {externalGuages.map(
+              {allowedGauges.map(
                 (
                   { rewardAmount, duration: durationDays, remainingEpochs },
                   index
@@ -820,9 +848,9 @@ const Pool: FunctionComponent = observer(() => {
               )}
             </div>
           )}
-          {lockupGauges && pool && (
+          {allowedLockupGauges && pool && (
             <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
-              {lockupGauges.map(({ duration, superfluidApr }) => (
+              {allowedLockupGauges.map(({ duration, superfluidApr }) => (
                 <PoolGaugeCard
                   key={duration.humanize()}
                   days={duration.humanize()}
