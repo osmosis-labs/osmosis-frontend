@@ -31,6 +31,13 @@ export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
   "635": true,
 };
 
+/** List of pools active in LBP to present in frontend. */
+export const PromotedLBPPoolIds: {
+  poolId: string;
+  name: string;
+  baseDenom: string;
+}[] = [];
+
 /** Gauges to be rendered in pool's respective pool detail page. */
 export const ExternalIncentiveGaugeAllowList: {
   [poolId: string]: {

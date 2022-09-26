@@ -5,7 +5,7 @@ import type { AppProps } from "next/app";
 import { enableStaticRendering } from "mobx-react-lite";
 import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
-import { MainLayout } from "../components/layouts";
+import { MainLayout, MainLayoutMenu } from "../components/layouts";
 import { TempBanner } from "../components/alert/temp-banner";
 import { OgpMeta } from "../components/ogp-meta";
 import dayjs from "dayjs";
@@ -19,6 +19,7 @@ import {
   EventName,
   IS_FRONTIER,
   NavBarEvents,
+  PromotedLBPPoolIds,
 } from "../config";
 import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
 
@@ -28,7 +29,7 @@ dayjs.extend(utc);
 enableStaticRendering(typeof window === "undefined");
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const menus = [
+  let menus: MainLayoutMenu[] = [
     {
       label: "Swap",
       link: "/",
@@ -50,28 +51,42 @@ function MyApp({ Component, pageProps }: AppProps) {
       iconSelected: "/icons/asset-selected.svg",
       selectionTest: /\/assets/,
     },
-    {
-      label: "Stake",
-      link: "https://wallet.keplr.app/chains/osmosis",
-      icon: IS_FRONTIER ? "/icons/ticket-white.svg" : "/icons/ticket.svg",
-      userAnalyticsEvent: NavBarEvents.stakeLink,
-      amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
-    },
-    {
-      label: "Vote",
-      link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
-      icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
-      userAnalyticsEvent: NavBarEvents.voteLink,
-      amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
-    },
-    {
-      label: "Info",
-      link: "https://info.osmosis.zone",
-      icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
-      userAnalyticsEvent: NavBarEvents.infoLink,
-      amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
-    },
   ];
+
+  if (PromotedLBPPoolIds.length > 0) {
+    menus.push({
+      label: "Bootstrap",
+      link: "/bootstrap",
+      icon: "/icons/pool-white.svg",
+      selectionTest: /\/bootstrap/,
+    });
+  }
+
+  menus.push(
+    ...[
+      {
+        label: "Stake",
+        link: "https://wallet.keplr.app/chains/osmosis",
+        icon: IS_FRONTIER ? "/icons/ticket-white.svg" : "/icons/ticket.svg",
+        userAnalyticsEvent: NavBarEvents.stakeLink,
+        amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
+      },
+      {
+        label: "Vote",
+        link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
+        icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
+        userAnalyticsEvent: NavBarEvents.voteLink,
+        amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
+      },
+      {
+        label: "Info",
+        link: "https://info.osmosis.zone",
+        icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
+        userAnalyticsEvent: NavBarEvents.infoLink,
+        amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
+      },
+    ]
+  );
 
   useMatomoAnalytics({ init: true });
   useAmplitudeAnalytics({ init: true });

@@ -4,19 +4,22 @@ import {
   QueryResponse,
 } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
-import { Currency } from "@keplr-wallet/types";
+import { Currency, AppCurrency } from "@keplr-wallet/types";
 import {
   CoinPretty,
+  PricePretty,
+  Dec,
   DecUtils,
   Int,
   IntPretty,
   RatePretty,
 } from "@keplr-wallet/unit";
-import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
 import { Pool, WeightedPool, WeightedPoolRaw } from "@osmosis-labs/pools";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { IPriceStore } from "src/price";
+import { Duration } from "dayjs/plugin/duration";
+import dayjs from "dayjs";
 
 export class ObservableQueryPool extends ObservableChainQuery<{
   pool: WeightedPoolRaw;
@@ -114,6 +117,77 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   @computed
   get totalWeight(): IntPretty {
     return new IntPretty(this.pool.totalWeight);
+  }
+
+  @computed
+  get smoothWeightChange():
+    | {
+        startTime: Date;
+        endTime: Date;
+        duration: Duration;
+        initialPoolWeights: {
+          currency: AppCurrency;
+          weight: IntPretty;
+          ratio: IntPretty;
+        }[];
+        targetPoolWeights: {
+          currency: AppCurrency;
+          weight: IntPretty;
+          ratio: IntPretty;
+        }[];
+      }
+    | undefined {
+    if (!this.pool.smoothWeightChange) return;
+
+    const params = this.pool.smoothWeightChange;
+
+    const startTime = new Date(params.startTime);
+    const duration = dayjs.duration(
+      parseInt(params.duration.replace("s", "")) * 1000
+    );
+    const endTime = dayjs(startTime).add(duration).toDate();
+
+    let totalInitialPoolWeight = new Dec(0);
+    for (const weight of params.initialPoolWeights) {
+      totalInitialPoolWeight = totalInitialPoolWeight.add(
+        new Dec(weight.weight)
+      );
+    }
+    const initialPoolWeights = params.initialPoolWeights.map((weight) => {
+      return {
+        currency: this.chainGetter
+          .getChain(this.chainId)
+          .forceFindCurrency(weight.token.denom),
+        weight: new IntPretty(new Dec(weight.weight)),
+        ratio: new IntPretty(new Dec(weight.weight))
+          .quo(totalInitialPoolWeight)
+          .moveDecimalPointRight(2),
+      };
+    });
+
+    let totalTargetPoolWeight = new Dec(0);
+    for (const weight of params.targetPoolWeights) {
+      totalTargetPoolWeight = totalTargetPoolWeight.add(new Dec(weight.weight));
+    }
+    const targetPoolWeights = params.targetPoolWeights.map((weight) => {
+      return {
+        currency: this.chainGetter
+          .getChain(this.chainId)
+          .forceFindCurrency(weight.token.denom),
+        weight: new IntPretty(new Dec(weight.weight)),
+        ratio: new IntPretty(new Dec(weight.weight))
+          .quo(totalTargetPoolWeight)
+          .moveDecimalPointRight(2),
+      };
+    });
+
+    return {
+      startTime,
+      endTime,
+      duration,
+      initialPoolWeights,
+      targetPoolWeights,
+    };
   }
 
   @computed
