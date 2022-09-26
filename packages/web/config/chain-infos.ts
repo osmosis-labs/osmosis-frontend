@@ -485,19 +485,20 @@ const chainInfos = (
           type: "cw20",
           contractAddress:
             "juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv",
-          coinDenom: "SEJUNO",
+          coinDenom: "seJUNO",
           coinMinimalDenom:
-            "cw20:juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv:SEJUNO",
+            "cw20:juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv:seJUNO",
           coinDecimals: 6,
+          coinGeckoId: "pool:sejuno",
           coinImageUrl: "/tokens/sejuno.png",
         },
         {
           type: "cw20",
           contractAddress:
             "juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3",
-          coinDenom: "BJUNO",
+          coinDenom: "bJUNO",
           coinMinimalDenom:
-            "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3:BJUNO",
+            "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3:bJUNO",
           coinDecimals: 6,
           coinImageUrl: "/tokens/bjuno.png",
         },
@@ -519,6 +520,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno19rqljkh95gh40s7qdx40ksx3zq5tm4qsmsrdz9smw668x9zdr3lqtg33mf:SEASY",
           coinDecimals: 6,
+          coinGeckoId: "pool:seasy",
           coinImageUrl: "/tokens/seasy.svg",
         },
       ],
