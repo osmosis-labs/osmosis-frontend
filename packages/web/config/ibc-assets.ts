@@ -900,6 +900,12 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "uaxl",
     isVerified: true,
   },
+  {
+    counterpartyChainId: "reb_1111-1,
+    sourceChannelId: "channel-355",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "arebus",
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
