@@ -129,9 +129,9 @@ const SynthesisItem: FunctionComponent<{
     return <React.Fragment />;
   }
 
-  const baseCurrency = chainStore.osmosis.currencies.find(
-    (c) => c.coinMinimalDenom === baseDenom
-  );
+  const baseCurrency = chainStore
+    .getChain(chainStore.osmosis.chainId)
+    .findCurrency(baseDenom);
 
   return (
     <li
