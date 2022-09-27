@@ -1994,8 +1994,8 @@ const chainInfos = (
       explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
     },
     {
-      rpc: "https://api.mainnet.rebus.money:1317",
-      rest: "https://api.mainnet.rebus.money:26657",
+      rpc: "https://api.mainnet.rebus.money:26657",
+      rest: "https://api.mainnet.rebus.money:1317",
       chainId: "reb_1111-1",
       chainName: "Rebus",
       bip44: {
