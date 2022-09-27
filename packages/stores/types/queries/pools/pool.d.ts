@@ -27,6 +27,7 @@ export declare class ObservableQueryPool extends ObservableChainQuery<{
     get shareCurrency(): Currency;
     get totalShare(): CoinPretty;
     get totalWeight(): IntPretty;
+    /** LBP params. */
     get smoothWeightChange(): {
         startTime: Date;
         endTime: Date;
