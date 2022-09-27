@@ -1055,11 +1055,16 @@ export const ExternalIncentiveGaugeAllowList: {
         "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
     },
   ],
-  "808": [
+  "812": [
     {
-      gaugeId: "29637",
+      gaugeId: "29675",
       denom:
-        "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
+        "ibc/903A61A498756EA560B85A85132D3AEE21B5DEDD41213725D22ABF276EA6945E",
+    },
+    {
+      gaugeId: "29674",
+      denom:
+        "uosmo",
     },
   ],
 };

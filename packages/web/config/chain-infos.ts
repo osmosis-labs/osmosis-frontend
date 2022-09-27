@@ -2010,7 +2010,7 @@ chainInfos.push({
     coinDenom: "AXL",
     coinMinimalDenom: "uaxl",
     coinDecimals: 6,
-    // coinGeckoId: 'pool:uaxl',
+    coinGeckoId: 'axelar',
     coinImageUrl: "/tokens/axl.svg",
   },
   bip44: {
