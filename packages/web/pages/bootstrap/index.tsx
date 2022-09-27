@@ -12,7 +12,7 @@ import { generateRandom } from "../../components/utils";
 const BootstrapPage: NextPage = observer(() => {
   return (
     <div className="w-full h-full bg-background">
-      <div className="pt-20 px-5 pb-5 md:p-10">
+      <div className="pt-10 px-5 pb-5 md:p-10">
         <div className="max-w-page mx-auto">
           <LBPOverview
             title="Liquidity Bootstrapping Pools"
@@ -58,7 +58,7 @@ export const LBPOverview: FunctionComponent<{
   return (
     <section className="w-full">
       <div className="flex items-center mb-4 md:mb-6">
-        <h5 className="md:text-2xl text-xl leading-snug">{title}</h5>
+        <h4 className="leading-snug">{title}</h4>
       </div>
       <div className="flex flex-col md:flex-row md:gap-21.5">
         <div className="flex items-center gap-10 md:gap-21.5 mb-2.5 md:mb-0">
@@ -135,6 +135,8 @@ const SynthesisItem: FunctionComponent<{
     (c) => c.coinMinimalDenom === baseDenom
   );
 
+  console.log(baseCurrency);
+
   return (
     <li
       className="w-full rounded-xl p-5 md:py-6 md:px-7.5 bg-card cursor-pointer border border-transparent hover:border-enabledGold border-opacity-40"
@@ -144,18 +146,18 @@ const SynthesisItem: FunctionComponent<{
         router.push(`/pool/${poolId}`);
       }}
     >
-      <section className="flex mb-5">
+      <section className="flex items-center mb-5">
         <figure className="w-19 h-19 md:w-21 md:h-21 flex-shrink-0 mr-5 md:mr-7.5 rounded-full border border-enabledGold flex justify-center items-center">
           <figure
             style={{
               backgroundImage: generateRandom(index),
             }}
-            className="w-16 h-16 md:w-18 md:h-18 flex-shrink-0 rounded-full flex justify-center items-end"
+            className="w-16 h-16 md:w-18 md:h-18 shrink-0 rounded-full flex justify-center items-end"
           >
             <img
               alt="bubbles"
               className="w-10 h-10 mb-1"
-              src={"/public/assets/Icons/Bubbles.svg"}
+              src={baseCurrency?.coinImageUrl ?? "/images/bubbles.svg"}
             />
           </figure>
         </figure>
