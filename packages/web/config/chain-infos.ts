@@ -2019,6 +2019,13 @@ chainInfos.push({
   bech32Config: Bech32Address.defaultBech32Config("axelar"),
   currencies: [
     {
+      coinDenom: "AXL",
+      coinMinimalDenom: "uaxl",
+      coinDecimals: 6,
+      coinGeckoId: 'axelar',
+      coinImageUrl: "/tokens/axl.svg",
+    },
+    {
       coinDenom: IS_TESTNET ? "aUSDC" : "USDC",
       coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
       coinDecimals: 6,
@@ -2154,7 +2161,7 @@ chainInfos.push({
       coinDenom: "AXL",
       coinMinimalDenom: "uaxl",
       coinDecimals: 6,
-      // coinGeckoId: 'pool:uaxl',
+      coinGeckoId: 'axelar',
       coinImageUrl: "/tokens/axl.svg",
     },
   ],
