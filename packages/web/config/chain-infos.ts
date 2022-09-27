@@ -2045,7 +2045,7 @@ chainInfos.push({
       coinDenom: "AXL",
       coinMinimalDenom: "uaxl",
       coinDecimals: 6,
-      coinGeckoId: 'axelar',
+      coinGeckoId: "pool:uaxl",
       coinImageUrl: "/tokens/axl.svg",
     },
     {
