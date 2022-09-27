@@ -1993,6 +1993,29 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
     },
+    {
+      rpc: "https://api.rebuschain.com:26657/",
+      rest: "https://api.rebuschain.com:1317/",
+      chainId: "reb_1111-1",
+      chainName: "Rebus",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("rebus"),
+      currencies: [
+        {
+          coinDenom: "REBUS",
+          coinMinimalDenom: "arebus",
+          coinDecimals: 18,
+          coinGeckoId: "pool:arebus",
+          coinImageUrl: "/tokens/rebus.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://rebus.explorers.guru/transaction/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
