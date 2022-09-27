@@ -47,7 +47,7 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
     const denomsInPools: string[] = [];
     // Register the denoms in the response.
     for (const pool of response.data.pools) {
-      for (const asset of pool.pool_assets) {
+      for (const asset of pool.poolAssets) {
         denomsInPools.push(asset.token.denom);
       }
     }
