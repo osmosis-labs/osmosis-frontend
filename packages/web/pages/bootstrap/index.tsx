@@ -133,8 +133,6 @@ const SynthesisItem: FunctionComponent<{
     (c) => c.coinMinimalDenom === baseDenom
   );
 
-  console.log(baseCurrency);
-
   return (
     <li
       className="w-full rounded-xl p-5 md:py-6 md:px-7.5 bg-card cursor-pointer border border-transparent hover:border-enabledGold border-opacity-40"
