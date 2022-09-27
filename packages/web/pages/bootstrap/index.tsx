@@ -12,7 +12,7 @@ import { generateRandom } from "../../components/utils";
 const BootstrapPage: NextPage = observer(() => {
   return (
     <div className="w-full h-full bg-background">
-      <div className="pt-10 px-5 pb-5 md:p-10">
+      <div className="pt-10 md:pt-20 px-5 pb-5 md:p-10">
         <div className="max-w-page mx-auto">
           <LBPOverview
             title="Liquidity Bootstrapping Pools"
@@ -63,15 +63,13 @@ export const LBPOverview: FunctionComponent<{
       <div className="flex flex-col md:flex-row md:gap-21.5">
         <div className="flex items-center gap-10 md:gap-21.5 mb-2.5 md:mb-0">
           <OverviewLabelValue label="Active Pools">
-            <h5 className="inline md:text-2xl text-xl">{activePools.length}</h5>
+            <h5 className="inline md:text-sm text-xl">{activePools.length}</h5>
           </OverviewLabelValue>
           <OverviewLabelValue label="Total Pools">
-            <h5 className="inline md:text-2xl text-xl">{poolIds.length}</h5>
+            <h5 className="inline md:text-sm text-xl">{poolIds.length}</h5>
           </OverviewLabelValue>
-        </div>
-        <div>
           <OverviewLabelValue label="Total Pool Value">
-            <h5 className="inline md:text-2xl text-xl">
+            <h5 className="inline md:text-sm text-xl">
               {totalPoolValue.toString()}
             </h5>
           </OverviewLabelValue>
@@ -87,7 +85,7 @@ const OverviewLabelValue: FunctionComponent<Record<"label", string>> = ({
 }) => {
   return (
     <div className="flex flex-col">
-      <p className="mb-2.5 md:mb-3 text-sm md:text-base text-white-mid whitespace-nowrap">
+      <p className="mb-2.5 md:mb-3 text-sm md:text-xs text-white-mid whitespace-nowrap">
         {label}
       </p>
       {children}
