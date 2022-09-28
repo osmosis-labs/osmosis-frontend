@@ -1,3 +1,6 @@
+import { DenomHelper } from "@keplr-wallet/common";
+import { IS_FRONTIER } from "./ibc-assets";
+
 export const UserAction: { [key: string]: boolean } = {
   CreateNewPool: true,
 };
@@ -30,6 +33,24 @@ export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
   "580": true,
   "635": true,
 };
+
+/** List of pools active in LBP to present in frontend. */
+export const PromotedLBPPoolIds: {
+  poolId: string;
+  name: string;
+  ibcHashDenom: string;
+}[] = IS_FRONTIER
+  ? [
+      {
+        poolId: "813",
+        name: "REBUS Liquidity Bootstrapping Pool",
+        ibcHashDenom: DenomHelper.ibcDenom(
+          [{ portId: "transfer", channelId: "channel-355" }],
+          "arebus"
+        ),
+      },
+    ]
+  : [];
 
 /** Gauges to be rendered in pool's respective pool detail page. */
 export const ExternalIncentiveGaugeAllowList: {
@@ -771,17 +792,12 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "662": [
     {
-      gaugeId: "2591",
+      gaugeId: "29666",
       denom:
         "ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7",
     },
     {
-      gaugeId: "2592",
-      denom:
-        "ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7",
-    },
-    {
-      gaugeId: "2593",
+      gaugeId: "29667",
       denom:
         "ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7",
     },
@@ -1013,6 +1029,13 @@ export const ExternalIncentiveGaugeAllowList: {
         "ibc/52C57FCA7D6854AA178E7A183DDBE4EF322B904B1D719FC485F6FFBC1F72A19E",
     },
   ],
+  "793": [
+    {
+      gaugeId: "29635",
+      denom:
+        "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
+    },
+  ],
   "796": [
     {
       gaugeId: "29545",
@@ -1032,6 +1055,38 @@ export const ExternalIncentiveGaugeAllowList: {
       gaugeId: "29615",
       denom:
         "ibc/0CD46223FEABD2AEAAAF1F057D01E63BCA79B7D4BD6B68F1EB973A987344695D",
+    },
+  ],
+  "810": [
+    {
+      gaugeId: "29659",
+      denom:
+        "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
+    },
+  ],
+  "807": [
+    {
+      gaugeId: "29636",
+      denom:
+        "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
+    },
+  ],
+  "808": [
+    {
+      gaugeId: "29637",
+      denom:
+        "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
+    },
+  ],
+  "812": [
+    {
+      gaugeId: "29675",
+      denom:
+        "ibc/903A61A498756EA560B85A85132D3AEE21B5DEDD41213725D22ABF276EA6945E",
+    },
+    {
+      gaugeId: "29674",
+      denom: "uosmo",
     },
   ],
 };

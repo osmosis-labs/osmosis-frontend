@@ -1,10 +1,10 @@
 import { ChainGetter, ObservableChainQuery, QueryResponse } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
-import { Currency } from "@keplr-wallet/types";
-import { CoinPretty, Int, IntPretty, RatePretty } from "@keplr-wallet/unit";
-import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
+import { Currency, AppCurrency } from "@keplr-wallet/types";
+import { CoinPretty, PricePretty, Int, IntPretty, RatePretty } from "@keplr-wallet/unit";
 import { Pool, WeightedPoolRaw } from "@osmosis-labs/pools";
 import { IPriceStore } from "src/price";
+import { Duration } from "dayjs/plugin/duration";
 export declare class ObservableQueryPool extends ObservableChainQuery<{
     pool: WeightedPoolRaw;
 }> {
@@ -27,6 +27,21 @@ export declare class ObservableQueryPool extends ObservableChainQuery<{
     get shareCurrency(): Currency;
     get totalShare(): CoinPretty;
     get totalWeight(): IntPretty;
+    get smoothWeightChange(): {
+        startTime: Date;
+        endTime: Date;
+        duration: Duration;
+        initialPoolWeights: {
+            currency: AppCurrency;
+            weight: IntPretty;
+            ratio: IntPretty;
+        }[];
+        targetPoolWeights: {
+            currency: AppCurrency;
+            weight: IntPretty;
+            ratio: IntPretty;
+        }[];
+    } | undefined;
     get poolAssets(): {
         amount: CoinPretty;
         weight: IntPretty;

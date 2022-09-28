@@ -18,8 +18,11 @@ export declare class ObservableQueryIncentivizedPools extends ObservableChainQue
     protected readonly queryEpochProvision: ObservableQueryEpochProvisions;
     protected readonly queryEpochs: ObservableQueryEpochs;
     constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, queryLockableDurations: ObservableQueryLockableDurations, queryDistrInfo: ObservableQueryDistrInfo, queryPools: ObservableQueryPools, queryMintParmas: ObservableQueryMintParmas, queryEpochProvision: ObservableQueryEpochProvisions, queryEpochs: ObservableQueryEpochs);
+    /** Internally incentivized pools. */
     get incentivizedPools(): string[];
+    /** Is incentivized internally. */
     readonly isIncentivized: (poolId: string) => boolean;
+    /** Internal incentives (OSMO). */
     readonly getIncentivizedGaugeId: (poolId: string, duration: Duration) => string | undefined;
     /**
      * 가장 긴 lockable duration의 apy를 반환한다.
