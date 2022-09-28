@@ -192,17 +192,11 @@ const OsmosisFullLogo: FunctionComponent<{
   />
 );
 
-const Drawer = ({
-  children,
-  showSidebar,
-  isMobile,
-  height,
-}: {
-  children: ReactNode;
+const Drawer: FunctionComponent<{
   showSidebar: boolean;
   isMobile: boolean;
   height: number;
-}) => {
+}> = ({ children, showSidebar, isMobile, height }) => {
   const windowLoading = height <= 0;
   if (windowLoading) {
     return null;
