@@ -169,14 +169,12 @@ const Pool: FunctionComponent = observer(() => {
     const gaugeDurationMap = new Map<number, Gauge>();
 
     // uniqued external gauges by duration
-    if (externalGauges) {
-      externalGauges.forEach((extGauge) => {
-        gaugeDurationMap.set(extGauge.duration.asSeconds(), {
-          id: extGauge.id,
-          duration: extGauge.duration,
-        });
+    externalGauges.concat(allowedGauges).forEach((extGauge) => {
+      gaugeDurationMap.set(extGauge.duration.asSeconds(), {
+        id: extGauge.id,
+        duration: extGauge.duration,
       });
-    }
+    });
 
     // overwrite any external gauges with internal gauges w/ apr calcs
     superfluidPoolStore?.gaugesWithSuperfluidApr.forEach((gauge) => {
@@ -186,19 +184,21 @@ const Pool: FunctionComponent = observer(() => {
     return Array.from(gaugeDurationMap.values()).sort(
       (a, b) => a.duration.asSeconds() - b.duration.asSeconds()
     );
-  }, [externalGauges, superfluidPoolStore?.gaugesWithSuperfluidApr]);
+  }, [
+    allowedGauges,
+    externalGauges,
+    superfluidPoolStore?.gaugesWithSuperfluidApr,
+  ]);
   const allowedLockupGauges = useMemo(() => {
     const gaugeDurationMap = new Map<number, Gauge>();
 
     // uniqued external gauges by duration
-    if (allowedGauges) {
-      allowedGauges.forEach((extGauge) => {
-        gaugeDurationMap.set(extGauge.duration.asSeconds(), {
-          id: extGauge.id,
-          duration: extGauge.duration,
-        });
+    allowedGauges.forEach((extGauge) => {
+      gaugeDurationMap.set(extGauge.duration.asSeconds(), {
+        id: extGauge.id,
+        duration: extGauge.duration,
       });
-    }
+    });
 
     // overwrite any external gauges with internal gauges w/ apr calcs
     superfluidPoolStore?.gaugesWithSuperfluidApr.forEach((gauge) => {
@@ -232,8 +232,6 @@ const Pool: FunctionComponent = observer(() => {
     (allowedLockupGauges && allowedLockupGauges.length > 0) ||
     (allLockupGauges && allLockupGauges.length > 0) ||
     false;
-
-  console.log(allowedLockupGauges, allLockupGauges);
 
   const showPoolBondingTables =
     showLiquidityMiningSection ||
