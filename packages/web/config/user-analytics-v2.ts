@@ -39,11 +39,11 @@ export type EventProperties = {
 export type UserProperties = {
   isWalletConnected: boolean;
   connectedWallet: string;
-  totalAssetsPrice: string;
-  unbondedAssetsPrice: string;
-  bondedAssetsPrice: string;
-  stakedOsmoPrice: string;
-  osmoBalance: string;
+  totalAssetsPrice: number;
+  unbondedAssetsPrice: number;
+  bondedAssetsPrice: number;
+  stakedOsmoPrice: number;
+  osmoBalance: number;
   myPoolsCount: number;
 };
 
