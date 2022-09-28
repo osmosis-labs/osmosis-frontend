@@ -29,7 +29,7 @@ dayjs.extend(utc);
 enableStaticRendering(typeof window === "undefined");
 
 function MyApp({ Component, pageProps }: AppProps) {
-  let menus: MainLayoutMenu[] = [
+  const menus: MainLayoutMenu[] = [
     {
       label: "Swap",
       link: "/",
