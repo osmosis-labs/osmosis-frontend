@@ -7,10 +7,10 @@ const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 const chainInfos = (
   [
     {
-      rpc: "https://rpc-v12.dev-osmosis.zone/", // test: "http://rpc-test.osmosis.zone/"
-      rest: "https://lcd-v12.dev-osmosis.zone/", // test: "http://lcd-test.osmosis.zone/"
-      chainId: "localosmosis", // test: "osmo-test-4"
-      chainName: "Osmosis(V12)",
+      rpc: "https://testnet-rpc.osmosis.zone/", // test: "http://rpc-test.osmosis.zone/"
+      rest: "https://testnet-rest.osmosis.zone/", // test: "http://lcd-test.osmosis.zone/"
+      chainId: "osmo-test-4", // test: "osmo-test-4"
+      chainName: "Osmosis Testnet",
       bip44: {
         coinType: 118,
       },
