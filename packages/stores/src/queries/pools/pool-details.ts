@@ -267,8 +267,9 @@ export class ObservableQueryPoolDetails {
           const now = new Date();
 
           if (
-            startTime.add(gauge.lockupDuration).isBefore(now) ||
-            isInternalGauge
+            startTime.isAfter(now) ||
+            isInternalGauge ||
+            !(gauge.remainingEpoch > 1)
           ) {
             return;
           }
