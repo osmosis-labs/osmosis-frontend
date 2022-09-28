@@ -1,6 +1,7 @@
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Duration } from "dayjs/plugin/duration";
+import dayjs from "dayjs";
 import { AppCurrency, FiatCurrency } from "@keplr-wallet/types";
 import { PricePretty, Dec, RatePretty, CoinPretty } from "@keplr-wallet/unit";
 import { IPriceStore } from "../../price";
@@ -253,15 +254,21 @@ export class ObservableQueryPoolDetails {
     );
 
     return (
-      queryPoolGuageIds.gaugeIdsWithDuration?.map(({ gaugeId }) => {
-        const observableGauge = this.queries.queryGauge.get(gaugeId);
+      queryPoolGuageIds.gaugeIdsWithDuration
+        ?.map(({ gaugeId }) => {
+          const gauge = this.queries.queryGauge.get(gaugeId);
 
-        return {
-          id: gaugeId,
-          duration: observableGauge.lockupDuration,
-          remainingEpochs: observableGauge.remainingEpoch,
-        };
-      }) ?? []
+          const startTime = dayjs(gauge.startTime);
+          const now = new Date();
+
+          if (startTime.add(gauge.lockupDuration).isBefore(now)) return;
+          return {
+            id: gaugeId,
+            duration: gauge.lockupDuration,
+            remainingEpochs: gauge.remainingEpoch,
+          };
+        })
+        .filter((gauge): gauge is ExternalGauge => gauge !== undefined) ?? []
     );
   }
 

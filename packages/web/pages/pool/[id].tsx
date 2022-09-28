@@ -224,8 +224,8 @@ const Pool: FunctionComponent = observer(() => {
 
   const showLiquidityMiningSection =
     poolDetailStore?.isIncentivized ||
-    (allowedGauges && allowedGauges.length > 0) ||
-    (allGauges && allGauges.length > 0) ||
+    (allowedLockupGauges && allowedLockupGauges.length > 0) ||
+    (allLockupGauges && allLockupGauges.length > 0) ||
     false;
 
   const showPoolBondingTables =
