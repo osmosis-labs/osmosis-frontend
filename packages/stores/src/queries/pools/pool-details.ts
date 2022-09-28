@@ -257,11 +257,22 @@ export class ObservableQueryPoolDetails {
       queryPoolGuageIds.gaugeIdsWithDuration
         ?.map(({ gaugeId }) => {
           const gauge = this.queries.queryGauge.get(gaugeId);
+          const isInternalGauge =
+            this.queries.queryIncentivizedPools.getIncentivizedGaugeId(
+              this.queryPool.id,
+              gauge.lockupDuration
+            ) !== undefined;
 
           const startTime = dayjs(gauge.startTime);
           const now = new Date();
 
-          if (startTime.add(gauge.lockupDuration).isBefore(now)) return;
+          if (
+            startTime.add(gauge.lockupDuration).isBefore(now) ||
+            isInternalGauge
+          ) {
+            return;
+          }
+
           return {
             id: gaugeId,
             duration: gauge.lockupDuration,

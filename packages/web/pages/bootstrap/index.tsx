@@ -131,7 +131,7 @@ const SynthesisItem: FunctionComponent<{
 
   const baseCurrency = chainStore
     .getChain(chainStore.osmosis.chainId)
-    .findCurrency(baseDenom);
+    .forceFindCurrency(baseDenom);
 
   return (
     <li
@@ -172,7 +172,7 @@ const SynthesisItem: FunctionComponent<{
               Current Price
             </p>
             <h5 className="text-lg md:text-xl">
-              {baseCurrency
+              {(baseCurrency
                 ? priceStore
                     .calculatePrice(
                       new CoinPretty(
@@ -183,7 +183,7 @@ const SynthesisItem: FunctionComponent<{
                       )
                     )
                     ?.toString()
-                : undefined ?? "$0"}
+                : undefined) ?? "$0"}
             </h5>
           </div>
         </div>

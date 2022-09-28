@@ -36,6 +36,7 @@ import {
   UnPoolWhitelistedPoolIds,
   PoolDetailEvents,
   EventName,
+  PromotedLBPPoolIds,
 } from "../../config";
 import {
   useAddLiquidityConfig,
@@ -61,6 +62,9 @@ const Pool: FunctionComponent = observer(() => {
 
   const { id: poolId } = router.query;
   const { chainId } = chainStore.osmosis;
+  const lbpConfig = PromotedLBPPoolIds.find(
+    ({ poolId: lbpPoolId }) => lbpPoolId === poolId
+  );
 
   const queryCosmos = queriesStore.get(chainId).cosmos;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -681,10 +685,14 @@ const Pool: FunctionComponent = observer(() => {
         title={
           <MetricLoader className="h-7 w-64" isLoading={!pool}>
             <h5>
-              {`Pool #${pool?.id} : ${pool?.poolAssets
-                .map((asset) => asset.amount.currency.coinDenom.split(" ")[0])
-                .map((denom) => truncateString(denom))
-                .join(" / ")}`}
+              {lbpConfig
+                ? lbpConfig.name
+                : `Pool #${pool?.id} : ${pool?.poolAssets
+                    .map(
+                      (asset) => asset.amount.currency.coinDenom.split(" ")[0]
+                    )
+                    .map((denom) => truncateString(denom))
+                    .join(" / ")}`}
             </h5>
           </MetricLoader>
         }

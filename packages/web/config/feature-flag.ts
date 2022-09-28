@@ -1,3 +1,5 @@
+import { IS_FRONTIER } from "./ibc-assets";
+
 export const UserAction: { [key: string]: boolean } = {
   CreateNewPool: true,
 };
@@ -36,7 +38,15 @@ export const PromotedLBPPoolIds: {
   poolId: string;
   name: string;
   baseDenom: string;
-}[] = [];
+}[] = IS_FRONTIER
+  ? [
+      {
+        poolId: "813",
+        name: "REBUS Liquidity Bootstrapping Pool",
+        baseDenom: "arebus",
+      },
+    ]
+  : [];
 
 /** Gauges to be rendered in pool's respective pool detail page. */
 export const ExternalIncentiveGaugeAllowList: {
@@ -1077,8 +1087,7 @@ export const ExternalIncentiveGaugeAllowList: {
     },
     {
       gaugeId: "29674",
-      denom:
-        "uosmo",
+      denom: "uosmo",
     },
   ],
 };
