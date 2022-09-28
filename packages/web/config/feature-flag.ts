@@ -1,3 +1,6 @@
+import { DenomHelper } from "@keplr-wallet/common";
+import { IS_FRONTIER } from "./ibc-assets";
+
 export const UserAction: { [key: string]: boolean } = {
   CreateNewPool: true,
 };
@@ -30,6 +33,24 @@ export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
   "580": true,
   "635": true,
 };
+
+/** List of pools active in LBP to present in frontend. */
+export const PromotedLBPPoolIds: {
+  poolId: string;
+  name: string;
+  ibcHashDenom: string;
+}[] = IS_FRONTIER
+  ? [
+      {
+        poolId: "813",
+        name: "REBUS Liquidity Bootstrapping Pool",
+        ibcHashDenom: DenomHelper.ibcDenom(
+          [{ portId: "transfer", channelId: "channel-355" }],
+          "arebus"
+        ),
+      },
+    ]
+  : [];
 
 /** Gauges to be rendered in pool's respective pool detail page. */
 export const ExternalIncentiveGaugeAllowList: {
@@ -1070,8 +1091,7 @@ export const ExternalIncentiveGaugeAllowList: {
     },
     {
       gaugeId: "29674",
-      denom:
-        "uosmo",
+      denom: "uosmo",
     },
   ],
 };
