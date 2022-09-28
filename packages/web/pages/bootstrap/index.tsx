@@ -1,5 +1,6 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import Image from "next/image";
 import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import dayjs from "dayjs";
@@ -7,7 +8,6 @@ import { PricePretty, CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { useStore } from "../../stores";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { PromotedLBPPoolIds } from "../../config";
-import { generateRandom } from "../../components/utils";
 
 const BootstrapPage: NextPage = observer(() => {
   return (
@@ -96,14 +96,13 @@ const OverviewLabelValue: FunctionComponent<Record<"label", string>> = ({
 export const SynthesisList: FunctionComponent = () => {
   return (
     <ul>
-      {PromotedLBPPoolIds.map((pool, index) => {
+      {PromotedLBPPoolIds.map((pool) => {
         return (
           <SynthesisItem
             key={pool.poolId}
-            index={index}
             poolId={pool.poolId}
             name={pool.name}
-            baseDenom={pool.baseDenom}
+            baseDenom={pool.ibcHashDenom}
           />
         );
       })}
@@ -112,11 +111,10 @@ export const SynthesisList: FunctionComponent = () => {
 };
 
 const SynthesisItem: FunctionComponent<{
-  index: number;
   poolId: string;
   name: string;
   baseDenom: string;
-}> = observer(({ index, poolId, name, baseDenom }) => {
+}> = observer(({ poolId, name, baseDenom }) => {
   const { chainStore, queriesStore, priceStore } = useStore();
 
   const queries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
@@ -143,20 +141,14 @@ const SynthesisItem: FunctionComponent<{
       }}
     >
       <section className="flex items-center mb-5">
-        <figure className="w-19 h-19 md:w-21 md:h-21 flex-shrink-0 mr-5 md:mr-7.5 rounded-full border border-enabledGold flex justify-center items-center">
-          <figure
-            style={{
-              backgroundImage: generateRandom(index),
-            }}
-            className="w-16 h-16 md:w-18 md:h-18 shrink-0 rounded-full flex justify-center items-end"
-          >
-            <img
-              alt="bubbles"
-              className="w-10 h-10 mb-1"
-              src={baseCurrency?.coinImageUrl ?? "/images/bubbles.svg"}
-            />
-          </figure>
-        </figure>
+        <div className="w-fit mx-4">
+          <Image
+            alt="image"
+            src={baseCurrency?.coinImageUrl ?? "/images/bubbles.svg"}
+            height={80}
+            width={80}
+          />
+        </div>
         <div className="flex flex-col md:flex-row justify-between md:items-center md:w-full">
           <div className="mr-2 flex flex-col mb-3 md:mb-0">
             <p className="mb-2 text-sm font-semibold text-white-mid">

@@ -1,3 +1,4 @@
+import { DenomHelper } from "@keplr-wallet/common";
 import { IS_FRONTIER } from "./ibc-assets";
 
 export const UserAction: { [key: string]: boolean } = {
@@ -37,13 +38,16 @@ export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
 export const PromotedLBPPoolIds: {
   poolId: string;
   name: string;
-  baseDenom: string;
+  ibcHashDenom: string;
 }[] = IS_FRONTIER
   ? [
       {
         poolId: "813",
         name: "REBUS Liquidity Bootstrapping Pool",
-        baseDenom: "arebus",
+        ibcHashDenom: DenomHelper.ibcDenom(
+          [{ portId: "transfer", channelId: "channel-355" }],
+          "arebus"
+        ),
       },
     ]
   : [];
