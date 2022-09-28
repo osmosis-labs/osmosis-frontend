@@ -82,16 +82,6 @@ const Pool: FunctionComponent = observer(() => {
   }, [poolExists]);
 
   // initialize pool data stores once root pool store is loaded
-  const [poolDetailStore, setPoolDetailStore] =
-    useState<ObservableQueryPoolDetails | null>(null);
-  const allowedGauges =
-    pool && ExternalIncentiveGaugeAllowList[pool.id]
-      ? poolDetailStore?.queryAllowedExternalGauges(
-          (denom) => chainStore.getChain(chainId).findCurrency(denom),
-          ExternalIncentiveGaugeAllowList[pool.id]
-        ) ?? []
-      : [];
-  const allGauges = poolDetailStore?.allExternalGauges ?? [];
   const [superfluidPoolStore, setSuperfluidPoolStore] =
     useState<ObservableQuerySuperfluidPool | null>(null);
   useEffect(() => {
@@ -158,6 +148,17 @@ const Pool: FunctionComponent = observer(() => {
     pool ? queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id) : undefined
   );
 
+  // pool gauges
+  const [poolDetailStore, setPoolDetailStore] =
+    useState<ObservableQueryPoolDetails | null>(null);
+  const allowedGauges =
+    pool && ExternalIncentiveGaugeAllowList[pool.id]
+      ? poolDetailStore?.queryAllowedExternalGauges(
+          (denom) => chainStore.getChain(chainId).findCurrency(denom),
+          ExternalIncentiveGaugeAllowList[pool.id]
+        ) ?? []
+      : [];
+  const externalGauges = poolDetailStore?.allExternalGauges ?? [];
   type Gauge = {
     id: string;
     duration: Duration;
@@ -168,8 +169,8 @@ const Pool: FunctionComponent = observer(() => {
     const gaugeDurationMap = new Map<number, Gauge>();
 
     // uniqued external gauges by duration
-    if (allGauges) {
-      allGauges.forEach((extGauge) => {
+    if (externalGauges) {
+      externalGauges.forEach((extGauge) => {
         gaugeDurationMap.set(extGauge.duration.asSeconds(), {
           id: extGauge.id,
           duration: extGauge.duration,
@@ -185,7 +186,7 @@ const Pool: FunctionComponent = observer(() => {
     return Array.from(gaugeDurationMap.values()).sort(
       (a, b) => a.duration.asSeconds() - b.duration.asSeconds()
     );
-  }, [allGauges, superfluidPoolStore?.gaugesWithSuperfluidApr]);
+  }, [externalGauges, superfluidPoolStore?.gaugesWithSuperfluidApr]);
   const allowedLockupGauges = useMemo(() => {
     const gaugeDurationMap = new Map<number, Gauge>();
 
@@ -231,6 +232,8 @@ const Pool: FunctionComponent = observer(() => {
     (allowedLockupGauges && allowedLockupGauges.length > 0) ||
     (allLockupGauges && allLockupGauges.length > 0) ||
     false;
+
+  console.log(allowedLockupGauges, allLockupGauges);
 
   const showPoolBondingTables =
     showLiquidityMiningSection ||
