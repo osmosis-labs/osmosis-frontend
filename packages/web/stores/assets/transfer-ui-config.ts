@@ -242,11 +242,14 @@ export class ObservableTransferUIConfig {
       sourceChainKey?: SourceChainKey
     ) => void
   ) {
-    const inAppBridgeAssets = this.assetsStore.ibcBalances.filter(
-      (asset) => !asset.withdrawUrlOverride && !asset.depositUrlOverride
+    const availableAssets = this.assetsStore.ibcBalances.filter(
+      (asset) =>
+        !asset.withdrawUrlOverride &&
+        !asset.depositUrlOverride &&
+        !asset.isUnstable
     );
     const tokens = await Promise.all(
-      inAppBridgeAssets.map(async ({ balance, originBridgeInfo }) => {
+      availableAssets.map(async ({ balance, originBridgeInfo }) => {
         const defaultSourceChainId = await this.kvStore.get<string | undefined>(
           makeAssetSrcNetworkPreferredKey(balance.denom)
         );

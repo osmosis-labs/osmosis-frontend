@@ -17,7 +17,7 @@ export const LockTokensModal: FunctionComponent<
     gauges: {
       id: string;
       duration: Duration;
-      apr: RatePretty;
+      apr?: RatePretty;
       superfluidApr?: RatePretty;
     }[];
     amountConfig: AmountConfig;
@@ -84,15 +84,18 @@ export const LockTokensModal: FunctionComponent<
     <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-col gap-2.5">
-          <span className="subitle1">Unbonding period</span>
-          <div className="flex md:flex-col gap-4">
+          <span className="subitle1">
+            Unbonding period
+            {gauges.length > 3 && !isMobile ? ` (${gauges.length})` : null}
+          </span>
+          <div className="flex md:flex-col gap-4 overflow-x-auto">
             {gauges.map(({ id, duration, apr, superfluidApr }, index) => (
               <LockupItem
                 key={id}
                 duration={duration.humanize()}
                 isSelected={index === selectedGaugeIndex}
                 onSelect={() => setSelectedGaugeIndex(index)}
-                apr={apr.maxDecimals(2).trim(true).toString()}
+                apr={apr?.maxDecimals(2).trim(true).toString()}
                 superfluidApr={superfluidApr
                   ?.maxDecimals(0)
                   .trim(true)
@@ -157,7 +160,7 @@ const LockupItem: FunctionComponent<
     duration: string;
     isSelected: boolean;
     onSelect: () => void;
-    apr: string;
+    apr?: string;
     superfluidApr?: string;
   } & MobileProps
 > = ({
@@ -174,7 +177,7 @@ const LockupItem: FunctionComponent<
       {
         "shadow-elevation-08dp": isSelected,
       },
-      "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer",
+      "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer min-w-[190px]",
       superfluidApr
         ? "bg-superfluid"
         : isSelected
@@ -216,11 +219,13 @@ const LockupItem: FunctionComponent<
             )}
           </div>
         </div>
-        <div className="flex items-center md:text-right text-center md:mx-0 mx-auto gap-2">
-          <p className="subtitle2 md:m-0 mt-1 text-secondary-200 md:text-sm text-base">
-            {`${apr}${superfluidApr ? `+ ${superfluidApr}` : ""}`}
-          </p>
-        </div>
+        {apr && (
+          <div className="flex items-center md:text-right text-center md:mx-0 mx-auto gap-2">
+            <p className="subtitle2 md:m-0 mt-1 text-secondary-200 md:text-sm text-base">
+              {`${apr}${superfluidApr ? `+ ${superfluidApr}` : ""}`}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   </button>

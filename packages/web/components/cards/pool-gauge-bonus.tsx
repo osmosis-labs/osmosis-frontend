@@ -10,7 +10,7 @@ export const PoolGaugeBonusCard: FunctionComponent<
   } & LoadingProps &
     MobileProps
 > = ({ bonusValue, days, remainingEpochs, isLoading, isMobile = false }) => (
-  <div className="flex flex-col w-full gap-1 bg-card rounded-xl md:pl-[30%] md:p-3.5 py-5 px-7 border border-white-mid">
+  <div className="flex flex-col w-full min-w-[220px] gap-1 bg-card rounded-xl md:pl-[30%] md:p-3.5 py-5 px-7 border border-white-mid">
     {isMobile ? (
       <span className="subtitle1">{`${days} bonus reward`}</span>
     ) : (

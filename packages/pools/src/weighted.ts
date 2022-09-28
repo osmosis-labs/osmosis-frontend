@@ -1,4 +1,4 @@
-import { Pool } from "./interface";
+import { Pool, SmoothWeightChangeParams } from "./interface";
 import { Dec, Int } from "@keplr-wallet/unit";
 import * as WeightedPoolMath from "@osmosis-labs/math";
 
@@ -92,6 +92,19 @@ export class WeightedPool implements Pool {
 
   get totalShare(): Int {
     return new Int(this.raw.totalShares.amount);
+  }
+
+  get smoothWeightChange(): SmoothWeightChangeParams | undefined {
+    if (this.raw.poolParams.smoothWeightChangeParams !== null) {
+      const { start_time, duration, initialPoolWeights, targetPoolWeights } =
+        this.raw.poolParams.smoothWeightChangeParams;
+      return {
+        startTime: start_time,
+        duration,
+        initialPoolWeights,
+        targetPoolWeights,
+      };
+    }
   }
 
   getPoolAsset(denom: string): { denom: string; amount: Int; weight: Int } {

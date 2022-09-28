@@ -136,9 +136,9 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
         return;
       }
 
-      // set to highest amount
+      // set to highest amount, or first in list
       let maxAmount = new Dec(0);
-      let maxIndex = -1;
+      let maxIndex = 0;
       this.poolAssetConfigs.forEach((poolAssetConfig, index) => {
         try {
           const curAmt = new Dec(poolAssetConfig.amount);
@@ -157,17 +157,6 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   @action
   setSingleAmountInConfigIndex(index: number) {
     this._singleAmountInConfigIndex = index;
-  }
-
-  @action
-  setSingleAmountInConfig(coinDenom: string) {
-    const poolAssetIndex = this.poolAssetConfigs.findIndex(
-      (assetConfig) => assetConfig.sendCurrency.coinDenom === coinDenom
-    );
-
-    if (poolAssetIndex !== -1) {
-      this.setSingleAmountInConfigIndex(poolAssetIndex);
-    }
   }
 
   @computed

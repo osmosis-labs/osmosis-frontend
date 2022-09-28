@@ -175,9 +175,9 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                                   addLiquidityConfig.singleAmountInAsset
                                     ?.currency.coinDenom ?? ""
                                 }
-                                onSelectToken={(coinDenom) =>
-                                  addLiquidityConfig.setSingleAmountInConfig(
-                                    coinDenom
+                                onSelectToken={(tokenIndex) =>
+                                  addLiquidityConfig.setSingleAmountInConfigIndex(
+                                    tokenIndex
                                   )
                                 }
                                 isMobile={isMobile}
