@@ -95,14 +95,18 @@ export class WeightedPool implements Pool {
   }
 
   get smoothWeightChange(): SmoothWeightChangeParams | undefined {
-    if (this.raw.poolParams.smoothWeightChangeParams !== null) {
-      const { start_time, duration, initialPoolWeights, targetPoolWeights } =
-        this.raw.poolParams.smoothWeightChangeParams;
+    if (this.raw.pool_params.smooth_weight_change_params !== null) {
+      const {
+        start_time,
+        duration,
+        initial_pool_weights,
+        target_pool_weights,
+      } = this.raw.pool_params.smooth_weight_change_params;
       return {
         startTime: start_time,
         duration,
-        initialPoolWeights,
-        targetPoolWeights,
+        initialPoolWeights: initial_pool_weights,
+        targetPoolWeights: target_pool_weights,
       };
     }
   }
