@@ -1,6 +1,12 @@
 import type { NextPage } from "next";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState, useEffect } from "react";
+import {
+  FunctionComponent,
+  useState,
+  useEffect,
+  ComponentProps,
+  useCallback,
+} from "react";
 import { PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { makeLocalStorageKVStore } from "../../stores/kv-store";
@@ -19,7 +25,7 @@ import {
   BridgeTransferModal,
   TransferAssetSelectModal,
 } from "../../modals";
-import { ConnectNonIbcWallet } from "../../modals/connect-non-ibc-wallet";
+import { ConnectNonIbcWallet, PreTransferModal } from "../../modals";
 import { useWindowSize, useAmplitudeAnalytics } from "../../hooks";
 import { WalletConnectQRModal } from "../../modals";
 import { EventName } from "../../config";
@@ -51,10 +57,53 @@ const Assets: NextPage = observer(() => {
       )
   );
 
+  // mobile only
+  const [preTransferModalProps, setPreTransferModalProps] =
+    useState<ComponentProps<typeof PreTransferModal> | null>(null);
+  const launchPreTransferModal = useCallback(
+    (coinDenom: string) => {
+      const ibcBalance = ibcBalances.find(
+        (ibcBalance) => ibcBalance.balance.denom === coinDenom
+      );
+
+      if (!ibcBalance) return;
+
+      setPreTransferModalProps({
+        isOpen: true,
+        selectedToken: ibcBalance.balance,
+        tokens: ibcBalances.map(({ balance }) => balance),
+        externalDepositUrl: ibcBalance.depositUrlOverride,
+        externalWithdrawUrl: ibcBalance.withdrawUrlOverride,
+        isUnstable: ibcBalance.isUnstable,
+        onSelectToken: launchPreTransferModal,
+        onWithdraw: () => {
+          transferConfig.transferAsset(
+            "withdraw",
+            ibcBalance.chainInfo.chainId,
+            coinDenom
+          );
+          setPreTransferModalProps(null);
+        },
+        onDeposit: () => {
+          transferConfig.transferAsset(
+            "deposit",
+            ibcBalance.chainInfo.chainId,
+            coinDenom
+          );
+          setPreTransferModalProps(null);
+        },
+        onRequestClose: () => setPreTransferModalProps(null),
+      });
+    },
+    [ibcBalances]
+  );
+
   useEffect(() => {
     setUserProperty(
       "osmoBalance",
-      nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()
+      Number(
+        nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()
+      )
     );
   }, [nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()]);
 
@@ -64,6 +113,9 @@ const Assets: NextPage = observer(() => {
         onDepositIntent={() => transferConfig.startTransfer("deposit")}
         onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
       />
+      {isMobile && preTransferModalProps && (
+        <PreTransferModal {...preTransferModalProps} />
+      )}
       {transferConfig.assetSelectModal && (
         <TransferAssetSelectModal {...transferConfig.assetSelectModal} />
       )}
@@ -89,7 +141,9 @@ const Assets: NextPage = observer(() => {
         onDepositIntent={() => transferConfig.startTransfer("deposit")}
         onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
         onDeposit={(chainId, coinDenom) =>
-          transferConfig.transferAsset("deposit", chainId, coinDenom)
+          isMobile
+            ? launchPreTransferModal(coinDenom)
+            : transferConfig.transferAsset("deposit", chainId, coinDenom)
         }
         onWithdraw={(chainId, coinDenom) =>
           transferConfig.transferAsset("withdraw", chainId, coinDenom)
@@ -130,10 +184,22 @@ const AssetsOverview: FunctionComponent<{
   ]);
 
   useEffect(() => {
-    setUserProperty("totalAssetsPrice", totalAssetsValue.toString());
-    setUserProperty("unbondedAssetsPrice", availableAssetsValue.toString());
-    setUserProperty("bondedAssetsPrice", bondedAssetsValue.toString());
-    setUserProperty("stakedOsmoPrice", stakedAssetsValue.toString());
+    setUserProperty(
+      "totalAssetsPrice",
+      Number(totalAssetsValue.trim(true).toDec().toString(2))
+    );
+    setUserProperty(
+      "unbondedAssetsPrice",
+      Number(availableAssetsValue.trim(true).toDec().toString(2))
+    );
+    setUserProperty(
+      "bondedAssetsPrice",
+      Number(bondedAssetsValue.trim(true).toDec().toString(2))
+    );
+    setUserProperty(
+      "stakedOsmoPrice",
+      Number(stakedAssetsValue.trim(true).toDec().toString(2))
+    );
   }, [
     totalAssetsValue.toString(),
     availableAssetsValue.toString(),

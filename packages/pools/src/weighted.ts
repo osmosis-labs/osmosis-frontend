@@ -5,18 +5,18 @@ import * as WeightedPoolMath from "@osmosis-labs/math";
 /** Raw query response representation of pool. */
 export interface WeightedPoolRaw {
   id: string;
-  pool_params: {
+  poolParams: {
     lock: boolean;
     // Dec
-    swap_fee: string;
+    swapFee: string;
     // Dec
-    exit_fee: string;
-    smooth_weight_change_params: {
+    exitFee: string;
+    smoothWeightChangeParams: {
       // Timestamp
       start_time: string;
       // Seconds with s suffix. Ex) 3600s
       duration: string;
-      initial_pool_weights: {
+      initialPoolWeights: {
         token: {
           denom: string;
           // Int
@@ -25,7 +25,7 @@ export interface WeightedPoolRaw {
         // Int
         weight: string;
       }[];
-      target_pool_weights: {
+      targetPoolWeights: {
         token: {
           denom: string;
           // Int
@@ -37,13 +37,13 @@ export interface WeightedPoolRaw {
     } | null;
   };
   // Int
-  total_weight: string;
-  total_shares: {
+  totalWeight: string;
+  totalShares: {
     denom: string;
     // Int
     amount: string;
   };
-  pool_assets: [
+  poolAssets: [
     {
       // Int
       weight: string;
@@ -61,7 +61,7 @@ export class WeightedPool implements Pool {
   constructor(public readonly raw: WeightedPoolRaw) {}
 
   get exitFee(): Dec {
-    return new Dec(this.raw.pool_params.exit_fee);
+    return new Dec(this.raw.poolParams.exitFee);
   }
 
   get id(): string {
@@ -69,7 +69,7 @@ export class WeightedPool implements Pool {
   }
 
   get poolAssets(): { denom: string; amount: Int; weight: Int }[] {
-    return this.raw.pool_assets.map((asset) => {
+    return this.raw.poolAssets.map((asset) => {
       return {
         denom: asset.token.denom,
         amount: new Int(asset.token.amount),
@@ -79,19 +79,19 @@ export class WeightedPool implements Pool {
   }
 
   get poolAssetDenoms(): string[] {
-    return this.raw.pool_assets.map((asset) => asset.token.denom);
+    return this.raw.poolAssets.map((asset) => asset.token.denom);
   }
 
   get shareDenom(): string {
-    return this.raw.total_shares.denom;
+    return this.raw.totalShares.denom;
   }
 
   get swapFee(): Dec {
-    return new Dec(this.raw.pool_params.swap_fee);
+    return new Dec(this.raw.poolParams.swapFee);
   }
 
   get totalShare(): Int {
-    return new Int(this.raw.total_shares.amount);
+    return new Int(this.raw.totalShares.amount);
   }
 
   get smoothWeightChange(): SmoothWeightChangeParams | undefined {
@@ -124,7 +124,7 @@ export class WeightedPool implements Pool {
   }
 
   get totalWeight(): Int {
-    return new Int(this.raw.total_weight);
+    return new Int(this.raw.totalWeight);
   }
 
   getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec {

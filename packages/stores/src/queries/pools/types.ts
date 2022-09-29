@@ -5,5 +5,5 @@ export type Pools = {
 };
 
 export type NumPools = {
-  num_pools: string;
+  numPools: string;
 };

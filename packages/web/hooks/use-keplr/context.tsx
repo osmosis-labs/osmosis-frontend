@@ -18,6 +18,7 @@ import WalletConnect from "@walletconnect/client";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { isMobile } from "@walletconnect/browser-utils";
 import { useMatomoAnalytics } from "../use-matomo-analytics";
+import { useAmplitudeAnalytics } from "../use-amplitude-analytics";
 
 export async function sendTxWC(
   chainId: string,
@@ -81,6 +82,7 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
   const [isExtentionNotInstalled, setIsExtensionNotInstalled] = useState(false);
   const [wcUri, setWCUri] = useState("");
   const { trackEvent } = useMatomoAnalytics();
+  const { setUserProperty } = useAmplitudeAnalytics();
 
   const lastUsedKeplrRef = useRef<Keplr | undefined>();
   const defaultConnectionTypeRef = useRef<
@@ -199,6 +201,8 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
             lastUsedKeplrRef.current = keplr;
             setConnectionType("extension");
             trackEvent(NavBarEvents.connectKeplrSuccess);
+            setUserProperty("isWalletConnected", true);
+            setUserProperty("connectedWallet", "extension");
             resolve(keplr);
             cleanUp();
           });
@@ -231,6 +235,8 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
                 setIsExtensionSelectionModalOpen(false);
                 lastUsedKeplrRef.current = keplr;
                 setConnectionType("wallet-connect");
+                setUserProperty("isWalletConnected", true);
+                setUserProperty("connectedWallet", "wallet-connect");
                 resolve(keplr);
               }
             });
@@ -241,6 +247,8 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
             setIsExtensionSelectionModalOpen(false);
             lastUsedKeplrRef.current = keplr;
             setConnectionType("wallet-connect");
+            setUserProperty("isWalletConnected", true);
+            setUserProperty("connectedWallet", "wallet-connect");
             resolve(keplr);
             cleanUp();
           }

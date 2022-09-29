@@ -3,21 +3,21 @@ import { Dec, Int } from "@keplr-wallet/unit";
 /** Raw query response representation of pool. */
 export interface WeightedPoolRaw {
     id: string;
-    pool_params: {
+    poolParams: {
         lock: boolean;
-        swap_fee: string;
-        exit_fee: string;
-        smooth_weight_change_params: {
+        swapFee: string;
+        exitFee: string;
+        smoothWeightChangeParams: {
             start_time: string;
             duration: string;
-            initial_pool_weights: {
+            initialPoolWeights: {
                 token: {
                     denom: string;
                     amount: string;
                 };
                 weight: string;
             }[];
-            target_pool_weights: {
+            targetPoolWeights: {
                 token: {
                     denom: string;
                     amount: string;
@@ -26,12 +26,12 @@ export interface WeightedPoolRaw {
             }[];
         } | null;
     };
-    total_weight: string;
-    total_shares: {
+    totalWeight: string;
+    totalShares: {
         denom: string;
         amount: string;
     };
-    pool_assets: [
+    poolAssets: [
         {
             weight: string;
             token: {

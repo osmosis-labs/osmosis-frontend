@@ -88,10 +88,10 @@ export class OsmosisAccountImpl {
     onFulfill?: (tx: any) => void
   ) {
     const poolParams = {
-      swap_fee: new Dec(swapFee)
+      swapFee: new Dec(swapFee)
         .quo(DecUtils.getTenExponentNInPrecisionRange(2))
         .toString(),
-      exit_fee: new Dec(0).toString(),
+      exitFee: new Dec(0).toString(),
     };
 
     const poolAssets: {
@@ -123,8 +123,8 @@ export class OsmosisAccountImpl {
       type: this._msgOpts.createPool.type,
       value: {
         sender: this.base.bech32Address,
-        pool_params: poolParams,
-        pool_assets: poolAssets,
+        poolParams,
+        poolAssets,
         future_pool_governor: "24h",
       },
     };
@@ -143,13 +143,13 @@ export class OsmosisAccountImpl {
                   sender: msg.value.sender,
                   poolParams: {
                     swapFee: this.changeDecStringToProtoBz(
-                      msg.value.pool_params.swap_fee
+                      msg.value.poolParams.swapFee
                     ),
                     exitFee: this.changeDecStringToProtoBz(
-                      msg.value.pool_params.exit_fee
+                      msg.value.poolParams.exitFee
                     ),
                   },
-                  poolAssets: msg.value.pool_assets,
+                  poolAssets: msg.value.poolAssets,
                   futurePoolGovernor: msg.value.future_pool_governor,
                 }
               ).finish(),
@@ -259,8 +259,8 @@ export class OsmosisAccountImpl {
           type: this._msgOpts.joinPool.type,
           value: {
             sender: this.base.bech32Address,
-            pool_id: poolId,
-            share_out_amount: new Dec(shareOutAmount)
+            poolId,
+            shareOutAmount: new Dec(shareOutAmount)
               .mul(
                 DecUtils.getTenExponentNInPrecisionRange(
                   this._msgOpts.joinPool.shareCoinDecimals
@@ -268,7 +268,7 @@ export class OsmosisAccountImpl {
               )
               .truncate()
               .toString(),
-            token_in_maxs: tokenInMaxs,
+            tokenInMaxs,
           },
         };
 
@@ -279,9 +279,9 @@ export class OsmosisAccountImpl {
               typeUrl: "/osmosis.gamm.v1beta1.MsgJoinPool",
               value: osmosis.gamm.v1beta1.MsgJoinPool.encode({
                 sender: msg.value.sender,
-                poolId: Long.fromString(msg.value.pool_id),
-                shareOutAmount: msg.value.share_out_amount,
-                tokenInMaxs: msg.value.token_in_maxs,
+                poolId: Long.fromString(msg.value.poolId),
+                shareOutAmount: msg.value.shareOutAmount,
+                tokenInMaxs: msg.value.tokenInMaxs,
               }).finish(),
             },
           ],
@@ -380,12 +380,12 @@ export class OsmosisAccountImpl {
           type: this._msgOpts.joinSwapExternAmountIn.type,
           value: {
             sender: this.base.bech32Address,
-            pool_id: poolId,
-            token_in: {
+            poolId,
+            tokenIn: {
               denom: coin.denom,
               amount: coin.amount.toString(),
             },
-            share_out_min_amount: shareOutMinAmount.toString(),
+            shareOutMinAmount: shareOutMinAmount.toString(),
           },
         };
 
@@ -396,9 +396,9 @@ export class OsmosisAccountImpl {
               typeUrl: "/osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn",
               value: osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn.encode({
                 sender: msg.value.sender,
-                poolId: Long.fromString(msg.value.pool_id),
-                tokenIn: msg.value.token_in,
-                shareOutMinAmount: msg.value.share_out_min_amount,
+                poolId: Long.fromString(msg.value.poolId),
+                tokenIn: msg.value.tokenIn,
+                shareOutMinAmount: msg.value.shareOutMinAmount,
               }).finish(),
             },
           ],
@@ -526,12 +526,12 @@ export class OsmosisAccountImpl {
                 sender: msg.value.sender,
                 routes: msg.value.routes.map((route) => {
                   return {
-                    poolId: Long.fromString(route.pool_id),
-                    tokenOutDenom: route.token_out_denom,
+                    poolId: Long.fromString(route.poolId),
+                    tokenOutDenom: route.tokenOutDenom,
                   };
                 }),
-                tokenIn: msg.value.token_in,
-                tokenOutMinAmount: msg.value.token_out_min_amount,
+                tokenIn: msg.value.tokenIn,
+                tokenOutMinAmount: msg.value.tokenOutMinAmount,
               }).finish(),
             },
           ],
@@ -649,15 +649,15 @@ export class OsmosisAccountImpl {
               value: osmosis.gamm.v1beta1.MsgSwapExactAmountIn.encode({
                 sender: msg.value.sender,
                 routes: msg.value.routes.map(
-                  (route: { pool_id: string; token_out_denom: string }) => {
+                  (route: { poolId: string; tokenOutDenom: string }) => {
                     return {
-                      poolId: Long.fromString(route.pool_id),
-                      tokenOutDenom: route.token_out_denom,
+                      poolId: Long.fromString(route.poolId),
+                      tokenOutDenom: route.tokenOutDenom,
                     };
                   }
                 ),
-                tokenIn: msg.value.token_in,
-                tokenOutMinAmount: msg.value.token_out_min_amount,
+                tokenIn: msg.value.tokenIn,
+                tokenOutMinAmount: msg.value.tokenOutMinAmount,
               }).finish(),
             },
           ],
@@ -766,15 +766,15 @@ export class OsmosisAccountImpl {
               value: osmosis.gamm.v1beta1.MsgSwapExactAmountOut.encode({
                 sender: msg.value.sender,
                 routes: msg.value.routes.map(
-                  (route: { pool_id: string; token_in_denom: string }) => {
+                  (route: { poolId: string; tokenInDenom: string }) => {
                     return {
-                      poolId: Long.fromString(route.pool_id),
-                      tokenInDenom: route.token_in_denom,
+                      poolId: Long.fromString(route.poolId),
+                      tokenInDenom: route.tokenInDenom,
                     };
                   }
                 ),
-                tokenOut: msg.value.token_out,
-                tokenInMaxAmount: msg.value.token_in_max_amount,
+                tokenOut: msg.value.tokenOut,
+                tokenInMaxAmount: msg.value.tokenInMaxAmount,
               }).finish(),
             },
           ],
@@ -878,8 +878,8 @@ export class OsmosisAccountImpl {
           type: this._msgOpts.exitPool.type,
           value: {
             sender: this.base.bech32Address,
-            pool_id: pool.id,
-            share_in_amount: new Dec(shareInAmount)
+            poolId: pool.id,
+            shareInAmount: new Dec(shareInAmount)
               .mul(
                 DecUtils.getTenExponentNInPrecisionRange(
                   this._msgOpts.exitPool.shareCoinDecimals
@@ -887,7 +887,7 @@ export class OsmosisAccountImpl {
               )
               .truncate()
               .toString(),
-            token_out_mins: tokenOutMins,
+            tokenOutMins,
           },
         };
 
@@ -898,9 +898,9 @@ export class OsmosisAccountImpl {
               typeUrl: "/osmosis.gamm.v1beta1.MsgExitPool",
               value: osmosis.gamm.v1beta1.MsgExitPool.encode({
                 sender: msg.value.sender,
-                poolId: Long.fromString(msg.value.pool_id),
-                shareInAmount: msg.value.share_in_amount,
-                tokenOutMins: msg.value.token_out_mins,
+                poolId: Long.fromString(msg.value.poolId),
+                shareInAmount: msg.value.shareInAmount,
+                tokenOutMins: msg.value.tokenOutMins,
               }).finish(),
             },
           ],

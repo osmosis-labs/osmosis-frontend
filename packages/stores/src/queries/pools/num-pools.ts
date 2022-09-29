@@ -17,7 +17,7 @@ export class ObservableQueryNumPools extends ObservableChainQuery<NumPools> {
       return 0;
     }
 
-    return parseInt(this.response.data.num_pools);
+    return parseInt(this.response.data.numPools);
   }
 
   readonly computeNumPages = computedFn((itemsPerPage: number): number => {
