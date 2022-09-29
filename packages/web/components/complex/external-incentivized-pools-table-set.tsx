@@ -2,18 +2,13 @@ import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useCallback } from "react";
-import {
-  EventName,
-  ExternalIncentiveGaugeAllowList,
-  PoolsPageEvents,
-} from "../../config";
+import { ExternalIncentiveGaugeAllowList, PoolsPageEvents } from "../../config";
 import {
   useFilteredData,
   usePaginatedData,
   useSortedData,
   useWindowSize,
   useMatomoAnalytics,
-  useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { PageList, SortMenu } from "../control";
@@ -35,7 +30,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     } = useStore();
     const { isMobile } = useWindowSize();
     const { trackEvent } = useMatomoAnalytics();
-    const { logEvent } = useAmplitudeAnalytics();
 
     const { chainId } = chainStore.osmosis;
     const queryExternal = queriesExternalStore.get();
@@ -197,32 +191,12 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
               onClickHeader: () => {
                 switch (sortDirection) {
                   case "ascending":
-                    const newSortDirection = "descending";
-                    logEvent([
-                      EventName.Pools.externalIncentivePoolsListSorted,
-                      {
-                        sortedBy: keyPath,
-                        sortDirection: newSortDirection,
-                        sortedOn: "table-head",
-                      },
-                    ]);
-                    setSortDirection(newSortDirection);
+                    setSortDirection("descending");
                     break;
                   case "descending":
-                    // default sort key toggles forever
-
                     if (sortKeyPath === initialKeyPath) {
-                      const newSortDirection = "ascending";
-                      logEvent([
-                        EventName.Pools.externalIncentivePoolsListSorted,
-                        {
-                          sortedBy: keyPath,
-                          sortDirection: newSortDirection,
-                          sortedOn: "table-head",
-                        },
-                      ]);
-                      setSortDirection(newSortDirection);
-                      setSortDirection(newSortDirection);
+                      // default sort key toggles forever
+                      setSortDirection("ascending");
                     } else {
                       // other keys toggle then go back to default
                       setSortKeyPath(initialKeyPath);
@@ -233,17 +207,8 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             }
           : {
               onClickHeader: () => {
-                const newSortDirection = "ascending";
-                logEvent([
-                  EventName.Pools.externalIncentivePoolsListSorted,
-                  {
-                    sortedBy: keyPath,
-                    sortDirection: newSortDirection,
-                    sortedOn: "table-head",
-                  },
-                ]);
                 setSortKeyPath(keyPath);
-                setSortDirection(newSortDirection);
+                setSortDirection("ascending");
               },
             },
       [sortKeyPath, sortDirection, setSortDirection, setSortKeyPath]
@@ -287,24 +252,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       () =>
         allData.map((poolWithFeeMetrics) => ({
           link: `/pool/${poolWithFeeMetrics.pool.id}`,
-          onClick: () => {
-            logEvent([
-              EventName.Pools.externalIncentivePoolsItemClicked,
-              {
-                poolId: poolWithFeeMetrics.pool.id,
-                poolName: poolWithFeeMetrics.pool.poolAssets
-                  .map((poolAsset) => poolAsset.amount.denom)
-                  .join(" / "),
-                poolWeight: poolWithFeeMetrics.pool.poolAssets
-                  .map((poolAsset) => poolAsset.weightFraction.toString())
-                  .join(" / "),
-                isSuperfluidPool:
-                  queryOsmosis.querySuperfluidPools.isSuperfluidPool(
-                    poolWithFeeMetrics.pool.id
-                  ),
-              },
-            ]);
-          },
         })),
       [allData]
     );
@@ -414,21 +361,10 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             <SortMenu
               options={tableCols}
               selectedOptionId={sortKeyPath}
-              onSelect={(id) => {
-                if (id === sortKeyPath) {
-                  setSortKeyPath("");
-                } else {
-                  logEvent([
-                    EventName.Pools.externalIncentivePoolsListSorted,
-                    {
-                      sortedBy: id,
-                      sortDirection: sortDirection,
-                      sortedOn: "dropdown",
-                    },
-                  ]);
-                  setSortKeyPath(id);
-                }
-              }}
+              onSelect={(id) =>
+                id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id)
+              }
+              onToggleSortDirection={toggleSortDirection}
             />
           </div>
         </div>

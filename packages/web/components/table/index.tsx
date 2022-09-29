@@ -151,7 +151,7 @@ export const Table = <TCell extends BaseCell>({
               onMouseEnter={() => setRowHovered(rowIndex, true)}
               onMouseLeave={() => setRowHovered(rowIndex, false)}
               onClick={() => {
-                if (rowDef !== undefined) {
+                if (rowIsButton) {
                   rowDef.onClick?.(rowIndex);
                 }
               }}

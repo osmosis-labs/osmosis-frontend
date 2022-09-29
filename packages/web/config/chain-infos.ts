@@ -7,14 +7,11 @@ const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 const chainInfos = (
   [
     {
-      rpc: IS_TESTNET
-        ? "https://rpc-test.osmosis.zone/"
-        : "https://rpc-osmosis.keplr.app/",
-      rest: IS_TESTNET
-        ? "https://lcd-test.osmosis.zone/"
-        : "https://lcd-osmosis.keplr.app/",
-      chainId: IS_TESTNET ? "osmo-test-4" : "osmosis-1",
-      chainName: "Osmosis",
+
+      rpc: "https://testnet-rpc.osmosis.zone/", // test: "http://rpc-test.osmosis.zone/"
+      rest: "https://testnet-rest.osmosis.zone/", // test: "http://lcd-test.osmosis.zone/"
+      chainId: "osmo-test-4", // test: "osmo-test-4"
+      chainName: "Osmosis Testnet",
       bip44: {
         coinType: 118,
       },
@@ -46,6 +43,59 @@ const chainInfos = (
       explorerUrlToTx: IS_TESTNET
         ? "https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}"
         : "https://www.mintscan.io/osmosis/txs/{txHash}",
+    },
+    {
+      rpc: "https://sentry.testnet.saage.io:26657",
+      rest: "https://sentry.testnet.saage.io:1317",
+      chainId: "sit-5",
+      chainName: "saagetestnet5",
+      bip44: { coinType: 909 },
+      bech32Config: Bech32Address.defaultBech32Config("sge"),
+      currencies: [
+        {
+          coinDenom: "SGE",
+          coinMinimalDenom: "usge",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/saage.png",
+          coinGeckoId: "pool:usge",
+          isFeeCurrency: true,
+          isStakeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.00025,
+        average: 0.0025,
+        high: 0.025,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx:
+        "https://blockexplorer-1.testnet.saage.io/transactions/{txHash}",
+    },
+    {
+      rpc: "https://tx-endpoint-test.imversed.com:443",
+      rest: "https://query-endpoint-test.imversed.com:443",
+      chainId: "imversed-test-1",
+      chainName: "imversedtestnet",
+      bip44: { coinType: 118 },
+      bech32Config: Bech32Address.defaultBech32Config("imv"),
+      currencies: [
+        {
+          coinDenom: "IMV",
+          coinMinimalDenom: "nimv",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/imv.png",
+          coinGeckoId: "pool:nimv",
+          isFeeCurrency: true,
+          isStakeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.00025,
+        average: 0.0025,
+        high: 0.025,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://tex-t.imversed.com/transactions/{txHash}",
     },
     {
       rpc: "https://rpc-cosmoshub.keplr.app",

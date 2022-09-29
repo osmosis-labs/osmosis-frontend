@@ -132,13 +132,12 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
 
       const matchedLocks = this.response.data.locks
         .filter((lock) => {
-          // Accepts the lock duration with jitter (~1hour 1minute)
-          // see: https://github.com/osmosis-labs/osmosis-frontend/issues/771
+          // Accepts the lock duration with jitter (~60s)
           return (
             Math.abs(
               Number.parseInt(lock.duration.replace("s", "")) -
                 duration.asSeconds()
-            ) <= 3_700
+            ) <= 60
           );
         })
         .filter((lock) => {

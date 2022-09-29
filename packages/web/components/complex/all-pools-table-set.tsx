@@ -9,14 +9,13 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { EventName, PoolsPageEvents } from "../../config";
+import { PoolsPageEvents } from "../../config";
 import {
   useFilteredData,
   usePaginatedData,
   useSortedData,
   useWindowSize,
   useMatomoAnalytics,
-  useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { Switch, MenuToggle, PageList, SortMenu } from "../control";
@@ -46,7 +45,6 @@ export const AllPoolsTableSet: FunctionComponent<{
   } = useStore();
   const { isMobile } = useWindowSize();
   const { trackEvent } = useMatomoAnalytics();
-  const { logEvent } = useAmplitudeAnalytics();
 
   const [activeOptionId, setActiveOptionId] = useState(tableSet);
   const selectOption = (optionId: string) => {
@@ -57,19 +55,8 @@ export const AllPoolsTableSet: FunctionComponent<{
     }
   };
   const [isPoolTvlFiltered, do_setIsPoolTvlFiltered] = useState(false);
-  const tvlFilterLabel = `Show pools less than ${new PricePretty(
-    priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-    TVL_FILTER_THRESHOLD
-  ).toString()}`;
   const setIsPoolTvlFiltered = useCallback(
     (isFiltered: boolean) => {
-      logEvent([
-        EventName.Pools.allPoolsListFiltered,
-        {
-          filteredBy: tvlFilterLabel,
-          isFilterOn: isFiltered,
-        },
-      ]);
       if (isFiltered) trackEvent(PoolsPageEvents.showLowTvlPools);
       do_setIsPoolTvlFiltered(isFiltered);
     },
@@ -202,31 +189,12 @@ export const AllPoolsTableSet: FunctionComponent<{
             onClickHeader: () => {
               switch (sortDirection) {
                 case "ascending":
-                  const newSortDirection = "descending";
-                  logEvent([
-                    EventName.Pools.allPoolsListSorted,
-                    {
-                      sortedBy: keyPath,
-                      sortDirection: newSortDirection,
-                      sortedOn: "table",
-                    },
-                  ]);
-                  setSortDirection(newSortDirection);
+                  setSortDirection("descending");
                   break;
                 case "descending":
-                  // default sort key toggles forever
                   if (sortKeyPath === initialKeyPath) {
-                    const newSortDirection = "ascending";
-                    logEvent([
-                      EventName.Pools.allPoolsListSorted,
-                      {
-                        sortedBy: keyPath,
-                        sortDirection: newSortDirection,
-
-                        sortedOn: "table",
-                      },
-                    ]);
-                    setSortDirection(newSortDirection);
+                    // default sort key toggles forever
+                    setSortDirection("ascending");
                   } else {
                     // other keys toggle then go back to default
                     setSortKeyPath(initialKeyPath);
@@ -237,18 +205,8 @@ export const AllPoolsTableSet: FunctionComponent<{
           }
         : {
             onClickHeader: () => {
-              const newSortDirection = "ascending";
-              logEvent([
-                EventName.Pools.allPoolsListSorted,
-                {
-                  sortedBy: keyPath,
-                  sortDirection: newSortDirection,
-
-                  sortedOn: "table",
-                },
-              ]);
               setSortKeyPath(keyPath);
-              setSortDirection(newSortDirection);
+              setSortDirection("ascending");
             },
           },
     [sortKeyPath, sortDirection, setSortDirection, setSortKeyPath]
@@ -295,26 +253,6 @@ export const AllPoolsTableSet: FunctionComponent<{
     () =>
       allData.map((poolWithFeeMetrics) => ({
         link: `/pool/${poolWithFeeMetrics.pool.id}`,
-        onClick: () => {
-          logEvent([
-            isIncentivizedPools
-              ? EventName.Pools.incentivizedPoolsItemClicked
-              : EventName.Pools.allPoolsItemClicked,
-            {
-              poolId: poolWithFeeMetrics.pool.id,
-              poolName: poolWithFeeMetrics.pool.poolAssets
-                .map((poolAsset) => poolAsset.amount.denom)
-                .join(" / "),
-              poolWeight: poolWithFeeMetrics.pool.poolAssets
-                .map((poolAsset) => poolAsset.weightFraction.toString())
-                .join(" / "),
-              isSuperfluidPool:
-                queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
-                  poolWithFeeMetrics.pool.id
-                ),
-            },
-          ]);
-        },
       })),
     [allData]
   );
@@ -443,10 +381,9 @@ export const AllPoolsTableSet: FunctionComponent<{
                   },
             ],
           ],
-          isSuperfluidPool:
-            queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
-              poolData.pool.id
-            ),
+          isSuperfluid: queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+            poolData.pool.id
+          ),
         }))}
         searchBoxProps={{
           currentValue: query,
@@ -470,7 +407,10 @@ export const AllPoolsTableSet: FunctionComponent<{
         minTvlToggleProps={{
           isOn: isPoolTvlFiltered,
           onToggle: setIsPoolTvlFiltered,
-          label: tvlFilterLabel,
+          label: `Show pools less than ${new PricePretty(
+            priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+            TVL_FILTER_THRESHOLD
+          ).toString()}`,
         }}
       />
     );
@@ -494,7 +434,10 @@ export const AllPoolsTableSet: FunctionComponent<{
             onToggle={setIsPoolTvlFiltered}
             className="mr-2"
           >
-            {tvlFilterLabel}
+            {`Show pools less than ${new PricePretty(
+              priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+              TVL_FILTER_THRESHOLD
+            ).toString()}`}
           </Switch>
           <div className="flex flex-wrap items-center gap-8 lg:w-full lg:place-content-between">
             <SearchBox
@@ -507,35 +450,10 @@ export const AllPoolsTableSet: FunctionComponent<{
             <SortMenu
               options={tableCols}
               selectedOptionId={sortKeyPath}
-              onSelect={(id) => {
-                if (id === sortKeyPath) {
-                  setSortKeyPath("");
-                } else {
-                  logEvent([
-                    EventName.Pools.allPoolsListSorted,
-                    {
-                      sortedBy: id,
-                      sortDirection: sortDirection,
-                      sortedOn: "dropdown",
-                    },
-                  ]);
-                  setSortKeyPath(id);
-                }
-              }}
-              onToggleSortDirection={() => {
-                logEvent([
-                  EventName.Pools.allPoolsListSorted,
-                  {
-                    sortedBy: sortKeyPath,
-                    sortDirection:
-                      sortDirection === "ascending"
-                        ? "descending"
-                        : "ascending",
-                    sortedOn: "dropdown",
-                  },
-                ]);
-                toggleSortDirection();
-              }}
+              onSelect={(id) =>
+                id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id)
+              }
+              onToggleSortDirection={toggleSortDirection}
             />
           </div>
         </div>

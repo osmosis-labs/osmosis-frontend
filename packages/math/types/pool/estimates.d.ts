@@ -31,7 +31,6 @@ export declare function estimateExitSwap(pool: {
         denom: string;
         amount: Int;
     }[];
-    exitFee: Dec;
 }, makeCoinPretty: (coin: Coin) => CoinPretty, shareInAmount: string, shareCoinDecimals: number): {
     tokenOuts: CoinPretty[];
 };

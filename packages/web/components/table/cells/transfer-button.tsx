@@ -26,7 +26,7 @@ export const TransferButtonCell: FunctionComponent<
         disabled={isUnstable}
         externalUrl={withdrawUrlOverride}
         label="Withdraw"
-        action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
+        action={() => onWithdraw?.(chainId, coinDenom)}
       />
     ) : null
   ) : chainId && coinDenom && onDeposit ? (
@@ -34,7 +34,7 @@ export const TransferButtonCell: FunctionComponent<
       disabled={isUnstable}
       externalUrl={depositUrlOverride}
       label="Deposit"
-      action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
+      action={() => onDeposit?.(chainId, coinDenom)}
     />
   ) : null;
 
@@ -56,7 +56,6 @@ const TransferButton: FunctionComponent<{
       style={
         disabled ? { pointerEvents: "none", cursor: "default" } : undefined
       }
-      onClick={action}
     >
       {label}
       <Image
