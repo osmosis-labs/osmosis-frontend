@@ -33,7 +33,7 @@ export declare class IBCTransferHistoryStore {
     protected traceUncommitedHistoryAndUpgradeToPendingHistory(txHash: string): Generator<Promise<any>, void, any>;
     tryUpdateHistoryStatus(txHash: string): Generator<Promise<void> | Promise<IBCTransferHistoryStatus>, void, IBCTransferHistoryStatus>;
     protected get historyMapByTxHash(): Map<string, IBCTransferHistory>;
-    protected restore(): Generator<Promise<UncommitedHistory[] | undefined> | Generator<Promise<void>, void, unknown>, void, (UncommitedHistory[] & IBCTransferHistory[]) | undefined>;
+    protected restore(): Generator<Promise<string | undefined> | Generator<Promise<void>, void, unknown>, void, string | undefined>;
     protected trimObsoleteHistory(): Generator<Promise<void>, void, unknown>;
     protected save(): Promise<void>;
 }

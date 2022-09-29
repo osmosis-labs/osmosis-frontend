@@ -11,7 +11,7 @@ export class ObservableQueryPixels extends ObservableQuery<ResponsePixels> {
       },
     });
 
-    super(kvStore, instance, "/pixels");
+    super(kvStore, instance, "/pixels/4878846");
   }
 }
 

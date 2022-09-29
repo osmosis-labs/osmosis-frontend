@@ -2,7 +2,7 @@ import { MsgOpt } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { Dec, DecUtils, Int, Coin } from "@keplr-wallet/unit";
 import { Msg } from "@cosmjs/launchpad";
-import { WeightedPoolMath, WeightedPoolEstimates } from "@osmosis-labs/math";
+import * as WeightedPoolMath from "@osmosis-labs/math";
 
 /**
  * Helpers for constructing Amino messages for Osmosis.
@@ -31,7 +31,7 @@ export class Amino {
     }[],
     maxSlippage: string = "0"
   ) {
-    const estimated = WeightedPoolEstimates.estimateMultihopSwapExactAmountIn(
+    const estimated = WeightedPoolMath.estimateMultihopSwapExactAmountIn(
       {
         currency: tokenIn.currency,
         amount: new Dec(tokenIn.amount)
@@ -48,11 +48,10 @@ export class Amino {
     const maxSlippageDec = new Dec(maxSlippage).quo(
       DecUtils.getTenExponentNInPrecisionRange(2)
     );
-    // TODO: Compare the computed slippage and wanted max slippage?
 
     const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
       ? new Int(1)
-      : WeightedPoolMath.calcSlippageTokenIn(
+      : WeightedPoolMath.calcPriceImpactTokenIn(
           estimated.spotPriceBeforeRaw,
           new Dec(tokenIn.amount)
             .mul(
@@ -77,15 +76,15 @@ export class Amino {
         sender,
         routes: routes.map((route) => {
           return {
-            poolId: route.pool.id,
-            tokenOutDenom: route.tokenOutCurrency.coinMinimalDenom,
+            pool_id: route.pool.id,
+            token_out_denom: route.tokenOutCurrency.coinMinimalDenom,
           };
         }),
-        tokenIn: {
+        token_in: {
           denom: coin.denom,
           amount: coin.amount.toString(),
         },
-        tokenOutMinAmount: tokenOutMinAmount.toString(),
+        token_out_min_amount: tokenOutMinAmount.toString(),
       },
     };
   }
@@ -115,7 +114,7 @@ export class Amino {
       .truncate();
     const coin = new Coin(tokenIn.currency.coinMinimalDenom, inUAmount);
 
-    const estimated = WeightedPoolEstimates.estimateSwapExactAmountIn(
+    const estimated = WeightedPoolMath.estimateSwapExactAmountIn(
       pool,
       coin,
       tokenOutCurrency
@@ -127,7 +126,7 @@ export class Amino {
 
     const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
       ? new Int(1)
-      : WeightedPoolMath.calcSlippageTokenIn(
+      : WeightedPoolMath.calcPriceImpactTokenIn(
           estimated.raw.spotPriceBefore,
           inUAmount,
           maxSlippageDec
@@ -139,15 +138,15 @@ export class Amino {
         sender,
         routes: [
           {
-            poolId: pool.id,
-            tokenOutDenom: tokenOutCurrency.coinMinimalDenom,
+            pool_id: pool.id,
+            token_out_denom: tokenOutCurrency.coinMinimalDenom,
           },
         ],
-        tokenIn: {
+        token_in: {
           denom: coin.denom,
           amount: coin.amount.toString(),
         },
-        tokenOutMinAmount: tokenOutMinAmount.toString(),
+        token_out_min_amount: tokenOutMinAmount.toString(),
       },
     };
   }
@@ -177,7 +176,7 @@ export class Amino {
       .truncate();
     const coin = new Coin(tokenOut.currency.coinMinimalDenom, outUAmount);
 
-    const estimated = WeightedPoolEstimates.estimateSwapExactAmountOut(
+    const estimated = WeightedPoolMath.estimateSwapExactAmountOut(
       pool,
       coin,
       tokenInCurrency
@@ -186,12 +185,11 @@ export class Amino {
     const maxSlippageDec = new Dec(maxSlippage).quo(
       DecUtils.getTenExponentNInPrecisionRange(2)
     );
-    // TODO: Compare the computed slippage and wanted max slippage?)
 
     const tokenInMaxAmount = maxSlippageDec.equals(new Dec(0))
       ? // TODO: Set exact 2^128 - 1
         new Int(1_000_000_000_000)
-      : WeightedPoolMath.calcSlippageTokenOut(
+      : WeightedPoolMath.calcPriceImpactTokenOut(
           estimated.raw.spotPriceBefore,
           outUAmount,
           maxSlippageDec
@@ -203,15 +201,15 @@ export class Amino {
         sender,
         routes: [
           {
-            poolId: pool.id,
-            tokenInDenom: tokenInCurrency.coinMinimalDenom,
+            pool_id: pool.id,
+            token_in_denom: tokenInCurrency.coinMinimalDenom,
           },
         ],
-        tokenOut: {
+        token_out: {
           denom: coin.denom,
           amount: coin.amount.toString(),
         },
-        tokenInMaxAmount: tokenInMaxAmount.toString(),
+        token_in_max_amount: tokenInMaxAmount.toString(),
       },
     };
   }

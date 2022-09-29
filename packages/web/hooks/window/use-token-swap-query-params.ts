@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
 import { ObservableTradeTokenInConfig } from "@osmosis-labs/stores";
 import { CoinBalance } from "../../stores/assets";
+import { useStore } from "../../stores";
 
 /** Bidirectionally sets/gets window query params to/from `from=DENOM&to=DENOM` and sets in trade config object. */
 export function useTokenSwapQueryParams(
@@ -11,6 +12,12 @@ export function useTokenSwapQueryParams(
 ) {
   const router = useRouter();
   const firstQueryEffectChecker = useRef(false);
+  const {
+    chainStore: { osmosis },
+    queriesStore,
+  } = useStore();
+  const queryGammPools = queriesStore.get(osmosis.chainId).osmosis!
+    .queryGammPools;
 
   useEffect(() => {
     if (isInModal || !tradeConfig) {
@@ -19,8 +26,7 @@ export function useTokenSwapQueryParams(
     if (
       router.query.from &&
       router.query.to &&
-      router.query.from !== router.query.to &&
-      tradeConfig.sendableCurrencies.length >= tradeConfig.pools.length
+      router.query.from !== router.query.to
     ) {
       const fromCurrency =
         balances.find(
@@ -45,7 +51,6 @@ export function useTokenSwapQueryParams(
         tradeConfig.setOutCurrency(toCurrency);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.query.from, router.query.to, tradeConfig?.sendableCurrencies]);
 
   useEffect(() => {
@@ -56,22 +61,28 @@ export function useTokenSwapQueryParams(
     // Update current in and out currency to query string.
     // The first effect should be ignored because the query string set when visiting the web page for the first time must be processed.
     if (firstQueryEffectChecker.current) {
-      if (
-        tradeConfig.sendCurrency.coinDenom !== "UNKNOWN" &&
-        tradeConfig.outCurrency.coinDenom !== "UNKNOWN" &&
-        (tradeConfig.sendCurrency.coinDenom !== router.query.from ||
-          tradeConfig.outCurrency.coinDenom !== router.query.to)
-      ) {
-        router.replace(
-          `/?from=${tradeConfig.sendCurrency.coinDenom.split(" ")[0]}&to=${
-            tradeConfig.outCurrency.coinDenom.split(" ")[0]
-          }`
-        );
-      }
+      queryGammPools
+        .waitResponse() // wait for gamm pools to load
+        .then(() => {
+          if (
+            tradeConfig.sendCurrency.coinDenom !== "UNKNOWN" &&
+            tradeConfig.outCurrency.coinDenom !== "UNKNOWN" &&
+            (tradeConfig.sendCurrency.coinDenom !== router.query.from ||
+              tradeConfig.outCurrency.coinDenom !== router.query.to) &&
+            tradeConfig.sendableCurrencies.length >= balances.length
+          ) {
+            // If ibc registry not loaded (i.e. first load of app in browser), `sendCurrency` and `outCurrency` will return
+            // first two assets in `sendableCurrencies` which will be inexhaustive. This will
+            // loop through query params and set the config to the wrong, intially loaded assets.
+            router.replace(
+              `/?from=${tradeConfig.sendCurrency.coinDenom.split(" ")[0]}&to=${
+                tradeConfig.outCurrency.coinDenom.split(" ")[0]
+              }`
+            );
+          }
+        });
     } else {
       firstQueryEffectChecker.current = true;
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tradeConfig?.sendCurrency, tradeConfig?.outCurrency]);
 }

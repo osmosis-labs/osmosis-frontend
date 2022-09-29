@@ -67,7 +67,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "ubtsg"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:uxki",
@@ -87,7 +87,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "ustars"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:uhuahua",
@@ -110,7 +110,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "ulum"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:udsm",
@@ -133,7 +133,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "udig"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:ugraviton",
@@ -143,7 +143,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "ugraviton"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:usomm",
@@ -153,7 +153,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "usomm"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:udarc",
@@ -163,7 +163,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "udarc"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:neta",
@@ -173,7 +173,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:marble",
@@ -183,7 +183,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:uumee",
@@ -193,7 +193,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "uumee"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:pstake",
@@ -206,7 +206,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:crbrus",
@@ -216,27 +216,27 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "ucrbrus"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
-    alternativeCoinId: "pool:uusd",
+    alternativeCoinId: "pool:uustc",
     poolId: "560",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-72" }],
       "uusd"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
-    alternativeCoinId: "pool:uluna",
+    alternativeCoinId: "pool:ulunc",
     poolId: "561",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-72" }],
       "uluna"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:umntl",
@@ -246,7 +246,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "umntl"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:umeme",
@@ -256,7 +256,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "umeme"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:utick",
@@ -279,7 +279,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:rac",
@@ -289,7 +289,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:block",
@@ -299,7 +299,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:nhash",
@@ -309,7 +309,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "nhash"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:uglx",
@@ -319,7 +319,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "uglx"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:dhk",
@@ -329,7 +329,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:raw",
@@ -339,7 +339,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
   },
   {
     alternativeCoinId: "pool:asvt",
@@ -362,6 +362,99 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "osmosis",
+    destCoinId: "osmo-test-4",
+  },
+  {
+    alternativeCoinId: "pool:glto",
+    poolId: "778",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-169" }],
+      "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmo-test-4",
+  },
+  {
+    alternativeCoinId: "pool:odin",
+    poolId: "777",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-258" }],
+      "loki"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmo-test-4",
+  },
+  {
+    alternativeCoinId: "pool:utgd",
+    poolId: "769",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-263" }],
+      "utgd"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmo-test-4",
+  },
+  {
+    alternativeCoinId: "pool:ucre",
+    poolId: "786",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-297" }],
+      "ucre"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmo-test-4",
+  },
+  {
+    alternativeCoinId: "pool:geo",
+    poolId: "787",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-258" }],
+      "mGeo"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmo-test-4",
+  },
+  {
+    alternativeCoinId: "pool:gkey",
+    poolId: "790",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-169" }],
+      "cw20:juno1gz8cf86zr4vw9cjcyyv432vgdaecvr9n254d3uwwkx9rermekddsxzageh"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmo-test-4",
+  },
+  {
+    alternativeCoinId: "pool:stuatom",
+    poolId: "803",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-326" }],
+      "stuatom"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-0" }],
+      "uatom"
+    ),
+    destCoinId: "cosmos",
+  },
+  {
+    alternativeCoinId: "pool:o9w",
+    poolId: "805",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-258" }],
+      "mO9W"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmo-test-4",
+  },
+  {
+    alternativeCoinId: "pool:ustrd",
+    poolId: "806",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-326" }],
+      "ustrd"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmo-test-4",
   },
 ];

@@ -74,7 +74,7 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
               }
             }}
           >
-            <div className="bg-primary-200 h-9 md:h-6 ml-1.5 rounded-full">
+            <div className="bg-primary-200 h-9 md:h-6 md:w-6 ml-1.5 rounded-full">
               <Image
                 alt="add"
                 src="/icons/add.svg"

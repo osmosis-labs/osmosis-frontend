@@ -1,4 +1,4 @@
-import { computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import {
   DefaultGasPriceStep,
@@ -21,6 +21,9 @@ import { StdFee } from "@cosmjs/launchpad";
 export class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
   @observable
   protected _gas: number;
+
+  @observable
+  protected _shouldZero: boolean = false;
 
   constructor(chainGetter: ChainGetter, initialChainId: string, gas: number) {
     super(chainGetter, initialChainId);
@@ -61,14 +64,31 @@ export class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
     return undefined;
   }
 
+  get shouldZero(): boolean {
+    return this._shouldZero;
+  }
+
+  @action
+  setShouldZero(value: boolean) {
+    this._shouldZero = value;
+  }
+
   readonly getFeePrimitive = computedFn((): CoinPrimitive | undefined => {
+    const feeCurrency = this.feeCurrency;
+
+    if (!feeCurrency) return undefined;
+
+    if (this.shouldZero) {
+      return {
+        denom: feeCurrency.coinMinimalDenom,
+        amount: "0",
+      };
+    }
+
     const gasPriceStep = this.chainInfo.gasPriceStep ?? DefaultGasPriceStep;
     const feeAmount = new Dec(gasPriceStep.high.toString()).mul(
       new Dec(this.gas)
     );
-    const feeCurrency = this.feeCurrency;
-
-    if (!feeCurrency) return undefined;
 
     return {
       denom: feeCurrency.coinMinimalDenom,

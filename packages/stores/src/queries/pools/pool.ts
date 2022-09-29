@@ -58,7 +58,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const denomsInPool: string[] = [];
     // Try to register the Denom of Asset in the Pool in Response.(For IBC tokens)
-    for (const asset of response.data.pool.poolAssets) {
+    for (const asset of response.data.pool.pool_assets) {
       denomsInPool.push(asset.token.denom);
     }
 
@@ -239,7 +239,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     afterSpotPriceOutOverIn: IntPretty;
     effectivePriceInOverOut: IntPretty;
     effectivePriceOutOverIn: IntPretty;
-    slippage: RatePretty;
+    priceImpact: RatePretty;
   } {
     return this.getTokenOutByTokenInComputedFn(
       tokenIn.denom,
@@ -263,7 +263,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     afterSpotPriceOutOverIn: IntPretty;
     effectivePriceInOverOut: IntPretty;
     effectivePriceOutOverIn: IntPretty;
-    slippage: RatePretty;
+    priceImpact: RatePretty;
   } = computedFn(
     (tokenInDenom: string, tokenInAmount: string, tokenOutDenom: string) => {
       const result = this.pool.getTokenOutByTokenIn(
@@ -296,7 +296,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
         effectivePriceOutOverIn: new IntPretty(
           result.effectivePriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
         ),
-        slippage: new RatePretty(result.slippage),
+        priceImpact: new RatePretty(result.priceImpact),
       };
     }
   );
@@ -313,7 +313,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     afterSpotPriceOutOverIn: IntPretty;
     effectivePriceInOverOut: IntPretty;
     effectivePriceOutOverIn: IntPretty;
-    slippage: RatePretty;
+    priceImpact: RatePretty;
   } {
     return this.getTokenInByTokenOutComputedFn(
       tokenOut.denom,
@@ -322,11 +322,6 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     );
   }
 
-  /*
-   Unfortunately, if reference is included in args,
-   there is no guarantee that computed will memorize the result well, so to reduce this problem,
-   create an internal function that accepts only primitive types as args.
-  */
   protected readonly getTokenInByTokenOutComputedFn: (
     tokenOutDenom: string,
     tokenOutAmount: string,
@@ -337,7 +332,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     afterSpotPriceOutOverIn: IntPretty;
     effectivePriceInOverOut: IntPretty;
     effectivePriceOutOverIn: IntPretty;
-    slippage: RatePretty;
+    priceImpact: RatePretty;
   } = computedFn(
     (tokenOutDenom: string, tokenOutAmount: string, tokenInDenom: string) => {
       const result = this.pool.getTokenOutByTokenIn(
@@ -372,7 +367,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
         effectivePriceOutOverIn: new IntPretty(
           result.effectivePriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
         ),
-        slippage: new RatePretty(result.slippage),
+        priceImpact: new RatePretty(result.priceImpact),
       };
     }
   );

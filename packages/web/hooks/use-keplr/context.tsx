@@ -2,23 +2,22 @@ import React, {
   createContext,
   FunctionComponent,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
 import { Keplr } from "@keplr-wallet/types";
 import { getKeplrFromWindow } from "@keplr-wallet/stores";
-import {
-  KeplrConnectionSelectModal,
-  KeplrWalletConnectQRModal,
-} from "../../modals";
+import { KeplrConnectionSelectModal, WalletConnectQRModal } from "../../modals";
 import EventEmitter from "eventemitter3";
 import { BroadcastMode, StdTx } from "@cosmjs/launchpad";
 import Axios from "axios";
-import { ChainInfos } from "../../config";
+import { ChainInfos, NavBarEvents } from "../../config";
 import { Buffer } from "buffer";
 import WalletConnect from "@walletconnect/client";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { isMobile } from "@walletconnect/browser-utils";
+import { useMatomoAnalytics } from "../use-matomo-analytics";
 
 export async function sendTxWC(
   chainId: string,
@@ -77,8 +76,11 @@ export const GetKeplrContext = createContext<{
 } | null>(null);
 
 export const GetKeplrProvider: FunctionComponent = ({ children }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isExtensionSelectionModalOpen, setIsExtensionSelectionModalOpen] =
+    useState(false);
+  const [isExtentionNotInstalled, setIsExtensionNotInstalled] = useState(false);
   const [wcUri, setWCUri] = useState("");
+  const { trackEvent } = useMatomoAnalytics();
 
   const lastUsedKeplrRef = useRef<Keplr | undefined>();
   const defaultConnectionTypeRef = useRef<
@@ -164,29 +166,39 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
       if (!isMobile()) {
         // If on mobile browser environment,
         // no need to open select modal.
-        setIsModalOpen(true);
+        setIsExtensionSelectionModalOpen(true);
       }
 
       return await new Promise((resolve, reject) => {
         const cleanUp = () => {
-          eventListener.off("modal_close");
+          eventListener.off("extension_selection_modal_close");
           eventListener.off("select_extension");
           eventListener.off("select_wallet_connect");
           eventListener.off("wc_modal_close");
           eventListener.off("connect");
+          eventListener.off("keplr_install_modal_close");
         };
 
-        eventListener.on("modal_close", () => {
-          setIsModalOpen(false);
+        eventListener.on("extension_selection_modal_close", () => {
+          trackEvent(NavBarEvents.cancelConnectWallet);
+          setIsExtensionSelectionModalOpen(false);
+          reject();
+          cleanUp();
+        });
+
+        eventListener.on("keplr_install_modal_close", () => {
+          setIsExtensionNotInstalled(false);
           reject();
           cleanUp();
         });
 
         eventListener.on("select_extension", () => {
-          setIsModalOpen(false);
+          setIsExtensionSelectionModalOpen(false);
+
           getKeplrFromWindow().then((keplr) => {
             lastUsedKeplrRef.current = keplr;
             setConnectionType("extension");
+            trackEvent(NavBarEvents.connectKeplrSuccess);
             resolve(keplr);
             cleanUp();
           });
@@ -212,10 +224,11 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
               if (error) {
                 reject(error);
               } else {
+                trackEvent(NavBarEvents.connectWalletConnectSuccess);
                 const keplr = new KeplrWalletConnectV1(connector, {
                   sendTx: sendTxWC,
                 });
-                setIsModalOpen(false);
+                setIsExtensionSelectionModalOpen(false);
                 lastUsedKeplrRef.current = keplr;
                 setConnectionType("wallet-connect");
                 resolve(keplr);
@@ -225,7 +238,7 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
             const keplr = new KeplrWalletConnectV1(connector, {
               sendTx: sendTxWC,
             });
-            setIsModalOpen(false);
+            setIsExtensionSelectionModalOpen(false);
             lastUsedKeplrRef.current = keplr;
             setConnectionType("wallet-connect");
             resolve(keplr);
@@ -247,6 +260,14 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
     })();
   });
 
+  useEffect(() => {
+    getKeplrFromWindow().then((keplr) => {
+      if (!keplr) {
+        setIsExtensionNotInstalled(true);
+      }
+    });
+  });
+
   return (
     <GetKeplrContext.Provider
       value={{
@@ -265,9 +286,12 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
       }}
     >
       <KeplrConnectionSelectModal
-        isOpen={isModalOpen}
+        isOpen={isExtensionSelectionModalOpen}
+        overrideWithKeplrInstallLink={
+          isExtentionNotInstalled ? "https://www.keplr.app/" : undefined
+        }
         onRequestClose={() => {
-          eventListener.emit("modal_close");
+          eventListener.emit("extension_selection_modal_close");
         }}
         onSelectExtension={() => {
           eventListener.emit("select_extension");
@@ -276,7 +300,7 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
           eventListener.emit("select_wallet_connect");
         }}
       />
-      <KeplrWalletConnectQRModal
+      <WalletConnectQRModal
         isOpen={wcUri.length > 0}
         onRequestClose={() => {
           eventListener.emit("wc_modal_close");

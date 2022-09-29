@@ -1,19 +1,27 @@
-import Image from "next/image";
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
-import { enableStaticRendering } from "mobx-react-lite";
+import Head from "next/head";
 import type { AppProps } from "next/app";
+import { enableStaticRendering } from "mobx-react-lite";
 import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
-import { MainLayout } from "../components/layouts";
+import { MainLayout, MainLayoutMenu } from "../components/layouts";
 import { TempBanner } from "../components/alert/temp-banner";
+import { OgpMeta } from "../components/ogp-meta";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
-import { GetKeplrProvider, useWindowSize } from "../hooks";
+import { GetKeplrProvider, useMatomoAnalytics } from "../hooks";
 import { IbcNotifier } from "../stores/ibc-notifier";
-import { IS_FRONTIER } from "../config";
+import {
+  AmplitudeEvent,
+  EventName,
+  IS_FRONTIER,
+  NavBarEvents,
+  PromotedLBPPoolIds,
+} from "../config";
+import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
@@ -21,11 +29,9 @@ dayjs.extend(utc);
 enableStaticRendering(typeof window === "undefined");
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const { isMobile } = useWindowSize();
-
-  const menus = [
+  const menus: MainLayoutMenu[] = [
     {
-      label: "Trade",
+      label: "Swap",
       link: "/",
       icon: IS_FRONTIER ? "/icons/trade-white.svg" : "/icons/trade.svg",
       iconSelected: "/icons/trade-selected.svg",
@@ -45,63 +51,78 @@ function MyApp({ Component, pageProps }: AppProps) {
       iconSelected: "/icons/asset-selected.svg",
       selectionTest: /\/assets/,
     },
-    {
-      label: "Stake",
-      link: "https://wallet.keplr.app/#/osmosis/stake",
-      icon: IS_FRONTIER ? "/icons/ticket-white.svg" : "/icons/ticket.svg",
-    },
-    {
-      label: "Vote",
-      link: "https://wallet.keplr.app/#/osmosis/governance",
-      icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
-    },
-    {
-      label: "Info",
-      link: "https://info.osmosis.zone",
-      icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
-    },
   ];
 
-  if (!IS_FRONTIER && !isMobile) {
+  if (PromotedLBPPoolIds.length > 0) {
     menus.push({
-      label: "Pixel",
-      link: "/pixels",
-      icon: "/icons/osmopixel.png",
-      iconSelected: "/icons/osmopixel.png",
-      selectionTest: /\/pixels/,
+      label: "Bootstrap",
+      link: "/bootstrap",
+      icon: "/icons/pool-white.svg",
+      selectionTest: /\/bootstrap/,
     });
   }
+
+  menus.push(
+    ...[
+      {
+        label: "Stake",
+        link: "https://wallet.keplr.app/chains/osmosis",
+        icon: IS_FRONTIER ? "/icons/ticket-white.svg" : "/icons/ticket.svg",
+        userAnalyticsEvent: NavBarEvents.stakeLink,
+        amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
+      },
+      {
+        label: "Vote",
+        link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
+        icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
+        userAnalyticsEvent: NavBarEvents.voteLink,
+        amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
+      },
+      {
+        label: "Info",
+        link: "https://info.osmosis.zone",
+        icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
+        userAnalyticsEvent: NavBarEvents.infoLink,
+        amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
+      },
+    ]
+  );
+
+  useMatomoAnalytics({ init: true });
+  useAmplitudeAnalytics({ init: true });
 
   return (
     <GetKeplrProvider>
       <StoreProvider>
+        <Head>
+          {/* metamask Osmosis app icon */}
+          <link
+            rel="shortcut icon"
+            href={`${
+              typeof window !== "undefined" ? window.origin : ""
+            }/osmosis-logo-wc.png`}
+          />
+        </Head>
+        <OgpMeta />
         <IbcNotifier />
-        <TempBanner
-          localStorageKey="ack_is_testnet"
-          title="Welcome to the Osmosis Testnet."
-          message={
-            <>
-              Head over to{" "}
-              <a
-                className="inline underline mr-1"
-                href="https://faucet.osmosis.zone/"
-                rel="noreferrer"
-                target="_blank"
-              >
-                faucet.osmosis.zone
-              </a>
-              <Image
-                className="opacity-50"
-                alt="link"
-                src="/icons/external-link-white.svg"
-                height={10}
-                width={10}
-              />{" "}
-              to get some tokens to play with. Practice good citizenry, don{"'"}
-              t abuse this service--the number of available tokens is limited.
-            </>
-          }
-        />
+        {IS_FRONTIER && (
+          <TempBanner
+            localStorageKey="show_frontier_banner"
+            title="You're viewing all permissionless assets"
+            message={
+              <>
+                <a
+                  className="items-center underline"
+                  href="https://app.osmosis.zone/"
+                  target="_self"
+                >
+                  Click here to return to the main app
+                </a>
+                .
+              </>
+            }
+          />
+        )}
         <MainLayout menus={menus}>
           <Component {...pageProps} />
           <ToastContainer

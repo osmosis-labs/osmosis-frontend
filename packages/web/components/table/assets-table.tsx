@@ -1,31 +1,33 @@
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { initialAssetsSort } from "../../config";
+import { Dec } from "@keplr-wallet/unit";
+import { initialAssetsSort, AssetsPageEvents } from "../../config";
 import {
   IBCBalance,
   IBCCW20ContractBalance,
   CoinBalance,
 } from "../../stores/assets";
+import { useStore } from "../../stores";
+import { useSortedData, useFilteredData } from "../../hooks/data";
+import {
+  useLocalStorageState,
+  useWindowSize,
+  useMatomoAnalytics,
+} from "../../hooks";
+import { ShowMoreButton } from "../buttons/show-more";
 import { SearchBox } from "../input";
-import { SortMenu } from "../control";
-import { Table } from ".";
+import { SortMenu, Switch } from "../control";
 import { SortDirection } from "../types";
+import { AssetCard } from "../cards";
+import { Button } from "../buttons";
 import {
   AssetNameCell,
   BalanceCell,
   TransferButtonCell,
   AssetCell as TableCell,
 } from "./cells";
-import { useStore } from "../../stores";
-import { useSortedData, useFilteredData } from "../../hooks/data";
-import { useLocalStorageState, useWindowSize } from "../../hooks/window";
-import { ShowMoreButton } from "../buttons/show-more";
-import { AssetCard } from "../cards";
-import { Switch } from "../control";
-import { Button } from "../buttons";
-import { PreTransferModal } from "../../modals";
-import { IbcHistoryTable } from "./ibc-history";
+import { TransferHistoryTable } from "./transfer-history";
 import { ColumnDef } from "./types";
+import { Table } from ".";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -34,6 +36,8 @@ interface Props {
     withdrawUrlOverride?: string;
     sourceChainNameOverride?: string;
   })[];
+  onWithdrawIntent: () => void;
+  onDepositIntent: () => void;
   onWithdraw: (chainId: string, coinDenom: string) => void;
   onDeposit: (chainId: string, coinDenom: string) => void;
 }
@@ -41,11 +45,30 @@ interface Props {
 export const AssetsTable: FunctionComponent<Props> = ({
   nativeBalances,
   ibcBalances,
-  onDeposit,
-  onWithdraw,
+  onDepositIntent,
+  onWithdrawIntent,
+  onDeposit: do_onDeposit,
+  onWithdraw: do_onWithdraw,
 }) => {
   const { chainStore } = useStore();
   const { width, isMobile } = useWindowSize();
+  const { trackEvent } = useMatomoAnalytics();
+
+  const onDeposit = useCallback(
+    (...depositParams: Parameters<typeof do_onDeposit>) => {
+      do_onDeposit(...depositParams);
+      trackEvent(AssetsPageEvents.rowStartDeposit);
+    },
+    [do_onDeposit]
+  );
+  const onWithdraw = useCallback(
+    (...depositParams: Parameters<typeof do_onWithdraw>) => {
+      do_onWithdraw(...depositParams);
+      trackEvent(AssetsPageEvents.rowStartWithdraw);
+    },
+    [do_onWithdraw]
+  );
+
   const mergeWithdrawCol = width < 1000 && !isMobile;
   // Assemble cells with all data needed for any place in the table.
   const cells: TableCell[] = useMemo(
@@ -109,7 +132,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
               value && value.toDec().gt(new Dec(0))
                 ? value?.toDec().toString()
                 : "0",
-            isCW20,
             queryTags: [
               ...(isCW20 ? ["CW20"] : []),
               ...(pegMechanism ? ["stable", pegMechanism] : []),
@@ -135,12 +157,19 @@ export const AssetsTable: FunctionComponent<Props> = ({
   // Sort data based on user's input either with the table column headers or the sort menu.
   const [
     sortKey,
-    setSortKey,
+    do_setSortKey,
     sortDirection,
     setSortDirection,
     toggleSortDirection,
     sortedCells,
   ] = useSortedData(cells);
+  const setSortKey = useCallback(
+    (term: string) => {
+      trackEvent(AssetsPageEvents.sortAssets);
+      do_setSortKey(term);
+    },
+    [trackEvent, sortDirection, do_setSortKey]
+  );
 
   // Table column def to determine how the first 2 column headers handle user click.
   const sortColumnWithKeys = useCallback(
@@ -195,73 +224,28 @@ export const AssetsTable: FunctionComponent<Props> = ({
     ? filteredSortedCells
     : filteredSortedCells.slice(0, 10);
 
-  // Mobile only - State for pre-transfer menu for selecting asset to ibc transfer
-  const [showPreTransfer, setShowPreTransfer] = useState(false);
-  const [selectedTransferToken, setPreTransferToken] = useState<CoinPretty>(
-    ibcBalances[0].balance
-  );
-  const {
-    chainInfo: selectedChainInfo,
-    depositUrlOverride: selectedDepositUrlOverride,
-    withdrawUrlOverride: selectedWithdrawUrlOverride,
-  } = ibcBalances.find(
-    (ibcAsset) => ibcAsset.balance.denom === selectedTransferToken.denom
-  ) ?? {};
-
   return (
-    <section className="min-h-screen md:bg-background bg-surface">
-      {showPreTransfer && (
-        <PreTransferModal
-          isOpen={showPreTransfer}
-          onRequestClose={() => setShowPreTransfer(false)}
-          externalDepositUrl={selectedDepositUrlOverride}
-          externalWithdrawUrl={selectedWithdrawUrlOverride}
-          onDeposit={() => {
-            if (selectedChainInfo?.chainId) {
-              onDeposit(selectedChainInfo.chainId, selectedTransferToken.denom);
-            }
-            setShowPreTransfer(false);
-          }}
-          onWithdraw={() => {
-            if (selectedChainInfo?.chainId) {
-              onWithdraw(
-                selectedChainInfo.chainId,
-                selectedTransferToken.denom
-              );
-            }
-            setShowPreTransfer(false);
-          }}
-          isUnstable={
-            ibcBalances.find(
-              (balance) => balance.balance.denom === selectedTransferToken.denom
-            )?.isUnstable ?? false
-          }
-          onSelectToken={(coinDenom) => {
-            const ibcToken = ibcBalances.find(
-              (ibcAsset) => ibcAsset.balance.denom === coinDenom
-            );
-            if (ibcToken) {
-              setPreTransferToken(ibcToken.balance);
-            }
-          }}
-          selectedToken={selectedTransferToken}
-          tokens={ibcBalances.map((ibcAsset) => ibcAsset.balance)}
-        />
-      )}
+    <section className="md:bg-background bg-surface">
       <div className="max-w-container mx-auto md:p-4 p-10">
         {isMobile ? (
           <div className="flex flex-col gap-5">
             <div className="flex place-content-between gap-10 py-2">
               <Button
                 className="w-full h-10"
-                onClick={() => setShowPreTransfer(true)}
+                onClick={() => {
+                  onDepositIntent();
+                  trackEvent(AssetsPageEvents.rowStartDeposit);
+                }}
               >
                 Deposit
               </Button>
               <Button
                 className="w-full h-10 bg-primary-200/30"
                 type="outline"
-                onClick={() => setShowPreTransfer(true)}
+                onClick={() => {
+                  onWithdrawIntent();
+                  trackEvent(AssetsPageEvents.rowStartWithdraw);
+                }}
               >
                 Withdraw
               </Button>
@@ -273,6 +257,9 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 setHideZeroBalances(false);
                 setQuery(query);
               }}
+              onFocus={() => {
+                trackEvent(AssetsPageEvents.startSearchAssets);
+              }}
               placeholder="Filter by symbol"
             />
             <h6>Assets</h6>
@@ -280,7 +267,13 @@ export const AssetsTable: FunctionComponent<Props> = ({
               <Switch
                 isOn={hideZeroBalances}
                 disabled={!canHideZeroBalances}
-                onToggle={() => setHideZeroBalances(!hideZeroBalances)}
+                onToggle={() => {
+                  if (hideZeroBalances)
+                    trackEvent(AssetsPageEvents.showZeroBalances);
+                  else trackEvent(AssetsPageEvents.hideZeroBalances);
+
+                  setHideZeroBalances(!hideZeroBalances);
+                }}
               >
                 Hide zero balances
               </Switch>
@@ -313,7 +306,13 @@ export const AssetsTable: FunctionComponent<Props> = ({
               <Switch
                 isOn={hideZeroBalances}
                 disabled={!canHideZeroBalances}
-                onToggle={() => setHideZeroBalances(!hideZeroBalances)}
+                onToggle={() => {
+                  if (hideZeroBalances)
+                    trackEvent(AssetsPageEvents.showZeroBalances);
+                  else trackEvent(AssetsPageEvents.hideZeroBalances);
+
+                  setHideZeroBalances(!hideZeroBalances);
+                }}
               >
                 Hide zero balances
               </Switch>
@@ -323,6 +322,9 @@ export const AssetsTable: FunctionComponent<Props> = ({
                   onInput={(query) => {
                     setHideZeroBalances(false);
                     setQuery(query);
+                  }}
+                  onFocus={() => {
+                    trackEvent(AssetsPageEvents.startSearchAssets);
                   }}
                   placeholder="Search assets"
                 />
@@ -369,15 +371,9 @@ export const AssetsTable: FunctionComponent<Props> = ({
                     assetData.chainId === chainStore.osmosis.chainId)
                     ? undefined
                     : () => {
-                        setPreTransferToken(
-                          new CoinPretty(
-                            assetData.currency,
-                            assetData.amount.replace(",", "")
-                          ).moveDecimalPointRight(
-                            assetData.currency.coinDecimals
-                          )
-                        );
-                        setShowPreTransfer(true);
+                        if (assetData.chainId && assetData.coinDenom) {
+                          onDeposit(assetData.chainId, assetData.coinDenom);
+                        }
                       }
                 }
                 showArrow
@@ -446,7 +442,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
             />
           )}
         </div>
-        <IbcHistoryTable className="mt-8 md:w-screen md:-mx-4" />
+        <TransferHistoryTable className="mt-8 md:w-screen md:-mx-4" />
       </div>
     </section>
   );

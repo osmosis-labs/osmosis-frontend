@@ -6,13 +6,20 @@ import { ToggleProps } from "./types";
 export const CheckBox: FunctionComponent<
   ToggleProps &
     Disableable &
-    CustomClasses & { labelClassName?: string; checkClassName?: string }
+    CustomClasses & {
+      labelClassName?: string;
+      checkClassName?: string;
+      checkMarkClassName?: string;
+      checkMarkIconUrl?: string;
+    }
 > = ({
   isOn,
   onToggle: onToggle,
   disabled = false,
   labelClassName,
   checkClassName,
+  checkMarkClassName,
+  checkMarkIconUrl = "/icons/check-mark.svg",
   className,
   children,
 }) => {
@@ -31,15 +38,18 @@ export const CheckBox: FunctionComponent<
       {isOn && showImg && (
         <div
           className={classNames(
-            "cursor-pointer h-full absolute top-0 left-0 h-5 w-5 z-20",
+            "cursor-pointer absolute top-0 left-0 h-5 w-5 z-20",
             disabled ? "cursor-default opacity-50" : null,
             checkClassName
           )}
         >
           <img
-            className="absolute h-5 w-5 top-0 left-0"
+            className={classNames(
+              "absolute h-5 w-5 top-0 left-0",
+              checkMarkClassName
+            )}
             alt=""
-            src="/icons/check-mark.svg"
+            src={checkMarkIconUrl}
           />
         </div>
       )}

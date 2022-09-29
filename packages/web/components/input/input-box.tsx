@@ -48,7 +48,7 @@ export const InputBox: FunctionComponent<Props> = ({
   return (
     <div
       className={classNames(
-        "flex flex-nowrap justify-between w-full h-fit mad-h-2 rounded-lg px-2 text-white-high bg-background",
+        "flex flex-nowrap justify-between w-full h-fit rounded-lg px-2 text-white-high bg-background",
         {
           border: style !== "no-border",
           "border-secondary-200":
@@ -83,7 +83,7 @@ export const InputBox: FunctionComponent<Props> = ({
             ref={inputRef}
             id="text-input"
             className={classNames(
-              "w-full appearance-none bg-transparent align-middle leading-10 pt-px pr-1",
+              "w-full appearance-none bg-transparent align-middle leading-10 md:leading-0 pt-px md:p-0 pr-1",
               {
                 "text-white-disabled": disabled,
                 "text-white-high": currentValue != "" && !disabled,
