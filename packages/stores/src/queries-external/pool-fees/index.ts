@@ -100,10 +100,13 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<Pool
       const poolTVL = pool.pool.computeTotalValueLocked(priceStore).toDec();
 
       if (poolTVL.equals(new Dec(0))) {
-        return new RatePretty(0);
+        return new RatePretty(0).ready(false);
       }
       const percentRevenue = avgDayFeeRevenue.quo(poolTVL);
       const dailyRate = new Dec(1).add(percentRevenue);
+
+      if (!dailyRate.lt(new Dec(2))) return new RatePretty(0);
+
       const rate = pow(dailyRate, new Dec(365));
 
       return new RatePretty(rate)
