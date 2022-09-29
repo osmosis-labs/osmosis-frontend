@@ -1,6 +1,6 @@
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { Dec } from "@keplr-wallet/unit";
-import { initialAssetsSort, AssetsPageEvents } from "../../config";
+import { initialAssetsSort } from "../../config";
 import {
   IBCBalance,
   IBCCW20ContractBalance,
@@ -11,7 +11,6 @@ import { useSortedData, useFilteredData } from "../../hooks/data";
 import {
   useLocalStorageState,
   useWindowSize,
-  useMatomoAnalytics,
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { ShowMoreButton } from "../buttons/show-more";
@@ -58,7 +57,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
 }) => {
   const { chainStore } = useStore();
   const { width, isMobile } = useWindowSize();
-  const { trackEvent } = useMatomoAnalytics();
   const { logEvent } = useAmplitudeAnalytics();
 
   const onDeposit = useCallback(
@@ -71,7 +69,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
           hasExternalUrl: !!depositParams[2],
         },
       ]);
-      trackEvent(AssetsPageEvents.rowStartDeposit);
     },
     [do_onDeposit]
   );
@@ -85,7 +82,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
           hasExternalUrl: !!withdrawParams[2],
         },
       ]);
-      trackEvent(AssetsPageEvents.rowStartWithdraw);
     },
     [do_onWithdraw]
   );
@@ -186,7 +182,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
   ] = useSortedData(cells);
   const setSortKey = useCallback(
     (term: string) => {
-      trackEvent(AssetsPageEvents.sortAssets);
       logEvent([
         EventName.Assets.assetsListSorted,
         {
@@ -198,7 +193,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
       ]);
       do_setSortKey(term);
     },
-    [trackEvent, sortDirection, do_setSortKey]
+    [sortDirection, do_setSortKey]
   );
 
   // Table column def to determine how the first 2 column headers handle user click.
@@ -283,7 +278,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 className="w-full h-10"
                 onClick={() => {
                   onDepositIntent();
-                  trackEvent(AssetsPageEvents.rowStartDeposit);
                 }}
               >
                 Deposit
@@ -293,7 +287,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 type="outline"
                 onClick={() => {
                   onWithdrawIntent();
-                  trackEvent(AssetsPageEvents.rowStartWithdraw);
                 }}
               >
                 Withdraw
@@ -306,9 +299,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 setHideZeroBalances(false);
                 setQuery(query);
               }}
-              onFocus={() => {
-                trackEvent(AssetsPageEvents.startSearchAssets);
-              }}
               placeholder="Filter by symbol"
             />
             <h6>Assets</h6>
@@ -317,9 +307,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 isOn={hideZeroBalances}
                 disabled={!canHideZeroBalances}
                 onToggle={() => {
-                  if (hideZeroBalances)
-                    trackEvent(AssetsPageEvents.showZeroBalances);
-                  else trackEvent(AssetsPageEvents.hideZeroBalances);
                   logEvent([
                     EventName.Assets.assetsListFiltered,
                     {
@@ -363,10 +350,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 isOn={hideZeroBalances}
                 disabled={!canHideZeroBalances}
                 onToggle={() => {
-                  if (hideZeroBalances)
-                    trackEvent(AssetsPageEvents.showZeroBalances);
-                  else trackEvent(AssetsPageEvents.hideZeroBalances);
-
                   setHideZeroBalances(!hideZeroBalances);
                 }}
               >
@@ -378,9 +361,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
                   onInput={(query) => {
                     setHideZeroBalances(false);
                     setQuery(query);
-                  }}
-                  onFocus={() => {
-                    trackEvent(AssetsPageEvents.startSearchAssets);
                   }}
                   placeholder="Search assets"
                 />
