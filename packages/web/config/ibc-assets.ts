@@ -37,22 +37,32 @@ export const IBCAssetInfos: (IBCAsset & {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChains: [AxelarSourceChainConfigs.usdc.ethereum],
+      sourceChains: [
+        AxelarSourceChainConfigs.uusdc.ethereum
+      ],
       tokenMinDenom: IS_TESTNET ? "uausdc" : "uusdc", // test: "uausdc"
-      transferFeeMinAmount: IS_TESTNET ? "150000" : "10500000", // From https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
+      transferFeeMinAmount: IS_TESTNET ? "150000" : "10500000",
     },
   },
   {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
+    counterpartyChainId: IS_TESTNET
+      ? "axelar-testnet-lisbon-3"
+      : "axelar-dojo-1",
+    sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
+    destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
     coinMinimalDenom: "weth-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=weth-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=weth-wei",
-    sourceChainNameOverride: "Ethereum",
+    sourceChainNameOverride: IS_TESTNET ? "Ropsten Ethereum" : "Ethereum",
     isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [
+        AxelarSourceChainConfigs.wethwei.ethereum
+      ],
+      tokenMinDenom: "weth-wei",
+      transferFeeMinAmount: IS_TESTNET ? "60000000000000" : "6300000000000000",
+    },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
