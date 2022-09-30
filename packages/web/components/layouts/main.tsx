@@ -2,9 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
 import {
   useWindowSize,
   useWindowScroll,
@@ -13,8 +14,8 @@ import {
   useMatomoAnalytics,
   useAmplitudeAnalytics,
 } from "../../hooks";
-import { SidebarBottom } from "../complex/sidebar-bottom";
 import { AmplitudeEvent, IS_FRONTIER } from "../../config";
+import { NavBar } from "../navbar";
 
 export type MainLayoutMenu = {
   label: string;
@@ -35,6 +36,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
     const router = useRouter();
     const { trackEvent } = useMatomoAnalytics();
     const { logEvent } = useAmplitudeAnalytics();
+    const { navBarStore } = useStore();
 
     const { height, isMobile } = useWindowSize();
     const [_, isScrolledTop] = useWindowScroll();
@@ -45,6 +47,18 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
     const showFixedLogo = !smallVerticalScreen || (isMobile && !showSidebar);
 
     const showBlockLogo = smallVerticalScreen;
+
+    const selectedMenuItem = menus.find(
+      ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
+    );
+
+    // clear nav bar store on route change
+    useEffect(() => {
+      router.events.on(
+        "routeChangeStart",
+        () => (navBarStore.callToActionButtons = [])
+      );
+    }, []);
 
     return (
       <React.Fragment>
@@ -66,8 +80,8 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
               <OsmosisFullLogo width={166} onClick={() => router.push("/")} />
             </div>
           )}
-          <div className="h-full flex flex-col justify-between">
-            <ul className="my-auto">
+          <div className="h-full pt-20">
+            <ul>
               {menus.map(
                 ({
                   label,
@@ -155,7 +169,6 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                 }
               )}
             </ul>
-            <SidebarBottom />
           </div>
         </div>
         <div
@@ -180,9 +193,10 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
           </div>
         </div>
         {showSidebar && (
-          <div className="fixed ml-sidebar md:ml-0 h-screen w-screen bg-black/30" />
+          <div className="fixed ml-sidebar md:ml-0 h-content w-screen bg-black/30" />
         )}
-        <div className="ml-sidebar md:ml-0 h-screen">{children}</div>
+        <NavBar className="ml-sidebar" title={selectedMenuItem?.label ?? ""} />
+        <div className="ml-sidebar md:ml-0 h-content">{children}</div>
       </React.Fragment>
     );
   }

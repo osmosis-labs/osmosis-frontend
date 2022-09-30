@@ -167,13 +167,10 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       initialKeyPath,
       initialSortDirection
     );
-    const setSortKeyPath = useCallback(
-      (terms: string) => {
-        trackEvent(PoolsPageEvents.sortPools);
-        do_setSortKeyPath(terms);
-      },
-      [do_setSortKeyPath]
-    );
+    const setSortKeyPath = useCallback((terms: string) => {
+      trackEvent(PoolsPageEvents.sortPools);
+      do_setSortKeyPath(terms);
+    }, []);
 
     const [query, setQuery, filteredPools] = useFilteredData(
       sortedAllPoolsWithMetrics,
@@ -246,7 +243,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
                 setSortDirection(newSortDirection);
               },
             },
-      [sortKeyPath, sortDirection, setSortDirection, setSortKeyPath]
+      [sortKeyPath, sortDirection]
     );
     const tableCols = useMemo(
       () => [
@@ -319,11 +316,9 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
               coinDenom: poolAsset.amount.currency.coinDenom,
             })
           );
-          const isIncentivized =
-            queryOsmosis.queryIncentivizedPools.isIncentivized(poolId);
 
           return [
-            { poolId, poolAssets, isIncentivized },
+            { poolId, poolAssets },
             { value: poolWithMetrics.liquidity.toString() },
             {
               value: poolWithMetrics.apr?.toString(),
@@ -403,7 +398,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       <>
         <div className="mt-5 flex flex-wrap gap-3 items-center justify-between">
           <h5>External Incentive Pools</h5>
-          <div className="flex gap-8 lg:w-full lg:place-content-between">
+          <div className="flex items-center gap-8 lg:w-full lg:place-content-between">
             <SearchBox
               currentValue={query}
               onInput={setQuery}

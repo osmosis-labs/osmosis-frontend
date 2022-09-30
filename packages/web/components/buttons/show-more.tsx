@@ -14,16 +14,12 @@ export const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
     onClick={() => onToggle(isOn)}
   >
     <span className="body2 md:caption text-white-mid">
-      {isOn ? "Less" : "More"}
+      {isOn ? "View less" : "View all"}
     </span>
     <div className="m-auto">
       <Image
-        alt={isOn ? "less" : "more"}
-        src={
-          isOn
-            ? "/icons/chevron-up-secondary.svg"
-            : "/icons/chevron-down-secondary.svg"
-        }
+        alt={isOn ? "view less" : "view all"}
+        src={isOn ? "/icons/chevron-up.svg" : "/icons/chevron-down.svg"}
         height={14}
         width={14}
       />

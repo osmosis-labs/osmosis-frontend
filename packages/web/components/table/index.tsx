@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React, {
   PropsWithoutRef,
   useState,
@@ -43,9 +44,10 @@ export const Table = <TCell extends BaseCell>({
   tBodyClassName,
 }: PropsWithoutRef<Props<TCell>>) => {
   const { width } = useWindowSize();
+  const router = useRouter();
 
+  // pass row hovered to cell components. Tailwind preferred for tr/tds.
   const [rowsHovered, setRowsHovered] = useState(() => data.map(() => false));
-
   const setRowHovered = useCallback(
     (rowIndex: number, value: boolean) =>
       setRowsHovered(
@@ -61,7 +63,7 @@ export const Table = <TCell extends BaseCell>({
   return (
     <table className={classNames("overflow-y-scroll", className)}>
       <thead className={tHeadClassName}>
-        <tr className={classNames("h-20", headerTrClassName)}>
+        <tr className={classNames("px-10 py-5", headerTrClassName)}>
           {columnDefs.map((colDef, colIndex) => {
             if (colDef.collapseAt && width < colDef.collapseAt) {
               return null;
@@ -81,10 +83,12 @@ export const Table = <TCell extends BaseCell>({
                 <ClickableContent
                   isButton={colDef?.sort?.onClickHeader !== undefined}
                 >
-                  <span>
+                  <div>
                     {colDef?.display ? (
                       typeof colDef.display === "string" ? (
-                        colDef.display
+                        <span className="subtitle1 text-osmoverse-300">
+                          {colDef.display}
+                        </span>
                       ) : (
                         <>{colDef.display}</>
                       )
@@ -119,7 +123,7 @@ export const Table = <TCell extends BaseCell>({
                     {colDef.infoTooltip && (
                       <InfoTooltip content={colDef.infoTooltip} />
                     )}
-                  </span>
+                  </div>
                 </ClickableContent>
               </th>
             );
@@ -138,24 +142,27 @@ export const Table = <TCell extends BaseCell>({
             <tr
               key={rowIndex}
               className={classNames(
-                "h-20 shadow-separator bg-surface",
+                "h-20",
                 rowDef?.makeClass?.(rowIndex),
                 {
                   "focus-within:bg-card focus-within:outline-none":
                     rowDef?.link,
+                  " hover:bg-osmoverse-800 hover:cursor-pointer":
+                    rowDef?.onClick,
                 },
-                rowHovered && rowDef?.makeHoverClass
+                rowDef?.makeHoverClass
                   ? `cursor-pointer ${rowDef.makeHoverClass(rowIndex)}`
                   : undefined
               )}
               onMouseEnter={() => setRowHovered(rowIndex, true)}
               onMouseLeave={() => setRowHovered(rowIndex, false)}
               onClick={() => {
-                if (rowDef !== undefined) {
-                  rowDef.onClick?.(rowIndex);
-                }
+                if (rowDef?.link) {
+                  router.push(rowDef.link);
+                } else rowDef?.onClick?.(rowIndex);
               }}
             >
+              {/* layout row's cells */}
               {row.map((cell, columnIndex) => {
                 const DisplayCell = columnDefs[columnIndex]?.displayCell;
                 const customClass = columnDefs[columnIndex]?.className;
@@ -166,7 +173,20 @@ export const Table = <TCell extends BaseCell>({
                 }
 
                 return (
-                  <td className={customClass} key={`${rowIndex}${columnIndex}`}>
+                  <td
+                    className={classNames(
+                      "subtitle1",
+                      {
+                        "rounded-l-2xl": columnIndex === 0,
+                        "rounded-r-2xl":
+                          columnDefs &&
+                          Array.isArray(columnDefs) &&
+                          columnIndex === columnDefs.length - 1,
+                      },
+                      customClass
+                    )}
+                    key={`${rowIndex}${columnIndex}`}
+                  >
                     <ClickableContent isButton={rowIsButton}>
                       {rowDef?.link ? (
                         <Link href={rowDef?.link}>

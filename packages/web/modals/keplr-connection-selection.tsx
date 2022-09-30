@@ -37,7 +37,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
           }}
         >
           <Image
-            src="/images/keplr-logo.png"
+            src="/images/keplr-logo.svg"
             alt="keplr logo"
             width={64}
             height={64}
@@ -66,7 +66,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
           }}
         >
           <Image
-            src="/images/keplr-logo.png"
+            src="/images/keplr-logo.svg"
             alt="keplr logo"
             width={64}
             height={64}

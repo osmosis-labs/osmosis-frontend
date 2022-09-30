@@ -57,24 +57,21 @@ export const AllPoolsTableSet: FunctionComponent<{
     }
   };
   const [isPoolTvlFiltered, do_setIsPoolTvlFiltered] = useState(false);
-  const tvlFilterLabel = `Show pools less than ${new PricePretty(
+  const tvlFilterLabel = `Show pools < ${new PricePretty(
     priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
     TVL_FILTER_THRESHOLD
   ).toString()}`;
-  const setIsPoolTvlFiltered = useCallback(
-    (isFiltered: boolean) => {
-      logEvent([
-        EventName.Pools.allPoolsListFiltered,
-        {
-          filteredBy: tvlFilterLabel,
-          isFilterOn: isFiltered,
-        },
-      ]);
-      if (isFiltered) trackEvent(PoolsPageEvents.showLowTvlPools);
-      do_setIsPoolTvlFiltered(isFiltered);
-    },
-    [do_setIsPoolTvlFiltered]
-  );
+  const setIsPoolTvlFiltered = useCallback((isFiltered: boolean) => {
+    logEvent([
+      EventName.Pools.allPoolsListFiltered,
+      {
+        filteredBy: tvlFilterLabel,
+        isFilterOn: isFiltered,
+      },
+    ]);
+    if (isFiltered) trackEvent(PoolsPageEvents.showLowTvlPools);
+    do_setIsPoolTvlFiltered(isFiltered);
+  }, []);
 
   const { chainId } = chainStore.osmosis;
   const queriesOsmosis = queriesStore.get(chainId).osmosis!;
@@ -172,13 +169,10 @@ export const AllPoolsTableSet: FunctionComponent<{
     toggleSortDirection,
     sortedAllPoolsWithMetrics,
   ] = useSortedData(tvlFilteredPools, initialKeyPath, initialSortDirection);
-  const setSortKeyPath = useCallback(
-    (terms: string) => {
-      trackEvent(PoolsPageEvents.sortPools);
-      do_setSortKeyPath(terms);
-    },
-    [do_setSortKeyPath]
-  );
+  const setSortKeyPath = useCallback((terms: string) => {
+    trackEvent(PoolsPageEvents.sortPools);
+    do_setSortKeyPath(terms);
+  }, []);
 
   const [query, setQuery, filteredPools] = useFilteredData(
     sortedAllPoolsWithMetrics,
@@ -251,7 +245,7 @@ export const AllPoolsTableSet: FunctionComponent<{
               setSortDirection(newSortDirection);
             },
           },
-    [sortKeyPath, sortDirection, setSortDirection, setSortKeyPath]
+    [sortKeyPath, sortDirection]
   );
   const tableCols = useMemo(
     () => [
@@ -288,7 +282,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         collapseAt: Breakpoint.LG,
       },
     ],
-    [makeSortMechanism, isIncentivizedPools]
+    [isIncentivizedPools]
   );
 
   const tableRows: RowDef[] = useMemo(
@@ -332,7 +326,6 @@ export const AllPoolsTableSet: FunctionComponent<{
           {
             poolId,
             poolAssets,
-            isIncentivized: incentivizedPoolIds.some((id) => id === poolId),
           },
           { value: poolWithMetrics.liquidity.toString() },
           {
@@ -388,14 +381,7 @@ export const AllPoolsTableSet: FunctionComponent<{
       setIsPoolTvlFiltered(false);
       didAutoSwitchTVLFilter.current = false;
     }
-  }, [
-    query,
-    filteredPools,
-    isPoolTvlFiltered,
-    activeOptionId,
-    setIsPoolTvlFiltered,
-    setActiveOptionId,
-  ]);
+  }, [query, filteredPools, isPoolTvlFiltered, activeOptionId]);
 
   if (isMobile) {
     return (
@@ -481,21 +467,24 @@ export const AllPoolsTableSet: FunctionComponent<{
       <div className="flex flex-col gap-3 mt-5">
         <div className="flex items-center place-content-between">
           <h5>All Pools</h5>
+          <Switch
+            isOn={isPoolTvlFiltered}
+            onToggle={setIsPoolTvlFiltered}
+            className="mr-2"
+            labelPosition="left"
+          >
+            <span className="subtitle1 text-osmoverse-200">
+              {tvlFilterLabel}
+            </span>
+          </Switch>
+        </div>
+        <div className="flex flex-wrap items-center gap-4 place-content-between">
           <MenuToggle
             className="inline"
             options={poolsMenuOptions}
             selectedOptionId={activeOptionId}
             onSelect={selectOption}
           />
-        </div>
-        <div className="flex flex-wrap gap-4 place-content-between">
-          <Switch
-            isOn={isPoolTvlFiltered}
-            onToggle={setIsPoolTvlFiltered}
-            className="mr-2"
-          >
-            {tvlFilterLabel}
-          </Switch>
           <div className="flex flex-wrap items-center gap-8 lg:w-full lg:place-content-between">
             <SearchBox
               currentValue={query}
@@ -541,7 +530,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         </div>
       </div>
       <Table<PoolCompositionCell & MetricLoaderCell>
-        className="mt-5 w-full lg:text-sm"
+        className="my-5 w-full lg:text-sm"
         columnDefs={tableCols}
         rowDefs={tableRows}
         data={tableData}

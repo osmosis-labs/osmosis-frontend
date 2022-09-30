@@ -20,6 +20,26 @@ module.exports = {
         faint: "rgba(255, 255, 255, 0.12)",
       },
       transparent: "transparent",
+      osmoverse: {
+        100: "#E4E1FB",
+        200: "#CEC8F3",
+        300: "#B0AADC",
+        400: "#958FC0",
+        500: "#736CA3",
+        600: "#565081",
+        700: "#3C356D",
+        800: "#282750",
+        900: "#140F34",
+      },
+      wosmongton: {
+        200: "#B3B1FD",
+        400: "#6A67EA",
+        500: "#5B57FA",
+        700: "#462ADF",
+      },
+      rust: {
+        200: "#F8C2B0",
+      },
       primary: IS_FRONTIER
         ? {
             50: "#8A86FF",
@@ -45,10 +65,6 @@ module.exports = {
             800: "#080559",
             900: "#02003F",
           },
-      wosmongton: {
-        200: "#B3B1FD",
-        500: "#5B57FA",
-      },
       primaryVariant: "#0A0674",
       secondary: IS_FRONTIER
         ? {
@@ -186,6 +202,9 @@ module.exports = {
         "0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2)",
     },
     screens: {
+      "3xl": { max: "1792px" },
+      // => @media (max-width: 1792px) { ... }
+
       "2xl": { max: "1536px" },
       // => @media (max-width: 1536px) { ... }
 
@@ -216,6 +235,10 @@ module.exports = {
       xs: { max: "420px" },
     },
     extend: {
+      height: {
+        navbar: "88px",
+        content: "calc(100vh - 88px)",
+      },
       width: {
         loader: {
           1: "3.75rem",

@@ -33,6 +33,8 @@ import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
 import { PoolPriceRoutes } from "../config";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { OsmoPixelsQueries } from "./pixels";
+import { NavBarStore } from "./nav-bar";
+import { UserSettings, ShowDustUserSetting } from "./user-settings";
 const semver = require("semver");
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -59,6 +61,10 @@ export class RootStore {
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
 
   public readonly queryOsmoPixels: OsmoPixelsQueries;
+
+  public readonly navBarStore: NavBarStore;
+
+  public readonly userSettings: UserSettings;
 
   constructor(
     getKeplr: () => Promise<Keplr | undefined> = () =>
@@ -236,5 +242,18 @@ export class RootStore {
       makeIndexedKVStore("query_osmo_pixels"),
       "https://pixels-osmosis.keplr.app"
     );
+
+    this.navBarStore = new NavBarStore(
+      this.chainStore.osmosis.chainId,
+      this.accountStore,
+      this.queriesStore
+    );
+
+    this.userSettings = new UserSettings([
+      new ShowDustUserSetting(
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
+          ?.symbol ?? "$"
+      ),
+    ]);
   }
 }

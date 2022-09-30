@@ -37,7 +37,7 @@ export const PoolCard: FunctionComponent<
         <Link href={`/pool/${poolId}`} passHref prefetch={false}>
           <a
             className={classNames(
-              "w-full h-32 p-px rounded-lg shadow-elevation-08dp",
+              "w-full min-w-[360px] h-32 p-px rounded-lg shadow-elevation-08dp",
               {
                 "bg-card": !isSuperfluid,
                 "bg-superfluid": isSuperfluid,
@@ -84,7 +84,7 @@ export const PoolCard: FunctionComponent<
       <Link href={`/pool/${poolId}`} passHref prefetch={false}>
         <a
           className={classNames(
-            "w-full max-w-md p-px rounded-2xl hover:bg-enabledGold text-left",
+            "p-[2px] rounded-[28px] hover:bg-wosmongton-200 text-left",
             {
               "bg-card": !isSuperfluid,
               "bg-superfluid hover:bg-none": isSuperfluid,
@@ -94,28 +94,27 @@ export const PoolCard: FunctionComponent<
             onClick?.();
           }}
         >
-          <div className="flex flex-col place-content-between w-full h-full px-[1.875rem] pt-7 pb-6 bg-card rounded-2xlinset cursor-pointer">
-            <div className="flex items-center">
-              <PoolAssetsIcon assets={poolAssets} size="md" />
+          <div className="flex flex-col gap-14 place-content-between w-full h-full px-[1.875rem] pt-7 pb-6 bg-card rounded-[27px] hover:bg-osmoverse-700 cursor-pointer">
+            <div className="flex items-center place-content-between">
+              <PoolAssetsIcon assets={poolAssets} />
               <div className="ml-5 flex flex-col">
                 <PoolAssetsName
                   size="md"
                   assetDenoms={poolAssets.map((asset) => asset.coinDenom)}
                 />
-                <div className="subtitle2 text-white-mid">{`Pool #${poolId}`}</div>
+                <div className="subtitle1 text-white-mid">{`Pool #${poolId}`}</div>
               </div>
             </div>
-            <hr className="mt-5 mb-3 w-full text-secondary-200 h-px" />
             <div className="flex place-content-between">
               {poolMetrics.map((poolMetric, index) => (
-                <div key={index} className="flex flex-col">
-                  <span className="subtitle2 whitespace-nowrap text-white-disabled">
+                <div key={index} className="flex flex-col gap-3">
+                  <span className="subtitle1 whitespace-nowrap text-white-disabled">
                     {poolMetric.label}
                   </span>
                   {typeof poolMetric.value === "string" ? (
-                    <span className="mt-0.5 subtitle1 text-white-high">
+                    <h6 className="mt-0.5 text-white-high">
                       {poolMetric.value}
-                    </span>
+                    </h6>
                   ) : (
                     <>{poolMetric.value}</>
                   )}

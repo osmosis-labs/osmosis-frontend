@@ -1,16 +1,14 @@
 import type { NextPage } from "next";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
-import dayjs from "dayjs";
+import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { ObservableQueryPool, isError } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
 import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
 import { CreatePoolModal } from "../../modals/create-pool";
-import { LeftTime } from "../../components/left-time";
+import { PoolsOverview } from "../../components/overview/pools";
 import { MetricLoader } from "../../components/loaders";
-import { Overview } from "../../components/overview";
 import { TabBox } from "../../components/control";
 import { priceFormatter } from "../../components/utils";
 import { useStore } from "../../stores";
@@ -26,10 +24,9 @@ import {
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
-import { UserAction, PoolsPageEvents, EventName } from "../../config";
+import { PoolsPageEvents, EventName } from "../../config";
 import { POOLS_PER_PAGE } from "../../components/complex";
 
-const REWARD_EPOCH_IDENTIFIER = "day";
 const TVL_FILTER_THRESHOLD = 1000;
 
 const LESS_SUPERFLUID_POOLS_COUNT = 6;
@@ -41,6 +38,7 @@ const Pools: NextPage = observer(function () {
     priceStore,
     queriesStore,
     queriesExternalStore,
+    navBarStore,
   } = useStore();
   const { isMobile } = useWindowSize();
   const { trackEvent } = useMatomoAnalytics();
@@ -53,19 +51,6 @@ const Pools: NextPage = observer(function () {
   const queriesExternal = queriesExternalStore.get();
 
   const account = accountStore.getAccount(chainId);
-
-  const queryEpoch = queryOsmosis.queryEpochs.getEpoch(REWARD_EPOCH_IDENTIFIER);
-  const now = new Date();
-  const epochRemainingTime = dayjs.duration(
-    dayjs(queryEpoch.endTime).diff(dayjs(now), "second"),
-    "second"
-  );
-  const epochRemainingTimeString =
-    epochRemainingTime.asSeconds() <= 0
-      ? dayjs.duration(0, "seconds").format("HH-mm")
-      : epochRemainingTime.format("HH-mm");
-  const [epochRemainingHour, epochRemainingMinute] =
-    epochRemainingTimeString.split("-");
 
   const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
     account.bech32Address
@@ -98,15 +83,6 @@ const Pools: NextPage = observer(function () {
     .process("poolLiquidity")
     .reverse();
   const [showMoreSfsPools, setShowMoreSfsPools] = useState(false);
-
-  const osmoPrice = priceStore.calculatePrice(
-    new CoinPretty(
-      chainStore.osmosis.stakeCurrency,
-      DecUtils.getTenExponentNInPrecisionRange(
-        chainStore.osmosis.stakeCurrency.coinDecimals
-      )
-    )
-  );
 
   const poolCountShowMoreThreshold = isMobile ? 3 : 6;
 
@@ -158,8 +134,15 @@ const Pools: NextPage = observer(function () {
   /// show pools > $1k TVL
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 
+  // set nav bar state
+  useEffect(() => {
+    navBarStore.callToActionButtons = [
+      { label: "Create new Pool", onClick: () => setIsCreatingPool(true) },
+    ];
+  }, []);
+
   return (
-    <main>
+    <main className="bg-background px-8">
       {isCreatingPool && (
         <CreatePoolModal
           isOpen={isCreatingPool}
@@ -197,48 +180,11 @@ const Pools: NextPage = observer(function () {
           }}
         />
       )}
-      <Overview
-        title="Active Pools"
-        titleButtons={
-          UserAction.CreateNewPool
-            ? [
-                {
-                  label: "Create New Pool",
-                  onClick: () => {
-                    logEvent([EventName.Pools.createNewPoolClicked]);
-                    setIsCreatingPool(true);
-                  },
-                },
-              ]
-            : []
-        }
-        primaryOverviewLabels={[
-          {
-            label: "OSMO Price",
-            value: (
-              <MetricLoader
-                className="h-[2.5rem] !mt-0"
-                isLoading={!osmoPrice || osmoPrice.toDec().isZero()}
-              >
-                <div className="h-[2.5rem]">{osmoPrice?.toString()}</div>
-              </MetricLoader>
-            ),
-          },
-          {
-            label: "Reward distribution in",
-            value: (
-              <LeftTime
-                className="-mt-1 md:mt-0"
-                hour={epochRemainingHour}
-                minute={epochRemainingMinute}
-                isMobile={isMobile}
-              />
-            ),
-          },
-        ]}
-      />
-      <section className="bg-background">
-        <div className="max-w-container mx-auto md:p-4 p-10 pb-[3.75rem]">
+      <section className="pt-20 pb-10">
+        <PoolsOverview className="mx-auto" />
+      </section>
+      <section>
+        <div className="mx-auto pb-[3.75rem]">
           {isMobile ? (
             <span className="subtitle2">My Pools</span>
           ) : (
@@ -389,7 +335,7 @@ const Pools: NextPage = observer(function () {
         </div>
       </section>
       {isMobile ? (
-        <section className="bg-background">
+        <section>
           <TabBox
             tabs={[
               {
@@ -503,8 +449,8 @@ const Pools: NextPage = observer(function () {
         </section>
       ) : (
         <>
-          <section className="bg-surface">
-            <div className="max-w-container mx-auto p-10">
+          <section>
+            <div className="mx-auto">
               <h5>Superfluid Pools</h5>
               <div className="my-5 grid grid-cards">
                 {superfluidPools &&
@@ -582,13 +528,13 @@ const Pools: NextPage = observer(function () {
               )}
             </div>
           </section>
-          <section className="bg-surface shadow-separator">
-            <div className="max-w-container mx-auto md:p-4 p-10 py-[3.75rem]">
+          <section>
+            <div className="mx-auto py-[3.75rem]">
               <AllPoolsTableSet />
             </div>
           </section>
-          <section className="bg-surface shadow-separator min-h-screen">
-            <div className="max-w-container mx-auto md:p-4 p-10 py-[3.75rem]">
+          <section className="min-h-screen">
+            <div className="mx-auto py-[3.75rem]">
               <ExternalIncentivizedPoolsTableSet />
             </div>
           </section>
