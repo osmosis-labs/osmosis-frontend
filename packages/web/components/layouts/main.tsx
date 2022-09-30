@@ -69,7 +69,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
         )}
         <div
           className={classNames(
-            "z-40 fixed w-sidebar h-full bg-card flex flex-col px-5 py-6 overflow-x-hidden overflow-y-auto",
+            "z-40 fixed w-sidebar h-full bg-card flex flex-col px-2 py-6 overflow-x-hidden overflow-y-auto",
             {
               hidden: !showSidebar && isMobile,
             }
@@ -96,17 +96,20 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                     ? selectionTest.test(router.pathname)
                     : false;
                   return (
-                    <li key={label} className="h-16 flex items-center">
+                    <li
+                      key={label}
+                      className={classNames("px-4 py-3 flex items-center", {
+                        "rounded-full bg-wosmongton-500": selected,
+                      })}
+                    >
                       <Head>
                         {selected && <title key="title">{label}</title>}
                       </Head>
                       <Link href={link} passHref>
                         <a
                           className={classNames(
-                            "flex items-center opacity-75 hover:opacity-100",
-                            {
-                              "opacity-100 transition-all": selected,
-                            }
+                            "flex items-center hover:opacity-100",
+                            selected ? "opacity-100" : "opacity-75"
                           )}
                           target={selectionTest ? "_self" : "_blank"}
                           onClick={() => {
@@ -118,32 +121,21 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                             }
                           }}
                         >
-                          <div className="h-11 w-11 relative">
+                          <div className="w-5 h-5 z-10">
                             <Image
-                              className="absolute top-0 left-0 transition-all"
-                              src={`${
-                                IS_FRONTIER
-                                  ? "/icons/hexagon-border-white"
-                                  : "/icons/hexagon-border"
-                              }${selected ? "-selected" : ""}.svg`}
-                              layout="fill"
-                              alt="menu icon border"
+                              src={iconSelected ?? icon}
+                              width={20}
+                              height={20}
+                              alt="menu icon"
                             />
-                            <div className="w-5 h-5 absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-                              <Image
-                                src={selected ? iconSelected ?? icon : icon}
-                                width={20}
-                                height={20}
-                                alt="menu icon"
-                              />
-                            </div>
                           </div>
                           <p
                             className={classNames(
                               "ml-2.5 text-base overflow-x-hidden font-semibold transition-all max-w-24",
-                              selected
-                                ? "text-white-high"
-                                : "text-iconDefault group-hover:text-white-mid"
+                              {
+                                "text-osmoverse-400 group-hover:text-white-mid":
+                                  !selected,
+                              }
                             )}
                           >
                             {label}
