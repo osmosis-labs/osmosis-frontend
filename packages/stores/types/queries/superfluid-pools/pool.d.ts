@@ -36,7 +36,8 @@ export declare class ObservableQuerySuperfluidPool {
         querySuperfluidOsmoEquivalent: ObservableQuerySuperfluidOsmoEquivalent;
     }, priceStore: IPriceStore);
     get isSuperfluid(): boolean;
-    get superfluidGauges(): {
+    /** Wraps `gauges` member of pool detail store with potential superfluid APR info. */
+    get gaugesWithSuperfluidApr(): {
         superfluidApr: RatePretty | undefined;
         id: string;
         duration: import("dayjs/plugin/duration").Duration;

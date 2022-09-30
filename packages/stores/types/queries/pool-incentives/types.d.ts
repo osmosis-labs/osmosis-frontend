@@ -17,3 +17,9 @@ export declare type DistrInfo = {
         }[];
     };
 };
+export declare type GaugeIdsWithDuration = {
+    gauge_ids_with_duration: {
+        gauge_id: string;
+        duration: string;
+    }[];
+};

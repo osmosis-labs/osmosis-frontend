@@ -9,7 +9,7 @@ export const PoolTokenSelect: FunctionComponent<
   {
     tokens: PoolAssetInfo[];
     selectedTokenDenom: string;
-    onSelectToken: (coinDenom: string) => void;
+    onSelectToken: (tokenIndex: number) => void;
   } & CustomClasses &
     MobileProps
 > = ({
@@ -68,9 +68,9 @@ export const PoolTokenSelect: FunctionComponent<
           tokens={tokens.filter(
             (token) => token.coinDenom !== selectedTokenDenom
           )}
-          onSelect={(coinDenom) => {
+          onSelect={(tokenDenom) => {
             setToggleOpen(false);
-            onSelectToken(coinDenom);
+            onSelectToken(tokenIndex(tokenDenom));
           }}
           isMobile={isMobile}
         />

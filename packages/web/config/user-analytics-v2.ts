@@ -39,11 +39,11 @@ export type EventProperties = {
 export type UserProperties = {
   isWalletConnected: boolean;
   connectedWallet: string;
-  totalAssetsPrice: string;
-  unbondedAssetsPrice: string;
-  bondedAssetsPrice: string;
-  stakedOsmoPrice: string;
-  osmoBalance: string;
+  totalAssetsPrice: number;
+  unbondedAssetsPrice: number;
+  bondedAssetsPrice: number;
+  stakedOsmoPrice: number;
+  osmoBalance: number;
   myPoolsCount: number;
 };
 
@@ -60,6 +60,7 @@ export const EventName = {
     pageViewed: "Swap: Page viewed",
     maxClicked: "Swap: Max clicked",
     halfClicked: "Swap: Half clicked",
+    inputEntered: "Swap: Input entered",
     slippageToleranceSet: "Swap: Slippage tolerance set",
     switchClicked: "Swap: Switch clicked",
     swapStarted: "Swap: Swap started",
@@ -116,7 +117,7 @@ export const EventName = {
   Assets: {
     pageViewed: "Assets: Page viewed",
     depositClicked: "Assets: Deposit clicked",
-    withdrawClicked: "Assets: Deposit clicked",
+    withdrawClicked: "Assets: Withdraw clicked",
     myPoolsCardClicked: "Assets: My pools card clicked",
     myPoolsMoreClicked: "Assets: My pools more clicked",
     assetsListFiltered: "Assets: Assets list filtered",

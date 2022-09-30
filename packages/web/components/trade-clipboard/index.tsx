@@ -367,6 +367,9 @@ export const TradeClipboard: FunctionComponent<{
                     logEvent([
                       EventName.Swap.slippageToleranceSet,
                       {
+                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
                         percentage: slippageConfig.slippage.toString(),
                       },
                     ]);
@@ -544,6 +547,14 @@ export const TradeClipboard: FunctionComponent<{
                     Number(e.target.value) <= Number.MAX_SAFE_INTEGER &&
                     e.target.value.length <= (isMobile ? 19 : 26)
                   ) {
+                    logEvent([
+                      EventName.Swap.inputEntered,
+                      {
+                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+                      },
+                    ]);
                     tradeTokenInConfig.setAmount(e.target.value);
                   }
                 }}

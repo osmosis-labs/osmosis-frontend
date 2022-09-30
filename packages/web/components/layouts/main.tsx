@@ -44,9 +44,9 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
 
     const smallVerticalScreen = height < 850;
 
-    const showFixedLogo = !smallVerticalScreen || (isMobile && !showSidebar);
+    const showFixedLogo = !smallVerticalScreen || isMobile;
 
-    const showBlockLogo = smallVerticalScreen;
+    const showBlockLogo = smallVerticalScreen && !isMobile;
 
     const selectedMenuItem = menus.find(
       ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
@@ -67,21 +67,14 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
             <OsmosisFullLogo onClick={() => router.push("/")} />
           </div>
         )}
-        <div
-          className={classNames(
-            "z-40 fixed w-sidebar h-full bg-card flex flex-col px-5 py-6 overflow-x-hidden overflow-y-auto",
-            {
-              hidden: !showSidebar && isMobile,
-            }
-          )}
-        >
+        <Drawer showSidebar={showSidebar} isMobile={isMobile} height={height}>
           {showBlockLogo && (
-            <div className="z-50 w-sidebar mx-auto">
+            <div className="grow-0 z-50 w-sidebar mx-auto">
               <OsmosisFullLogo width={166} onClick={() => router.push("/")} />
             </div>
           )}
-          <div className="h-full pt-20">
-            <ul>
+          <div className="grow h-full flex flex-col justify-between">
+            <ul className="my-auto">
               {menus.map(
                 ({
                   label,
@@ -96,17 +89,20 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                     ? selectionTest.test(router.pathname)
                     : false;
                   return (
-                    <li key={label} className="h-16 flex items-center">
+                    <li
+                      key={label}
+                      className={classNames("px-4 py-3 flex items-center", {
+                        "rounded-full bg-wosmongton-500": selected,
+                      })}
+                    >
                       <Head>
                         {selected && <title key="title">{label}</title>}
                       </Head>
                       <Link href={link} passHref>
                         <a
                           className={classNames(
-                            "flex items-center opacity-75 hover:opacity-100",
-                            {
-                              "opacity-100 transition-all": selected,
-                            }
+                            "flex items-center hover:opacity-100",
+                            selected ? "opacity-100" : "opacity-75"
                           )}
                           target={selectionTest ? "_self" : "_blank"}
                           onClick={() => {
@@ -118,32 +114,21 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                             }
                           }}
                         >
-                          <div className="h-11 w-11 relative">
+                          <div className="w-5 h-5 z-10">
                             <Image
-                              className="absolute top-0 left-0 transition-all"
-                              src={`${
-                                IS_FRONTIER
-                                  ? "/icons/hexagon-border-white"
-                                  : "/icons/hexagon-border"
-                              }${selected ? "-selected" : ""}.svg`}
-                              layout="fill"
-                              alt="menu icon border"
+                              src={iconSelected ?? icon}
+                              width={20}
+                              height={20}
+                              alt="menu icon"
                             />
-                            <div className="w-5 h-5 absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-                              <Image
-                                src={selected ? iconSelected ?? icon : icon}
-                                width={20}
-                                height={20}
-                                alt="menu icon"
-                              />
-                            </div>
                           </div>
                           <p
                             className={classNames(
                               "ml-2.5 text-base overflow-x-hidden font-semibold transition-all max-w-24",
-                              selected
-                                ? "text-white-high"
-                                : "text-iconDefault group-hover:text-white-mid"
+                              {
+                                "text-osmoverse-400 group-hover:text-white-mid":
+                                  !selected,
+                              }
                             )}
                           >
                             {label}
@@ -170,7 +155,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
               )}
             </ul>
           </div>
-        </div>
+        </Drawer>
         <div
           className={classNames(
             "fixed flex z-40 h-mobile-header w-screen items-center justify-end px-5",
@@ -219,3 +204,56 @@ const OsmosisFullLogo: FunctionComponent<{
     }}
   />
 );
+
+const Drawer: FunctionComponent<{
+  showSidebar: boolean;
+  isMobile: boolean;
+  height: number;
+}> = ({ children, showSidebar, isMobile, height }) => {
+  const windowLoading = height <= 0;
+  if (windowLoading) {
+    return null;
+  } else if (isMobile === true) {
+    return (
+      <>
+        <div
+          className={classNames(
+            "absolute z-40 inset-0 h-full transform w-full bg-backdrop -translate-x-full",
+            {
+              "-translate-x-0": showSidebar,
+            }
+          )}
+        />
+        <main
+          className={classNames(
+            "-translate-x-full fixed overflow-hidden z-40 inset-0 duration-300 transform ease-in-out w-full h-full",
+            {
+              "-translate-x-0": showSidebar,
+            }
+          )}
+        >
+          <section
+            className={classNames(
+              "w-sidebar shadow-xl absolute bg-white h-full delay-300 duration-150 ease-in-out transition-all transform bg-card flex flex-col overflow-x-hidden overflow-y-auto"
+            )}
+          >
+            <article className="relative h-full flex flex-col">
+              <div className="w-sidebar text-center pt-5 bg-card grow-0">
+                <div className="invisible">
+                  <OsmosisFullLogo width={166} />
+                </div>
+              </div>
+              <div className="grow px-5 py-6 overflow-y-scroll">{children}</div>
+            </article>
+          </section>
+        </main>
+      </>
+    );
+  } else {
+    return (
+      <article className="fixed flex flex-col inset-y-0 z-40 bg-card px-5 py-6 w-sidebar overflow-x-hidden">
+        {children}
+      </article>
+    );
+  }
+};
