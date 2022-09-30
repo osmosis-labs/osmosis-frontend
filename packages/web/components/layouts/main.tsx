@@ -73,88 +73,97 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
               <OsmosisFullLogo width={166} onClick={() => router.push("/")} />
             </div>
           )}
-          <div className="grow h-full flex flex-col justify-between">
-            <ul className="my-auto">
-              {menus.map(
-                ({
-                  label,
-                  link,
-                  icon,
-                  iconSelected,
-                  selectionTest,
-                  userAnalyticsEvent,
-                  amplitudeEvent,
-                }) => {
-                  const selected = selectionTest
-                    ? selectionTest.test(router.pathname)
-                    : false;
-                  return (
-                    <li
-                      key={label}
-                      className={classNames("px-4 py-3 flex items-center", {
+          <ul className="w-full flex flex-col gap-3 mt-20">
+            {menus.map(
+              ({
+                label,
+                link,
+                icon,
+                iconSelected,
+                selectionTest,
+                userAnalyticsEvent,
+                amplitudeEvent,
+              }) => {
+                const selected = selectionTest
+                  ? selectionTest.test(router.pathname)
+                  : false;
+                return (
+                  <li
+                    key={label}
+                    className={classNames(
+                      "px-4 py-3 flex items-center cursor-pointer",
+                      {
                         "rounded-full bg-wosmongton-500": selected,
-                      })}
-                    >
-                      <Head>
-                        {selected && <title key="title">{label}</title>}
-                      </Head>
-                      <Link href={link} passHref>
-                        <a
+                      }
+                    )}
+                    onClick={() => router.push(link)}
+                  >
+                    <Head>
+                      {selected && <title key="title">{label}</title>}
+                    </Head>
+                    <Link href={link} passHref>
+                      <a
+                        className={classNames(
+                          "flex items-center hover:opacity-100",
+                          selected ? "opacity-100" : "opacity-75"
+                        )}
+                        target={selectionTest ? "_self" : "_blank"}
+                        onClick={(e) => {
+                          e.stopPropagation();
+
+                          if (userAnalyticsEvent) {
+                            trackEvent(userAnalyticsEvent);
+                          }
+                          if (amplitudeEvent) {
+                            logEvent(amplitudeEvent);
+                          }
+                        }}
+                      >
+                        <div
                           className={classNames(
-                            "flex items-center hover:opacity-100",
-                            selected ? "opacity-100" : "opacity-75"
+                            "w-5 h-5 z-10",
+                            selected ? "opacity-100" : "opacity-40"
                           )}
-                          target={selectionTest ? "_self" : "_blank"}
-                          onClick={() => {
-                            if (userAnalyticsEvent) {
-                              trackEvent(userAnalyticsEvent);
-                            }
-                            if (amplitudeEvent) {
-                              logEvent(amplitudeEvent);
-                            }
-                          }}
                         >
-                          <div className="w-5 h-5 z-10">
+                          <Image
+                            src={iconSelected ?? icon}
+                            width={20}
+                            height={20}
+                            alt="menu icon"
+                          />
+                        </div>
+                        <p
+                          className={classNames(
+                            "ml-2.5 text-base overflow-x-hidden font-semibold transition-all max-w-24",
+                            {
+                              "text-osmoverse-400 group-hover:text-white-mid":
+                                !selected,
+                            }
+                          )}
+                        >
+                          {label}
+                        </p>
+                        {!selectionTest && (
+                          <div className="ml-2">
                             <Image
-                              src={iconSelected ?? icon}
-                              width={20}
-                              height={20}
-                              alt="menu icon"
+                              src={
+                                IS_FRONTIER
+                                  ? "/icons/link-deco-white.svg"
+                                  : "/icons/link-deco.svg"
+                              }
+                              alt="link"
+                              width={12}
+                              height={12}
                             />
                           </div>
-                          <p
-                            className={classNames(
-                              "ml-2.5 text-base overflow-x-hidden font-semibold transition-all max-w-24",
-                              {
-                                "text-osmoverse-400 group-hover:text-white-mid":
-                                  !selected,
-                              }
-                            )}
-                          >
-                            {label}
-                          </p>
-                          {!selectionTest && (
-                            <div className="ml-2">
-                              <Image
-                                src={
-                                  IS_FRONTIER
-                                    ? "/icons/link-deco-white.svg"
-                                    : "/icons/link-deco.svg"
-                                }
-                                alt="link"
-                                width={12}
-                                height={12}
-                              />
-                            </div>
-                          )}
-                        </a>
-                      </Link>
-                    </li>
-                  );
-                }
-              )}
-            </ul>
-          </div>
+                        )}
+                      </a>
+                    </Link>
+                  </li>
+                );
+              }
+            )}
+          </ul>
         </Drawer>
         <div
           className={classNames(
@@ -243,7 +252,7 @@ const Drawer: FunctionComponent<{
                   <OsmosisFullLogo width={166} />
                 </div>
               </div>
-              <div className="grow px-5 py-6 overflow-y-scroll">{children}</div>
+              <div className="grow px-2 py-6 overflow-y-scroll">{children}</div>
             </article>
           </section>
         </main>
@@ -251,7 +260,7 @@ const Drawer: FunctionComponent<{
     );
   } else {
     return (
-      <article className="fixed flex flex-col inset-y-0 z-40 bg-card px-5 py-6 w-sidebar overflow-x-hidden">
+      <article className="fixed flex flex-col inset-y-0 z-40 bg-card px-2 py-6 w-sidebar overflow-x-hidden">
         {children}
       </article>
     );
