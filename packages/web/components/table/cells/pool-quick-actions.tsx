@@ -8,9 +8,9 @@ import { PoolCompositionCell } from "./pool-composition";
 export interface PoolQuickActionCell
   extends BaseCell,
     Pick<PoolCompositionCell, "poolId"> {
-  onAddLiquidity: (poolId: string) => void;
-  onRemoveLiquidity: (poolId: string) => void;
-  onLockTokens: (poolId: string) => void;
+  onAddLiquidity: () => void;
+  onRemoveLiquidity: () => void;
+  onLockTokens: () => void;
 }
 
 /** Displays pool composition as a cell in a table.
@@ -36,19 +36,19 @@ export const PoolQuickActionCell: FunctionComponent<
 
   const doAction = useCallback(
     (optionId) => {
-      if (poolId) {
-        switch (optionId) {
-          case "add-liquidity":
-            onAddLiquidity?.(poolId);
-            break;
-          case "remove-liquidity":
-            onRemoveLiquidity?.(poolId);
-            break;
-          case "lock-tokeths":
-            onLockTokens?.(poolId);
-            break;
-        }
+      switch (optionId) {
+        case "add-liquidity":
+          onAddLiquidity?.();
+          break;
+        case "remove-liquidity":
+          onRemoveLiquidity?.();
+          break;
+        case "lock-tokens":
+          onLockTokens?.();
+          break;
       }
+
+      setDropdownOpen(false);
     },
     [poolId, onAddLiquidity, onRemoveLiquidity, onLockTokens]
   );
@@ -60,7 +60,7 @@ export const PoolQuickActionCell: FunctionComponent<
         e.stopPropagation();
       }}
     >
-      <div
+      <button
         className="absolute hover:pointer-cursor"
         onClick={(e) => {
           setDropdownOpen(true);
@@ -69,13 +69,13 @@ export const PoolQuickActionCell: FunctionComponent<
       >
         <Image alt="menu" src="/icons/more-menu.svg" width={24} height={24} />
         <MenuDropdown
-          className="top-0 right-0"
+          className="w-40 top-0 right-0"
           isOpen={dropdownOpen}
           options={menuOptions}
-          onSelect={doAction}
+          onSelect={(id) => doAction(id)}
           isFloating
         />
-      </div>
+      </button>
     </div>
   );
 };

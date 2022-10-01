@@ -37,7 +37,7 @@ export const MenuDropdown: FunctionComponent<Props> = ({
             "text-rust-200": id === selectedOptionId,
             " text-osmoverse-200 body2": id !== selectedOptionId,
             "rounded-b-xlinset": index === options.length - 1,
-            "rounded-t-xlinset": isFloating,
+            "rounded-t-xlinset": isFloating && index === 0,
           }
         )}
         key={id}
