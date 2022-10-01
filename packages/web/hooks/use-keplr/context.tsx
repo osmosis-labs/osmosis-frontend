@@ -12,12 +12,11 @@ import { KeplrConnectionSelectModal, WalletConnectQRModal } from "../../modals";
 import EventEmitter from "eventemitter3";
 import { BroadcastMode, StdTx } from "@cosmjs/launchpad";
 import Axios from "axios";
-import { ChainInfos, NavBarEvents } from "../../config";
+import { ChainInfos } from "../../config";
 import { Buffer } from "buffer";
 import WalletConnect from "@walletconnect/client";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { isMobile } from "@walletconnect/browser-utils";
-import { useMatomoAnalytics } from "../use-matomo-analytics";
 import { useAmplitudeAnalytics } from "../use-amplitude-analytics";
 
 export async function sendTxWC(
@@ -81,7 +80,6 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
     useState(false);
   const [isExtentionNotInstalled, setIsExtensionNotInstalled] = useState(false);
   const [wcUri, setWCUri] = useState("");
-  const { trackEvent } = useMatomoAnalytics();
   const { setUserProperty } = useAmplitudeAnalytics();
 
   const lastUsedKeplrRef = useRef<Keplr | undefined>();
@@ -182,7 +180,6 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
         };
 
         eventListener.on("extension_selection_modal_close", () => {
-          trackEvent(NavBarEvents.cancelConnectWallet);
           setIsExtensionSelectionModalOpen(false);
           reject();
           cleanUp();
@@ -200,7 +197,6 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
           getKeplrFromWindow().then((keplr) => {
             lastUsedKeplrRef.current = keplr;
             setConnectionType("extension");
-            trackEvent(NavBarEvents.connectKeplrSuccess);
             setUserProperty("isWalletConnected", true);
             setUserProperty("connectedWallet", "extension");
             resolve(keplr);
@@ -228,7 +224,6 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
               if (error) {
                 reject(error);
               } else {
-                trackEvent(NavBarEvents.connectWalletConnectSuccess);
                 const keplr = new KeplrWalletConnectV1(connector, {
                   sendTx: sendTxWC,
                 });
