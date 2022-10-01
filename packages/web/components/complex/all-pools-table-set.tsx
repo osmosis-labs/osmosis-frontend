@@ -18,13 +18,19 @@ import {
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { Switch, MenuToggle, PageList, SortMenu } from "../control";
+import { Switch, MenuToggle, PageList, SortMenu, MenuOption } from "../control";
 import { SearchBox } from "../input";
-import { RowDef, Table } from "../table";
-import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
+import { ColumnDef, RowDef, Table } from "../table";
+import {
+  MetricLoaderCell,
+  PoolCompositionCell,
+  PoolQuickActionCell,
+} from "../table/cells";
 import { Breakpoint } from "../types";
 import { CompactPoolTableDisplay } from "./compact-pool-table-display";
 import { POOLS_PER_PAGE } from ".";
+
+type PoolCell = PoolCompositionCell & MetricLoaderCell & PoolQuickActionCell;
 
 const poolsMenuOptions = [
   { id: "incentivized-pools", display: "Incentivized Pools" },
@@ -238,7 +244,7 @@ export const AllPoolsTableSet: FunctionComponent<{
           },
     [sortKeyPath, sortDirection]
   );
-  const tableCols = useMemo(
+  const tableCols: ColumnDef<PoolCell>[] = useMemo(
     () => [
       {
         id: "pool.id",
@@ -255,7 +261,6 @@ export const AllPoolsTableSet: FunctionComponent<{
         id: "volume24h",
         display: "Volume (24H)",
         sort: makeSortMechanism("volume24h"),
-
         displayCell: MetricLoaderCell,
       },
       {
@@ -272,6 +277,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         displayCell: isIncentivizedPools ? MetricLoaderCell : undefined,
         collapseAt: Breakpoint.LG,
       },
+      { id: "quickActions", display: "", displayCell: PoolQuickActionCell },
     ],
     [isIncentivizedPools]
   );
@@ -334,6 +340,12 @@ export const AllPoolsTableSet: FunctionComponent<{
             isLoading: isIncentivizedPools
               ? queriesOsmosis.queryIncentivizedPools.isAprFetching
               : false,
+          },
+          {
+            poolId,
+            onAddLiquidity: () => {},
+            onRemoveLiquidity: () => {},
+            onLockTokens: () => {},
           },
         ];
       }),
@@ -431,7 +443,7 @@ export const AllPoolsTableSet: FunctionComponent<{
           placeholder: "Search pools",
         }}
         sortMenuProps={{
-          options: tableCols,
+          options: tableCols as MenuOption[],
           selectedOptionId: sortKeyPath,
           onSelect: (id) =>
             id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id),
@@ -483,7 +495,7 @@ export const AllPoolsTableSet: FunctionComponent<{
               className="!w-64"
             />
             <SortMenu
-              options={tableCols}
+              options={tableCols as MenuOption[]}
               selectedOptionId={sortKeyPath}
               onSelect={(id) => {
                 if (id === sortKeyPath) {
@@ -518,7 +530,7 @@ export const AllPoolsTableSet: FunctionComponent<{
           </div>
         </div>
       </div>
-      <Table<PoolCompositionCell & MetricLoaderCell>
+      <Table<PoolCell>
         className="my-5 w-full lg:text-sm"
         columnDefs={tableCols}
         rowDefs={tableRows}

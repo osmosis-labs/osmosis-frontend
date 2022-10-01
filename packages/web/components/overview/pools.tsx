@@ -59,7 +59,7 @@ export const PoolsOverview: FunctionComponent<{} & CustomClasses> = ({
     >
       <div className="flex flex-col gap-5">
         <h6>OSMO Price</h6>
-        <h2>{osmoPrice?.toString()}</h2>
+        <h2 className="text-wosmongton-100">{osmoPrice?.toString()}</h2>
       </div>
       <div className="flex flex-col gap-5">
         <h6>Next payout in</h6>

@@ -71,20 +71,23 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
           )}
           <ul className="w-full flex flex-col gap-3 mt-20">
             {menus.map(
-              ({
-                label,
-                link,
-                icon,
-                iconSelected,
-                selectionTest,
-                amplitudeEvent,
-              }) => {
+              (
+                {
+                  label,
+                  link,
+                  icon,
+                  iconSelected,
+                  selectionTest,
+                  amplitudeEvent,
+                },
+                index
+              ) => {
                 const selected = selectionTest
                   ? selectionTest.test(router.pathname)
                   : false;
                 return (
                   <li
-                    key={label}
+                    key={index}
                     className={classNames(
                       "px-4 py-3 flex items-center cursor-pointer",
                       {

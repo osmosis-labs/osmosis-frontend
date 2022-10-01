@@ -5,10 +5,7 @@ import { CustomClasses } from "../types";
 
 interface Props extends MenuSelectProps, CustomClasses {
   isOpen: boolean;
-  /** Default: `"left"` */
-  openDropdownHDirection?: "left" | "right";
-  /** Default: `"down"` */
-  openDropdownVDirection?: "down" | "up";
+  isFloating?: boolean;
 }
 
 /**
@@ -19,11 +16,13 @@ export const MenuDropdown: FunctionComponent<Props> = ({
   selectedOptionId,
   onSelect,
   isOpen,
+  isFloating = false,
   className,
 }) => (
   <div
     className={classNames(
-      "absolute flex flex-col bg-osmoverse-900 rounded-b-xl border border-osmoverse-600 select-none z-50",
+      "absolute flex flex-col bg-osmoverse-900 border border-osmoverse-600 select-none z-[1000]",
+      isFloating ? "rounded-xl" : "rounded-b-xl",
       {
         hidden: !isOpen,
       },
@@ -38,6 +37,7 @@ export const MenuDropdown: FunctionComponent<Props> = ({
             "text-rust-200": id === selectedOptionId,
             " text-osmoverse-200 body2": id !== selectedOptionId,
             "rounded-b-xlinset": index === options.length - 1,
+            "rounded-t-xlinset": isFloating,
           }
         )}
         key={id}
