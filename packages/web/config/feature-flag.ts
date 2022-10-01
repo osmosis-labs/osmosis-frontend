@@ -1089,4 +1089,10 @@ export const ExternalIncentiveGaugeAllowList: {
       denom: "uosmo",
     },
   ],
+  "806": [
+    {
+      gaugeId: "29683",
+      denom: "uosmo",
+    },
+  ],
 };
