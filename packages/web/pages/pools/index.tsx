@@ -347,7 +347,13 @@ const Pools: NextPage = observer(function () {
               },
               {
                 title: "External Incentive Pools",
-                content: <ExternalIncentivizedPoolsTableSet />,
+                content: (
+                  <ExternalIncentivizedPoolsTableSet
+                    quickAddLiquidity={(poolId) =>
+                      setAddLiquidityModalPoolId(poolId)
+                    }
+                  />
+                ),
               },
               {
                 title: (
@@ -536,7 +542,11 @@ const Pools: NextPage = observer(function () {
           </section>
           <section className="min-h-screen">
             <div className="mx-auto py-[3.75rem]">
-              <ExternalIncentivizedPoolsTableSet />
+              <ExternalIncentivizedPoolsTableSet
+                quickAddLiquidity={(poolId) =>
+                  setAddLiquidityModalPoolId(poolId)
+                }
+              />
             </div>
           </section>
         </>
