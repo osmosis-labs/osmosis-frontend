@@ -1,6 +1,7 @@
 import { DenomHelper } from "@keplr-wallet/common";
 import { IS_FRONTIER } from "./ibc-assets";
 
+/** UI will go into "halt mode" if `true`. */
 export const IS_HALTED = true;
 
 export const UserAction: { [key: string]: boolean } = {

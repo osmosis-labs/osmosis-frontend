@@ -38,7 +38,7 @@ export const TempBanner: FunctionComponent<{
         IS_FRONTIER ? "py-3" : "py-2"
       )}
     >
-      {IS_FRONTIER && (
+      {IS_FRONTIER && !shouldPersist && (
         <button
           className="absolute w-[20px] -top-1.5 -left-1.5 cursor-pointer"
           onClick={() => setShowBanner(false)}
@@ -80,7 +80,7 @@ export const TempBanner: FunctionComponent<{
             </div>
           </div>
         </div>
-        {!IS_FRONTIER && (
+        {!IS_FRONTIER && !shouldPersist && (
           <button
             className="flex items-center shrink-0 w-[40px] cursor-pointer"
             onClick={() => setShowBanner(false)}
