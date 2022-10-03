@@ -3,7 +3,6 @@ import { isSlippageError, prettifyTxError } from "@osmosis-labs/stores";
 import { ChainInfoWithExplorer } from "../../stores/chain";
 import { displayToast } from "./toast";
 import { ToastType } from "./types";
-import { IS_HALTED } from "../../config";
 
 export function toastOnBroadcastFailed(
   getChain: (chainId: string) => ChainInfoInner<ChainInfoWithExplorer>
@@ -16,24 +15,14 @@ export function toastOnBroadcastFailed(
       caption = e;
     }
 
-    if (IS_HALTED) {
-      displayToast(
-        {
-          message: "Transactions disabled",
-          caption: "Chain halted",
-        },
-        ToastType.ERROR
-      );
-    } else {
-      displayToast(
-        {
-          message: "Transaction Failed",
-          caption:
-            prettifyTxError(caption, getChain(chainId).currencies) ?? caption,
-        },
-        ToastType.ERROR
-      );
-    }
+    displayToast(
+      {
+        message: "Transaction Failed",
+        caption:
+          prettifyTxError(caption, getChain(chainId).currencies) ?? caption,
+      },
+      ToastType.ERROR
+    );
   };
 }
 
