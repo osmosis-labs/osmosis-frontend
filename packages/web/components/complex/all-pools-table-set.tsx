@@ -1,6 +1,6 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { ObservablePoolWithFeeMetrics } from "@osmosis-labs/stores";
+import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
+import { computed } from "mobx";
 import {
   FunctionComponent,
   useState,
@@ -9,6 +9,7 @@ import {
   useEffect,
   useRef,
 } from "react";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { EventName } from "../../config";
 import {
   useFilteredData,
@@ -38,6 +39,20 @@ const poolsMenuOptions = [
 ];
 
 const TVL_FILTER_THRESHOLD = 1000;
+
+type PoolWithMetrics = {
+  pool: ObservableQueryPool;
+  liquidity: PricePretty;
+  myLiquidity: PricePretty;
+  apr?: RatePretty;
+  poolName: string;
+  networkNames: string;
+  volume24h: PricePretty;
+  volume7d: PricePretty;
+  feesSpent24h: PricePretty;
+  feesSpent7d: PricePretty;
+  feesPercentage: string;
+};
 
 export const AllPoolsTableSet: FunctionComponent<{
   tableSet?: "incentivized-pools" | "all-pools";
@@ -81,16 +96,16 @@ export const AllPoolsTableSet: FunctionComponent<{
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
 
   const allPools = queriesOsmosis.queryGammPools.getAllPools();
-  const incentivizedPoolIds =
-    queriesOsmosis.queryIncentivizedPools.incentivizedPools;
 
-  const allPoolsWithMetrics = useMemo(
+  const allPoolsWithMetrics: PoolWithMetrics[] = useMemo(
     () =>
       allPools.map((pool) => ({
-        ...queriesExternal.queryGammPoolFeeMetrics.makePoolWithFeeMetrics(
-          pool,
+        pool,
+        ...queriesExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+          pool.id,
           priceStore
         ),
+        liquidity: pool.computeTotalValueLocked(priceStore),
         myLiquidity: pool
           .computeTotalValueLocked(priceStore)
           .mul(
@@ -99,9 +114,6 @@ export const AllPoolsTableSet: FunctionComponent<{
               pool.id
             )
           ),
-        apr: queriesOsmosis.queryIncentivizedPools
-          .computeMostAPY(pool.id, priceStore)
-          .maxDecimals(2),
         poolName: pool.poolAssets
           .map((asset) => asset.amount.currency.coinDenom)
           .join("/"),
@@ -115,34 +127,37 @@ export const AllPoolsTableSet: FunctionComponent<{
       })),
     [
       allPools,
-      account.bech32Address,
-      queriesOsmosis,
-      priceStore,
-      queriesExternal,
+      queriesOsmosis.queryGammPools.response,
       queriesExternal.queryGammPoolFeeMetrics.response,
+      queriesOsmosis.queryAccountLocked.get(account.bech32Address).response,
+      queriesOsmosis.queryLockedCoins.get(account.bech32Address).response,
+      queriesOsmosis.queryUnlockingCoins.get(account.bech32Address).response,
+      priceStore.response,
+      queriesExternal.queryGammPoolFeeMetrics.response,
+      account.bech32Address,
     ]
   );
 
-  const incentivizedPoolsWithMetrics = useMemo(
-    () =>
-      allPoolsWithMetrics.reduce(
-        (
-          incentivizedPools: ObservablePoolWithFeeMetrics[],
-          poolWithMetrics: ObservablePoolWithFeeMetrics
-        ) => {
-          if (
-            incentivizedPoolIds.some(
-              (incentivizedPoolId) =>
-                poolWithMetrics.pool.id === incentivizedPoolId
-            )
-          ) {
-            incentivizedPools.push(poolWithMetrics);
-          }
-          return incentivizedPools;
-        },
-        []
-      ),
-    [allPoolsWithMetrics, incentivizedPoolIds]
+  const incentivizedPoolsWithMetrics = allPoolsWithMetrics.reduce(
+    (
+      incentivizedPools: PoolWithMetrics[],
+      poolWithMetrics: PoolWithMetrics
+    ) => {
+      if (
+        queriesOsmosis.queryIncentivizedPools.incentivizedPools.some(
+          (incentivizedPoolId) => poolWithMetrics.pool.id === incentivizedPoolId
+        )
+      ) {
+        incentivizedPools.push({
+          ...poolWithMetrics,
+          apr: queriesOsmosis.queryIncentivizedPools
+            .computeMostAPY(poolWithMetrics.pool.id, priceStore)
+            .maxDecimals(2),
+        });
+      }
+      return incentivizedPools;
+    },
+    []
   );
 
   const isIncentivizedPools = activeOptionId === poolsMenuOptions[0].id;
@@ -158,7 +173,11 @@ export const AllPoolsTableSet: FunctionComponent<{
       : activeOptionPools.filter((poolWithMetrics) =>
           poolWithMetrics.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
         );
-  }, [isPoolTvlFiltered, activeOptionPools]);
+  }, [
+    isPoolTvlFiltered,
+    activeOptionPools,
+    queriesExternal.queryGammPoolFeeMetrics.response,
+  ]);
 
   const initialKeyPath = "liquidity";
   const initialSortDirection = "descending";
@@ -185,6 +204,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     filteredPools,
     POOLS_PER_PAGE
   );
+
   const makeSortMechanism = useCallback(
     (keyPath: string) =>
       sortKeyPath === keyPath
@@ -193,31 +213,29 @@ export const AllPoolsTableSet: FunctionComponent<{
             onClickHeader: () => {
               switch (sortDirection) {
                 case "ascending":
-                  const newSortDirection = "descending";
                   logEvent([
                     EventName.Pools.allPoolsListSorted,
                     {
                       sortedBy: keyPath,
-                      sortDirection: newSortDirection,
+                      sortDirection: "descending",
                       sortedOn: "table",
                     },
                   ]);
-                  setSortDirection(newSortDirection);
+                  setSortDirection("descending");
                   break;
                 case "descending":
                   // default sort key toggles forever
                   if (sortKeyPath === initialKeyPath) {
-                    const newSortDirection = "ascending";
                     logEvent([
                       EventName.Pools.allPoolsListSorted,
                       {
                         sortedBy: keyPath,
-                        sortDirection: newSortDirection,
+                        sortDirection: "ascending",
 
                         sortedOn: "table",
                       },
                     ]);
-                    setSortDirection(newSortDirection);
+                    setSortDirection("ascending");
                   } else {
                     // other keys toggle then go back to default
                     setSortKeyPath(initialKeyPath);
@@ -352,9 +370,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     [
       allData,
       isIncentivizedPools,
-      incentivizedPoolIds,
-      queriesExternal,
-      queriesOsmosis,
+      queriesOsmosis.queryIncentivizedPools.isAprFetching,
     ]
   );
 
@@ -443,7 +459,9 @@ export const AllPoolsTableSet: FunctionComponent<{
           placeholder: "Search pools",
         }}
         sortMenuProps={{
-          options: tableCols as MenuOption[],
+          options: tableCols.filter(
+            (col) => typeof col.display === "string" && col.display.length === 0
+          ) as MenuOption[],
           selectedOptionId: sortKeyPath,
           onSelect: (id) =>
             id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id),
