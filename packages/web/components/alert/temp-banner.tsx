@@ -30,7 +30,7 @@ export const TempBanner: FunctionComponent<{
           : undefined,
       }}
       className={classNames(
-        "fixed flex place-content-evenly right-3 top-3 text-white-high md:w-[330px] w-[596px] rounded-2xl",
+        "fixed flex place-content-between right-3 top-3 text-white-high md:w-[330px] w-[596px] rounded-2xl",
         {
           "border border-enabledGold": !IS_FRONTIER,
           "bg-background": !IS_FRONTIER,
@@ -51,36 +51,38 @@ export const TempBanner: FunctionComponent<{
           />
         </button>
       )}
-      <div className="flex items-center md:px-1 px-2 md:gap-1 gap-4">
-        <div className="pt-1.5 mx-2 shrink-0">
-          <Image
-            alt="info"
-            src={
-              IS_FRONTIER
-                ? "/icons/info-white-emphasis.svg"
-                : "/icons/info-secondary-200.svg"
-            }
-            height={20}
-            width={20}
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          {typeof title === "string" ? (
-            <h6 className="md:subtitle1">{title}</h6>
-          ) : (
-            <>{title}</>
-          )}
-          <div
-            className={classNames("text-xs font-body gap-1", {
-              "text-white-mid": !IS_FRONTIER,
-            })}
-          >
-            {message}
+      <div className="flex w-full place-content-between items-center md:px-1 px-2 md:gap-1 gap-4">
+        <div className="flex items-center gap-4 md:gap-1">
+          <div className="pt-1.5 mx-2 shrink-0">
+            <Image
+              alt="info"
+              src={
+                IS_FRONTIER
+                  ? "/icons/info-white-emphasis.svg"
+                  : "/icons/info-secondary-200.svg"
+              }
+              height={20}
+              width={20}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            {typeof title === "string" ? (
+              <h6 className="md:subtitle1">{title}</h6>
+            ) : (
+              <>{title}</>
+            )}
+            <div
+              className={classNames("text-xs font-body gap-1", {
+                "text-white-mid": !IS_FRONTIER,
+              })}
+            >
+              {message}
+            </div>
           </div>
         </div>
         {!IS_FRONTIER && (
           <button
-            className="shrink-0 w-[40px] cursor-pointer"
+            className="flex items-center shrink-0 w-[40px] cursor-pointer"
             onClick={() => setShowBanner(false)}
           >
             <Image

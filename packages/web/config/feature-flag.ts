@@ -1,6 +1,8 @@
 import { DenomHelper } from "@keplr-wallet/common";
 import { IS_FRONTIER } from "./ibc-assets";
 
+export const IS_HALTED = true;
+
 export const UserAction: { [key: string]: boolean } = {
   CreateNewPool: true,
 };
