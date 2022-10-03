@@ -121,14 +121,14 @@ function MyApp({ Component, pageProps }: AppProps) {
             }
           />
         )}
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+          }}
+          transition={Bounce}
+        />
         <MainLayout menus={menus}>
           <Component {...pageProps} />
-          <ToastContainer
-            toastStyle={{
-              backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
-            }}
-            transition={Bounce}
-          />
         </MainLayout>
       </StoreProvider>
     </GetKeplrProvider>
