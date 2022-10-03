@@ -36,6 +36,8 @@ export const PoolQuickActionCell: FunctionComponent<
 
   const doAction = useCallback(
     (optionId) => {
+      setDropdownOpen(false);
+
       switch (optionId) {
         case "add-liquidity":
           onAddLiquidity?.();
@@ -47,10 +49,8 @@ export const PoolQuickActionCell: FunctionComponent<
           onLockTokens?.();
           break;
       }
-
-      setDropdownOpen(false);
     },
-    [poolId, onAddLiquidity, onRemoveLiquidity, onLockTokens]
+    [poolId, onAddLiquidity, onRemoveLiquidity, onLockTokens, setDropdownOpen]
   );
 
   return (
@@ -60,7 +60,7 @@ export const PoolQuickActionCell: FunctionComponent<
         e.stopPropagation();
       }}
     >
-      <button
+      <div
         className="absolute hover:pointer-cursor"
         onClick={(e) => {
           setDropdownOpen(true);
@@ -75,7 +75,7 @@ export const PoolQuickActionCell: FunctionComponent<
           onSelect={(id) => doAction(id)}
           isFloating
         />
-      </button>
+      </div>
     </div>
   );
 };

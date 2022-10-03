@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   ChainGetter,
   QueriesStore,
@@ -9,6 +9,7 @@ import {
   OsmosisQueries,
   ObservableAddLiquidityConfig,
 } from "@osmosis-labs/stores";
+import { useStore } from "../../stores";
 
 /** Maintains a single instance of `ObservableAddLiquidityConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `poolId`, `bech32Address`, and `queryOsmosis.queryGammPoolShare` on render.
@@ -17,9 +18,16 @@ export function useAddLiquidityConfig(
   chainGetter: ChainGetter,
   osmosisChainId: string,
   poolId: string,
-  bech32Address: string,
   queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, OsmosisQueries]>
-) {
+): {
+  config: ObservableAddLiquidityConfig;
+  onAddLiquidity: () => Promise<void>;
+} {
+  const { accountStore } = useStore();
+
+  const account = accountStore.getAccount(osmosisChainId);
+  const { bech32Address } = account;
+
   const queryOsmosis = queriesStore.get(osmosisChainId).osmosis!;
   const [config] = useState(
     () =>
@@ -38,5 +46,44 @@ export function useAddLiquidityConfig(
   config.setSender(bech32Address);
   config.setPoolId(poolId);
   config.setQueryPoolShare(queryOsmosis.queryGammPoolShare);
-  return config;
+
+  const onAddLiquidity = useCallback(async () => {
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        if (config.isSingleAmountIn && config.singleAmountInConfig) {
+          await account.osmosis.sendJoinSwapExternAmountInMsg(
+            config.poolId,
+            {
+              currency: config.singleAmountInConfig.sendCurrency,
+              amount: config.singleAmountInConfig.amount,
+            },
+            undefined,
+            undefined,
+            resolve
+          );
+        } else if (config.shareOutAmount) {
+          await account.osmosis.sendJoinPoolMsg(
+            config.poolId,
+            config.shareOutAmount.toDec().toString(),
+            undefined,
+            undefined,
+            resolve
+          );
+        }
+      } catch (e: any) {
+        console.error(e);
+        reject(e.message);
+      }
+    });
+  }, [
+    account.osmosis,
+    config.isSingleAmountIn,
+    config.singleAmountInConfig,
+    config.poolId,
+    config.singleAmountInConfig?.sendCurrency,
+    config.singleAmountInConfig?.amount,
+    config.shareOutAmount,
+  ]);
+
+  return { config, onAddLiquidity };
 }

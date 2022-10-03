@@ -1,6 +1,5 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import { computed } from "mobx";
 import {
   FunctionComponent,
   useState,
@@ -56,7 +55,8 @@ type PoolWithMetrics = {
 
 export const AllPoolsTableSet: FunctionComponent<{
   tableSet?: "incentivized-pools" | "all-pools";
-}> = observer(({ tableSet = "incentivized-pools" }) => {
+  quickAddLiquidity: (poolId: string) => void;
+}> = observer(({ tableSet = "incentivized-pools", quickAddLiquidity }) => {
   const {
     chainStore,
     queriesExternalStore,
@@ -361,7 +361,7 @@ export const AllPoolsTableSet: FunctionComponent<{
           },
           {
             poolId,
-            onAddLiquidity: () => {},
+            onAddLiquidity: () => quickAddLiquidity(poolId),
             onRemoveLiquidity: () => {},
             onLockTokens: () => {},
           },

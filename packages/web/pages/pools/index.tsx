@@ -6,7 +6,7 @@ import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
 import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
-import { CreatePoolModal } from "../../modals/create-pool";
+import { CreatePoolModal, AddLiquidityModal } from "../../modals";
 import { PoolsOverview } from "../../components/overview/pools";
 import { MetricLoader } from "../../components/loaders";
 import { TabBox } from "../../components/control";
@@ -118,6 +118,11 @@ const Pools: NextPage = observer(function () {
     ];
   }, []);
 
+  // pool quick action modals
+  const [addLiquidityModalPoolId, setAddLiquidityModalPoolId] = useState<
+    string | null
+  >(null);
+
   return (
     <main className="bg-background px-8">
       {isCreatingPool && (
@@ -151,6 +156,13 @@ const Pools: NextPage = observer(function () {
               console.error(e);
             }
           }}
+        />
+      )}
+      {addLiquidityModalPoolId && (
+        <AddLiquidityModal
+          poolId={addLiquidityModalPoolId}
+          isOpen={true}
+          onRequestClose={() => setAddLiquidityModalPoolId(null)}
         />
       )}
       <section className="pt-20 pb-10">
@@ -313,11 +325,25 @@ const Pools: NextPage = observer(function () {
             tabs={[
               {
                 title: "Incentivized Pools",
-                content: <AllPoolsTableSet tableSet="incentivized-pools" />,
+                content: (
+                  <AllPoolsTableSet
+                    tableSet="incentivized-pools"
+                    quickAddLiquidity={(poolId) =>
+                      setAddLiquidityModalPoolId(poolId)
+                    }
+                  />
+                ),
               },
               {
                 title: "All Pools",
-                content: <AllPoolsTableSet tableSet="all-pools" />,
+                content: (
+                  <AllPoolsTableSet
+                    tableSet="all-pools"
+                    quickAddLiquidity={(poolId) =>
+                      setAddLiquidityModalPoolId(poolId)
+                    }
+                  />
+                ),
               },
               {
                 title: "External Incentive Pools",
@@ -501,7 +527,11 @@ const Pools: NextPage = observer(function () {
           </section>
           <section>
             <div className="mx-auto py-[3.75rem]">
-              <AllPoolsTableSet />
+              <AllPoolsTableSet
+                quickAddLiquidity={(poolId) =>
+                  setAddLiquidityModalPoolId(poolId)
+                }
+              />
             </div>
           </section>
           <section className="min-h-screen">

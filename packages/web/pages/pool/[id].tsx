@@ -111,11 +111,10 @@ const Pool: FunctionComponent = observer(() => {
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
     useState(false);
   const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
-  const addLiquidityConfig = useAddLiquidityConfig(
+  const { config: addLiquidityConfig, onAddLiquidity } = useAddLiquidityConfig(
     chainStore,
     chainId,
     pool?.id ?? "",
-    bech32Address,
     queriesStore
   );
   const removeLiquidityConfig = useRemoveLiquidityConfig(
@@ -226,7 +225,7 @@ const Pool: FunctionComponent = observer(() => {
     false;
 
   // user actions
-  const addLiquidity = useCallback(async () => {
+  const addLiquidity = () => {
     logEvent([
       EventName.PoolDetail.addLiquidityStarted,
       {
@@ -254,99 +253,37 @@ const Pool: FunctionComponent = observer(() => {
       },
     ]);
 
-    try {
-      if (
-        addLiquidityConfig.isSingleAmountIn &&
-        addLiquidityConfig.singleAmountInConfig
-      ) {
-        await account.osmosis.sendJoinSwapExternAmountInMsg(
-          addLiquidityConfig.poolId,
-          {
-            currency: addLiquidityConfig.singleAmountInConfig.sendCurrency,
-            amount: addLiquidityConfig.singleAmountInConfig.amount,
-          },
-          undefined,
-          undefined,
-          () => {
-            logEvent([
-              EventName.PoolDetail.addLiquidityCompleted,
-              {
-                poolId,
-                poolName,
-                poolWeight,
-                isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
-                isSingleAsset: addLiquidityConfig.isSingleAmountIn,
-                providingLiquidity:
-                  addLiquidityConfig.isSingleAmountIn &&
-                  addLiquidityConfig.singleAmountInConfig
-                    ? {
-                        [addLiquidityConfig.singleAmountInConfig?.sendCurrency
-                          .coinDenom]: Number(
-                          addLiquidityConfig.singleAmountInConfig.amount
-                        ),
-                      }
-                    : addLiquidityConfig.poolAssetConfigs.reduce(
-                        (acc, cur) => ({
-                          ...acc,
-                          [cur.sendCurrency.coinDenom]: Number(cur.amount),
-                        }),
-                        {}
-                      ),
-              },
-            ]);
+    onAddLiquidity().then(() => {
+      logEvent([
+        EventName.PoolDetail.addLiquidityCompleted,
+        {
+          poolId,
+          poolName,
+          poolWeight,
+          isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
+          isSingleAsset: addLiquidityConfig.isSingleAmountIn,
+          providingLiquidity:
+            addLiquidityConfig.isSingleAmountIn &&
+            addLiquidityConfig.singleAmountInConfig
+              ? {
+                  [addLiquidityConfig.singleAmountInConfig?.sendCurrency
+                    .coinDenom]: Number(
+                    addLiquidityConfig.singleAmountInConfig.amount
+                  ),
+                }
+              : addLiquidityConfig.poolAssetConfigs.reduce(
+                  (acc, cur) => ({
+                    ...acc,
+                    [cur.sendCurrency.coinDenom]: Number(cur.amount),
+                  }),
+                  {}
+                ),
+        },
+      ]);
 
-            setShowManageLiquidityDialog(false);
-          }
-        );
-      } else if (addLiquidityConfig.shareOutAmount) {
-        await account.osmosis.sendJoinPoolMsg(
-          addLiquidityConfig.poolId,
-          addLiquidityConfig.shareOutAmount.toDec().toString(),
-          undefined,
-          undefined,
-          () => {
-            logEvent([
-              EventName.PoolDetail.addLiquidityCompleted,
-              {
-                poolId,
-                poolName,
-                poolWeight,
-                isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
-                isSingleAsset: addLiquidityConfig.isSingleAmountIn,
-                providingLiquidity:
-                  addLiquidityConfig.isSingleAmountIn &&
-                  addLiquidityConfig.singleAmountInConfig
-                    ? {
-                        [addLiquidityConfig.singleAmountInConfig?.sendCurrency
-                          .coinDenom]:
-                          addLiquidityConfig.singleAmountInConfig.amount,
-                      }
-                    : addLiquidityConfig.poolAssetConfigs.reduce(
-                        (acc, cur) => ({
-                          ...acc,
-                          [cur.sendCurrency.coinDenom]: cur.amount,
-                        }),
-                        {}
-                      ),
-              },
-            ]);
-
-            setShowManageLiquidityDialog(false);
-          }
-        );
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }, [
-    account.osmosis,
-    addLiquidityConfig.isSingleAmountIn,
-    addLiquidityConfig.singleAmountInConfig,
-    addLiquidityConfig.poolId,
-    addLiquidityConfig.singleAmountInConfig?.sendCurrency,
-    addLiquidityConfig.singleAmountInConfig?.amount,
-    addLiquidityConfig.shareOutAmount,
-  ]);
+      setShowManageLiquidityDialog(false);
+    });
+  };
   const removeLiquidity = useCallback(async () => {
     logEvent([
       EventName.PoolDetail.removeLiquidityStarted,
