@@ -18,6 +18,7 @@ import {
   AmplitudeEvent,
   EventName,
   IS_FRONTIER,
+  IS_HALTED,
   NavBarEvents,
   PromotedLBPPoolIds,
 } from "../config";
@@ -105,7 +106,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         </Head>
         <OgpMeta />
         <IbcNotifier />
-        {IS_FRONTIER && (
+        {IS_FRONTIER && !IS_HALTED && (
           <TempBanner
             localStorageKey="show_frontier_banner"
             title="You're viewing all permissionless assets"
@@ -121,6 +122,14 @@ function MyApp({ Component, pageProps }: AppProps) {
                 .
               </>
             }
+          />
+        )}
+        {IS_HALTED && (
+          <TempBanner
+            localStorageKey="show_halted_banner"
+            shouldPersist
+            title="Chain is halted"
+            message="Transactions are temporarily disabled"
           />
         )}
         <MainLayout menus={menus}>
