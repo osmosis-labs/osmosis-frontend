@@ -36,13 +36,8 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
     const account = accountStore.getAccount(chainId);
 
-    const pools = Object.keys(ExternalIncentiveGaugeAllowList).map(
-      (poolId: string) => {
-        const pool = queryOsmosis.queryGammPools.getPool(poolId);
-        if (pool) {
-          return pool;
-        }
-      }
+    const pools = Object.keys(ExternalIncentiveGaugeAllowList).map((poolId) =>
+      queryOsmosis.queryGammPools.getPool(poolId)
     );
 
     const externalIncentivizedPools = useMemo(
@@ -76,7 +71,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             return maxRemainingEpoch > 0;
           }
         ),
-      [pools, queryOsmosis]
+      [pools]
     );
 
     const externalIncentivizedPoolsWithMetrics = useMemo(
@@ -108,10 +103,12 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
           }
 
           return {
-            ...queryExternal.queryGammPoolFeeMetrics.makePoolWithFeeMetrics(
-              pool,
+            pool,
+            ...queryExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+              pool.id,
               priceStore
             ),
+            liquidity: pool.computeTotalValueLocked(priceStore),
             epochsRemaining: maxRemainingEpoch,
             myLiquidity: pool
               .computeTotalValueLocked(priceStore)
