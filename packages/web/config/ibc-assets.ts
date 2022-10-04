@@ -910,7 +910,7 @@ export const IBCAssetInfos: (IBCAsset & {
     counterpartyChainId: "teritori-1",
     sourceChannelId: "channel-362",
     destChannelId: "channel-0",
-    coinMinimalDenom: "atori",
+    coinMinimalDenom: "utori",
   },
 
 ].filter((ibcAsset) => {

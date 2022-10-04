@@ -2030,7 +2030,7 @@ const chainInfos = (
           coinDenom: "TORI",
           coinMinimalDenom: "utori",
           coinDecimals: 6,
-          coinGeckoId: "pool:atori",
+          coinGeckoId: "pool:utori",
           coinImageUrl: "/tokens/tori.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
