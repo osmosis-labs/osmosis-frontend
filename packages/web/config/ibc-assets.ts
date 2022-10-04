@@ -119,7 +119,6 @@ export const IBCAssetInfos: (IBCAsset & {
     depositUrlOverride: "https://app.evmos.org/transfer",
     withdrawUrlOverride: "https://app.evmos.org/transfer",
     isVerified: true,
-    isUnstable: true,
   },
   {
     counterpartyChainId: "kava_2222-10",
