@@ -376,10 +376,9 @@ export const AllPoolsTableSet: FunctionComponent<{
             {
               poolId,
               onAddLiquidity: () => quickAddLiquidity(poolId),
-              onRemoveLiquidity: () =>
-                !poolWithMetrics.myLiquidity.toDec().isZero()
-                  ? () => quickRemoveLiquidity(poolId)
-                  : undefined,
+              onRemoveLiquidity: !poolWithMetrics.myLiquidity.toDec().isZero()
+                ? () => quickRemoveLiquidity(poolId)
+                : undefined,
               onLockTokens: () => {},
             },
           ];

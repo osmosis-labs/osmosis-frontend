@@ -46,8 +46,10 @@ export const PoolsOverview: FunctionComponent<{} & CustomClasses> = ({
         `${epochRemainingHour}:${epochRemainingMinute}:${epochRemainingSeconds}`
       );
     };
-    setInterval(updateTimeRemaining, 1000);
+    const intervalId = setInterval(updateTimeRemaining, 1000);
     updateTimeRemaining();
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
