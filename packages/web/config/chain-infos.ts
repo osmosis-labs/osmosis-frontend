@@ -2017,8 +2017,8 @@ const chainInfos = (
       explorerUrlToTx: "https://rebus.explorers.guru/transaction/{txHash}",
     },
     {
-      rpc: "https://",
-      rest: "https://",
+      rpc: "https://rpc.mainnet.teritori.com/",
+      rest: "https://rest.mainnet.teritori.com/",
       chainId: "teritori-1",
       chainName: "Teritori",
       bip44: {
