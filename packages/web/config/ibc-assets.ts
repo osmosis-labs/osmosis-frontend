@@ -906,6 +906,13 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "arebus",
   },
+  {
+    counterpartyChainId: "teritori-1",
+    sourceChannelId: "channel-362",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "atori",
+  },
+
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
