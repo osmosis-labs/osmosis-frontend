@@ -25,7 +25,8 @@ import { POOLS_PER_PAGE } from ".";
 
 export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
   quickAddLiquidity: (poolId: string) => void;
-}> = observer(({ quickAddLiquidity }) => {
+  quickRemoveLiquidity: (poolId: string) => void;
+}> = observer(({ quickAddLiquidity, quickRemoveLiquidity }) => {
   const {
     chainStore,
     queriesExternalStore,
@@ -141,8 +142,9 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
     [
       chainId,
       externalIncentivizedPools,
-      queryOsmosis,
-      queryExternal,
+      queryOsmosis.queryIncentivizedPools.response,
+      queryExternal.queryGammPoolFeeMetrics.response,
+      queryOsmosis.queryGammPools.response,
       priceStore,
       account,
       chainStore,
@@ -320,12 +322,14 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
           {
             poolId,
             onAddLiquidity: () => quickAddLiquidity(poolId),
-            onRemoveLiquidity: () => {},
+            onRemoveLiquidity: !poolWithMetrics.myLiquidity.toDec().isZero()
+              ? () => quickRemoveLiquidity(poolId)
+              : undefined,
             onLockTokens: () => {},
           },
         ];
       }),
-    [allData, queryOsmosis]
+    [allData, queryOsmosis.queryIncentivizedPools.isAprFetching]
   );
 
   if (isMobile) {

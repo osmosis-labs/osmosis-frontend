@@ -10,6 +10,7 @@ export * from "./manage-liquidity";
 export * from "./superfluid-validator";
 export * from "./menu-options";
 export * from "./pre-transfer";
+export * from "./remove-liquidity";
 export * from "./token-select";
 export * from "./trade-tokens";
 export * from "./transfer-asset-select";

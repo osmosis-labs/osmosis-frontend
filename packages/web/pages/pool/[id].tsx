@@ -117,13 +117,8 @@ const Pool: FunctionComponent = observer(() => {
     pool?.id ?? "",
     queriesStore
   );
-  const removeLiquidityConfig = useRemoveLiquidityConfig(
-    chainStore,
-    chainId,
-    pool?.id ?? "",
-    bech32Address,
-    queriesStore
-  );
+  const { config: removeLiquidityConfig, onRemoveLiquidity } =
+    useRemoveLiquidityConfig(chainStore, chainId, pool?.id ?? "", queriesStore);
   const lockLPTokensConfig = useAmountConfig(
     chainStore,
     queriesStore,
@@ -226,105 +221,52 @@ const Pool: FunctionComponent = observer(() => {
 
   // user actions
   const addLiquidity = () => {
-    logEvent([
-      EventName.PoolDetail.addLiquidityStarted,
-      {
-        poolId,
-        poolName,
-        poolWeight,
-        isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
-        isSingleAsset: addLiquidityConfig.isSingleAmountIn,
-        providingLiquidity:
-          addLiquidityConfig.isSingleAmountIn &&
-          addLiquidityConfig.singleAmountInConfig
-            ? {
-                [addLiquidityConfig.singleAmountInConfig?.sendCurrency
-                  .coinDenom]: Number(
-                  addLiquidityConfig.singleAmountInConfig.amount
-                ),
-              }
-            : addLiquidityConfig.poolAssetConfigs.reduce(
-                (acc, cur) => ({
-                  ...acc,
-                  [cur.sendCurrency.coinDenom]: Number(cur.amount),
-                }),
-                {}
-              ),
-      },
-    ]);
+    const poolInfo = {
+      poolId,
+      poolName,
+      poolWeight,
+      isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
+      isSingleAsset: addLiquidityConfig.isSingleAmountIn,
+      providingLiquidity:
+        addLiquidityConfig.isSingleAmountIn &&
+        addLiquidityConfig.singleAmountInConfig
+          ? {
+              [addLiquidityConfig.singleAmountInConfig?.sendCurrency.coinDenom]:
+                Number(addLiquidityConfig.singleAmountInConfig.amount),
+            }
+          : addLiquidityConfig.poolAssetConfigs.reduce(
+              (acc, cur) => ({
+                ...acc,
+                [cur.sendCurrency.coinDenom]: Number(cur.amount),
+              }),
+              {}
+            ),
+    };
+
+    logEvent([EventName.PoolDetail.addLiquidityStarted, poolInfo]);
 
     onAddLiquidity().then(() => {
-      logEvent([
-        EventName.PoolDetail.addLiquidityCompleted,
-        {
-          poolId,
-          poolName,
-          poolWeight,
-          isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
-          isSingleAsset: addLiquidityConfig.isSingleAmountIn,
-          providingLiquidity:
-            addLiquidityConfig.isSingleAmountIn &&
-            addLiquidityConfig.singleAmountInConfig
-              ? {
-                  [addLiquidityConfig.singleAmountInConfig?.sendCurrency
-                    .coinDenom]: Number(
-                    addLiquidityConfig.singleAmountInConfig.amount
-                  ),
-                }
-              : addLiquidityConfig.poolAssetConfigs.reduce(
-                  (acc, cur) => ({
-                    ...acc,
-                    [cur.sendCurrency.coinDenom]: Number(cur.amount),
-                  }),
-                  {}
-                ),
-        },
-      ]);
+      logEvent([EventName.PoolDetail.addLiquidityCompleted, poolInfo]);
 
       setShowManageLiquidityDialog(false);
     });
   };
-  const removeLiquidity = useCallback(async () => {
-    logEvent([
-      EventName.PoolDetail.removeLiquidityStarted,
-      {
-        poolId,
-        poolName,
-        poolWeight,
-        isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
-        poolSharePercentage: removeLiquidityConfig.percentage,
-      },
-    ]);
+  const removeLiquidity = () => {
+    const poolInfo = {
+      poolId,
+      poolName,
+      poolWeight,
+      isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
+      poolSharePercentage: removeLiquidityConfig.percentage,
+    };
 
-    try {
-      await account.osmosis.sendExitPoolMsg(
-        removeLiquidityConfig.poolId,
-        removeLiquidityConfig.poolShareWithPercentage.toDec().toString(),
-        undefined,
-        undefined,
-        () => {
-          logEvent([
-            EventName.PoolDetail.removeLiquidityCompleted,
-            {
-              poolId,
-              poolName,
-              poolWeight,
-              isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
-              poolSharePercentage: removeLiquidityConfig.percentage,
-            },
-          ]);
+    logEvent([EventName.PoolDetail.removeLiquidityStarted, poolInfo]);
 
-          setShowManageLiquidityDialog(false);
-        }
-      );
-    } catch (e) {
-      console.error(e);
-    }
-  }, [
-    account.osmosis,
-    removeLiquidityConfig.poolId,
-    removeLiquidityConfig.poolShareWithPercentage,
-  ]);
+    onRemoveLiquidity().then(() => {
+      logEvent([EventName.PoolDetail.removeLiquidityCompleted, poolInfo]);
+      setShowManageLiquidityDialog(false);
+    });
+  };
   const lockToken = useCallback(
     async (gaugeId, electSuperfluid) => {
       const gauge = allLockupGauges?.find((gauge) => gauge.id === gaugeId);

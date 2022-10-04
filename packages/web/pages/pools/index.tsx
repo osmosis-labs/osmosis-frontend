@@ -6,7 +6,11 @@ import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
 import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
-import { CreatePoolModal, AddLiquidityModal } from "../../modals";
+import {
+  CreatePoolModal,
+  AddLiquidityModal,
+  RemoveLiquidityModal,
+} from "../../modals";
 import { PoolsOverview } from "../../components/overview/pools";
 import { MetricLoader } from "../../components/loaders";
 import { TabBox } from "../../components/control";
@@ -122,6 +126,9 @@ const Pools: NextPage = observer(function () {
   const [addLiquidityModalPoolId, setAddLiquidityModalPoolId] = useState<
     string | null
   >(null);
+  const [removeLiquidityModalPoolId, setRemoveLiquidityModalPoolId] = useState<
+    string | null
+  >(null);
 
   return (
     <main className="bg-background px-8">
@@ -163,6 +170,13 @@ const Pools: NextPage = observer(function () {
           poolId={addLiquidityModalPoolId}
           isOpen={true}
           onRequestClose={() => setAddLiquidityModalPoolId(null)}
+        />
+      )}
+      {removeLiquidityModalPoolId && (
+        <RemoveLiquidityModal
+          poolId={removeLiquidityModalPoolId}
+          isOpen={true}
+          onRequestClose={() => setRemoveLiquidityModalPoolId(null)}
         />
       )}
       <section className="pt-20 pb-10">
@@ -331,6 +345,9 @@ const Pools: NextPage = observer(function () {
                     quickAddLiquidity={(poolId) =>
                       setAddLiquidityModalPoolId(poolId)
                     }
+                    quickRemoveLiquidity={(poolId) =>
+                      setRemoveLiquidityModalPoolId(poolId)
+                    }
                   />
                 ),
               },
@@ -342,6 +359,9 @@ const Pools: NextPage = observer(function () {
                     quickAddLiquidity={(poolId) =>
                       setAddLiquidityModalPoolId(poolId)
                     }
+                    quickRemoveLiquidity={(poolId) =>
+                      setRemoveLiquidityModalPoolId(poolId)
+                    }
                   />
                 ),
               },
@@ -351,6 +371,9 @@ const Pools: NextPage = observer(function () {
                   <ExternalIncentivizedPoolsTableSet
                     quickAddLiquidity={(poolId) =>
                       setAddLiquidityModalPoolId(poolId)
+                    }
+                    quickRemoveLiquidity={(poolId) =>
+                      setRemoveLiquidityModalPoolId(poolId)
                     }
                   />
                 ),
@@ -537,6 +560,9 @@ const Pools: NextPage = observer(function () {
                 quickAddLiquidity={(poolId) =>
                   setAddLiquidityModalPoolId(poolId)
                 }
+                quickRemoveLiquidity={(poolId) =>
+                  setRemoveLiquidityModalPoolId(poolId)
+                }
               />
             </div>
           </section>
@@ -545,6 +571,9 @@ const Pools: NextPage = observer(function () {
               <ExternalIncentivizedPoolsTableSet
                 quickAddLiquidity={(poolId) =>
                   setAddLiquidityModalPoolId(poolId)
+                }
+                quickRemoveLiquidity={(poolId) =>
+                  setRemoveLiquidityModalPoolId(poolId)
                 }
               />
             </div>
