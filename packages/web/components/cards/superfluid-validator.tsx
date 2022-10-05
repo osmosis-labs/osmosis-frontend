@@ -5,8 +5,9 @@ import { MobileProps } from "../types";
 export const SuperfluidValidatorCard: FunctionComponent<
   {
     validatorName?: string;
-    validatorImgSrc: string;
+    validatorImgSrc?: string;
     validatorCommission?: string;
+    inactive?: "inactive" | "jailed";
     delegation: string;
     apr: string;
   } & MobileProps
@@ -14,6 +15,7 @@ export const SuperfluidValidatorCard: FunctionComponent<
   validatorName,
   validatorImgSrc,
   validatorCommission,
+  inactive,
   delegation,
   apr,
   isMobile = false,
@@ -33,12 +35,19 @@ export const SuperfluidValidatorCard: FunctionComponent<
         )}
         <div className="flex place-content-between">
           <div className="flex gap-3">
-            <div className="rounded-full border border-enabledGold w-14 h-14 p-1 flex shrink-0">
-              <img className="rounded-full" alt="" src={validatorImgSrc} />
-            </div>
+            {validatorImgSrc && (
+              <div className="rounded-full border border-enabledGold w-14 h-14 p-1 flex shrink-0">
+                <img className="rounded-full" alt="" src={validatorImgSrc} />
+              </div>
+            )}
             <div className="flex flex-col place-content-evenly">
               <span className="subtitle2 md:text-sm text-white-high">
                 {validatorName ?? ""}
+                {inactive
+                  ? inactive === "jailed"
+                    ? " (Jailed)"
+                    : " (Inactive)"
+                  : undefined}
               </span>
               <span className="text-sm text-iconDefault">
                 {t("pool.superfluidValidatorCard.commission", {

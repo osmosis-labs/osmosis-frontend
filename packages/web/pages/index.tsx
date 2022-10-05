@@ -3,9 +3,10 @@ import type { NextPage } from "next";
 import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 import { TradeClipboard } from "../components/trade-clipboard";
 import { useStore } from "../stores";
-import { IS_FRONTIER } from "../config";
+import { EventName, IS_FRONTIER } from "../config";
 import { Dec } from "@keplr-wallet/unit";
 import { useMemo, useRef } from "react";
+import { useAmplitudeAnalytics } from "../hooks";
 
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore } = useStore();
@@ -95,10 +96,21 @@ const Home: NextPage = observer(function () {
                 break;
               }
             }
+
+            // only pools with at least 1,000,000 STARS
+            if (
+              "originChainId" in asset.amount.currency &&
+              asset.amount.currency.coinMinimalDenom ===
+                "ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4"
+            ) {
+              if (asset.amount.toDec().gt(new Dec(1_000_000))) {
+                hasEnoughAssets = true;
+                break;
+              }
+            }
           }
 
           if (hasEnoughAssets) {
-            console.log(`${pool.id} will be included to swap router`);
             poolsPassed.current.set(pool.id, true);
           }
 
@@ -108,8 +120,12 @@ const Home: NextPage = observer(function () {
     [allPools]
   );
 
+  useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Swap.pageViewed],
+  });
+
   return (
-    <main className="relative bg-background h-screen">
+    <main className="relative bg-background h-full">
       <div className="absolute w-full h-full bg-home-bg-pattern bg-repeat-x bg-cover">
         <svg
           className="absolute w-full h-full lg:hidden"

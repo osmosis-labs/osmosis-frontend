@@ -4,6 +4,7 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 const IS_FRONTIER = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
 
 module.exports = {
+  mode: "jit",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
@@ -20,6 +21,27 @@ module.exports = {
         faint: "rgba(255, 255, 255, 0.12)",
       },
       transparent: "transparent",
+      osmoverse: {
+        100: "#E4E1FB",
+        200: "#CEC8F3",
+        300: "#B0AADC",
+        400: "#958FC0",
+        500: "#736CA3",
+        600: "#565081",
+        700: "#3C356D",
+        800: "#282750",
+        900: "#140F34",
+      },
+      wosmongton: {
+        100: "#D3D1FF",
+        200: "#B3B1FD",
+        400: "#6A67EA",
+        500: "#5B57FA",
+        700: "#462ADF",
+      },
+      rust: {
+        200: "#F8C2B0",
+      },
       primary: IS_FRONTIER
         ? {
             50: "#8A86FF",
@@ -182,6 +204,9 @@ module.exports = {
         "0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2)",
     },
     screens: {
+      "3xl": { max: "1792px" },
+      // => @media (max-width: 1792px) { ... }
+
       "2xl": { max: "1536px" },
       // => @media (max-width: 1536px) { ... }
 
@@ -212,6 +237,10 @@ module.exports = {
       xs: { max: "420px" },
     },
     extend: {
+      height: {
+        navbar: "88px",
+        content: "calc(100vh - 88px)",
+      },
       width: {
         loader: {
           1: "3.75rem",
@@ -259,10 +288,11 @@ module.exports = {
         outBack: "cubic-bezier(0.46, 0.47, 0.4, 1.4)",
         inBack: "cubic-bezier(0.7, -0.4, 0.52, 0.51)",
       },
+      transitionProperty: {
+        width: "width",
+        borderRadius: "border-radius",
+      },
     },
-    // fontWeight: {
-    //   bold: 600, // font-bold
-    // },
   },
   plugins: [],
 };

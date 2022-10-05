@@ -3,35 +3,172 @@ import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
   useState,
+  useEffect,
   ComponentProps,
   useCallback,
 } from "react";
 import { PricePretty } from "@keplr-wallet/unit";
-import { IBCCurrency } from "@keplr-wallet/types";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { useStore } from "../../stores/";
-import { Overview } from "../../components/overview";
+import { makeLocalStorageKVStore } from "../../stores/kv-store";
+import { useStore } from "../../stores";
+import { ObservableTransferUIConfig } from "../../stores/assets";
 import { AssetsTable } from "../../components/table/assets-table";
 import { DepoolingTable } from "../../components/table/depooling-table";
 import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards/";
 import { Metric } from "../../components/types";
 import { MetricLoader } from "../../components/loaders";
-import { IbcTransferModal } from "../../modals/ibc-transfer";
-import { useWindowSize } from "../../hooks";
+import { priceFormatter } from "../../components/utils";
 import { useTranslation } from "react-multi-lang";
+import {
+  IbcTransferModal,
+  BridgeTransferModal,
+  TransferAssetSelectModal,
+} from "../../modals";
+import { ConnectNonIbcWallet, PreTransferModal } from "../../modals";
+import { useWindowSize, useAmplitudeAnalytics } from "../../hooks";
+import { WalletConnectQRModal } from "../../modals";
+import { EventName } from "../../config";
 
 const INIT_POOL_CARD_COUNT = 6;
 
 const Assets: NextPage = observer(() => {
   const { isMobile } = useWindowSize();
+  const {
+    assetsStore,
+    chainStore: {
+      osmosis: { chainId },
+    },
+    accountStore,
+    navBarStore,
+  } = useStore();
+  const { nativeBalances, ibcBalances } = assetsStore;
+  const account = accountStore.getAccount(chainId);
+
+  const [transferConfig] = useState(
+    () =>
+      new ObservableTransferUIConfig(
+        assetsStore,
+        account,
+        makeLocalStorageKVStore("transfer-ui-config")
+      )
+  );
+
+  // set up user analytics
+  const { logEvent, setUserProperty } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Assets.pageViewed],
+  });
+  // mobile only
+  const [preTransferModalProps, setPreTransferModalProps] =
+    useState<ComponentProps<typeof PreTransferModal> | null>(null);
+  const launchPreTransferModal = useCallback(
+    (coinDenom: string) => {
+      const ibcBalance = ibcBalances.find(
+        (ibcBalance) => ibcBalance.balance.denom === coinDenom
+      );
+
+      if (!ibcBalance) return;
+
+      setPreTransferModalProps({
+        isOpen: true,
+        selectedToken: ibcBalance.balance,
+        tokens: ibcBalances.map(({ balance }) => balance),
+        externalDepositUrl: ibcBalance.depositUrlOverride,
+        externalWithdrawUrl: ibcBalance.withdrawUrlOverride,
+        isUnstable: ibcBalance.isUnstable,
+        onSelectToken: launchPreTransferModal,
+        onWithdraw: () => {
+          transferConfig.transferAsset(
+            "withdraw",
+            ibcBalance.chainInfo.chainId,
+            coinDenom
+          );
+          setPreTransferModalProps(null);
+        },
+        onDeposit: () => {
+          transferConfig.transferAsset(
+            "deposit",
+            ibcBalance.chainInfo.chainId,
+            coinDenom
+          );
+          setPreTransferModalProps(null);
+        },
+        onRequestClose: () => setPreTransferModalProps(null),
+      });
+    },
+    [ibcBalances]
+  );
+
+  useEffect(() => {
+    setUserProperty(
+      "osmoBalance",
+      Number(
+        nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()
+      )
+    );
+  }, [nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()]);
+
+  // set nav bar ctas
+  useEffect(() => {
+    navBarStore.callToActionButtons = [
+      {
+        label: "Deposit",
+        onClick: () => {
+          transferConfig.startTransfer("deposit");
+          logEvent([EventName.Assets.depositClicked]);
+        },
+      },
+      {
+        label: "Withdraw",
+        onClick: () => {
+          transferConfig.startTransfer("withdraw");
+          logEvent([EventName.Assets.withdrawClicked]);
+        },
+      },
+    ];
+  }, []);
 
   return (
-    <main className="bg-background">
+    <main className="flex flex-col gap-20 bg-background p-8">
       <AssetsOverview />
+      {isMobile && preTransferModalProps && (
+        <PreTransferModal {...preTransferModalProps} />
+      )}
+      {transferConfig.assetSelectModal && (
+        <TransferAssetSelectModal {...transferConfig.assetSelectModal} />
+      )}
+      {transferConfig.connectNonIbcWalletModal && (
+        <ConnectNonIbcWallet {...transferConfig.connectNonIbcWalletModal} />
+      )}
+      {transferConfig.ibcTransferModal && (
+        <IbcTransferModal {...transferConfig.ibcTransferModal} />
+      )}
+      {transferConfig.bridgeTransferModal && (
+        <BridgeTransferModal {...transferConfig.bridgeTransferModal} />
+      )}
+      {transferConfig.walletConnectEth.sessionConnectUri && (
+        <WalletConnectQRModal
+          isOpen={true}
+          uri={transferConfig.walletConnectEth.sessionConnectUri || ""}
+          onRequestClose={() => transferConfig.walletConnectEth.disable()}
+        />
+      )}
+      <AssetsTable
+        nativeBalances={nativeBalances}
+        ibcBalances={ibcBalances}
+        onDepositIntent={() => transferConfig.startTransfer("deposit")}
+        onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
+        onDeposit={(chainId, coinDenom) =>
+          isMobile
+            ? launchPreTransferModal(coinDenom)
+            : transferConfig.transferAsset("deposit", chainId, coinDenom)
+        }
+        onWithdraw={(chainId, coinDenom) =>
+          transferConfig.transferAsset("withdraw", chainId, coinDenom)
+        }
+      />
       {!isMobile && <PoolAssets />}
-      <ChainAssets />
-      <section className="bg-surface py-2">
+      <section className="bg-surface">
         <DepoolingTable
           className="p-10 md:p-5 max-w-container mx-auto"
           tableClassName="md:w-screen md:-mx-5"
@@ -43,7 +180,6 @@ const Assets: NextPage = observer(() => {
 
 const AssetsOverview: FunctionComponent = observer(() => {
   const { assetsStore } = useStore();
-  const { isMobile } = useWindowSize();
   const t = useTranslation();
 
   const totalAssetsValue = assetsStore.calcValueOf([
@@ -61,34 +197,62 @@ const AssetsOverview: FunctionComponent = observer(() => {
     assetsStore.unstakingBalance,
   ]);
 
+  // set up user analytics
+  const { setUserProperty } = useAmplitudeAnalytics();
+  useEffect(() => {
+    setUserProperty(
+      "totalAssetsPrice",
+      Number(totalAssetsValue.trim(true).toDec().toString(2))
+    );
+    setUserProperty(
+      "unbondedAssetsPrice",
+      Number(availableAssetsValue.trim(true).toDec().toString(2))
+    );
+    setUserProperty(
+      "bondedAssetsPrice",
+      Number(bondedAssetsValue.trim(true).toDec().toString(2))
+    );
+    setUserProperty(
+      "stakedOsmoPrice",
+      Number(stakedAssetsValue.trim(true).toDec().toString(2))
+    );
+  }, [
+    totalAssetsValue.toString(),
+    availableAssetsValue.toString(),
+    bondedAssetsValue.toString(),
+    stakedAssetsValue.toString(),
+  ]);
+
+  const Metric: FunctionComponent<Metric> = ({ label, value }) => (
+    <div className="flex flex-col gap-5">
+      <h6>{label}</h6>
+      <h2 className="text-wosmongton-100">{value}</h2>
+    </div>
+  );
+
   return (
-    <Overview
-      title={isMobile ? t("assets.title") : <h4>{t("assets.title")}</h4>}
-      primaryOverviewLabels={[
-        {
-          label: t("assets.totalAssets"),
-          value: totalAssetsValue.toString(),
-        },
-        {
-          label: t("assets.unbondedAssets"),
-          value: availableAssetsValue.toString(),
-        },
-        {
-          label: t("assets.bondedAssets"),
-          value: bondedAssetsValue.toString(),
-        },
-        {
-          label: t("assets.stakedAssets"),
-          value: stakedAssetsValue.toString(),
-        },
-      ]}
-    />
+    <div className="w-full flex items-center gap-[100px] bg-osmoverse-800 rounded-[32px] px-20 py-10">
+      <Metric
+        label={t("assets.totalAssets")}
+        value={totalAssetsValue.toString()}
+      />
+      <Metric
+        label={t("assets.bondedAssets")}
+        value={bondedAssetsValue.toString()}
+      />
+      <Metric
+        label={t("assets.unbondedAssets")}
+        value={availableAssetsValue.toString()}
+      />
+    </div>
   );
 });
 
 const PoolAssets: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore } = useStore();
+  const { setUserProperty } = useAmplitudeAnalytics();
   const t = useTranslation();
+
   const { chainId } = chainStore.osmosis;
   const { bech32Address } = accountStore.getAccount(chainId);
   const ownedPoolIds = queriesStore
@@ -96,96 +260,19 @@ const PoolAssets: FunctionComponent = observer(() => {
     .osmosis!.queryGammPoolShare.getOwnPools(bech32Address);
   const [showAllPools, setShowAllPools] = useState(false);
 
+  useEffect(() => {
+    setUserProperty("myPoolsCount", ownedPoolIds.length);
+  }, [ownedPoolIds.length]);
+
+  if (ownedPoolIds.length === 0) {
+    return null;
+  }
+
   return (
-    <section className="bg-background">
-      <div className="max-w-container mx-auto md:px-4 px-10 py-5">
-        <h5>{t("assets.myPools")}</h5>
-        <PoolCards {...{ showAllPools, ownedPoolIds, setShowAllPools }} />
-      </div>
+    <section>
+      <h5>{t("assets.myPools")}</h5>
+      <PoolCards {...{ showAllPools, ownedPoolIds, setShowAllPools }} />
     </section>
-  );
-});
-
-const ChainAssets: FunctionComponent = observer(() => {
-  const {
-    assetsStore: { nativeBalances, ibcBalances },
-  } = useStore();
-
-  const [transferModal, setTransferModal] = useState<ComponentProps<
-    typeof IbcTransferModal
-  > | null>(null);
-
-  const openTransferModal = useCallback(
-    (mode: "deposit" | "withdraw", chainId: string, coinDenom: string) => {
-      const balance = ibcBalances.find(
-        (bal) =>
-          bal.chainInfo.chainId === chainId &&
-          bal.balance.currency.coinDenom === coinDenom
-      );
-
-      if (!balance) {
-        setTransferModal(null);
-        return;
-      }
-
-      const currency = balance.balance.currency;
-      // IBC multihop currency
-      const modifiedCurrency =
-        mode === "deposit" && balance.depositingSrcMinDenom
-          ? {
-              coinDecimals: currency.coinDecimals,
-              coinGeckoId: currency.coinGeckoId,
-              coinImageUrl: currency.coinImageUrl,
-              coinDenom: currency.coinDenom,
-              coinMinimalDenom: "",
-              paths: (currency as IBCCurrency).paths.slice(0, 1),
-              originChainId: balance.chainInfo.chainId,
-              originCurrency: {
-                coinDecimals: currency.coinDecimals,
-                coinImageUrl: currency.coinImageUrl,
-                coinDenom: currency.coinDenom,
-                coinMinimalDenom: balance.depositingSrcMinDenom,
-              },
-            }
-          : currency;
-
-      const {
-        chainInfo: { chainId: counterpartyChainId },
-        sourceChannelId,
-        destChannelId,
-      } = balance;
-
-      setTransferModal({
-        isOpen: true,
-        onRequestClose: () => setTransferModal(null),
-        currency: modifiedCurrency as IBCCurrency,
-        counterpartyChainId: counterpartyChainId,
-        sourceChannelId,
-        destChannelId,
-        isWithdraw: mode === "withdraw",
-        ics20ContractAddress:
-          "ics20ContractAddress" in balance
-            ? balance.ics20ContractAddress
-            : undefined,
-      });
-    },
-    [ibcBalances, setTransferModal]
-  );
-
-  return (
-    <>
-      {transferModal && <IbcTransferModal {...transferModal} />}
-      <AssetsTable
-        nativeBalances={nativeBalances}
-        ibcBalances={ibcBalances}
-        onDeposit={(chainId, coinDenom) =>
-          openTransferModal("deposit", chainId, coinDenom)
-        }
-        onWithdraw={(chainId, coinDenom) =>
-          openTransferModal("withdraw", chainId, coinDenom)
-        }
-      />
-    </>
   );
 });
 
@@ -193,26 +280,37 @@ const PoolCards: FunctionComponent<{
   showAllPools: boolean;
   ownedPoolIds: string[];
   setShowAllPools: (show: boolean) => void;
-}> = observer(({ showAllPools, ownedPoolIds, setShowAllPools }) => (
-  <>
-    <div className="my-5 grid grid-cards">
-      <PoolCardsDisplayer
-        poolIds={
-          showAllPools
-            ? ownedPoolIds
-            : ownedPoolIds.slice(0, INIT_POOL_CARD_COUNT)
-        }
-      />
-    </div>
-    {ownedPoolIds.length > INIT_POOL_CARD_COUNT && (
-      <ShowMoreButton
-        className="m-auto"
-        isOn={showAllPools}
-        onToggle={() => setShowAllPools(!showAllPools)}
-      />
-    )}
-  </>
-));
+}> = observer(({ showAllPools, ownedPoolIds, setShowAllPools }) => {
+  const { logEvent } = useAmplitudeAnalytics();
+  return (
+    <>
+      <div className="my-5 grid grid-cards">
+        <PoolCardsDisplayer
+          poolIds={
+            showAllPools
+              ? ownedPoolIds
+              : ownedPoolIds.slice(0, INIT_POOL_CARD_COUNT)
+          }
+        />
+      </div>
+      {ownedPoolIds.length > INIT_POOL_CARD_COUNT && (
+        <ShowMoreButton
+          className="m-auto"
+          isOn={showAllPools}
+          onToggle={() => {
+            logEvent([
+              EventName.Assets.assetsListMoreClicked,
+              {
+                isOn: !showAllPools,
+              },
+            ]);
+            setShowAllPools(!showAllPools);
+          }}
+        />
+      )}
+    </>
+  );
+});
 
 const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
   ({ poolIds }) => {
@@ -278,13 +376,8 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                   label: t("assets.poolCards.FeeAPY"),
                   value: (() => {
                     const queriesExternal = queriesExternalStore.get();
-                    const poolWithFeeMetrics =
-                      queriesExternal.queryGammPoolFeeMetrics.makePoolWithFeeMetrics(
-                        pool,
-                        priceStore
-                      );
                     return queriesExternal.queryGammPoolFeeMetrics.get7dPoolFeeApy(
-                      poolWithFeeMetrics,
+                      pool,
                       priceStore
                     );
                   })()
@@ -293,7 +386,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                 },
             {
               label: t("assets.poolCards.liquidity"),
-              value: pool.computeTotalValueLocked(priceStore).toString(),
+              value: priceFormatter(pool.computeTotalValueLocked(priceStore)),
             },
             queriesOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
@@ -320,6 +413,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
         if (aFiatValue.toDec().lt(bFiatValue.toDec())) return 1;
         return 0;
       });
+    const { logEvent } = useAmplitudeAnalytics();
 
     return (
       <>
@@ -332,6 +426,24 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
             isSuperfluid={queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
               pool.id
             )}
+            onClick={() =>
+              logEvent([
+                EventName.Assets.myPoolsCardClicked,
+                {
+                  poolId: pool.id,
+                  poolName: pool.poolAssets
+                    .map((poolAsset) => poolAsset.amount.denom)
+                    .join(" / "),
+                  poolWeight: pool.poolAssets
+                    .map((poolAsset) => poolAsset.weightFraction.toString())
+                    .join(" / "),
+                  isSuperfluidPool:
+                    queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+                      pool.id
+                    ),
+                },
+              ])
+            }
           />
         ))}
       </>

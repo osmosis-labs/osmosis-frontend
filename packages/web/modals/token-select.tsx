@@ -30,12 +30,7 @@ export const TokenSelectModal: FunctionComponent<
       onClick={(e) => e.stopPropagation()}
     >
       <div className="w-[1.125rem] h-[1.125rem] shrink-0">
-        <Image
-          src="/icons/search-hollow.svg"
-          alt="search"
-          width={18}
-          height={18}
-        />
+        <Image src="/icons/search.svg" alt="search" width={18} height={18} />
       </div>
       <input
         type="text"
@@ -68,6 +63,7 @@ export const TokenSelectModal: FunctionComponent<
             onClick={(e) => {
               e.stopPropagation();
               props.onSelect(coinDenom);
+              props.onRequestClose();
             }}
           >
             <button className="flex items-center justify-between text-left w-full">

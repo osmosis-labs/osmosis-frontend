@@ -89,7 +89,7 @@
   }
 
   thead > tr > th:first-child {
-    @apply md:rounded-none rounded-tl-2xl pl-8 pr-3 py-3;
+    @apply rounded-l-full md:rounded-none pl-8 pr-3 py-3;
   }
 
   thead > tr > th {
@@ -97,7 +97,7 @@
   }
 
   thead > tr > th:last-child {
-    @apply md:rounded-none rounded-tr-2xl pl-3 pr-8 py-3;
+    @apply rounded-r-full md:rounded-none pl-3 pr-8 py-3;
   }
 
   tbody > tr > td:first-child {
@@ -113,7 +113,7 @@
   }
 
   .grid-cards {
-    @apply grid-cols-3 gap-8 1.5xl:grid-cols-2 1.5md:grid-cols-1;
+    @apply grid-cols-4 gap-8 3xl:grid-cols-3 1.5xl:grid-cols-2 1.5md:grid-cols-1;
   }
 
   /* Chrome, Safari and Opera */
@@ -208,7 +208,7 @@
 
 /* Toasts override styles in `react-toastify/dist/ReactToastify.css` */
 .Toastify__toast-container {
-  z-index: 99 !important;
+  z-index: 200 !important;
   max-width: 360px !important;
   min-width: 360px !important;
 }
@@ -251,4 +251,18 @@
 /** CHARTS */
 .highcharts-background {
   fill-opacity: 0;
+}
+
+.pulse {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }

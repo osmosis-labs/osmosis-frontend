@@ -1,12 +1,12 @@
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
-import { useEffect } from "react";
+import Head from "next/head";
 import type { AppProps } from "next/app";
+import { useEffect, useMemo } from "react";
 import { enableStaticRendering } from "mobx-react-lite";
 import { ToastContainer, Bounce } from "react-toastify";
-import init from "@socialgouv/matomo-next";
 import { StoreProvider } from "../stores";
-import { MainLayout } from "../components/layouts";
+import { MainLayout, MainLayoutMenu } from "../components/layouts";
 import { TempBanner } from "../components/alert/temp-banner";
 import { OgpMeta } from "../components/ogp-meta";
 import dayjs from "dayjs";
@@ -15,7 +15,13 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import { GetKeplrProvider } from "../hooks";
 import { IbcNotifier } from "../stores/ibc-notifier";
-import { IS_FRONTIER } from "../config";
+import {
+  AmplitudeEvent,
+  EventName,
+  IS_FRONTIER,
+  PromotedLBPPoolIds,
+} from "../config";
+import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
 import {
   setDefaultLanguage,
   setLanguage,
@@ -24,9 +30,9 @@ import {
 } from "react-multi-lang";
 
 import en from "../localizations/en.json";
-import "../localizations/dayjs_locale_en.js";
+import "../localizations/dayjs-locale-en.js";
 import fr from "../localizations/fr.json";
-import "../localizations/dayjs_locale_fr.js";
+import "../localizations/dayjs-locale-fr.js";
 import { Formatted } from "../components/localization";
 
 dayjs.extend(relativeTime);
@@ -41,55 +47,63 @@ setDefaultLanguage(DEFAULT_LANGUAGE);
 
 function MyApp({ Component, pageProps }: AppProps) {
   const t = useTranslation();
-  const menus = [
-    {
-      label: t("menu.swap"),
-      link: "/",
-      icon: IS_FRONTIER ? "/icons/trade-white.svg" : "/icons/trade.svg",
-      iconSelected: "/icons/trade-selected.svg",
-      selectionTest: /\/$/,
-    },
-    {
-      label: t("menu.pools"),
-      link: "/pools",
-      icon: IS_FRONTIER ? "/icons/pool-white.svg" : "/icons/pool.svg",
-      iconSelected: "/icons/pool-selected.svg",
-      selectionTest: /\/pools/,
-    },
-    {
-      label: t("menu.assets"),
-      link: "/assets",
-      icon: IS_FRONTIER ? "/icons/asset-white.svg" : "/icons/asset.svg",
-      iconSelected: "/icons/asset-selected.svg",
-      selectionTest: /\/assets/,
-    },
-    {
-      label: t("menu.stake"),
-      link: "https://wallet.keplr.app/chains/osmosis",
-      icon: IS_FRONTIER ? "/icons/ticket-white.svg" : "/icons/ticket.svg",
-    },
-    {
-      label: t("menu.vote"),
-      link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
-      icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
-    },
-    {
-      label: t("menu.info"),
-      link: "https://info.osmosis.zone",
-      icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
-    },
-  ];
+  const menus = useMemo(() => {
+    let m: MainLayoutMenu[] = [
+      {
+        label: t("menu.swap"),
+        link: "/",
+        icon: IS_FRONTIER ? "/icons/trade-white.svg" : "/icons/trade.svg",
+        iconSelected: "/icons/trade-white.svg",
+        selectionTest: /\/$/,
+      },
+      {
+        label: t("menu.pools"),
+        link: "/pools",
+        icon: IS_FRONTIER ? "/icons/pool-white.svg" : "/icons/pool.svg",
+        iconSelected: "/icons/pool-white.svg",
+        selectionTest: /\/pools/,
+      },
+      {
+        label: t("menu.assets"),
+        link: "/assets",
+        icon: IS_FRONTIER ? "/icons/asset-white.svg" : "/icons/asset.svg",
+        iconSelected: "/icons/asset-white.svg",
+        selectionTest: /\/assets/,
+      },
+    ];
 
-  // matomo analytics
-  useEffect(() => {
-    if (IS_FRONTIER) {
-      // only testing matomo on frontier for now
-      init({
-        url: "https://analyze.osmosis.zone/",
-        siteId: "4",
+    if (PromotedLBPPoolIds.length > 0) {
+      menus.push({
+        label: "Bootstrap",
+        link: "/bootstrap",
+        icon: "/icons/pool-white.svg",
+        selectionTest: /\/bootstrap/,
       });
     }
-  }, []);
+
+    m.push(
+      {
+        label: t("menu.stake"),
+        link: "https://wallet.keplr.app/chains/osmosis",
+        icon: "/icons/ticket-white.svg",
+        amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
+      },
+      {
+        label: t("menu.vote"),
+        link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
+        icon: "/icons/vote-white.svg",
+        amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
+      },
+      {
+        label: t("menu.info"),
+        link: "https://info.osmosis.zone",
+        icon: "/icons/chart-white.svg",
+        amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
+      }
+    );
+
+    return m;
+  }, [t]);
 
   // Localization
   useEffect(() => {
@@ -105,10 +119,20 @@ function MyApp({ Component, pageProps }: AppProps) {
       setLanguage(userLanguage);
     }
   }, []);
+  useAmplitudeAnalytics({ init: true });
 
   return (
     <GetKeplrProvider>
       <StoreProvider>
+        <Head>
+          {/* metamask Osmosis app icon */}
+          <link
+            rel="shortcut icon"
+            href={`${
+              typeof window !== "undefined" ? window.origin : ""
+            }/osmosis-logo-wc.png`}
+          />
+        </Head>
         <OgpMeta />
         <IbcNotifier />
         {IS_FRONTIER && (
@@ -120,7 +144,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <Formatted
                   translationKey="app.banner.linkText"
                   components={{
-                    "<text>": <p className="items-center" />,
+                    "<text>": <></>,
                     "<link>": (
                       <a
                         className="items-center underline"
@@ -134,14 +158,14 @@ function MyApp({ Component, pageProps }: AppProps) {
             }
           />
         )}
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+          }}
+          transition={Bounce}
+        />
         <MainLayout menus={menus}>
           <Component {...pageProps} />
-          <ToastContainer
-            toastStyle={{
-              backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
-            }}
-            transition={Bounce}
-          />
         </MainLayout>
       </StoreProvider>
     </GetKeplrProvider>

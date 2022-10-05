@@ -1,17 +1,20 @@
 import type { NextPage } from "next";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
-import dayjs from "dayjs";
+import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
 import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
-import { CreatePoolModal } from "../../modals/create-pool";
-import { LeftTime } from "../../components/left-time";
+import {
+  CreatePoolModal,
+  AddLiquidityModal,
+  RemoveLiquidityModal,
+} from "../../modals";
+import { PoolsOverview } from "../../components/overview/pools";
 import { MetricLoader } from "../../components/loaders";
-import { Overview } from "../../components/overview";
 import { TabBox } from "../../components/control";
+import { priceFormatter } from "../../components/utils";
 import { useStore } from "../../stores";
 import { DataSorter } from "../../hooks/data/data-sorter";
 import {
@@ -20,14 +23,14 @@ import {
   usePaginatedData,
   useSortedData,
   useCreatePoolConfig,
+  useAmplitudeAnalytics,
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
-import { UserAction } from "../../config";
+import { EventName } from "../../config";
 import { POOLS_PER_PAGE } from "../../components/complex";
 import { useTranslation } from "react-multi-lang";
 
-const REWARD_EPOCH_IDENTIFIER = "day";
 const TVL_FILTER_THRESHOLD = 1000;
 
 const LESS_SUPERFLUID_POOLS_COUNT = 6;
@@ -39,28 +42,19 @@ const Pools: NextPage = observer(function () {
     priceStore,
     queriesStore,
     queriesExternalStore,
+    navBarStore,
   } = useStore();
-  const { isMobile } = useWindowSize();
   const t = useTranslation();
+  const { isMobile } = useWindowSize();
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Pools.pageViewed],
+  });
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const queriesExternal = queriesExternalStore.get();
 
   const account = accountStore.getAccount(chainId);
-
-  const queryEpoch = queryOsmosis.queryEpochs.getEpoch(REWARD_EPOCH_IDENTIFIER);
-  const now = new Date();
-  const epochRemainingTime = dayjs.duration(
-    dayjs(queryEpoch.endTime).diff(dayjs(now), "second"),
-    "second"
-  );
-  const epochRemainingTimeString =
-    epochRemainingTime.asSeconds() <= 0
-      ? dayjs.duration(0, "seconds").format("HH-mm")
-      : epochRemainingTime.format("HH-mm");
-  const [epochRemainingHour, epochRemainingMinute] =
-    epochRemainingTimeString.split("-");
 
   const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
     account.bech32Address
@@ -86,6 +80,7 @@ const Pools: NextPage = observer(function () {
         assets: superfluidPool.poolAssets.map((poolAsset) => ({
           coinImageUrl: poolAsset.amount.currency.coinImageUrl,
           coinDenom: poolAsset.amount.currency.coinDenom,
+          weightFraction: poolAsset.weightFraction,
         })),
       })) ?? []
   )
@@ -93,19 +88,11 @@ const Pools: NextPage = observer(function () {
     .reverse();
   const [showMoreSfsPools, setShowMoreSfsPools] = useState(false);
 
-  const osmoPrice = priceStore.calculatePrice(
-    new CoinPretty(
-      chainStore.osmosis.stakeCurrency,
-      DecUtils.getTenExponentNInPrecisionRange(
-        chainStore.osmosis.stakeCurrency.coinDecimals
-      )
-    )
-  );
-
   const poolCountShowMoreThreshold = isMobile ? 3 : 6;
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
+
   const createPoolConfig = useCreatePoolConfig(
     chainStore,
     chainId,
@@ -119,8 +106,10 @@ const Pools: NextPage = observer(function () {
     superfluidPools ?? [],
     ["id", "assets.coinDenom"]
   );
+
   const [sortKeyPath, setSortKeyPath, , , toggleSortDirection, sortedSfsPools] =
     useSortedData(fiteredSfsPools, "apr", "descending");
+
   const [page, setPage, minPage, numPages, sfsPoolsPage] = usePaginatedData(
     sortedSfsPools,
     POOLS_PER_PAGE
@@ -128,8 +117,23 @@ const Pools: NextPage = observer(function () {
   /// show pools > $1k TVL
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 
+  // set nav bar state
+  useEffect(() => {
+    navBarStore.callToActionButtons = [
+      { label: "Create new Pool", onClick: () => setIsCreatingPool(true) },
+    ];
+  }, []);
+
+  // pool quick action modals
+  const [addLiquidityModalPoolId, setAddLiquidityModalPoolId] = useState<
+    string | null
+  >(null);
+  const [removeLiquidityModalPoolId, setRemoveLiquidityModalPoolId] = useState<
+    string | null
+  >(null);
+
   return (
-    <main>
+    <main className="bg-background px-8">
       {isCreatingPool && (
         <CreatePoolModal
           isOpen={isCreatingPool}
@@ -152,54 +156,36 @@ const Pools: NextPage = observer(function () {
                   },
                 })),
                 undefined,
-                () => setIsCreatingPool(false)
+                () => {
+                  setIsCreatingPool(false);
+                }
               );
             } catch (e) {
               setIsCreatingPool(false);
-              console.log(e);
+              console.error(e);
             }
           }}
         />
       )}
-      <Overview
-        title={t("pools.title")}
-        titleButtons={
-          UserAction.CreateNewPool
-            ? [
-                {
-                  label: t("pools.createPool.button"),
-                  onClick: () => setIsCreatingPool(true),
-                },
-              ]
-            : []
-        }
-        primaryOverviewLabels={[
-          {
-            label: t("pools.priceOsmo"),
-            value: (
-              <MetricLoader
-                className="h-[2.5rem] !mt-0"
-                isLoading={!osmoPrice || osmoPrice.toDec().isZero()}
-              >
-                <div className="h-[2.5rem]">{osmoPrice?.toString()}</div>
-              </MetricLoader>
-            ),
-          },
-          {
-            label: t("pools.rewardDistribution"),
-            value: (
-              <LeftTime
-                className="-mt-1 md:mt-0"
-                hour={epochRemainingHour}
-                minute={epochRemainingMinute}
-                isMobile={isMobile}
-              />
-            ),
-          },
-        ]}
-      />
-      <section className="bg-background">
-        <div className="max-w-container mx-auto md:p-4 p-10 pb-[3.75rem]">
+      {addLiquidityModalPoolId && (
+        <AddLiquidityModal
+          poolId={addLiquidityModalPoolId}
+          isOpen={true}
+          onRequestClose={() => setAddLiquidityModalPoolId(null)}
+        />
+      )}
+      {removeLiquidityModalPoolId && (
+        <RemoveLiquidityModal
+          poolId={removeLiquidityModalPoolId}
+          isOpen={true}
+          onRequestClose={() => setRemoveLiquidityModalPoolId(null)}
+        />
+      )}
+      <section className="pt-20 pb-10">
+        <PoolsOverview className="mx-auto" />
+      </section>
+      <section>
+        <div className="mx-auto pb-[3.75rem]">
           {isMobile ? (
             <span className="subtitle2">{t("pools.myPools")}</span>
           ) : (
@@ -272,7 +258,7 @@ const Pools: NextPage = observer(function () {
                         <MetricLoader
                           isLoading={poolLiquidity.toDec().isZero()}
                         >
-                          {poolLiquidity.toString()}
+                          {priceFormatter(poolLiquidity)}
                         </MetricLoader>
                       ),
                     },
@@ -284,7 +270,7 @@ const Pools: NextPage = observer(function () {
                         <MetricLoader
                           isLoading={poolLiquidity.toDec().isZero()}
                         >
-                          {myBonded.toString()}
+                          {priceFormatter(myBonded)}
                         </MetricLoader>
                       ),
                     },
@@ -312,6 +298,29 @@ const Pools: NextPage = observer(function () {
                         myPoolId
                       )}
                       mobileShowFirstLabel
+                      onClick={() =>
+                        logEvent([
+                          EventName.Pools.myPoolsCardClicked,
+                          {
+                            poolId: myPoolId,
+                            poolName: myPool.poolAssets
+                              .map(
+                                (poolAsset) =>
+                                  poolAsset.amount.currency.coinDenom
+                              )
+                              .join(" / "),
+                            poolWeight: myPool.poolAssets
+                              .map((poolAsset) =>
+                                poolAsset.weightFraction.toString()
+                              )
+                              .join(" / "),
+                            isSuperfluidPool:
+                              queryOsmosis.querySuperfluidPools.isSuperfluidPool(
+                                myPoolId
+                              ),
+                          },
+                        ])
+                      }
                     />
                   );
                 }
@@ -329,20 +338,49 @@ const Pools: NextPage = observer(function () {
         </div>
       </section>
       {isMobile ? (
-        <section className="bg-background">
+        <section>
           <TabBox
             tabs={[
               {
                 title: t("pools.incentivized"),
-                content: <AllPoolsTableSet tableSet="incentivized-pools" />,
+                content: (
+                  <AllPoolsTableSet
+                    tableSet="incentivized-pools"
+                    quickAddLiquidity={(poolId) =>
+                      setAddLiquidityModalPoolId(poolId)
+                    }
+                    quickRemoveLiquidity={(poolId) =>
+                      setRemoveLiquidityModalPoolId(poolId)
+                    }
+                  />
+                ),
               },
               {
                 title: t("pools.all"),
-                content: <AllPoolsTableSet tableSet="all-pools" />,
+                content: (
+                  <AllPoolsTableSet
+                    tableSet="all-pools"
+                    quickAddLiquidity={(poolId) =>
+                      setAddLiquidityModalPoolId(poolId)
+                    }
+                    quickRemoveLiquidity={(poolId) =>
+                      setRemoveLiquidityModalPoolId(poolId)
+                    }
+                  />
+                ),
               },
               {
                 title: t("pools.externalIncentivized.title"),
-                content: <ExternalIncentivizedPoolsTableSet />,
+                content: (
+                  <ExternalIncentivizedPoolsTableSet
+                    quickAddLiquidity={(poolId) =>
+                      setAddLiquidityModalPoolId(poolId)
+                    }
+                    quickRemoveLiquidity={(poolId) =>
+                      setRemoveLiquidityModalPoolId(poolId)
+                    }
+                  />
+                ),
               },
               {
                 title: (
@@ -441,8 +479,8 @@ const Pools: NextPage = observer(function () {
         </section>
       ) : (
         <>
-          <section className="bg-surface">
-            <div className="max-w-container mx-auto p-10">
+          <section>
+            <div className="mx-auto">
               <h5>{t("pools.superfluid.title")}</h5>
               <div className="my-5 grid grid-cards">
                 {superfluidPools &&
@@ -475,7 +513,7 @@ const Pools: NextPage = observer(function () {
                               <MetricLoader
                                 isLoading={poolLiquidity.toDec().isZero()}
                               >
-                                {poolLiquidity.toString()}
+                                {priceFormatter(poolLiquidity)}
                               </MetricLoader>
                             ),
                           },
@@ -493,6 +531,20 @@ const Pools: NextPage = observer(function () {
                           },
                         ]}
                         isSuperfluid
+                        onClick={() =>
+                          logEvent([
+                            EventName.Pools.superfluidPoolsCardClicked,
+                            {
+                              poolId: id,
+                              poolName: assets
+                                .map((asset) => asset.coinDenom)
+                                .join(" / "),
+                              poolWeight: assets
+                                .map((asset) => asset.weightFraction.toString())
+                                .join(" / "),
+                            },
+                          ])
+                        }
                       />
                     )
                   )}
@@ -506,14 +558,28 @@ const Pools: NextPage = observer(function () {
               )}
             </div>
           </section>
-          <section className="bg-surface shadow-separator">
-            <div className="max-w-container mx-auto md:p-4 p-10 py-[3.75rem]">
-              <AllPoolsTableSet />
+          <section>
+            <div className="mx-auto py-[3.75rem]">
+              <AllPoolsTableSet
+                quickAddLiquidity={(poolId) =>
+                  setAddLiquidityModalPoolId(poolId)
+                }
+                quickRemoveLiquidity={(poolId) =>
+                  setRemoveLiquidityModalPoolId(poolId)
+                }
+              />
             </div>
           </section>
-          <section className="bg-surface shadow-separator min-h-screen">
-            <div className="max-w-container mx-auto md:p-4 p-10 py-[3.75rem]">
-              <ExternalIncentivizedPoolsTableSet />
+          <section className="min-h-screen">
+            <div className="mx-auto py-[3.75rem]">
+              <ExternalIncentivizedPoolsTableSet
+                quickAddLiquidity={(poolId) =>
+                  setAddLiquidityModalPoolId(poolId)
+                }
+                quickRemoveLiquidity={(poolId) =>
+                  setRemoveLiquidityModalPoolId(poolId)
+                }
+              />
             </div>
           </section>
         </>

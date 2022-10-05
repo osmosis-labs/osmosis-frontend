@@ -6,11 +6,7 @@ import { pow } from "@osmosis-labs/math";
 import { IPriceStore } from "../../price";
 import { ObservableQueryPool } from "../../queries/pools";
 import { ObservableQueryExternal } from "../store";
-import {
-  ObservablePoolWithFeeMetrics,
-  PoolFeesMetrics,
-  PoolFees,
-} from "./types";
+import { PoolFeesMetrics, PoolFees } from "./types";
 
 /** Queries Imperator pool fee history data. */
 export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<PoolFees> {
@@ -19,22 +15,6 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<Pool
 
     makeObservable(this);
   }
-
-  readonly makePoolWithFeeMetrics = computedFn(
-    (
-      pool: ObservableQueryPool,
-      priceStore: IPriceStore
-    ): ObservablePoolWithFeeMetrics => {
-      const poolFeesMetrics = this.getPoolFeesMetrics(pool.id, priceStore);
-      const liquidity = pool.computeTotalValueLocked(priceStore);
-
-      return {
-        pool,
-        liquidity,
-        ...poolFeesMetrics,
-      };
-    }
-  );
 
   readonly getPoolFeesMetrics = computedFn(
     (poolId: string, priceStore: IPriceStore): PoolFeesMetrics => {
@@ -89,21 +69,21 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<Pool
 
   /** Get pool non-incentivized return from fees based on past 7d of activity, compounded. */
   readonly get7dPoolFeeApy = computedFn(
-    (
-      pool: ObservablePoolWithFeeMetrics,
-      priceStore: IPriceStore
-    ): RatePretty => {
-      const avgDayFeeRevenue = new Dec(
-        pool.feesSpent7d.toDec().toString(),
-        6
-      ).quo(new Dec(7));
-      const poolTVL = pool.pool.computeTotalValueLocked(priceStore).toDec();
+    (pool: ObservableQueryPool, priceStore: IPriceStore): RatePretty => {
+      const { feesSpent7d } = this.getPoolFeesMetrics(pool.id, priceStore);
+      const avgDayFeeRevenue = new Dec(feesSpent7d.toDec().toString(), 6).quo(
+        new Dec(7)
+      );
+      const poolTVL = pool.computeTotalValueLocked(priceStore).toDec();
 
       if (poolTVL.equals(new Dec(0))) {
-        return new RatePretty(0);
+        return new RatePretty(0).ready(false);
       }
       const percentRevenue = avgDayFeeRevenue.quo(poolTVL);
       const dailyRate = new Dec(1).add(percentRevenue);
+
+      if (!dailyRate.lt(new Dec(2))) return new RatePretty(0);
+
       const rate = pow(dailyRate, new Dec(365));
 
       return new RatePretty(rate)

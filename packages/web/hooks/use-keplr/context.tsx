@@ -8,10 +8,7 @@ import React, {
 } from "react";
 import { Keplr } from "@keplr-wallet/types";
 import { getKeplrFromWindow } from "@keplr-wallet/stores";
-import {
-  KeplrConnectionSelectModal,
-  KeplrWalletConnectQRModal,
-} from "../../modals";
+import { KeplrConnectionSelectModal, WalletConnectQRModal } from "../../modals";
 import EventEmitter from "eventemitter3";
 import { BroadcastMode, StdTx } from "@cosmjs/launchpad";
 import Axios from "axios";
@@ -20,6 +17,7 @@ import { Buffer } from "buffer";
 import WalletConnect from "@walletconnect/client";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { isMobile } from "@walletconnect/browser-utils";
+import { useAmplitudeAnalytics } from "../use-amplitude-analytics";
 
 export async function sendTxWC(
   chainId: string,
@@ -82,6 +80,7 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
     useState(false);
   const [isExtentionNotInstalled, setIsExtensionNotInstalled] = useState(false);
   const [wcUri, setWCUri] = useState("");
+  const { setUserProperty } = useAmplitudeAnalytics();
 
   const lastUsedKeplrRef = useRef<Keplr | undefined>();
   const defaultConnectionTypeRef = useRef<
@@ -198,6 +197,8 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
           getKeplrFromWindow().then((keplr) => {
             lastUsedKeplrRef.current = keplr;
             setConnectionType("extension");
+            setUserProperty("isWalletConnected", true);
+            setUserProperty("connectedWallet", "extension");
             resolve(keplr);
             cleanUp();
           });
@@ -229,6 +230,8 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
                 setIsExtensionSelectionModalOpen(false);
                 lastUsedKeplrRef.current = keplr;
                 setConnectionType("wallet-connect");
+                setUserProperty("isWalletConnected", true);
+                setUserProperty("connectedWallet", "wallet-connect");
                 resolve(keplr);
               }
             });
@@ -239,6 +242,8 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
             setIsExtensionSelectionModalOpen(false);
             lastUsedKeplrRef.current = keplr;
             setConnectionType("wallet-connect");
+            setUserProperty("isWalletConnected", true);
+            setUserProperty("connectedWallet", "wallet-connect");
             resolve(keplr);
             cleanUp();
           }
@@ -298,7 +303,7 @@ export const GetKeplrProvider: FunctionComponent = ({ children }) => {
           eventListener.emit("select_wallet_connect");
         }}
       />
-      <KeplrWalletConnectQRModal
+      <WalletConnectQRModal
         isOpen={wcUri.length > 0}
         onRequestClose={() => {
           eventListener.emit("wc_modal_close");

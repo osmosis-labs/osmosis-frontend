@@ -1,5 +1,6 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { OriginBridgeInfo } from "../../integrations/bridge-info";
 
 export interface IBCAsset {
   counterpartyChainId: string;
@@ -17,6 +18,9 @@ export interface IBCAsset {
   // If this is a multihop ibc, need to special case because the denom on osmosis
   // isn't H(source_denom), but rather H(ibc_path)
   ibcTransferPathDenom?: string;
+
+  /** Additional info to support non-IBC bridge integration. */
+  originBridgeInfo?: OriginBridgeInfo;
 }
 
 export interface CoinBalance {
@@ -43,6 +47,7 @@ export interface IBCBalance extends CoinBalance {
   sourceChannelId: string;
   destChannelId: string;
   isUnstable?: boolean;
+  originBridgeInfo?: OriginBridgeInfo;
 }
 
 export interface IBCCW20ContractBalance extends IBCBalance {

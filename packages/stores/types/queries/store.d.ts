@@ -3,7 +3,7 @@ import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
 import { DeepReadonly } from "utility-types";
 import { ObservableQueryGammPoolShare } from "./pool-share";
-import { ObservableQueryIncentivizedPools, ObservableQueryLockableDurations } from "./pool-incentives";
+import { ObservableQueryIncentivizedPools, ObservableQueryLockableDurations, ObservableQueryPoolsGaugeIds } from "./pool-incentives";
 import { ObservableQueryEpochs } from "./epochs";
 import { ObservableQueryAccountLockedCoins, ObservableQueryAccountUnlockingCoins, ObservableQueryAccountLocked, ObservableSyntheticLockupsByLockId } from "./lockup";
 import { ObservableQueryEpochProvisions, ObservableQueryMintParmas } from "./mint";
@@ -33,6 +33,7 @@ export declare class OsmosisQueriesImpl {
     readonly queryDistrInfo: DeepReadonly<ObservableQueryDistrInfo>;
     readonly queryIncentivizedPools: DeepReadonly<ObservableQueryIncentivizedPools>;
     readonly queryGauge: DeepReadonly<ObservableQueryGuage>;
+    readonly queryPoolsGaugeIds: DeepReadonly<ObservableQueryPoolsGaugeIds>;
     readonly queryPoolCreationFee: DeepReadonly<ObservableQueryPoolCreationFee>;
     readonly querySuperfluidPools: DeepReadonly<ObservableQuerySuperfluidPools>;
     readonly querySuperfluidDelegations: DeepReadonly<ObservableQuerySuperfluidDelegations>;

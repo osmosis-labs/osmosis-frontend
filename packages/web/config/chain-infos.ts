@@ -2,12 +2,18 @@ import { ChainInfoWithExplorer } from "../stores/chain";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
+
 const chainInfos = (
   [
     {
-      rpc: "https://rpc-osmosis.keplr.app/", // test: "http://rpc-test.osmosis.zone/"
-      rest: "https://lcd-osmosis.keplr.app/", // test: "http://lcd-test.osmosis.zone/"
-      chainId: "osmosis-1", // test: "osmo-test-4"
+      rpc: IS_TESTNET
+        ? "https://rpc-test.osmosis.zone/"
+        : "https://rpc-osmosis.keplr.app/",
+      rest: IS_TESTNET
+        ? "https://lcd-test.osmosis.zone/"
+        : "https://lcd-osmosis.keplr.app/",
+      chainId: IS_TESTNET ? "osmo-test-4" : "osmosis-1",
       chainName: "Osmosis",
       bip44: {
         coinType: 118,
@@ -37,7 +43,9 @@ const chainInfos = (
         high: 0.025,
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
-      explorerUrlToTx: "https://www.mintscan.io/osmosis/txs/{txHash}",
+      explorerUrlToTx: IS_TESTNET
+        ? "https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}"
+        : "https://www.mintscan.io/osmosis/txs/{txHash}",
     },
     {
       rpc: "https://rpc-cosmoshub.keplr.app",
@@ -76,7 +84,8 @@ const chainInfos = (
           coinDenom: "LUNC",
           coinMinimalDenom: "uluna",
           coinDecimals: 6,
-          coinGeckoId: "terra-luna",
+          //coinGeckoId: "terra-luna",
+          coinGeckoId: "pool:ulunc",
           coinImageUrl: "/tokens/lunc.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -85,7 +94,8 @@ const chainInfos = (
           coinDenom: "USTC",
           coinMinimalDenom: "uusd",
           coinDecimals: 6,
-          coinGeckoId: "terrausd",
+          //coinGeckoId: "terrausd",
+          coinGeckoId: "pool:uustc",
           coinImageUrl: "/tokens/ustc.png",
           isFeeCurrency: true,
           pegMechanism: "algorithmic",
@@ -468,8 +478,50 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno1gz8cf86zr4vw9cjcyyv432vgdaecvr9n254d3uwwkx9rermekddsxzageh:GKEY",
           coinDecimals: 6,
-          // coinGeckoId: "pool:gkey",
+          coinGeckoId: "pool:gkey",
           coinImageUrl: "/tokens/gkey.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv",
+          coinDenom: "seJUNO",
+          coinMinimalDenom:
+            "cw20:juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv:seJUNO",
+          coinDecimals: 6,
+          coinGeckoId: "pool:sejuno",
+          coinImageUrl: "/tokens/sejuno.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3",
+          coinDenom: "bJUNO",
+          coinMinimalDenom:
+            "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3:bJUNO",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/bjuno.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno159q8t5g02744lxq8lfmcn6f78qqulq9wn3y9w7lxjgkz4e0a6kvsfvapse",
+          coinDenom: "SOLAR",
+          coinMinimalDenom:
+            "cw20:juno159q8t5g02744lxq8lfmcn6f78qqulq9wn3y9w7lxjgkz4e0a6kvsfvapse:SOLAR",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/solar.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno19rqljkh95gh40s7qdx40ksx3zq5tm4qsmsrdz9smw668x9zdr3lqtg33mf",
+          coinDenom: "SEASY",
+          coinMinimalDenom:
+            "cw20:juno19rqljkh95gh40s7qdx40ksx3zq5tm4qsmsrdz9smw668x9zdr3lqtg33mf:SEASY",
+          coinDecimals: 6,
+          coinGeckoId: "pool:seasy",
+          coinImageUrl: "/tokens/seasy.svg",
         },
       ],
       features: [
@@ -1279,7 +1331,7 @@ const chainInfos = (
         average: 0.0007,
         high: 0.0009,
       },
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx:
         "https://explorer.injective.network/transaction/{txHash}",
     },
@@ -1466,7 +1518,7 @@ const chainInfos = (
         average: 25000000000,
         high: 40000000000,
       },
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx: "https://www.mintscan.io/evmos/txs/{txHash}",
     },
     {
@@ -1557,6 +1609,13 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "kava-swap",
           coinImageUrl: "/tokens/swp.svg",
+        },
+        {
+          coinDenom: "USDX",
+          coinMinimalDenom: "usdx",
+          coinDecimals: 6,
+          coinGeckoId: "usdx",
+          coinImageUrl: "/tokens/usdx.png",
         },
       ],
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
@@ -1707,6 +1766,13 @@ const chainInfos = (
           coinGeckoId: "pool:geo",
           coinImageUrl: "/tokens/geo.svg",
         },
+        {
+          coinDenom: "O9W",
+          coinMinimalDenom: "mO9W",
+          coinDecimals: 6,
+          coinGeckoId: "pool:o9w",
+          coinImageUrl: "/tokens/o9w.svg",
+        },
       ],
       gasPriceStep: {
         low: 0.025,
@@ -1806,20 +1872,168 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "cosmwasm"],
       explorerUrlToTx: "https://scan.orai.io/txs/{txHash}",
     },
+    {
+      rpc: "https://rpc.cudos.org",
+      rest: "https://rest.cudos.org",
+      chainId: "cudos-1",
+      chainName: "Cudos",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("cudos"),
+      currencies: [
+        {
+          coinDenom: "CUDOS",
+          coinMinimalDenom: "acudos",
+          coinDecimals: 18,
+          coinGeckoId: "cudos",
+          coinImageUrl: "/tokens/cudos.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 5000000000000,
+        average: 10000000000000,
+        high: 20000000000000,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://explorer.cudos.org/transactions/{txHash}",
+    },
+    {
+      rpc: "https://main.rpc.agoric.net",
+      rest: "https://main.api.agoric.net",
+      chainId: "agoric-3",
+      chainName: "Agoric",
+      bip44: {
+        coinType: 564,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("agoric"),
+      currencies: [
+        {
+          coinDenom: "BLD",
+          coinMinimalDenom: "ubld",
+          coinDecimals: 6,
+          coinGeckoId: "agoric",
+          coinImageUrl: "/tokens/bld.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+        {
+          coinDenom: "IST",
+          coinMinimalDenom: "uist",
+          coinDecimals: 6,
+          // coinGeckoId: "cudos",
+          coinImageUrl: "/tokens/ist.png",
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://agoric.bigdipper.live/transactions/{txHash}",
+    },
+    {
+      rpc: "https://stride-rpc.polkachu.com/",
+      rest: "https://stride-api.polkachu.com/",
+      chainId: "stride-1",
+      chainName: "Stride",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("stride"),
+      currencies: [
+        {
+          coinDenom: "STRD",
+          coinMinimalDenom: "ustrd",
+          coinDecimals: 6,
+          coinGeckoId: "pool:ustrd",
+          coinImageUrl: "/tokens/strd.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+        {
+          coinDenom: "stATOM",
+          coinMinimalDenom: "stuatom",
+          coinDecimals: 6,
+          coinGeckoId: "pool:stuatom",
+          coinImageUrl: "/tokens/statom.svg",
+        },
+        {
+          coinDenom: "stSTARS",
+          coinMinimalDenom: "stustars",
+          coinDecimals: 6,
+          coinGeckoId: "pool:stustars",
+          coinImageUrl: "/tokens/ststars.svg",
+        },
+        {
+          coinDenom: "stOSMO",
+          coinMinimalDenom: "stuosmo",
+          coinDecimals: 6,
+          // coinGeckoId: "osmosis",
+          coinImageUrl: "/tokens/stosmo.svg",
+        },
+        {
+          coinDenom: "stJUNO",
+          coinMinimalDenom: "stujuno",
+          coinDecimals: 6,
+          // coinGeckoId: "juno-network",
+          coinImageUrl: "/tokens/stjuno.svg",
+        },
+        {
+          coinDenom: "stSCRT",
+          coinMinimalDenom: "stuscrt",
+          coinDecimals: 6,
+          // coinGeckoId: "secret",
+          coinImageUrl: "/tokens/stscrt.svg",
+        },
+      ],
+      gasPriceStep: {
+        low: 0,
+        average: 0,
+        high: 0.04,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
+    },
+    {
+      rpc: "https://api.mainnet.rebus.money:26657",
+      rest: "https://api.mainnet.rebus.money:1317",
+      chainId: "reb_1111-1",
+      chainName: "Rebus",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("rebus"),
+      currencies: [
+        {
+          coinDenom: "REBUS",
+          coinMinimalDenom: "arebus",
+          coinDecimals: 18,
+          coinGeckoId: "pool:arebus",
+          coinImageUrl: "/tokens/rebus.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://rebus.explorers.guru/transaction/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
 // Add normal chain infos in case of `currencies` not containing the stake or fee currency.
 chainInfos.push({
-  rpc: "https://rpc-axelar.keplr.app",
-  rest: "https://lcd-axelar.keplr.app",
-  chainId: "axelar-dojo-1",
+  rpc: IS_TESTNET
+    ? "https://axelartest-rpc.quickapi.com/"
+    : "https://rpc-axelar.keplr.app", // source: https://docs.axelar.dev/resources
+  rest: IS_TESTNET
+    ? "https://axelartest-lcd.quickapi.com/"
+    : "https://lcd-axelar.keplr.app",
+  chainId: IS_TESTNET ? "axelar-testnet-lisbon-3" : "axelar-dojo-1",
   chainName: "Axelar",
   stakeCurrency: {
     coinDenom: "AXL",
     coinMinimalDenom: "uaxl",
     coinDecimals: 6,
-    // coinGeckoId: 'pool:uaxl',
+    coinGeckoId: "axelar",
     coinImageUrl: "/tokens/axl.svg",
   },
   bip44: {
@@ -1828,8 +2042,15 @@ chainInfos.push({
   bech32Config: Bech32Address.defaultBech32Config("axelar"),
   currencies: [
     {
-      coinDenom: "USDC",
-      coinMinimalDenom: "uusdc",
+      coinDenom: "AXL",
+      coinMinimalDenom: "uaxl",
+      coinDecimals: 6,
+      coinGeckoId: "pool:uaxl",
+      coinImageUrl: "/tokens/axl.svg",
+    },
+    {
+      coinDenom: IS_TESTNET ? "aUSDC" : "USDC",
+      coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
       coinDecimals: 6,
       coinGeckoId: "usd-coin",
       coinImageUrl: "/tokens/usdc.svg",
@@ -1963,7 +2184,7 @@ chainInfos.push({
       coinDenom: "AXL",
       coinMinimalDenom: "uaxl",
       coinDecimals: 6,
-      // coinGeckoId: 'pool:uaxl',
+      coinGeckoId: "axelar",
       coinImageUrl: "/tokens/axl.svg",
     },
   ],
@@ -1973,7 +2194,9 @@ chainInfos.push({
     high: 0.00009,
   },
   features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
-  explorerUrlToTx: "https://axelarscan.io/tx/{txHash}",
+  explorerUrlToTx: IS_TESTNET
+    ? "https://testnet.axelarscan.io/tx/{txHash}"
+    : "https://axelarscan.io/tx/{txHash}",
 });
 
 export const ChainInfos: ChainInfoWithExplorer[] = chainInfos;

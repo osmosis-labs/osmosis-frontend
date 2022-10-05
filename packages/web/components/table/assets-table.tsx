@@ -1,31 +1,34 @@
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { initialAssetsSort } from "../../config";
 import {
   IBCBalance,
   IBCCW20ContractBalance,
   CoinBalance,
 } from "../../stores/assets";
+import { useStore } from "../../stores";
+import { useSortedData, useFilteredData } from "../../hooks/data";
+import {
+  useLocalStorageState,
+  useWindowSize,
+  useAmplitudeAnalytics,
+} from "../../hooks";
+import { ShowMoreButton } from "../buttons/show-more";
 import { SearchBox } from "../input";
-import { SortMenu } from "../control";
-import { Table } from ".";
+import { SortMenu, Switch } from "../control";
 import { SortDirection } from "../types";
+import { AssetCard } from "../cards";
+import { Button } from "../buttons";
 import {
   AssetNameCell,
   BalanceCell,
   TransferButtonCell,
   AssetCell as TableCell,
 } from "./cells";
-import { useStore } from "../../stores";
-import { useSortedData, useFilteredData } from "../../hooks/data";
-import { useLocalStorageState, useWindowSize } from "../../hooks/window";
-import { ShowMoreButton } from "../buttons/show-more";
-import { AssetCard } from "../cards";
-import { Switch } from "../control";
-import { Button } from "../buttons";
-import { PreTransferModal } from "../../modals";
-import { IbcHistoryTable } from "./ibc-history";
+import { TransferHistoryTable } from "./transfer-history";
 import { ColumnDef } from "./types";
+import { Table } from ".";
+import { EventName } from "../../config/user-analytics-v2";
 import { useTranslation } from "react-multi-lang";
 
 interface Props {
@@ -35,19 +38,56 @@ interface Props {
     withdrawUrlOverride?: string;
     sourceChainNameOverride?: string;
   })[];
-  onWithdraw: (chainId: string, coinDenom: string) => void;
-  onDeposit: (chainId: string, coinDenom: string) => void;
+  onWithdrawIntent: () => void;
+  onDepositIntent: () => void;
+  onWithdraw: (
+    chainId: string,
+    coinDenom: string,
+    externalUrl?: string
+  ) => void;
+  onDeposit: (chainId: string, coinDenom: string, externalUrl?: string) => void;
 }
 
 export const AssetsTable: FunctionComponent<Props> = ({
   nativeBalances,
   ibcBalances,
-  onDeposit,
-  onWithdraw,
+  onDepositIntent,
+  onWithdrawIntent,
+  onDeposit: do_onDeposit,
+  onWithdraw: do_onWithdraw,
 }) => {
   const { chainStore } = useStore();
   const t = useTranslation();
   const { width, isMobile } = useWindowSize();
+  const { logEvent } = useAmplitudeAnalytics();
+
+  const onDeposit = useCallback(
+    (...depositParams: Parameters<typeof do_onDeposit>) => {
+      do_onDeposit(...depositParams);
+      logEvent([
+        EventName.Assets.assetsItemDepositClicked,
+        {
+          tokenName: depositParams[1],
+          hasExternalUrl: !!depositParams[2],
+        },
+      ]);
+    },
+    []
+  );
+  const onWithdraw = useCallback(
+    (...withdrawParams: Parameters<typeof do_onWithdraw>) => {
+      do_onWithdraw(...withdrawParams);
+      logEvent([
+        EventName.Assets.assetsItemWithdrawClicked,
+        {
+          tokenName: withdrawParams[1],
+          hasExternalUrl: !!withdrawParams[2],
+        },
+      ]);
+    },
+    []
+  );
+
   const mergeWithdrawCol = width < 1000 && !isMobile;
   // Assemble cells with all data needed for any place in the table.
   const cells: TableCell[] = useMemo(
@@ -111,7 +151,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
               value && value.toDec().gt(new Dec(0))
                 ? value?.toDec().toString()
                 : "0",
-            isCW20,
             queryTags: [
               ...(isCW20 ? ["CW20"] : []),
               ...(pegMechanism ? ["stable", pegMechanism] : []),
@@ -125,24 +164,33 @@ export const AssetsTable: FunctionComponent<Props> = ({
         })
       ),
     ],
-    [
-      nativeBalances,
-      chainStore.osmosis.chainId,
-      ibcBalances,
-      onWithdraw,
-      onDeposit,
-    ]
+    [nativeBalances, chainStore.osmosis.chainId, ibcBalances]
   );
 
   // Sort data based on user's input either with the table column headers or the sort menu.
   const [
     sortKey,
-    setSortKey,
+    do_setSortKey,
     sortDirection,
     setSortDirection,
     toggleSortDirection,
     sortedCells,
   ] = useSortedData(cells);
+  const setSortKey = useCallback(
+    (term: string) => {
+      logEvent([
+        EventName.Assets.assetsListSorted,
+        {
+          sortedBy: term,
+          sortDirection,
+
+          sortedOn: "dropdown",
+        },
+      ]);
+      do_setSortKey(term);
+    },
+    [sortDirection]
+  );
 
   // Table column def to determine how the first 2 column headers handle user click.
   const sortColumnWithKeys = useCallback(
@@ -165,16 +213,35 @@ export const AssetsTable: FunctionComponent<Props> = ({
         // If it wasn't sorting (aka first time it is clicked), then it will sort on the first
         // key by default.
         onClickHeader: isSorting
-          ? toggleSortDirection
+          ? () => {
+              logEvent([
+                EventName.Assets.assetsListSorted,
+                {
+                  sortedBy: firstKey,
+                  sortDirection:
+                    sortDirection === "descending" ? "ascending" : "descending",
+                  sortedOn: "table-head",
+                },
+              ]);
+              toggleSortDirection();
+            }
           : () => {
               if (firstKey) {
+                logEvent([
+                  EventName.Assets.assetsListSorted,
+                  {
+                    sortedBy: firstKey,
+                    sortDirection: onClickSortDirection,
+                    sortedOn: "table-head",
+                  },
+                ]);
                 setSortKey(firstKey);
                 setSortDirection(onClickSortDirection);
               }
             },
       };
     },
-    [sortKey, sortDirection, toggleSortDirection, setSortKey, setSortDirection]
+    [sortKey, sortDirection]
   );
 
   // User toggles for showing 10+ pools and assets with > 0 fiat value
@@ -197,99 +264,118 @@ export const AssetsTable: FunctionComponent<Props> = ({
     ? filteredSortedCells
     : filteredSortedCells.slice(0, 10);
 
-  // Mobile only - State for pre-transfer menu for selecting asset to ibc transfer
-  const [showPreTransfer, setShowPreTransfer] = useState(false);
-  const [selectedTransferToken, setPreTransferToken] = useState<CoinPretty>(
-    ibcBalances[0].balance
-  );
-  const {
-    chainInfo: selectedChainInfo,
-    depositUrlOverride: selectedDepositUrlOverride,
-    withdrawUrlOverride: selectedWithdrawUrlOverride,
-  } = ibcBalances.find(
-    (ibcAsset) => ibcAsset.balance.denom === selectedTransferToken.denom
-  ) ?? {};
-
   return (
-    <section className="min-h-screen md:bg-background bg-surface">
-      {showPreTransfer && (
-        <PreTransferModal
-          isOpen={showPreTransfer}
-          onRequestClose={() => setShowPreTransfer(false)}
-          externalDepositUrl={selectedDepositUrlOverride}
-          externalWithdrawUrl={selectedWithdrawUrlOverride}
-          onDeposit={() => {
-            if (selectedChainInfo?.chainId) {
-              onDeposit(selectedChainInfo.chainId, selectedTransferToken.denom);
-            }
-            setShowPreTransfer(false);
-          }}
-          onWithdraw={() => {
-            if (selectedChainInfo?.chainId) {
-              onWithdraw(
-                selectedChainInfo.chainId,
-                selectedTransferToken.denom
-              );
-            }
-            setShowPreTransfer(false);
-          }}
-          isUnstable={
-            ibcBalances.find(
-              (balance) => balance.balance.denom === selectedTransferToken.denom
-            )?.isUnstable ?? false
-          }
-          onSelectToken={(coinDenom) => {
-            const ibcToken = ibcBalances.find(
-              (ibcAsset) => ibcAsset.balance.denom === coinDenom
-            );
-            if (ibcToken) {
-              setPreTransferToken(ibcToken.balance);
-            }
-          }}
-          selectedToken={selectedTransferToken}
-          tokens={ibcBalances.map((ibcAsset) => ibcAsset.balance)}
-        />
-      )}
-      <div className="max-w-container mx-auto md:p-4 p-10">
-        {isMobile ? (
-          <div className="flex flex-col gap-5">
-            <div className="flex place-content-between gap-10 py-2">
-              <Button
-                className="w-full h-10"
-                onClick={() => setShowPreTransfer(true)}
-              >
-                {t("assets.table.depositButton")}
-              </Button>
-              <Button
-                className="w-full h-10 bg-primary-200/30"
-                type="outline"
-                onClick={() => setShowPreTransfer(true)}
-              >
-                {t("assets.table.withdrawButton")}
-              </Button>
-            </div>
-            <SearchBox
-              className="!rounded !w-full h-11"
-              currentValue={query}
-              onInput={(query) => {
-                setHideZeroBalances(false);
-                setQuery(query);
+    <section>
+      {isMobile ? (
+        <div className="flex flex-col gap-5">
+          <div className="flex place-content-between gap-10 py-2">
+            <Button
+              className="w-full h-10"
+              onClick={() => {
+                onDepositIntent();
               }}
-              placeholder={t("assets.table.search")}
+            >
+              {t("assets.table.depositButton")}
+            </Button>
+            <Button
+              className="w-full h-10 bg-primary-200/30"
+              type="outline"
+              onClick={() => {
+                onWithdrawIntent();
+              }}
+            >
+              {t("assets.table.withdrawButton")}
+            </Button>
+          </div>
+          <SearchBox
+            className="!rounded !w-full h-11"
+            currentValue={query}
+            onInput={(query) => {
+              setHideZeroBalances(false);
+              setQuery(query);
+            }}
+            placeholder={t("assets.table.search")}
+          />
+          <h6>Assets</h6>
+          <div className="flex gap-3 items-center place-content-between">
+            <Switch
+              isOn={hideZeroBalances}
+              disabled={!canHideZeroBalances}
+              onToggle={() => {
+                logEvent([
+                  EventName.Assets.assetsListFiltered,
+                  {
+                    filteredBy: t("assets.table.hideZero"),
+                    isFilterOn: !hideZeroBalances,
+                  },
+                ]);
+
+                setHideZeroBalances(!hideZeroBalances);
+              }}
+            >
+              {t("assets.table.hideZero")}
+            </Switch>
+            <SortMenu
+              selectedOptionId={sortKey}
+              onSelect={setSortKey}
+              onToggleSortDirection={toggleSortDirection}
+              options={[
+                {
+                  id: "coinDenom",
+                  display: t("assets.table.sort.symbol"),
+                },
+                {
+                  /** These ids correspond to keys in `Cell` type and are later used for sorting. */
+                  id: "chainName",
+                  display: t("assets.table.sort.netword"),
+                },
+                {
+                  id: "amount",
+                  display: t("assets.table.sort.balance"),
+                },
+              ]}
             />
-            <h6>{t("assets.table.title")}</h6>
-            <div className="flex gap-3 items-center place-content-between">
-              <Switch
-                isOn={hideZeroBalances}
-                disabled={!canHideZeroBalances}
-                onToggle={() => setHideZeroBalances(!hideZeroBalances)}
-              >
-                {t("assets.table.hideZero")}
-              </Switch>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-5">
+          <h5>{t("assets.table.title")}</h5>
+          <div className="flex place-content-between">
+            <Switch
+              isOn={hideZeroBalances}
+              disabled={!canHideZeroBalances}
+              onToggle={() => {
+                setHideZeroBalances(!hideZeroBalances);
+              }}
+            >
+              {t("assets.table.hideZero")}
+            </Switch>
+            <div className="flex items-center gap-5">
+              <SearchBox
+                currentValue={query}
+                onInput={(query) => {
+                  setHideZeroBalances(false);
+                  setQuery(query);
+                }}
+                placeholder={t("assets.table.search")}
+              />
               <SortMenu
                 selectedOptionId={sortKey}
                 onSelect={setSortKey}
-                onToggleSortDirection={toggleSortDirection}
+                onToggleSortDirection={() => {
+                  logEvent([
+                    EventName.Assets.assetsListSorted,
+                    {
+                      sortedBy: sortKey,
+                      sortDirection:
+                        sortDirection === "descending"
+                          ? "ascending"
+                          : "descending",
+                      sortedOn: "dropdown",
+                    },
+                  ]);
+                  toggleSortDirection();
+                }}
                 options={[
                   {
                     id: "coinDenom",
@@ -301,155 +387,114 @@ export const AssetsTable: FunctionComponent<Props> = ({
                     display: t("assets.table.sort.netword"),
                   },
                   {
-                    id: "amount",
+                    id: "fiatValueRaw",
                     display: t("assets.table.sort.balance"),
                   },
                 ]}
               />
             </div>
           </div>
-        ) : (
-          <div className="flex flex-col gap-5">
-            <h5>{t("assets.table.title")}</h5>
-            <div className="flex place-content-between">
-              <Switch
-                isOn={hideZeroBalances}
-                disabled={!canHideZeroBalances}
-                onToggle={() => setHideZeroBalances(!hideZeroBalances)}
-              >
-                {t("assets.table.hideZero")}
-              </Switch>
-              <div className="flex items-center gap-5">
-                <SearchBox
-                  currentValue={query}
-                  onInput={(query) => {
-                    setHideZeroBalances(false);
-                    setQuery(query);
-                  }}
-                  placeholder={t("assets.table.search")}
-                />
-                <SortMenu
-                  selectedOptionId={sortKey}
-                  onSelect={setSortKey}
-                  onToggleSortDirection={toggleSortDirection}
-                  options={[
-                    {
-                      id: "coinDenom",
-                      display: t("assets.table.sort.symbol"),
-                    },
-                    {
-                      /** These ids correspond to keys in `Cell` type and are later used for sorting. */
-                      id: "chainName",
-                      display: t("assets.table.sort.netword"),
-                    },
-                    {
-                      id: "fiatValueRaw",
-                      display: t("assets.table.sort.balance"),
-                    },
-                  ]}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-        {isMobile ? (
-          <div className="flex flex-col gap-3 my-7">
-            {tableData.map((assetData) => (
-              <AssetCard
-                key={assetData.coinDenom}
-                {...assetData}
-                coinDenomCaption={assetData.chainName}
-                metrics={[
-                  { label: "", value: assetData.amount },
-                  ...(assetData.fiatValue
-                    ? [{ label: "", value: assetData.fiatValue }]
-                    : []),
-                ]}
-                onClick={
-                  assetData.chainId === undefined ||
-                  (assetData.chainId &&
-                    assetData.chainId === chainStore.osmosis.chainId)
-                    ? undefined
-                    : () => {
-                        setPreTransferToken(
-                          new CoinPretty(
-                            assetData.currency,
-                            assetData.amount.replace(",", "")
-                          ).moveDecimalPointRight(
-                            assetData.currency.coinDecimals
-                          )
-                        );
-                        setShowPreTransfer(true);
+        </div>
+      )}
+      {isMobile ? (
+        <div className="flex flex-col gap-3 my-7">
+          {tableData.map((assetData) => (
+            <AssetCard
+              key={assetData.coinDenom}
+              {...assetData}
+              coinDenomCaption={assetData.chainName}
+              metrics={[
+                { label: "", value: assetData.amount },
+                ...(assetData.fiatValue
+                  ? [{ label: "", value: assetData.fiatValue }]
+                  : []),
+              ]}
+              onClick={
+                assetData.chainId === undefined ||
+                (assetData.chainId &&
+                  assetData.chainId === chainStore.osmosis.chainId)
+                  ? undefined
+                  : () => {
+                      if (assetData.chainId && assetData.coinDenom) {
+                        onDeposit(assetData.chainId, assetData.coinDenom);
                       }
-                }
-                showArrow
-              />
-            ))}
-          </div>
-        ) : (
-          <Table<TableCell>
-            className="w-full my-5"
-            columnDefs={[
-              {
-                display: t("assets.table.columns.assetChain"),
-                displayCell: AssetNameCell,
-                sort: sortColumnWithKeys(["coinDenom", "chainName"]),
-              },
-              {
-                display: t("assets.table.columns.balance"),
-                displayCell: BalanceCell,
-                sort: sortColumnWithKeys(["fiatValueRaw"], "descending"),
-                className: "text-right pr-24 lg:pr-8 1.5md:pr-1",
-              },
-              ...(mergeWithdrawCol
-                ? ([
-                    {
-                      display: t("assets.table.columns.transfer"),
-                      displayCell: (cell) => (
-                        <div>
-                          <TransferButtonCell type="deposit" {...cell} />
-                          <TransferButtonCell type="withdraw" {...cell} />
-                        </div>
-                      ),
-                      className: "text-center max-w-[5rem]",
-                    },
-                  ] as ColumnDef<TableCell>[])
-                : ([
-                    {
-                      display: t("assets.table.columns.deposit"),
-                      displayCell: (cell) => (
+                    }
+              }
+              showArrow
+            />
+          ))}
+        </div>
+      ) : (
+        <Table<TableCell>
+          className="w-full my-5"
+          columnDefs={[
+            {
+              display: t("assets.table.columns.assetChain"),
+              displayCell: AssetNameCell,
+              sort: sortColumnWithKeys(["coinDenom", "chainName"]),
+            },
+            {
+              display: t("assets.table.columns.balance"),
+              displayCell: BalanceCell,
+              sort: sortColumnWithKeys(["fiatValueRaw"], "descending"),
+              className: "text-right pr-24 lg:pr-8 1.5md:pr-1",
+            },
+            ...(mergeWithdrawCol
+              ? ([
+                  {
+                    display: t("assets.table.columns.transfer"),
+                    displayCell: (cell) => (
+                      <div>
                         <TransferButtonCell type="deposit" {...cell} />
-                      ),
-                      className: "text-center max-w-[5rem]",
-                    },
-                    {
-                      display: t("assets.table.columns.withdraw"),
-                      displayCell: (cell) => (
                         <TransferButtonCell type="withdraw" {...cell} />
-                      ),
-                      className: "text-center max-w-[5rem]",
-                    },
-                  ] as ColumnDef<TableCell>[])),
-            ]}
-            data={tableData.map((cell) => [
-              cell,
-              cell,
-              ...(mergeWithdrawCol ? [cell] : [cell, cell]),
-            ])}
-            headerTrClassName="!h-12 !body2"
+                      </div>
+                    ),
+                    className: "text-center max-w-[5rem]",
+                  },
+                ] as ColumnDef<TableCell>[])
+              : ([
+                  {
+                    display: t("assets.table.columns.deposit"),
+                    displayCell: (cell) => (
+                      <TransferButtonCell type="deposit" {...cell} />
+                    ),
+                    className: "text-center max-w-[5rem]",
+                  },
+                  {
+                    display: t("assets.table.columns.withdraw"),
+                    displayCell: (cell) => (
+                      <TransferButtonCell type="withdraw" {...cell} />
+                    ),
+                    className: "text-center max-w-[5rem]",
+                  },
+                ] as ColumnDef<TableCell>[])),
+          ]}
+          data={tableData.map((cell) => [
+            cell,
+            cell,
+            ...(mergeWithdrawCol ? [cell] : [cell, cell]),
+          ])}
+          headerTrClassName="!h-12 !body2"
+        />
+      )}
+      <div className="relative flex h-12 justify-center">
+        {filteredSortedCells.length > 10 && (
+          <ShowMoreButton
+            className="m-auto"
+            isOn={showAllAssets}
+            onToggle={() => {
+              logEvent([
+                EventName.Assets.assetsListMoreClicked,
+                {
+                  isOn: !showAllAssets,
+                },
+              ]);
+              setShowAllAssets(!showAllAssets);
+            }}
           />
         )}
-        <div className="relative flex h-12 justify-center">
-          {filteredSortedCells.length > 10 && (
-            <ShowMoreButton
-              className="m-auto"
-              isOn={showAllAssets}
-              onToggle={() => setShowAllAssets(!showAllAssets)}
-            />
-          )}
-        </div>
-        <IbcHistoryTable className="mt-8 md:w-screen md:-mx-4" />
       </div>
+      <TransferHistoryTable className="mt-8 md:w-screen md:-mx-4" />
     </section>
   );
 };

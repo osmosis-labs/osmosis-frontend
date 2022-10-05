@@ -150,10 +150,14 @@ export const TokenSelect: FunctionComponent<
               </div>
             )}
             <div className="relative flex flex-col">
-              <div className="absolute -bottom-2.5 md:-bottom-2 flex items-center">
-                {isMobile ? <h6>{selectedDenom}</h6> : <h5>{selectedDenom}</h5>}
+              <div className="absolute -bottom-2.5 md:-bottom- flex items-center">
+                {isMobile ? (
+                  <span className="subtitle1">{selectedDenom}</span>
+                ) : (
+                  <h5>{selectedDenom}</h5>
+                )}
                 {canSelectTokens && (
-                  <div className="w-5 ml-3 md:ml-2">
+                  <div className="w-5 ml-3 md:ml-2 md:pb-1.5">
                     <Image
                       className={`opacity-40 group-hover:opacity-100 transition-transform duration-100 ${
                         isSelectOpen ? "rotate-180" : "rotate-0"
@@ -166,7 +170,7 @@ export const TokenSelect: FunctionComponent<
                   </div>
                 )}
               </div>
-              <div className="absolute top-1 md:top-1.5 w-28 subtitle2 md:caption text-iconDefault">
+              <div className="absolute top-1 md:top-1.5 w-24 subtitle2 md:caption text-iconDefault">
                 {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
                   ?.chainName ?? ""}
               </div>
@@ -195,7 +199,7 @@ export const TokenSelect: FunctionComponent<
               <div className="flex items-center h-9 pl-4 mb-3 rounded-2xl bg-card">
                 <div className="w-[1.125rem] h-[1.125rem] shrink-0">
                   <Image
-                    src="/icons/search-hollow.svg"
+                    src="/icons/search.svg"
                     alt="search"
                     width={18}
                     height={18}

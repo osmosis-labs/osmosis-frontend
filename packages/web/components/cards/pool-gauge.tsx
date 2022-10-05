@@ -17,11 +17,11 @@ export const PoolGaugeCard: FunctionComponent<
   return (
     <div
       className={classNames(
-        "w-full p-0.5 rounded-xl ",
+        "w-full p-0.5 rounded-xl",
         superfluidApr ? "bg-superfluid" : "bg-card" // vanilla tailwind does not support border gradients
       )}
     >
-      <div className="flex flex-col w-full gap-1 bg-card rounded-xlinset md:pl-[30%] md:p-3.5 py-5 px-7">
+      <div className="flex flex-col w-full h-full gap-1 bg-card rounded-xlinset md:pl-[30%] md:p-3.5 py-5 px-7">
         <UnbondingPeriodHeader isMobile={isMobile}>
           <MetricLoader className="h-6 md:h-4" isLoading={isLoading}>
             {t("pool.gauges.time", { time: days ?? "0" })}

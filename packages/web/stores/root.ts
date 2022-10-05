@@ -16,6 +16,7 @@ import {
   LPCurrencyRegistrar,
   QueriesExternalStore,
   IBCTransferHistoryStore,
+  NonIbcBridgeHistoryStore,
   OsmosisAccount,
   PoolFallbackPriceStore,
 } from "@osmosis-labs/stores";
@@ -26,12 +27,16 @@ import {
   toastOnBroadcast,
   toastOnFulfill,
 } from "../components/alert";
+import { AxelarTransferStatusSource } from "../integrations/axelar";
 import { ObservableAssets } from "./assets";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
 import { PoolPriceRoutes } from "../config";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { OsmoPixelsQueries } from "./pixels";
+import { NavBarStore } from "./nav-bar";
+import { UserSettings, ShowDustUserSetting } from "./user-settings";
 const semver = require("semver");
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -48,6 +53,7 @@ export class RootStore {
   public readonly priceStore: PoolFallbackPriceStore;
 
   public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
+  public readonly nonIbcBridgeHistoryStore: NonIbcBridgeHistoryStore;
 
   public readonly assetsStore: ObservableAssets;
 
@@ -56,11 +62,18 @@ export class RootStore {
 
   public readonly queryOsmoPixels: OsmoPixelsQueries;
 
+  public readonly navBarStore: NavBarStore;
+
+  public readonly userSettings: UserSettings;
+
   constructor(
     getKeplr: () => Promise<Keplr | undefined> = () =>
       Promise.resolve(undefined)
   ) {
-    this.chainStore = new ChainStore(ChainInfos, "osmosis");
+    this.chainStore = new ChainStore(
+      ChainInfos,
+      IS_TESTNET ? "osmo-test-4" : "osmosis"
+    );
 
     const eventListener = (() => {
       // On client-side (web browser), use the global window object.
@@ -86,7 +99,7 @@ export class RootStore {
     );
 
     this.queriesStore = new QueriesStore(
-      makeIndexedKVStore("store_web_queries"),
+      makeIndexedKVStore("store_web_queries_v12"),
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
@@ -124,7 +137,10 @@ export class RootStore {
       },
       CosmosAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator: () => ({ ibcTransfer: { gas: 130000 } }),
+        msgOptsCreator: (chainId) =>
+          chainId.startsWith("evmos_")
+            ? { ibcTransfer: { gas: 160000 } }
+            : { ibcTransfer: { gas: 130000 } },
         preTxEvents: {
           onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
             this.chainStore.getChain(chainId)
@@ -161,6 +177,15 @@ export class RootStore {
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
       makeIndexedKVStore("ibc_transfer_history"),
       this.chainStore
+    );
+    this.nonIbcBridgeHistoryStore = new NonIbcBridgeHistoryStore(
+      makeLocalStorageKVStore("nonibc_transfer_history"),
+      [
+        new AxelarTransferStatusSource(
+          IS_TESTNET ? "https://testnet.axelarscan.io" : undefined,
+          IS_TESTNET ? "https://testnet.api.axelarscan.io" : undefined
+        ),
+      ]
     );
 
     this.assetsStore = new ObservableAssets(
@@ -217,5 +242,18 @@ export class RootStore {
       makeIndexedKVStore("query_osmo_pixels"),
       "https://pixels-osmosis.keplr.app"
     );
+
+    this.navBarStore = new NavBarStore(
+      this.chainStore.osmosis.chainId,
+      this.accountStore,
+      this.queriesStore
+    );
+
+    this.userSettings = new UserSettings([
+      new ShowDustUserSetting(
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
+          ?.symbol ?? "$"
+      ),
+    ]);
   }
 }

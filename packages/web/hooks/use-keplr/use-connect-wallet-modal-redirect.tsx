@@ -20,7 +20,8 @@ import { useKeplr } from "./hook";
  */
 export function useConnectWalletModalRedirect(
   actionButtonProps: ComponentProps<typeof Button>,
-  onRequestClose: () => void
+  onRequestClose: () => void,
+  connectWalletMessage = "Connect wallet"
 ) {
   const keplr = useKeplr();
   const { accountStore, chainStore } = useStore();
@@ -39,7 +40,6 @@ export function useConnectWalletModalRedirect(
     ) {
       setShowSelf(true);
     }
-    // eslint-disable-next-line
   }, [osmosisAccount.walletStatus]);
 
   // prevent ibc-transfer dialog from randomly appearing if they connect wallet later
@@ -51,7 +51,6 @@ export function useConnectWalletModalRedirect(
         setShowSelf(true); // reset state to allow modal to be opened later
       });
     }
-    // eslint-disable-next-line
   }, [showSelf]);
 
   return {
@@ -77,9 +76,10 @@ export function useConnectWalletModalRedirect(
               height={24}
               width={24}
             />
-            Connect Wallet
+            {connectWalletMessage}
           </h6>
         </Button>
       ),
+    walletConnected: osmosisAccount.walletStatus === WalletStatus.Loaded,
   };
 }

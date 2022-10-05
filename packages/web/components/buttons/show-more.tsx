@@ -21,12 +21,8 @@ export const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
       </span>
       <div className="m-auto">
         <Image
-          alt={isOn ? "less" : "more"}
-          src={
-            isOn
-              ? "/icons/chevron-up-secondary.svg"
-              : "/icons/chevron-down-secondary.svg"
-          }
+          alt={isOn ? t("components.show.less") : t("components.show.more")}
+          src={isOn ? "/icons/chevron-up.svg" : "/icons/chevron-down.svg"}
           height={14}
           width={14}
         />

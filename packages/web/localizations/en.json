@@ -178,6 +178,8 @@
       "title": "Manage Liquidity",
       "tabAddLiquidity": "Add Liquidity",
       "tabRemoveLiquidity": "Remove Liquidity",
+      "modalTitleRemove": "Remove Liquidity from Pool #{poolId}",
+      "modalTitleAdd": "Add Liquidity from Pool #{poolId}",
       "LPTokenBalance": "LP token balance:",
       "available": "Available",
       "MAX": "MAX",
@@ -216,10 +218,9 @@
       "myLiquidity": "My Liquidity"
     },
     "ibcTransfer": {
-      "titleWithdraw": "Withdraw IBC Asset",
-      "titleWithdrawMobile": "Withdraw",
-      "titleDeposit": "Deposit IBC Asset",
-      "titleDepositMobile": "Deposit",
+      "titleWithdraw": "Withdraw {coinDenom}",
+      "titleDeposit": "Deposit {coinDenom}",
+      "waitTime": "20 seconds",
       "copied": "Copied!",
       "IBCTransfer": "IBC Transfer",
       "from": "from",

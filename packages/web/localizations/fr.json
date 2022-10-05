@@ -178,6 +178,8 @@
       "title": "Gestion de la liquidité",
       "tabAddLiquidity": "Ajouter de la liquidité",
       "tabRemoveLiquidity": "Retirer de la liquidité",
+      "modalTitleRemove": "Retirer de la liquidité de la pool n°{poolId}",
+      "modalTitleAdd": "Ajouter de la liquidité de la pool n°{poolId}",
       "LPTokenBalance": "Solde de jeton RL:",
       "available": "Disponnible",
       "MAX": "MAX",
@@ -216,10 +218,9 @@
       "myLiquidity": "Ma liquidité"
     },
     "ibcTransfer": {
-      "titleWithdraw": "Retirer des actifs IBC",
-      "titleWithdrawMobile": "Retirer",
-      "titleDeposit": "Déposer des actifs IBC",
-      "titleDepositMobile": "Déposer",
+      "titleWithdraw": "Retirer {coinDenom}",
+      "titleDeposit": "Déposer {coinDenom}",
+      "waitTime": "20 secondes",
       "copied": "Copié !",
       "IBCTransfer": "Transfert IBC",
       "from": "Depuis",
