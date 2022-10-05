@@ -1,4 +1,4 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useCallback } from "react";
@@ -108,6 +108,14 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
           }
         }
 
+        const poolTvl = pool.computeTotalValueLocked(priceStore);
+        const myLiquidity = poolTvl.mul(
+          queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+            account.bech32Address,
+            pool.id
+          )
+        );
+
         return {
           pool,
           ...queryExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
@@ -116,14 +124,17 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
           ),
           liquidity: pool.computeTotalValueLocked(priceStore),
           epochsRemaining: maxRemainingEpoch,
-          myLiquidity: pool
-            .computeTotalValueLocked(priceStore)
-            .mul(
-              queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-                account.bech32Address,
-                pool.id
+          myLiquidity,
+          myAvailableLiquidity: myLiquidity.toDec().isZero()
+            ? new PricePretty(
+                priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+                0
               )
-            ),
+            : poolTvl.mul(
+                queryOsmosis.queryGammPoolShare
+                  .getAvailableGammShare(account.bech32Address, pool.id)
+                  .quo(pool.totalShare)
+              ),
           apr: queryOsmosis.queryIncentivizedPools
             .computeMostAPY(pool.id, priceStore)
             .maxDecimals(2),
@@ -322,7 +333,9 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
           {
             poolId,
             onAddLiquidity: () => quickAddLiquidity(poolId),
-            onRemoveLiquidity: !poolWithMetrics.myLiquidity.toDec().isZero()
+            onRemoveLiquidity: !poolWithMetrics.myAvailableLiquidity
+              .toDec()
+              .isZero()
               ? () => quickRemoveLiquidity(poolId)
               : undefined,
             onLockTokens: () => {},
