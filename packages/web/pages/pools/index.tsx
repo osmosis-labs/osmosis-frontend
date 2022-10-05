@@ -129,6 +129,15 @@ const Pools: NextPage = observer(function () {
   const [removeLiquidityModalPoolId, setRemoveLiquidityModalPoolId] = useState<
     string | null
   >(null);
+  const [lockTokensModalPoolId, setLockTokensModalPoolId] = useState<
+    string | null
+  >(null);
+  const quickActionProps = {
+    quickAddLiquidity: (poolId: string) => setAddLiquidityModalPoolId(poolId),
+    quickRemoveLiquidity: (poolId: string) =>
+      setRemoveLiquidityModalPoolId(poolId),
+    quickLockTokens: (poolId: string) => setLockTokensModalPoolId(poolId),
+  };
 
   return (
     <main className="bg-background px-8">
@@ -342,12 +351,7 @@ const Pools: NextPage = observer(function () {
                 content: (
                   <AllPoolsTableSet
                     tableSet="incentivized-pools"
-                    quickAddLiquidity={(poolId) =>
-                      setAddLiquidityModalPoolId(poolId)
-                    }
-                    quickRemoveLiquidity={(poolId) =>
-                      setRemoveLiquidityModalPoolId(poolId)
-                    }
+                    {...quickActionProps}
                   />
                 ),
               },
@@ -356,26 +360,14 @@ const Pools: NextPage = observer(function () {
                 content: (
                   <AllPoolsTableSet
                     tableSet="all-pools"
-                    quickAddLiquidity={(poolId) =>
-                      setAddLiquidityModalPoolId(poolId)
-                    }
-                    quickRemoveLiquidity={(poolId) =>
-                      setRemoveLiquidityModalPoolId(poolId)
-                    }
+                    {...quickActionProps}
                   />
                 ),
               },
               {
                 title: "External Incentive Pools",
                 content: (
-                  <ExternalIncentivizedPoolsTableSet
-                    quickAddLiquidity={(poolId) =>
-                      setAddLiquidityModalPoolId(poolId)
-                    }
-                    quickRemoveLiquidity={(poolId) =>
-                      setRemoveLiquidityModalPoolId(poolId)
-                    }
-                  />
+                  <ExternalIncentivizedPoolsTableSet {...quickActionProps} />
                 ),
               },
               {
@@ -556,26 +548,12 @@ const Pools: NextPage = observer(function () {
           </section>
           <section>
             <div className="mx-auto py-[3.75rem]">
-              <AllPoolsTableSet
-                quickAddLiquidity={(poolId) =>
-                  setAddLiquidityModalPoolId(poolId)
-                }
-                quickRemoveLiquidity={(poolId) =>
-                  setRemoveLiquidityModalPoolId(poolId)
-                }
-              />
+              <AllPoolsTableSet {...quickActionProps} />
             </div>
           </section>
           <section className="min-h-screen">
             <div className="mx-auto py-[3.75rem]">
-              <ExternalIncentivizedPoolsTableSet
-                quickAddLiquidity={(poolId) =>
-                  setAddLiquidityModalPoolId(poolId)
-                }
-                quickRemoveLiquidity={(poolId) =>
-                  setRemoveLiquidityModalPoolId(poolId)
-                }
-              />
+              <ExternalIncentivizedPoolsTableSet {...quickActionProps} />
             </div>
           </section>
         </>

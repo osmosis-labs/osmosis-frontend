@@ -38,7 +38,7 @@ export const PoolQuickActionCell: FunctionComponent<
       });
     }
     if (onLockTokens) {
-      m.push({ id: "lock-tokens", display: "Lock Tokens" });
+      m.push({ id: "lock-tokens", display: "Lock Shares" });
     }
 
     return m;

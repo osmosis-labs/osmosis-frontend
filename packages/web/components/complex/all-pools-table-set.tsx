@@ -58,11 +58,13 @@ export const AllPoolsTableSet: FunctionComponent<{
   tableSet?: "incentivized-pools" | "all-pools";
   quickAddLiquidity: (poolId: string) => void;
   quickRemoveLiquidity: (poolId: string) => void;
+  quickLockTokens: (poolId: string) => void;
 }> = observer(
   ({
     tableSet = "incentivized-pools",
     quickAddLiquidity,
     quickRemoveLiquidity,
+    quickLockTokens,
   }) => {
     const {
       chainStore,
@@ -392,7 +394,11 @@ export const AllPoolsTableSet: FunctionComponent<{
                 .isZero()
                 ? () => quickRemoveLiquidity(poolId)
                 : undefined,
-              onLockTokens: () => {},
+              onLockTokens: !poolWithMetrics.myAvailableLiquidity
+                .toDec()
+                .isZero()
+                ? () => quickLockTokens(poolId)
+                : undefined,
             },
           ];
         }),
