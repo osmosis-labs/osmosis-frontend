@@ -516,9 +516,7 @@ const Pools: NextPage = observer(function () {
                             label: "Fees (7D)",
                             value: (
                               <MetricLoader
-                                isLoading={poolFeesMetrics.feesSpent7d
-                                  .toDec()
-                                  .isZero()}
+                                isLoading={!poolFeesMetrics.feesSpent7d.isReady}
                               >
                                 {poolFeesMetrics.feesSpent7d.toString()}
                               </MetricLoader>
