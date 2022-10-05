@@ -2033,7 +2033,7 @@ chainInfos.push({
     coinDenom: "AXL",
     coinMinimalDenom: "uaxl",
     coinDecimals: 6,
-    coinGeckoId: 'axelar',
+    coinGeckoId: "axelar",
     coinImageUrl: "/tokens/axl.svg",
   },
   bip44: {
@@ -2184,7 +2184,7 @@ chainInfos.push({
       coinDenom: "AXL",
       coinMinimalDenom: "uaxl",
       coinDecimals: 6,
-      coinGeckoId: 'axelar',
+      coinGeckoId: "axelar",
       coinImageUrl: "/tokens/axl.svg",
     },
   ],
