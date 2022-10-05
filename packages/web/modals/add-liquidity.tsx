@@ -17,7 +17,7 @@ export const AddLiquidityModal: FunctionComponent<
   const account = accountStore.getAccount(chainId);
   const isSendingMsg = account.txTypeInProgress !== "";
 
-  const { config, onAddLiquidity } = useAddLiquidityConfig(
+  const { config, addLiquidity } = useAddLiquidityConfig(
     chainStore,
     chainId,
     poolId,
@@ -30,7 +30,7 @@ export const AddLiquidityModal: FunctionComponent<
       size: "lg",
       loading: isSendingMsg,
       disabled: config.error !== undefined || isSendingMsg,
-      onClick: () => onAddLiquidity().finally(() => props.onRequestClose()),
+      onClick: () => addLiquidity().finally(() => props.onRequestClose()),
       children: "Add Liquidity",
     },
     props.onRequestClose

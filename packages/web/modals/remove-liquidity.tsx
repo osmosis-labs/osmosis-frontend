@@ -20,7 +20,7 @@ export const RemoveLiquidityModal: FunctionComponent<
   const account = accountStore.getAccount(chainId);
   const isSendingMsg = account.txTypeInProgress !== "";
 
-  const { config, onRemoveLiquidity } = useRemoveLiquidityConfig(
+  const { config, removeLiquidity } = useRemoveLiquidityConfig(
     chainStore,
     chainId,
     poolId,
@@ -33,7 +33,7 @@ export const RemoveLiquidityModal: FunctionComponent<
       size: "lg",
       loading: isSendingMsg,
       disabled: config.error !== undefined || isSendingMsg,
-      onClick: () => onRemoveLiquidity().finally(() => props.onRequestClose()),
+      onClick: () => removeLiquidity().finally(() => props.onRequestClose()),
       children: "Remove Liquidity",
     },
     props.onRequestClose
