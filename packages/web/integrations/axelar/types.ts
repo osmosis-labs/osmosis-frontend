@@ -22,7 +22,9 @@ export interface AxelarBridgeConfig {
   transferFeeMinAmount: string;
 }
 
-/** See: https://docs.axelar.dev/dev/build/chain-names/mainnet
+/** Should be legal arguments to Axelar APIs.
+ *
+ *  See: https://docs.axelar.dev/dev/build/chain-names/mainnet
  *  Testnet: https://axelartest-lcd.quickapi.com/axelar/nexus/v1beta1/chains?status=1
  */
 export type SourceChain =
@@ -36,10 +38,10 @@ export type SourceChain =
   | "Mumbai"
   | "Moonbeam"
   | "Moonbase Alpha TestNet"
-  | "Binance Smart Chain"
+  | "Binance"
   | "Binance Smart Chain Testnet";
 
-/** Maps eth client chainIDs => axelar chain ids.
+/** Maps eth client human-readable chainIDs => Axelar API-acceptable chain ids.
  *
  *  Values not included as keys are assumed to be the same across chainlist and Axelar.
  */
@@ -87,9 +89,7 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/avalanche.svg",
     },
     binance: {
-      id: IS_TESTNET
-        ? ("Binance Smart Chain Testnet" as const)
-        : ("Binance Smart Chain" as const),
+      id: "Binance" as const,
       erc20ContractAddress: IS_TESTNET
         ? "0xc2fA98faB811B785b81c64Ac875b31CC9E40F9D2"
         : "0x4268B8F0B87b6Eae5d897996E6b845ddbD99Adf3",
@@ -105,9 +105,7 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
     fantom: {
-      id: IS_TESTNET
-        ? ("Fantom Testnet" as const)
-        : ("Fantom" as const),
+      id: IS_TESTNET ? ("Fantom Testnet" as const) : ("Fantom" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x75Cc4fDf1ee3E781C1A3Ee9151D5c6Ce34Cf5C61"
         : "0x1B6382DBDEa11d97f24495C9A90b7c88469134a4",
@@ -120,14 +118,10 @@ export const SourceChainConfigs: {
       erc20ContractAddress: IS_TESTNET
         ? "0xD1633F7Fb3d716643125d6415d4177bC36b7186b"
         : "0xCa01a1D0993565291051daFF390892518ACfAD3A",
-      logoUrl: IS_TESTNET
-        ? "/networks/moonbase.svg"
-        : "/networks/moonbeam.svg",
+      logoUrl: IS_TESTNET ? "/networks/moonbase.svg" : "/networks/moonbeam.svg",
     },
     polygon: {
-      id: IS_TESTNET
-        ? ("Mumbai" as const)
-        : ("Polygon" as const),
+      id: IS_TESTNET ? ("Mumbai" as const) : ("Polygon" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x2c852e740B62308c46DD29B982FBb650D063Bd07"
         : "0x750e4C4984a9e0f12978eA6742Bc1c5D248f40ed",
@@ -154,18 +148,14 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/avalanche.svg",
     },
     binance: {
-      id: IS_TESTNET
-        ? ("Binance Smart Chain Testnet" as const)
-        : ("Binance Smart Chain" as const),
+      id: "Binance" as const,
       erc20ContractAddress: IS_TESTNET
         ? "0x03Dc012b7851b7D65592Aebc40a6aF9A171E9315"
         : "",
       logoUrl: "/networks/binance.svg",
     },
     fantom: {
-      id: IS_TESTNET
-        ? ("Fantom Testnet" as const)
-        : ("Fantom" as const),
+      id: IS_TESTNET ? ("Fantom Testnet" as const) : ("Fantom" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x930640ef299Bf772f786Cf7E88DA951D76E33168"
         : "",
@@ -178,14 +168,10 @@ export const SourceChainConfigs: {
       erc20ContractAddress: IS_TESTNET
         ? "0xc40Fdaa2cB43C85eAA6D43856df42E7A80669fca"
         : "",
-      logoUrl: IS_TESTNET
-        ? "/networks/moonbase.svg"
-        : "/networks/moonbeam.svg",
+      logoUrl: IS_TESTNET ? "/networks/moonbase.svg" : "/networks/moonbeam.svg",
     },
     polygon: {
-      id: IS_TESTNET
-        ? ("Mumbai" as const)
-        : ("Polygon" as const),
+      id: IS_TESTNET ? ("Mumbai" as const) : ("Polygon" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0xfba15fFF35558fE2A469B96A90AeD7727FE38fAE"
         : "",
@@ -212,9 +198,7 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
     fantom: {
-      id: IS_TESTNET
-        ? ("Fantom Testnet" as const)
-        : ("Fantom" as const),
+      id: IS_TESTNET ? ("Fantom Testnet" as const) : ("Fantom" as const),
       erc20ContractAddress: IS_TESTNET
         ? ""
         : "0xD5d5350F42CB484036A1C1aF5F2DF77eAFadcAFF",
@@ -227,14 +211,10 @@ export const SourceChainConfigs: {
       erc20ContractAddress: IS_TESTNET
         ? ""
         : "0x14dF360966a1c4582d2b18EDbdae432EA0A27575",
-      logoUrl: IS_TESTNET
-        ? "/networks/moonbase.svg"
-        : "/networks/moonbeam.svg",
+      logoUrl: IS_TESTNET ? "/networks/moonbase.svg" : "/networks/moonbeam.svg",
     },
     polygon: {
-      id: IS_TESTNET
-        ? ("Mumbai" as const)
-        : ("Polygon" as const),
+      id: IS_TESTNET ? ("Mumbai" as const) : ("Polygon" as const),
       erc20ContractAddress: IS_TESTNET
         ? ""
         : "0xDDc9E2891FA11a4CC5C223145e8d14B44f3077c9",
@@ -261,9 +241,7 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
     fantom: {
-      id: IS_TESTNET
-        ? ("Fantom Testnet" as const)
-        : ("Fantom" as const),
+      id: IS_TESTNET ? ("Fantom Testnet" as const) : ("Fantom" as const),
       erc20ContractAddress: IS_TESTNET
         ? ""
         : "0xd226392C23fb3476274ED6759D4a478db3197d82",
@@ -276,14 +254,10 @@ export const SourceChainConfigs: {
       erc20ContractAddress: IS_TESTNET
         ? ""
         : "0xDFd74aF792bC6D45D1803F425CE62Dd16f8Ae038",
-      logoUrl: IS_TESTNET
-        ? "/networks/moonbase.svg"
-        : "/networks/moonbeam.svg",
+      logoUrl: IS_TESTNET ? "/networks/moonbase.svg" : "/networks/moonbeam.svg",
     },
     polygon: {
-      id: IS_TESTNET
-        ? ("Mumbai" as const)
-        : ("Polygon" as const),
+      id: IS_TESTNET ? ("Mumbai" as const) : ("Polygon" as const),
       erc20ContractAddress: IS_TESTNET
         ? ""
         : "0xCeED2671d8634e3ee65000EDbbEe66139b132fBf",
@@ -298,9 +272,7 @@ export const SourceChainConfigs: {
       erc20ContractAddress: IS_TESTNET
         ? ""
         : "0xFfFFfFff1FcaCBd218EDc0EbA20Fc2308C778080",
-      logoUrl: IS_TESTNET
-        ? "/networks/moonbase.svg"
-        : "/networks/moonbeam.svg",
+      logoUrl: IS_TESTNET ? "/networks/moonbase.svg" : "/networks/moonbeam.svg",
     },
   },
   wavaxwei: {
@@ -314,9 +286,7 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/avalanche.svg",
     },
     binance: {
-      id: IS_TESTNET
-        ? ("Binance Smart Chain Testnet" as const)
-        : ("Binance Smart Chain" as const),
+      id: "Binance" as const,
       erc20ContractAddress: IS_TESTNET
         ? "0x1B29EC62efC689c462b4E0512457175793cEc9e6"
         : "",
@@ -332,9 +302,7 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
     fantom: {
-      id: IS_TESTNET
-        ? ("Fantom Testnet" as const)
-        : ("Fantom" as const),
+      id: IS_TESTNET ? ("Fantom Testnet" as const) : ("Fantom" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x8776aDD48553518641a589C39792cc409d4C8B84"
         : "",
@@ -347,14 +315,10 @@ export const SourceChainConfigs: {
       erc20ContractAddress: IS_TESTNET
         ? "0x64aae6319934995Bf30e67EBBBA9750256E07283"
         : "",
-      logoUrl: IS_TESTNET
-        ? "/networks/moonbase.svg"
-        : "/networks/moonbeam.svg",
+      logoUrl: IS_TESTNET ? "/networks/moonbase.svg" : "/networks/moonbeam.svg",
     },
     polygon: {
-      id: IS_TESTNET
-        ? ("Mumbai" as const)
-        : ("Polygon" as const),
+      id: IS_TESTNET ? ("Mumbai" as const) : ("Polygon" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x6DD60c05FdA1255A44Ffaa9A8200b5b179A578D6"
         : "",
@@ -369,9 +333,7 @@ export const SourceChainConfigs: {
       erc20ContractAddress: IS_TESTNET
         ? "0x1436aE0dF0A8663F18c0Ec51d7e2E46591730715"
         : "0xAcc15dC74880C9944775448304B263D191c6077F",
-      logoUrl: IS_TESTNET
-        ? "/networks/moonbase.svg"
-        : "/networks/moonbeam.svg",
+      logoUrl: IS_TESTNET ? "/networks/moonbase.svg" : "/networks/moonbeam.svg",
     },
     avalanche: {
       id: IS_TESTNET
@@ -383,9 +345,7 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/avalanche.svg",
     },
     binance: {
-      id: IS_TESTNET
-        ? ("Binance Smart Chain Testnet" as const)
-        : ("Binance Smart Chain" as const),
+      id: "Binance" as const,
       erc20ContractAddress: IS_TESTNET
         ? "0xa893Fd868c3159B294f6416F512203be53315fd8"
         : "",
@@ -401,18 +361,14 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
     fantom: {
-      id: IS_TESTNET
-        ? ("Fantom Testnet" as const)
-        : ("Fantom" as const),
+      id: IS_TESTNET ? ("Fantom Testnet" as const) : ("Fantom" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0xD6f858A1E75e9a06c42dcd86BB876C5E9FccA572"
         : "",
       logoUrl: "/networks/fantom.svg",
     },
     polygon: {
-      id: IS_TESTNET
-        ? ("Mumbai" as const)
-        : ("Polygon" as const),
+      id: IS_TESTNET ? ("Mumbai" as const) : ("Polygon" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0xb6a2f51C219A66866263Cb18DD41EE6C51B464cB"
         : "",
@@ -421,9 +377,7 @@ export const SourceChainConfigs: {
   },
   wmaticwei: {
     polygon: {
-      id: IS_TESTNET
-        ? ("Mumbai" as const)
-        : ("Polygon" as const),
+      id: IS_TESTNET ? ("Mumbai" as const) : ("Polygon" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889"
         : "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
@@ -439,9 +393,7 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/avalanche.svg",
     },
     binance: {
-      id: IS_TESTNET
-        ? ("Binance Smart Chain Testnet" as const)
-        : ("Binance Smart Chain" as const),
+      id: "Binance" as const,
       erc20ContractAddress: IS_TESTNET
         ? "0x920fA0DbB65cE928C29103AeC7B5c188bbea2f24"
         : "",
@@ -457,9 +409,7 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
     fantom: {
-      id: IS_TESTNET
-        ? ("Fantom Testnet" as const)
-        : ("Fantom" as const),
+      id: IS_TESTNET ? ("Fantom Testnet" as const) : ("Fantom" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x3C12d813bb36295A8361C4740A732Bb700df6Db0"
         : "",
@@ -472,9 +422,7 @@ export const SourceChainConfigs: {
       erc20ContractAddress: IS_TESTNET
         ? "0xde3dB4FD7D7A5Cc7D8811b7BaFA4103FD90282f3"
         : "",
-      logoUrl: IS_TESTNET
-        ? "/networks/moonbase.svg"
-        : "/networks/moonbeam.svg",
+      logoUrl: IS_TESTNET ? "/networks/moonbase.svg" : "/networks/moonbeam.svg",
     },
   },
   wbtcsatoshi: {
@@ -490,9 +438,7 @@ export const SourceChainConfigs: {
   },
   wbnbwei: {
     binance: {
-      id: IS_TESTNET
-        ? ("Binance Smart Chain Testnet" as const)
-        : ("Binance Smart Chain" as const),
+      id: "Binance" as const,
       erc20ContractAddress: IS_TESTNET
         ? "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd"
         : "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
@@ -517,9 +463,7 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
     fantom: {
-      id: IS_TESTNET
-        ? ("Fantom Testnet" as const)
-        : ("Fantom" as const),
+      id: IS_TESTNET ? ("Fantom Testnet" as const) : ("Fantom" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x8DA729FC44366eFE36d522B865FeC34653e85F6e"
         : "",
@@ -532,14 +476,10 @@ export const SourceChainConfigs: {
       erc20ContractAddress: IS_TESTNET
         ? "0x8d0BBbA567Ae73a06A8678e53Dc7ADD0AF6b7039"
         : "",
-      logoUrl: IS_TESTNET
-        ? "/networks/moonbase.svg"
-        : "/networks/moonbeam.svg",
+      logoUrl: IS_TESTNET ? "/networks/moonbase.svg" : "/networks/moonbeam.svg",
     },
     polygon: {
-      id: IS_TESTNET
-        ? ("Mumbai" as const)
-        : ("Polygon" as const),
+      id: IS_TESTNET ? ("Mumbai" as const) : ("Polygon" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x55fDE07dEF3261a41fC59B783D27A6357e8A86Df"
         : "",
@@ -548,9 +488,7 @@ export const SourceChainConfigs: {
   },
   wftmwei: {
     fantom: {
-      id: IS_TESTNET
-        ? ("Fantom Testnet" as const)
-        : ("Fantom" as const),
+      id: IS_TESTNET ? ("Fantom Testnet" as const) : ("Fantom" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x812666209b90344Ec8e528375298ab9045c2Bd08"
         : "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
@@ -566,9 +504,7 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/avalanche.svg",
     },
     binance: {
-      id: IS_TESTNET
-        ? ("Binance Smart Chain Testnet" as const)
-        : ("Binance Smart Chain" as const),
+      id: "Binance" as const,
       erc20ContractAddress: IS_TESTNET
         ? "0x90dEcD89a744a0CFbB3cc8DE08A5f3B14875B6C4"
         : "",
@@ -590,14 +526,10 @@ export const SourceChainConfigs: {
       erc20ContractAddress: IS_TESTNET
         ? "0x40EebD34eC6CB4C0644a18494365171b1dcE97eb"
         : "",
-      logoUrl: IS_TESTNET
-        ? "/networks/moonbase.svg"
-        : "/networks/moonbeam.svg",
+      logoUrl: IS_TESTNET ? "/networks/moonbase.svg" : "/networks/moonbeam.svg",
     },
     polygon: {
-      id: IS_TESTNET
-        ? ("Mumbai" as const)
-        : ("Polygon" as const),
+      id: IS_TESTNET ? ("Mumbai" as const) : ("Polygon" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x62b6F2A4eE6a4801bfcD2056d19c6d71654D2582"
         : "",
@@ -657,9 +589,7 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
     fantom: {
-      id: IS_TESTNET
-        ? ("Fantom Testnet" as const)
-        : ("Fantom" as const),
+      id: IS_TESTNET ? ("Fantom Testnet" as const) : ("Fantom" as const),
       erc20ContractAddress: IS_TESTNET
         ? ""
         : "0xbE71e68fB36d14565F523C9c36ab2A8Be0c26D55",
@@ -672,14 +602,10 @@ export const SourceChainConfigs: {
       erc20ContractAddress: IS_TESTNET
         ? ""
         : "0x61C82805453a989E99B544DFB7031902e9bac448",
-      logoUrl: IS_TESTNET
-        ? "/networks/moonbase.svg"
-        : "/networks/moonbeam.svg",
+      logoUrl: IS_TESTNET ? "/networks/moonbase.svg" : "/networks/moonbeam.svg",
     },
     polygon: {
-      id: IS_TESTNET
-        ? ("Mumbai" as const)
-        : ("Polygon" as const),
+      id: IS_TESTNET ? ("Mumbai" as const) : ("Polygon" as const),
       erc20ContractAddress: IS_TESTNET
         ? ""
         : "0x53Adc464b488bE8C5d7269B9ABBCe8bA74195C3a",
