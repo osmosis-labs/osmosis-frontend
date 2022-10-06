@@ -93,7 +93,7 @@ export class RootStore {
     );
 
     this.queriesStore = new QueriesStore(
-      makeIndexedKVStore("store_web_queries"),
+      makeIndexedKVStore("store_web_queries_v12"),
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),

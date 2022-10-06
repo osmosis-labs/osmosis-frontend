@@ -1993,6 +1993,57 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
     },
+    {
+      rpc: "https://api.mainnet.rebus.money:26657",
+      rest: "https://api.mainnet.rebus.money:1317",
+      chainId: "reb_1111-1",
+      chainName: "Rebus",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("rebus"),
+      currencies: [
+        {
+          coinDenom: "REBUS",
+          coinMinimalDenom: "arebus",
+          coinDecimals: 18,
+          coinGeckoId: "pool:arebus",
+          coinImageUrl: "/tokens/rebus.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://rebus.explorers.guru/transaction/{txHash}",
+    },
+    {
+      rpc: "https://rpc.mainnet.teritori.com/",
+      rest: "https://rest.mainnet.teritori.com/",
+      chainId: "teritori-1",
+      chainName: "Teritori",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("tori"),
+      currencies: [
+        {
+          coinDenom: "TORI",
+          coinMinimalDenom: "utori",
+          coinDecimals: 6,
+          coinGeckoId: "pool:utori",
+          coinImageUrl: "/tokens/utori.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.0,
+        average: 0.25,
+        high: 0.5,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://explorer.teritori.com/teritori/tx/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
@@ -2010,7 +2061,7 @@ chainInfos.push({
     coinDenom: "AXL",
     coinMinimalDenom: "uaxl",
     coinDecimals: 6,
-    // coinGeckoId: 'pool:uaxl',
+    coinGeckoId: 'axelar',
     coinImageUrl: "/tokens/axl.svg",
   },
   bip44: {
@@ -2018,6 +2069,13 @@ chainInfos.push({
   },
   bech32Config: Bech32Address.defaultBech32Config("axelar"),
   currencies: [
+    {
+      coinDenom: "AXL",
+      coinMinimalDenom: "uaxl",
+      coinDecimals: 6,
+      coinGeckoId: "pool:uaxl",
+      coinImageUrl: "/tokens/axl.svg",
+    },
     {
       coinDenom: IS_TESTNET ? "aUSDC" : "USDC",
       coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
@@ -2154,7 +2212,7 @@ chainInfos.push({
       coinDenom: "AXL",
       coinMinimalDenom: "uaxl",
       coinDecimals: 6,
-      // coinGeckoId: 'pool:uaxl',
+      coinGeckoId: 'axelar',
       coinImageUrl: "/tokens/axl.svg",
     },
   ],

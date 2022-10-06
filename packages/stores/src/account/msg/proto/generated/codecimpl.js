@@ -1302,15 +1302,30 @@ exports.osmosis = $root.osmosis = (() => {
       })();
       v1beta1.MsgJoinPoolResponse = (function () {
         function MsgJoinPoolResponse(p) {
+          this.tokenIn = [];
           if (p)
             for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
               if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
         }
+        MsgJoinPoolResponse.prototype.shareOutAmount = "";
+        MsgJoinPoolResponse.prototype.tokenIn = $util.emptyArray;
         MsgJoinPoolResponse.create = function create(properties) {
           return new MsgJoinPoolResponse(properties);
         };
         MsgJoinPoolResponse.encode = function encode(m, w) {
           if (!w) w = $Writer.create();
+          if (
+            m.shareOutAmount != null &&
+            Object.hasOwnProperty.call(m, "shareOutAmount")
+          )
+            w.uint32(10).string(m.shareOutAmount);
+          if (m.tokenIn != null && m.tokenIn.length) {
+            for (var i = 0; i < m.tokenIn.length; ++i)
+              $root.cosmos.base.v1beta1.Coin.encode(
+                m.tokenIn[i],
+                w.uint32(18).fork()
+              ).ldelim();
+          }
           return w;
         };
         MsgJoinPoolResponse.decode = function decode(r, l) {
@@ -1320,6 +1335,15 @@ exports.osmosis = $root.osmosis = (() => {
           while (r.pos < c) {
             var t = r.uint32();
             switch (t >>> 3) {
+              case 1:
+                m.shareOutAmount = r.string();
+                break;
+              case 2:
+                if (!(m.tokenIn && m.tokenIn.length)) m.tokenIn = [];
+                m.tokenIn.push(
+                  $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+                );
+                break;
               default:
                 r.skipType(t & 7);
                 break;
@@ -1330,10 +1354,50 @@ exports.osmosis = $root.osmosis = (() => {
         MsgJoinPoolResponse.fromObject = function fromObject(d) {
           if (d instanceof $root.osmosis.gamm.v1beta1.MsgJoinPoolResponse)
             return d;
-          return new $root.osmosis.gamm.v1beta1.MsgJoinPoolResponse();
+          var m = new $root.osmosis.gamm.v1beta1.MsgJoinPoolResponse();
+          if (d.shareOutAmount != null) {
+            m.shareOutAmount = String(d.shareOutAmount);
+          }
+          if (d.tokenIn) {
+            if (!Array.isArray(d.tokenIn))
+              throw TypeError(
+                ".osmosis.gamm.v1beta1.MsgJoinPoolResponse.tokenIn: array expected"
+              );
+            m.tokenIn = [];
+            for (var i = 0; i < d.tokenIn.length; ++i) {
+              if (typeof d.tokenIn[i] !== "object")
+                throw TypeError(
+                  ".osmosis.gamm.v1beta1.MsgJoinPoolResponse.tokenIn: object expected"
+                );
+              m.tokenIn[i] = $root.cosmos.base.v1beta1.Coin.fromObject(
+                d.tokenIn[i]
+              );
+            }
+          }
+          return m;
         };
-        MsgJoinPoolResponse.toObject = function toObject() {
-          return {};
+        MsgJoinPoolResponse.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.arrays || o.defaults) {
+            d.tokenIn = [];
+          }
+          if (o.defaults) {
+            d.shareOutAmount = "";
+          }
+          if (m.shareOutAmount != null && m.hasOwnProperty("shareOutAmount")) {
+            d.shareOutAmount = m.shareOutAmount;
+          }
+          if (m.tokenIn && m.tokenIn.length) {
+            d.tokenIn = [];
+            for (var j = 0; j < m.tokenIn.length; ++j) {
+              d.tokenIn[j] = $root.cosmos.base.v1beta1.Coin.toObject(
+                m.tokenIn[j],
+                o
+              );
+            }
+          }
+          return d;
         };
         MsgJoinPoolResponse.prototype.toJSON = function toJSON() {
           return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
@@ -1502,15 +1566,24 @@ exports.osmosis = $root.osmosis = (() => {
       })();
       v1beta1.MsgExitPoolResponse = (function () {
         function MsgExitPoolResponse(p) {
+          this.tokenOut = [];
           if (p)
             for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
               if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
         }
+        MsgExitPoolResponse.prototype.tokenOut = $util.emptyArray;
         MsgExitPoolResponse.create = function create(properties) {
           return new MsgExitPoolResponse(properties);
         };
         MsgExitPoolResponse.encode = function encode(m, w) {
           if (!w) w = $Writer.create();
+          if (m.tokenOut != null && m.tokenOut.length) {
+            for (var i = 0; i < m.tokenOut.length; ++i)
+              $root.cosmos.base.v1beta1.Coin.encode(
+                m.tokenOut[i],
+                w.uint32(10).fork()
+              ).ldelim();
+          }
           return w;
         };
         MsgExitPoolResponse.decode = function decode(r, l) {
@@ -1520,6 +1593,12 @@ exports.osmosis = $root.osmosis = (() => {
           while (r.pos < c) {
             var t = r.uint32();
             switch (t >>> 3) {
+              case 1:
+                if (!(m.tokenOut && m.tokenOut.length)) m.tokenOut = [];
+                m.tokenOut.push(
+                  $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+                );
+                break;
               default:
                 r.skipType(t & 7);
                 break;
@@ -1530,10 +1609,41 @@ exports.osmosis = $root.osmosis = (() => {
         MsgExitPoolResponse.fromObject = function fromObject(d) {
           if (d instanceof $root.osmosis.gamm.v1beta1.MsgExitPoolResponse)
             return d;
-          return new $root.osmosis.gamm.v1beta1.MsgExitPoolResponse();
+          var m = new $root.osmosis.gamm.v1beta1.MsgExitPoolResponse();
+          if (d.tokenOut) {
+            if (!Array.isArray(d.tokenOut))
+              throw TypeError(
+                ".osmosis.gamm.v1beta1.MsgExitPoolResponse.tokenOut: array expected"
+              );
+            m.tokenOut = [];
+            for (var i = 0; i < d.tokenOut.length; ++i) {
+              if (typeof d.tokenOut[i] !== "object")
+                throw TypeError(
+                  ".osmosis.gamm.v1beta1.MsgExitPoolResponse.tokenOut: object expected"
+                );
+              m.tokenOut[i] = $root.cosmos.base.v1beta1.Coin.fromObject(
+                d.tokenOut[i]
+              );
+            }
+          }
+          return m;
         };
-        MsgExitPoolResponse.toObject = function toObject() {
-          return {};
+        MsgExitPoolResponse.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.arrays || o.defaults) {
+            d.tokenOut = [];
+          }
+          if (m.tokenOut && m.tokenOut.length) {
+            d.tokenOut = [];
+            for (var j = 0; j < m.tokenOut.length; ++j) {
+              d.tokenOut[j] = $root.cosmos.base.v1beta1.Coin.toObject(
+                m.tokenOut[j],
+                o
+              );
+            }
+          }
+          return d;
         };
         MsgExitPoolResponse.prototype.toJSON = function toJSON() {
           return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
@@ -3951,6 +4061,1036 @@ exports.osmosis = $root.osmosis = (() => {
           return v1beta1;
         })();
         return balancer;
+      })();
+      poolmodels.stableswap = (function () {
+        const stableswap = {};
+        stableswap.v1beta1 = (function () {
+          const v1beta1 = {};
+          v1beta1.PoolParams = (function () {
+            function PoolParams(p) {
+              if (p)
+                for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                  if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+            }
+            PoolParams.prototype.swapFee = "";
+            PoolParams.prototype.exitFee = "";
+            PoolParams.create = function create(properties) {
+              return new PoolParams(properties);
+            };
+            PoolParams.encode = function encode(m, w) {
+              if (!w) w = $Writer.create();
+              if (m.swapFee != null && Object.hasOwnProperty.call(m, "swapFee"))
+                w.uint32(10).string(m.swapFee);
+              if (m.exitFee != null && Object.hasOwnProperty.call(m, "exitFee"))
+                w.uint32(18).string(m.exitFee);
+              return w;
+            };
+            PoolParams.decode = function decode(r, l) {
+              if (!(r instanceof $Reader)) r = $Reader.create(r);
+              var c = l === undefined ? r.len : r.pos + l,
+                m =
+                  new $root.osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams();
+              while (r.pos < c) {
+                var t = r.uint32();
+                switch (t >>> 3) {
+                  case 1:
+                    m.swapFee = r.string();
+                    break;
+                  case 2:
+                    m.exitFee = r.string();
+                    break;
+                  default:
+                    r.skipType(t & 7);
+                    break;
+                }
+              }
+              return m;
+            };
+            PoolParams.fromObject = function fromObject(d) {
+              if (
+                d instanceof
+                $root.osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams
+              )
+                return d;
+              var m =
+                new $root.osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams();
+              if (d.swapFee != null) {
+                m.swapFee = String(d.swapFee);
+              }
+              if (d.exitFee != null) {
+                m.exitFee = String(d.exitFee);
+              }
+              return m;
+            };
+            PoolParams.toObject = function toObject(m, o) {
+              if (!o) o = {};
+              var d = {};
+              if (o.defaults) {
+                d.swapFee = "";
+                d.exitFee = "";
+              }
+              if (m.swapFee != null && m.hasOwnProperty("swapFee")) {
+                d.swapFee = m.swapFee;
+              }
+              if (m.exitFee != null && m.hasOwnProperty("exitFee")) {
+                d.exitFee = m.exitFee;
+              }
+              return d;
+            };
+            PoolParams.prototype.toJSON = function toJSON() {
+              return this.constructor.toObject(
+                this,
+                $protobuf.util.toJSONOptions
+              );
+            };
+            return PoolParams;
+          })();
+          v1beta1.Pool = (function () {
+            function Pool(p) {
+              this.poolLiquidity = [];
+              this.scalingFactor = [];
+              if (p)
+                for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                  if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+            }
+            Pool.prototype.address = "";
+            Pool.prototype.id = $util.Long
+              ? $util.Long.fromBits(0, 0, true)
+              : 0;
+            Pool.prototype.poolParams = null;
+            Pool.prototype.futurePoolGovernor = "";
+            Pool.prototype.totalShares = null;
+            Pool.prototype.poolLiquidity = $util.emptyArray;
+            Pool.prototype.scalingFactor = $util.emptyArray;
+            Pool.prototype.scalingFactorGovernor = "";
+            Pool.create = function create(properties) {
+              return new Pool(properties);
+            };
+            Pool.encode = function encode(m, w) {
+              if (!w) w = $Writer.create();
+              if (m.address != null && Object.hasOwnProperty.call(m, "address"))
+                w.uint32(10).string(m.address);
+              if (m.id != null && Object.hasOwnProperty.call(m, "id"))
+                w.uint32(16).uint64(m.id);
+              if (
+                m.poolParams != null &&
+                Object.hasOwnProperty.call(m, "poolParams")
+              )
+                $root.osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams.encode(
+                  m.poolParams,
+                  w.uint32(26).fork()
+                ).ldelim();
+              if (
+                m.futurePoolGovernor != null &&
+                Object.hasOwnProperty.call(m, "futurePoolGovernor")
+              )
+                w.uint32(34).string(m.futurePoolGovernor);
+              if (
+                m.totalShares != null &&
+                Object.hasOwnProperty.call(m, "totalShares")
+              )
+                $root.cosmos.base.v1beta1.Coin.encode(
+                  m.totalShares,
+                  w.uint32(42).fork()
+                ).ldelim();
+              if (m.poolLiquidity != null && m.poolLiquidity.length) {
+                for (var i = 0; i < m.poolLiquidity.length; ++i)
+                  $root.cosmos.base.v1beta1.Coin.encode(
+                    m.poolLiquidity[i],
+                    w.uint32(50).fork()
+                  ).ldelim();
+              }
+              if (m.scalingFactor != null && m.scalingFactor.length) {
+                w.uint32(58).fork();
+                for (var i = 0; i < m.scalingFactor.length; ++i)
+                  w.uint64(m.scalingFactor[i]);
+                w.ldelim();
+              }
+              if (
+                m.scalingFactorGovernor != null &&
+                Object.hasOwnProperty.call(m, "scalingFactorGovernor")
+              )
+                w.uint32(66).string(m.scalingFactorGovernor);
+              return w;
+            };
+            Pool.decode = function decode(r, l) {
+              if (!(r instanceof $Reader)) r = $Reader.create(r);
+              var c = l === undefined ? r.len : r.pos + l,
+                m = new $root.osmosis.gamm.poolmodels.stableswap.v1beta1.Pool();
+              while (r.pos < c) {
+                var t = r.uint32();
+                switch (t >>> 3) {
+                  case 1:
+                    m.address = r.string();
+                    break;
+                  case 2:
+                    m.id = r.uint64();
+                    break;
+                  case 3:
+                    m.poolParams =
+                      $root.osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams.decode(
+                        r,
+                        r.uint32()
+                      );
+                    break;
+                  case 4:
+                    m.futurePoolGovernor = r.string();
+                    break;
+                  case 5:
+                    m.totalShares = $root.cosmos.base.v1beta1.Coin.decode(
+                      r,
+                      r.uint32()
+                    );
+                    break;
+                  case 6:
+                    if (!(m.poolLiquidity && m.poolLiquidity.length))
+                      m.poolLiquidity = [];
+                    m.poolLiquidity.push(
+                      $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+                    );
+                    break;
+                  case 7:
+                    if (!(m.scalingFactor && m.scalingFactor.length))
+                      m.scalingFactor = [];
+                    if ((t & 7) === 2) {
+                      var c2 = r.uint32() + r.pos;
+                      while (r.pos < c2) m.scalingFactor.push(r.uint64());
+                    } else m.scalingFactor.push(r.uint64());
+                    break;
+                  case 8:
+                    m.scalingFactorGovernor = r.string();
+                    break;
+                  default:
+                    r.skipType(t & 7);
+                    break;
+                }
+              }
+              return m;
+            };
+            Pool.fromObject = function fromObject(d) {
+              if (
+                d instanceof
+                $root.osmosis.gamm.poolmodels.stableswap.v1beta1.Pool
+              )
+                return d;
+              var m =
+                new $root.osmosis.gamm.poolmodels.stableswap.v1beta1.Pool();
+              if (d.address != null) {
+                m.address = String(d.address);
+              }
+              if (d.id != null) {
+                if ($util.Long)
+                  (m.id = $util.Long.fromValue(d.id)).unsigned = true;
+                else if (typeof d.id === "string") m.id = parseInt(d.id, 10);
+                else if (typeof d.id === "number") m.id = d.id;
+                else if (typeof d.id === "object")
+                  m.id = new $util.LongBits(
+                    d.id.low >>> 0,
+                    d.id.high >>> 0
+                  ).toNumber(true);
+              }
+              if (d.poolParams != null) {
+                if (typeof d.poolParams !== "object")
+                  throw TypeError(
+                    ".osmosis.gamm.poolmodels.stableswap.v1beta1.Pool.poolParams: object expected"
+                  );
+                m.poolParams =
+                  $root.osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams.fromObject(
+                    d.poolParams
+                  );
+              }
+              if (d.futurePoolGovernor != null) {
+                m.futurePoolGovernor = String(d.futurePoolGovernor);
+              }
+              if (d.totalShares != null) {
+                if (typeof d.totalShares !== "object")
+                  throw TypeError(
+                    ".osmosis.gamm.poolmodels.stableswap.v1beta1.Pool.totalShares: object expected"
+                  );
+                m.totalShares = $root.cosmos.base.v1beta1.Coin.fromObject(
+                  d.totalShares
+                );
+              }
+              if (d.poolLiquidity) {
+                if (!Array.isArray(d.poolLiquidity))
+                  throw TypeError(
+                    ".osmosis.gamm.poolmodels.stableswap.v1beta1.Pool.poolLiquidity: array expected"
+                  );
+                m.poolLiquidity = [];
+                for (var i = 0; i < d.poolLiquidity.length; ++i) {
+                  if (typeof d.poolLiquidity[i] !== "object")
+                    throw TypeError(
+                      ".osmosis.gamm.poolmodels.stableswap.v1beta1.Pool.poolLiquidity: object expected"
+                    );
+                  m.poolLiquidity[i] =
+                    $root.cosmos.base.v1beta1.Coin.fromObject(
+                      d.poolLiquidity[i]
+                    );
+                }
+              }
+              if (d.scalingFactor) {
+                if (!Array.isArray(d.scalingFactor))
+                  throw TypeError(
+                    ".osmosis.gamm.poolmodels.stableswap.v1beta1.Pool.scalingFactor: array expected"
+                  );
+                m.scalingFactor = [];
+                for (var i = 0; i < d.scalingFactor.length; ++i) {
+                  if ($util.Long)
+                    (m.scalingFactor[i] = $util.Long.fromValue(
+                      d.scalingFactor[i]
+                    )).unsigned = true;
+                  else if (typeof d.scalingFactor[i] === "string")
+                    m.scalingFactor[i] = parseInt(d.scalingFactor[i], 10);
+                  else if (typeof d.scalingFactor[i] === "number")
+                    m.scalingFactor[i] = d.scalingFactor[i];
+                  else if (typeof d.scalingFactor[i] === "object")
+                    m.scalingFactor[i] = new $util.LongBits(
+                      d.scalingFactor[i].low >>> 0,
+                      d.scalingFactor[i].high >>> 0
+                    ).toNumber(true);
+                }
+              }
+              if (d.scalingFactorGovernor != null) {
+                m.scalingFactorGovernor = String(d.scalingFactorGovernor);
+              }
+              return m;
+            };
+            Pool.toObject = function toObject(m, o) {
+              if (!o) o = {};
+              var d = {};
+              if (o.arrays || o.defaults) {
+                d.poolLiquidity = [];
+                d.scalingFactor = [];
+              }
+              if (o.defaults) {
+                d.address = "";
+                if ($util.Long) {
+                  var n = new $util.Long(0, 0, true);
+                  d.id =
+                    o.longs === String
+                      ? n.toString()
+                      : o.longs === Number
+                      ? n.toNumber()
+                      : n;
+                } else d.id = o.longs === String ? "0" : 0;
+                d.poolParams = null;
+                d.futurePoolGovernor = "";
+                d.totalShares = null;
+                d.scalingFactorGovernor = "";
+              }
+              if (m.address != null && m.hasOwnProperty("address")) {
+                d.address = m.address;
+              }
+              if (m.id != null && m.hasOwnProperty("id")) {
+                if (typeof m.id === "number")
+                  d.id = o.longs === String ? String(m.id) : m.id;
+                else
+                  d.id =
+                    o.longs === String
+                      ? $util.Long.prototype.toString.call(m.id)
+                      : o.longs === Number
+                      ? new $util.LongBits(
+                          m.id.low >>> 0,
+                          m.id.high >>> 0
+                        ).toNumber(true)
+                      : m.id;
+              }
+              if (m.poolParams != null && m.hasOwnProperty("poolParams")) {
+                d.poolParams =
+                  $root.osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams.toObject(
+                    m.poolParams,
+                    o
+                  );
+              }
+              if (
+                m.futurePoolGovernor != null &&
+                m.hasOwnProperty("futurePoolGovernor")
+              ) {
+                d.futurePoolGovernor = m.futurePoolGovernor;
+              }
+              if (m.totalShares != null && m.hasOwnProperty("totalShares")) {
+                d.totalShares = $root.cosmos.base.v1beta1.Coin.toObject(
+                  m.totalShares,
+                  o
+                );
+              }
+              if (m.poolLiquidity && m.poolLiquidity.length) {
+                d.poolLiquidity = [];
+                for (var j = 0; j < m.poolLiquidity.length; ++j) {
+                  d.poolLiquidity[j] = $root.cosmos.base.v1beta1.Coin.toObject(
+                    m.poolLiquidity[j],
+                    o
+                  );
+                }
+              }
+              if (m.scalingFactor && m.scalingFactor.length) {
+                d.scalingFactor = [];
+                for (var j = 0; j < m.scalingFactor.length; ++j) {
+                  if (typeof m.scalingFactor[j] === "number")
+                    d.scalingFactor[j] =
+                      o.longs === String
+                        ? String(m.scalingFactor[j])
+                        : m.scalingFactor[j];
+                  else
+                    d.scalingFactor[j] =
+                      o.longs === String
+                        ? $util.Long.prototype.toString.call(m.scalingFactor[j])
+                        : o.longs === Number
+                        ? new $util.LongBits(
+                            m.scalingFactor[j].low >>> 0,
+                            m.scalingFactor[j].high >>> 0
+                          ).toNumber(true)
+                        : m.scalingFactor[j];
+                }
+              }
+              if (
+                m.scalingFactorGovernor != null &&
+                m.hasOwnProperty("scalingFactorGovernor")
+              ) {
+                d.scalingFactorGovernor = m.scalingFactorGovernor;
+              }
+              return d;
+            };
+            Pool.prototype.toJSON = function toJSON() {
+              return this.constructor.toObject(
+                this,
+                $protobuf.util.toJSONOptions
+              );
+            };
+            return Pool;
+          })();
+          v1beta1.Msg = (function () {
+            function Msg(rpcImpl, requestDelimited, responseDelimited) {
+              $protobuf.rpc.Service.call(
+                this,
+                rpcImpl,
+                requestDelimited,
+                responseDelimited
+              );
+            }
+            (Msg.prototype = Object.create(
+              $protobuf.rpc.Service.prototype
+            )).constructor = Msg;
+            Msg.create = function create(
+              rpcImpl,
+              requestDelimited,
+              responseDelimited
+            ) {
+              return new this(rpcImpl, requestDelimited, responseDelimited);
+            };
+            Object.defineProperty(
+              (Msg.prototype.createStableswapPool =
+                function createStableswapPool(request, callback) {
+                  return this.rpcCall(
+                    createStableswapPool,
+                    $root.osmosis.gamm.poolmodels.stableswap.v1beta1
+                      .MsgCreateStableswapPool,
+                    $root.osmosis.gamm.poolmodels.stableswap.v1beta1
+                      .MsgCreateStableswapPoolResponse,
+                    request,
+                    callback
+                  );
+                }),
+              "name",
+              { value: "CreateStableswapPool" }
+            );
+            Object.defineProperty(
+              (Msg.prototype.stableSwapAdjustScalingFactors =
+                function stableSwapAdjustScalingFactors(request, callback) {
+                  return this.rpcCall(
+                    stableSwapAdjustScalingFactors,
+                    $root.osmosis.gamm.poolmodels.stableswap.v1beta1
+                      .MsgStableSwapAdjustScalingFactors,
+                    $root.osmosis.gamm.poolmodels.stableswap.v1beta1
+                      .MsgStableSwapAdjustScalingFactorsResponse,
+                    request,
+                    callback
+                  );
+                }),
+              "name",
+              { value: "StableSwapAdjustScalingFactors" }
+            );
+            return Msg;
+          })();
+          v1beta1.MsgCreateStableswapPool = (function () {
+            function MsgCreateStableswapPool(p) {
+              this.initialPoolLiquidity = [];
+              this.scalingFactors = [];
+              if (p)
+                for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                  if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+            }
+            MsgCreateStableswapPool.prototype.sender = "";
+            MsgCreateStableswapPool.prototype.poolParams = null;
+            MsgCreateStableswapPool.prototype.initialPoolLiquidity =
+              $util.emptyArray;
+            MsgCreateStableswapPool.prototype.scalingFactors = $util.emptyArray;
+            MsgCreateStableswapPool.prototype.futurePoolGovernor = "";
+            MsgCreateStableswapPool.create = function create(properties) {
+              return new MsgCreateStableswapPool(properties);
+            };
+            MsgCreateStableswapPool.encode = function encode(m, w) {
+              if (!w) w = $Writer.create();
+              if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
+                w.uint32(10).string(m.sender);
+              if (
+                m.poolParams != null &&
+                Object.hasOwnProperty.call(m, "poolParams")
+              )
+                $root.osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams.encode(
+                  m.poolParams,
+                  w.uint32(18).fork()
+                ).ldelim();
+              if (
+                m.initialPoolLiquidity != null &&
+                m.initialPoolLiquidity.length
+              ) {
+                for (var i = 0; i < m.initialPoolLiquidity.length; ++i)
+                  $root.cosmos.base.v1beta1.Coin.encode(
+                    m.initialPoolLiquidity[i],
+                    w.uint32(26).fork()
+                  ).ldelim();
+              }
+              if (m.scalingFactors != null && m.scalingFactors.length) {
+                w.uint32(34).fork();
+                for (var i = 0; i < m.scalingFactors.length; ++i)
+                  w.uint64(m.scalingFactors[i]);
+                w.ldelim();
+              }
+              if (
+                m.futurePoolGovernor != null &&
+                Object.hasOwnProperty.call(m, "futurePoolGovernor")
+              )
+                w.uint32(42).string(m.futurePoolGovernor);
+              return w;
+            };
+            MsgCreateStableswapPool.decode = function decode(r, l) {
+              if (!(r instanceof $Reader)) r = $Reader.create(r);
+              var c = l === undefined ? r.len : r.pos + l,
+                m =
+                  new $root.osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool();
+              while (r.pos < c) {
+                var t = r.uint32();
+                switch (t >>> 3) {
+                  case 1:
+                    m.sender = r.string();
+                    break;
+                  case 2:
+                    m.poolParams =
+                      $root.osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams.decode(
+                        r,
+                        r.uint32()
+                      );
+                    break;
+                  case 3:
+                    if (
+                      !(m.initialPoolLiquidity && m.initialPoolLiquidity.length)
+                    )
+                      m.initialPoolLiquidity = [];
+                    m.initialPoolLiquidity.push(
+                      $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+                    );
+                    break;
+                  case 4:
+                    if (!(m.scalingFactors && m.scalingFactors.length))
+                      m.scalingFactors = [];
+                    if ((t & 7) === 2) {
+                      var c2 = r.uint32() + r.pos;
+                      while (r.pos < c2) m.scalingFactors.push(r.uint64());
+                    } else m.scalingFactors.push(r.uint64());
+                    break;
+                  case 5:
+                    m.futurePoolGovernor = r.string();
+                    break;
+                  default:
+                    r.skipType(t & 7);
+                    break;
+                }
+              }
+              return m;
+            };
+            MsgCreateStableswapPool.fromObject = function fromObject(d) {
+              if (
+                d instanceof
+                $root.osmosis.gamm.poolmodels.stableswap.v1beta1
+                  .MsgCreateStableswapPool
+              )
+                return d;
+              var m =
+                new $root.osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool();
+              if (d.sender != null) {
+                m.sender = String(d.sender);
+              }
+              if (d.poolParams != null) {
+                if (typeof d.poolParams !== "object")
+                  throw TypeError(
+                    ".osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool.poolParams: object expected"
+                  );
+                m.poolParams =
+                  $root.osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams.fromObject(
+                    d.poolParams
+                  );
+              }
+              if (d.initialPoolLiquidity) {
+                if (!Array.isArray(d.initialPoolLiquidity))
+                  throw TypeError(
+                    ".osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool.initialPoolLiquidity: array expected"
+                  );
+                m.initialPoolLiquidity = [];
+                for (var i = 0; i < d.initialPoolLiquidity.length; ++i) {
+                  if (typeof d.initialPoolLiquidity[i] !== "object")
+                    throw TypeError(
+                      ".osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool.initialPoolLiquidity: object expected"
+                    );
+                  m.initialPoolLiquidity[i] =
+                    $root.cosmos.base.v1beta1.Coin.fromObject(
+                      d.initialPoolLiquidity[i]
+                    );
+                }
+              }
+              if (d.scalingFactors) {
+                if (!Array.isArray(d.scalingFactors))
+                  throw TypeError(
+                    ".osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool.scalingFactors: array expected"
+                  );
+                m.scalingFactors = [];
+                for (var i = 0; i < d.scalingFactors.length; ++i) {
+                  if ($util.Long)
+                    (m.scalingFactors[i] = $util.Long.fromValue(
+                      d.scalingFactors[i]
+                    )).unsigned = true;
+                  else if (typeof d.scalingFactors[i] === "string")
+                    m.scalingFactors[i] = parseInt(d.scalingFactors[i], 10);
+                  else if (typeof d.scalingFactors[i] === "number")
+                    m.scalingFactors[i] = d.scalingFactors[i];
+                  else if (typeof d.scalingFactors[i] === "object")
+                    m.scalingFactors[i] = new $util.LongBits(
+                      d.scalingFactors[i].low >>> 0,
+                      d.scalingFactors[i].high >>> 0
+                    ).toNumber(true);
+                }
+              }
+              if (d.futurePoolGovernor != null) {
+                m.futurePoolGovernor = String(d.futurePoolGovernor);
+              }
+              return m;
+            };
+            MsgCreateStableswapPool.toObject = function toObject(m, o) {
+              if (!o) o = {};
+              var d = {};
+              if (o.arrays || o.defaults) {
+                d.initialPoolLiquidity = [];
+                d.scalingFactors = [];
+              }
+              if (o.defaults) {
+                d.sender = "";
+                d.poolParams = null;
+                d.futurePoolGovernor = "";
+              }
+              if (m.sender != null && m.hasOwnProperty("sender")) {
+                d.sender = m.sender;
+              }
+              if (m.poolParams != null && m.hasOwnProperty("poolParams")) {
+                d.poolParams =
+                  $root.osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams.toObject(
+                    m.poolParams,
+                    o
+                  );
+              }
+              if (m.initialPoolLiquidity && m.initialPoolLiquidity.length) {
+                d.initialPoolLiquidity = [];
+                for (var j = 0; j < m.initialPoolLiquidity.length; ++j) {
+                  d.initialPoolLiquidity[j] =
+                    $root.cosmos.base.v1beta1.Coin.toObject(
+                      m.initialPoolLiquidity[j],
+                      o
+                    );
+                }
+              }
+              if (m.scalingFactors && m.scalingFactors.length) {
+                d.scalingFactors = [];
+                for (var j = 0; j < m.scalingFactors.length; ++j) {
+                  if (typeof m.scalingFactors[j] === "number")
+                    d.scalingFactors[j] =
+                      o.longs === String
+                        ? String(m.scalingFactors[j])
+                        : m.scalingFactors[j];
+                  else
+                    d.scalingFactors[j] =
+                      o.longs === String
+                        ? $util.Long.prototype.toString.call(
+                            m.scalingFactors[j]
+                          )
+                        : o.longs === Number
+                        ? new $util.LongBits(
+                            m.scalingFactors[j].low >>> 0,
+                            m.scalingFactors[j].high >>> 0
+                          ).toNumber(true)
+                        : m.scalingFactors[j];
+                }
+              }
+              if (
+                m.futurePoolGovernor != null &&
+                m.hasOwnProperty("futurePoolGovernor")
+              ) {
+                d.futurePoolGovernor = m.futurePoolGovernor;
+              }
+              return d;
+            };
+            MsgCreateStableswapPool.prototype.toJSON = function toJSON() {
+              return this.constructor.toObject(
+                this,
+                $protobuf.util.toJSONOptions
+              );
+            };
+            return MsgCreateStableswapPool;
+          })();
+          v1beta1.MsgCreateStableswapPoolResponse = (function () {
+            function MsgCreateStableswapPoolResponse(p) {
+              if (p)
+                for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                  if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+            }
+            MsgCreateStableswapPoolResponse.prototype.poolId = $util.Long
+              ? $util.Long.fromBits(0, 0, true)
+              : 0;
+            MsgCreateStableswapPoolResponse.create = function create(
+              properties
+            ) {
+              return new MsgCreateStableswapPoolResponse(properties);
+            };
+            MsgCreateStableswapPoolResponse.encode = function encode(m, w) {
+              if (!w) w = $Writer.create();
+              if (m.poolId != null && Object.hasOwnProperty.call(m, "poolId"))
+                w.uint32(8).uint64(m.poolId);
+              return w;
+            };
+            MsgCreateStableswapPoolResponse.decode = function decode(r, l) {
+              if (!(r instanceof $Reader)) r = $Reader.create(r);
+              var c = l === undefined ? r.len : r.pos + l,
+                m =
+                  new $root.osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPoolResponse();
+              while (r.pos < c) {
+                var t = r.uint32();
+                switch (t >>> 3) {
+                  case 1:
+                    m.poolId = r.uint64();
+                    break;
+                  default:
+                    r.skipType(t & 7);
+                    break;
+                }
+              }
+              return m;
+            };
+            MsgCreateStableswapPoolResponse.fromObject = function fromObject(
+              d
+            ) {
+              if (
+                d instanceof
+                $root.osmosis.gamm.poolmodels.stableswap.v1beta1
+                  .MsgCreateStableswapPoolResponse
+              )
+                return d;
+              var m =
+                new $root.osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPoolResponse();
+              if (d.poolId != null) {
+                if ($util.Long)
+                  (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+                else if (typeof d.poolId === "string")
+                  m.poolId = parseInt(d.poolId, 10);
+                else if (typeof d.poolId === "number") m.poolId = d.poolId;
+                else if (typeof d.poolId === "object")
+                  m.poolId = new $util.LongBits(
+                    d.poolId.low >>> 0,
+                    d.poolId.high >>> 0
+                  ).toNumber(true);
+              }
+              return m;
+            };
+            MsgCreateStableswapPoolResponse.toObject = function toObject(m, o) {
+              if (!o) o = {};
+              var d = {};
+              if (o.defaults) {
+                if ($util.Long) {
+                  var n = new $util.Long(0, 0, true);
+                  d.poolId =
+                    o.longs === String
+                      ? n.toString()
+                      : o.longs === Number
+                      ? n.toNumber()
+                      : n;
+                } else d.poolId = o.longs === String ? "0" : 0;
+              }
+              if (m.poolId != null && m.hasOwnProperty("poolId")) {
+                if (typeof m.poolId === "number")
+                  d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+                else
+                  d.poolId =
+                    o.longs === String
+                      ? $util.Long.prototype.toString.call(m.poolId)
+                      : o.longs === Number
+                      ? new $util.LongBits(
+                          m.poolId.low >>> 0,
+                          m.poolId.high >>> 0
+                        ).toNumber(true)
+                      : m.poolId;
+              }
+              return d;
+            };
+            MsgCreateStableswapPoolResponse.prototype.toJSON =
+              function toJSON() {
+                return this.constructor.toObject(
+                  this,
+                  $protobuf.util.toJSONOptions
+                );
+              };
+            return MsgCreateStableswapPoolResponse;
+          })();
+          v1beta1.MsgStableSwapAdjustScalingFactors = (function () {
+            function MsgStableSwapAdjustScalingFactors(p) {
+              this.scalingFactors = [];
+              if (p)
+                for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                  if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+            }
+            MsgStableSwapAdjustScalingFactors.prototype.sender = "";
+            MsgStableSwapAdjustScalingFactors.prototype.poolId = $util.Long
+              ? $util.Long.fromBits(0, 0, true)
+              : 0;
+            MsgStableSwapAdjustScalingFactors.prototype.scalingFactors =
+              $util.emptyArray;
+            MsgStableSwapAdjustScalingFactors.create = function create(
+              properties
+            ) {
+              return new MsgStableSwapAdjustScalingFactors(properties);
+            };
+            MsgStableSwapAdjustScalingFactors.encode = function encode(m, w) {
+              if (!w) w = $Writer.create();
+              if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
+                w.uint32(10).string(m.sender);
+              if (m.poolId != null && Object.hasOwnProperty.call(m, "poolId"))
+                w.uint32(16).uint64(m.poolId);
+              if (m.scalingFactors != null && m.scalingFactors.length) {
+                w.uint32(26).fork();
+                for (var i = 0; i < m.scalingFactors.length; ++i)
+                  w.uint64(m.scalingFactors[i]);
+                w.ldelim();
+              }
+              return w;
+            };
+            MsgStableSwapAdjustScalingFactors.decode = function decode(r, l) {
+              if (!(r instanceof $Reader)) r = $Reader.create(r);
+              var c = l === undefined ? r.len : r.pos + l,
+                m =
+                  new $root.osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactors();
+              while (r.pos < c) {
+                var t = r.uint32();
+                switch (t >>> 3) {
+                  case 1:
+                    m.sender = r.string();
+                    break;
+                  case 2:
+                    m.poolId = r.uint64();
+                    break;
+                  case 3:
+                    if (!(m.scalingFactors && m.scalingFactors.length))
+                      m.scalingFactors = [];
+                    if ((t & 7) === 2) {
+                      var c2 = r.uint32() + r.pos;
+                      while (r.pos < c2) m.scalingFactors.push(r.uint64());
+                    } else m.scalingFactors.push(r.uint64());
+                    break;
+                  default:
+                    r.skipType(t & 7);
+                    break;
+                }
+              }
+              return m;
+            };
+            MsgStableSwapAdjustScalingFactors.fromObject = function fromObject(
+              d
+            ) {
+              if (
+                d instanceof
+                $root.osmosis.gamm.poolmodels.stableswap.v1beta1
+                  .MsgStableSwapAdjustScalingFactors
+              )
+                return d;
+              var m =
+                new $root.osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactors();
+              if (d.sender != null) {
+                m.sender = String(d.sender);
+              }
+              if (d.poolId != null) {
+                if ($util.Long)
+                  (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+                else if (typeof d.poolId === "string")
+                  m.poolId = parseInt(d.poolId, 10);
+                else if (typeof d.poolId === "number") m.poolId = d.poolId;
+                else if (typeof d.poolId === "object")
+                  m.poolId = new $util.LongBits(
+                    d.poolId.low >>> 0,
+                    d.poolId.high >>> 0
+                  ).toNumber(true);
+              }
+              if (d.scalingFactors) {
+                if (!Array.isArray(d.scalingFactors))
+                  throw TypeError(
+                    ".osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactors.scalingFactors: array expected"
+                  );
+                m.scalingFactors = [];
+                for (var i = 0; i < d.scalingFactors.length; ++i) {
+                  if ($util.Long)
+                    (m.scalingFactors[i] = $util.Long.fromValue(
+                      d.scalingFactors[i]
+                    )).unsigned = true;
+                  else if (typeof d.scalingFactors[i] === "string")
+                    m.scalingFactors[i] = parseInt(d.scalingFactors[i], 10);
+                  else if (typeof d.scalingFactors[i] === "number")
+                    m.scalingFactors[i] = d.scalingFactors[i];
+                  else if (typeof d.scalingFactors[i] === "object")
+                    m.scalingFactors[i] = new $util.LongBits(
+                      d.scalingFactors[i].low >>> 0,
+                      d.scalingFactors[i].high >>> 0
+                    ).toNumber(true);
+                }
+              }
+              return m;
+            };
+            MsgStableSwapAdjustScalingFactors.toObject = function toObject(
+              m,
+              o
+            ) {
+              if (!o) o = {};
+              var d = {};
+              if (o.arrays || o.defaults) {
+                d.scalingFactors = [];
+              }
+              if (o.defaults) {
+                d.sender = "";
+                if ($util.Long) {
+                  var n = new $util.Long(0, 0, true);
+                  d.poolId =
+                    o.longs === String
+                      ? n.toString()
+                      : o.longs === Number
+                      ? n.toNumber()
+                      : n;
+                } else d.poolId = o.longs === String ? "0" : 0;
+              }
+              if (m.sender != null && m.hasOwnProperty("sender")) {
+                d.sender = m.sender;
+              }
+              if (m.poolId != null && m.hasOwnProperty("poolId")) {
+                if (typeof m.poolId === "number")
+                  d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+                else
+                  d.poolId =
+                    o.longs === String
+                      ? $util.Long.prototype.toString.call(m.poolId)
+                      : o.longs === Number
+                      ? new $util.LongBits(
+                          m.poolId.low >>> 0,
+                          m.poolId.high >>> 0
+                        ).toNumber(true)
+                      : m.poolId;
+              }
+              if (m.scalingFactors && m.scalingFactors.length) {
+                d.scalingFactors = [];
+                for (var j = 0; j < m.scalingFactors.length; ++j) {
+                  if (typeof m.scalingFactors[j] === "number")
+                    d.scalingFactors[j] =
+                      o.longs === String
+                        ? String(m.scalingFactors[j])
+                        : m.scalingFactors[j];
+                  else
+                    d.scalingFactors[j] =
+                      o.longs === String
+                        ? $util.Long.prototype.toString.call(
+                            m.scalingFactors[j]
+                          )
+                        : o.longs === Number
+                        ? new $util.LongBits(
+                            m.scalingFactors[j].low >>> 0,
+                            m.scalingFactors[j].high >>> 0
+                          ).toNumber(true)
+                        : m.scalingFactors[j];
+                }
+              }
+              return d;
+            };
+            MsgStableSwapAdjustScalingFactors.prototype.toJSON =
+              function toJSON() {
+                return this.constructor.toObject(
+                  this,
+                  $protobuf.util.toJSONOptions
+                );
+              };
+            return MsgStableSwapAdjustScalingFactors;
+          })();
+          v1beta1.MsgStableSwapAdjustScalingFactorsResponse = (function () {
+            function MsgStableSwapAdjustScalingFactorsResponse(p) {
+              if (p)
+                for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                  if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+            }
+            MsgStableSwapAdjustScalingFactorsResponse.create = function create(
+              properties
+            ) {
+              return new MsgStableSwapAdjustScalingFactorsResponse(properties);
+            };
+            MsgStableSwapAdjustScalingFactorsResponse.encode = function encode(
+              m,
+              w
+            ) {
+              if (!w) w = $Writer.create();
+              return w;
+            };
+            MsgStableSwapAdjustScalingFactorsResponse.decode = function decode(
+              r,
+              l
+            ) {
+              if (!(r instanceof $Reader)) r = $Reader.create(r);
+              var c = l === undefined ? r.len : r.pos + l,
+                m =
+                  new $root.osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactorsResponse();
+              while (r.pos < c) {
+                var t = r.uint32();
+                switch (t >>> 3) {
+                  default:
+                    r.skipType(t & 7);
+                    break;
+                }
+              }
+              return m;
+            };
+            MsgStableSwapAdjustScalingFactorsResponse.fromObject =
+              function fromObject(d) {
+                if (
+                  d instanceof
+                  $root.osmosis.gamm.poolmodels.stableswap.v1beta1
+                    .MsgStableSwapAdjustScalingFactorsResponse
+                )
+                  return d;
+                return new $root.osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactorsResponse();
+              };
+            MsgStableSwapAdjustScalingFactorsResponse.toObject =
+              function toObject() {
+                return {};
+              };
+            MsgStableSwapAdjustScalingFactorsResponse.prototype.toJSON =
+              function toJSON() {
+                return this.constructor.toObject(
+                  this,
+                  $protobuf.util.toJSONOptions
+                );
+              };
+            return MsgStableSwapAdjustScalingFactorsResponse;
+          })();
+          return v1beta1;
+        })();
+        return stableswap;
       })();
       return poolmodels;
     })();

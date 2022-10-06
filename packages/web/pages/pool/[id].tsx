@@ -37,6 +37,7 @@ import {
   PoolDetailEvents,
   EventName,
   IncludesInternalAndExternalIncentiveGaugeList,
+  PromotedLBPPoolIds,
 } from "../../config";
 import {
   useAddLiquidityConfig,
@@ -62,6 +63,9 @@ const Pool: FunctionComponent = observer(() => {
 
   const { id: poolId } = router.query;
   const { chainId } = chainStore.osmosis;
+  const lbpConfig = PromotedLBPPoolIds.find(
+    ({ poolId: lbpPoolId }) => lbpPoolId === poolId
+  );
 
   const queryCosmos = queriesStore.get(chainId).cosmos;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -79,16 +83,6 @@ const Pool: FunctionComponent = observer(() => {
   }, [poolExists]);
 
   // initialize pool data stores once root pool store is loaded
-  const [poolDetailStore, setPoolDetailStore] =
-    useState<ObservableQueryPoolDetails | null>(null);
-  const allowedGauges =
-    pool && ExternalIncentiveGaugeAllowList[pool.id]
-      ? poolDetailStore?.queryAllowedExternalGauges(
-          (denom) => chainStore.getChain(chainId).findCurrency(denom),
-          ExternalIncentiveGaugeAllowList[pool.id]
-        ) ?? []
-      : [];
-  const allGauges = poolDetailStore?.allExternalGauges ?? [];
   const [superfluidPoolStore, setSuperfluidPoolStore] =
     useState<ObservableQuerySuperfluidPool | null>(null);
   useEffect(() => {
@@ -155,6 +149,17 @@ const Pool: FunctionComponent = observer(() => {
     pool ? queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id) : undefined
   );
 
+  // pool gauges
+  const [poolDetailStore, setPoolDetailStore] =
+    useState<ObservableQueryPoolDetails | null>(null);
+  const allowedGauges =
+    pool && ExternalIncentiveGaugeAllowList[pool.id]
+      ? poolDetailStore?.queryAllowedExternalGauges(
+          (denom) => chainStore.getChain(chainId).findCurrency(denom),
+          ExternalIncentiveGaugeAllowList[pool.id]
+        ) ?? []
+      : [];
+  const externalGauges = poolDetailStore?.allExternalGauges ?? [];
   type Gauge = {
     id: string;
     duration: Duration;
@@ -165,14 +170,12 @@ const Pool: FunctionComponent = observer(() => {
     const gaugeDurationMap = new Map<number, Gauge>();
 
     // uniqued external gauges by duration
-    if (allGauges) {
-      allGauges.forEach((extGauge) => {
-        gaugeDurationMap.set(extGauge.duration.asSeconds(), {
-          id: extGauge.id,
-          duration: extGauge.duration,
-        });
+    externalGauges.concat(allowedGauges).forEach((extGauge) => {
+      gaugeDurationMap.set(extGauge.duration.asSeconds(), {
+        id: extGauge.id,
+        duration: extGauge.duration,
       });
-    }
+    });
 
     // overwrite any external gauges with internal gauges w/ apr calcs
     superfluidPoolStore?.gaugesWithSuperfluidApr.forEach((gauge) => {
@@ -182,19 +185,21 @@ const Pool: FunctionComponent = observer(() => {
     return Array.from(gaugeDurationMap.values()).sort(
       (a, b) => a.duration.asSeconds() - b.duration.asSeconds()
     );
-  }, [allGauges, superfluidPoolStore?.gaugesWithSuperfluidApr]);
+  }, [
+    allowedGauges,
+    externalGauges,
+    superfluidPoolStore?.gaugesWithSuperfluidApr,
+  ]);
   const allowedLockupGauges = useMemo(() => {
     const gaugeDurationMap = new Map<number, Gauge>();
 
     // uniqued external gauges by duration
-    if (allowedGauges) {
-      allowedGauges.forEach((extGauge) => {
-        gaugeDurationMap.set(extGauge.duration.asSeconds(), {
-          id: extGauge.id,
-          duration: extGauge.duration,
-        });
+    allowedGauges.forEach((extGauge) => {
+      gaugeDurationMap.set(extGauge.duration.asSeconds(), {
+        id: extGauge.id,
+        duration: extGauge.duration,
       });
-    }
+    });
 
     // overwrite any external gauges with internal gauges w/ apr calcs
     superfluidPoolStore?.gaugesWithSuperfluidApr.forEach((gauge) => {
@@ -225,8 +230,8 @@ const Pool: FunctionComponent = observer(() => {
 
   const showLiquidityMiningSection =
     poolDetailStore?.isIncentivized ||
-    (allowedGauges && allowedGauges.length > 0) ||
-    (allGauges && allGauges.length > 0) ||
+    (allowedLockupGauges && allowedLockupGauges.length > 0) ||
+    (allLockupGauges && allLockupGauges.length > 0) ||
     false;
 
   const showPoolBondingTables =
@@ -682,10 +687,14 @@ const Pool: FunctionComponent = observer(() => {
         title={
           <MetricLoader className="h-7 w-64" isLoading={!pool}>
             <h5>
-              {`Pool #${pool?.id} : ${pool?.poolAssets
-                .map((asset) => asset.amount.currency.coinDenom.split(" ")[0])
-                .map((denom) => truncateString(denom))
-                .join(" / ")}`}
+              {lbpConfig
+                ? lbpConfig.name
+                : `Pool #${pool?.id} : ${pool?.poolAssets
+                    .map(
+                      (asset) => asset.amount.currency.coinDenom.split(" ")[0]
+                    )
+                    .map((denom) => truncateString(denom))
+                    .join(" / ")}`}
             </h5>
           </MetricLoader>
         }
@@ -859,7 +868,8 @@ const Pool: FunctionComponent = observer(() => {
                     .computeAPY(pool.id, duration, priceStore, fiat)
                     .add(
                       IncludesInternalAndExternalIncentiveGaugeList[pool.id]
-                        ? allowedGauges[0].rewardAmount
+                        ? // @ts-ignore
+                          allowedGauges[0]?.rewardAmount
                             .maxDecimals(0)
                             .quo(new Dec(1000000))
                             .toDec()

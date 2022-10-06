@@ -1,3 +1,9 @@
+import { DenomHelper } from "@keplr-wallet/common";
+import { IS_FRONTIER } from "./ibc-assets";
+
+/** UI will go into "halt mode" if `true`. */
+export const IS_HALTED = false;
+
 export const UserAction: { [key: string]: boolean } = {
   CreateNewPool: true,
 };
@@ -37,6 +43,23 @@ export const IncludesInternalAndExternalIncentiveGaugeList: {
   // Stride ATOM/stATOM
   "803": true,
 };
+/** List of pools active in LBP to present in frontend. */
+export const PromotedLBPPoolIds: {
+  poolId: string;
+  name: string;
+  ibcHashDenom: string;
+}[] = IS_FRONTIER
+  ? [
+      {
+        poolId: "813",
+        name: "REBUS Liquidity Bootstrapping Pool",
+        ibcHashDenom: DenomHelper.ibcDenom(
+          [{ portId: "transfer", channelId: "channel-355" }],
+          "arebus"
+        ),
+      },
+    ]
+  : [];
 
 /** Gauges to be rendered in pool's respective pool detail page. */
 export const ExternalIncentiveGaugeAllowList: {
@@ -778,17 +801,12 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "662": [
     {
-      gaugeId: "2591",
+      gaugeId: "29666",
       denom:
         "ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7",
     },
     {
-      gaugeId: "2592",
-      denom:
-        "ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7",
-    },
-    {
-      gaugeId: "2593",
+      gaugeId: "29667",
       denom:
         "ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7",
     },
@@ -1067,6 +1085,23 @@ export const ExternalIncentiveGaugeAllowList: {
       gaugeId: "29637",
       denom:
         "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
+    },
+  ],
+  "812": [
+    {
+      gaugeId: "29675",
+      denom:
+        "ibc/903A61A498756EA560B85A85132D3AEE21B5DEDD41213725D22ABF276EA6945E",
+    },
+    {
+      gaugeId: "29674",
+      denom: "uosmo",
+    },
+  ],
+  "806": [
+    {
+      gaugeId: "29683",
+      denom: "uosmo",
     },
   ],
 };

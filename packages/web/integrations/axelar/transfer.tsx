@@ -229,6 +229,7 @@ const AxelarTransfer: FunctionComponent<
     const warnOfDifferentDepositAddress =
       isWithdraw &&
       ethWalletClient.isConnected &&
+      lastDepositAccountAddress &&
       ethWalletClient.accountAddress
         ? ethWalletClient.accountAddress !== lastDepositAccountAddress
         : false;

@@ -101,7 +101,9 @@ const Assets: NextPage = observer(() => {
   useEffect(() => {
     setUserProperty(
       "osmoBalance",
-      nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()
+      Number(
+        nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()
+      )
     );
   }, [nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()]);
 
@@ -138,14 +140,18 @@ const Assets: NextPage = observer(() => {
         ibcBalances={ibcBalances}
         onDepositIntent={() => transferConfig.startTransfer("deposit")}
         onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
-        onDeposit={(chainId, coinDenom) =>
-          isMobile
-            ? launchPreTransferModal(coinDenom)
-            : transferConfig.transferAsset("deposit", chainId, coinDenom)
-        }
-        onWithdraw={(chainId, coinDenom) =>
-          transferConfig.transferAsset("withdraw", chainId, coinDenom)
-        }
+        onDeposit={(chainId, coinDenom, externalDepositUrl) => {
+          if (!externalDepositUrl) {
+            isMobile
+              ? launchPreTransferModal(coinDenom)
+              : transferConfig.transferAsset("deposit", chainId, coinDenom);
+          }
+        }}
+        onWithdraw={(chainId, coinDenom, externalWithdrawUrl) => {
+          if (!externalWithdrawUrl) {
+            transferConfig.transferAsset("withdraw", chainId, coinDenom);
+          }
+        }}
       />
       {!isMobile && <PoolAssets />}
       <section className="bg-surface">
@@ -182,10 +188,22 @@ const AssetsOverview: FunctionComponent<{
   ]);
 
   useEffect(() => {
-    setUserProperty("totalAssetsPrice", totalAssetsValue.toString());
-    setUserProperty("unbondedAssetsPrice", availableAssetsValue.toString());
-    setUserProperty("bondedAssetsPrice", bondedAssetsValue.toString());
-    setUserProperty("stakedOsmoPrice", stakedAssetsValue.toString());
+    setUserProperty(
+      "totalAssetsPrice",
+      Number(totalAssetsValue.trim(true).toDec().toString(2))
+    );
+    setUserProperty(
+      "unbondedAssetsPrice",
+      Number(availableAssetsValue.trim(true).toDec().toString(2))
+    );
+    setUserProperty(
+      "bondedAssetsPrice",
+      Number(bondedAssetsValue.trim(true).toDec().toString(2))
+    );
+    setUserProperty(
+      "stakedOsmoPrice",
+      Number(stakedAssetsValue.trim(true).toDec().toString(2))
+    );
   }, [
     totalAssetsValue.toString(),
     availableAssetsValue.toString(),

@@ -212,6 +212,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
               mintPrice &&
               poolTVL.toDec().gt(new Dec(0))
             ) {
+              // @ts-ignore
               const log = (label, value) => {
                 console.log(label, value);
                 return value;
