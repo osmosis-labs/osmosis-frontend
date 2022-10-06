@@ -2031,7 +2031,7 @@ const chainInfos = (
           coinMinimalDenom: "utori",
           coinDecimals: 6,
           coinGeckoId: "pool:utori",
-          coinImageUrl: "/tokens/utori.svg",
+          coinImageUrl: "/tokens/utori.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
