@@ -1974,7 +1974,7 @@ const chainInfos = (
           coinDenom: "stJUNO",
           coinMinimalDenom: "stujuno",
           coinDecimals: 6,
-          // coinGeckoId: "juno-network",
+          coinGeckoId: "juno-network",
           coinImageUrl: "/tokens/stjuno.svg",
         },
         {
