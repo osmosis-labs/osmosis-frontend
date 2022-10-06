@@ -120,7 +120,10 @@ const Pools: NextPage = observer(function () {
   // set nav bar state
   useEffect(() => {
     navBarStore.callToActionButtons = [
-      { label: "Create new Pool", onClick: () => setIsCreatingPool(true) },
+      {
+        label: t("pools.createPool.button"),
+        onClick: () => setIsCreatingPool(true),
+      },
     ];
   }, []);
 

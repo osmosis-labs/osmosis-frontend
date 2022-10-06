@@ -4,6 +4,7 @@ import { useBooleanWithWindowEvent } from "../../../hooks";
 import { MenuDropdown, MenuOption } from "../../control";
 import { BaseCell } from "..";
 import { PoolCompositionCell } from "./pool-composition";
+import { useTranslation } from "react-multi-lang";
 
 export interface PoolQuickActionCell
   extends BaseCell,
@@ -21,6 +22,7 @@ export const PoolQuickActionCell: FunctionComponent<
   Partial<PoolQuickActionCell>
 > = ({ poolId, onAddLiquidity, onRemoveLiquidity, onLockTokens }) => {
   const [dropdownOpen, setDropdownOpen] = useBooleanWithWindowEvent(false);
+  const t = useTranslation();
 
   const menuOptions = useMemo(() => {
     const m: MenuOption[] = [];
@@ -28,17 +30,20 @@ export const PoolQuickActionCell: FunctionComponent<
     if (onAddLiquidity) {
       m.push({
         id: "add-liquidity",
-        display: "Add liquidity",
+        display: t("pool.manageLiquidity.actionAddLiquidity"),
       });
     }
     if (onRemoveLiquidity) {
       m.push({
         id: "remove-liquidity",
-        display: "Remove liquidity",
+        display: t("pool.manageLiquidity.actionRemoveLiquidity"),
       });
     }
     if (onLockTokens) {
-      m.push({ id: "lock-tokens", display: "Lock Tokens" });
+      m.push({
+        id: "lock-tokens",
+        display: t("pool.manageLiquidity.actionLockTokens"),
+      });
     }
 
     return m;

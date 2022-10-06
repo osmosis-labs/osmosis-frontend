@@ -185,7 +185,10 @@
       "MAX": "MAX",
       "autoSwap": "Auto-swap single asset",
       "autoSwapInfo": "'Auto-swap single asset' allows you to provide liquidity using one asset. This will impact the pool price of the asset you’re providing liquidity with.",
-      "priceImpact": "Price impact"
+      "priceImpact": "Price impact",
+      "actionAddLiquidity": "Add liquidity",
+      "actionRemoveLiquidity": "Remove liquidity",
+      "actionLockTokens": "Lock Tokens"
     },
     "superfluidValidator": {
       "title": "Select Superfluid Validator",
@@ -295,9 +298,13 @@
     "vote": "Vote",
     "info": "Info",
     "connectWallet": "Connect wallet",
-    "signOut": "Sign Out",
+    "signOut": "Disconnect",
     "help": "Get Support Lab Help",
     "learnMoreFrontier": "Learn More<br/>About the <br2/> <name>Osmosis Frontier</name>"
+  },
+  "settings": {
+    "title": "Settings",
+    "poolsLowLiquidity": "Show pools/assets < $ 0.01"
   },
   "404": {
     "title": "Not found"

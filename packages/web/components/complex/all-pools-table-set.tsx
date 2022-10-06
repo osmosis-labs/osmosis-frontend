@@ -33,11 +33,6 @@ import { useTranslation } from "react-multi-lang";
 
 type PoolCell = PoolCompositionCell & MetricLoaderCell & PoolQuickActionCell;
 
-const poolsMenuOptions = [
-  { id: "incentivized-pools", display: "Incentivized Pools" },
-  { id: "all-pools", display: "All Pools" },
-];
-
 const TVL_FILTER_THRESHOLD = 1000;
 
 type PoolWithMetrics = {
@@ -77,6 +72,12 @@ export const AllPoolsTableSet: FunctionComponent<{
     const { logEvent } = useAmplitudeAnalytics();
 
     const [activeOptionId, setActiveOptionId] = useState(tableSet);
+
+    const poolsMenuOptions = [
+      { id: "incentivized-pools", display: t("pools.incentivized") },
+      { id: "all-pools", display: t("pools.all") },
+    ];
+
     const selectOption = (optionId: string) => {
       if (optionId === "incentivized-pools" || optionId === "all-pools") {
         setActiveOptionId(optionId);

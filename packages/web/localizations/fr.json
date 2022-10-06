@@ -185,7 +185,10 @@
       "MAX": "MAX",
       "autoSwap": "Échange automatique d'un seul actif",
       "autoSwapInfo": "''Échange automatique d'un seul actif'' permet de vous fournir des liquidités en utilisant un seul actif. Cela aura un impact sur le prix du bassin de l'actif avec lequel pour fournissez la liquidité.",
-      "priceImpact": "Impact du prix"
+      "priceImpact": "Impact du prix",
+      "actionAddLiquidity": "Ajouter de la liquidité",
+      "actionRemoveLiquidity": "Retirer de la liquidité",
+      "actionLockTokens": "Déléguer des jetons"
     },
     "superfluidValidator": {
       "title": "Sélection validateur superfluide",
@@ -295,9 +298,13 @@
     "vote": "Voter",
     "info": "Info",
     "connectWallet": "Connecter le portefeuille",
-    "signOut": "Se déconnecter",
+    "signOut": "Déconnecter",
     "help": "Obtenir de l'aide",
     "learnMoreFrontier": "En apprendre<br/>plus sur<br2/> <name>Osmosis Frontier</name>"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "poolsLowLiquidity": "Afficher les pools / actifs < 0.01$"
   },
   "404": {
     "title": "Page non trouvée"

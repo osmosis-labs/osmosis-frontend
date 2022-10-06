@@ -9,6 +9,7 @@ import { useStore } from "../../stores";
 import { CustomClasses } from "../types";
 import { useBooleanWithWindowEvent } from "../../hooks";
 import { IUserSetting } from "../../stores/user-settings";
+import { useTranslation } from "react-multi-lang";
 
 export const NavBar: FunctionComponent<
   { title: string; backElementClassNames?: string } & CustomClasses
@@ -21,6 +22,7 @@ export const NavBar: FunctionComponent<
     accountStore,
     userSettings,
   } = useStore();
+  const t = useTranslation();
 
   // wallet
   const account = accountStore.getAccount(chainId);
@@ -75,7 +77,7 @@ export const NavBar: FunctionComponent<
               }}
               className="w-[168px] h-10"
             >
-              <span className="mx-auto button">Connect Wallet</span>
+              <span className="mx-auto button">{t("menu.connectWallet")}</span>
             </NewButton>
           ) : hoverWalletInfo ? (
             <NewButton
@@ -87,7 +89,7 @@ export const NavBar: FunctionComponent<
                 setHoverWalletInfo(false);
               }}
             >
-              <span className="mx-auto button">Disconnect</span>
+              <span className="mx-auto button">{t("menu.signOut")}</span>
             </NewButton>
           ) : (
             <div
@@ -156,24 +158,27 @@ const NavBarButton: FunctionComponent<
 
 const SettingsDropdown: FunctionComponent<{
   userSettings: IUserSetting[];
-}> = observer(({ userSettings }) => (
-  <div
-    className="absolute top-[110%] left-[50%] -translate-x-1/2 flex flex-col gap-10 min-w-[385px] text-left bg-osmoverse-800 p-8 rounded-3xl"
-    onClick={(e) => e.stopPropagation()}
-  >
-    <h5>Settings</h5>
-    <div className="flex flex-col gap-7">
-      {userSettings.map((setting) => (
-        <div
-          className="flex items-center w-full place-content-between"
-          key={setting.id}
-        >
-          <span className="flex-nowrap subtitle1 text-osmoverse-100">
-            {setting.displayLabel}
-          </span>
-          {setting.controlComponent(setting.state as any, setting.setState)}
-        </div>
-      ))}
+}> = observer(({ userSettings }) => {
+  const t = useTranslation();
+  return (
+    <div
+      className="absolute top-[110%] left-[50%] -translate-x-1/2 flex flex-col gap-10 min-w-[385px] text-left bg-osmoverse-800 p-8 rounded-3xl"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h5>{t("settings.title")}</h5>
+      <div className="flex flex-col gap-7">
+        {userSettings.map((setting) => (
+          <div
+            className="flex items-center w-full place-content-between"
+            key={setting.id}
+          >
+            <span className="flex-nowrap subtitle1 text-osmoverse-100">
+              {setting.displayLabel}
+            </span>
+            {setting.controlComponent(setting.state as any, setting.setState)}
+          </div>
+        ))}
+      </div>
     </div>
-  </div>
-));
+  );
+});
