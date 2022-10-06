@@ -1303,7 +1303,13 @@ export namespace osmosis {
       }
 
       /** Properties of a MsgJoinPoolResponse. */
-      interface IMsgJoinPoolResponse {}
+      interface IMsgJoinPoolResponse {
+        /** MsgJoinPoolResponse shareOutAmount */
+        shareOutAmount?: string | null;
+
+        /** MsgJoinPoolResponse tokenIn */
+        tokenIn?: cosmos.base.v1beta1.ICoin[] | null;
+      }
 
       /** Represents a MsgJoinPoolResponse. */
       class MsgJoinPoolResponse implements IMsgJoinPoolResponse {
@@ -1312,6 +1318,12 @@ export namespace osmosis {
          * @param [p] Properties to set
          */
         constructor(p?: osmosis.gamm.v1beta1.IMsgJoinPoolResponse);
+
+        /** MsgJoinPoolResponse shareOutAmount. */
+        public shareOutAmount: string;
+
+        /** MsgJoinPoolResponse tokenIn. */
+        public tokenIn: cosmos.base.v1beta1.ICoin[];
 
         /**
          * Creates a new MsgJoinPoolResponse instance using the specified properties.
@@ -1469,7 +1481,10 @@ export namespace osmosis {
       }
 
       /** Properties of a MsgExitPoolResponse. */
-      interface IMsgExitPoolResponse {}
+      interface IMsgExitPoolResponse {
+        /** MsgExitPoolResponse tokenOut */
+        tokenOut?: cosmos.base.v1beta1.ICoin[] | null;
+      }
 
       /** Represents a MsgExitPoolResponse. */
       class MsgExitPoolResponse implements IMsgExitPoolResponse {
@@ -1478,6 +1493,9 @@ export namespace osmosis {
          * @param [p] Properties to set
          */
         constructor(p?: osmosis.gamm.v1beta1.IMsgExitPoolResponse);
+
+        /** MsgExitPoolResponse tokenOut. */
+        public tokenOut: cosmos.base.v1beta1.ICoin[];
 
         /**
          * Creates a new MsgExitPoolResponse instance using the specified properties.
@@ -3386,6 +3404,656 @@ export namespace osmosis {
 
             /**
              * Converts this MsgCreateBalancerPoolResponse to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+          }
+        }
+      }
+
+      /** Namespace stableswap. */
+      namespace stableswap {
+        /** Namespace v1beta1. */
+        namespace v1beta1 {
+          /** Properties of a PoolParams. */
+          interface IPoolParams {
+            /** PoolParams swapFee */
+            swapFee?: string | null;
+
+            /** PoolParams exitFee */
+            exitFee?: string | null;
+          }
+
+          /** Represents a PoolParams. */
+          class PoolParams implements IPoolParams {
+            /**
+             * Constructs a new PoolParams.
+             * @param [p] Properties to set
+             */
+            constructor(
+              p?: osmosis.gamm.poolmodels.stableswap.v1beta1.IPoolParams
+            );
+
+            /** PoolParams swapFee. */
+            public swapFee: string;
+
+            /** PoolParams exitFee. */
+            public exitFee: string;
+
+            /**
+             * Creates a new PoolParams instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns PoolParams instance
+             */
+            public static create(
+              properties?: osmosis.gamm.poolmodels.stableswap.v1beta1.IPoolParams
+            ): osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams;
+
+            /**
+             * Encodes the specified PoolParams message. Does not implicitly {@link osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams.verify|verify} messages.
+             * @param m PoolParams message or plain object to encode
+             * @param [w] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(
+              m: osmosis.gamm.poolmodels.stableswap.v1beta1.IPoolParams,
+              w?: $protobuf.Writer
+            ): $protobuf.Writer;
+
+            /**
+             * Decodes a PoolParams message from the specified reader or buffer.
+             * @param r Reader or buffer to decode from
+             * @param [l] Message length if known beforehand
+             * @returns PoolParams
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(
+              r: $protobuf.Reader | Uint8Array,
+              l?: number
+            ): osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams;
+
+            /**
+             * Creates a PoolParams message from a plain object. Also converts values to their respective internal types.
+             * @param d Plain object
+             * @returns PoolParams
+             */
+            public static fromObject(d: {
+              [k: string]: any;
+            }): osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams;
+
+            /**
+             * Creates a plain object from a PoolParams message. Also converts values to other types if specified.
+             * @param m PoolParams
+             * @param [o] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(
+              m: osmosis.gamm.poolmodels.stableswap.v1beta1.PoolParams,
+              o?: $protobuf.IConversionOptions
+            ): { [k: string]: any };
+
+            /**
+             * Converts this PoolParams to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+          }
+
+          /** Properties of a Pool. */
+          interface IPool {
+            /** Pool address */
+            address?: string | null;
+
+            /** Pool id */
+            id?: Long | null;
+
+            /** Pool poolParams */
+            poolParams?: osmosis.gamm.poolmodels.stableswap.v1beta1.IPoolParams | null;
+
+            /** Pool futurePoolGovernor */
+            futurePoolGovernor?: string | null;
+
+            /** Pool totalShares */
+            totalShares?: cosmos.base.v1beta1.ICoin | null;
+
+            /** Pool poolLiquidity */
+            poolLiquidity?: cosmos.base.v1beta1.ICoin[] | null;
+
+            /** Pool scalingFactor */
+            scalingFactor?: Long[] | null;
+
+            /** Pool scalingFactorGovernor */
+            scalingFactorGovernor?: string | null;
+          }
+
+          /** Represents a Pool. */
+          class Pool implements IPool {
+            /**
+             * Constructs a new Pool.
+             * @param [p] Properties to set
+             */
+            constructor(p?: osmosis.gamm.poolmodels.stableswap.v1beta1.IPool);
+
+            /** Pool address. */
+            public address: string;
+
+            /** Pool id. */
+            public id: Long;
+
+            /** Pool poolParams. */
+            public poolParams?: osmosis.gamm.poolmodels.stableswap.v1beta1.IPoolParams | null;
+
+            /** Pool futurePoolGovernor. */
+            public futurePoolGovernor: string;
+
+            /** Pool totalShares. */
+            public totalShares?: cosmos.base.v1beta1.ICoin | null;
+
+            /** Pool poolLiquidity. */
+            public poolLiquidity: cosmos.base.v1beta1.ICoin[];
+
+            /** Pool scalingFactor. */
+            public scalingFactor: Long[];
+
+            /** Pool scalingFactorGovernor. */
+            public scalingFactorGovernor: string;
+
+            /**
+             * Creates a new Pool instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns Pool instance
+             */
+            public static create(
+              properties?: osmosis.gamm.poolmodels.stableswap.v1beta1.IPool
+            ): osmosis.gamm.poolmodels.stableswap.v1beta1.Pool;
+
+            /**
+             * Encodes the specified Pool message. Does not implicitly {@link osmosis.gamm.poolmodels.stableswap.v1beta1.Pool.verify|verify} messages.
+             * @param m Pool message or plain object to encode
+             * @param [w] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(
+              m: osmosis.gamm.poolmodels.stableswap.v1beta1.IPool,
+              w?: $protobuf.Writer
+            ): $protobuf.Writer;
+
+            /**
+             * Decodes a Pool message from the specified reader or buffer.
+             * @param r Reader or buffer to decode from
+             * @param [l] Message length if known beforehand
+             * @returns Pool
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(
+              r: $protobuf.Reader | Uint8Array,
+              l?: number
+            ): osmosis.gamm.poolmodels.stableswap.v1beta1.Pool;
+
+            /**
+             * Creates a Pool message from a plain object. Also converts values to their respective internal types.
+             * @param d Plain object
+             * @returns Pool
+             */
+            public static fromObject(d: {
+              [k: string]: any;
+            }): osmosis.gamm.poolmodels.stableswap.v1beta1.Pool;
+
+            /**
+             * Creates a plain object from a Pool message. Also converts values to other types if specified.
+             * @param m Pool
+             * @param [o] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(
+              m: osmosis.gamm.poolmodels.stableswap.v1beta1.Pool,
+              o?: $protobuf.IConversionOptions
+            ): { [k: string]: any };
+
+            /**
+             * Converts this Pool to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+          }
+
+          /** Represents a Msg */
+          class Msg extends $protobuf.rpc.Service {
+            /**
+             * Constructs a new Msg service.
+             * @param rpcImpl RPC implementation
+             * @param [requestDelimited=false] Whether requests are length-delimited
+             * @param [responseDelimited=false] Whether responses are length-delimited
+             */
+            constructor(
+              rpcImpl: $protobuf.RPCImpl,
+              requestDelimited?: boolean,
+              responseDelimited?: boolean
+            );
+
+            /**
+             * Creates new Msg service using the specified rpc implementation.
+             * @param rpcImpl RPC implementation
+             * @param [requestDelimited=false] Whether requests are length-delimited
+             * @param [responseDelimited=false] Whether responses are length-delimited
+             * @returns RPC service. Useful where requests and/or responses are streamed.
+             */
+            public static create(
+              rpcImpl: $protobuf.RPCImpl,
+              requestDelimited?: boolean,
+              responseDelimited?: boolean
+            ): Msg;
+
+            /**
+             * Calls CreateStableswapPool.
+             * @param request MsgCreateStableswapPool message or plain object
+             * @param callback Node-style callback called with the error, if any, and MsgCreateStableswapPoolResponse
+             */
+            public createStableswapPool(
+              request: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgCreateStableswapPool,
+              callback: osmosis.gamm.poolmodels.stableswap.v1beta1.Msg.CreateStableswapPoolCallback
+            ): void;
+
+            /**
+             * Calls CreateStableswapPool.
+             * @param request MsgCreateStableswapPool message or plain object
+             * @returns Promise
+             */
+            public createStableswapPool(
+              request: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgCreateStableswapPool
+            ): Promise<osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPoolResponse>;
+
+            /**
+             * Calls StableSwapAdjustScalingFactors.
+             * @param request MsgStableSwapAdjustScalingFactors message or plain object
+             * @param callback Node-style callback called with the error, if any, and MsgStableSwapAdjustScalingFactorsResponse
+             */
+            public stableSwapAdjustScalingFactors(
+              request: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgStableSwapAdjustScalingFactors,
+              callback: osmosis.gamm.poolmodels.stableswap.v1beta1.Msg.StableSwapAdjustScalingFactorsCallback
+            ): void;
+
+            /**
+             * Calls StableSwapAdjustScalingFactors.
+             * @param request MsgStableSwapAdjustScalingFactors message or plain object
+             * @returns Promise
+             */
+            public stableSwapAdjustScalingFactors(
+              request: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgStableSwapAdjustScalingFactors
+            ): Promise<osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactorsResponse>;
+          }
+
+          namespace Msg {
+            /**
+             * Callback as used by {@link osmosis.gamm.poolmodels.stableswap.v1beta1.Msg#createStableswapPool}.
+             * @param error Error, if any
+             * @param [response] MsgCreateStableswapPoolResponse
+             */
+            type CreateStableswapPoolCallback = (
+              error: Error | null,
+              response?: osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPoolResponse
+            ) => void;
+
+            /**
+             * Callback as used by {@link osmosis.gamm.poolmodels.stableswap.v1beta1.Msg#stableSwapAdjustScalingFactors}.
+             * @param error Error, if any
+             * @param [response] MsgStableSwapAdjustScalingFactorsResponse
+             */
+            type StableSwapAdjustScalingFactorsCallback = (
+              error: Error | null,
+              response?: osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactorsResponse
+            ) => void;
+          }
+
+          /** Properties of a MsgCreateStableswapPool. */
+          interface IMsgCreateStableswapPool {
+            /** MsgCreateStableswapPool sender */
+            sender?: string | null;
+
+            /** MsgCreateStableswapPool poolParams */
+            poolParams?: osmosis.gamm.poolmodels.stableswap.v1beta1.IPoolParams | null;
+
+            /** MsgCreateStableswapPool initialPoolLiquidity */
+            initialPoolLiquidity?: cosmos.base.v1beta1.ICoin[] | null;
+
+            /** MsgCreateStableswapPool scalingFactors */
+            scalingFactors?: Long[] | null;
+
+            /** MsgCreateStableswapPool futurePoolGovernor */
+            futurePoolGovernor?: string | null;
+          }
+
+          /** Represents a MsgCreateStableswapPool. */
+          class MsgCreateStableswapPool implements IMsgCreateStableswapPool {
+            /**
+             * Constructs a new MsgCreateStableswapPool.
+             * @param [p] Properties to set
+             */
+            constructor(
+              p?: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgCreateStableswapPool
+            );
+
+            /** MsgCreateStableswapPool sender. */
+            public sender: string;
+
+            /** MsgCreateStableswapPool poolParams. */
+            public poolParams?: osmosis.gamm.poolmodels.stableswap.v1beta1.IPoolParams | null;
+
+            /** MsgCreateStableswapPool initialPoolLiquidity. */
+            public initialPoolLiquidity: cosmos.base.v1beta1.ICoin[];
+
+            /** MsgCreateStableswapPool scalingFactors. */
+            public scalingFactors: Long[];
+
+            /** MsgCreateStableswapPool futurePoolGovernor. */
+            public futurePoolGovernor: string;
+
+            /**
+             * Creates a new MsgCreateStableswapPool instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns MsgCreateStableswapPool instance
+             */
+            public static create(
+              properties?: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgCreateStableswapPool
+            ): osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool;
+
+            /**
+             * Encodes the specified MsgCreateStableswapPool message. Does not implicitly {@link osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool.verify|verify} messages.
+             * @param m MsgCreateStableswapPool message or plain object to encode
+             * @param [w] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(
+              m: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgCreateStableswapPool,
+              w?: $protobuf.Writer
+            ): $protobuf.Writer;
+
+            /**
+             * Decodes a MsgCreateStableswapPool message from the specified reader or buffer.
+             * @param r Reader or buffer to decode from
+             * @param [l] Message length if known beforehand
+             * @returns MsgCreateStableswapPool
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(
+              r: $protobuf.Reader | Uint8Array,
+              l?: number
+            ): osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool;
+
+            /**
+             * Creates a MsgCreateStableswapPool message from a plain object. Also converts values to their respective internal types.
+             * @param d Plain object
+             * @returns MsgCreateStableswapPool
+             */
+            public static fromObject(d: {
+              [k: string]: any;
+            }): osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool;
+
+            /**
+             * Creates a plain object from a MsgCreateStableswapPool message. Also converts values to other types if specified.
+             * @param m MsgCreateStableswapPool
+             * @param [o] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(
+              m: osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool,
+              o?: $protobuf.IConversionOptions
+            ): { [k: string]: any };
+
+            /**
+             * Converts this MsgCreateStableswapPool to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+          }
+
+          /** Properties of a MsgCreateStableswapPoolResponse. */
+          interface IMsgCreateStableswapPoolResponse {
+            /** MsgCreateStableswapPoolResponse poolId */
+            poolId?: Long | null;
+          }
+
+          /** Represents a MsgCreateStableswapPoolResponse. */
+          class MsgCreateStableswapPoolResponse
+            implements IMsgCreateStableswapPoolResponse
+          {
+            /**
+             * Constructs a new MsgCreateStableswapPoolResponse.
+             * @param [p] Properties to set
+             */
+            constructor(
+              p?: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgCreateStableswapPoolResponse
+            );
+
+            /** MsgCreateStableswapPoolResponse poolId. */
+            public poolId: Long;
+
+            /**
+             * Creates a new MsgCreateStableswapPoolResponse instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns MsgCreateStableswapPoolResponse instance
+             */
+            public static create(
+              properties?: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgCreateStableswapPoolResponse
+            ): osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPoolResponse;
+
+            /**
+             * Encodes the specified MsgCreateStableswapPoolResponse message. Does not implicitly {@link osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPoolResponse.verify|verify} messages.
+             * @param m MsgCreateStableswapPoolResponse message or plain object to encode
+             * @param [w] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(
+              m: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgCreateStableswapPoolResponse,
+              w?: $protobuf.Writer
+            ): $protobuf.Writer;
+
+            /**
+             * Decodes a MsgCreateStableswapPoolResponse message from the specified reader or buffer.
+             * @param r Reader or buffer to decode from
+             * @param [l] Message length if known beforehand
+             * @returns MsgCreateStableswapPoolResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(
+              r: $protobuf.Reader | Uint8Array,
+              l?: number
+            ): osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPoolResponse;
+
+            /**
+             * Creates a MsgCreateStableswapPoolResponse message from a plain object. Also converts values to their respective internal types.
+             * @param d Plain object
+             * @returns MsgCreateStableswapPoolResponse
+             */
+            public static fromObject(d: {
+              [k: string]: any;
+            }): osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPoolResponse;
+
+            /**
+             * Creates a plain object from a MsgCreateStableswapPoolResponse message. Also converts values to other types if specified.
+             * @param m MsgCreateStableswapPoolResponse
+             * @param [o] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(
+              m: osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPoolResponse,
+              o?: $protobuf.IConversionOptions
+            ): { [k: string]: any };
+
+            /**
+             * Converts this MsgCreateStableswapPoolResponse to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+          }
+
+          /** Properties of a MsgStableSwapAdjustScalingFactors. */
+          interface IMsgStableSwapAdjustScalingFactors {
+            /** MsgStableSwapAdjustScalingFactors sender */
+            sender?: string | null;
+
+            /** MsgStableSwapAdjustScalingFactors poolId */
+            poolId?: Long | null;
+
+            /** MsgStableSwapAdjustScalingFactors scalingFactors */
+            scalingFactors?: Long[] | null;
+          }
+
+          /** Represents a MsgStableSwapAdjustScalingFactors. */
+          class MsgStableSwapAdjustScalingFactors
+            implements IMsgStableSwapAdjustScalingFactors
+          {
+            /**
+             * Constructs a new MsgStableSwapAdjustScalingFactors.
+             * @param [p] Properties to set
+             */
+            constructor(
+              p?: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgStableSwapAdjustScalingFactors
+            );
+
+            /** MsgStableSwapAdjustScalingFactors sender. */
+            public sender: string;
+
+            /** MsgStableSwapAdjustScalingFactors poolId. */
+            public poolId: Long;
+
+            /** MsgStableSwapAdjustScalingFactors scalingFactors. */
+            public scalingFactors: Long[];
+
+            /**
+             * Creates a new MsgStableSwapAdjustScalingFactors instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns MsgStableSwapAdjustScalingFactors instance
+             */
+            public static create(
+              properties?: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgStableSwapAdjustScalingFactors
+            ): osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactors;
+
+            /**
+             * Encodes the specified MsgStableSwapAdjustScalingFactors message. Does not implicitly {@link osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactors.verify|verify} messages.
+             * @param m MsgStableSwapAdjustScalingFactors message or plain object to encode
+             * @param [w] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(
+              m: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgStableSwapAdjustScalingFactors,
+              w?: $protobuf.Writer
+            ): $protobuf.Writer;
+
+            /**
+             * Decodes a MsgStableSwapAdjustScalingFactors message from the specified reader or buffer.
+             * @param r Reader or buffer to decode from
+             * @param [l] Message length if known beforehand
+             * @returns MsgStableSwapAdjustScalingFactors
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(
+              r: $protobuf.Reader | Uint8Array,
+              l?: number
+            ): osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactors;
+
+            /**
+             * Creates a MsgStableSwapAdjustScalingFactors message from a plain object. Also converts values to their respective internal types.
+             * @param d Plain object
+             * @returns MsgStableSwapAdjustScalingFactors
+             */
+            public static fromObject(d: {
+              [k: string]: any;
+            }): osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactors;
+
+            /**
+             * Creates a plain object from a MsgStableSwapAdjustScalingFactors message. Also converts values to other types if specified.
+             * @param m MsgStableSwapAdjustScalingFactors
+             * @param [o] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(
+              m: osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactors,
+              o?: $protobuf.IConversionOptions
+            ): { [k: string]: any };
+
+            /**
+             * Converts this MsgStableSwapAdjustScalingFactors to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+          }
+
+          /** Properties of a MsgStableSwapAdjustScalingFactorsResponse. */
+          interface IMsgStableSwapAdjustScalingFactorsResponse {}
+
+          /** Represents a MsgStableSwapAdjustScalingFactorsResponse. */
+          class MsgStableSwapAdjustScalingFactorsResponse
+            implements IMsgStableSwapAdjustScalingFactorsResponse
+          {
+            /**
+             * Constructs a new MsgStableSwapAdjustScalingFactorsResponse.
+             * @param [p] Properties to set
+             */
+            constructor(
+              p?: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgStableSwapAdjustScalingFactorsResponse
+            );
+
+            /**
+             * Creates a new MsgStableSwapAdjustScalingFactorsResponse instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns MsgStableSwapAdjustScalingFactorsResponse instance
+             */
+            public static create(
+              properties?: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgStableSwapAdjustScalingFactorsResponse
+            ): osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactorsResponse;
+
+            /**
+             * Encodes the specified MsgStableSwapAdjustScalingFactorsResponse message. Does not implicitly {@link osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactorsResponse.verify|verify} messages.
+             * @param m MsgStableSwapAdjustScalingFactorsResponse message or plain object to encode
+             * @param [w] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(
+              m: osmosis.gamm.poolmodels.stableswap.v1beta1.IMsgStableSwapAdjustScalingFactorsResponse,
+              w?: $protobuf.Writer
+            ): $protobuf.Writer;
+
+            /**
+             * Decodes a MsgStableSwapAdjustScalingFactorsResponse message from the specified reader or buffer.
+             * @param r Reader or buffer to decode from
+             * @param [l] Message length if known beforehand
+             * @returns MsgStableSwapAdjustScalingFactorsResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(
+              r: $protobuf.Reader | Uint8Array,
+              l?: number
+            ): osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactorsResponse;
+
+            /**
+             * Creates a MsgStableSwapAdjustScalingFactorsResponse message from a plain object. Also converts values to their respective internal types.
+             * @param d Plain object
+             * @returns MsgStableSwapAdjustScalingFactorsResponse
+             */
+            public static fromObject(d: {
+              [k: string]: any;
+            }): osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactorsResponse;
+
+            /**
+             * Creates a plain object from a MsgStableSwapAdjustScalingFactorsResponse message. Also converts values to other types if specified.
+             * @param m MsgStableSwapAdjustScalingFactorsResponse
+             * @param [o] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(
+              m: osmosis.gamm.poolmodels.stableswap.v1beta1.MsgStableSwapAdjustScalingFactorsResponse,
+              o?: $protobuf.IConversionOptions
+            ): { [k: string]: any };
+
+            /**
+             * Converts this MsgStableSwapAdjustScalingFactorsResponse to JSON.
              * @returns JSON object
              */
             public toJSON(): { [k: string]: any };

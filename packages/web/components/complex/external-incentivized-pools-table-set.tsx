@@ -2,17 +2,12 @@ import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useCallback } from "react";
-import {
-  EventName,
-  ExternalIncentiveGaugeAllowList,
-  PoolsPageEvents,
-} from "../../config";
+import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
 import {
   useFilteredData,
   usePaginatedData,
   useSortedData,
   useWindowSize,
-  useMatomoAnalytics,
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
@@ -34,7 +29,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       accountStore,
     } = useStore();
     const { isMobile } = useWindowSize();
-    const { trackEvent } = useMatomoAnalytics();
     const { logEvent } = useAmplitudeAnalytics();
 
     const { chainId } = chainStore.osmosis;
@@ -114,10 +108,12 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
           }
 
           return {
-            ...queryExternal.queryGammPoolFeeMetrics.makePoolWithFeeMetrics(
-              pool,
+            pool,
+            ...queryExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+              pool.id,
               priceStore
             ),
+            liquidity: pool.computeTotalValueLocked(priceStore),
             epochsRemaining: maxRemainingEpoch,
             myLiquidity: pool
               .computeTotalValueLocked(priceStore)
@@ -157,7 +153,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     const initialSortDirection = "descending";
     const [
       sortKeyPath,
-      do_setSortKeyPath,
+      setSortKeyPath,
       sortDirection,
       setSortDirection,
       toggleSortDirection,
@@ -167,10 +163,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       initialKeyPath,
       initialSortDirection
     );
-    const setSortKeyPath = useCallback((terms: string) => {
-      trackEvent(PoolsPageEvents.sortPools);
-      do_setSortKeyPath(terms);
-    }, []);
 
     const [query, setQuery, filteredPools] = useFilteredData(
       sortedAllPoolsWithMetrics,
@@ -402,7 +394,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             <SearchBox
               currentValue={query}
               onInput={setQuery}
-              onFocus={() => trackEvent(PoolsPageEvents.startPoolsSearch)}
               placeholder="Filter by name"
               className="!w-64"
             />

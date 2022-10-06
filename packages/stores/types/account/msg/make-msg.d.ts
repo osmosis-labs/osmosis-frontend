@@ -33,14 +33,14 @@ export declare class Amino {
         value: {
             sender: string;
             routes: {
-                poolId: string;
-                tokenOutDenom: string;
+                pool_id: string;
+                token_out_denom: string;
             }[];
-            tokenIn: {
+            token_in: {
                 denom: string;
                 amount: string;
             };
-            tokenOutMinAmount: string;
+            token_out_min_amount: string;
         };
     };
     static makeSwapExactAmountInMsg(pool: {

@@ -1,6 +1,7 @@
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Duration } from "dayjs/plugin/duration";
+import dayjs from "dayjs";
 import { AppCurrency, FiatCurrency } from "@keplr-wallet/types";
 import { PricePretty, Dec, RatePretty, CoinPretty } from "@keplr-wallet/unit";
 import { IPriceStore } from "../../price";
@@ -8,6 +9,7 @@ import { ObservableQueryGammPoolShare } from "../pool-share";
 import {
   ObservableQueryIncentivizedPools,
   ObservableQueryLockableDurations,
+  ObservableQueryPoolsGaugeIds,
 } from "../pool-incentives";
 import { ObservableQueryGuage } from "../incentives";
 import {
@@ -16,6 +18,14 @@ import {
   ObservableQueryAccountUnlockingCoins,
 } from "../lockup";
 import { ObservableQueryPool } from "./pool";
+
+/** Non OSMO gauge. */
+export type ExternalGauge = {
+  id: string;
+  duration: Duration;
+  rewardAmount?: CoinPretty;
+  remainingEpochs: number;
+};
 
 /** Convenience store for getting common details of a pool via many other query stores. */
 export class ObservableQueryPoolDetails {
@@ -31,6 +41,7 @@ export class ObservableQueryPoolDetails {
       queryUnlockingCoins: ObservableQueryAccountUnlockingCoins;
       queryGauge: ObservableQueryGuage;
       queryLockableDurations: ObservableQueryLockableDurations;
+      queryPoolsGaugeIds: ObservableQueryPoolsGaugeIds;
     },
     protected readonly priceStore: IPriceStore
   ) {
@@ -237,11 +248,47 @@ export class ObservableQueryPoolDetails {
     return false;
   }
 
-  queryExternalGauges = computedFn(
+  get allExternalGauges(): ExternalGauge[] {
+    const queryPoolGuageIds = this.queries.queryPoolsGaugeIds.get(
+      this.queryPool.id
+    );
+
+    return (
+      queryPoolGuageIds.gaugeIdsWithDuration
+        ?.map(({ gaugeId }) => {
+          const gauge = this.queries.queryGauge.get(gaugeId);
+          const isInternalGauge =
+            this.queries.queryIncentivizedPools.getIncentivizedGaugeId(
+              this.queryPool.id,
+              gauge.lockupDuration
+            ) !== undefined;
+
+          const startTime = dayjs(gauge.startTime);
+          const now = new Date();
+
+          if (
+            startTime.isAfter(now) ||
+            isInternalGauge ||
+            !(gauge.remainingEpoch > 1)
+          ) {
+            return;
+          }
+
+          return {
+            id: gaugeId,
+            duration: gauge.lockupDuration,
+            remainingEpochs: gauge.remainingEpoch,
+          };
+        })
+        .filter((gauge): gauge is ExternalGauge => gauge !== undefined) ?? []
+    );
+  }
+
+  readonly queryAllowedExternalGauges = computedFn(
     (
-      allowedGauges: { gaugeId: string; denom: string }[],
-      findCurrency: (denom: string) => AppCurrency | undefined
-    ) => {
+      findCurrency: (denom: string) => AppCurrency | undefined,
+      allowedGauges: { gaugeId: string; denom: string }[]
+    ): ExternalGauge[] => {
       return allowedGauges
         .map(({ gaugeId, denom }) => {
           const observableGauge = this.queries.queryGauge.get(gaugeId);
@@ -258,18 +305,9 @@ export class ObservableQueryPoolDetails {
               ? observableGauge.getRemainingCoin(currency)
               : undefined,
             remainingEpochs: observableGauge.remainingEpoch,
-          };
+          } as ExternalGauge;
         })
-        .filter(
-          (
-            gauge
-          ): gauge is {
-            id: string;
-            duration: Duration;
-            rewardAmount: CoinPretty | undefined;
-            remainingEpochs: number;
-          } => gauge !== undefined
-        );
+        .filter((gauge): gauge is ExternalGauge => gauge !== undefined);
     }
   );
 }

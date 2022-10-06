@@ -1,5 +1,5 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { ObservablePoolWithFeeMetrics } from "@osmosis-labs/stores";
+import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -9,13 +9,12 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { EventName, PoolsPageEvents } from "../../config";
+import { EventName } from "../../config";
 import {
   useFilteredData,
   usePaginatedData,
   useSortedData,
   useWindowSize,
-  useMatomoAnalytics,
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
@@ -34,6 +33,20 @@ const poolsMenuOptions = [
 
 const TVL_FILTER_THRESHOLD = 1000;
 
+type PoolWithMetrics = {
+  pool: ObservableQueryPool;
+  liquidity: PricePretty;
+  myLiquidity: PricePretty;
+  apr?: RatePretty;
+  poolName: string;
+  networkNames: string;
+  volume24h: PricePretty;
+  volume7d: PricePretty;
+  feesSpent24h: PricePretty;
+  feesSpent7d: PricePretty;
+  feesPercentage: string;
+};
+
 export const AllPoolsTableSet: FunctionComponent<{
   tableSet?: "incentivized-pools" | "all-pools";
 }> = observer(({ tableSet = "incentivized-pools" }) => {
@@ -45,13 +58,10 @@ export const AllPoolsTableSet: FunctionComponent<{
     accountStore,
   } = useStore();
   const { isMobile } = useWindowSize();
-  const { trackEvent } = useMatomoAnalytics();
   const { logEvent } = useAmplitudeAnalytics();
 
   const [activeOptionId, setActiveOptionId] = useState(tableSet);
   const selectOption = (optionId: string) => {
-    if (optionId === "all-pools") trackEvent(PoolsPageEvents.showAllPools);
-
     if (optionId === "incentivized-pools" || optionId === "all-pools") {
       setActiveOptionId(optionId);
     }
@@ -61,17 +71,19 @@ export const AllPoolsTableSet: FunctionComponent<{
     priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
     TVL_FILTER_THRESHOLD
   ).toString()}`;
-  const setIsPoolTvlFiltered = useCallback((isFiltered: boolean) => {
-    logEvent([
-      EventName.Pools.allPoolsListFiltered,
-      {
-        filteredBy: tvlFilterLabel,
-        isFilterOn: isFiltered,
-      },
-    ]);
-    if (isFiltered) trackEvent(PoolsPageEvents.showLowTvlPools);
-    do_setIsPoolTvlFiltered(isFiltered);
-  }, []);
+  const setIsPoolTvlFiltered = useCallback(
+    (isFiltered: boolean) => {
+      logEvent([
+        EventName.Pools.allPoolsListFiltered,
+        {
+          filteredBy: tvlFilterLabel,
+          isFilterOn: isFiltered,
+        },
+      ]);
+      do_setIsPoolTvlFiltered(isFiltered);
+    },
+    [do_setIsPoolTvlFiltered]
+  );
 
   const { chainId } = chainStore.osmosis;
   const queriesOsmosis = queriesStore.get(chainId).osmosis!;
@@ -83,13 +95,15 @@ export const AllPoolsTableSet: FunctionComponent<{
   const incentivizedPoolIds =
     queriesOsmosis.queryIncentivizedPools.incentivizedPools;
 
-  const allPoolsWithMetrics = useMemo(
+  const allPoolsWithMetrics: PoolWithMetrics[] = useMemo(
     () =>
       allPools.map((pool) => ({
-        ...queriesExternal.queryGammPoolFeeMetrics.makePoolWithFeeMetrics(
-          pool,
+        pool,
+        ...queriesExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+          pool.id,
           priceStore
         ),
+        liquidity: pool.computeTotalValueLocked(priceStore),
         myLiquidity: pool
           .computeTotalValueLocked(priceStore)
           .mul(
@@ -126,8 +140,8 @@ export const AllPoolsTableSet: FunctionComponent<{
     () =>
       allPoolsWithMetrics.reduce(
         (
-          incentivizedPools: ObservablePoolWithFeeMetrics[],
-          poolWithMetrics: ObservablePoolWithFeeMetrics
+          incentivizedPools: PoolWithMetrics[],
+          poolWithMetrics: PoolWithMetrics
         ) => {
           if (
             incentivizedPoolIds.some(
@@ -163,16 +177,12 @@ export const AllPoolsTableSet: FunctionComponent<{
   const initialSortDirection = "descending";
   const [
     sortKeyPath,
-    do_setSortKeyPath,
+    setSortKeyPath,
     sortDirection,
     setSortDirection,
     toggleSortDirection,
     sortedAllPoolsWithMetrics,
   ] = useSortedData(tvlFilteredPools, initialKeyPath, initialSortDirection);
-  const setSortKeyPath = useCallback((terms: string) => {
-    trackEvent(PoolsPageEvents.sortPools);
-    do_setSortKeyPath(terms);
-  }, []);
 
   const [query, setQuery, filteredPools] = useFilteredData(
     sortedAllPoolsWithMetrics,
@@ -437,7 +447,6 @@ export const AllPoolsTableSet: FunctionComponent<{
         searchBoxProps={{
           currentValue: query,
           onInput: setQuery,
-          onFocus: () => trackEvent(PoolsPageEvents.startPoolsSearch),
           placeholder: "Search pools",
         }}
         sortMenuProps={{
@@ -489,7 +498,6 @@ export const AllPoolsTableSet: FunctionComponent<{
             <SearchBox
               currentValue={query}
               onInput={setQuery}
-              onFocus={() => trackEvent(PoolsPageEvents.startPoolsSearch)}
               placeholder="Search pools"
               className="!w-64"
             />

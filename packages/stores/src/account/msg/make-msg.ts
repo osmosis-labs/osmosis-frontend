@@ -76,15 +76,15 @@ export class Amino {
         sender,
         routes: routes.map((route) => {
           return {
-            poolId: route.pool.id,
-            tokenOutDenom: route.tokenOutCurrency.coinMinimalDenom,
+            pool_id: route.pool.id,
+            token_out_denom: route.tokenOutCurrency.coinMinimalDenom,
           };
         }),
-        tokenIn: {
+        token_in: {
           denom: coin.denom,
           amount: coin.amount.toString(),
         },
-        tokenOutMinAmount: tokenOutMinAmount.toString(),
+        token_out_min_amount: tokenOutMinAmount.toString(),
       },
     };
   }
@@ -138,15 +138,15 @@ export class Amino {
         sender,
         routes: [
           {
-            poolId: pool.id,
-            tokenOutDenom: tokenOutCurrency.coinMinimalDenom,
+            pool_id: pool.id,
+            token_out_denom: tokenOutCurrency.coinMinimalDenom,
           },
         ],
-        tokenIn: {
+        token_in: {
           denom: coin.denom,
           amount: coin.amount.toString(),
         },
-        tokenOutMinAmount: tokenOutMinAmount.toString(),
+        token_out_min_amount: tokenOutMinAmount.toString(),
       },
     };
   }
@@ -201,15 +201,15 @@ export class Amino {
         sender,
         routes: [
           {
-            poolId: pool.id,
-            tokenInDenom: tokenInCurrency.coinMinimalDenom,
+            pool_id: pool.id,
+            token_in_denom: tokenInCurrency.coinMinimalDenom,
           },
         ],
-        tokenOut: {
+        token_out: {
           denom: coin.denom,
           amount: coin.amount.toString(),
         },
-        tokenInMaxAmount: tokenInMaxAmount.toString(),
+        token_in_max_amount: tokenInMaxAmount.toString(),
       },
     };
   }

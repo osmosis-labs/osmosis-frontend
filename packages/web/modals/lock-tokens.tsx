@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Duration } from "dayjs/plugin/duration";
 import classNames from "classnames";
@@ -46,6 +46,7 @@ export const LockTokensModal: FunctionComponent<
   const [selectedGaugeIndex, setSelectedGaugeIndex] = useState<number | null>(
     null
   );
+
   const highestGaugeSelected = selectedGaugeIndex === gauges.length - 1;
   const [electSuperfluid, setElectSuperfluid] = useState(true);
 
@@ -79,6 +80,11 @@ export const LockTokensModal: FunctionComponent<
     },
     props.onRequestClose
   );
+
+  // auto select the gauge if there's one
+  useEffect(() => {
+    if (gauges.length === 1) setSelectedGaugeIndex(0);
+  }, [gauges]);
 
   return (
     <ModalBase {...props} isOpen={props.isOpen && showModalBase}>

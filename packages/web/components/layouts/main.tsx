@@ -10,8 +10,6 @@ import {
   useWindowSize,
   useWindowScroll,
   useBooleanWithWindowEvent,
-  UserEvent,
-  useMatomoAnalytics,
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { AmplitudeEvent, IS_FRONTIER } from "../../config";
@@ -23,7 +21,6 @@ export type MainLayoutMenu = {
   icon: string;
   iconSelected?: string;
   selectionTest?: RegExp;
-  userAnalyticsEvent?: UserEvent;
   amplitudeEvent?: AmplitudeEvent;
 };
 
@@ -34,7 +31,6 @@ export interface MainLayoutProps {
 export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
   ({ children, menus }) => {
     const router = useRouter();
-    const { trackEvent } = useMatomoAnalytics();
     const { logEvent } = useAmplitudeAnalytics();
     const { navBarStore } = useStore();
 
@@ -44,9 +40,9 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
 
     const smallVerticalScreen = height < 850;
 
-    const showFixedLogo = !smallVerticalScreen || (isMobile && !showSidebar);
+    const showFixedLogo = !smallVerticalScreen || isMobile;
 
-    const showBlockLogo = smallVerticalScreen;
+    const showBlockLogo = smallVerticalScreen && !isMobile;
 
     const selectedMenuItem = menus.find(
       ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
@@ -67,16 +63,9 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
             <OsmosisFullLogo onClick={() => router.push("/")} />
           </div>
         )}
-        <div
-          className={classNames(
-            "z-40 fixed w-sidebar h-full bg-card flex flex-col px-5 py-6 overflow-x-hidden overflow-y-auto",
-            {
-              hidden: !showSidebar && isMobile,
-            }
-          )}
-        >
+        <Drawer showSidebar={showSidebar} isMobile={isMobile} height={height}>
           {showBlockLogo && (
-            <div className="z-50 w-sidebar mx-auto">
+            <div className="grow-0 z-50 w-sidebar mx-auto">
               <OsmosisFullLogo width={166} onClick={() => router.push("/")} />
             </div>
           )}
@@ -89,7 +78,6 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                   icon,
                   iconSelected,
                   selectionTest,
-                  userAnalyticsEvent,
                   amplitudeEvent,
                 }) => {
                   const selected = selectionTest
@@ -110,9 +98,6 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                           )}
                           target={selectionTest ? "_self" : "_blank"}
                           onClick={() => {
-                            if (userAnalyticsEvent) {
-                              trackEvent(userAnalyticsEvent);
-                            }
                             if (amplitudeEvent) {
                               logEvent(amplitudeEvent);
                             }
@@ -170,7 +155,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
               )}
             </ul>
           </div>
-        </div>
+        </Drawer>
         <div
           className={classNames(
             "fixed flex z-40 h-mobile-header w-screen items-center justify-end px-5",
@@ -219,3 +204,56 @@ const OsmosisFullLogo: FunctionComponent<{
     }}
   />
 );
+
+const Drawer: FunctionComponent<{
+  showSidebar: boolean;
+  isMobile: boolean;
+  height: number;
+}> = ({ children, showSidebar, isMobile, height }) => {
+  const windowLoading = height <= 0;
+  if (windowLoading) {
+    return null;
+  } else if (isMobile === true) {
+    return (
+      <>
+        <div
+          className={classNames(
+            "absolute z-40 inset-0 h-full transform w-full bg-backdrop -translate-x-full",
+            {
+              "-translate-x-0": showSidebar,
+            }
+          )}
+        />
+        <main
+          className={classNames(
+            "-translate-x-full fixed overflow-hidden z-40 inset-0 duration-300 transform ease-in-out w-full h-full",
+            {
+              "-translate-x-0": showSidebar,
+            }
+          )}
+        >
+          <section
+            className={classNames(
+              "w-sidebar shadow-xl absolute bg-white h-full delay-300 duration-150 ease-in-out transition-all transform bg-card flex flex-col overflow-x-hidden overflow-y-auto"
+            )}
+          >
+            <article className="relative h-full flex flex-col">
+              <div className="w-sidebar text-center pt-5 bg-card grow-0">
+                <div className="invisible">
+                  <OsmosisFullLogo width={166} />
+                </div>
+              </div>
+              <div className="grow px-5 py-6 overflow-y-scroll">{children}</div>
+            </article>
+          </section>
+        </main>
+      </>
+    );
+  } else {
+    return (
+      <article className="fixed flex flex-col inset-y-0 z-40 bg-card px-5 py-6 w-sidebar overflow-x-hidden">
+        {children}
+      </article>
+    );
+  }
+};

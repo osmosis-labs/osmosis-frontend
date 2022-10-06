@@ -485,19 +485,20 @@ const chainInfos = (
           type: "cw20",
           contractAddress:
             "juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv",
-          coinDenom: "SEJUNO",
+          coinDenom: "seJUNO",
           coinMinimalDenom:
-            "cw20:juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv:SEJUNO",
+            "cw20:juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv:seJUNO",
           coinDecimals: 6,
+          coinGeckoId: "pool:sejuno",
           coinImageUrl: "/tokens/sejuno.png",
         },
         {
           type: "cw20",
           contractAddress:
             "juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3",
-          coinDenom: "BJUNO",
+          coinDenom: "bJUNO",
           coinMinimalDenom:
-            "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3:BJUNO",
+            "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3:bJUNO",
           coinDecimals: 6,
           coinImageUrl: "/tokens/bjuno.png",
         },
@@ -519,6 +520,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno19rqljkh95gh40s7qdx40ksx3zq5tm4qsmsrdz9smw668x9zdr3lqtg33mf:SEASY",
           coinDecimals: 6,
+          coinGeckoId: "pool:seasy",
           coinImageUrl: "/tokens/seasy.svg",
         },
       ],
@@ -1955,6 +1957,13 @@ const chainInfos = (
           coinImageUrl: "/tokens/statom.svg",
         },
         {
+          coinDenom: "stSTARS",
+          coinMinimalDenom: "stustars",
+          coinDecimals: 6,
+          coinGeckoId: "pool:stustars",
+          coinImageUrl: "/tokens/ststars.svg",
+        },
+        {
           coinDenom: "stOSMO",
           coinMinimalDenom: "stuosmo",
           coinDecimals: 6,
@@ -1984,6 +1993,29 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
     },
+    {
+      rpc: "https://api.mainnet.rebus.money:26657",
+      rest: "https://api.mainnet.rebus.money:1317",
+      chainId: "reb_1111-1",
+      chainName: "Rebus",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("rebus"),
+      currencies: [
+        {
+          coinDenom: "REBUS",
+          coinMinimalDenom: "arebus",
+          coinDecimals: 18,
+          coinGeckoId: "pool:arebus",
+          coinImageUrl: "/tokens/rebus.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://rebus.explorers.guru/transaction/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
@@ -2001,7 +2033,7 @@ chainInfos.push({
     coinDenom: "AXL",
     coinMinimalDenom: "uaxl",
     coinDecimals: 6,
-    // coinGeckoId: 'pool:uaxl',
+    coinGeckoId: "axelar",
     coinImageUrl: "/tokens/axl.svg",
   },
   bip44: {
@@ -2009,6 +2041,13 @@ chainInfos.push({
   },
   bech32Config: Bech32Address.defaultBech32Config("axelar"),
   currencies: [
+    {
+      coinDenom: "AXL",
+      coinMinimalDenom: "uaxl",
+      coinDecimals: 6,
+      coinGeckoId: "pool:uaxl",
+      coinImageUrl: "/tokens/axl.svg",
+    },
     {
       coinDenom: IS_TESTNET ? "aUSDC" : "USDC",
       coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
@@ -2145,7 +2184,7 @@ chainInfos.push({
       coinDenom: "AXL",
       coinMinimalDenom: "uaxl",
       coinDecimals: 6,
-      // coinGeckoId: 'pool:uaxl',
+      coinGeckoId: "axelar",
       coinImageUrl: "/tokens/axl.svg",
     },
   ],
