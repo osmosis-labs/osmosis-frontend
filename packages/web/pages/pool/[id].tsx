@@ -36,6 +36,7 @@ import {
   UnPoolWhitelistedPoolIds,
   PoolDetailEvents,
   EventName,
+  IncludesInternalAndExternalIncentiveGaugeList,
 } from "../../config";
 import {
   useAddLiquidityConfig,
@@ -856,6 +857,14 @@ const Pool: FunctionComponent = observer(() => {
                   days={duration.humanize()}
                   apr={queryOsmosis.queryIncentivizedPools
                     .computeAPY(pool.id, duration, priceStore, fiat)
+                    .add(
+                      IncludesInternalAndExternalIncentiveGaugeList[pool.id]
+                        ? allowedGauges[0].rewardAmount
+                            .maxDecimals(0)
+                            .quo(new Dec(1000000))
+                            .toDec()
+                        : new Dec(0)
+                    )
                     .maxDecimals(2)
                     .toString()}
                   superfluidApr={superfluidApr?.maxDecimals(2).toString()}

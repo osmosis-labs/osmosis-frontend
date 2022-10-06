@@ -212,8 +212,15 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
               mintPrice &&
               poolTVL.toDec().gt(new Dec(0))
             ) {
+              const log = (label, value) => {
+                console.log(label, value);
+                return value;
+              };
               // 에포치마다 발행되는 민팅 코인의 수.
-              const epochProvision = this.queryEpochProvision.epochProvisions;
+              const epochProvision = log(
+                "epochProvisions",
+                this.queryEpochProvision.epochProvisions
+              );
 
               if (epochProvision) {
                 const numEpochPerYear =
@@ -223,23 +230,32 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
                     })
                     .asMilliseconds() / epoch.duration.asMilliseconds();
 
-                const yearProvision = epochProvision.mul(
-                  new Dec(numEpochPerYear.toString())
+                const yearProvision = log(
+                  "yearProvision",
+                  epochProvision.mul(new Dec(numEpochPerYear.toString()))
                 );
-                const yearProvisionToPots = yearProvision.mul(
-                  this.queryMintParmas.distributionProportions.poolIncentives
+                const yearProvisionToPots = log(
+                  "yearProvisionToSpots",
+                  yearProvision.mul(
+                    this.queryMintParmas.distributionProportions.poolIncentives
+                  )
                 );
-                const yearProvisionToPot = yearProvisionToPots.mul(
-                  new Dec(potWeight).quo(new Dec(totalWeight))
+                const yearProvisionToPot = log(
+                  "yearProvisionToPot",
+                  yearProvisionToPots.mul(
+                    new Dec(potWeight).quo(new Dec(totalWeight))
+                  )
                 );
 
-                const yearProvisionToPotPrice = new Dec(
-                  mintPrice.toString()
-                ).mul(yearProvisionToPot.toDec());
+                const yearProvisionToPotPrice = log(
+                  "yearProvisionToPotPrice",
+                  new Dec(mintPrice.toString()).mul(yearProvisionToPot.toDec())
+                );
 
                 // 백분률로 반환한다.
-                return new RatePretty(
-                  yearProvisionToPotPrice.quo(poolTVL.toDec())
+                return log(
+                  "what",
+                  new RatePretty(yearProvisionToPotPrice.quo(poolTVL.toDec()))
                 );
               }
             }

@@ -31,6 +31,13 @@ export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
   "635": true,
 };
 
+export const IncludesInternalAndExternalIncentiveGaugeList: {
+  [poolId: string]: boolean;
+} = {
+  // Stride ATOM/stATOM
+  "803": true,
+};
+
 /** Gauges to be rendered in pool's respective pool detail page. */
 export const ExternalIncentiveGaugeAllowList: {
   [poolId: string]: {
@@ -1040,6 +1047,7 @@ export const ExternalIncentiveGaugeAllowList: {
       denom:
         "ibc/0CD46223FEABD2AEAAAF1F057D01E63BCA79B7D4BD6B68F1EB973A987344695D",
     },
+  ],
   "810": [
     {
       gaugeId: "29659",
