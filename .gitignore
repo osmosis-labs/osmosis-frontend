@@ -6,6 +6,7 @@ dist
 prod
 build
 yarn-error.log
+.yarn
 
 src/styles/index.scss
 .vercel
