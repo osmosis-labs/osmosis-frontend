@@ -371,8 +371,7 @@ const AxelarTransfer: FunctionComponent<
       (isWithdraw && osmosisAccount.txTypeInProgress === "");
     const isInsufficientFee =
       amount !== "" &&
-      new CoinPretty(originCurrency, amount)
-        .moveDecimalPointRight(originCurrency.coinDecimals)
+      new CoinPretty(originCurrency, amount * (10**originCurrency.coinDecimals))
         .toDec()
         .lt(
           new CoinPretty(originCurrency, new Dec(transferFeeMinAmount)).toDec()
@@ -380,8 +379,7 @@ const AxelarTransfer: FunctionComponent<
     const isInsufficientBal =
       amount !== "" &&
       availableBalance &&
-      new CoinPretty(originCurrency, amount)
-        .moveDecimalPointRight(originCurrency.coinDecimals)
+      new CoinPretty(originCurrency, amount * (10**originCurrency.coinDecimals))
         .toDec()
         .gt(availableBalance.toDec());
     const buttonErrorMessage = userDisconnectedEthWallet
