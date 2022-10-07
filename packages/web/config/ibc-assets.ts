@@ -48,7 +48,7 @@ export const IBCAssetInfos: (IBCAsset & {
       : "axelar-dojo-1",
     sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
     destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
-    coinMinimalDenom: IS_TESTNET ? "weth-wei" : "weth-wei",
+    coinMinimalDenom: "weth-wei",
     sourceChainNameOverride: IS_TESTNET ? "Ropsten Ethereum" : "Ethereum",
     isVerified: true,
     originBridgeInfo: {
