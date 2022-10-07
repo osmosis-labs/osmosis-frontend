@@ -182,8 +182,15 @@ const AxelarTransfer: FunctionComponent<
         if (amount !== "") {
           nonIbcBridgeHistoryStore.pushTxNow(
             `axelar${txHash}`,
-            new CoinPretty(originCurrency, amount)
-              .moveDecimalPointRight(originCurrency.coinDecimals)
+            new CoinPretty(
+              originCurrency,
+              new Dec(amount).mul(
+                // CoinPretty only accepts whole amounts
+                DecUtils.getTenExponentNInPrecisionRange(
+                  originCurrency.coinDecimals
+                )
+              )
+            )
               .trim(true)
               .toString(),
             isWithdraw,
