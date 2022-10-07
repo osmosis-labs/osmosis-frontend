@@ -288,9 +288,15 @@ const AxelarTransfer: FunctionComponent<
             try {
               await erc20Transfer(
                 ethWalletClient.send,
-                new CoinPretty(originCurrency, depositAmount)
-                  .moveDecimalPointRight(originCurrency.coinDecimals)
-                  .toCoin().amount,
+                new CoinPretty(
+                  originCurrency,
+                  new Dec(amount).mul(
+                    // CoinPretty only accepts whole amounts
+                    DecUtils.getTenExponentNInPrecisionRange(
+                      originCurrency.coinDecimals
+                    )
+                  )
+                ).toCoin().amount,
                 erc20ContractAddress,
                 ethWalletClient.accountAddress!,
                 depositAddress
