@@ -41,9 +41,9 @@ export const RemoveLiquidityModal: FunctionComponent<
 
   return (
     <ModalBase
+      title={`Remove Liquidity from Pool #${poolId}`}
       {...props}
       isOpen={props.isOpen && showModalBase}
-      title={`Remove Liquidity from Pool #${poolId}`}
     >
       <RemoveLiquidity
         className="pt-4"

@@ -6,7 +6,7 @@ import { AppCurrency } from "@keplr-wallet/types";
 import { useStore } from "../../stores";
 import { useAmountConfig } from "./use-amount-config";
 
-/** UI config for setting valid token amounts and locking them in a lock. */
+/** UI config for setting valid GAMM token amounts and locking them in a lock. */
 export function useLockTokenConfig(
   chainGetter: ChainGetter,
   queriesStore: IQueriesStore,
@@ -50,6 +50,7 @@ export function useLockTokenConfig(
           );
         } catch (e) {
           console.error(e);
+          console.log("Locktokens config: rejected");
           reject();
         }
       });

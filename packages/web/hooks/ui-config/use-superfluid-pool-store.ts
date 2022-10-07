@@ -80,6 +80,10 @@ export function useSuperfluidPoolStore(
                 console.error(e);
                 reject();
               }
+            } else {
+              console.warn(
+                "Superfluid delegate: amount config for use in sendLockAndSuperfluidDelegateMsg missing"
+              );
             }
           }
         }

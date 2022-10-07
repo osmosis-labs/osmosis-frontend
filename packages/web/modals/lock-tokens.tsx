@@ -100,7 +100,11 @@ export const LockTokensModal: FunctionComponent<
   }, [allAggregatedGauges]);
 
   return (
-    <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
+    <ModalBase
+      title={`Lock Shares in Pool #${poolId}`}
+      {...props}
+      isOpen={props.isOpen && showModalBase}
+    >
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-col gap-2.5">
           <span className="subitle1">

@@ -19,7 +19,7 @@ export type Gauge = {
 };
 
 /** Resolves all and whitelisted gauges by durations. Aggregates Gauges by duration. */
-export function usePoolGauges(poolId: string): {
+export function usePoolGauges(poolId?: string): {
   /** Aggregated by duration. */
   allAggregatedGauges: Gauge[];
   /** Aggregated by duration. */

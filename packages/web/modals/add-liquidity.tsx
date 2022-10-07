@@ -38,9 +38,9 @@ export const AddLiquidityModal: FunctionComponent<
 
   return (
     <ModalBase
+      title={`Add Liquidity to Pool #${poolId}`}
       {...props}
       isOpen={props.isOpen && showModalBase}
-      title={`Add Liquidity to Pool #${poolId}`}
     >
       <AddLiquidity
         className="pt-4"

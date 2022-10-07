@@ -183,9 +183,7 @@ const Pool: FunctionComponent = observer(() => {
       .finally(() => setShowManageLiquidityDialog(false));
   };
   const onLockToken = (gaugeId: string, electSuperfluid?: boolean) => {
-    const gauge = allowedAggregatedGauges?.find(
-      (gauge) => gauge.id === gaugeId
-    );
+    const gauge = allAggregatedGauges?.find((gauge) => gauge.id === gaugeId);
     const lockInfo = {
       poolId,
       poolName,
@@ -206,11 +204,7 @@ const Pool: FunctionComponent = observer(() => {
         .then(() => logEvent([E.bondCompleted, lockInfo]))
         .finally(() => setShowLockLPTokenModal(false));
     } else {
-      console.error(
-        "Gauge of id",
-        gaugeId,
-        "not found in allowedAggregatedGauges"
-      );
+      console.error("Gauge of id", gaugeId, "not found in allAggregatedGauges");
     }
   };
   const handleSuperfluidDelegateToValidator = useCallback(
@@ -314,7 +308,6 @@ const Pool: FunctionComponent = observer(() => {
           }
           isOpen={showSuperfluidValidatorModal}
           onRequestClose={() => setShowSuperfluidValidatorsModal(false)}
-          isSendingMsg={account.txTypeInProgress !== ""}
           onSelectValidator={handleSuperfluidDelegateToValidator}
         />
       )}

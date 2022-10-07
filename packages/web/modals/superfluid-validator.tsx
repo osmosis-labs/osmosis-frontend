@@ -15,12 +15,11 @@ import { useWindowSize } from "../hooks/window";
 interface Props extends ModalBaseProps {
   availableBondAmount: CoinPretty;
   onSelectValidator: (address: string) => void;
-  isSendingMsg?: boolean;
 }
 
 export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
   (props) => {
-    const { availableBondAmount, onSelectValidator, isSendingMsg } = props;
+    const { availableBondAmount, onSelectValidator } = props;
     const { chainStore, queriesStore, accountStore } = useStore();
     const { isMobile } = useWindowSize();
 
@@ -36,6 +35,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
       queries.cosmos.queryDelegations.getQueryBech32Address(
         account.bech32Address
       ).delegations;
+    const isSendingMsg = account.txTypeInProgress !== "";
 
     // vals from 0..<1 used to initially & randomly sort validators in `isDelegated` key
     const randomSortVals = useMemo(
