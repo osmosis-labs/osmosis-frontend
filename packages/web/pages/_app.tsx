@@ -2,7 +2,7 @@ import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 import Head from "next/head";
 import type { AppProps } from "next/app";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { enableStaticRendering } from "mobx-react-lite";
 import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
@@ -24,7 +24,6 @@ import {
 import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
 import {
   setDefaultLanguage,
-  setLanguage,
   setTranslations,
   useTranslation,
 } from "react-multi-lang";
@@ -40,10 +39,10 @@ dayjs.extend(duration);
 dayjs.extend(utc);
 enableStaticRendering(typeof window === "undefined");
 
-const SUPPORTED_LANGUAGES = ["en", "fr"];
 const DEFAULT_LANGUAGE = "en";
 setTranslations({ en, fr });
 setDefaultLanguage(DEFAULT_LANGUAGE);
+dayjs.locale(DEFAULT_LANGUAGE);
 
 function MyApp({ Component, pageProps }: AppProps) {
   const t = useTranslation();
@@ -105,20 +104,20 @@ function MyApp({ Component, pageProps }: AppProps) {
     return m;
   }, [t]);
 
-  // Localization
-  useEffect(() => {
-    // get user language from navigator
-    let navigatorLanguage = window.navigator.language;
-    // formats can get: 'en-US', 'fr-FR', 'en-FR', 'fr', 'en', ...
-    let userLanguage = SUPPORTED_LANGUAGES.find((language) =>
-      navigatorLanguage.includes(language)
-    );
-    // default language is en, change only if it's different
-    if (userLanguage && userLanguage != DEFAULT_LANGUAGE) {
-      dayjs.locale(userLanguage);
-      setLanguage(userLanguage);
-    }
-  }, []);
+  // // Localization
+  // useEffect(() => {
+  //   // get user language from navigator
+  //   let navigatorLanguage = window.navigator.language;
+  //   // formats can get: 'en-US', 'fr-FR', 'en-FR', 'fr', 'en', ...
+  //   let userLanguage = SUPPORTED_LANGUAGES.find((language) =>
+  //     navigatorLanguage.includes(language)
+  //   );
+  //   // default language is en, change only if it's different
+  //   if (userLanguage && userLanguage != DEFAULT_LANGUAGE) {
+  //     dayjs.locale(userLanguage);
+  //     setLanguage(userLanguage);
+  //   }
+  // }, []);
   useAmplitudeAnalytics({ init: true });
 
   return (

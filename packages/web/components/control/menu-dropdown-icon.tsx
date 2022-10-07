@@ -3,22 +3,16 @@ import Image from "next/image";
 import classNames from "classnames";
 import React from "react";
 
-export interface ToStringWise {
-  toString: () => string;
-}
-
-export type MenuDropdownIconProps<T extends ToStringWise> = {
-  value: T;
+export type MenuDropdownIconProps = {
+  value: string;
   display: string;
-  currentValue: T;
+  currentValue: string;
   image: string;
   index: number;
   optionLength: number;
-  onSelect: ({ value }: { value: T }) => void;
+  onSelect: ({ value }: { value: string }) => void;
 };
-export const MenuDropdownIcon: FunctionComponent<
-  MenuDropdownIconProps<ToStringWise>
-> = ({
+export const MenuDropdownIcon: FunctionComponent<MenuDropdownIconProps> = ({
   value,
   display,
   image,

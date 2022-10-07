@@ -27,7 +27,6 @@ export class LanguageUserSetting implements IUserSetting<LanguageState> {
 
   constructor(defaultLanguage: string) {
     this.displayLabel = `Language`;
-
     makeObservable(this);
     this._state = {
       language: defaultLanguage,

@@ -14,6 +14,8 @@ import {
 } from "../../hooks";
 import { AmplitudeEvent, IS_FRONTIER } from "../../config";
 import { NavBar } from "../navbar";
+import dayjs from "dayjs";
+import { setLanguage } from "react-multi-lang";
 
 export type MainLayoutMenu = {
   label: string;
@@ -31,6 +33,9 @@ export interface MainLayoutProps {
 export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
   ({ children, menus }) => {
     const router = useRouter();
+    const { userSettings } = useStore();
+    const currentLanguage: string | undefined =
+      userSettings.getUserSettingById("language")?.state.language;
     const { logEvent } = useAmplitudeAnalytics();
     const { navBarStore } = useStore();
 
@@ -55,6 +60,18 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
         () => (navBarStore.callToActionButtons = [])
       );
     }, []);
+
+    useEffect(() => {
+      if (currentLanguage) {
+        console.log(
+          "%cmain.tsx -> 66 BLUE: currentLanguage",
+          "background: #2196f3; color:#FFFFFF",
+          currentLanguage
+        );
+        dayjs.locale(currentLanguage);
+        setLanguage(currentLanguage);
+      }
+    }, [currentLanguage]);
 
     return (
       <React.Fragment>

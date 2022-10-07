@@ -85,7 +85,7 @@ export const LanguageSelect: FunctionComponent<LanguageSelectProps> = observer(
         >
           {options.map(({ value, display, image }, index) => {
             return (
-              <MenuDropdownIcon<string>
+              <MenuDropdownIcon
                 key={index}
                 value={value}
                 display={display}

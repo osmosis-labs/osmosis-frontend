@@ -254,7 +254,7 @@ export class RootStore {
     );
 
     this.userSettings = new UserSettings([
-      new LanguageUserSetting("fr"),
+      new LanguageUserSetting("en"),
       new ShowDustUserSetting(
         this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
           ?.symbol ?? "$"
