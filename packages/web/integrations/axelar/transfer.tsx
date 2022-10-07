@@ -2,7 +2,7 @@ import { FunctionComponent, useState, useEffect, useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { Environment } from "@axelar-network/axelarjs-sdk";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
 import {
@@ -371,17 +371,36 @@ const AxelarTransfer: FunctionComponent<
       (isWithdraw && osmosisAccount.txTypeInProgress === "");
     const isInsufficientFee =
       amount !== "" &&
-      new CoinPretty(originCurrency, amount)
+      new CoinPretty(
+        originCurrency,
+        new Dec(amount).mul(
+          // CoinPretty only accepts whole amounts
+          DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
+        )
+      )
         .moveDecimalPointRight(originCurrency.coinDecimals)
         .toDec()
         .lt(
-          new CoinPretty(originCurrency, new Dec(transferFeeMinAmount)).toDec()
+          new CoinPretty(
+            originCurrency,
+            new Dec(transferFeeMinAmount).mul(
+              // CoinPretty only accepts whole amounts
+              DecUtils.getTenExponentNInPrecisionRange(
+                originCurrency.coinDecimals
+              )
+            )
+          ).toDec()
         );
     const isInsufficientBal =
       amount !== "" &&
       availableBalance &&
-      new CoinPretty(originCurrency, amount)
-        .moveDecimalPointRight(originCurrency.coinDecimals)
+      new CoinPretty(
+        originCurrency,
+        new Dec(amount).mul(
+          // CoinPretty only accepts whole amounts
+          DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
+        )
+      )
         .toDec()
         .gt(availableBalance.toDec());
     const buttonErrorMessage = userDisconnectedEthWallet
