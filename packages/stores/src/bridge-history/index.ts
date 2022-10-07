@@ -8,6 +8,7 @@ import {
 } from "mobx";
 import { computedFn } from "mobx-utils";
 import { KVStore } from "@keplr-wallet/common";
+import { IQueriesStore, CosmosQueries } from "@keplr-wallet/stores";
 import { TxStatus } from "./types";
 import { ITxStatusReceiver, ITxStatusSource } from "./types";
 
@@ -37,6 +38,8 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
   private isRestoredFromLocalStorage = false;
 
   constructor(
+    protected readonly queriesStore: IQueriesStore<CosmosQueries>,
+    protected readonly chainId: string,
     protected readonly kvStore: KVStore,
     protected readonly txStatusSources: ITxStatusSource[] = [],
     protected readonly historyExpireDays = 3
@@ -141,6 +144,14 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
     if (!snapshot) {
       console.error("Couldn't find tx snapshot when receiving tx status");
       return;
+    }
+
+    // update balances if successful
+    if (status === "success") {
+      this.queriesStore
+        .get(this.chainId)
+        .queryBalances.getQueryBech32Address(snapshot.accountAddress)
+        .fetch();
     }
 
     snapshot.status = status;
