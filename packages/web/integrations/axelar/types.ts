@@ -1,5 +1,3 @@
-const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
-
 export interface AxelarBridgeConfig {
   /** Currently just via deposit address, future could be gateway contract call. */
   method: "deposit-address";
@@ -128,7 +126,7 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/polygon.svg",
     },
   },
-  wethwei: {
+  weth: {
     ethereum: {
       id: IS_TESTNET
         ? ("Ropsten Test Network" as const)

@@ -58,9 +58,10 @@ export const IBCAssetInfos: (IBCAsset & {
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChains: [
-        AxelarSourceChainConfigs.wethwei.ethereum
+        AxelarSourceChainConfigs.weth.ethereum
       ],
       tokenMinDenom: "weth-wei",
+
       transferFeeMinAmount: IS_TESTNET ? "60000000000000" : "6300000000000000",
     },
   },
@@ -202,6 +203,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uregen",
     isVerified: true,
+    isUnstable: true,
   },
   {
     counterpartyChainId: "sentinelhub-2",
@@ -916,6 +918,19 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "arebus",
   },
+  {
+    counterpartyChainId: "teritori-1",
+    sourceChannelId: "channel-362",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "utori",
+  },
+  {
+    counterpartyChainId: "stride-1",
+    sourceChannelId: "channel-326",
+    destChannelId: "channel-5",
+    coinMinimalDenom: "stujuno",
+  },
+
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (

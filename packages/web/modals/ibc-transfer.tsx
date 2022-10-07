@@ -7,9 +7,8 @@ import {
   useIbcTransfer,
   useConnectWalletModalRedirect,
   useAmplitudeAnalytics,
-  useMatomoAnalytics,
 } from "../hooks";
-import { AssetsPageEvents, EventName } from "../config";
+import { EventName } from "../config";
 import { ModalBase, ModalBaseProps } from ".";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
@@ -18,7 +17,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
     const { chainId: osmosisChainId } = chainStore.osmosis;
 
-    const { trackEvent } = useMatomoAnalytics();
     const { logEvent } = useAmplitudeAnalytics();
 
     const [
@@ -64,9 +62,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               (txFullfillEvent) => {
                 // success
                 ibcTransferHistoryStore.pushPendingHistory(txFullfillEvent);
-                if (txFullfillEvent) {
-                  trackEvent(AssetsPageEvents.ibcTransferSuccess);
-                }
                 props.onRequestClose();
               },
               (txBroadcastEvent) => {
@@ -81,9 +76,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   },
                 ]);
                 ibcTransferHistoryStore.pushUncommitedHistory(txBroadcastEvent);
-              },
-              () => {
-                trackEvent(AssetsPageEvents.ibcTransferFailure);
               }
             );
           },

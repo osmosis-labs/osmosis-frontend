@@ -9,19 +9,17 @@ import {
   useWindowSize,
   useWindowScroll,
   useBooleanWithWindowEvent,
-  UserEvent,
-  useMatomoAnalytics,
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { SidebarBottom } from "../complex/sidebar-bottom";
 import { AmplitudeEvent, IS_FRONTIER } from "../../config";
+
 export type MainLayoutMenu = {
   label: string;
   link: string;
   icon: string;
   iconSelected?: string;
   selectionTest?: RegExp;
-  userAnalyticsEvent?: UserEvent;
   amplitudeEvent?: AmplitudeEvent;
 };
 
@@ -32,7 +30,6 @@ export interface MainLayoutProps {
 export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
   ({ children, menus }) => {
     const router = useRouter();
-    const { trackEvent } = useMatomoAnalytics();
     const { logEvent } = useAmplitudeAnalytics();
     const { height, isMobile } = useWindowSize();
     const [_, isScrolledTop] = useWindowScroll();
@@ -66,7 +63,6 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                   icon,
                   iconSelected,
                   selectionTest,
-                  userAnalyticsEvent,
                   amplitudeEvent,
                 }) => {
                   const selected = selectionTest
@@ -87,9 +83,6 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
                           )}
                           target={selectionTest ? "_self" : "_blank"}
                           onClick={() => {
-                            if (userAnalyticsEvent) {
-                              trackEvent(userAnalyticsEvent);
-                            }
                             if (amplitudeEvent) {
                               logEvent(amplitudeEvent);
                             }
