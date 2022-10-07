@@ -89,7 +89,8 @@ export class RootStore {
     })();
 
     this.queriesExternalStore = new QueriesExternalStore(
-      makeIndexedKVStore("store_web_queries")
+      makeIndexedKVStore("store_web_queries"),
+      IS_TESTNET ? "https://api.testnet.osmosis.zone/" : undefined
     );
 
     this.queriesStore = new QueriesStore(

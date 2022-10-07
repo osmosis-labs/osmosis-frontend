@@ -6,7 +6,7 @@ import { ObservableQueryExternal } from "../store";
 import { ObservablePoolWithFeeMetrics, PoolFeesMetrics, PoolFees } from "./types";
 /** Queries Imperator pool fee history data. */
 export declare class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<PoolFees> {
-    constructor(kvStore: KVStore);
+    constructor(kvStore: KVStore, baseURL: string);
     readonly makePoolWithFeeMetrics: (pool: ObservableQueryPool, priceStore: IPriceStore) => ObservablePoolWithFeeMetrics;
     readonly getPoolFeesMetrics: (poolId: string, priceStore: IPriceStore) => PoolFeesMetrics;
     /** Get pool non-incentivized return from fees based on past 7d of activity, compounded. */
