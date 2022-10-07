@@ -543,5 +543,4 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     destCoinId: "juno-network",
   },
-  
 ];

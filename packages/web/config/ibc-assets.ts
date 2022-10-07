@@ -198,7 +198,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uregen",
     isVerified: true,
-    isUnstable: true,
   },
   {
     counterpartyChainId: "sentinelhub-2",
@@ -925,7 +924,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-5",
     coinMinimalDenom: "stujuno",
   },
-
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
