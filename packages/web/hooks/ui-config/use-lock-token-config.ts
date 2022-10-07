@@ -50,7 +50,6 @@ export function useLockTokenConfig(
           );
         } catch (e) {
           console.error(e);
-          console.log("Locktokens config: rejected");
           reject();
         }
       });

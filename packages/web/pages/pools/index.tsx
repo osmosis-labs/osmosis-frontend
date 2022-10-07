@@ -190,7 +190,6 @@ const Pools: NextPage = observer(function () {
       });
       setLockLpTokenModalPoolId(null);
     } else if (gauge) {
-      console.log("lock token");
       lockToken(gauge.duration).finally(() => {
         setLockLpTokenModalPoolId(null);
         setSuperfluidDelegateModalProps(null);
