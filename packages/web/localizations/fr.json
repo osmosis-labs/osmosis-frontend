@@ -256,7 +256,7 @@
       },
       "sort": {
         "symbol": "Devise",
-        "netword": "Réseau",
+        "network": "Réseau",
         "balance": "Fonds"
       }
     },

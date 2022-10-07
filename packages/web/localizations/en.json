@@ -256,7 +256,7 @@
       },
       "sort": {
         "symbol": "Symbol",
-        "netword": "Network",
+        "network": "Network",
         "balance": "Balance"
       }
     },
