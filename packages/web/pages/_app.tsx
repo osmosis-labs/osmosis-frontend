@@ -55,7 +55,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     ];
 
     if (PromotedLBPPoolIds.length > 0) {
-      menus.push({
+      m.push({
         label: "Bootstrap",
         link: "/bootstrap",
         icon: "/icons/pool-white.svg",
