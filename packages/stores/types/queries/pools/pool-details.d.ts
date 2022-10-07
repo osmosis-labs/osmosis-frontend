@@ -46,7 +46,7 @@ export declare class ObservableQueryPoolDetails {
     get totalValueLocked(): PricePretty;
     get lockableDurations(): Duration[];
     get longestDuration(): Duration;
-    get gauges(): {
+    get internalGauges(): {
         id: string;
         duration: Duration;
         apr: RatePretty;

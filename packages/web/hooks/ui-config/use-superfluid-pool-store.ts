@@ -7,7 +7,9 @@ import { useStore } from "../../stores";
 import { AmountConfig } from "@keplr-wallet/hooks";
 
 /** When provided a pool details store (which may need to be loaded), will generate superfluid pool info and actions. */
-export function useSuperfluidPool(poolDetails?: ObservableQueryPoolDetails): {
+export function useSuperfluidPoolStore(
+  poolDetails?: ObservableQueryPoolDetails
+): {
   superfluidPoolStore: ObservableQuerySuperfluidPool | undefined;
   superfluidDelegateToValidator: (
     validatorAddress: string,

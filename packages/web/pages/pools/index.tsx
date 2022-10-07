@@ -129,14 +129,14 @@ const Pools: NextPage = observer(function () {
   const [removeLiquidityModalPoolId, setRemoveLiquidityModalPoolId] = useState<
     string | null
   >(null);
-  const [lockTokensModalPoolId, setLockTokensModalPoolId] = useState<
-    string | null
-  >(null);
+  // const [lockTokensModalPoolId, setLockTokensModalPoolId] = useState<
+  //   string | null
+  // >(null);
   const quickActionProps = {
     quickAddLiquidity: (poolId: string) => setAddLiquidityModalPoolId(poolId),
     quickRemoveLiquidity: (poolId: string) =>
       setRemoveLiquidityModalPoolId(poolId),
-    quickLockTokens: (poolId: string) => setLockTokensModalPoolId(poolId),
+    quickLockTokens: (poolId: string) => {}, // setLockTokensModalPoolId(poolId),
   };
 
   return (
