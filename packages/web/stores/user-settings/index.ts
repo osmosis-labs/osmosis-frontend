@@ -30,3 +30,4 @@ export class UserSettings {
 }
 
 export * from "./show-dust";
+export * from "./language";

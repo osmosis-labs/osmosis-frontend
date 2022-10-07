@@ -34,7 +34,11 @@ import { PoolPriceRoutes } from "../config";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { OsmoPixelsQueries } from "./pixels";
 import { NavBarStore } from "./nav-bar";
-import { UserSettings, ShowDustUserSetting } from "./user-settings";
+import {
+  UserSettings,
+  ShowDustUserSetting,
+  LanguageUserSetting,
+} from "./user-settings";
 const semver = require("semver");
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -250,6 +254,7 @@ export class RootStore {
     );
 
     this.userSettings = new UserSettings([
+      new LanguageUserSetting("fr"),
       new ShowDustUserSetting(
         this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
           ?.symbol ?? "$"
