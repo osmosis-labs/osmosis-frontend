@@ -298,8 +298,6 @@ export class ObservableTransferUIConfig {
       (wallet) => wallet.isConnected
     );
 
-    console.log("launchWalletSelectModal");
-
     this._connectNonIbcWalletModal = {
       isOpen: true,
       initiallySelectedWalletId: alreadyConnectedWallet?.key,
