@@ -4,7 +4,6 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 const IS_FRONTIER = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
 
 module.exports = {
-  mode: "jit",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
