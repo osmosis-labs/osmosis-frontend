@@ -6,6 +6,7 @@ import { useStore } from "../../stores";
 import Image from "next/image";
 import { MenuDropdownIcon } from "./menu-dropdown-icon/menu-dropdown-icon";
 import { MenuDropdownIconItem } from "./types";
+import { MenuOptionsIconModal } from "../../modals";
 
 export type LanguageSelectProps = {
   options: MenuDropdownIconItem[];
@@ -71,12 +72,19 @@ export const LanguageSelect: FunctionComponent<LanguageSelectProps> = observer(
           </span>
         </button>
         {isMobile ? (
-          <div></div>
+          <MenuOptionsIconModal
+            currentValue={currentLanguage}
+            onSelect={onSelect}
+            isOpen={dropdownOpen}
+            onRequestClose={() => setDropdownOpen(false)}
+            options={options}
+            title="Language"
+          />
         ) : (
           <MenuDropdownIcon
             currentValue={currentLanguage}
             onSelect={onSelect}
-            open={dropdownOpen}
+            isOpen={dropdownOpen}
             options={options}
           />
         )}

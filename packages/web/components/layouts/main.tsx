@@ -63,11 +63,6 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
 
     useEffect(() => {
       if (currentLanguage) {
-        console.log(
-          "%cmain.tsx -> 66 BLUE: currentLanguage",
-          "background: #2196f3; color:#FFFFFF",
-          currentLanguage
-        );
         dayjs.locale(currentLanguage);
         setLanguage(currentLanguage);
       }

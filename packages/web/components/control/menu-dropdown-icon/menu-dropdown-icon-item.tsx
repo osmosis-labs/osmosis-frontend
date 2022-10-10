@@ -26,7 +26,7 @@ export const MenuDropdownIconItem: FunctionComponent<Props> = ({
   index,
   currentValue,
   optionLength,
-}) => {
+}: Props) => {
   return (
     <button
       className={classNames(
