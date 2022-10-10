@@ -125,7 +125,7 @@ const Pools: NextPage = observer(function () {
         onClick: () => setIsCreatingPool(true),
       },
     ];
-  }, []);
+  }, [t]);
 
   // pool quick action modals
   const [addLiquidityModalPoolId, setAddLiquidityModalPoolId] = useState<

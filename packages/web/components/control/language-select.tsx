@@ -7,6 +7,7 @@ import Image from "next/image";
 import { MenuDropdownIcon } from "./menu-dropdown-icon/menu-dropdown-icon";
 import { MenuDropdownIconItem } from "./types";
 import { MenuOptionsIconModal } from "../../modals";
+import { useTranslation } from "react-multi-lang";
 
 export type LanguageSelectProps = {
   options: MenuDropdownIconItem[];
@@ -16,6 +17,7 @@ export const LanguageSelect: FunctionComponent<LanguageSelectProps> = observer(
   ({ options }) => {
     const { isMobile } = useWindowSize();
     const { userSettings } = useStore();
+    const t = useTranslation();
     const [dropdownOpen, setDropdownOpen] = useBooleanWithWindowEvent(false);
     const currentLanguage =
       userSettings.getUserSettingById("language")?.state.language;
@@ -56,7 +58,7 @@ export const LanguageSelect: FunctionComponent<LanguageSelectProps> = observer(
                   />
                 )}
             </div>
-            <p className="mx-3">{currentOption?.display}</p>
+            <p className="mx-3">{t(currentOption?.display ?? "")}</p>
             <div className="flex items-center justify-center min-w-[24px] mr-3">
               {currentOption &&
                 currentOption.image &&
