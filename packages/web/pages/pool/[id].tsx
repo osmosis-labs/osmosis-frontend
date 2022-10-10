@@ -460,11 +460,6 @@ const Pool: FunctionComponent = observer(() => {
     ],
   });
 
-  console.log(
-    "%c[id].tsx -> 463 PINK: currentLanguage",
-    "background: #e91e63; color:#FFFFFF",
-    currentLanguage
-  );
   return (
     <main>
       <Head>
@@ -714,7 +709,7 @@ const Pool: FunctionComponent = observer(() => {
                     bonusValue={
                       rewardAmount?.maxDecimals(0).trim(true).toString() ?? "0"
                     }
-                    days={durationDays.local(currentLanguage).humanize()}
+                    days={durationDays.humanize()}
                     remainingEpochs={remainingEpochs.toString()}
                     isMobile={isMobile}
                   />

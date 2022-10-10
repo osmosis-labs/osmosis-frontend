@@ -24,7 +24,7 @@ export const MenuDropdownIcon: FunctionComponent<MenuDropdownIconProps> = ({
   return (
     <button
       className={classNames(
-        "px-[1rem] py-[0.5rem] cursor-pointer hover:bg-osmoverse-700 flex items-center ",
+        "px-4 py-2 cursor-pointer hover:bg-osmoverse-700 flex items-center ",
         {
           "text-rust-200": value === currentValue,
           "rounded-b-xlinset": index === optionLength - 1,
@@ -37,7 +37,7 @@ export const MenuDropdownIcon: FunctionComponent<MenuDropdownIconProps> = ({
       <div className="flex items-center justify-center min-w-[24px]">
         <Image src={image} width={24} height={24} alt={`${display}`} />
       </div>
-      <p className="ml-[0.75rem]">{display.toString()}</p>
+      <p className="ml-3">{display.toString()}</p>
     </button>
   );
 };

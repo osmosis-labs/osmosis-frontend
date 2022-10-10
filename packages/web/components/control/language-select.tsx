@@ -60,8 +60,8 @@ export const LanguageSelect: FunctionComponent<LanguageSelectProps> = observer(
                   />
                 )}
             </div>
-            <p className="mx-[0.75rem]">{currentOption?.display}</p>
-            <div className="flex items-center justify-center min-w-[24px] mr-[0.75rem]">
+            <p className="mx-3">{currentOption?.display}</p>
+            <div className="flex items-center justify-center min-w-[24px] mr-3">
               {currentOption &&
                 currentOption.image &&
                 currentOption.display && (
