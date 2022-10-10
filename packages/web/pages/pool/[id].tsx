@@ -55,7 +55,8 @@ import { useTranslation } from "react-multi-lang";
 const Pool: FunctionComponent = observer(() => {
   const router = useRouter();
   const t = useTranslation();
-  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+  const { chainStore, queriesStore, accountStore, priceStore, userSettings } =
+    useStore();
   const { isMobile } = useWindowSize();
 
   const { id: poolId } = router.query;
@@ -78,7 +79,8 @@ const Pool: FunctionComponent = observer(() => {
       router.push("/pools");
     }
   }, [poolExists]);
-
+  const currentLanguage =
+    userSettings.getUserSettingById("language")?.state.language;
   // initialize pool data stores once root pool store is loaded
   const [superfluidPoolStore, setSuperfluidPoolStore] =
     useState<ObservableQuerySuperfluidPool | null>(null);
@@ -706,7 +708,7 @@ const Pool: FunctionComponent = observer(() => {
                     bonusValue={
                       rewardAmount?.maxDecimals(0).trim(true).toString() ?? "0"
                     }
-                    days={durationDays.humanize()}
+                    days={durationDays.locale(currentLanguage).humanize()}
                     remainingEpochs={remainingEpochs.toString()}
                     isMobile={isMobile}
                   />
@@ -718,8 +720,8 @@ const Pool: FunctionComponent = observer(() => {
             <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
               {allowedLockupGauges.map(({ duration, superfluidApr }) => (
                 <PoolGaugeCard
-                  key={duration.humanize()}
-                  days={duration.humanize()}
+                  key={duration.locale(currentLanguage).humanize()}
+                  days={duration.locale(currentLanguage).humanize()}
                   apr={queryOsmosis.queryIncentivizedPools
                     .computeAPY(pool.id, duration, priceStore, fiat)
                     .maxDecimals(2)
@@ -953,7 +955,9 @@ const Pool: FunctionComponent = observer(() => {
                     superfluidPoolStore.superfluid.delegations.length > 0;
                   return [
                     {
-                      value: lockedAsset.duration.humanize(),
+                      value: lockedAsset.duration
+                        .locale(currentLanguage)
+                        .humanize(),
                       isSuperfluidDuration,
                     }, // Unbonding Duration
                     {
@@ -969,7 +973,9 @@ const Pool: FunctionComponent = observer(() => {
                     }, // Amount
                     {
                       ...lockedAsset,
-                      value: lockedAsset.duration.humanize(),
+                      value: lockedAsset.duration
+                        .locale(currentLanguage)
+                        .humanize(),
                       isSuperfluidDuration,
                     }, // Unbond All button
                   ].filter((_row, index) => (isMobile ? index !== 1 : true));
@@ -1013,7 +1019,7 @@ const Pool: FunctionComponent = observer(() => {
                   poolDetailStore?.userUnlockingAssets?.map(
                     ({ duration, amount, endTime }) => [
                       {
-                        value: duration.humanize(),
+                        value: duration.locale(currentLanguage).humanize(),
                       },
                       {
                         value: amount.maxDecimals(6).trim(true).toString(),
