@@ -173,7 +173,7 @@ const SettingsDropdown: FunctionComponent<{
             key={setting.id}
           >
             <span className="flex-nowrap subtitle1 text-osmoverse-100">
-              {setting.displayLabel}
+              {setting.getLabel(t)}
             </span>
             {setting.controlComponent(setting.state as any, setting.setState)}
           </div>

@@ -2,6 +2,7 @@ import { FunctionComponent } from "react";
 import Image from "next/image";
 import classNames from "classnames";
 import React from "react";
+import { useTranslation } from "react-multi-lang";
 
 interface Props {
   value: string;
@@ -27,6 +28,7 @@ export const MenuDropdownIconItem: FunctionComponent<Props> = ({
   currentValue,
   optionLength,
 }: Props) => {
+  const t = useTranslation();
   return (
     <button
       className={classNames(
@@ -43,7 +45,7 @@ export const MenuDropdownIconItem: FunctionComponent<Props> = ({
       <div className="flex items-center justify-center min-w-[24px]">
         <Image src={image} width={24} height={24} alt={`${display}`} />
       </div>
-      <p className="ml-3">{display.toString()}</p>
+      <p className="ml-3">{t(display.toString())}</p>
     </button>
   );
 };

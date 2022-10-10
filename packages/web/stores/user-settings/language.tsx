@@ -7,13 +7,20 @@ import { LanguageSelect, MenuDropdownIconItem } from "../../components/control";
 export type LanguageState = { language: string };
 
 const SUPPORTED_LANGUAGES: MenuDropdownIconItem[] = [
-  { value: "en", display: "English", image: "/images/flag-english.png" },
-  { value: "fr", display: "Français", image: "/images/flag-french.png" },
+  {
+    value: "en",
+    display: "settings.languages.en",
+    image: "/images/flag-english.png",
+  },
+  {
+    value: "fr",
+    display: "settings.languages.fr",
+    image: "/images/flag-french.png",
+  },
 ];
 
 export class LanguageUserSetting implements IUserSetting<LanguageState> {
   readonly id = "language";
-  readonly displayLabel: string;
   readonly controlComponent: FunctionComponent<LanguageState> = ({}) => {
     return (
       <div className="flex">
@@ -26,11 +33,14 @@ export class LanguageUserSetting implements IUserSetting<LanguageState> {
   protected _state: LanguageState;
 
   constructor(defaultLanguage: string) {
-    this.displayLabel = `Language`;
     makeObservable(this);
     this._state = {
       language: defaultLanguage,
     };
+  }
+
+  getLabel(t: Function): string {
+    return t("settings.titleLanguage");
   }
 
   @computed

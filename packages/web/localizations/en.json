@@ -304,7 +304,12 @@
   },
   "settings": {
     "title": "Settings",
-    "poolsLowLiquidity": "Show pools/assets < $ 0.01"
+    "titleLanguage": "Language",
+    "titleShowDust": "Show pools/assets < {fiatSymbol}0.01",
+    "languages": {
+      "fr": "French",
+      "en": "English"
+    }
   },
   "404": {
     "title": "Not found"
