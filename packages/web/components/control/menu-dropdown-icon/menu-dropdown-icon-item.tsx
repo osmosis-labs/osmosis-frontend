@@ -3,7 +3,7 @@ import Image from "next/image";
 import classNames from "classnames";
 import React from "react";
 
-export type MenuDropdownIconProps = {
+interface Props {
   value: string;
   display: string;
   currentValue: string;
@@ -11,8 +11,14 @@ export type MenuDropdownIconProps = {
   index: number;
   optionLength: number;
   onSelect: ({ value }: { value: string }) => void;
+}
+
+export type MenuDropdownIconItem = {
+  value: string;
+  display: string;
+  image: string;
 };
-export const MenuDropdownIcon: FunctionComponent<MenuDropdownIconProps> = ({
+export const MenuDropdownIconItem: FunctionComponent<Props> = ({
   value,
   display,
   image,

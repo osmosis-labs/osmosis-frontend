@@ -55,10 +55,7 @@ import { useTranslation } from "react-multi-lang";
 const Pool: FunctionComponent = observer(() => {
   const router = useRouter();
   const t = useTranslation();
-  const { chainStore, queriesStore, accountStore, priceStore, userSettings } =
-    useStore();
-  const currentLanguage: string | undefined =
-    userSettings.getUserSettingById("language")?.state.language;
+  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
   const { isMobile } = useWindowSize();
 
   const { id: poolId } = router.query;

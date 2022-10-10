@@ -1,24 +1,19 @@
-import classNames from "classnames";
 import React, { useCallback } from "react";
 import { FunctionComponent } from "react";
-import { useBooleanWithWindowEvent } from "../../hooks";
+import { useBooleanWithWindowEvent, useWindowSize } from "../../hooks";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import Image from "next/image";
-import { MenuDropdownIcon } from "./menu-dropdown-icon";
-
-export type LanguageOption = {
-  value: string;
-  display: string;
-  image: string;
-};
+import { MenuDropdownIcon } from "./menu-dropdown-icon/menu-dropdown-icon";
+import { MenuDropdownIconItem } from "./types";
 
 export type LanguageSelectProps = {
-  options: LanguageOption[];
+  options: MenuDropdownIconItem[];
 };
 
 export const LanguageSelect: FunctionComponent<LanguageSelectProps> = observer(
   ({ options }) => {
+    const { isMobile } = useWindowSize();
     const { userSettings } = useStore();
     const [dropdownOpen, setDropdownOpen] = useBooleanWithWindowEvent(false);
     const currentLanguage =
@@ -75,29 +70,16 @@ export const LanguageSelect: FunctionComponent<LanguageSelectProps> = observer(
             </div>
           </span>
         </button>
-        <div
-          className={classNames(
-            "absolute flex flex-col bg-osmoverse-900 border border-osmoverse-600 select-none z-[1000] rounded-xl right-0",
-            {
-              hidden: !dropdownOpen,
-            }
-          )}
-        >
-          {options.map(({ value, display, image }, index) => {
-            return (
-              <MenuDropdownIcon
-                key={index}
-                value={value}
-                display={display}
-                image={image}
-                index={index}
-                currentValue={currentLanguage}
-                optionLength={options.length}
-                onSelect={onSelect}
-              />
-            );
-          })}
-        </div>
+        {isMobile ? (
+          <div></div>
+        ) : (
+          <MenuDropdownIcon
+            currentValue={currentLanguage}
+            onSelect={onSelect}
+            open={dropdownOpen}
+            options={options}
+          />
+        )}
       </div>
     );
   }

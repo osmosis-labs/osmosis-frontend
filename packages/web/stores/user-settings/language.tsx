@@ -2,11 +2,11 @@ import { action, makeObservable, observable, computed } from "mobx";
 import { FunctionComponent } from "react";
 import { IUserSetting } from ".";
 import React from "react";
-import { LanguageOption, LanguageSelect } from "../../components/control";
+import { LanguageSelect, MenuDropdownIconItem } from "../../components/control";
 
 export type LanguageState = { language: string };
 
-const SUPPORTED_LANGUAGES: LanguageOption[] = [
+const SUPPORTED_LANGUAGES: MenuDropdownIconItem[] = [
   { value: "en", display: "English", image: "/images/flag-english.png" },
   { value: "fr", display: "Français", image: "/images/flag-french.png" },
 ];

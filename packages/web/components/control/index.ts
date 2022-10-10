@@ -10,5 +10,5 @@ export * from "./tab-box";
 export * from "./toggle";
 export * from "./token-select";
 export * from "./language-select";
-export * from "./menu-dropdown-icon";
+export * from "./menu-dropdown-icon/menu-dropdown-icon";
 export * from "./types";
