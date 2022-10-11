@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -108,7 +109,9 @@ const Assets: NextPage = observer(() => {
   }, [nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()]);
 
   // set nav bar ctas
+  const router = useRouter();
   useEffect(() => {
+    console.log("set buttons");
     navBarStore.callToActionButtons = [
       {
         label: "Deposit",
@@ -125,7 +128,7 @@ const Assets: NextPage = observer(() => {
         },
       },
     ];
-  }, []);
+  }, [router.pathname]);
 
   return (
     <main className="flex flex-col gap-20 bg-background p-8">
