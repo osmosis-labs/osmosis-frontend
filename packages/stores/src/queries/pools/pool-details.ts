@@ -81,7 +81,7 @@ export class ObservableQueryPoolDetails {
   }
 
   @computed
-  get gauges() {
+  get internalGauges() {
     return this.queries.queryLockableDurations.lockableDurations
       .map((duration) => {
         const gaugeId =

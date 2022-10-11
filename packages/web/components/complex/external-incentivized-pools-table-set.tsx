@@ -1,4 +1,4 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useCallback } from "react";
@@ -14,13 +14,21 @@ import { useStore } from "../../stores";
 import { PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { RowDef, Table } from "../table";
-import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
+import {
+  MetricLoaderCell,
+  PoolCompositionCell,
+  PoolQuickActionCell,
+} from "../table/cells";
 import { Breakpoint } from "../types";
 import { CompactPoolTableDisplay } from "./compact-pool-table-display";
 import { POOLS_PER_PAGE } from ".";
 
-export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
-  () => {
+export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
+  quickAddLiquidity: (poolId: string) => void;
+  quickRemoveLiquidity: (poolId: string) => void;
+  quickLockTokens: (poolId: string) => void;
+}> = observer(
+  ({ quickAddLiquidity, quickRemoveLiquidity, quickLockTokens }) => {
     const {
       chainStore,
       queriesExternalStore,
@@ -36,13 +44,8 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
     const account = accountStore.getAccount(chainId);
 
-    const pools = Object.keys(ExternalIncentiveGaugeAllowList).map(
-      (poolId: string) => {
-        const pool = queryOsmosis.queryGammPools.getPool(poolId);
-        if (pool) {
-          return pool;
-        }
-      }
+    const pools = Object.keys(ExternalIncentiveGaugeAllowList).map((poolId) =>
+      queryOsmosis.queryGammPools.getPool(poolId)
     );
 
     const externalIncentivizedPools = useMemo(
@@ -76,7 +79,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             return maxRemainingEpoch > 0;
           }
         ),
-      [pools, queryOsmosis]
+      [pools]
     );
 
     const externalIncentivizedPoolsWithMetrics = useMemo(
@@ -107,6 +110,14 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             }
           }
 
+          const poolTvl = pool.computeTotalValueLocked(priceStore);
+          const myLiquidity = poolTvl.mul(
+            queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+              account.bech32Address,
+              pool.id
+            )
+          );
+
           return {
             pool,
             ...queryExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
@@ -115,14 +126,17 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             ),
             liquidity: pool.computeTotalValueLocked(priceStore),
             epochsRemaining: maxRemainingEpoch,
-            myLiquidity: pool
-              .computeTotalValueLocked(priceStore)
-              .mul(
-                queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-                  account.bech32Address,
-                  pool.id
+            myLiquidity,
+            myAvailableLiquidity: myLiquidity.toDec().isZero()
+              ? new PricePretty(
+                  priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+                  0
                 )
-              ),
+              : poolTvl.mul(
+                  queryOsmosis.queryGammPoolShare
+                    .getAvailableGammShare(account.bech32Address, pool.id)
+                    .quo(pool.totalShare)
+                ),
             apr: queryOsmosis.queryIncentivizedPools
               .computeMostAPY(pool.id, priceStore)
               .maxDecimals(2),
@@ -141,8 +155,9 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       [
         chainId,
         externalIncentivizedPools,
-        queryOsmosis,
-        queryExternal,
+        queryOsmosis.queryIncentivizedPools.response,
+        queryExternal.queryGammPoolFeeMetrics.response,
+        queryOsmosis.queryGammPools.response,
         priceStore,
         account,
         chainStore,
@@ -268,6 +283,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
           sort: makeSortMechanism("myLiquidity"),
           collapseAt: Breakpoint.LG,
         },
+        { id: "quickActions", display: "", displayCell: PoolQuickActionCell },
       ],
       [makeSortMechanism]
     );
@@ -318,9 +334,23 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             },
             { value: poolWithMetrics.epochsRemaining?.toString() },
             { value: poolWithMetrics.myLiquidity?.toString() },
+            {
+              poolId,
+              onAddLiquidity: () => quickAddLiquidity(poolId),
+              onRemoveLiquidity: !poolWithMetrics.myAvailableLiquidity
+                .toDec()
+                .isZero()
+                ? () => quickRemoveLiquidity(poolId)
+                : undefined,
+              onLockTokens: !poolWithMetrics.myAvailableLiquidity
+                .toDec()
+                .isZero()
+                ? () => quickLockTokens(poolId)
+                : undefined,
+            },
           ];
         }),
-      [allData, queryOsmosis]
+      [allData, queryOsmosis.queryIncentivizedPools.isAprFetching]
     );
 
     if (isMobile) {

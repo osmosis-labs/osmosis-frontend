@@ -35,21 +35,23 @@ export const NavBar: FunctionComponent<
     <>
       <div
         className={classNames(
-          "fixed z-[1000] flex place-content-between items-center bg-osmoverse-900 h-navbar w-[calc(100vw_-_12.875rem)] px-8",
+          "fixed z-[100] flex place-content-between items-center bg-osmoverse-900 h-navbar w-[calc(100vw_-_12.875rem)] px-8",
           className
         )}
       >
         <div className="flex items-center gap-9">
           <h4>{navBarStore.title || title}</h4>
-          {navBarStore.callToActionButtons.map((button, index) => (
-            <NewButton
-              mode={index > 0 ? "secondary" : undefined}
-              key={index}
-              {...button}
-            >
-              <span className="subtitle1 mx-auto">{button.label}</span>
-            </NewButton>
-          ))}
+          <div className="flex items-center gap-3">
+            {navBarStore.callToActionButtons.map((button, index) => (
+              <NewButton
+                mode={index > 0 ? "secondary" : undefined}
+                key={index}
+                {...button}
+              >
+                <span className="subtitle1 mx-auto">{button.label}</span>
+              </NewButton>
+            ))}
+          </div>
         </div>
         <div className="flex gap-3 items-center">
           <div className="relative">

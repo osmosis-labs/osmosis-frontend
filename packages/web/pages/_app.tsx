@@ -2,6 +2,7 @@ import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 import Head from "next/head";
 import type { AppProps } from "next/app";
+import { useMemo } from "react";
 import { enableStaticRendering } from "mobx-react-lite";
 import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
@@ -29,61 +30,63 @@ dayjs.extend(utc);
 enableStaticRendering(typeof window === "undefined");
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const menus: MainLayoutMenu[] = [
-    {
-      label: "Swap",
-      link: "/",
-      icon: IS_FRONTIER ? "/icons/trade-white.svg" : "/icons/trade.svg",
-      iconSelected: "/icons/trade-selected.svg",
-      selectionTest: /\/$/,
-    },
-    {
-      label: "Pools",
-      link: "/pools",
-      icon: IS_FRONTIER ? "/icons/pool-white.svg" : "/icons/pool.svg",
-      iconSelected: "/icons/pool-selected.svg",
-      selectionTest: /\/pools/,
-    },
-    {
-      label: "Assets",
-      link: "/assets",
-      icon: IS_FRONTIER ? "/icons/asset-white.svg" : "/icons/asset.svg",
-      iconSelected: "/icons/asset-selected.svg",
-      selectionTest: /\/assets/,
-    },
-  ];
+  const menus = useMemo(() => {
+    let m: MainLayoutMenu[] = [
+      {
+        label: "Swap",
+        link: "/",
+        icon: IS_FRONTIER ? "/icons/trade-white.svg" : "/icons/trade.svg",
+        iconSelected: "/icons/trade-white.svg",
+        selectionTest: /\/$/,
+      },
+      {
+        label: "Pools",
+        link: "/pools",
+        icon: IS_FRONTIER ? "/icons/pool-white.svg" : "/icons/pool.svg",
+        iconSelected: "/icons/pool-white.svg",
+        selectionTest: /\/pools/,
+      },
+      {
+        label: "Assets",
+        link: "/assets",
+        icon: IS_FRONTIER ? "/icons/asset-white.svg" : "/icons/asset.svg",
+        iconSelected: "/icons/asset-white.svg",
+        selectionTest: /\/assets/,
+      },
+    ];
 
-  if (PromotedLBPPoolIds.length > 0) {
-    menus.push({
-      label: "Bootstrap",
-      link: "/bootstrap",
-      icon: "/icons/pool-white.svg",
-      selectionTest: /\/bootstrap/,
-    });
-  }
+    if (PromotedLBPPoolIds.length > 0) {
+      m.push({
+        label: "Bootstrap",
+        link: "/bootstrap",
+        icon: "/icons/pool-white.svg",
+        selectionTest: /\/bootstrap/,
+      });
+    }
 
-  menus.push(
-    ...[
+    m.push(
       {
         label: "Stake",
         link: "https://wallet.keplr.app/chains/osmosis",
-        icon: IS_FRONTIER ? "/icons/ticket-white.svg" : "/icons/ticket.svg",
+        icon: "/icons/ticket-white.svg",
         amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
       },
       {
         label: "Vote",
         link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
-        icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
+        icon: "/icons/vote-white.svg",
         amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
       },
       {
         label: "Info",
         link: "https://info.osmosis.zone",
-        icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
+        icon: "/icons/chart-white.svg",
         amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
-      },
-    ]
-  );
+      }
+    );
+
+    return m;
+  }, []);
 
   useAmplitudeAnalytics({ init: true });
 
@@ -127,14 +130,14 @@ function MyApp({ Component, pageProps }: AppProps) {
             message="Transactions are temporarily disabled"
           />
         )}
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+          }}
+          transition={Bounce}
+        />
         <MainLayout menus={menus}>
           <Component {...pageProps} />
-          <ToastContainer
-            toastStyle={{
-              backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
-            }}
-            transition={Bounce}
-          />
         </MainLayout>
       </StoreProvider>
     </GetKeplrProvider>
