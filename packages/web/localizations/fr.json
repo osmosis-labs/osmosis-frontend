@@ -77,7 +77,23 @@
     },
     "createPool": {
       "title": "Créer un nouveau bassin",
-      "button": "Créer un nouveau bassin"
+      "button": "Créer un nouveau bassin",
+      "step": {
+        "one": "Étape {step} / {nbStep} - Configurer le ratio des jetons",
+        "two": "Étape {step} / {nbStep} - Entrer le montant à ajouter",
+        "three": "Étape {step} / {nbStep} - Comfirmer le ratio du bassin et le montant des jetons"
+      },
+      "infoMessage": "Frais de création de bassin",
+      "infoCaption": "Transféré au bassin communautaire d'Osmosis",
+      "buttonCreate": "Créer le bassin",
+      "buttonNext": "Suivant",
+      "buttonBack": "Retour",
+      "buttonAddToken": "Ajouter un nouveau jeton",
+      "buttonMAX": "MAX",
+      "amount": "Montant",
+      "token": "Jeton",
+      "swapFee": "Définit les frais de swap",
+      "undersandCost": "Je comprends que la création d'un nouveau pool coûtera {POOL_CREATION_FEE}."
     }
   },
   "pool": {
@@ -327,5 +343,6 @@
   "Request rejected": "Demande rejetée",
   "Amount is empty": "Le montant est vide",
   "Insufficient amount": "Montant insuffisant",
-  "Amount is zero": "Le montant est de zéro."
+  "Amount is zero": "Le montant est de zéro.",
+  "Minimum of 2 assets required": "Minimum de 2 actifs requis"
 }

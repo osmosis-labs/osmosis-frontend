@@ -77,7 +77,23 @@
     },
     "createPool": {
       "title": "Create New Pool",
-      "button": "Create New Pool"
+      "button": "Create New Pool",
+      "step": {
+        "one": "Step {step} / {nbStep} - Set token ratios",
+        "two": "Step {step} / {nbStep} - Input amount to add",
+        "three": "Step {step} / {nbStep} - Confirm pool ratio and token amount"
+      },
+      "infoMessage": "Pool Creation Fee",
+      "infoCaption": "Transferred to the Osmosis community pool",
+      "buttonCreate": "Create Pool",
+      "buttonNext": "Next",
+      "buttonBack": "Previous",
+      "buttonAddToken": "Add new token",
+      "buttonMAX": "MAX",
+      "amount": "Amount",
+      "token": "Token",
+      "swapFee": "Set Swap Fee",
+      "undersandCost": "I understand that creating a new pool will cost {POOL_CREATION_FEE}."
     }
   },
   "pool": {
@@ -327,5 +343,6 @@
   "Request rejected": "Request rejected",
   "Amount is empty": "Amount is empty",
   "Insufficient amount": "Insufficient amount",
-  "Amount is zero": "Amount is zero"
+  "Amount is zero": "Amount is zero",
+  "Minimum of 2 assets required": "Minimum of 2 assets required"
 }

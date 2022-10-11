@@ -6,11 +6,13 @@ import { Button } from "../../../buttons";
 import { StepBase } from "./step-base";
 import { StepProps } from "./types";
 import { useWindowSize } from "../../../../hooks";
+import { useTranslation } from "react-multi-lang";
 
 export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
   (props) => {
     const { createPoolConfig: config } = props;
     const { isMobile } = useWindowSize();
+    const t = useTranslation();
 
     return (
       <StepBase step={2} {...props}>
@@ -68,7 +70,13 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                       size="xs"
                       onClick={() => amountConfig.setFraction(1)}
                     >
-                      {isMobile ? <span className="text-xxs">MAX</span> : "MAX"}
+                      {isMobile ? (
+                        <span className="text-xxs">
+                          {t("pools.createPool.buttonMAX")}
+                        </span>
+                      ) : (
+                        t("pools.createPool.buttonMAX")
+                      )}
                     </Button>
                   </div>
                   <div className="flex place-content-end items-center gap-2.5">
