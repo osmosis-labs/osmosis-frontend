@@ -2,10 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent } from "react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
 import {
   useWindowSize,
   useWindowScroll,
@@ -32,7 +31,6 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
   ({ children, menus }) => {
     const router = useRouter();
     const { logEvent } = useAmplitudeAnalytics();
-    const { navBarStore } = useStore();
 
     const { height, isMobile } = useWindowSize();
     const [_, isScrolledTop] = useWindowScroll();
@@ -47,14 +45,6 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
     const selectedMenuItem = menus.find(
       ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
     );
-
-    // clear nav bar store on route change
-    useEffect(() => {
-      router.events.on(
-        "routeChangeStart",
-        () => (navBarStore.callToActionButtons = [])
-      );
-    }, []);
 
     return (
       <React.Fragment>

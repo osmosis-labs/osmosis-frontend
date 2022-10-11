@@ -1,5 +1,4 @@
 import type { NextPage } from "next";
-import { useRouter } from "next/router";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -26,7 +25,11 @@ import {
   TransferAssetSelectModal,
 } from "../../modals";
 import { ConnectNonIbcWallet, PreTransferModal } from "../../modals";
-import { useWindowSize, useAmplitudeAnalytics } from "../../hooks";
+import {
+  useWindowSize,
+  useAmplitudeAnalytics,
+  useNavBarCtas,
+} from "../../hooks";
 import { WalletConnectQRModal } from "../../modals";
 import { EventName } from "../../config";
 
@@ -40,7 +43,6 @@ const Assets: NextPage = observer(() => {
       osmosis: { chainId },
     },
     accountStore,
-    navBarStore,
   } = useStore();
   const { nativeBalances, ibcBalances } = assetsStore;
   const account = accountStore.getAccount(chainId);
@@ -109,26 +111,22 @@ const Assets: NextPage = observer(() => {
   }, [nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()]);
 
   // set nav bar ctas
-  const router = useRouter();
-  useEffect(() => {
-    console.log("set buttons");
-    navBarStore.callToActionButtons = [
-      {
-        label: "Deposit",
-        onClick: () => {
-          transferConfig.startTransfer("deposit");
-          logEvent([EventName.Assets.depositClicked]);
-        },
+  useNavBarCtas([
+    {
+      label: "Deposit",
+      onClick: () => {
+        transferConfig.startTransfer("deposit");
+        logEvent([EventName.Assets.depositClicked]);
       },
-      {
-        label: "Withdraw",
-        onClick: () => {
-          transferConfig.startTransfer("withdraw");
-          logEvent([EventName.Assets.withdrawClicked]);
-        },
+    },
+    {
+      label: "Withdraw",
+      onClick: () => {
+        transferConfig.startTransfer("withdraw");
+        logEvent([EventName.Assets.withdrawClicked]);
       },
-    ];
-  }, [router.pathname]);
+    },
+  ]);
 
   return (
     <main className="flex flex-col gap-20 bg-background p-8">
