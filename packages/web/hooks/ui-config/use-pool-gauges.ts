@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { Duration } from "dayjs/plugin/duration";
 import { RatePretty, CoinPretty } from "@keplr-wallet/unit";
-import { usePoolDetailStore } from "./use-pool-detail-store";
-import { useSuperfluidPoolStore } from "./use-superfluid-pool-store";
+import { usePoolDetailConfig } from "./use-pool-detail-config";
+import { useSuperfluidPoolConfig } from "./use-superfluid-pool-config";
 import { useStore } from "../../stores";
 import { ExternalIncentiveGaugeAllowList } from "../../config";
 
@@ -33,17 +33,17 @@ export function usePoolGauges(poolId?: string): {
     osmosis: { chainId },
   } = chainStore;
 
-  const { poolDetailStore, pool } = usePoolDetailStore(poolId);
-  const { superfluidPoolStore } = useSuperfluidPoolStore(poolDetailStore);
+  const { poolDetailConfig, pool } = usePoolDetailConfig(poolId);
+  const { superfluidPoolConfig } = useSuperfluidPoolConfig(poolDetailConfig);
 
   const allowedGauges =
     pool && ExternalIncentiveGaugeAllowList[pool.id]
-      ? poolDetailStore?.queryAllowedExternalGauges(
+      ? poolDetailConfig?.queryAllowedExternalGauges(
           (denom) => chainStore.getChain(chainId).findCurrency(denom),
           ExternalIncentiveGaugeAllowList[pool.id]
         ) ?? []
       : [];
-  const externalGauges = poolDetailStore?.allExternalGauges ?? [];
+  const externalGauges = poolDetailConfig?.allExternalGauges ?? [];
   const allAggregatedGauges: Gauge[] | undefined = useMemo(() => {
     const gaugeDurationMap = new Map<number, Gauge>();
 
@@ -58,7 +58,7 @@ export function usePoolGauges(poolId?: string): {
     });
 
     // overwrite any external gauges with internal gauges w/ apr calcs
-    superfluidPoolStore?.gaugesWithSuperfluidApr.forEach((gauge) => {
+    superfluidPoolConfig?.gaugesWithSuperfluidApr.forEach((gauge) => {
       gaugeDurationMap.set(gauge.duration.asSeconds(), gauge);
     });
 
@@ -68,7 +68,7 @@ export function usePoolGauges(poolId?: string): {
   }, [
     allowedGauges,
     externalGauges,
-    superfluidPoolStore?.gaugesWithSuperfluidApr,
+    superfluidPoolConfig?.gaugesWithSuperfluidApr,
   ]);
   const allowedAggregatedGauges = useMemo(() => {
     const gaugeDurationMap = new Map<number, Gauge>();
@@ -84,19 +84,19 @@ export function usePoolGauges(poolId?: string): {
     });
 
     // overwrite any external gauges with internal gauges w/ apr calcs
-    superfluidPoolStore?.gaugesWithSuperfluidApr.forEach((gauge) => {
+    superfluidPoolConfig?.gaugesWithSuperfluidApr.forEach((gauge) => {
       gaugeDurationMap.set(gauge.duration.asSeconds(), gauge);
     });
 
     return Array.from(gaugeDurationMap.values()).sort(
       (a, b) => a.duration.asSeconds() - b.duration.asSeconds()
     );
-  }, [allowedGauges, superfluidPoolStore?.gaugesWithSuperfluidApr]);
+  }, [allowedGauges, superfluidPoolConfig?.gaugesWithSuperfluidApr]);
 
   return {
     allAggregatedGauges,
     allowedAggregatedGauges,
-    internalGauges: poolDetailStore?.internalGauges ?? [],
+    internalGauges: poolDetailConfig?.internalGauges ?? [],
     externalGauges,
   };
 }

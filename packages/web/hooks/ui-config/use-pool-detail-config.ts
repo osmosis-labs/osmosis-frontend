@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ObservableQueryPoolDetails } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 
-export function usePoolDetailStore(poolId?: string) {
+export function usePoolDetailConfig(poolId?: string) {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const { chainId } = chainStore.osmosis;
@@ -13,11 +13,11 @@ export function usePoolDetailStore(poolId?: string) {
 
   const pool = poolId ? queryOsmosis.queryGammPools.getPool(poolId) : undefined;
 
-  const [poolDetailStore, setPoolDetailStore] =
+  const [poolDetailConfig, setPoolDetailConfig] =
     useState<ObservableQueryPoolDetails | null>(null);
   useEffect(() => {
-    if (!poolDetailStore && pool && fiat) {
-      setPoolDetailStore(
+    if (!poolDetailConfig && pool && fiat) {
+      setPoolDetailConfig(
         new ObservableQueryPoolDetails(
           bech32Address,
           fiat,
@@ -27,7 +27,7 @@ export function usePoolDetailStore(poolId?: string) {
         )
       );
     }
-  }, [pool, poolDetailStore, bech32Address, fiat, queryOsmosis, priceStore]);
+  }, [pool, poolDetailConfig, bech32Address, fiat, queryOsmosis, priceStore]);
 
-  return { poolDetailStore: poolDetailStore ?? undefined, pool };
+  return { poolDetailConfig: poolDetailConfig ?? undefined, pool };
 }

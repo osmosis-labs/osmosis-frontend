@@ -27,8 +27,8 @@ import {
   useCreatePoolConfig,
   useAmplitudeAnalytics,
   useLockTokenConfig,
-  usePoolDetailStore,
-  useSuperfluidPoolStore,
+  usePoolDetailConfig,
+  useSuperfluidPoolConfig,
   usePoolGauges,
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
@@ -150,16 +150,14 @@ const Pools: NextPage = observer(function () {
   };
 
   // lock tokens (& possibly select sfs validator) quick action state
-  const { poolDetailStore } = usePoolDetailStore(
+  const { poolDetailConfig } = usePoolDetailConfig(
     lockLpTokenModalPoolId ?? undefined
   );
   const { allAggregatedGauges } = usePoolGauges(
     lockLpTokenModalPoolId ?? undefined
   );
-  const {
-    superfluidPoolStore: _,
-    superfluidDelegateToValidator: onSuperfluidDelegateToValidator,
-  } = useSuperfluidPoolStore(poolDetailStore);
+  const { superfluidPoolConfig: _, superfluidDelegateToValidator } =
+    useSuperfluidPoolConfig(poolDetailConfig);
   const selectedPoolShareCurrency = lockLpTokenModalPoolId
     ? queryOsmosis.queryGammPoolShare.getShareCurrency(lockLpTokenModalPoolId)
     : undefined;
@@ -180,7 +178,7 @@ const Pools: NextPage = observer(function () {
           lockLpTokenConfig.getAmountPrimitive().amount
         ),
         onSelectValidator: (address) =>
-          onSuperfluidDelegateToValidator(address, lockLpTokenConfig).finally(
+          superfluidDelegateToValidator(address, lockLpTokenConfig).finally(
             () => {
               setSuperfluidDelegateModalProps(null);
               lockLpTokenConfig.setAmount("");
