@@ -25,11 +25,7 @@ import {
   TransferAssetSelectModal,
 } from "../../modals";
 import { ConnectNonIbcWallet, PreTransferModal } from "../../modals";
-import {
-  useWindowSize,
-  useAmplitudeAnalytics,
-  useNavBarCtas,
-} from "../../hooks";
+import { useWindowSize, useAmplitudeAnalytics, useNavBar } from "../../hooks";
 import { WalletConnectQRModal } from "../../modals";
 import { EventName } from "../../config";
 
@@ -111,22 +107,24 @@ const Assets: NextPage = observer(() => {
   }, [nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()]);
 
   // set nav bar ctas
-  useNavBarCtas([
-    {
-      label: "Deposit",
-      onClick: () => {
-        transferConfig.startTransfer("deposit");
-        logEvent([EventName.Assets.depositClicked]);
+  useNavBar({
+    ctas: [
+      {
+        label: "Deposit",
+        onClick: () => {
+          transferConfig.startTransfer("deposit");
+          logEvent([EventName.Assets.depositClicked]);
+        },
       },
-    },
-    {
-      label: "Withdraw",
-      onClick: () => {
-        transferConfig.startTransfer("withdraw");
-        logEvent([EventName.Assets.withdrawClicked]);
+      {
+        label: "Withdraw",
+        onClick: () => {
+          transferConfig.startTransfer("withdraw");
+          logEvent([EventName.Assets.withdrawClicked]);
+        },
       },
-    },
-  ]);
+    ],
+  });
 
   return (
     <main className="flex flex-col gap-20 bg-background p-8">

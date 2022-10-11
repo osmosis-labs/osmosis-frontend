@@ -30,7 +30,7 @@ import {
   usePoolDetailConfig,
   useSuperfluidPoolConfig,
   usePoolGauges,
-  useNavBarCtas,
+  useNavBar,
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
@@ -53,9 +53,11 @@ const Pools: NextPage = observer(function () {
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });
-  useNavBarCtas([
-    { label: "Create new Pool", onClick: () => setIsCreatingPool(true) },
-  ]);
+  useNavBar({
+    ctas: [
+      { label: "Create new Pool", onClick: () => setIsCreatingPool(true) },
+    ],
+  });
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
