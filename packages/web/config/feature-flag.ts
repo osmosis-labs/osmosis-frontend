@@ -44,14 +44,14 @@ export const PromotedLBPPoolIds: {
   ibcHashDenom: string;
 }[] = IS_FRONTIER
   ? [
-      {
+/*      {
         poolId: "813",
         name: "REBUS Liquidity Bootstrapping Pool",
         ibcHashDenom: DenomHelper.ibcDenom(
           [{ portId: "transfer", channelId: "channel-355" }],
           "arebus"
         ),
-      },
+      },*/
     ]
   : [];
 
