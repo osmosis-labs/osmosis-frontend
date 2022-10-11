@@ -204,7 +204,7 @@
       "priceImpact": "Price impact",
       "actionAddLiquidity": "Add liquidity",
       "actionRemoveLiquidity": "Remove liquidity",
-      "actionLockTokens": "Lock Tokens"
+      "actionLockTokens": "Lock Shares"
     },
     "superfluidValidator": {
       "title": "Select Superfluid Validator",

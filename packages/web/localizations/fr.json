@@ -204,7 +204,7 @@
       "priceImpact": "Impact du prix",
       "actionAddLiquidity": "Ajouter de la liquidité",
       "actionRemoveLiquidity": "Retirer de la liquidité",
-      "actionLockTokens": "Déléguer des jetons"
+      "actionLockTokens": "Vérouiller le partage"
     },
     "superfluidValidator": {
       "title": "Sélection validateur superfluide",

@@ -39,6 +39,7 @@ type PoolWithMetrics = {
   pool: ObservableQueryPool;
   liquidity: PricePretty;
   myLiquidity: PricePretty;
+  myAvailableLiquidity: PricePretty;
   apr?: RatePretty;
   poolName: string;
   networkNames: string;
@@ -53,11 +54,13 @@ export const AllPoolsTableSet: FunctionComponent<{
   tableSet?: "incentivized-pools" | "all-pools";
   quickAddLiquidity: (poolId: string) => void;
   quickRemoveLiquidity: (poolId: string) => void;
+  quickLockTokens: (poolId: string) => void;
 }> = observer(
   ({
     tableSet = "incentivized-pools",
     quickAddLiquidity,
     quickRemoveLiquidity,
+    quickLockTokens,
   }) => {
     const {
       chainStore,
@@ -111,36 +114,46 @@ export const AllPoolsTableSet: FunctionComponent<{
 
     const allPoolsWithMetrics: PoolWithMetrics[] = useMemo(
       () =>
-        allPools.map((pool) => ({
-          pool,
-          ...queriesExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
-            pool.id,
-            priceStore
-          ),
-          liquidity: pool.computeTotalValueLocked(priceStore),
-          myLiquidity: pool
-            .computeTotalValueLocked(priceStore)
-            .mul(
-              queriesOsmosis.queryGammPoolShare.getAllGammShareRatio(
-                account.bech32Address,
-                pool.id
-              )
-            ),
-          poolName: pool.poolAssets
-            .map((asset) => asset.amount.currency.coinDenom)
-            .join("/"),
-          networkNames: pool.poolAssets
-            .map(
-              (asset) =>
-                chainStore.getChainFromCurrency(asset.amount.denom)
-                  ?.chainName ?? ""
+        allPools.map((pool) => {
+          const poolTvl = pool.computeTotalValueLocked(priceStore);
+          const myLiquidity = poolTvl.mul(
+            queriesOsmosis.queryGammPoolShare.getAllGammShareRatio(
+              account.bech32Address,
+              pool.id
             )
-            .join(" "),
-        })),
+          );
+
+          return {
+            pool,
+            ...queriesExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+              pool.id,
+              priceStore
+            ),
+            liquidity: pool.computeTotalValueLocked(priceStore),
+            myLiquidity,
+            myAvailableLiquidity: myLiquidity.toDec().isZero()
+              ? new PricePretty(fiat, 0)
+              : poolTvl.mul(
+                  queriesOsmosis.queryGammPoolShare
+                    .getAvailableGammShare(account.bech32Address, pool.id)
+                    .quo(pool.totalShare)
+                ),
+            poolName: pool.poolAssets
+              .map((asset) => asset.amount.currency.coinDenom)
+              .join("/"),
+            networkNames: pool.poolAssets
+              .map(
+                (asset) =>
+                  chainStore.getChainFromCurrency(asset.amount.denom)
+                    ?.chainName ?? ""
+              )
+              .join(" "),
+          };
+        }),
       [
-        // note: mobx only causes rerenders for values referenced *during* render. I.e. *not* within useEffect/useCallback/useMemo hooks
+        // note: mobx only causes rerenders for values referenced *during* render. I.e. *not* within useEffect/useCallback/useMemo hooks (see: https://mobx.js.org/react-integration.html)
         // `useMemo` is needed in this file to avoid "debounce" with the hundreds of re-renders by mobx as the 200+ API requests come in and populate 1000+ observables (otherwise the UI is unresponsive for 30+ seconds)
-        // also, the higher level `useMemo`s (i.e. this one) gain the most performance as other React renders are prevented down the line as data is calculated
+        // also, the higher level `useMemo`s (i.e. this one) gain the most performance as other React renders are prevented down the line as data is calculated (remember, renders are initiated by both mobx and react)
         allPools,
         queriesOsmosis.queryGammPools.response,
         queriesExternal.queryGammPoolFeeMetrics.response,
@@ -384,11 +397,16 @@ export const AllPoolsTableSet: FunctionComponent<{
             {
               poolId,
               onAddLiquidity: () => quickAddLiquidity(poolId),
-              onRemoveLiquidity: () =>
-                !poolWithMetrics.myLiquidity.toDec().isZero()
-                  ? () => quickRemoveLiquidity(poolId)
-                  : undefined,
-              onLockTokens: () => {},
+              onRemoveLiquidity: !poolWithMetrics.myAvailableLiquidity
+                .toDec()
+                .isZero()
+                ? () => quickRemoveLiquidity(poolId)
+                : undefined,
+              onLockTokens: !poolWithMetrics.myAvailableLiquidity
+                .toDec()
+                .isZero()
+                ? () => quickLockTokens(poolId)
+                : undefined,
             },
           ];
         }),

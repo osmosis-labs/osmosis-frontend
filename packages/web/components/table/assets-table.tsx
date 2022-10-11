@@ -339,18 +339,18 @@ export const AssetsTable: FunctionComponent<Props> = ({
         </div>
       ) : (
         <div className="flex flex-col gap-5">
-          <h5>{t("assets.table.title")}</h5>
-          <div className="flex place-content-between">
-            <Switch
-              isOn={hideZeroBalances}
-              disabled={!canHideZeroBalances}
-              onToggle={() => {
-                setHideZeroBalances(!hideZeroBalances);
-              }}
-            >
-              {t("assets.table.hideZero")}
-            </Switch>
+          <div className="flex flex-wrap items-center place-content-between">
+            <h5 className="shrink-0 mr-5">{t("assets.table.title")}</h5>
             <div className="flex items-center gap-5">
+              <Switch
+                isOn={hideZeroBalances}
+                disabled={!canHideZeroBalances}
+                onToggle={() => {
+                  setHideZeroBalances(!hideZeroBalances);
+                }}
+              >
+                {t("assets.table.hideZero")}
+              </Switch>
               <SearchBox
                 currentValue={query}
                 onInput={(query) => {

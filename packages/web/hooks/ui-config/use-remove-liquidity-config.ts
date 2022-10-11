@@ -23,7 +23,7 @@ export function useRemoveLiquidityConfig(
   initialPercent = "50"
 ): {
   config: ObservableRemoveLiquidityConfig;
-  onRemoveLiquidity: () => Promise<void>;
+  removeLiquidity: () => Promise<void>;
 } {
   const { accountStore } = useStore();
 
@@ -50,7 +50,7 @@ export function useRemoveLiquidityConfig(
   config.setPoolId(poolId);
   config.setQueryPoolShare(queryOsmosis.queryGammPoolShare);
 
-  const onRemoveLiquidity = useCallback(() => {
+  const removeLiquidity = useCallback(() => {
     return new Promise<void>(async (resolve, reject) => {
       try {
         await account.osmosis.sendExitPoolMsg(
@@ -67,5 +67,5 @@ export function useRemoveLiquidityConfig(
     });
   }, []);
 
-  return { config, onRemoveLiquidity };
+  return { config, removeLiquidity };
 }

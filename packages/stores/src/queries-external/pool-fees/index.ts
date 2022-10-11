@@ -10,8 +10,8 @@ import { PoolFeesMetrics, PoolFees } from "./types";
 
 /** Queries Imperator pool fee history data. */
 export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<PoolFees> {
-  constructor(kvStore: KVStore) {
-    super(kvStore, "/fees/v1/pools");
+  constructor(kvStore: KVStore, baseURL: string) {
+    super(kvStore, baseURL, "/fees/v1/pools");
 
     makeObservable(this);
   }
@@ -29,7 +29,9 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<Pool
         (poolMetric) => poolMetric.pool_id === poolId
       );
       if (!poolFeesMetricsRaw) {
-        const zeroPrice = new PricePretty(fiatCurrency, new Dec(0));
+        const zeroPrice = new PricePretty(fiatCurrency, new Dec(0)).ready(
+          false
+        );
         return {
           volume24h: zeroPrice,
           volume7d: zeroPrice,

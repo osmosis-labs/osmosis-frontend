@@ -21,7 +21,7 @@ export function useAddLiquidityConfig(
   queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, OsmosisQueries]>
 ): {
   config: ObservableAddLiquidityConfig;
-  onAddLiquidity: () => Promise<void>;
+  addLiquidity: () => Promise<void>;
 } {
   const { accountStore } = useStore();
 
@@ -47,7 +47,7 @@ export function useAddLiquidityConfig(
   config.setPoolId(poolId);
   config.setQueryPoolShare(queryOsmosis.queryGammPoolShare);
 
-  const onAddLiquidity = useCallback(async () => {
+  const addLiquidity = useCallback(async () => {
     return new Promise<void>(async (resolve, reject) => {
       try {
         if (config.isSingleAmountIn && config.singleAmountInConfig) {
@@ -85,5 +85,5 @@ export function useAddLiquidityConfig(
     config.shareOutAmount,
   ]);
 
-  return { config, onAddLiquidity };
+  return { config, addLiquidity };
 }
