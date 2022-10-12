@@ -1,4 +1,3 @@
-import { DenomHelper } from "@keplr-wallet/common";
 import { IS_FRONTIER } from "./ibc-assets";
 
 /** UI will go into "halt mode" if `true`. */
@@ -44,7 +43,7 @@ export const PromotedLBPPoolIds: {
   ibcHashDenom: string;
 }[] = IS_FRONTIER
   ? [
-/*      {
+      /*      {
         poolId: "813",
         name: "REBUS Liquidity Bootstrapping Pool",
         ibcHashDenom: DenomHelper.ibcDenom(
