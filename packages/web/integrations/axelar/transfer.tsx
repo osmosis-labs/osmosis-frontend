@@ -57,7 +57,7 @@ const AxelarTransfer: FunctionComponent<
     onRequestClose,
     onRequestSwitchWallet,
     tokenMinDenom,
-    transferFeeMinAmount,
+    //transferFeeMinAmount,
     sourceChains,
     isTestNet = process.env.NEXT_PUBLIC_IS_TESTNET === "true",
     connectCosmosWalletButtonOverride,
@@ -101,6 +101,11 @@ const AxelarTransfer: FunctionComponent<
     const erc20ContractAddress = sourceChains.find(
       ({ id }) => id === selectedSourceChainKey
     )?.erc20ContractAddress;
+    
+    const transferFeeMinAmount = sourceChains.find(
+      ({ id }) => id === selectedSourceChainKey
+    )?.transferFeeMinAmount;
+    
     const axelarChainId =
       chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
       "axelar-dojo-1";

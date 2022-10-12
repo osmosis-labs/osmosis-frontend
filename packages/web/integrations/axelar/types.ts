@@ -17,7 +17,7 @@ export interface AxelarBridgeConfig {
    *  TODO: use `useTransferFeeQuery` should fees become dynamic and once APIs become production ready.
    *  See calculator tool on Axelar docs to get current fee constants: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee.
    */
-  transferFeeMinAmount: string;
+  //transferFeeMinAmount: string;
 }
 
 /** See: https://docs.axelar.dev/dev/build/chain-names/mainnet
@@ -61,4 +61,6 @@ export type SourceChainConfig = {
   };
 
   logoUrl: string;
+  
+  transferFeeMinAmount: string;
 };
