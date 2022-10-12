@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
-import { Staking, WalletStatus } from "@keplr-wallet/stores";
+import { Staking } from "@keplr-wallet/stores";
 import {
   ObservableQueryPoolDetails,
   ObservableQuerySuperfluidPool,
