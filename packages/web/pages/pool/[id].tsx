@@ -32,6 +32,7 @@ import { DepoolingTable } from "../../components/table/depooling-table";
 import { truncateString } from "../../components/utils";
 import {
   ExternalIncentiveGaugeAllowList,
+  MergesInternalAndExternalIncentiveGaugeList,
   UnPoolWhitelistedPoolIds,
   EventName,
   PromotedLBPPoolIds,
@@ -828,7 +829,15 @@ const Pool: FunctionComponent = observer(() => {
                   key={duration.humanize()}
                   days={duration.humanize()}
                   apr={queryOsmosis.queryIncentivizedPools
-                    .computeAPY(pool.id, duration, priceStore, fiat)
+                    .computeAPYWithExternalIncentives(
+                      pool.id,
+                      duration,
+                      priceStore,
+                      fiat,
+                      MergesInternalAndExternalIncentiveGaugeList[pool.id]
+                        ? allowedGauges
+                        : []
+                    )
                     .maxDecimals(2)
                     .toString()}
                   superfluidApr={superfluidApr?.maxDecimals(2).toString()}
