@@ -107,12 +107,6 @@ const Pool: FunctionComponent = observer(() => {
     }
   }, [poolExists, pool, fiat, queryOsmosis, priceStore]);
   useEffect(() => {
-    console.log(
-      "set address",
-      !!poolDetailStore,
-      !!superfluidPoolStore,
-      bech32Address
-    );
     poolDetailStore?.setBech32Address(bech32Address);
     superfluidPoolStore?.setBech32Address(bech32Address);
   }, [bech32Address, poolDetailStore, superfluidPoolStore]);
