@@ -1,4 +1,4 @@
-import { computed, makeObservable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
@@ -29,8 +29,10 @@ export type ExternalGauge = {
 
 /** Convenience store for getting common details of a pool via many other query stores. */
 export class ObservableQueryPoolDetails {
+  @observable
+  protected bech32Address: string = "";
+
   constructor(
-    protected readonly bech32Address: string,
     protected readonly fiatCurrency: FiatCurrency,
     protected readonly queryPool: ObservableQueryPool,
     protected readonly queries: {
@@ -46,6 +48,11 @@ export class ObservableQueryPoolDetails {
     protected readonly priceStore: IPriceStore
   ) {
     makeObservable(this);
+  }
+
+  @action
+  setBech32Address(bech32Address: string) {
+    this.bech32Address = bech32Address;
   }
 
   @computed

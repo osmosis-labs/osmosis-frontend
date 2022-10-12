@@ -1,4 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
+import { IQueriesStore, CosmosQueries } from "@keplr-wallet/stores";
 import { TxStatus } from "./types";
 import { ITxStatusReceiver, ITxStatusSource } from "./types";
 /** Persistable data enough to identify a tx. */
@@ -17,13 +18,15 @@ declare type TxSnapshot = {
  *  NOTE: source keyPrefix values must be unique.
  */
 export declare class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
+    protected readonly queriesStore: IQueriesStore<CosmosQueries>;
+    protected readonly chainId: string;
     protected readonly kvStore: KVStore;
     protected readonly txStatusSources: ITxStatusSource[];
     protected readonly historyExpireDays: number;
     /** Volatile store of tx statuses. `prefixedKey => TxSnapshot` */
     protected snapshots: TxSnapshot[];
     private isRestoredFromLocalStorage;
-    constructor(kvStore: KVStore, txStatusSources?: ITxStatusSource[], historyExpireDays?: number);
+    constructor(queriesStore: IQueriesStore<CosmosQueries>, chainId: string, kvStore: KVStore, txStatusSources?: ITxStatusSource[], historyExpireDays?: number);
     addStatusSource(source: ITxStatusSource): void;
     getHistoriesByAccount: (accountAddress: string) => {
         key: string;
