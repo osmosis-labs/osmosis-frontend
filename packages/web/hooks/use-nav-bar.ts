@@ -20,5 +20,5 @@ export function useNavBar({
       navBarStore.title = undefined;
       navBarStore.callToActionButtons = [];
     };
-  }, []);
+  }, [title, ctas]);
 }

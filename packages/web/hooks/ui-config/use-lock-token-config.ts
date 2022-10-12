@@ -1,28 +1,28 @@
 import { useCallback } from "react";
 import { Duration } from "dayjs/plugin/duration";
-import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
 import { useStore } from "../../stores";
 import { useAmountConfig } from "./use-amount-config";
 
 /** UI config for setting valid GAMM token amounts and locking them in a lock. */
-export function useLockTokenConfig(
-  chainGetter: ChainGetter,
-  queriesStore: IQueriesStore,
-  chainId: string,
-  sendCurrency?: AppCurrency | undefined
-): {
+export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
   config: AmountConfig;
   lockToken: (gaugeDuration: Duration) => Promise<void>;
+  unlockToken: (
+    lockIds: string[],
+    duration: Duration
+  ) => Promise<"synthetic" | "normal">;
 } {
-  const { accountStore } = useStore();
+  const { chainStore, queriesStore, accountStore } = useStore();
+
+  const { chainId } = chainStore.osmosis;
 
   const account = accountStore.getAccount(chainId);
   const { bech32Address } = account;
 
   const config = useAmountConfig(
-    chainGetter,
+    chainStore,
     queriesStore,
     chainId,
     bech32Address,
@@ -57,5 +57,59 @@ export function useLockTokenConfig(
     [account, config.sendCurrency, config.amount]
   );
 
-  return { config, lockToken };
+  const queryOsmosis = queriesStore.get(chainId).osmosis!;
+
+  const unlockToken = useCallback(
+    (lockIds: string[], duration: Duration) => {
+      return new Promise<"synthetic" | "normal">(async (resolve, reject) => {
+        try {
+          const blockGasLimitLockIds = lockIds.slice(0, 4);
+
+          // refresh locks
+          for (const lockId of blockGasLimitLockIds) {
+            await queryOsmosis.querySyntheticLockupsByLockId
+              .get(lockId)
+              .waitFreshResponse();
+          }
+
+          // make msg lock objects
+          const locks = blockGasLimitLockIds.map((lockId) => ({
+            lockId,
+            isSyntheticLock:
+              queryOsmosis.querySyntheticLockupsByLockId.get(lockId)
+                .isSyntheticLock === true,
+          }));
+
+          const durations =
+            queryOsmosis.queryLockableDurations.lockableDurations;
+          const isSuperfluidDuration =
+            duration.asSeconds() === durations[duration.length - 1].asSeconds();
+
+          if (
+            isSuperfluidDuration ||
+            locks.some((lock) => lock.isSyntheticLock)
+          ) {
+            await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+              locks,
+              undefined,
+              () => resolve("synthetic")
+            );
+          } else {
+            const blockGasLimitLockIds = lockIds.slice(0, 10);
+            await account.osmosis.sendBeginUnlockingMsg(
+              blockGasLimitLockIds,
+              undefined,
+              () => resolve("normal")
+            );
+          }
+        } catch (e) {
+          console.error(e);
+          reject();
+        }
+      });
+    },
+    [queryOsmosis]
+  );
+
+  return { config, lockToken, unlockToken };
 }

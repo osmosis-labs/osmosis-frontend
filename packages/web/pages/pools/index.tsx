@@ -160,9 +160,6 @@ const Pools: NextPage = observer(function () {
     ? queryOsmosis.queryGammPoolShare.getShareCurrency(lockLpTokenModalPoolId)
     : undefined;
   const { config: lockLpTokenConfig, lockToken } = useLockTokenConfig(
-    chainStore,
-    queriesStore,
-    chainId,
     selectedPoolShareCurrency
   );
   const onLockToken = (gaugeId: string, electSuperfluid?: boolean) => {

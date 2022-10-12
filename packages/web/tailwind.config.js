@@ -30,10 +30,12 @@ module.exports = {
         700: "#3C356D",
         800: "#282750",
         900: "#140F34",
+        1000: "#090524",
       },
       wosmongton: {
         100: "#D3D1FF",
         200: "#B3B1FD",
+        300: "#8C8AF9",
         400: "#6A67EA",
         500: "#5B57FA",
         700: "#462ADF",
@@ -111,6 +113,7 @@ module.exports = {
       black: "#000000",
       backdrop: "rgba(0, 0, 0, 0.3)",
       superfluid: "#8A86FF",
+      bullish: "#6BDEC9",
     },
     fontSize: {
       xxs: "0.5rem",
@@ -288,6 +291,7 @@ module.exports = {
         inBack: "cubic-bezier(0.7, -0.4, 0.52, 0.51)",
       },
       transitionProperty: {
+        height: "height",
         width: "width",
         borderRadius: "border-radius",
       },
