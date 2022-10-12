@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
-import { Staking } from "@keplr-wallet/stores";
+import { Staking, WalletStatus } from "@keplr-wallet/stores";
 import {
   ObservableQueryPoolDetails,
   ObservableQuerySuperfluidPool,
@@ -84,7 +84,12 @@ const Pool: FunctionComponent = observer(() => {
     useState<ObservableQuerySuperfluidPool | null>(null);
   useEffect(() => {
     let newPoolDetailStore;
-    if (poolExists && pool && !poolDetailStore && bech32Address !== "") {
+    if (
+      poolExists &&
+      pool &&
+      !poolDetailStore &&
+      (bech32Address !== "" || account.walletStatus === WalletStatus.NotInit)
+    ) {
       newPoolDetailStore = new ObservableQueryPoolDetails(
         bech32Address,
         fiat,
@@ -93,7 +98,11 @@ const Pool: FunctionComponent = observer(() => {
         priceStore
       );
     }
-    if (newPoolDetailStore && !superfluidPoolStore && bech32Address !== "") {
+    if (
+      newPoolDetailStore &&
+      !superfluidPoolStore &&
+      (bech32Address !== "" || account.walletStatus === WalletStatus.NotInit)
+    ) {
       setPoolDetailStore(newPoolDetailStore);
       setSuperfluidPoolStore(
         new ObservableQuerySuperfluidPool(
