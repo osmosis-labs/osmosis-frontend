@@ -8,7 +8,6 @@ import {
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
-import { CREATE_POOL_MAX_ASSETS } from ".";
 
 export interface CreatePoolConfigOpts {
   minAssetsCount: number;
@@ -51,7 +50,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     feeConfig?: IFeeConfig,
     opts: CreatePoolConfigOpts = {
       minAssetsCount: 2,
-      maxAssetsCount: 8,
+      maxAssetsCount: 4,
     }
   ) {
     super(chainGetter, initialChainId);
@@ -83,7 +82,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
   get canAddAsset(): boolean {
     return (
-      this._assets.length < CREATE_POOL_MAX_ASSETS &&
+      this._assets.length < this._opts.maxAssetsCount &&
       this.remainingSelectableCurrencies.length > 0
     );
   }
@@ -175,7 +174,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
       }
     }
     if (!totalPercentage.equals(new Dec(100))) {
-      return new Error("Sum of percentages is not 100%");
+      return new Error("Sum of percentages is not 100");
     }
   }
 

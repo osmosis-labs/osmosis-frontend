@@ -84,7 +84,7 @@ export const PoolCard: FunctionComponent<
       <Link href={`/pool/${poolId}`} passHref prefetch={false}>
         <a
           className={classNames(
-            "p-[2px] rounded-[28px] hover:bg-wosmongton-200 text-left",
+            "p-[2px] rounded-4xl hover:bg-wosmongton-200 text-left",
             {
               "bg-card": !isSuperfluid,
               "bg-superfluid hover:bg-none": isSuperfluid,

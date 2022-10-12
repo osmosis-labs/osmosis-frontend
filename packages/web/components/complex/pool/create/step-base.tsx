@@ -12,7 +12,6 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
       step,
       createPoolConfig: config,
       isSendingMsg,
-      backStep,
       advanceStep,
       children,
     }) => {
@@ -29,7 +28,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
 
       return (
         <div className="flex flex-col gap-5">
-          <span className="body2 md:caption md:mt-4">
+          <span className="body2 text-center md:caption md:mt-4">
             Step {step} / 3 -
             {step === 1
               ? " Set token ratios"
@@ -39,12 +38,15 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
               ? " Confirm pool ratio and token amount"
               : null}{" "}
           </span>
-          <Info
-            message="Pool Creation Fee"
-            caption="Transferred to the Osmosis community pool"
-            data={POOL_CREATION_FEE}
-            isMobile={isMobile}
-          />
+          {step === 1 ||
+            (step === 3 && (
+              <Info
+                message="Pool Creation Fee"
+                caption="Transferred to the Osmosis community pool"
+                data={POOL_CREATION_FEE}
+                isMobile={isMobile}
+              />
+            ))}
           <div>{children}</div>
           {positiveBalanceError && step === 1 && (
             <Error className="mx-auto" message={positiveBalanceError} />
@@ -59,16 +61,6 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
             <Error className="mx-auto" message={swapFeeError} />
           )}
           <div className="flex gap-4 mx-auto">
-            {step !== 1 && (
-              <Button
-                className="w-28 md:w-20 bg-secondary-200 hover:bg-secondary-100"
-                size={isMobile ? "sm" : "lg"}
-                disabled={isSendingMsg}
-                onClick={() => backStep()}
-              >
-                Back
-              </Button>
-            )}
             <Button
               className="w-80 md:w-36 md:h-10"
               size={isMobile ? "sm" : "lg"}

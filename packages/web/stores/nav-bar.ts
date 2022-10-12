@@ -17,7 +17,7 @@ export type CallToAction = {
 };
 export class NavBarStore {
   @observable
-  title: string | undefined;
+  protected _title: string | undefined;
 
   @observable
   protected _callToActionButtons: CallToAction[] = [];
@@ -37,6 +37,10 @@ export class NavBarStore {
 
   get callToActionButtons() {
     return this._callToActionButtons;
+  }
+
+  set title(val: string) {
+    runInAction(() => (this._title = val));
   }
 
   /** Use `useEffect` hook to apply currrent page's CTAs. */

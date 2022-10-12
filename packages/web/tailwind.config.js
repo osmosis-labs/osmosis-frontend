@@ -194,6 +194,8 @@ module.exports = {
         "linear-gradient(90deg, rgba(138, 134, 255, 0.2) 0.04%, rgba(225, 60, 189, 0.2) 99.5%)",
       "selected-validator":
         "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), linear-gradient(#231d4b, #231d4b)",
+      "gradient-positive":
+        "linear-gradient(96.5deg, #2AB4DF 1.78%, #2AAEDF 1.79%, #899DFF 1.8%, #24F9AC 100%);",
     },
     boxShadow: {
       container:
@@ -283,6 +285,8 @@ module.exports = {
         lginset: "0.438rem", // 1px smaller than rounded-lg
         xlinset: "0.688rem", // 1px smaller than rounded-xl
         "2xlinset": "0.938rem", // 1 px smaller than rounded-2xl
+        "4x4pxlinset": "1.5rem", // 4px smaller than 4xl
+        "4xl": "1.75rem",
       },
       transitionTimingFunction: {
         bounce: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",

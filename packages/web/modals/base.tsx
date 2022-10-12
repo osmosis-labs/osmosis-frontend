@@ -56,7 +56,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           >
             <Image
               alt="back button"
-              src="/icons/chevron-left.svg"
+              src="/icons/left.svg"
               height={32}
               width={32}
             />
