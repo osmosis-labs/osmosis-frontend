@@ -108,6 +108,18 @@ const Home: NextPage = observer(function () {
                 break;
               }
             }
+            
+            // only pools with at least 10,000 JUNO
+            if (
+              "originChainId" in asset.amount.currency &&
+              asset.amount.currency.coinMinimalDenom ===
+                "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED"
+            ) {
+              if (asset.amount.toDec().gt(new Dec(10_000))) {
+                hasEnoughAssets = true;
+                break;
+              }
+            }
           }
 
           if (hasEnoughAssets) {
