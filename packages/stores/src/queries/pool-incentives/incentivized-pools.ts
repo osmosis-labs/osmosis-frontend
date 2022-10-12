@@ -138,6 +138,10 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         );
       });
 
+      if (!externalGauge?.rewardAmount) {
+        return apy;
+      }
+
       const mintDenom = this.queryMintParmas.mintDenom;
 
       if (!mintDenom) {
@@ -149,10 +153,6 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       const mintCurrency = chainInfo.findCurrency(mintDenom);
 
       if (!mintCurrency) {
-        return apy;
-      }
-
-      if (!externalGauge?.rewardAmount) {
         return apy;
       }
 
