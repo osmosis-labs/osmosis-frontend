@@ -128,7 +128,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     ): RatePretty => {
       const apy = this.computeAPY(poolId, duration, priceStore, fiatCurrency);
 
-      if (!externalGauges) {
+      if (!externalGauges.length) {
         return apy;
       }
 
