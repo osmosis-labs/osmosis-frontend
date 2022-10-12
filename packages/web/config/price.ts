@@ -543,4 +543,14 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     destCoinId: "juno-network",
   },
+  {
+    alternativeCoinId: "pool:rowan",
+    poolId: "629",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-47" }],
+      "rowan"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmosis",
+  },
 ];
