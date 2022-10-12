@@ -2,7 +2,6 @@ import Head from "next/head";
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import { Staking } from "@keplr-wallet/stores";
 import {
-  isError,
   ObservableQueryPoolDetails,
   ObservableQuerySuperfluidPool,
 } from "@osmosis-labs/stores";
@@ -33,10 +32,9 @@ import { DepoolingTable } from "../../components/table/depooling-table";
 import { truncateString } from "../../components/utils";
 import {
   ExternalIncentiveGaugeAllowList,
+  MergesInternalAndExternalIncentiveGaugeList,
   UnPoolWhitelistedPoolIds,
-  PoolDetailEvents,
   EventName,
-  IncludesInternalAndExternalIncentiveGaugeList,
   PromotedLBPPoolIds,
 } from "../../config";
 import {
@@ -44,7 +42,6 @@ import {
   useAmountConfig,
   useRemoveLiquidityConfig,
   useWindowSize,
-  useMatomoAnalytics,
   useAmplitudeAnalytics,
 } from "../../hooks";
 import {
@@ -59,7 +56,6 @@ const Pool: FunctionComponent = observer(() => {
   const router = useRouter();
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
   const { isMobile } = useWindowSize();
-  const { trackEvent } = useMatomoAnalytics();
 
   const { id: poolId } = router.query;
   const { chainId } = chainStore.osmosis;
@@ -113,19 +109,9 @@ const Pool: FunctionComponent = observer(() => {
   }, [poolExists, pool, bech32Address, fiat, queryOsmosis, priceStore]);
 
   // Manage liquidity + bond LP tokens (modals) state
-  const [showManageLiquidityDialog, do_setShowManageLiquidityDialog] =
+  const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
     useState(false);
-  const setShowManageLiquidityDialog = useCallback((isOpen: boolean) => {
-    if (isOpen) {
-      trackEvent(PoolDetailEvents.startManageLiquidity);
-    }
-    do_setShowManageLiquidityDialog(isOpen);
-  }, []);
-  const [showLockLPTokenModal, do_setShowLockLPTokenModal] = useState(false);
-  const setShowLockLPTokenModal = useCallback((show: boolean) => {
-    if (show) trackEvent(PoolDetailEvents.startLockTokens);
-    do_setShowLockLPTokenModal(show);
-  }, []);
+  const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
   const addLiquidityConfig = useAddLiquidityConfig(
     chainStore,
     chainId,
@@ -211,12 +197,8 @@ const Pool: FunctionComponent = observer(() => {
     );
   }, [allowedGauges, superfluidPoolStore?.gaugesWithSuperfluidApr]);
 
-  const [showSuperfluidValidatorModal, do_setShowSuperfluidValidatorsModal] =
+  const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
     useState(false);
-  const setShowSuperfluidValidatorsModal = useCallback((show: boolean) => {
-    trackEvent(PoolDetailEvents.goSuperfluid);
-    do_setShowSuperfluidValidatorsModal(show);
-  }, []);
 
   // swap modal
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
@@ -286,11 +268,7 @@ const Pool: FunctionComponent = observer(() => {
           },
           undefined,
           undefined,
-          (tx) => {
-            if (isError(tx))
-              trackEvent(PoolDetailEvents.addSingleLiquidityFailure);
-            else trackEvent(PoolDetailEvents.addSingleLiquiditySuccess);
-            trackEvent(PoolDetailEvents.setSingleAssetLiquidity);
+          () => {
             logEvent([
               EventName.PoolDetail.addLiquidityCompleted,
               {
@@ -327,9 +305,7 @@ const Pool: FunctionComponent = observer(() => {
           addLiquidityConfig.shareOutAmount.toDec().toString(),
           undefined,
           undefined,
-          (tx) => {
-            if (isError(tx)) trackEvent(PoolDetailEvents.addLiquidityFailure);
-            else trackEvent(PoolDetailEvents.addLiquiditySuccess);
+          () => {
             logEvent([
               EventName.PoolDetail.addLiquidityCompleted,
               {
@@ -390,9 +366,7 @@ const Pool: FunctionComponent = observer(() => {
         removeLiquidityConfig.poolShareWithPercentage.toDec().toString(),
         undefined,
         undefined,
-        (tx) => {
-          if (isError(tx)) trackEvent(PoolDetailEvents.removeLiquidityFailure);
-          else trackEvent(PoolDetailEvents.removeLiquiditySuccess);
+        () => {
           logEvent([
             EventName.PoolDetail.removeLiquidityCompleted,
             {
@@ -455,10 +429,7 @@ const Pool: FunctionComponent = observer(() => {
                 },
               ],
               undefined,
-              (tx) => {
-                if (isError(tx))
-                  trackEvent(PoolDetailEvents.gammTokenLockFailure);
-                else trackEvent(PoolDetailEvents.gammTokenLockSuccess);
+              () => {
                 logEvent([
                   EventName.PoolDetail.bondCompleted,
                   {
@@ -514,10 +485,7 @@ const Pool: FunctionComponent = observer(() => {
               superfluidPoolStore.superfluid.upgradeableLpLockIds.lockIds,
               validatorAddress,
               undefined,
-              (tx) => {
-                if (isError(tx))
-                  trackEvent(PoolDetailEvents.superfluidStakeFailure);
-                else trackEvent(PoolDetailEvents.superfluidStakeSuccess);
+              () => {
                 logEvent([
                   EventName.PoolDetail.superfluidStakeCompleted,
                   {
@@ -553,10 +521,7 @@ const Pool: FunctionComponent = observer(() => {
               ],
               validatorAddress,
               undefined,
-              (tx) => {
-                if (isError(tx))
-                  trackEvent(PoolDetailEvents.superfluidStakeFailure);
-                else trackEvent(PoolDetailEvents.superfluidStakeSuccess);
+              () => {
                 logEvent([
                   EventName.PoolDetail.superfluidStakeCompleted,
                   {
@@ -726,7 +691,6 @@ const Pool: FunctionComponent = observer(() => {
                   isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
                 },
               ]);
-              trackEvent(PoolDetailEvents.startSwapTokens);
               setShowTradeTokenModal(true);
             },
           },
@@ -865,15 +829,14 @@ const Pool: FunctionComponent = observer(() => {
                   key={duration.humanize()}
                   days={duration.humanize()}
                   apr={queryOsmosis.queryIncentivizedPools
-                    .computeAPY(pool.id, duration, priceStore, fiat)
-                    .add(
-                      IncludesInternalAndExternalIncentiveGaugeList[pool.id]
-                        ? // @ts-ignore
-                          allowedGauges[0]?.rewardAmount
-                            .maxDecimals(0)
-                            .quo(new Dec(1000000))
-                            .toDec()
-                        : new Dec(0)
+                    .computeAPYWithExternalIncentives(
+                      pool.id,
+                      duration,
+                      priceStore,
+                      fiat,
+                      MergesInternalAndExternalIncentiveGaugeList[pool.id]
+                        ? allowedGauges
+                        : []
                     )
                     .maxDecimals(2)
                     .toString()}
@@ -937,12 +900,7 @@ const Pool: FunctionComponent = observer(() => {
                     try {
                       await account.osmosis.sendUnPoolWhitelistedPoolMsg(
                         pool.id,
-                        undefined,
-                        (tx) => {
-                          if (isError(tx))
-                            trackEvent(PoolDetailEvents.unpoolFailure);
-                          else trackEvent(PoolDetailEvents.unpoolSuccess);
-                        }
+                        undefined
                       );
                     } catch (e) {
                       console.error(e);
@@ -1039,15 +997,7 @@ const Pool: FunctionComponent = observer(() => {
                               await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
                                 locks,
                                 undefined,
-                                (tx) => {
-                                  if (isError(tx))
-                                    trackEvent(
-                                      PoolDetailEvents.gammTokenUnlockFailure
-                                    );
-                                  else
-                                    trackEvent(
-                                      PoolDetailEvents.gammTokenUnlockSuccess
-                                    );
+                                () => {
                                   logEvent([
                                     EventName.PoolDetail.unbondAllCompleted,
                                     {
@@ -1067,16 +1017,7 @@ const Pool: FunctionComponent = observer(() => {
                               await account.osmosis.sendBeginUnlockingMsg(
                                 blockGasLimitLockIds,
                                 undefined,
-                                (tx) => {
-                                  if (isError(tx))
-                                    trackEvent(
-                                      PoolDetailEvents.gammTokenUnlockFailure
-                                    );
-                                  else
-                                    trackEvent(
-                                      PoolDetailEvents.gammTokenUnlockSuccess
-                                    );
-
+                                () => {
                                   logEvent([
                                     EventName.PoolDetail.unbondAllCompleted,
                                     {

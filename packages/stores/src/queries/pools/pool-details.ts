@@ -18,14 +18,7 @@ import {
   ObservableQueryAccountUnlockingCoins,
 } from "../lockup";
 import { ObservableQueryPool } from "./pool";
-
-/** Non OSMO gauge. */
-export type ExternalGauge = {
-  id: string;
-  duration: Duration;
-  rewardAmount?: CoinPretty;
-  remainingEpochs: number;
-};
+import { ExternalGauge } from "./types";
 
 /** Convenience store for getting common details of a pool via many other query stores. */
 export class ObservableQueryPoolDetails {

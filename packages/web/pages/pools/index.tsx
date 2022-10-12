@@ -2,8 +2,8 @@ import type { NextPage } from "next";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import { useCallback, useState } from "react";
-import { ObservableQueryPool, isError } from "@osmosis-labs/stores";
+import { useState } from "react";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
 import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
@@ -21,12 +21,11 @@ import {
   usePaginatedData,
   useSortedData,
   useCreatePoolConfig,
-  useMatomoAnalytics,
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
-import { UserAction, PoolsPageEvents, EventName } from "../../config";
+import { UserAction, EventName } from "../../config";
 import { POOLS_PER_PAGE } from "../../components/complex";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
@@ -43,7 +42,6 @@ const Pools: NextPage = observer(function () {
     queriesExternalStore,
   } = useStore();
   const { isMobile } = useWindowSize();
-  const { trackEvent } = useMatomoAnalytics();
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });
@@ -111,15 +109,7 @@ const Pools: NextPage = observer(function () {
   const poolCountShowMoreThreshold = isMobile ? 3 : 6;
 
   // create pool dialog
-  const [isCreatingPool, do_setIsCreatingPool] = useState(false);
-  const setIsCreatingPool = useCallback(
-    (isCreating: boolean) => {
-      if (isCreating) trackEvent(PoolsPageEvents.startCreatePool);
-
-      do_setIsCreatingPool(isCreating);
-    },
-    [do_setIsCreatingPool]
-  );
+  const [isCreatingPool, setIsCreatingPool] = useState(false);
 
   const createPoolConfig = useCreatePoolConfig(
     chainStore,
@@ -135,21 +125,8 @@ const Pools: NextPage = observer(function () {
     ["id", "assets.coinDenom"]
   );
 
-  const [
-    sortKeyPath,
-    do_setSortKeyPath,
-    ,
-    ,
-    toggleSortDirection,
-    sortedSfsPools,
-  ] = useSortedData(fiteredSfsPools, "apr", "descending");
-  const setSortKeyPath = useCallback(
-    (terms: string) => {
-      trackEvent(PoolsPageEvents.sortPools);
-      do_setSortKeyPath(terms);
-    },
-    [do_setSortKeyPath]
-  );
+  const [sortKeyPath, setSortKeyPath, , , toggleSortDirection, sortedSfsPools] =
+    useSortedData(fiteredSfsPools, "apr", "descending");
 
   const [page, setPage, minPage, numPages, sfsPoolsPage] = usePaginatedData(
     sortedSfsPools,
@@ -182,11 +159,7 @@ const Pools: NextPage = observer(function () {
                   },
                 })),
                 undefined,
-                (tx) => {
-                  if (isError(tx))
-                    trackEvent(PoolsPageEvents.createPoolFailure);
-                  else trackEvent(PoolsPageEvents.createPoolSuccess);
-
+                () => {
                   setIsCreatingPool(false);
                 }
               );
@@ -461,8 +434,6 @@ const Pools: NextPage = observer(function () {
                     searchBoxProps={{
                       currentValue: query,
                       onInput: setQuery,
-                      onFocus: () =>
-                        trackEvent(PoolsPageEvents.startPoolsSearch),
                       placeholder: "Filter by symbol",
                     }}
                     sortMenuProps={{
@@ -545,9 +516,7 @@ const Pools: NextPage = observer(function () {
                             label: "Fees (7D)",
                             value: (
                               <MetricLoader
-                                isLoading={poolFeesMetrics.feesSpent7d
-                                  .toDec()
-                                  .isZero()}
+                                isLoading={!poolFeesMetrics.feesSpent7d.isReady}
                               >
                                 {poolFeesMetrics.feesSpent7d.toString()}
                               </MetricLoader>

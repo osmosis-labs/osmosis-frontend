@@ -11,7 +11,7 @@ import {
   ObservableQueryEpochProvisions,
   ObservableQueryMintParmas,
 } from "../mint";
-import { ObservableQueryPools } from "../pools";
+import { ObservableQueryPools, ExternalGauge } from "../pools";
 import { IPriceStore } from "../../price";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
@@ -118,6 +118,52 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     }
   );
 
+  readonly computeAPYWithExternalIncentives = computedFn(
+    (
+      poolId: string,
+      duration: Duration,
+      priceStore: IPriceStore,
+      fiatCurrency: FiatCurrency,
+      externalGauges: ExternalGauge[]
+    ): RatePretty => {
+      const apy = this.computeAPY(poolId, duration, priceStore, fiatCurrency);
+
+      if (!externalGauges) {
+        return apy;
+      }
+
+      const externalGauge = externalGauges.find((externalGauge) => {
+        return (
+          duration.asMilliseconds() === externalGauge.duration.asMilliseconds()
+        );
+      });
+
+      const mintDenom = this.queryMintParmas.mintDenom;
+
+      if (!mintDenom) {
+        return apy;
+      }
+
+      const chainInfo = this.chainGetter.getChain(this.chainId);
+
+      const mintCurrency = chainInfo.findCurrency(mintDenom);
+
+      if (!mintCurrency) {
+        return apy;
+      }
+
+      if (!externalGauge?.rewardAmount) {
+        return apy;
+      }
+
+      const amount = externalGauge.rewardAmount.moveDecimalPointLeft(
+        mintCurrency.coinDecimals
+      );
+
+      return apy.add(amount);
+    }
+  );
+
   /**
    * 리워드를 받을 수 있는 풀의 연당 이익률을 반환한다.
    * 리워드를 받을 수 없는 풀일 경우 0를 리턴한다.
@@ -157,6 +203,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         priceStore,
         fiatCurrency
       );
+
       for (const lockableDuration of lockableDurations) {
         // 인센티브는 unlock 기간보다 짧은 모든 팟에 분배된다.
         // 그러므로 apy를 계산하기 위해서는 제시된 duration보다 짧은 모든 duration에 대한 apy를 더해줘야 한다.
@@ -177,6 +224,14 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       return apy;
     }
   );
+
+  // computeAPYWithExternalGauges(803, 1, priceStore, fiatCurrency, whiteListedExternalGauges) -> 0.18%
+  // computeAPYWithExternalGauges(803, 7, priceStore, fiatCurrency, whiteListedExternalGauges) -> 0.28%
+  // computeAPYWithExternalGauges(803, 14, priceStore, fiatCurrency, whiteListedExternalGauges) -> 14.55%
+  //
+  // externalGauge = externalGauge.duration === lockableDuration
+  //
+  // if (externalGauge?.rewardAmount) apy = apy.add(externalGauge.rewardAmount)
 
   protected computeAPYForSpecificDuration(
     poolId: string,
@@ -205,6 +260,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
               mintCurrency.coinGeckoId,
               fiatCurrency.currency
             );
+
             const poolTVL = pool.computeTotalValueLocked(priceStore);
             if (
               totalWeight.gt(new Int(0)) &&
@@ -212,16 +268,8 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
               mintPrice &&
               poolTVL.toDec().gt(new Dec(0))
             ) {
-              // @ts-ignore
-              const log = (label, value) => {
-                console.log(label, value);
-                return value;
-              };
               // 에포치마다 발행되는 민팅 코인의 수.
-              const epochProvision = log(
-                "epochProvisions",
-                this.queryEpochProvision.epochProvisions
-              );
+              const epochProvision = this.queryEpochProvision.epochProvisions;
 
               if (epochProvision) {
                 const numEpochPerYear =
@@ -231,32 +279,25 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
                     })
                     .asMilliseconds() / epoch.duration.asMilliseconds();
 
-                const yearProvision = log(
-                  "yearProvision",
-                  epochProvision.mul(new Dec(numEpochPerYear.toString()))
-                );
-                const yearProvisionToPots = log(
-                  "yearProvisionToSpots",
-                  yearProvision.mul(
-                    this.queryMintParmas.distributionProportions.poolIncentives
-                  )
-                );
-                const yearProvisionToPot = log(
-                  "yearProvisionToPot",
-                  yearProvisionToPots.mul(
-                    new Dec(potWeight).quo(new Dec(totalWeight))
-                  )
+                const yearProvision = epochProvision.mul(
+                  new Dec(numEpochPerYear.toString())
                 );
 
-                const yearProvisionToPotPrice = log(
-                  "yearProvisionToPotPrice",
-                  new Dec(mintPrice.toString()).mul(yearProvisionToPot.toDec())
+                const yearProvisionToPots = yearProvision.mul(
+                  this.queryMintParmas.distributionProportions.poolIncentives
                 );
+
+                const yearProvisionToPot = yearProvisionToPots.mul(
+                  new Dec(potWeight).quo(new Dec(totalWeight))
+                );
+
+                const yearProvisionToPotPrice = new Dec(
+                  mintPrice.toString()
+                ).mul(yearProvisionToPot.toDec());
 
                 // 백분률로 반환한다.
-                return log(
-                  "what",
-                  new RatePretty(yearProvisionToPotPrice.quo(poolTVL.toDec()))
+                return new RatePretty(
+                  yearProvisionToPotPrice.quo(poolTVL.toDec())
                 );
               }
             }
