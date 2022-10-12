@@ -84,29 +84,18 @@ const Pool: FunctionComponent = observer(() => {
     useState<ObservableQuerySuperfluidPool | null>(null);
   useEffect(() => {
     let newPoolDetailStore;
-    if (
-      poolExists &&
-      pool &&
-      !poolDetailStore &&
-      (bech32Address !== "" || account.walletStatus === WalletStatus.NotInit)
-    ) {
+    if (poolExists && pool && !poolDetailStore) {
       newPoolDetailStore = new ObservableQueryPoolDetails(
-        bech32Address,
         fiat,
         pool,
         queryOsmosis,
         priceStore
       );
     }
-    if (
-      newPoolDetailStore &&
-      !superfluidPoolStore &&
-      (bech32Address !== "" || account.walletStatus === WalletStatus.NotInit)
-    ) {
+    if (newPoolDetailStore && !superfluidPoolStore) {
       setPoolDetailStore(newPoolDetailStore);
       setSuperfluidPoolStore(
         new ObservableQuerySuperfluidPool(
-          bech32Address,
           fiat,
           newPoolDetailStore,
           queriesStore.get(chainId).cosmos.queryValidators,
@@ -116,7 +105,17 @@ const Pool: FunctionComponent = observer(() => {
         )
       );
     }
-  }, [poolExists, pool, bech32Address, fiat, queryOsmosis, priceStore]);
+  }, [poolExists, pool, fiat, queryOsmosis, priceStore]);
+  useEffect(() => {
+    console.log(
+      "set address",
+      !!poolDetailStore,
+      !!superfluidPoolStore,
+      bech32Address
+    );
+    poolDetailStore?.setBech32Address(bech32Address);
+    superfluidPoolStore?.setBech32Address(bech32Address);
+  }, [bech32Address, poolDetailStore, superfluidPoolStore]);
 
   // Manage liquidity + bond LP tokens (modals) state
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
