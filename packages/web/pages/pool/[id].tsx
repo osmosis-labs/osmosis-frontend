@@ -78,11 +78,13 @@ const Pool: FunctionComponent = observer(() => {
   }, [poolExists]);
 
   // initialize pool data stores once root pool store is loaded
+  const [poolDetailStore, setPoolDetailStore] =
+    useState<ObservableQueryPoolDetails | null>(null);
   const [superfluidPoolStore, setSuperfluidPoolStore] =
     useState<ObservableQuerySuperfluidPool | null>(null);
   useEffect(() => {
     let newPoolDetailStore;
-    if (poolExists && pool && !poolDetailStore) {
+    if (poolExists && pool && !poolDetailStore && bech32Address !== "") {
       newPoolDetailStore = new ObservableQueryPoolDetails(
         bech32Address,
         fiat,
@@ -91,7 +93,7 @@ const Pool: FunctionComponent = observer(() => {
         priceStore
       );
     }
-    if (newPoolDetailStore && !superfluidPoolStore) {
+    if (newPoolDetailStore && !superfluidPoolStore && bech32Address !== "") {
       setPoolDetailStore(newPoolDetailStore);
       setSuperfluidPoolStore(
         new ObservableQuerySuperfluidPool(
@@ -135,8 +137,6 @@ const Pool: FunctionComponent = observer(() => {
   );
 
   // pool gauges
-  const [poolDetailStore, setPoolDetailStore] =
-    useState<ObservableQueryPoolDetails | null>(null);
   const allowedGauges =
     pool && ExternalIncentiveGaugeAllowList[pool.id]
       ? poolDetailStore?.queryAllowedExternalGauges(
