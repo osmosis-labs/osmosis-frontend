@@ -225,14 +225,6 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     }
   );
 
-  // computeAPYWithExternalGauges(803, 1, priceStore, fiatCurrency, whiteListedExternalGauges) -> 0.18%
-  // computeAPYWithExternalGauges(803, 7, priceStore, fiatCurrency, whiteListedExternalGauges) -> 0.28%
-  // computeAPYWithExternalGauges(803, 14, priceStore, fiatCurrency, whiteListedExternalGauges) -> 14.55%
-  //
-  // externalGauge = externalGauge.duration === lockableDuration
-  //
-  // if (externalGauge?.rewardAmount) apy = apy.add(externalGauge.rewardAmount)
-
   protected computeAPYForSpecificDuration(
     poolId: string,
     duration: Duration,
@@ -282,11 +274,9 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
                 const yearProvision = epochProvision.mul(
                   new Dec(numEpochPerYear.toString())
                 );
-
                 const yearProvisionToPots = yearProvision.mul(
                   this.queryMintParmas.distributionProportions.poolIncentives
                 );
-
                 const yearProvisionToPot = yearProvisionToPots.mul(
                   new Dec(potWeight).quo(new Dec(totalWeight))
                 );
