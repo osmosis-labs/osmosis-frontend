@@ -25,7 +25,12 @@ import {
   TransferAssetSelectModal,
 } from "../../modals";
 import { ConnectNonIbcWallet, PreTransferModal } from "../../modals";
-import { useWindowSize, useAmplitudeAnalytics, useNavBar } from "../../hooks";
+import {
+  useWindowSize,
+  useAmplitudeAnalytics,
+  useNavBar,
+  useShowDustUserSetting,
+} from "../../hooks";
 import { WalletConnectQRModal } from "../../modals";
 import { EventName } from "../../config";
 
@@ -241,11 +246,13 @@ const AssetsOverview: FunctionComponent = observer(() => {
 });
 
 const PoolAssets: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const { setUserProperty } = useAmplitudeAnalytics();
 
   const { chainId } = chainStore.osmosis;
   const { bech32Address } = accountStore.getAccount(chainId);
+  const queryOsmosis = queriesStore.get(chainId).osmosis!;
+
   const ownedPoolIds = queriesStore
     .get(chainId)
     .osmosis!.queryGammPoolShare.getOwnPools(bech32Address);
@@ -255,14 +262,28 @@ const PoolAssets: FunctionComponent = observer(() => {
     setUserProperty("myPoolsCount", ownedPoolIds.length);
   }, [ownedPoolIds.length]);
 
-  if (ownedPoolIds.length === 0) {
+  const dustedPoolIds = useShowDustUserSetting(ownedPoolIds, (poolId) =>
+    queryOsmosis.queryGammPools
+      .getPool(poolId)
+      ?.computeTotalValueLocked(priceStore)
+      .mul(
+        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+          bech32Address,
+          poolId
+        )
+      )
+  );
+
+  if (dustedPoolIds.length === 0) {
     return null;
   }
 
   return (
     <section>
       <h5>My Pools</h5>
-      <PoolCards {...{ showAllPools, ownedPoolIds, setShowAllPools }} />
+      <PoolCards
+        {...{ showAllPools, ownedPoolIds: dustedPoolIds, setShowAllPools }}
+      />
     </section>
   );
 });
