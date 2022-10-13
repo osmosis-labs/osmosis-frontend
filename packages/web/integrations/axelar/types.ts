@@ -13,12 +13,6 @@ export interface AxelarBridgeConfig {
    *  See: https://docs.axelar.dev/resources/mainnet#assets
    */
   coinMinimalDenom: string;
-  //tokenMinDenom: string;
-  /** Amount of Axelar transfer fee in `originCurrency`.
-   *  TODO: use `useTransferFeeQuery` should fees become dynamic and once APIs become production ready.
-   *  See calculator tool on Axelar docs to get current fee constants: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee.
-   */
-  //transferFeeMinAmount: string;
 }
 
 /** See: https://docs.axelar.dev/dev/build/chain-names/mainnet
@@ -63,5 +57,10 @@ export type SourceChainConfig = {
 
   logoUrl: string;
   
+  /** Amount of Axelar transfer fee in `originCurrency`.
+  *  TODO: use `useTransferFeeQuery` should fees become dynamic and once APIs become production ready.
+  *  See calculator tool on Axelar docs to get current fee constants: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee.
+  */
   transferFeeMinAmount: string;
+  
 };

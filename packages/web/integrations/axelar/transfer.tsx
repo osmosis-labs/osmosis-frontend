@@ -237,7 +237,6 @@ const AxelarTransfer: FunctionComponent<
     // notify user they are withdrawing into a different account then they last deposited to
     const [lastDepositAccountAddress, setLastDepositAccountAddress] =
       useLocalStorageState<string | null>(
-        //`axelar-last-deposit-addr-${tokenMinDenom}`,
         `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
         null
       );
