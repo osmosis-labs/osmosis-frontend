@@ -68,6 +68,7 @@ export const TokenSelectModal: FunctionComponent<
             onClick={(e) => {
               e.stopPropagation();
               props.onSelect(coinDenom);
+              props.onRequestClose();
             }}
           >
             <button className="flex items-center justify-between text-left w-full">

@@ -12,6 +12,7 @@ import { LeftTime } from "../../components/left-time";
 import { MetricLoader } from "../../components/loaders";
 import { Overview } from "../../components/overview";
 import { TabBox } from "../../components/control";
+import { priceFormatter } from "../../components/utils";
 import { useStore } from "../../stores";
 import { DataSorter } from "../../hooks/data/data-sorter";
 import {
@@ -20,10 +21,11 @@ import {
   usePaginatedData,
   useSortedData,
   useCreatePoolConfig,
+  useAmplitudeAnalytics,
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
-import { UserAction } from "../../config";
+import { UserAction, EventName } from "../../config";
 import { POOLS_PER_PAGE } from "../../components/complex";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
@@ -40,6 +42,9 @@ const Pools: NextPage = observer(function () {
     queriesExternalStore,
   } = useStore();
   const { isMobile } = useWindowSize();
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Pools.pageViewed],
+  });
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -84,6 +89,7 @@ const Pools: NextPage = observer(function () {
         assets: superfluidPool.poolAssets.map((poolAsset) => ({
           coinImageUrl: poolAsset.amount.currency.coinImageUrl,
           coinDenom: poolAsset.amount.currency.coinDenom,
+          weightFraction: poolAsset.weightFraction,
         })),
       })) ?? []
   )
@@ -104,6 +110,7 @@ const Pools: NextPage = observer(function () {
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
+
   const createPoolConfig = useCreatePoolConfig(
     chainStore,
     chainId,
@@ -117,8 +124,10 @@ const Pools: NextPage = observer(function () {
     superfluidPools ?? [],
     ["id", "assets.coinDenom"]
   );
+
   const [sortKeyPath, setSortKeyPath, , , toggleSortDirection, sortedSfsPools] =
     useSortedData(fiteredSfsPools, "apr", "descending");
+
   const [page, setPage, minPage, numPages, sfsPoolsPage] = usePaginatedData(
     sortedSfsPools,
     POOLS_PER_PAGE
@@ -150,11 +159,13 @@ const Pools: NextPage = observer(function () {
                   },
                 })),
                 undefined,
-                () => setIsCreatingPool(false)
+                () => {
+                  setIsCreatingPool(false);
+                }
               );
             } catch (e) {
               setIsCreatingPool(false);
-              console.log(e);
+              console.error(e);
             }
           }}
         />
@@ -166,7 +177,10 @@ const Pools: NextPage = observer(function () {
             ? [
                 {
                   label: "Create New Pool",
-                  onClick: () => setIsCreatingPool(true),
+                  onClick: () => {
+                    logEvent([EventName.Pools.createNewPoolClicked]);
+                    setIsCreatingPool(true);
+                  },
                 },
               ]
             : []
@@ -268,7 +282,7 @@ const Pools: NextPage = observer(function () {
                         <MetricLoader
                           isLoading={poolLiquidity.toDec().isZero()}
                         >
-                          {poolLiquidity.toString()}
+                          {priceFormatter(poolLiquidity)}
                         </MetricLoader>
                       ),
                     },
@@ -280,7 +294,7 @@ const Pools: NextPage = observer(function () {
                         <MetricLoader
                           isLoading={poolLiquidity.toDec().isZero()}
                         >
-                          {myBonded.toString()}
+                          {priceFormatter(myBonded)}
                         </MetricLoader>
                       ),
                     },
@@ -308,6 +322,29 @@ const Pools: NextPage = observer(function () {
                         myPoolId
                       )}
                       mobileShowFirstLabel
+                      onClick={() =>
+                        logEvent([
+                          EventName.Pools.myPoolsCardClicked,
+                          {
+                            poolId: myPoolId,
+                            poolName: myPool.poolAssets
+                              .map(
+                                (poolAsset) =>
+                                  poolAsset.amount.currency.coinDenom
+                              )
+                              .join(" / "),
+                            poolWeight: myPool.poolAssets
+                              .map((poolAsset) =>
+                                poolAsset.weightFraction.toString()
+                              )
+                              .join(" / "),
+                            isSuperfluidPool:
+                              queryOsmosis.querySuperfluidPools.isSuperfluidPool(
+                                myPoolId
+                              ),
+                          },
+                        ])
+                      }
                     />
                   );
                 }
@@ -471,7 +508,7 @@ const Pools: NextPage = observer(function () {
                               <MetricLoader
                                 isLoading={poolLiquidity.toDec().isZero()}
                               >
-                                {poolLiquidity.toString()}
+                                {priceFormatter(poolLiquidity)}
                               </MetricLoader>
                             ),
                           },
@@ -479,9 +516,7 @@ const Pools: NextPage = observer(function () {
                             label: "Fees (7D)",
                             value: (
                               <MetricLoader
-                                isLoading={poolFeesMetrics.feesSpent7d
-                                  .toDec()
-                                  .isZero()}
+                                isLoading={!poolFeesMetrics.feesSpent7d.isReady}
                               >
                                 {poolFeesMetrics.feesSpent7d.toString()}
                               </MetricLoader>
@@ -489,6 +524,20 @@ const Pools: NextPage = observer(function () {
                           },
                         ]}
                         isSuperfluid
+                        onClick={() =>
+                          logEvent([
+                            EventName.Pools.superfluidPoolsCardClicked,
+                            {
+                              poolId: id,
+                              poolName: assets
+                                .map((asset) => asset.coinDenom)
+                                .join(" / "),
+                              poolWeight: assets
+                                .map((asset) => asset.weightFraction.toString())
+                                .join(" / "),
+                            },
+                          ])
+                        }
                       />
                     )
                   )}

@@ -1,42 +1,16 @@
-import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { CoinPrimitive } from "@keplr-wallet/stores";
 import { CoinPretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import classNames from "classnames";
+import { request, gql } from "graphql-request";
 
-import { REGISTRY_ADDRESSES } from "../../config";
+import { REGISTRY_ADDRESSES, SUBQUERY_ENDPOINTS } from "../../config";
 import { useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
 import { TabBox } from "../control";
 import { Button } from "../buttons";
-import classNames from "classnames";
-
-interface StateResponse {
-  curr_executing_request_id: number;
-  stakes_len: number;
-  total_requests: number;
-  total_stake_amount: string;
-}
-
-interface Request {
-  user: string;
-  executor: string;
-  target: string;
-  msg: string;
-  input_asset: any;
-  status: string;
-  created_at: number;
-}
-
-export interface RequestInfoResponse {
-  id: number;
-  request: Request;
-}
-
-interface RequestsResponse {
-  requests: RequestInfoResponse[];
-}
 
 interface Order {
   id: number;
@@ -45,6 +19,18 @@ interface Order {
   createdAt: number;
   inputToken: CoinPrimitive;
   outputToken: CoinPrimitive;
+}
+
+interface Request {
+  id: string;
+  registerId: string;
+  txHash: string;
+  target: string;
+  msg: string;
+  assets: string;
+  status: string;
+  createdAt: string;
+  executedOrCancelledAt: string;
 }
 
 const OrderRow = ({ order }: { order: Order }) => {
@@ -191,53 +177,58 @@ export default function OrderHistory({
         const keplr = await account.getKeplr();
         if (!keplr) return;
 
-        const client = await SigningCosmWasmClient.connectWithSigner(
-          rpc,
-          keplr.getOfflineSigner(chainId)
+        console.log("SUBQUERY_ENDPOINTS[chainId]", SUBQUERY_ENDPOINTS[chainId]);
+
+        const {
+          requests: { nodes },
+        } = await request(
+          SUBQUERY_ENDPOINTS[chainId],
+          gql`
+            query {
+              requests(
+                filter: {
+                  registerId: {
+                    like: "${account.bech32Address.toString()}"
+                  }
+                }
+              ) {
+                nodes {
+                  id
+                  registerId
+                  target
+                  msg
+                  assets
+                  status
+                  createdAt
+                  txHash
+                  executedOrCancelledAt
+                }
+              }
+            }
+          `
         );
-        const state: StateResponse = await client.queryContractSmart(
-          REGISTRY_ADDRESSES[chainId],
-          { state: {} }
-        );
-        const limit = 30;
+
         const allOrders: Order[] = [];
-        for (let i = 0; i < state.total_requests; i += limit) {
-          const requestsQuery = { limit, order_by: "asc" } as any;
-          if (i > 0) {
-            requestsQuery["start_after"] = i - 1;
-          }
-          const newRequests: RequestsResponse = await client.queryContractSmart(
-            REGISTRY_ADDRESSES[chainId],
-            { requests: requestsQuery }
-          );
-          const parsedOrders = newRequests.requests
-            .filter((req) => req.request.user === account.bech32Address)
-            .map((req) => {
-              const { request } = req;
-              const msg = JSON.parse(
-                Buffer.from(request.msg, "base64").toString()
-              );
-              const { swap } = msg;
-              if (!swap || !swap.first || !swap.route) return null;
-              return {
-                id: req.id,
-                type: swap.min_output === "0" ? "StopLoss" : "Limit",
-                status: request.status,
-                createdAt: request.created_at,
-                inputToken: { denom: swap.first.denom_in, amount: swap.amount },
-                outputToken: {
-                  denom:
-                    swap.route.length > 0
-                      ? swap.route[swap.route.length - 1].denom_out
-                      : swap.first.denom_out,
-                  amount:
-                    swap.min_output === "0" ? swap.max_output : swap.min_output,
-                },
-              } as Order;
-            })
-            .filter((order: Order | null) => order !== null);
-          allOrders.push(...(parsedOrders as Order[]));
-        }
+        (nodes as Request[]).map((request) => {
+          const msg = JSON.parse(Buffer.from(request.msg, "base64").toString());
+          const { swap } = msg;
+          if (!swap || !swap.first || !swap.route) return;
+          allOrders.push({
+            id: Number(request.id),
+            type: swap.min_output === "0" ? "StopLoss" : "Limit",
+            status: request.status,
+            createdAt: Math.floor(new Date(request.createdAt).getTime() / 1000),
+            inputToken: { denom: swap.first.denom_in, amount: swap.amount },
+            outputToken: {
+              denom:
+                swap.route.length > 0
+                  ? swap.route[swap.route.length - 1].denom_out
+                  : swap.first.denom_out,
+              amount:
+                swap.min_output === "0" ? swap.max_output : swap.min_output,
+            },
+          });
+        });
         setOrders(allOrders);
       }
     };
@@ -265,7 +256,7 @@ export default function OrderHistory({
           },
           {
             title: "Cancelled",
-            content: <OrderRows orders={orderByStatus("canceled")} />,
+            content: <OrderRows orders={orderByStatus("cancelled")} />,
           },
         ]}
       />

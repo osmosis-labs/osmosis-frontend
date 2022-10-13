@@ -10,6 +10,7 @@ interface Props extends InputProps<string>, Disableable, CustomClasses {
 export const SearchBox: FunctionComponent<Props> = ({
   currentValue,
   onInput,
+  onFocus,
   placeholder,
   state = "enabled",
   disabled = false,
@@ -32,6 +33,7 @@ export const SearchBox: FunctionComponent<Props> = ({
         value={currentValue}
         placeholder={placeholder}
         autoComplete="off"
+        onFocus={(e: any) => onFocus?.(e)}
         onInput={(e: any) => onInput(e.target.value)}
         onClick={(e: any) => e.target.select()}
         disabled={disabled}

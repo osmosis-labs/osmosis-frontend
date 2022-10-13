@@ -1,3 +1,5 @@
+import { PricePretty, IntPretty } from "@keplr-wallet/unit";
+
 export function replaceAt<T>(
   what: T,
   where: Array<T>,
@@ -39,4 +41,65 @@ export function truncateString(str: string, num = 8) {
     return str;
   }
   return str.slice(0, num) + "...";
+}
+
+/** Resolves a promise once desired results have been polled. */
+export function poll<TData>({
+  fn,
+  validate,
+  interval = 1_500,
+  maxAttempts = 50,
+}: {
+  /** Polling function. */
+  fn: () => Promise<TData>;
+  /** Determines if result meets end condition. */
+  validate: (data: TData) => boolean;
+  /** Gap in MS. */
+  interval?: number;
+  /** Max number of attempts before finished polling. Leave `undefined` for infinite. */
+  maxAttempts?: number;
+}) {
+  let attempts = 0;
+
+  const executePoll = async (
+    resolve: (data: TData) => void,
+    reject: (error: Error) => void
+  ) => {
+    const result = await fn();
+    attempts++;
+
+    if (validate(result)) {
+      return resolve(result);
+    } else if (maxAttempts && attempts === maxAttempts) {
+      return reject(new Error(`Exceeded max attempts: ${maxAttempts}`));
+    } else {
+      setTimeout(executePoll, interval, resolve, reject);
+    }
+  };
+
+  return new Promise(executePoll);
+}
+
+export function getKeyByValue(
+  object: { [key: string]: string },
+  value: string
+) {
+  return Object.keys(object).find((key) => object[key] === value);
+}
+
+/** Formats a price as compact by default. i.e. $7.53M or $265K. Validate handled by `PricePretty`. */
+export function priceFormatter(
+  price: PricePretty,
+  opts: Intl.NumberFormatOptions = {
+    maximumSignificantDigits: 3,
+    notation: "compact",
+    compactDisplay: "short",
+    style: "currency",
+    currency: price.fiatCurrency.currency,
+  }
+): string {
+  const formatter = new Intl.NumberFormat(price.fiatCurrency.locale, opts);
+  return formatter.format(
+    Number(new IntPretty(price).maxDecimals(2).toString().split(",").join(""))
+  );
 }

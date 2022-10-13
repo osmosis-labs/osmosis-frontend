@@ -33,7 +33,6 @@ export declare class ObservableAddLiquidityConfig extends ManageLiquidityConfigB
     get singleAmountInConfig(): AmountConfig | undefined;
     setIsSingleAmountIn(value: boolean): void;
     setSingleAmountInConfigIndex(index: number): void;
-    setSingleAmountInConfig(coinDenom: string): void;
     get singleAmountInPriceImpact(): RatePretty | undefined;
     get singleAmountInBalance(): CoinPretty | undefined;
     get poolAssetConfigs(): AmountConfig[];

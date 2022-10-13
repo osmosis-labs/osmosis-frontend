@@ -9,11 +9,13 @@ import {
   useEffect,
   useRef,
 } from "react";
+import { EventName } from "../../config";
 import {
   useFilteredData,
   usePaginatedData,
   useSortedData,
   useWindowSize,
+  useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { Switch, MenuToggle, PageList, SortMenu } from "../control";
@@ -42,6 +44,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     accountStore,
   } = useStore();
   const { isMobile } = useWindowSize();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const [activeOptionId, setActiveOptionId] = useState(tableSet);
   const selectOption = (optionId: string) => {
@@ -49,7 +52,24 @@ export const AllPoolsTableSet: FunctionComponent<{
       setActiveOptionId(optionId);
     }
   };
-  const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
+  const [isPoolTvlFiltered, do_setIsPoolTvlFiltered] = useState(false);
+  const tvlFilterLabel = `Show pools less than ${new PricePretty(
+    priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+    TVL_FILTER_THRESHOLD
+  ).toString()}`;
+  const setIsPoolTvlFiltered = useCallback(
+    (isFiltered: boolean) => {
+      logEvent([
+        EventName.Pools.allPoolsListFiltered,
+        {
+          filteredBy: tvlFilterLabel,
+          isFilterOn: isFiltered,
+        },
+      ]);
+      do_setIsPoolTvlFiltered(isFiltered);
+    },
+    [do_setIsPoolTvlFiltered]
+  );
 
   const { chainId } = chainStore.osmosis;
   const queriesOsmosis = queriesStore.get(chainId).osmosis!;
@@ -90,7 +110,6 @@ export const AllPoolsTableSet: FunctionComponent<{
           )
           .join(" "),
       })),
-    // eslint-disable-next-line
     [
       allPools,
       account.bech32Address,
@@ -171,12 +190,31 @@ export const AllPoolsTableSet: FunctionComponent<{
             onClickHeader: () => {
               switch (sortDirection) {
                 case "ascending":
-                  setSortDirection("descending");
+                  const newSortDirection = "descending";
+                  logEvent([
+                    EventName.Pools.allPoolsListSorted,
+                    {
+                      sortedBy: keyPath,
+                      sortDirection: newSortDirection,
+                      sortedOn: "table",
+                    },
+                  ]);
+                  setSortDirection(newSortDirection);
                   break;
                 case "descending":
+                  // default sort key toggles forever
                   if (sortKeyPath === initialKeyPath) {
-                    // default sort key toggles forever
-                    setSortDirection("ascending");
+                    const newSortDirection = "ascending";
+                    logEvent([
+                      EventName.Pools.allPoolsListSorted,
+                      {
+                        sortedBy: keyPath,
+                        sortDirection: newSortDirection,
+
+                        sortedOn: "table",
+                      },
+                    ]);
+                    setSortDirection(newSortDirection);
                   } else {
                     // other keys toggle then go back to default
                     setSortKeyPath(initialKeyPath);
@@ -187,8 +225,18 @@ export const AllPoolsTableSet: FunctionComponent<{
           }
         : {
             onClickHeader: () => {
+              const newSortDirection = "ascending";
+              logEvent([
+                EventName.Pools.allPoolsListSorted,
+                {
+                  sortedBy: keyPath,
+                  sortDirection: newSortDirection,
+
+                  sortedOn: "table",
+                },
+              ]);
               setSortKeyPath(keyPath);
-              setSortDirection("ascending");
+              setSortDirection(newSortDirection);
             },
           },
     [sortKeyPath, sortDirection, setSortDirection, setSortKeyPath]
@@ -235,6 +283,26 @@ export const AllPoolsTableSet: FunctionComponent<{
     () =>
       allData.map((poolWithFeeMetrics) => ({
         link: `/pool/${poolWithFeeMetrics.pool.id}`,
+        onClick: () => {
+          logEvent([
+            isIncentivizedPools
+              ? EventName.Pools.incentivizedPoolsItemClicked
+              : EventName.Pools.allPoolsItemClicked,
+            {
+              poolId: poolWithFeeMetrics.pool.id,
+              poolName: poolWithFeeMetrics.pool.poolAssets
+                .map((poolAsset) => poolAsset.amount.denom)
+                .join(" / "),
+              poolWeight: poolWithFeeMetrics.pool.poolAssets
+                .map((poolAsset) => poolAsset.weightFraction.toString())
+                .join(" / "),
+              isSuperfluidPool:
+                queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+                  poolWithFeeMetrics.pool.id
+                ),
+            },
+          ]);
+        },
       })),
     [allData]
   );
@@ -363,9 +431,10 @@ export const AllPoolsTableSet: FunctionComponent<{
                   },
             ],
           ],
-          isSuperfluid: queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
-            poolData.pool.id
-          ),
+          isSuperfluidPool:
+            queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+              poolData.pool.id
+            ),
         }))}
         searchBoxProps={{
           currentValue: query,
@@ -388,10 +457,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         minTvlToggleProps={{
           isOn: isPoolTvlFiltered,
           onToggle: setIsPoolTvlFiltered,
-          label: `Show pools less than ${new PricePretty(
-            priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-            TVL_FILTER_THRESHOLD
-          ).toString()}`,
+          label: tvlFilterLabel,
         }}
       />
     );
@@ -415,10 +481,7 @@ export const AllPoolsTableSet: FunctionComponent<{
             onToggle={setIsPoolTvlFiltered}
             className="mr-2"
           >
-            {`Show pools less than ${new PricePretty(
-              priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-              TVL_FILTER_THRESHOLD
-            ).toString()}`}
+            {tvlFilterLabel}
           </Switch>
           <div className="flex flex-wrap items-center gap-8 lg:w-full lg:place-content-between">
             <SearchBox
@@ -430,10 +493,35 @@ export const AllPoolsTableSet: FunctionComponent<{
             <SortMenu
               options={tableCols}
               selectedOptionId={sortKeyPath}
-              onSelect={(id) =>
-                id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id)
-              }
-              onToggleSortDirection={toggleSortDirection}
+              onSelect={(id) => {
+                if (id === sortKeyPath) {
+                  setSortKeyPath("");
+                } else {
+                  logEvent([
+                    EventName.Pools.allPoolsListSorted,
+                    {
+                      sortedBy: id,
+                      sortDirection: sortDirection,
+                      sortedOn: "dropdown",
+                    },
+                  ]);
+                  setSortKeyPath(id);
+                }
+              }}
+              onToggleSortDirection={() => {
+                logEvent([
+                  EventName.Pools.allPoolsListSorted,
+                  {
+                    sortedBy: sortKeyPath,
+                    sortDirection:
+                      sortDirection === "ascending"
+                        ? "descending"
+                        : "ascending",
+                    sortedOn: "dropdown",
+                  },
+                ]);
+                toggleSortDirection();
+              }}
             />
           </div>
         </div>

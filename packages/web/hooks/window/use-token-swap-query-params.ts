@@ -54,7 +54,6 @@ export function useTokenSwapQueryParams(
         tradeConfig.setOutCurrency(toCurrency);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.query.from, router.query.to, tradeConfig?.sendableCurrencies]);
 
   useEffect(() => {
@@ -88,7 +87,5 @@ export function useTokenSwapQueryParams(
     } else {
       firstQueryEffectChecker.current = true;
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tradeConfig?.sendCurrency, tradeConfig?.outCurrency]);
 }

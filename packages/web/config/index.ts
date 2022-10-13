@@ -13,3 +13,4 @@ export * from "./initial-assets-sort";
 export * from "./price";
 
 export * from "./autonomy";
+export * from "./user-analytics-v2";

@@ -7,6 +7,8 @@ export interface Pool {
     get shareDenom(): string;
     get swapFee(): Dec;
     get exitFee(): Dec;
+    /** LBP */
+    get smoothWeightChange(): SmoothWeightChangeParams | undefined;
     get poolAssets(): {
         denom: string;
         amount: Int;
@@ -51,3 +53,28 @@ export interface Pool {
     getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;
     getLimitAmountByTokenIn(denom: string): Int;
 }
+/** Parameters of LBP. */
+export declare type SmoothWeightChangeParams = {
+    /** Timestamp */
+    startTime: string;
+    /** Seconds with s suffix. Ex) 3600s */
+    duration: string;
+    initialPoolWeights: {
+        token: {
+            denom: string;
+            /** Int */
+            amount: string;
+        };
+        /** Int */
+        weight: string;
+    }[];
+    targetPoolWeights: {
+        token: {
+            denom: string;
+            /** Int */
+            amount: string;
+        };
+        /** Int */
+        weight: string;
+    }[];
+};

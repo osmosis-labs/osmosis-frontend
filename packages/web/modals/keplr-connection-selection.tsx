@@ -79,7 +79,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
       }}
     >
       <Image
-        src="/images/wallet-connect-logo.png"
+        src="/icons/walletconnect.svg"
         alt="wallet connect logo"
         width={64}
         height={64}

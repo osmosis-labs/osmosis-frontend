@@ -172,6 +172,7 @@ export declare class OsmosisAccountImpl {
         queryDistrInfo: import("../queries/pool-incentives/distr-info").ObservableQueryDistrInfo;
         queryIncentivizedPools: import("../queries").ObservableQueryIncentivizedPools;
         queryGauge: import("../queries").ObservableQueryGuage;
+        queryPoolsGaugeIds: import("../queries").ObservableQueryPoolsGaugeIds;
         queryPoolCreationFee: import("../queries").ObservableQueryPoolCreationFee;
         querySuperfluidPools: import("../queries").ObservableQuerySuperfluidPools;
         querySuperfluidDelegations: import("../queries").ObservableQuerySuperfluidDelegations;

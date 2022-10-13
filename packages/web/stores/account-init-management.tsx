@@ -4,11 +4,13 @@ import { useStore } from "./index";
 import { getKeplrFromWindow, WalletStatus } from "@keplr-wallet/stores";
 import { useKeplr } from "../hooks";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
+import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
 
 /** Manages the initialization of the Osmosis account. */
 export const AccountInitManagement: FunctionComponent = observer(
   ({ children }) => {
     const { chainStore, accountStore } = useStore();
+    const { setUserProperty } = useAmplitudeAnalytics();
 
     const keplr = useKeplr();
 
@@ -25,9 +27,9 @@ export const AccountInitManagement: FunctionComponent = observer(
       getKeplrFromWindow().then((keplr) => {
         if (keplr && keplr.mode === "mobile-web") {
           account.init();
+          setUserProperty("isWalletConnected", true);
         }
       });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Init Osmosis account w/ desired connection type (wallet connect, extension)
@@ -42,9 +44,10 @@ export const AccountInitManagement: FunctionComponent = observer(
             keplr.setDefaultConnectionType("extension");
           }
           account.init();
+          setUserProperty("isWalletConnected", true);
+          setUserProperty("connectedWallet", value);
         }
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const listenWCDisconnectEventOnce = useRef(false);
@@ -63,6 +66,7 @@ export const AccountInitManagement: FunctionComponent = observer(
                 chainStore.chainInfos.forEach((chainInfo) => {
                   if (accountStore.hasAccount(chainInfo.chainId)) {
                     accountStore.getAccount(chainInfo.chainId).disconnect();
+                    setUserProperty("isWalletConnected", false);
                   }
                 });
               });
@@ -94,7 +98,7 @@ export const AccountInitManagement: FunctionComponent = observer(
         keplr.getKeplr().then((keplrAPI) => {
           if (keplrAPI && keplrAPI instanceof KeplrWalletConnectV1) {
             keplrAPI.connector.killSession().catch((e) => {
-              console.log(e);
+              console.error(e);
             });
           }
 

@@ -57,7 +57,7 @@ export const PageList: FunctionComponent<Props> = ({
         <div className={isEditingText ? "pt-2.5 pr-2" : undefined}>
           <Image
             alt="left"
-            src="/icons/chevron-left.svg"
+            src="/icons/chevron-left-secondary.svg"
             height={18}
             width={18}
             onClick={() =>

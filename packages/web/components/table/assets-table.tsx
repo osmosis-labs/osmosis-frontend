@@ -1,31 +1,34 @@
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { initialAssetsSort } from "../../config";
 import {
   IBCBalance,
   IBCCW20ContractBalance,
   CoinBalance,
 } from "../../stores/assets";
+import { useStore } from "../../stores";
+import { useSortedData, useFilteredData } from "../../hooks/data";
+import {
+  useLocalStorageState,
+  useWindowSize,
+  useAmplitudeAnalytics,
+} from "../../hooks";
+import { ShowMoreButton } from "../buttons/show-more";
 import { SearchBox } from "../input";
-import { SortMenu } from "../control";
-import { Table } from ".";
+import { SortMenu, Switch } from "../control";
 import { SortDirection } from "../types";
+import { AssetCard } from "../cards";
+import { Button } from "../buttons";
 import {
   AssetNameCell,
   BalanceCell,
   TransferButtonCell,
   AssetCell as TableCell,
 } from "./cells";
-import { useStore } from "../../stores";
-import { useSortedData, useFilteredData } from "../../hooks/data";
-import { useLocalStorageState, useWindowSize } from "../../hooks/window";
-import { ShowMoreButton } from "../buttons/show-more";
-import { AssetCard } from "../cards";
-import { Switch } from "../control";
-import { Button } from "../buttons";
-import { PreTransferModal } from "../../modals";
-import { IbcHistoryTable } from "./ibc-history";
+import { TransferHistoryTable } from "./transfer-history";
 import { ColumnDef } from "./types";
+import { Table } from ".";
+import { EventName } from "../../config/user-analytics-v2";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -34,18 +37,55 @@ interface Props {
     withdrawUrlOverride?: string;
     sourceChainNameOverride?: string;
   })[];
-  onWithdraw: (chainId: string, coinDenom: string) => void;
-  onDeposit: (chainId: string, coinDenom: string) => void;
+  onWithdrawIntent: () => void;
+  onDepositIntent: () => void;
+  onWithdraw: (
+    chainId: string,
+    coinDenom: string,
+    externalUrl?: string
+  ) => void;
+  onDeposit: (chainId: string, coinDenom: string, externalUrl?: string) => void;
 }
 
 export const AssetsTable: FunctionComponent<Props> = ({
   nativeBalances,
   ibcBalances,
-  onDeposit,
-  onWithdraw,
+  onDepositIntent,
+  onWithdrawIntent,
+  onDeposit: do_onDeposit,
+  onWithdraw: do_onWithdraw,
 }) => {
   const { chainStore } = useStore();
   const { width, isMobile } = useWindowSize();
+  const { logEvent } = useAmplitudeAnalytics();
+
+  const onDeposit = useCallback(
+    (...depositParams: Parameters<typeof do_onDeposit>) => {
+      do_onDeposit(...depositParams);
+      logEvent([
+        EventName.Assets.assetsItemDepositClicked,
+        {
+          tokenName: depositParams[1],
+          hasExternalUrl: !!depositParams[2],
+        },
+      ]);
+    },
+    [do_onDeposit]
+  );
+  const onWithdraw = useCallback(
+    (...withdrawParams: Parameters<typeof do_onWithdraw>) => {
+      do_onWithdraw(...withdrawParams);
+      logEvent([
+        EventName.Assets.assetsItemWithdrawClicked,
+        {
+          tokenName: withdrawParams[1],
+          hasExternalUrl: !!withdrawParams[2],
+        },
+      ]);
+    },
+    [do_onWithdraw]
+  );
+
   const mergeWithdrawCol = width < 1000 && !isMobile;
   // Assemble cells with all data needed for any place in the table.
   const cells: TableCell[] = useMemo(
@@ -134,12 +174,27 @@ export const AssetsTable: FunctionComponent<Props> = ({
   // Sort data based on user's input either with the table column headers or the sort menu.
   const [
     sortKey,
-    setSortKey,
+    do_setSortKey,
     sortDirection,
     setSortDirection,
     toggleSortDirection,
     sortedCells,
   ] = useSortedData(cells);
+  const setSortKey = useCallback(
+    (term: string) => {
+      logEvent([
+        EventName.Assets.assetsListSorted,
+        {
+          sortedBy: term,
+          sortDirection,
+
+          sortedOn: "dropdown",
+        },
+      ]);
+      do_setSortKey(term);
+    },
+    [sortDirection, do_setSortKey]
+  );
 
   // Table column def to determine how the first 2 column headers handle user click.
   const sortColumnWithKeys = useCallback(
@@ -162,9 +217,28 @@ export const AssetsTable: FunctionComponent<Props> = ({
         // If it wasn't sorting (aka first time it is clicked), then it will sort on the first
         // key by default.
         onClickHeader: isSorting
-          ? toggleSortDirection
+          ? () => {
+              logEvent([
+                EventName.Assets.assetsListSorted,
+                {
+                  sortedBy: firstKey,
+                  sortDirection:
+                    sortDirection === "descending" ? "ascending" : "descending",
+                  sortedOn: "table-head",
+                },
+              ]);
+              toggleSortDirection();
+            }
           : () => {
               if (firstKey) {
+                logEvent([
+                  EventName.Assets.assetsListSorted,
+                  {
+                    sortedBy: firstKey,
+                    sortDirection: onClickSortDirection,
+                    sortedOn: "table-head",
+                  },
+                ]);
                 setSortKey(firstKey);
                 setSortDirection(onClickSortDirection);
               }
@@ -194,73 +268,26 @@ export const AssetsTable: FunctionComponent<Props> = ({
     ? filteredSortedCells
     : filteredSortedCells.slice(0, 10);
 
-  // Mobile only - State for pre-transfer menu for selecting asset to ibc transfer
-  const [showPreTransfer, setShowPreTransfer] = useState(false);
-  const [selectedTransferToken, setPreTransferToken] = useState<CoinPretty>(
-    ibcBalances[0].balance
-  );
-  const {
-    chainInfo: selectedChainInfo,
-    depositUrlOverride: selectedDepositUrlOverride,
-    withdrawUrlOverride: selectedWithdrawUrlOverride,
-  } = ibcBalances.find(
-    (ibcAsset) => ibcAsset.balance.denom === selectedTransferToken.denom
-  ) ?? {};
-
   return (
-    <section className="min-h-screen md:bg-background bg-surface">
-      {showPreTransfer && (
-        <PreTransferModal
-          isOpen={showPreTransfer}
-          onRequestClose={() => setShowPreTransfer(false)}
-          externalDepositUrl={selectedDepositUrlOverride}
-          externalWithdrawUrl={selectedWithdrawUrlOverride}
-          onDeposit={() => {
-            if (selectedChainInfo?.chainId) {
-              onDeposit(selectedChainInfo.chainId, selectedTransferToken.denom);
-            }
-            setShowPreTransfer(false);
-          }}
-          onWithdraw={() => {
-            if (selectedChainInfo?.chainId) {
-              onWithdraw(
-                selectedChainInfo.chainId,
-                selectedTransferToken.denom
-              );
-            }
-            setShowPreTransfer(false);
-          }}
-          isUnstable={
-            ibcBalances.find(
-              (balance) => balance.balance.denom === selectedTransferToken.denom
-            )?.isUnstable ?? false
-          }
-          onSelectToken={(coinDenom) => {
-            const ibcToken = ibcBalances.find(
-              (ibcAsset) => ibcAsset.balance.denom === coinDenom
-            );
-            if (ibcToken) {
-              setPreTransferToken(ibcToken.balance);
-            }
-          }}
-          selectedToken={selectedTransferToken}
-          tokens={ibcBalances.map((ibcAsset) => ibcAsset.balance)}
-        />
-      )}
+    <section className="md:bg-background bg-surface">
       <div className="max-w-container mx-auto md:p-4 p-10">
         {isMobile ? (
           <div className="flex flex-col gap-5">
             <div className="flex place-content-between gap-10 py-2">
               <Button
                 className="w-full h-10"
-                onClick={() => setShowPreTransfer(true)}
+                onClick={() => {
+                  onDepositIntent();
+                }}
               >
                 Deposit
               </Button>
               <Button
                 className="w-full h-10 bg-primary-200/30"
                 type="outline"
-                onClick={() => setShowPreTransfer(true)}
+                onClick={() => {
+                  onWithdrawIntent();
+                }}
               >
                 Withdraw
               </Button>
@@ -279,7 +306,17 @@ export const AssetsTable: FunctionComponent<Props> = ({
               <Switch
                 isOn={hideZeroBalances}
                 disabled={!canHideZeroBalances}
-                onToggle={() => setHideZeroBalances(!hideZeroBalances)}
+                onToggle={() => {
+                  logEvent([
+                    EventName.Assets.assetsListFiltered,
+                    {
+                      filteredBy: "Hide zero balances",
+                      isFilterOn: !hideZeroBalances,
+                    },
+                  ]);
+
+                  setHideZeroBalances(!hideZeroBalances);
+                }}
               >
                 Hide zero balances
               </Switch>
@@ -312,7 +349,9 @@ export const AssetsTable: FunctionComponent<Props> = ({
               <Switch
                 isOn={hideZeroBalances}
                 disabled={!canHideZeroBalances}
-                onToggle={() => setHideZeroBalances(!hideZeroBalances)}
+                onToggle={() => {
+                  setHideZeroBalances(!hideZeroBalances);
+                }}
               >
                 Hide zero balances
               </Switch>
@@ -328,7 +367,20 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 <SortMenu
                   selectedOptionId={sortKey}
                   onSelect={setSortKey}
-                  onToggleSortDirection={toggleSortDirection}
+                  onToggleSortDirection={() => {
+                    logEvent([
+                      EventName.Assets.assetsListSorted,
+                      {
+                        sortedBy: sortKey,
+                        sortDirection:
+                          sortDirection === "descending"
+                            ? "ascending"
+                            : "descending",
+                        sortedOn: "dropdown",
+                      },
+                    ]);
+                    toggleSortDirection();
+                  }}
                   options={[
                     {
                       id: "coinDenom",
@@ -368,15 +420,9 @@ export const AssetsTable: FunctionComponent<Props> = ({
                     assetData.chainId === chainStore.osmosis.chainId)
                     ? undefined
                     : () => {
-                        setPreTransferToken(
-                          new CoinPretty(
-                            assetData.currency,
-                            assetData.amount.replace(",", "")
-                          ).moveDecimalPointRight(
-                            assetData.currency.coinDecimals
-                          )
-                        );
-                        setShowPreTransfer(true);
+                        if (assetData.chainId && assetData.coinDenom) {
+                          onDeposit(assetData.chainId, assetData.coinDenom);
+                        }
                       }
                 }
                 showArrow
@@ -441,11 +487,19 @@ export const AssetsTable: FunctionComponent<Props> = ({
             <ShowMoreButton
               className="m-auto"
               isOn={showAllAssets}
-              onToggle={() => setShowAllAssets(!showAllAssets)}
+              onToggle={() => {
+                logEvent([
+                  EventName.Assets.assetsListMoreClicked,
+                  {
+                    isOn: !showAllAssets,
+                  },
+                ]);
+                setShowAllAssets(!showAllAssets);
+              }}
             />
           )}
         </div>
-        <IbcHistoryTable className="mt-8 md:w-screen md:-mx-4" />
+        <TransferHistoryTable className="mt-8 md:w-screen md:-mx-4" />
       </div>
     </section>
   );

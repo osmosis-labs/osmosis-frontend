@@ -1,3 +1,8 @@
+export const SUBQUERY_ENDPOINTS: { [chainId: string]: string } = {
+  "osmosis-1": "",
+  "osmo-test-4": "",
+};
+
 export const REGISTRY_ADDRESSES: { [chainId: string]: string } = {
   "osmosis-1": "",
   "osmo-test-4":

@@ -39,6 +39,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     makeObservable(this);
   }
 
+  /** Internally incentivized pools. */
   @computed
   get incentivizedPools(): string[] {
     if (!this.response) {
@@ -53,10 +54,12 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     return [...new Set(result)];
   }
 
+  /** Is incentivized internally. */
   readonly isIncentivized = computedFn((poolId: string) => {
     return this.incentivizedPools.includes(poolId);
   });
 
+  /** Internal incentives (OSMO). */
   readonly getIncentivizedGaugeId = computedFn(
     (poolId: string, duration: Duration): string | undefined => {
       if (!this.response) {

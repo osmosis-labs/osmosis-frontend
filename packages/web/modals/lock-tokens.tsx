@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Duration } from "dayjs/plugin/duration";
 import classNames from "classnames";
@@ -17,7 +17,7 @@ export const LockTokensModal: FunctionComponent<
     gauges: {
       id: string;
       duration: Duration;
-      apr: RatePretty;
+      apr?: RatePretty;
       superfluidApr?: RatePretty;
     }[];
     amountConfig: AmountConfig;
@@ -46,6 +46,7 @@ export const LockTokensModal: FunctionComponent<
   const [selectedGaugeIndex, setSelectedGaugeIndex] = useState<number | null>(
     null
   );
+
   const highestGaugeSelected = selectedGaugeIndex === gauges.length - 1;
   const [electSuperfluid, setElectSuperfluid] = useState(true);
 
@@ -80,19 +81,27 @@ export const LockTokensModal: FunctionComponent<
     props.onRequestClose
   );
 
+  // auto select the gauge if there's one
+  useEffect(() => {
+    if (gauges.length === 1) setSelectedGaugeIndex(0);
+  }, [gauges]);
+
   return (
     <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-col gap-2.5">
-          <span className="subitle1">Unbonding period</span>
-          <div className="flex md:flex-col gap-4">
+          <span className="subitle1">
+            Unbonding period
+            {gauges.length > 3 && !isMobile ? ` (${gauges.length})` : null}
+          </span>
+          <div className="flex md:flex-col gap-4 overflow-x-auto">
             {gauges.map(({ id, duration, apr, superfluidApr }, index) => (
               <LockupItem
                 key={id}
                 duration={duration.humanize()}
                 isSelected={index === selectedGaugeIndex}
                 onSelect={() => setSelectedGaugeIndex(index)}
-                apr={apr.maxDecimals(2).trim(true).toString()}
+                apr={apr?.maxDecimals(2).trim(true).toString()}
                 superfluidApr={superfluidApr
                   ?.maxDecimals(0)
                   .trim(true)
@@ -157,7 +166,7 @@ const LockupItem: FunctionComponent<
     duration: string;
     isSelected: boolean;
     onSelect: () => void;
-    apr: string;
+    apr?: string;
     superfluidApr?: string;
   } & MobileProps
 > = ({
@@ -174,7 +183,7 @@ const LockupItem: FunctionComponent<
       {
         "shadow-elevation-08dp": isSelected,
       },
-      "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer",
+      "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer min-w-[190px]",
       superfluidApr
         ? "bg-superfluid"
         : isSelected
@@ -184,7 +193,7 @@ const LockupItem: FunctionComponent<
   >
     <div
       className={classNames(
-        "flex items-center rounded-2xlinset bg-surface h-full md:py-3.5 py-5 px-4",
+        "flex items-center rounded-2xlinset bg-surface h-full px-5 md:py-3.5 py-5 md:px-4",
         {
           "bg-superfluid-20": superfluidApr && isSelected,
         }
@@ -198,7 +207,7 @@ const LockupItem: FunctionComponent<
             : "border-iconDefault border"
         )}
       />
-      <div className="flex w-full place-content-between items-center items-left flex-col md:flex-row">
+      <div className="flex w-full place-content-between items-center items-left flex-col md:flex-row md:items-baseline">
         <div className="flex gap-1.5 items-center md:mx-1 mx-auto">
           {isMobile ? (
             <span className="subtitle1">{duration}</span>
@@ -216,11 +225,13 @@ const LockupItem: FunctionComponent<
             )}
           </div>
         </div>
-        <div className="flex items-center md:text-right text-center md:mx-0 mx-auto gap-2">
-          <p className="subtitle2 md:m-0 mt-1 text-secondary-200 md:text-sm text-base">
-            {`${apr}${superfluidApr ? `+ ${superfluidApr}` : ""}`}
-          </p>
-        </div>
+        {apr && (
+          <div className="flex items-center md:text-right text-center md:mx-0 mx-auto gap-2">
+            <p className="subtitle2 md:m-0 mt-1 text-secondary-200 md:text-sm text-base">
+              {`${apr}${superfluidApr ? `+ ${superfluidApr}` : ""}`}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   </button>
