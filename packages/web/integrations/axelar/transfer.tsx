@@ -57,8 +57,6 @@ const AxelarTransfer: FunctionComponent<
     onRequestClose,
     onRequestSwitchWallet,
     coinMinimalDenom,
-    //tokenMinDenom,
-    //transferFeeMinAmount,
     sourceChains,
     isTestNet = process.env.NEXT_PUBLIC_IS_TESTNET === "true",
     connectCosmosWalletButtonOverride,
@@ -99,13 +97,10 @@ const AxelarTransfer: FunctionComponent<
       EthClientChainIds_AxelarChainIdsMap[selectedSourceChainKey] ??
       selectedSourceChainKey;
 
-    const erc20ContractAddress = sourceChains.find(
-      ({ id }) => id === selectedSourceChainKey
-    )?.erc20ContractAddress;
-    
-    const transferFeeMinAmount = sourceChains.find(
-      ({ id }) => id === selectedSourceChainKey
-    )?.transferFeeMinAmount;
+    const sourceChainConfig = sourceChains.find( ({ id }) => id === selectedSourceChainKey );
+
+    const erc20ContractAddress = sourceChainConfig?.erc20ContractAddress;
+    const transferFeeMinAmount = sourceChainConfig?.transferFeeMinAmount;
     
     const axelarChainId =
       chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
