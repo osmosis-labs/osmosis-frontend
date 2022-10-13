@@ -252,8 +252,10 @@ export class RootStore {
       this.queriesStore
     );
 
+    const userSettingKvStore = makeLocalStorageKVStore("user_setting");
     this.userSettings = new UserSettings([
       new ShowDustUserSetting(
+        userSettingKvStore,
         this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
           ?.symbol ?? "$"
       ),
