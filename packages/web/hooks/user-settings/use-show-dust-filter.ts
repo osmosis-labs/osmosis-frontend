@@ -3,10 +3,13 @@ import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { useStore } from "../../stores";
 import { ShowDustState } from "../../stores/user-settings";
 
-/** Filter a list of items less than one fiat min-amount (penny) if the user setting is on. */
+/** Filter a list of items less than one fiat min-amount (penny) if the user setting is on.
+ *  @param items Items to be filtered
+ *  @param getValueOfItem Get the value of the item in fiat. Return `undefined` to include regardless.
+ */
 export function useShowDustUserSetting<TDustableItem>(
   items: TDustableItem[],
-  getValueOfItem: (item: TDustableItem) => PricePretty
+  getValueOfItem: (item: TDustableItem) => PricePretty | undefined
 ): TDustableItem[] {
   const { userSettings } = useStore();
 
@@ -20,8 +23,10 @@ export function useShowDustUserSetting<TDustableItem>(
   return useMemo(
     () =>
       items.filter((item) =>
-        showDust ? true : getValueOfItem(item).toDec().gt(new Dec(0.01))
+        showDust
+          ? true
+          : getValueOfItem(item)?.toDec().gte(new Dec(0.01)) ?? true
       ),
-    [showDust, items]
+    [items, showDust]
   );
 }
