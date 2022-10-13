@@ -936,9 +936,11 @@ export const TradeClipboard: FunctionComponent<{
                 REGISTRY_ADDRESSES[chainId],
                 {
                   create_request: {
-                    target: WRAPPER_ADDRESSES[chainId],
-                    msg,
-                    input_asset,
+                    request_info: {
+                      target: WRAPPER_ADDRESSES[chainId],
+                      msg,
+                      input_asset,
+                    },
                   },
                 },
                 funds,

@@ -1,12 +1,13 @@
 export const SUBQUERY_ENDPOINTS: { [chainId: string]: string } = {
   "osmosis-1": "",
-  "osmo-test-4": "",
+  "osmo-test-4":
+    "https://api.subquery.network/sq/0xlook/autonomy-osmosis-subql",
 };
 
 export const REGISTRY_ADDRESSES: { [chainId: string]: string } = {
   "osmosis-1": "",
   "osmo-test-4":
-    "osmo1m5e3fu3tjv7j5txuv65p89tpqruzh29le5e926fssax2tzcf59nqd9fmxf",
+    "osmo1yx3jsxdxq6lg6qm5yfl8aars7ye33x2hasnpqtwmu79mfzumqqjsdl54sh",
 };
 
 export const WRAPPER_ADDRESSES: { [chainId: string]: string } = {
