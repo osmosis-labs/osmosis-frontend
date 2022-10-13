@@ -192,6 +192,29 @@ const Pool: FunctionComponent = observer(() => {
       gaugeDurationMap.set(gauge.duration.asSeconds(), gauge);
     });
 
+    // Compute combined APR (internal gauge + white-listed external gauge)
+    gaugeDurationMap.forEach((gauge) => {
+      const baseApy = queryOsmosis.queryIncentivizedPools.computeAPY(
+        pool.id,
+        gauge.duration,
+        priceStore,
+        fiat
+      );
+
+      const externalApy =
+        queryOsmosis.queryIncentivizedPools.computeExternalIncentiveAPYForSpecificDuration(
+          gauge.duration,
+          allowedGauges
+        );
+
+      const totalApr = baseApy.add(externalApy);
+
+      gaugeDurationMap.set(gauge.duration.asSeconds(), {
+        ...gauge,
+        apr: totalApr,
+      });
+    });
+
     return Array.from(gaugeDurationMap.values()).sort(
       (a, b) => a.duration.asSeconds() - b.duration.asSeconds()
     );
@@ -824,20 +847,11 @@ const Pool: FunctionComponent = observer(() => {
           )}
           {allowedLockupGauges && pool && (
             <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
-              {allowedLockupGauges.map(({ duration, superfluidApr }) => (
+              {allowedLockupGauges.map(({ duration, apr, superfluidApr }) => (
                 <PoolGaugeCard
                   key={duration.humanize()}
                   days={duration.humanize()}
-                  apr={queryOsmosis.queryIncentivizedPools
-                    .computeAPYWithExternalIncentives(
-                      pool.id,
-                      duration,
-                      priceStore,
-                      fiat,
-                      allowedGauges
-                    )
-                    .maxDecimals(2)
-                    .toString()}
+                  apr={apr?.maxDecimals?.(2).toString() ?? "0"}
                   superfluidApr={superfluidApr?.maxDecimals(2).toString()}
                   isMobile={isMobile}
                 />

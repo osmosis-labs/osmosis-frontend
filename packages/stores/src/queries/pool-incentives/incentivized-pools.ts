@@ -118,18 +118,13 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     }
   );
 
-  readonly computeAPYWithExternalIncentives = computedFn(
-    (
-      poolId: string,
-      duration: Duration,
-      priceStore: IPriceStore,
-      fiatCurrency: FiatCurrency,
-      allowedGauges: ExternalGauge[]
-    ): RatePretty => {
-      const apy = this.computeAPY(poolId, duration, priceStore, fiatCurrency);
-
+  /**
+   * Computes external incentive APY for the given duration
+   */
+  readonly computeExternalIncentiveAPYForSpecificDuration = computedFn(
+    (duration: Duration, allowedGauges: ExternalGauge[]): RatePretty => {
       if (!allowedGauges.length) {
-        return apy;
+        return new RatePretty(new Dec(0));
       }
 
       const externalGauge = allowedGauges.find((externalGauge) => {
@@ -139,13 +134,13 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       });
 
       if (!externalGauge?.rewardAmount) {
-        return apy;
+        return new RatePretty(new Dec(0));
       }
 
       const mintDenom = this.queryMintParmas.mintDenom;
 
       if (!mintDenom) {
-        return apy;
+        return new RatePretty(new Dec(0));
       }
 
       const chainInfo = this.chainGetter.getChain(this.chainId);
@@ -153,14 +148,14 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       const mintCurrency = chainInfo.findCurrency(mintDenom);
 
       if (!mintCurrency) {
-        return apy;
+        return new RatePretty(new Dec(0));
       }
 
-      const amount = externalGauge.rewardAmount.moveDecimalPointLeft(
-        mintCurrency.coinDecimals
+      return new RatePretty(
+        externalGauge.rewardAmount
+          .moveDecimalPointLeft(mintCurrency.coinDecimals)
+          .toDec()
       );
-
-      return apy.add(amount);
     }
   );
 
