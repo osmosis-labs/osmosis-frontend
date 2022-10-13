@@ -60,7 +60,7 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
           ))}
           <button
             className={classNames(
-              "flex items-center shrink-0 h-24 md:h-auto gap-5 md:p-2.5 px-7 border border-osmoverse-700 rounded-2xl select-none",
+              "flex items-center shrink-0 gap-5 md:p-2.5 px-6 py-4 border border-osmoverse-700 rounded-2xl select-none",
               config.canAddAsset
                 ? "hover:border-wosmongton-200 cursor-pointer"
                 : "opacity-30 cursor-default"
@@ -74,7 +74,7 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
               }
             }}
           >
-            <div className="flex items-center justify-center bg-wosmongton-500 h-9 w-9 md:h-6 md:w-6 ml-1.5 rounded-full">
+            <div className="flex items-center justify-center bg-wosmongton-500 h-7 w-7 md:h-6 md:w-6 ml-1.5 rounded-full">
               <Image
                 alt="add"
                 src="/icons/add.svg"
@@ -82,11 +82,7 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
                 width={isMobile ? 12 : 15}
               />
             </div>
-            {isMobile ? (
-              <span className="subtitle1">Add new token</span>
-            ) : (
-              <h6>Add new token</h6>
-            )}
+            <span className="subtitle1">Add new token</span>
           </button>
         </div>
       </StepBase>

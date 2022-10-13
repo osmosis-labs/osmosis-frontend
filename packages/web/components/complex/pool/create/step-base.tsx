@@ -2,7 +2,7 @@ import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { StepProps } from "./types";
 import { Info, Error } from "../../../alert";
-import { Button } from "../../../buttons";
+import { NewButton } from "../../../buttons";
 import { POOL_CREATION_FEE } from ".";
 import { useWindowSize } from "../../../../hooks";
 
@@ -38,15 +38,6 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
               ? " Confirm pool ratio and token amount"
               : null}{" "}
           </span>
-          {step === 1 ||
-            (step === 3 && (
-              <Info
-                message="Pool Creation Fee"
-                caption="Transferred to the Osmosis community pool"
-                data={POOL_CREATION_FEE}
-                isMobile={isMobile}
-              />
-            ))}
           <div>{children}</div>
           {positiveBalanceError && step === 1 && (
             <Error className="mx-auto" message={positiveBalanceError} />
@@ -60,17 +51,21 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
           {swapFeeError && step === 3 && (
             <Error className="mx-auto" message={swapFeeError} />
           )}
-          <div className="flex gap-4 mx-auto">
-            <Button
-              className="w-80 md:w-36 md:h-10"
-              size={isMobile ? "sm" : "lg"}
-              onClick={() => advanceStep()}
-              loading={isSendingMsg}
-              disabled={!canAdvance || isSendingMsg}
-            >
-              {step === 3 ? "Create Pool" : "Next"}
-            </Button>
-          </div>
+          {(step === 1 || step === 3) && (
+            <Info
+              message="Pool Creation Fee"
+              caption="Transferred to the Osmosis community pool"
+              data={POOL_CREATION_FEE}
+              isMobile={isMobile}
+            />
+          )}
+          <NewButton
+            className="w-full h-16"
+            onClick={() => advanceStep()}
+            disabled={!canAdvance || isSendingMsg}
+          >
+            {step === 3 ? "Create Pool" : "Next"}
+          </NewButton>
         </div>
       );
     }

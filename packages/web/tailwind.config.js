@@ -194,6 +194,8 @@ module.exports = {
         "linear-gradient(90deg, rgba(138, 134, 255, 0.2) 0.04%, rgba(225, 60, 189, 0.2) 99.5%)",
       "selected-validator":
         "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), linear-gradient(#231d4b, #231d4b)",
+      "gradient-neutral":
+        "linear-gradient(96.42deg, #462ADF -0.59%, #8A86FF 100%);",
       "gradient-positive":
         "linear-gradient(96.5deg, #2AB4DF 1.78%, #2AAEDF 1.79%, #899DFF 1.8%, #24F9AC 100%);",
     },

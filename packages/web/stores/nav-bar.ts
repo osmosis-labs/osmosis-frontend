@@ -39,7 +39,7 @@ export class NavBarStore {
     return this._callToActionButtons;
   }
 
-  set title(val: string) {
+  set title(val: string | undefined) {
     runInAction(() => (this._title = val));
   }
 

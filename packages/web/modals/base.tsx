@@ -43,7 +43,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         overlayClassName
       )}
       className={classNames(
-        "absolute outline-none md:w-[90%] w-full p-8 md:pt-8 md:pb-5 md:px-4 bg-surface rounded-2xl flex flex-col max-w-modal",
+        "absolute outline-none md:w-[90%] w-full p-8 md:pt-8 md:pb-5 md:px-4 bg-osmoverse-800 rounded-2xl flex flex-col max-w-modal",
         className
       )}
     >

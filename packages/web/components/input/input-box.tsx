@@ -51,15 +51,15 @@ export const InputBox: FunctionComponent<Props> = ({
   return (
     <div
       className={classNames(
-        "flex flex-nowrap justify-between w-full h-fit rounded-lg px-2 text-white-high bg-background",
+        "flex flex-nowrap justify-between w-full h-fit rounded-lg px-2 text-white-high bg-osmoverse-1000",
         {
           border: style !== "no-border",
-          "border-secondary-200":
+          "border-osmoverse-200":
             style !== "no-border" && (style === "active" || inputFocused),
-          "border-background":
+          "border-osmoverse-1000":
             style !== "no-border" && style === "enabled" && !inputFocused,
           "border-missionError": style === "error",
-          "cursor-default bg-[#C4A46A14] border-white-disabled": disabled,
+          "cursor-default bg-osmoverse-800 border-white-disabled": disabled,
         },
         className
       )}
