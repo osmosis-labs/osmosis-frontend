@@ -124,15 +124,15 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       duration: Duration,
       priceStore: IPriceStore,
       fiatCurrency: FiatCurrency,
-      externalGauges: ExternalGauge[]
+      allowedGauges: ExternalGauge[]
     ): RatePretty => {
       const apy = this.computeAPY(poolId, duration, priceStore, fiatCurrency);
 
-      if (!externalGauges.length) {
+      if (!allowedGauges.length) {
         return apy;
       }
 
-      const externalGauge = externalGauges.find((externalGauge) => {
+      const externalGauge = allowedGauges.find((externalGauge) => {
         return (
           duration.asMilliseconds() === externalGauge.duration.asMilliseconds()
         );

@@ -834,9 +834,7 @@ const Pool: FunctionComponent = observer(() => {
                       duration,
                       priceStore,
                       fiat,
-                      MergesInternalAndExternalIncentiveGaugeList[pool.id]
-                        ? allowedGauges
-                        : []
+                      allowedGauges
                     )
                     .maxDecimals(2)
                     .toString()}

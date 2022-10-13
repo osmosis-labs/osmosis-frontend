@@ -37,12 +37,6 @@ export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
   "635": true,
 };
 
-export const IncludesInternalAndExternalIncentiveGaugeList: {
-  [poolId: string]: boolean;
-} = {
-  // Stride ATOM/stATOM
-  "803": true,
-};
 /** List of pools active in LBP to present in frontend. */
 export const PromotedLBPPoolIds: {
   poolId: string;
@@ -60,14 +54,6 @@ export const PromotedLBPPoolIds: {
       },
     ]
   : [];
-
-// The pool ids white listed that would merge their internal and external gauges
-export const MergesInternalAndExternalIncentiveGaugeList: Record<
-  string,
-  boolean
-> = {
-  "803": true,
-};
 
 /** Gauges to be rendered in pool's respective pool detail page. */
 export const ExternalIncentiveGaugeAllowList: {
