@@ -56,7 +56,8 @@ const AxelarTransfer: FunctionComponent<
     selectedSourceChainKey,
     onRequestClose,
     onRequestSwitchWallet,
-    tokenMinDenom,
+    coinMinimalDenom,
+    //tokenMinDenom,
     //transferFeeMinAmount,
     sourceChains,
     isTestNet = process.env.NEXT_PUBLIC_IS_TESTNET === "true",
@@ -227,7 +228,8 @@ const AxelarTransfer: FunctionComponent<
         sourceChain,
         destChain,
         isWithdraw || correctChainSelected ? address : undefined,
-        tokenMinDenom,
+        originCurrency.coinMinimalDenom,
+        //tokenMinDenom,
         undefined,
         isTestNet ? Environment.TESTNET : Environment.MAINNET
       );
@@ -235,7 +237,8 @@ const AxelarTransfer: FunctionComponent<
     // notify user they are withdrawing into a different account then they last deposited to
     const [lastDepositAccountAddress, setLastDepositAccountAddress] =
       useLocalStorageState<string | null>(
-        `axelar-last-deposit-addr-${tokenMinDenom}`,
+        //`axelar-last-deposit-addr-${tokenMinDenom}`,
+        `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
         null
       );
     const warnOfDifferentDepositAddress =

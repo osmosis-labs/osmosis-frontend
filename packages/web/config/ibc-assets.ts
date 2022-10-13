@@ -38,7 +38,7 @@ export const IBCAssetInfos: (IBCAsset & {
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.usdc.ethereum],
-      tokenMinDenom: IS_TESTNET ? "uausdc" : "uusdc", // test: "uausdc"
+      //tokenMinDenom: IS_TESTNET ? "uausdc" : "uusdc", // test: "uausdc"
     },
   },
   {
@@ -55,7 +55,7 @@ export const IBCAssetInfos: (IBCAsset & {
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.weth.ethereum],
-      tokenMinDenom: IS_TESTNET ? "weth-wei" : "weth-wei",
+      //tokenMinDenom: IS_TESTNET ? "weth-wei" : "weth-wei",
     },
   },
   {

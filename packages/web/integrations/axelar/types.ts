@@ -12,7 +12,8 @@ export interface AxelarBridgeConfig {
   /** Ex: `uusdc`. NOTE: Will get currency info from `originCurrency` on the IBC balance (from registrar).
    *  See: https://docs.axelar.dev/resources/mainnet#assets
    */
-  tokenMinDenom: string;
+  coinMinimalDenom: string;
+  //tokenMinDenom: string;
   /** Amount of Axelar transfer fee in `originCurrency`.
    *  TODO: use `useTransferFeeQuery` should fees become dynamic and once APIs become production ready.
    *  See calculator tool on Axelar docs to get current fee constants: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee.
