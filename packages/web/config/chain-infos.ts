@@ -523,6 +523,17 @@ const chainInfos = (
           coinGeckoId: "pool:seasy",
           coinImageUrl: "/tokens/seasy.svg",
         },
+		 {
+          type: "cw20",
+          contractAddress:
+            "juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3",
+          coinDenom: "MUSE",
+          coinMinimalDenom:
+            "cw20:juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3:MUSE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:muse",
+          coinImageUrl: "/tokens/muse.svg",
+        },
       ],
       features: [
         "stargate",
