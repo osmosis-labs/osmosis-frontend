@@ -35,6 +35,10 @@ export class NavBarStore {
     makeObservable(this);
   }
 
+  get title() {
+    return this._title;
+  }
+
   get callToActionButtons() {
     return this._callToActionButtons;
   }

@@ -13,9 +13,7 @@ export function useNavBar({
 
   useEffect(() => {
     if (title) navBarStore.title = title;
-    if (ctas) {
-      navBarStore.callToActionButtons = ctas;
-    }
+    if (ctas) navBarStore.callToActionButtons = ctas;
     return () => {
       navBarStore.title = undefined;
       navBarStore.callToActionButtons = [];
