@@ -2,7 +2,7 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { InputBox } from "../../../input";
-import { Button } from "../../../buttons";
+import { BorderButton } from "../../../buttons";
 import { StepBase } from "./step-base";
 import { StepProps } from "./types";
 import { useWindowSize } from "../../../../hooks";
@@ -52,24 +52,22 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col gap-0.5">
-                  <div className="flex items-center place-content-end gap-2.5">
-                    <span className="subtitle2 md:text-xxs text-white-mid">
-                      Balance:{" "}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center place-content-end gap-1">
+                    <span className="caption">Available</span>
+                    <span className="caption text-wosmongton-300">
                       {config.queryBalances
                         .getQueryBech32Address(config.sender)
                         .getBalanceFromCurrency(amountConfig.sendCurrency)
                         .maxDecimals(6)
                         .toString()}
                     </span>
-                    <Button
-                      className="w-11 h-6 md:w-8 md:h-4 caption"
-                      type="outline"
-                      size="xs"
+                    <BorderButton
+                      className="w-11 h-6 md:w-8 md:h-4 caption !p-0"
                       onClick={() => amountConfig.setFraction(1)}
                     >
                       {isMobile ? <span className="text-xxs">MAX</span> : "MAX"}
-                    </Button>
+                    </BorderButton>
                   </div>
                   <div className="flex place-content-end items-center gap-2.5">
                     <InputBox
@@ -80,7 +78,6 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                       onInput={(value) => amountConfig.setAmount(value)}
                       placeholder=""
                     />
-                    {!isMobile && <h6>{justCoinDenom}</h6>}
                   </div>
                 </div>
               </div>
