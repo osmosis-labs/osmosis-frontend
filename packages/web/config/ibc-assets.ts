@@ -43,16 +43,22 @@ export const IBCAssetInfos: (IBCAsset & {
     },
   },
   {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
+    counterpartyChainId: IS_TESTNET
+      ? "axelar-testnet-lisbon-3"
+      : "axelar-dojo-1",
+    sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
+    destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
     coinMinimalDenom: "weth-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=weth-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=weth-wei",
-    sourceChainNameOverride: "Ethereum",
+    sourceChainNameOverride: IS_TESTNET ? "Ropsten Ethereum" : "Ethereum",
     isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.weth.ethereum],
+      tokenMinDenom: IS_TESTNET ? "weth-wei" : "weth-wei",
+      transferFeeMinAmount: IS_TESTNET ? "60000000000000" : "6300000000000000",
+    },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -855,6 +861,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "stride-1",
@@ -905,6 +912,18 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-355",
     destChannelId: "channel-0",
     coinMinimalDenom: "arebus",
+  },
+  {
+    counterpartyChainId: "teritori-1",
+    sourceChannelId: "channel-362",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "utori",
+  },
+  {
+    counterpartyChainId: "stride-1",
+    sourceChannelId: "channel-326",
+    destChannelId: "channel-5",
+    coinMinimalDenom: "stujuno",
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
