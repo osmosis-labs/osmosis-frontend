@@ -1,6 +1,5 @@
 import { FunctionComponent, useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { runInAction } from "mobx";
 import { InputBox } from "../../../input";
 import {
   PieChart,
@@ -31,7 +30,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
   return (
     <StepBase step={3} {...props}>
       <div className="flex flex-col gap-2.5">
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-2 bg-osmoverse-900 rounded-3xl p-6">
           <figure
             className="mx-auto"
             style={{
@@ -48,7 +47,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
             />
           </figure>
           <div className="flex flex-col gap-2">
-            <div className="flex place-content-between caption md:text-xxs text-white-disabled">
+            <div className="flex place-content-between caption md:text-xxs text-osmoverse-500">
               <span>Token</span>
               <span>Amount</span>
             </div>
@@ -85,7 +84,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
                     </div>
                     <div className="flex items-center place-content-between">
                       {"paths" in sendCurrency ? (
-                        <span className="subtitle2 md:caption md:text-sm text-iconDefault">
+                        <span className="subtitle2 md:caption md:text-sm text-osmoverse-500">
                           {(sendCurrency as IBCCurrency).paths
                             .map((path) => path.channelId)
                             .join(", ")}
@@ -93,7 +92,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
                       ) : (
                         <br />
                       )}
-                      <span className="body1 md:caption md:text-sm text-white-mid">
+                      <span className="body1 md:caption md:text-sm text-osmoverse-500">
                         {percentage}%
                       </span>
                     </div>
@@ -103,8 +102,8 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
             )}
           </div>
         </div>
-        <div className="flex p-3.5 md:p-2.5 items-center place-content-between border border-white-faint rounded-2xl">
-          <span className="md:subtitle2">Set Swap Fee</span>
+        <div className="flex p-3.5 md:p-2.5 items-center place-content-between rounded-2xl">
+          <h6 className="md:subtitle2">Set Swap Fee</h6>
           <div className="flex items-center gap-4 md:gap-1">
             <InputBox
               className="w-44 md:w-20"
@@ -113,29 +112,27 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
               currentValue={config.swapFee}
               onInput={(value) => config.setSwapFee(value)}
               placeholder=""
+              trailingSymbol="%"
             />
-            {isMobile ? <span className="subtitle2">%</span> : <h6>%</h6>}
           </div>
         </div>
-        <div className="flex items-center justify-center gap-2 p-3.5 md:px-12 md:caption">
-          <CheckBox
-            className="after:!bg-transparent after:!border-2 after:!border-iconDefault"
-            isOn={config.acknowledgeFee}
-            onToggle={() => {
-              runInAction(() => {
-                config.acknowledgeFee = !config.acknowledgeFee;
-              });
-            }}
-          >
-            {isMobile ? (
-              <div className="w-2/3 mx-auto">
-                I understand that creating a new pool will cost{" "}
-                {POOL_CREATION_FEE}.
-              </div>
-            ) : (
-              `I understand that creating a new pool will cost ${POOL_CREATION_FEE}.`
-            )}
-          </CheckBox>
+        <div className="bg-gradient-negative rounded-xl md:caption p-[2px]">
+          <div className="flex items-center justify-center gap-2 bg-osmoverse-800 rounded-xlinset p-3.5 md:px-12">
+            <CheckBox
+              className="after:!bg-transparent after:!border-2 after:!border-osmoverse-400"
+              isOn={config.acknowledgeFee}
+              onToggle={() => (config.acknowledgeFee = !config.acknowledgeFee)}
+            >
+              {isMobile ? (
+                <div className="w-2/3 mx-auto">
+                  I understand that creating a new pool will cost{" "}
+                  {POOL_CREATION_FEE}.
+                </div>
+              ) : (
+                `I understand that creating a new pool will cost ${POOL_CREATION_FEE}.`
+              )}
+            </CheckBox>
+          </div>
         </div>
       </div>
     </StepBase>

@@ -46,7 +46,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
               : null}{" "}
           </span>
           <div>{children}</div>
-          {(step === 1 || step === 3) && (
+          {step === 1 && (
             <Info
               message="Pool Creation Fee"
               caption="Transferred to the Osmosis community pool"

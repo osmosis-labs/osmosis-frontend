@@ -1,4 +1,10 @@
-import { observable, computed, makeObservable, action } from "mobx";
+import {
+  observable,
+  computed,
+  makeObservable,
+  action,
+  runInAction,
+} from "mobx";
 import { TxChainSetter, IFeeConfig } from "@keplr-wallet/hooks";
 import {
   ObservableQueryBalances,
@@ -37,7 +43,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
   protected _swapFee: string = "0";
 
   @observable
-  public acknowledgeFee = false;
+  public _acknowledgeFee = false;
 
   protected _opts: CreatePoolConfigOpts;
 
@@ -98,6 +104,14 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
   get queryBalances(): ObservableQueryBalances {
     return this._queryBalances;
+  }
+
+  get acknowledgeFee() {
+    return this._acknowledgeFee;
+  }
+
+  set acknowledgeFee(ack: boolean) {
+    runInAction(() => (this._acknowledgeFee = ack));
   }
 
   @computed
