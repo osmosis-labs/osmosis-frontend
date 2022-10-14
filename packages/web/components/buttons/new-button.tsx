@@ -15,11 +15,14 @@ export const NewButton: FunctionComponent<
     <button
       {...props}
       className={classNames(
-        "flex items-center text-center rounded-xl disabled:text-osmoverse-100 py-2",
+        "flex items-center text-center rounded-xl disabled:text-osmoverse-100 disabled:cursor-default py-2",
         size === "sm" ? "px-5" : "px-6",
         {
-          "bg-wosmongton-700 hover:bg-wosmongton-400": mode === "primary",
-          "bg-transparent border hover:border-2": mode === "secondary",
+          "bg-wosmongton-700 hover:bg-wosmongton-400":
+            mode === "primary" && !props.disabled,
+          "bg-transparent border hover:border-2":
+            mode === "secondary" && !props.disabled,
+          "bg-osmoverse-500": props.disabled,
         },
         className
       )}
