@@ -289,7 +289,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                 Deposit
               </Button>
               <Button
-                className="w-full h-10 bg-primary-200/30"
+                className="w-full h-10 bg-wosmongton-200/30"
                 type="outline"
                 onClick={() => {
                   onWithdrawIntent();

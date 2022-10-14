@@ -133,7 +133,7 @@ export const AddLiquidity: FunctionComponent<
                       <div className="flex gap-2 text-caption font-caption justify-end">
                         <span className="my-auto">Available</span>
                         {assetBalance && (
-                          <span className="text-primary-50 my-auto">
+                          <span className="text-wosmongton-100 my-auto">
                             {assetBalance.maxDecimals(6).toString()}
                           </span>
                         )}

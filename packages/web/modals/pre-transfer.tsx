@@ -57,7 +57,7 @@ export const PreTransferModal: FunctionComponent<
           {externalDepositUrl ? (
             <a
               className={classNames(
-                "flex w-full gap-1 h-10 text-button font-button justify-center items-center rounded-lg bg-primary-200",
+                "flex w-full gap-1 h-10 text-button font-button justify-center items-center rounded-lg bg-wosmongton-200",
                 { "opacity-30": isUnstable }
               )}
               href={externalDepositUrl}
@@ -89,7 +89,7 @@ export const PreTransferModal: FunctionComponent<
           {externalWithdrawUrl ? (
             <a
               className={classNames(
-                "flex w-full gap-1 text-button font-button h-10 justify-center items-center rounded-lg bg-primary-200/30 border border-primary-200",
+                "flex w-full gap-1 text-button font-button h-10 justify-center items-center rounded-lg bg-wosmongton-200/30 border border-wosmongton-200",
                 { "opacity-30": isUnstable }
               )}
               href={externalWithdrawUrl}
@@ -111,7 +111,7 @@ export const PreTransferModal: FunctionComponent<
             </a>
           ) : (
             <Button
-              className="w-full h-10 bg-primary-200/30"
+              className="w-full h-10 bg-wosmongton-200/30"
               type="outline"
               disabled={isUnstable}
               onClick={onWithdraw}

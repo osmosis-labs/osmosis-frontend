@@ -154,7 +154,7 @@ export const LockTokensModal: FunctionComponent<
           {availableToken && (
             <div className="flex gap-1 caption">
               <span>Available LP Token</span>
-              <span className="text-primary-50">
+              <span className="text-wosmongton-100">
                 {availableToken.trim(true).toString()}
               </span>
             </div>
@@ -168,7 +168,7 @@ export const LockTokensModal: FunctionComponent<
               {
                 label: "MAX",
                 onClick: () => config.toggleIsMax(),
-                className: "!my-auto !h-6 !bg-primary-200 !caption",
+                className: "!my-auto !h-6 !bg-wosmongton-200 !caption",
               },
             ]}
           />
