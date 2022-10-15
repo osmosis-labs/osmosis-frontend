@@ -124,8 +124,6 @@ export class ObservableBondLiquidityConfig extends UserConfig {
               );
 
             if (dailyPoolReward) {
-              console.log(curDuration.humanize(), dailyPoolReward.toString());
-
               incentivesBreakdown.push({
                 dailyPoolReward,
                 apr,

@@ -186,6 +186,8 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       fiatCurrency: FiatCurrency
     ): CoinPretty | undefined => {
       const gaugeId = this.getIncentivizedGaugeId(poolId, duration);
+      const incentiveBondDurations =
+        this.queryLockableDurations.lockableDurations;
 
       if (this.incentivizedPools.includes(poolId) && gaugeId) {
         const pool = this.queryPools.getPool(poolId);
@@ -232,9 +234,36 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
                     this.queryMintParmas.distributionProportions.poolIncentives
                   );
 
+                  const curInternalBondDurationIndex =
+                    incentiveBondDurations.reduce(
+                      (defaultIndex, bondDuration, index) => {
+                        if (
+                          bondDuration.asMilliseconds() ===
+                          duration.asMilliseconds()
+                        ) {
+                          return index;
+                        }
+                        return defaultIndex;
+                      },
+                      0
+                    );
+
+                  const priorDuration =
+                    incentiveBondDurations[curInternalBondDurationIndex - 1];
+
                   return yearProvisionToPots
                     .mul(new Dec(potWeight).quo(new Dec(totalWeight)))
-                    .quo(new Dec(numEpochPerYear));
+                    .quo(new Dec(numEpochPerYear))
+                    .add(
+                      priorDuration
+                        ? this.computeDailyRewardForDuration(
+                            poolId,
+                            priorDuration,
+                            priceStore,
+                            fiatCurrency
+                          ) ?? new Dec(0)
+                        : new Dec(0)
+                    );
                 }
               }
             }
