@@ -3,3 +3,4 @@ export * from "./create-pool";
 export * from "./fake-fee-config";
 export * from "./slippage-config";
 export * from "./trade-token-in-config";
+export * from "./user-config";

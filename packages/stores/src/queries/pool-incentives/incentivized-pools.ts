@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
-import { Dec, Int, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int, RatePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
@@ -178,6 +178,72 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     }
   );
 
+  readonly computeDailyRewardForDuration = computedFn(
+    (
+      poolId: string,
+      duration: Duration,
+      priceStore: IPriceStore,
+      fiatCurrency: FiatCurrency
+    ): CoinPretty | undefined => {
+      const gaugeId = this.getIncentivizedGaugeId(poolId, duration);
+
+      if (this.incentivizedPools.includes(poolId) && gaugeId) {
+        const pool = this.queryPools.getPool(poolId);
+        if (pool) {
+          const mintDenom = this.queryMintParmas.mintDenom;
+          const epochIdentifier = this.queryMintParmas.epochIdentifier;
+
+          if (mintDenom && epochIdentifier) {
+            const epoch = this.queryEpochs.getEpoch(epochIdentifier);
+
+            const chainInfo = this.chainGetter.getChain(this.chainId);
+            const mintCurrency = chainInfo.findCurrency(mintDenom);
+
+            if (mintCurrency && mintCurrency.coinGeckoId && epoch.duration) {
+              const totalWeight = this.queryDistrInfo.totalWeight;
+              const potWeight = this.queryDistrInfo.getWeight(gaugeId);
+              const mintPrice = priceStore.getPrice(
+                mintCurrency.coinGeckoId,
+                fiatCurrency.currency
+              );
+              const poolTVL = pool.computeTotalValueLocked(priceStore);
+              if (
+                totalWeight.gt(new Int(0)) &&
+                potWeight.gt(new Int(0)) &&
+                mintPrice &&
+                poolTVL.toDec().gt(new Dec(0))
+              ) {
+                const epochProvision = this.queryEpochProvision.epochProvisions;
+
+                if (epochProvision) {
+                  const numEpochPerYear =
+                    dayjs
+                      .duration({
+                        years: 1,
+                      })
+                      .asMilliseconds() / epoch.duration.asMilliseconds();
+
+                  /** Issued over year. */
+                  const yearProvision = epochProvision.mul(
+                    new Dec(numEpochPerYear.toString())
+                  );
+
+                  const yearProvisionToPots = yearProvision.mul(
+                    this.queryMintParmas.distributionProportions.poolIncentives
+                  );
+
+                  return yearProvisionToPots
+                    .mul(new Dec(potWeight).quo(new Dec(totalWeight)))
+                    .quo(new Dec(numEpochPerYear));
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  );
+
   protected computeAPYForSpecificDuration(
     poolId: string,
     duration: Duration,
@@ -223,6 +289,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
                     })
                     .asMilliseconds() / epoch.duration.asMilliseconds();
 
+                /** Issued over year. */
                 const yearProvision = epochProvision.mul(
                   new Dec(numEpochPerYear.toString())
                 );

@@ -1,4 +1,4 @@
-import { computed, makeObservable, observable, action } from "mobx";
+import { computed, makeObservable } from "mobx";
 import { FiatCurrency } from "@keplr-wallet/types";
 import {
   ObservableQueryValidators,
@@ -7,6 +7,7 @@ import {
 } from "@keplr-wallet/stores";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { IPriceStore } from "../../price";
+import { UserConfig } from "../../ui-config";
 import { ObservableQueryPoolDetails } from "../pools";
 import { ObservableQueryGammPoolShare } from "../pool-share";
 import {
@@ -22,10 +23,7 @@ import {
 } from "../superfluid-pools";
 
 /** Convenience store getting common superfluid data for a pool via superfluid stores. */
-export class ObservableQuerySuperfluidPool {
-  @observable
-  protected bech32Address: string = "";
-
+export class ObservableQuerySuperfluidPool extends UserConfig {
   constructor(
     protected readonly fiatCurrency: FiatCurrency,
     protected readonly queryPoolDetails: ObservableQueryPoolDetails,
@@ -43,12 +41,8 @@ export class ObservableQuerySuperfluidPool {
     },
     protected readonly priceStore: IPriceStore
   ) {
+    super();
     makeObservable(this);
-  }
-
-  @action
-  setBech32Address(bech32Address: string) {
-    this.bech32Address = bech32Address;
   }
 
   @computed

@@ -1,5 +1,5 @@
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
-import { PricePretty, Dec } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { initialAssetsSort } from "../../config";
 import {
   IBCBalance,

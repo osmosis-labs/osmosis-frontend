@@ -2,6 +2,7 @@ import { Duration } from "dayjs/plugin/duration";
 import { AppCurrency, FiatCurrency } from "@keplr-wallet/types";
 import { PricePretty, RatePretty, CoinPretty } from "@keplr-wallet/unit";
 import { IPriceStore } from "../../price";
+import { UserConfig } from "../../ui-config";
 import { ObservableQueryGammPoolShare } from "../pool-share";
 import { ObservableQueryIncentivizedPools, ObservableQueryLockableDurations, ObservableQueryPoolsGaugeIds } from "../pool-incentives";
 import { ObservableQueryGuage } from "../incentives";
@@ -15,7 +16,7 @@ export declare type ExternalGauge = {
     remainingEpochs: number;
 };
 /** Convenience store for getting common details of a pool via many other query stores. */
-export declare class ObservableQueryPoolDetails {
+export declare class ObservableQueryPoolDetails extends UserConfig {
     protected readonly fiatCurrency: FiatCurrency;
     protected readonly queryPool: ObservableQueryPool;
     protected readonly queries: {
@@ -29,7 +30,6 @@ export declare class ObservableQueryPoolDetails {
         queryPoolsGaugeIds: ObservableQueryPoolsGaugeIds;
     };
     protected readonly priceStore: IPriceStore;
-    protected bech32Address: string;
     constructor(fiatCurrency: FiatCurrency, queryPool: ObservableQueryPool, queries: {
         queryGammPoolShare: ObservableQueryGammPoolShare;
         queryIncentivizedPools: ObservableQueryIncentivizedPools;
@@ -40,7 +40,6 @@ export declare class ObservableQueryPoolDetails {
         queryLockableDurations: ObservableQueryLockableDurations;
         queryPoolsGaugeIds: ObservableQueryPoolsGaugeIds;
     }, priceStore: IPriceStore);
-    setBech32Address(bech32Address: string): void;
     get pool(): ObservableQueryPool;
     get poolShareCurrency(): import("@keplr-wallet/types").Currency;
     get isIncentivized(): boolean;

@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
-import { RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 import { ObservableQueryEpochs } from "../epochs";
 import { ObservableQueryEpochProvisions, ObservableQueryMintParmas } from "../mint";
@@ -33,6 +33,7 @@ export declare class ObservableQueryIncentivizedPools extends ObservableChainQue
      * 리워드를 받을 수 없는 풀일 경우 0를 리턴한다.
      */
     readonly computeAPY: (poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency) => RatePretty;
+    readonly computeDailyRewardForDuration: (poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency) => CoinPretty | undefined;
     protected computeAPYForSpecificDuration(poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency): RatePretty;
     get isAprFetching(): boolean;
 }

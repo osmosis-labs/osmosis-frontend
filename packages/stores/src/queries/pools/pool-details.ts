@@ -1,10 +1,11 @@
-import { action, computed, makeObservable, observable } from "mobx";
+import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
 import { AppCurrency, FiatCurrency } from "@keplr-wallet/types";
 import { PricePretty, Dec, RatePretty, CoinPretty } from "@keplr-wallet/unit";
 import { IPriceStore } from "../../price";
+import { UserConfig } from "../../ui-config";
 import { ObservableQueryGammPoolShare } from "../pool-share";
 import {
   ObservableQueryIncentivizedPools,
@@ -28,10 +29,7 @@ export type ExternalGauge = {
 };
 
 /** Convenience store for getting common details of a pool via many other query stores. */
-export class ObservableQueryPoolDetails {
-  @observable
-  protected bech32Address: string = "";
-
+export class ObservableQueryPoolDetails extends UserConfig {
   constructor(
     protected readonly fiatCurrency: FiatCurrency,
     protected readonly queryPool: ObservableQueryPool,
@@ -47,12 +45,9 @@ export class ObservableQueryPoolDetails {
     },
     protected readonly priceStore: IPriceStore
   ) {
-    makeObservable(this);
-  }
+    super();
 
-  @action
-  setBech32Address(bech32Address: string) {
-    this.bech32Address = bech32Address;
+    makeObservable(this);
   }
 
   @computed
