@@ -106,12 +106,7 @@ export const NavBar: FunctionComponent<
                 <span className="text-button font-button">
                   {navBarStore.walletInfo.balance.toString()}
                 </span>
-                <span className="caption">
-                  {Bech32Address.shortenAddress(
-                    navBarStore.walletInfo.bech32Address,
-                    16
-                  )}
-                </span>
+                <span className="caption">{navBarStore.walletInfo.name}</span>
               </div>
             </div>
           )}

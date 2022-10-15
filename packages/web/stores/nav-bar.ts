@@ -54,13 +54,11 @@ export class NavBarStore {
 
   @computed
   get walletInfo(): {
-    bech32Address: string;
+    name: string;
     logoUrl: string;
     balance: CoinPretty;
   } {
-    const bech32Address = this.accountStore.getAccount(
-      this.chainId
-    ).bech32Address;
+    const { bech32Address, name } = this.accountStore.getAccount(this.chainId);
     const balance = this.queriesStore
       .get(this.chainId)
       .queryBalances.getQueryBech32Address(bech32Address)
@@ -70,7 +68,7 @@ export class NavBarStore {
       .upperCase(true);
 
     return {
-      bech32Address,
+      name,
       logoUrl: "/images/keplr-logo.svg", // TODO: add to future wallet abstraction to use leap wallet
       balance,
     };
