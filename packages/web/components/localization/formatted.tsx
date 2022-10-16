@@ -160,10 +160,46 @@ const getFormattedComponent = ({
   }
 };
 
+/**
+ *
+ * The goal is to simplify the translation and avoid cutting the translation if the translation has several components (like: <br/>, <em></em>, <p></p>,...)
+ * Full exemple:
+ * We have the following text:
+ * "I'm text warning with <em className="font-bold">important</em> text."
+ * we need three translations:
+ * {
+ *  "importantTextStart": "I'm text warning with",
+ *  "importantTextMiddle": "important",
+ *  "importantTextEnd": "text."
+ * }
+ * and have this result:
+ * <>
+ *    {t("importantTextStart")}
+ *    <em className="font-bold">{t("importantTextMiddle")}</em>
+ *    {("importantTextEnd")}
+ * </>
+ * To avoid to break the translation in several pieces we can use the Formatted component.
+ * We only need one translation:
+ * {
+ *  "importantText": "I'm text warning with <bold>important</bold> text."
+ * }
+ * and use Formatted:
+ * <Formatted
+ *    translationKey="importantText"
+ *    components={{"<bold>": <em className="font-bold" />}}
+ * />
+ * and get the expected result:
+ * "I'm text warning with <em className="font-bold">important</em> text."
+ *
+ * @param translationKey the translation key is used to find de translation in translation file. (ex: "pool.title").
+ * @param values the values is used to pass data to the translation. (ex: {poolName: "ATOM / OSMO"}).
+ * @param components the components is used replace components in translation (ex: {"<text>": <p>}).
+ * @returns an JSX element.
+ */
 export const Formatted = ({
   translationKey,
-  components,
   values,
+  components,
 }: FormattedProps) => {
   const t = useTranslation();
   // get translation with values
