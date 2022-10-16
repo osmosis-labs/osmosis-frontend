@@ -12,11 +12,7 @@ import {
 import classNames from "classnames";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking } from "@keplr-wallet/stores";
-import {
-  EventName,
-  PromotedLBPPoolIds,
-  ExternalIncentiveGaugeAllowList,
-} from "../../config";
+import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
 import {
   useAddLiquidityConfig,
   useRemoveLiquidityConfig,
@@ -36,7 +32,6 @@ import {
   TradeTokens,
 } from "../../modals";
 import { useStore } from "../../stores";
-import { Duration } from "dayjs/plugin/duration";
 import { PoolAssetsIcon } from "../../components/assets";
 import { BondCard } from "../../components/cards";
 import { NewButton } from "../../components/buttons";
@@ -56,9 +51,6 @@ const Pool: FunctionComponent = observer(() => {
 
   const { id: poolId } = router.query as { id: string };
   const { chainId } = chainStore.osmosis;
-  const lbpConfig = PromotedLBPPoolIds.find(
-    ({ poolId: lbpPoolId }) => lbpPoolId === poolId
-  );
 
   const queryCosmos = queriesStore.get(chainId).cosmos;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -120,11 +112,7 @@ const Pool: FunctionComponent = observer(() => {
   );
   const { config: removeLiquidityConfig, removeLiquidity } =
     useRemoveLiquidityConfig(chainStore, chainId, pool?.id ?? "", queriesStore);
-  const {
-    config: lockLPTokensConfig,
-    lockToken,
-    unlockToken,
-  } = useLockTokenConfig(
+  const { config: lockLPTokensConfig, lockToken } = useLockTokenConfig(
     pool ? queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id) : undefined
   );
   const {
@@ -213,17 +201,17 @@ const Pool: FunctionComponent = observer(() => {
       console.error("Gauge of id", gaugeId, "not found in allAggregatedGauges");
     }
   };
-  const onUnlockToken = (lockIds: string[], duration: Duration) => {
-    const unlockEvent = {
-      ...baseEventInfo,
-      unbondingPeriod: duration?.asDays(),
-    };
-    logEvent([E.unbondAllStarted, unlockEvent]);
+  // const onUnlockToken = (lockIds: string[], duration: Duration) => {
+  //   const unlockEvent = {
+  //     ...baseEventInfo,
+  //     unbondingPeriod: duration?.asDays(),
+  //   };
+  //   logEvent([E.unbondAllStarted, unlockEvent]);
 
-    unlockToken(lockIds, duration).then(() => {
-      logEvent([E.unbondAllCompleted, unlockEvent]);
-    });
-  };
+  //   unlockToken(lockIds, duration).then(() => {
+  //     logEvent([E.unbondAllCompleted, unlockEvent]);
+  //   });
+  // };
   // TODO: re-add unpool functionality
   const handleSuperfluidDelegateToValidator = useCallback(
     (validatorAddress) => {

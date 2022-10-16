@@ -7,7 +7,14 @@ import { RatePretty } from "@keplr-wallet/unit";
 
 export const BondCard: FunctionComponent<
   BondableDuration & { onUnbond: () => void }
-> = ({ duration, userShares, aggregateApr, incentivesBreakdown, onUnbond }) => {
+> = ({
+  duration,
+  userShares,
+  aggregateApr,
+  superfluid,
+  incentivesBreakdown,
+  onUnbond,
+}) => {
   const [drawerUp, setDrawerUp] = useState(false);
 
   return (
@@ -43,6 +50,7 @@ export const BondCard: FunctionComponent<
       <Drawer
         aggregateApr={aggregateApr}
         incentivesBreakdown={incentivesBreakdown}
+        superfluid={superfluid}
         drawerUp={drawerUp}
         toggleDetailsVisible={() => setDrawerUp(!drawerUp)}
       />
@@ -53,21 +61,16 @@ export const BondCard: FunctionComponent<
 const Drawer: FunctionComponent<{
   aggregateApr: RatePretty;
   incentivesBreakdown: BondableDuration["incentivesBreakdown"];
+  superfluid: BondableDuration["superfluid"];
   drawerUp: boolean;
   toggleDetailsVisible: () => void;
 }> = ({
   aggregateApr,
   incentivesBreakdown,
+  superfluid,
   drawerUp,
   toggleDetailsVisible,
 }) => {
-  const superfluidInfo:
-    | BondableDuration["incentivesBreakdown"][0]["superfluid"]
-    | undefined =
-    incentivesBreakdown.length > 0
-      ? incentivesBreakdown[incentivesBreakdown.length - 1]?.superfluid
-      : undefined;
-
   return (
     <div
       className={classNames(
@@ -90,7 +93,7 @@ const Drawer: FunctionComponent<{
           <div className="flex items-center gap-4">
             <h5
               className={classNames(
-                superfluidInfo
+                superfluid
                   ? "text-transparent bg-clip-text bg-superfluid"
                   : "text-bullish"
               )}
@@ -153,32 +156,18 @@ const Drawer: FunctionComponent<{
         })}
       >
         <div className="flex flex-col max-h-[110px] gap-5 py-6 px-8 overflow-y-scroll">
-          {incentivesBreakdown.map(
-            ({ dailyPoolReward, apr, numDaysRemaining }) => (
-              <div
-                className="flex items-center place-content-between"
-                key={dailyPoolReward.denom}
-              >
-                <div className="flex items-center gap-2">
-                  <h6 className="text-osmoverse-200">
-                    {apr.maxDecimals(2).toString()}
-                  </h6>
-                  {dailyPoolReward.currency.coinImageUrl && (
-                    <Image
-                      alt="token icon"
-                      src={dailyPoolReward.currency.coinImageUrl}
-                      height={24}
-                      width={24}
-                    />
-                  )}
-                </div>
-                <div className="flex flex-col">
-                  <span>{dailyPoolReward.maxDecimals(0).toString()} / day</span>
-                  {numDaysRemaining && <span>{numDaysRemaining}</span>}
-                </div>
-              </div>
-            )
-          )}
+          {incentivesBreakdown.map((breakdown, index) => (
+            <>
+              {superfluid && index === 0 ? (
+                <>
+                  <SuperfluidBreakdownRow {...superfluid} />
+                  <IncentiveBreakdownRow {...breakdown} />
+                </>
+              ) : (
+                <IncentiveBreakdownRow {...breakdown} />
+              )}
+            </>
+          ))}
         </div>
         <span className="caption text-center text-osmoverse-400">
           Rewards distributed to all liquidity providers
@@ -187,3 +176,67 @@ const Drawer: FunctionComponent<{
     </div>
   );
 };
+
+const SuperfluidBreakdownRow: FunctionComponent<
+  BondableDuration["superfluid"]
+> = ({
+  apr,
+  commission,
+  delegated,
+  undelegating,
+  validatorMoniker,
+  validatorLogoUrl,
+}) => (
+  <div className="flex items-center place-content-between" key="superfluid">
+    <div className="flex items-center gap-2">
+      <h6 className="text-osmoverse-200">{apr.maxDecimals(2).toString()}</h6>
+      {validatorLogoUrl && (
+        <img
+          className="rounded-full"
+          alt="validator icon"
+          src={validatorLogoUrl}
+          height={24}
+          width={24}
+        />
+      )}
+    </div>
+    <div className="flex flex-col text-right">
+      <span>{validatorMoniker}</span>
+      <span className="caption text-osmoverse-400">
+        {commission?.toString()}
+        {delegated
+          ? `, ${delegated.maxDecimals(2).toString()} delegated`
+          : undelegating
+          ? `, ${undelegating.maxDecimals(2).toString()} undelegating`
+          : null}
+      </span>
+    </div>
+  </div>
+);
+
+const IncentiveBreakdownRow: FunctionComponent<
+  BondableDuration["incentivesBreakdown"][0]
+> = ({ dailyPoolReward, apr, numDaysRemaining }) => (
+  <div
+    className="flex items-center place-content-between"
+    key={dailyPoolReward.denom}
+  >
+    <div className="flex items-center gap-2">
+      <h6 className="text-osmoverse-200">{apr.maxDecimals(2).toString()}</h6>
+      {dailyPoolReward.currency.coinImageUrl && (
+        <Image
+          alt="token icon"
+          src={dailyPoolReward.currency.coinImageUrl}
+          height={24}
+          width={24}
+        />
+      )}
+    </div>
+    <div className="flex flex-col text-right">
+      <span>{dailyPoolReward.maxDecimals(0).toString()} / day</span>
+      {numDaysRemaining && (
+        <span className="caption text-osmoverse-400">{numDaysRemaining}</span>
+      )}
+    </div>
+  </div>
+);

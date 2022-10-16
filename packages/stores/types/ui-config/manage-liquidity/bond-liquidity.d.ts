@@ -13,14 +13,15 @@ export declare type BondableDuration = {
         dailyPoolReward: CoinPretty;
         apr: RatePretty;
         numDaysRemaining?: number;
-        superfluid?: {
-            apr: RatePretty;
-            validatorMoniker?: string;
-            validatorLogoUrl?: string;
-            delegated?: CoinPretty;
-            undelegating?: CoinPretty;
-        };
     }[];
+    superfluid?: {
+        apr: RatePretty;
+        commission?: RatePretty;
+        validatorMoniker?: string;
+        validatorLogoUrl?: string;
+        delegated?: CoinPretty;
+        undelegating?: CoinPretty;
+    };
 };
 export declare class ObservableBondLiquidityConfig extends UserConfig {
     protected readonly poolDetails: ObservableQueryPoolDetails;

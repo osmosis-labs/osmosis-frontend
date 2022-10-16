@@ -24,14 +24,15 @@ export type BondableDuration = {
     dailyPoolReward: CoinPretty;
     apr: RatePretty;
     numDaysRemaining?: number;
-    superfluid?: {
-      apr: RatePretty;
-      validatorMoniker?: string;
-      validatorLogoUrl?: string;
-      delegated?: CoinPretty;
-      undelegating?: CoinPretty;
-    };
   }[];
+  superfluid?: {
+    apr: RatePretty;
+    commission?: RatePretty;
+    validatorMoniker?: string;
+    validatorLogoUrl?: string;
+    delegated?: CoinPretty;
+    undelegating?: CoinPretty;
+  };
 };
 
 export class ObservableBondLiquidityConfig extends UserConfig {
@@ -93,12 +94,6 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           []
         );
 
-        let aggregateApr = new RatePretty(0);
-
-        if (internalGaugeOfDuration)
-          aggregateApr = aggregateApr.add(internalGaugeOfDuration.apr);
-        // TODO: sum APR of each external gauge
-
         const queryLockedCoin = this.queries.queryAccountLocked.get(
           this.bech32Address
         );
@@ -136,25 +131,9 @@ export class ObservableBondLiquidityConfig extends UserConfig {
               );
 
             if (dailyPoolReward) {
-              // add superfluid data to highest duration
-              const sfsDuration = this.poolDetails.longestDuration;
-              let superfluid:
-                | BondableDuration["incentivesBreakdown"][0]["superfluid"]
-                | undefined;
-              if (
-                this.superfluidPool.isSuperfluid &&
-                sfsDuration &&
-                curDuration.asSeconds() === sfsDuration.asSeconds()
-              ) {
-                superfluid = {
-                  apr: this.superfluidPool.superfluidApr,
-                };
-              }
-
               incentivesBreakdown.push({
                 dailyPoolReward,
                 apr,
-                superfluid,
               });
             }
           }
@@ -179,12 +158,49 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           });
         });
 
+        // add superfluid data to highest duration
+        const sfsDuration = this.poolDetails.longestDuration;
+        let superfluid: BondableDuration["superfluid"] | undefined;
+        if (
+          this.superfluidPool.isSuperfluid &&
+          this.superfluidPool.superfluid &&
+          sfsDuration &&
+          curDuration.asSeconds() === sfsDuration.asSeconds()
+        ) {
+          const delegation =
+            (this.superfluidPool.superfluid.delegations?.length ?? 0) > 0
+              ? this.superfluidPool.superfluid.delegations?.[0]
+              : undefined;
+          const undelegation =
+            (this.superfluidPool.superfluid.undelegations?.length ?? 0) > 0
+              ? this.superfluidPool.superfluid.undelegations?.[0]
+              : undefined;
+
+          superfluid = {
+            apr: this.superfluidPool.superfluidApr,
+            commission: delegation?.validatorCommission,
+            delegated: delegation?.amount,
+            undelegating: undelegation?.amount,
+            validatorMoniker: delegation?.validatorName,
+            validatorLogoUrl: delegation?.validatorImgSrc,
+          };
+        }
+
+        let aggregateApr = new RatePretty(0);
+
+        if (internalGaugeOfDuration)
+          aggregateApr = aggregateApr.add(internalGaugeOfDuration.apr);
+
+        if (superfluid) aggregateApr = aggregateApr.add(superfluid.apr);
+        // TODO: sum APR of each external gauge
+
         return {
           duration: curDuration,
           userShares,
           userUnlockingShares,
           aggregateApr,
           incentivesBreakdown,
+          superfluid,
         };
       });
     }
