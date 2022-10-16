@@ -18,19 +18,20 @@ import { UserConfig } from "../user-config";
 export type BondableDuration = {
   duration: Duration;
   userShares: CoinPretty;
+  userUnlockingShares: CoinPretty;
   aggregateApr: RatePretty;
   incentivesBreakdown: {
     dailyPoolReward: CoinPretty;
     apr: RatePretty;
     numDaysRemaining?: number;
+    superfluid?: {
+      apr: RatePretty;
+      validatorMoniker?: string;
+      validatorLogoUrl?: string;
+      delegated?: CoinPretty;
+      undelegating?: CoinPretty;
+    };
   }[];
-  superfluid?: {
-    apr: RatePretty;
-    validatorMoniker?: string;
-    validatorLogoUrl?: string;
-    delegated?: CoinPretty;
-    undelegating?: CoinPretty;
-  };
 };
 
 export class ObservableBondLiquidityConfig extends UserConfig {
@@ -98,15 +99,26 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           aggregateApr = aggregateApr.add(internalGaugeOfDuration.apr);
         // TODO: sum APR of each external gauge
 
-        const userShares = this.queries.queryAccountLocked
-          .get(this.bech32Address)
-          .getLockedCoinWithDuration(
-            this.poolDetails.poolShareCurrency,
-            curDuration
-          ).amount;
+        const queryLockedCoin = this.queries.queryAccountLocked.get(
+          this.bech32Address
+        );
+        const userShares = queryLockedCoin.getLockedCoinWithDuration(
+          this.poolDetails.poolShareCurrency,
+          curDuration
+        ).amount;
+        const allUnlockingCoins = queryLockedCoin.getUnlockingCoinWithDuration(
+          this.poolDetails.poolShareCurrency,
+          curDuration
+        );
+        const userUnlockingShares =
+          allUnlockingCoins.length > 0
+            ? allUnlockingCoins[0]?.amount ??
+              new CoinPretty(this.poolDetails.poolShareCurrency, 0)
+            : new CoinPretty(this.poolDetails.poolShareCurrency, 0);
 
         const incentivesBreakdown: BondableDuration["incentivesBreakdown"] = [];
 
+        // push internal incentives for current duration
         if (internalGaugeOfDuration) {
           const { apr } = internalGaugeOfDuration;
 
@@ -124,14 +136,31 @@ export class ObservableBondLiquidityConfig extends UserConfig {
               );
 
             if (dailyPoolReward) {
+              // add superfluid data to highest duration
+              const sfsDuration = this.poolDetails.longestDuration;
+              let superfluid:
+                | BondableDuration["incentivesBreakdown"][0]["superfluid"]
+                | undefined;
+              if (
+                this.superfluidPool.isSuperfluid &&
+                sfsDuration &&
+                curDuration.asSeconds() === sfsDuration.asSeconds()
+              ) {
+                superfluid = {
+                  apr: this.superfluidPool.superfluidApr,
+                };
+              }
+
               incentivesBreakdown.push({
                 dailyPoolReward,
                 apr,
+                superfluid,
               });
             }
           }
         }
 
+        // push external incentives to current duration
         externalGaugesOfDuration.forEach(({ id }) => {
           const queryGauge = this.queries.queryGauge.get(id);
           const allowedGauge = allowedGauges.find(
@@ -150,20 +179,12 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           });
         });
 
-        let superfluid: BondableDuration["superfluid"];
-
-        if (this.superfluidPool.isSuperfluid) {
-          superfluid = {
-            apr: this.superfluidPool.superfluidApr,
-          };
-        }
-
         return {
           duration: curDuration,
           userShares,
+          userUnlockingShares,
           aggregateApr,
           incentivesBreakdown,
-          superfluid,
         };
       });
     }

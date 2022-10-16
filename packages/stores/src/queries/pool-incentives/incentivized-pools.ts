@@ -255,6 +255,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
                     .mul(new Dec(potWeight).quo(new Dec(totalWeight)))
                     .quo(new Dec(numEpochPerYear))
                     .add(
+                      // for internal incentives, higher bonding periods accrue incentives from prior gauges
                       priorDuration
                         ? this.computeDailyRewardForDuration(
                             poolId,

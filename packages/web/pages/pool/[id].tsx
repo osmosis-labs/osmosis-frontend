@@ -509,32 +509,24 @@ const Pool: FunctionComponent = observer(() => {
                 </div>
                 <span className="caption text-osmoverse-200">
                   Lock up your shares for longer durations to earn higher APRs.
-                  Go superfluid for maximum rewards.
+                  {superfluidPoolConfig?.isSuperfluid &&
+                    " Go superfluid for maximum rewards."}
                 </span>
               </div>
               <NewButton
-                className={classNames(
-                  "h-16 w-96 px-20 py-4 border-none",
-                  levelCta === 2
-                    ? "bg-gradient-positive text-osmoverse-900"
-                    : "bg-osmoverse-500 text-osmoverse-100"
-                )}
+                className={classNames("h-16 w-96 px-20 py-4 border-none", {
+                  "bg-gradient-positive text-osmoverse-900": levelCta === 2,
+                })}
                 disabled={levelCta !== 2}
-                mode="secondary"
               >
                 Bond shares
               </NewButton>
             </div>
             <div className="flex items-center gap-4">
-              {bondableDurations.map((bondableDuration, index) => (
+              {bondableDurations.map((bondableDuration) => (
                 <BondCard
                   key={bondableDuration.duration.asMilliseconds()}
                   {...bondableDuration}
-                  superfluid={
-                    index === bondableDurations.length - 1
-                      ? bondableDuration.superfluid
-                      : undefined
-                  }
                   onUnbond={() => console.log("log")}
                 />
               ))}

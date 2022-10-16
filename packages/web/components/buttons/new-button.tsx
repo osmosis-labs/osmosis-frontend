@@ -22,7 +22,9 @@ export const NewButton: FunctionComponent<
           "bg-wosmongton-700 hover:bg-wosmongton-400":
             mode === "primary" && !props.disabled,
           "bg-osmoverse-500 text-osmoverse-100":
-            mode === "primary" && props.disabled,
+            (mode === "primary" || mode === "primary-warning") &&
+            props.disabled,
+          "bg-gradient-negative": mode === "primary-warning",
           "bg-transparent border-2":
             mode === "secondary" || mode === "tertiary",
           "border-wosmongton-400 hover:border-wosmongton-200":
