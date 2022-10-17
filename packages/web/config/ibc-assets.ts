@@ -868,6 +868,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-326",
     destChannelId: "channel-5",
     coinMinimalDenom: "ustrd",
+    isVerified: true,
   },
   {
     counterpartyChainId: "stride-1",
