@@ -38,7 +38,7 @@ export declare class ObservableBondLiquidityConfig extends UserConfig {
         queryIncentivizedPools: ObservableQueryIncentivizedPools;
     });
     /** Gets all available durations for user to bond in, with a breakdown of the assets incentivizing the duration. Internal OSMO incentives included in breakdown. */
-    readonly getBondableAllowedDurations: (poolId: string, findCurrency: (denom: string) => AppCurrency | undefined, allowedGauges: {
+    readonly getBondableAllowedDurations: (findCurrency: (denom: string) => AppCurrency | undefined, allowedGauges: {
         gaugeId: string;
         denom: string;
     }[] | undefined) => BondableDuration[];

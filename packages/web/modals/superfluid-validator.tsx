@@ -157,7 +157,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
             <div className="flex items-center place-content-between">
               <span className="md:caption subtitle1">Bonded Amount</span>
               <span className="md:caption body1 text-white-mid">
-                {availableBondAmount.maxDecimals(2).trim(true).toString()}
+                {availableBondAmount.trim(true).toString()}
               </span>
             </div>
             <div className="flex items-center place-content-between">

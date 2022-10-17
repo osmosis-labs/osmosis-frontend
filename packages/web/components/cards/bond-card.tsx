@@ -3,10 +3,10 @@ import { FunctionComponent, useState } from "react";
 import classNames from "classnames";
 import { BondableDuration } from "@osmosis-labs/stores";
 import { NewButton } from "../buttons";
-import { RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 
 export const BondCard: FunctionComponent<
-  BondableDuration & { onUnbond: () => void }
+  BondableDuration & { onUnbond: () => void; onGoSuperfluid: () => void }
 > = ({
   duration,
   userShares,
@@ -14,6 +14,7 @@ export const BondCard: FunctionComponent<
   superfluid,
   incentivesBreakdown,
   onUnbond,
+  onGoSuperfluid,
 }) => {
   const [drawerUp, setDrawerUp] = useState(false);
 
@@ -49,10 +50,12 @@ export const BondCard: FunctionComponent<
       />
       <Drawer
         aggregateApr={aggregateApr}
+        userShares={userShares}
         incentivesBreakdown={incentivesBreakdown}
         superfluid={superfluid}
         drawerUp={drawerUp}
         toggleDetailsVisible={() => setDrawerUp(!drawerUp)}
+        onGoSuperfluid={onGoSuperfluid}
       />
     </div>
   );
@@ -60,16 +63,20 @@ export const BondCard: FunctionComponent<
 
 const Drawer: FunctionComponent<{
   aggregateApr: RatePretty;
+  userShares: CoinPretty;
   incentivesBreakdown: BondableDuration["incentivesBreakdown"];
   superfluid: BondableDuration["superfluid"];
   drawerUp: boolean;
   toggleDetailsVisible: () => void;
+  onGoSuperfluid: () => void;
 }> = ({
   aggregateApr,
+  userShares,
   incentivesBreakdown,
   superfluid,
   drawerUp,
   toggleDetailsVisible,
+  onGoSuperfluid,
 }) => {
   return (
     <div
@@ -158,9 +165,13 @@ const Drawer: FunctionComponent<{
         <div className="flex flex-col max-h-[110px] gap-5 py-6 px-8 overflow-y-scroll">
           {incentivesBreakdown.map((breakdown, index) => (
             <>
-              {superfluid && index === 0 ? (
+              {index === 0 && superfluid ? (
                 <>
-                  <SuperfluidBreakdownRow {...superfluid} />
+                  <SuperfluidBreakdownRow
+                    {...superfluid}
+                    userShares={userShares}
+                    onGoSuperfluid={onGoSuperfluid}
+                  />
                   <IncentiveBreakdownRow {...breakdown} />
                 </>
               ) : (
@@ -178,8 +189,13 @@ const Drawer: FunctionComponent<{
 };
 
 const SuperfluidBreakdownRow: FunctionComponent<
-  BondableDuration["superfluid"]
+  {
+    userShares: CoinPretty;
+    onGoSuperfluid: () => void;
+  } & BondableDuration["superfluid"]
 > = ({
+  userShares,
+  onGoSuperfluid,
   apr,
   commission,
   delegated,
@@ -189,27 +205,42 @@ const SuperfluidBreakdownRow: FunctionComponent<
 }) => (
   <div className="flex items-center place-content-between" key="superfluid">
     <div className="flex items-center gap-2">
-      <h6 className="text-osmoverse-200">{apr.maxDecimals(2).toString()}</h6>
-      {validatorLogoUrl && (
-        <img
-          className="rounded-full"
-          alt="validator icon"
-          src={validatorLogoUrl}
-          height={24}
-          width={24}
-        />
-      )}
+      <h6 className="text-transparent bg-clip-text bg-superfluid">
+        +{apr.maxDecimals(0).toString()}
+      </h6>
+      <img
+        className="rounded-full"
+        alt="validator icon"
+        src={validatorLogoUrl ?? "/icons/superfluid-osmo.svg"}
+        height={24}
+        width={24}
+      />
     </div>
     <div className="flex flex-col text-right">
-      <span>{validatorMoniker}</span>
-      <span className="caption text-osmoverse-400">
-        {commission?.toString()}
-        {delegated
-          ? `, ${delegated.maxDecimals(2).toString()} delegated`
-          : undelegating
-          ? `, ${undelegating.maxDecimals(2).toString()} undelegating`
-          : null}
-      </span>
+      {delegated || undelegating ? (
+        <>
+          <span>{validatorMoniker}</span>
+          <span className="caption text-osmoverse-400">
+            {commission?.toString()}
+            {delegated
+              ? `, ~${delegated.maxDecimals(2).toString()} delegated`
+              : undelegating
+              ? `, ~${undelegating.maxDecimals(2).toString()} undelegating`
+              : null}
+          </span>
+        </>
+      ) : userShares.toDec().gt(new Dec(0)) ? (
+        <NewButton
+          className="text-transparent bg-clip-text bg-superfluid border-superfluid"
+          mode="tertiary"
+          size="sm"
+          onClick={onGoSuperfluid}
+        >
+          Go superfluid
+        </NewButton>
+      ) : (
+        <span>Superfluid Staking</span>
+      )}
     </div>
   </div>
 );
@@ -222,7 +253,7 @@ const IncentiveBreakdownRow: FunctionComponent<
     key={dailyPoolReward.denom}
   >
     <div className="flex items-center gap-2">
-      <h6 className="text-osmoverse-200">{apr.maxDecimals(2).toString()}</h6>
+      <h6 className="text-osmoverse-200">+{apr.maxDecimals(0).toString()}</h6>
       {dailyPoolReward.currency.coinImageUrl && (
         <Image
           alt="token icon"

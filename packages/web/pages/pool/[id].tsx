@@ -125,11 +125,12 @@ const Pool: FunctionComponent = observer(() => {
   const [showPoolDetails, setShowPoolDetails] = useState(false);
   const bondableDurations = pool
     ? bondLiquidityConfig?.getBondableAllowedDurations(
-        pool.id,
         (denom) => chainStore.getChain(chainId).forceFindCurrency(denom),
         ExternalIncentiveGaugeAllowList[pool.id]
       ) ?? []
     : [];
+
+  console.log(bondableDurations);
 
   // swap modal
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
@@ -516,6 +517,7 @@ const Pool: FunctionComponent = observer(() => {
                   key={bondableDuration.duration.asMilliseconds()}
                   {...bondableDuration}
                   onUnbond={() => console.log("log")}
+                  onGoSuperfluid={() => setShowSuperfluidValidatorsModal(true)}
                 />
               ))}
             </div>

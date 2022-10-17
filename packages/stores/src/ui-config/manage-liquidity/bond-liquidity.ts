@@ -53,18 +53,20 @@ export class ObservableBondLiquidityConfig extends UserConfig {
   /** Gets all available durations for user to bond in, with a breakdown of the assets incentivizing the duration. Internal OSMO incentives included in breakdown. */
   readonly getBondableAllowedDurations = computedFn(
     (
-      poolId: string,
       findCurrency: (denom: string) => AppCurrency | undefined,
       allowedGauges: { gaugeId: string; denom: string }[] | undefined
     ): BondableDuration[] => {
+      const poolId = this.poolDetails.pool.id;
       const gauges = this.superfluidPool.gaugesWithSuperfluidApr;
 
-      if (!allowedGauges) return [];
+      const externalGauges = allowedGauges
+        ? this.poolDetails.queryAllowedExternalGauges(
+            findCurrency,
+            allowedGauges
+          )
+        : [];
 
-      const externalGauges = this.poolDetails.queryAllowedExternalGauges(
-        findCurrency,
-        allowedGauges
-      );
+      console.log(allowedGauges);
 
       /** Set of all available durations. */
       const durationsMsSet = new Set<number>();
@@ -142,7 +144,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
         // push external incentives to current duration
         externalGaugesOfDuration.forEach(({ id }) => {
           const queryGauge = this.queries.queryGauge.get(id);
-          const allowedGauge = allowedGauges.find(
+          const allowedGauge = allowedGauges?.find(
             ({ gaugeId }) => gaugeId === id
           );
           if (!allowedGauge) return;
