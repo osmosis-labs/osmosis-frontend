@@ -7,7 +7,6 @@ export type ShowDustState = { showDust: boolean };
 
 export class ShowDustUserSetting implements IUserSetting<ShowDustState> {
   readonly id = "show-dust";
-  readonly fiatSymbol: string;
   readonly controlComponent: FunctionComponent<ShowDustState> = ({
     showDust,
   }) => (
@@ -22,8 +21,7 @@ export class ShowDustUserSetting implements IUserSetting<ShowDustState> {
     showDust: false,
   };
 
-  constructor(fiatSymbol: string) {
-    this.fiatSymbol = fiatSymbol;
+  constructor(protected readonly fiatSymbol: string) {
     makeObservable(this);
   }
 
