@@ -2062,7 +2062,7 @@ const chainInfos = (
         chainId: "lambda_92000-1",
         chainName: "Lambda",
         bip44: {
-          coinType: 118,
+          coinType: 60,
         },
         bech32Config: Bech32Address.defaultBech32Config("lamb"),
         currencies: [
