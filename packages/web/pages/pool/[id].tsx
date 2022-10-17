@@ -32,7 +32,6 @@ import { DepoolingTable } from "../../components/table/depooling-table";
 import { truncateString } from "../../components/utils";
 import {
   ExternalIncentiveGaugeAllowList,
-  MergesInternalAndExternalIncentiveGaugeList,
   UnPoolWhitelistedPoolIds,
   EventName,
   PromotedLBPPoolIds,
@@ -195,7 +194,7 @@ const Pool: FunctionComponent = observer(() => {
     // Compute combined APR (internal gauge + white-listed external gauge)
     gaugeDurationMap.forEach((gauge) => {
       const baseApy = queryOsmosis.queryIncentivizedPools.computeAPY(
-        pool.id,
+        pool?.id ?? "",
         gauge.duration,
         priceStore,
         fiat
