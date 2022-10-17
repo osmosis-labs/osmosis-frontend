@@ -105,20 +105,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     return m;
   }, [t]);
 
-  // // Localization
-  // useEffect(() => {
-  //   // get user language from navigator
-  //   let navigatorLanguage = window.navigator.language;
-  //   // formats can get: 'en-US', 'fr-FR', 'en-FR', 'fr', 'en', ...
-  //   let userLanguage = SUPPORTED_LANGUAGES.find((language) =>
-  //     navigatorLanguage.includes(language)
-  //   );
-  //   // default language is en, change only if it's different
-  //   if (userLanguage && userLanguage != DEFAULT_LANGUAGE) {
-  //     dayjs.locale(userLanguage);
-  //     setLanguage(userLanguage);
-  //   }
-  // }, []);
   useAmplitudeAnalytics({ init: true });
 
   return (
