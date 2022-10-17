@@ -47,7 +47,7 @@ export const PoolQuickActionCell: FunctionComponent<
     }
 
     return m;
-  }, [onAddLiquidity, onRemoveLiquidity, onLockTokens]);
+  }, [onAddLiquidity, onRemoveLiquidity, onLockTokens, t]);
 
   const doAction = useCallback(
     (optionId) => {

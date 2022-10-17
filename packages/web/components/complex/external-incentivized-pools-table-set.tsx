@@ -287,7 +287,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
         },
         { id: "quickActions", display: "", displayCell: PoolQuickActionCell },
       ],
-      [makeSortMechanism]
+      [makeSortMechanism, t]
     );
 
     const tableRows: RowDef[] = useMemo(

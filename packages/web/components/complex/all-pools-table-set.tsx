@@ -330,7 +330,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         },
         { id: "quickActions", display: "", displayCell: PoolQuickActionCell },
       ],
-      [isIncentivizedPools]
+      [isIncentivizedPools, t]
     );
 
     const tableRows: RowDef[] = useMemo(
