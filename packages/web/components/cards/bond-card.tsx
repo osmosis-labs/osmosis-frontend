@@ -30,6 +30,7 @@ export const BondCard: FunctionComponent<
             mode="tertiary"
             size="sm"
             onClick={onUnbond}
+            disabled={userShares.toDec().isZero()}
           >
             Unbond
           </NewButton>
@@ -158,11 +159,11 @@ const Drawer: FunctionComponent<{
         </button>
       </div>
       <div
-        className={classNames("flex flex-col place-content-between h-[44%]", {
+        className={classNames("flex flex-col gap-[13px] h-[54%]", {
           "bg-osmoverse-700": drawerUp,
         })}
       >
-        <div className="flex flex-col max-h-[110px] gap-5 py-6 px-8 overflow-y-scroll">
+        <div className="flex flex-col max-h-[140px] gap-5 py-6 px-8 overflow-y-scroll">
           {incentivesBreakdown.map((breakdown, index) => (
             <>
               {index === 0 && superfluid ? (
@@ -231,7 +232,7 @@ const SuperfluidBreakdownRow: FunctionComponent<
         </>
       ) : userShares.toDec().gt(new Dec(0)) ? (
         <NewButton
-          className="text-transparent bg-clip-text bg-superfluid border-superfluid"
+          className="py-1 text-transparent bg-clip-text bg-superfluid border-superfluid"
           mode="tertiary"
           size="sm"
           onClick={onGoSuperfluid}

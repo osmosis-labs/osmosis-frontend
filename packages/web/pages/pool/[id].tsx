@@ -12,6 +12,7 @@ import {
 import classNames from "classnames";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking } from "@keplr-wallet/stores";
+import { Duration } from "dayjs/plugin/duration";
 import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
 import {
   useAddLiquidityConfig,
@@ -112,7 +113,11 @@ const Pool: FunctionComponent = observer(() => {
   );
   const { config: removeLiquidityConfig, removeLiquidity } =
     useRemoveLiquidityConfig(chainStore, chainId, pool?.id ?? "", queriesStore);
-  const { config: lockLPTokensConfig, lockToken } = useLockTokenConfig(
+  const {
+    config: lockLPTokensConfig,
+    lockToken,
+    unlockTokens,
+  } = useLockTokenConfig(
     pool ? queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id) : undefined
   );
   const {
@@ -129,8 +134,6 @@ const Pool: FunctionComponent = observer(() => {
         ExternalIncentiveGaugeAllowList[pool.id]
       ) ?? []
     : [];
-
-  console.log(bondableDurations);
 
   // swap modal
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
@@ -202,17 +205,31 @@ const Pool: FunctionComponent = observer(() => {
       console.error("Gauge of id", gaugeId, "not found in allAggregatedGauges");
     }
   };
-  // const onUnlockToken = (lockIds: string[], duration: Duration) => {
-  //   const unlockEvent = {
-  //     ...baseEventInfo,
-  //     unbondingPeriod: duration?.asDays(),
-  //   };
-  //   logEvent([E.unbondAllStarted, unlockEvent]);
+  const onUnlockTokens = (duration: Duration) => {
+    const lockIds = poolDetailConfig?.userLockedAssets.reduce<string[]>(
+      (foundLockIds, lock) => {
+        if (lock.duration.asMilliseconds() === duration.asMilliseconds()) {
+          return foundLockIds.concat(...lock.lockIds);
+        }
+        return foundLockIds;
+      },
+      []
+    );
+    if (!lockIds) {
+      console.warn("No lock ids found");
+      return;
+    }
 
-  //   unlockToken(lockIds, duration).then(() => {
-  //     logEvent([E.unbondAllCompleted, unlockEvent]);
-  //   });
-  // };
+    const unlockEvent = {
+      ...baseEventInfo,
+      unbondingPeriod: duration?.asDays(),
+    };
+    logEvent([E.unbondAllStarted, unlockEvent]);
+
+    unlockTokens(lockIds, duration).then(() => {
+      logEvent([E.unbondAllCompleted, unlockEvent]);
+    });
+  };
   // TODO: re-add unpool functionality
   const handleSuperfluidDelegateToValidator = useCallback(
     (validatorAddress) => {
@@ -516,7 +533,7 @@ const Pool: FunctionComponent = observer(() => {
                 <BondCard
                   key={bondableDuration.duration.asMilliseconds()}
                   {...bondableDuration}
-                  onUnbond={() => console.log("log")}
+                  onUnbond={() => onUnlockTokens(bondableDuration.duration)}
                   onGoSuperfluid={() => setShowSuperfluidValidatorsModal(true)}
                 />
               ))}

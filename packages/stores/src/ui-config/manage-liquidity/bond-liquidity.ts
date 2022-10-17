@@ -66,8 +66,6 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           )
         : [];
 
-      console.log(allowedGauges);
-
       /** Set of all available durations. */
       const durationsMsSet = new Set<number>();
 

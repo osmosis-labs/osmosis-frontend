@@ -9,7 +9,7 @@ import { useAmountConfig } from "./use-amount-config";
 export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
   config: AmountConfig;
   lockToken: (gaugeDuration: Duration) => Promise<void>;
-  unlockToken: (
+  unlockTokens: (
     lockIds: string[],
     duration: Duration
   ) => Promise<"synthetic" | "normal">;
@@ -31,14 +31,14 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
   );
 
   const lockToken = useCallback(
-    (gaugeDuration) => {
+    (lockDuration) => {
       return new Promise<void>(async (resolve, reject) => {
         try {
           if (!config.sendCurrency.coinMinimalDenom.startsWith("gamm")) {
             throw new Error("Tried to lock non-gamm token");
           }
           await account.osmosis.sendLockTokensMsg(
-            gaugeDuration.asSeconds(),
+            lockDuration.asSeconds(),
             [
               {
                 currency: config.sendCurrency,
@@ -59,7 +59,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
 
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
 
-  const unlockToken = useCallback(
+  const unlockTokens = useCallback(
     (lockIds: string[], duration: Duration) => {
       return new Promise<"synthetic" | "normal">(async (resolve, reject) => {
         try {
@@ -111,5 +111,5 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
     [queryOsmosis]
   );
 
-  return { config, lockToken, unlockToken };
+  return { config, lockToken, unlockTokens };
 }
