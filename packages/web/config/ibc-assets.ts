@@ -940,6 +940,8 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-259",
     destChannelId: "channel-3",
     coinMinimalDenom: "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk",
+    ibcTransferPathDenom:
+      "transfer/channel-259/factory:kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7:uusk",
     isVerified: true,
   },
 ].filter((ibcAsset) => {
