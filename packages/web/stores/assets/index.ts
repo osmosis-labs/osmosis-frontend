@@ -116,11 +116,6 @@ export class ObservableAssets {
         sourceDenom = ibcAsset.coinMinimalDenom;
       }
 
-      if (ibcAsset.counterpartyMinimalDenom) {
-        sourceDenom = ibcAsset.counterpartyMinimalDenom
-        console.log(sourceDenom)
-      }
-
       const balance = this.queries.queryBalances
         .getQueryBech32Address(this.account.bech32Address)
         .getBalanceFromCurrency({
