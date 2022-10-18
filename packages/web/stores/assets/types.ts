@@ -19,6 +19,9 @@ export interface IBCAsset {
   // isn't H(source_denom), but rather H(ibc_path)
   ibcTransferPathDenom?: string;
 
+  // If this token has a different minimum denom on the source chain, use this
+  counterpartyMinimalDenom?: string;
+
   /** Additional info to support non-IBC bridge integration. */
   originBridgeInfo?: OriginBridgeInfo;
 }
