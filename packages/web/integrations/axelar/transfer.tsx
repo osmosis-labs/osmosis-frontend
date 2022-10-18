@@ -224,7 +224,6 @@ const AxelarTransfer: FunctionComponent<
         destChain,
         isWithdraw || correctChainSelected ? address : undefined,
         originCurrency.coinMinimalDenom,
-        //tokenMinDenom,
         undefined,
         isTestNet ? Environment.TESTNET : Environment.MAINNET
       );
