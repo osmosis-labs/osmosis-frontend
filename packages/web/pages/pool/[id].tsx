@@ -59,8 +59,7 @@ const Pool: FunctionComponent = observer(() => {
   const queryCosmos = queriesStore.get(chainId).cosmos;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const { bech32Address } = accountStore.getAccount(chainStore.osmosis.chainId);
-  const queryGammPoolFeeMetrics =
-    queriesExternalStore.get().queryGammPoolFeeMetrics;
+  const queryGammPoolFeeMetrics = queriesExternalStore.queryGammPoolFeeMetrics;
 
   // eject to pools page if pool does not exist
   const poolExists = queryOsmosis.queryGammPools.poolExists(poolId as string);
@@ -466,7 +465,8 @@ const Pool: FunctionComponent = observer(() => {
                     <h5 className="text-bullish">{`${
                       pool
                         ? queryGammPoolFeeMetrics
-                            .get7dPoolFeeApy(pool, priceStore)
+                            .get7dPoolFeeApr(pool, priceStore)
+                            .maxDecimals(2)
                             .toString()
                         : ""
                     } APR`}</h5>

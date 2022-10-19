@@ -25,7 +25,7 @@ export declare class ObservableQueryIncentivizedPools extends ObservableChainQue
     /** Internal incentives (OSMO). */
     readonly getIncentivizedGaugeId: (poolId: string, duration: Duration) => string | undefined;
     /**
-     * 가장 긴 lockable duration의 apy를 반환한다.
+     * Returns the APY of the longest lockable duration.
      */
     readonly computeMostAPY: (poolId: string, priceStore: IPriceStore) => RatePretty;
     /**

@@ -40,7 +40,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
     const { logEvent } = useAmplitudeAnalytics();
 
     const { chainId } = chainStore.osmosis;
-    const queryExternal = queriesExternalStore.get();
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
     const account = accountStore.getAccount(chainId);
 
@@ -120,7 +119,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
 
           return {
             pool,
-            ...queryExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+            ...queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
               pool.id,
               priceStore
             ),
@@ -139,7 +138,14 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
                 ),
             apr: queryOsmosis.queryIncentivizedPools
               .computeMostAPY(pool.id, priceStore)
-              .maxDecimals(2),
+              .add(
+                // swap fees
+                queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApy(
+                  pool,
+                  priceStore
+                )
+              )
+              .maxDecimals(0),
             poolName: pool.poolAssets
               .map((asset) => asset.amount.currency.coinDenom)
               .join("/"),
@@ -156,7 +162,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
         chainId,
         externalIncentivizedPools,
         queryOsmosis.queryIncentivizedPools.response,
-        queryExternal.queryGammPoolFeeMetrics.response,
+        queriesExternalStore.queryGammPoolFeeMetrics.response,
         queryOsmosis.queryGammPools.response,
         priceStore,
         account,

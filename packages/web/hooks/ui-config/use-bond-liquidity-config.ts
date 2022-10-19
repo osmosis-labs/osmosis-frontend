@@ -5,7 +5,8 @@ import { usePoolDetailConfig } from "./use-pool-detail-config";
 import { useSuperfluidPoolConfig } from "./use-superfluid-pool-config";
 
 export function useBondLiquidityConfig(bech32Address: string, poolId?: string) {
-  const { chainStore, queriesStore, priceStore } = useStore();
+  const { chainStore, queriesStore, priceStore, queriesExternalStore } =
+    useStore();
 
   const { poolDetailConfig } = usePoolDetailConfig(poolId);
   const { superfluidPoolConfig } = useSuperfluidPoolConfig(poolDetailConfig);
@@ -21,6 +22,7 @@ export function useBondLiquidityConfig(bech32Address: string, poolId?: string) {
           poolDetailConfig,
           superfluidPoolConfig,
           priceStore,
+          queriesExternalStore.queryGammPoolFeeMetrics,
           queryOsmosis
         )
       );

@@ -86,7 +86,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
   );
 
   /**
-   * 가장 긴 lockable duration의 apy를 반환한다.
+   * Returns the APY of the longest lockable duration.
    */
   readonly computeMostAPY = computedFn(
     (poolId: string, priceStore: IPriceStore): RatePretty => {

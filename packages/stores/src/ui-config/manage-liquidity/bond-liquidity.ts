@@ -12,6 +12,7 @@ import {
   ObservableQueryGuage,
   ObservableQueryIncentivizedPools,
 } from "../../queries";
+import { ObservableQueryPoolFeesMetrics } from "../../queries-external";
 import { IPriceStore } from "../../price";
 import { UserConfig } from "../user-config";
 
@@ -40,6 +41,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
     protected readonly poolDetails: ObservableQueryPoolDetails,
     protected readonly superfluidPool: ObservableQuerySuperfluidPool,
     protected readonly priceStore: IPriceStore,
+    protected readonly queryFeeMetrics: ObservableQueryPoolFeesMetrics,
     protected readonly queries: {
       queryAccountLocked: ObservableQueryAccountLocked;
       queryGauge: ObservableQueryGuage;
@@ -193,6 +195,13 @@ export class ObservableBondLiquidityConfig extends UserConfig {
 
         if (superfluid) aggregateApr = aggregateApr.add(superfluid.apr);
         // TODO: sum APR of each external gauge
+
+        aggregateApr = aggregateApr.add(
+          this.queryFeeMetrics.get7dPoolFeeApr(
+            this.poolDetails.pool,
+            this.priceStore
+          )
+        );
 
         return {
           duration: curDuration,
