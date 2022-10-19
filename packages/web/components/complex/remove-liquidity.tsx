@@ -48,14 +48,10 @@ export const RemoveLiquidity: FunctionComponent<
         </div>
         <Slider
           className="w-full my-8"
-          type="plain"
           currentValue={removeLiquidityConfig.percentage}
           onInput={(value) =>
             removeLiquidityConfig.setPercentage(value.toString())
           }
-          disabled={removeLiquidityConfig.poolShareWithPercentage
-            .toDec()
-            .equals(new Dec(0))}
           min={0}
           max={100}
           step={1}
