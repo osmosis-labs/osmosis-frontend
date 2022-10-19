@@ -8,7 +8,7 @@ import { useWindowSize } from "../../hooks";
 import { MenuToggle } from "../../components/control";
 import { Token } from "../../components/assets";
 import { InputBox } from "../../components/input";
-import { Error, Info } from "../../components/alert";
+import { Info } from "../../components/alert";
 import { PoolTokenSelect } from "../../components/control/pool-token-select";
 import { BorderButton } from "../buttons";
 import { CustomClasses } from "../types";

@@ -64,12 +64,10 @@ export const LockTokensModal: FunctionComponent<
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       className: "h-14 md:w-full w-96 mt-3 mx-auto",
-      size: "lg",
       disabled:
         config.error !== undefined ||
         selectedGaugeIndex === null ||
         isSendingMsg,
-      loading: isSendingMsg,
       onClick: () => {
         const gauge = allAggregatedGauges.find(
           (_, index) => index === selectedGaugeIndex

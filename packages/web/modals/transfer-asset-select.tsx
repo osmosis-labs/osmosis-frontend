@@ -87,9 +87,8 @@ export const TransferAssetSelectModal: FunctionComponent<
   } = useConnectWalletModalRedirect(
     {
       className: "h-14 md:w-full w-96 mt-3 mx-auto !px-1",
-      size: "lg",
       onClick: () => onSelectAsset(selectedTokenDenom, selectedNetwork?.id),
-      children: <span>Next</span>,
+      children: "Next",
     },
     props.onRequestClose,
     "Connect Wallet"
