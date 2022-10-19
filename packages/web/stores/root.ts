@@ -255,7 +255,7 @@ export class RootStore {
     );
 
     this.userSettings = new UserSettings([
-      new LanguageUserSetting("en"),
+      new LanguageUserSetting(0), // give index of default language in SUPPORTED_LANGUAGES
       new ShowDustUserSetting(
         this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
           ?.symbol ?? "$"

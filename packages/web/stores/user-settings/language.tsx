@@ -2,25 +2,29 @@ import { action, makeObservable, observable, computed } from "mobx";
 import { FunctionComponent } from "react";
 import { IUserSetting } from ".";
 import React from "react";
-import { LanguageSelect, MenuDropdownIconItem } from "../../components/control";
+import {
+  LanguageSelect,
+  MenuDropdownIconItemProps,
+} from "../../components/control";
 
 export type LanguageState = { language: string };
 
-const SUPPORTED_LANGUAGES: MenuDropdownIconItem[] = [
+const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
   {
     value: "en",
     display: "settings.languages.en",
-    image: "/images/flag-english.png",
+    iconUrl: "/images/flag-english.png",
   },
   {
     value: "fr",
     display: "settings.languages.fr",
-    image: "/images/flag-french.png",
+    iconUrl: "/images/flag-french.png",
   },
 ];
 
 export class LanguageUserSetting implements IUserSetting<LanguageState> {
   readonly id = "language";
+  readonly defaultLanguage: MenuDropdownIconItemProps;
   readonly controlComponent: FunctionComponent<LanguageState> = ({}) => {
     return (
       <div className="flex">
@@ -32,10 +36,11 @@ export class LanguageUserSetting implements IUserSetting<LanguageState> {
   @observable
   protected _state: LanguageState;
 
-  constructor(defaultLanguage: string) {
+  constructor(indexDefaultLanguage: number) {
     makeObservable(this);
+    this.defaultLanguage = SUPPORTED_LANGUAGES[indexDefaultLanguage];
     this._state = {
-      language: defaultLanguage,
+      language: this.defaultLanguage.value,
     };
   }
 

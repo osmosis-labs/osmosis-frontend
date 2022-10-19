@@ -1,17 +1,19 @@
-import { FunctionComponent } from "react";
-import { MenuDropdownIconItem as MenuDropdownIconItemType } from "../components/control";
+import React, { FunctionComponent } from "react";
+import { MenuDropdownIconItemProps } from "../components/control";
 import { ModalBase, ModalBaseProps } from "./base";
-import { MenuDropdownIconItem } from "../components/control/menu-dropdown-icon";
-import React from "react";
+import {
+  MenuDropdownIconItem,
+  onSelectIconDropdown,
+} from "../components/control/icon-dropdown";
 
 /** Intended for mobile use only - full screen alternative to menu options dropdown. */
 export const MenuOptionsIconModal: FunctionComponent<
   ModalBaseProps & {
-    currentValue: string;
-    options: MenuDropdownIconItemType[];
-    onSelect: ({ value }: { value: string }) => void;
+    currentOption: MenuDropdownIconItemProps;
+    options: MenuDropdownIconItemProps[];
+    onSelect: onSelectIconDropdown;
   }
-> = ({ currentValue, options, onSelect, ...props }) => (
+> = ({ currentOption, options, onSelect, ...props }) => (
   <ModalBase
     className="border border-white-faint !p-0 !rounded-xl"
     {...props}
@@ -24,25 +26,18 @@ export const MenuOptionsIconModal: FunctionComponent<
     </span>
     <hr className="mx-3 shadow-separator h-px text-white-faint" />
     <div className="flex flex-col">
-      {options.map(
-        (
-          { value, display, image }: MenuDropdownIconItemType,
-          index: number
-        ) => {
-          return (
-            <MenuDropdownIconItem
-              key={index}
-              value={value}
-              display={display}
-              image={image}
-              index={index}
-              currentValue={currentValue}
-              optionLength={options.length}
-              onSelect={onSelect}
-            />
-          );
-        }
-      )}
+      {options.map((option: MenuDropdownIconItemProps, index: number) => {
+        return (
+          <MenuDropdownIconItem
+            key={index}
+            option={option}
+            index={index}
+            currentOption={currentOption}
+            optionLength={options.length}
+            onSelect={onSelect}
+          />
+        );
+      })}
     </div>
   </ModalBase>
 );

@@ -3,49 +3,47 @@ import Image from "next/image";
 import classNames from "classnames";
 import React from "react";
 import { useTranslation } from "react-multi-lang";
+import { MenuDropdownIconItemProps } from "../types";
 
 interface Props {
-  value: string;
-  display: string;
-  currentValue: string;
-  image: string;
+  option: MenuDropdownIconItemProps;
+  currentOption: MenuDropdownIconItemProps;
   index: number;
   optionLength: number;
-  onSelect: ({ value }: { value: string }) => void;
+  onSelect: onSelectIconDropdown;
 }
 
-export type MenuDropdownIconItem = {
-  value: string;
-  display: string;
-  image: string;
-};
+export type onSelectIconDropdown = (option: MenuDropdownIconItemProps) => void;
+
 export const MenuDropdownIconItem: FunctionComponent<Props> = ({
-  value,
-  display,
-  image,
+  option,
   onSelect,
   index,
-  currentValue,
   optionLength,
 }: Props) => {
   const t = useTranslation();
+
   return (
     <button
       className={classNames(
         "px-4 py-2 cursor-pointer hover:bg-osmoverse-700 flex items-center ",
         {
-          "text-rust-200": value === currentValue,
           "rounded-b-xlinset": index === optionLength - 1,
           "rounded-t-xlinset": index === 0,
         }
       )}
-      key={value.toString()}
-      onClick={() => onSelect({ value })}
+      key={option.value.toString()}
+      onClick={() => onSelect(option)}
     >
       <div className="flex items-center justify-center min-w-[24px]">
-        <Image src={image} width={24} height={24} alt={`${display}`} />
+        <Image
+          src={option.iconUrl}
+          width={24}
+          height={24}
+          alt={`${option.display}`}
+        />
       </div>
-      <p className="ml-3">{t(display.toString())}</p>
+      <p className="ml-3">{t(option.display.toString())}</p>
     </button>
   );
 };

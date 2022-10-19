@@ -1,96 +1,40 @@
-import React, { useCallback } from "react";
-import { FunctionComponent } from "react";
-import { useBooleanWithWindowEvent, useWindowSize } from "../../hooks";
+import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import Image from "next/image";
-import { MenuDropdownIcon } from "./menu-dropdown-icon/menu-dropdown-icon";
-import { MenuDropdownIconItem } from "./types";
-import { MenuOptionsIconModal } from "../../modals";
+import { MenuDropdownIconItemProps } from "./types";
 import { useTranslation } from "react-multi-lang";
+import { IconDropdown } from "./icon-dropdown/icon-dropdown";
+import { LanguageUserSetting } from "../../stores/user-settings";
 
 export type LanguageSelectProps = {
-  options: MenuDropdownIconItem[];
+  options: MenuDropdownIconItemProps[];
 };
 
 export const LanguageSelect: FunctionComponent<LanguageSelectProps> = observer(
-  ({ options }) => {
-    const { isMobile } = useWindowSize();
+  ({ options }: LanguageSelectProps) => {
     const { userSettings } = useStore();
     const t = useTranslation();
-    const [dropdownOpen, setDropdownOpen] = useBooleanWithWindowEvent(false);
-    const currentLanguage =
-      userSettings.getUserSettingById("language")?.state.language;
+    const languageSetting = userSettings.getUserSettingById(
+      "language"
+    ) as LanguageUserSetting;
+    const currentLanguage = languageSetting?.state.language;
     const currentOption = options.find(
       (option) => option.value === currentLanguage
     );
 
-    const onSelect = useCallback(
-      ({ value }: { value: string }) => {
-        setDropdownOpen(false);
-
-        userSettings
-          .getUserSettingById("language")
-          ?.setState({ language: value });
-      },
-      [setDropdownOpen]
-    );
+    const onSelect = (option: MenuDropdownIconItemProps) => {
+      userSettings
+        .getUserSettingById("language")
+        ?.setState({ language: option.value });
+    };
 
     return (
-      <div className="relative">
-        <button
-          className="flex items-center border border-osmoverse-200 rounded-xl bg-osmoverse-900"
-          onClick={(e) => {
-            e.stopPropagation();
-            setDropdownOpen(!dropdownOpen);
-          }}
-        >
-          <span className="flex items-center my-[0.6875rem] m-auto md:ml-1 ml-2 leading-loose select-none text-center body md:caption overflow-hidden">
-            <div className="flex items-center justify-center min-w-[24px]">
-              {currentOption &&
-                currentOption.image &&
-                currentOption.display && (
-                  <Image
-                    src={currentOption.image}
-                    width={24}
-                    height={24}
-                    alt={`language ${currentOption.display}`}
-                  />
-                )}
-            </div>
-            <p className="mx-3">{t(currentOption?.display ?? "")}</p>
-            <div className="flex items-center justify-center min-w-[24px] mr-3">
-              {currentOption &&
-                currentOption.image &&
-                currentOption.display && (
-                  <Image
-                    src={"/icons/chevron-down.svg"}
-                    width={13}
-                    height={20}
-                    alt={``}
-                  />
-                )}
-            </div>
-          </span>
-        </button>
-        {isMobile ? (
-          <MenuOptionsIconModal
-            currentValue={currentLanguage}
-            onSelect={onSelect}
-            isOpen={dropdownOpen}
-            onRequestClose={() => setDropdownOpen(false)}
-            options={options}
-            title="Language"
-          />
-        ) : (
-          <MenuDropdownIcon
-            currentValue={currentLanguage}
-            onSelect={onSelect}
-            isOpen={dropdownOpen}
-            options={options}
-          />
-        )}
-      </div>
+      <IconDropdown
+        onSelect={onSelect}
+        options={options}
+        currentOption={currentOption ?? languageSetting.defaultLanguage}
+        title={t("settings.titleLanguage")}
+      />
     );
   }
 );
