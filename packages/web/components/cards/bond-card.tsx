@@ -163,7 +163,7 @@ const Drawer: FunctionComponent<{
           "bg-osmoverse-700": drawerUp,
         })}
       >
-        <div className="flex flex-col max-h-[140px] gap-5 py-6 px-8 overflow-y-scroll">
+        <div className="flex flex-col h-[140px] gap-5 py-6 px-8 overflow-y-scroll">
           {incentivesBreakdown.map((breakdown, index) => (
             <>
               {index === 0 && superfluid ? (
@@ -204,7 +204,7 @@ const SuperfluidBreakdownRow: FunctionComponent<
   validatorMoniker,
   validatorLogoUrl,
 }) => (
-  <div className="flex items-center place-content-between" key="superfluid">
+  <div className="flex items-start place-content-between" key="superfluid">
     <div className="flex items-center gap-2">
       <h6 className="text-transparent bg-clip-text bg-superfluid">
         +{apr.maxDecimals(0).toString()}
@@ -222,12 +222,14 @@ const SuperfluidBreakdownRow: FunctionComponent<
         <>
           <span>{validatorMoniker}</span>
           <span className="caption text-osmoverse-400">
-            {commission?.toString()}
             {delegated
-              ? `, ~${delegated.maxDecimals(2).toString()} delegated`
+              ? `~${delegated.maxDecimals(2).toString()} delegated`
               : undelegating
-              ? `, ~${undelegating.maxDecimals(2).toString()} undelegating`
+              ? `~${undelegating.maxDecimals(2).toString()} undelegating`
               : null}
+          </span>
+          <span className="caption text-osmoverse-400">
+            {commission?.toString()} commission
           </span>
         </>
       ) : userShares.toDec().gt(new Dec(0)) ? (
@@ -250,7 +252,7 @@ const IncentiveBreakdownRow: FunctionComponent<
   BondableDuration["incentivesBreakdown"][0]
 > = ({ dailyPoolReward, apr, numDaysRemaining }) => (
   <div
-    className="flex items-center place-content-between"
+    className="flex items-start place-content-between"
     key={dailyPoolReward.denom}
   >
     <div className="flex items-center gap-2">
