@@ -34,9 +34,7 @@ export const RemoveLiquidityModal: FunctionComponent<
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      className: "h-14 md:w-full md:px-1 w-96 mt-3 mx-auto",
-      size: "lg",
-      loading: isSendingMsg,
+      className: "w-full h-16 md:px-1 mt-3",
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () =>
         props.onRemoveLiquidity?.(

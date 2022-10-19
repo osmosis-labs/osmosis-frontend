@@ -528,6 +528,7 @@ const Pool: FunctionComponent = observer(() => {
                   "bg-gradient-positive text-osmoverse-900": levelCta === 2,
                 })}
                 disabled={levelCta !== 2}
+                onClick={() => setShowLockLPTokenModal(true)}
               >
                 Bond shares
               </NewButton>
