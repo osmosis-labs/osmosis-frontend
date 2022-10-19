@@ -77,21 +77,12 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<Pool
         new Dec(7)
       );
       const poolTVL = pool.computeTotalValueLocked(priceStore).toDec();
+      const revenuePerYear = avgDayFeeRevenue.mul(new Dec(365));
 
-      if (poolTVL.equals(new Dec(0))) {
-        return new RatePretty(0).ready(false);
-      }
-      const percentRevenue = avgDayFeeRevenue.quo(poolTVL);
-      const dailyRate = new Dec(1).add(percentRevenue);
+      if (poolTVL.equals(new Dec(0)) || revenuePerYear.equals(new Dec(0)))
+        return new RatePretty(0);
 
-      if (!dailyRate.lt(new Dec(2))) return new RatePretty(0);
-
-      const rate = pow(dailyRate, new Dec(365));
-
-      return new RatePretty(rate)
-        .sub(new Dec(1))
-        .mul(new Dec(2))
-        .moveDecimalPointLeft(2);
+      return new RatePretty(revenuePerYear.quo(poolTVL));
     }
   );
 }

@@ -289,6 +289,7 @@ const Pool: FunctionComponent = observer(() => {
       </Head>
       {pool && showAddLiquidityModal && (
         <AddLiquidityModal
+          title="Add Liquidity"
           isOpen={true}
           poolId={pool.id}
           onRequestClose={() => setShowAddLiquidityModal(false)}
@@ -297,6 +298,7 @@ const Pool: FunctionComponent = observer(() => {
       )}
       {pool && showRemoveLiquidityModal && (
         <RemoveLiquidityModal
+          title="Remove Liquidity"
           isOpen={true}
           poolId={pool.id}
           onRequestClose={() => setShowRemoveLiquidityModal(false)}
