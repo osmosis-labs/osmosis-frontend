@@ -41,7 +41,7 @@ export const RemoveLiquidityModal: FunctionComponent<
           removeLiquidity().finally(() => props.onRequestClose()),
           config
         ),
-      children: "Remove Liquidity",
+      children: config.error ? config.error.message : "Remove Liquidity",
     },
     props.onRequestClose
   );
