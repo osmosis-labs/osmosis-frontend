@@ -12,11 +12,13 @@ import {
 import classNames from "classnames";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking } from "@keplr-wallet/stores";
+import {
+  ObservableAddLiquidityConfig,
+  ObservableRemoveLiquidityConfig,
+} from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
 import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
 import {
-  useAddLiquidityConfig,
-  useRemoveLiquidityConfig,
   useLockTokenConfig,
   useSuperfluidPoolConfig,
   useWindowSize,
@@ -27,8 +29,9 @@ import {
   useBondLiquidityConfig,
 } from "../../hooks";
 import {
+  AddLiquidityModal,
+  RemoveLiquidityModal,
   LockTokensModal,
-  ManageLiquidityModal,
   SuperfluidValidatorModal,
   TradeTokens,
 } from "../../modals";
@@ -55,9 +58,7 @@ const Pool: FunctionComponent = observer(() => {
 
   const queryCosmos = queriesStore.get(chainId).cosmos;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const { bech32Address, txTypeInProgress } = accountStore.getAccount(
-    chainStore.osmosis.chainId
-  );
+  const { bech32Address } = accountStore.getAccount(chainStore.osmosis.chainId);
   const queryGammPoolFeeMetrics =
     queriesExternalStore.get().queryGammPoolFeeMetrics;
 
@@ -102,17 +103,10 @@ const Pool: FunctionComponent = observer(() => {
   });
 
   // Manage liquidity + bond LP tokens (modals) state
-  const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
+  const [showAddLiquidityModal, setShowAddLiquidityModal] = useState(false);
+  const [showRemoveLiquidityModal, setShowRemoveLiquidityModal] =
     useState(false);
   const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
-  const { config: addLiquidityConfig, addLiquidity } = useAddLiquidityConfig(
-    chainStore,
-    chainId,
-    pool?.id ?? "",
-    queriesStore
-  );
-  const { config: removeLiquidityConfig, removeLiquidity } =
-    useRemoveLiquidityConfig(chainStore, chainId, pool?.id ?? "", queriesStore);
   const {
     config: lockLPTokensConfig,
     lockToken,
@@ -145,18 +139,21 @@ const Pool: FunctionComponent = observer(() => {
     poolWeight,
     isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
   };
-  const onAddLiquidity = () => {
+  const onAddLiquidity = (
+    result: Promise<void>,
+    config: ObservableAddLiquidityConfig
+  ) => {
     const poolInfo = {
       ...baseEventInfo,
-      isSingleAsset: addLiquidityConfig.isSingleAmountIn,
+      isSingleAsset: config.isSingleAmountIn,
       providingLiquidity:
-        addLiquidityConfig.isSingleAmountIn &&
-        addLiquidityConfig.singleAmountInConfig
+        config.isSingleAmountIn && config.singleAmountInConfig
           ? {
-              [addLiquidityConfig.singleAmountInConfig?.sendCurrency.coinDenom]:
-                Number(addLiquidityConfig.singleAmountInConfig.amount),
+              [config.singleAmountInConfig?.sendCurrency.coinDenom]: Number(
+                config.singleAmountInConfig.amount
+              ),
             }
-          : addLiquidityConfig.poolAssetConfigs.reduce(
+          : config.poolAssetConfigs.reduce(
               (acc, cur) => ({
                 ...acc,
                 [cur.sendCurrency.coinDenom]: Number(cur.amount),
@@ -167,21 +164,24 @@ const Pool: FunctionComponent = observer(() => {
 
     logEvent([E.addLiquidityStarted, poolInfo]);
 
-    addLiquidity()
+    result
       .then(() => logEvent([E.addLiquidityCompleted, poolInfo]))
-      .finally(() => setShowManageLiquidityDialog(false));
+      .finally(() => setShowAddLiquidityModal(false));
   };
-  const onRemoveLiquidity = () => {
+  const onRemoveLiquidity = (
+    result: Promise<void>,
+    config: ObservableRemoveLiquidityConfig
+  ) => {
     const removeLiqInfo = {
       ...baseEventInfo,
-      poolSharePercentage: removeLiquidityConfig.percentage,
+      poolSharePercentage: config.percentage,
     };
 
     logEvent([E.removeLiquidityStarted, removeLiqInfo]);
 
-    removeLiquidity()
+    result
       .then(() => logEvent([E.removeLiquidityCompleted, removeLiqInfo]))
-      .finally(() => setShowManageLiquidityDialog(false));
+      .finally(() => setShowRemoveLiquidityModal(false));
   };
   const onLockToken = (gaugeId: string, electSuperfluid?: boolean) => {
     const gauge = allAggregatedGauges?.find((gauge) => gauge.id === gaugeId);
@@ -287,22 +287,22 @@ const Pool: FunctionComponent = observer(() => {
       <Head>
         <title>{pageTitle}</title>
       </Head>
-      {pool &&
-        addLiquidityConfig &&
-        removeLiquidityConfig &&
-        showManageLiquidityDialog && (
-          <ManageLiquidityModal
-            isOpen={showManageLiquidityDialog}
-            title="Manage Liquidity"
-            onRequestClose={() => setShowManageLiquidityDialog(false)}
-            addLiquidityConfig={addLiquidityConfig}
-            removeLiquidityConfig={removeLiquidityConfig}
-            isSendingMsg={txTypeInProgress !== ""}
-            getFiatValue={(coin) => priceStore.calculatePrice(coin)}
-            onAddLiquidity={onAddLiquidity}
-            onRemoveLiquidity={onRemoveLiquidity}
-          />
-        )}
+      {pool && showAddLiquidityModal && (
+        <AddLiquidityModal
+          isOpen={true}
+          poolId={pool.id}
+          onRequestClose={() => setShowAddLiquidityModal(false)}
+          onAddLiquidity={onAddLiquidity}
+        />
+      )}
+      {pool && showRemoveLiquidityModal && (
+        <RemoveLiquidityModal
+          isOpen={true}
+          poolId={pool.id}
+          onRequestClose={() => setShowRemoveLiquidityModal(false)}
+          onRemoveLiquidity={onRemoveLiquidity}
+        />
+      )}
       {pool && showTradeTokenModal && (
         <TradeTokens
           className="md:!p-0"
@@ -475,17 +475,21 @@ const Pool: FunctionComponent = observer(() => {
                 </span>
               </div>
               <div className="flex shrink-0 gap-4">
-                <NewButton className="h-16 px-20 py-4" mode="secondary">
+                <NewButton
+                  className="h-16 px-20 py-4"
+                  mode="secondary"
+                  onClick={() => setShowRemoveLiquidityModal(true)}
+                >
                   Remove liquidity
                 </NewButton>
                 <NewButton
                   className={classNames("h-16 px-20 py-4", {
                     "bg-gradient-positive text-osmoverse-900": levelCta === 1,
                   })}
+                  onClick={() => setShowAddLiquidityModal(true)}
                 >
                   Add Liquidity
                 </NewButton>
-                {/** Buttons */}
               </div>
             </div>
             <div className="flex flex-col items-end gap-3">

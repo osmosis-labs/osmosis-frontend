@@ -1,5 +1,6 @@
 import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
+import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { useStore } from "../stores";
 import { useConnectWalletModalRedirect, useAddLiquidityConfig } from "../hooks";
 import { AddLiquidity } from "../components/complex/add-liquidity";
@@ -8,6 +9,10 @@ import { ModalBase, ModalBaseProps } from "./base";
 export const AddLiquidityModal: FunctionComponent<
   {
     poolId: string;
+    onAddLiquidity?: (
+      result: Promise<void>,
+      config: ObservableAddLiquidityConfig
+    ) => void;
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
@@ -30,7 +35,13 @@ export const AddLiquidityModal: FunctionComponent<
       size: "lg",
       loading: isSendingMsg,
       disabled: config.error !== undefined || isSendingMsg,
-      onClick: () => addLiquidity().finally(() => props.onRequestClose()),
+      onClick: () =>
+        props.onAddLiquidity?.(
+          addLiquidity().finally(() => {
+            props.onRequestClose();
+          }),
+          config
+        ),
       children: "Add Liquidity",
     },
     props.onRequestClose
