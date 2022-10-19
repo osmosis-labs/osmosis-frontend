@@ -90,7 +90,7 @@ const Drawer: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "absolute w-full h-full -bottom-[255px] left-1/2 -translate-x-1/2 flex flex-col transition-all duration-300 ease-inOutBack z-50",
+        "absolute w-full h-full -bottom-[268px] left-1/2 -translate-x-1/2 flex flex-col transition-all duration-300 ease-inOutBack z-50",
         {
           "-translate-y-[170px] bg-osmoverse-700 rounded-t-[18px]": drawerUp,
         }
