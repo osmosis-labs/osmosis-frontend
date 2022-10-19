@@ -1974,7 +1974,7 @@ const chainInfos = (
           coinDenom: "stJUNO",
           coinMinimalDenom: "stujuno",
           coinDecimals: 6,
-          // coinGeckoId: "juno-network",
+          coinGeckoId: "pool:stujuno",
           coinImageUrl: "/tokens/stjuno.svg",
         },
         {
@@ -2015,6 +2015,34 @@ const chainInfos = (
       ],
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://rebus.explorers.guru/transaction/{txHash}",
+    },
+    {
+      rpc: "https://rpc.mainnet.teritori.com/",
+      rest: "https://rest.mainnet.teritori.com/",
+      chainId: "teritori-1",
+      chainName: "Teritori",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("tori"),
+      currencies: [
+        {
+          coinDenom: "TORI",
+          coinMinimalDenom: "utori",
+          coinDecimals: 6,
+          coinGeckoId: "pool:utori",
+          coinImageUrl: "/tokens/utori.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.0,
+        average: 0.25,
+        high: 0.5,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://explorer.teritori.com/teritori/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);

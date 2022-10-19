@@ -2,7 +2,7 @@ import { FunctionComponent, useState, useEffect, useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { Environment } from "@axelar-network/axelarjs-sdk";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
 import {
@@ -56,8 +56,6 @@ const AxelarTransfer: FunctionComponent<
     selectedSourceChainKey,
     onRequestClose,
     onRequestSwitchWallet,
-    tokenMinDenom,
-    transferFeeMinAmount,
     sourceChains,
     isTestNet = process.env.NEXT_PUBLIC_IS_TESTNET === "true",
     connectCosmosWalletButtonOverride,
@@ -98,9 +96,11 @@ const AxelarTransfer: FunctionComponent<
       EthClientChainIds_AxelarChainIdsMap[selectedSourceChainKey] ??
       selectedSourceChainKey;
 
-    const erc20ContractAddress = sourceChains.find(
-      ({ id }) => id === selectedSourceChainKey
-    )?.erc20ContractAddress;
+    const sourceChainConfig = sourceChains.find( ({ id }) => id === selectedSourceChainKey );
+
+    const erc20ContractAddress = sourceChainConfig?.erc20ContractAddress;
+    const transferFeeMinAmount = sourceChainConfig?.transferFeeMinAmount ?? "0";
+    
     const axelarChainId =
       chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
       "axelar-dojo-1";
@@ -182,8 +182,15 @@ const AxelarTransfer: FunctionComponent<
         if (amount !== "") {
           nonIbcBridgeHistoryStore.pushTxNow(
             `axelar${txHash}`,
-            new CoinPretty(originCurrency, amount)
-              .moveDecimalPointRight(originCurrency.coinDecimals)
+            new CoinPretty(
+              originCurrency,
+              new Dec(amount).mul(
+                // CoinPretty only accepts whole amounts
+                DecUtils.getTenExponentNInPrecisionRange(
+                  originCurrency.coinDecimals
+                )
+              )
+            )
               .trim(true)
               .toString(),
             isWithdraw,
@@ -215,7 +222,7 @@ const AxelarTransfer: FunctionComponent<
         sourceChain,
         destChain,
         isWithdraw || correctChainSelected ? address : undefined,
-        tokenMinDenom,
+        originCurrency.coinMinimalDenom,
         undefined,
         isTestNet ? Environment.TESTNET : Environment.MAINNET
       );
@@ -223,7 +230,7 @@ const AxelarTransfer: FunctionComponent<
     // notify user they are withdrawing into a different account then they last deposited to
     const [lastDepositAccountAddress, setLastDepositAccountAddress] =
       useLocalStorageState<string | null>(
-        `axelar-last-deposit-addr-${tokenMinDenom}`,
+        `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
         null
       );
     const warnOfDifferentDepositAddress =
@@ -288,9 +295,15 @@ const AxelarTransfer: FunctionComponent<
             try {
               await erc20Transfer(
                 ethWalletClient.send,
-                new CoinPretty(originCurrency, depositAmount)
-                  .moveDecimalPointRight(originCurrency.coinDecimals)
-                  .toCoin().amount,
+                new CoinPretty(
+                  originCurrency,
+                  new Dec(amount).mul(
+                    // CoinPretty only accepts whole amounts
+                    DecUtils.getTenExponentNInPrecisionRange(
+                      originCurrency.coinDecimals
+                    )
+                  )
+                ).toCoin().amount,
                 erc20ContractAddress,
                 ethWalletClient.accountAddress!,
                 depositAddress
@@ -371,17 +384,36 @@ const AxelarTransfer: FunctionComponent<
       (isWithdraw && osmosisAccount.txTypeInProgress === "");
     const isInsufficientFee =
       amount !== "" &&
-      new CoinPretty(originCurrency, amount)
+      new CoinPretty(
+        originCurrency,
+        new Dec(amount).mul(
+          // CoinPretty only accepts whole amounts
+          DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
+        )
+      )
         .moveDecimalPointRight(originCurrency.coinDecimals)
         .toDec()
         .lt(
-          new CoinPretty(originCurrency, new Dec(transferFeeMinAmount)).toDec()
+          new CoinPretty(
+            originCurrency,
+            new Dec(transferFeeMinAmount).mul(
+              // CoinPretty only accepts whole amounts
+              DecUtils.getTenExponentNInPrecisionRange(
+                originCurrency.coinDecimals
+              )
+            )
+          ).toDec()
         );
     const isInsufficientBal =
       amount !== "" &&
       availableBalance &&
-      new CoinPretty(originCurrency, amount)
-        .moveDecimalPointRight(originCurrency.coinDecimals)
+      new CoinPretty(
+        originCurrency,
+        new Dec(amount).mul(
+          // CoinPretty only accepts whole amounts
+          DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
+        )
+      )
         .toDec()
         .gt(availableBalance.toDec());
     const buttonErrorMessage = userDisconnectedEthWallet

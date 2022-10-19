@@ -174,6 +174,8 @@ export class RootStore {
       this.chainStore
     );
     this.nonIbcBridgeHistoryStore = new NonIbcBridgeHistoryStore(
+      this.queriesStore,
+      this.chainStore.osmosis.chainId,
       makeLocalStorageKVStore("nonibc_transfer_history"),
       [
         new AxelarTransferStatusSource(
