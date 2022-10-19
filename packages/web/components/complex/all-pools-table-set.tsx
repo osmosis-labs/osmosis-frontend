@@ -176,7 +176,7 @@ export const AllPoolsTableSet: FunctionComponent<{
               .computeMostAPY(poolWithMetrics.pool.id, priceStore)
               .add(
                 // swap fees
-                queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApy(
+                queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
                   poolWithMetrics.pool,
                   priceStore
                 )

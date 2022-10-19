@@ -1,5 +1,5 @@
 import { Duration } from "dayjs/plugin/duration";
-import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, RatePretty, PricePretty } from "@keplr-wallet/unit";
 import { AppCurrency } from "@keplr-wallet/types";
 import { ObservableQueryPoolDetails, ObservableQuerySuperfluidPool, ObservableQueryAccountLocked, ObservableQueryGuage, ObservableQueryIncentivizedPools } from "../../queries";
 import { ObservableQueryPoolFeesMetrics } from "../../queries-external";
@@ -10,6 +10,8 @@ export declare type BondableDuration = {
     userShares: CoinPretty;
     userUnlockingShares: CoinPretty;
     aggregateApr: RatePretty;
+    swapFeeApr: RatePretty;
+    swapFeeDailyReward: PricePretty;
     incentivesBreakdown: {
         dailyPoolReward: CoinPretty;
         apr: RatePretty;

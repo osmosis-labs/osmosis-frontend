@@ -62,7 +62,6 @@ const Pools: NextPage = observer(function () {
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const queriesExternal = queriesExternalStore.get();
   const account = accountStore.getAccount(chainId);
 
   const superfluidPoolIds = queryOsmosis.querySuperfluidPools.superfluidPoolIds;
@@ -73,7 +72,7 @@ const Pools: NextPage = observer(function () {
       .map((superfluidPool) => ({
         id: superfluidPool.id,
         poolFeesMetrics:
-          queriesExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+          queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
             superfluidPool.id,
             priceStore
           ),

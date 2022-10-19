@@ -3,7 +3,7 @@ import { FunctionComponent, useState } from "react";
 import classNames from "classnames";
 import { BondableDuration } from "@osmosis-labs/stores";
 import { NewButton } from "../buttons";
-import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 
 export const BondCard: FunctionComponent<
   BondableDuration & { onUnbond: () => void; onGoSuperfluid: () => void }
@@ -11,6 +11,8 @@ export const BondCard: FunctionComponent<
   duration,
   userShares,
   aggregateApr,
+  swapFeeApr,
+  swapFeeDailyReward,
   superfluid,
   incentivesBreakdown,
   onUnbond,
@@ -52,6 +54,8 @@ export const BondCard: FunctionComponent<
       <Drawer
         aggregateApr={aggregateApr}
         userShares={userShares}
+        swapFeeApr={swapFeeApr}
+        swapFeeDailyReward={swapFeeDailyReward}
         incentivesBreakdown={incentivesBreakdown}
         superfluid={superfluid}
         drawerUp={drawerUp}
@@ -64,6 +68,8 @@ export const BondCard: FunctionComponent<
 
 const Drawer: FunctionComponent<{
   aggregateApr: RatePretty;
+  swapFeeApr: RatePretty;
+  swapFeeDailyReward: PricePretty;
   userShares: CoinPretty;
   incentivesBreakdown: BondableDuration["incentivesBreakdown"];
   superfluid: BondableDuration["superfluid"];
@@ -72,6 +78,8 @@ const Drawer: FunctionComponent<{
   onGoSuperfluid: () => void;
 }> = ({
   aggregateApr,
+  swapFeeApr,
+  swapFeeDailyReward,
   userShares,
   incentivesBreakdown,
   superfluid,
@@ -166,17 +174,19 @@ const Drawer: FunctionComponent<{
         <div className="flex flex-col h-[140px] gap-5 py-6 px-8 overflow-y-scroll">
           {incentivesBreakdown.map((breakdown, index) => (
             <>
-              {index === 0 && superfluid ? (
-                <>
-                  <SuperfluidBreakdownRow
-                    {...superfluid}
-                    userShares={userShares}
-                    onGoSuperfluid={onGoSuperfluid}
-                  />
-                  <IncentiveBreakdownRow {...breakdown} />
-                </>
-              ) : (
-                <IncentiveBreakdownRow {...breakdown} />
+              {index === 0 && superfluid && (
+                <SuperfluidBreakdownRow
+                  {...superfluid}
+                  userShares={userShares}
+                  onGoSuperfluid={onGoSuperfluid}
+                />
+              )}
+              <IncentiveBreakdownRow {...breakdown} />
+              {index === incentivesBreakdown.length - 1 && (
+                <SwapFeeBreakdownRow
+                  swapFeeApr={swapFeeApr}
+                  swapFeeDailyReward={swapFeeDailyReward}
+                />
               )}
             </>
           ))}
@@ -271,6 +281,36 @@ const IncentiveBreakdownRow: FunctionComponent<
       {numDaysRemaining && (
         <span className="caption text-osmoverse-400">{numDaysRemaining}</span>
       )}
+    </div>
+  </div>
+);
+
+const SwapFeeBreakdownRow: FunctionComponent<{
+  swapFeeApr: RatePretty;
+  swapFeeDailyReward: PricePretty;
+}> = ({ swapFeeApr, swapFeeDailyReward }) => (
+  <div
+    className="flex items-start place-content-between"
+    key={swapFeeApr.toString()}
+  >
+    <div className="flex items-center gap-2">
+      <h6 className="text-osmoverse-200">
+        +{swapFeeApr.maxDecimals(0).toString()}
+      </h6>
+    </div>
+    <div className="flex flex-col text-right">
+      <span>{swapFeeDailyReward.maxDecimals(0).toString()} / day</span>
+      <span className="caption text-osmoverse-400">
+        from{" "}
+        <a
+          rel="noreferrer"
+          target="_blank"
+          href="https://docs.osmosis.zone/overview/getting-started/#swap-fees"
+        >
+          <u>swap fees</u>
+        </a>{" "}
+        (7d avg)
+      </span>
     </div>
   </div>
 );

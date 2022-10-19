@@ -386,8 +386,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
               : {
                   label: "Fee APY",
                   value: (() => {
-                    const queriesExternal = queriesExternalStore.get();
-                    return queriesExternal.queryGammPoolFeeMetrics.get7dPoolFeeApy(
+                    return queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
                       pool,
                       priceStore
                     );

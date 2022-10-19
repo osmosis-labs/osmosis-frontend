@@ -2,7 +2,7 @@ import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
-import { CoinPretty, RatePretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, RatePretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { AppCurrency } from "@keplr-wallet/types";
 import {
   ObservableQueryPoolDetails,
@@ -21,6 +21,8 @@ export type BondableDuration = {
   userShares: CoinPretty;
   userUnlockingShares: CoinPretty;
   aggregateApr: RatePretty;
+  swapFeeApr: RatePretty;
+  swapFeeDailyReward: PricePretty;
   incentivesBreakdown: {
     dailyPoolReward: CoinPretty;
     apr: RatePretty;
@@ -196,18 +198,21 @@ export class ObservableBondLiquidityConfig extends UserConfig {
         if (superfluid) aggregateApr = aggregateApr.add(superfluid.apr);
         // TODO: sum APR of each external gauge
 
-        aggregateApr = aggregateApr.add(
-          this.queryFeeMetrics.get7dPoolFeeApr(
-            this.poolDetails.pool,
-            this.priceStore
-          )
+        const swapFeeApr = this.queryFeeMetrics.get7dPoolFeeApr(
+          this.poolDetails.pool,
+          this.priceStore
         );
+        aggregateApr = aggregateApr.add(swapFeeApr);
 
         return {
           duration: curDuration,
           userShares,
           userUnlockingShares,
           aggregateApr,
+          swapFeeApr,
+          swapFeeDailyReward: this.queryFeeMetrics
+            .getPoolFeesMetrics(poolId, this.priceStore)
+            .feesSpent7d.quo(new Dec(7)),
           incentivesBreakdown,
           superfluid,
         };
