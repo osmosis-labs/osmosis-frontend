@@ -204,11 +204,9 @@ const Drawer: FunctionComponent<{
             </>
           ))}
         </div>
-        <div className="flex items-center justify-center">
-          <span className="caption text-center text-osmoverse-400">
-            Rewards distributed to all liquidity providers
-          </span>
-        </div>
+        <span className="caption text-center text-osmoverse-400">
+          Rewards distributed to all liquidity providers
+        </span>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import { AppCurrency } from "@keplr-wallet/types";
 import { useStore } from "../../stores";
 import { useAmountConfig } from "./use-amount-config";
 
-/** UI config for setting valid GAMM token amounts and locking them in a lock. */
+/** UI config for setting valid GAMM token amounts and un/locking them in a lock. */
 export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
   config: AmountConfig;
   lockToken: (gaugeDuration: Duration) => Promise<void>;
@@ -82,6 +82,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
 
           const durations =
             queryOsmosis.queryLockableDurations.lockableDurations;
+
           const isSuperfluidDuration =
             duration.asSeconds() === durations[duration.length - 1].asSeconds();
 

@@ -132,113 +132,123 @@ const Pool: FunctionComponent = observer(() => {
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
 
   // handle user actions
-  const baseEventInfo = {
-    poolId,
-    poolName,
-    poolWeight,
-    isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
-  };
-  const onAddLiquidity = (
-    result: Promise<void>,
-    config: ObservableAddLiquidityConfig
-  ) => {
-    const poolInfo = {
-      ...baseEventInfo,
-      isSingleAsset: config.isSingleAmountIn,
-      providingLiquidity:
-        config.isSingleAmountIn && config.singleAmountInConfig
-          ? {
-              [config.singleAmountInConfig?.sendCurrency.coinDenom]: Number(
-                config.singleAmountInConfig.amount
+  const baseEventInfo = useMemo(
+    () => ({
+      poolId,
+      poolName,
+      poolWeight,
+      isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
+    }),
+    [poolId, poolName, poolWeight, superfluidPoolConfig?.isSuperfluid]
+  );
+  const onAddLiquidity = useCallback(
+    (result: Promise<void>, config: ObservableAddLiquidityConfig) => {
+      const poolInfo = {
+        ...baseEventInfo,
+        isSingleAsset: config.isSingleAmountIn,
+        providingLiquidity:
+          config.isSingleAmountIn && config.singleAmountInConfig
+            ? {
+                [config.singleAmountInConfig?.sendCurrency.coinDenom]: Number(
+                  config.singleAmountInConfig.amount
+                ),
+              }
+            : config.poolAssetConfigs.reduce(
+                (acc, cur) => ({
+                  ...acc,
+                  [cur.sendCurrency.coinDenom]: Number(cur.amount),
+                }),
+                {}
               ),
-            }
-          : config.poolAssetConfigs.reduce(
-              (acc, cur) => ({
-                ...acc,
-                [cur.sendCurrency.coinDenom]: Number(cur.amount),
-              }),
-              {}
-            ),
-    };
+      };
 
-    logEvent([E.addLiquidityStarted, poolInfo]);
+      logEvent([E.addLiquidityStarted, poolInfo]);
 
-    result
-      .then(() => logEvent([E.addLiquidityCompleted, poolInfo]))
-      .finally(() => setShowAddLiquidityModal(false));
-  };
-  const onRemoveLiquidity = (
-    result: Promise<void>,
-    config: ObservableRemoveLiquidityConfig
-  ) => {
-    const removeLiqInfo = {
-      ...baseEventInfo,
-      poolSharePercentage: config.percentage,
-    };
+      result
+        .then(() => logEvent([E.addLiquidityCompleted, poolInfo]))
+        .finally(() => setShowAddLiquidityModal(false));
+    },
+    [baseEventInfo, logEvent]
+  );
+  const onRemoveLiquidity = useCallback(
+    (result: Promise<void>, config: ObservableRemoveLiquidityConfig) => {
+      const removeLiqInfo = {
+        ...baseEventInfo,
+        poolSharePercentage: config.percentage,
+      };
 
-    logEvent([E.removeLiquidityStarted, removeLiqInfo]);
+      logEvent([E.removeLiquidityStarted, removeLiqInfo]);
 
-    result
-      .then(() => logEvent([E.removeLiquidityCompleted, removeLiqInfo]))
-      .finally(() => setShowRemoveLiquidityModal(false));
-  };
-  const onLockToken = (gaugeId: string, electSuperfluid?: boolean) => {
-    const gauge = allAggregatedGauges?.find((gauge) => gauge.id === gaugeId);
-    const lockInfo = {
-      ...baseEventInfo,
-      isSuperfluidEnabled: electSuperfluid,
-      unbondingPeriod: gauge?.duration.asDays(),
-    };
+      result
+        .then(() => logEvent([E.removeLiquidityCompleted, removeLiqInfo]))
+        .finally(() => setShowRemoveLiquidityModal(false));
+    },
+    [baseEventInfo, logEvent]
+  );
+  const onLockToken = useCallback(
+    (gaugeId: string, electSuperfluid?: boolean) => {
+      const gauge = allAggregatedGauges?.find((gauge) => gauge.id === gaugeId);
+      const lockInfo = {
+        ...baseEventInfo,
+        isSuperfluidEnabled: electSuperfluid,
+        unbondingPeriod: gauge?.duration.asDays(),
+      };
 
-    logEvent([E.bondStarted, lockInfo]);
+      logEvent([E.bondStarted, lockInfo]);
 
-    if (electSuperfluid) {
-      setShowSuperfluidValidatorsModal(true);
-      setShowLockLPTokenModal(false);
-      // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
-    } else if (gauge) {
-      lockToken(gauge.duration)
-        .then(() => logEvent([E.bondCompleted, lockInfo]))
-        .finally(() => setShowLockLPTokenModal(false));
-    } else {
-      console.error("Gauge of id", gaugeId, "not found in allAggregatedGauges");
-    }
-  };
-  const onUnlockTokens = (duration: Duration) => {
-    const lockIds = poolDetailConfig?.userLockedAssets.reduce<string[]>(
-      (foundLockIds, lock) => {
-        if (lock.duration.asMilliseconds() === duration.asMilliseconds()) {
-          return foundLockIds.concat(...lock.lockIds);
-        }
-        return foundLockIds;
-      },
-      []
-    );
-    if (!lockIds) {
-      console.warn("No lock ids found");
-      return;
-    }
+      if (electSuperfluid) {
+        setShowSuperfluidValidatorsModal(true);
+        setShowLockLPTokenModal(false);
+        // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
+      } else if (gauge) {
+        lockToken(gauge.duration)
+          .then(() => logEvent([E.bondCompleted, lockInfo]))
+          .finally(() => setShowLockLPTokenModal(false));
+      } else {
+        console.error(
+          "Gauge of id",
+          gaugeId,
+          "not found in allAggregatedGauges"
+        );
+      }
+    },
+    [allAggregatedGauges, baseEventInfo, logEvent, lockToken]
+  );
+  const onUnlockTokens = useCallback(
+    (duration: Duration) => {
+      const lockIds = poolDetailConfig?.userLockedAssets.reduce<string[]>(
+        (foundLockIds, lock) => {
+          if (lock.duration.asMilliseconds() === duration.asMilliseconds()) {
+            return foundLockIds.concat(...lock.lockIds);
+          }
+          return foundLockIds;
+        },
+        []
+      );
+      if (!lockIds) {
+        console.warn("No lock ids found");
+        return;
+      }
 
-    const unlockEvent = {
-      ...baseEventInfo,
-      unbondingPeriod: duration?.asDays(),
-    };
-    logEvent([E.unbondAllStarted, unlockEvent]);
+      const unlockEvent = {
+        ...baseEventInfo,
+        unbondingPeriod: duration?.asDays(),
+      };
+      logEvent([E.unbondAllStarted, unlockEvent]);
 
-    unlockTokens(lockIds, duration).then(() => {
-      logEvent([E.unbondAllCompleted, unlockEvent]);
-    });
-  };
+      unlockTokens(lockIds, duration).then(() => {
+        logEvent([E.unbondAllCompleted, unlockEvent]);
+      });
+    },
+    [poolDetailConfig?.userLockedAssets, baseEventInfo, logEvent, unlockTokens]
+  );
   // TODO: re-add unpool functionality
   const handleSuperfluidDelegateToValidator = useCallback(
     (validatorAddress) => {
-      if (!superfluidPoolConfig?.superfluid) return;
+      if (!baseEventInfo.isSuperfluidPool) return;
 
       const poolInfo = {
-        poolId,
-        poolName,
-        poolWeight,
-        isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
+        ...baseEventInfo,
         unbondingPeriod: 14,
         validatorName: queryCosmos.queryValidators
           .getQueryStatus(Staking.BondStatus.Bonded)
@@ -251,7 +261,14 @@ const Pool: FunctionComponent = observer(() => {
         .then(() => logEvent([E.superfluidStakeCompleted, poolInfo]))
         .finally(() => setShowSuperfluidValidatorsModal(false));
     },
-    [superfluidPoolConfig?.superfluid, lockLPTokensConfig]
+    [
+      lockLPTokensConfig,
+      baseEventInfo,
+      queryCosmos.queryValidators.getQueryStatus(Staking.BondStatus.Bonded)
+        .response,
+      logEvent,
+      superfluidDelegateToValidator,
+    ]
   );
 
   const pageTitle = useMemo(
