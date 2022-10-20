@@ -208,7 +208,7 @@ const Drawer: FunctionComponent<{
           "bg-osmoverse-700": drawerUp,
         })}
       >
-        <div className="flex flex-col h-[180px] gap-5 pt-6 px-8 overflow-y-scroll">
+        <div className="flex flex-col h-[180px] gap-5 py-6 px-8 overflow-y-auto">
           {incentivesBreakdown.map((breakdown, index) => (
             <div className="flex flex-col gap-5" key={index}>
               {index === 0 && superfluid && (
