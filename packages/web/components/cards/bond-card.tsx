@@ -1,9 +1,10 @@
 import Image from "next/image";
 import { FunctionComponent, useState } from "react";
 import classNames from "classnames";
-import { BondableDuration } from "@osmosis-labs/stores";
-import { NewButton } from "../buttons";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { BondableDuration } from "@osmosis-labs/stores";
+import { FallbackImg } from "../assets";
+import { NewButton } from "../buttons";
 
 export const BondCard: FunctionComponent<
   BondableDuration & {
@@ -241,21 +242,20 @@ const SuperfluidBreakdownRow: FunctionComponent<
   validatorMoniker,
   validatorLogoUrl,
 }) => (
-  <div className="flex flex-col gap-1">
+  <div className="flex flex-col gap-2">
     <div className="flex items-start place-content-between">
       <div className="flex items-center gap-2">
         <h6 className="text-transparent bg-clip-text bg-superfluid">
           +{apr.maxDecimals(0).toString()}
         </h6>
-        <object data="/icons/profile.svg" type="image/svg+xml">
-          <img
-            className="rounded-full"
-            alt="validator icon"
-            src={validatorLogoUrl ?? "/icons/profile.svg"}
-            height={24}
-            width={24}
-          />
-        </object>
+        <FallbackImg
+          className="rounded-full"
+          alt="validator icon"
+          src={validatorLogoUrl ?? "/icons/superfluid-osmo.svg"}
+          fallbackSrc="/icons/profile.svg"
+          height={24}
+          width={24}
+        />
       </div>
       {delegated || undelegating ? (
         <span>{validatorMoniker}</span>
