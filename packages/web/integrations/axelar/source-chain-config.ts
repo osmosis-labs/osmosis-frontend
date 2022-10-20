@@ -74,4 +74,116 @@ export const SourceChainConfigs: {
       transferFeeMinAmount: IS_TESTNET ? "40000000000000000" : "2000000000000000000",
     },
   },
+  wbtc: {
+    ethereum: {
+      id: ("Ethereum" as const),
+      erc20ContractAddress: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      logoUrl: "/networks/ethereum.svg",
+      transferFeeMinAmount: "50000",
+    },
+  },
+  dai: {
+    ethereum: {
+      id: ("Ethereum" as const),
+      erc20ContractAddress: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      logoUrl: "/networks/ethereum.svg",
+      transferFeeMinAmount: "10000000000000000000",
+    },
+  },
+  dot: {
+    moonbeam: {
+      id: ("Moonbeam" as const),
+      erc20ContractAddress: "0xFfFFfFff1FcaCBd218EDc0EbA20Fc2308C778080",
+      logoUrl: "/networks/moonbeam.svg",
+      transferFeeMinAmount: "1000000000",
+    },
+  },
+  usdt: {
+    ethereum: {
+      id: ("Ethereum" as const),
+      erc20ContractAddress: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      logoUrl: "/networks/ethereum.svg",
+      transferFeeMinAmount: "10000000",
+    },
+  },
+  frax: {
+    ethereum: {
+      id: ("Ethereum" as const),
+      erc20ContractAddress: "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+      logoUrl: "/networks/ethereum.svg",
+      transferFeeMinAmount: "10000000000000000000",
+    },
+  },
+  link: {
+    ethereum: {
+      id: ("Ethereum" as const),
+      erc20ContractAddress: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
+      logoUrl: "/networks/ethereum.svg",
+      transferFeeMinAmount: "2000000000000000000",
+    },
+  },
+  aave: {
+    ethereum: {
+      id: ("Ethereum" as const),
+      erc20ContractAddress: "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
+      logoUrl: "/networks/ethereum.svg",
+      transferFeeMinAmount: "200000000000000000",
+    },
+  },
+  ape: {
+    ethereum: {
+      id: ("Ethereum" as const),
+      erc20ContractAddress: "0x4d224452801ACEd8B2F0aebE155379bb5D594381",
+      logoUrl: "/networks/ethereum.svg",
+      transferFeeMinAmount: "2000000000000000000",
+    },
+  },
+  axs: {
+    ethereum: {
+      id: ("Ethereum" as const),
+      erc20ContractAddress: "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b",
+      logoUrl: "/networks/ethereum.svg",
+      transferFeeMinAmount: "700000000000000000",
+    },
+  },
+  mkr: {
+    ethereum: {
+      id: ("Ethereum" as const),
+      erc20ContractAddress: "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2",
+      logoUrl: "/networks/ethereum.svg",
+      transferFeeMinAmount: "10000000000000000",
+    },
+  },
+  rai: {
+    ethereum: {
+      id: ("Ethereum" as const),
+      erc20ContractAddress: "0x03ab458634910AaD20eF5f1C8ee96F1D6ac54919",
+      logoUrl: "/networks/ethereum.svg",
+      transferFeeMinAmount: "3000000000000000000",
+    },
+  },
+  shib: {
+    ethereum: {
+      id: ("Ethereum" as const),
+      erc20ContractAddress: "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
+      logoUrl: "/networks/ethereum.svg",
+      transferFeeMinAmount: "1000000000000000000000000",
+    },
+  },
+  uni: {
+    ethereum: {
+      id: ("Ethereum" as const),
+      erc20ContractAddress: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+      logoUrl: "/networks/ethereum.svg",
+      transferFeeMinAmount: "2000000000000000000",
+    },
+  },
+  xcn: {
+    ethereum: {
+      id: ("Ethereum" as const),
+      erc20ContractAddress: "0xA2cd3D43c775978A96BdBf12d733D5A1ED94fb18",
+      logoUrl: "/networks/ethereum.svg",
+      transferFeeMinAmount: "100000000000000000000",
+    },
+  },
 };
