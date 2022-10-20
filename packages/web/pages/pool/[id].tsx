@@ -186,12 +186,11 @@ const Pool: FunctionComponent = observer(() => {
     [baseEventInfo, logEvent]
   );
   const onLockToken = useCallback(
-    (gaugeId: string, electSuperfluid?: boolean) => {
-      const gauge = allAggregatedGauges?.find((gauge) => gauge.id === gaugeId);
+    (duration: Duration, electSuperfluid?: boolean) => {
       const lockInfo = {
         ...baseEventInfo,
         isSuperfluidEnabled: electSuperfluid,
-        unbondingPeriod: gauge?.duration.asDays(),
+        unbondingPeriod: duration.asDays(),
       };
 
       logEvent([E.bondStarted, lockInfo]);
@@ -200,16 +199,10 @@ const Pool: FunctionComponent = observer(() => {
         setShowSuperfluidValidatorsModal(true);
         setShowLockLPTokenModal(false);
         // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
-      } else if (gauge) {
-        lockToken(gauge.duration)
+      } else {
+        lockToken(duration)
           .then(() => logEvent([E.bondCompleted, lockInfo]))
           .finally(() => setShowLockLPTokenModal(false));
-      } else {
-        console.error(
-          "Gauge of id",
-          gaugeId,
-          "not found in allAggregatedGauges"
-        );
       }
     },
     [allAggregatedGauges, baseEventInfo, logEvent, lockToken]

@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import { useState, ComponentProps, useMemo } from "react";
+import { Duration } from "dayjs/plugin/duration";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
@@ -29,7 +30,6 @@ import {
   useLockTokenConfig,
   usePoolDetailConfig,
   useSuperfluidPoolConfig,
-  usePoolGauges,
   useNavBar,
   useShowDustUserSetting,
 } from "../../hooks";
@@ -144,9 +144,6 @@ const Pools: NextPage = observer(function () {
   const { poolDetailConfig } = usePoolDetailConfig(
     lockLpTokenModalPoolId ?? undefined
   );
-  const { allAggregatedGauges } = usePoolGauges(
-    lockLpTokenModalPoolId ?? undefined
-  );
   const { superfluidPoolConfig: _, superfluidDelegateToValidator } =
     useSuperfluidPoolConfig(poolDetailConfig);
   const selectedPoolShareCurrency = lockLpTokenModalPoolId
@@ -155,8 +152,7 @@ const Pools: NextPage = observer(function () {
   const { config: lockLpTokenConfig, lockToken } = useLockTokenConfig(
     selectedPoolShareCurrency
   );
-  const onLockToken = (gaugeId: string, electSuperfluid?: boolean) => {
-    const gauge = allAggregatedGauges?.find((gauge) => gauge.id === gaugeId);
+  const onLockToken = (duration: Duration, electSuperfluid?: boolean) => {
     if (electSuperfluid && selectedPoolShareCurrency) {
       // open superfluid modal
       setSuperfluidDelegateModalProps({
@@ -175,8 +171,8 @@ const Pools: NextPage = observer(function () {
         onRequestClose: () => setSuperfluidDelegateModalProps(null),
       });
       setLockLpTokenModalPoolId(null);
-    } else if (gauge) {
-      lockToken(gauge.duration).finally(() => {
+    } else {
+      lockToken(duration).finally(() => {
         setLockLpTokenModalPoolId(null);
         setSuperfluidDelegateModalProps(null);
         lockLpTokenConfig.setAmount("");
