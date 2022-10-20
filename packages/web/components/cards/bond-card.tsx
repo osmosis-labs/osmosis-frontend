@@ -179,7 +179,12 @@ const Drawer: FunctionComponent<{
           </div>
         </div>
         <button
-          className="flex items-center cursor-pointer"
+          className={classNames(
+            "flex items-center cursor-pointer transition-transform",
+            {
+              "-translate-y-[28px]": drawerUp,
+            }
+          )}
           onClick={toggleDetailsVisible}
         >
           <span className="caption text-osmoverse-400">Details</span>
