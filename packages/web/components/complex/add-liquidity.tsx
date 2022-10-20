@@ -25,24 +25,31 @@ export const AddLiquidity: FunctionComponent<
 
     return (
       <div className={classNames("flex flex-col gap-8", className)}>
-        <div className="mx-auto">
-          <MenuToggle
-            selectedOptionId={
-              addLiquidityConfig.isSingleAmountIn ? "single" : "all"
-            }
-            options={[
-              {
-                id: "all",
-                display: "All assets",
-              },
-              { id: "single", display: "Single asset" },
-            ]}
-            onSelect={(id) => {
-              if (id === "single") {
-                addLiquidityConfig.setIsSingleAmountIn(true);
-              } else addLiquidityConfig.setIsSingleAmountIn(false);
-            }}
-          />
+        <div className="flex flex-col gap-4 text-center">
+          <div className="mx-auto">
+            <MenuToggle
+              selectedOptionId={
+                addLiquidityConfig.isSingleAmountIn ? "single" : "all"
+              }
+              options={[
+                {
+                  id: "all",
+                  display: "All assets",
+                },
+                { id: "single", display: "Single asset" },
+              ]}
+              onSelect={(id) => {
+                if (id === "single") {
+                  addLiquidityConfig.setIsSingleAmountIn(true);
+                } else addLiquidityConfig.setIsSingleAmountIn(false);
+              }}
+            />
+          </div>
+          {addLiquidityConfig.isSingleAmountIn && (
+            <span className="caption">
+              Use autoswap to add liquidity with a single asset.
+            </span>
+          )}
         </div>
         <div className="flex flex-col gap-2.5 max-h-96 overflow-y-auto">
           {(addLiquidityConfig.isSingleAmountIn &&
