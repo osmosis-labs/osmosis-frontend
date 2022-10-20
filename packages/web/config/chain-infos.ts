@@ -2056,6 +2056,29 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://explorer.teritori.com/teritori/tx/{txHash}",
     },
+    {
+        rpc: "https://rpc.lambda.im",
+        rest: "https://rest.lambda.im",
+        chainId: "lambda_92000-1",
+        chainName: "Lambda",
+        bip44: {
+          coinType: 60,
+        },
+        bech32Config: Bech32Address.defaultBech32Config("lamb"),
+        currencies: [
+          {
+            coinDenom: "LAMB",
+            coinMinimalDenom: "ulamb",
+            coinDecimals: 18,
+            coinGeckoId: "pool:lambda",
+            coinImageUrl: "/tokens/lambda.png",
+            isStakeCurrency: true,
+            isFeeCurrency: true,
+          },
+        ],
+        features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+        explorerUrlToTx: "https://explorer.nodestake.top/lambda/tx/{txHash}",
+      },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 

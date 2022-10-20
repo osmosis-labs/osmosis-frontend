@@ -935,6 +935,12 @@ export const IBCAssetInfos: (IBCAsset & {
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
+  {
+    counterpartyChainId: "lambda_92000-1",
+    sourceChannelId: "channel-2",
+    destChannelId: "channel-378",
+    coinMinimalDenom: "ulamb",
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
