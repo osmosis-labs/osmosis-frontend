@@ -171,7 +171,7 @@ export const LockTokensModal: FunctionComponent<
               <div className="flex gap-1 caption">
                 <span>Available</span>
                 <span
-                  className="text-wosmongton-100 cursor-pointer"
+                  className="text-wosmongton-300 cursor-pointer"
                   onClick={() => config.setIsMax(true)}
                 >
                   {availableToken.trim(true).toString()}
