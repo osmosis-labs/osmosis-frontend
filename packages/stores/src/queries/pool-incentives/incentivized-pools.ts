@@ -192,7 +192,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
           })
           .asMilliseconds() / epoch.duration.asMilliseconds();
 
-      const coinPrice = new Dec(mintPrice.toString()).mul(
+      const externalIncentivePrice = new Dec(mintPrice.toString()).mul(
         externalGauge.rewardAmount.toDec()
       );
 
@@ -203,7 +203,9 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       // coins = (X coin's price in USD * remaining incentives in X tokens * (365 / remaining days in gauge))
       // apr = coins / TVL of pool
 
-      return new RatePretty(coinPrice.mul(yearProvision).quo(poolTVL.toDec()));
+      return new RatePretty(
+        externalIncentivePrice.mul(yearProvision).quo(poolTVL.toDec())
+      );
     }
   );
 
