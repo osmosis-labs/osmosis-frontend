@@ -310,8 +310,6 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
               // 에포치마다 발행되는 민팅 코인의 수.
               const epochProvision = this.queryEpochProvision.epochProvisions;
 
-              // coins = (STRD price in USD * remaining incentives in STRD tokens * (365 / remaining days in gauge))
-              // apr = coins / TVL of pool
               if (epochProvision) {
                 const numEpochPerYear =
                   dayjs
@@ -335,7 +333,6 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
                   mintPrice.toString()
                 ).mul(yearProvisionToPot.toDec());
 
-                // yearProvisionToPotPrice / tVL
                 // 백분률로 반환한다.
                 return new RatePretty(
                   yearProvisionToPotPrice.quo(poolTVL.toDec())

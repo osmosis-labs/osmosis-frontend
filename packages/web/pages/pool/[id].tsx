@@ -209,10 +209,6 @@ const Pool: FunctionComponent = observer(() => {
           allowedGauges
         );
 
-      // if (externalApy.toString() !== "0%") {
-      //   debugger;
-      // }
-
       const totalApr = baseApy.add(externalApy);
 
       gaugeDurationMap.set(gauge.duration.asSeconds(), {
