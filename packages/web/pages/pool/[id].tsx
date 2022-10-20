@@ -202,9 +202,16 @@ const Pool: FunctionComponent = observer(() => {
 
       const externalApy =
         queryOsmosis.queryIncentivizedPools.computeExternalIncentiveAPYForSpecificDuration(
+          pool?.id ?? "",
           gauge.duration,
+          priceStore,
+          fiat,
           allowedGauges
         );
+
+      // if (externalApy.toString() !== "0%") {
+      //   debugger;
+      // }
 
       const totalApr = baseApy.add(externalApy);
 

@@ -31,7 +31,7 @@ export declare class ObservableQueryIncentivizedPools extends ObservableChainQue
     /**
      * Computes external incentive APY for the given duration
      */
-    readonly computeExternalIncentiveAPYForSpecificDuration: (duration: Duration, allowedGauges: ExternalGauge[]) => RatePretty;
+    readonly computeExternalIncentiveAPYForSpecificDuration: (poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency, allowedGauges: ExternalGauge[]) => RatePretty;
     /**
      * 리워드를 받을 수 있는 풀의 연당 이익률을 반환한다.
      * 리워드를 받을 수 없는 풀일 경우 0를 리턴한다.

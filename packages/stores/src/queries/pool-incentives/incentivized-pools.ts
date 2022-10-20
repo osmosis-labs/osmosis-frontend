@@ -122,7 +122,13 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
    * Computes external incentive APY for the given duration
    */
   readonly computeExternalIncentiveAPYForSpecificDuration = computedFn(
-    (duration: Duration, allowedGauges: ExternalGauge[]): RatePretty => {
+    (
+      poolId: string,
+      duration: Duration,
+      priceStore: IPriceStore,
+      fiatCurrency: FiatCurrency,
+      allowedGauges: ExternalGauge[]
+    ): RatePretty => {
       if (!allowedGauges.length) {
         return new RatePretty(new Dec(0));
       }
@@ -137,25 +143,67 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         return new RatePretty(new Dec(0));
       }
 
-      const mintDenom = this.queryMintParmas.mintDenom;
+      const pool = this.queryPools.getPool(poolId);
 
-      if (!mintDenom) {
+      if (!pool) {
         return new RatePretty(new Dec(0));
       }
+
+      const mintDenom = this.queryMintParmas.mintDenom;
+      const epochIdentifier = this.queryMintParmas.epochIdentifier;
+
+      if (!mintDenom || !epochIdentifier) {
+        return new RatePretty(new Dec(0));
+      }
+
+      const epoch = this.queryEpochs.getEpoch(epochIdentifier);
 
       const chainInfo = this.chainGetter.getChain(this.chainId);
 
-      const mintCurrency = chainInfo.findCurrency(mintDenom);
+      const mintCurrency = chainInfo.findCurrency(
+        externalGauge.rewardAmount.currency.coinMinimalDenom
+      );
 
-      if (!mintCurrency) {
+      if (!mintCurrency?.coinGeckoId || !epoch.duration) {
         return new RatePretty(new Dec(0));
       }
 
-      return new RatePretty(
-        externalGauge.rewardAmount
-          .moveDecimalPointLeft(mintCurrency.coinDecimals)
-          .toDec()
+      const mintPrice = priceStore.getPrice(
+        mintCurrency.coinGeckoId,
+        fiatCurrency.currency
       );
+
+      const poolTVL = pool.computeTotalValueLocked(priceStore);
+
+      if (!mintPrice || !poolTVL.toDec().gt(new Dec(0))) {
+        return new RatePretty(new Dec(0));
+      }
+
+      const epochProvision = this.queryEpochProvision.epochProvisions;
+
+      if (!epochProvision) {
+        return new RatePretty(new Dec(0));
+      }
+
+      const numEpochPerYear =
+        dayjs
+          .duration({
+            years: 1,
+          })
+          .asMilliseconds() / epoch.duration.asMilliseconds();
+
+      const coinPrice = new Dec(mintPrice.toString()).mul(
+        externalGauge.rewardAmount.toDec()
+      );
+
+      const yearProvision = new Dec(numEpochPerYear.toString()).quo(
+        new Dec(externalGauge.remainingEpochs)
+      );
+
+      // coins = (X coin's price in USD * remaining incentives in X tokens * (365 / remaining days in gauge))
+      // apr = coins / TVL of pool
+
+      return new RatePretty(coinPrice.mul(yearProvision).quo(poolTVL.toDec()));
     }
   );
 
@@ -242,6 +290,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 
           if (mintCurrency && mintCurrency.coinGeckoId && epoch.duration) {
             const totalWeight = this.queryDistrInfo.totalWeight;
+            // 99999918
             const potWeight = this.queryDistrInfo.getWeight(gaugeId);
             const mintPrice = priceStore.getPrice(
               mintCurrency.coinGeckoId,
@@ -249,6 +298,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
             );
 
             const poolTVL = pool.computeTotalValueLocked(priceStore);
+
             if (
               totalWeight.gt(new Int(0)) &&
               potWeight.gt(new Int(0)) &&
@@ -258,6 +308,8 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
               // 에포치마다 발행되는 민팅 코인의 수.
               const epochProvision = this.queryEpochProvision.epochProvisions;
 
+              // coins = (STRD price in USD * remaining incentives in STRD tokens * (365 / remaining days in gauge))
+              // apr = coins / TVL of pool
               if (epochProvision) {
                 const numEpochPerYear =
                   dayjs
@@ -270,6 +322,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
                   new Dec(numEpochPerYear.toString())
                 );
                 const yearProvisionToPots = yearProvision.mul(
+                  // Probably a decimal value
                   this.queryMintParmas.distributionProportions.poolIncentives
                 );
                 const yearProvisionToPot = yearProvisionToPots.mul(
@@ -280,6 +333,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
                   mintPrice.toString()
                 ).mul(yearProvisionToPot.toDec());
 
+                // yearProvisionToPotPrice / tVL
                 // 백분률로 반환한다.
                 return new RatePretty(
                   yearProvisionToPotPrice.quo(poolTVL.toDec())
