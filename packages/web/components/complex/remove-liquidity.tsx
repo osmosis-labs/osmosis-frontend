@@ -25,9 +25,17 @@ export const RemoveLiquidity: FunctionComponent<
           className
         )}
       >
-        <h2 className="mt-12">{`${removeLiquidityConfig.computePoolShareValueWithPercentage(
-          priceStore
-        )}`}</h2>
+        <div className="flex flex-col gap-1">
+          <h2 className="mt-12">{`${removeLiquidityConfig.computePoolShareValueWithPercentage(
+            priceStore
+          )}`}</h2>
+          <h5 className="text-osmoverse-100">
+            {removeLiquidityConfig.poolShareWithPercentage
+              .hideDenom(true)
+              .toString()}{" "}
+            shares
+          </h5>
+        </div>
         <div className="flex flex-wrap items-center place-content-around gap-4 rounded-xl border border-osmoverse-600 py-2 px-3 text-osmoverse-300">
           {removeLiquidityConfig.poolShareAssetsWithPercentage.map((asset) => (
             <div
