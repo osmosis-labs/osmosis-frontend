@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import { useState, useEffect, ComponentProps } from "react";
+import { useState, ComponentProps } from "react";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
@@ -27,9 +27,10 @@ import {
   useCreatePoolConfig,
   useAmplitudeAnalytics,
   useLockTokenConfig,
-  usePoolDetailStore,
-  useSuperfluidPoolStore,
+  usePoolDetailConfig,
+  useSuperfluidPoolConfig,
   usePoolGauges,
+  useNavBarCtas,
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
@@ -48,13 +49,15 @@ const Pools: NextPage = observer(function () {
     priceStore,
     queriesStore,
     queriesExternalStore,
-    navBarStore,
   } = useStore();
   const t = useTranslation();
   const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });
+  useNavBarCtas([
+    { label: "Create new Pool", onClick: () => setIsCreatingPool(true) },
+  ]);
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -123,16 +126,6 @@ const Pools: NextPage = observer(function () {
   /// show pools > $1k TVL
   const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 
-  // set nav bar state
-  useEffect(() => {
-    navBarStore.callToActionButtons = [
-      {
-        label: t("pools.createPool.button"),
-        onClick: () => setIsCreatingPool(true),
-      },
-    ];
-  }, [t]);
-
   // pool quick action modals
   const [addLiquidityModalPoolId, setAddLiquidityModalPoolId] = useState<
     string | null
@@ -155,16 +148,14 @@ const Pools: NextPage = observer(function () {
   };
 
   // lock tokens (& possibly select sfs validator) quick action state
-  const { poolDetailStore } = usePoolDetailStore(
+  const { poolDetailConfig } = usePoolDetailConfig(
     lockLpTokenModalPoolId ?? undefined
   );
   const { allAggregatedGauges } = usePoolGauges(
     lockLpTokenModalPoolId ?? undefined
   );
-  const {
-    superfluidPoolStore: _,
-    superfluidDelegateToValidator: onSuperfluidDelegateToValidator,
-  } = useSuperfluidPoolStore(poolDetailStore);
+  const { superfluidPoolConfig: _, superfluidDelegateToValidator } =
+    useSuperfluidPoolConfig(poolDetailConfig);
   const selectedPoolShareCurrency = lockLpTokenModalPoolId
     ? queryOsmosis.queryGammPoolShare.getShareCurrency(lockLpTokenModalPoolId)
     : undefined;
@@ -185,7 +176,7 @@ const Pools: NextPage = observer(function () {
           lockLpTokenConfig.getAmountPrimitive().amount
         ),
         onSelectValidator: (address) =>
-          onSuperfluidDelegateToValidator(address, lockLpTokenConfig).finally(
+          superfluidDelegateToValidator(address, lockLpTokenConfig).finally(
             () => {
               setSuperfluidDelegateModalProps(null);
               lockLpTokenConfig.setAmount("");

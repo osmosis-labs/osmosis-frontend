@@ -12,8 +12,8 @@ import { MobileProps } from "../components/types";
 import {
   useConnectWalletModalRedirect,
   usePoolGauges,
-  usePoolDetailStore,
-  useSuperfluidPoolStore,
+  usePoolDetailConfig,
+  useSuperfluidPoolConfig,
   useWindowSize,
 } from "../hooks";
 import { useTranslation } from "react-multi-lang";
@@ -40,8 +40,8 @@ export const LockTokensModal: FunctionComponent<
   const { allAggregatedGauges } = usePoolGauges(poolId);
 
   // initialize pool data stores once root pool store is loaded
-  const { poolDetailStore } = usePoolDetailStore(poolId);
-  const { superfluidPoolStore } = useSuperfluidPoolStore(poolDetailStore);
+  const { poolDetailConfig } = usePoolDetailConfig(poolId);
+  const { superfluidPoolConfig } = useSuperfluidPoolConfig(poolDetailConfig);
 
   const availableToken = queryOsmosis.queryGammPoolShare.getAvailableGammShare(
     bech32Address,
@@ -49,8 +49,8 @@ export const LockTokensModal: FunctionComponent<
   );
   const isSendingMsg = account.txTypeInProgress !== "";
   const hasSuperfluidValidator =
-    superfluidPoolStore?.superfluid?.delegations &&
-    superfluidPoolStore.superfluid.delegations.length > 0;
+    superfluidPoolConfig?.superfluid?.delegations &&
+    superfluidPoolConfig.superfluid.delegations.length > 0;
 
   const isSuperfluid = allAggregatedGauges.some(
     (gauge) => gauge.superfluidApr !== undefined

@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import React, { FunctionComponent, useEffect } from "react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
 import {
   useWindowSize,
   useWindowScroll,
@@ -16,6 +15,7 @@ import { AmplitudeEvent, IS_FRONTIER } from "../../config";
 import { NavBar } from "../navbar";
 import dayjs from "dayjs";
 import { setLanguage } from "react-multi-lang";
+import { useStore } from "../../stores";
 
 export type MainLayoutMenu = {
   label: string;
@@ -37,7 +37,6 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
     const currentLanguage: string | undefined =
       userSettings.getUserSettingById("language")?.state.language;
     const { logEvent } = useAmplitudeAnalytics();
-    const { navBarStore } = useStore();
 
     const { height, isMobile } = useWindowSize();
     const [_, isScrolledTop] = useWindowScroll();
@@ -52,14 +51,6 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
     const selectedMenuItem = menus.find(
       ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
     );
-
-    // clear nav bar store on route change
-    useEffect(() => {
-      router.events.on(
-        "routeChangeStart",
-        () => (navBarStore.callToActionButtons = [])
-      );
-    }, []);
 
     useEffect(() => {
       if (currentLanguage) {

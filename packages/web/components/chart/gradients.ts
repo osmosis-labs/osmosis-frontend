@@ -1,4 +1,4 @@
-import { GradientColorObject } from "highcharts";
+import type { GradientColorObject } from "highcharts";
 
 export const HIGHCHART_GRADIENTS: GradientColorObject[] = [
   {

@@ -7,10 +7,10 @@ import { useStore } from "../../stores";
 import { AmountConfig } from "@keplr-wallet/hooks";
 
 /** When provided a pool details store (which may need to be loaded), will generate superfluid pool info and actions. */
-export function useSuperfluidPoolStore(
+export function useSuperfluidPoolConfig(
   poolDetails?: ObservableQueryPoolDetails
 ): {
-  superfluidPoolStore: ObservableQuerySuperfluidPool | undefined;
+  superfluidPoolConfig: ObservableQuerySuperfluidPool | undefined;
   superfluidDelegateToValidator: (
     validatorAddress: string,
     lockLPTokensConfig?: AmountConfig
@@ -24,10 +24,10 @@ export function useSuperfluidPoolStore(
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
 
-  const [superfluidPoolStore, setSuperfluidPoolStore] =
+  const [superfluidPoolConfig, setSuperfluidPoolStore] =
     useState<ObservableQuerySuperfluidPool | null>(null);
   useEffect(() => {
-    if (poolDetails && !superfluidPoolStore) {
+    if (poolDetails && !superfluidPoolConfig) {
       setSuperfluidPoolStore(
         new ObservableQuerySuperfluidPool(
           bech32Address,
@@ -46,12 +46,12 @@ export function useSuperfluidPoolStore(
     (validatorAddress, lockLPTokensConfig) => {
       return new Promise<"delegated" | "locked-and-delegated">(
         async (resolve, reject) => {
-          if (superfluidPoolStore?.superfluid) {
-            if (superfluidPoolStore.superfluid.upgradeableLpLockIds) {
+          if (superfluidPoolConfig?.superfluid) {
+            if (superfluidPoolConfig.superfluid.upgradeableLpLockIds) {
               // is delegating existing locked shares
               try {
                 await account.osmosis.sendSuperfluidDelegateMsg(
-                  superfluidPoolStore.superfluid.upgradeableLpLockIds.lockIds,
+                  superfluidPoolConfig.superfluid.upgradeableLpLockIds.lockIds,
                   validatorAddress,
                   undefined,
                   () => resolve("delegated")
@@ -61,7 +61,7 @@ export function useSuperfluidPoolStore(
                 reject();
               }
             } else if (
-              superfluidPoolStore.superfluid.superfluidLpShares &&
+              superfluidPoolConfig.superfluid.superfluidLpShares &&
               lockLPTokensConfig
             ) {
               try {
@@ -90,15 +90,15 @@ export function useSuperfluidPoolStore(
       );
     },
     [
-      superfluidPoolStore?.superfluid,
-      superfluidPoolStore?.superfluid?.upgradeableLpLockIds,
-      superfluidPoolStore?.superfluid?.upgradeableLpLockIds?.lockIds,
-      superfluidPoolStore?.superfluid?.superfluidLpShares,
+      superfluidPoolConfig?.superfluid,
+      superfluidPoolConfig?.superfluid?.upgradeableLpLockIds,
+      superfluidPoolConfig?.superfluid?.upgradeableLpLockIds?.lockIds,
+      superfluidPoolConfig?.superfluid?.superfluidLpShares,
     ]
   );
 
   return {
-    superfluidPoolStore: superfluidPoolStore ?? undefined,
+    superfluidPoolConfig: superfluidPoolConfig ?? undefined,
     superfluidDelegateToValidator,
   };
 }

@@ -35,11 +35,11 @@ import {
   useAddLiquidityConfig,
   useRemoveLiquidityConfig,
   useLockTokenConfig,
-  useSuperfluidPoolStore,
+  useSuperfluidPoolConfig,
   useWindowSize,
   useAmplitudeAnalytics,
   usePoolGauges,
-  usePoolDetailStore,
+  usePoolDetailConfig,
 } from "../../hooks";
 import {
   LockTokensModal,
@@ -80,11 +80,9 @@ const Pool: FunctionComponent = observer(() => {
   const currentLanguage =
     userSettings.getUserSettingById("language")?.state.language;
   // initialize pool data stores once root pool store is loaded
-  const { poolDetailStore, pool } = usePoolDetailStore(poolId);
-  const {
-    superfluidPoolStore,
-    superfluidDelegateToValidator: onSuperfluidDelegateToValidator,
-  } = useSuperfluidPoolStore(poolDetailStore);
+  const { poolDetailConfig, pool } = usePoolDetailConfig(poolId);
+  const { superfluidPoolConfig, superfluidDelegateToValidator } =
+    useSuperfluidPoolConfig(poolDetailConfig);
 
   // Manage liquidity + bond LP tokens (modals) state
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
@@ -122,23 +120,23 @@ const Pool: FunctionComponent = observer(() => {
   const showDepoolButton =
     (pool &&
       UnPoolWhitelistedPoolIds[pool.id] !== undefined &&
-      poolDetailStore?.userCanDepool) ||
+      poolDetailConfig?.userCanDepool) ||
     account.txTypeInProgress === "unPoolWhitelistedPool";
 
   const showLiquidityMiningSection =
-    poolDetailStore?.isIncentivized ||
+    poolDetailConfig?.isIncentivized ||
     (allAggregatedGauges && allAggregatedGauges.length > 0) ||
     (allowedAggregatedGauges && allowedAggregatedGauges.length > 0) ||
     false;
 
   const showPoolBondingTables =
     showLiquidityMiningSection ||
-    (poolDetailStore?.userLockedAssets &&
-      poolDetailStore.userLockedAssets?.some((lockedAsset) =>
+    (poolDetailConfig?.userLockedAssets &&
+      poolDetailConfig.userLockedAssets?.some((lockedAsset) =>
         lockedAsset.amount.toDec().gt(new Dec(0))
       )) ||
-    (poolDetailStore?.userUnlockingAssets &&
-      poolDetailStore.userUnlockingAssets.length > 0) ||
+    (poolDetailConfig?.userUnlockingAssets &&
+      poolDetailConfig.userUnlockingAssets.length > 0) ||
     false;
 
   // handle user actions
@@ -147,7 +145,7 @@ const Pool: FunctionComponent = observer(() => {
       poolId,
       poolName,
       poolWeight,
-      isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
+      isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
       isSingleAsset: addLiquidityConfig.isSingleAmountIn,
       providingLiquidity:
         addLiquidityConfig.isSingleAmountIn &&
@@ -176,7 +174,7 @@ const Pool: FunctionComponent = observer(() => {
       poolId,
       poolName,
       poolWeight,
-      isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
+      isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
       poolSharePercentage: removeLiquidityConfig.percentage,
     };
 
@@ -192,7 +190,7 @@ const Pool: FunctionComponent = observer(() => {
       poolId,
       poolName,
       poolWeight,
-      isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
+      isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
       isSuperfluidEnabled: electSuperfluid,
       unbondingPeriod: gauge?.duration.asDays(),
     };
@@ -213,13 +211,13 @@ const Pool: FunctionComponent = observer(() => {
   };
   const handleSuperfluidDelegateToValidator = useCallback(
     (validatorAddress) => {
-      if (!superfluidPoolStore?.superfluid) return;
+      if (!superfluidPoolConfig?.superfluid) return;
 
       const poolInfo = {
         poolId,
         poolName,
         poolWeight,
-        isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
+        isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
         unbondingPeriod: 14,
         validatorName: queryCosmos.queryValidators
           .getQueryStatus(Staking.BondStatus.Bonded)
@@ -228,11 +226,11 @@ const Pool: FunctionComponent = observer(() => {
 
       logEvent([E.superfluidStakeStarted, poolInfo]);
 
-      onSuperfluidDelegateToValidator(validatorAddress, lockLPTokensConfig)
+      superfluidDelegateToValidator(validatorAddress, lockLPTokensConfig)
         .then(() => logEvent([E.superfluidStakeCompleted, poolInfo]))
         .finally(() => setShowSuperfluidValidatorsModal(false));
     },
-    [superfluidPoolStore?.superfluid, lockLPTokensConfig]
+    [superfluidPoolConfig?.superfluid, lockLPTokensConfig]
   );
 
   const { poolName, poolWeight } = useMemo(
@@ -253,8 +251,8 @@ const Pool: FunctionComponent = observer(() => {
         poolId,
         poolName,
         poolWeight,
-        ...(superfluidPoolStore && {
-          isSuperfluidPool: superfluidPoolStore.isSuperfluid,
+        ...(superfluidPoolConfig && {
+          isSuperfluidPool: superfluidPoolConfig.isSuperfluid,
         }),
       },
     ],
@@ -299,7 +297,7 @@ const Pool: FunctionComponent = observer(() => {
           onLockToken={onLockToken}
         />
       )}
-      {superfluidPoolStore?.superfluid && pool && lockLPTokensConfig && (
+      {superfluidPoolConfig?.superfluid && pool && lockLPTokensConfig && (
         <SuperfluidValidatorModal
           title={
             isMobile
@@ -307,8 +305,8 @@ const Pool: FunctionComponent = observer(() => {
               : t("pool.superfluidValidator.title")
           }
           availableBondAmount={
-            superfluidPoolStore?.superfluid.upgradeableLpLockIds
-              ? superfluidPoolStore.superfluid.upgradeableLpLockIds.amount // is delegating amount from existing lockup
+            superfluidPoolConfig?.superfluid.upgradeableLpLockIds
+              ? superfluidPoolConfig.superfluid.upgradeableLpLockIds.amount // is delegating amount from existing lockup
               : new CoinPretty(
                   pool.shareCurrency, // is delegating amount from new/pending lockup
                   lockLPTokensConfig.amount !== ""
@@ -352,7 +350,7 @@ const Pool: FunctionComponent = observer(() => {
                   poolId,
                   poolName,
                   poolWeight,
-                  isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
+                  isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
                 },
               ]);
               setShowManageLiquidityDialog(true);
@@ -367,7 +365,7 @@ const Pool: FunctionComponent = observer(() => {
                   poolId,
                   poolName,
                   poolWeight,
-                  isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
+                  isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
                 },
               ]);
               setShowTradeTokenModal(true);
@@ -380,9 +378,9 @@ const Pool: FunctionComponent = observer(() => {
             value: (
               <MetricLoader
                 className="h-7 w-56"
-                isLoading={!pool || !poolDetailStore?.totalValueLocked}
+                isLoading={!pool || !poolDetailConfig?.totalValueLocked}
               >
-                {poolDetailStore?.totalValueLocked?.toString()}
+                {poolDetailConfig?.totalValueLocked?.toString()}
               </MetricLoader>
             ),
           },
@@ -391,9 +389,9 @@ const Pool: FunctionComponent = observer(() => {
             value: (
               <MetricLoader
                 className="h-7 "
-                isLoading={!poolDetailStore?.userLockedValue}
+                isLoading={!poolDetailConfig?.userLockedValue}
               >
-                {poolDetailStore?.userLockedValue?.toString() ??
+                {poolDetailConfig?.userLockedValue?.toString() ??
                   `0${fiat.symbol}`}
               </MetricLoader>
             ),
@@ -405,9 +403,9 @@ const Pool: FunctionComponent = observer(() => {
             value: (
               <MetricLoader
                 className="h-4"
-                isLoading={!poolDetailStore?.userBondedValue}
+                isLoading={!poolDetailConfig?.userBondedValue}
               >
-                {poolDetailStore?.userBondedValue?.toString() ??
+                {poolDetailConfig?.userBondedValue?.toString() ??
                   `0${fiat.symbol}`}
               </MetricLoader>
             ),
@@ -439,7 +437,7 @@ const Pool: FunctionComponent = observer(() => {
                   ) : (
                     <h5>{t("pool.liquidityMiningMobile")}</h5>
                   )}
-                  {superfluidPoolStore?.superfluid && (
+                  {superfluidPoolConfig?.superfluid && (
                     <div className="bg-superfluid w-fit rounded-full px-4 py-1 md:caption text-base">
                       {t("pool.superfluidEnabled")}
                     </div>
@@ -456,9 +454,9 @@ const Pool: FunctionComponent = observer(() => {
                 <span className="font-h5 text-h5 md:subtitle1">
                   <MetricLoader
                     className="h-6"
-                    isLoading={!poolDetailStore?.userAvailableValue}
+                    isLoading={!poolDetailConfig?.userAvailableValue}
                   >
-                    {poolDetailStore?.userAvailableValue?.toString() || "$0"}
+                    {poolDetailConfig?.userAvailableValue?.toString() || "$0"}
                   </MetricLoader>
                 </span>
                 <Button
@@ -471,7 +469,7 @@ const Pool: FunctionComponent = observer(() => {
                         poolName,
                         poolWeight,
                         isSuperfluidPool:
-                          superfluidPoolStore?.isSuperfluid ?? false,
+                          superfluidPoolConfig?.isSuperfluid ?? false,
                       },
                     ]);
                     setShowLockLPTokenModal(true);
@@ -519,7 +517,7 @@ const Pool: FunctionComponent = observer(() => {
             </div>
           )}
         </div>
-        {superfluidPoolStore?.superfluid && (
+        {superfluidPoolConfig?.superfluid && (
           <div className="max-w-container mx-auto md:p-5 p-10 flex flex-col gap-4">
             {isMobile ? (
               <span className="subtitle2">
@@ -528,13 +526,13 @@ const Pool: FunctionComponent = observer(() => {
             ) : (
               <h5>{t("pool.superfluidStaking")}</h5>
             )}
-            {superfluidPoolStore.superfluid.upgradeableLpLockIds ? (
+            {superfluidPoolConfig.superfluid.upgradeableLpLockIds ? (
               <GoSuperfluidCard
                 goSuperfluid={() => setShowSuperfluidValidatorsModal(true)}
                 isMobile={isMobile}
               />
             ) : (
-              superfluidPoolStore.superfluid.delegations?.map(
+              superfluidPoolConfig.superfluid.delegations?.map(
                 (
                   {
                     validatorName,
@@ -596,7 +594,7 @@ const Pool: FunctionComponent = observer(() => {
                   {
                     display: t("pool.myBondings.unbondingDuration"),
                     className: "!pl-8",
-                    displayCell: superfluidPoolStore?.isSuperfluid
+                    displayCell: superfluidPoolConfig?.isSuperfluid
                       ? ({ value, isSuperfluidDuration }) => (
                           <div className="flex items-center gap-3">
                             <span>{value ?? ""}</span>
@@ -641,7 +639,7 @@ const Pool: FunctionComponent = observer(() => {
                               poolName,
                               poolWeight,
                               isSuperfluidPool:
-                                superfluidPoolStore?.isSuperfluid ?? false,
+                                superfluidPoolConfig?.isSuperfluid ?? false,
                               unbondingPeriod: duration?.asDays(),
                             },
                           ]);
@@ -681,7 +679,7 @@ const Pool: FunctionComponent = observer(() => {
                                       poolName,
                                       poolWeight,
                                       isSuperfluidPool:
-                                        superfluidPoolStore?.isSuperfluid ??
+                                        superfluidPoolConfig?.isSuperfluid ??
                                         false,
                                       unbondingPeriod: duration?.asDays(),
                                     },
@@ -701,7 +699,7 @@ const Pool: FunctionComponent = observer(() => {
                                       poolName,
                                       poolWeight,
                                       isSuperfluidPool:
-                                        superfluidPoolStore?.isSuperfluid ??
+                                        superfluidPoolConfig?.isSuperfluid ??
                                         false,
                                       unbondingPeriod: duration?.asDays(),
                                     },
@@ -733,39 +731,43 @@ const Pool: FunctionComponent = observer(() => {
                 isMobile ? display !== t("pool.myBondings.currentAPR") : true
               )}
               data={
-                poolDetailStore?.userLockedAssets?.map((lockedAsset, index) => {
-                  const isSuperfluidDuration =
-                    index ===
-                      (poolDetailStore.userLockedAssets?.length ?? 0) - 1 &&
-                    superfluidPoolStore?.superfluid?.delegations &&
-                    superfluidPoolStore.superfluid.delegations.length > 0;
-                  return [
-                    {
-                      value: lockedAsset.duration
-                        .locale(currentLanguage)
-                        .humanize(),
-                      isSuperfluidDuration,
-                    }, // Unbonding Duration
-                    {
-                      value:
-                        lockedAsset.apr?.maxDecimals(2).trim(true).toString() ??
-                        "0%",
-                    }, // Current APR
-                    {
-                      value: lockedAsset.amount
-                        .maxDecimals(6)
-                        .trim(true)
-                        .toString(),
-                    }, // Amount
-                    {
-                      ...lockedAsset,
-                      value: lockedAsset.duration
-                        .locale(currentLanguage)
-                        .humanize(),
-                      isSuperfluidDuration,
-                    }, // Unbond All button
-                  ].filter((_row, index) => (isMobile ? index !== 1 : true));
-                }) ?? []
+                poolDetailConfig?.userLockedAssets?.map(
+                  (lockedAsset, index) => {
+                    const isSuperfluidDuration =
+                      index ===
+                        (poolDetailConfig.userLockedAssets?.length ?? 0) - 1 &&
+                      superfluidPoolConfig?.superfluid?.delegations &&
+                      superfluidPoolConfig.superfluid.delegations.length > 0;
+                    return [
+                      {
+                        value: lockedAsset.duration
+                          .locale(currentLanguage)
+                          .humanize(),
+                        isSuperfluidDuration,
+                      }, // Unbonding Duration
+                      {
+                        value:
+                          lockedAsset.apr
+                            ?.maxDecimals(2)
+                            .trim(true)
+                            .toString() ?? "0%",
+                      }, // Current APR
+                      {
+                        value: lockedAsset.amount
+                          .maxDecimals(6)
+                          .trim(true)
+                          .toString(),
+                      }, // Amount
+                      {
+                        ...lockedAsset,
+                        value: lockedAsset.duration
+                          .locale(currentLanguage)
+                          .humanize(),
+                        isSuperfluidDuration,
+                      }, // Unbond All button
+                    ].filter((_row, index) => (isMobile ? index !== 1 : true));
+                  }
+                ) ?? []
               }
             />
           </div>
@@ -777,8 +779,8 @@ const Pool: FunctionComponent = observer(() => {
             poolId={pool.id}
           />
         )}
-        {poolDetailStore?.userUnlockingAssets &&
-          poolDetailStore.userUnlockingAssets.length > 0 && (
+        {poolDetailConfig?.userUnlockingAssets &&
+          poolDetailConfig.userUnlockingAssets.length > 0 && (
             <div className="max-w-container mx-auto md:p-5 p-10">
               {isMobile ? (
                 <span className="subtitle2">
@@ -802,7 +804,7 @@ const Pool: FunctionComponent = observer(() => {
                   },
                 ]}
                 data={
-                  poolDetailStore?.userUnlockingAssets?.map(
+                  poolDetailConfig?.userUnlockingAssets?.map(
                     ({ duration, amount, endTime }) => [
                       {
                         value: duration.locale(currentLanguage).humanize(),
@@ -819,8 +821,8 @@ const Pool: FunctionComponent = observer(() => {
               />
             </div>
           )}
-        {superfluidPoolStore?.superfluid?.undelegations &&
-          superfluidPoolStore.superfluid.undelegations.length > 0 && (
+        {superfluidPoolConfig?.superfluid?.undelegations &&
+          superfluidPoolConfig.superfluid.undelegations.length > 0 && (
             <div className="max-w-container mx-auto md:p-5 p-10">
               {isMobile ? (
                 <span className="subtitle2">
@@ -847,7 +849,7 @@ const Pool: FunctionComponent = observer(() => {
                   },
                 ]}
                 data={
-                  superfluidPoolStore.superfluid.undelegations.map(
+                  superfluidPoolConfig.superfluid.undelegations.map(
                     ({ validatorName, inactive, amount, endTime }) => [
                       {
                         value: `${validatorName ?? ""}${
@@ -877,7 +879,7 @@ const Pool: FunctionComponent = observer(() => {
             <h5>{t("pool.catalyst.title")}</h5>
           )}
           <div className="flex flex-wrap md:flex-col gap-5 my-5">
-            {(poolDetailStore?.userPoolAssets ?? [undefined, undefined]).map(
+            {(poolDetailConfig?.userPoolAssets ?? [undefined, undefined]).map(
               (userAsset, index) => {
                 const totalAmount = pool?.poolAssets
                   .find(
@@ -917,7 +919,7 @@ const Pool: FunctionComponent = observer(() => {
                   <PoolCatalystCard
                     key={index}
                     colorKey={Number(pool?.id ?? "0") + index}
-                    isLoading={!pool || !poolDetailStore?.userPoolAssets}
+                    isLoading={!pool || !poolDetailConfig?.userPoolAssets}
                     className="md:w-full w-1/2 max-w-md"
                     percentDec={userAsset?.ratio.toString()}
                     tokenDenom={userAsset?.asset.currency.coinDenom}
@@ -927,7 +929,7 @@ const Pool: FunctionComponent = observer(() => {
                         label: t("pool.catalyst.amount"),
                         value: (
                           <MetricLoader
-                            isLoading={!poolDetailStore?.userPoolAssets}
+                            isLoading={!poolDetailConfig?.userPoolAssets}
                           >
                             {totalAmountAdjusted}
                           </MetricLoader>
@@ -937,7 +939,7 @@ const Pool: FunctionComponent = observer(() => {
                         label: t("pool.catalyst.myAmount"),
                         value: (
                           <MetricLoader
-                            isLoading={!poolDetailStore?.userPoolAssets}
+                            isLoading={!poolDetailConfig?.userPoolAssets}
                           >
                             {myAmountAdjusted}
                           </MetricLoader>
