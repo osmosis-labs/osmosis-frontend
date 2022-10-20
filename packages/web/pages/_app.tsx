@@ -30,9 +30,6 @@ import {
 } from "react-multi-lang";
 
 import en from "../localizations/en.json";
-import "../localizations/dayjs-locale-en.js";
-import fr from "../localizations/fr.json";
-import "../localizations/dayjs-locale-fr.js";
 import { Formatted } from "../components/localization";
 
 dayjs.extend(relativeTime);
@@ -41,9 +38,8 @@ dayjs.extend(utc);
 enableStaticRendering(typeof window === "undefined");
 
 const DEFAULT_LANGUAGE = "en";
-setTranslations({ en, fr });
+setTranslations({ en });
 setDefaultLanguage(DEFAULT_LANGUAGE);
-dayjs.locale(DEFAULT_LANGUAGE);
 
 function MyApp({ Component, pageProps }: AppProps) {
   const t = useTranslation();
@@ -106,7 +102,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [t]);
 
   useAmplitudeAnalytics({ init: true });
-
   return (
     <GetKeplrProvider>
       <StoreProvider>

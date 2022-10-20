@@ -5,6 +5,8 @@ import { useRouter } from "next/router";
 import React, { FunctionComponent, useEffect } from "react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+// import dayjs from "dayjs";
+
 import {
   useWindowSize,
   useWindowScroll,
@@ -13,9 +15,14 @@ import {
 } from "../../hooks";
 import { AmplitudeEvent, IS_FRONTIER } from "../../config";
 import { NavBar } from "../navbar";
-import dayjs from "dayjs";
-import { setLanguage } from "react-multi-lang";
+import { setLanguage, setTranslations } from "react-multi-lang";
 import { useStore } from "../../stores";
+// import dynamic from "next/dynamic";
+// import {
+//   setDefaultLanguage,
+//   setTranslations,
+//   useTranslation,
+// } from "react-multi-lang";
 
 export type MainLayoutMenu = {
   label: string;
@@ -54,8 +61,19 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
 
     useEffect(() => {
       if (currentLanguage) {
-        dayjs.locale(currentLanguage);
-        setLanguage(currentLanguage);
+        const load = async () => {
+          const language = await import(
+            `../../localizations/${currentLanguage}.json`
+          );
+          await import(
+            `../../localizations/dayjs-locale-${currentLanguage}.js`
+          );
+          setTranslations({
+            [currentLanguage]: language,
+          });
+          setLanguage(currentLanguage);
+        };
+        load();
       }
     }, [currentLanguage]);
 
