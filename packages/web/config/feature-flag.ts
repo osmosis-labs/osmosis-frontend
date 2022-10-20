@@ -909,7 +909,7 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "722": [
     {
-      gaugeId: "21737",
+      gaugeId: "29822",
       denom:
         "ibc/6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A",
     },
