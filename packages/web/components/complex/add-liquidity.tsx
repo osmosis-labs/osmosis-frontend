@@ -10,7 +10,6 @@ import { Token } from "../../components/assets";
 import { InputBox } from "../../components/input";
 import { Info } from "../../components/alert";
 import { PoolTokenSelect } from "../../components/control/pool-token-select";
-import { BorderButton } from "../buttons";
 import { CustomClasses } from "../types";
 
 export const AddLiquidity: FunctionComponent<
@@ -142,19 +141,18 @@ export const AddLiquidity: FunctionComponent<
                       <div className="flex gap-2 text-caption font-caption justify-end">
                         <span className="my-auto">Available</span>
                         {assetBalance && (
-                          <span className="text-wosmongton-300 my-auto">
+                          <span
+                            className={classNames(
+                              "text-wosmongton-300 my-auto",
+                              assetBalance?.toDec().isZero()
+                                ? "opacity-70"
+                                : "cursor-pointer"
+                            )}
+                            onClick={() => addLiquidityConfig.setMax()}
+                          >
                             {assetBalance.maxDecimals(6).toString()}
                           </span>
                         )}
-                        <BorderButton
-                          className={classNames("caption py-1 px-1.5", {
-                            "opacity-30": assetBalance?.toDec().isZero(),
-                          })}
-                          onClick={() => addLiquidityConfig.setMax()}
-                          disabled={assetBalance?.toDec().isZero()}
-                        >
-                          MAX
-                        </BorderButton>
                       </div>
                     )}
                     <div className="flex place-content-end gap-1">
