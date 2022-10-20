@@ -775,16 +775,20 @@ export const IBCAssetInfos: (IBCAsset & {
       "ki1hzz0s0ucrhdp6tue2lxk3c03nj6f60qy463we7lgx0wudd72ctmsd9kgha",
   },
   {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
-    coinMinimalDenom: "wglmr-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=moonbeam&destination=osmosis&asset_denom=wglmr-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=moonbeam&asset_denom=wglmr-wei",
-    sourceChainNameOverride: "Moonbeam",
-  },
+    counterpartyChainId: IS_TESTNET
+      ? "axelar-testnet-lisbon-3"
+      : "axelar-dojo-1",
+    sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
+    destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
+    coinMinimalDenom: IS_TESTNET ? "wdev-wei" : "wglmr-wei",
+    sourceChainNameOverride: IS_TESTNET ? "Moonbase" : "Moonbeam",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.glmr.moonbeam],
+    },
+  },  
   {
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-169",

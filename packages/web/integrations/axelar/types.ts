@@ -24,6 +24,7 @@ export type SourceChain =
   | "Fantom"
   | "Polygon"
   | "Moonbeam"
+  | "Moonbase"
   | "Binance";
 
 /** Maps eth client chainIDs => axelar chain ids.
@@ -37,6 +38,7 @@ export const EthClientChainIds_AxelarChainIdsMap: {
   "Avalanche C-Chain": "Avalanche",
   "Binance Smart Chain": "Binance",
   "Fantom Opera": "Fantom",
+  "Moonbase": "Moonbeam",
 };
 
 export type SourceChainConfig = {

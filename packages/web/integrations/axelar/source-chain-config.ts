@@ -62,4 +62,16 @@ export const SourceChainConfigs: {
       transferFeeMinAmount: IS_TESTNET ? "60000000000000" : "6300000000000000",
     },
   },
+  glmr: {
+    moonbeam: {
+      id: IS_TESTNET
+        ? ("Moonbase" as const)
+        : ("Moonbeam" as const),
+      erc20ContractAddress: IS_TESTNET
+        ? "0x1436aE0dF0A8663F18c0Ec51d7e2E46591730715"
+        : "0xAcc15dC74880C9944775448304B263D191c6077F",
+      logoUrl: "/networks/moonbeam.svg",
+      transferFeeMinAmount: IS_TESTNET ? "40000000000000000" : "2000000000000000000",
+    },
+  },
 };
