@@ -736,8 +736,8 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "ukuji",
     depositUrlOverride:
       "https://blue.kujira.app/ibc?destination=osmosis-1&denom=ukuji",
-    withdrawUrlOverride:
-      "https://blue.kujira.app/ibc?destination=kaiyo-1&source=osmosis-1&denom=ukuji",
+    // withdrawUrlOverride:
+    //   "https://blue.kujira.app/ibc?destination=kaiyo-1&source=osmosis-1&denom=ukuji",
     isVerified: true,
   },
   {
