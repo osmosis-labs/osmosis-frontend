@@ -197,7 +197,7 @@ module.exports = {
       "gradient-neutral":
         "linear-gradient(96.42deg, #462ADF -0.59%, #8A86FF 100%);",
       "gradient-positive":
-        "linear-gradient(96.5deg, #2AB4DF 1.78%, #2AAEDF 1.79%, #899DFF 1.8%, #24F9AC 100%);",
+        "linear-gradient(96.28deg, #899EFF 0%, #28F6AF 99.28%);",
       "gradient-negative":
         "linear-gradient(96.42deg, #B03A20 -0.59%, #FA825D 100%);",
     },

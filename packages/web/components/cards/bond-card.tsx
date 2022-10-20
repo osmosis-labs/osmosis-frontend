@@ -26,36 +26,56 @@ export const BondCard: FunctionComponent<
   const [drawerUp, setDrawerUp] = useState(false);
 
   return (
-    <div className="relative flex flex-col gap-[115px] overflow-hidden w-full h-[380px] max-w-[348px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8">
-      <div className="flex items-start place-content-between">
-        <div className="flex flex-col gap-3">
-          <span className="subtitle1 text-osmoverse-100">
-            {duration.humanize()} unbonding
-          </span>
-          <div className="flex flex-col text-osmoverse-100">
-            <h3>
-              {userShares.hideDenom(true).trim(true).maxDecimals(3).toString()}
-            </h3>
-            <span>shares</span>
+    <div className="relative flex flex-col gap-[115px] overflow-hidden w-fit h-[380px] max-w-[348px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-start gap-4 place-content-between">
+          <div className="flex flex-col gap-3">
+            <span className="subtitle1 text-osmoverse-100">
+              {duration.humanize()} unbonding
+            </span>
+            <div className="flex flex-col text-osmoverse-100">
+              <h3>
+                {userShares
+                  .hideDenom(true)
+                  .trim(true)
+                  .maxDecimals(3)
+                  .toString()}
+              </h3>
+              <span>shares</span>
+            </div>
+            {userShares.toDec().gt(new Dec(0)) && (
+              <button
+                className="flex items-center gap-1 text-wosmongton-200"
+                onClick={onUnbond}
+              >
+                Unbond
+                <Image
+                  alt="unbond"
+                  src="/icons/arrow-right.svg"
+                  height={24}
+                  width={24}
+                />
+              </button>
+            )}
           </div>
-          {userShares.toDec().gt(new Dec(0)) && (
-            <button
-              className="flex items-center gap-1 text-wosmongton-200"
-              onClick={onUnbond}
-            >
-              Unbond
-              <Image
-                alt="unbond"
-                src="/icons/arrow-right.svg"
-                height={24}
-                width={24}
-              />
-            </button>
+          {splashImageSrc && (
+            <Image alt="splash" src={splashImageSrc} height={90} width={90} />
           )}
         </div>
-        {splashImageSrc && (
-          <Image alt="splash" src={splashImageSrc} height={90} width={90} />
-        )}
+        {superfluid &&
+          userShares.toDec().gt(new Dec(0)) &&
+          !superfluid.delegated &&
+          !superfluid.undelegating && (
+            <NewButton
+              className="py-1.5 text-transparent bg-clip-text bg-superfluid border-superfluid"
+              mode="tertiary"
+              size="sm"
+              onClick={onGoSuperfluid}
+            >
+              Earn {superfluid.apr.maxDecimals(0).toString()} more. Go
+              superfluid
+            </NewButton>
+          )}
       </div>
       <div
         className={classNames(
@@ -93,12 +113,10 @@ const Drawer: FunctionComponent<{
   aggregateApr,
   swapFeeApr,
   swapFeeDailyReward,
-  userShares,
   incentivesBreakdown,
   superfluid,
   drawerUp,
   toggleDetailsVisible,
-  onGoSuperfluid,
 }) => {
   return (
     <div
@@ -186,13 +204,9 @@ const Drawer: FunctionComponent<{
       >
         <div className="flex flex-col h-[180px] gap-5 pt-6 px-8 overflow-y-scroll">
           {incentivesBreakdown.map((breakdown, index) => (
-            <>
+            <div className="flex flex-col gap-5" key={index}>
               {index === 0 && superfluid && (
-                <SuperfluidBreakdownRow
-                  {...superfluid}
-                  userShares={userShares}
-                  onGoSuperfluid={onGoSuperfluid}
-                />
+                <SuperfluidBreakdownRow {...superfluid} />
               )}
               <IncentiveBreakdownRow {...breakdown} />
               {index === incentivesBreakdown.length - 1 && (
@@ -201,7 +215,7 @@ const Drawer: FunctionComponent<{
                   swapFeeDailyReward={swapFeeDailyReward}
                 />
               )}
-            </>
+            </div>
           ))}
         </div>
         <span className="caption text-center text-osmoverse-400">
@@ -213,13 +227,8 @@ const Drawer: FunctionComponent<{
 };
 
 const SuperfluidBreakdownRow: FunctionComponent<
-  {
-    userShares: CoinPretty;
-    onGoSuperfluid: () => void;
-  } & BondableDuration["superfluid"]
+  BondableDuration["superfluid"]
 > = ({
-  userShares,
-  onGoSuperfluid,
   apr,
   commission,
   delegated,
@@ -227,57 +236,57 @@ const SuperfluidBreakdownRow: FunctionComponent<
   validatorMoniker,
   validatorLogoUrl,
 }) => (
-  <div className="flex items-start place-content-between" key="superfluid">
-    <div className="flex items-center gap-2">
-      <h6 className="text-transparent bg-clip-text bg-superfluid">
-        +{apr.maxDecimals(0).toString()}
-      </h6>
-      <img
-        className="rounded-full"
-        alt="validator icon"
-        src={validatorLogoUrl ?? "/icons/superfluid-osmo.svg"}
-        height={24}
-        width={24}
-      />
-    </div>
-    <div className="flex flex-col text-right">
+  <div className="flex flex-col gap-1">
+    <div className="flex items-start place-content-between">
+      <div className="flex items-center gap-2">
+        <h6 className="text-transparent bg-clip-text bg-superfluid">
+          +{apr.maxDecimals(0).toString()}
+        </h6>
+        <object data="/icons/profile.svg" type="image/svg+xml">
+          <img
+            className="rounded-full"
+            alt="validator icon"
+            src={validatorLogoUrl ?? "/icons/profile.svg"}
+            height={24}
+            width={24}
+          />
+        </object>
+      </div>
       {delegated || undelegating ? (
-        <>
-          <span>{validatorMoniker}</span>
-          <span className="caption text-osmoverse-400">
-            {delegated
-              ? `~${delegated.maxDecimals(2).toString()} delegated`
-              : undelegating
-              ? `~${undelegating.maxDecimals(2).toString()} undelegating`
-              : null}
-          </span>
-          <span className="caption text-osmoverse-400">
-            {commission?.toString()} commission
-          </span>
-        </>
-      ) : userShares.toDec().gt(new Dec(0)) ? (
-        <NewButton
-          className="py-1 text-transparent bg-clip-text bg-superfluid border-superfluid"
-          mode="tertiary"
-          size="sm"
-          onClick={onGoSuperfluid}
-        >
-          Go superfluid
-        </NewButton>
+        <span>{validatorMoniker}</span>
       ) : (
         <span>Superfluid Staking</span>
       )}
     </div>
+    {(delegated || undelegating) && (
+      <div className="flex flex-col text-right ml-auto">
+        <div className="flex flex-col gap-[2px] bg-osmoverse-800 rounded-md py-2 px-4">
+          <span className="caption">
+            {delegated
+              ? `~${delegated.trim(true).toString()}`
+              : undelegating
+              ? `~${undelegating.trim(true).toString()}`
+              : null}
+            <span className="text-osmoverse-400">
+              {delegated ? " delegated" : undelegating ? " undelegating" : ""}
+            </span>
+          </span>
+          {commission && (
+            <span className="caption">
+              {commission.toString()}{" "}
+              <span className="text-osmoverse-400">commission</span>
+            </span>
+          )}
+        </div>
+      </div>
+    )}
   </div>
 );
 
 const IncentiveBreakdownRow: FunctionComponent<
   BondableDuration["incentivesBreakdown"][0]
 > = ({ dailyPoolReward, apr, numDaysRemaining }) => (
-  <div
-    className="flex items-start place-content-between"
-    key={dailyPoolReward.denom}
-  >
+  <div className="flex items-start place-content-between">
     <div className="flex items-center gap-2">
       <h6 className="text-osmoverse-200">+{apr.maxDecimals(0).toString()}</h6>
       {dailyPoolReward.currency.coinImageUrl && (
@@ -302,10 +311,7 @@ const SwapFeeBreakdownRow: FunctionComponent<{
   swapFeeApr: RatePretty;
   swapFeeDailyReward: PricePretty;
 }> = ({ swapFeeApr, swapFeeDailyReward }) => (
-  <div
-    className="flex items-start place-content-between"
-    key={swapFeeApr.toString()}
-  >
+  <div className="flex items-start place-content-between">
     <div className="flex items-center gap-2">
       <h6 className="text-osmoverse-200">
         +{swapFeeApr.maxDecimals(0).toString()}
