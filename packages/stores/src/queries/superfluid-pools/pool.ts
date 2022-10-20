@@ -5,7 +5,7 @@ import {
   ObservableQueryInflation,
   Staking,
 } from "@keplr-wallet/stores";
-import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { Dec, RatePretty, CoinPretty } from "@keplr-wallet/unit";
 import { IPriceStore } from "../../price";
 import { UserConfig } from "../../ui-config";
 import { ObservableQueryPoolDetails } from "../pools";
@@ -94,33 +94,32 @@ export class ObservableQuerySuperfluidPool extends UserConfig {
   }
 
   @computed
-  get upgradeableLpLockIds() {
+  get superfluid() {
     if (!this.isSuperfluid || !this.queryPoolDetails.longestDuration) return;
 
+    let upgradeableLpLockIds:
+      | {
+          amount: CoinPretty;
+          lockIds: string[];
+        }
+      | undefined;
     if (this.queryPoolDetails.lockableDurations.length > 0) {
-      return this.queries.queryAccountLocked
+      upgradeableLpLockIds = this.queries.queryAccountLocked
         .get(this.bech32Address)
         .getLockedCoinWithDuration(
           this.queryPoolDetails.poolShareCurrency,
           this.queryPoolDetails.longestDuration
         );
     }
-  }
-
-  @computed
-  get superfluid() {
-    if (!this.isSuperfluid || !this.queryPoolDetails.longestDuration) return;
 
     const undelegatedLockedLpShares =
       (this.queries.querySuperfluidDelegations
         .getQuerySuperfluidDelegations(this.bech32Address)
         .getDelegations(this.queryPoolDetails.poolShareCurrency)?.length ===
         0 &&
-        this.upgradeableLpLockIds &&
-        this.upgradeableLpLockIds.lockIds.length > 0) ??
+        upgradeableLpLockIds &&
+        upgradeableLpLockIds.lockIds.length > 0) ??
       false;
-
-    const upgradeableLpLockIds = this.upgradeableLpLockIds;
 
     return undelegatedLockedLpShares
       ? { upgradeableLpLockIds }

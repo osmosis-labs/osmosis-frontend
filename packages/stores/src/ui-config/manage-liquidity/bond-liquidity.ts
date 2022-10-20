@@ -28,6 +28,7 @@ export type BondableDuration = {
     apr: RatePretty;
     numDaysRemaining?: number;
   }[];
+  /** Both `delegated` and `undelegating` will be `undefined` if the user may "Go superfluid". */
   superfluid?: {
     apr: RatePretty;
     commission?: RatePretty;
@@ -183,8 +184,12 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           superfluid = {
             apr: this.superfluidPool.superfluidApr,
             commission: delegation?.validatorCommission,
-            delegated: delegation?.amount,
-            undelegating: undelegation?.amount,
+            delegated: !this.superfluidPool.superfluid.upgradeableLpLockIds
+              ? delegation?.amount
+              : undefined,
+            undelegating: !this.superfluidPool.superfluid.upgradeableLpLockIds
+              ? undelegation?.amount
+              : undefined,
             validatorMoniker: delegation?.validatorName,
             validatorLogoUrl: delegation?.validatorImgSrc,
           };

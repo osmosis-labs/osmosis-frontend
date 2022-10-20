@@ -17,6 +17,7 @@ export declare type BondableDuration = {
         apr: RatePretty;
         numDaysRemaining?: number;
     }[];
+    /** Both `delegated` and `undelegating` will be `undefined` if the user may "Go superfluid". */
     superfluid?: {
         apr: RatePretty;
         commission?: RatePretty;

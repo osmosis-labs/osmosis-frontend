@@ -1,6 +1,6 @@
 import { FiatCurrency } from "@keplr-wallet/types";
 import { ObservableQueryValidators, ObservableQueryInflation } from "@keplr-wallet/stores";
-import { RatePretty } from "@keplr-wallet/unit";
+import { RatePretty, CoinPretty } from "@keplr-wallet/unit";
 import { IPriceStore } from "../../price";
 import { UserConfig } from "../../ui-config";
 import { ObservableQueryPoolDetails } from "../pools";
@@ -45,13 +45,9 @@ export declare class ObservableQuerySuperfluidPool extends UserConfig {
         isLoading: boolean;
     }[];
     get superfluidApr(): RatePretty;
-    get upgradeableLpLockIds(): {
-        amount: import("@keplr-wallet/unit").CoinPretty;
-        lockIds: string[];
-    } | undefined;
     get superfluid(): {
         upgradeableLpLockIds: {
-            amount: import("@keplr-wallet/unit").CoinPretty;
+            amount: CoinPretty;
             lockIds: string[];
         } | undefined;
         delegations?: undefined;
@@ -64,16 +60,16 @@ export declare class ObservableQuerySuperfluidPool extends UserConfig {
             validatorImgSrc: string | undefined;
             inactive: string | undefined;
             apr: RatePretty;
-            amount: import("@keplr-wallet/unit").CoinPretty;
+            amount: CoinPretty;
         }[] | undefined;
         undelegations: {
             validatorName: string | undefined;
             inactive: string | undefined;
-            amount: import("@keplr-wallet/unit").CoinPretty;
+            amount: CoinPretty;
             endTime: Date;
         }[] | undefined;
         superfluidLpShares: {
-            amount: import("@keplr-wallet/unit").CoinPretty;
+            amount: CoinPretty;
             lockIds: string[];
         };
         upgradeableLpLockIds?: undefined;
