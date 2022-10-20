@@ -188,9 +188,6 @@ const LockupItem: FunctionComponent<{
   <button
     onClick={onSelect}
     className={classNames(
-      {
-        "shadow-elevation-08dp": isSelected,
-      },
       "rounded-2xl px-0.25 py-0.25 w-full cursor-pointer min-w-[190px]",
       isSelected
         ? "bg-enabledGold bg-opacity-30"
@@ -202,20 +199,12 @@ const LockupItem: FunctionComponent<{
         "flex items-center rounded-2xlinset bg-surface h-full px-5 md:py-3.5 py-5 md:px-4"
       )}
     >
-      <figure
-        className={classNames(
-          "rounded-full w-4 h-4 mr-2 flex-shrink-0",
-          isSelected
-            ? "border-secondary-200 border-4 bg-white-high"
-            : "border-iconDefault border"
-        )}
-      />
       <div className="flex w-full place-content-between flex-col text-center">
         <h5>{duration}</h5>
         {apr && (
           <div className="flex items-center md:text-right text-center md:mx-0 mx-auto gap-2">
             <p className="subtitle2 md:m-0 mt-1 text-secondary-200 md:text-sm text-base">
-              {apr.toString()}
+              {apr}
             </p>
           </div>
         )}

@@ -558,7 +558,7 @@ export const TradeClipboard: FunctionComponent<{
         >
           <div
             className={classNames(
-              "w-full h-full rounded-full flex items-center shadow-elevation-04dp",
+              "w-full h-full rounded-full flex items-center",
               {
                 "bg-card": !isHoveringSwitchButton,
                 "bg-[#4E477C]": isHoveringSwitchButton,
@@ -843,7 +843,7 @@ export const TradeClipboard: FunctionComponent<{
             ? "error"
             : "primary"
         }
-        className="flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
+        className="flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full"
         disabled={
           account.walletStatus === WalletStatus.Loaded &&
           (tradeTokenInConfig.error !== undefined ||

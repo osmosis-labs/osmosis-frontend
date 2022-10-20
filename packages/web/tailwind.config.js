@@ -201,16 +201,6 @@ module.exports = {
       "gradient-negative":
         "linear-gradient(96.42deg, #B03A20 -0.59%, #FA825D 100%);",
     },
-    boxShadow: {
-      container:
-        "0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)",
-      "elevation-04dp":
-        "0px 4px 5px rgba(0, 0, 0, 0.14), 0px 1px 10px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.2)",
-      "elevation-08dp":
-        "0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)",
-      "elevation-24dp":
-        "0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2)",
-    },
     screens: {
       "3xl": { max: "1792px" },
       // => @media (max-width: 1792px) { ... }
