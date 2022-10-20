@@ -84,7 +84,8 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
             queryOsmosis.queryLockableDurations.lockableDurations;
 
           const isSuperfluidDuration =
-            duration.asSeconds() === durations[duration.length - 1].asSeconds();
+            duration.asSeconds() ===
+            durations[durations.length - 1]?.asSeconds();
 
           if (
             isSuperfluidDuration ||
@@ -109,7 +110,11 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
         }
       });
     },
-    [queryOsmosis]
+    [
+      queryOsmosis,
+      queryOsmosis.querySyntheticLockupsByLockId,
+      queryOsmosis.queryLockableDurations.response,
+    ]
   );
 
   return { config, lockToken, unlockTokens };
