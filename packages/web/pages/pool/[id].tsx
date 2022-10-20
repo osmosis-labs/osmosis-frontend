@@ -542,6 +542,15 @@ const Pool: FunctionComponent = observer(() => {
                   {...bondableDuration}
                   onUnbond={() => onUnlockTokens(bondableDuration.duration)}
                   onGoSuperfluid={() => setShowSuperfluidValidatorsModal(true)}
+                  splashImageSrc={
+                    bondableDuration.duration.asDays() === 1
+                      ? "/images/small-vial.svg"
+                      : bondableDuration.duration.asDays() === 7
+                      ? "/images/medium-vial.svg"
+                      : bondableDuration.duration.asDays() === 14
+                      ? "/images/large-vial.svg"
+                      : undefined
+                  }
                 />
               ))}
             </div>

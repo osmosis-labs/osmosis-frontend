@@ -6,7 +6,11 @@ import { NewButton } from "../buttons";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 
 export const BondCard: FunctionComponent<
-  BondableDuration & { onUnbond: () => void; onGoSuperfluid: () => void }
+  BondableDuration & {
+    onUnbond: () => void;
+    onGoSuperfluid: () => void;
+    splashImageSrc?: string;
+  }
 > = ({
   duration,
   userShares,
@@ -17,32 +21,41 @@ export const BondCard: FunctionComponent<
   incentivesBreakdown,
   onUnbond,
   onGoSuperfluid,
+  splashImageSrc,
 }) => {
   const [drawerUp, setDrawerUp] = useState(false);
 
   return (
     <div className="relative flex flex-col gap-[115px] overflow-hidden w-full h-[380px] max-w-[348px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8">
-      <div className="flex flex-col gap-3">
-        <div className="flex items-start place-content-between">
+      <div className="flex items-start place-content-between">
+        <div className="flex flex-col gap-3">
           <span className="subtitle1 text-osmoverse-100">
             {duration.humanize()} unbonding
           </span>
-          <NewButton
-            className="!text-osmoverse-400 z-50"
-            mode="tertiary"
-            size="sm"
-            onClick={onUnbond}
-            disabled={userShares.toDec().isZero()}
-          >
-            Unbond
-          </NewButton>
+          <div className="flex flex-col text-osmoverse-100">
+            <h3>
+              {userShares.hideDenom(true).trim(true).maxDecimals(3).toString()}
+            </h3>
+            <span>shares</span>
+          </div>
+          {userShares.toDec().gt(new Dec(0)) && (
+            <button
+              className="flex items-center gap-1 text-wosmongton-200"
+              onClick={onUnbond}
+            >
+              Unbond
+              <Image
+                alt="unbond"
+                src="/icons/arrow-right.svg"
+                height={24}
+                width={24}
+              />
+            </button>
+          )}
         </div>
-        <div className="flex flex-col text-osmoverse-100">
-          <h3>
-            {userShares.hideDenom(true).trim(true).maxDecimals(3).toString()}
-          </h3>
-          <span>shares</span>
-        </div>
+        {splashImageSrc && (
+          <Image alt="splash" src={splashImageSrc} height={90} width={90} />
+        )}
       </div>
       <div
         className={classNames(
