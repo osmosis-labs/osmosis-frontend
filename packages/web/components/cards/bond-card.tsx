@@ -21,7 +21,7 @@ export const BondCard: FunctionComponent<
   const [drawerUp, setDrawerUp] = useState(false);
 
   return (
-    <div className="relative flex flex-col gap-[115px] overflow-hidden w-full h-[360px] max-w-[348px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8">
+    <div className="relative flex flex-col gap-[115px] overflow-hidden w-full h-[380px] max-w-[348px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8">
       <div className="flex flex-col gap-3">
         <div className="flex items-start place-content-between">
           <span className="subtitle1 text-osmoverse-100">
@@ -90,9 +90,9 @@ const Drawer: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "absolute w-full h-full -bottom-[268px] left-1/2 -translate-x-1/2 flex flex-col transition-all duration-300 ease-inOutBack z-50",
+        "absolute w-full h-[320px] -bottom-[226px] left-1/2 -translate-x-1/2 flex flex-col transition-all duration-300 ease-inOutBack z-50",
         {
-          "-translate-y-[170px] bg-osmoverse-700 rounded-t-[18px]": drawerUp,
+          "-translate-y-[210px] bg-osmoverse-700 rounded-t-[18px]": drawerUp,
         }
       )}
     >
@@ -167,11 +167,11 @@ const Drawer: FunctionComponent<{
         </button>
       </div>
       <div
-        className={classNames("flex flex-col gap-[13px] h-[54%]", {
+        className={classNames("flex flex-col gap-1.5 h-full", {
           "bg-osmoverse-700": drawerUp,
         })}
       >
-        <div className="flex flex-col h-[140px] gap-5 py-6 px-8 overflow-y-scroll">
+        <div className="flex flex-col h-[180px] gap-5 pt-6 px-8 overflow-y-scroll">
           {incentivesBreakdown.map((breakdown, index) => (
             <>
               {index === 0 && superfluid && (
@@ -191,9 +191,11 @@ const Drawer: FunctionComponent<{
             </>
           ))}
         </div>
-        <span className="caption text-center text-osmoverse-400">
-          Rewards distributed to all liquidity providers
-        </span>
+        <div className="flex items-center justify-center">
+          <span className="caption text-center text-osmoverse-400">
+            Rewards distributed to all liquidity providers
+          </span>
+        </div>
       </div>
     </div>
   );
