@@ -3,7 +3,7 @@ import { FunctionComponent, ImgHTMLAttributes, useRef } from "react";
 export const FallbackImg: FunctionComponent<
   {
     /** Image to show if there is an error rendering/fetching default image src. */
-    fallbackSrc: string;
+    fallbacksrc: string;
   } & ImgHTMLAttributes<HTMLImageElement>
 > = (props) => {
   const imgRef = useRef<HTMLImageElement | null>(null);
@@ -15,7 +15,7 @@ export const FallbackImg: FunctionComponent<
       {...props}
       onError={() => {
         if (imgRef.current) {
-          imgRef.current.src = props.fallbackSrc;
+          imgRef.current.src = props.fallbacksrc;
         }
       }}
     />

@@ -250,7 +250,7 @@ const SuperfluidBreakdownRow: FunctionComponent<
           className="rounded-full"
           alt="validator icon"
           src={validatorLogoUrl ?? "/icons/superfluid-osmo.svg"}
-          fallbackSrc="/icons/profile.svg"
+          fallbacksrc="/icons/profile.svg"
           height={24}
           width={24}
         />
