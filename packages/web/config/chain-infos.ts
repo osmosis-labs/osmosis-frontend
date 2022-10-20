@@ -523,6 +523,17 @@ const chainInfos = (
           coinGeckoId: "pool:seasy",
           coinImageUrl: "/tokens/seasy.svg",
         },
+		 {
+          type: "cw20",
+          contractAddress:
+            "juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3",
+          coinDenom: "MUSE",
+          coinMinimalDenom:
+            "cw20:juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3:MUSE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:muse",
+          coinImageUrl: "/tokens/muse.svg",
+        },
       ],
       features: [
         "stargate",
@@ -1079,7 +1090,8 @@ const chainInfos = (
           coinDenom: "ROWAN",
           coinMinimalDenom: "rowan",
           coinDecimals: 18,
-          coinGeckoId: "sifchain",
+          coinGeckoId: "pool:rowan",
+          //coinGeckoId: "sifchain",
           coinImageUrl: "/tokens/rowan.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -2044,6 +2056,29 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://explorer.teritori.com/teritori/tx/{txHash}",
     },
+    {
+        rpc: "https://rpc.lambda.im",
+        rest: "https://rest.lambda.im",
+        chainId: "lambda_92000-1",
+        chainName: "Lambda",
+        bip44: {
+          coinType: 60,
+        },
+        bech32Config: Bech32Address.defaultBech32Config("lamb"),
+        currencies: [
+          {
+            coinDenom: "LAMB",
+            coinMinimalDenom: "ulamb",
+            coinDecimals: 18,
+            coinGeckoId: "pool:lambda",
+            coinImageUrl: "/tokens/lambda.png",
+            isStakeCurrency: true,
+            isFeeCurrency: true,
+          },
+        ],
+        features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+        explorerUrlToTx: "https://explorer.nodestake.top/lambda/tx/{txHash}",
+      },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 

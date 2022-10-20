@@ -1,4 +1,3 @@
-import { DenomHelper } from "@keplr-wallet/common";
 import { IS_FRONTIER } from "./ibc-assets";
 
 /** UI will go into "halt mode" if `true`. */
@@ -44,14 +43,14 @@ export const PromotedLBPPoolIds: {
   ibcHashDenom: string;
 }[] = IS_FRONTIER
   ? [
-      {
+      /*      {
         poolId: "813",
         name: "REBUS Liquidity Bootstrapping Pool",
         ibcHashDenom: DenomHelper.ibcDenom(
           [{ portId: "transfer", channelId: "channel-355" }],
           "arebus"
         ),
-      },
+      },*/
     ]
   : [];
 
@@ -187,14 +186,7 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "553": [
     {
-      gaugeId: "4276",
-      denom:
-        "ibc/9989AD6CCA39D1131523DB0617B50F6442081162294B4795E26746292467B525",
-    },
-  ],
-  "555": [
-    {
-      gaugeId: "4277",
+      gaugeId: "29762",
       denom:
         "ibc/9989AD6CCA39D1131523DB0617B50F6442081162294B4795E26746292467B525",
     },
@@ -1052,6 +1044,16 @@ export const ExternalIncentiveGaugeAllowList: {
       denom:
         "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
     },
+    {
+      gaugeId: "29757",
+      denom:
+        "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
+    },
+    {
+      gaugeId: "29830",
+      denom:
+        "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
+    },
   ],
   "805": [
     {
@@ -1096,6 +1098,20 @@ export const ExternalIncentiveGaugeAllowList: {
     {
       gaugeId: "29683",
       denom: "uosmo",
+    },
+  ],
+  "816": [
+    {
+      gaugeId: "29758",
+      denom: "ibc/EB7FB9C8B425F289B63703413327C2051030E848CE4EAAEA2E51199D6D39D3EC",
+    },
+    {
+      gaugeId: "29759",
+      denom: "ibc/EB7FB9C8B425F289B63703413327C2051030E848CE4EAAEA2E51199D6D39D3EC",
+    },
+    {
+      gaugeId: "29760",
+      denom: "ibc/EB7FB9C8B425F289B63703413327C2051030E848CE4EAAEA2E51199D6D39D3EC",
     },
   ],
   "817": [

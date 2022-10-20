@@ -78,13 +78,14 @@ const Pool: FunctionComponent = observer(() => {
   }, [poolExists]);
 
   // initialize pool data stores once root pool store is loaded
+  const [poolDetailStore, setPoolDetailStore] =
+    useState<ObservableQueryPoolDetails | null>(null);
   const [superfluidPoolStore, setSuperfluidPoolStore] =
     useState<ObservableQuerySuperfluidPool | null>(null);
   useEffect(() => {
     let newPoolDetailStore;
     if (poolExists && pool && !poolDetailStore) {
       newPoolDetailStore = new ObservableQueryPoolDetails(
-        bech32Address,
         fiat,
         pool,
         queryOsmosis,
@@ -95,7 +96,6 @@ const Pool: FunctionComponent = observer(() => {
       setPoolDetailStore(newPoolDetailStore);
       setSuperfluidPoolStore(
         new ObservableQuerySuperfluidPool(
-          bech32Address,
           fiat,
           newPoolDetailStore,
           queriesStore.get(chainId).cosmos.queryValidators,
@@ -105,7 +105,11 @@ const Pool: FunctionComponent = observer(() => {
         )
       );
     }
-  }, [poolExists, pool, bech32Address, fiat, queryOsmosis, priceStore]);
+  }, [poolExists, pool, fiat, queryOsmosis, priceStore]);
+  useEffect(() => {
+    poolDetailStore?.setBech32Address(bech32Address);
+    superfluidPoolStore?.setBech32Address(bech32Address);
+  }, [bech32Address, poolDetailStore, superfluidPoolStore]);
 
   // Manage liquidity + bond LP tokens (modals) state
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
@@ -135,8 +139,6 @@ const Pool: FunctionComponent = observer(() => {
   );
 
   // pool gauges
-  const [poolDetailStore, setPoolDetailStore] =
-    useState<ObservableQueryPoolDetails | null>(null);
   const allowedGauges =
     pool && ExternalIncentiveGaugeAllowList[pool.id]
       ? poolDetailStore?.queryAllowedExternalGauges(
