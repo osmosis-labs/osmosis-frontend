@@ -329,7 +329,7 @@ const Pool: FunctionComponent = observer(() => {
           <LockTokensModal
             poolId={poolId}
             isOpen={showLockLPTokenModal}
-            title="Liquidity Bonding"
+            title="Bond LP Shares"
             onRequestClose={() => setShowLockLPTokenModal(false)}
             amountConfig={lockLPTokensConfig}
             onLockToken={onLockToken}

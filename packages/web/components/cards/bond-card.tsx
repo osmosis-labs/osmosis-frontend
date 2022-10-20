@@ -141,9 +141,7 @@ const Drawer: FunctionComponent<{
           <div className="flex items-center gap-4">
             <h5
               className={classNames(
-                superfluid
-                  ? "text-transparent bg-clip-text bg-superfluid"
-                  : "text-bullish"
+                superfluid ? "text-superfluid" : "text-bullish"
               )}
             >
               {aggregateApr.maxDecimals(0).toString()} APR

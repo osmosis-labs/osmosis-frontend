@@ -55,6 +55,9 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+  .text-superfluid {
+    @apply text-transparent bg-clip-text bg-superfluid;
+  }
 
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
