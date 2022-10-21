@@ -5,10 +5,11 @@ import { RatePretty } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 import { ObservableQueryEpochs } from "../epochs";
 import { ObservableQueryEpochProvisions, ObservableQueryMintParmas } from "../mint";
-import { ObservableQueryPools, ExternalGauge } from "../pools";
+import { ObservableQueryPools } from "../pools";
 import { IPriceStore } from "../../price";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
+import { ObservableQueryGuage } from "../incentives";
 import { IncentivizedPools } from "./types";
 export declare class ObservableQueryIncentivizedPools extends ObservableChainQuery<IncentivizedPools> {
     protected readonly queryLockableDurations: ObservableQueryLockableDurations;
@@ -17,7 +18,8 @@ export declare class ObservableQueryIncentivizedPools extends ObservableChainQue
     protected readonly queryMintParmas: ObservableQueryMintParmas;
     protected readonly queryEpochProvision: ObservableQueryEpochProvisions;
     protected readonly queryEpochs: ObservableQueryEpochs;
-    constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, queryLockableDurations: ObservableQueryLockableDurations, queryDistrInfo: ObservableQueryDistrInfo, queryPools: ObservableQueryPools, queryMintParmas: ObservableQueryMintParmas, queryEpochProvision: ObservableQueryEpochProvisions, queryEpochs: ObservableQueryEpochs);
+    protected readonly queryGauge: ObservableQueryGuage;
+    constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, queryLockableDurations: ObservableQueryLockableDurations, queryDistrInfo: ObservableQueryDistrInfo, queryPools: ObservableQueryPools, queryMintParmas: ObservableQueryMintParmas, queryEpochProvision: ObservableQueryEpochProvisions, queryEpochs: ObservableQueryEpochs, queryGauge: ObservableQueryGuage);
     /** Internally incentivized pools. */
     get incentivizedPools(): string[];
     /** Is incentivized internally. */
@@ -29,9 +31,9 @@ export declare class ObservableQueryIncentivizedPools extends ObservableChainQue
      */
     readonly computeMostAPY: (poolId: string, priceStore: IPriceStore) => RatePretty;
     /**
-     * Computes all external incentive APY for the given duration
+     * Computes external incentive APY for the given duration
      */
-    readonly computeExternalIncentiveAPYForSpecificDuration: (poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency, allowedGauges: ExternalGauge[]) => RatePretty;
+    readonly computeExternalIncentiveGaugeAPR: (poolId: string, gaugeId: string, denom: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency) => RatePretty;
     /**
      * 리워드를 받을 수 있는 풀의 연당 이익률을 반환한다.
      * 리워드를 받을 수 없는 풀일 경우 0를 리턴한다.

@@ -202,14 +202,21 @@ const Pool: FunctionComponent = observer(() => {
         fiat
       );
 
-      const externalApy =
-        queryOsmosis.queryIncentivizedPools.computeExternalIncentiveAPYForSpecificDuration(
-          pool?.id ?? "",
-          gauge.duration,
-          priceStore,
-          fiat,
-          allowedGauges
+      const allowedExternalGauges =
+        ExternalIncentiveGaugeAllowList[pool.id] ?? [];
+
+      const externalApy = allowedExternalGauges.reduce((apy, allowList) => {
+        return apy.add(
+          queryOsmosis.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
+            pool?.id ?? "",
+            allowList.gaugeId,
+            allowList.denom,
+            gauge.duration,
+            priceStore,
+            fiat
+          )
         );
+      }, new RatePretty(new Dec(0)));
 
       const totalApr = baseApy.add(externalApy);
 
