@@ -123,7 +123,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
 
         const incentivesBreakdown: BondableDuration["incentivesBreakdown"] = [];
 
-        // push internal incentives for current duration
+        // push single internal incentive for current duration
         if (internalGaugeOfDuration) {
           const { apr } = internalGaugeOfDuration;
 
@@ -150,7 +150,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
         }
 
         // push external incentives to current duration
-        externalGaugesOfDuration.forEach(({ id }) => {
+        externalGaugesOfDuration.forEach(({ id, duration }) => {
           const queryGauge = this.queries.queryGauge.get(id);
           const allowedGauge = allowedGauges?.find(
             ({ gaugeId }) => gaugeId === id
@@ -158,17 +158,26 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           if (!allowedGauge) return;
 
           const currency = findCurrency(allowedGauge.denom);
-          if (!currency) return;
+          const fiatCurrency = this.priceStore.getFiatCurrency(
+            this.priceStore.defaultVsCurrency
+          );
+          if (!currency || !fiatCurrency) return;
 
           incentivesBreakdown.push({
             dailyPoolReward: queryGauge
               .getRemainingCoin(currency)
               .quo(new Dec(queryGauge.remainingEpoch)),
-            apr: new RatePretty(0), // TODO: get external incentive apr
+            apr: this.queries.queryIncentivizedPools.computeExternalIncentiveAPYForSpecificDuration(
+              poolId,
+              duration,
+              this.priceStore,
+              fiatCurrency,
+              externalGauges
+            ),
           });
         });
 
-        // add superfluid data to highest duration
+        // add superfluid data if highest duration
         const sfsDuration = this.poolDetails.longestDuration;
         let superfluid: BondableDuration["superfluid"] | undefined;
         if (
@@ -200,14 +209,10 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           };
         }
 
-        let aggregateApr = new RatePretty(0);
-
-        if (internalGaugeOfDuration)
-          aggregateApr = aggregateApr.add(internalGaugeOfDuration.apr);
-
-        if (superfluid) aggregateApr = aggregateApr.add(superfluid.apr);
-        // TODO: sum APR of each external gauge
-
+        let aggregateApr = incentivesBreakdown.reduce<RatePretty>(
+          (sum, { apr }) => sum.add(apr),
+          new RatePretty(0)
+        );
         const swapFeeApr = this.queryFeeMetrics.get7dPoolFeeApr(
           this.poolDetails.pool,
           this.priceStore

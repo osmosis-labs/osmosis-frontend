@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useState, useMemo } from "react";
 import classNames from "classnames";
 import moment from "dayjs";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
@@ -145,6 +145,17 @@ const Drawer: FunctionComponent<{
   drawerUp,
   toggleDetailsVisible,
 }) => {
+  const uniqueCoinImages = useMemo(() => {
+    const imgSrcDenomMap = new Map<string, string>();
+    incentivesBreakdown.forEach((breakdown) => {
+      const currency = breakdown.dailyPoolReward.currency;
+      if (currency.coinImageUrl) {
+        imgSrcDenomMap.set(currency.coinDenom, currency.coinImageUrl);
+      }
+    });
+    return Array.from(imgSrcDenomMap.values());
+  }, [incentivesBreakdown]);
+
   return (
     <div
       className={classNames(
@@ -178,28 +189,22 @@ const Drawer: FunctionComponent<{
                 drawerUp ? "opacity-0" : "opacity-100"
               )}
             >
-              {incentivesBreakdown
-                .map((breakdown) => ({
-                  denom: breakdown.dailyPoolReward.denom,
-                  coinImageUrl: breakdown.dailyPoolReward.currency.coinImageUrl,
-                }))
-                .filter(({ coinImageUrl }) => coinImageUrl !== undefined)
-                .map(({ denom, coinImageUrl }, index) => (
-                  <div key={denom}>
-                    {index === 2 && incentivesBreakdown.length > 3 ? (
-                      <span className="caption text-osmoverse-400">
-                        +{incentivesBreakdown.length - 2}
-                      </span>
-                    ) : index < 2 ? (
-                      <Image
-                        alt="incentive icon"
-                        src={coinImageUrl!}
-                        height={24}
-                        width={24}
-                      />
-                    ) : null}
-                  </div>
-                ))}
+              {uniqueCoinImages.map((coinImageUrl, index) => (
+                <div key={index}>
+                  {index === 2 && incentivesBreakdown.length > 3 ? (
+                    <span className="caption text-osmoverse-400">
+                      +{incentivesBreakdown.length - 2}
+                    </span>
+                  ) : index < 2 ? (
+                    <Image
+                      alt="incentive icon"
+                      src={coinImageUrl}
+                      height={24}
+                      width={24}
+                    />
+                  ) : null}
+                </div>
+              ))}
             </div>
           </div>
         </div>

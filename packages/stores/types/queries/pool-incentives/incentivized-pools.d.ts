@@ -5,7 +5,7 @@ import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 import { ObservableQueryEpochs } from "../epochs";
 import { ObservableQueryEpochProvisions, ObservableQueryMintParmas } from "../mint";
-import { ObservableQueryPools } from "../pools";
+import { ObservableQueryPools, ExternalGauge } from "../pools";
 import { IPriceStore } from "../../price";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
@@ -28,6 +28,10 @@ export declare class ObservableQueryIncentivizedPools extends ObservableChainQue
      * Returns the APY of the longest lockable duration.
      */
     readonly computeMostAPY: (poolId: string, priceStore: IPriceStore) => RatePretty;
+    /**
+     * Computes external incentive APY for the given duration
+     */
+    readonly computeExternalIncentiveAPYForSpecificDuration: (poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency, allowedGauges: ExternalGauge[]) => RatePretty;
     /**
      * 리워드를 받을 수 있는 풀의 연당 이익률을 반환한다.
      * 리워드를 받을 수 없는 풀일 경우 0를 리턴한다.
