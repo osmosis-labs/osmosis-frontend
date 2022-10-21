@@ -163,8 +163,6 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       const chainInfo = this.chainGetter.getChain(this.chainId);
 
       return externalGauges.reduce((externalApr, externalGauge) => {
-        console.log("here", externalApr.maxDecimals(2).toString());
-
         if (!externalGauge?.rewardAmount) {
           return externalApr;
         }
