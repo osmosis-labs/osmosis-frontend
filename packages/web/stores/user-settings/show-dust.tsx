@@ -27,7 +27,10 @@ export class ShowDustUserSetting implements IUserSetting<ShowDustState> {
     showDust: false,
   };
 
-  constructor(protected readonly fiatSymbol: string) {
+  constructor(
+    protected readonly kvStore: KVStore,
+    protected readonly fiatSymbol: string
+  ) {
     makeObservable(this);
 
     this.kvStore

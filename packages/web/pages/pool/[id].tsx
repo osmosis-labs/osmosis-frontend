@@ -70,8 +70,6 @@ const Pool: FunctionComponent = observer(() => {
       router.push("/pools");
     }
   }, [poolExists]);
-  const currentLanguage =
-    userSettings.getUserSettingById("language")?.state.language;
   // initialize pool data stores once root pool store is loaded
   const { poolDetailConfig, pool } = usePoolDetailConfig(poolId);
   const { superfluidPoolConfig, superfluidDelegateToValidator } =
