@@ -30,7 +30,6 @@ export function useSuperfluidPoolConfig(
     if (poolDetails && !superfluidPoolConfig) {
       setSuperfluidPoolStore(
         new ObservableQuerySuperfluidPool(
-          bech32Address,
           fiat,
           poolDetails,
           queriesStore.get(chainId).cosmos.queryValidators,
@@ -40,7 +39,12 @@ export function useSuperfluidPoolConfig(
         )
       );
     }
-  }, [poolDetails, bech32Address, fiat, queryOsmosis, priceStore]);
+  }, [poolDetails, fiat, queryOsmosis, priceStore]);
+
+  useEffect(
+    () => superfluidPoolConfig?.setBech32Address(bech32Address),
+    [superfluidPoolConfig, bech32Address]
+  );
 
   const superfluidDelegateToValidator = useCallback(
     (validatorAddress, lockLPTokensConfig) => {

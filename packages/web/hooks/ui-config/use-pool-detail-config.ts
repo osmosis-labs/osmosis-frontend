@@ -18,16 +18,15 @@ export function usePoolDetailConfig(poolId?: string) {
   useEffect(() => {
     if (!poolDetailConfig && pool && fiat) {
       setPoolDetailConfig(
-        new ObservableQueryPoolDetails(
-          bech32Address,
-          fiat,
-          pool,
-          queryOsmosis,
-          priceStore
-        )
+        new ObservableQueryPoolDetails(fiat, pool, queryOsmosis, priceStore)
       );
     }
-  }, [pool, poolDetailConfig, bech32Address, fiat, queryOsmosis, priceStore]);
+  }, [pool, poolDetailConfig, fiat, queryOsmosis, priceStore]);
+
+  useEffect(
+    () => poolDetailConfig?.setBech32Address(bech32Address),
+    [poolDetailConfig, bech32Address]
+  );
 
   return { poolDetailConfig: poolDetailConfig ?? undefined, pool };
 }

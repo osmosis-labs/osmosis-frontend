@@ -523,6 +523,17 @@ const chainInfos = (
           coinGeckoId: "pool:seasy",
           coinImageUrl: "/tokens/seasy.svg",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3",
+          coinDenom: "MUSE",
+          coinMinimalDenom:
+            "cw20:juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3:MUSE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:muse",
+          coinImageUrl: "/tokens/muse.svg",
+        },
       ],
       features: [
         "stargate",
@@ -1079,7 +1090,8 @@ const chainInfos = (
           coinDenom: "ROWAN",
           coinMinimalDenom: "rowan",
           coinDecimals: 18,
-          coinGeckoId: "sifchain",
+          coinGeckoId: "pool:rowan",
+          //coinGeckoId: "sifchain",
           coinImageUrl: "/tokens/rowan.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -1668,6 +1680,14 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
+        {
+          coinDenom: "USK",
+          coinMinimalDenom:
+            "factory:kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7:uusk",
+          coinDecimals: 6,
+          coinGeckoId: "usk",
+          coinImageUrl: "/tokens/usk.png",
+        },
       ],
       gasPriceStep: {
         low: 0.01,
@@ -1974,7 +1994,7 @@ const chainInfos = (
           coinDenom: "stJUNO",
           coinMinimalDenom: "stujuno",
           coinDecimals: 6,
-          // coinGeckoId: "juno-network",
+          coinGeckoId: "pool:stujuno",
           coinImageUrl: "/tokens/stjuno.svg",
         },
         {
@@ -2015,6 +2035,57 @@ const chainInfos = (
       ],
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://rebus.explorers.guru/transaction/{txHash}",
+    },
+    {
+      rpc: "https://rpc.mainnet.teritori.com/",
+      rest: "https://rest.mainnet.teritori.com/",
+      chainId: "teritori-1",
+      chainName: "Teritori",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("tori"),
+      currencies: [
+        {
+          coinDenom: "TORI",
+          coinMinimalDenom: "utori",
+          coinDecimals: 6,
+          coinGeckoId: "pool:utori",
+          coinImageUrl: "/tokens/utori.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 0.0,
+        average: 0.25,
+        high: 0.5,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://explorer.teritori.com/teritori/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpc.lambda.im",
+      rest: "https://rest.lambda.im",
+      chainId: "lambda_92000-1",
+      chainName: "Lambda",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("lamb"),
+      currencies: [
+        {
+          coinDenom: "LAMB",
+          coinMinimalDenom: "ulamb",
+          coinDecimals: 18,
+          coinGeckoId: "pool:lambda",
+          coinImageUrl: "/tokens/lambda.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+      explorerUrlToTx: "https://explorer.nodestake.top/lambda/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
