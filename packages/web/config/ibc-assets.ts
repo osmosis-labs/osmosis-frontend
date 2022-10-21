@@ -941,8 +941,8 @@ export const IBCAssetInfos: (IBCAsset & {
   },
   {
     counterpartyChainId: "lambda_92000-1",
-    sourceChannelId: "channel-2",
-    destChannelId: "channel-378",
+    sourceChannelId: "channel-378",
+    destChannelId: "channel-2",
     coinMinimalDenom: "ulamb",
   },
   {
