@@ -29,7 +29,7 @@ export declare class ObservableQueryIncentivizedPools extends ObservableChainQue
      */
     readonly computeMostAPY: (poolId: string, priceStore: IPriceStore) => RatePretty;
     /**
-     * Computes external incentive APY for the given duration
+     * Computes all external incentive APY for the given duration
      */
     readonly computeExternalIncentiveAPYForSpecificDuration: (poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency, allowedGauges: ExternalGauge[]) => RatePretty;
     /**

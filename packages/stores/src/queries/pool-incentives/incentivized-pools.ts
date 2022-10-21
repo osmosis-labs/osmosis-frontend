@@ -119,7 +119,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
   );
 
   /**
-   * Computes external incentive APY for the given duration
+   * Computes all external incentive APY for the given duration
    */
   readonly computeExternalIncentiveAPYForSpecificDuration = computedFn(
     (
@@ -129,83 +129,93 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       fiatCurrency: FiatCurrency,
       allowedGauges: ExternalGauge[]
     ): RatePretty => {
+      const initialExternalApr = new RatePretty(new Dec(0));
+
       if (!allowedGauges.length) {
-        return new RatePretty(new Dec(0));
+        return initialExternalApr;
       }
 
-      const externalGauge = allowedGauges.find((externalGauge) => {
+      const externalGauges = allowedGauges.filter((externalGauge) => {
         return (
           duration.asMilliseconds() === externalGauge.duration.asMilliseconds()
         );
       });
 
-      if (!externalGauge?.rewardAmount) {
-        return new RatePretty(new Dec(0));
+      if (!externalGauges.length) {
+        return initialExternalApr;
       }
 
       const pool = this.queryPools.getPool(poolId);
 
       if (!pool) {
-        return new RatePretty(new Dec(0));
+        return initialExternalApr;
       }
 
       const mintDenom = this.queryMintParmas.mintDenom;
       const epochIdentifier = this.queryMintParmas.epochIdentifier;
 
       if (!mintDenom || !epochIdentifier) {
-        return new RatePretty(new Dec(0));
+        return initialExternalApr;
       }
 
       const epoch = this.queryEpochs.getEpoch(epochIdentifier);
 
       const chainInfo = this.chainGetter.getChain(this.chainId);
 
-      const mintCurrency = chainInfo.findCurrency(
-        externalGauge.rewardAmount.currency.coinMinimalDenom
-      );
+      return externalGauges.reduce((externalApr, externalGauge) => {
+        console.log("here", externalApr.maxDecimals(2).toString());
 
-      if (!mintCurrency?.coinGeckoId || !epoch.duration) {
-        return new RatePretty(new Dec(0));
-      }
+        if (!externalGauge?.rewardAmount) {
+          return externalApr;
+        }
 
-      const mintPrice = priceStore.getPrice(
-        mintCurrency.coinGeckoId,
-        fiatCurrency.currency
-      );
+        const mintCurrency = chainInfo.findCurrency(
+          externalGauge.rewardAmount.currency.coinMinimalDenom
+        );
 
-      const poolTVL = pool.computeTotalValueLocked(priceStore);
+        if (!mintCurrency?.coinGeckoId || !epoch.duration) {
+          return externalApr;
+        }
 
-      if (!mintPrice || !poolTVL.toDec().gt(new Dec(0))) {
-        return new RatePretty(new Dec(0));
-      }
+        const mintPrice = priceStore.getPrice(
+          mintCurrency.coinGeckoId,
+          fiatCurrency.currency
+        );
 
-      const epochProvision = this.queryEpochProvision.epochProvisions;
+        const poolTVL = pool.computeTotalValueLocked(priceStore);
 
-      if (!epochProvision) {
-        return new RatePretty(new Dec(0));
-      }
+        if (!mintPrice || !poolTVL.toDec().gt(new Dec(0))) {
+          return externalApr;
+        }
 
-      const numEpochPerYear =
-        dayjs
-          .duration({
-            years: 1,
-          })
-          .asMilliseconds() / epoch.duration.asMilliseconds();
+        const epochProvision = this.queryEpochProvision.epochProvisions;
 
-      const externalIncentivePrice = new Dec(mintPrice.toString()).mul(
-        externalGauge.rewardAmount.toDec()
-      );
+        if (!epochProvision) {
+          return externalApr;
+        }
 
-      const yearProvision = new Dec(numEpochPerYear.toString()).quo(
-        new Dec(externalGauge.remainingEpochs)
-      );
+        const numEpochPerYear =
+          dayjs
+            .duration({
+              years: 1,
+            })
+            .asMilliseconds() / epoch.duration.asMilliseconds();
 
-      // coins = (X coin's price in USD * remaining incentives in X tokens * (365 / remaining days in gauge))
-      // apr = coins / TVL of pool
+        const externalIncentivePrice = new Dec(mintPrice.toString()).mul(
+          externalGauge.rewardAmount.toDec()
+        );
 
-      return new RatePretty(
-        externalIncentivePrice.mul(yearProvision).quo(poolTVL.toDec())
-      );
+        const yearProvision = new Dec(numEpochPerYear.toString()).quo(
+          new Dec(externalGauge.remainingEpochs)
+        );
+
+        // coins = (X coin's price in USD * remaining incentives in X tokens * (365 / remaining days in gauge))
+        // apr = coins / TVL of pool
+
+        return externalApr.add(
+          externalIncentivePrice.mul(yearProvision).quo(poolTVL.toDec())
+        );
+      }, initialExternalApr);
     }
   );
 
