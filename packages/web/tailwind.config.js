@@ -42,6 +42,8 @@ module.exports = {
       },
       rust: {
         200: "#F8C2B0",
+        700: "#C6451C",
+        800: "#B03A20",
       },
       primaryVariant: "#0A0674",
       secondary: IS_FRONTIER
