@@ -8,11 +8,13 @@ import { StepProps } from "./types";
 import { StepBase } from "./step-base";
 import { useWindowSize } from "../../../../hooks";
 import { BorderButton } from "../../../buttons";
+import { useTranslation } from "react-multi-lang";
 
 export const Step1SetRatios: FunctionComponent<StepProps> = observer(
   (props) => {
     const { createPoolConfig: config } = props;
     const { isMobile } = useWindowSize();
+    const t = useTranslation();
 
     return (
       <StepBase step={1} {...props}>
@@ -82,7 +84,9 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
                 width={isMobile ? 12 : 15}
               />
             </div>
-            <span className="subtitle1">Add new token</span>
+            <span className="subtitle1">
+              {t("pools.createPool.buttonAddToken")}
+            </span>
           </button>
         </div>
       </StepBase>

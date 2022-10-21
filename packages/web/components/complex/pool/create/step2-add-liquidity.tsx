@@ -5,11 +5,13 @@ import { InputBox } from "../../../input";
 import { StepBase } from "./step-base";
 import { StepProps } from "./types";
 import { useWindowSize } from "../../../../hooks";
+import { useTranslation } from "react-multi-lang";
 
 export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
   (props) => {
     const { createPoolConfig: config } = props;
     const { isMobile } = useWindowSize();
+    const t = useTranslation();
 
     return (
       <StepBase step={2} {...props}>
@@ -51,7 +53,9 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                 </div>
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center place-content-end gap-1">
-                    <span className="caption">Available</span>
+                    <span className="caption">
+                      {t("pools.createPool.available")}
+                    </span>
                     <span
                       className="caption text-wosmongton-300 cursor-pointer"
                       onClick={() => amountConfig.setIsMax(true)}

@@ -8,6 +8,7 @@ import {
 } from "../hooks";
 import { RemoveLiquidity } from "../components/complex/remove-liquidity";
 import { ModalBase, ModalBaseProps } from "./base";
+import { useTranslation } from "react-multi-lang";
 
 export const RemoveLiquidityModal: FunctionComponent<
   {
@@ -20,6 +21,7 @@ export const RemoveLiquidityModal: FunctionComponent<
 > = observer((props) => {
   const { poolId } = props;
   const { chainStore, accountStore, queriesStore } = useStore();
+  const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getAccount(chainId);
@@ -41,14 +43,16 @@ export const RemoveLiquidityModal: FunctionComponent<
           removeLiquidity().finally(() => props.onRequestClose()),
           config
         ),
-      children: config.error ? config.error.message : "Remove Liquidity",
+      children: config.error
+        ? config.error.message
+        : t("pool.manageLiquidity.tabRemoveLiquidity"),
     },
     props.onRequestClose
   );
 
   return (
     <ModalBase
-      title={`Remove Liquidity from Pool #${poolId}`}
+      title={t("pool.manageLiquidity.modalTitleRemove", { poolId })}
       {...props}
       isOpen={props.isOpen && showModalBase}
     >

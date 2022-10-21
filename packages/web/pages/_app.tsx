@@ -23,31 +23,44 @@ import {
   PromotedLBPPoolIds,
 } from "../config";
 import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
+import {
+  setDefaultLanguage,
+  setTranslations,
+  useTranslation,
+} from "react-multi-lang";
+
+import en from "../localizations/en.json";
+import { Formatted } from "../components/localization";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 dayjs.extend(utc);
 enableStaticRendering(typeof window === "undefined");
 
+const DEFAULT_LANGUAGE = "en";
+setTranslations({ en });
+setDefaultLanguage(DEFAULT_LANGUAGE);
+
 function MyApp({ Component, pageProps }: AppProps) {
+  const t = useTranslation();
   const menus = useMemo(() => {
     let m: MainLayoutMenu[] = [
       {
-        label: "Swap",
+        label: t("menu.swap"),
         link: "/",
         icon: IS_FRONTIER ? "/icons/trade-white.svg" : "/icons/trade.svg",
         iconSelected: "/icons/trade-white.svg",
         selectionTest: /\/$/,
       },
       {
-        label: "Pools",
+        label: t("menu.pools"),
         link: "/pools",
         icon: IS_FRONTIER ? "/icons/pool-white.svg" : "/icons/pool.svg",
         iconSelected: "/icons/pool-white.svg",
         selectionTest: /\/pools/,
       },
       {
-        label: "Assets",
+        label: t("menu.assets"),
         link: "/assets",
         icon: IS_FRONTIER ? "/icons/asset-white.svg" : "/icons/asset.svg",
         iconSelected: "/icons/asset-white.svg",
@@ -66,19 +79,19 @@ function MyApp({ Component, pageProps }: AppProps) {
 
     m.push(
       {
-        label: "Stake",
+        label: t("menu.stake"),
         link: "https://wallet.keplr.app/chains/osmosis",
         icon: "/icons/ticket-white.svg",
         amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
       },
       {
-        label: "Vote",
+        label: t("menu.vote"),
         link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
         icon: "/icons/vote-white.svg",
         amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
       },
       {
-        label: "Info",
+        label: t("menu.info"),
         link: "https://info.osmosis.zone",
         icon: "/icons/chart-white.svg",
         amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
@@ -86,10 +99,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     );
 
     return m;
-  }, []);
+  }, [t]);
 
   useAmplitudeAnalytics({ init: true });
-
   return (
     <GetKeplrProvider>
       <StoreProvider>
@@ -107,17 +119,22 @@ function MyApp({ Component, pageProps }: AppProps) {
         {IS_FRONTIER && !IS_HALTED && (
           <TempBanner
             localStorageKey="show_frontier_banner"
-            title="You're viewing all permissionless assets"
+            title={t("app.banner.title")}
             message={
               <>
-                <a
-                  className="items-center underline"
-                  href="https://app.osmosis.zone/"
-                  target="_self"
-                >
-                  Click here to return to the main app
-                </a>
-                .
+                <Formatted
+                  translationKey="app.banner.linkText"
+                  components={{
+                    "<text>": <></>,
+                    "<link>": (
+                      <a
+                        className="items-center underline"
+                        href="https://app.osmosis.zone/"
+                        target="_self"
+                      />
+                    ),
+                  }}
+                />
               </>
             }
           />

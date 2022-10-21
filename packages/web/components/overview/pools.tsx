@@ -6,6 +6,7 @@ import { CoinPretty, DecUtils } from "@keplr-wallet/unit";
 import { useStore } from "../../stores";
 import { useWindowSize } from "../../hooks";
 import { CustomClasses, Breakpoint } from "../types";
+import { useTranslation } from "react-multi-lang";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
 
@@ -17,6 +18,7 @@ export const PoolsOverview: FunctionComponent<{} & CustomClasses> = ({
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
+  const t = useTranslation();
 
   const osmoPrice = priceStore.calculatePrice(
     new CoinPretty(
@@ -63,11 +65,11 @@ export const PoolsOverview: FunctionComponent<{} & CustomClasses> = ({
       )}
     >
       <div className="flex flex-col gap-5">
-        <h6>OSMO Price</h6>
+        <h6>{t("pools.priceOsmo")}</h6>
         <h2 className="text-wosmongton-100">{osmoPrice?.toString()}</h2>
       </div>
       <div className="flex flex-col gap-5">
-        <h6>Next payout in</h6>
+        <h6>{t("pools.rewardDistribution")}</h6>
         <h2 className="text-transparent bg-clip-text bg-superfluid">
           {timeRemaining}
         </h2>

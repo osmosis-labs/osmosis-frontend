@@ -5,6 +5,7 @@ import { Info } from "../../../alert";
 import { NewButton } from "../../../buttons";
 import { POOL_CREATION_FEE } from ".";
 import { useWindowSize } from "../../../../hooks";
+import { useTranslation } from "react-multi-lang";
 
 export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
   observer(
@@ -16,11 +17,14 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
       children,
     }) => {
       const { isMobile } = useWindowSize();
+      const t = useTranslation();
+      const positiveBalanceError = t(
+        config.positiveBalanceError?.message ?? ""
+      );
+      const percentageError = t(config.percentageError?.message ?? "");
+      const amountError = t(config.amountError?.message ?? "");
+      const swapFeeError = t(config.swapFeeError?.message ?? "");
 
-      const positiveBalanceError = config.positiveBalanceError?.message;
-      const percentageError = config.percentageError?.message;
-      const amountError = config.amountError?.message;
-      const swapFeeError = config.swapFeeError?.message;
       const canAdvance =
         (step === 1 && !percentageError && !positiveBalanceError) ||
         (step === 2 && !amountError) ||
@@ -38,18 +42,27 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
           <span className="body2 text-center md:caption md:mt-4">
             Step {step} / 3 -
             {step === 1
-              ? " Set token ratios"
+              ? t("pools.createPool.step.one", {
+                  step: step.toString(),
+                  nbStep: "3",
+                })
               : step === 2
-              ? " Input amount to add"
+              ? t("pools.createPool.step.two", {
+                  step: step.toString(),
+                  nbStep: "3",
+                })
               : step === 3
-              ? " Confirm pool ratio and token amount"
+              ? t("pools.createPool.step.three", {
+                  step: step.toString(),
+                  nbStep: "3",
+                })
               : null}{" "}
           </span>
           <div>{children}</div>
           {step === 1 && (
             <Info
-              message="Pool Creation Fee"
-              caption="Transferred to the Osmosis community pool"
+              message={t("pools.createPool.infoMessage")}
+              caption={t("pools.createPool.infoCaption")}
               data={POOL_CREATION_FEE}
               isMobile={isMobile}
             />
@@ -62,8 +75,8 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
             {currentErrorMessage
               ? currentErrorMessage
               : step === 3
-              ? "Create Pool"
-              : "Next"}
+              ? t("pools.createPool.buttonCreate")
+              : t("pools.createPool.buttonNext")}
           </NewButton>
         </div>
       );

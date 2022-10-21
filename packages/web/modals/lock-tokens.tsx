@@ -14,6 +14,7 @@ import {
   useSuperfluidPoolConfig,
 } from "../hooks";
 import { ExternalIncentiveGaugeAllowList } from "../config";
+import { useTranslation } from "react-multi-lang";
 
 export const LockTokensModal: FunctionComponent<
   {
@@ -24,6 +25,7 @@ export const LockTokensModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId, amountConfig: config, onLockToken } = props;
+  const t = useTranslation();
 
   const { chainStore, accountStore, queriesStore } = useStore();
 
@@ -94,10 +96,10 @@ export const LockTokensModal: FunctionComponent<
       children:
         config.error?.message ||
         (electSuperfluid && !hasSuperfluidValidator && highestDurationSelected
-          ? "Next"
+          ? t("pool.lockToken.buttonNext")
           : superfluidInEffect
           ? "Bond & Stake"
-          : "Bond" || undefined),
+          : t("pool.lockToken.buttonBond") || undefined),
     },
     props.onRequestClose
   );
@@ -115,7 +117,7 @@ export const LockTokensModal: FunctionComponent<
     >
       <div className="flex flex-col gap-8">
         <span className="subtitle1 text-center">
-          Select an unbonding period
+          {t("pool.lockToken.unbondingPeriod")}
         </span>
         <h2 className="text-center">
           <span

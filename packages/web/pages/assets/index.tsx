@@ -19,6 +19,7 @@ import { PoolCard } from "../../components/cards/";
 import { Metric } from "../../components/types";
 import { MetricLoader } from "../../components/loaders";
 import { priceFormatter } from "../../components/utils";
+import { useTranslation } from "react-multi-lang";
 import {
   IbcTransferModal,
   BridgeTransferModal,
@@ -187,6 +188,7 @@ const Assets: NextPage = observer(() => {
 
 const AssetsOverview: FunctionComponent = observer(() => {
   const { assetsStore } = useStore();
+  const t = useTranslation();
 
   const totalAssetsValue = assetsStore.calcValueOf([
     ...assetsStore.availableBalance,
@@ -238,9 +240,18 @@ const AssetsOverview: FunctionComponent = observer(() => {
 
   return (
     <div className="w-full flex items-center gap-[100px] bg-osmoverse-800 rounded-[32px] px-20 py-10">
-      <Metric label="Total assets" value={totalAssetsValue.toString()} />
-      <Metric label="Bonded" value={bondedAssetsValue.toString()} />
-      <Metric label="Unbonded" value={availableAssetsValue.toString()} />
+      <Metric
+        label={t("assets.totalAssets")}
+        value={totalAssetsValue.toString()}
+      />
+      <Metric
+        label={t("assets.bondedAssets")}
+        value={bondedAssetsValue.toString()}
+      />
+      <Metric
+        label={t("assets.unbondedAssets")}
+        value={availableAssetsValue.toString()}
+      />
     </div>
   );
 });
@@ -248,6 +259,7 @@ const AssetsOverview: FunctionComponent = observer(() => {
 const PoolAssets: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const { setUserProperty } = useAmplitudeAnalytics();
+  const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const { bech32Address } = accountStore.getAccount(chainId);
@@ -280,7 +292,7 @@ const PoolAssets: FunctionComponent = observer(() => {
 
   return (
     <section>
-      <h5>My Pools</h5>
+      <h5>{t("assets.myPools")}</h5>
       <PoolCards
         {...{ showAllPools, ownedPoolIds: dustedPoolIds, setShowAllPools }}
       />
@@ -333,6 +345,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
       priceStore,
       accountStore,
     } = useStore();
+    const t = useTranslation();
 
     const queriesOsmosis = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;
@@ -369,7 +382,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
           [
             queriesOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
-                  label: "APR",
+                  label: t("assets.poolCards.APR"),
                   value: (
                     <MetricLoader
                       isLoading={
@@ -384,7 +397,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                   ),
                 }
               : {
-                  label: "Fee APY",
+                  label: t("assets.poolCards.FeeAPY"),
                   value: (() => {
                     return queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
                       pool,
@@ -395,16 +408,16 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                     .toString(),
                 },
             {
-              label: "Pool Liquidity",
+              label: t("assets.poolCards.liquidity"),
               value: priceFormatter(pool.computeTotalValueLocked(priceStore)),
             },
             queriesOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
-                  label: "Bonded",
+                  label: t("assets.poolCards.bonded"),
                   value: tvl.mul(actualLockedShareRatio).toString(),
                 }
               : {
-                  label: "My Liquidity",
+                  label: t("assets.poolCards.myLiquidity"),
                   value: tvl
                     .mul(actualShareRatio)
                     .moveDecimalPointRight(2)

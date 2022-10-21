@@ -1,0 +1,347 @@
+{
+  "app": {
+    "banner": {
+      "title": "Vous consultez tous les actifs sans permission",
+      "linkText": "Vous consultez tous les actifs sans permission.<link>Cliquez ici pour revenir au site principal</link>."
+    }
+  },
+  "swap": {
+    "title": "Échanger",
+    "settings": {
+      "title": "Paramètres de transaction",
+      "slippage": "Tolérance de glissement",
+      "slippageInfo": "Votre transaction sera annulée si le prix dépasse le pourcentage en votre défaveur."
+    },
+    "available": "Disponnible",
+    "MAX": "MAX",
+    "HALF": "MOITIÉ",
+    "button": "Échanger",
+    "buttonError": "Échanger quand même",
+    "buttonConnect": "Connecter le portefeuille",
+    "priceImpact": "Impact du prix",
+    "fee": "Frais d'échange ({fee})",
+    "expectedOutput": "Résultat attendu",
+    "minimumSlippage": "Minimum reçu après glissement ({slippage})",
+    "error": {
+      "findCurrency": "Impossible de trouver la devise {currency}"
+    }
+  },
+  "pools": {
+    "title": "Bassins actifs",
+    "priceOsmo": "Prix de l'OSMO",
+    "rewardDistribution": "Distribution de la récompence dans",
+    "myPools": "Mes Bassins",
+    "APR": "TAP",
+    "available": "Disponnible",
+    "liquidity": "Liquidité Bassin",
+    "bonded": "Cautionné",
+    "poolId": "Bassin n°{id}",
+    "incentivized": "Bassins incités",
+    "all": "Tous les Bassins",
+    "superfluid": {
+      "title": "Bassins superfluides",
+      "APR": "TAP",
+      "liquidity": "Liquidité Bassin",
+      "fees7D": "Frais (7J)"
+    },
+    "allPools": {
+      "title": "Tous les Bassins",
+      "titleIncentivized": "Bassins incités",
+      "myLiquidity": "ma liquidité",
+      "TVL": "VTB",
+      "APR": "TAP",
+      "APRIncentivized": "7j Vol.",
+      "search": "Rechercher dans les bassins",
+      "displayLowLiquidity": "Afficher les bassins avec moins de {value}",
+      "sort": {
+        "poolName": "Nom du bassin",
+        "liquidity": "Liquidité",
+        "volume24h": "Volume (24H)",
+        "fees": "Frais (7J)",
+        "APRIncentivized": "TAP",
+        "APR": "Ma liquidité"
+      }
+    },
+    "externalIncentivized": {
+      "title": "Bassins externes conseillés",
+      "TVL": "VTB",
+      "APR": "TAP",
+      "search": "Rechercher par devise",
+      "sort": {
+        "poolName": "Nom du bassin",
+        "liquidity": "Liquidité",
+        "APR": "TAP",
+        "epochs": "Cycles restants",
+        "myLiquidity": "Ma liquidité"
+      }
+    },
+    "createPool": {
+      "title": "Créer un nouveau bassin",
+      "button": "Créer un nouveau bassin",
+      "step": {
+        "one": "Étape {step} / {nbStep} - Configurer le ratio des jetons",
+        "two": "Étape {step} / {nbStep} - Entrer le montant à ajouter",
+        "three": "Étape {step} / {nbStep} - Comfirmer le ratio du bassin et le montant des jetons"
+      },
+      "infoMessage": "Frais de création de bassin",
+      "infoCaption": "Transféré au bassin communautaire d'Osmosis",
+      "buttonCreate": "Créer le bassin",
+      "buttonNext": "Suivant",
+      "buttonBack": "Retour",
+      "buttonAddToken": "Ajouter un nouveau jeton",
+      "amount": "Montant",
+      "token": "Jeton",
+      "swapFee": "Définit les frais de swap",
+      "undersandCost": "Je comprends que la création d'un nouveau pool coûtera {POOL_CREATION_FEE}."
+    }
+  },
+  "pool": {
+    "title": "Bassin n°{id}",
+    "liquidityMining": "Minage de liquidité",
+    "liquidityMiningMobile": "Minage de liquidité",
+    "superfluidEnabled": "Délégation Superfluide activée",
+    "liquidityMiningInfo": "Garantir la liquidité à diverses périodes minimales de désengagement pour obtenir des primes de liquidité d'OSMO et des commissions sur les frais d'échange.",
+    "availableLPToken": "Jeton RL disponnible",
+    "buttonStartEarning": "Commencez à gagner",
+    "superfluidStaking": "Jalonnement superfluide",
+    "superfluidStakingMobile": "Mon jalonnement superfluide",
+    "catalyst": {
+      "title": "Catalyseur de bassin",
+      "titleMobile": "Catalyseur de bassin",
+      "amount": "Montant total",
+      "myAmount": "Mon montant"
+    },
+    "superfluidUnlock": {
+      "title": "Détachements Superfluid",
+      "titleMobile": "Détachements Superfluid",
+      "validator": "Validateur",
+      "amount": "Montant",
+      "unbondingComplete": "Déblocage complet"
+    },
+    "unlock": {
+      "title": "Détachements",
+      "titleMobile": "Détachements",
+      "unbondingDuration": "Durée de déblocage",
+      "amount": "Montant",
+      "unbondingComplete": "Déblocage complet"
+    },
+    "depoolings": {
+      "title": "Retirer",
+      "titleMobile": "Retirer",
+      "note": "Note: Le solde de l'actif de dépopulation indiqué est un total pour tous les bassins et non par bassin.",
+      "amount": "Montant",
+      "unlock": "Déblocage complet"
+    },
+    "myBondings": {
+      "title": "Mes jalonnements",
+      "titleMobile": "Mes jalonnements",
+      "depoolButton": "Retirer les actions RL",
+      "unbondingDuration": "Durée de déblocage",
+      "currentAPR": "Actuel TAP",
+      "amount": "Montant",
+      "action": "Action",
+      "actionUnbond": "Tout débloquer",
+      "actionUnbondMobile": "Débloquer"
+    },
+    "superfluidValidatorCard": {
+      "myValidator": "Mon validateur superfluide",
+      "myDelegation": "Ma délégation superfluide",
+      "commission": "Commission - {commission}",
+      "APR": "~{apr} TAP"
+    },
+    "goSuperfluid": {
+      "title": "Jalonnement superfluide désactivé",
+      "titleMobile": "Vous n'utilisez pas le jalonnement superfluide",
+      "info": "Vous êtes éligible au jalonnement superfluide<br/>Choisissez un validateur superfluide pour obtenir des récompenses supplémentaires.",
+      "button": "Utiliser le superfluide"
+    },
+    "gauges": {
+      "time": "{time} pour délier",
+      "APR": "TAP",
+      "info": "Le jalonnement superfluide vous permet de sécuriser le réseau et de recevoir des récompenses supplémentaire payeées en OSMO",
+      "bonus": {
+        "title": "Récompence bonus de blocage",
+        "titleMobile": "{days} récompence bonus",
+        "info": "Le cautionnement de ce bassin pendant {days} donnera droit à des primes de cautionnement supplémentaires pendant {remainingEpochs} jours.",
+        "remaining": "Restant:",
+        "remainingMobile": "Bonus:",
+        "remainingEpochs": "{remainingEpochs} jours restants"
+      }
+    },
+    "overview": {
+      "title": "Bassin n°{id} : {name}",
+      "buttons": {
+        "addRemoveLiquidity": "Ajouter / Retirer de la liquidité",
+        "swap": "Échanger des jetons"
+      },
+      "liquidity": "Liquidité du bassin",
+      "myLiquidity": "Ma liquidité",
+      "bonded": "Délégué",
+      "swapFee": "Frais d'échange"
+    },
+    "lockToken": {
+      "title": "Déléguer des liquidités",
+      "unbondingPeriod": "Periode de déblocage",
+      "superfluidStake": "Jalonnage superfluide",
+      "amountToBond": "Montant à bloquer",
+      "availableToken": "Jeton de fournisseur de liquidité disponnible",
+      "inputMax": "MAX",
+      "buttonNext": "Suivant",
+      "buttonBond": "Déléguer"
+    },
+    "manageLiquidity": {
+      "title": "Gestion de la liquidité",
+      "tabAddLiquidity": "Ajouter de la liquidité",
+      "tabRemoveLiquidity": "Retirer de la liquidité",
+      "modalTitleRemove": "Retirer de la liquidité de la pool n°{poolId}",
+      "modalTitleAdd": "Ajouter de la liquidité de la pool n°{poolId}",
+      "LPTokenBalance": "Solde de jeton RL:",
+      "available": "Disponnible",
+      "MAX": "MAX",
+      "autoSwap": "Échange automatique d'un seul actif",
+      "autoSwapInfo": "''Échange automatique d'un seul actif'' permet de vous fournir des liquidités en utilisant un seul actif. Cela aura un impact sur le prix du bassin de l'actif avec lequel pour fournissez la liquidité.",
+      "priceImpact": "Impact du prix",
+      "actionAddLiquidity": "Ajouter de la liquidité",
+      "actionRemoveLiquidity": "Retirer de la liquidité",
+      "actionLockTokens": "Vérouiller le partage"
+    },
+    "superfluidValidator": {
+      "title": "Sélection validateur superfluide",
+      "titleMobile": "Sélection validateur",
+      "choose": "Choisissez votre validateur superfluide",
+      "search": "Rechercher par nom",
+      "bondedAmount": "Montant bloqué",
+      "estimation": "Estimation délégation superfluide",
+      "estimationMobile": "Est. délégation",
+      "estimationInfo": "La valeur de cette délégation fluctue et est estimée en fonction de la quantité d'OSMO dans le bassin.",
+      "buttonBond": "Lier & Déléguer",
+      "columns": {
+        "validator": "Validateur",
+        "commission": "Commission"
+      }
+    }
+  },
+  "assets": {
+    "title": "Mes actifs Osmosis",
+    "totalAssets": "Actifs totaux",
+    "unbondedAssets": "Actifs non liés",
+    "bondedAssets": "Actifs liés",
+    "stakedAssets": "OSMO cautionné",
+    "myPools": "Mes Bassins",
+    "poolCards": {
+      "APR": "TAP",
+      "FeeAPY": "Frais PAR",
+      "liquidity": "Liquidité Bassin",
+      "bonded": "Liés",
+      "myLiquidity": "Ma liquidité"
+    },
+    "ibcTransfer": {
+      "titleWithdraw": "Retirer {coinDenom}",
+      "titleDeposit": "Déposer {coinDenom}",
+      "waitTime": "20 secondes",
+      "copied": "Copié !",
+      "IBCTransfer": "Transfert IBC",
+      "from": "Depuis",
+      "to": "à",
+      "warningLossFunds": "Attention: un retrait à l'adresse de l'échange central entraînera la perte des fonds.",
+      "buttonEnter": "Entrer",
+      "checkboxVerify": "Je vérifie que je n'envoie pas à une adresse d'échangeur",
+      "buttonEdit": "Éditer",
+      "amoutWithdraw": "Montant à retirer",
+      "amoutDeposit": "Montant à déposer",
+      "availableBalance": "Montant des fonds:",
+      "MAX": "MAX"
+    },
+    "table": {
+      "depositButton": "Déposer",
+      "withdrawButton": "Retirer",
+      "search": "Rechercher par devise",
+      "title": "Actifs",
+      "hideZero": "Cacher les fonds à zéro",
+      "preTransfer": {
+        "deposit": "Déposer",
+        "withdraw": "Retirer"
+      },
+      "columns": {
+        "assetChain": "Actif / Chaine",
+        "balance": "Fonds",
+        "transfer": "Transfert",
+        "deposit": "Déposer",
+        "withdraw": "Retirer"
+      },
+      "sort": {
+        "symbol": "Devise",
+        "network": "Réseau",
+        "balance": "Fonds"
+      }
+    },
+    "historyTable": {
+      "title": "Historique des transferts",
+      "pending": "En cours",
+      "success": "Succès",
+      "refunded": "Rembourser",
+      "pendingRefunded": "Échec: remboursement en cours",
+      "colums": {
+        "transactionHash": "Hash Transaction",
+        "type": "Type",
+        "amount": "Montant",
+        "status": "Status",
+        "deposit": "Déposer",
+        "withdraw": "Retirer"
+      }
+    }
+  },
+  "components": {
+    "show": {
+      "more": "Plus",
+      "less": "Moins"
+    },
+    "table": {
+      "poolId": "Bassin n°{id}"
+    },
+    "sort": {
+      "SORT": "TRIER PAR",
+      "SORTMobile": "TRIER",
+      "mobileMenu": "Trier par"
+    }
+  },
+  "menu": {
+    "swap": "Échanger",
+    "pools": "Bassins",
+    "assets": "Actifs",
+    "stake": "Stake",
+    "vote": "Voter",
+    "info": "Info",
+    "connectWallet": "Connecter le portefeuille",
+    "signOut": "Déconnecter",
+    "help": "Obtenir de l'aide",
+    "learnMoreFrontier": "En apprendre<br/>plus sur<br2/> <name>Osmosis Frontier</name>"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "titleLanguage": "Langue",
+    "titleShowDust": "Afficher les pools/actifs < 0.01{fiatSymbol}",
+    "languages": {
+      "fr": "Français",
+      "en": "Anglais"
+    }
+  },
+  "404": {
+    "title": "Page non trouvée"
+  },
+  "500": {
+    "title": "Erreur serveur"
+  },
+  "Transaction Failed": "Échec de la transaction",
+  "Transaction Successful": "Succès de la transaction",
+  "Transaction Broadcasting": "Diffustion de la transaction",
+  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "L'échange a échoué. La liquitité n'est peut-être pas suffisante. Essayez d'ajuster le glissement autorisé.",
+  "Waiting for transaction to be included in the block": "Attente de l'inclusion de la transaction dans le bloc",
+  "view explorer": "Voir dans l'exploreur",
+  "Unknown error": "Erreur inconnue",
+  "Request rejected": "Demande rejetée",
+  "Amount is empty": "Le montant est vide",
+  "Insufficient amount": "Montant insuffisant",
+  "Amount is zero": "Le montant est de zéro.",
+  "Minimum of 2 assets required": "Minimum de 2 actifs requis"
+}

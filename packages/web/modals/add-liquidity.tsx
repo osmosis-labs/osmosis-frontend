@@ -5,6 +5,7 @@ import { useStore } from "../stores";
 import { useConnectWalletModalRedirect, useAddLiquidityConfig } from "../hooks";
 import { AddLiquidity } from "../components/complex/add-liquidity";
 import { ModalBase, ModalBaseProps } from "./base";
+import { useTranslation } from "react-multi-lang";
 
 export const AddLiquidityModal: FunctionComponent<
   {
@@ -17,6 +18,7 @@ export const AddLiquidityModal: FunctionComponent<
 > = observer((props) => {
   const { poolId } = props;
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getAccount(chainId);
@@ -40,14 +42,16 @@ export const AddLiquidityModal: FunctionComponent<
           }),
           config
         ),
-      children: config.error ? config.error.message : "Add Liquidity",
+      children: config.error
+        ? config.error.message
+        : t("pool.manageLiquidity.tabAddLiquidity"),
     },
     props.onRequestClose
   );
 
   return (
     <ModalBase
-      title={`Add Liquidity to Pool #${poolId}`}
+      title={t("pool.manageLiquidity.modalTitleAdd", { poolId })}
       {...props}
       isOpen={props.isOpen && showModalBase}
     >

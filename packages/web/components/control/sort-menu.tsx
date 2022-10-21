@@ -6,6 +6,7 @@ import { Disableable, CustomClasses } from "../types";
 import { MenuSelectProps } from "./types";
 import { useBooleanWithWindowEvent, useWindowSize } from "../../hooks";
 import { MenuOptionsModal } from "../../modals";
+import { useTranslation } from "react-multi-lang";
 
 interface Props extends MenuSelectProps, Disableable, CustomClasses {
   onToggleSortDirection?: () => void;
@@ -21,6 +22,7 @@ export const SortMenu: FunctionComponent<Props> = ({
 }) => {
   const [dropdownOpen, setDropdownOpen] = useBooleanWithWindowEvent(false);
   const { isMobile } = useWindowSize();
+  const t = useTranslation();
 
   const selectedOption = options.find(
     (option) => option.id === selectedOptionId
@@ -79,13 +81,15 @@ export const SortMenu: FunctionComponent<Props> = ({
           }}
         >
           <span className="block m-auto md:ml-1 ml-2 leading-loose text-osmoverse-200 min-w-[3.75rem] select-none text-center body2 md:caption overflow-hidden">
-            {isMobile ? "Sort" : "Sort by"}
+            {isMobile
+              ? t("components.sort.SORT")
+              : t("components.sort.SORTMobile")}
           </span>
         </button>
       </div>
       {isMobile ? (
         <MenuOptionsModal
-          title="Sort By"
+          title={t("components.sort.mobileMenu")}
           selectedOptionId={selectedOptionId}
           options={options}
           isOpen={dropdownOpen}

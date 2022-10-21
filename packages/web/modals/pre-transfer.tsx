@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useWindowSize } from "../hooks";
 import classNames from "classnames";
 import { UNSTABLE_MSG } from "../config";
+import { useTranslation } from "react-multi-lang";
 
 export const PreTransferModal: FunctionComponent<
   ModalBaseProps & {
@@ -32,7 +33,7 @@ export const PreTransferModal: FunctionComponent<
     onDeposit,
   } = props;
   const { isMobile } = useWindowSize();
-
+  const t = useTranslation();
   return (
     <ModalBase
       {...props}
@@ -69,7 +70,7 @@ export const PreTransferModal: FunctionComponent<
                   : undefined
               }
             >
-              Deposit
+              {t("assets.table.preTransfer.deposit")}
               <Image
                 alt="external transfer link"
                 src="/icons/external-link-white.svg"
@@ -83,7 +84,7 @@ export const PreTransferModal: FunctionComponent<
               disabled={isUnstable}
               onClick={onDeposit}
             >
-              Deposit
+              {t("assets.table.preTransfer.deposit")}
             </Button>
           )}
           {externalWithdrawUrl ? (
@@ -101,7 +102,7 @@ export const PreTransferModal: FunctionComponent<
                   : undefined
               }
             >
-              Withdraw
+              {t("assets.table.preTransfer.withdraw")}
               <Image
                 alt="external transfer link"
                 src="/icons/external-link-white.svg"
@@ -116,7 +117,7 @@ export const PreTransferModal: FunctionComponent<
               disabled={isUnstable}
               onClick={onWithdraw}
             >
-              Withdraw
+              {t("assets.table.preTransfer.withdraw")}
             </Button>
           )}
         </div>

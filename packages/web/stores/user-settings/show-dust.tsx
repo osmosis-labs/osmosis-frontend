@@ -13,7 +13,6 @@ import { IUserSetting } from ".";
 export type ShowDustState = { showDust: boolean };
 export class ShowDustUserSetting implements IUserSetting<ShowDustState> {
   readonly id = "show-dust";
-  readonly displayLabel: string;
   readonly controlComponent: FunctionComponent<ShowDustState> = ({
     showDust,
   }) => (
@@ -28,8 +27,7 @@ export class ShowDustUserSetting implements IUserSetting<ShowDustState> {
     showDust: false,
   };
 
-  constructor(protected readonly kvStore: KVStore, fiatSymbol: string) {
-    this.displayLabel = `Show pools/assets < ${fiatSymbol} 0.01`;
+  constructor(protected readonly fiatSymbol: string) {
     makeObservable(this);
 
     this.kvStore
@@ -37,6 +35,10 @@ export class ShowDustUserSetting implements IUserSetting<ShowDustState> {
       .then((value) =>
         runInAction(() => (this._state = { showDust: value as boolean }))
       );
+  }
+
+  getLabel(t: Function): string {
+    return t("settings.titleShowDust", { fiatSymbol: this.fiatSymbol });
   }
 
   @computed

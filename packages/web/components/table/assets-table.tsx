@@ -31,6 +31,7 @@ import { ColumnDef } from "./types";
 import { Table } from ".";
 import { EventName } from "../../config/user-analytics-v2";
 import { observer } from "mobx-react-lite";
+import { useTranslation } from "react-multi-lang";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -60,6 +61,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
   }) => {
     const { chainStore } = useStore();
     const { width, isMobile } = useWindowSize();
+    const t = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
 
     const onDeposit = useCallback(
@@ -305,7 +307,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                 setHideZeroBalances(false);
                 setQuery(query);
               }}
-              placeholder="Filter by symbol"
+              placeholder={t("assets.table.search")}
             />
             <h6>Assets</h6>
             <div className="flex gap-3 items-center place-content-between">
@@ -324,7 +326,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                   setHideZeroBalances(!hideZeroBalances);
                 }}
               >
-                Hide zero balances
+                {t("assets.table.hideZero")}
               </Switch>
               <SortMenu
                 selectedOptionId={sortKey}
@@ -333,16 +335,16 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                 options={[
                   {
                     id: "coinDenom",
-                    display: "Symbol",
+                    display: t("assets.table.sort.symbol"),
                   },
                   {
                     /** These ids correspond to keys in `Cell` type and are later used for sorting. */
                     id: "chainName",
-                    display: "Network",
+                    display: t("assets.table.sort.netword"),
                   },
                   {
-                    id: "amount",
-                    display: "Balance",
+                    id: "fiatValueRaw",
+                    display: t("assets.table.sort.balance"),
                   },
                 ]}
               />
@@ -465,7 +467,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                   ] as ColumnDef<TableCell>[])
                 : ([
                     {
-                      display: "Deposit",
+                      display: t("assets.table.columns.transfer"),
                       displayCell: (cell) => (
                         <TransferButtonCell type="deposit" {...cell} />
                       ),

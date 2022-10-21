@@ -41,9 +41,10 @@ export function useSuperfluidPoolConfig(
     }
   }, [poolDetails, fiat, queryOsmosis, priceStore]);
 
-  useEffect(() => {
-    superfluidPoolConfig?.setBech32Address(bech32Address);
-  }, [superfluidPoolConfig, bech32Address]);
+  useEffect(
+    () => superfluidPoolConfig?.setBech32Address(bech32Address),
+    [superfluidPoolConfig, bech32Address]
+  );
 
   const superfluidDelegateToValidator = useCallback(
     (validatorAddress, lockLPTokensConfig) => {

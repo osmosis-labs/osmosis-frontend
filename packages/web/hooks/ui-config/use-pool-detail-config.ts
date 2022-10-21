@@ -23,9 +23,10 @@ export function usePoolDetailConfig(poolId?: string) {
     }
   }, [pool, poolDetailConfig, fiat, queryOsmosis, priceStore]);
 
-  useEffect(() => {
-    poolDetailConfig?.setBech32Address(bech32Address);
-  }, [poolDetailConfig, bech32Address]);
+  useEffect(
+    () => poolDetailConfig?.setBech32Address(bech32Address),
+    [poolDetailConfig, bech32Address]
+  );
 
   return { poolDetailConfig: poolDetailConfig ?? undefined, pool };
 }

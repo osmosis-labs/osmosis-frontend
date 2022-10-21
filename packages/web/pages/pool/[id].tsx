@@ -39,6 +39,7 @@ import { useStore } from "../../stores";
 import { PoolAssetsIcon } from "../../components/assets";
 import { BondCard } from "../../components/cards";
 import { NewButton } from "../../components/buttons";
+import { useTranslation } from "react-multi-lang";
 
 const E = EventName.PoolDetail;
 
@@ -51,6 +52,7 @@ const Pool: FunctionComponent = observer(() => {
     priceStore,
     queriesExternalStore,
   } = useStore();
+  const t = useTranslation();
   const { isMobile } = useWindowSize();
 
   const { id: poolId } = router.query as { id: string };
@@ -68,7 +70,8 @@ const Pool: FunctionComponent = observer(() => {
       router.push("/pools");
     }
   }, [poolExists]);
-
+  const currentLanguage =
+    userSettings.getUserSettingById("language")?.state.language;
   // initialize pool data stores once root pool store is loaded
   const { poolDetailConfig, pool } = usePoolDetailConfig(poolId);
   const { superfluidPoolConfig, superfluidDelegateToValidator } =
@@ -294,11 +297,13 @@ const Pool: FunctionComponent = observer(() => {
   return (
     <main className="flex flex-col gap-10 bg-osmoverse-900 min-h-screen p-8">
       <Head>
-        <title>{pageTitle}</title>
+        <title>
+          {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
+        </title>
       </Head>
       {pool && showAddLiquidityModal && (
         <AddLiquidityModal
-          title="Add Liquidity"
+          title={t("pool.manageLiquidity.title")}
           isOpen={true}
           poolId={pool.id}
           onRequestClose={() => setShowAddLiquidityModal(false)}
@@ -329,7 +334,7 @@ const Pool: FunctionComponent = observer(() => {
           <LockTokensModal
             poolId={poolId}
             isOpen={showLockLPTokenModal}
-            title="Bond LP Shares"
+            title={t("pool.lockToken.title")}
             onRequestClose={() => setShowLockLPTokenModal(false)}
             amountConfig={lockLPTokensConfig}
             onLockToken={onLockToken}
@@ -341,7 +346,9 @@ const Pool: FunctionComponent = observer(() => {
         showSuperfluidValidatorModal && (
           <SuperfluidValidatorModal
             title={
-              isMobile ? "Select Validator" : "Select Superfluid Validator"
+              isMobile
+                ? t("pool.superfluidValidator.titleMobile")
+                : t("pool.superfluidValidator.title")
             }
             availableBondAmount={
               superfluidPoolConfig?.superfluid.upgradeableLpLockIds
@@ -381,7 +388,7 @@ const Pool: FunctionComponent = observer(() => {
               </div>
               {superfluidPoolConfig?.isSuperfluid && (
                 <span className="body2 text-osmoverse-300">
-                  Superfluid staking enabled
+                  {t("pool.superfluidEnabled")}
                 </span>
               )}
             </div>

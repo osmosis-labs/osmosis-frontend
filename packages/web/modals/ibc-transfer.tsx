@@ -10,10 +10,12 @@ import {
 } from "../hooks";
 import { EventName } from "../config";
 import { ModalBase, ModalBaseProps } from ".";
+import { useTranslation } from "react-multi-lang";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
     const { currency, counterpartyChainId, isWithdraw } = props;
+    const t = useTranslation();
     const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
     const { chainId: osmosisChainId } = chainStore.osmosis;
 
@@ -81,7 +83,9 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           },
           children: (
             <h6 className="md:text-base text-lg">
-              {isWithdraw ? "Withdraw" : "Deposit"}
+              {isWithdraw
+                ? t("assets.ibcTransfer.titleWithdraw")
+                : t("assets.ibcTransfer.titleDeposit")}
             </h6>
           ),
         },
@@ -94,8 +98,12 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
         isOpen={props.isOpen && showModalBase}
         title={
           isWithdraw
-            ? `Withdraw ${currency.coinDenom}`
-            : `Deposit ${currency.coinDenom}`
+            ? t("assets.ibcTransfer.titleWithdraw", {
+                coinDenom: currency.coinDenom,
+              })
+            : t("assets.ibcTransfer.titleDeposit", {
+                coinDenom: currency.coinDenom,
+              })
         }
       >
         <Transfer
@@ -160,7 +168,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           toggleIsMax={() => amountConfig.toggleIsMax()}
           currentValue={amountConfig.amount}
           onInput={(value) => amountConfig.setAmount(value)}
-          waitTime="20 seconds"
+          waitTime={t("assets.ibcTransfer.waitTime")}
         />
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
           {accountActionButton}

@@ -2,9 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+// import dayjs from "dayjs";
+
 import {
   useWindowSize,
   useWindowScroll,
@@ -13,6 +15,14 @@ import {
 } from "../../hooks";
 import { AmplitudeEvent, IS_FRONTIER } from "../../config";
 import { NavBar } from "../navbar";
+import { setLanguage, setTranslations } from "react-multi-lang";
+import { useStore } from "../../stores";
+// import dynamic from "next/dynamic";
+// import {
+//   setDefaultLanguage,
+//   setTranslations,
+//   useTranslation,
+// } from "react-multi-lang";
 
 export type MainLayoutMenu = {
   label: string;
@@ -30,6 +40,9 @@ export interface MainLayoutProps {
 export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
   ({ children, menus }) => {
     const router = useRouter();
+    const { userSettings } = useStore();
+    const currentLanguage: string | undefined =
+      userSettings.getUserSettingById("language")?.state.language;
     const { logEvent } = useAmplitudeAnalytics();
 
     const { height, isMobile } = useWindowSize();
@@ -45,6 +58,24 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
     const selectedMenuItem = menus.find(
       ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
     );
+
+    useEffect(() => {
+      if (currentLanguage) {
+        const load = async () => {
+          const language = await import(
+            `../../localizations/${currentLanguage}.json`
+          );
+          await import(
+            `../../localizations/dayjs-locale-${currentLanguage}.js`
+          );
+          setTranslations({
+            [currentLanguage]: language,
+          });
+          setLanguage(currentLanguage);
+        };
+        load();
+      }
+    }, [currentLanguage]);
 
     return (
       <React.Fragment>
