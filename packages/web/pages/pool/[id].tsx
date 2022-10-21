@@ -502,14 +502,11 @@ const Pool: FunctionComponent = observer(() => {
           )}
           {allAggregatedGauges && pool && (
             <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
-              {allAggregatedGauges.map(({ duration, superfluidApr }) => (
+              {allAggregatedGauges.map(({ duration, apr, superfluidApr }) => (
                 <PoolGaugeCard
                   key={duration.locale(currentLanguage).humanize()}
                   days={duration.locale(currentLanguage).humanize()}
-                  apr={queryOsmosis.queryIncentivizedPools
-                    .computeAPY(pool.id, duration, priceStore, fiat)
-                    .maxDecimals(2)
-                    .toString()}
+                  apr={apr?.maxDecimals?.(2).toString() ?? "0"}
                   superfluidApr={superfluidApr?.maxDecimals(2).toString()}
                   isMobile={isMobile}
                 />
