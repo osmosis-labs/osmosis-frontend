@@ -11,7 +11,7 @@ import {
   ObservableQueryEpochProvisions,
   ObservableQueryMintParmas,
 } from "../mint";
-import { ObservableQueryPools, ObservableQueryPoolDetails } from "../pools";
+import { ObservableQueryPools } from "../pools";
 import { IPriceStore } from "../../price";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";

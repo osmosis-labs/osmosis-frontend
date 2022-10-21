@@ -203,7 +203,9 @@ const Pool: FunctionComponent = observer(() => {
       );
 
       const allowedExternalGauges =
-        ExternalIncentiveGaugeAllowList[pool.id] ?? [];
+        pool?.id && ExternalIncentiveGaugeAllowList[pool.id]
+          ? ExternalIncentiveGaugeAllowList[pool.id]
+          : [];
 
       const externalApy = allowedExternalGauges.reduce((apy, allowList) => {
         return apy.add(
