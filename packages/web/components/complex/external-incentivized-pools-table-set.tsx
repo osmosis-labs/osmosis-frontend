@@ -22,6 +22,7 @@ import {
 import { Breakpoint } from "../types";
 import { CompactPoolTableDisplay } from "./compact-pool-table-display";
 import { POOLS_PER_PAGE } from ".";
+import { useTranslation } from "react-multi-lang";
 
 export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
   quickAddLiquidity: (poolId: string) => void;
@@ -38,6 +39,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
     } = useStore();
     const { isMobile } = useWindowSize();
     const { logEvent } = useAmplitudeAnalytics();
+    const t = useTranslation();
 
     const { chainId } = chainStore.osmosis;
     const queryExternal = queriesExternalStore.get();
@@ -256,36 +258,36 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
       () => [
         {
           id: "pool.id",
-          display: "Pool Name",
+          display: t("pools.externalIncentivized.sort.poolName"),
           sort: makeSortMechanism("pool.id"),
           displayCell: PoolCompositionCell,
         },
         {
           id: "liquidity",
-          display: "Liquidity",
+          display: t("pools.externalIncentivized.sort.liquidity"),
           sort: makeSortMechanism("liquidity"),
         },
         {
           id: "apr",
-          display: "APR",
+          display: t("pools.externalIncentivized.sort.APR"),
           sort: makeSortMechanism("apr"),
           displayCell: MetricLoaderCell,
         },
         {
           id: "epochsRemaining",
-          display: "Epochs Remaining",
+          display: t("pools.externalIncentivized.sort.epochs"),
           sort: makeSortMechanism("epochsRemaining"),
           collapseAt: Breakpoint.XL,
         },
         {
           id: "myLiquidity",
-          display: "My Liquidity",
+          display: t("pools.externalIncentivized.sort.myLiquidity"),
           sort: makeSortMechanism("myLiquidity"),
           collapseAt: Breakpoint.LG,
         },
         { id: "quickActions", display: "", displayCell: PoolQuickActionCell },
       ],
-      [makeSortMechanism]
+      [makeSortMechanism, t]
     );
 
     const tableRows: RowDef[] = useMemo(
@@ -356,7 +358,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
     if (isMobile) {
       return (
         <CompactPoolTableDisplay
-          title="External Incentive Pool"
+          title={t("pools.externalIncentivized.title")}
           pools={allData.map((poolData) => ({
             id: poolData.pool.id,
             assets: poolData.pool.poolAssets.map(
@@ -383,9 +385,12 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
               ],
               ...[
                 sortKeyPath === "apr"
-                  ? { label: "TVL", value: poolData.liquidity.toString() }
+                  ? {
+                      label: t("pools.externalIncentivized.TVL"),
+                      value: poolData.liquidity.toString(),
+                    }
                   : {
-                      label: "APR",
+                      label: t("pools.externalIncentivized.APR"),
                       value: poolData.apr?.toString() ?? "0%",
                     },
               ],
@@ -397,7 +402,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
           searchBoxProps={{
             currentValue: query,
             onInput: setQuery,
-            placeholder: "Filtery by symbol",
+            placeholder: t("pools.externalIncentivized.search"),
           }}
           sortMenuProps={{
             options: tableCols,
@@ -419,12 +424,12 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
     return (
       <>
         <div className="mt-5 flex flex-wrap gap-3 items-center justify-between">
-          <h5>External Incentive Pools</h5>
+          <h5>{t("pools.externalIncentivized.title")}</h5>
           <div className="flex items-center gap-8 lg:w-full lg:place-content-between">
             <SearchBox
               currentValue={query}
               onInput={setQuery}
-              placeholder="Filter by name"
+              placeholder={t("pools.externalIncentivized.search")}
               className="!w-64"
             />
             <SortMenu

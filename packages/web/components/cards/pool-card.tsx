@@ -7,6 +7,7 @@ import { PoolAssetInfo } from "../assets/types";
 import { Metric } from "../types";
 import { CustomClasses } from "../types";
 import { useWindowSize } from "../../hooks";
+import { useTranslation } from "react-multi-lang";
 
 export const PoolCard: FunctionComponent<
   {
@@ -28,6 +29,7 @@ export const PoolCard: FunctionComponent<
     className,
   }) => {
     const { isMobile } = useWindowSize();
+    const t = useTranslation();
 
     // <Link /> notes: turn off prefetch to avoid loading tons of pools and lagging the client, many pools will be in viewport. They will still be fetched on hover.
     // See : https://nextjs.org/docs/api-reference/next/link
@@ -56,7 +58,7 @@ export const PoolCard: FunctionComponent<
                     assetDenoms={poolAssets.map((asset) => asset.coinDenom)}
                   />
                   <span className="caption text-white-disabled">
-                    Pool #{poolId}
+                    {t("pools.poolId", { id: poolId })}
                   </span>
                 </div>
               </div>
@@ -102,7 +104,9 @@ export const PoolCard: FunctionComponent<
                   size="md"
                   assetDenoms={poolAssets.map((asset) => asset.coinDenom)}
                 />
-                <div className="subtitle1 text-white-mid">{`Pool #${poolId}`}</div>
+                <div className="subtitle1 text-white-mid">
+                  {t("pools.poolId", { id: poolId })}
+                </div>
               </div>
             </div>
             <div className="flex place-content-between">

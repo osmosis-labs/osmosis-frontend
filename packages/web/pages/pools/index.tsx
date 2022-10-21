@@ -36,6 +36,7 @@ import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-t
 import { ShowMoreButton } from "../../components/buttons/show-more";
 import { EventName } from "../../config";
 import { POOLS_PER_PAGE } from "../../components/complex";
+import { useTranslation } from "react-multi-lang";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -49,6 +50,7 @@ const Pools: NextPage = observer(function () {
     queriesStore,
     queriesExternalStore,
   } = useStore();
+  const t = useTranslation();
   const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
@@ -198,7 +200,7 @@ const Pools: NextPage = observer(function () {
         <CreatePoolModal
           isOpen={isCreatingPool}
           onRequestClose={() => setIsCreatingPool(false)}
-          title="Create New Pool"
+          title={t("pools.createPool.title")}
           createPoolConfig={createPoolConfig}
           isSendingMsg={account.txTypeInProgress !== ""}
           onCreatePool={async () => {
@@ -260,9 +262,9 @@ const Pools: NextPage = observer(function () {
       <section>
         <div className="mx-auto pb-[3.75rem]">
           {isMobile ? (
-            <span className="subtitle2">My Pools</span>
+            <span className="subtitle2">{t("pools.myPools")}</span>
           ) : (
-            <h5>My Pools</h5>
+            <h5>{t("pools.myPools")}</h5>
           )}
           <div className="flex flex-col gap-4">
             <div className="mt-5 grid grid-cards md:gap-3">
@@ -289,7 +291,7 @@ const Pools: NextPage = observer(function () {
 
                   let myPoolMetrics = [
                     {
-                      label: "APR",
+                      label: t("pools.APR"),
                       value: isMobile ? (
                         apr.maxDecimals(2).toString()
                       ) : (
@@ -303,7 +305,9 @@ const Pools: NextPage = observer(function () {
                       ),
                     },
                     {
-                      label: isMobile ? "Available" : "Pool Liquidity",
+                      label: isMobile
+                        ? t("pools.available")
+                        : t("pools.liquidity"),
                       value: isMobile ? (
                         (!myPool.totalShare.toDec().equals(new Dec(0))
                           ? myPool
@@ -334,7 +338,7 @@ const Pools: NextPage = observer(function () {
                       ),
                     },
                     {
-                      label: "Bonded",
+                      label: t("pools.bonded"),
                       value: isMobile ? (
                         myBonded.toString()
                       ) : (
@@ -413,7 +417,7 @@ const Pools: NextPage = observer(function () {
           <TabBox
             tabs={[
               {
-                title: "Incentivized Pools",
+                title: t("pools.incentivized"),
                 content: (
                   <AllPoolsTableSet
                     tableSet="incentivized-pools"
@@ -422,7 +426,7 @@ const Pools: NextPage = observer(function () {
                 ),
               },
               {
-                title: "All Pools",
+                title: t("pools.all"),
                 content: (
                   <AllPoolsTableSet
                     tableSet="all-pools"
@@ -431,7 +435,7 @@ const Pools: NextPage = observer(function () {
                 ),
               },
               {
-                title: "External Incentive Pools",
+                title: t("pools.externalIncentivized.title"),
                 content: (
                   <ExternalIncentivizedPoolsTableSet {...quickActionProps} />
                 ),
@@ -535,7 +539,7 @@ const Pools: NextPage = observer(function () {
         <>
           <section>
             <div className="mx-auto">
-              <h5>Superfluid Pools</h5>
+              <h5>{t("pools.superfluid.title")}</h5>
               <div className="my-5 grid grid-cards">
                 {superfluidPools &&
                   (showMoreSfsPools
@@ -549,7 +553,7 @@ const Pools: NextPage = observer(function () {
                         poolAssets={assets}
                         poolMetrics={[
                           {
-                            label: "APR",
+                            label: t("pools.superfluid.APR"),
                             value: (
                               <MetricLoader
                                 isLoading={
@@ -562,7 +566,7 @@ const Pools: NextPage = observer(function () {
                             ),
                           },
                           {
-                            label: "Pool Liquidity",
+                            label: t("pools.superfluid.liquidity"),
                             value: (
                               <MetricLoader
                                 isLoading={poolLiquidity.toDec().isZero()}
@@ -572,7 +576,7 @@ const Pools: NextPage = observer(function () {
                             ),
                           },
                           {
-                            label: "Fees (7D)",
+                            label: t("pools.superfluid.fees7D"),
                             value: (
                               <MetricLoader
                                 isLoading={!poolFeesMetrics.feesSpent7d.isReady}

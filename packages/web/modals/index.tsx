@@ -15,3 +15,4 @@ export * from "./token-select";
 export * from "./trade-tokens";
 export * from "./transfer-asset-select";
 export * from "./wallet-connect";
+export * from "./menu-options-icon";

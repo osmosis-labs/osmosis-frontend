@@ -11,6 +11,7 @@ import { ValidatorInfoCell } from "../components/table/cells/";
 import { InfoTooltip } from "../components/tooltip";
 import { useFilteredData, useSortedData } from "../hooks/data";
 import { useWindowSize } from "../hooks/window";
+import { useTranslation } from "react-multi-lang";
 
 interface Props extends ModalBaseProps {
   availableBondAmount: CoinPretty;
@@ -20,6 +21,7 @@ interface Props extends ModalBaseProps {
 export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
   (props) => {
     const { availableBondAmount, onSelectValidator } = props;
+    const t = useTranslation();
     const { chainStore, queriesStore, accountStore } = useStore();
     const { isMobile } = useWindowSize();
 
@@ -91,13 +93,13 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
         <div className="flex flex-col gap-2.5 mt-8">
           <div className="flex md:flex-col gap-2.5 mb-1 items-center place-content-between">
             <span className="subtitle2 mr-auto">
-              Choose your superfluid validator
+              {t("pool.superfluidValidator.choose")}
             </span>
             <SearchBox
               className={isMobile ? "!rounded !w-full h-11" : undefined}
               currentValue={query}
               onInput={setQuery}
-              placeholder="Search by name"
+              placeholder={t("pool.superfluidValidator.search")}
             />
           </div>
           <div className="overflow-y-scroll overflow-x-clip h-72">
@@ -107,7 +109,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
               headerTrClassName="body2 text-wireframes-grey !h-11"
               columnDefs={[
                 {
-                  display: "Validator",
+                  display: t("pool.superfluidValidator.columns.validator"),
                   className: isMobile ? "caption" : undefined,
                   sort:
                     sortKey === "validatorName"
@@ -119,7 +121,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
                   displayCell: ValidatorInfoCell,
                 },
                 {
-                  display: "Commission",
+                  display: t("pool.superfluidValidator.columns.commission"),
                   className: `text-right ${isMobile ? "caption" : undefined}`,
                   sort:
                     sortKey === "validatorCommission"
@@ -155,7 +157,9 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
           </div>
           <div className="flex flex-col md:gap-2 gap-4 py-3 px-5 rounded-xl border border-white-faint bg-card">
             <div className="flex items-center place-content-between">
-              <span className="md:caption subtitle1">Bonded Amount</span>
+              <span className="md:caption subtitle1">
+                {t("pool.superfluidValidator.bondedAmount")}
+              </span>
               <span className="md:caption body1 text-white-mid">
                 {availableBondAmount.maxDecimals(2).trim(true).toString()}
               </span>
@@ -163,8 +167,8 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
             <div className="flex items-center place-content-between">
               <span className="md:caption subtitle1">
                 {isMobile
-                  ? "Est. Delegation"
-                  : "Estimated Superfluid Delegation"}
+                  ? t("pool.superfluidValidator.estimationMobile")
+                  : t("pool.superfluidValidator.estimation")}
               </span>
               <span className="md:caption flex items-center body1 text-white-mid">
                 ~
@@ -175,7 +179,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
                   .toString() ?? "0"}
                 <InfoTooltip
                   className="ml-1"
-                  content="The value of this delegation fluctuates and is estimated based on the amount of OSMO in the pool."
+                  content={t("pool.superfluidValidator.estimationInfo")}
                 />
               </span>
             </div>
@@ -191,7 +195,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
               }
             }}
           >
-            Bond {"&"} Stake
+            {t("pool.superfluidValidator.buttonBond")}
           </Button>
         </div>
       </ModalBase>

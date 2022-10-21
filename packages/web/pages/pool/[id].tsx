@@ -48,12 +48,15 @@ import {
   TradeTokens,
 } from "../../modals";
 import { useStore } from "../../stores";
+import { useTranslation } from "react-multi-lang";
 
 const E = EventName.PoolDetail;
 
 const Pool: FunctionComponent = observer(() => {
   const router = useRouter();
-  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+  const t = useTranslation();
+  const { chainStore, queriesStore, accountStore, priceStore, userSettings } =
+    useStore();
   const { isMobile } = useWindowSize();
 
   const { id: poolId } = router.query as { id: string };
@@ -74,7 +77,8 @@ const Pool: FunctionComponent = observer(() => {
       router.push("/pools");
     }
   }, [poolExists]);
-
+  const currentLanguage =
+    userSettings.getUserSettingById("language")?.state.language;
   // initialize pool data stores once root pool store is loaded
   const { poolDetailConfig, pool } = usePoolDetailConfig(poolId);
   const { superfluidPoolConfig, superfluidDelegateToValidator } =
@@ -257,12 +261,14 @@ const Pool: FunctionComponent = observer(() => {
   return (
     <main>
       <Head>
-        <title>Pool #{poolId}</title>
+        <title>
+          {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
+        </title>
       </Head>
       {pool && addLiquidityConfig && removeLiquidityConfig && (
         <ManageLiquidityModal
           isOpen={showManageLiquidityDialog}
-          title="Manage Liquidity"
+          title={t("pool.manageLiquidity.title")}
           onRequestClose={() => setShowManageLiquidityDialog(false)}
           addLiquidityConfig={addLiquidityConfig}
           removeLiquidityConfig={removeLiquidityConfig}
@@ -285,7 +291,7 @@ const Pool: FunctionComponent = observer(() => {
         <LockTokensModal
           poolId={poolId}
           isOpen={showLockLPTokenModal}
-          title="Liquidity Bonding"
+          title={t("pool.lockToken.title")}
           onRequestClose={() => setShowLockLPTokenModal(false)}
           amountConfig={lockLPTokensConfig}
           onLockToken={onLockToken}
@@ -293,7 +299,11 @@ const Pool: FunctionComponent = observer(() => {
       )}
       {superfluidPoolConfig?.superfluid && pool && lockLPTokensConfig && (
         <SuperfluidValidatorModal
-          title={isMobile ? "Select Validator" : "Select Superfluid Validator"}
+          title={
+            isMobile
+              ? t("pool.superfluidValidator.titleMobile")
+              : t("pool.superfluidValidator.title")
+          }
           availableBondAmount={
             superfluidPoolConfig?.superfluid.upgradeableLpLockIds
               ? superfluidPoolConfig.superfluid.upgradeableLpLockIds.amount // is delegating amount from existing lockup
@@ -316,18 +326,23 @@ const Pool: FunctionComponent = observer(() => {
             <h5>
               {lbpConfig
                 ? lbpConfig.name
-                : `Pool #${pool?.id} : ${pool?.poolAssets
-                    .map(
-                      (asset) => asset.amount.currency.coinDenom.split(" ")[0]
-                    )
-                    .map((denom) => truncateString(denom))
-                    .join(" / ")}`}
+                : t("pool.overview.title", {
+                    id: pool?.id ?? "-",
+                    name:
+                      pool?.poolAssets
+                        .map(
+                          (asset) =>
+                            asset.amount.currency.coinDenom.split(" ")[0]
+                        )
+                        .map((denom) => truncateString(denom))
+                        .join(" / ") ?? "-",
+                  })}
             </h5>
           </MetricLoader>
         }
         titleButtons={[
           {
-            label: "Add / Remove Liquidity",
+            label: t("pool.overview.buttons.addRemoveLiquidity"),
             onClick: () => {
               logEvent([
                 E.addOrRemoveLiquidityClicked,
@@ -342,7 +357,7 @@ const Pool: FunctionComponent = observer(() => {
             },
           },
           {
-            label: "Swap Tokens",
+            label: t("pool.overview.buttons.swap"),
             onClick: () => {
               logEvent([
                 E.swapTokensClicked,
@@ -359,7 +374,7 @@ const Pool: FunctionComponent = observer(() => {
         ]}
         primaryOverviewLabels={[
           {
-            label: "Pool Liquidity",
+            label: t("pool.overview.liquidity"),
             value: (
               <MetricLoader
                 className="h-7 w-56"
@@ -370,7 +385,7 @@ const Pool: FunctionComponent = observer(() => {
             ),
           },
           {
-            label: "My Liquidity",
+            label: t("pool.overview.myLiquidity"),
             value: (
               <MetricLoader
                 className="h-7 "
@@ -384,7 +399,7 @@ const Pool: FunctionComponent = observer(() => {
         ]}
         secondaryOverviewLabels={[
           {
-            label: "Bonded",
+            label: t("pool.overview.bonded"),
             value: (
               <MetricLoader
                 className="h-4"
@@ -396,7 +411,7 @@ const Pool: FunctionComponent = observer(() => {
             ),
           },
           {
-            label: "Swap Fee",
+            label: t("pool.overview.swapFee"),
             value: (
               <MetricLoader className="h-4" isLoading={!pool}>
                 {pool?.swapFee.toString() ?? "0%"}
@@ -413,27 +428,28 @@ const Pool: FunctionComponent = observer(() => {
         <div className="max-w-container mx-auto md:p-5 p-10">
           {showLiquidityMiningSection && (
             <div className="flex lg:flex-col gap-6 place-content-between">
-              <div className="max-w-md">
-                <div className="flex lg:flex-col gap-3">
+              <div className="max-w-lg">
+                <div className="flex lg:flex-col gap-2">
                   {isMobile ? (
-                    <span className="subtitle1 text-lg">Liquidity Mining</span>
+                    <span className="subtitle1 text-lg">
+                      {t("pool.liquidityMiningMobile")}
+                    </span>
                   ) : (
-                    <h5>Liquidity Mining</h5>
+                    <h5>{t("pool.liquidityMiningMobile")}</h5>
                   )}
                   {superfluidPoolConfig?.superfluid && (
                     <div className="bg-superfluid w-fit rounded-full px-4 py-1 md:caption text-base">
-                      Superfluid Staking Enabled
+                      {t("pool.superfluidEnabled")}
                     </div>
                   )}
                 </div>
                 <p className="text-white-mid md:caption py-2">
-                  Bond liquidity to various minimum unbonding periods to earn
-                  OSMO liquidity rewards and swap fees
+                  {t("pool.liquidityMiningInfo")}
                 </p>
               </div>
               <div className="flex flex-col gap-2 text-right lg:text-left">
                 <span className="caption text-white-mid">
-                  Available LP tokens
+                  {t("pool.availableLPToken")}
                 </span>
                 <span className="font-h5 text-h5 md:subtitle1">
                   <MetricLoader
@@ -459,7 +475,7 @@ const Pool: FunctionComponent = observer(() => {
                     setShowLockLPTokenModal(true);
                   }}
                 >
-                  Start Earning
+                  {t("pool.buttonStartEarning")}
                 </Button>
               </div>
             </div>
@@ -476,7 +492,7 @@ const Pool: FunctionComponent = observer(() => {
                     bonusValue={
                       rewardAmount?.maxDecimals(0).trim(true).toString() ?? "0"
                     }
-                    days={durationDays.humanize()}
+                    days={durationDays.locale(currentLanguage).humanize()}
                     remainingEpochs={remainingEpochs?.toString() ?? "0"}
                     isMobile={isMobile}
                   />
@@ -488,8 +504,8 @@ const Pool: FunctionComponent = observer(() => {
             <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
               {allAggregatedGauges.map(({ duration, superfluidApr }) => (
                 <PoolGaugeCard
-                  key={duration.humanize()}
-                  days={duration.humanize()}
+                  key={duration.locale(currentLanguage).humanize()}
+                  days={duration.locale(currentLanguage).humanize()}
                   apr={queryOsmosis.queryIncentivizedPools
                     .computeAPY(pool.id, duration, priceStore, fiat)
                     .maxDecimals(2)
@@ -504,9 +520,11 @@ const Pool: FunctionComponent = observer(() => {
         {superfluidPoolConfig?.superfluid && (
           <div className="max-w-container mx-auto md:p-5 p-10 flex flex-col gap-4">
             {isMobile ? (
-              <span className="subtitle2">My Superfluid Stake</span>
+              <span className="subtitle2">
+                {t("pool.superfluidStakingMobile")}
+              </span>
             ) : (
-              <h5>Superfluid Staking</h5>
+              <h5>{t("pool.superfluidStaking")}</h5>
             )}
             {superfluidPoolConfig.superfluid.upgradeableLpLockIds ? (
               <GoSuperfluidCard
@@ -543,9 +561,11 @@ const Pool: FunctionComponent = observer(() => {
           <div className="max-w-container mx-auto md:p-5 p-10">
             <div className="flex items-center place-content-between">
               {isMobile ? (
-                <span className="subtitle2">My Bondings</span>
+                <span className="subtitle2">
+                  {t("pool.myBondings.titleMobile")}
+                </span>
               ) : (
-                <h6>My Bondings</h6>
+                <h6>{t("pool.myBondings.title")}</h6>
               )}
               {showDepoolButton && pool && (
                 <Button
@@ -562,7 +582,7 @@ const Pool: FunctionComponent = observer(() => {
                   }}
                   loading={account.txTypeInProgress === "unPoolWhitelistedPool"}
                 >
-                  Depool LP Shares
+                  {t("pool.myBondings.depoolButton")}
                 </Button>
               )}
             </div>
@@ -572,7 +592,7 @@ const Pool: FunctionComponent = observer(() => {
               columnDefs={(
                 [
                   {
-                    display: "Unbonding Duration",
+                    display: t("pool.myBondings.unbondingDuration"),
                     className: "!pl-8",
                     displayCell: superfluidPoolConfig?.isSuperfluid
                       ? ({ value, isSuperfluidDuration }) => (
@@ -590,10 +610,10 @@ const Pool: FunctionComponent = observer(() => {
                         )
                       : undefined,
                   },
-                  { display: "Current APR" },
-                  { display: "Amount" },
+                  { display: t("pool.myBondings.currentAPR") },
+                  { display: t("pool.myBondings.amount") },
                   {
-                    display: "Action",
+                    display: t("pool.myBondings.action"),
                     className:
                       "md:text-right text-center md:justify-right justify-center",
                     displayCell: ({
@@ -692,7 +712,9 @@ const Pool: FunctionComponent = observer(() => {
                           }
                         }}
                       >
-                        {isMobile ? "Unbond" : "Unbond All"}
+                        {isMobile
+                          ? t("pool.myBondings.actionUnbondMobile")
+                          : t("pool.myBondings.actionUnbondMobile")}
                       </Button>
                     ),
                   },
@@ -706,7 +728,7 @@ const Pool: FunctionComponent = observer(() => {
                   }
                 >[]
               ).filter(({ display }) =>
-                isMobile ? display !== "Current APR" : true
+                isMobile ? display !== t("pool.myBondings.currentAPR") : true
               )}
               data={
                 poolDetailConfig?.userLockedAssets?.map(
@@ -718,7 +740,9 @@ const Pool: FunctionComponent = observer(() => {
                       superfluidPoolConfig.superfluid.delegations.length > 0;
                     return [
                       {
-                        value: lockedAsset.duration.humanize(),
+                        value: lockedAsset.duration
+                          .locale(currentLanguage)
+                          .humanize(),
                         isSuperfluidDuration,
                       }, // Unbonding Duration
                       {
@@ -736,7 +760,9 @@ const Pool: FunctionComponent = observer(() => {
                       }, // Amount
                       {
                         ...lockedAsset,
-                        value: lockedAsset.duration.humanize(),
+                        value: lockedAsset.duration
+                          .locale(currentLanguage)
+                          .humanize(),
                         isSuperfluidDuration,
                       }, // Unbond All button
                     ].filter((_row, index) => (isMobile ? index !== 1 : true));
@@ -757,21 +783,23 @@ const Pool: FunctionComponent = observer(() => {
           poolDetailConfig.userUnlockingAssets.length > 0 && (
             <div className="max-w-container mx-auto md:p-5 p-10">
               {isMobile ? (
-                <span className="subtitle2">Unbondings</span>
+                <span className="subtitle2">
+                  {t("pool.unlock.titleMobile")}
+                </span>
               ) : (
-                <h6>Unbondings</h6>
+                <h6>{t("pool.unlock.title")}</h6>
               )}
               <Table
                 className="md:-mx-5 md:w-screen md:caption w-full my-5"
                 headerTrClassName="md:h-11"
                 columnDefs={[
                   {
-                    display: "Unbonding Duration",
+                    display: t("pool.unlock.unbondingDuration"),
                     className: "w-1/3 !pl-8",
                   },
-                  { display: "Amount", className: "w-1/3" },
+                  { display: t("pool.unlock.amount"), className: "w-1/3" },
                   {
-                    display: "Unbonding Complete",
+                    display: t("pool.unlock.unbondingComplete"),
                     className: "w-1/3",
                   },
                 ]}
@@ -779,7 +807,7 @@ const Pool: FunctionComponent = observer(() => {
                   poolDetailConfig?.userUnlockingAssets?.map(
                     ({ duration, amount, endTime }) => [
                       {
-                        value: duration.humanize(),
+                        value: duration.locale(currentLanguage).humanize(),
                       },
                       {
                         value: amount.maxDecimals(6).trim(true).toString(),
@@ -797,21 +825,26 @@ const Pool: FunctionComponent = observer(() => {
           superfluidPoolConfig.superfluid.undelegations.length > 0 && (
             <div className="max-w-container mx-auto md:p-5 p-10">
               {isMobile ? (
-                <span className="subtitle2">Superfluid Unbondings</span>
+                <span className="subtitle2">
+                  {t("pool.superfluidUnlock.titleMobile")}
+                </span>
               ) : (
-                <h6>Superfluid Unbondings</h6>
+                <h6>{t("pool.superfluidUnlock.title")}</h6>
               )}
               <Table
                 className="md:-mx-5 md:w-screen md:caption w-full my-5"
                 headerTrClassName="md:h-11"
                 columnDefs={[
                   {
-                    display: "Validator",
+                    display: t("pool.superfluidUnlock.validator"),
                     className: "w-1/3 !pl-8",
                   },
-                  { display: "Amount", className: "w-1/3" },
                   {
-                    display: "Unbonding Complete",
+                    display: t("pool.superfluidUnlock.amount"),
+                    className: "w-1/3",
+                  },
+                  {
+                    display: t("pool.superfluidUnlock.unbondingComplete"),
                     className: "w-1/3",
                   },
                 ]}
@@ -841,9 +874,9 @@ const Pool: FunctionComponent = observer(() => {
           )}
         <div className="max-w-container mx-auto md:p-5 p-10">
           {isMobile ? (
-            <span className="subtitle2">Pool Catalyst</span>
+            <span className="subtitle2">{t("pool.catalyst.titleMobile")}</span>
           ) : (
-            <h5>Pool Catalyst</h5>
+            <h5>{t("pool.catalyst.title")}</h5>
           )}
           <div className="flex flex-wrap md:flex-col gap-5 my-5">
             {(poolDetailConfig?.userPoolAssets ?? [undefined, undefined]).map(
@@ -893,7 +926,7 @@ const Pool: FunctionComponent = observer(() => {
                     isMobile={isMobile}
                     metrics={[
                       {
-                        label: "Total amount",
+                        label: t("pool.catalyst.amount"),
                         value: (
                           <MetricLoader
                             isLoading={!poolDetailConfig?.userPoolAssets}
@@ -903,7 +936,7 @@ const Pool: FunctionComponent = observer(() => {
                         ),
                       },
                       {
-                        label: "My amount",
+                        label: t("pool.catalyst.myAmount"),
                         value: (
                           <MetricLoader
                             isLoading={!poolDetailConfig?.userPoolAssets}

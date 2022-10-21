@@ -21,6 +21,7 @@ import { Button } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
+import { useTranslation } from "react-multi-lang";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -36,6 +37,7 @@ export const TradeClipboard: FunctionComponent<{
     assetsStore: { nativeBalances, ibcBalances },
     priceStore,
   } = useStore();
+  const t = useTranslation();
   const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics();
@@ -238,7 +240,7 @@ export const TradeClipboard: FunctionComponent<{
       )}
     >
       <div className="relative flex items-center justify-end w-full">
-        <h6 className="w-full text-center">Swap</h6>
+        <h6 className="w-full text-center">{t("swap.title")}</h6>
         <button
           className="absolute right-3 top-0"
           onClick={(e) => {
@@ -264,13 +266,13 @@ export const TradeClipboard: FunctionComponent<{
             onClick={(e) => e.stopPropagation()}
           >
             <div className="subtitle1 text-white-emphasis">
-              Transaction Settings
+              {t("swap.settings.title")}
             </div>
             <div className="flex items-center mt-2.5">
               <div className="body2 text-white-disabled mr-2">
-                Slippage tolerance
+                {t("swap.settings.slippage")}
               </div>
-              <InfoTooltip content="Your transaction will revert if the price changes unfavorably by more than this percentage." />
+              <InfoTooltip content={t("swap.settings.slippageInfo")} />
             </div>
 
             <ul className="flex gap-x-3 w-full mt-3">
@@ -380,7 +382,7 @@ export const TradeClipboard: FunctionComponent<{
           >
             <div className="flex">
               <span className="caption text-sm md:text-xs text-white-full">
-                Available
+                {t("swap.available")}
               </span>
               <span className="caption text-sm md:text-xs text-primary-50 ml-1.5">
                 {queries.queryBalances
@@ -418,7 +420,7 @@ export const TradeClipboard: FunctionComponent<{
                   }
                 }}
               >
-                MAX
+                {t("swap.MAX")}
               </button>
               <button
                 className={classNames(
@@ -445,7 +447,7 @@ export const TradeClipboard: FunctionComponent<{
                   }
                 }}
               >
-                HALF
+                {t("swap.HALF")}
               </button>
             </div>
           </div>
@@ -763,7 +765,7 @@ export const TradeClipboard: FunctionComponent<{
                 "text-error": showPriceImpactWarning,
               })}
             >
-              <div className="caption">Price Impact</div>
+              <div className="caption">{t("swap.priceImpact")}</div>
               <div
                 className={classNames(
                   "caption",
@@ -777,8 +779,9 @@ export const TradeClipboard: FunctionComponent<{
             </div>
             <div className="flex justify-between">
               <div className="caption">
-                Swap Fee (
-                {tradeTokenInConfig.expectedSwapResult.swapFee.toString()})
+                {t("swap.fee", {
+                  fee: tradeTokenInConfig.expectedSwapResult.swapFee.toString(),
+                })}
               </div>
               <div className="caption text-wireframes-lightGrey">
                 {`≈ ${
@@ -790,15 +793,16 @@ export const TradeClipboard: FunctionComponent<{
             </div>
             <hr className="text-white-faint" />
             <div className="flex justify-between">
-              <div className="caption">Expected Output</div>
+              <div className="caption">{t("swap.expectedOutput")}</div>
               <div className="caption text-wireframes-lightGrey whitespace-nowrap">
                 {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
               </div>
             </div>
             <div className="flex justify-between">
               <div className="caption text-white-high">
-                Minimum received after slippage{" "}
-                {`(${slippageConfig.slippage.trim(true).toString()})`}
+                {t("swap.minimumSlippage", {
+                  slippage: slippageConfig.slippage.trim(true).toString(),
+                })}
               </div>
               <div
                 className={classNames(
@@ -877,7 +881,11 @@ export const TradeClipboard: FunctionComponent<{
               if (!tokenOutCurrency) {
                 tradeTokenInConfig.setError(
                   new Error(
-                    `Failed to find currency ${tradeTokenInConfig.optimizedRoutePaths[0].tokenOutDenoms[i]}`
+                    t("swap.error.findCurrency", {
+                      currency:
+                        tradeTokenInConfig.optimizedRoutePaths[0]
+                          .tokenOutDenoms[i],
+                    })
                   )
                 );
                 return;
@@ -899,7 +907,10 @@ export const TradeClipboard: FunctionComponent<{
             if (!tokenInCurrency) {
               tradeTokenInConfig.setError(
                 new Error(
-                  `Failed to find currency ${tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom}`
+                  t("swap.error.findCurrency", {
+                    currency:
+                      tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom,
+                  })
                 )
               );
               return;
@@ -999,9 +1010,9 @@ export const TradeClipboard: FunctionComponent<{
           tradeTokenInConfig.error ? (
             tradeTokenInConfig.error.message
           ) : showPriceImpactWarning ? (
-            "Swap Anyway"
+            t("swap.buttonError")
           ) : (
-            "Swap"
+            t("swap.button")
           )
         ) : (
           <div className="flex items-center gap-1">
@@ -1011,7 +1022,7 @@ export const TradeClipboard: FunctionComponent<{
               height={24}
               width={24}
             />
-            <span>Connect Wallet</span>
+            <span>{t("swap.buttonConnect")}</span>
           </div>
         )}
       </Button>

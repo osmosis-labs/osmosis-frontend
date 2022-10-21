@@ -5,7 +5,7 @@ import { computedFn } from "mobx-utils";
 export interface IUserSetting<TState = any> {
   readonly id: string;
   readonly state: TState;
-  readonly displayLabel: string;
+  readonly getLabel: (t: Function) => string;
   readonly controlComponent: FunctionComponent<TState>;
   setState(value: TState): void;
 }
@@ -30,3 +30,4 @@ export class UserSettings {
 }
 
 export * from "./show-dust";
+export * from "./language";

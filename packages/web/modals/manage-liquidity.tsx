@@ -10,6 +10,7 @@ import {
   ObservableAddLiquidityConfig,
   ObservableRemoveLiquidityConfig,
 } from "@osmosis-labs/stores";
+import { useTranslation } from "react-multi-lang";
 
 export interface Props extends ModalBaseProps {
   addLiquidityConfig: ObservableAddLiquidityConfig;
@@ -30,8 +31,8 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
       onRemoveLiquidity,
       isSendingMsg = false,
     } = props;
-
     const [selectedTabIndex, setSelectedTabIndex] = useState<0 | 1>(0);
+    const t = useTranslation();
 
     const { showModalBase, accountActionButton } =
       useConnectWalletModalRedirect(
@@ -49,7 +50,9 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
                 .equals(new Dec(0))),
           onClick: selectedTabIndex === 0 ? onAddLiquidity : onRemoveLiquidity,
           children:
-            selectedTabIndex === 0 ? "Add Liquidity" : "Remove Liquidity",
+            selectedTabIndex === 0
+              ? t("pool.manageLiquidity.tabAddLiquidity")
+              : t("pool.manageLiquidity.tabRemoveLiquidity"),
         },
         props.onRequestClose
       );
@@ -69,7 +72,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
           }}
           tabs={[
             {
-              title: "Add Liquidity",
+              title: t("pool.manageLiquidity.tabAddLiquidity"),
               content: (
                 <AddLiquidity
                   addLiquidityConfig={addLiquidityConfig}
@@ -79,7 +82,7 @@ export const ManageLiquidityModal: FunctionComponent<Props> = observer(
               ),
             },
             {
-              title: "Remove Liquidity",
+              title: t("pool.manageLiquidity.tabRemoveLiquidity"),
               content: (
                 <RemoveLiquidity
                   removeLiquidityConfig={removeLiquidityConfig}
