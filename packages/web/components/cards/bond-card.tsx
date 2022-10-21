@@ -80,7 +80,7 @@ export const BondCard: FunctionComponent<
                 <>
                   available in
                   <span className="text-white-full">
-                    {`${moment(userUnlockingShares.endTime).fromNow(true)}`}
+                    {moment(userUnlockingShares.endTime).fromNow(true)}
                   </span>
                 </>
               ) : (
