@@ -8,7 +8,10 @@ import { UserConfig } from "../user-config";
 export declare type BondableDuration = {
     duration: Duration;
     userShares: CoinPretty;
-    userUnlockingShares: CoinPretty;
+    userUnlockingShares?: {
+        shares: CoinPretty;
+        endTime?: Date;
+    };
     aggregateApr: RatePretty;
     swapFeeApr: RatePretty;
     swapFeeDailyReward: PricePretty;

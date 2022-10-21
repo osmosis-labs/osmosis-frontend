@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { FunctionComponent, useState } from "react";
 import classNames from "classnames";
+import moment from "dayjs";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { BondableDuration } from "@osmosis-labs/stores";
 import { FallbackImg } from "../assets";
@@ -15,6 +16,7 @@ export const BondCard: FunctionComponent<
 > = ({
   duration,
   userShares,
+  userUnlockingShares,
   aggregateApr,
   swapFeeApr,
   swapFeeDailyReward,
@@ -63,6 +65,30 @@ export const BondCard: FunctionComponent<
             <Image alt="splash" src={splashImageSrc} height={90} width={90} />
           )}
         </div>
+        {userUnlockingShares && (
+          <div className="flex flex-col gap-1 bg-osmoverse-900 rounded-lg p-3">
+            <h6>
+              {userUnlockingShares.shares
+                .hideDenom(true)
+                .trim(true)
+                .maxDecimals(3)
+                .toString()}{" "}
+              shares
+            </h6>
+            <h6 className="flex items-center gap-1 text-osmoverse-400">
+              {userUnlockingShares.endTime ? (
+                <>
+                  available in
+                  <span className="text-white-full">
+                    {`${moment(userUnlockingShares.endTime).fromNow(true)}`}
+                  </span>
+                </>
+              ) : (
+                <>unbonding</>
+              )}
+            </h6>
+          </div>
+        )}
         {superfluid &&
           userShares.toDec().gt(new Dec(0)) &&
           !superfluid.delegated &&
@@ -255,7 +281,7 @@ const SuperfluidBreakdownRow: FunctionComponent<
           width={24}
         />
       </div>
-      {delegated || undelegating ? (
+      {(delegated || undelegating) && validatorMoniker ? (
         <span>{validatorMoniker}</span>
       ) : (
         <span>Superfluid Staking</span>

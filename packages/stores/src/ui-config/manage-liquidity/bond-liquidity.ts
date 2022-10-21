@@ -19,7 +19,7 @@ import { UserConfig } from "../user-config";
 export type BondableDuration = {
   duration: Duration;
   userShares: CoinPretty;
-  userUnlockingShares: CoinPretty;
+  userUnlockingShares?: { shares: CoinPretty; endTime?: Date };
   aggregateApr: RatePretty;
   swapFeeApr: RatePretty;
   swapFeeDailyReward: PricePretty;
@@ -112,9 +112,14 @@ export class ObservableBondLiquidityConfig extends UserConfig {
         );
         const userUnlockingShares =
           allUnlockingCoins.length > 0
-            ? allUnlockingCoins[0]?.amount ??
-              new CoinPretty(this.poolDetails.poolShareCurrency, 0)
-            : new CoinPretty(this.poolDetails.poolShareCurrency, 0);
+            ? {
+                // only return soonest unlocking shares
+                shares:
+                  allUnlockingCoins[0]?.amount ??
+                  new CoinPretty(this.poolDetails.poolShareCurrency, 0),
+                endTime: allUnlockingCoins[0]?.endTime,
+              }
+            : undefined;
 
         const incentivesBreakdown: BondableDuration["incentivesBreakdown"] = [];
 
