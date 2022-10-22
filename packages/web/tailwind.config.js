@@ -19,7 +19,21 @@ module.exports = {
         disabled: "rgba(255, 255, 255, 0.38)",
         faint: "rgba(255, 255, 255, 0.12)",
       },
-      transparent: "transparent",
+      ion: {
+        500: "#2994D0",
+      },
+      bullish: {
+        400: "#6BDEC9",
+        600: "#00A399",
+      },
+      wosmongton: {
+        100: "#D3D1FF",
+        200: "#B3B1FD",
+        300: "#8C8AF9",
+        400: "#6A67EA",
+        500: "#5B57FA",
+        700: "#462ADF",
+      },
       osmoverse: {
         100: "#E4E1FB",
         200: "#CEC8F3",
@@ -32,16 +46,12 @@ module.exports = {
         900: "#140F34",
         1000: "#090524",
       },
-      wosmongton: {
-        100: "#D3D1FF",
-        200: "#B3B1FD",
-        300: "#8C8AF9",
-        400: "#6A67EA",
-        500: "#5B57FA",
-        700: "#462ADF",
+      ammelia: {
+        600: "#CA2EBD",
       },
       rust: {
         200: "#F8C2B0",
+        500: "#FA825D",
         700: "#C6451C",
         800: "#B03A20",
       },
@@ -90,7 +100,7 @@ module.exports = {
       black: "#000000",
       backdrop: "rgba(0, 0, 0, 0.3)",
       superfluid: "#8A86FF",
-      bullish: "#6BDEC9",
+      transparent: "transparent",
     },
     fontSize: {
       xxs: "0.5rem",

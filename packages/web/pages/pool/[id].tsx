@@ -36,6 +36,7 @@ import {
   TradeTokens,
 } from "../../modals";
 import { useStore } from "../../stores";
+import { AssetBreakdownChart } from "../../components/chart";
 import { PoolAssetsIcon } from "../../components/assets";
 import { BondCard } from "../../components/cards";
 import { NewButton } from "../../components/buttons";
@@ -419,23 +420,12 @@ const Pool: FunctionComponent = observer(() => {
               </div>
             </div>
           </div>
-          <div>
-            <div className="flex flex-col gap-4">
-              <span className="subtitle1 text-osmoverse-400">
-                Pool catalysts
-              </span>
-              <div className="flex items-center gap-24">
-                {pool?.poolAssets.map((asset) => (
-                  <div key={asset.amount.denom}>
-                    <span className="subtitle1">{asset.amount.denom}</span>
-                    <h5 className="text-osmoverse-100">
-                      {asset.amount.maxDecimals(0).hideDenom(true).toString()}
-                    </h5>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          {pool && (
+            <AssetBreakdownChart
+              assets={pool.poolAssets}
+              totalWeight={pool.totalWeight}
+            />
+          )}
         </div>
         <div
           className="flex items-center mx-auto gap-1 cursor-pointer select-none"
@@ -477,7 +467,7 @@ const Pool: FunctionComponent = observer(() => {
                   <LevelBadge level={1} />
                   <div className="flex shrink-0 items-center gap-4">
                     <h5>Earn swap fees</h5>
-                    <h5 className="text-bullish">{`${
+                    <h5 className="text-bullish-400">{`${
                       pool
                         ? queryGammPoolFeeMetrics
                             .get7dPoolFeeApr(pool, priceStore)
