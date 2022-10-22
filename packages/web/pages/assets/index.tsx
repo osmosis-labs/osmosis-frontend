@@ -29,6 +29,7 @@ import { ConnectNonIbcWallet, PreTransferModal } from "../../modals";
 import { useWindowSize, useAmplitudeAnalytics } from "../../hooks";
 import { WalletConnectQRModal } from "../../modals";
 import { EventName } from "../../config";
+import { useTokenTransferQueryParams } from "../../hooks/window/use-assets-transfer-query-params";
 
 const INIT_POOL_CARD_COUNT = 6;
 
@@ -57,6 +58,9 @@ const Assets: NextPage = observer(() => {
       )
   );
 
+  const { setTransferQueryParams } =
+    useTokenTransferQueryParams(transferConfig);
+
   // mobile only
   const [preTransferModalProps, setPreTransferModalProps] =
     useState<ComponentProps<typeof PreTransferModal> | null>(null);
@@ -77,19 +81,11 @@ const Assets: NextPage = observer(() => {
         isUnstable: ibcBalance.isUnstable,
         onSelectToken: launchPreTransferModal,
         onWithdraw: () => {
-          transferConfig.transferAsset(
-            "withdraw",
-            ibcBalance.chainInfo.chainId,
-            coinDenom
-          );
+          transferConfig.transferAsset("withdraw", coinDenom);
           setPreTransferModalProps(null);
         },
         onDeposit: () => {
-          transferConfig.transferAsset(
-            "deposit",
-            ibcBalance.chainInfo.chainId,
-            coinDenom
-          );
+          transferConfig.transferAsset("deposit", coinDenom);
           setPreTransferModalProps(null);
         },
         onRequestClose: () => setPreTransferModalProps(null),
@@ -110,14 +106,34 @@ const Assets: NextPage = observer(() => {
   return (
     <main className="bg-background">
       <AssetsOverview
-        onDepositIntent={() => transferConfig.startTransfer("deposit")}
-        onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
+        onDepositIntent={() => {
+          transferConfig.startTransfer("deposit");
+          setTransferQueryParams("deposit");
+        }}
+        onWithdrawIntent={() => {
+          transferConfig.startTransfer("withdraw");
+          setTransferQueryParams("withdraw");
+        }}
       />
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
       )}
       {transferConfig.assetSelectModal && (
-        <TransferAssetSelectModal {...transferConfig.assetSelectModal} />
+        <TransferAssetSelectModal
+          {...transferConfig.assetSelectModal}
+          onSelectAsset={(denom, soureChainKey) => {
+            transferConfig.assetSelectModal?.onSelectAsset(
+              denom,
+              soureChainKey
+            );
+            setTransferQueryParams(
+              transferConfig.assetSelectModal?.isWithdraw
+                ? "withdraw"
+                : "deposit",
+              denom
+            );
+          }}
+        />
       )}
       {transferConfig.connectNonIbcWalletModal && (
         <ConnectNonIbcWallet {...transferConfig.connectNonIbcWalletModal} />
@@ -138,18 +154,26 @@ const Assets: NextPage = observer(() => {
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
-        onDepositIntent={() => transferConfig.startTransfer("deposit")}
-        onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
-        onDeposit={(chainId, coinDenom, externalDepositUrl) => {
+        onDepositIntent={() => {
+          transferConfig.startTransfer("deposit");
+          setTransferQueryParams("deposit");
+        }}
+        onWithdrawIntent={() => {
+          transferConfig.startTransfer("withdraw");
+          setTransferQueryParams("withdraw");
+        }}
+        onDeposit={(coinDenom, externalDepositUrl) => {
           if (!externalDepositUrl) {
             isMobile
               ? launchPreTransferModal(coinDenom)
-              : transferConfig.transferAsset("deposit", chainId, coinDenom);
+              : transferConfig.transferAsset("deposit", coinDenom);
+            setTransferQueryParams("deposit", coinDenom);
           }
         }}
-        onWithdraw={(chainId, coinDenom, externalWithdrawUrl) => {
+        onWithdraw={(coinDenom, externalWithdrawUrl) => {
           if (!externalWithdrawUrl) {
-            transferConfig.transferAsset("withdraw", chainId, coinDenom);
+            transferConfig.transferAsset("withdraw", coinDenom);
+            setTransferQueryParams("withdraw", coinDenom);
           }
         }}
       />

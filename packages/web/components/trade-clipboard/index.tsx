@@ -21,6 +21,7 @@ import { Button } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
+import { useRouter } from "next/router";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -34,11 +35,14 @@ export const TradeClipboard: FunctionComponent<{
     accountStore,
     queriesStore,
     assetsStore: { nativeBalances, ibcBalances },
+    assetsStore,
     priceStore,
   } = useStore();
   const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics();
+
+  const router = useRouter();
 
   const allTokenBalances = nativeBalances.concat(ibcBalances);
 
@@ -230,6 +234,28 @@ export const TradeClipboard: FunctionComponent<{
     [tradeTokenInConfig.expectedSwapResult.amount]
   );
 
+  var isDepositToken =
+    tradeTokenInConfig.sendCurrency.coinDenom !== "OSMO" &&
+    tradeTokenInConfig.sendCurrency.coinDenom !== "ION";
+
+  var isSwapCurrencyInOsmosisZero = false;
+
+  if (isDepositToken) {
+    var balance = assetsStore.ibcBalances.find(
+      (bal) =>
+        bal.balance.currency.coinDenom ===
+        tradeTokenInConfig.sendCurrency.coinDenom
+    );
+    if (balance) {
+      var accOsmosis = accountStore.getAccount(chainId);
+      var balOsmosis = queriesStore
+        .get(chainId)
+        .queryBalances.getQueryBech32Address(accOsmosis.bech32Address)
+        .getBalanceFromCurrency(balance.balance.currency);
+      isSwapCurrencyInOsmosisZero = balOsmosis.toDec().isZero();
+    }
+  }
+
   return (
     <div
       className={classNames(
@@ -393,6 +419,21 @@ export const TradeClipboard: FunctionComponent<{
               </span>
             </div>
             <div className="flex items-center gap-1.5">
+              {!isSwapCurrencyInOsmosisZero && isDepositToken && (
+                <button
+                  className={classNames(
+                    "button text-primary-50 hover:bg-primary-50/30 border border-primary-50 text-xs py-1 px-1.5 rounded-md"
+                  )}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push(
+                      `/assets?direction=deposit&transfer=${tradeTokenInConfig.sendCurrency.coinDenom}`
+                    );
+                  }}
+                >
+                  DEPOSIT
+                </button>
+              )}
               <button
                 className={classNames(
                   "button text-primary-50 hover:bg-primary-50/30 border border-primary-50 text-xs py-1 px-1.5 rounded-md",
@@ -847,13 +888,17 @@ export const TradeClipboard: FunctionComponent<{
         disabled={
           account.walletStatus === WalletStatus.Loaded &&
           (tradeTokenInConfig.error !== undefined ||
-            tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
             account.txTypeInProgress !== "")
         }
         loading={account.txTypeInProgress !== ""}
         onClick={async () => {
           if (account.walletStatus !== WalletStatus.Loaded) {
             return account.init();
+          }
+          if (isSwapCurrencyInOsmosisZero && isDepositToken) {
+            router.push(
+              `/assets?direction=deposit&transfer=${tradeTokenInConfig.sendCurrency.coinDenom}`
+            );
           }
           if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
             const routes: {
@@ -998,6 +1043,8 @@ export const TradeClipboard: FunctionComponent<{
         {account.walletStatus === WalletStatus.Loaded ? (
           tradeTokenInConfig.error ? (
             tradeTokenInConfig.error.message
+          ) : isSwapCurrencyInOsmosisZero && isDepositToken ? (
+            "Deposit"
           ) : showPriceImpactWarning ? (
             "Swap Anyway"
           ) : (

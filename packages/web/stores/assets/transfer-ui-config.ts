@@ -18,7 +18,7 @@ import { Wallet, SourceChainKey } from "../../integrations";
 import { makeLocalStorageKVStore } from "../../stores/kv-store";
 import { IBCBalance, ObservableAssets } from ".";
 
-type TransferDir = "withdraw" | "deposit";
+export type TransferDir = "withdraw" | "deposit";
 
 /** Coordinates user preference for transfer (IBC or non-IBC) of asset, network, and asset custodian via display of modals. */
 export class ObservableTransferUIConfig {
@@ -110,7 +110,7 @@ export class ObservableTransferUIConfig {
           return;
         }
 
-        this.transferAsset(direction, bridgedBalance.chainInfo.chainId, denom);
+        this.transferAsset(direction, denom);
       } else {
         // ibc transfer
         const ibcBalance = this.assetsStore.ibcBalances.find(
@@ -129,15 +129,9 @@ export class ObservableTransferUIConfig {
   /** ### DEPOSIT/WITHDRAW FROM TABLE ROW
    *  User wants to transfer asset with counterparty IBC chain and coinDenom known. */
   @action
-  async transferAsset(
-    direction: TransferDir,
-    chainId: string,
-    coinDenom: string
-  ) {
+  async transferAsset(direction: TransferDir, coinDenom: string) {
     const balance = this.assetsStore.ibcBalances.find(
-      (bal) =>
-        bal.chainInfo.chainId === chainId &&
-        bal.balance.currency.coinDenom === coinDenom
+      (bal) => bal.balance.currency.coinDenom === coinDenom
     );
 
     if (!balance) {
