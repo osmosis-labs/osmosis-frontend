@@ -121,7 +121,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
   );
 
   /**
-   * Computes the external incentive APR for the given gauge, denom, and duration
+   * Computes the external incentive APR for the given duration
    */
   readonly computeExternalIncentiveGaugeAPR = computedFn(
     (
