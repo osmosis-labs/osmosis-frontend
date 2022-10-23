@@ -36,7 +36,10 @@ import {
   TradeTokens,
 } from "../../modals";
 import { useStore } from "../../stores";
-import { AssetBreakdownChart } from "../../components/chart";
+import {
+  AssetBreakdownChart,
+  PriceBreakdownChart,
+} from "../../components/chart";
 import { PoolAssetsIcon } from "../../components/assets";
 import { BondCard } from "../../components/cards";
 import { NewButton } from "../../components/buttons";
@@ -448,6 +451,40 @@ const Pool: FunctionComponent = observer(() => {
           </div>
         </div>
       </div>
+      {poolDetailConfig?.userStats && (
+        <div className="w-full flex items-center gap-4">
+          <div className="w-full flex flex-col gap-3 bg-osmoverse-1000 px-10 py-7 rounded-4xl">
+            <div className="flex items-center gap-3 place-content-between">
+              <div className="flex shrink-0 flex-col gap-1">
+                <h4 className="text-osmoverse-100">
+                  {poolDetailConfig.userStats.bondedValue.toString()}
+                </h4>
+                <h6 className="text-osmoverse-300">
+                  {poolDetailConfig.userStats.totalShares
+                    .maxDecimals(6)
+                    .hideDenom(true)
+                    .toString()}{" "}
+                  shares
+                </h6>
+              </div>
+              <div className="w-2/3 md:w-full">
+                <PriceBreakdownChart
+                  prices={[
+                    {
+                      label: "Bonded",
+                      price: poolDetailConfig.userStats.bondedValue,
+                    },
+                    {
+                      label: "Unbonded",
+                      price: poolDetailConfig.userStats.unbondedValue,
+                    },
+                  ]}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col gap-7">
         <h5>Put your assets to work.</h5>
         <span className="subtitle1 text-osmoverse-300">

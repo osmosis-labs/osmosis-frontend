@@ -21,6 +21,7 @@ module.exports = {
       },
       ion: {
         500: "#2994D0",
+        700: "#1469AF",
       },
       bullish: {
         400: "#6BDEC9",

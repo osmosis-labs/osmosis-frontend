@@ -15,7 +15,8 @@ export const AssetBreakdownChart: FunctionComponent<{
     weight: IntPretty;
   }[];
   totalWeight: IntPretty;
-}> = ({ assets, totalWeight }) => {
+  colorCycle?: typeof ColorCycle;
+}> = ({ assets, totalWeight, colorCycle = ColorCycle }) => {
   const assetPercentages = assets.map(({ weight }) =>
     weight.quo(totalWeight).mul(new Dec(100))
   );
@@ -30,13 +31,10 @@ export const AssetBreakdownChart: FunctionComponent<{
         gridTemplateColumns: gridTemplateColumns.join(" "),
       }}
     >
-      {assets.map(({ amount, weight }, index) => (
+      {assets.map(({ amount }, index) => (
         <div
           key={amount.currency.coinDenom}
-          className={classNames(
-            "flex flex-col gap-2.5",
-            `w-[${weight.mul(new IntPretty(100)).toString()}]`
-          )}
+          className={classNames("flex flex-col gap-2.5")}
         >
           <div>
             <span className="subtitle1 text-osmoverse-400">
@@ -49,7 +47,7 @@ export const AssetBreakdownChart: FunctionComponent<{
           <div
             className={classNames(
               "flex w-full h-3",
-              ColorCycle[index % ColorCycle.length],
+              colorCycle[index % colorCycle.length],
               {
                 "rounded-l-full": index === 0,
                 "rounded-r-full": index === assets.length - 1,
