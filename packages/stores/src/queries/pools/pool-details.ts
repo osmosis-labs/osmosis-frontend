@@ -116,7 +116,7 @@ export class ObservableQueryPoolDetails extends UserConfig {
   }
 
   @computed
-  get userLockedValue(): PricePretty {
+  get userShareValue(): PricePretty {
     return this.totalValueLocked.mul(
       this.queries.queryGammPoolShare.getAllGammShareRatio(
         this.bech32Address,
@@ -243,6 +243,7 @@ export class ObservableQueryPoolDetails extends UserConfig {
     return false;
   }
 
+  @computed
   get allExternalGauges(): ExternalGauge[] {
     const queryPoolGuageIds = this.queries.queryPoolsGaugeIds.get(
       this.queryPool.id
@@ -277,6 +278,31 @@ export class ObservableQueryPoolDetails extends UserConfig {
         })
         .filter((gauge): gauge is ExternalGauge => gauge !== undefined) ?? []
     );
+  }
+
+  @computed
+  get userStats():
+    | {
+        totalShares: CoinPretty;
+        totalShareValue: PricePretty;
+        bondedValue: PricePretty;
+        unbondedValue: PricePretty;
+        currentDailyEarnings?: PricePretty;
+      }
+    | undefined {
+    const totalShares = this.queries.queryGammPoolShare.getAllGammShare(
+      this.bech32Address,
+      this.queryPool.id
+    );
+
+    if (totalShares.toDec().isZero()) return;
+
+    return {
+      totalShares,
+      totalShareValue: this.userShareValue,
+      bondedValue: this.userBondedValue,
+      unbondedValue: this.userAvailableValue,
+    };
   }
 
   readonly queryAllowedExternalGauges = computedFn(

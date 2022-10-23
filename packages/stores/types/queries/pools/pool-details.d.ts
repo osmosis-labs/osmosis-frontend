@@ -46,7 +46,7 @@ export declare class ObservableQueryPoolDetails extends UserConfig {
         apr: RatePretty;
         isLoading: boolean;
     }[];
-    get userLockedValue(): PricePretty;
+    get userShareValue(): PricePretty;
     get userBondedValue(): PricePretty;
     get userAvailableValue(): PricePretty;
     get userPoolAssets(): {
@@ -67,6 +67,13 @@ export declare class ObservableQueryPoolDetails extends UserConfig {
     }[];
     get userCanDepool(): boolean;
     get allExternalGauges(): ExternalGauge[];
+    get userStats(): {
+        totalShares: CoinPretty;
+        totalShareValue: PricePretty;
+        bondedValue: PricePretty;
+        unbondedValue: PricePretty;
+        currentDailyEarnings?: PricePretty;
+    } | undefined;
     readonly queryAllowedExternalGauges: (findCurrency: (denom: string) => AppCurrency | undefined, allowedGauges: {
         gaugeId: string;
         denom: string;

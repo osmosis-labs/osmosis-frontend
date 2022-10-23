@@ -1,6 +1,6 @@
 import { WeightedPoolRaw } from "@osmosis-labs/pools";
 import { Duration } from "dayjs/plugin/duration";
-import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty } from "@keplr-wallet/unit";
 
 export type Pools = {
   pools: WeightedPoolRaw[];
