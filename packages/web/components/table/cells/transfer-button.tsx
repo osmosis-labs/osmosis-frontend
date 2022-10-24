@@ -36,7 +36,7 @@ export const TransferButtonCell: FunctionComponent<
     <TransferButton
       disabled={isUnstable}
       externalUrl={depositUrlOverride}
-      label={onBuyOsmo ? "Buy OSMO" : t("assets.table.depositButton")}
+      label={onBuyOsmo ? "Buy" : t("assets.table.depositButton")}
       action={
         onBuyOsmo
           ? onBuyOsmo
