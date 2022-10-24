@@ -10,3 +10,5 @@ export type OriginBridgeInfo = {
 
 /** String literal identifiers for a source chain. */
 export type SourceChainKey = SourceChain;
+
+export type FiatRampKey = "kado" | "transak";

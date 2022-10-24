@@ -24,8 +24,9 @@ import {
   IbcTransferModal,
   BridgeTransferModal,
   TransferAssetSelectModal,
+  FiatRampsModal,
 } from "../../modals";
-import { ConnectNonIbcWallet, PreTransferModal } from "../../modals";
+import { SelectAssetSourceModal, PreTransferModal } from "../../modals";
 import {
   useWindowSize,
   useAmplitudeAnalytics,
@@ -139,13 +140,16 @@ const Assets: NextPage = observer(() => {
         <TransferAssetSelectModal {...transferConfig.assetSelectModal} />
       )}
       {transferConfig.connectNonIbcWalletModal && (
-        <ConnectNonIbcWallet {...transferConfig.connectNonIbcWalletModal} />
+        <SelectAssetSourceModal {...transferConfig.connectNonIbcWalletModal} />
       )}
       {transferConfig.ibcTransferModal && (
         <IbcTransferModal {...transferConfig.ibcTransferModal} />
       )}
       {transferConfig.bridgeTransferModal && (
         <BridgeTransferModal {...transferConfig.bridgeTransferModal} />
+      )}
+      {transferConfig.fiatRampsModal && (
+        <FiatRampsModal {...transferConfig.fiatRampsModal} />
       )}
       {transferConfig.walletConnectEth.sessionConnectUri && (
         <WalletConnectQRModal
@@ -171,6 +175,7 @@ const Assets: NextPage = observer(() => {
             transferConfig.transferAsset("withdraw", chainId, coinDenom);
           }
         }}
+        onBuyOsmo={() => transferConfig.buyOsmo()}
       />
       {!isMobile && <PoolAssets />}
       <section className="bg-surface">

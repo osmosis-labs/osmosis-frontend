@@ -6,7 +6,7 @@ import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
 
 /** Prompts user to connect from a list of wallets. Will onboard a user for an uninstalled wallet if the functionality is available. */
-export const ConnectNonIbcWallet: FunctionComponent<
+export const SelectAssetSourceModal: FunctionComponent<
   ModalBaseProps & {
     initiallySelectedWalletId?: string;
     desiredSourceKey?: SourceChainKey;

@@ -20,6 +20,7 @@ export const TransferButtonCell: FunctionComponent<
   isUnstable,
   onWithdraw,
   onDeposit,
+  onBuyOsmo,
 }) => {
   const t = useTranslation();
   return type === "withdraw" ? (
@@ -31,12 +32,16 @@ export const TransferButtonCell: FunctionComponent<
         action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
       />
     ) : null
-  ) : chainId && coinDenom && onDeposit ? (
+  ) : chainId && coinDenom && (onDeposit || onBuyOsmo) ? (
     <TransferButton
       disabled={isUnstable}
       externalUrl={depositUrlOverride}
-      label={t("assets.table.depositButton")}
-      action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
+      label={onBuyOsmo ? "Buy OSMO" : t("assets.table.depositButton")}
+      action={
+        onBuyOsmo
+          ? onBuyOsmo
+          : () => onDeposit?.(chainId, coinDenom, depositUrlOverride)
+      }
     />
   ) : null;
 };

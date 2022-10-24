@@ -46,6 +46,7 @@ interface Props {
     externalUrl?: string
   ) => void;
   onDeposit: (chainId: string, coinDenom: string, externalUrl?: string) => void;
+  onBuyOsmo: () => void;
 }
 
 export const AssetsTable: FunctionComponent<Props> = ({
@@ -55,6 +56,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
   onWithdrawIntent,
   onDeposit: do_onDeposit,
   onWithdraw: do_onWithdraw,
+  onBuyOsmo,
 }) => {
   const { chainStore } = useStore();
   const t = useTranslation();
@@ -113,6 +115,7 @@ export const AssetsTable: FunctionComponent<Props> = ({
               ? value?.toDec().toString()
               : "0",
           isCW20: false,
+          onBuyOsmo: balance.denom === "OSMO" ? onBuyOsmo : undefined,
         };
       }),
       ...initialAssetsSort(
