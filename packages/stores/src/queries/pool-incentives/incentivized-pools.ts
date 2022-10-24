@@ -121,25 +121,17 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
   );
 
   /**
-   * Computes the external incentive APR for the given duration
+   * Computes the external incentive APR for the given gaugeId and denom
    */
   readonly computeExternalIncentiveGaugeAPR = computedFn(
     (
       poolId: string,
       gaugeId: string,
       denom: string,
-      duration: Duration,
       priceStore: IPriceStore,
       fiatCurrency: FiatCurrency
     ): RatePretty => {
       const observableGauge = this.queryGauge.get(gaugeId);
-
-      if (
-        duration.asMilliseconds() !==
-        observableGauge.lockupDuration.asMilliseconds()
-      ) {
-        return new RatePretty(new Dec(0));
-      }
 
       if (observableGauge.remainingEpoch < 1) {
         return new RatePretty(new Dec(0));

@@ -193,38 +193,46 @@ const Pool: FunctionComponent = observer(() => {
       gaugeDurationMap.set(gauge.duration.asSeconds(), gauge);
     });
 
-    // Compute combined APR (internal gauge + white-listed external gauge)
+    const allowedExternalGauges =
+      pool?.id && ExternalIncentiveGaugeAllowList[pool.id]
+        ? ExternalIncentiveGaugeAllowList[pool.id]
+        : [];
+
+    // Combine the internal incentive APR and sum of external incentive APRs
     gaugeDurationMap.forEach((gauge) => {
-      const baseApy = queryOsmosis.queryIncentivizedPools.computeAPY(
+      const baseAPR = queryOsmosis.queryIncentivizedPools.computeAPY(
         pool?.id ?? "",
         gauge.duration,
         priceStore,
         fiat
       );
 
-      const allowedExternalGauges =
-        pool?.id && ExternalIncentiveGaugeAllowList[pool.id]
-          ? ExternalIncentiveGaugeAllowList[pool.id]
-          : [];
+      const externalAPR = allowedGauges
+        .filter(
+          (extGauge) =>
+            extGauge.duration.asMilliseconds() ===
+            gauge.duration.asMilliseconds()
+        )
+        .reduce((apr, extGauge) => {
+          const denom =
+            allowedExternalGauges.find((allowList) => {
+              return allowList.gaugeId === extGauge.id;
+            })?.denom ?? "";
 
-      const externalApy = allowedExternalGauges.reduce((apy, allowList) => {
-        return apy.add(
-          queryOsmosis.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
-            pool?.id ?? "",
-            allowList.gaugeId,
-            allowList.denom,
-            gauge.duration,
-            priceStore,
-            fiat
-          )
-        );
-      }, new RatePretty(new Dec(0)));
-
-      const totalApr = baseApy.add(externalApy);
+          return apr.add(
+            queryOsmosis.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
+              pool?.id ?? "",
+              extGauge.id,
+              denom,
+              priceStore,
+              fiat
+            )
+          );
+        }, new RatePretty(new Dec(0)));
 
       gaugeDurationMap.set(gauge.duration.asSeconds(), {
         ...gauge,
-        apr: totalApr,
+        apr: baseAPR.add(externalAPR),
       });
     });
 
