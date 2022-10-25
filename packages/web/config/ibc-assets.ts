@@ -38,8 +38,6 @@ export const IBCAssetInfos: (IBCAsset & {
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.usdc.ethereum],
-      tokenMinDenom: IS_TESTNET ? "uausdc" : "uusdc", // test: "uausdc"
-      transferFeeMinAmount: IS_TESTNET ? "150000" : "10500000", // From https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
     },
   },
   {
@@ -56,8 +54,6 @@ export const IBCAssetInfos: (IBCAsset & {
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.weth.ethereum],
-      tokenMinDenom: IS_TESTNET ? "weth-wei" : "weth-wei",
-      transferFeeMinAmount: IS_TESTNET ? "60000000000000" : "6300000000000000",
     },
   },
   {
@@ -941,8 +937,8 @@ export const IBCAssetInfos: (IBCAsset & {
   },
   {
     counterpartyChainId: "lambda_92000-1",
-    sourceChannelId: "channel-2",
-    destChannelId: "channel-378",
+    sourceChannelId: "channel-378",
+    destChannelId: "channel-2",
     coinMinimalDenom: "ulamb",
   },
   {

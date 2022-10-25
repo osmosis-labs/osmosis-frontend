@@ -10,3 +10,4 @@ export * from "./use-remove-liquidity-config";
 export * from "./use-slippage-config";
 export * from "./use-superfluid-pool-config";
 export * from "./use-trade-token-in-config";
+export * from "./use-transfer-config";
