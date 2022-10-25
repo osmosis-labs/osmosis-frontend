@@ -55,7 +55,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
     makeObservable(this);
   }
 
-  /** Gets all available durations for user to bond in, with a breakdown of the assets incentivizing the duration. Internal OSMO incentives included in breakdown. */
+  /** Gets all available durations for user to bond in, with a breakdown of the assets incentivizing the duration. Internal OSMO incentives & swap fees included in breakdown. */
   readonly getBondableAllowedDurations = computedFn(
     (
       findCurrency: (denom: string) => AppCurrency | undefined,
@@ -150,7 +150,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
         }
 
         // push external incentives to current duration
-        externalGaugesOfDuration.forEach(({ id, duration }) => {
+        externalGaugesOfDuration.forEach(({ id }) => {
           const queryGauge = this.queries.queryGauge.get(id);
           const allowedGauge = allowedGauges?.find(
             ({ gaugeId }) => gaugeId === id
@@ -167,12 +167,12 @@ export class ObservableBondLiquidityConfig extends UserConfig {
             dailyPoolReward: queryGauge
               .getRemainingCoin(currency)
               .quo(new Dec(queryGauge.remainingEpoch)),
-            apr: this.queries.queryIncentivizedPools.computeExternalIncentiveAPYForSpecificDuration(
+            apr: this.queries.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
               poolId,
-              duration,
+              allowedGauge.gaugeId,
+              allowedGauge.denom,
               this.priceStore,
-              fiatCurrency,
-              externalGauges
+              fiatCurrency
             ),
           });
         });
