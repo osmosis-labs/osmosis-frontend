@@ -2114,7 +2114,7 @@ const chainInfos = (
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx:
-        "https://explorer.unification.chainmasters.ninja/unification/tx/${txHash}",
+        "https://explorer.unification.chainmasters.ninja/unification/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
