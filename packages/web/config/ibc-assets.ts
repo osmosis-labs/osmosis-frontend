@@ -809,7 +809,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
     destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
     coinMinimalDenom: IS_TESTNET ? "wdev-wei" : "wglmr-wei",
-    sourceChainNameOverride: IS_TESTNET ? "Moonbase" : "Moonbeam",
+    sourceChainNameOverride: IS_TESTNET ? "Moonbase Alpha" : "Moonbeam",
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],

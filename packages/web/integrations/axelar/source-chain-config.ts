@@ -65,7 +65,7 @@ export const SourceChainConfigs: {
   glmr: {
     moonbeam: {
       id: IS_TESTNET
-        ? ("Moonbase" as const)
+        ? ("Moonbase Alpha" as const)
         : ("Moonbeam" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x1436aE0dF0A8663F18c0Ec51d7e2E46591730715"

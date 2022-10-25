@@ -24,21 +24,23 @@ export type SourceChain =
   | "Fantom"
   | "Polygon"
   | "Moonbeam"
-  | "Moonbase"
+  | "Moonbase Alpha"
   | "Binance";
 
 /** Maps eth client chainIDs => axelar chain ids.
+ *
+ *  ethClientChainIDs must be specified in ../ethereuem/types.ts::ChainNames{} to map the name to a chainID, which is in turn used to add the network to EVM-compatible wallets, like Metamask.
+ *
+ * AxelarChainIds must be specified in SourceChain{} and are used in ./source-chain-configs.ts::SourceChainConfigs{} as <asset>::<network>::id values.
  *
  *  Values not included as keys are assumed to be the same across chainlist and Axelar.
  */
 export const EthClientChainIds_AxelarChainIdsMap: {
   [ethClientChainIds: string]: SourceChain;
 } = {
-  "Ropsten Test Network": "Ethereum",
   "Avalanche C-Chain": "Avalanche",
   "Binance Smart Chain": "Binance",
   "Fantom Opera": "Fantom",
-  "Moonbase": "Moonbeam",
 };
 
 export type SourceChainConfig = {

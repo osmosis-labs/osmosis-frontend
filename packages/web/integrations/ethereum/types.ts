@@ -24,8 +24,8 @@ export interface EthWallet
 
 export type SendFn = Pick<EthWallet, "send">["send"];
 
-/** Ethereum chains: https://docs.metamask.io/guide/ethereum-provider.html#chain-ids */
 export const ChainNames: { [chainId: string]: string } = {
+  /** Ethereum chains: https://docs.metamask.io/guide/ethereum-provider.html#chain-ids */
   "0x1": "Ethereum",
   "0x3": "Ropsten Test Network",
   "0x4": "Rinkeby Test Network",
@@ -38,6 +38,7 @@ export const ChainNames: { [chainId: string]: string } = {
   "0x89": "Polygon",
   "0xfa": "Fantom Opera",
   "0x504": "Moonbeam",
+  "0x507": "Moonbase Alpha",
   "0x2329": "Evmos",
   "0xa86a": "Avalanche C-Chain",
   "0x4e454152": "Aurora",
