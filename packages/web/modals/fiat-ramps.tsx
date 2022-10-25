@@ -1,24 +1,43 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect } from "react";
 import { ModalBase, ModalBaseProps } from "./base";
 import { FiatRampKey } from "../integrations";
-import { Transak } from "../integrations/transak";
+import { useTransakModal } from "../integrations/transak";
+import { Kado } from "../integrations/kado";
 
 export const FiatRampsModal: FunctionComponent<
-  { fiatRampKey: FiatRampKey } & ModalBaseProps
-> = (props) => (
-  <ModalBase {...props} overlayClassName="!hidden">
-    {(() => {
-      switch (props.fiatRampKey) {
-        case "transak":
-          return (
-            <Transak
-              onRequestClose={props.onRequestClose}
-              showTransakModalOnMount={true}
-            />
-          );
-        default:
-          return null;
+  { fiatRampKey: FiatRampKey; assetKey: string } & ModalBaseProps
+> = (props) => {
+  const { fiatRampKey, isOpen } = props;
+
+  const { setModal } = useTransakModal({
+    onRequestClose: props.onRequestClose,
+  });
+
+  useEffect(() => {
+    if (fiatRampKey === "transak") {
+      if (isOpen) {
+        setModal(true);
+      } else {
+        setModal(false);
       }
-    })()}
-  </ModalBase>
-);
+    }
+  }, [fiatRampKey, isOpen]);
+
+  return (
+    <ModalBase
+      {...props}
+      overlayClassName={fiatRampKey === "transak" ? "!hidden" : undefined}
+      className="w-fit p-0 m-0"
+      hideCloseButton
+    >
+      {(() => {
+        switch (fiatRampKey) {
+          case "kado":
+            return <Kado {...props} />;
+          default:
+            return null;
+        }
+      })()}
+    </ModalBase>
+  );
+};

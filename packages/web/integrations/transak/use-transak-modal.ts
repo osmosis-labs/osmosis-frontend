@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { WalletStatus } from "@keplr-wallet/stores";
 import { useStore } from "../../stores";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
@@ -20,9 +21,10 @@ export function useTransakModal(
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
 
   const [transak, setTransak] = useState<any | null>(null);
+  const [shouldShow, setShouldShow] = useState(false);
 
   useEffect(() => {
-    if (account.bech32Address !== "") {
+    if (account.walletStatus === WalletStatus.Loaded) {
       import("@transak/transak-sdk" as any).then(({ default: transakSdk }) => {
         const transak = new transakSdk({
           apiKey: IS_TESTNET
@@ -45,28 +47,28 @@ export function useTransakModal(
         // This will trigger when the user closed the widget
         transak.on(transak.EVENTS.TRANSAK_WIDGET_CLOSE, () => {
           transak.close();
+          setShouldShow(false);
           onRequestClose?.();
         });
 
         // This will trigger when the user marks payment is made.
         transak.on(transak.EVENTS.TRANSAK_ORDER_SUCCESSFUL, () => {
           transak.close();
+          setShouldShow(false);
           onRequestClose?.();
         });
       });
+    } else {
+      setTransak(null);
     }
-  }, [account.bech32Address]);
+  }, [account.walletStatus]);
 
   useEffect(() => {
-    if (showOnMount && transak) {
+    if ((showOnMount || shouldShow) && transak) {
       transak.init();
+      setShouldShow(false);
     }
-  }, [transak]);
+  }, [shouldShow, transak]);
 
-  return {
-    setModal: (show) => {
-      if (show) transak?.init();
-      else transak?.close();
-    },
-  };
+  return { setModal: setShouldShow };
 }

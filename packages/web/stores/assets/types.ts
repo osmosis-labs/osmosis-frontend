@@ -23,7 +23,7 @@ export interface IBCAsset {
   originBridgeInfo?: OriginBridgeInfo;
 
   /** Keys for fiat on/off ramps. Ramp must accept asset's major denom (e.g. `ATOM`). */
-  fiatOnRamps?: FiatRampKey[];
+  fiatRamps?: { rampKey: FiatRampKey; assetKey: string }[];
 }
 
 export interface CoinBalance {
@@ -51,7 +51,7 @@ export interface IBCBalance extends CoinBalance {
   destChannelId: string;
   isUnstable?: boolean;
   originBridgeInfo?: OriginBridgeInfo;
-  fiatOnRamps?: FiatRampKey[];
+  fiatRamps?: { rampKey: FiatRampKey; assetKey: string }[];
 }
 
 export interface IBCCW20ContractBalance extends IBCBalance {

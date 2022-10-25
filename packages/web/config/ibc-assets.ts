@@ -41,6 +41,7 @@ export const IBCAssetInfos: (IBCAsset & {
       tokenMinDenom: IS_TESTNET ? "uausdc" : "uusdc", // test: "uausdc"
       transferFeeMinAmount: IS_TESTNET ? "150000" : "10500000", // From https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
     },
+    fiatRamps: [{ rampKey: "kado" as const, assetKey: "USDC" }],
   },
   {
     counterpartyChainId: IS_TESTNET

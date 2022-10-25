@@ -1,7 +1,12 @@
 import { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { WalletCard } from "../components/cards";
-import { SourceChainKey, Wallet } from "../integrations";
+import { AssetSourceCard } from "../components/cards";
+import {
+  FiatRampKey,
+  SourceChainKey,
+  Wallet,
+  FiatRampDisplayInfos,
+} from "../integrations";
 import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
 
@@ -12,14 +17,17 @@ export const SelectAssetSourceModal: FunctionComponent<
     desiredSourceKey?: SourceChainKey;
     isWithdraw: boolean;
     wallets: Wallet[];
-    onSelectWallet: (key: string) => void;
+    fiatRamps?: FiatRampKey[];
+    onSelectSource: (key: string) => void;
   }
 > = observer((props) => {
-  const [selectedWalletKey, setSelectedWalletId] = useState<string | null>(
-    props.initiallySelectedWalletId ?? null
-  );
+  const [selectedAssetSourceKey, setSelectedAssetSourceKey] = useState<
+    string | null
+  >(props.initiallySelectedWalletId ?? null);
 
-  const selectedWallet = props.wallets.find((w) => w.key === selectedWalletKey);
+  const selectedWallet = props.wallets.find(
+    (w) => w.key === selectedAssetSourceKey
+  );
   const canOnboardSelectedWallet =
     selectedWallet && !selectedWallet.isInstalled && selectedWallet.onboard;
 
@@ -28,12 +36,13 @@ export const SelectAssetSourceModal: FunctionComponent<
       className: "h-14 md:w-full w-96 mt-3 mx-auto !px-1",
       size: "lg",
       disabled:
-        props.initiallySelectedWalletId === undefined && !selectedWalletKey,
+        props.initiallySelectedWalletId === undefined &&
+        !selectedAssetSourceKey,
       onClick: () => {
         if (canOnboardSelectedWallet) {
           selectedWallet!.onboard?.();
-        } else if (selectedWalletKey) {
-          props.onSelectWallet(selectedWalletKey);
+        } else if (selectedAssetSourceKey) {
+          props.onSelectSource(selectedAssetSourceKey);
         } else {
           console.error(
             "Wallet selection invalid state: selectedWalletKey undefined"
@@ -59,14 +68,23 @@ export const SelectAssetSourceModal: FunctionComponent<
       title={props.isWithdraw ? "Withdraw to" : "Deposit from"}
     >
       <div className="grid grid-cols-3 md:grid-cols-2 gap-4 m-4">
-        {props.wallets.map((wallet, i) => (
-          <WalletCard
-            key={i}
+        {props.wallets.map((wallet, index) => (
+          <AssetSourceCard
+            key={index}
             id={wallet.key}
             {...wallet.displayInfo}
             isConnected={wallet.isConnected}
-            isSelected={wallet.key === selectedWalletKey}
-            onClick={() => setSelectedWalletId(wallet.key)}
+            isSelected={wallet.key === selectedAssetSourceKey}
+            onClick={() => setSelectedAssetSourceKey(wallet.key)}
+          />
+        ))}
+        {props.fiatRamps?.map((fiatRampKey, index) => (
+          <AssetSourceCard
+            key={index}
+            id={fiatRampKey}
+            {...FiatRampDisplayInfos[fiatRampKey]}
+            isSelected={fiatRampKey === selectedAssetSourceKey}
+            onClick={() => setSelectedAssetSourceKey(fiatRampKey)}
           />
         ))}
       </div>

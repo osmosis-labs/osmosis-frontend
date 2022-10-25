@@ -28,6 +28,7 @@ export class ObservableTransferUIConfig {
   // * clicking back button
   // * transferring from the global deposit/withdraw buttons
   // * transferring by clicking on an asset table row
+  // * launching fiat on/off ramps
 
   @observable
   protected _ibcTransferModal:
@@ -168,7 +169,11 @@ export class ObservableTransferUIConfig {
         (wallet) => wallet.isConnected
       );
 
-      if (alreadyConnectedWallet && alreadyConnectedWallet.chainId) {
+      if (
+        alreadyConnectedWallet &&
+        alreadyConnectedWallet.chainId &&
+        (!balance.fiatRamps || balance.fiatRamps.length === 0)
+      ) {
         this.launchBridgeTransferModal(
           direction,
           balance,
@@ -198,7 +203,7 @@ export class ObservableTransferUIConfig {
 
   @action
   buyOsmo() {
-    this.launchFiatRampsModal("transak");
+    this.launchFiatRampsModal("transak", "OSMO");
   }
 
   // SECTION - methods for launching a particular modal
@@ -322,8 +327,13 @@ export class ObservableTransferUIConfig {
       isWithdraw: direction === "withdraw",
       onRequestClose: () => this.closeAllModals(),
       wallets,
-      onSelectWallet: (key) => {
+      fiatRamps: balanceOnOsmosis.fiatRamps?.map(({ rampKey }) => rampKey),
+      onSelectSource: (key) => {
         const selectedWallet = wallets.find((wallet) => wallet.key === key);
+        const selectedFiatRamp = balanceOnOsmosis.fiatRamps?.find(
+          ({ rampKey }) => rampKey === key
+        );
+
         if (selectedWallet !== undefined) {
           // enable then call back
           const openBridgeModal = () => {
@@ -356,8 +366,14 @@ export class ObservableTransferUIConfig {
             wallets.forEach((wallet) => wallet.disable());
             selectedWallet.enable().then(openBridgeModal);
           } else openBridgeModal();
+        } else if (selectedFiatRamp !== undefined) {
+          this.closeAllModals();
+          this.launchFiatRampsModal(
+            selectedFiatRamp.rampKey,
+            selectedFiatRamp.assetKey
+          );
         } else {
-          console.error("Given wallet key doesn't match any wallet");
+          console.error("Given wallet or fiat ramp key doesn't match anything");
           this.closeAllModals();
         }
       },
@@ -391,20 +407,17 @@ export class ObservableTransferUIConfig {
   }
 
   @action
-  protected launchFiatRampsModal(fiatRampKey: FiatRampKey) {
-    console.log("launch ramp");
-
+  protected launchFiatRampsModal(fiatRampKey: FiatRampKey, assetKey: string) {
     this._fiatRampsModal = {
       isOpen: true,
       onRequestClose: () => this.closeAllModals(),
       fiatRampKey,
+      assetKey,
     };
   }
 
   @action
   protected closeAllModals() {
-    console.log("closeAllModals");
-
     this._selectAssetSourceModal =
       this._assetSelectModal =
       this._bridgeTransferModal =
