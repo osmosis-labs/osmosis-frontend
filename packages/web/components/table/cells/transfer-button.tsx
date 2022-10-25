@@ -2,7 +2,6 @@ import Image from "next/image";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
-import { Button } from "../../../components/buttons/button";
 import { AssetCell as Cell } from "./types";
 import { useStore } from "../../../stores";
 import { useTranslation } from "react-multi-lang";
@@ -64,7 +63,7 @@ const TransferButton: FunctionComponent<{
   externalUrl ? (
     <a
       className={classNames(
-        "mx-auto flex justify-center items-center gap-0.5 pl-1 pt-2 text-button font-subtitle2 base text-secondary-200",
+        "mx-auto flex justify-center items-center gap-1 pl-1 pt-2 text-subtitle1 base text-wosmongton-200",
         { "opacity-30": disabled }
       )}
       rel="noreferrer"
@@ -78,19 +77,23 @@ const TransferButton: FunctionComponent<{
       {label}
       <Image
         alt="external transfer link"
-        src="/icons/external-link-secondary-200.svg"
-        height={8}
-        width={8}
+        src="/icons/external-link.svg"
+        height={13}
+        width={13}
       />
     </a>
   ) : (
-    <Button
-      className="m-auto text-button"
+    <button
+      className="flex items-center gap-1 text-wosmongton-200 m-auto text-subtitle1"
       onClick={action}
       disabled={disabled}
-      size="xs"
-      type="arrow-sm"
     >
       <span>{label}</span>
-    </Button>
+      <Image
+        alt="chevron"
+        src="/icons/chevron-right.svg"
+        height={13}
+        width={13}
+      />
+    </button>
   );
