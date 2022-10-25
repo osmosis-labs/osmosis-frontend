@@ -88,9 +88,9 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
   );
 
   /**
-   * Returns the APY of the longest lockable duration.
+   * Returns the APR of the longest lockable duration.
    */
-  readonly computeMostAPY = computedFn(
+  readonly computeMostApr = computedFn(
     (poolId: string, priceStore: IPriceStore): RatePretty => {
       if (!this.isIncentivized(poolId)) {
         return new RatePretty(new Dec(0));
@@ -111,7 +111,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         return new RatePretty(new Dec(0));
       }
 
-      return this.computeAPY(
+      return this.computeApr(
         poolId,
         lockableDurations[0],
         priceStore,
@@ -210,7 +210,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
    * 리워드를 받을 수 있는 풀의 연당 이익률을 반환한다.
    * 리워드를 받을 수 없는 풀일 경우 0를 리턴한다.
    */
-  readonly computeAPY = computedFn(
+  readonly computeApr = computedFn(
     (
       poolId: string,
       duration: Duration,
@@ -239,7 +239,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         return new RatePretty(new Dec(0));
       }
 
-      let apy = this.computeAPYForSpecificDuration(
+      let apr = this.computeAprForSpecificDuration(
         poolId,
         duration,
         priceStore,
@@ -247,14 +247,12 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       );
 
       for (const lockableDuration of lockableDurations) {
-        // 인센티브는 unlock 기간보다 짧은 모든 팟에 분배된다.
-        // 그러므로 apy를 계산하기 위해서는 제시된 duration보다 짧은 모든 duration에 대한 apy를 더해줘야 한다.
         if (lockableDuration.asMilliseconds() >= duration.asMilliseconds()) {
           break;
         }
 
-        apy = apy.add(
-          this.computeAPYForSpecificDuration(
+        apr = apr.add(
+          this.computeAprForSpecificDuration(
             poolId,
             lockableDuration,
             priceStore,
@@ -263,7 +261,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         );
       }
 
-      return apy;
+      return apr;
     }
   );
 
@@ -363,7 +361,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     }
   );
 
-  protected computeAPYForSpecificDuration(
+  protected computeAprForSpecificDuration(
     poolId: string,
     duration: Duration,
     priceStore: IPriceStore,

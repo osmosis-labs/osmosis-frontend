@@ -27,9 +27,9 @@ export declare class ObservableQueryIncentivizedPools extends ObservableChainQue
     /** Internal incentives (OSMO). */
     readonly getIncentivizedGaugeId: (poolId: string, duration: Duration) => string | undefined;
     /**
-     * Returns the APY of the longest lockable duration.
+     * Returns the APR of the longest lockable duration.
      */
-    readonly computeMostAPY: (poolId: string, priceStore: IPriceStore) => RatePretty;
+    readonly computeMostApr: (poolId: string, priceStore: IPriceStore) => RatePretty;
     /**
      * Computes the external incentive APR for the given gaugeId and denom
      */
@@ -38,8 +38,8 @@ export declare class ObservableQueryIncentivizedPools extends ObservableChainQue
      * 리워드를 받을 수 있는 풀의 연당 이익률을 반환한다.
      * 리워드를 받을 수 없는 풀일 경우 0를 리턴한다.
      */
-    readonly computeAPY: (poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency) => RatePretty;
+    readonly computeApr: (poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency) => RatePretty;
     readonly computeDailyRewardForDuration: (poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency) => CoinPretty | undefined;
-    protected computeAPYForSpecificDuration(poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency): RatePretty;
+    protected computeAprForSpecificDuration(poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency): RatePretty;
     get isAprFetching(): boolean;
 }

@@ -139,7 +139,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
                     .quo(pool.totalShare)
                 ),
             apr: queryOsmosis.queryIncentivizedPools
-              .computeMostAPY(pool.id, priceStore)
+              .computeMostApr(pool.id, priceStore)
               .add(
                 // swap fees
                 queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(

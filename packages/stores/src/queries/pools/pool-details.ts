@@ -89,7 +89,7 @@ export class ObservableQueryPoolDetails extends UserConfig {
 
         const gauge = this.queries.queryGauge.get(gaugeId);
 
-        const apr = this.queries.queryIncentivizedPools.computeAPY(
+        const apr = this.queries.queryIncentivizedPools.computeApr(
           this.queryPool.id,
           gauge.lockupDuration,
           this.priceStore,
@@ -178,7 +178,7 @@ export class ObservableQueryPoolDetails extends UserConfig {
             this.queryPool.id
           )
             ? new RatePretty(
-                this.queries.queryIncentivizedPools.computeAPY(
+                this.queries.queryIncentivizedPools.computeApr(
                   this.queryPool.id,
                   lockedAsset.duration,
                   this.priceStore,

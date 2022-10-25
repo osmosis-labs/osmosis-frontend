@@ -381,7 +381,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                       }
                     >
                       {queriesOsmosis.queryIncentivizedPools
-                        .computeMostAPY(poolId, priceStore)
+                        .computeMostApr(poolId, priceStore)
                         .maxDecimals(2)
                         .toString()}
                     </MetricLoader>

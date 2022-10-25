@@ -160,7 +160,7 @@ export class ObservableQuerySuperfluidPool extends UserConfig {
               );
 
               if (this.queryPoolDetails.lockableDurations.length > 0) {
-                const poolApr = this.queries.queryIncentivizedPools.computeAPY(
+                const poolApr = this.queries.queryIncentivizedPools.computeApr(
                   this.queryPoolDetails.pool.id,
                   this.queryPoolDetails.longestDuration,
                   this.priceStore,

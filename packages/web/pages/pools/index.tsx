@@ -78,7 +78,7 @@ const Pools: NextPage = observer(function () {
             superfluidPool.id,
             priceStore
           ),
-        apr: queryOsmosis.queryIncentivizedPools.computeMostAPY(
+        apr: queryOsmosis.queryIncentivizedPools.computeMostApr(
           superfluidPool.id,
           priceStore
         ),
@@ -283,7 +283,7 @@ const Pools: NextPage = observer(function () {
           <div className="flex flex-col gap-4">
             <div className="mt-5 grid grid-cards md:gap-3">
               {dustFilteredPools.map((myPool) => {
-                const apr = queryOsmosis.queryIncentivizedPools.computeMostAPY(
+                const apr = queryOsmosis.queryIncentivizedPools.computeMostApr(
                   myPool.id,
                   priceStore
                 );
