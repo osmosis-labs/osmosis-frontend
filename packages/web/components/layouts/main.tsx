@@ -7,8 +7,6 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import {
   useWindowSize,
-  useWindowScroll,
-  useBooleanWithWindowEvent,
   useAmplitudeAnalytics,
   useCurrentLanguage,
 } from "../../hooks";
@@ -34,12 +32,10 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
     useCurrentLanguage();
 
     const { height, isMobile } = useWindowSize();
-    const [_, isScrolledTop] = useWindowScroll();
-    const [showSidebar, setShowSidebar] = useBooleanWithWindowEvent(false);
 
     const smallVerticalScreen = height < 850;
 
-    const showFixedLogo = !smallVerticalScreen || isMobile;
+    const showFixedLogo = !smallVerticalScreen && !isMobile;
     const showBlockLogo = smallVerticalScreen && !isMobile;
 
     const selectedMenuItem = menus.find(
@@ -53,7 +49,7 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
             <OsmosisFullLogo onClick={() => router.push("/")} />
           </div>
         )}
-        <article className="fixed md:hidden flex flex-col inset-y-0 z-40 bg-card px-2 py-6 w-sidebar overflow-x-hidden">
+        <article className="fixed md:hidden flex flex-col inset-y-0 z-40 bg-osmoverse-800 px-2 py-6 w-sidebar overflow-x-hidden">
           {showBlockLogo && (
             <div className="grow-0 ml-2 z-50 w-sidebar mx-auto">
               <OsmosisFullLogo width={166} onClick={() => router.push("/")} />
@@ -61,29 +57,11 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
           )}
           <MenuItems menus={menus} />
         </article>
-        <div
-          className={classNames(
-            "fixed flex z-40 h-mobile-header w-screen items-center justify-end px-5",
-            {
-              "bg-black/80": !isScrolledTop && isMobile,
-              hidden: showSidebar || !isMobile,
-            }
-          )}
-        >
-          <div
-            className={classNames({ hidden: showSidebar })}
-            onClick={() => setShowSidebar(true)}
-          >
-            <Image
-              alt="menu"
-              src={IS_FRONTIER ? "/icons/menu-white.svg" : "/icons/menu.svg"}
-              height={38}
-              width={38}
-            />
-          </div>
-        </div>
-        <NavBar className="ml-sidebar" title={selectedMenuItem?.label ?? ""} />
-        <div className="ml-sidebar md:ml-0 h-content bg-osmoverse-900">
+        <NavBar
+          className="ml-sidebar md:ml-0"
+          title={selectedMenuItem?.label ?? ""}
+        />
+        <div className="ml-sidebar md:ml-0 h-content md:h-content-mobile bg-osmoverse-900">
           {children}
         </div>
       </React.Fragment>

@@ -10,9 +10,10 @@ import { useBooleanWithWindowEvent } from "../../hooks";
 import { IUserSetting } from "../../stores/user-settings";
 import { useTranslation } from "react-multi-lang";
 
+/** Nav bar at top of page. React children used for dropdown menu on mobile. */
 export const NavBar: FunctionComponent<
   { title: string; backElementClassNames?: string } & CustomClasses
-> = observer(({ title, className, backElementClassNames }) => {
+> = observer(({ title, className, backElementClassNames, children }) => {
   const {
     navBarStore,
     chainStore: {
@@ -36,15 +37,26 @@ export const NavBar: FunctionComponent<
     <>
       <div
         className={classNames(
-          "fixed z-[100] flex place-content-between items-center bg-osmoverse-900 h-navbar w-[calc(100vw_-_12.875rem)] px-8",
+          "fixed z-[100] flex place-content-between md:place-content-start md:gap-6 items-center bg-osmoverse-900 h-navbar md:h-navbar-mobile w-[calc(100vw_-_12.875rem)] md:w-full px-8 md:px-4",
           className
         )}
       >
-        <div className="flex items-center gap-9">
-          <h4>{navBarStore.title || title}</h4>
+        <div className="hidden md:block">
+          <Image
+            alt="mobile menu"
+            src="/icons/hamburger.svg"
+            height={30}
+            width={30}
+          />
+        </div>
+        <div className="md:w-full md:place-content-between flex items-center gap-9 md:gap-6">
+          <h4 className="md:font-h6 md:text-h6">
+            {navBarStore.title || title}
+          </h4>
           <div className="flex items-center gap-3">
             {navBarStore.callToActionButtons.map((button, index) => (
               <NewButton
+                className={index > 0 ? "md:hidden" : undefined}
                 mode={index > 0 ? "secondary" : undefined}
                 key={index}
                 {...button}
@@ -54,7 +66,7 @@ export const NavBar: FunctionComponent<
             ))}
           </div>
         </div>
-        <div className="flex gap-3 items-center">
+        <div className="md:hidden flex gap-3 items-center">
           <div className="relative">
             <NavBarButton
               iconurl="/icons/setting.svg"
@@ -70,11 +82,11 @@ export const NavBar: FunctionComponent<
           </div>
           {!walletConnected ? (
             <NewButton
+              className="w-[168px] h-10"
               onClick={() => {
                 account.init();
                 setHoverWalletInfo(false);
               }}
-              className="w-[168px] h-10"
             >
               <span className="mx-auto button">{t("menu.connectWallet")}</span>
             </NewButton>
@@ -116,7 +128,7 @@ export const NavBar: FunctionComponent<
       {/* Back-layer element to occupy space for the caller */}
       <div
         className={classNames(
-          "bg-osmoverse-900 h-navbar",
+          "bg-osmoverse-900 h-navbar md:h-navbar-mobile",
           backElementClassNames
         )}
       />

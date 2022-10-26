@@ -297,7 +297,7 @@ const Pool: FunctionComponent = observer(() => {
   }, [poolDetailConfig?.userAvailableValue, bondableDurations]);
 
   return (
-    <main className="flex flex-col gap-10 bg-osmoverse-900 min-h-screen p-8">
+    <main className="flex flex-col gap-10 md:gap-4 bg-osmoverse-900 min-h-screen p-8 md:p-4">
       <Head>
         <title>
           {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
@@ -370,7 +370,7 @@ const Pool: FunctionComponent = observer(() => {
       <div className="flex flex-col gap-4 bg-osmoverse-1000 rounded-4xl pb-5">
         <div
           className={classNames(
-            "flex flex-col gap-10 px-10 pt-10 transition-height duration-300 ease-inOutBack overflow-hidden",
+            "flex flex-col gap-10 px-10 pt-10 md:px-5 md:pt-7 transition-height duration-300 ease-inOutBack overflow-hidden",
             showPoolDetails
               ? "h-[230px] xl:h-[300px] lg:h-[510px]"
               : "h-[120px] xl:h-[180px] lg:h-[300px]"
@@ -456,7 +456,7 @@ const Pool: FunctionComponent = observer(() => {
       {poolDetailConfig?.userStats && (
         <div className="w-full flex items-center gap-4">
           <div className="w-full flex flex-col gap-3 bg-osmoverse-1000 px-10 py-7 rounded-4xl">
-            <div className="flex items-center gap-3 place-content-between">
+            <div className="flex items-center md:flex-col md:items-start gap-3 place-content-between">
               <div className="flex shrink-0 flex-col gap-1">
                 <h4 className="text-osmoverse-100">
                   {poolDetailConfig.userStats.bondedValue.toString()}
@@ -487,7 +487,7 @@ const Pool: FunctionComponent = observer(() => {
           </div>
         </div>
       )}
-      <div className="flex flex-col gap-7">
+      <div className="flex flex-col gap-7 md:gap-4">
         <h5 className="md:text-h6 md:font-h6">Put your assets to work.</h5>
         <span className="subtitle1 md:text-body1 md:font-body1 text-osmoverse-300">
           Add your assets to this pool to unlock exciting APRs. The longer your
@@ -499,7 +499,7 @@ const Pool: FunctionComponent = observer(() => {
             levelCta === 1 ? "bg-gradient-positive" : "bg-osmoverse-800"
           )}
         >
-          <div className="flex flex-col gap-10 bg-osmoverse-800 rounded-4x4pxlinset p-9">
+          <div className="flex flex-col gap-10 bg-osmoverse-800 rounded-4x4pxlinset p-9 md:p-5">
             <div className="flex items-start lg:flex-col lg:gap-14 place-content-between">
               <div className="flex flex-col gap-4">
                 <div className="flex items-baseline flex-wrap gap-4">
@@ -568,8 +568,8 @@ const Pool: FunctionComponent = observer(() => {
             levelCta === 2 ? "bg-gradient-positive" : "bg-osmoverse-800"
           )}
         >
-          <div className="flex flex-col gap-10 bg-osmoverse-800 rounded-4x4pxlinset p-9">
-            <div className="flex place-content-between">
+          <div className="flex flex-col gap-10 bg-osmoverse-800 rounded-4x4pxlinset p-9 md:p-5">
+            <div className="flex lg:flex-col gap-10 place-content-between">
               <div className="flex flex-col gap-4">
                 <div className="flex items-baseline flex-wrap gap-4">
                   <LevelBadge level={2} />
@@ -582,9 +582,12 @@ const Pool: FunctionComponent = observer(() => {
                 </span>
               </div>
               <NewButton
-                className={classNames("h-16 w-96 px-20 py-4 border-none", {
-                  "bg-gradient-positive text-osmoverse-900": levelCta === 2,
-                })}
+                className={classNames(
+                  "h-16 w-96 md:w-full px-20 py-4 border-none",
+                  {
+                    "bg-gradient-positive text-osmoverse-900": levelCta === 2,
+                  }
+                )}
                 disabled={levelCta !== 2}
                 onClick={() => setShowLockLPTokenModal(true)}
               >

@@ -29,7 +29,7 @@ export const BondCard: FunctionComponent<
   const [drawerUp, setDrawerUp] = useState(false);
 
   return (
-    <div className="relative flex flex-col gap-[115px] overflow-hidden w-fit h-[380px] max-w-[348px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8">
+    <div className="relative flex flex-col gap-[115px] overflow-hidden w-[360px] h-[380px] max-w-[348px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8">
       <div className="flex flex-col gap-4">
         <div className="flex items-start gap-4 place-content-between">
           <div className="flex flex-col gap-3">
@@ -175,7 +175,7 @@ const Drawer: FunctionComponent<{
       >
         <div className="flex flex-col">
           <span className="subtitle1 text-osmoverse-200">Incentives</span>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 md:gap-1.5">
             <h5
               className={classNames(
                 superfluid ? "text-superfluid" : "text-bullish-400"
@@ -217,7 +217,7 @@ const Drawer: FunctionComponent<{
           )}
           onClick={toggleDetailsVisible}
         >
-          <span className="caption text-osmoverse-400">Details</span>
+          <span className="md:hidden caption text-osmoverse-400">Details</span>
           <div
             className={classNames("flex items-center transition-transform", {
               "rotate-180": drawerUp,
@@ -321,7 +321,7 @@ const IncentiveBreakdownRow: FunctionComponent<
   BondableDuration["incentivesBreakdown"][0]
 > = ({ dailyPoolReward, apr, numDaysRemaining }) => (
   <div className="flex items-start place-content-between">
-    <div className="flex items-center gap-2">
+    <div className="flex items-center shrink-0 gap-2">
       <h6 className="text-osmoverse-200">+{apr.maxDecimals(0).toString()}</h6>
       {dailyPoolReward.currency.coinImageUrl && (
         <Image
