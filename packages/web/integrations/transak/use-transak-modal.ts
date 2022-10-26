@@ -29,7 +29,7 @@ export function useTransakModal(
         const transak = new transakSdk({
           apiKey: IS_TESTNET
             ? "901b8814-ce22-46e4-813f-4f3e46cd96cb"
-            : process.env.NEXT_PUBLIC_TRANSAK_KEY, // Your API Key
+            : "43081699-9def-4599-9499-cc51a6952624", // API Key
           environment: IS_TESTNET ? "STAGING" : "PRODUCTION", // STAGING/PRODUCTION
           widgetHeight: "625px",
           widgetWidth: "500px",
