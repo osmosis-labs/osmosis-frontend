@@ -17,7 +17,8 @@ const CONNECTED_ACCOUNT_KEY = "wc-eth-connected-account";
 const CONNECTED_ACCOUNT_CHAINID = "wc-eth-connected-chainId";
 
 export class ObservableWalletConnect implements EthWallet {
-  key: WalletKey = "walletconnect";
+  readonly key: WalletKey = "walletconnect";
+  readonly mobileEnabled = false;
 
   displayInfo: WalletDisplay = {
     iconUrl: "/icons/walletconnect.svg",

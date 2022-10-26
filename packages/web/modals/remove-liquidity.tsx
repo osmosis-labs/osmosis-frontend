@@ -1,5 +1,6 @@
 import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
+import { ObservableRemoveLiquidityConfig } from "@osmosis-labs/stores";
 import { useStore } from "../stores";
 import {
   useConnectWalletModalRedirect,
@@ -12,6 +13,10 @@ import { useTranslation } from "react-multi-lang";
 export const RemoveLiquidityModal: FunctionComponent<
   {
     poolId: string;
+    onRemoveLiquidity?: (
+      result: Promise<void>,
+      config: ObservableRemoveLiquidityConfig
+    ) => void;
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
@@ -31,12 +36,16 @@ export const RemoveLiquidityModal: FunctionComponent<
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      className: "h-14 md:w-full md:px-1 w-96 mt-3 mx-auto",
-      size: "lg",
-      loading: isSendingMsg,
+      className: "w-full h-16 md:px-1 mt-3",
       disabled: config.error !== undefined || isSendingMsg,
-      onClick: () => removeLiquidity().finally(() => props.onRequestClose()),
-      children: t("pool.manageLiquidity.tabRemoveLiquidity"),
+      onClick: () =>
+        props.onRemoveLiquidity?.(
+          removeLiquidity().finally(() => props.onRequestClose()),
+          config
+        ),
+      children: config.error
+        ? config.error.message
+        : t("pool.manageLiquidity.tabRemoveLiquidity"),
     },
     props.onRequestClose
   );

@@ -6,7 +6,6 @@ export * from "./create-pool";
 export * from "./ibc-transfer";
 export * from "./keplr-connection-selection";
 export * from "./lock-tokens";
-export * from "./manage-liquidity";
 export * from "./superfluid-validator";
 export * from "./menu-options";
 export * from "./pre-transfer";

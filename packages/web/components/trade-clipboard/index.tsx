@@ -282,7 +282,7 @@ export const TradeClipboard: FunctionComponent<{
                     key={slippage.index}
                     className={classNames(
                       "flex items-center justify-center w-full h-8 cursor-pointer rounded-full text-white-high",
-                      slippage.selected ? "bg-primary-200" : "bg-background"
+                      slippage.selected ? "bg-wosmongton-200" : "bg-background"
                     )}
                     onClick={(e) => {
                       e.preventDefault();
@@ -310,7 +310,7 @@ export const TradeClipboard: FunctionComponent<{
                   slippageConfig.isManualSlippage
                     ? slippageConfig.getManualSlippageError()
                       ? "bg-missionError"
-                      : "bg-primary-200"
+                      : "bg-wosmongton-200"
                     : "bg-background"
                 )}
                 onClick={(e) => {
@@ -384,7 +384,7 @@ export const TradeClipboard: FunctionComponent<{
               <span className="caption text-sm md:text-xs text-white-full">
                 {t("swap.available")}
               </span>
-              <span className="caption text-sm md:text-xs text-primary-50 ml-1.5">
+              <span className="caption text-sm md:text-xs text-wosmongton-100 ml-1.5">
                 {queries.queryBalances
                   .getQueryBech32Address(account.bech32Address)
                   .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency)
@@ -397,9 +397,9 @@ export const TradeClipboard: FunctionComponent<{
             <div className="flex items-center gap-1.5">
               <button
                 className={classNames(
-                  "button text-primary-50 hover:bg-primary-50/30 border border-primary-50 text-xs py-1 px-1.5 rounded-md",
+                  "button text-wosmongton-100 hover:bg-wosmongton-100/30 border border-wosmongton-100 text-xs py-1 px-1.5 rounded-md",
                   tradeTokenInConfig.fraction === 1
-                    ? "bg-primary-50/40"
+                    ? "bg-wosmongton-100/40"
                     : "bg-transparent"
                 )}
                 onClick={(e) => {
@@ -424,9 +424,9 @@ export const TradeClipboard: FunctionComponent<{
               </button>
               <button
                 className={classNames(
-                  "button text-primary-50 hover:bg-primary-50/30 border border-primary-50 text-xs py-1 px-1.5 rounded-md",
+                  "button text-wosmongton-100 hover:bg-wosmongton-100/30 border border-wosmongton-100 text-xs py-1 px-1.5 rounded-md",
                   tradeTokenInConfig.fraction === 0.5
-                    ? "bg-primary-50/40"
+                    ? "bg-wosmongton-100/40"
                     : "bg-transparent"
                 )}
                 onClick={(e) => {
@@ -560,7 +560,7 @@ export const TradeClipboard: FunctionComponent<{
         >
           <div
             className={classNames(
-              "w-full h-full rounded-full flex items-center shadow-elevation-04dp",
+              "w-full h-full rounded-full flex items-center",
               {
                 "bg-card": !isHoveringSwitchButton,
                 "bg-[#4E477C]": isHoveringSwitchButton,
@@ -847,7 +847,7 @@ export const TradeClipboard: FunctionComponent<{
             ? "error"
             : "primary"
         }
-        className="flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
+        className="flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full"
         disabled={
           account.walletStatus === WalletStatus.Loaded &&
           (tradeTokenInConfig.error !== undefined ||

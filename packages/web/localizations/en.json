@@ -89,7 +89,7 @@
       "buttonNext": "Next",
       "buttonBack": "Previous",
       "buttonAddToken": "Add new token",
-      "buttonMAX": "MAX",
+      "available": "Available",
       "amount": "Amount",
       "token": "Token",
       "swapFee": "Set Swap Fee",

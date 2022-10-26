@@ -2,14 +2,13 @@ import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { KVStore } from "@keplr-wallet/common";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { pow } from "@osmosis-labs/math";
 import { IPriceStore } from "../../price";
 import { ObservableQueryPool } from "../../queries/pools";
-import { ObservableQueryExternal } from "../store";
+import { ObservableQueryExternalBase } from "../store";
 import { PoolFeesMetrics, PoolFees } from "./types";
 
 /** Queries Imperator pool fee history data. */
-export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<PoolFees> {
+export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternalBase<PoolFees> {
   constructor(kvStore: KVStore, baseURL: string) {
     super(kvStore, baseURL, "/fees/v1/pools");
 
@@ -69,29 +68,20 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternal<Pool
     }
   );
 
-  /** Get pool non-incentivized return from fees based on past 7d of activity, compounded. */
-  readonly get7dPoolFeeApy = computedFn(
+  /** Get pool non-incentivized return from fees based on past 7d of activity. */
+  readonly get7dPoolFeeApr = computedFn(
     (pool: ObservableQueryPool, priceStore: IPriceStore): RatePretty => {
       const { feesSpent7d } = this.getPoolFeesMetrics(pool.id, priceStore);
       const avgDayFeeRevenue = new Dec(feesSpent7d.toDec().toString(), 6).quo(
         new Dec(7)
       );
       const poolTVL = pool.computeTotalValueLocked(priceStore).toDec();
+      const revenuePerYear = avgDayFeeRevenue.mul(new Dec(365));
 
-      if (poolTVL.equals(new Dec(0))) {
-        return new RatePretty(0).ready(false);
-      }
-      const percentRevenue = avgDayFeeRevenue.quo(poolTVL);
-      const dailyRate = new Dec(1).add(percentRevenue);
+      if (poolTVL.equals(new Dec(0)) || revenuePerYear.equals(new Dec(0)))
+        return new RatePretty(0);
 
-      if (!dailyRate.lt(new Dec(2))) return new RatePretty(0);
-
-      const rate = pow(dailyRate, new Dec(365));
-
-      return new RatePretty(rate)
-        .sub(new Dec(1))
-        .mul(new Dec(2))
-        .moveDecimalPointLeft(2);
+      return new RatePretty(revenuePerYear.quo(poolTVL));
     }
   );
 }

@@ -28,19 +28,15 @@ export const CreatePoolModal: FunctionComponent<
         config.clearAssets();
         props.onRequestClose();
       }}
+      onRequestBack={curStep && curStep !== 1 ? backStep : undefined}
     >
       {curStep === 1 && (
-        <Step1SetRatios
-          createPoolConfig={config}
-          advanceStep={advanceStep}
-          backStep={backStep}
-        />
+        <Step1SetRatios createPoolConfig={config} advanceStep={advanceStep} />
       )}
       {curStep === 2 && (
         <Step2AddLiquidity
           createPoolConfig={config}
           advanceStep={advanceStep}
-          backStep={backStep}
         />
       )}
       {curStep === 3 && (
@@ -48,7 +44,6 @@ export const CreatePoolModal: FunctionComponent<
           createPoolConfig={config}
           isSendingMsg={isSendingMsg}
           advanceStep={onCreatePool}
-          backStep={backStep}
         />
       )}
     </ModalBase>

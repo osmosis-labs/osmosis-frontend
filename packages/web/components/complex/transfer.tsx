@@ -178,7 +178,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
               !panelDisabled &&
               !isEditingWithdrawAddr && (
                 <Button
-                  className="border border-primary-50 hover:border-primary-50/60 text-primary-50 hover:text-primary-50/60"
+                  className="border border-wosmongton-100 hover:border-wosmongton-100/60 text-wosmongton-100 hover:text-wosmongton-100/60"
                   type="outline"
                   onClick={() => {
                     setIsEditingWithdrawAddr(true);
@@ -202,7 +202,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                   {
                     label: "Enter",
                     className:
-                      "bg-primary-50 hover:bg-primary-50 border-0 rounded-md",
+                      "bg-wosmongton-100 hover:bg-wosmongton-100 border-0 rounded-md",
                     onClick: () => setIsEditingWithdrawAddr(false),
                     disabled: !editWithdrawAddrConfig.isValid,
                   },
@@ -235,7 +235,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             >
               Available{!isMobile && ` on ${from.networkName}`}:{" "}
               <button
-                className="text-primary-50 cursor-pointer disabled:cursor-default"
+                className="text-wosmongton-100 cursor-pointer disabled:cursor-default"
                 disabled={availableBalance?.toDec().isZero()}
                 onClick={() => {
                   toggleIsMax();

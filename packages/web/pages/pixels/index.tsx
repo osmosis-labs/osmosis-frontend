@@ -296,7 +296,7 @@ const Pixels: NextPage = observer(function () {
   return (
     <main>
       <div className="w-full h-screen bg-background">
-        <div className="absolute pointer-events-none top-10 left-1/2 z-[11]  py-2 px-8 bg-primary-200 flex items-center rounded-lg">
+        <div className="absolute pointer-events-none top-10 left-1/2 z-[11]  py-2 px-8 bg-wosmongton-200 flex items-center rounded-lg">
           {`${new IntPretty(
             new Dec(status.response?.data.numDots ?? 0)
           )} pixels placed`}
@@ -338,7 +338,7 @@ const Pixels: NextPage = observer(function () {
                       borderRadius: "8px",
                       pointerEvents: "all",
                     }}
-                    className={"bg-primary-200"}
+                    className={"bg-wosmongton-200"}
                     onClick={() => zoomOut()}
                   >
                     -
@@ -356,7 +356,7 @@ const Pixels: NextPage = observer(function () {
                       borderRadius: "8px",
                       pointerEvents: "all",
                     }}
-                    className={"bg-primary-200"}
+                    className={"bg-wosmongton-200"}
                     onClick={() => zoomIn()}
                   >
                     +
@@ -398,7 +398,7 @@ const Pixels: NextPage = observer(function () {
           }}
         </TransformWrapper>
         <div className="relative">
-          <div className="absolute pointer-events-none bottom-[40px] left-1/2 -translate-x-1/2 z-[11] py-2 px-8 bg-primary-200 flex items-center rounded-lg">
+          <div className="absolute pointer-events-none bottom-[40px] left-1/2 -translate-x-1/2 z-[11] py-2 px-8 bg-wosmongton-200 flex items-center rounded-lg">
             Pixels has ended. Thank you for playing.
           </div>
         </div>

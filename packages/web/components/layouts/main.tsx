@@ -206,7 +206,9 @@ export const MainLayout: FunctionComponent<MainLayoutProps> = observer(
           <div className="fixed ml-sidebar md:ml-0 h-content w-screen bg-black/30" />
         )}
         <NavBar className="ml-sidebar" title={selectedMenuItem?.label ?? ""} />
-        <div className="ml-sidebar md:ml-0 h-content">{children}</div>
+        <div className="ml-sidebar md:ml-0 h-content bg-osmoverse-900">
+          {children}
+        </div>
       </React.Fragment>
     );
   }

@@ -129,9 +129,10 @@ export const TokenSelect: FunctionComponent<
       <div className="flex md:justify-start justify-center items-center relative">
         {selectedCurrency && (
           <button
-            className={`flex items-center gap-2 text-left ${
-              canSelectTokens ? "cursor-pointer" : ""
-            }`}
+            className={classNames(
+              "flex items-center gap-2 text-left",
+              canSelectTokens ? "cursor-pointer" : "cursor-default"
+            )}
             onClick={(e) => {
               e.stopPropagation();
               if (canSelectTokens) {
@@ -193,7 +194,7 @@ export const TokenSelect: FunctionComponent<
         ) : (
           isSelectOpen && (
             <div
-              className="absolute -bottom-1.5 md:-left-3 -left-4 translate-y-full md:p-1 p-3.5 bg-surface rounded-b-2xl z-50 w-[24.5rem] sm:w-[calc(100vw-50px)] md:max-w-[400px]"
+              className="absolute -bottom-1.5 md:-left-3 -left-4 translate-y-full md:p-1 p-3.5 bg-osmoverse-800 rounded-b-2xl z-50 w-[24.5rem] sm:w-[calc(100vw-50px)] md:max-w-[400px]"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center h-9 pl-4 mb-3 rounded-2xl bg-card">

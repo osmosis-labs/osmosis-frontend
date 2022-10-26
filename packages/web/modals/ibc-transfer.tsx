@@ -81,7 +81,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               }
             );
           },
-          loading: inTransit,
           children: (
             <h6 className="md:text-base text-lg">
               {isWithdraw
