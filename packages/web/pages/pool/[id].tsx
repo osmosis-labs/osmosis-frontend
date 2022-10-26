@@ -372,7 +372,7 @@ const Pool: FunctionComponent = observer(() => {
           className={classNames(
             "flex flex-col gap-10 px-10 pt-10 transition-height duration-300 ease-inOutBack overflow-hidden",
             showPoolDetails
-              ? "h-[250px] xl:h-[300px] lg:h-[510px]"
+              ? "h-[230px] xl:h-[300px] lg:h-[510px]"
               : "h-[120px] xl:h-[180px] lg:h-[300px]"
           )}
         >
@@ -488,8 +488,8 @@ const Pool: FunctionComponent = observer(() => {
         </div>
       )}
       <div className="flex flex-col gap-7">
-        <h5>Put your assets to work.</h5>
-        <span className="subtitle1 text-osmoverse-300">
+        <h5 className="md:text-h6 md:font-h6">Put your assets to work.</h5>
+        <span className="subtitle1 md:text-body1 md:font-body1 text-osmoverse-300">
           Add your assets to this pool to unlock exciting APRs. The longer your
           unbonding period, the more you make. Learn more
         </span>
@@ -500,13 +500,13 @@ const Pool: FunctionComponent = observer(() => {
           )}
         >
           <div className="flex flex-col gap-10 bg-osmoverse-800 rounded-4x4pxlinset p-9">
-            <div className="flex items-start place-content-between">
+            <div className="flex items-start lg:flex-col lg:gap-14 place-content-between">
               <div className="flex flex-col gap-4">
                 <div className="flex items-baseline flex-wrap gap-4">
                   <LevelBadge level={1} />
-                  <div className="flex shrink-0 items-center gap-4">
-                    <h5>Earn swap fees</h5>
-                    <h5 className="text-bullish-400">{`${
+                  <div className="flex shrink-0 items-center gap-4 sm:flex-wrap sm:shrink">
+                    <h5 className="md:text-h6 md:font-h6">Earn swap fees</h5>
+                    <h5 className="md:text-h6 md:font-h6 text-bullish-400">{`${
                       pool
                         ? queryGammPoolFeeMetrics
                             .get7dPoolFeeApr(pool, priceStore)
@@ -516,30 +516,42 @@ const Pool: FunctionComponent = observer(() => {
                     } APR`}</h5>
                   </div>
                 </div>
-                <span className="caption text-osmoverse-200">
+                <span className="caption md:text-body2 md:font-body2 text-osmoverse-200">
                   Convert your tokens into shares and earn on every swap.
                 </span>
               </div>
-              <div className="flex shrink-0 gap-4">
-                <NewButton
-                  className="h-16 px-20 py-4"
-                  mode="secondary"
-                  onClick={() => setShowRemoveLiquidityModal(true)}
-                >
-                  Remove liquidity
-                </NewButton>
-                <NewButton
-                  className={classNames("h-16 px-20 py-4", {
-                    "bg-gradient-positive text-osmoverse-900": levelCta === 1,
-                  })}
-                  onClick={() => setShowAddLiquidityModal(true)}
-                >
-                  Add Liquidity
-                </NewButton>
+              <div className="w-full md:flex flex-col items-start gap-4">
+                <div className="hidden lg:flex flex-col items-end gap-3">
+                  <h3 className="md:text-h4 md:font-h4">
+                    {`${queryOsmosis.queryGammPoolShare
+                      .getAvailableGammShare(bech32Address, poolId)
+                      .trim(true)
+                      .hideDenom(true)
+                      .maxDecimals(4)
+                      .toString()} shares`}
+                  </h3>
+                </div>
+                <div className="lg:w-full flex shrink-0 xs:shrink xs:flex-wrap gap-4">
+                  <NewButton
+                    className="lg:w-full h-16 px-20 py-4"
+                    mode="secondary"
+                    onClick={() => setShowRemoveLiquidityModal(true)}
+                  >
+                    Remove liquidity
+                  </NewButton>
+                  <NewButton
+                    className={classNames("lg:w-full h-16 px-20 py-4", {
+                      "bg-gradient-positive text-osmoverse-900": levelCta === 1,
+                    })}
+                    onClick={() => setShowAddLiquidityModal(true)}
+                  >
+                    Add Liquidity
+                  </NewButton>
+                </div>
               </div>
             </div>
-            <div className="flex flex-col items-end gap-3">
-              <h3>
+            <div className="lg:hidden flex flex-col items-end gap-3">
+              <h3 className="md:text-h4 md:font-h4">
                 {`${queryOsmosis.queryGammPoolShare
                   .getAvailableGammShare(bech32Address, poolId)
                   .trim(true)
@@ -607,7 +619,7 @@ const Pool: FunctionComponent = observer(() => {
 
 const LevelBadge: FunctionComponent<{ level: number }> = ({ level }) => (
   <div className="bg-wosmongton-400 rounded-xl px-5 py-1">
-    <h5>Level {level}</h5>
+    <h5 className="md:text-h6 md:font-h6">Level {level}</h5>
   </div>
 );
 

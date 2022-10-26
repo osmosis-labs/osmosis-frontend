@@ -38,9 +38,13 @@ export const NewButton: FunctionComponent<
     >
       {typeof children === "string" ? (
         size === "sm" ? (
-          <span className="button mx-auto">{children}</span>
+          <span className="button mx-auto md:text-subtitle1 md:font-subtitle1">
+            {children}
+          </span>
         ) : (
-          <h6 className="mx-auto">{children}</h6>
+          <h6 className="mx-auto md:text-subtitle1 md:font-subtitle1">
+            {children}
+          </h6>
         )
       ) : (
         children
