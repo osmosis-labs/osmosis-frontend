@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { MetricLoader } from "../loaders";
 import { InfoTooltip } from "../tooltip";
 import { LoadingProps, MobileProps } from "../types";
+import { useTranslation } from "react-multi-lang";
 
 export const PoolGaugeCard: FunctionComponent<
   {
@@ -11,36 +12,40 @@ export const PoolGaugeCard: FunctionComponent<
     superfluidApr?: string;
   } & LoadingProps &
     MobileProps
-> = ({ days, apr, isLoading = false, superfluidApr, isMobile = false }) => (
-  <div
-    className={classNames(
-      "w-full p-0.5 rounded-xl",
-      superfluidApr ? "bg-superfluid" : "bg-card" // vanilla tailwind does not support border gradients
-    )}
-  >
-    <div className="flex flex-col w-full h-full gap-1 bg-card rounded-xlinset md:pl-[30%] md:p-3.5 py-5 px-7">
-      <UnbondingPeriodHeader isMobile={isMobile}>
+> = ({ days, apr, isLoading = false, superfluidApr, isMobile = false }) => {
+  const t = useTranslation();
+  return (
+    <div
+      className={classNames(
+        "w-full p-0.5 rounded-xl",
+        superfluidApr ? "bg-superfluid" : "bg-card" // vanilla tailwind does not support border gradients
+      )}
+    >
+      <div className="flex flex-col w-full h-full gap-1 bg-card rounded-xlinset md:pl-[30%] md:p-3.5 py-5 px-7">
+        <UnbondingPeriodHeader isMobile={isMobile}>
+          <MetricLoader className="h-6 md:h-4" isLoading={isLoading}>
+            {t("pool.gauges.time", { time: days ?? "0" })}
+            {superfluidApr && (
+              <InfoTooltip
+                className="flex shrink-0"
+                style="secondary-200"
+                iconSrcOverride="/icons/superfluid-osmo.svg"
+                size={{ height: 23, width: 23 }}
+                content={t("pool.gauges.info")}
+              />
+            )}
+          </MetricLoader>
+        </UnbondingPeriodHeader>
         <MetricLoader className="h-6 md:h-4" isLoading={isLoading}>
-          {days ?? "0"} unbonding
-          {superfluidApr && (
-            <InfoTooltip
-              className="flex shrink-0"
-              style="secondary-200"
-              iconSrcOverride="/icons/superfluid-osmo.svg"
-              size={{ height: 23, width: 23 }}
-              content="Superfluid Staking lets you secure the network and receive additional rewards paid out in OSMO."
-            />
-          )}
+          <p className="font-caption text-lg text-secondary-200 md:subtitle2">
+            {t("pool.gauges.APR")} {apr ?? "0%"}{" "}
+            {superfluidApr ? `+ ${superfluidApr}` : null}
+          </p>
         </MetricLoader>
-      </UnbondingPeriodHeader>
-      <MetricLoader className="h-6 md:h-4" isLoading={isLoading}>
-        <p className="font-caption text-lg text-secondary-200 md:subtitle2">
-          APR {apr ?? "0%"} {superfluidApr ? `+ ${superfluidApr}` : null}
-        </p>
-      </MetricLoader>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const UnbondingPeriodHeader: FunctionComponent<MobileProps> = ({
   isMobile = false,

@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { FunctionComponent } from "react";
 import { Button } from "../../../components/buttons/button";
 import { AssetCell as Cell } from "./types";
+import { useTranslation } from "react-multi-lang";
 
 export const TransferButtonCell: FunctionComponent<
   {
@@ -19,13 +20,14 @@ export const TransferButtonCell: FunctionComponent<
   isUnstable,
   onWithdraw,
   onDeposit,
-}) =>
-  type === "withdraw" ? (
+}) => {
+  const t = useTranslation();
+  return type === "withdraw" ? (
     chainId && coinDenom && onWithdraw ? (
       <TransferButton
         disabled={isUnstable}
         externalUrl={withdrawUrlOverride}
-        label="Withdraw"
+        label={t("assets.table.withdrawButton")}
         action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
       />
     ) : null
@@ -33,10 +35,11 @@ export const TransferButtonCell: FunctionComponent<
     <TransferButton
       disabled={isUnstable}
       externalUrl={depositUrlOverride}
-      label="Deposit"
+      label={t("assets.table.depositButton")}
       action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
     />
   ) : null;
+};
 
 const TransferButton: FunctionComponent<{
   externalUrl?: string;

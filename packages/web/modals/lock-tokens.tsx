@@ -1,53 +1,66 @@
 import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { Duration } from "dayjs/plugin/duration";
 import classNames from "classnames";
-import { RatePretty, CoinPretty } from "@keplr-wallet/unit";
 import { AmountConfig } from "@keplr-wallet/hooks";
+import { useStore } from "../stores";
 import { InputBox } from "../components/input";
 import { Error } from "../components/alert";
 import { CheckBox } from "../components/control";
 import { ModalBase, ModalBaseProps } from "./base";
 import { MobileProps } from "../components/types";
-import { useConnectWalletModalRedirect } from "../hooks";
+import {
+  useConnectWalletModalRedirect,
+  usePoolGauges,
+  usePoolDetailConfig,
+  useSuperfluidPoolConfig,
+  useWindowSize,
+} from "../hooks";
+import { useTranslation } from "react-multi-lang";
 
 export const LockTokensModal: FunctionComponent<
-  ModalBaseProps & {
-    gauges: {
-      id: string;
-      duration: Duration;
-      apr?: RatePretty;
-      superfluidApr?: RatePretty;
-    }[];
+  {
+    poolId: string;
     amountConfig: AmountConfig;
-    availableToken?: CoinPretty;
     /** `electSuperfluid` is left undefined if it is irrelevant- if the user has already opted into superfluid in the past. */
     onLockToken: (gaugeId: string, electSuperfluid?: boolean) => void;
-    /* Used to label the main button as "Next" to choose validator or "Bond" to reuse chosen sfs validator.
-       If `true`, "Superfluid Stake" checkbox will not be shown since user has already opted in. */
-    hasSuperfluidValidator?: boolean;
-    isSendingMsg?: boolean;
-  } & MobileProps
+  } & ModalBaseProps
 > = observer((props) => {
-  const {
-    gauges,
-    amountConfig: config,
-    availableToken,
-    onLockToken,
-    hasSuperfluidValidator,
-    isSendingMsg,
-    isMobile = false,
-  } = props;
+  const { poolId, amountConfig: config, onLockToken } = props;
+  const t = useTranslation();
 
-  const isSuperfluid = gauges.some(
+  const { chainStore, accountStore, queriesStore } = useStore();
+  const { isMobile } = useWindowSize();
+
+  const { chainId } = chainStore.osmosis;
+  const queryOsmosis = queriesStore.get(chainId).osmosis!;
+  const account = accountStore.getAccount(chainId);
+  const { bech32Address } = account;
+
+  const { allAggregatedGauges } = usePoolGauges(poolId);
+
+  // initialize pool data stores once root pool store is loaded
+  const { poolDetailConfig } = usePoolDetailConfig(poolId);
+  const { superfluidPoolConfig } = useSuperfluidPoolConfig(poolDetailConfig);
+
+  const availableToken = queryOsmosis.queryGammPoolShare.getAvailableGammShare(
+    bech32Address,
+    poolId
+  );
+  const isSendingMsg = account.txTypeInProgress !== "";
+  const hasSuperfluidValidator =
+    superfluidPoolConfig?.superfluid?.delegations &&
+    superfluidPoolConfig.superfluid.delegations.length > 0;
+
+  const isSuperfluid = allAggregatedGauges.some(
     (gauge) => gauge.superfluidApr !== undefined
   );
   const [selectedGaugeIndex, setSelectedGaugeIndex] = useState<number | null>(
     null
   );
 
-  const highestGaugeSelected = selectedGaugeIndex === gauges.length - 1;
+  const highestGaugeSelected =
+    selectedGaugeIndex === allAggregatedGauges.length - 1;
   const [electSuperfluid, setElectSuperfluid] = useState(true);
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
@@ -60,7 +73,9 @@ export const LockTokensModal: FunctionComponent<
         isSendingMsg,
       loading: isSendingMsg,
       onClick: () => {
-        const gauge = gauges.find((_, index) => index === selectedGaugeIndex);
+        const gauge = allAggregatedGauges.find(
+          (_, index) => index === selectedGaugeIndex
+        );
         if (gauge) {
           onLockToken(
             gauge.id,
@@ -75,40 +90,48 @@ export const LockTokensModal: FunctionComponent<
       },
       children:
         electSuperfluid && !hasSuperfluidValidator && highestGaugeSelected
-          ? "Next"
-          : "Bond" || undefined,
+          ? t("pool.lockToken.buttonNext")
+          : t("pool.lockToken.buttonBond") || undefined,
     },
     props.onRequestClose
   );
 
   // auto select the gauge if there's one
   useEffect(() => {
-    if (gauges.length === 1) setSelectedGaugeIndex(0);
-  }, [gauges]);
+    if (allAggregatedGauges.length === 1) setSelectedGaugeIndex(0);
+  }, [allAggregatedGauges]);
 
   return (
-    <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
+    <ModalBase
+      title={`Lock Shares in Pool #${poolId}`}
+      {...props}
+      isOpen={props.isOpen && showModalBase}
+    >
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-col gap-2.5">
           <span className="subitle1">
-            Unbonding period
-            {gauges.length > 3 && !isMobile ? ` (${gauges.length})` : null}
+            {t("pool.lockToken.unbondingPeriod")}
+            {allAggregatedGauges.length > 3 && !isMobile
+              ? ` (${allAggregatedGauges.length})`
+              : null}
           </span>
           <div className="flex md:flex-col gap-4 overflow-x-auto">
-            {gauges.map(({ id, duration, apr, superfluidApr }, index) => (
-              <LockupItem
-                key={id}
-                duration={duration.humanize()}
-                isSelected={index === selectedGaugeIndex}
-                onSelect={() => setSelectedGaugeIndex(index)}
-                apr={apr?.maxDecimals(2).trim(true).toString()}
-                superfluidApr={superfluidApr
-                  ?.maxDecimals(0)
-                  .trim(true)
-                  .toString()}
-                isMobile={isMobile}
-              />
-            ))}
+            {allAggregatedGauges.map(
+              ({ id, duration, apr, superfluidApr }, index) => (
+                <LockupItem
+                  key={id}
+                  duration={duration.humanize()}
+                  isSelected={index === selectedGaugeIndex}
+                  onSelect={() => setSelectedGaugeIndex(index)}
+                  apr={apr?.maxDecimals(2).trim(true).toString()}
+                  superfluidApr={superfluidApr
+                    ?.maxDecimals(0)
+                    .trim(true)
+                    .toString()}
+                  isMobile={isMobile}
+                />
+              )
+            )}
           </div>
         </div>
         {!hasSuperfluidValidator && highestGaugeSelected && isSuperfluid && (
@@ -118,7 +141,7 @@ export const LockTokensModal: FunctionComponent<
               isOn={electSuperfluid}
               onToggle={() => setElectSuperfluid(!electSuperfluid)}
             >
-              Superfluid Stake
+              {t("pool.lockToken.superfluidStake")}
             </CheckBox>
             <Image
               alt=""
@@ -129,10 +152,10 @@ export const LockTokensModal: FunctionComponent<
           </div>
         )}
         <div className="flex flex-col gap-2 md:border-0 border border-white-faint md:rounded-0 rounded-2xl md:p-px p-4">
-          <span className="subtitle1">Amount To Bond</span>
+          <span className="subtitle1">{t("pool.lockToken.amountToBond")}</span>
           {availableToken && (
             <div className="flex gap-1 caption">
-              <span>Available LP Token</span>
+              <span>{t("pool.lockToken.availableToken")}</span>
               <span className="text-primary-50">
                 {availableToken.trim(true).toString()}
               </span>
@@ -145,7 +168,7 @@ export const LockTokensModal: FunctionComponent<
             placeholder=""
             labelButtons={[
               {
-                label: "MAX",
+                label: t("pool.lockToken.inputMax"),
                 onClick: () => config.toggleIsMax(),
                 className: "!my-auto !h-6 !bg-primary-200 !caption",
               },
@@ -153,7 +176,12 @@ export const LockTokensModal: FunctionComponent<
           />
         </div>
         {config.error?.message !== undefined && (
-          <Error className="mx-auto" message={config.error?.message ?? ""} />
+          <Error
+            className="mx-auto"
+            message={
+              config.error?.message ? t(`errors.${config.error.message}`) : ""
+            }
+          />
         )}
         {accountActionButton}
       </div>

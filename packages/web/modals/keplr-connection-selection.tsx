@@ -60,7 +60,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
         }}
       >
         <Image
-          src="/images/keplr-logo.png"
+          src="/images/keplr-logo.svg"
           alt="keplr logo"
           width={64}
           height={64}
@@ -69,6 +69,9 @@ export const KeplrConnectionSelectModal: FunctionComponent<
           <h6>Keplr Wallet</h6>
           <p className="body2 text-iconDefault mt-1">Keplr Browser Extension</p>
         </div>
+        <p className="body2 text-iconDefault mt-1">
+          {overrideWithKeplrInstallLink}
+        </p>
       </button>
     )}
     <button

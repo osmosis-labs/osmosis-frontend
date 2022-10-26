@@ -13,10 +13,12 @@ import { IBCCurrency } from "@keplr-wallet/types";
 import { CheckBox } from "../../../control";
 import { POOL_CREATION_FEE } from ".";
 import { useWindowSize } from "../../../../hooks";
+import { useTranslation } from "react-multi-lang";
 
 export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
   const { createPoolConfig: config } = props;
   const { isMobile } = useWindowSize();
+  const t = useTranslation();
 
   const series = useMemo(() => {
     return generateSeries(
@@ -49,8 +51,8 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
           </figure>
           <div className="flex flex-col gap-2">
             <div className="flex place-content-between caption md:text-xxs text-white-disabled">
-              <span>Token</span>
-              <span>Amount</span>
+              <span>{t("pools.createPool.token")}</span>
+              <span>{t("pools.createPool.amount")}</span>
             </div>
             {config.assets.map(
               (
@@ -104,7 +106,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
           </div>
         </div>
         <div className="flex p-3.5 md:p-2.5 items-center place-content-between border border-white-faint rounded-2xl">
-          <span className="md:subtitle2">Set Swap Fee</span>
+          <span className="md:subtitle2">{t("pools.createPool.swapFee")}</span>
           <div className="flex items-center gap-4 md:gap-1">
             <InputBox
               className="w-44 md:w-20"
@@ -129,11 +131,10 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
           >
             {isMobile ? (
               <div className="w-2/3 mx-auto">
-                I understand that creating a new pool will cost{" "}
-                {POOL_CREATION_FEE}.
+                {t("pools.createPool.undersandCost", { POOL_CREATION_FEE })}
               </div>
             ) : (
-              `I understand that creating a new pool will cost ${POOL_CREATION_FEE}.`
+              t("pools.createPool.undersandCost", { POOL_CREATION_FEE })
             )}
           </CheckBox>
         </div>

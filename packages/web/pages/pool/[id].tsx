@@ -1,10 +1,6 @@
 import Head from "next/head";
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import { Staking } from "@keplr-wallet/stores";
-import {
-  ObservableQueryPoolDetails,
-  ObservableQuerySuperfluidPool,
-} from "@osmosis-labs/stores";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
@@ -31,17 +27,19 @@ import { BaseCell, ColumnDef, Table } from "../../components/table";
 import { DepoolingTable } from "../../components/table/depooling-table";
 import { truncateString } from "../../components/utils";
 import {
-  ExternalIncentiveGaugeAllowList,
   UnPoolWhitelistedPoolIds,
   EventName,
   PromotedLBPPoolIds,
 } from "../../config";
 import {
   useAddLiquidityConfig,
-  useAmountConfig,
   useRemoveLiquidityConfig,
+  useLockTokenConfig,
+  useSuperfluidPoolConfig,
   useWindowSize,
   useAmplitudeAnalytics,
+  usePoolGauges,
+  usePoolDetailConfig,
 } from "../../hooks";
 import {
   LockTokensModal,
@@ -50,13 +48,18 @@ import {
   TradeTokens,
 } from "../../modals";
 import { useStore } from "../../stores";
+import { useTranslation } from "react-multi-lang";
+
+const E = EventName.PoolDetail;
 
 const Pool: FunctionComponent = observer(() => {
   const router = useRouter();
-  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+  const t = useTranslation();
+  const { chainStore, queriesStore, accountStore, priceStore, userSettings } =
+    useStore();
   const { isMobile } = useWindowSize();
 
-  const { id: poolId } = router.query;
+  const { id: poolId } = router.query as { id: string };
   const { chainId } = chainStore.osmosis;
   const lbpConfig = PromotedLBPPoolIds.find(
     ({ poolId: lbpPoolId }) => lbpPoolId === poolId
@@ -65,8 +68,6 @@ const Pool: FunctionComponent = observer(() => {
   const queryCosmos = queriesStore.get(chainId).cosmos;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
-  const pool = queryOsmosis.queryGammPools.getPool(poolId as string);
-  const { bech32Address } = accountStore.getAccount(chainId);
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
 
   // eject to pools page if pool does not exist
@@ -76,125 +77,38 @@ const Pool: FunctionComponent = observer(() => {
       router.push("/pools");
     }
   }, [poolExists]);
-
+  const currentLanguage =
+    userSettings.getUserSettingById("language")?.state.language;
   // initialize pool data stores once root pool store is loaded
-  const [superfluidPoolStore, setSuperfluidPoolStore] =
-    useState<ObservableQuerySuperfluidPool | null>(null);
-  useEffect(() => {
-    let newPoolDetailStore;
-    if (poolExists && pool && !poolDetailStore) {
-      newPoolDetailStore = new ObservableQueryPoolDetails(
-        bech32Address,
-        fiat,
-        pool,
-        queryOsmosis,
-        priceStore
-      );
-    }
-    if (newPoolDetailStore && !superfluidPoolStore) {
-      setPoolDetailStore(newPoolDetailStore);
-      setSuperfluidPoolStore(
-        new ObservableQuerySuperfluidPool(
-          bech32Address,
-          fiat,
-          newPoolDetailStore,
-          queriesStore.get(chainId).cosmos.queryValidators,
-          queriesStore.get(chainId).cosmos.queryInflation,
-          queryOsmosis,
-          priceStore
-        )
-      );
-    }
-  }, [poolExists, pool, bech32Address, fiat, queryOsmosis, priceStore]);
+  const { poolDetailConfig, pool } = usePoolDetailConfig(poolId);
+  const { superfluidPoolConfig, superfluidDelegateToValidator } =
+    useSuperfluidPoolConfig(poolDetailConfig);
 
   // Manage liquidity + bond LP tokens (modals) state
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
     useState(false);
   const [showLockLPTokenModal, setShowLockLPTokenModal] = useState(false);
-  const addLiquidityConfig = useAddLiquidityConfig(
+  const { config: addLiquidityConfig, addLiquidity } = useAddLiquidityConfig(
     chainStore,
     chainId,
     pool?.id ?? "",
-    bech32Address,
     queriesStore
   );
-  const removeLiquidityConfig = useRemoveLiquidityConfig(
-    chainStore,
-    chainId,
-    pool?.id ?? "",
-    bech32Address,
-    queriesStore
-  );
-  const lockLPTokensConfig = useAmountConfig(
+  const { config: removeLiquidityConfig, removeLiquidity } =
+    useRemoveLiquidityConfig(chainStore, chainId, pool?.id ?? "", queriesStore);
+  const { config: lockLPTokensConfig, lockToken } = useLockTokenConfig(
     chainStore,
     queriesStore,
     chainId,
-    bech32Address,
-    undefined,
     pool ? queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id) : undefined
   );
 
-  // pool gauges
-  const [poolDetailStore, setPoolDetailStore] =
-    useState<ObservableQueryPoolDetails | null>(null);
-  const allowedGauges =
-    pool && ExternalIncentiveGaugeAllowList[pool.id]
-      ? poolDetailStore?.queryAllowedExternalGauges(
-          (denom) => chainStore.getChain(chainId).findCurrency(denom),
-          ExternalIncentiveGaugeAllowList[pool.id]
-        ) ?? []
-      : [];
-  const externalGauges = poolDetailStore?.allExternalGauges ?? [];
-  type Gauge = {
-    id: string;
-    duration: Duration;
-    apr?: RatePretty;
-    superfluidApr?: RatePretty;
-  };
-  const allLockupGauges: Gauge[] | undefined = useMemo(() => {
-    const gaugeDurationMap = new Map<number, Gauge>();
-
-    // uniqued external gauges by duration
-    externalGauges.concat(allowedGauges).forEach((extGauge) => {
-      gaugeDurationMap.set(extGauge.duration.asSeconds(), {
-        id: extGauge.id,
-        duration: extGauge.duration,
-      });
-    });
-
-    // overwrite any external gauges with internal gauges w/ apr calcs
-    superfluidPoolStore?.gaugesWithSuperfluidApr.forEach((gauge) => {
-      gaugeDurationMap.set(gauge.duration.asSeconds(), gauge);
-    });
-
-    return Array.from(gaugeDurationMap.values()).sort(
-      (a, b) => a.duration.asSeconds() - b.duration.asSeconds()
-    );
-  }, [
-    allowedGauges,
+  const {
+    allAggregatedGauges,
+    allowedAggregatedGauges,
+    internalGauges: _,
     externalGauges,
-    superfluidPoolStore?.gaugesWithSuperfluidApr,
-  ]);
-  const allowedLockupGauges = useMemo(() => {
-    const gaugeDurationMap = new Map<number, Gauge>();
-
-    // uniqued external gauges by duration
-    allowedGauges.forEach((extGauge) => {
-      gaugeDurationMap.set(extGauge.duration.asSeconds(), {
-        id: extGauge.id,
-        duration: extGauge.duration,
-      });
-    });
-
-    // overwrite any external gauges with internal gauges w/ apr calcs
-    superfluidPoolStore?.gaugesWithSuperfluidApr.forEach((gauge) => {
-      gaugeDurationMap.set(gauge.duration.asSeconds(), gauge);
-    });
-
-    return Array.from(gaugeDurationMap.values()).sort(
-      (a, b) => a.duration.asSeconds() - b.duration.asSeconds()
-    );
-  }, [allowedGauges, superfluidPoolStore?.gaugesWithSuperfluidApr]);
+  } = usePoolGauges(poolId);
 
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
     useState(false);
@@ -206,371 +120,139 @@ const Pool: FunctionComponent = observer(() => {
   const showDepoolButton =
     (pool &&
       UnPoolWhitelistedPoolIds[pool.id] !== undefined &&
-      poolDetailStore?.userCanDepool) ||
+      poolDetailConfig?.userCanDepool) ||
     account.txTypeInProgress === "unPoolWhitelistedPool";
 
   const showLiquidityMiningSection =
-    poolDetailStore?.isIncentivized ||
-    (allowedLockupGauges && allowedLockupGauges.length > 0) ||
-    (allLockupGauges && allLockupGauges.length > 0) ||
+    poolDetailConfig?.isIncentivized ||
+    (allAggregatedGauges && allAggregatedGauges.length > 0) ||
+    (allowedAggregatedGauges && allowedAggregatedGauges.length > 0) ||
     false;
 
   const showPoolBondingTables =
     showLiquidityMiningSection ||
-    (poolDetailStore?.userLockedAssets &&
-      poolDetailStore.userLockedAssets?.some((lockedAsset) =>
+    (poolDetailConfig?.userLockedAssets &&
+      poolDetailConfig.userLockedAssets?.some((lockedAsset) =>
         lockedAsset.amount.toDec().gt(new Dec(0))
       )) ||
-    (poolDetailStore?.userUnlockingAssets &&
-      poolDetailStore.userUnlockingAssets.length > 0) ||
+    (poolDetailConfig?.userUnlockingAssets &&
+      poolDetailConfig.userUnlockingAssets.length > 0) ||
     false;
 
-  // user actions
-  const addLiquidity = useCallback(async () => {
-    logEvent([
-      EventName.PoolDetail.addLiquidityStarted,
-      {
-        poolId,
-        poolName,
-        poolWeight,
-        isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
-        isSingleAsset: addLiquidityConfig.isSingleAmountIn,
-        providingLiquidity:
-          addLiquidityConfig.isSingleAmountIn &&
-          addLiquidityConfig.singleAmountInConfig
-            ? {
-                [addLiquidityConfig.singleAmountInConfig?.sendCurrency
-                  .coinDenom]: Number(
-                  addLiquidityConfig.singleAmountInConfig.amount
-                ),
-              }
-            : addLiquidityConfig.poolAssetConfigs.reduce(
-                (acc, cur) => ({
-                  ...acc,
-                  [cur.sendCurrency.coinDenom]: Number(cur.amount),
-                }),
-                {}
-              ),
-      },
-    ]);
-
-    try {
-      if (
+  // handle user actions
+  const onAddLiquidity = () => {
+    const poolInfo = {
+      poolId,
+      poolName,
+      poolWeight,
+      isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
+      isSingleAsset: addLiquidityConfig.isSingleAmountIn,
+      providingLiquidity:
         addLiquidityConfig.isSingleAmountIn &&
         addLiquidityConfig.singleAmountInConfig
-      ) {
-        await account.osmosis.sendJoinSwapExternAmountInMsg(
-          addLiquidityConfig.poolId,
-          {
-            currency: addLiquidityConfig.singleAmountInConfig.sendCurrency,
-            amount: addLiquidityConfig.singleAmountInConfig.amount,
-          },
-          undefined,
-          undefined,
-          () => {
-            logEvent([
-              EventName.PoolDetail.addLiquidityCompleted,
-              {
-                poolId,
-                poolName,
-                poolWeight,
-                isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
-                isSingleAsset: addLiquidityConfig.isSingleAmountIn,
-                providingLiquidity:
-                  addLiquidityConfig.isSingleAmountIn &&
-                  addLiquidityConfig.singleAmountInConfig
-                    ? {
-                        [addLiquidityConfig.singleAmountInConfig?.sendCurrency
-                          .coinDenom]: Number(
-                          addLiquidityConfig.singleAmountInConfig.amount
-                        ),
-                      }
-                    : addLiquidityConfig.poolAssetConfigs.reduce(
-                        (acc, cur) => ({
-                          ...acc,
-                          [cur.sendCurrency.coinDenom]: Number(cur.amount),
-                        }),
-                        {}
-                      ),
-              },
-            ]);
+          ? {
+              [addLiquidityConfig.singleAmountInConfig?.sendCurrency.coinDenom]:
+                Number(addLiquidityConfig.singleAmountInConfig.amount),
+            }
+          : addLiquidityConfig.poolAssetConfigs.reduce(
+              (acc, cur) => ({
+                ...acc,
+                [cur.sendCurrency.coinDenom]: Number(cur.amount),
+              }),
+              {}
+            ),
+    };
 
-            setShowManageLiquidityDialog(false);
-          }
-        );
-      } else if (addLiquidityConfig.shareOutAmount) {
-        await account.osmosis.sendJoinPoolMsg(
-          addLiquidityConfig.poolId,
-          addLiquidityConfig.shareOutAmount.toDec().toString(),
-          undefined,
-          undefined,
-          () => {
-            logEvent([
-              EventName.PoolDetail.addLiquidityCompleted,
-              {
-                poolId,
-                poolName,
-                poolWeight,
-                isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
-                isSingleAsset: addLiquidityConfig.isSingleAmountIn,
-                providingLiquidity:
-                  addLiquidityConfig.isSingleAmountIn &&
-                  addLiquidityConfig.singleAmountInConfig
-                    ? {
-                        [addLiquidityConfig.singleAmountInConfig?.sendCurrency
-                          .coinDenom]:
-                          addLiquidityConfig.singleAmountInConfig.amount,
-                      }
-                    : addLiquidityConfig.poolAssetConfigs.reduce(
-                        (acc, cur) => ({
-                          ...acc,
-                          [cur.sendCurrency.coinDenom]: cur.amount,
-                        }),
-                        {}
-                      ),
-              },
-            ]);
+    logEvent([E.addLiquidityStarted, poolInfo]);
 
-            setShowManageLiquidityDialog(false);
-          }
-        );
-      }
-    } catch (e) {
-      console.error(e);
+    addLiquidity()
+      .then(() => logEvent([E.addLiquidityCompleted, poolInfo]))
+      .finally(() => setShowManageLiquidityDialog(false));
+  };
+  const onRemoveLiquidity = () => {
+    const removeLiqInfo = {
+      poolId,
+      poolName,
+      poolWeight,
+      isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
+      poolSharePercentage: removeLiquidityConfig.percentage,
+    };
+
+    logEvent([E.removeLiquidityStarted, removeLiqInfo]);
+
+    removeLiquidity()
+      .then(() => logEvent([E.removeLiquidityCompleted, removeLiqInfo]))
+      .finally(() => setShowManageLiquidityDialog(false));
+  };
+  const onLockToken = (gaugeId: string, electSuperfluid?: boolean) => {
+    const gauge = allAggregatedGauges?.find((gauge) => gauge.id === gaugeId);
+    const lockInfo = {
+      poolId,
+      poolName,
+      poolWeight,
+      isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
+      isSuperfluidEnabled: electSuperfluid,
+      unbondingPeriod: gauge?.duration.asDays(),
+    };
+
+    logEvent([E.bondStarted, lockInfo]);
+
+    if (electSuperfluid) {
+      setShowSuperfluidValidatorsModal(true);
+      setShowLockLPTokenModal(false);
+      // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
+    } else if (gauge) {
+      lockToken(gauge.duration)
+        .then(() => logEvent([E.bondCompleted, lockInfo]))
+        .finally(() => setShowLockLPTokenModal(false));
+    } else {
+      console.error("Gauge of id", gaugeId, "not found in allAggregatedGauges");
     }
-  }, [
-    account.osmosis,
-    addLiquidityConfig.isSingleAmountIn,
-    addLiquidityConfig.singleAmountInConfig,
-    addLiquidityConfig.poolId,
-    addLiquidityConfig.singleAmountInConfig?.sendCurrency,
-    addLiquidityConfig.singleAmountInConfig?.amount,
-    addLiquidityConfig.shareOutAmount,
-  ]);
-  const removeLiquidity = useCallback(async () => {
-    logEvent([
-      EventName.PoolDetail.removeLiquidityStarted,
-      {
+  };
+  const handleSuperfluidDelegateToValidator = useCallback(
+    (validatorAddress) => {
+      if (!superfluidPoolConfig?.superfluid) return;
+
+      const poolInfo = {
         poolId,
         poolName,
         poolWeight,
-        isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
-        poolSharePercentage: removeLiquidityConfig.percentage,
-      },
-    ]);
+        isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
+        unbondingPeriod: 14,
+        validatorName: queryCosmos.queryValidators
+          .getQueryStatus(Staking.BondStatus.Bonded)
+          .getValidator(validatorAddress)?.description.moniker,
+      };
 
-    try {
-      await account.osmosis.sendExitPoolMsg(
-        removeLiquidityConfig.poolId,
-        removeLiquidityConfig.poolShareWithPercentage.toDec().toString(),
-        undefined,
-        undefined,
-        () => {
-          logEvent([
-            EventName.PoolDetail.removeLiquidityCompleted,
-            {
-              poolId,
-              poolName,
-              poolWeight,
-              isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
-              poolSharePercentage: removeLiquidityConfig.percentage,
-            },
-          ]);
+      logEvent([E.superfluidStakeStarted, poolInfo]);
 
-          setShowManageLiquidityDialog(false);
-        }
-      );
-    } catch (e) {
-      console.error(e);
-    }
-  }, [
-    account.osmosis,
-    removeLiquidityConfig.poolId,
-    removeLiquidityConfig.poolShareWithPercentage,
-  ]);
-  const lockToken = useCallback(
-    async (gaugeId, electSuperfluid) => {
-      const gauge = allLockupGauges?.find((gauge) => gauge.id === gaugeId);
-
-      logEvent([
-        EventName.PoolDetail.bondStarted,
-        {
-          poolId,
-          poolName,
-          poolWeight,
-          isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
-          isSuperfluidEnabled: electSuperfluid,
-          unbondingPeriod: gauge?.duration.asDays(),
-        },
-      ]);
-
-      if (electSuperfluid) {
-        setShowLockLPTokenModal(false);
-        setShowSuperfluidValidatorsModal(true);
-        // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
-      } else {
-        try {
-          if (!gauge) {
-            throw new Error("Error getting gauge");
-          }
-          if (
-            !lockLPTokensConfig.sendCurrency.coinMinimalDenom.startsWith("gamm")
-          ) {
-            throw new Error("Tried to lock non-gamm token");
-          }
-          if (gauge) {
-            await account.osmosis.sendLockTokensMsg(
-              gauge.duration.asSeconds(),
-              [
-                {
-                  currency: lockLPTokensConfig.sendCurrency,
-                  amount: lockLPTokensConfig.amount,
-                },
-              ],
-              undefined,
-              () => {
-                logEvent([
-                  EventName.PoolDetail.bondCompleted,
-                  {
-                    poolId,
-                    poolName,
-                    poolWeight,
-                    isSuperfluidPool:
-                      superfluidPoolStore?.isSuperfluid ?? false,
-                    isSuperfluidEnabled: false,
-                    unbondingPeriod: gauge?.duration.asDays(),
-                  },
-                ]);
-
-                setShowLockLPTokenModal(false);
-              }
-            );
-          } else {
-            console.error("Gauge ID not found:", gaugeId);
-          }
-        } catch (e) {
-          console.error(e);
-        }
-      }
+      superfluidDelegateToValidator(validatorAddress, lockLPTokensConfig)
+        .then(() => logEvent([E.superfluidStakeCompleted, poolInfo]))
+        .finally(() => setShowSuperfluidValidatorsModal(false));
     },
-    [
-      allLockupGauges,
-      lockLPTokensConfig.sendCurrency,
-      lockLPTokensConfig.amount,
-      account.osmosis,
-    ]
-  );
-  const superfluidDelegateToValidator = useCallback(
-    async (validatorAddress) => {
-      if (superfluidPoolStore?.superfluid) {
-        logEvent([
-          EventName.PoolDetail.superfluidStakeStarted,
-          {
-            poolId,
-            poolName,
-            poolWeight,
-            isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
-            unbondingPeriod: 14,
-            validatorName: queryCosmos.queryValidators
-              .getQueryStatus(Staking.BondStatus.Bonded)
-              .getValidator(validatorAddress)?.description.moniker,
-          },
-        ]);
-
-        if (superfluidPoolStore.superfluid.upgradeableLpLockIds) {
-          // is delegating existing locked shares
-          try {
-            await account.osmosis.sendSuperfluidDelegateMsg(
-              superfluidPoolStore.superfluid.upgradeableLpLockIds.lockIds,
-              validatorAddress,
-              undefined,
-              () => {
-                logEvent([
-                  EventName.PoolDetail.superfluidStakeCompleted,
-                  {
-                    poolId,
-                    poolName,
-                    poolWeight,
-                    isSuperfluidPool:
-                      superfluidPoolStore?.isSuperfluid ?? false,
-                    unbondingPeriod: 14,
-                    validatorName: queryCosmos.queryValidators
-                      .getQueryStatus(Staking.BondStatus.Bonded)
-                      .getValidator(validatorAddress)?.description.moniker,
-                  },
-                ]);
-
-                setShowSuperfluidValidatorsModal(false);
-              }
-            );
-          } catch (e) {
-            console.error(e);
-          }
-        } else if (
-          superfluidPoolStore.superfluid.superfluidLpShares &&
-          lockLPTokensConfig
-        ) {
-          try {
-            await account.osmosis.sendLockAndSuperfluidDelegateMsg(
-              [
-                {
-                  currency: lockLPTokensConfig.sendCurrency,
-                  amount: lockLPTokensConfig.amount,
-                },
-              ],
-              validatorAddress,
-              undefined,
-              () => {
-                logEvent([
-                  EventName.PoolDetail.superfluidStakeCompleted,
-                  {
-                    poolId,
-                    poolName,
-                    poolWeight,
-                    isSuperfluidPool:
-                      superfluidPoolStore?.isSuperfluid ?? false,
-                    unbondingPeriod: 14,
-                    validatorName: queryCosmos.queryValidators
-                      .getQueryStatus(Staking.BondStatus.Bonded)
-                      .getValidator(validatorAddress)?.description.moniker,
-                  },
-                ]);
-
-                setShowSuperfluidValidatorsModal(false);
-              }
-            );
-            // TODO: clear/reset LP lock amount config ??
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      }
-    },
-    [
-      superfluidPoolStore?.superfluid,
-      superfluidPoolStore?.superfluid?.upgradeableLpLockIds,
-      superfluidPoolStore?.superfluid?.upgradeableLpLockIds?.lockIds,
-      superfluidPoolStore?.superfluid?.superfluidLpShares,
-      lockLPTokensConfig.sendCurrency,
-      lockLPTokensConfig.amount,
-    ]
+    [superfluidPoolConfig?.superfluid, lockLPTokensConfig]
   );
 
-  const poolName = pool?.poolAssets
-    .map((poolAsset) => poolAsset.amount.denom)
-    .join(" / ");
-  const poolWeight = pool?.poolAssets
-    .map((poolAsset) => poolAsset.weightFraction.toString())
-    .join(" / ");
+  const { poolName, poolWeight } = useMemo(
+    () => ({
+      poolName: pool?.poolAssets
+        .map((poolAsset) => poolAsset.amount.denom)
+        .join(" / "),
+      poolWeight: pool?.poolAssets
+        .map((poolAsset) => poolAsset.weightFraction.toString())
+        .join(" / "),
+    }),
+    [pool?.poolAssets]
+  );
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [
-      EventName.PoolDetail.pageViewed,
+      E.pageViewed,
       {
         poolId,
         poolName,
         poolWeight,
-        ...(superfluidPoolStore && {
-          isSuperfluidPool: superfluidPoolStore.isSuperfluid,
+        ...(superfluidPoolConfig && {
+          isSuperfluidPool: superfluidPoolConfig.isSuperfluid,
         }),
       },
     ],
@@ -579,19 +261,21 @@ const Pool: FunctionComponent = observer(() => {
   return (
     <main>
       <Head>
-        <title>Pool #{poolId}</title>
+        <title>
+          {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
+        </title>
       </Head>
       {pool && addLiquidityConfig && removeLiquidityConfig && (
         <ManageLiquidityModal
           isOpen={showManageLiquidityDialog}
-          title="Manage Liquidity"
+          title={t("pool.manageLiquidity.title")}
           onRequestClose={() => setShowManageLiquidityDialog(false)}
           addLiquidityConfig={addLiquidityConfig}
           removeLiquidityConfig={removeLiquidityConfig}
           isSendingMsg={account.txTypeInProgress !== ""}
           getFiatValue={(coin) => priceStore.calculatePrice(coin)}
-          onAddLiquidity={addLiquidity}
-          onRemoveLiquidity={removeLiquidity}
+          onAddLiquidity={onAddLiquidity}
+          onRemoveLiquidity={onRemoveLiquidity}
         />
       )}
       {pool && (
@@ -603,47 +287,36 @@ const Pool: FunctionComponent = observer(() => {
           pools={[pool.pool]}
         />
       )}
-      {lockLPTokensConfig && allLockupGauges && (
+      {lockLPTokensConfig && allowedAggregatedGauges && (
         <LockTokensModal
+          poolId={poolId}
           isOpen={showLockLPTokenModal}
-          title="Liquidity Bonding"
+          title={t("pool.lockToken.title")}
           onRequestClose={() => setShowLockLPTokenModal(false)}
-          isSendingMsg={account.txTypeInProgress !== ""}
           amountConfig={lockLPTokensConfig}
-          isMobile={isMobile}
-          availableToken={
-            pool
-              ? queryOsmosis.queryGammPoolShare.getAvailableGammShare(
-                  bech32Address,
-                  pool.id
-                )
-              : undefined
-          }
-          gauges={allLockupGauges}
-          hasSuperfluidValidator={
-            superfluidPoolStore?.superfluid?.delegations &&
-            superfluidPoolStore.superfluid.delegations.length > 0
-          }
-          onLockToken={lockToken}
+          onLockToken={onLockToken}
         />
       )}
-      {superfluidPoolStore?.superfluid && pool && lockLPTokensConfig && (
+      {superfluidPoolConfig?.superfluid && pool && lockLPTokensConfig && (
         <SuperfluidValidatorModal
-          title={isMobile ? "Select Validator" : "Select Superfluid Validator"}
+          title={
+            isMobile
+              ? t("pool.superfluidValidator.titleMobile")
+              : t("pool.superfluidValidator.title")
+          }
           availableBondAmount={
-            superfluidPoolStore?.superfluid.upgradeableLpLockIds
-              ? superfluidPoolStore.superfluid.upgradeableLpLockIds.amount // is delegating amount from existing lockup
+            superfluidPoolConfig?.superfluid.upgradeableLpLockIds
+              ? superfluidPoolConfig.superfluid.upgradeableLpLockIds.amount // is delegating amount from existing lockup
               : new CoinPretty(
                   pool.shareCurrency, // is delegating amount from new/pending lockup
                   lockLPTokensConfig.amount !== ""
-                    ? lockLPTokensConfig.amount
+                    ? lockLPTokensConfig.getAmountPrimitive().amount
                     : new Dec(0)
                 )
           }
           isOpen={showSuperfluidValidatorModal}
           onRequestClose={() => setShowSuperfluidValidatorsModal(false)}
-          isSendingMsg={account.txTypeInProgress !== ""}
-          onSelectValidator={superfluidDelegateToValidator}
+          onSelectValidator={handleSuperfluidDelegateToValidator}
         />
       )}
 
@@ -653,41 +326,46 @@ const Pool: FunctionComponent = observer(() => {
             <h5>
               {lbpConfig
                 ? lbpConfig.name
-                : `Pool #${pool?.id} : ${pool?.poolAssets
-                    .map(
-                      (asset) => asset.amount.currency.coinDenom.split(" ")[0]
-                    )
-                    .map((denom) => truncateString(denom))
-                    .join(" / ")}`}
+                : t("pool.overview.title", {
+                    id: pool?.id ?? "-",
+                    name:
+                      pool?.poolAssets
+                        .map(
+                          (asset) =>
+                            asset.amount.currency.coinDenom.split(" ")[0]
+                        )
+                        .map((denom) => truncateString(denom))
+                        .join(" / ") ?? "-",
+                  })}
             </h5>
           </MetricLoader>
         }
         titleButtons={[
           {
-            label: "Add / Remove Liquidity",
+            label: t("pool.overview.buttons.addRemoveLiquidity"),
             onClick: () => {
               logEvent([
-                EventName.PoolDetail.addOrRemoveLiquidityClicked,
+                E.addOrRemoveLiquidityClicked,
                 {
                   poolId,
                   poolName,
                   poolWeight,
-                  isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
+                  isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
                 },
               ]);
               setShowManageLiquidityDialog(true);
             },
           },
           {
-            label: "Swap Tokens",
+            label: t("pool.overview.buttons.swap"),
             onClick: () => {
               logEvent([
-                EventName.PoolDetail.swapTokensClicked,
+                E.swapTokensClicked,
                 {
                   poolId,
                   poolName,
                   poolWeight,
-                  isSuperfluidPool: superfluidPoolStore?.isSuperfluid ?? false,
+                  isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
                 },
               ]);
               setShowTradeTokenModal(true);
@@ -696,24 +374,24 @@ const Pool: FunctionComponent = observer(() => {
         ]}
         primaryOverviewLabels={[
           {
-            label: "Pool Liquidity",
+            label: t("pool.overview.liquidity"),
             value: (
               <MetricLoader
                 className="h-7 w-56"
-                isLoading={!pool || !poolDetailStore?.totalValueLocked}
+                isLoading={!pool || !poolDetailConfig?.totalValueLocked}
               >
-                {poolDetailStore?.totalValueLocked?.toString()}
+                {poolDetailConfig?.totalValueLocked?.toString()}
               </MetricLoader>
             ),
           },
           {
-            label: "My Liquidity",
+            label: t("pool.overview.myLiquidity"),
             value: (
               <MetricLoader
                 className="h-7 "
-                isLoading={!poolDetailStore?.userLockedValue}
+                isLoading={!poolDetailConfig?.userLockedValue}
               >
-                {poolDetailStore?.userLockedValue?.toString() ??
+                {poolDetailConfig?.userLockedValue?.toString() ??
                   `0${fiat.symbol}`}
               </MetricLoader>
             ),
@@ -721,19 +399,19 @@ const Pool: FunctionComponent = observer(() => {
         ]}
         secondaryOverviewLabels={[
           {
-            label: "Bonded",
+            label: t("pool.overview.bonded"),
             value: (
               <MetricLoader
                 className="h-4"
-                isLoading={!poolDetailStore?.userBondedValue}
+                isLoading={!poolDetailConfig?.userBondedValue}
               >
-                {poolDetailStore?.userBondedValue?.toString() ??
+                {poolDetailConfig?.userBondedValue?.toString() ??
                   `0${fiat.symbol}`}
               </MetricLoader>
             ),
           },
           {
-            label: "Swap Fee",
+            label: t("pool.overview.swapFee"),
             value: (
               <MetricLoader className="h-4" isLoading={!pool}>
                 {pool?.swapFee.toString() ?? "0%"}
@@ -750,60 +428,61 @@ const Pool: FunctionComponent = observer(() => {
         <div className="max-w-container mx-auto md:p-5 p-10">
           {showLiquidityMiningSection && (
             <div className="flex lg:flex-col gap-6 place-content-between">
-              <div className="max-w-md">
-                <div className="flex lg:flex-col gap-3">
+              <div className="max-w-lg">
+                <div className="flex lg:flex-col gap-2">
                   {isMobile ? (
-                    <span className="subtitle1 text-lg">Liquidity Mining</span>
+                    <span className="subtitle1 text-lg">
+                      {t("pool.liquidityMiningMobile")}
+                    </span>
                   ) : (
-                    <h5>Liquidity Mining</h5>
+                    <h5>{t("pool.liquidityMiningMobile")}</h5>
                   )}
-                  {superfluidPoolStore?.superfluid && (
+                  {superfluidPoolConfig?.superfluid && (
                     <div className="bg-superfluid w-fit rounded-full px-4 py-1 md:caption text-base">
-                      Superfluid Staking Enabled
+                      {t("pool.superfluidEnabled")}
                     </div>
                   )}
                 </div>
                 <p className="text-white-mid md:caption py-2">
-                  Bond liquidity to various minimum unbonding periods to earn
-                  OSMO liquidity rewards and swap fees
+                  {t("pool.liquidityMiningInfo")}
                 </p>
               </div>
               <div className="flex flex-col gap-2 text-right lg:text-left">
                 <span className="caption text-white-mid">
-                  Available LP tokens
+                  {t("pool.availableLPToken")}
                 </span>
                 <span className="font-h5 text-h5 md:subtitle1">
                   <MetricLoader
                     className="h-6"
-                    isLoading={!poolDetailStore?.userAvailableValue}
+                    isLoading={!poolDetailConfig?.userAvailableValue}
                   >
-                    {poolDetailStore?.userAvailableValue?.toString() || "$0"}
+                    {poolDetailConfig?.userAvailableValue?.toString() || "$0"}
                   </MetricLoader>
                 </span>
                 <Button
                   className="h-8 lg:w-fit w-full md:caption"
                   onClick={() => {
                     logEvent([
-                      EventName.PoolDetail.startEarningClicked,
+                      E.startEarningClicked,
                       {
                         poolId,
                         poolName,
                         poolWeight,
                         isSuperfluidPool:
-                          superfluidPoolStore?.isSuperfluid ?? false,
+                          superfluidPoolConfig?.isSuperfluid ?? false,
                       },
                     ]);
                     setShowLockLPTokenModal(true);
                   }}
                 >
-                  Start Earning
+                  {t("pool.buttonStartEarning")}
                 </Button>
               </div>
             </div>
           )}
-          {allowedGauges && allowedGauges.length > 0 && (
+          {externalGauges && externalGauges.length > 0 && (
             <div className="flex lg:flex-col overflow-x-auto md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
-              {allowedGauges.map(
+              {externalGauges.map(
                 (
                   { rewardAmount, duration: durationDays, remainingEpochs },
                   index
@@ -813,24 +492,21 @@ const Pool: FunctionComponent = observer(() => {
                     bonusValue={
                       rewardAmount?.maxDecimals(0).trim(true).toString() ?? "0"
                     }
-                    days={durationDays.humanize()}
-                    remainingEpochs={remainingEpochs.toString()}
+                    days={durationDays.locale(currentLanguage).humanize()}
+                    remainingEpochs={remainingEpochs?.toString() ?? "0"}
                     isMobile={isMobile}
                   />
                 )
               )}
             </div>
           )}
-          {allowedLockupGauges && pool && (
+          {allAggregatedGauges && pool && (
             <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
-              {allowedLockupGauges.map(({ duration, superfluidApr }) => (
+              {allAggregatedGauges.map(({ duration, apr, superfluidApr }) => (
                 <PoolGaugeCard
-                  key={duration.humanize()}
-                  days={duration.humanize()}
-                  apr={queryOsmosis.queryIncentivizedPools
-                    .computeAPY(pool.id, duration, priceStore, fiat)
-                    .maxDecimals(2)
-                    .toString()}
+                  key={duration.locale(currentLanguage).humanize()}
+                  days={duration.locale(currentLanguage).humanize()}
+                  apr={apr?.maxDecimals?.(2).toString() ?? "0"}
                   superfluidApr={superfluidApr?.maxDecimals(2).toString()}
                   isMobile={isMobile}
                 />
@@ -838,20 +514,22 @@ const Pool: FunctionComponent = observer(() => {
             </div>
           )}
         </div>
-        {superfluidPoolStore?.superfluid && (
+        {superfluidPoolConfig?.superfluid && (
           <div className="max-w-container mx-auto md:p-5 p-10 flex flex-col gap-4">
             {isMobile ? (
-              <span className="subtitle2">My Superfluid Stake</span>
+              <span className="subtitle2">
+                {t("pool.superfluidStakingMobile")}
+              </span>
             ) : (
-              <h5>Superfluid Staking</h5>
+              <h5>{t("pool.superfluidStaking")}</h5>
             )}
-            {superfluidPoolStore.superfluid.upgradeableLpLockIds ? (
+            {superfluidPoolConfig.superfluid.upgradeableLpLockIds ? (
               <GoSuperfluidCard
                 goSuperfluid={() => setShowSuperfluidValidatorsModal(true)}
                 isMobile={isMobile}
               />
             ) : (
-              superfluidPoolStore.superfluid.delegations?.map(
+              superfluidPoolConfig.superfluid.delegations?.map(
                 (
                   {
                     validatorName,
@@ -880,9 +558,11 @@ const Pool: FunctionComponent = observer(() => {
           <div className="max-w-container mx-auto md:p-5 p-10">
             <div className="flex items-center place-content-between">
               {isMobile ? (
-                <span className="subtitle2">My Bondings</span>
+                <span className="subtitle2">
+                  {t("pool.myBondings.titleMobile")}
+                </span>
               ) : (
-                <h6>My Bondings</h6>
+                <h6>{t("pool.myBondings.title")}</h6>
               )}
               {showDepoolButton && pool && (
                 <Button
@@ -899,7 +579,7 @@ const Pool: FunctionComponent = observer(() => {
                   }}
                   loading={account.txTypeInProgress === "unPoolWhitelistedPool"}
                 >
-                  Depool LP Shares
+                  {t("pool.myBondings.depoolButton")}
                 </Button>
               )}
             </div>
@@ -909,9 +589,9 @@ const Pool: FunctionComponent = observer(() => {
               columnDefs={(
                 [
                   {
-                    display: "Unbonding Duration",
+                    display: t("pool.myBondings.unbondingDuration"),
                     className: "!pl-8",
-                    displayCell: superfluidPoolStore?.isSuperfluid
+                    displayCell: superfluidPoolConfig?.isSuperfluid
                       ? ({ value, isSuperfluidDuration }) => (
                           <div className="flex items-center gap-3">
                             <span>{value ?? ""}</span>
@@ -927,10 +607,10 @@ const Pool: FunctionComponent = observer(() => {
                         )
                       : undefined,
                   },
-                  { display: "Current APR" },
-                  { display: "Amount" },
+                  { display: t("pool.myBondings.currentAPR") },
+                  { display: t("pool.myBondings.amount") },
                   {
-                    display: "Action",
+                    display: t("pool.myBondings.action"),
                     className:
                       "md:text-right text-center md:justify-right justify-center",
                     displayCell: ({
@@ -950,13 +630,13 @@ const Pool: FunctionComponent = observer(() => {
                         onClick={async () => {
                           if (!lockIds) return;
                           logEvent([
-                            EventName.PoolDetail.unbondAllStarted,
+                            E.unbondAllStarted,
                             {
                               poolId,
                               poolName,
                               poolWeight,
                               isSuperfluidPool:
-                                superfluidPoolStore?.isSuperfluid ?? false,
+                                superfluidPoolConfig?.isSuperfluid ?? false,
                               unbondingPeriod: duration?.asDays(),
                             },
                           ]);
@@ -990,13 +670,13 @@ const Pool: FunctionComponent = observer(() => {
                                 undefined,
                                 () => {
                                   logEvent([
-                                    EventName.PoolDetail.unbondAllCompleted,
+                                    E.unbondAllCompleted,
                                     {
                                       poolId,
                                       poolName,
                                       poolWeight,
                                       isSuperfluidPool:
-                                        superfluidPoolStore?.isSuperfluid ??
+                                        superfluidPoolConfig?.isSuperfluid ??
                                         false,
                                       unbondingPeriod: duration?.asDays(),
                                     },
@@ -1010,13 +690,13 @@ const Pool: FunctionComponent = observer(() => {
                                 undefined,
                                 () => {
                                   logEvent([
-                                    EventName.PoolDetail.unbondAllCompleted,
+                                    E.unbondAllCompleted,
                                     {
                                       poolId,
                                       poolName,
                                       poolWeight,
                                       isSuperfluidPool:
-                                        superfluidPoolStore?.isSuperfluid ??
+                                        superfluidPoolConfig?.isSuperfluid ??
                                         false,
                                       unbondingPeriod: duration?.asDays(),
                                     },
@@ -1029,7 +709,9 @@ const Pool: FunctionComponent = observer(() => {
                           }
                         }}
                       >
-                        {isMobile ? "Unbond" : "Unbond All"}
+                        {isMobile
+                          ? t("pool.myBondings.actionUnbondMobile")
+                          : t("pool.myBondings.actionUnbondMobile")}
                       </Button>
                     ),
                   },
@@ -1043,38 +725,46 @@ const Pool: FunctionComponent = observer(() => {
                   }
                 >[]
               ).filter(({ display }) =>
-                isMobile ? display !== "Current APR" : true
+                isMobile ? display !== t("pool.myBondings.currentAPR") : true
               )}
               data={
-                poolDetailStore?.userLockedAssets?.map((lockedAsset, index) => {
-                  const isSuperfluidDuration =
-                    index ===
-                      (poolDetailStore.userLockedAssets?.length ?? 0) - 1 &&
-                    superfluidPoolStore?.superfluid?.delegations &&
-                    superfluidPoolStore.superfluid.delegations.length > 0;
-                  return [
-                    {
-                      value: lockedAsset.duration.humanize(),
-                      isSuperfluidDuration,
-                    }, // Unbonding Duration
-                    {
-                      value:
-                        lockedAsset.apr?.maxDecimals(2).trim(true).toString() ??
-                        "0%",
-                    }, // Current APR
-                    {
-                      value: lockedAsset.amount
-                        .maxDecimals(6)
-                        .trim(true)
-                        .toString(),
-                    }, // Amount
-                    {
-                      ...lockedAsset,
-                      value: lockedAsset.duration.humanize(),
-                      isSuperfluidDuration,
-                    }, // Unbond All button
-                  ].filter((_row, index) => (isMobile ? index !== 1 : true));
-                }) ?? []
+                poolDetailConfig?.userLockedAssets?.map(
+                  (lockedAsset, index) => {
+                    const isSuperfluidDuration =
+                      index ===
+                        (poolDetailConfig.userLockedAssets?.length ?? 0) - 1 &&
+                      superfluidPoolConfig?.superfluid?.delegations &&
+                      superfluidPoolConfig.superfluid.delegations.length > 0;
+                    return [
+                      {
+                        value: lockedAsset.duration
+                          .locale(currentLanguage)
+                          .humanize(),
+                        isSuperfluidDuration,
+                      }, // Unbonding Duration
+                      {
+                        value:
+                          lockedAsset.apr
+                            ?.maxDecimals(2)
+                            .trim(true)
+                            .toString() ?? "0%",
+                      }, // Current APR
+                      {
+                        value: lockedAsset.amount
+                          .maxDecimals(6)
+                          .trim(true)
+                          .toString(),
+                      }, // Amount
+                      {
+                        ...lockedAsset,
+                        value: lockedAsset.duration
+                          .locale(currentLanguage)
+                          .humanize(),
+                        isSuperfluidDuration,
+                      }, // Unbond All button
+                    ].filter((_row, index) => (isMobile ? index !== 1 : true));
+                  }
+                ) ?? []
               }
             />
           </div>
@@ -1086,33 +776,35 @@ const Pool: FunctionComponent = observer(() => {
             poolId={pool.id}
           />
         )}
-        {poolDetailStore?.userUnlockingAssets &&
-          poolDetailStore.userUnlockingAssets.length > 0 && (
+        {poolDetailConfig?.userUnlockingAssets &&
+          poolDetailConfig.userUnlockingAssets.length > 0 && (
             <div className="max-w-container mx-auto md:p-5 p-10">
               {isMobile ? (
-                <span className="subtitle2">Unbondings</span>
+                <span className="subtitle2">
+                  {t("pool.unlock.titleMobile")}
+                </span>
               ) : (
-                <h6>Unbondings</h6>
+                <h6>{t("pool.unlock.title")}</h6>
               )}
               <Table
                 className="md:-mx-5 md:w-screen md:caption w-full my-5"
                 headerTrClassName="md:h-11"
                 columnDefs={[
                   {
-                    display: "Unbonding Duration",
+                    display: t("pool.unlock.unbondingDuration"),
                     className: "w-1/3 !pl-8",
                   },
-                  { display: "Amount", className: "w-1/3" },
+                  { display: t("pool.unlock.amount"), className: "w-1/3" },
                   {
-                    display: "Unbonding Complete",
+                    display: t("pool.unlock.unbondingComplete"),
                     className: "w-1/3",
                   },
                 ]}
                 data={
-                  poolDetailStore?.userUnlockingAssets?.map(
+                  poolDetailConfig?.userUnlockingAssets?.map(
                     ({ duration, amount, endTime }) => [
                       {
-                        value: duration.humanize(),
+                        value: duration.locale(currentLanguage).humanize(),
                       },
                       {
                         value: amount.maxDecimals(6).trim(true).toString(),
@@ -1126,30 +818,35 @@ const Pool: FunctionComponent = observer(() => {
               />
             </div>
           )}
-        {superfluidPoolStore?.superfluid?.undelegations &&
-          superfluidPoolStore.superfluid.undelegations.length > 0 && (
+        {superfluidPoolConfig?.superfluid?.undelegations &&
+          superfluidPoolConfig.superfluid.undelegations.length > 0 && (
             <div className="max-w-container mx-auto md:p-5 p-10">
               {isMobile ? (
-                <span className="subtitle2">Superfluid Unbondings</span>
+                <span className="subtitle2">
+                  {t("pool.superfluidUnlock.titleMobile")}
+                </span>
               ) : (
-                <h6>Superfluid Unbondings</h6>
+                <h6>{t("pool.superfluidUnlock.title")}</h6>
               )}
               <Table
                 className="md:-mx-5 md:w-screen md:caption w-full my-5"
                 headerTrClassName="md:h-11"
                 columnDefs={[
                   {
-                    display: "Validator",
+                    display: t("pool.superfluidUnlock.validator"),
                     className: "w-1/3 !pl-8",
                   },
-                  { display: "Amount", className: "w-1/3" },
                   {
-                    display: "Unbonding Complete",
+                    display: t("pool.superfluidUnlock.amount"),
+                    className: "w-1/3",
+                  },
+                  {
+                    display: t("pool.superfluidUnlock.unbondingComplete"),
                     className: "w-1/3",
                   },
                 ]}
                 data={
-                  superfluidPoolStore.superfluid.undelegations.map(
+                  superfluidPoolConfig.superfluid.undelegations.map(
                     ({ validatorName, inactive, amount, endTime }) => [
                       {
                         value: `${validatorName ?? ""}${
@@ -1174,12 +871,12 @@ const Pool: FunctionComponent = observer(() => {
           )}
         <div className="max-w-container mx-auto md:p-5 p-10">
           {isMobile ? (
-            <span className="subtitle2">Pool Catalyst</span>
+            <span className="subtitle2">{t("pool.catalyst.titleMobile")}</span>
           ) : (
-            <h5>Pool Catalyst</h5>
+            <h5>{t("pool.catalyst.title")}</h5>
           )}
           <div className="flex flex-wrap md:flex-col gap-5 my-5">
-            {(poolDetailStore?.userPoolAssets ?? [undefined, undefined]).map(
+            {(poolDetailConfig?.userPoolAssets ?? [undefined, undefined]).map(
               (userAsset, index) => {
                 const totalAmount = pool?.poolAssets
                   .find(
@@ -1219,27 +916,27 @@ const Pool: FunctionComponent = observer(() => {
                   <PoolCatalystCard
                     key={index}
                     colorKey={Number(pool?.id ?? "0") + index}
-                    isLoading={!pool || !poolDetailStore?.userPoolAssets}
+                    isLoading={!pool || !poolDetailConfig?.userPoolAssets}
                     className="md:w-full w-1/2 max-w-md"
                     percentDec={userAsset?.ratio.toString()}
                     tokenDenom={userAsset?.asset.currency.coinDenom}
                     isMobile={isMobile}
                     metrics={[
                       {
-                        label: "Total amount",
+                        label: t("pool.catalyst.amount"),
                         value: (
                           <MetricLoader
-                            isLoading={!poolDetailStore?.userPoolAssets}
+                            isLoading={!poolDetailConfig?.userPoolAssets}
                           >
                             {totalAmountAdjusted}
                           </MetricLoader>
                         ),
                       },
                       {
-                        label: "My amount",
+                        label: t("pool.catalyst.myAmount"),
                         value: (
                           <MetricLoader
-                            isLoading={!poolDetailStore?.userPoolAssets}
+                            isLoading={!poolDetailConfig?.userPoolAssets}
                           >
                             {myAmountAdjusted}
                           </MetricLoader>

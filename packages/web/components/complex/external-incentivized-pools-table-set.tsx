@@ -1,4 +1,4 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useCallback } from "react";
@@ -14,13 +14,22 @@ import { useStore } from "../../stores";
 import { PageList, SortMenu } from "../control";
 import { SearchBox } from "../input";
 import { RowDef, Table } from "../table";
-import { MetricLoaderCell, PoolCompositionCell } from "../table/cells";
+import {
+  MetricLoaderCell,
+  PoolCompositionCell,
+  PoolQuickActionCell,
+} from "../table/cells";
 import { Breakpoint } from "../types";
 import { CompactPoolTableDisplay } from "./compact-pool-table-display";
 import { POOLS_PER_PAGE } from ".";
+import { useTranslation } from "react-multi-lang";
 
-export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
-  () => {
+export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
+  quickAddLiquidity: (poolId: string) => void;
+  quickRemoveLiquidity: (poolId: string) => void;
+  quickLockTokens: (poolId: string) => void;
+}> = observer(
+  ({ quickAddLiquidity, quickRemoveLiquidity, quickLockTokens }) => {
     const {
       chainStore,
       queriesExternalStore,
@@ -30,19 +39,15 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     } = useStore();
     const { isMobile } = useWindowSize();
     const { logEvent } = useAmplitudeAnalytics();
+    const t = useTranslation();
 
     const { chainId } = chainStore.osmosis;
     const queryExternal = queriesExternalStore.get();
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
     const account = accountStore.getAccount(chainId);
 
-    const pools = Object.keys(ExternalIncentiveGaugeAllowList).map(
-      (poolId: string) => {
-        const pool = queryOsmosis.queryGammPools.getPool(poolId);
-        if (pool) {
-          return pool;
-        }
-      }
+    const pools = Object.keys(ExternalIncentiveGaugeAllowList).map((poolId) =>
+      queryOsmosis.queryGammPools.getPool(poolId)
     );
 
     const externalIncentivizedPools = useMemo(
@@ -76,7 +81,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             return maxRemainingEpoch > 0;
           }
         ),
-      [pools, queryOsmosis]
+      [pools]
     );
 
     const externalIncentivizedPoolsWithMetrics = useMemo(
@@ -107,6 +112,14 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             }
           }
 
+          const poolTvl = pool.computeTotalValueLocked(priceStore);
+          const myLiquidity = poolTvl.mul(
+            queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+              account.bech32Address,
+              pool.id
+            )
+          );
+
           return {
             pool,
             ...queryExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
@@ -115,14 +128,17 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             ),
             liquidity: pool.computeTotalValueLocked(priceStore),
             epochsRemaining: maxRemainingEpoch,
-            myLiquidity: pool
-              .computeTotalValueLocked(priceStore)
-              .mul(
-                queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-                  account.bech32Address,
-                  pool.id
+            myLiquidity,
+            myAvailableLiquidity: myLiquidity.toDec().isZero()
+              ? new PricePretty(
+                  priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+                  0
                 )
-              ),
+              : poolTvl.mul(
+                  queryOsmosis.queryGammPoolShare
+                    .getAvailableGammShare(account.bech32Address, pool.id)
+                    .quo(pool.totalShare)
+                ),
             apr: queryOsmosis.queryIncentivizedPools
               .computeMostAPY(pool.id, priceStore)
               .maxDecimals(2),
@@ -141,8 +157,9 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       [
         chainId,
         externalIncentivizedPools,
-        queryOsmosis,
-        queryExternal,
+        queryOsmosis.queryIncentivizedPools.response,
+        queryExternal.queryGammPoolFeeMetrics.response,
+        queryOsmosis.queryGammPools.response,
         priceStore,
         account,
         chainStore,
@@ -241,35 +258,36 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       () => [
         {
           id: "pool.id",
-          display: "Pool Name",
+          display: t("pools.externalIncentivized.sort.poolName"),
           sort: makeSortMechanism("pool.id"),
           displayCell: PoolCompositionCell,
         },
         {
           id: "liquidity",
-          display: "Liquidity",
+          display: t("pools.externalIncentivized.sort.liquidity"),
           sort: makeSortMechanism("liquidity"),
         },
         {
           id: "apr",
-          display: "APR",
+          display: t("pools.externalIncentivized.sort.APR"),
           sort: makeSortMechanism("apr"),
           displayCell: MetricLoaderCell,
         },
         {
           id: "epochsRemaining",
-          display: "Epochs Remaining",
+          display: t("pools.externalIncentivized.sort.epochs"),
           sort: makeSortMechanism("epochsRemaining"),
           collapseAt: Breakpoint.XL,
         },
         {
           id: "myLiquidity",
-          display: "My Liquidity",
+          display: t("pools.externalIncentivized.sort.myLiquidity"),
           sort: makeSortMechanism("myLiquidity"),
           collapseAt: Breakpoint.LG,
         },
+        { id: "quickActions", display: "", displayCell: PoolQuickActionCell },
       ],
-      [makeSortMechanism]
+      [makeSortMechanism, t]
     );
 
     const tableRows: RowDef[] = useMemo(
@@ -318,15 +336,29 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             },
             { value: poolWithMetrics.epochsRemaining?.toString() },
             { value: poolWithMetrics.myLiquidity?.toString() },
+            {
+              poolId,
+              onAddLiquidity: () => quickAddLiquidity(poolId),
+              onRemoveLiquidity: !poolWithMetrics.myAvailableLiquidity
+                .toDec()
+                .isZero()
+                ? () => quickRemoveLiquidity(poolId)
+                : undefined,
+              onLockTokens: !poolWithMetrics.myAvailableLiquidity
+                .toDec()
+                .isZero()
+                ? () => quickLockTokens(poolId)
+                : undefined,
+            },
           ];
         }),
-      [allData, queryOsmosis]
+      [allData, queryOsmosis.queryIncentivizedPools.isAprFetching]
     );
 
     if (isMobile) {
       return (
         <CompactPoolTableDisplay
-          title="External Incentive Pool"
+          title={t("pools.externalIncentivized.title")}
           pools={allData.map((poolData) => ({
             id: poolData.pool.id,
             assets: poolData.pool.poolAssets.map(
@@ -353,9 +385,12 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
               ],
               ...[
                 sortKeyPath === "apr"
-                  ? { label: "TVL", value: poolData.liquidity.toString() }
+                  ? {
+                      label: t("pools.externalIncentivized.TVL"),
+                      value: poolData.liquidity.toString(),
+                    }
                   : {
-                      label: "APR",
+                      label: t("pools.externalIncentivized.APR"),
                       value: poolData.apr?.toString() ?? "0%",
                     },
               ],
@@ -367,7 +402,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
           searchBoxProps={{
             currentValue: query,
             onInput: setQuery,
-            placeholder: "Filtery by symbol",
+            placeholder: t("pools.externalIncentivized.search"),
           }}
           sortMenuProps={{
             options: tableCols,
@@ -389,12 +424,12 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     return (
       <>
         <div className="mt-5 flex flex-wrap gap-3 items-center justify-between">
-          <h5>External Incentive Pools</h5>
+          <h5>{t("pools.externalIncentivized.title")}</h5>
           <div className="flex items-center gap-8 lg:w-full lg:place-content-between">
             <SearchBox
               currentValue={query}
               onInput={setQuery}
-              placeholder="Filter by name"
+              placeholder={t("pools.externalIncentivized.search")}
               className="!w-64"
             />
             <SortMenu

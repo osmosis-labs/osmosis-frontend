@@ -7,16 +7,9 @@ import { ObservableQueryIncentivizedPools, ObservableQueryLockableDurations, Obs
 import { ObservableQueryGuage } from "../incentives";
 import { ObservableQueryAccountLocked, ObservableQueryAccountLockedCoins, ObservableQueryAccountUnlockingCoins } from "../lockup";
 import { ObservableQueryPool } from "./pool";
-/** Non OSMO gauge. */
-export declare type ExternalGauge = {
-    id: string;
-    duration: Duration;
-    rewardAmount?: CoinPretty;
-    remainingEpochs: number;
-};
+import { ExternalGauge } from "./types";
 /** Convenience store for getting common details of a pool via many other query stores. */
 export declare class ObservableQueryPoolDetails {
-    protected readonly bech32Address: string;
     protected readonly fiatCurrency: FiatCurrency;
     protected readonly queryPool: ObservableQueryPool;
     protected readonly queries: {
@@ -30,7 +23,8 @@ export declare class ObservableQueryPoolDetails {
         queryPoolsGaugeIds: ObservableQueryPoolsGaugeIds;
     };
     protected readonly priceStore: IPriceStore;
-    constructor(bech32Address: string, fiatCurrency: FiatCurrency, queryPool: ObservableQueryPool, queries: {
+    protected bech32Address: string;
+    constructor(fiatCurrency: FiatCurrency, queryPool: ObservableQueryPool, queries: {
         queryGammPoolShare: ObservableQueryGammPoolShare;
         queryIncentivizedPools: ObservableQueryIncentivizedPools;
         queryAccountLocked: ObservableQueryAccountLocked;
@@ -40,13 +34,14 @@ export declare class ObservableQueryPoolDetails {
         queryLockableDurations: ObservableQueryLockableDurations;
         queryPoolsGaugeIds: ObservableQueryPoolsGaugeIds;
     }, priceStore: IPriceStore);
+    setBech32Address(bech32Address: string): void;
     get pool(): ObservableQueryPool;
     get poolShareCurrency(): import("@keplr-wallet/types").Currency;
     get isIncentivized(): boolean;
     get totalValueLocked(): PricePretty;
     get lockableDurations(): Duration[];
     get longestDuration(): Duration;
-    get gauges(): {
+    get internalGauges(): {
         id: string;
         duration: Duration;
         apr: RatePretty;

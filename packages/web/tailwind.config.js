@@ -32,6 +32,7 @@ module.exports = {
         900: "#140F34",
       },
       wosmongton: {
+        100: "#D3D1FF",
         200: "#B3B1FD",
         400: "#6A67EA",
         500: "#5B57FA",

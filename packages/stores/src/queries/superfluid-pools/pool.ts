@@ -1,4 +1,4 @@
-import { computed, makeObservable } from "mobx";
+import { computed, makeObservable, observable, action } from "mobx";
 import { FiatCurrency } from "@keplr-wallet/types";
 import {
   ObservableQueryValidators,
@@ -23,8 +23,10 @@ import {
 
 /** Convenience store getting common superfluid data for a pool via superfluid stores. */
 export class ObservableQuerySuperfluidPool {
+  @observable
+  protected bech32Address: string = "";
+
   constructor(
-    protected readonly bech32Address: string,
     protected readonly fiatCurrency: FiatCurrency,
     protected readonly queryPoolDetails: ObservableQueryPoolDetails,
     protected readonly queryValidators: ObservableQueryValidators,
@@ -44,6 +46,11 @@ export class ObservableQuerySuperfluidPool {
     makeObservable(this);
   }
 
+  @action
+  setBech32Address(bech32Address: string) {
+    this.bech32Address = bech32Address;
+  }
+
   @computed
   get isSuperfluid() {
     return this.queries.querySuperfluidPools.isSuperfluidPool(
@@ -54,7 +61,7 @@ export class ObservableQuerySuperfluidPool {
   /** Wraps `gauges` member of pool detail store with potential superfluid APR info. */
   @computed
   get gaugesWithSuperfluidApr() {
-    return this.queryPoolDetails.gauges.map((gaugeInfo) => {
+    return this.queryPoolDetails.internalGauges.map((gaugeInfo) => {
       const lastDuration = this.queryPoolDetails.longestDuration;
       return {
         ...gaugeInfo,

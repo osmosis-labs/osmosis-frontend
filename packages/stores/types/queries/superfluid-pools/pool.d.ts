@@ -9,7 +9,6 @@ import { ObservableQueryAccountLocked } from "../lockup";
 import { ObservableQuerySuperfluidPools, ObservableQuerySuperfluidDelegations, ObservableQuerySuperfluidUndelegations, ObservableQuerySuperfluidOsmoEquivalent } from "../superfluid-pools";
 /** Convenience store getting common superfluid data for a pool via superfluid stores. */
 export declare class ObservableQuerySuperfluidPool {
-    protected readonly bech32Address: string;
     protected readonly fiatCurrency: FiatCurrency;
     protected readonly queryPoolDetails: ObservableQueryPoolDetails;
     protected readonly queryValidators: ObservableQueryValidators;
@@ -25,7 +24,8 @@ export declare class ObservableQuerySuperfluidPool {
         querySuperfluidOsmoEquivalent: ObservableQuerySuperfluidOsmoEquivalent;
     };
     protected readonly priceStore: IPriceStore;
-    constructor(bech32Address: string, fiatCurrency: FiatCurrency, queryPoolDetails: ObservableQueryPoolDetails, queryValidators: ObservableQueryValidators, queryInflation: ObservableQueryInflation, queries: {
+    protected bech32Address: string;
+    constructor(fiatCurrency: FiatCurrency, queryPoolDetails: ObservableQueryPoolDetails, queryValidators: ObservableQueryValidators, queryInflation: ObservableQueryInflation, queries: {
         queryGammPoolShare: ObservableQueryGammPoolShare;
         queryLockableDurations: ObservableQueryLockableDurations;
         queryIncentivizedPools: ObservableQueryIncentivizedPools;
@@ -35,6 +35,7 @@ export declare class ObservableQuerySuperfluidPool {
         querySuperfluidUndelegations: ObservableQuerySuperfluidUndelegations;
         querySuperfluidOsmoEquivalent: ObservableQuerySuperfluidOsmoEquivalent;
     }, priceStore: IPriceStore);
+    setBech32Address(bech32Address: string): void;
     get isSuperfluid(): boolean;
     /** Wraps `gauges` member of pool detail store with potential superfluid APR info. */
     get gaugesWithSuperfluidApr(): {

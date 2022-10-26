@@ -43,16 +43,22 @@ export const IBCAssetInfos: (IBCAsset & {
     },
   },
   {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
+    counterpartyChainId: IS_TESTNET
+      ? "axelar-testnet-lisbon-3"
+      : "axelar-dojo-1",
+    sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
+    destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
     coinMinimalDenom: "weth-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=weth-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=weth-wei",
-    sourceChainNameOverride: "Ethereum",
+    sourceChainNameOverride: IS_TESTNET ? "Ropsten Ethereum" : "Ethereum",
     isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.weth.ethereum],
+      tokenMinDenom: IS_TESTNET ? "weth-wei" : "weth-wei",
+      transferFeeMinAmount: IS_TESTNET ? "60000000000000" : "6300000000000000",
+    },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -728,6 +734,10 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-259",
     destChannelId: "channel-3",
     coinMinimalDenom: "ukuji",
+    depositUrlOverride:
+      "https://blue.kujira.app/ibc?destination=osmosis-1&denom=ukuji",
+    // withdrawUrlOverride:
+    //   "https://blue.kujira.app/ibc?destination=kaiyo-1&source=osmosis-1&denom=ukuji",
     isVerified: true,
   },
   {
@@ -855,12 +865,14 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "stride-1",
     sourceChannelId: "channel-326",
     destChannelId: "channel-5",
     coinMinimalDenom: "ustrd",
+    isVerified: true,
   },
   {
     counterpartyChainId: "stride-1",
@@ -905,6 +917,44 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-355",
     destChannelId: "channel-0",
     coinMinimalDenom: "arebus",
+  },
+  {
+    counterpartyChainId: "teritori-1",
+    sourceChannelId: "channel-362",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "utori",
+  },
+  {
+    counterpartyChainId: "stride-1",
+    sourceChannelId: "channel-326",
+    destChannelId: "channel-5",
+    coinMinimalDenom: "stujuno",
+  },
+  {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
+    counterpartyChainId: "lambda_92000-1",
+    sourceChannelId: "channel-2",
+    destChannelId: "channel-378",
+    coinMinimalDenom: "ulamb",
+  },
+  {
+    counterpartyChainId: "kaiyo-1",
+    sourceChannelId: "channel-259",
+    destChannelId: "channel-3",
+    coinMinimalDenom:
+      "factory:kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7:uusk",
+    depositUrlOverride:
+      "https://blue.kujira.app/ibc?destination=osmosis-1&source=kaiyo-1&denom=factory%2Fkujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7%2Fuusk",
+    withdrawUrlOverride:
+      "https://blue.kujira.app/ibc?destination=kaiyo-1&source=osmosis-1&denom=ibc%2F44492EAB24B72E3FB59B9FA619A22337FB74F95D8808FE6BC78CC0E6C18DC2EC",
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
