@@ -191,8 +191,8 @@ export class ObservableTransferUIConfig {
             );
           }
         );
-      } else if (applicableWallets.length > 0) {
-        this.launchSelectAssetSourceModal(direction, balance, sourceChainKey);
+      } else {
+        this.launchWalletSelectModal(direction, balance, sourceChainKey);
       }
     } else {
       this.launchIbcTransferModal(direction, balance);

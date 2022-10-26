@@ -134,8 +134,8 @@ const Assets: NextPage = observer(() => {
       {transferConfig?.assetSelectModal && (
         <TransferAssetSelectModal {...transferConfig.assetSelectModal} />
       )}
-      {transferConfig?.connectNonIbcWalletModal && (
-        <SelectAssetSourceModal {...transferConfig.connectNonIbcWalletModal} />
+      {transferConfig?.selectAssetSourceModal && (
+        <SelectAssetSourceModal {...transferConfig.selectAssetSourceModal} />
       )}
       {transferConfig?.ibcTransferModal && (
         <IbcTransferModal {...transferConfig.ibcTransferModal} />
