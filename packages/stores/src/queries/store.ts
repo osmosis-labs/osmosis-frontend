@@ -167,6 +167,7 @@ export class OsmosisQueriesImpl {
       chainId,
       chainGetter
     );
+    this.queryGauge = new ObservableQueryGuage(kvStore, chainId, chainGetter);
     this.queryIncentivizedPools = new ObservableQueryIncentivizedPools(
       kvStore,
       chainId,
@@ -176,9 +177,9 @@ export class OsmosisQueriesImpl {
       this.queryGammPools,
       this.queryMintParams,
       this.queryEpochProvisions,
-      this.queryEpochs
+      this.queryEpochs,
+      this.queryGauge
     );
-    this.queryGauge = new ObservableQueryGuage(kvStore, chainId, chainGetter);
     this.queryPoolsGaugeIds = new ObservableQueryPoolsGaugeIds(
       kvStore,
       chainId,

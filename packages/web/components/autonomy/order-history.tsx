@@ -177,8 +177,6 @@ export default function OrderHistory({
         const keplr = await account.getKeplr();
         if (!keplr) return;
 
-        console.log("SUBQUERY_ENDPOINTS[chainId]", SUBQUERY_ENDPOINTS[chainId]);
-
         const {
           requests: { nodes },
         } = await request(

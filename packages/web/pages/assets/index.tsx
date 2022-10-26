@@ -9,9 +9,7 @@ import {
 } from "react";
 import { PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { makeLocalStorageKVStore } from "../../stores/kv-store";
 import { useStore } from "../../stores";
-import { ObservableTransferUIConfig } from "../../stores/assets";
 import { Overview } from "../../components/overview";
 import { AssetsTable } from "../../components/table/assets-table";
 import { DepoolingTable } from "../../components/table/depooling-table";
@@ -26,7 +24,11 @@ import {
   TransferAssetSelectModal,
 } from "../../modals";
 import { ConnectNonIbcWallet, PreTransferModal } from "../../modals";
-import { useWindowSize, useAmplitudeAnalytics } from "../../hooks";
+import {
+  useWindowSize,
+  useAmplitudeAnalytics,
+  useTransferConfig,
+} from "../../hooks";
 import { WalletConnectQRModal } from "../../modals";
 import { EventName } from "../../config";
 
@@ -47,15 +49,7 @@ const Assets: NextPage = observer(() => {
   const { setUserProperty } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Assets.pageViewed],
   });
-
-  const [transferConfig] = useState(
-    () =>
-      new ObservableTransferUIConfig(
-        assetsStore,
-        account,
-        makeLocalStorageKVStore("transfer-ui-config")
-      )
-  );
+  const transferConfig = useTransferConfig(assetsStore, account);
 
   // mobile only
   const [preTransferModalProps, setPreTransferModalProps] =
@@ -77,7 +71,7 @@ const Assets: NextPage = observer(() => {
         isUnstable: ibcBalance.isUnstable,
         onSelectToken: launchPreTransferModal,
         onWithdraw: () => {
-          transferConfig.transferAsset(
+          transferConfig?.transferAsset(
             "withdraw",
             ibcBalance.chainInfo.chainId,
             coinDenom
@@ -85,7 +79,7 @@ const Assets: NextPage = observer(() => {
           setPreTransferModalProps(null);
         },
         onDeposit: () => {
-          transferConfig.transferAsset(
+          transferConfig?.transferAsset(
             "deposit",
             ibcBalance.chainInfo.chainId,
             coinDenom
@@ -110,25 +104,25 @@ const Assets: NextPage = observer(() => {
   return (
     <main className="bg-background">
       <AssetsOverview
-        onDepositIntent={() => transferConfig.startTransfer("deposit")}
-        onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
+        onDepositIntent={() => transferConfig?.startTransfer("deposit")}
+        onWithdrawIntent={() => transferConfig?.startTransfer("withdraw")}
       />
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
       )}
-      {transferConfig.assetSelectModal && (
+      {transferConfig?.assetSelectModal && (
         <TransferAssetSelectModal {...transferConfig.assetSelectModal} />
       )}
-      {transferConfig.connectNonIbcWalletModal && (
+      {transferConfig?.connectNonIbcWalletModal && (
         <ConnectNonIbcWallet {...transferConfig.connectNonIbcWalletModal} />
       )}
-      {transferConfig.ibcTransferModal && (
+      {transferConfig?.ibcTransferModal && (
         <IbcTransferModal {...transferConfig.ibcTransferModal} />
       )}
-      {transferConfig.bridgeTransferModal && (
+      {transferConfig?.bridgeTransferModal && (
         <BridgeTransferModal {...transferConfig.bridgeTransferModal} />
       )}
-      {transferConfig.walletConnectEth.sessionConnectUri && (
+      {transferConfig?.walletConnectEth.sessionConnectUri && (
         <WalletConnectQRModal
           isOpen={true}
           uri={transferConfig.walletConnectEth.sessionConnectUri || ""}
@@ -138,18 +132,18 @@ const Assets: NextPage = observer(() => {
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
-        onDepositIntent={() => transferConfig.startTransfer("deposit")}
-        onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
+        onDepositIntent={() => transferConfig?.startTransfer("deposit")}
+        onWithdrawIntent={() => transferConfig?.startTransfer("withdraw")}
         onDeposit={(chainId, coinDenom, externalDepositUrl) => {
           if (!externalDepositUrl) {
             isMobile
               ? launchPreTransferModal(coinDenom)
-              : transferConfig.transferAsset("deposit", chainId, coinDenom);
+              : transferConfig?.transferAsset("deposit", chainId, coinDenom);
           }
         }}
         onWithdraw={(chainId, coinDenom, externalWithdrawUrl) => {
           if (!externalWithdrawUrl) {
-            transferConfig.transferAsset("withdraw", chainId, coinDenom);
+            transferConfig?.transferAsset("withdraw", chainId, coinDenom);
           }
         }}
       />
