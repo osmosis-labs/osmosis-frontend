@@ -52,7 +52,7 @@ export class ObservableTransferUIConfig {
   protected _selectAssetSourceModal:
     | ComponentProps<typeof SelectAssetSourceModal>
     | undefined;
-  get connectNonIbcWalletModal():
+  get selectAssetSourceModal():
     | ComponentProps<typeof SelectAssetSourceModal>
     | undefined {
     return this._selectAssetSourceModal;
@@ -192,7 +192,7 @@ export class ObservableTransferUIConfig {
           }
         );
       } else {
-        this.launchWalletSelectModal(direction, balance, sourceChainKey);
+        this.launchSelectAssetSourceModal(direction, balance, sourceChainKey);
       }
     } else {
       this.launchIbcTransferModal(direction, balance);
