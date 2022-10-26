@@ -371,10 +371,12 @@ const Pool: FunctionComponent = observer(() => {
         <div
           className={classNames(
             "flex flex-col gap-10 px-10 pt-10 transition-height duration-300 ease-inOutBack overflow-hidden",
-            showPoolDetails ? "h-[250px]" : "h-[120px]"
+            showPoolDetails
+              ? "h-[250px] xl:h-[300px] lg:h-[510px]"
+              : "h-[120px] xl:h-[180px] lg:h-[300px]"
           )}
         >
-          <div className="flex items-start place-content-between">
+          <div className="flex items-start gap-2 place-content-between xl:flex-col">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 {pool && (
@@ -394,7 +396,7 @@ const Pool: FunctionComponent = observer(() => {
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-10">
+            <div className="flex items-center gap-10 xl:place-content-between xl:w-full lg:flex-col lg:w-fit lg:items-start">
               <div>
                 <span className="text-osmoverse-400 subtitle1 gap-2">
                   24hr Trading volume

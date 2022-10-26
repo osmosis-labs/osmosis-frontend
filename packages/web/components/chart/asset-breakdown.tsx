@@ -26,7 +26,9 @@ export const AssetBreakdownChart: FunctionComponent<{
 
   return (
     <div
-      className={classNames("grid w-full")}
+      className={classNames(
+        "grid w-full md:!grid-cols-2 md:p-6 md:rounded-2xl md:bg-osmoverse-900"
+      )}
       style={{
         gridTemplateColumns: gridTemplateColumns.join(" "),
       }}
@@ -37,16 +39,25 @@ export const AssetBreakdownChart: FunctionComponent<{
           className={classNames("flex flex-col gap-2.5")}
         >
           <div>
-            <span className="subtitle1 text-osmoverse-400">
-              {amount.currency.coinDenom}: {assetPercentages[index].toString()}%
-            </span>
-            <h5 className="text-osmoverse-100">
+            <div className="md:flex md:items-center md:gap-1">
+              <div
+                className={classNames(
+                  "hidden md:block h-4 w-4 rounded-full",
+                  colorCycle[index % colorCycle.length]
+                )}
+              />
+              <span className="subtitle1 md:body2 text-osmoverse-400">
+                {amount.currency.coinDenom}:{" "}
+                {assetPercentages[index].toString()}%
+              </span>
+            </div>
+            <h5 className="md:subtitle2 text-osmoverse-100">
               {amount.maxDecimals(0).hideDenom(true).toString()}
             </h5>
           </div>
           <div
             className={classNames(
-              "flex w-full h-3",
+              "md:hidden flex w-full h-3",
               colorCycle[index % colorCycle.length],
               {
                 "rounded-l-full": index === 0,
