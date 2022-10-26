@@ -49,7 +49,7 @@ const chainInfos = (
     },
     {
       rpc: "https://testnet-rpc.osmosis.zone/",
-      rest: "https://testnet-rest.osmosis.zone/",
+      rest: "https://lcd.testnet.osmosis.zone/",
       chainId: "osmo-test-4",
       chainName: "Osmosis Testnet",
       bip44: {
