@@ -106,7 +106,6 @@ export const AllPoolsTableSet: FunctionComponent<{
 
     const { chainId } = chainStore.osmosis;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-    const queriesExternal = queriesExternalStore.get();
     const account = accountStore.getAccount(chainId);
     const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
 
@@ -125,7 +124,7 @@ export const AllPoolsTableSet: FunctionComponent<{
 
           return {
             pool,
-            ...queriesExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+            ...queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
               pool.id,
               priceStore
             ),
@@ -156,12 +155,12 @@ export const AllPoolsTableSet: FunctionComponent<{
         // also, the higher level `useMemo`s (i.e. this one) gain the most performance as other React renders are prevented down the line as data is calculated (remember, renders are initiated by both mobx and react)
         allPools,
         queriesOsmosis.queryGammPools.response,
-        queriesExternal.queryGammPoolFeeMetrics.response,
+        queriesExternalStore.queryGammPoolFeeMetrics.response,
         queriesOsmosis.queryAccountLocked.get(account.bech32Address).response,
         queriesOsmosis.queryLockedCoins.get(account.bech32Address).response,
         queriesOsmosis.queryUnlockingCoins.get(account.bech32Address).response,
         priceStore.response,
-        queriesExternal.queryGammPoolFeeMetrics.response,
+        queriesExternalStore.queryGammPoolFeeMetrics.response,
         account.bech32Address,
       ]
     );
@@ -180,8 +179,32 @@ export const AllPoolsTableSet: FunctionComponent<{
           incentivizedPools.push({
             ...poolWithMetrics,
             apr: queriesOsmosis.queryIncentivizedPools
-              .computeMostAPY(poolWithMetrics.pool.id, priceStore)
-              .maxDecimals(2),
+              .computeMostApr(poolWithMetrics.pool.id, priceStore)
+              .add(
+                // swap fees
+                queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
+                  poolWithMetrics.pool,
+                  priceStore
+                )
+              )
+              .add(
+                // superfluid apr
+                queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+                  poolWithMetrics.pool.id
+                )
+                  ? new RatePretty(
+                      queriesStore
+                        .get(chainId)
+                        .cosmos.queryInflation.inflation.mul(
+                          queriesOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
+                            poolWithMetrics.pool.id
+                          )
+                        )
+                        .moveDecimalPointLeft(2)
+                    )
+                  : new Dec(0)
+              )
+              .maxDecimals(0),
           });
         }
         return incentivizedPools;
@@ -207,7 +230,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     }, [
       isPoolTvlFiltered,
       activeOptionPools,
-      queriesExternal.queryGammPoolFeeMetrics.response,
+      queriesExternalStore.queryGammPoolFeeMetrics.response,
     ]);
 
     const initialKeyPath = "liquidity";
@@ -380,11 +403,11 @@ export const AllPoolsTableSet: FunctionComponent<{
             { value: poolWithMetrics.liquidity.toString() },
             {
               value: poolWithMetrics.volume24h.toString(),
-              isLoading: !queriesExternal.queryGammPoolFeeMetrics.response,
+              isLoading: !queriesExternalStore.queryGammPoolFeeMetrics.response,
             },
             {
               value: poolWithMetrics.feesSpent7d.toString(),
-              isLoading: !queriesExternal.queryGammPoolFeeMetrics.response,
+              isLoading: !queriesExternalStore.queryGammPoolFeeMetrics.response,
             },
             {
               value: isIncentivizedPools

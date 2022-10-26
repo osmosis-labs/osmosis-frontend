@@ -4,7 +4,7 @@ import { CustomClasses } from "../types";
 
 export const NewButton: FunctionComponent<
   {
-    mode?: "primary" | "primary-warning" | "secondary";
+    mode?: "primary" | "primary-warning" | "secondary" | "tertiary";
     size?: "sm" | "normal";
   } & CustomClasses &
     ButtonHTMLAttributes<HTMLButtonElement>
@@ -15,18 +15,30 @@ export const NewButton: FunctionComponent<
     <button
       {...props}
       className={classNames(
-        "flex items-center text-center rounded-xl disabled:text-osmoverse-100 py-2",
+        "flex items-center text-center disabled:cursor-default py-2",
         size === "sm" ? "px-5" : "px-6",
+        mode === "tertiary" ? "rounded-md" : "rounded-xl",
         {
-          "bg-wosmongton-700 hover:bg-wosmongton-400": mode === "primary",
-          "bg-transparent border hover:border-2": mode === "secondary",
+          "bg-wosmongton-700 hover:bg-wosmongton-400":
+            mode === "primary" && !props.disabled,
+          "bg-osmoverse-500 text-osmoverse-100":
+            (mode === "primary" || mode === "primary-warning") &&
+            props.disabled,
+          "bg-gradient-negative": mode === "primary-warning",
+          "bg-transparent border-2":
+            mode === "secondary" || mode === "tertiary",
+          "border-wosmongton-400 hover:border-wosmongton-200":
+            mode === "secondary" && !props.disabled,
+          "border-osmoverse-600 text-osmoverse-400":
+            mode === "secondary" && props.disabled,
+          "border-osmoverse-400": mode === "tertiary" && !props.disabled,
         },
         className
       )}
     >
       {typeof children === "string" ? (
         size === "sm" ? (
-          <span className="subtitle1 mx-auto">{children}</span>
+          <span className="button mx-auto">{children}</span>
         ) : (
           <h6 className="mx-auto">{children}</h6>
         )

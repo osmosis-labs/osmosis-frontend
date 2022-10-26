@@ -56,8 +56,6 @@ const AxelarTransfer: FunctionComponent<
     selectedSourceChainKey,
     onRequestClose,
     onRequestSwitchWallet,
-    tokenMinDenom,
-    transferFeeMinAmount,
     sourceChains,
     isTestNet = process.env.NEXT_PUBLIC_IS_TESTNET === "true",
     connectCosmosWalletButtonOverride,
@@ -98,9 +96,13 @@ const AxelarTransfer: FunctionComponent<
       EthClientChainIds_AxelarChainIdsMap[selectedSourceChainKey] ??
       selectedSourceChainKey;
 
-    const erc20ContractAddress = sourceChains.find(
+    const sourceChainConfig = sourceChains.find(
       ({ id }) => id === selectedSourceChainKey
-    )?.erc20ContractAddress;
+    );
+
+    const erc20ContractAddress = sourceChainConfig?.erc20ContractAddress;
+    const transferFeeMinAmount = sourceChainConfig?.transferFeeMinAmount ?? "0";
+
     const axelarChainId =
       chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
       "axelar-dojo-1";
@@ -222,7 +224,7 @@ const AxelarTransfer: FunctionComponent<
         sourceChain,
         destChain,
         isWithdraw || correctChainSelected ? address : undefined,
-        tokenMinDenom,
+        originCurrency.coinMinimalDenom,
         undefined,
         isTestNet ? Environment.TESTNET : Environment.MAINNET
       );
@@ -230,7 +232,7 @@ const AxelarTransfer: FunctionComponent<
     // notify user they are withdrawing into a different account then they last deposited to
     const [lastDepositAccountAddress, setLastDepositAccountAddress] =
       useLocalStorageState<string | null>(
-        `axelar-last-deposit-addr-${tokenMinDenom}`,
+        `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
         null
       );
     const warnOfDifferentDepositAddress =

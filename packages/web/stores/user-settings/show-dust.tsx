@@ -1,10 +1,16 @@
-import { action, makeObservable, observable, computed } from "mobx";
+import {
+  action,
+  makeObservable,
+  observable,
+  computed,
+  runInAction,
+} from "mobx";
+import { KVStore } from "@keplr-wallet/common";
 import { FunctionComponent } from "react";
 import { Switch } from "../../components/control";
 import { IUserSetting } from ".";
 
 export type ShowDustState = { showDust: boolean };
-
 export class ShowDustUserSetting implements IUserSetting<ShowDustState> {
   readonly id = "show-dust";
   readonly controlComponent: FunctionComponent<ShowDustState> = ({
@@ -21,8 +27,17 @@ export class ShowDustUserSetting implements IUserSetting<ShowDustState> {
     showDust: false,
   };
 
-  constructor(protected readonly fiatSymbol: string) {
+  constructor(
+    protected readonly kvStore: KVStore,
+    protected readonly fiatSymbol: string
+  ) {
     makeObservable(this);
+
+    this.kvStore
+      .get(this.id)
+      .then((value) =>
+        runInAction(() => (this._state = { showDust: value as boolean }))
+      );
   }
 
   getLabel(t: Function): string {
@@ -37,5 +52,6 @@ export class ShowDustUserSetting implements IUserSetting<ShowDustState> {
   @action
   setState(state: ShowDustState) {
     this._state = state;
+    this.kvStore.set(this.id, state.showDust);
   }
 }

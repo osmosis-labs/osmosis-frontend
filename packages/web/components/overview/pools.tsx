@@ -4,7 +4,8 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import { CoinPretty, DecUtils } from "@keplr-wallet/unit";
 import { useStore } from "../../stores";
-import { CustomClasses } from "../types";
+import { useWindowSize } from "../../hooks";
+import { CustomClasses, Breakpoint } from "../types";
 import { useTranslation } from "react-multi-lang";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
@@ -13,6 +14,8 @@ export const PoolsOverview: FunctionComponent<{} & CustomClasses> = ({
   className,
 }) => {
   const { chainStore, priceStore, queriesStore } = useStore();
+  const { width } = useWindowSize();
+
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const t = useTranslation();
@@ -71,14 +74,28 @@ export const PoolsOverview: FunctionComponent<{} & CustomClasses> = ({
           {timeRemaining}
         </h2>
       </div>
-      <div className="absolute h-[292px] right-0 -bottom-[0.025rem] overflow-clip rounded-br-[32px]">
-        <Image
-          alt="lab machine"
-          src="/images/lab-machine.svg"
-          height={292}
-          width={480}
-        />
-      </div>
+      {width > Breakpoint.XLG && (
+        <div className="absolute h-[292px] 1.5xl:h-[200px] xl:h-[188px] right-0 -bottom-[0.025rem] overflow-clip rounded-br-[32px]">
+          <Image
+            alt="lab machine"
+            src="/images/lab-machine.svg"
+            height={
+              width < Breakpoint.XLHALF
+                ? width < Breakpoint.XL
+                  ? 190
+                  : 200
+                : 292
+            }
+            width={
+              width < Breakpoint.XLHALF
+                ? width < Breakpoint.XL
+                  ? 280
+                  : 380
+                : 480
+            }
+          />
+        </div>
+      )}
     </div>
   );
 };

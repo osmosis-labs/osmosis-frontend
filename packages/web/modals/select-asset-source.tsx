@@ -34,7 +34,6 @@ export const SelectAssetSourceModal: FunctionComponent<
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       className: "h-14 md:w-full w-96 mt-3 mx-auto !px-1",
-      size: "lg",
       disabled:
         props.initiallySelectedWalletId === undefined &&
         !selectedAssetSourceKey,

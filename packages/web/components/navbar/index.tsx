@@ -2,7 +2,6 @@ import Image from "next/image";
 import { ButtonHTMLAttributes, FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
-import { Bech32Address } from "@keplr-wallet/cosmos";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { NewButton } from "../buttons";
 import { useStore } from "../../stores";
@@ -108,12 +107,7 @@ export const NavBar: FunctionComponent<
                 <span className="text-button font-button">
                   {navBarStore.walletInfo.balance.toString()}
                 </span>
-                <span className="caption">
-                  {Bech32Address.shortenAddress(
-                    navBarStore.walletInfo.bech32Address,
-                    16
-                  )}
-                </span>
+                <span className="caption">{navBarStore.walletInfo.name}</span>
               </div>
             </div>
           )}

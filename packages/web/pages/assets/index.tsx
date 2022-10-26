@@ -9,9 +9,7 @@ import {
 } from "react";
 import { PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { makeLocalStorageKVStore } from "../../stores/kv-store";
 import { useStore } from "../../stores";
-import { ObservableTransferUIConfig } from "../../stores/assets";
 import { AssetsTable } from "../../components/table/assets-table";
 import { DepoolingTable } from "../../components/table/depooling-table";
 import { ShowMoreButton } from "../../components/buttons/show-more";
@@ -25,14 +23,17 @@ import {
   BridgeTransferModal,
   TransferAssetSelectModal,
   FiatRampsModal,
+  SelectAssetSourceModal,
+  PreTransferModal,
+  WalletConnectQRModal,
 } from "../../modals";
-import { SelectAssetSourceModal, PreTransferModal } from "../../modals";
 import {
   useWindowSize,
   useAmplitudeAnalytics,
-  useNavBarCtas,
+  useNavBar,
+  useShowDustUserSetting,
+  useTransferConfig,
 } from "../../hooks";
-import { WalletConnectQRModal } from "../../modals";
 import { EventName } from "../../config";
 
 const INIT_POOL_CARD_COUNT = 6;
@@ -49,19 +50,11 @@ const Assets: NextPage = observer(() => {
   const { nativeBalances, ibcBalances } = assetsStore;
   const account = accountStore.getAccount(chainId);
 
-  const [transferConfig] = useState(
-    () =>
-      new ObservableTransferUIConfig(
-        assetsStore,
-        account,
-        makeLocalStorageKVStore("transfer-ui-config")
-      )
-  );
-
-  // set up user analytics
-  const { logEvent, setUserProperty } = useAmplitudeAnalytics({
+  const { setUserProperty, logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Assets.pageViewed],
   });
+  const transferConfig = useTransferConfig(assetsStore, account);
+
   // mobile only
   const [preTransferModalProps, setPreTransferModalProps] =
     useState<ComponentProps<typeof PreTransferModal> | null>(null);
@@ -82,7 +75,7 @@ const Assets: NextPage = observer(() => {
         isUnstable: ibcBalance.isUnstable,
         onSelectToken: launchPreTransferModal,
         onWithdraw: () => {
-          transferConfig.transferAsset(
+          transferConfig?.transferAsset(
             "withdraw",
             ibcBalance.chainInfo.chainId,
             coinDenom
@@ -90,7 +83,7 @@ const Assets: NextPage = observer(() => {
           setPreTransferModalProps(null);
         },
         onDeposit: () => {
-          transferConfig.transferAsset(
+          transferConfig?.transferAsset(
             "deposit",
             ibcBalance.chainInfo.chainId,
             coinDenom
@@ -113,22 +106,24 @@ const Assets: NextPage = observer(() => {
   }, [nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()]);
 
   // set nav bar ctas
-  useNavBarCtas([
-    {
-      label: "Deposit",
-      onClick: () => {
-        transferConfig.startTransfer("deposit");
-        logEvent([EventName.Assets.depositClicked]);
+  useNavBar({
+    ctas: [
+      {
+        label: "Deposit",
+        onClick: () => {
+          transferConfig?.startTransfer("deposit");
+          logEvent([EventName.Assets.depositClicked]);
+        },
       },
-    },
-    {
-      label: "Withdraw",
-      onClick: () => {
-        transferConfig.startTransfer("withdraw");
-        logEvent([EventName.Assets.withdrawClicked]);
+      {
+        label: "Withdraw",
+        onClick: () => {
+          transferConfig?.startTransfer("withdraw");
+          logEvent([EventName.Assets.withdrawClicked]);
+        },
       },
-    },
-  ]);
+    ],
+  });
 
   return (
     <main className="flex flex-col gap-20 bg-background p-8">
@@ -136,22 +131,22 @@ const Assets: NextPage = observer(() => {
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
       )}
-      {transferConfig.assetSelectModal && (
+      {transferConfig?.assetSelectModal && (
         <TransferAssetSelectModal {...transferConfig.assetSelectModal} />
       )}
-      {transferConfig.connectNonIbcWalletModal && (
+      {transferConfig?.connectNonIbcWalletModal && (
         <SelectAssetSourceModal {...transferConfig.connectNonIbcWalletModal} />
       )}
-      {transferConfig.ibcTransferModal && (
+      {transferConfig?.ibcTransferModal && (
         <IbcTransferModal {...transferConfig.ibcTransferModal} />
       )}
-      {transferConfig.bridgeTransferModal && (
+      {transferConfig?.bridgeTransferModal && (
         <BridgeTransferModal {...transferConfig.bridgeTransferModal} />
       )}
-      {transferConfig.fiatRampsModal && (
+      {transferConfig?.fiatRampsModal && (
         <FiatRampsModal {...transferConfig.fiatRampsModal} />
       )}
-      {transferConfig.walletConnectEth.sessionConnectUri && (
+      {transferConfig?.walletConnectEth.sessionConnectUri && (
         <WalletConnectQRModal
           isOpen={true}
           uri={transferConfig.walletConnectEth.sessionConnectUri || ""}
@@ -161,21 +156,21 @@ const Assets: NextPage = observer(() => {
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
-        onDepositIntent={() => transferConfig.startTransfer("deposit")}
-        onWithdrawIntent={() => transferConfig.startTransfer("withdraw")}
+        onDepositIntent={() => transferConfig?.startTransfer("deposit")}
+        onWithdrawIntent={() => transferConfig?.startTransfer("withdraw")}
         onDeposit={(chainId, coinDenom, externalDepositUrl) => {
           if (!externalDepositUrl) {
             isMobile
               ? launchPreTransferModal(coinDenom)
-              : transferConfig.transferAsset("deposit", chainId, coinDenom);
+              : transferConfig?.transferAsset("deposit", chainId, coinDenom);
           }
         }}
         onWithdraw={(chainId, coinDenom, externalWithdrawUrl) => {
           if (!externalWithdrawUrl) {
-            transferConfig.transferAsset("withdraw", chainId, coinDenom);
+            transferConfig?.transferAsset("withdraw", chainId, coinDenom);
           }
         }}
-        onBuyOsmo={() => transferConfig.buyOsmo()}
+        onBuyOsmo={() => transferConfig?.buyOsmo()}
       />
       {!isMobile && <PoolAssets />}
       <section className="bg-surface">
@@ -259,12 +254,14 @@ const AssetsOverview: FunctionComponent = observer(() => {
 });
 
 const PoolAssets: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const { setUserProperty } = useAmplitudeAnalytics();
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const { bech32Address } = accountStore.getAccount(chainId);
+  const queryOsmosis = queriesStore.get(chainId).osmosis!;
+
   const ownedPoolIds = queriesStore
     .get(chainId)
     .osmosis!.queryGammPoolShare.getOwnPools(bech32Address);
@@ -274,14 +271,28 @@ const PoolAssets: FunctionComponent = observer(() => {
     setUserProperty("myPoolsCount", ownedPoolIds.length);
   }, [ownedPoolIds.length]);
 
-  if (ownedPoolIds.length === 0) {
+  const dustedPoolIds = useShowDustUserSetting(ownedPoolIds, (poolId) =>
+    queryOsmosis.queryGammPools
+      .getPool(poolId)
+      ?.computeTotalValueLocked(priceStore)
+      .mul(
+        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+          bech32Address,
+          poolId
+        )
+      )
+  );
+
+  if (dustedPoolIds.length === 0) {
     return null;
   }
 
   return (
     <section>
       <h5>{t("assets.myPools")}</h5>
-      <PoolCards {...{ showAllPools, ownedPoolIds, setShowAllPools }} />
+      <PoolCards
+        {...{ showAllPools, ownedPoolIds: dustedPoolIds, setShowAllPools }}
+      />
     </section>
   );
 });
@@ -376,7 +387,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                       }
                     >
                       {queriesOsmosis.queryIncentivizedPools
-                        .computeMostAPY(poolId, priceStore)
+                        .computeMostApr(poolId, priceStore)
                         .maxDecimals(2)
                         .toString()}
                     </MetricLoader>
@@ -385,8 +396,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
               : {
                   label: t("assets.poolCards.FeeAPY"),
                   value: (() => {
-                    const queriesExternal = queriesExternalStore.get();
-                    return queriesExternal.queryGammPoolFeeMetrics.get7dPoolFeeApy(
+                    return queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
                       pool,
                       priceStore
                     );

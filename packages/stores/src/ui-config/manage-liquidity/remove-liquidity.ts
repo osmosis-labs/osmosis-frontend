@@ -1,6 +1,8 @@
 import { observable, makeObservable, action, computed } from "mobx";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { computedFn } from "mobx-utils";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
+import { IPriceStore } from "../../price";
 import {
   ObservableQueryGammPoolShare,
   ObservableQueryPools,
@@ -89,4 +91,22 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
       );
     }
   }
+
+  /** Calculate value of currently selected pool shares. */
+  readonly computePoolShareValueWithPercentage = computedFn(
+    (priceStore: IPriceStore) => {
+      const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
+      return this.poolShareAssetsWithPercentage.reduce(
+        (accummulatedValue, asset) => {
+          const assetPrice = priceStore.calculatePrice(
+            asset,
+            priceStore.defaultVsCurrency
+          );
+          if (assetPrice) return accummulatedValue.add(assetPrice);
+          else return accummulatedValue;
+        },
+        new PricePretty(fiat, 0)
+      );
+    }
+  );
 }

@@ -77,7 +77,8 @@ export class ObservableTransferUIConfig {
   constructor(
     protected readonly assetsStore: ObservableAssets,
     protected readonly account: AccountSetBase,
-    protected readonly kvStore: KVStore
+    protected readonly kvStore: KVStore,
+    protected readonly isMobile: boolean
   ) {
     makeObservable(this);
   }
@@ -92,7 +93,9 @@ export class ObservableTransferUIConfig {
   );
 
   protected get _ethClientWallets(): EthWallet[] {
-    return [this.metamask, this.walletConnectEth];
+    return [this.metamask, this.walletConnectEth].filter((wallet) =>
+      this.isMobile ? wallet.mobileEnabled : true
+    );
   }
 
   /** ### GLOBAL DEPOSIT/WITHDRAW BUTTONS AT TOP
@@ -190,11 +193,6 @@ export class ObservableTransferUIConfig {
         );
       } else if (applicableWallets.length > 0) {
         this.launchSelectAssetSourceModal(direction, balance, sourceChainKey);
-      } else {
-        console.warn(
-          "No non-Keplr wallets found for this bridged asset:",
-          balance.balance.currency.coinDenom
-        );
       }
     } else {
       this.launchIbcTransferModal(direction, balance);
