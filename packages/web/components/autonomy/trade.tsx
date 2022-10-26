@@ -940,6 +940,7 @@ export const TradeClipboard: FunctionComponent<{
                       target: WRAPPER_ADDRESSES[chainId],
                       msg,
                       input_asset,
+                      is_recurring: false,
                     },
                   },
                 },
