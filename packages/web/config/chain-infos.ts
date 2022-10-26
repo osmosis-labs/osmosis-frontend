@@ -118,8 +118,8 @@ const chainInfos = (
       explorerUrlToTx: "https://finder.terra.money/columbus-5/tx/{txHash}",
     },
     {
-      rpc: "https://rpc-secret.keplr.app",
-      rest: "https://lcd-secret.keplr.app",
+      rpc: "https://rpc.spartanapi.dev",
+      rest: "https://lcd.spartanapi.dev",
       chainId: "secret-4",
       chainName: "Secret Network",
       bip44: {
