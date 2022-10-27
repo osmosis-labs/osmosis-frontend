@@ -5,15 +5,19 @@ import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { NewButton } from "../buttons";
 import { useStore } from "../../stores";
-import { CustomClasses } from "../types";
-import { useBooleanWithWindowEvent } from "../../hooks";
+import { useBooleanWithWindowEvent, useWindowSize } from "../../hooks";
 import { IUserSetting } from "../../stores/user-settings";
 import { useTranslation } from "react-multi-lang";
+import { MainLayoutMenu, CustomClasses } from "../types";
+import { MainMenu } from "../main-menu";
 
-/** Nav bar at top of page. React children used for dropdown menu on mobile. */
 export const NavBar: FunctionComponent<
-  { title: string; backElementClassNames?: string } & CustomClasses
-> = observer(({ title, className, backElementClassNames, children }) => {
+  {
+    title: string;
+    backElementClassNames?: string;
+    menus: MainLayoutMenu[];
+  } & CustomClasses
+> = observer(({ title, className, backElementClassNames, menus }) => {
   const {
     navBarStore,
     chainStore: {
@@ -23,6 +27,7 @@ export const NavBar: FunctionComponent<
     userSettings,
   } = useStore();
   const t = useTranslation();
+  const { isMobile } = useWindowSize();
 
   // wallet
   const account = accountStore.getAccount(chainId);
@@ -33,6 +38,10 @@ export const NavBar: FunctionComponent<
   const [settingsDropdownOpen, setSettingsDropdownOpen] =
     useBooleanWithWindowEvent(false);
 
+  // mobile nav menu
+  const [mobileNavMenuOptionsOpen, setMobileNavMenuOptionsOpen] =
+    useBooleanWithWindowEvent(false);
+
   return (
     <>
       <div
@@ -41,13 +50,34 @@ export const NavBar: FunctionComponent<
           className
         )}
       >
-        <div className="hidden md:block">
+        <div className="relative hidden md:flex items-center">
           <Image
             alt="mobile menu"
             src="/icons/hamburger.svg"
             height={30}
             width={30}
+            onClick={() => {
+              if (!mobileNavMenuOptionsOpen) setMobileNavMenuOptionsOpen(true);
+            }}
           />
+          {settingsDropdownOpen && isMobile && (
+            <SettingsDropdown userSettings={userSettings.userSettings} />
+          )}
+          {mobileNavMenuOptionsOpen && isMobile && (
+            <div className="absolute w-52 top-[100%] top-navbar-mobile py-4 px-3 bg-osmoverse-800 rounded-3xl">
+              <MainMenu
+                menus={menus.concat({
+                  label: "Settings",
+                  link: (e) => {
+                    e.stopPropagation();
+                    setMobileNavMenuOptionsOpen(false);
+                    setSettingsDropdownOpen(true);
+                  },
+                  icon: "/icons/setting-white.svg",
+                })}
+              />
+            </div>
+          )}
         </div>
         <div className="md:w-full md:place-content-between flex items-center gap-9 md:gap-6">
           <h4 className="md:font-h6 md:text-h6">
@@ -70,13 +100,13 @@ export const NavBar: FunctionComponent<
           <div className="relative">
             <NavBarButton
               iconurl="/icons/setting.svg"
-              hovericonurl="/icons/setting-hover.svg"
+              hovericonurl="/icons/setting-white.svg"
               onClick={() => {
                 // allow global event to close dropdown when clicking settings button
                 if (!settingsDropdownOpen) setSettingsDropdownOpen(true);
               }}
             />
-            {settingsDropdownOpen && (
+            {settingsDropdownOpen && !isMobile && (
               <SettingsDropdown userSettings={userSettings.userSettings} />
             )}
           </div>
@@ -168,7 +198,7 @@ const SettingsDropdown: FunctionComponent<{
   const t = useTranslation();
   return (
     <div
-      className="absolute top-[110%] left-[50%] -translate-x-1/2 flex flex-col gap-10 min-w-[385px] text-left bg-osmoverse-800 p-8 rounded-3xl"
+      className="absolute top-[110%] md:top-navbar-mobile left-[50%] md:left-0 -translate-x-1/2 md:translate-x-0 flex flex-col gap-10 min-w-[385px] text-left bg-osmoverse-800 p-8 rounded-3xl"
       onClick={(e) => e.stopPropagation()}
     >
       <h5>{t("settings.title")}</h5>

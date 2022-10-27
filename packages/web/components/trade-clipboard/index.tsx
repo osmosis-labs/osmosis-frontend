@@ -253,9 +253,7 @@ export const TradeClipboard: FunctionComponent<{
             width={isMobile ? 20 : 28}
             height={isMobile ? 20 : 28}
             src={
-              IS_FRONTIER
-                ? "/icons/setting-white.svg"
-                : `/icons/setting${isSettingOpen ? "-selected" : ""}.svg`
+              isSettingOpen ? "/icons/setting-white.svg" : "/icons/setting.svg"
             }
             alt="setting icon"
           />
