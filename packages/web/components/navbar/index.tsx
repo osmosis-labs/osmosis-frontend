@@ -18,21 +18,7 @@ export const NavBar: FunctionComponent<
     menus: MainLayoutMenu[];
   } & CustomClasses
 > = observer(({ title, className, backElementClassNames, menus }) => {
-  const {
-    navBarStore,
-    chainStore: {
-      osmosis: { chainId },
-    },
-    accountStore,
-    userSettings,
-  } = useStore();
-  const t = useTranslation();
-  const { isMobile } = useWindowSize();
-
-  // wallet
-  const account = accountStore.getAccount(chainId);
-  const walletConnected = account.walletStatus === WalletStatus.Loaded;
-  const [hoverWalletInfo, setHoverWalletInfo] = useState(false);
+  const { navBarStore, userSettings } = useStore();
 
   // settings button
   const [settingsDropdownOpen, setSettingsDropdownOpen] =
@@ -60,11 +46,11 @@ export const NavBar: FunctionComponent<
               if (!mobileNavMenuOptionsOpen) setMobileNavMenuOptionsOpen(true);
             }}
           />
-          {settingsDropdownOpen && isMobile && (
+          {settingsDropdownOpen && (
             <SettingsDropdown userSettings={userSettings.userSettings} />
           )}
-          {mobileNavMenuOptionsOpen && isMobile && (
-            <div className="absolute w-52 top-[100%] top-navbar-mobile py-4 px-3 bg-osmoverse-800 rounded-3xl">
+          {mobileNavMenuOptionsOpen && (
+            <div className="absolute flex flex-col gap-2 w-52 top-[100%] top-navbar-mobile py-4 px-3 bg-osmoverse-800 rounded-3xl">
               <MainMenu
                 menus={menus.concat({
                   label: "Settings",
@@ -76,6 +62,7 @@ export const NavBar: FunctionComponent<
                   icon: "/icons/setting-white.svg",
                 })}
               />
+              <WalletInfo />
             </div>
           )}
         </div>
@@ -106,53 +93,11 @@ export const NavBar: FunctionComponent<
                 if (!settingsDropdownOpen) setSettingsDropdownOpen(true);
               }}
             />
-            {settingsDropdownOpen && !isMobile && (
+            {settingsDropdownOpen && (
               <SettingsDropdown userSettings={userSettings.userSettings} />
             )}
           </div>
-          {!walletConnected ? (
-            <NewButton
-              className="w-[168px] h-10"
-              onClick={() => {
-                account.init();
-                setHoverWalletInfo(false);
-              }}
-            >
-              <span className="mx-auto button">{t("menu.connectWallet")}</span>
-            </NewButton>
-          ) : hoverWalletInfo ? (
-            <NewButton
-              className="w-[168px] h-10"
-              mode="secondary"
-              onMouseLeave={() => setHoverWalletInfo(false)}
-              onClick={() => {
-                account.disconnect();
-                setHoverWalletInfo(false);
-              }}
-            >
-              <span className="mx-auto button">{t("menu.signOut")}</span>
-            </NewButton>
-          ) : (
-            <div
-              className="flex items-center gap-3 px-2 py-1 rounded-xl border border-osmoverse-700"
-              onMouseOver={() => setHoverWalletInfo(true)}
-              onClick={() => setHoverWalletInfo(true)}
-            >
-              <Image
-                alt="wallet-icon"
-                src={navBarStore.walletInfo.logoUrl}
-                height={28}
-                width={28}
-              />
-
-              <div className="flex leading-tight flex-col text-center">
-                <span className="text-button font-button">
-                  {navBarStore.walletInfo.balance.toString()}
-                </span>
-                <span className="caption">{navBarStore.walletInfo.name}</span>
-              </div>
-            </div>
-          )}
+          <WalletInfo className="md:hidden" />
         </div>
       </div>
       {/* Back-layer element to occupy space for the caller */}
@@ -218,3 +163,75 @@ const SettingsDropdown: FunctionComponent<{
     </div>
   );
 });
+
+const WalletInfo: FunctionComponent<CustomClasses> = observer(
+  ({ className }) => {
+    const {
+      chainStore: {
+        osmosis: { chainId },
+      },
+      accountStore,
+      navBarStore,
+    } = useStore();
+    const t = useTranslation();
+    const { isMobile } = useWindowSize();
+
+    // wallet
+    const account = accountStore.getAccount(chainId);
+    const walletConnected = account.walletStatus === WalletStatus.Loaded;
+    const [hoverWalletInfo, setHoverWalletInfo] = useState(false);
+
+    // mobile: show disconnect on tap vs hover
+    const [mobileTapInfo, setMobileTapInfo] = useState(false);
+
+    return (
+      <div className={className}>
+        {!walletConnected ? (
+          <NewButton
+            className="w-[168px] h-10"
+            onClick={() => {
+              account.init();
+              setHoverWalletInfo(false);
+            }}
+          >
+            <span className="mx-auto button">{t("menu.connectWallet")}</span>
+          </NewButton>
+        ) : hoverWalletInfo || mobileTapInfo ? (
+          <NewButton
+            className="w-[168px] h-10"
+            mode="secondary"
+            onMouseLeave={() => setHoverWalletInfo(false)}
+            onClick={() => {
+              account.disconnect();
+              setHoverWalletInfo(false);
+            }}
+          >
+            <span className="mx-auto button">{t("menu.signOut")}</span>
+          </NewButton>
+        ) : (
+          <div
+            className="flex items-center gap-3 px-2 py-1 rounded-xl border border-osmoverse-700"
+            onMouseOver={() => setHoverWalletInfo(true)}
+            onClick={() => {
+              if (isMobile) setMobileTapInfo(true);
+            }}
+          >
+            <Image
+              alt="wallet-icon"
+              src={navBarStore.walletInfo.logoUrl}
+              height={28}
+              width={28}
+            />
+
+            <div className="flex leading-tight flex-col text-center">
+              <span className="text-button font-button">
+                {navBarStore.walletInfo.balance.toString()}
+              </span>
+              <span className="caption">{navBarStore.walletInfo.name}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+);

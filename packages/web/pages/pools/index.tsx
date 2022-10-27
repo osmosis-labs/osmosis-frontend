@@ -209,7 +209,7 @@ const Pools: NextPage = observer(function () {
   );
 
   return (
-    <main className="bg-background px-8">
+    <main className="bg-background px-8 md:px-3">
       {isCreatingPool && (
         <CreatePoolModal
           isOpen={isCreatingPool}
@@ -275,11 +275,7 @@ const Pools: NextPage = observer(function () {
       </section>
       <section>
         <div className="mx-auto pb-[3.75rem]">
-          {isMobile ? (
-            <span className="subtitle2">{t("pools.myPools")}</span>
-          ) : (
-            <h5>{t("pools.myPools")}</h5>
-          )}
+          <h5 className="md:font-h6 md:text-h6">{t("pools.myPools")}</h5>
           <div className="flex flex-col gap-4">
             <div className="mt-5 grid grid-cards md:gap-3">
               {dustFilteredPools.map((myPool) => {

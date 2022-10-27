@@ -391,7 +391,7 @@ const Pool: FunctionComponent = observer(() => {
                 <h5>{poolName}</h5>
               </div>
               {superfluidPoolConfig?.isSuperfluid && (
-                <span className="body2 text-osmoverse-300">
+                <span className="body2 superfluid">
                   {t("pool.superfluidEnabled")}
                 </span>
               )}
@@ -516,7 +516,7 @@ const Pool: FunctionComponent = observer(() => {
                     } APR`}</h5>
                   </div>
                 </div>
-                <span className="caption md:text-body2 md:font-body2 text-osmoverse-200">
+                <span className="body2 text-osmoverse-200">
                   Convert your tokens into shares and earn on every swap.
                 </span>
               </div>
@@ -575,7 +575,7 @@ const Pool: FunctionComponent = observer(() => {
                   <LevelBadge level={2} />
                   <h5>Bond liquidity</h5>
                 </div>
-                <span className="caption text-osmoverse-200">
+                <span className="body2 text-osmoverse-200">
                   Lock up your shares for longer durations to earn higher APRs.
                   {superfluidPoolConfig?.isSuperfluid &&
                     " Go superfluid for maximum rewards."}

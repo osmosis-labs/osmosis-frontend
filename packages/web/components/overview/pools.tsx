@@ -60,42 +60,50 @@ export const PoolsOverview: FunctionComponent<{} & CustomClasses> = ({
   return (
     <div
       className={classNames(
-        "relative flex items-center gap-32 h-48 rounded-[32px] bg-osmoverse-800 px-20",
+        "relative flex md:flex-col items-center md:items-start gap-32 md:gap-3 h-48 md:h-fit rounded-[32px] bg-osmoverse-800 px-20 md:px-4 md:py-5",
         className
       )}
     >
-      <div className="flex flex-col gap-5">
-        <h6>{t("pools.priceOsmo")}</h6>
-        <h2 className="text-wosmongton-100">{osmoPrice?.toString()}</h2>
+      <div className="flex flex-col gap-5 md:gap-2">
+        <h6 className="md:font-subtitle1 md:text-subtitle1">
+          {t("pools.priceOsmo")}
+        </h6>
+        <h2 className="text-wosmongton-100 md:font-h4 md:text-h4">
+          {osmoPrice?.toString()}
+        </h2>
       </div>
-      <div className="flex flex-col gap-5">
-        <h6>{t("pools.rewardDistribution")}</h6>
-        <h2 className="text-transparent bg-clip-text bg-superfluid">
+      <div className="flex flex-col gap-5 md:gap-2">
+        <h6 className="md:font-subtitle1 md:text-subtitle1">
+          {t("pools.rewardDistribution")}
+        </h6>
+        <h2 className="text-transparent bg-clip-text bg-superfluid md:font-h4 md:text-h4">
           {timeRemaining}
         </h2>
       </div>
-      {width > Breakpoint.XLG && (
-        <div className="absolute h-[292px] 1.5xl:h-[200px] xl:h-[188px] right-0 -bottom-[0.025rem] overflow-clip rounded-br-[32px]">
-          <Image
-            alt="lab machine"
-            src="/images/lab-machine.svg"
-            height={
-              width < Breakpoint.XLHALF
-                ? width < Breakpoint.XL
-                  ? 190
-                  : 200
-                : 292
-            }
-            width={
-              width < Breakpoint.XLHALF
-                ? width < Breakpoint.XL
-                  ? 280
-                  : 380
-                : 480
-            }
-          />
-        </div>
-      )}
+      <div className="absolute xs:hidden h-[292px] md:h-[100px] 1.5xl:h-[200px] xl:h-[188px] right-0 -bottom-[0.025rem] overflow-clip rounded-br-[32px]">
+        <Image
+          alt="lab machine"
+          src="/images/lab-machine.svg"
+          height={
+            width < Breakpoint.MD
+              ? 100
+              : width < Breakpoint.XLHALF
+              ? width < Breakpoint.XL
+                ? 190
+                : 200
+              : 292
+          }
+          width={
+            width < Breakpoint.MD
+              ? 180
+              : width < Breakpoint.XLHALF
+              ? width < Breakpoint.XL
+                ? 280
+                : 380
+              : 480
+          }
+        />
+      </div>
     </div>
   );
 };
