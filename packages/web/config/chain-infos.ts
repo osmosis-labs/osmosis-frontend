@@ -2116,6 +2116,29 @@ const chainInfos = (
       explorerUrlToTx:
         "https://explorer.unification.chainmasters.ninja/unification/tx/{txHash}",
     },
+    {
+      rpc: "https://rpc.jackalprotocol.com",
+      rest: "https://api.jackalprotocol.com",
+      chainId: "jackal-1",
+      chainName: "Jackal",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("jkl"),
+      currencies: [
+        {
+          coinDenom: "JKL",
+          coinMinimalDenom: "ujkl",
+          coinDecimals: 6,
+          coinGeckoId: "",
+          coinImageUrl: "/tokens/jkl.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://ping.pub/jackal/tx/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
