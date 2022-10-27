@@ -46,9 +46,7 @@ export const MainMenu: FunctionComponent<{
                     selected ? "opacity-100" : "opacity-75"
                   )}
                   target={selectionTest ? "_self" : "_blank"}
-                  onClick={(e) => {
-                    if (typeof link === "string") e.stopPropagation();
-
+                  onClick={() => {
                     if (amplitudeEvent) {
                       logEvent(amplitudeEvent);
                     }

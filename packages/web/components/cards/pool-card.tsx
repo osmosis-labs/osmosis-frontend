@@ -29,7 +29,7 @@ export const PoolCard: FunctionComponent<
         className={classNames(
           "p-[2px] rounded-4xl hover:bg-wosmongton-200 text-left",
           {
-            "bg-card": !isSuperfluid,
+            "bg-osmoverse-800": !isSuperfluid,
             "bg-superfluid hover:bg-none": isSuperfluid,
           }
         )}

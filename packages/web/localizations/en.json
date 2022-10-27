@@ -35,7 +35,6 @@
     "available": "Available",
     "liquidity": "Pool Liquidity",
     "bonded": "Bonded",
-    "poolId": "Pool #{id}",
     "incentivized": "Incentivized Pools",
     "all": "All Pools",
     "superfluid": {
@@ -46,13 +45,12 @@
     },
     "allPools": {
       "title": "All Pools",
-      "titleIncentivized": "Incentivized Pools",
       "myLiquidity": "my liquidity",
       "TVL": "TVL",
       "APR": "APR",
       "APRIncentivized": "7d Vol.",
       "search": "Search pools",
-      "displayLowLiquidity": "Show pools less than {value}",
+      "displayLowLiquidity": "Show pools < {value}",
       "sort": {
         "poolName": "Pool Name",
         "liquidity": "Liquidity",
@@ -294,8 +292,8 @@
   },
   "components": {
     "show": {
-      "more": "More",
-      "less": "Less"
+      "more": "View more",
+      "less": "View less"
     },
     "table": {
       "poolId": "Pool #{id}"

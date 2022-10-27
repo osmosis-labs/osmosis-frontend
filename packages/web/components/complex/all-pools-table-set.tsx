@@ -471,11 +471,6 @@ export const AllPoolsTableSet: FunctionComponent<{
     if (isMobile) {
       return (
         <CompactPoolTableDisplay
-          title={
-            isIncentivizedPools
-              ? t("pools.allPools.titleIncentivized")
-              : t("pools.allPools.title")
-          }
           pools={allData.map((poolData) => ({
             id: poolData.pool.id,
             assets: poolData.pool.poolAssets.map(
@@ -492,13 +487,16 @@ export const AllPoolsTableSet: FunctionComponent<{
               ...[
                 sortKeyPath === "volume24h"
                   ? {
-                      label: "",
+                      label: "Volume (24h)",
                       value: poolData.volume24h.toString(),
                     }
                   : sortKeyPath === "feesSpent7d"
-                  ? { label: "", value: poolData.feesSpent7d.toString() }
+                  ? {
+                      label: "Fees (7d)",
+                      value: poolData.feesSpent7d.toString(),
+                    }
                   : sortKeyPath === "apr"
-                  ? { label: "", value: poolData.apr?.toString() ?? "0%" }
+                  ? { label: "APR", value: poolData.apr?.toString() ?? "0%" }
                   : sortKeyPath === "myLiquidity"
                   ? {
                       label: t("pools.allPools.myLiquidity"),

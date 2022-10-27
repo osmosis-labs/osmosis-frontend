@@ -21,7 +21,7 @@ export const Switch: FunctionComponent<
 }) => (
   <label
     className={classNames(
-      "flex shrink-0 items-center gap-2 subtitle2 md:caption select-none",
+      "flex shrink-0 items-center gap-2 subtitle2 md:subtitle1 select-none",
       {
         "cursor-pointer": !disabled,
       },

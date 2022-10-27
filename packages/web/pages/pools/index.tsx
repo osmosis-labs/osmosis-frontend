@@ -209,7 +209,7 @@ const Pools: NextPage = observer(function () {
   );
 
   return (
-    <main className="bg-background px-8 md:px-3">
+    <main className="bg-osmoverse-900 px-8 md:px-3">
       {isCreatingPool && (
         <CreatePoolModal
           isOpen={isCreatingPool}
@@ -439,12 +439,9 @@ const Pools: NextPage = observer(function () {
                 ),
               },
               {
-                title: (
-                  <span className="superfluid caption">Superfluid Pools</span>
-                ),
+                title: <span className="superfluid">Superfluid Pools</span>,
                 content: (
                   <CompactPoolTableDisplay
-                    title="Superfluid Pools"
                     pools={
                       sfsPoolsPage?.map(
                         ({ id, poolLiquidity, apr, assets }) => ({
@@ -454,19 +451,19 @@ const Pools: NextPage = observer(function () {
                             ...[
                               sortKeyPath === "poolLiquidity"
                                 ? {
-                                    label: "",
+                                    label: t("pools.allPools.TVL"),
                                     value: poolLiquidity.toString(),
                                   }
                                 : sortKeyPath === "apr"
                                 ? {
-                                    label: "",
+                                    label: t("pools.allPools.APR"),
                                     value: apr
                                       .maxDecimals(2)
                                       .trim(true)
                                       .toString(),
                                   }
                                 : {
-                                    label: "APR",
+                                    label: t("pools.allPools.APR"),
                                     value: apr
                                       .maxDecimals(2)
                                       .trim(true)
@@ -476,14 +473,14 @@ const Pools: NextPage = observer(function () {
                             ...[
                               sortKeyPath === "poolLiquidity"
                                 ? {
-                                    label: "APR",
+                                    label: t("pools.allPools.APR"),
                                     value: apr
                                       .maxDecimals(2)
                                       .trim(true)
                                       .toString(),
                                   }
                                 : {
-                                    label: "TVL",
+                                    label: t("pools.allPools.TVL"),
                                     value: poolLiquidity.toString(),
                                   },
                             ],
@@ -500,7 +497,7 @@ const Pools: NextPage = observer(function () {
                     sortMenuProps={{
                       options: [
                         { id: "id", display: "Pool ID" },
-                        { id: "apr", display: "APR" },
+                        { id: "apr", display: t("pools.allPools.APR") },
                         { id: "poolLiquidity", display: "Liquidity" },
                       ],
                       selectedOptionId: sortKeyPath,
@@ -519,7 +516,7 @@ const Pools: NextPage = observer(function () {
                     minTvlToggleProps={{
                       isOn: isPoolTvlFiltered,
                       onToggle: setIsPoolTvlFiltered,
-                      label: `Show pools less than ${new PricePretty(
+                      label: `Show pools < ${new PricePretty(
                         priceStore.getFiatCurrency(
                           priceStore.defaultVsCurrency
                         )!,

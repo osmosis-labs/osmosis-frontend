@@ -30,10 +30,9 @@ export const AssetCard: FunctionComponent<
 }) => (
   <div
     className={classNames(
-      "w-full p-px rounded-lg",
+      "w-full rounded-2xl",
       {
-        "bg-white-full/30": !isSuperfluid,
-        "bg-superfluid": isSuperfluid,
+        "p-[2px] bg-superfluid": isSuperfluid,
       },
       className
     )}
@@ -41,54 +40,60 @@ export const AssetCard: FunctionComponent<
   >
     <div
       className={classNames(
-        "flex place-content-between w-full bg-background rounded-lginset",
-        Array.isArray(coinImageUrl) ? "p-6" : "p-4",
+        "flex flex-col gap-3 place-content-between w-full bg-osmoverse-800 rounded-[0.875rem] p-9",
         contentClassName
       )}
     >
-      <div
-        className={`flex ${
-          Array.isArray(coinImageUrl) ? "flex-col items" : "items-center"
-        } gap-3`}
-      >
-        {coinImageUrl &&
-          (Array.isArray(coinImageUrl) ? (
-            <PoolAssetsIcon assets={coinImageUrl} size="sm" />
-          ) : (
-            <div className="w-[2.125rem] h-[2.125rem] rounded-full border border-enabledGold shrink-0 flex items-center justify-center overflow-hidden">
-              <Image alt="asset" src={coinImageUrl} height={28} width={28} />
-            </div>
-          ))}
-        <div className="flex flex-col gap-0.5">
-          <span className="button">{truncateString(coinDenom, 12)}</span>
-          {coinDenomCaption && (
-            <span className="caption text-white-disabled">
-              {coinDenomCaption}
-            </span>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            {coinImageUrl &&
+              (Array.isArray(coinImageUrl) ? (
+                coinImageUrl.map((url, index) => {
+                  const src = typeof url === "string" ? url : url.coinImageUrl;
+
+                  if (!src) return;
+
+                  return (
+                    <div key={index} className="h-[20px] w-[20px]">
+                      <Image alt="asset" src={src} height={20} width={20} />
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="w-[2.125rem] h-[2.125rem] rounded-full shrink-0 flex items-center justify-center overflow-hidden">
+                  <Image
+                    alt="asset"
+                    src={coinImageUrl}
+                    height={20}
+                    width={20}
+                  />
+                </div>
+              ))}
+          </div>
+          <h6>{truncateString(coinDenom, 12)}</h6>
+          {onClick !== undefined && showArrow && (
+            <Image
+              alt="right"
+              src="/icons/chevron-right.svg"
+              height={10}
+              width={10}
+            />
           )}
         </div>
-      </div>
-      <div className="flex items-center gap-2.5">
-        <div className="flex flex-col text-right">
-          {metrics.map(({ label, value }, index) => (
-            <span
-              key={index}
-              className={
-                index === 0 ? "subtitle2" : "caption text-white-disabled"
-              }
-            >
-              {value} {label}
-            </span>
-          ))}
-        </div>
-        {onClick !== undefined && showArrow && (
-          <Image
-            alt="right"
-            src="/icons/chevron-right.svg"
-            height={10}
-            width={10}
-          />
+        {coinDenomCaption && (
+          <span className="subtitle1 text-osmoverse-300">
+            {coinDenomCaption}
+          </span>
         )}
+      </div>
+      <div className="flex items-center place-content-between gap-2.5">
+        {metrics.map(({ label, value }, index) => (
+          <div key={index} className="flex flex-col text-left">
+            <span className="subtitle1 text-osmoverse-400">{label}</span>
+            <h6>{value}</h6>
+          </div>
+        ))}
       </div>
     </div>
   </div>
