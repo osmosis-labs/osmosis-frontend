@@ -261,7 +261,8 @@
       "hideZero": "Hide zero balances",
       "preTransfer": {
         "deposit": "Deposit",
-        "withdraw": "Withdraw"
+        "withdraw": "Withdraw",
+        "currentBal": "Current Balance"
       },
       "columns": {
         "assetChain": "Asset / Chain",

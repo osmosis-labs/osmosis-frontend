@@ -62,7 +62,10 @@ const Assets: NextPage = observer(() => {
         (ibcBalance) => ibcBalance.balance.denom === coinDenom
       );
 
-      if (!ibcBalance) return;
+      if (!ibcBalance) {
+        console.error("launchPreTransferModal: ibcBalance not found");
+        return;
+      }
 
       setPreTransferModalProps({
         isOpen: true,
@@ -91,7 +94,7 @@ const Assets: NextPage = observer(() => {
         onRequestClose: () => setPreTransferModalProps(null),
       });
     },
-    [ibcBalances]
+    [ibcBalances, transferConfig]
   );
 
   useEffect(() => {

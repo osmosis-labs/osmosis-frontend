@@ -434,7 +434,11 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                       <span className="caption">{assetData.fiatValue}</span>
                     )}
                   </div>
-                  {assetData.chainName && (
+                  {!(
+                    assetData.chainId === undefined ||
+                    (assetData.chainId &&
+                      assetData.chainId === chainStore.osmosis.chainId)
+                  ) && (
                     <Image
                       alt="select asset"
                       src="/icons/chevron-right-disabled.svg"
