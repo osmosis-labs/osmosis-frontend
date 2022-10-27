@@ -28,6 +28,7 @@
   },
   "pools": {
     "title": "Active Pools",
+    "poolId": "Pool #{id}",
     "priceOsmo": "OSMO Price",
     "rewardDistribution": "Reward distribution in",
     "myPools": "My Pools",
@@ -223,10 +224,9 @@
     }
   },
   "assets": {
-    "title": "My Osmosis Assets",
-    "totalAssets": "Total Assets",
-    "unbondedAssets": "Unbonded Assets",
-    "bondedAssets": "Bonded Assets",
+    "totalAssets": "Total",
+    "unbondedAssets": "Unbonded",
+    "bondedAssets": "Bonded",
     "stakedAssets": "Staked OSMO",
     "myPools": "My Pools",
     "poolCards": {

@@ -15,14 +15,16 @@ export const SearchBox: FunctionComponent<
 }) => (
   <div
     className={classNames(
-      "flex flex-nowrap gap-3 justify-between w-max rounded-xl py-[10px] px-5 border border-osmoverse-500",
+      "flex items-center flex-nowrap gap-3 justify-between w-max rounded-xl py-[10px] px-5 border border-osmoverse-500",
       {
         "opacity-50": disabled,
       },
       className
     )}
   >
-    <Image alt="search" src="/icons/search.svg" height={16} width={16} />
+    <div className="h-4 w-4 mb-1 shrink-0">
+      <Image alt="search" src="/icons/search.svg" height={16} width={16} />
+    </div>
     <label className="grow shrink">
       <input
         className="w-full h-full appearance-none bg-transparent placeholder:text-osmoverse-400 placeholder:body1"

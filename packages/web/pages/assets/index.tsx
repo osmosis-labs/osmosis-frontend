@@ -124,7 +124,7 @@ const Assets: NextPage = observer(() => {
   });
 
   return (
-    <main className="flex flex-col gap-20 bg-background p-8">
+    <main className="flex flex-col gap-20 md:gap-8 bg-background p-8 md:p-4">
       <AssetsOverview />
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
@@ -151,8 +151,6 @@ const Assets: NextPage = observer(() => {
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
-        onDepositIntent={() => transferConfig?.startTransfer("deposit")}
-        onWithdrawIntent={() => transferConfig?.startTransfer("withdraw")}
         onDeposit={(chainId, coinDenom, externalDepositUrl) => {
           if (!externalDepositUrl) {
             isMobile
@@ -223,14 +221,16 @@ const AssetsOverview: FunctionComponent = observer(() => {
   ]);
 
   const Metric: FunctionComponent<Metric> = ({ label, value }) => (
-    <div className="flex flex-col gap-5">
-      <h6>{label}</h6>
-      <h2 className="text-wosmongton-100">{value}</h2>
+    <div className="flex flex-col gap-5 md:gap-2 shrink-0">
+      <h6 className="md:text-subtitle1 md:font-subtitle1">{label}</h6>
+      <h2 className="lg:text-h3 lg:font-h3 md:text-h4 md:font-h4 text-wosmongton-100">
+        {value}
+      </h2>
     </div>
   );
 
   return (
-    <div className="w-full flex items-center gap-[100px] bg-osmoverse-800 rounded-[32px] px-20 py-10">
+    <div className="w-full flex md:flex-col items-center md:items-start gap-[100px] lg:gap-5 md:gap-3 bg-osmoverse-800 md:bg-osmoverse-1000 rounded-[32px] px-20 lg:px-10 md:px-4 py-10 md:py-5">
       <Metric
         label={t("assets.totalAssets")}
         value={totalAssetsValue.toString()}

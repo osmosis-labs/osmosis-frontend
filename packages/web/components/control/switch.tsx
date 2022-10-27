@@ -29,7 +29,12 @@ export const Switch: FunctionComponent<
     )}
   >
     {labelPosition === "left" && (
-      <div className={classNames("mr-3", disabled ? "opacity-30" : undefined)}>
+      <div
+        className={classNames(
+          "mr-3 lg:mr-1",
+          disabled ? "opacity-30" : undefined
+        )}
+      >
         {children}
       </div>
     )}
@@ -49,7 +54,12 @@ export const Switch: FunctionComponent<
       onChange={(e) => onToggle(e.target.checked)}
     />
     {labelPosition === "right" && (
-      <div className={classNames("ml-3", disabled ? "opacity-30" : undefined)}>
+      <div
+        className={classNames(
+          "ml-3 lg:ml-1",
+          disabled ? "opacity-30" : undefined
+        )}
+      >
         {children}
       </div>
     )}

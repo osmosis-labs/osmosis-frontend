@@ -66,14 +66,14 @@ export const NavBar: FunctionComponent<
             </div>
           )}
         </div>
-        <div className="md:w-full md:place-content-between flex items-center gap-9 md:gap-6">
+        <div className="md:w-full md:place-content-between flex items-center gap-9 lg:gap-6 md:gap-3">
           <h4 className="md:font-h6 md:text-h6">
             {navBarStore.title || title}
           </h4>
           <div className="flex items-center gap-3">
             {navBarStore.callToActionButtons.map((button, index) => (
               <NewButton
-                className={index > 0 ? "md:hidden" : undefined}
+                className="lg:px-2"
                 mode={index > 0 ? "secondary" : undefined}
                 key={index}
                 {...button}
@@ -83,7 +83,7 @@ export const NavBar: FunctionComponent<
             ))}
           </div>
         </div>
-        <div className="md:hidden flex gap-3 items-center">
+        <div className="md:hidden flex gap-3 lg:gap-2 shrink-0 items-center">
           <div className="relative">
             <NavBarButton
               iconurl="/icons/setting.svg"
@@ -185,7 +185,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     const [mobileTapInfo, setMobileTapInfo] = useState(false);
 
     return (
-      <div className={className}>
+      <div className={classNames("shrink-0", className)}>
         {!walletConnected ? (
           <NewButton
             className="w-[168px] h-10"

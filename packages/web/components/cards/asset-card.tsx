@@ -2,7 +2,7 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CustomClasses, Metric } from "../types";
-import { PoolAssetInfo, PoolAssetsIcon } from "../assets";
+import { PoolAssetInfo } from "../assets";
 import { truncateString } from "../utils";
 
 /** For displaying a token and it's balance, or a pool overview. */
@@ -13,7 +13,6 @@ export const AssetCard: FunctionComponent<
     coinDenomCaption?: string;
     metrics: Metric[];
     isSuperfluid?: boolean;
-    onClick?: () => void;
     showArrow?: boolean;
     contentClassName?: string;
   } & CustomClasses
@@ -23,8 +22,6 @@ export const AssetCard: FunctionComponent<
   coinDenomCaption,
   metrics,
   isSuperfluid = false,
-  onClick,
-  showArrow,
   className,
   contentClassName,
 }) => (
@@ -36,7 +33,6 @@ export const AssetCard: FunctionComponent<
       },
       className
     )}
-    onClick={() => onClick?.()}
   >
     <div
       className={classNames(
@@ -72,14 +68,6 @@ export const AssetCard: FunctionComponent<
               ))}
           </div>
           <h6>{truncateString(coinDenom, 12)}</h6>
-          {onClick !== undefined && showArrow && (
-            <Image
-              alt="right"
-              src="/icons/chevron-right.svg"
-              height={10}
-              width={10}
-            />
-          )}
         </div>
         {coinDenomCaption && (
           <span className="subtitle1 text-osmoverse-300">
