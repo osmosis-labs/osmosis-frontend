@@ -286,7 +286,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
               }}
               placeholder={t("assets.table.search")}
             />
-            <div className="flex gap-3 items-center place-content-between">
+            <div className="flex flex-wrap gap-3 items-center place-content-between">
               <Switch
                 isOn={hideZeroBalances}
                 disabled={!canHideZeroBalances}
@@ -407,14 +407,16 @@ export const AssetsTable: FunctionComponent<Props> = observer(
               >
                 <div className="flex items-center gap-2">
                   {assetData.coinImageUrl && (
-                    <Image
-                      alt="token icon"
-                      src={assetData.coinImageUrl}
-                      height={40}
-                      width={40}
-                    />
+                    <div className="w-10 shrink-0">
+                      <Image
+                        alt="token icon"
+                        src={assetData.coinImageUrl}
+                        height={40}
+                        width={40}
+                      />
+                    </div>
                   )}
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col shrink gap-1 text-ellipsis">
                     <h6>{assetData.coinDenom}</h6>
                     {assetData.chainName && (
                       <span className="caption text-osmoverse-400">
@@ -424,8 +426,10 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="flex flex-col items-end">
-                    <h5>{assetData.amount}</h5>
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    <h5 className="sm:text-h6 sm:font-h6 xs:text-subtitle2 xs:font-subtitle2">
+                      {assetData.amount}
+                    </h5>
                     {assetData.fiatValue && (
                       <span className="caption">{assetData.fiatValue}</span>
                     )}
