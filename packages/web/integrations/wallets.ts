@@ -19,6 +19,9 @@ export interface Wallet<
   readonly key: WalletKey;
   readonly displayInfo: WalletDisplay;
 
+  /** Works on mobile browsers. */
+  readonly mobileEnabled: boolean;
+
   readonly accountAddress?: string;
   /** Human readable chain, falls back to hex ID (`0x...`) if unknown. */
   readonly chainId?: string;

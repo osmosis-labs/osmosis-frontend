@@ -21,6 +21,7 @@ const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
 export class ObservableMetamask implements EthWallet {
   readonly key: WalletKey = "metamask";
+  readonly mobileEnabled = false;
 
   readonly displayInfo: WalletDisplay = {
     iconUrl: "/icons/metamask-fox.svg",

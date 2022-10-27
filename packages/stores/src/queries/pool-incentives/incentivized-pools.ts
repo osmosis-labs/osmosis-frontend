@@ -15,6 +15,7 @@ import { ObservableQueryPools } from "../pools";
 import { IPriceStore } from "../../price";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
+import { ObservableQueryGuage } from "../incentives";
 import { IncentivizedPools } from "./types";
 
 export class ObservableQueryIncentivizedPools extends ObservableChainQuery<IncentivizedPools> {
@@ -27,7 +28,8 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     protected readonly queryPools: ObservableQueryPools,
     protected readonly queryMintParmas: ObservableQueryMintParmas,
     protected readonly queryEpochProvision: ObservableQueryEpochProvisions,
-    protected readonly queryEpochs: ObservableQueryEpochs
+    protected readonly queryEpochs: ObservableQueryEpochs,
+    protected readonly queryGauge: ObservableQueryGuage
   ) {
     super(
       kvStore,
@@ -119,6 +121,92 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
   );
 
   /**
+   * Computes the external incentive APR for the given gaugeId and denom
+   */
+  readonly computeExternalIncentiveGaugeAPR = computedFn(
+    (
+      poolId: string,
+      gaugeId: string,
+      denom: string,
+      priceStore: IPriceStore,
+      fiatCurrency: FiatCurrency
+    ): RatePretty => {
+      const observableGauge = this.queryGauge.get(gaugeId);
+
+      if (observableGauge.remainingEpoch < 1) {
+        return new RatePretty(new Dec(0));
+      }
+
+      const chainInfo = this.chainGetter.getChain(this.chainId);
+
+      const mintCurrency = chainInfo.findCurrency(denom);
+
+      if (!mintCurrency?.coinGeckoId) {
+        return new RatePretty(new Dec(0));
+      }
+
+      const rewardAmount = observableGauge.getRemainingCoin(mintCurrency);
+
+      const pool = this.queryPools.getPool(poolId);
+
+      if (!pool) {
+        return new RatePretty(new Dec(0));
+      }
+
+      const epochIdentifier = this.queryMintParmas.epochIdentifier;
+
+      if (!epochIdentifier) {
+        return new RatePretty(new Dec(0));
+      }
+
+      const epoch = this.queryEpochs.getEpoch(epochIdentifier);
+
+      if (!mintCurrency?.coinGeckoId || !epoch.duration) {
+        return new RatePretty(new Dec(0));
+      }
+
+      const mintPrice = priceStore.getPrice(
+        mintCurrency.coinGeckoId,
+        fiatCurrency.currency
+      );
+
+      const poolTVL = pool.computeTotalValueLocked(priceStore);
+
+      if (!mintPrice || !poolTVL.toDec().gt(new Dec(0))) {
+        return new RatePretty(new Dec(0));
+      }
+
+      const epochProvision = this.queryEpochProvision.epochProvisions;
+
+      if (!epochProvision) {
+        return new RatePretty(new Dec(0));
+      }
+
+      const numEpochPerYear =
+        dayjs
+          .duration({
+            years: 1,
+          })
+          .asMilliseconds() / epoch.duration.asMilliseconds();
+
+      const externalIncentivePrice = new Dec(mintPrice.toString()).mul(
+        rewardAmount.toDec()
+      );
+
+      const yearProvision = new Dec(numEpochPerYear.toString()).quo(
+        new Dec(observableGauge.remainingEpoch)
+      );
+
+      // coins = (X coin's price in USD * remaining incentives in X tokens * (365 / remaining days in gauge))
+      // apr = coins / TVL of pool
+
+      return new RatePretty(
+        externalIncentivePrice.mul(yearProvision).quo(poolTVL.toDec())
+      );
+    }
+  );
+
+  /**
    * 리워드를 받을 수 있는 풀의 연당 이익률을 반환한다.
    * 리워드를 받을 수 없는 풀일 경우 0를 리턴한다.
    */
@@ -157,6 +245,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         priceStore,
         fiatCurrency
       );
+
       for (const lockableDuration of lockableDurations) {
         // 인센티브는 unlock 기간보다 짧은 모든 팟에 분배된다.
         // 그러므로 apy를 계산하기 위해서는 제시된 duration보다 짧은 모든 duration에 대한 apy를 더해줘야 한다.
@@ -200,12 +289,15 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 
           if (mintCurrency && mintCurrency.coinGeckoId && epoch.duration) {
             const totalWeight = this.queryDistrInfo.totalWeight;
+            // 99999918
             const potWeight = this.queryDistrInfo.getWeight(gaugeId);
             const mintPrice = priceStore.getPrice(
               mintCurrency.coinGeckoId,
               fiatCurrency.currency
             );
+
             const poolTVL = pool.computeTotalValueLocked(priceStore);
+
             if (
               totalWeight.gt(new Int(0)) &&
               potWeight.gt(new Int(0)) &&
@@ -227,6 +319,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
                   new Dec(numEpochPerYear.toString())
                 );
                 const yearProvisionToPots = yearProvision.mul(
+                  // Probably a decimal value
                   this.queryMintParmas.distributionProportions.poolIncentives
                 );
                 const yearProvisionToPot = yearProvisionToPots.mul(

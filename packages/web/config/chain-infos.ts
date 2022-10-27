@@ -523,7 +523,7 @@ const chainInfos = (
           coinGeckoId: "pool:seasy",
           coinImageUrl: "/tokens/seasy.svg",
         },
-		 {
+        {
           type: "cw20",
           contractAddress:
             "juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3",
@@ -1682,7 +1682,8 @@ const chainInfos = (
         },
         {
           coinDenom: "USK",
-          coinMinimalDenom: "factory:kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7:uusk",
+          coinMinimalDenom:
+            "factory:kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7:uusk",
           coinDecimals: 6,
           coinGeckoId: "usk",
           coinImageUrl: "/tokens/usk.png",
@@ -2064,28 +2065,57 @@ const chainInfos = (
       explorerUrlToTx: "https://explorer.teritori.com/teritori/tx/{txHash}",
     },
     {
-        rpc: "https://rpc.lambda.im",
-        rest: "https://rest.lambda.im",
-        chainId: "lambda_92000-1",
-        chainName: "Lambda",
-        bip44: {
-          coinType: 60,
-        },
-        bech32Config: Bech32Address.defaultBech32Config("lamb"),
-        currencies: [
-          {
-            coinDenom: "LAMB",
-            coinMinimalDenom: "ulamb",
-            coinDecimals: 18,
-            coinGeckoId: "pool:lambda",
-            coinImageUrl: "/tokens/lambda.png",
-            isStakeCurrency: true,
-            isFeeCurrency: true,
-          },
-        ],
-        features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
-        explorerUrlToTx: "https://explorer.nodestake.top/lambda/tx/{txHash}",
+      rpc: "https://rpc.lambda.im",
+      rest: "https://rest.lambda.im",
+      chainId: "lambda_92000-1",
+      chainName: "Lambda",
+      bip44: {
+        coinType: 60,
       },
+      bech32Config: Bech32Address.defaultBech32Config("lamb"),
+      currencies: [
+        {
+          coinDenom: "LAMB",
+          coinMinimalDenom: "ulamb",
+          coinDecimals: 18,
+          coinGeckoId: "pool:lambda",
+          coinImageUrl: "/tokens/lambda.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+      explorerUrlToTx: "https://explorer.nodestake.top/lambda/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpc.unification.chainmasters.ninja",
+      rest: "https://rest.unification.chainmasters.ninja",
+      chainId: "FUND-MainNet-2",
+      chainName: "Unification",
+      bip44: {
+        coinType: 5555,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("und"),
+      currencies: [
+        {
+          coinDenom: "FUND",
+          coinMinimalDenom: "nund",
+          coinDecimals: 9,
+          coinGeckoId: "unification",
+          coinImageUrl: "/tokens/fund.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 100,
+        average: 200,
+        high: 300,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx:
+        "https://explorer.unification.chainmasters.ninja/unification/tx/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
