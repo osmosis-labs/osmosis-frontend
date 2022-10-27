@@ -500,7 +500,7 @@ const Pool: FunctionComponent = observer(() => {
           )}
         >
           <div className="flex flex-col gap-10 bg-osmoverse-800 rounded-4x4pxlinset p-9 md:p-5">
-            <div className="flex items-start lg:flex-col lg:gap-14 place-content-between">
+            <div className="flex items-start lg:flex-col gap-2 lg:gap-14 place-content-between">
               <div className="flex flex-col gap-4">
                 <div className="flex items-baseline flex-wrap gap-4">
                   <LevelBadge level={1} />
@@ -520,7 +520,7 @@ const Pool: FunctionComponent = observer(() => {
                   Convert your tokens into shares and earn on every swap.
                 </span>
               </div>
-              <div className="w-full md:flex flex-col items-start gap-4">
+              <div className="lg:w-full flex flex-col gap-4">
                 <div className="hidden lg:flex flex-col items-end gap-3">
                   <h3 className="md:text-h4 md:font-h4">
                     {`${queryOsmosis.queryGammPoolShare

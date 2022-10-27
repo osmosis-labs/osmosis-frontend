@@ -217,7 +217,7 @@ const Drawer: FunctionComponent<{
           )}
           onClick={toggleDetailsVisible}
         >
-          <span className="md:hidden caption text-osmoverse-400">Details</span>
+          <span className="xs:hidden caption text-osmoverse-400">Details</span>
           <div
             className={classNames("flex items-center transition-transform", {
               "rotate-180": drawerUp,
@@ -239,7 +239,7 @@ const Drawer: FunctionComponent<{
       >
         <div className="flex flex-col h-[180px] gap-5 py-6 px-8 overflow-y-auto">
           {incentivesBreakdown.map((breakdown, index) => (
-            <div className="flex flex-col gap-5" key={index}>
+            <div className="flex flex-col gap-5 xs:text-subtitle2" key={index}>
               {index === 0 && superfluid && (
                 <SuperfluidBreakdownRow {...superfluid} />
               )}
@@ -272,7 +272,7 @@ const SuperfluidBreakdownRow: FunctionComponent<
   validatorLogoUrl,
 }) => (
   <div className="flex flex-col gap-2">
-    <div className="flex items-start place-content-between">
+    <div className="flex items-start text-right place-content-between">
       <div className="flex items-center gap-2">
         <h6 className="text-transparent bg-clip-text bg-superfluid">
           +{apr.maxDecimals(0).toString()}
@@ -286,11 +286,11 @@ const SuperfluidBreakdownRow: FunctionComponent<
           width={24}
         />
       </div>
-      {(delegated || undelegating) && validatorMoniker ? (
-        <span>{validatorMoniker}</span>
-      ) : (
-        <span>Superfluid Staking</span>
-      )}
+      <span>
+        {(delegated || undelegating) && validatorMoniker
+          ? validatorMoniker
+          : "Superfluid Staking"}
+      </span>
     </div>
     {(delegated || undelegating) && (
       <div className="flex flex-col text-right ml-auto">
