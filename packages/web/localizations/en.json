@@ -35,10 +35,12 @@
     "available": "Available",
     "liquidity": "Pool Liquidity",
     "bonded": "Bonded",
-    "incentivized": "Incentivized Pools",
+    "incentivized": "Incentivized",
     "all": "All Pools",
+    "allTab": "All",
     "superfluid": {
       "title": "Superfluid Pools",
+      "tab": "Superfluid",
       "APR": "APR",
       "liquidity": "Pool Liquidity",
       "fees7D": "Fees (7D)"
@@ -61,7 +63,7 @@
       }
     },
     "externalIncentivized": {
-      "title": "External Incentive Pools",
+      "title": "External Incentives",
       "TVL": "TVL",
       "APR": "APR",
       "search": "Search by symbol",

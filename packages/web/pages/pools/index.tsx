@@ -270,12 +270,12 @@ const Pools: NextPage = observer(function () {
       {superfluidDelegateModalProps && (
         <SuperfluidValidatorModal {...superfluidDelegateModalProps} />
       )}
-      <section className="pt-20 pb-10">
+      <section className="pt-20 md:pt-4 pb-10 md:pb-5">
         <PoolsOverview className="mx-auto" />
       </section>
       <section>
         <div className="mx-auto pb-[3.75rem]">
-          <h5 className="md:font-h6 md:text-h6">{t("pools.myPools")}</h5>
+          <h5 className="md:px-3">{t("pools.myPools")}</h5>
           <div className="flex flex-col gap-4">
             <div className="mt-5 grid grid-cards md:gap-3">
               {dustFilteredPools.map((myPool) => {
@@ -412,6 +412,7 @@ const Pools: NextPage = observer(function () {
       </section>
       {isMobile ? (
         <section>
+          <h5 className="md:px-3">{t("pools.all")}</h5>
           <TabBox
             tabs={[
               {
@@ -424,7 +425,7 @@ const Pools: NextPage = observer(function () {
                 ),
               },
               {
-                title: t("pools.all"),
+                title: t("pools.allTab"),
                 content: (
                   <AllPoolsTableSet
                     tableSet="all-pools"
@@ -439,7 +440,11 @@ const Pools: NextPage = observer(function () {
                 ),
               },
               {
-                title: <span className="superfluid">Superfluid Pools</span>,
+                title: (
+                  <span className="text-superfluid">
+                    {t("pools.superfluid.tab")}
+                  </span>
+                ),
                 content: (
                   <CompactPoolTableDisplay
                     pools={
