@@ -63,9 +63,10 @@ export const LockTokensModal: FunctionComponent<
     selectedDurationIndex === bondableDurations.length - 1;
   const [electSuperfluid, setElectSuperfluid] = useState(true);
 
-  const selectedApr = selectedDurationIndex
-    ? bondableDurations[selectedDurationIndex]?.aggregateApr
-    : undefined;
+  const selectedApr =
+    selectedDurationIndex !== null
+      ? bondableDurations[selectedDurationIndex]?.aggregateApr
+      : undefined;
   const superfluidInEffect = electSuperfluid && highestDurationSelected;
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
