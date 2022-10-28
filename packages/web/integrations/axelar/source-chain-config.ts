@@ -11,62 +11,70 @@ export const SourceChainConfigs: {
   usdc: {
     ethereum: {
       id: IS_TESTNET
-        ? ("Ropsten Test Network" as const)
+        ? ("ethereum-2" as const)
         : ("Ethereum" as const),
       erc20ContractAddress: IS_TESTNET
-        ? "0x526f0A95EDC3DF4CBDB7bb37d4F7Ed451dB8e369"
+        ? "0x254d06f33bDc5b8ee05b2ea472107E300226659A"
         : "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // test: 'aUSDC' on metamask/etherscan
       logoUrl: "/networks/ethereum.svg",
       transferFeeMinAmount: IS_TESTNET ? "150000" : "10500000", // From https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
     },
-    bnbChain: {
-      id: "Binance" as const,
-      erc20ContractAddress: "0x4268B8F0B87b6Eae5d897996E6b845ddbD99Adf3",
-      logoUrl: "/networks/binance.svg",
-      transferFeeMinAmount: IS_TESTNET ? "150000" : "1500000",
-    },
     avalanche: {
       id: "Avalanche" as const,
-      erc20ContractAddress: "0xfaB550568C688d5D8A52C7d794cb93Edc26eC0eC",
+      erc20ContractAddress: IS_TESTNET
+        ? "0x57F1c63497AEe0bE305B8852b354CEc793da43bB"
+        : "0xfaB550568C688d5D8A52C7d794cb93Edc26eC0eC",
       logoUrl: "/networks/avalanche.svg",
       transferFeeMinAmount: IS_TESTNET ? "150000" : "1500000",
     },
-    polygon: {
-      id: "Polygon" as const,
-      erc20ContractAddress: "0x750e4C4984a9e0f12978eA6742Bc1c5D248f40ed",
-      logoUrl: "/networks/polygon.svg",
+    binance: {
+      id: "binance" as const,
+      erc20ContractAddress: IS_TESTNET
+        ? "0xc2fA98faB811B785b81c64Ac875b31CC9E40F9D2"
+        : "0x4268B8F0B87b6Eae5d897996E6b845ddbD99Adf3",
+      logoUrl: "/networks/binance.svg",
       transferFeeMinAmount: IS_TESTNET ? "150000" : "1500000",
     },
     fantom: {
       id: "Fantom" as const,
-      erc20ContractAddress: "0x1B6382DBDEa11d97f24495C9A90b7c88469134a4",
+      erc20ContractAddress: IS_TESTNET
+        ? "0x75Cc4fDf1ee3E781C1A3Ee9151D5c6Ce34Cf5C61"
+        : "0x1B6382DBDEa11d97f24495C9A90b7c88469134a4",
       logoUrl: "/networks/fantom.svg",
       transferFeeMinAmount: IS_TESTNET ? "150000" : "1500000",
     },
     moonbeam: {
       id: "Moonbeam" as const,
-      erc20ContractAddress: "0xCa01a1D0993565291051daFF390892518ACfAD3A",
+      erc20ContractAddress: IS_TESTNET
+        ? "0xD1633F7Fb3d716643125d6415d4177bC36b7186b"
+        : "0xCa01a1D0993565291051daFF390892518ACfAD3A",
       logoUrl: "/networks/moonbeam.svg",
+      transferFeeMinAmount: IS_TESTNET ? "150000" : "1500000",
+    },
+    polygon: {
+      id: "Polygon" as const,
+      erc20ContractAddress: IS_TESTNET
+        ? "0x2c852e740B62308c46DD29B982FBb650D063Bd07"
+        : "0x750e4C4984a9e0f12978eA6742Bc1c5D248f40ed",
+      logoUrl: "/networks/polygon.svg",
       transferFeeMinAmount: IS_TESTNET ? "150000" : "1500000",
     },
   },
   weth: {
     ethereum: {
       id: IS_TESTNET
-        ? ("Ropsten Test Network" as const)
+        ? ("ethereum-2" as const)
         : ("Ethereum" as const),
       erc20ContractAddress: IS_TESTNET
-        ? "0xc778417E063141139Fce010982780140Aa0cD5Ab"
+        ? "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"
         : "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: IS_TESTNET ? "60000000000000" : "6300000000000000",
+      transferFeeMinAmount: IS_TESTNET ? "100000000000000" : "6300000000000000",
     },
   },
-  glmr: {
+  wglmr: {
     moonbeam: {
-      id: IS_TESTNET
-        ? ("Moonbase Alpha" as const)
-        : ("Moonbeam" as const),
+      id: "Moonbeam" as const,
       erc20ContractAddress: IS_TESTNET
         ? "0x1436aE0dF0A8663F18c0Ec51d7e2E46591730715"
         : "0xAcc15dC74880C9944775448304B263D191c6077F",
