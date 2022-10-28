@@ -36,7 +36,7 @@ export const NavBar: FunctionComponent<
     <>
       <div
         className={classNames(
-          "fixed z-[100] flex place-content-between items-center bg-osmoverse-900 h-navbar w-[calc(100vw_-_12.875rem)] px-8",
+          "fixed z-50 flex place-content-between items-center bg-osmoverse-900 h-navbar w-[calc(100vw_-_12.875rem)] px-8",
           className
         )}
       >

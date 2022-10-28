@@ -4,13 +4,12 @@ import { FunctionComponent } from "react";
 import { ButtonProps } from "../buttons/types";
 import { CustomClasses, Disableable } from "../types";
 
-export const WalletCard: FunctionComponent<
+export const AssetSourceCard: FunctionComponent<
   {
     id: string;
     iconUrl: string;
     displayName: string;
     isConnected?: boolean;
-    isInstalled?: boolean;
     isSelected?: boolean;
   } & Partial<ButtonProps> &
     CustomClasses &
@@ -20,7 +19,6 @@ export const WalletCard: FunctionComponent<
   displayName,
   isSelected = false,
   isConnected = false,
-  // isInstalled = true,
   onClick,
   className,
   disabled,

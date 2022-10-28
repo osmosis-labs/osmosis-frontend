@@ -84,8 +84,12 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           children: (
             <h6 className="md:text-base text-lg">
               {isWithdraw
-                ? t("assets.ibcTransfer.titleWithdraw")
-                : t("assets.ibcTransfer.titleDeposit")}
+                ? t("assets.ibcTransfer.titleWithdraw", {
+                    coinDenom: currency.coinDenom,
+                  })
+                : t("assets.ibcTransfer.titleDeposit", {
+                    coinDenom: currency.coinDenom,
+                  })}
             </h6>
           ),
         },

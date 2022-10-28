@@ -22,8 +22,11 @@ import {
   IbcTransferModal,
   BridgeTransferModal,
   TransferAssetSelectModal,
+  FiatRampsModal,
+  SelectAssetSourceModal,
+  PreTransferModal,
+  WalletConnectQRModal,
 } from "../../modals";
-import { ConnectNonIbcWallet, PreTransferModal } from "../../modals";
 import {
   useWindowSize,
   useAmplitudeAnalytics,
@@ -31,7 +34,6 @@ import {
   useShowDustUserSetting,
   useTransferConfig,
 } from "../../hooks";
-import { WalletConnectQRModal } from "../../modals";
 import { EventName } from "../../config";
 
 const INIT_POOL_CARD_COUNT = 6;
@@ -132,14 +134,17 @@ const Assets: NextPage = observer(() => {
       {transferConfig?.assetSelectModal && (
         <TransferAssetSelectModal {...transferConfig.assetSelectModal} />
       )}
-      {transferConfig?.connectNonIbcWalletModal && (
-        <ConnectNonIbcWallet {...transferConfig.connectNonIbcWalletModal} />
+      {transferConfig?.selectAssetSourceModal && (
+        <SelectAssetSourceModal {...transferConfig.selectAssetSourceModal} />
       )}
       {transferConfig?.ibcTransferModal && (
         <IbcTransferModal {...transferConfig.ibcTransferModal} />
       )}
       {transferConfig?.bridgeTransferModal && (
         <BridgeTransferModal {...transferConfig.bridgeTransferModal} />
+      )}
+      {transferConfig?.fiatRampsModal && (
+        <FiatRampsModal {...transferConfig.fiatRampsModal} />
       )}
       {transferConfig?.walletConnectEth.sessionConnectUri && (
         <WalletConnectQRModal
@@ -165,6 +170,7 @@ const Assets: NextPage = observer(() => {
             transferConfig?.transferAsset("withdraw", chainId, coinDenom);
           }
         }}
+        onBuyOsmo={() => transferConfig?.buyOsmo()}
       />
       {!isMobile && <PoolAssets />}
       <section className="bg-surface">
