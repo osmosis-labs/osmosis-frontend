@@ -77,7 +77,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           },
         ]);
       },
-      []
+      [do_onDeposit, logEvent]
     );
     const onWithdraw = useCallback(
       (...withdrawParams: Parameters<typeof do_onWithdraw>) => {
@@ -90,7 +90,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           },
         ]);
       },
-      []
+      [do_onWithdraw, logEvent]
     );
 
     const dustIbcBalances = useShowDustUserSetting(ibcBalances, (ibcBalance) =>
