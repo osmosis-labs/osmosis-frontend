@@ -28,8 +28,8 @@ export function useTransakModal(
       import("@transak/transak-sdk" as any).then(({ default: transakSdk }) => {
         const transak = new transakSdk({
           apiKey: IS_TESTNET
-            ? "901b8814-ce22-46e4-813f-4f3e46cd96cb"
-            : "43081699-9def-4599-9499-cc51a6952624", // API Key
+            ? "1cb6bc52-acd6-4633-ba31-195843d0c69f" // STAGING API Key
+            : "e844549d-f35c-4b3c-9269-48841ad8a561", // PROD API Key
           environment: IS_TESTNET ? "STAGING" : "PRODUCTION", // STAGING/PRODUCTION
           widgetHeight: "625px",
           widgetWidth: "500px",
