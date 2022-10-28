@@ -31,13 +31,16 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
     destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
     coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
-    sourceChainNameOverride: IS_TESTNET ? "Ropsten Ethereum" : "Ethereum",
+    sourceChainNameOverride: IS_TESTNET ? "Goerli Ethereum" : "Ethereum",
     isVerified: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChains: [AxelarSourceChainConfigs.usdc.ethereum],
+      sourceChains: [
+        AxelarSourceChainConfigs.usdc.ethereum,
+        AxelarSourceChainConfigs.usdc.moonbeam
+      ],
     },
   },
   {
@@ -47,7 +50,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
     destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
     coinMinimalDenom: "weth-wei",
-    sourceChainNameOverride: IS_TESTNET ? "Ropsten Ethereum" : "Ethereum",
+    sourceChainNameOverride: IS_TESTNET ? "Goerli Ethereum" : "Ethereum",
     isVerified: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -814,7 +817,7 @@ export const IBCAssetInfos: (IBCAsset & {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChains: [AxelarSourceChainConfigs.glmr.moonbeam],
+      sourceChains: [AxelarSourceChainConfigs.wglmr.moonbeam],
     },
   },  
   {
