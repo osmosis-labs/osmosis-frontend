@@ -17,7 +17,7 @@ import {
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { Button } from "../buttons";
+import { NewButton } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
@@ -839,20 +839,18 @@ export const TradeClipboard: FunctionComponent<{
           </div>
         </div>
       </div>
-      <Button
+      <NewButton
         color={
           showPriceImpactWarning && account.walletStatus === WalletStatus.Loaded
             ? "error"
             : "primary"
         }
-        className="flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full"
         disabled={
           account.walletStatus === WalletStatus.Loaded &&
           (tradeTokenInConfig.error !== undefined ||
             tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
             account.txTypeInProgress !== "")
         }
-        loading={account.txTypeInProgress !== ""}
         onClick={async () => {
           if (account.walletStatus !== WalletStatus.Loaded) {
             return account.init();
@@ -1023,7 +1021,7 @@ export const TradeClipboard: FunctionComponent<{
             <span>{t("swap.buttonConnect")}</span>
           </div>
         )}
-      </Button>
+      </NewButton>
     </div>
   );
 });

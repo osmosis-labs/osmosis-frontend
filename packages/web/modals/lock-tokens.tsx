@@ -70,7 +70,6 @@ export const LockTokensModal: FunctionComponent<
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      className: "h-16",
       disabled:
         config.error !== undefined ||
         selectedDurationIndex === null ||

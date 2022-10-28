@@ -73,7 +73,7 @@ export const NavBar: FunctionComponent<
           <div className="flex items-center gap-3">
             {navBarStore.callToActionButtons.map((button, index) => (
               <NewButton
-                className="lg:px-2"
+                className="h-fit lg:px-2"
                 mode={index > 0 ? "secondary" : undefined}
                 key={index}
                 {...button}

@@ -86,7 +86,7 @@ export const TransferAssetSelectModal: FunctionComponent<
     walletConnected: keplrConnected,
   } = useConnectWalletModalRedirect(
     {
-      className: "h-14 md:w-full w-96 mt-3 mx-auto !px-1",
+      className: "mt-3",
       onClick: () => onSelectAsset(selectedTokenDenom, selectedNetwork?.id),
       children: "Next",
     },
@@ -101,7 +101,7 @@ export const TransferAssetSelectModal: FunctionComponent<
       title={`${isWithdraw ? "Withdraw" : "Deposit"} Asset`}
     >
       <div className="flex flex-col gap-5 my-5">
-        <div className="flex items-centerw-full border border-white-faint rounded-2xl p-4 md:py-6">
+        <div className="flex items-centerw-full border border-osmoverse-700 rounded-2xl p-4 md:py-6">
           <TokenSelect
             tokens={tokens.map(({ token }) => token)}
             onSelect={(denom) => {
@@ -114,7 +114,7 @@ export const TransferAssetSelectModal: FunctionComponent<
         {selectedToken?.originBridgeInfo && selectedNetwork && keplrConnected && (
           <div
             className={classNames(
-              "relative w-full flex items-center place-content-between border border-white-faint p-4 transition-borderRadius",
+              "relative w-full flex items-center place-content-between border border-osmoverse-700 p-4 transition-borderRadius",
               {
                 "rounded-2xl": !isSourceChainDropdownOpen,
                 "rounded-l-2xl rounded-tr-2xl": isSourceChainDropdownOpen,
@@ -156,7 +156,7 @@ export const TransferAssetSelectModal: FunctionComponent<
             {isSourceChainDropdownOpen && (
               <div
                 style={{ borderTopStyle: "dashed" }}
-                className="absolute top-[100%] -right-[1px] border border-white-faint rounded-b-2xl z-50 bg-surface"
+                className="absolute top-[100%] -right-[1px] border border-osmoverse-700 rounded-b-2xl z-50 bg-surface"
               >
                 {selectedToken.originBridgeInfo.sourceChains
                   .filter(({ id }) => id !== selectedNetwork.id)

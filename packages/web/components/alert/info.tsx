@@ -4,13 +4,24 @@ import { CustomClasses, MobileProps } from "../types";
 import { Alert } from "./types";
 
 export const Info: FunctionComponent<
-  { size?: "large" | "subtle" } & Alert & { data?: string } & CustomClasses &
+  { size?: "large" | "subtle" } & Alert & {
+      data?: string;
+      borderClassName?: string;
+    } & CustomClasses &
     MobileProps
-> = ({ size = "large", message, caption, data, className, isMobile = false }) =>
+> = ({
+  size = "large",
+  message,
+  caption,
+  data,
+  borderClassName,
+  className,
+  isMobile = false,
+}) =>
   size === "subtle" ? (
     <div
       className={classNames(
-        "w-full p-2 rounded-lg border border-secondary-200",
+        "w-full p-2 rounded-lg border border-rust-500",
         className
       )}
     >
@@ -19,7 +30,8 @@ export const Info: FunctionComponent<
   ) : (
     <div
       className={classNames(
-        "flex gap-3 md:gap-1.5 w-full rounded-2xl bg-gradient-neutral p-px"
+        "flex gap-3 md:gap-1.5 w-full rounded-2xl bg-gradient-neutral p-px",
+        borderClassName
       )}
     >
       <div

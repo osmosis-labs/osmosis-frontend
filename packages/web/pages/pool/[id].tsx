@@ -533,14 +533,13 @@ const Pool: FunctionComponent = observer(() => {
                 </div>
                 <div className="lg:w-full flex shrink-0 xs:shrink xs:flex-wrap gap-4">
                   <NewButton
-                    className="lg:w-full h-16 px-20 py-4"
                     mode="secondary"
                     onClick={() => setShowRemoveLiquidityModal(true)}
                   >
                     Remove liquidity
                   </NewButton>
                   <NewButton
-                    className={classNames("lg:w-full h-16 px-20 py-4", {
+                    className={classNames({
                       "bg-gradient-positive text-osmoverse-900": levelCta === 1,
                     })}
                     onClick={() => setShowAddLiquidityModal(true)}
@@ -582,12 +581,9 @@ const Pool: FunctionComponent = observer(() => {
                 </span>
               </div>
               <NewButton
-                className={classNames(
-                  "h-16 w-96 md:w-full px-20 py-4 border-none",
-                  {
-                    "bg-gradient-positive text-osmoverse-900": levelCta === 2,
-                  }
-                )}
+                className={classNames("w-96 md:w-full border-none", {
+                  "bg-gradient-positive text-osmoverse-900": levelCta === 2,
+                })}
                 disabled={levelCta !== 2}
                 onClick={() => setShowLockLPTokenModal(true)}
               >

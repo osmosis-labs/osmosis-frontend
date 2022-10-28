@@ -13,7 +13,7 @@ import {
 import { IBCBalance } from "../../stores/assets";
 import { useStore } from "../../stores";
 import { Transfer } from "../../components/complex/transfer";
-import { Button } from "../../components/buttons";
+import { NewButton } from "../../components/buttons";
 import { getKeyByValue } from "../../components/utils";
 import { displayToast, ToastType } from "../../components/alert";
 import { BridgeIntegrationProps } from "../../modals";
@@ -480,9 +480,9 @@ const AxelarTransfer: FunctionComponent<
         />
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
           {connectCosmosWalletButtonOverride ?? (
-            <Button
+            <NewButton
               className={classNames(
-                "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl transition-opacity duration-300",
+                "hover:opacity-75 transition-opacity duration-300",
                 { "opacity-30": isDepositAddressLoading }
               )}
               disabled={
@@ -493,21 +493,18 @@ const AxelarTransfer: FunctionComponent<
                 isInsufficientBal ||
                 isSendTxPending
               }
-              loading={isSendTxPending}
               onClick={() => {
                 if (!isWithdraw && userDisconnectedEthWallet)
                   ethWalletClient.enable();
                 else doAxelarTransfer();
               }}
             >
-              <h6 className="md:text-base text-lg">
-                {buttonErrorMessage
-                  ? buttonErrorMessage
-                  : isWithdraw
-                  ? "Withdraw"
-                  : "Deposit"}
-              </h6>
-            </Button>
+              {buttonErrorMessage
+                ? buttonErrorMessage
+                : isWithdraw
+                ? "Withdraw"
+                : "Deposit"}
+            </NewButton>
           )}
         </div>
       </>

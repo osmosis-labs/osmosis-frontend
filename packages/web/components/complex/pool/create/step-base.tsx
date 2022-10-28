@@ -68,7 +68,6 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
             />
           )}
           <NewButton
-            className="w-full h-16"
             onClick={() => advanceStep()}
             disabled={!canAdvance || isSendingMsg}
           >
