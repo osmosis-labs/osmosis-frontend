@@ -45,7 +45,7 @@ export const RemoveLiquidityModal: FunctionComponent<
         ),
       children: config.error
         ? config.error.message
-        : t("pool.manageLiquidity.tabRemoveLiquidity"),
+        : t("pool.manageLiquidity.removeLiquidity"),
     },
     props.onRequestClose
   );

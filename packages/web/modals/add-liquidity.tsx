@@ -44,7 +44,7 @@ export const AddLiquidityModal: FunctionComponent<
         ),
       children: config.error
         ? config.error.message
-        : t("pool.manageLiquidity.tabAddLiquidity"),
+        : t("pool.manageLiquidity.addLiquidity"),
     },
     props.onRequestClose
   );

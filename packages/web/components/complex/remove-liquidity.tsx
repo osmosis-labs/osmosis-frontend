@@ -31,6 +31,7 @@ export const RemoveLiquidity: FunctionComponent<
           )}`}</h2>
           <h5 className="text-osmoverse-100">
             {removeLiquidityConfig.poolShareWithPercentage
+              .trim(true)
               .hideDenom(true)
               .toString()}{" "}
             shares
@@ -50,7 +51,7 @@ export const RemoveLiquidity: FunctionComponent<
                   width={16}
                 />
               )}
-              <span>{asset.toString()}</span>
+              <span>{asset.trim(true).toString()}</span>
             </div>
           ))}
         </div>

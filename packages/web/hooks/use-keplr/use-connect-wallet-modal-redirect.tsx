@@ -63,6 +63,7 @@ export function useConnectWalletModalRedirect(
       ) : (
         <NewButton
           {...actionButtonProps}
+          disabled={false}
           onClick={() => {
             osmosisAccount.init(); // show select connect modal
             setShowSelf(false);

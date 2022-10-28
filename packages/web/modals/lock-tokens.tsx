@@ -154,13 +154,16 @@ export const LockTokensModal: FunctionComponent<
               })}
             >
               <h6>
-                Superfluid Stake{" "}
+                {t("pool.lockToken.superfluidStake")}{" "}
                 {superfluidApr && `(+${superfluidApr.maxDecimals(0)} APR)`}
               </h6>
               {poolDetailConfig?.longestDuration && (
                 <span className="caption text-osmoverse-300">
-                  {poolDetailConfig.longestDuration.asDays()} day bonding
-                  requirement
+                  {t("pool.lockToken.bondingRequirement", {
+                    numDays: poolDetailConfig.longestDuration
+                      .asDays()
+                      .toString(),
+                  })}
                 </span>
               )}
             </div>
@@ -168,15 +171,17 @@ export const LockTokensModal: FunctionComponent<
         )}
         <div className="flex flex-col gap-2">
           <div className="flex items-center place-content-between">
-            <span className="subtitle1">Amount To Bond</span>
+            <span className="subtitle1">
+              {t("pool.lockToken.amountToBond")}
+            </span>
             {availableToken && (
               <div className="flex gap-1 caption">
-                <span>Available</span>
+                <span>{t("pool.lockToken.availableToken")}</span>
                 <span
                   className="text-wosmongton-300 cursor-pointer"
                   onClick={() => config.setIsMax(true)}
                 >
-                  {availableToken.trim(true).toString()}
+                  {availableToken.trim(true).hideDenom(true).toString()} shares
                 </span>
               </div>
             )}

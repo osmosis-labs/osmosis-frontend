@@ -305,7 +305,7 @@ const Pool: FunctionComponent = observer(() => {
       </Head>
       {pool && showAddLiquidityModal && (
         <AddLiquidityModal
-          title={t("pool.manageLiquidity.title")}
+          title={t("pool.manageLiquidity.addLiquidity")}
           isOpen={true}
           poolId={pool.id}
           onRequestClose={() => setShowAddLiquidityModal(false)}
@@ -314,7 +314,7 @@ const Pool: FunctionComponent = observer(() => {
       )}
       {pool && showRemoveLiquidityModal && (
         <RemoveLiquidityModal
-          title="Remove Liquidity"
+          title={t("pool.manageLiquidity.removeLiquidity")}
           isOpen={true}
           poolId={pool.id}
           onRequestClose={() => setShowRemoveLiquidityModal(false)}
@@ -531,8 +531,9 @@ const Pool: FunctionComponent = observer(() => {
                       .toString()} shares`}
                   </h3>
                 </div>
-                <div className="lg:w-full flex shrink-0 xs:shrink xs:flex-wrap gap-4">
+                <div className="flex shrink-0 xs:shrink xs:flex-wrap gap-4">
                   <NewButton
+                    className="w-fit shrink-0"
                     mode="secondary"
                     onClick={() => setShowRemoveLiquidityModal(true)}
                   >
@@ -540,7 +541,8 @@ const Pool: FunctionComponent = observer(() => {
                   </NewButton>
                   <NewButton
                     className={classNames({
-                      "bg-gradient-positive text-osmoverse-900": levelCta === 1,
+                      "w-fit shrink-0 bg-gradient-positive text-osmoverse-900":
+                        levelCta === 1,
                     })}
                     onClick={() => setShowAddLiquidityModal(true)}
                   >

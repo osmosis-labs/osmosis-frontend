@@ -15,7 +15,7 @@ export const NewButton: FunctionComponent<
     <button
       {...props}
       className={classNames(
-        "flex w-full h-16 items-center text-center disabled:cursor-default py-2",
+        "flex w-full h-16 items-center text-center place-content-center disabled:cursor-default py-2",
         size === "sm" ? "px-5" : "px-6",
         mode === "tertiary" ? "rounded-md" : "rounded-xl",
         {

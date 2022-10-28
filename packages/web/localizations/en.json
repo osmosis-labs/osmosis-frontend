@@ -182,19 +182,20 @@
       "swapFee": "Swap Fee"
     },
     "lockToken": {
-      "title": "Liquidity Bonding",
-      "unbondingPeriod": "Unbonding period",
+      "title": "Bond LP Shares",
+      "unbondingPeriod": "Select an unbonding period",
       "superfluidStake": "Superfluid Stake",
+      "bondingRequirement": "{numDays} day bonding requirement",
       "amountToBond": "Amount To Bond",
-      "availableToken": "Available LP Token",
+      "availableToken": "Available",
       "inputMax": "MAX",
       "buttonNext": "Next",
       "buttonBond": "Bond"
     },
     "manageLiquidity": {
       "title": "Manage Liquidity",
-      "tabAddLiquidity": "Add Liquidity",
-      "tabRemoveLiquidity": "Remove Liquidity",
+      "addLiquidity": "Add Liquidity",
+      "removeLiquidity": "Remove Liquidity",
       "modalTitleRemove": "Remove Liquidity from Pool #{poolId}",
       "modalTitleAdd": "Add Liquidity from Pool #{poolId}",
       "LPTokenBalance": "LP token balance:",
