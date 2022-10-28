@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { NextPage } from "next";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
@@ -30,7 +31,6 @@ import {
   useLockTokenConfig,
   usePoolDetailConfig,
   useSuperfluidPoolConfig,
-  useNavBar,
   useShowDustUserSetting,
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
@@ -55,11 +55,6 @@ const Pools: NextPage = observer(function () {
   const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
-  });
-  useNavBar({
-    ctas: [
-      { label: "Create new Pool", onClick: () => setIsCreatingPool(true) },
-    ],
   });
 
   const { chainId } = chainStore.osmosis;
@@ -270,7 +265,7 @@ const Pools: NextPage = observer(function () {
       {superfluidDelegateModalProps && (
         <SuperfluidValidatorModal {...superfluidDelegateModalProps} />
       )}
-      <section className="pt-20 md:pt-4 pb-10 md:pb-5">
+      <section className="pt-8 md:pt-4 pb-10 md:pb-5">
         <PoolsOverview className="mx-auto" />
       </section>
       <section>
@@ -626,6 +621,25 @@ const Pools: NextPage = observer(function () {
           </section>
         </>
       )}
+      <section className="pb-4">
+        <div className="w-full flex items-center bg-osmoverse-800 rounded-full px-5 py-4">
+          <span className="subtitle1 flex items-center gap-1">
+            Interested in creating a new pool?{" "}
+            <u
+              className="text-wosmongton-300 flex items-center cursor-pointer"
+              onClick={() => setIsCreatingPool(true)}
+            >
+              Click here to start the process.
+              <Image
+                alt="right arrow"
+                src="/icons/arrow-right-wosmongton-300.svg"
+                height={24}
+                width={24}
+              />
+            </u>
+          </span>
+        </div>
+      </section>
     </main>
   );
 });
