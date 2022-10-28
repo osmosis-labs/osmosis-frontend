@@ -39,6 +39,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.usdc.ethereum],
     },
+    fiatRamps: [{ rampKey: "kado" as const, assetKey: "USDC" }],
   },
   {
     counterpartyChainId: IS_TESTNET

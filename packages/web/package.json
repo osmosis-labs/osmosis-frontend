@@ -29,6 +29,7 @@
     "@osmosis-labs/pools": "^3.0.0",
     "@osmosis-labs/stores": "^3.0.0",
     "@tippyjs/react": "^4.2.6",
+    "@transak/transak-sdk": "^1.2.2",
     "@walletconnect/browser-utils": "^1.7.0",
     "@walletconnect/client": "^1.7.0",
     "@walletconnect/types": "^1.7.0",

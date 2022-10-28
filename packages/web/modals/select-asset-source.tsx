@@ -1,28 +1,33 @@
 import { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { WalletCard } from "../components/cards";
-import { SourceChainKey, Wallet } from "../integrations";
+import { AssetSourceCard } from "../components/cards";
+import {
+  FiatRampKey,
+  SourceChainKey,
+  Wallet,
+  FiatRampDisplayInfos,
+} from "../integrations";
 import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
 
 /** Prompts user to connect from a list of wallets. Will onboard a user for an uninstalled wallet if the functionality is available. */
-export const ConnectNonIbcWallet: FunctionComponent<
+export const SelectAssetSourceModal: FunctionComponent<
   ModalBaseProps & {
     initiallySelectedWalletId?: string;
     desiredSourceKey?: SourceChainKey;
     isWithdraw: boolean;
     wallets: Wallet[];
-    onSelectWallet: (key: string) => void;
+    fiatRamps?: FiatRampKey[];
+    onSelectSource: (key: string) => void;
   }
 > = observer((props) => {
-  const { initiallySelectedWalletId, isWithdraw, wallets, onSelectWallet } =
-    props;
+  const [selectedAssetSourceKey, setSelectedAssetSourceKey] = useState<
+    string | null
+  >(props.initiallySelectedWalletId ?? null);
 
-  const [selectedWalletKey, setSelectedWalletId] = useState<string | null>(
-    initiallySelectedWalletId ?? null
+  const selectedWallet = props.wallets.find(
+    (w) => w.key === selectedAssetSourceKey
   );
-
-  const selectedWallet = wallets.find((w) => w.key === selectedWalletKey);
   const canOnboardSelectedWallet =
     selectedWallet && !selectedWallet.isInstalled && selectedWallet.onboard;
 
@@ -30,13 +35,13 @@ export const ConnectNonIbcWallet: FunctionComponent<
     {
       className: "h-14 md:w-full w-96 mt-3 mx-auto !px-1",
       disabled:
-        (initiallySelectedWalletId === undefined && !selectedWalletKey) ||
-        wallets.length === 0,
+        props.initiallySelectedWalletId === undefined &&
+        !selectedAssetSourceKey,
       onClick: () => {
         if (canOnboardSelectedWallet) {
           selectedWallet!.onboard?.();
-        } else if (selectedWalletKey) {
-          onSelectWallet(selectedWalletKey);
+        } else if (selectedAssetSourceKey) {
+          props.onSelectSource(selectedAssetSourceKey);
         } else {
           console.error(
             "Wallet selection invalid state: selectedWalletKey undefined"
@@ -47,8 +52,6 @@ export const ConnectNonIbcWallet: FunctionComponent<
         <h6 className="md:text-base text-lg">
           {canOnboardSelectedWallet
             ? `Install ${selectedWallet.displayInfo.displayName}`
-            : wallets.length === 0
-            ? "None available"
             : "Next"}
         </h6>
       ),
@@ -61,30 +64,28 @@ export const ConnectNonIbcWallet: FunctionComponent<
     <ModalBase
       {...props}
       isOpen={props.isOpen && showModalBase}
-      title={isWithdraw ? "Withdraw to" : "Deposit from"}
+      title={props.isWithdraw ? "Withdraw to" : "Deposit from"}
     >
       <div className="grid grid-cols-3 md:grid-cols-2 gap-4 m-4">
-        {props.wallets.length === 0 ? (
-          <WalletCard
-            className="opacity-30"
-            id="placeholder"
-            displayName="None"
-            iconUrl="/icons/error-x.svg"
+        {props.wallets.map((wallet, index) => (
+          <AssetSourceCard
+            key={index}
+            id={wallet.key}
+            {...wallet.displayInfo}
+            isConnected={wallet.isConnected}
+            isSelected={wallet.key === selectedAssetSourceKey}
+            onClick={() => setSelectedAssetSourceKey(wallet.key)}
           />
-        ) : (
-          <>
-            {wallets.map((wallet, i) => (
-              <WalletCard
-                key={i}
-                id={wallet.key}
-                {...wallet.displayInfo}
-                isConnected={wallet.isConnected}
-                isSelected={wallet.key === selectedWalletKey}
-                onClick={() => setSelectedWalletId(wallet.key)}
-              />
-            ))}
-          </>
-        )}
+        ))}
+        {props.fiatRamps?.map((fiatRampKey, index) => (
+          <AssetSourceCard
+            key={index}
+            id={fiatRampKey}
+            {...FiatRampDisplayInfos[fiatRampKey]}
+            isSelected={fiatRampKey === selectedAssetSourceKey}
+            onClick={() => setSelectedAssetSourceKey(fiatRampKey)}
+          />
+        ))}
       </div>
       {accountActionButton}
     </ModalBase>
