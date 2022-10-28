@@ -11,6 +11,7 @@ import { InputBox } from "../../components/input";
 import { Info } from "../../components/alert";
 import { PoolTokenSelect } from "../../components/control/pool-token-select";
 import { CustomClasses } from "../types";
+import { BorderButton } from "../buttons";
 
 export const AddLiquidity: FunctionComponent<
   {
@@ -91,7 +92,7 @@ export const AddLiquidity: FunctionComponent<
             return (
               <div
                 key={currency.coinDenom}
-                className="flex flex-col gap-1 w-full md:p-2 p-4 border border-white-faint md:rounded-xl rounded-2xl"
+                className="flex flex-col gap-1 w-full md:p-3 p-4 border border-osmoverse-700 md:rounded-xl rounded-2xl"
               >
                 {isPeggedCurrency && (
                   <Info
@@ -162,7 +163,7 @@ export const AddLiquidity: FunctionComponent<
                         )}
                       </div>
                     )}
-                    <div className="flex place-content-end gap-1">
+                    <div className="flex items-center place-content-end gap-1">
                       <div className="flex flex-col rounded-lg bg-osmoverse-1000 p-1">
                         <InputBox
                           style="no-border"
@@ -183,6 +184,14 @@ export const AddLiquidity: FunctionComponent<
                           </span>
                         )}
                       </div>
+                      {isMobile && (
+                        <BorderButton
+                          className="py-0.5"
+                          onClick={() => addLiquidityConfig.setMax()}
+                        >
+                          MAX
+                        </BorderButton>
+                      )}
                     </div>
                   </div>
                 </div>
