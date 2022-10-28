@@ -1,7 +1,5 @@
-import classNames from "classnames";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 import { PoolAssetInfo } from "../assets";
 import { AssetCard } from "../cards";
 import {
@@ -37,7 +35,6 @@ export const CompactPoolTableDisplay: FunctionComponent<{
   minTvlToggleProps,
 }) => {
   const router = useRouter();
-  const t = useTranslation();
 
   return (
     <div className="flex flex-col gap-5 pb-8">

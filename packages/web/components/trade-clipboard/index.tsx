@@ -6,7 +6,7 @@ import { Pool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { IS_FRONTIER, EventName } from "../../config";
+import { EventName } from "../../config";
 import {
   useBooleanWithWindowEvent,
   useFakeFeeConfig,

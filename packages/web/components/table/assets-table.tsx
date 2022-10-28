@@ -407,7 +407,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
               >
                 <div className="flex items-center gap-2">
                   {assetData.coinImageUrl && (
-                    <div className="w-10 shrink-0">
+                    <div className="flex items-center w-10 shrink-0">
                       <Image
                         alt="token icon"
                         src={assetData.coinImageUrl}

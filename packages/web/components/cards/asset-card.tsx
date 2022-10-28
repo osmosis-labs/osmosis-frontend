@@ -13,6 +13,7 @@ export const AssetCard: FunctionComponent<
     coinDenomCaption?: string;
     metrics: Metric[];
     isSuperfluid?: boolean;
+    onClick?: () => void;
     showArrow?: boolean;
     contentClassName?: string;
   } & CustomClasses
@@ -22,6 +23,7 @@ export const AssetCard: FunctionComponent<
   coinDenomCaption,
   metrics,
   isSuperfluid = false,
+  onClick,
   className,
   contentClassName,
 }) => (
@@ -33,6 +35,7 @@ export const AssetCard: FunctionComponent<
       },
       className
     )}
+    onClick={() => onClick?.()}
   >
     <div
       className={classNames(
