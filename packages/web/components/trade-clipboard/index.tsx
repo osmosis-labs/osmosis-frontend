@@ -236,21 +236,21 @@ export const TradeClipboard: FunctionComponent<{
     [tradeTokenInConfig.expectedSwapResult.amount]
   );
 
-  var isDepositToken =
+  let isDepositToken =
     tradeTokenInConfig.sendCurrency.coinDenom !== "OSMO" &&
     tradeTokenInConfig.sendCurrency.coinDenom !== "ION";
 
-  var isSwapCurrencyInOsmosisZero = false;
+  let isSwapCurrencyInOsmosisZero = false;
 
   if (isDepositToken) {
-    var balance = assetsStore.ibcBalances.find(
+    let balance = assetsStore.ibcBalances.find(
       (bal) =>
         bal.balance.currency.coinDenom ===
         tradeTokenInConfig.sendCurrency.coinDenom
     );
     if (balance) {
-      var accOsmosis = accountStore.getAccount(chainId);
-      var balOsmosis = queriesStore
+      let accOsmosis = accountStore.getAccount(chainId);
+      let balOsmosis = queriesStore
         .get(chainId)
         .queryBalances.getQueryBech32Address(accOsmosis.bech32Address)
         .getBalanceFromCurrency(balance.balance.currency);
