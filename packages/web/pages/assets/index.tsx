@@ -28,12 +28,12 @@ import {
 import { ConnectNonIbcWallet, PreTransferModal } from "../../modals";
 import {
   useWindowSize,
+  useTokenTransferQueryParams,
   useAmplitudeAnalytics,
   useNavBarCtas,
 } from "../../hooks";
 import { WalletConnectQRModal } from "../../modals";
 import { EventName } from "../../config";
-import { useTokenTransferQueryParams } from "../../hooks/window/use-assets-transfer-query-params";
 
 const INIT_POOL_CARD_COUNT = 6;
 
