@@ -177,7 +177,7 @@ const Assets: NextPage = observer(() => {
           transferConfig.startTransfer("withdraw");
           setTransferQueryParams("withdraw");
         }}
-        onDeposit={(coinDenom, externalDepositUrl) => {
+        onDeposit={(_, coinDenom, externalDepositUrl) => {
           if (!externalDepositUrl) {
             isMobile
               ? launchPreTransferModal(coinDenom)
@@ -185,7 +185,7 @@ const Assets: NextPage = observer(() => {
             setTransferQueryParams("deposit", coinDenom);
           }
         }}
-        onWithdraw={(coinDenom, externalWithdrawUrl) => {
+        onWithdraw={(_, coinDenom, externalWithdrawUrl) => {
           if (!externalWithdrawUrl) {
             transferConfig.transferAsset("withdraw", coinDenom);
             setTransferQueryParams("withdraw", coinDenom);

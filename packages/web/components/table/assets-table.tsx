@@ -40,8 +40,12 @@ interface Props {
   })[];
   onWithdrawIntent: () => void;
   onDepositIntent: () => void;
-  onWithdraw: (coinDenom: string, externalUrl?: string) => void;
-  onDeposit: (coinDenom: string, externalUrl?: string) => void;
+  onWithdraw: (
+    chainId: string,
+    coinDenom: string,
+    externalUrl?: string
+  ) => void;
+  onDeposit: (chainId: string, coinDenom: string, externalUrl?: string) => void;
 }
 
 export const AssetsTable: FunctionComponent<Props> = ({
@@ -63,8 +67,8 @@ export const AssetsTable: FunctionComponent<Props> = ({
       logEvent([
         EventName.Assets.assetsItemDepositClicked,
         {
-          tokenName: depositParams[0],
-          hasExternalUrl: !!depositParams[1],
+          tokenName: depositParams[1],
+          hasExternalUrl: !!depositParams[2],
         },
       ]);
     },
@@ -76,8 +80,8 @@ export const AssetsTable: FunctionComponent<Props> = ({
       logEvent([
         EventName.Assets.assetsItemWithdrawClicked,
         {
-          tokenName: withdrawParams[0],
-          hasExternalUrl: !!withdrawParams[1],
+          tokenName: withdrawParams[1],
+          hasExternalUrl: !!withdrawParams[2],
         },
       ]);
     },
