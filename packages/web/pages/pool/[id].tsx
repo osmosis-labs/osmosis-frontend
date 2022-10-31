@@ -66,6 +66,8 @@ const Pool: FunctionComponent = observer(() => {
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const { bech32Address } = accountStore.getAccount(chainStore.osmosis.chainId);
   const queryGammPoolFeeMetrics = queriesExternalStore.queryGammPoolFeeMetrics;
+  const queryAccountPoolRewards =
+    queriesExternalStore.queryAccountsPoolRewards.get(bech32Address);
 
   // eject to pools page if pool does not exist
   const poolExists = queryOsmosis.queryGammPools.poolExists(poolId as string);
@@ -483,6 +485,19 @@ const Pool: FunctionComponent = observer(() => {
                   ]}
                 />
               </div>
+            </div>
+          </div>
+          <div className="w-full flex flex-col gap-3 bg-osmoverse-1000 px-10 py-7 rounded-4xl">
+            <div className="flex flex-col gap-2">
+              <span className="subtitle1 text-osmoverse-300">
+                {"You're currently earning"}
+              </span>
+              <h4 className="text-osmoverse-100">
+                {queryAccountPoolRewards
+                  .getUsdRewardsForPool(poolId)
+                  ?.day.toString() ?? "$0"}
+                /day
+              </h4>
             </div>
           </div>
         </div>

@@ -1,6 +1,4 @@
-import Axios from "axios";
 import { KVStore } from "@keplr-wallet/common";
-import { ObservableQuery } from "@keplr-wallet/stores";
 import { DeepReadonly } from "utility-types";
 import { IPriceStore } from "../price";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
@@ -15,7 +13,7 @@ export class QueriesExternalStore {
     kvStore: KVStore,
     priceStore: IPriceStore,
     feeMetricsBaseURL = "https://api-osmosis.imperator.co",
-    poolRewardsBaseUrl = "http://api-osmosis-chain.imperator.co"
+    poolRewardsBaseUrl = "https://api-osmosis-chain.imperator.co"
   ) {
     this.queryGammPoolFeeMetrics = new ObservableQueryPoolFeesMetrics(
       kvStore,
@@ -26,16 +24,5 @@ export class QueriesExternalStore {
       priceStore,
       poolRewardsBaseUrl
     );
-  }
-}
-
-export class ObservableQueryExternalBase<
-  T = unknown,
-  E = unknown
-> extends ObservableQuery<T, E> {
-  constructor(kvStore: KVStore, baseURL: string, urlPath: string) {
-    const instance = Axios.create({ baseURL });
-
-    super(kvStore, instance, urlPath);
   }
 }

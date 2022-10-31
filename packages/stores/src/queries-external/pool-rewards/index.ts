@@ -4,7 +4,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { IPriceStore } from "../../price";
-import { ObservableQueryExternalBase } from "../store";
+import { ObservableQueryExternalBase } from "../base";
 import { PoolsRewards, PoolRewards } from "./types";
 
 /** Queries Imperator pool fee history data. */
@@ -13,11 +13,15 @@ export class ObservableQueryAccountPoolRewards extends ObservableQueryExternalBa
     kvStore: KVStore,
     baseURL: string,
     protected readonly priceStore: IPriceStore,
-    bech32Address: string
+    protected readonly bech32Address: string
   ) {
     super(kvStore, baseURL, `/lp/v1/rewards/estimation/${bech32Address}`);
 
     makeObservable(this);
+  }
+
+  protected canFetch(): boolean {
+    return this.bech32Address !== "";
   }
 
   readonly getUsdRewardsForPool = computedFn(
@@ -45,7 +49,7 @@ export class ObservableQueryAccountsPoolRewards extends HasMapStore<ObservableQu
   constructor(
     kvStore: KVStore,
     priceStore: IPriceStore,
-    poolRewardsBaseUrl = "http://api-osmosis-chain.imperator.co"
+    poolRewardsBaseUrl = "https://api-osmosis-chain.imperator.co"
   ) {
     super(
       (bech32Address) =>

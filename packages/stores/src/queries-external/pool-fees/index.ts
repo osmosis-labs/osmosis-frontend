@@ -4,7 +4,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { IPriceStore } from "../../price";
 import { ObservableQueryPool } from "../../queries/pools";
-import { ObservableQueryExternalBase } from "../store";
+import { ObservableQueryExternalBase } from "../base";
 import { PoolFeesMetrics, PoolFees } from "./types";
 
 /** Queries Imperator pool fee history data. */
