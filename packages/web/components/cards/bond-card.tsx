@@ -72,11 +72,12 @@ export const BondCard: FunctionComponent<
         {userUnlockingShares && (
           <div className="flex flex-col gap-1 bg-osmoverse-900 rounded-lg p-3">
             <h6>
+              ~
               {t("pool.sharesAmount", {
-                amount: userUnlockingShares.shares
+                shares: userUnlockingShares.shares
                   .hideDenom(true)
                   .trim(true)
-                  .maxDecimals(3)
+                  .maxDecimals(6)
                   .toString(),
               })}
             </h6>
@@ -180,7 +181,9 @@ const Drawer: FunctionComponent<{
         )}
       >
         <div className="flex flex-col">
-          <span className="subtitle1 text-osmoverse-200">Incentives</span>
+          <span className="subtitle1 text-osmoverse-200">
+            {t("pool.incentives")}
+          </span>
           <div className="flex items-center gap-4 md:gap-1.5">
             <h5
               className={classNames(
@@ -305,9 +308,9 @@ const SuperfluidBreakdownRow: FunctionComponent<
         <div className="flex flex-col gap-[2px] bg-osmoverse-800 rounded-md py-2 px-4">
           <span className="caption">
             {delegated
-              ? `~${delegated.trim(true).toString()}`
+              ? `~${delegated.trim(true).maxDecimals(7).toString()}`
               : undelegating
-              ? `~${undelegating.trim(true).toString()}`
+              ? `~${undelegating.trim(true).maxDecimals(7).toString()}`
               : null}
             <span className="text-osmoverse-400">
               {delegated
