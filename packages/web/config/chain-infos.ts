@@ -1987,7 +1987,7 @@ const chainInfos = (
           coinDenom: "stOSMO",
           coinMinimalDenom: "stuosmo",
           coinDecimals: 6,
-          // coinGeckoId: "osmosis",
+          coinGeckoId: "pool:stuosmo",
           coinImageUrl: "/tokens/stosmo.svg",
         },
         {
