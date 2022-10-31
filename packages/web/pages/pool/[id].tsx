@@ -461,7 +461,7 @@ const Pool: FunctionComponent = observer(() => {
             <div className="flex items-center md:flex-col md:items-start gap-3 place-content-between">
               <div className="flex shrink-0 flex-col gap-1">
                 <h4 className="text-osmoverse-100">
-                  {poolDetailConfig.userStats.bondedValue.toString()}
+                  {poolDetailConfig.userStats.totalShareValue.toString()}
                 </h4>
                 <h6 className="text-osmoverse-300">
                   {poolDetailConfig.userStats.totalShares
