@@ -40,7 +40,6 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
       return (
         <div className="flex flex-col gap-5">
           <span className="body2 text-center md:caption md:mt-4">
-            Step {step} / 3 -
             {step === 1
               ? t("pools.createPool.step.one", {
                   step: step.toString(),

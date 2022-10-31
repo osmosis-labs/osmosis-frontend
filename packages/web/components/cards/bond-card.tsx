@@ -99,16 +99,20 @@ export const BondCard: FunctionComponent<
           userShares.toDec().gt(new Dec(0)) &&
           !superfluid.delegated &&
           !superfluid.undelegating && (
-            <NewButton
-              className="py-1.5 text-transparent bg-clip-text bg-superfluid border-superfluid"
-              mode="tertiary"
-              size="sm"
+            <button
+              className="flex items-center gap-1 superfluid"
               onClick={onGoSuperfluid}
             >
               {t("pool.superfluidEarnMore", {
                 rate: superfluid.apr.maxDecimals(0).toString(),
               })}
-            </NewButton>
+              <Image
+                alt="earn more"
+                src="/icons/arrow-right-superfluid.svg"
+                height={24}
+                width={24}
+              />
+            </button>
           )}
       </div>
       <div
