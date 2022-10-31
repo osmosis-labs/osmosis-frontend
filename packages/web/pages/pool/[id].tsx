@@ -456,7 +456,7 @@ const Pool: FunctionComponent = observer(() => {
         </div>
       </div>
       {poolDetailConfig?.userStats && (
-        <div className="w-full flex items-center gap-4">
+        <div className="w-full grid grid-cols-[2fr_1fr] gap-4">
           <div className="w-full flex flex-col gap-3 bg-osmoverse-1000 px-10 py-7 rounded-4xl">
             <div className="flex items-center md:flex-col md:items-start gap-3 place-content-between">
               <div className="flex shrink-0 flex-col gap-1">
