@@ -12,6 +12,7 @@ import { Info } from "../../components/alert";
 import { PoolTokenSelect } from "../../components/control/pool-token-select";
 import { CustomClasses } from "../types";
 import { BorderButton } from "../buttons";
+import { useTranslation } from "react-multi-lang";
 
 export const AddLiquidity: FunctionComponent<
   {
@@ -23,6 +24,7 @@ export const AddLiquidity: FunctionComponent<
   ({ className, addLiquidityConfig, actionButton, getFiatValue }) => {
     const { chainStore } = useStore();
     const { isMobile } = useWindowSize();
+    const t = useTranslation();
 
     return (
       <div className={classNames("flex flex-col gap-8", className)}>
@@ -47,9 +49,7 @@ export const AddLiquidity: FunctionComponent<
             />
           </div>
           {addLiquidityConfig.isSingleAmountIn && (
-            <span className="caption">
-              Use autoswap to add liquidity with a single asset.
-            </span>
+            <span className="caption">{t("addLiquidity.autoswapCaption")}</span>
           )}
         </div>
         <div className="flex flex-col gap-2.5 max-h-96 overflow-y-auto">
@@ -147,7 +147,9 @@ export const AddLiquidity: FunctionComponent<
                   <div className="flex flex-col gap-2">
                     {!isMobile && (
                       <div className="flex gap-2 text-caption font-caption justify-end">
-                        <span className="my-auto">Available</span>
+                        <span className="my-auto">
+                          {t("addLiquidity.available")}
+                        </span>
                         {assetBalance && (
                           <span
                             className={classNames(
@@ -189,7 +191,7 @@ export const AddLiquidity: FunctionComponent<
                           className="py-0.5"
                           onClick={() => addLiquidityConfig.setMax()}
                         >
-                          MAX
+                          {t("components.MAX")}
                         </BorderButton>
                       )}
                     </div>

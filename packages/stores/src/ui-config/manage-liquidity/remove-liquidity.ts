@@ -8,6 +8,7 @@ import {
   ObservableQueryPools,
 } from "../../queries";
 import { ManageLiquidityConfigBase } from "./base";
+import { NoAvailableSharesError } from "./errors";
 
 /** Use to config user input UI for eventually sending a valid exit pool msg.
  *  Included convenience functions for deriving pool asset amounts vs current input %.
@@ -86,7 +87,7 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
   @computed
   get error(): Error | undefined {
     if (this.poolShare.toDec().isZero()) {
-      return new Error(
+      return new NoAvailableSharesError(
         `No available ${this.poolShare.currency.coinDenom} shares`
       );
     }

@@ -2,6 +2,7 @@ import Image from "next/image";
 import { FunctionComponent, ReactNode } from "react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { useTranslation } from "react-multi-lang";
 import { Dec } from "@keplr-wallet/unit";
 import { ObservableRemoveLiquidityConfig } from "@osmosis-labs/stores";
 import { Slider } from "../../components/control";
@@ -16,6 +17,7 @@ export const RemoveLiquidity: FunctionComponent<
   } & CustomClasses
 > = observer(({ className, removeLiquidityConfig, actionButton }) => {
   const { priceStore } = useStore();
+  const t = useTranslation();
 
   return (
     <>
@@ -30,11 +32,12 @@ export const RemoveLiquidity: FunctionComponent<
             priceStore
           )}`}</h2>
           <h5 className="text-osmoverse-100 md:font-h6 md:text-h6">
-            {removeLiquidityConfig.poolShareWithPercentage
-              .trim(true)
-              .hideDenom(true)
-              .toString()}{" "}
-            shares
+            {t("removeLiquidity.sharesAmount", {
+              shares: removeLiquidityConfig.poolShareWithPercentage
+                .trim(true)
+                .hideDenom(true)
+                .toString(),
+            })}
           </h5>
         </div>
         <div className="flex flex-wrap items-center place-content-around gap-4 rounded-xl border border-osmoverse-600 py-2 px-3 text-osmoverse-300">
@@ -96,7 +99,7 @@ export const RemoveLiquidity: FunctionComponent<
               .toDec()
               .equals(new Dec(0))}
           >
-            MAX
+            {t("components.MAX")}
           </BorderButton>
         </div>
       </div>

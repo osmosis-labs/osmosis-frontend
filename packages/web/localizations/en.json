@@ -17,7 +17,6 @@
     "HALF": "HALF",
     "button": "Swap",
     "buttonError": "Swap anyway",
-    "buttonConnect": "Connect wallet",
     "priceImpact": "Price Impact",
     "fee": "Swap Fee ({fee})",
     "expectedOutput": "Expected Output",
@@ -135,10 +134,100 @@
     "7davg": "(7d avg)"
   },
   "removeLiquidity": {
-    "title": "Remove Liquidity"
+    "title": "Remove Liquidity",
+    "sharesAmount": "{shares} shares"
   },
   "addLiquidity": {
-    "title": "Add Liquidity"
+    "title": "Add Liquidity",
+    "allAssets": "All assets",
+    "singleAsset": "Single asset",
+    "available": "Available",
+    "autoswapCaption": "Use autoswap to add liquidity with a single asset."
+  },
+  "superfluidValidator": {
+    "title": "Select Superfluid Validator",
+    "titleMobile": "Select Validator",
+    "choose": "Choose your superfluid validator",
+    "search": "Search by name",
+    "bondedAmount": "Bonded Amount",
+    "estimation": "Estimated Superfluid Delegation",
+    "estimationMobile": "Est. Delegation",
+    "estimationInfo": "The value of this delegation fluctuates and is estimated based on the amount of OSMO in the pool.",
+    "buttonBond": "Bond & Stake",
+    "columns": {
+      "validator": "Validator",
+      "commission": "Commission"
+    }
+  },
+  "assets": {
+    "totalAssets": "Total",
+    "unbondedAssets": "Unbonded",
+    "bondedAssets": "Bonded",
+    "stakedAssets": "Staked OSMO",
+    "myPools": "My Pools",
+    "poolCards": {
+      "APR": "APR",
+      "FeeAPY": "Fee APY",
+      "liquidity": "Pool Liquidity",
+      "bonded": "Bonded",
+      "myLiquidity": "My Liquidity"
+    },
+    "ibcTransfer": {
+      "titleWithdraw": "Withdraw {coinDenom}",
+      "titleDeposit": "Deposit {coinDenom}",
+      "waitTime": "20 seconds",
+      "copied": "Copied!",
+      "IBCTransfer": "IBC Transfer",
+      "from": "from",
+      "to": "to",
+      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds.",
+      "buttonEnter": "Enter",
+      "checkboxVerify": "I verify I am not sending to an exchange address.",
+      "buttonEdit": "Edit",
+      "amoutWithdraw": "Amount To Withdraw",
+      "amoutDeposit": "Amount To Deposit",
+      "availableBalance": "Available balance:",
+      "MAX": "MAX"
+    },
+    "table": {
+      "depositButton": "Deposit",
+      "withdrawButton": "Withdraw",
+      "search": "Filter by symbol",
+      "title": "Assets",
+      "hideZero": "Hide zero balances",
+      "preTransfer": {
+        "deposit": "Deposit",
+        "withdraw": "Withdraw",
+        "currentBal": "Current Balance"
+      },
+      "columns": {
+        "assetChain": "Asset / Chain",
+        "balance": "Balance",
+        "transfer": "Transfer",
+        "deposit": "Deposit",
+        "withdraw": "Withdraw"
+      },
+      "sort": {
+        "symbol": "Symbol",
+        "network": "Network",
+        "balance": "Balance"
+      }
+    },
+    "historyTable": {
+      "title": "Transfer History",
+      "pending": "Pending",
+      "success": "Success",
+      "refunded": "Refunded",
+      "pendingRefunded": "Failed: Pending refund",
+      "colums": {
+        "transactionHash": "Transaction Hash",
+        "type": "Type",
+        "amount": "Amount",
+        "status": "Status",
+        "deposit": "Deposit",
+        "withdraw": "Withdraw"
+      }
+    }
   },
   "components": {
     "show": {
@@ -152,7 +241,8 @@
       "SORT": "SORT BY",
       "SORTMobile": "SORT",
       "mobileMenu": "Sort By"
-    }
+    },
+    "MAX": "MAX"
   },
   "menu": {
     "swap": "Swap",
@@ -161,7 +251,6 @@
     "stake": "Stake",
     "vote": "Vote",
     "info": "Info",
-    "connectWallet": "Connect wallet",
     "signOut": "Disconnect",
     "help": "Get Support Lab Help",
     "learnMoreFrontier": "Learn More<br/>About the <br2/> <name>Osmosis Frontier</name>"
@@ -181,6 +270,28 @@
   "500": {
     "title": "Server error"
   },
+  "errors": {
+    "emptyAmount": "Amount is empty",
+    "invalidNumberAmount": "Invalid form of number",
+    "zeroAmount": "Amount is zero",
+    "negativeAmount": "Amount is negative",
+    "insufficientAmount": "Insufficient amount",
+    "negativeSwapFee": "Swap fee is negative",
+    "highSwapFee": "Swap fee too high",
+    "invalidSwapFee": "Swap fee is invalid",
+    "minAssetsCount": "Minimum of {num} assets required",
+    "maxAssetsCount": "Maximum of {num} assets allowed",
+    "negativePercentage": "Percentage must be positive",
+    "percentageSum": "Sum of percentages is not 100",
+    "depositNoBalance": "You have no assets to deposit",
+    "negativeSlippage": "Slippage cannot be negative",
+    "invalidSlippage": "Invalid slippage",
+    "noSendCurrency": "Currency to send not set",
+    "notInitialized": "Not initialized",
+    "calculatingShareOutAmount": "Problem calculating out amount",
+    "noAvailableShares": "No available {denom} shares",
+    "generic": "Error"
+  },
   "Transaction Failed": "Transaction Failed",
   "Transaction Successful": "Transaction Successful",
   "Transaction Broadcasting": "Transaction Broadcasting",
@@ -192,5 +303,6 @@
   "Amount is empty": "Amount is empty",
   "Insufficient amount": "Insufficient amount",
   "Amount is zero": "Amount is zero",
-  "Minimum of 2 assets required": "Minimum of 2 assets required"
+  "Minimum of 2 assets required": "Minimum of 2 assets required",
+  "connectWallet": "Connect wallet"
 }

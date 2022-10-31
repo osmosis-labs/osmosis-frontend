@@ -194,7 +194,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
               setHoverWalletInfo(false);
             }}
           >
-            <span className="mx-auto button">{t("menu.connectWallet")}</span>
+            <span className="mx-auto button">{t("connectWallet")}</span>
           </NewButton>
         ) : hoverWalletInfo || mobileTapInfo ? (
           <NewButton

@@ -22,6 +22,7 @@ import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
 import { useTranslation } from "react-multi-lang";
+import { tError } from "../localization";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -306,7 +307,7 @@ export const TradeClipboard: FunctionComponent<{
                     ? "text-white-high"
                     : "text-white-faint",
                   slippageConfig.isManualSlippage
-                    ? slippageConfig.getManualSlippageError()
+                    ? slippageConfig.manualSlippageError
                       ? "bg-missionError"
                       : "bg-wosmongton-200"
                     : "bg-background"
@@ -1004,22 +1005,22 @@ export const TradeClipboard: FunctionComponent<{
       >
         {account.walletStatus === WalletStatus.Loaded ? (
           tradeTokenInConfig.error ? (
-            tradeTokenInConfig.error.message
+            t(...tError(tradeTokenInConfig.error))
           ) : showPriceImpactWarning ? (
             t("swap.buttonError")
           ) : (
             t("swap.button")
           )
         ) : (
-          <div className="flex items-center gap-1">
+          <h6 className="flex items-center gap-3">
             <Image
               alt="wallet"
               src="/icons/wallet.svg"
               height={24}
               width={24}
             />
-            <span>{t("swap.buttonConnect")}</span>
-          </div>
+            {t("connectWallet")}
+          </h6>
         )}
       </NewButton>
     </div>
