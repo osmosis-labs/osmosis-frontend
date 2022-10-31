@@ -272,14 +272,14 @@ const Pool: FunctionComponent = observer(() => {
   );
 
   const pageTitle = useMemo(
-    () => (pool ? `Pool #${pool.id}` : undefined),
+    () => (pool ? t("pool.title", { id: pool.id }) : undefined),
     [pool?.id]
   );
   useNavBar({
     title: pageTitle,
     ctas: [
       {
-        label: "Swap Tokens",
+        label: t("pool.swap"),
         onClick: () => {
           logEvent([E.swapTokensClicked, baseEventInfo]);
           setShowTradeTokenModal(true);
@@ -401,17 +401,17 @@ const Pool: FunctionComponent = observer(() => {
             <div className="flex items-center gap-10 xl:place-content-between xl:w-full lg:flex-col lg:w-fit lg:items-start">
               <div>
                 <span className="text-osmoverse-400 subtitle1 gap-2">
-                  24hr Trading volume
+                  {t("pool.24hrTradingVolume")}
                 </span>
                 <h4 className="text-osmoverse-100">
                   {queryGammPoolFeeMetrics
                     .getPoolFeesMetrics(poolId, priceStore)
-                    .volume7d.toString()}
+                    .volume24h.toString()}
                 </h4>
               </div>
               <div>
                 <span className="text-osmoverse-400 subtitle1 gap-2">
-                  Pool liquidity
+                  {t("pool.liquidity")}
                 </span>
                 <h4 className="text-osmoverse-100">
                   {poolDetailConfig?.totalValueLocked.toString()}
@@ -419,7 +419,7 @@ const Pool: FunctionComponent = observer(() => {
               </div>
               <div>
                 <span className="text-osmoverse-400 subtitle1 gap-2">
-                  Swap fee
+                  {t("pool.swapFee")}
                 </span>
                 <h4 className="text-osmoverse-100">
                   {pool?.swapFee.toString()}
@@ -465,11 +465,12 @@ const Pool: FunctionComponent = observer(() => {
                   {poolDetailConfig.userStats.totalShareValue.toString()}
                 </h4>
                 <h6 className="text-osmoverse-300">
-                  {poolDetailConfig.userStats.totalShares
-                    .maxDecimals(6)
-                    .hideDenom(true)
-                    .toString()}{" "}
-                  shares
+                  {t("pool.sharesAmount", {
+                    shares: poolDetailConfig.userStats.totalShares
+                      .maxDecimals(6)
+                      .hideDenom(true)
+                      .toString(),
+                  })}{" "}
                 </h6>
               </div>
               <div className="w-2/3 md:w-full">
@@ -491,23 +492,24 @@ const Pool: FunctionComponent = observer(() => {
           <div className="w-full flex flex-col gap-3 bg-osmoverse-1000 px-10 py-7 rounded-4xl">
             <div className="flex flex-col gap-2">
               <span className="subtitle1 text-osmoverse-300">
-                {"You're currently earning"}
+                {t("pool.currentDailyEarn")}
               </span>
               <h4 className="text-osmoverse-100">
-                {queryAccountPoolRewards
-                  .getUsdRewardsForPool(poolId)
-                  ?.day.toString() ?? "$0"}
-                /day
+                {t("pool.dailyEarnAmount", {
+                  amount:
+                    queryAccountPoolRewards
+                      .getUsdRewardsForPool(poolId)
+                      ?.day.toString() ?? "$0",
+                })}
               </h4>
             </div>
           </div>
         </div>
       )}
       <div className="flex flex-col gap-7 md:gap-4">
-        <h5 className="md:text-h6 md:font-h6">Put your assets to work.</h5>
+        <h5 className="md:text-h6 md:font-h6">{t("pool.putAssetsToWork")}</h5>
         <span className="subtitle1 md:text-body1 md:font-body1 text-osmoverse-300">
-          Add your assets to this pool to unlock exciting APRs. The longer your
-          unbonding period, the more you make. Learn more
+          {t("pool.putAssetsToWorkCaption")} Learn more
         </span>
         <div
           className={classNames(
@@ -521,7 +523,9 @@ const Pool: FunctionComponent = observer(() => {
                 <div className="flex items-baseline flex-wrap gap-4">
                   <LevelBadge level={1} />
                   <div className="flex shrink-0 items-center gap-4 sm:flex-wrap sm:shrink">
-                    <h5 className="md:text-h6 md:font-h6">Earn swap fees</h5>
+                    <h5 className="md:text-h6 md:font-h6">
+                      {t("Earn swap fees")}
+                    </h5>
                     <h5 className="md:text-h6 md:font-h6 text-bullish-400">{`${
                       pool
                         ? queryGammPoolFeeMetrics
@@ -529,22 +533,24 @@ const Pool: FunctionComponent = observer(() => {
                             .maxDecimals(2)
                             .toString()
                         : ""
-                    } APR`}</h5>
+                    } ${t("pool.APR")}`}</h5>
                   </div>
                 </div>
                 <span className="body2 text-osmoverse-200">
-                  Convert your tokens into shares and earn on every swap.
+                  {t("pool.earnSwapFeesCaption")}
                 </span>
               </div>
               <div className="lg:w-full flex flex-col gap-4">
                 <div className="hidden lg:flex flex-col items-end gap-3">
                   <h3 className="md:text-h4 md:font-h4">
-                    {`${queryOsmosis.queryGammPoolShare
-                      .getAvailableGammShare(bech32Address, poolId)
-                      .trim(true)
-                      .hideDenom(true)
-                      .maxDecimals(4)
-                      .toString()} shares`}
+                    {t("pool.sharesAmount", {
+                      shares: queryOsmosis.queryGammPoolShare
+                        .getAvailableGammShare(bech32Address, poolId)
+                        .trim(true)
+                        .hideDenom(true)
+                        .maxDecimals(4)
+                        .toString(),
+                    })}
                   </h3>
                 </div>
                 <div className="flex shrink-0 xs:shrink xs:flex-wrap gap-4">
@@ -553,7 +559,7 @@ const Pool: FunctionComponent = observer(() => {
                     mode="secondary"
                     onClick={() => setShowRemoveLiquidityModal(true)}
                   >
-                    Remove liquidity
+                    {t("removeLiquidity.title")}
                   </NewButton>
                   <NewButton
                     className={classNames({
@@ -562,19 +568,21 @@ const Pool: FunctionComponent = observer(() => {
                     })}
                     onClick={() => setShowAddLiquidityModal(true)}
                   >
-                    Add Liquidity
+                    {t("addLiquidity.title")}
                   </NewButton>
                 </div>
               </div>
             </div>
             <div className="lg:hidden flex flex-col items-end gap-3">
               <h3 className="md:text-h4 md:font-h4">
-                {`${queryOsmosis.queryGammPoolShare
-                  .getAvailableGammShare(bech32Address, poolId)
-                  .trim(true)
-                  .hideDenom(true)
-                  .maxDecimals(4)
-                  .toString()} shares`}
+                {t("pool.sharesAmount", {
+                  shares: queryOsmosis.queryGammPoolShare
+                    .getAvailableGammShare(bech32Address, poolId)
+                    .trim(true)
+                    .hideDenom(true)
+                    .maxDecimals(4)
+                    .toString(),
+                })}
               </h3>
             </div>
           </div>
@@ -590,12 +598,12 @@ const Pool: FunctionComponent = observer(() => {
               <div className="flex flex-col gap-4">
                 <div className="flex items-baseline flex-wrap gap-4">
                   <LevelBadge level={2} />
-                  <h5>Bond liquidity</h5>
+                  <h5>{t("pool.bondLiquidity")}</h5>
                 </div>
                 <span className="body2 text-osmoverse-200">
-                  Lock up your shares for longer durations to earn higher APRs.
+                  {t("pool.bondLiquidityCaption")}
                   {superfluidPoolConfig?.isSuperfluid &&
-                    " Go superfluid for maximum rewards."}
+                    ` ${t("pool.bondSuperfluidLiquidityCaption")}`}
                 </span>
               </div>
               <NewButton
@@ -605,7 +613,7 @@ const Pool: FunctionComponent = observer(() => {
                 disabled={levelCta !== 2}
                 onClick={() => setShowLockLPTokenModal(true)}
               >
-                Bond shares
+                {t("pool.bondShares")}
               </NewButton>
             </div>
             <div className="flex items-center flex-wrap gap-4">
@@ -634,10 +642,15 @@ const Pool: FunctionComponent = observer(() => {
   );
 });
 
-const LevelBadge: FunctionComponent<{ level: number }> = ({ level }) => (
-  <div className="bg-wosmongton-400 rounded-xl px-5 py-1">
-    <h5 className="md:text-h6 md:font-h6">Level {level}</h5>
-  </div>
-);
+const LevelBadge: FunctionComponent<{ level: number }> = ({ level }) => {
+  const t = useTranslation();
+  return (
+    <div className="bg-wosmongton-400 rounded-xl px-5 py-1">
+      <h5 className="md:text-h6 md:font-h6">
+        {t("pool.level", { level: level.toString() })}
+      </h5>
+    </div>
+  );
+};
 
 export default Pool;

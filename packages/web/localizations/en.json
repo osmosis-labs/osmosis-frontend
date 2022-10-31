@@ -99,200 +99,46 @@
   },
   "pool": {
     "title": "Pool #{id}",
-    "liquidityMining": "Liquidity Mining",
-    "liquidityMiningMobile": "Liquidity Mining",
-    "superfluidEnabled": "Superfluid Staking Enabled",
-    "liquidityMiningInfo": "Bond liquidity to various minimum unbonding periods to earn OSMO liquidity rewards and swap fees",
-    "availableLPToken": "Available LP tokens",
-    "buttonStartEarning": "Start Earning",
+    "swap": "Swap Tokens",
+    "superfluidEnabled": "Superfluid staking enabled",
+    "24hrTradingVolume": "24h Trading volume",
+    "liquidity": "Pool liquidity",
+    "swapFee": "Swap fee",
+    "yourStats": "Your stats",
+    "sharesAmount": "{shares} shares",
+    "currentDailyEarn": "You're currently earning",
+    "dailyEarnAmount": "{amount}/day",
+    "putAssetsToWork": "Put your assets to work.",
+    "putAssetsToWorkCaption": "Add your assets to this pool to unlock exciting APRs. The longer your unbonding period, the more you make.",
+    "level": "Level {level}",
+    "earnSwapFees": "Earn swap fees",
+    "earnSwapFeesCaption": "Convert your tokens into shares and earn on every swap.",
+    "APR": "APR",
+    "bondLiquidity": "Bond liquidity",
+    "bondLiquidityCaption": "Lock up your shares for longer durations to earn higher APRs.",
+    "bondSuperfluidLiquidityCaption": "Go superfluid for maximum rewards.",
+    "bondShares": "Bond Shares",
+    "amountDaysUnbonding": "{numDays} days unbonding",
+    "shares": "shares",
+    "unbond": "Unbond",
+    "sharesAvailableIn": "available in",
+    "unbonding": "unbonding",
+    "superfluidEarnMore": "Earn {rate} more. Go superfluid",
+    "details": "Details",
+    "rewardDistribution": "Rewards distributed to all liquidity providers",
     "superfluidStaking": "Superfluid Staking",
-    "superfluidStakingMobile": "My Superfluid Stake",
-    "catalyst": {
-      "title": "Pool Catalyst",
-      "titleMobile": "Pool Catalyst",
-      "amount": "Total amount",
-      "myAmount": "My amount"
-    },
-    "superfluidUnlock": {
-      "title": "Superfluid Unbondings",
-      "titleMobile": "Superfluid Unbondings",
-      "validator": "Validator",
-      "amount": "Amount",
-      "unbondingComplete": "Unbonding Complete"
-    },
-    "unlock": {
-      "title": "Unbondings",
-      "titleMobile": "Unbondings",
-      "unbondingDuration": "Unbonding Duration",
-      "amount": "Amount",
-      "unbondingComplete": "Unbond Complete"
-    },
-    "depoolings": {
-      "title": "Depoolings",
-      "titleMobile": "Depoolings",
-      "note": "Note: Depooling asset balance shown is a total across all pools, not on a per-pool basis",
-      "montant": "Amount",
-      "unlock": "Unlock Complete"
-    },
-    "myBondings": {
-      "title": "My bondings",
-      "titleMobile": "My bondings",
-      "depoolButton": "Depool LP Shares",
-      "unbondingDuration": "Unbonding Duration",
-      "currentAPR": "Current APR",
-      "amount": "Amount",
-      "action": "Action",
-      "actionUnbond": "Unbond All",
-      "actionUnbondMobile": "Unbond"
-    },
-    "superfluidValidatorCard": {
-      "myValidator": "My Superfluid Validator",
-      "myDelegation": "My Superfluid Delegation",
-      "commission": "Commission - {commission}",
-      "APR": "~{apr} APR"
-    },
-    "goSuperfluid": {
-      "title": "Superfluid Staking Inactive",
-      "titleMobile": "You're not Superfluid Staking",
-      "info": "You have superfluid eligible bonded liquidity.<br />Choose a Superfluid Staking validator to earn additional rewards.",
-      "button": "Go Superfluid"
-    },
-    "gauges": {
-      "time": "{time} unbonding",
-      "APR": "APR",
-      "info": "Superfluid Staking lets you secure the network and receive additional rewards paid out in OSMO.",
-      "bonus": {
-        "title": "Bonus bonding reward",
-        "titleMobile": "{days} bonus reward",
-        "info": "This pool bonding over {days} will earn additional bonding incentives for {remainingEpochs} days.",
-        "remaining": "Remaining:",
-        "remainingMobile": "Bonus:",
-        "remainingEpochs": "{remainingEpochs} days remaining"
-      }
-    },
-    "overview": {
-      "title": "Pool #{id} : {name}",
-      "buttons": {
-        "addRemoveLiquidity": "Add / Remove Liquidity",
-        "swap": "Swap Tokens"
-      },
-      "liquidity": "Pool Liquidity",
-      "myLiquidity": "My Liquidity",
-      "bonded": "Bonded",
-      "swapFee": "Swap Fee"
-    },
-    "lockToken": {
-      "title": "Bond LP Shares",
-      "unbondingPeriod": "Select an unbonding period",
-      "superfluidStake": "Superfluid Stake",
-      "bondingRequirement": "{numDays} day bonding requirement",
-      "amountToBond": "Amount To Bond",
-      "availableToken": "Available",
-      "inputMax": "MAX",
-      "buttonNext": "Next",
-      "buttonBond": "Bond"
-    },
-    "manageLiquidity": {
-      "title": "Manage Liquidity",
-      "addLiquidity": "Add Liquidity",
-      "removeLiquidity": "Remove Liquidity",
-      "modalTitleRemove": "Remove Liquidity from Pool #{poolId}",
-      "modalTitleAdd": "Add Liquidity from Pool #{poolId}",
-      "LPTokenBalance": "LP token balance:",
-      "available": "Available",
-      "MAX": "MAX",
-      "autoSwap": "Auto-swap single asset",
-      "autoSwapInfo": "'Auto-swap single asset' allows you to provide liquidity using one asset. This will impact the pool price of the asset you’re providing liquidity with.",
-      "priceImpact": "Price impact",
-      "actionAddLiquidity": "Add liquidity",
-      "actionRemoveLiquidity": "Remove liquidity",
-      "actionLockTokens": "Lock Shares"
-    },
-    "superfluidValidator": {
-      "title": "Select Superfluid Validator",
-      "titleMobile": "Select Validator",
-      "choose": "Choose your superfluid validator",
-      "search": "Search by name",
-      "bondedAmount": "Bonded Amount",
-      "estimation": "Estimated Superfluid Delegation",
-      "estimationMobile": "Est. Delegation",
-      "estimationInfo": "The value of this delegation fluctuates and is estimated based on the amount of OSMO in the pool.",
-      "buttonBond": "Bond & Stake",
-      "columns": {
-        "validator": "Validator",
-        "commission": "Commission"
-      }
-    }
+    "delegated": "delegated",
+    "undelegating": "undelegating",
+    "commission": "commission",
+    "from": "from",
+    "swapFees": "swap fees",
+    "7davg": "(7d avg)"
   },
-  "assets": {
-    "totalAssets": "Total",
-    "unbondedAssets": "Unbonded",
-    "bondedAssets": "Bonded",
-    "stakedAssets": "Staked OSMO",
-    "myPools": "My Pools",
-    "poolCards": {
-      "APR": "APR",
-      "FeeAPY": "Fee APY",
-      "liquidity": "Pool Liquidity",
-      "bonded": "Bonded",
-      "myLiquidity": "My Liquidity"
-    },
-    "ibcTransfer": {
-      "titleWithdraw": "Withdraw {coinDenom}",
-      "titleDeposit": "Deposit {coinDenom}",
-      "waitTime": "20 seconds",
-      "copied": "Copied!",
-      "IBCTransfer": "IBC Transfer",
-      "from": "from",
-      "to": "to",
-      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds.",
-      "buttonEnter": "Enter",
-      "checkboxVerify": "I verify I am not sending to an exchange address.",
-      "buttonEdit": "Edit",
-      "amoutWithdraw": "Amount To Withdraw",
-      "amoutDeposit": "Amount To Deposit",
-      "availableBalance": "Available balance:",
-      "MAX": "MAX"
-    },
-    "table": {
-      "depositButton": "Deposit",
-      "withdrawButton": "Withdraw",
-      "search": "Filter by symbol",
-      "title": "Assets",
-      "hideZero": "Hide zero balances",
-      "preTransfer": {
-        "deposit": "Deposit",
-        "withdraw": "Withdraw",
-        "currentBal": "Current Balance"
-      },
-      "columns": {
-        "assetChain": "Asset / Chain",
-        "balance": "Balance",
-        "transfer": "Transfer",
-        "deposit": "Deposit",
-        "withdraw": "Withdraw"
-      },
-      "sort": {
-        "symbol": "Symbol",
-        "network": "Network",
-        "balance": "Balance"
-      }
-    },
-    "historyTable": {
-      "title": "Transfer History",
-      "pending": "Pending",
-      "success": "Success",
-      "refunded": "Refunded",
-      "pendingRefunded": "Failed: Pending refund",
-      "colums": {
-        "transactionHash": "Transaction Hash",
-        "type": "Type",
-        "amount": "Amount",
-        "status": "Status",
-        "deposit": "Deposit",
-        "withdraw": "Withdraw"
-      }
-    }
+  "removeLiquidity": {
+    "title": "Remove Liquidity"
+  },
+  "addLiquidity": {
+    "title": "Add Liquidity"
   },
   "components": {
     "show": {

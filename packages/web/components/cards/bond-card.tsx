@@ -6,6 +6,7 @@ import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { BondableDuration } from "@osmosis-labs/stores";
 import { FallbackImg } from "../assets";
 import { NewButton } from "../buttons";
+import { t, useTranslation } from "react-multi-lang";
 
 export const BondCard: FunctionComponent<
   BondableDuration & {
@@ -27,6 +28,7 @@ export const BondCard: FunctionComponent<
   splashImageSrc,
 }) => {
   const [drawerUp, setDrawerUp] = useState(false);
+  const t = useTranslation();
 
   return (
     <div className="relative flex flex-col gap-[115px] overflow-hidden w-[360px] h-[380px] max-w-[348px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8">
@@ -34,7 +36,9 @@ export const BondCard: FunctionComponent<
         <div className="flex items-start gap-4 place-content-between">
           <div className="flex flex-col gap-3">
             <span className="subtitle1 text-osmoverse-100">
-              {duration.humanize()} unbonding
+              {t("pool.amountDaysUnbonding", {
+                numDays: duration.asDays().toString(),
+              })}
             </span>
             <div className="flex flex-col text-osmoverse-100">
               <h3>
@@ -44,14 +48,14 @@ export const BondCard: FunctionComponent<
                   .maxDecimals(3)
                   .toString()}
               </h3>
-              <span>shares</span>
+              <span>{t("pool.shares")}</span>
             </div>
             {userShares.toDec().gt(new Dec(0)) && (
               <button
                 className="flex items-center gap-1 text-wosmongton-200"
                 onClick={onUnbond}
               >
-                Unbond
+                {t("pool.unbond")}
                 <Image
                   alt="unbond"
                   src="/icons/arrow-right.svg"
@@ -68,23 +72,24 @@ export const BondCard: FunctionComponent<
         {userUnlockingShares && (
           <div className="flex flex-col gap-1 bg-osmoverse-900 rounded-lg p-3">
             <h6>
-              {userUnlockingShares.shares
-                .hideDenom(true)
-                .trim(true)
-                .maxDecimals(3)
-                .toString()}{" "}
-              shares
+              {t("pool.sharesAmount", {
+                amount: userUnlockingShares.shares
+                  .hideDenom(true)
+                  .trim(true)
+                  .maxDecimals(3)
+                  .toString(),
+              })}
             </h6>
             <h6 className="flex items-center gap-1 text-osmoverse-400">
               {userUnlockingShares.endTime ? (
                 <>
-                  available in
+                  {t("pool.sharesAvailableIn")}
                   <span className="text-white-full">
                     {moment(userUnlockingShares.endTime).fromNow(true)}
                   </span>
                 </>
               ) : (
-                <>unbonding</>
+                <>{t("pool.unbonding")}</>
               )}
             </h6>
           </div>
@@ -99,8 +104,9 @@ export const BondCard: FunctionComponent<
               size="sm"
               onClick={onGoSuperfluid}
             >
-              Earn {superfluid.apr.maxDecimals(0).toString()} more. Go
-              superfluid
+              {t("pool.superfluidEarnMore", {
+                rate: superfluid.apr.maxDecimals(0).toString(),
+              })}
             </NewButton>
           )}
       </div>
@@ -181,7 +187,7 @@ const Drawer: FunctionComponent<{
                 superfluid ? "text-superfluid" : "text-bullish-400"
               )}
             >
-              {aggregateApr.maxDecimals(0).toString()} APR
+              {aggregateApr.maxDecimals(0).toString()} {t("pool.APR")}
             </h5>
             <div
               className={classNames(
@@ -217,7 +223,9 @@ const Drawer: FunctionComponent<{
           )}
           onClick={toggleDetailsVisible}
         >
-          <span className="xs:hidden caption text-osmoverse-400">Details</span>
+          <span className="xs:hidden caption text-osmoverse-400">
+            {t("pool.details")}
+          </span>
           <div
             className={classNames("flex items-center transition-transform", {
               "rotate-180": drawerUp,
@@ -254,7 +262,7 @@ const Drawer: FunctionComponent<{
           ))}
         </div>
         <span className="caption text-center text-osmoverse-400">
-          Rewards distributed to all liquidity providers
+          {t("pool.rewardDistribution")}
         </span>
       </div>
     </div>
@@ -289,7 +297,7 @@ const SuperfluidBreakdownRow: FunctionComponent<
       <span>
         {(delegated || undelegating) && validatorMoniker
           ? validatorMoniker
-          : "Superfluid Staking"}
+          : t("pool.superfluidStaking")}
       </span>
     </div>
     {(delegated || undelegating) && (
@@ -302,13 +310,17 @@ const SuperfluidBreakdownRow: FunctionComponent<
               ? `~${undelegating.trim(true).toString()}`
               : null}
             <span className="text-osmoverse-400">
-              {delegated ? " delegated" : undelegating ? " undelegating" : ""}
+              {delegated
+                ? ` ${t("pool.delegated")}`
+                : undelegating
+                ? ` ${t("pool.undelegating")}`
+                : ""}
             </span>
           </span>
           {commission && (
             <span className="caption">
               {commission.toString()}{" "}
-              <span className="text-osmoverse-400">commission</span>
+              <span className="text-osmoverse-400">{t("pool.commission")}</span>
             </span>
           )}
         </div>
@@ -333,7 +345,11 @@ const IncentiveBreakdownRow: FunctionComponent<
       )}
     </div>
     <div className="flex flex-col text-right">
-      <span>{dailyPoolReward.maxDecimals(0).toString()} / day</span>
+      <span>
+        {t("pool.dailyEarnAmount", {
+          amount: dailyPoolReward.maxDecimals(0).toString(),
+        })}
+      </span>
       {numDaysRemaining && (
         <span className="caption text-osmoverse-400">{numDaysRemaining}</span>
       )}
@@ -352,17 +368,21 @@ const SwapFeeBreakdownRow: FunctionComponent<{
       </h6>
     </div>
     <div className="flex flex-col text-right">
-      <span>{swapFeeDailyReward.maxDecimals(0).toString()} / day</span>
+      <span>
+        {t("pool.dailyEarnAmount", {
+          amount: swapFeeDailyReward.maxDecimals(0).toString(),
+        })}
+      </span>
       <span className="caption text-osmoverse-400">
-        from{" "}
+        {`${t("pool.from")} `}
         <a
           rel="noreferrer"
           target="_blank"
           href="https://docs.osmosis.zone/overview/getting-started/#swap-fees"
         >
-          <u>swap fees</u>
+          <u>{t("pool.swapFees")}</u>
         </a>{" "}
-        (7d avg)
+        {t("pool.7davg")}
       </span>
     </div>
   </div>
