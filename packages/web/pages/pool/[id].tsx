@@ -565,9 +565,9 @@ const Pool: FunctionComponent = observer(() => {
                     })}
                   </h3>
                 </div>
-                <div className="flex shrink-0 xs:shrink xs:flex-wrap gap-4">
+                <div className="flex place-content-end flex-wrap shrink-0 xs:shrink gap-4">
                   <NewButton
-                    className="w-fit shrink-0"
+                    className="w-fit xs:w-full shrink-0"
                     mode="secondary"
                     onClick={() => setShowRemoveLiquidityModal(true)}
                   >
@@ -575,7 +575,7 @@ const Pool: FunctionComponent = observer(() => {
                   </NewButton>
                   <NewButton
                     className={classNames({
-                      "w-fit shrink-0 bg-gradient-positive text-osmoverse-900":
+                      "w-fit xs:w-full shrink-0 bg-gradient-positive text-osmoverse-900":
                         levelCta === 1,
                     })}
                     onClick={() => setShowAddLiquidityModal(true)}
