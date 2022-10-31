@@ -48,13 +48,14 @@ export class RootStore {
   public readonly queriesStore: QueriesStore<
     [CosmosQueries, CosmwasmQueries, OsmosisQueries]
   >;
-  public readonly queriesExternalStore: QueriesExternalStore;
 
   public readonly accountStore: AccountStore<
     [CosmosAccount, CosmwasmAccount, OsmosisAccount]
   >;
 
   public readonly priceStore: PoolFallbackPriceStore;
+
+  public readonly queriesExternalStore: QueriesExternalStore;
 
   public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
   public readonly nonIbcBridgeHistoryStore: NonIbcBridgeHistoryStore;
@@ -97,11 +98,6 @@ export class RootStore {
         },
       };
     })();
-
-    this.queriesExternalStore = new QueriesExternalStore(
-      makeIndexedKVStore("store_web_queries"),
-      IS_TESTNET ? "https://api.testnet.osmosis.zone/" : undefined
-    );
 
     this.queriesStore = new QueriesStore(
       makeIndexedKVStore("store_web_queries_v12"),
@@ -177,6 +173,12 @@ export class RootStore {
         this.chainStore.osmosis.chainId
       ).osmosis!.queryGammPools,
       PoolPriceRoutes
+    );
+
+    this.queriesExternalStore = new QueriesExternalStore(
+      makeIndexedKVStore("store_web_queries"),
+      this.priceStore,
+      IS_TESTNET ? "https://api.testnet.osmosis.zone/" : undefined
     );
 
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
