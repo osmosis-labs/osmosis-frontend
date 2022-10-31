@@ -106,6 +106,7 @@
     "yourStats": "Your stats",
     "sharesAmount": "{shares} shares",
     "currentDailyEarn": "You're currently earning",
+    "earnMore": "Earn more by bonding",
     "dailyEarnAmount": "{amount}/day",
     "putAssetsToWork": "Put your assets to work.",
     "putAssetsToWorkCaption": "Add your assets to this pool to unlock exciting APRs. The longer your unbonding period, the more you make.",
@@ -143,6 +144,12 @@
     "singleAsset": "Single asset",
     "available": "Available",
     "autoswapCaption": "Use autoswap to add liquidity with a single asset."
+  },
+  "lockToken": {
+    "title": "Bond LP Shares",
+    "selectPeriod": "Select unbonding period",
+    "availableToken": "Available",
+    "amountToBond": "Amount to bond"
   },
   "superfluidValidator": {
     "title": "Select Superfluid Validator",

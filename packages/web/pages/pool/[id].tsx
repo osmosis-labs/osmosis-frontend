@@ -336,7 +336,7 @@ const Pool: FunctionComponent = observer(() => {
           <LockTokensModal
             poolId={poolId}
             isOpen={showLockLPTokenModal}
-            title={t("pool.lockToken.title")}
+            title={t("lockToken.title")}
             onRequestClose={() => setShowLockLPTokenModal(false)}
             amountConfig={lockLPTokensConfig}
             onLockToken={onLockToken}
@@ -468,7 +468,7 @@ const Pool: FunctionComponent = observer(() => {
                       .maxDecimals(6)
                       .hideDenom(true)
                       .toString(),
-                  })}{" "}
+                  })}
                 </h6>
               </div>
               <div className="w-2/3 md:w-full">
@@ -487,7 +487,7 @@ const Pool: FunctionComponent = observer(() => {
               </div>
             </div>
           </div>
-          <div className="w-full flex flex-col gap-3 bg-osmoverse-1000 px-10 py-7 rounded-4xl">
+          <div className="w-full flex flex-col place-content-between bg-osmoverse-1000 px-10 py-7 rounded-4xl">
             <div className="flex flex-col gap-2">
               <span className="subtitle1 text-osmoverse-300">
                 {t("pool.currentDailyEarn")}
@@ -501,6 +501,20 @@ const Pool: FunctionComponent = observer(() => {
                 })}
               </h4>
             </div>
+            {poolDetailConfig?.userAvailableValue.toDec().gt(new Dec(0)) && (
+              <button
+                className="flex items-center gap-1 text-wosmongton-200"
+                onClick={() => setShowLockLPTokenModal(true)}
+              >
+                {t("pool.earnMore")}
+                <Image
+                  alt="earn more"
+                  src="/icons/arrow-right.svg"
+                  height={24}
+                  width={24}
+                />
+              </button>
+            )}
           </div>
         </div>
       )}

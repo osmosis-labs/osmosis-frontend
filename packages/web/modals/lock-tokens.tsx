@@ -96,10 +96,10 @@ export const LockTokensModal: FunctionComponent<
       children:
         config.error?.message ||
         (electSuperfluid && !hasSuperfluidValidator && highestDurationSelected
-          ? t("pool.lockToken.buttonNext")
+          ? t("lockToken.buttonNext")
           : superfluidInEffect
           ? "Bond & Stake"
-          : t("pool.lockToken.buttonBond") || undefined),
+          : t("lockToken.buttonBond") || undefined),
     },
     props.onRequestClose
   );
@@ -117,7 +117,7 @@ export const LockTokensModal: FunctionComponent<
     >
       <div className="flex flex-col gap-8">
         <span className="subtitle1 text-center">
-          {t("pool.lockToken.unbondingPeriod")}
+          {t("lockToken.selectPeriod")}
         </span>
         <h2 className="text-center">
           <span
@@ -125,7 +125,7 @@ export const LockTokensModal: FunctionComponent<
           >
             {selectedApr?.maxDecimals(2).toString() ?? "0%"}
           </span>{" "}
-          APR
+          {t("pool.APR")}
         </h2>
         <div className="flex md:flex-col gap-4 overflow-x-auto">
           {bondableDurations.map(({ duration, aggregateApr }, index) => (
@@ -154,12 +154,12 @@ export const LockTokensModal: FunctionComponent<
               })}
             >
               <h6>
-                {t("pool.lockToken.superfluidStake")}{" "}
+                {t("lockToken.superfluidStake")}{" "}
                 {superfluidApr && `(+${superfluidApr.maxDecimals(0)} APR)`}
               </h6>
               {poolDetailConfig?.longestDuration && (
                 <span className="caption text-osmoverse-300">
-                  {t("pool.lockToken.bondingRequirement", {
+                  {t("lockToken.bondingRequirement", {
                     numDays: poolDetailConfig.longestDuration
                       .asDays()
                       .toString(),
@@ -171,17 +171,20 @@ export const LockTokensModal: FunctionComponent<
         )}
         <div className="flex flex-col gap-2">
           <div className="flex items-center place-content-between">
-            <span className="subtitle1">
-              {t("pool.lockToken.amountToBond")}
-            </span>
+            <span className="subtitle1">{t("lockToken.amountToBond")}</span>
             {availableToken && (
               <div className="flex gap-1 caption">
-                <span>{t("pool.lockToken.availableToken")}</span>
+                <span>{t("lockToken.availableToken")}</span>
                 <span
                   className="text-wosmongton-300 cursor-pointer"
                   onClick={() => config.setIsMax(true)}
                 >
-                  {availableToken.trim(true).hideDenom(true).toString()} shares
+                  {t("pool.sharesAmount", {
+                    shares: availableToken
+                      .trim(true)
+                      .hideDenom(true)
+                      .toString(),
+                  })}
                 </span>
               </div>
             )}
