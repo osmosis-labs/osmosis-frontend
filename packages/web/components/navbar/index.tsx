@@ -32,11 +32,11 @@ export const NavBar: FunctionComponent<
     <>
       <div
         className={classNames(
-          "fixed z-[100] flex place-content-between md:place-content-start md:gap-6 items-center bg-osmoverse-900 h-navbar md:h-navbar-mobile w-[calc(100vw_-_12.875rem)] md:w-full px-8 md:px-4",
+          "fixed z-[100] flex place-content-between md:place-content-start md:gap-3 items-center bg-osmoverse-900 h-navbar md:h-navbar-mobile w-[calc(100vw_-_12.875rem)] md:w-full px-8 md:px-4",
           className
         )}
       >
-        <div className="relative hidden md:flex items-center">
+        <div className="relative hidden md:flex items-center shrink-0">
           <Image
             alt="mobile menu"
             src="/icons/hamburger.svg"
@@ -66,7 +66,7 @@ export const NavBar: FunctionComponent<
             </div>
           )}
         </div>
-        <div className="md:w-full md:place-content-between flex items-center gap-9 lg:gap-6 md:gap-3">
+        <div className="grow flex items-center md:place-content-between shrink-0 gap-9 lg:gap-6 md:gap-3">
           <h4 className="md:font-h6 md:text-h6">
             {navBarStore.title || title}
           </h4>
