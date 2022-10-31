@@ -456,7 +456,9 @@ const Pool: FunctionComponent = observer(() => {
       {poolDetailConfig?.userStats && (
         <div className="w-full grid grid-cols-[2fr_1fr] lg:flex lg:flex-col gap-4">
           <div className="w-full flex flex-col gap-3 bg-osmoverse-1000 px-10 py-7 rounded-4xl">
-            <span className="subtitle1 text-osmoverse-300">Your stats</span>
+            <span className="subtitle1 text-osmoverse-300">
+              {t("pool.yourStats")}
+            </span>
             <div className="flex items-center md:flex-col md:items-start gap-3 place-content-between">
               <div className="flex shrink-0 flex-col gap-1">
                 <h4 className="text-osmoverse-100">
@@ -487,7 +489,7 @@ const Pool: FunctionComponent = observer(() => {
               </div>
             </div>
           </div>
-          <div className="w-full flex flex-col place-content-between bg-osmoverse-1000 px-10 py-7 rounded-4xl">
+          <div className="w-full flex flex-col gap-3 place-content-between bg-osmoverse-1000 px-10 py-7 rounded-4xl">
             <div className="flex flex-col gap-2">
               <span className="subtitle1 text-osmoverse-300">
                 {t("pool.currentDailyEarn")}
@@ -521,7 +523,7 @@ const Pool: FunctionComponent = observer(() => {
       <div className="flex flex-col gap-7 md:gap-4">
         <h5 className="md:text-h6 md:font-h6">{t("pool.putAssetsToWork")}</h5>
         <span className="subtitle1 md:text-body1 md:font-body1 text-osmoverse-300">
-          {t("pool.putAssetsToWorkCaption")} Learn more
+          {t("pool.putAssetsToWorkCaption")} {t("pool.learnMore")}
         </span>
         <div
           className={classNames(
@@ -574,9 +576,8 @@ const Pool: FunctionComponent = observer(() => {
                     {t("removeLiquidity.title")}
                   </NewButton>
                   <NewButton
-                    className={classNames({
-                      "w-fit xs:w-full shrink-0 bg-gradient-positive text-osmoverse-900":
-                        levelCta === 1,
+                    className={classNames("w-fit xs:w-full shrink-0 ", {
+                      "bg-gradient-positive text-osmoverse-900": levelCta === 1,
                     })}
                     onClick={() => setShowAddLiquidityModal(true)}
                   >

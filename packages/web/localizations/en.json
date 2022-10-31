@@ -110,6 +110,7 @@
     "dailyEarnAmount": "{amount} / day",
     "putAssetsToWork": "Put your assets to work.",
     "putAssetsToWorkCaption": "Add your assets to this pool to unlock exciting APRs. The longer your unbonding period, the more you make.",
+    "learnMore": "Learn more",
     "level": "Level {level}",
     "earnSwapFees": "Earn swap fees",
     "earnSwapFeesCaption": "Convert your tokens into shares and earn on every swap.",
@@ -148,9 +149,15 @@
   },
   "lockToken": {
     "title": "Bond LP Shares",
+    "titleInPool": "Lock shares in {poolId}",
     "selectPeriod": "Select unbonding period",
     "availableToken": "Available",
-    "amountToBond": "Amount to bond"
+    "amountToBond": "Amount to bond",
+    "superfluidStake": "Superfluid staking",
+    "bondingRequirement": "{numDays} day bonding requirement",
+    "buttonNext": "Next",
+    "buttonBond": "Bond",
+    "buttonBondStake": "Bond & Stake"
   },
   "superfluidValidator": {
     "title": "Select Superfluid Validator",
