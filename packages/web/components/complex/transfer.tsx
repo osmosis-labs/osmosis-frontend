@@ -187,7 +187,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                     editWithdrawAddrConfig.setCustomAddress(to.address);
                   }}
                 >
-                  Edit
+                  {t("assets.ibcTransfer.buttonEdit")}
                 </Button>
               )}
             {isEditingWithdrawAddr && editWithdrawAddrConfig && (
@@ -202,7 +202,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                 }}
                 labelButtons={[
                   {
-                    label: t("ibcTransfer.buttonEnter"),
+                    label: t("assets.ibcTransfer.buttonEnter"),
                     className:
                       "bg-wosmongton-100 hover:bg-wosmongton-100 border-0 rounded-md",
                     onClick: () => setIsEditingWithdrawAddr(false),
@@ -223,9 +223,11 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         <div className="flex flex-col gap-3">
           <div className="flex items-baseline place-content-between">
             {isMobile ? (
-              <span className="subtitle1">Select Amount</span>
+              <span className="subtitle1">
+                {t("assets.ibcTransfer.selectAmount")}
+              </span>
             ) : (
-              <h6>Select Amount</h6>
+              <h6>{t("assets.ibcTransfer.selectAmount")}</h6>
             )}
             <div
               className={classNames(
@@ -263,7 +265,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             </div>
           )}
           <div className="flex items-center place-content-between">
-            <span>Estimated Time</span>
+            <span>{t("assets.ibcTransfer.estimatedTime")}</span>
             <span>{waitTime}</span>
           </div>
         </div>
@@ -278,9 +280,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         )}
         {editWithdrawAddrConfig && editWithdrawAddrConfig.customAddress !== "" && (
           <GradientView className="flex flex-col gap-2 body2 md:caption text-center bg-osmoverse-900">
-            <span>
-              Withdrawing to a centralized exchange can result in lost funds.
-            </span>
+            <span>{t("assets.ibcTransfer.warningLossFunds")}</span>
             <div className="mx-auto">
               <CheckBox
                 isOn={editWithdrawAddrConfig.didAckWithdrawRisk}
@@ -294,7 +294,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                   )
                 }
               >
-                I verify that {"I'm"} not sending to an exchange address{"."}
+                {t("assets.ibcTransfer.checkboxVerify")}
               </CheckBox>
             </div>
           </GradientView>

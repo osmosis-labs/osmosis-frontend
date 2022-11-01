@@ -199,6 +199,8 @@
     "ibcTransfer": {
       "titleWithdraw": "Withdraw {coinDenom}",
       "titleDeposit": "Deposit {coinDenom}",
+      "selectAmount": "Select Amount",
+      "estimatedTime": "Estimated Time",
       "waitTime": "20 seconds",
       "copied": "Copied!",
       "IBCTransfer": "IBC Transfer",
