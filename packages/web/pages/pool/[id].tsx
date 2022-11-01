@@ -437,7 +437,9 @@ const Pool: FunctionComponent = observer(() => {
           onClick={() => setShowPoolDetails(!showPoolDetails)}
         >
           <span className="subtitle2 text-wosmongton-200">
-            {showPoolDetails ? "Collapse details" : "Show details"}
+            {showPoolDetails
+              ? t("pool.collapseDetails")
+              : t("pool.showDetails")}
           </span>
           <div
             className={classNames("flex items-center transition-transform", {
@@ -477,11 +479,11 @@ const Pool: FunctionComponent = observer(() => {
                 <PriceBreakdownChart
                   prices={[
                     {
-                      label: "Bonded",
+                      label: t("pool.bonded"),
                       price: poolDetailConfig.userStats.bondedValue,
                     },
                     {
-                      label: "Unbonded",
+                      label: t("pool.unbonded"),
                       price: poolDetailConfig.userStats.unbondedValue,
                     },
                   ]}

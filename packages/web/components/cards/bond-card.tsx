@@ -5,7 +5,6 @@ import moment from "dayjs";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { BondableDuration } from "@osmosis-labs/stores";
 import { FallbackImg } from "../assets";
-import { NewButton } from "../buttons";
 import { t, useTranslation } from "react-multi-lang";
 
 export const BondCard: FunctionComponent<
