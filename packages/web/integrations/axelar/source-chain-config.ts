@@ -194,4 +194,14 @@ export const SourceChainConfigs: {
       transferFeeMinAmount: "100000000000000000000",
     },
   },
+  wbnb: {
+    binance: {
+      id: ("binance" as const),
+      erc20ContractAddress: IS_TESTNET
+        ? "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd"
+        : "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      logoUrl: "/networks/binance.svg",
+      transferFeeMinAmount: IS_TESTNET ? "500000000000000" : "5000000000000000",
+    },
+  },
 };

@@ -2206,6 +2206,13 @@ chainInfos.push({
       coinGeckoId: "polkadot",
       coinImageUrl: "/tokens/dot.svg",
     },
+    {
+      coinDenom: "WBNB",
+      coinMinimalDenom: "wbnb-wei",
+      coinDecimals: 18,
+      coinGeckoId: "wbnb",
+      coinImageUrl: "/tokens/wbnb.svg",
+    },
   ],
   feeCurrencies: [
     {
