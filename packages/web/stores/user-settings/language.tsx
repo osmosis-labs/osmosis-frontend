@@ -26,11 +26,7 @@ export class LanguageUserSetting implements IUserSetting<LanguageState> {
   readonly id = "language";
   readonly defaultLanguage: MenuDropdownIconItemProps;
   readonly controlComponent: FunctionComponent<LanguageState> = ({}) => {
-    return (
-      <div className="flex">
-        <LanguageSelect options={SUPPORTED_LANGUAGES} />
-      </div>
-    );
+    return <LanguageSelect options={SUPPORTED_LANGUAGES} />;
   };
 
   @observable

@@ -24,7 +24,7 @@ export const Toggle: FunctionComponent<
               "bg-wosmongton-200": !disabled && isOn,
               "cursor-pointer": isHovered && !disabled,
               "bg-wosmongton-100": isHovered && !disabled && isOn,
-              "bg-surface": !disabled && !isOn,
+              "bg-osmoverse-900": !disabled && !isOn,
             },
             className
           )}

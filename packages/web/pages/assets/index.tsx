@@ -130,7 +130,7 @@ const Assets: NextPage = observer(() => {
   });
 
   return (
-    <main className="flex flex-col gap-20 md:gap-8 bg-background p-8 md:p-4">
+    <main className="flex flex-col gap-20 md:gap-8 bg-osmoverse-900 p-8 md:p-4">
       <AssetsOverview />
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
@@ -175,7 +175,7 @@ const Assets: NextPage = observer(() => {
         onBuyOsmo={() => transferConfig?.buyOsmo()}
       />
       {!isMobile && <PoolAssets />}
-      <section className="bg-surface">
+      <section className="bg-osmoverse-900">
         <DepoolingTable
           className="p-10 md:p-5 max-w-container mx-auto"
           tableClassName="md:w-screen md:-mx-5"

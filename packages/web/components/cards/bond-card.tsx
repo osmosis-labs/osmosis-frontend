@@ -5,7 +5,7 @@ import moment from "dayjs";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { BondableDuration } from "@osmosis-labs/stores";
 import { FallbackImg } from "../assets";
-import { t, useTranslation } from "react-multi-lang";
+import { useTranslation } from "react-multi-lang";
 
 export const BondCard: FunctionComponent<
   BondableDuration & {
@@ -165,6 +165,7 @@ const Drawer: FunctionComponent<{
     });
     return Array.from(imgSrcDenomMap.values());
   }, [incentivesBreakdown]);
+  const t = useTranslation();
 
   return (
     <div
@@ -284,112 +285,123 @@ const SuperfluidBreakdownRow: FunctionComponent<
   undelegating,
   validatorMoniker,
   validatorLogoUrl,
-}) => (
-  <div className="flex flex-col gap-2">
-    <div className="flex items-start text-right place-content-between">
-      <div className="flex items-center gap-2">
-        <h6 className="text-transparent bg-clip-text bg-superfluid">
-          +{apr.maxDecimals(0).toString()}
-        </h6>
-        <FallbackImg
-          className="rounded-full"
-          alt="validator icon"
-          src={validatorLogoUrl ?? "/icons/superfluid-osmo.svg"}
-          fallbacksrc="/icons/profile.svg"
-          height={24}
-          width={24}
-        />
-      </div>
-      <span>
-        {(delegated || undelegating) && validatorMoniker
-          ? validatorMoniker
-          : t("pool.superfluidStaking")}
-      </span>
-    </div>
-    {(delegated || undelegating) && (
-      <div className="flex flex-col text-right ml-auto">
-        <div className="flex flex-col gap-[2px] bg-osmoverse-800 rounded-md py-2 px-4">
-          <span className="caption">
-            {delegated
-              ? `~${delegated.trim(true).maxDecimals(7).toString()}`
-              : undelegating
-              ? `~${undelegating.trim(true).maxDecimals(7).toString()}`
-              : null}
-            <span className="text-osmoverse-400">
-              {delegated
-                ? ` ${t("pool.delegated")}`
-                : undelegating
-                ? ` ${t("pool.undelegating")}`
-                : ""}
-            </span>
-          </span>
-          {commission && (
-            <span className="caption">
-              {commission.toString()}{" "}
-              <span className="text-osmoverse-400">{t("pool.commission")}</span>
-            </span>
-          )}
+}) => {
+  const t = useTranslation();
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-start text-right place-content-between">
+        <div className="flex items-center gap-2">
+          <h6 className="text-transparent bg-clip-text bg-superfluid">
+            +{apr.maxDecimals(0).toString()}
+          </h6>
+          <FallbackImg
+            className="rounded-full"
+            alt="validator icon"
+            src={validatorLogoUrl ?? "/icons/superfluid-osmo.svg"}
+            fallbacksrc="/icons/profile.svg"
+            height={24}
+            width={24}
+          />
         </div>
+        <span>
+          {(delegated || undelegating) && validatorMoniker
+            ? validatorMoniker
+            : t("pool.superfluidStaking")}
+        </span>
       </div>
-    )}
-  </div>
-);
+      {(delegated || undelegating) && (
+        <div className="flex flex-col text-right ml-auto">
+          <div className="flex flex-col gap-[2px] bg-osmoverse-800 rounded-md py-2 px-4">
+            <span className="caption">
+              {delegated
+                ? `~${delegated.trim(true).maxDecimals(7).toString()}`
+                : undelegating
+                ? `~${undelegating.trim(true).maxDecimals(7).toString()}`
+                : null}
+              <span className="text-osmoverse-400">
+                {delegated
+                  ? ` ${t("pool.delegated")}`
+                  : undelegating
+                  ? ` ${t("pool.undelegating")}`
+                  : ""}
+              </span>
+            </span>
+            {commission && (
+              <span className="caption">
+                {commission.toString()}{" "}
+                <span className="text-osmoverse-400">
+                  {t("pool.commission")}
+                </span>
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const IncentiveBreakdownRow: FunctionComponent<
   BondableDuration["incentivesBreakdown"][0]
-> = ({ dailyPoolReward, apr, numDaysRemaining }) => (
-  <div className="flex items-start place-content-between">
-    <div className="flex items-center shrink-0 gap-2">
-      <h6 className="text-osmoverse-200">+{apr.maxDecimals(0).toString()}</h6>
-      {dailyPoolReward.currency.coinImageUrl && (
-        <Image
-          alt="token icon"
-          src={dailyPoolReward.currency.coinImageUrl}
-          height={24}
-          width={24}
-        />
-      )}
+> = ({ dailyPoolReward, apr, numDaysRemaining }) => {
+  const t = useTranslation();
+  return (
+    <div className="flex items-start place-content-between">
+      <div className="flex items-center shrink-0 gap-2">
+        <h6 className="text-osmoverse-200">+{apr.maxDecimals(0).toString()}</h6>
+        {dailyPoolReward.currency.coinImageUrl && (
+          <Image
+            alt="token icon"
+            src={dailyPoolReward.currency.coinImageUrl}
+            height={24}
+            width={24}
+          />
+        )}
+      </div>
+      <div className="flex flex-col text-right">
+        <span>
+          {t("pool.dailyEarnAmount", {
+            amount: dailyPoolReward.maxDecimals(0).toString(),
+          })}
+        </span>
+        {numDaysRemaining && (
+          <span className="caption text-osmoverse-400">{numDaysRemaining}</span>
+        )}
+      </div>
     </div>
-    <div className="flex flex-col text-right">
-      <span>
-        {t("pool.dailyEarnAmount", {
-          amount: dailyPoolReward.maxDecimals(0).toString(),
-        })}
-      </span>
-      {numDaysRemaining && (
-        <span className="caption text-osmoverse-400">{numDaysRemaining}</span>
-      )}
-    </div>
-  </div>
-);
+  );
+};
 
 const SwapFeeBreakdownRow: FunctionComponent<{
   swapFeeApr: RatePretty;
   swapFeeDailyReward: PricePretty;
-}> = ({ swapFeeApr, swapFeeDailyReward }) => (
-  <div className="flex items-start place-content-between">
-    <div className="flex items-center gap-2">
-      <h6 className="text-osmoverse-200">
-        +{swapFeeApr.maxDecimals(0).toString()}
-      </h6>
+}> = ({ swapFeeApr, swapFeeDailyReward }) => {
+  const t = useTranslation();
+  return (
+    <div className="flex items-start place-content-between">
+      <div className="flex items-center gap-2">
+        <h6 className="text-osmoverse-200">
+          +{swapFeeApr.maxDecimals(0).toString()}
+        </h6>
+      </div>
+      <div className="flex flex-col text-right">
+        <span>
+          {t("pool.dailyEarnAmount", {
+            amount: swapFeeDailyReward.maxDecimals(0).toString(),
+          })}
+        </span>
+        <span className="caption text-osmoverse-400">
+          {`${t("pool.from")} `}
+          <a
+            rel="noreferrer"
+            target="_blank"
+            href="https://docs.osmosis.zone/overview/getting-started/#swap-fees"
+          >
+            <u>{t("pool.swapFees")}</u>
+          </a>{" "}
+          {t("pool.7davg")}
+        </span>
+      </div>
     </div>
-    <div className="flex flex-col text-right">
-      <span>
-        {t("pool.dailyEarnAmount", {
-          amount: swapFeeDailyReward.maxDecimals(0).toString(),
-        })}
-      </span>
-      <span className="caption text-osmoverse-400">
-        {`${t("pool.from")} `}
-        <a
-          rel="noreferrer"
-          target="_blank"
-          href="https://docs.osmosis.zone/overview/getting-started/#swap-fees"
-        >
-          <u>{t("pool.swapFees")}</u>
-        </a>{" "}
-        {t("pool.7davg")}
-      </span>
-    </div>
-  </div>
-);
+  );
+};
