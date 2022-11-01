@@ -325,7 +325,9 @@ export class ObservableTransferUIConfig {
       isWithdraw: direction === "withdraw",
       onRequestClose: () => this.closeAllModals(),
       wallets,
-      fiatRamps: balanceOnOsmosis.fiatRamps?.map(({ rampKey }) => rampKey),
+      fiatRamps: this.isMobile
+        ? []
+        : balanceOnOsmosis.fiatRamps?.map(({ rampKey }) => rampKey),
       onSelectSource: (key) => {
         const selectedWallet = wallets.find((wallet) => wallet.key === key);
         const selectedFiatRamp = balanceOnOsmosis.fiatRamps?.find(
