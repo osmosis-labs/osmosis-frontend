@@ -78,13 +78,14 @@ const Pool: FunctionComponent = observer(() => {
   }, [poolExists]);
 
   // initialize pool data stores once root pool store is loaded
+  const [poolDetailStore, setPoolDetailStore] =
+    useState<ObservableQueryPoolDetails | null>(null);
   const [superfluidPoolStore, setSuperfluidPoolStore] =
     useState<ObservableQuerySuperfluidPool | null>(null);
   useEffect(() => {
     let newPoolDetailStore;
     if (poolExists && pool && !poolDetailStore) {
       newPoolDetailStore = new ObservableQueryPoolDetails(
-        bech32Address,
         fiat,
         pool,
         queryOsmosis,
@@ -95,7 +96,6 @@ const Pool: FunctionComponent = observer(() => {
       setPoolDetailStore(newPoolDetailStore);
       setSuperfluidPoolStore(
         new ObservableQuerySuperfluidPool(
-          bech32Address,
           fiat,
           newPoolDetailStore,
           queriesStore.get(chainId).cosmos.queryValidators,
@@ -105,7 +105,11 @@ const Pool: FunctionComponent = observer(() => {
         )
       );
     }
-  }, [poolExists, pool, bech32Address, fiat, queryOsmosis, priceStore]);
+  }, [poolExists, pool, fiat, queryOsmosis, priceStore]);
+  useEffect(() => {
+    poolDetailStore?.setBech32Address(bech32Address);
+    superfluidPoolStore?.setBech32Address(bech32Address);
+  }, [bech32Address, poolDetailStore, superfluidPoolStore]);
 
   // Manage liquidity + bond LP tokens (modals) state
   const [showManageLiquidityDialog, setShowManageLiquidityDialog] =
@@ -135,8 +139,6 @@ const Pool: FunctionComponent = observer(() => {
   );
 
   // pool gauges
-  const [poolDetailStore, setPoolDetailStore] =
-    useState<ObservableQueryPoolDetails | null>(null);
   const allowedGauges =
     pool && ExternalIncentiveGaugeAllowList[pool.id]
       ? poolDetailStore?.queryAllowedExternalGauges(
@@ -189,6 +191,49 @@ const Pool: FunctionComponent = observer(() => {
     // overwrite any external gauges with internal gauges w/ apr calcs
     superfluidPoolStore?.gaugesWithSuperfluidApr.forEach((gauge) => {
       gaugeDurationMap.set(gauge.duration.asSeconds(), gauge);
+    });
+
+    const allowedExternalGauges =
+      pool?.id && ExternalIncentiveGaugeAllowList[pool.id]
+        ? ExternalIncentiveGaugeAllowList[pool.id]
+        : [];
+
+    // Combine the internal incentive APR and sum of external incentive APRs
+    gaugeDurationMap.forEach((gauge) => {
+      const baseAPR = queryOsmosis.queryIncentivizedPools.computeAPY(
+        pool?.id ?? "",
+        gauge.duration,
+        priceStore,
+        fiat
+      );
+
+      const externalAPR = allowedGauges
+        .filter(
+          (extGauge) =>
+            extGauge.duration.asMilliseconds() ===
+            gauge.duration.asMilliseconds()
+        )
+        .reduce((apr, extGauge) => {
+          const denom =
+            allowedExternalGauges.find((allowList) => {
+              return allowList.gaugeId === extGauge.id;
+            })?.denom ?? "";
+
+          return apr.add(
+            queryOsmosis.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
+              pool?.id ?? "",
+              extGauge.id,
+              denom,
+              priceStore,
+              fiat
+            )
+          );
+        }, new RatePretty(new Dec(0)));
+
+      gaugeDurationMap.set(gauge.duration.asSeconds(), {
+        ...gauge,
+        apr: baseAPR.add(externalAPR),
+      });
     });
 
     return Array.from(gaugeDurationMap.values()).sort(
@@ -823,14 +868,11 @@ const Pool: FunctionComponent = observer(() => {
           )}
           {allowedLockupGauges && pool && (
             <div className="flex lg:flex-col md:gap-3 gap-9 place-content-between md:pt-8 pt-10">
-              {allowedLockupGauges.map(({ duration, superfluidApr }) => (
+              {allowedLockupGauges.map(({ duration, apr, superfluidApr }) => (
                 <PoolGaugeCard
                   key={duration.humanize()}
                   days={duration.humanize()}
-                  apr={queryOsmosis.queryIncentivizedPools
-                    .computeAPY(pool.id, duration, priceStore, fiat)
-                    .maxDecimals(2)
-                    .toString()}
+                  apr={apr?.maxDecimals?.(2).toString() ?? "0"}
                   superfluidApr={superfluidApr?.maxDecimals(2).toString()}
                   isMobile={isMobile}
                 />

@@ -108,6 +108,18 @@ const Home: NextPage = observer(function () {
                 break;
               }
             }
+            
+            // only pools with at least 10,000 JUNO
+            if (
+              "originChainId" in asset.amount.currency &&
+              asset.amount.currency.coinMinimalDenom ===
+                "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED"
+            ) {
+              if (asset.amount.toDec().gt(new Dec(10_000))) {
+                hasEnoughAssets = true;
+                break;
+              }
+            }
           }
 
           if (hasEnoughAssets) {
@@ -135,7 +147,7 @@ const Home: NextPage = observer(function () {
           preserveAspectRatio={"xMidYMid slice"}
         >
           <g>
-            {!IS_FRONTIER && (
+            {/* {!IS_FRONTIER && (
               <ProgressiveSvgImage
                 lowResXlinkHref="/images/osmosis-home-bg-low.png"
                 xlinkHref="/images/osmosis-home-bg.png"
@@ -153,22 +165,26 @@ const Home: NextPage = observer(function () {
                 height="244"
                 fill="#120644"
               />
-            )}
+            )} */}
             <ProgressiveSvgImage
               lowResXlinkHref={
                 IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz-low.png"
-                  : "/images/osmosis-home-fg-low.png"
+                  ? "/images/halloween2022.png"
+                  : "/images/halloween2022.png"
               }
               xlinkHref={
                 IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz.png"
-                  : "/images/osmosis-home-fg.png"
+                  ? "/images/halloween2022.png"
+                  : "/images/halloween2022.png"
               }
-              x={IS_FRONTIER ? "-100" : "61"}
-              y={IS_FRONTIER ? "100" : "602"}
-              width={IS_FRONTIER ? "800" : "448.8865"}
-              height={IS_FRONTIER ? "800" : "285.1699"}
+              // x={IS_FRONTIER ? "-100" : "61"}
+              // y={IS_FRONTIER ? "100" : "602"}
+              // width={IS_FRONTIER ? "800" : "448.8865"}
+              // height={IS_FRONTIER ? "800" : "285.1699"}
+              x={"50"}
+              y={"0"}
+              width={"1000"}
+              height={"1000"}
             />
           </g>
         </svg>

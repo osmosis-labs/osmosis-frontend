@@ -9,6 +9,7 @@ import { ObservableQueryPools } from "../pools";
 import { IPriceStore } from "../../price";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
+import { ObservableQueryGuage } from "../incentives";
 import { IncentivizedPools } from "./types";
 export declare class ObservableQueryIncentivizedPools extends ObservableChainQuery<IncentivizedPools> {
     protected readonly queryLockableDurations: ObservableQueryLockableDurations;
@@ -17,7 +18,8 @@ export declare class ObservableQueryIncentivizedPools extends ObservableChainQue
     protected readonly queryMintParmas: ObservableQueryMintParmas;
     protected readonly queryEpochProvision: ObservableQueryEpochProvisions;
     protected readonly queryEpochs: ObservableQueryEpochs;
-    constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, queryLockableDurations: ObservableQueryLockableDurations, queryDistrInfo: ObservableQueryDistrInfo, queryPools: ObservableQueryPools, queryMintParmas: ObservableQueryMintParmas, queryEpochProvision: ObservableQueryEpochProvisions, queryEpochs: ObservableQueryEpochs);
+    protected readonly queryGauge: ObservableQueryGuage;
+    constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, queryLockableDurations: ObservableQueryLockableDurations, queryDistrInfo: ObservableQueryDistrInfo, queryPools: ObservableQueryPools, queryMintParmas: ObservableQueryMintParmas, queryEpochProvision: ObservableQueryEpochProvisions, queryEpochs: ObservableQueryEpochs, queryGauge: ObservableQueryGuage);
     /** Internally incentivized pools. */
     get incentivizedPools(): string[];
     /** Is incentivized internally. */
@@ -28,6 +30,10 @@ export declare class ObservableQueryIncentivizedPools extends ObservableChainQue
      * 가장 긴 lockable duration의 apy를 반환한다.
      */
     readonly computeMostAPY: (poolId: string, priceStore: IPriceStore) => RatePretty;
+    /**
+     * Computes the external incentive APR for the given gaugeId and denom
+     */
+    readonly computeExternalIncentiveGaugeAPR: (poolId: string, gaugeId: string, denom: string, priceStore: IPriceStore, fiatCurrency: FiatCurrency) => RatePretty;
     /**
      * 리워드를 받을 수 있는 풀의 연당 이익률을 반환한다.
      * 리워드를 받을 수 없는 풀일 경우 0를 리턴한다.

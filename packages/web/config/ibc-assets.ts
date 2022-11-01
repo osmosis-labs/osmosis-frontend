@@ -494,40 +494,40 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-    depositUrlOverride: "https://spacestation.zone/",
-    withdrawUrlOverride: "https://spacestation.zone/",
+    depositUrlOverride: "https://bridge.blockscape.network/",
+    withdrawUrlOverride: "https://bridge.blockscape.network/",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-    depositUrlOverride: "https://spacestation.zone/",
-    withdrawUrlOverride: "https://spacestation.zone/",
+    depositUrlOverride: "https://bridge.blockscape.network/",
+    withdrawUrlOverride: "https://bridge.blockscape.network/",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-    depositUrlOverride: "https://spacestation.zone/",
-    withdrawUrlOverride: "https://spacestation.zone/",
+    depositUrlOverride: "https://bridge.blockscape.network/",
+    withdrawUrlOverride: "https://bridge.blockscape.network/",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
-    depositUrlOverride: "https://spacestation.zone/",
-    withdrawUrlOverride: "https://spacestation.zone/",
+    depositUrlOverride: "https://bridge.blockscape.network/",
+    withdrawUrlOverride: "https://bridge.blockscape.network/",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    depositUrlOverride: "https://spacestation.zone/",
-    withdrawUrlOverride: "https://spacestation.zone/",
+    depositUrlOverride: "https://bridge.blockscape.network/",
+    withdrawUrlOverride: "https://bridge.blockscape.network/",
   },
   {
     counterpartyChainId: "juno-1",
@@ -730,6 +730,10 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-259",
     destChannelId: "channel-3",
     coinMinimalDenom: "ukuji",
+    depositUrlOverride:
+      "https://blue.kujira.app/ibc?destination=osmosis-1&denom=ukuji",
+    // withdrawUrlOverride:
+    //   "https://blue.kujira.app/ibc?destination=kaiyo-1&source=osmosis-1&denom=ukuji",
     isVerified: true,
   },
   {
@@ -841,6 +845,12 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "agoric-3",
+    sourceChannelId: "channel-320",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "uist",
+  },
+  {
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-169",
     destChannelId: "channel-47",
@@ -857,12 +867,14 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "stride-1",
     sourceChannelId: "channel-326",
     destChannelId: "channel-5",
     coinMinimalDenom: "ustrd",
+    isVerified: true,
   },
   {
     counterpartyChainId: "stride-1",
@@ -919,6 +931,51 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-326",
     destChannelId: "channel-5",
     coinMinimalDenom: "stujuno",
+  },
+  {
+    counterpartyChainId: "stride-1",
+    sourceChannelId: "channel-326",
+    destChannelId: "channel-5",
+    coinMinimalDenom: "stuosmo",
+  },
+  {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
+    counterpartyChainId: "lambda_92000-1",
+    sourceChannelId: "channel-378",
+    destChannelId: "channel-2",
+    coinMinimalDenom: "ulamb",
+  },
+  {
+    counterpartyChainId: "kaiyo-1",
+    sourceChannelId: "channel-259",
+    destChannelId: "channel-3",
+    coinMinimalDenom:
+      "factory:kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7:uusk",
+    depositUrlOverride:
+      "https://blue.kujira.app/ibc?destination=osmosis-1&source=kaiyo-1&denom=factory%2Fkujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7%2Fuusk",
+    withdrawUrlOverride:
+      "https://blue.kujira.app/ibc?destination=kaiyo-1&source=osmosis-1&denom=ibc%2F44492EAB24B72E3FB59B9FA619A22337FB74F95D8808FE6BC78CC0E6C18DC2EC",
+  },
+  {
+    counterpartyChainId: "FUND-MainNet-2",
+    sourceChannelId: "channel-382",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "nund",
+  },
+  {
+    counterpartyChainId: "jackal-1",
+    sourceChannelId: "channel-412",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "ujkl",
+    isUnstable: true,
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
