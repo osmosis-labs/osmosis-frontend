@@ -487,16 +487,19 @@ export const AllPoolsTableSet: FunctionComponent<{
               ...[
                 sortKeyPath === "volume24h"
                   ? {
-                      label: "Volume (24h)",
+                      label: t("pools.allPools.sort.volume24h"),
                       value: poolData.volume24h.toString(),
                     }
                   : sortKeyPath === "feesSpent7d"
                   ? {
-                      label: "Fees (7d)",
+                      label: t("pools.allPools.sort.fees"),
                       value: poolData.feesSpent7d.toString(),
                     }
                   : sortKeyPath === "apr"
-                  ? { label: "APR", value: poolData.apr?.toString() ?? "0%" }
+                  ? {
+                      label: t("pools.allPools.sort.APRIncentivized"),
+                      value: poolData.apr?.toString() ?? "0%",
+                    }
                   : sortKeyPath === "myLiquidity"
                   ? {
                       label: t("pools.allPools.myLiquidity"),
@@ -537,7 +540,7 @@ export const AllPoolsTableSet: FunctionComponent<{
           sortMenuProps={{
             options: tableCols.filter(
               (col) =>
-                typeof col.display === "string" && col.display.length === 0
+                typeof col.display === "string" && col.display.length !== 0
             ) as MenuOption[],
             selectedOptionId: sortKeyPath,
             onSelect: (id) =>

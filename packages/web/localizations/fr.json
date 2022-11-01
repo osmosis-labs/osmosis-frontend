@@ -59,7 +59,8 @@
         "volume24h": "Volume (24H)",
         "fees": "Frais (7J)",
         "APRIncentivized": "TAP",
-        "APR": "Ma liquidité"
+        "APR": "Ma liquidité",
+        "poolId": "ID de groupe"
       }
     },
     "externalIncentivized": {
@@ -93,7 +94,9 @@
       "amount": "Montant",
       "token": "Jeton",
       "swapFee": "Définit les frais de swap",
-      "undersandCost": "Je comprends que la création d'un nouveau pool coûtera {POOL_CREATION_FEE}."
+      "undersandCost": "Je comprends que la création d'un nouveau pool coûtera {POOL_CREATION_FEE}.",
+      "interestedCreate": "Intéressé par la création d'une nouvelle piscine ?",
+      "startProcess": "Cliquez ici pour démarrer le processus"
     }
   },
   "pool": {
@@ -142,10 +145,12 @@
   },
   "removeLiquidity": {
     "title": "Retirer de la liquidité",
+    "titleInPool": "Retirer des liquidités du pool {poolId}",
     "sharesAmount": "{shares} actifs"
   },
   "addLiquidity": {
     "title": "Ajouter de la liquidité",
+    "titleInPool": "Ajouter des liquidités au pool {poolId}",
     "allAssets": "Tous les actifs",
     "singleAsset": "Actif unique",
     "available": "Disponnible",
@@ -313,6 +318,16 @@
     "noAvailableShares": "Aucun actif {denom} disponnible",
     "generic": "Erreur"
   },
+  "connectWallet": "Connecter le portefeuille",
+  "keplr": {
+    "install": "Installer Keplr",
+    "wallet": "Portefeuille Keplr",
+    "extension": "Extension de navigateur Keplr",
+    "walletConnect": "WalletConnect",
+    "mobile": "Keplr Mobile"
+  },
+  "connectDisclaimer": "En connectant un portefeuille, vous reconnaissez avoir lu et compris la politique Osmosis",
+  "protocolDisclaimer": "Clause de non-responsabilité du protocole",
   "Transaction Failed": "Échec de la transaction",
   "Transaction Successful": "Succès de la transaction",
   "Transaction Broadcasting": "Diffustion de la transaction",
@@ -324,6 +339,5 @@
   "Amount is empty": "Le montant est vide",
   "Insufficient amount": "Montant insuffisant",
   "Amount is zero": "Le montant est de zéro.",
-  "Minimum of 2 assets required": "Minimum de 2 actifs requis",
-  "connectWallet": "Connecter le portefeuille"
+  "Minimum of 2 assets required": "Minimum de 2 actifs requis"
 }

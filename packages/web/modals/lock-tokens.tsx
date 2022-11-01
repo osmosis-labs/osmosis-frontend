@@ -13,6 +13,7 @@ import {
   useBondLiquidityConfig,
   usePoolDetailConfig,
   useSuperfluidPoolConfig,
+  useCurrentLanguage,
 } from "../hooks";
 import { ExternalIncentiveGaugeAllowList } from "../config";
 import { useTranslation } from "react-multi-lang";
@@ -27,6 +28,7 @@ export const LockTokensModal: FunctionComponent<
 > = observer((props) => {
   const { poolId, amountConfig: config, onLockToken } = props;
   const t = useTranslation();
+  const locale = useCurrentLanguage();
 
   const { chainStore, accountStore, queriesStore } = useStore();
 
@@ -132,7 +134,7 @@ export const LockTokensModal: FunctionComponent<
           {bondableDurations.map(({ duration, aggregateApr }, index) => (
             <LockupItem
               key={index}
-              duration={duration.humanize()}
+              duration={duration.locale(locale).humanize()}
               isSelected={index === selectedDurationIndex}
               onSelect={() => setSelectedDurationIndex(index)}
               apr={aggregateApr?.maxDecimals(2).trim(true).toString()}

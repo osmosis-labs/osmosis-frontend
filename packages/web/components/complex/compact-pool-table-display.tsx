@@ -36,14 +36,16 @@ export const CompactPoolTableDisplay: FunctionComponent<{
 }) => {
   const router = useRouter();
 
+  console.log(sortMenuProps?.options);
+
   return (
     <div className="flex flex-col gap-5 pb-8">
       {searchBoxProps && (
         <SearchBox className="!w-full h-11" {...searchBoxProps} />
       )}
-      <div className="h-10 flex items-center place-content-between">
+      <div className="flex flex-wrap gap-3 items-center place-content-between">
         {minTvlToggleProps && (
-          <Switch {...minTvlToggleProps}>
+          <Switch {...minTvlToggleProps} containerClassName="shrink flex-wrap">
             <span className="text-osmoverse-200">
               {minTvlToggleProps.label}
             </span>

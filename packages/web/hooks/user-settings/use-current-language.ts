@@ -23,4 +23,6 @@ export function useCurrentLanguage() {
       load();
     }
   }, [currentLanguage]);
+
+  return currentLanguage ?? "en";
 }

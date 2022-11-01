@@ -59,7 +59,8 @@
         "volume24h": "Volume (24H)",
         "fees": "Fees (7D)",
         "APRIncentivized": "APR",
-        "APR": "My Liquidity"
+        "APR": "My Liquidity",
+        "poolId": "Pool ID"
       }
     },
     "externalIncentivized": {
@@ -93,7 +94,9 @@
       "amount": "Amount",
       "token": "Token",
       "swapFee": "Set Swap Fee",
-      "undersandCost": "I understand that creating a new pool will cost {POOL_CREATION_FEE}."
+      "undersandCost": "I understand that creating a new pool will cost {POOL_CREATION_FEE}.",
+      "interestedCreate": "Interested in creating a new pool?",
+      "startProcess": "Click here to start the process"
     }
   },
   "pool": {
@@ -142,10 +145,12 @@
   },
   "removeLiquidity": {
     "title": "Remove Liquidity",
+    "titleInPool": "Remove liquidity from {poolId}",
     "sharesAmount": "{shares} shares"
   },
   "addLiquidity": {
     "title": "Add Liquidity",
+    "titleInPool": "Add liquidity to {poolId}",
     "allAssets": "All assets",
     "singleAsset": "Single asset",
     "available": "Available",
@@ -313,6 +318,16 @@
     "noAvailableShares": "No available {denom} shares",
     "generic": "Error"
   },
+  "connectWallet": "Connect wallet",
+  "keplr": {
+    "install": "Install Keplr",
+    "wallet": "Keplr Wallet",
+    "extension": "Keplr Browser Extension",
+    "walletConnect": "WalletConnect",
+    "mobile": "Keplr Mobile"
+  },
+  "connectDisclaimer": "By connecting a wallet, you acknowledge that you have read and understand the Osmosis",
+  "protocolDisclaimer": "Protocol Disclaimer",
   "Transaction Failed": "Transaction Failed",
   "Transaction Successful": "Transaction Successful",
   "Transaction Broadcasting": "Transaction Broadcasting",
@@ -324,6 +339,5 @@
   "Amount is empty": "Amount is empty",
   "Insufficient amount": "Insufficient amount",
   "Amount is zero": "Amount is zero",
-  "Minimum of 2 assets required": "Minimum of 2 assets required",
-  "connectWallet": "Connect wallet"
+  "Minimum of 2 assets required": "Minimum of 2 assets required"
 }

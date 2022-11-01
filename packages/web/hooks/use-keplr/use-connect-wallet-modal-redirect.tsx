@@ -4,6 +4,7 @@ import { WalletStatus } from "@keplr-wallet/stores";
 import { useStore } from "../../stores";
 import { NewButton } from "../../components/buttons";
 import { useKeplr } from "./hook";
+import { t } from "react-multi-lang";
 
 /** FOR USE IN MODALS
  *
@@ -21,7 +22,7 @@ import { useKeplr } from "./hook";
 export function useConnectWalletModalRedirect(
   actionButtonProps: ComponentProps<typeof NewButton>,
   onRequestClose: () => void,
-  connectWalletMessage = "Connect wallet"
+  connectWalletMessage = t("connectWallet")
 ) {
   const keplr = useKeplr();
   const { accountStore, chainStore } = useStore();

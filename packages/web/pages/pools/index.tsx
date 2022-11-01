@@ -240,6 +240,9 @@ const Pools: NextPage = observer(function () {
       )}
       {addLiquidityModalPoolId && (
         <AddLiquidityModal
+          title={t("addLiquidity.titleInPool", {
+            poolId: addLiquidityModalPoolId,
+          })}
           poolId={addLiquidityModalPoolId}
           isOpen={true}
           onRequestClose={() => setAddLiquidityModalPoolId(null)}
@@ -247,6 +250,9 @@ const Pools: NextPage = observer(function () {
       )}
       {removeLiquidityModalPoolId && (
         <RemoveLiquidityModal
+          title={t("removeLiquidity.titleInPool", {
+            poolId: removeLiquidityModalPoolId,
+          })}
           poolId={removeLiquidityModalPoolId}
           isOpen={true}
           onRequestClose={() => setRemoveLiquidityModalPoolId(null)}
@@ -254,7 +260,7 @@ const Pools: NextPage = observer(function () {
       )}
       {lockLpTokenModalPoolId && (
         <LockTokensModal
-          title={`Lock shares in Pool #${lockLpTokenModalPoolId}`}
+          title={t("lockToken.titleInPool", { poolId: lockLpTokenModalPoolId })}
           isOpen={true}
           poolId={lockLpTokenModalPoolId}
           amountConfig={lockLpTokenConfig}
@@ -496,9 +502,12 @@ const Pools: NextPage = observer(function () {
                     }}
                     sortMenuProps={{
                       options: [
-                        { id: "id", display: "Pool ID" },
+                        { id: "id", display: t("pools.allPools.sort.poolId") },
                         { id: "apr", display: t("pools.allPools.APR") },
-                        { id: "poolLiquidity", display: "Liquidity" },
+                        {
+                          id: "poolLiquidity",
+                          display: t("pools.allPools.sort.liquidity"),
+                        },
                       ],
                       selectedOptionId: sortKeyPath,
                       onSelect: (id) =>
@@ -516,12 +525,14 @@ const Pools: NextPage = observer(function () {
                     minTvlToggleProps={{
                       isOn: isPoolTvlFiltered,
                       onToggle: setIsPoolTvlFiltered,
-                      label: `Show pools < ${new PricePretty(
-                        priceStore.getFiatCurrency(
-                          priceStore.defaultVsCurrency
-                        )!,
-                        TVL_FILTER_THRESHOLD
-                      ).toString()}`,
+                      label: t("pools.allPools.displayLowLiquidity", {
+                        value: new PricePretty(
+                          priceStore.getFiatCurrency(
+                            priceStore.defaultVsCurrency
+                          )!,
+                          TVL_FILTER_THRESHOLD
+                        ).toString(),
+                      }),
                     }}
                   />
                 ),
@@ -623,19 +634,21 @@ const Pools: NextPage = observer(function () {
       )}
       <section className="pb-4">
         <div className="w-full flex items-center bg-osmoverse-800 rounded-full px-5 py-4">
-          <span className="subtitle1 flex items-center gap-1">
-            Interested in creating a new pool?{" "}
+          <span className="subtitle1 md:text-subtitle2 md:font-subtitle2 flex items-center gap-1">
+            {t("pools.createPool.interestedCreate")}{" "}
             <u
               className="text-wosmongton-300 flex items-center cursor-pointer"
               onClick={() => setIsCreatingPool(true)}
             >
-              Click here to start the process.
-              <Image
-                alt="right arrow"
-                src="/icons/arrow-right-wosmongton-300.svg"
-                height={24}
-                width={24}
-              />
+              {t("pools.createPool.startProcess")}
+              <div className="flex items-center shrink-0">
+                <Image
+                  alt="right arrow"
+                  src="/icons/arrow-right-wosmongton-300.svg"
+                  height={24}
+                  width={24}
+                />
+              </div>
             </u>
           </span>
         </div>
