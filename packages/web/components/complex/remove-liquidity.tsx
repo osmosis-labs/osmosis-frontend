@@ -54,7 +54,9 @@ export const RemoveLiquidity: FunctionComponent<
                   width={16}
                 />
               )}
-              <span>{asset.trim(true).toString()}</span>
+              <span className="max-w-xs truncate">
+                {asset.trim(true).toString()}
+              </span>
             </div>
           ))}
         </div>

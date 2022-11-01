@@ -63,7 +63,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       {
         label: t("menu.assets"),
         link: "/assets",
-        icon: IS_FRONTIER ? "/icons/asset-white.svg" : "/icons/asset.svg",
+        icon: "/icons/asset-white.svg",
         iconSelected: "/icons/asset-white.svg",
         selectionTest: /\/assets/,
       },

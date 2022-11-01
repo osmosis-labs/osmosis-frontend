@@ -269,13 +269,13 @@ export const Transfer: FunctionComponent<TransferProps> = ({
           <GradientView
             className="text-center"
             gradientClassName="bg-superfluid"
-            bgClassName="bg-surface"
+            bgClassName="bg-osmoverse-900"
           >
             <span className="body2 md:caption">{warningMessage}</span>
           </GradientView>
         )}
         {editWithdrawAddrConfig && editWithdrawAddrConfig.customAddress !== "" && (
-          <GradientView className="flex flex-col gap-2 body2 md:caption text-center bg-surface">
+          <GradientView className="flex flex-col gap-2 body2 md:caption text-center bg-osmoverse-900">
             <span>
               Withdrawing to a centralized exchange can result in lost funds.
             </span>
