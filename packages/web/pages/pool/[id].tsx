@@ -271,10 +271,7 @@ const Pool: FunctionComponent = observer(() => {
     ]
   );
 
-  const pageTitle = useMemo(
-    () => (pool ? t("pool.title", { id: pool.id }) : undefined),
-    [pool?.id]
-  );
+  const pageTitle = pool ? t("pool.title", { id: pool.id }) : undefined;
   useNavBar({
     title: pageTitle,
     ctas: [
@@ -540,7 +537,7 @@ const Pool: FunctionComponent = observer(() => {
                   <LevelBadge level={1} />
                   <div className="flex shrink-0 items-center gap-4 sm:flex-wrap sm:shrink">
                     <h5 className="md:text-h6 md:font-h6">
-                      {t("Earn swap fees")}
+                      {t("pool.earnSwapFees")}
                     </h5>
                     <h5 className="md:text-h6 md:font-h6 text-bullish-400">{`${
                       pool

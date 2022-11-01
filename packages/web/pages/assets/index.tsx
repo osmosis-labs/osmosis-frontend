@@ -49,6 +49,7 @@ const Assets: NextPage = observer(() => {
   } = useStore();
   const { nativeBalances, ibcBalances } = assetsStore;
   const account = accountStore.getAccount(chainId);
+  const t = useTranslation();
 
   const { setUserProperty, logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Assets.pageViewed],
@@ -112,14 +113,14 @@ const Assets: NextPage = observer(() => {
   useNavBar({
     ctas: [
       {
-        label: "Deposit",
+        label: t("assets.table.depositButton"),
         onClick: () => {
           transferConfig?.startTransfer("deposit");
           logEvent([EventName.Assets.depositClicked]);
         },
       },
       {
-        label: "Withdraw",
+        label: t("assets.table.withdrawButton"),
         onClick: () => {
           transferConfig?.startTransfer("withdraw");
           logEvent([EventName.Assets.withdrawClicked]);

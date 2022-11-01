@@ -321,7 +321,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                   {
                     /** These ids correspond to keys in `Cell` type and are later used for sorting. */
                     id: "chainName",
-                    display: t("assets.table.sort.netword"),
+                    display: t("assets.table.sort.network"),
                   },
                   {
                     id: "fiatValueRaw",
@@ -334,7 +334,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
         ) : (
           <div className="flex flex-col gap-5">
             <div className="flex flex-wrap items-center place-content-between">
-              <h5 className="shrink-0 mr-5">All Assets</h5>
+              <h5 className="shrink-0 mr-5">{t("assets.table.title")}</h5>
               <div className="flex items-center gap-5 lg:gap-2">
                 <Switch
                   isOn={hideZeroBalances}
@@ -343,7 +343,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                     setHideZeroBalances(!hideZeroBalances);
                   }}
                 >
-                  Hide zero balances
+                  {t("assets.table.hideZero")}
                 </Switch>
                 <SearchBox
                   currentValue={query}
@@ -351,7 +351,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                     setHideZeroBalances(false);
                     setQuery(query);
                   }}
-                  placeholder="Search assets"
+                  placeholder={t("assets.table.search")}
                 />
                 <SortMenu
                   selectedOptionId={sortKey}
@@ -373,16 +373,16 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                   options={[
                     {
                       id: "coinDenom",
-                      display: "Symbol",
+                      display: t("assets.table.sort.symbol"),
                     },
                     {
                       /** These ids correspond to keys in `Cell` type and are later used for sorting. */
                       id: "chainName",
-                      display: "Network",
+                      display: t("assets.table.sort.network"),
                     },
                     {
                       id: "fiatValueRaw",
-                      display: "Balance",
+                      display: t("assets.table.sort.balance"),
                     },
                   ]}
                 />
@@ -458,12 +458,12 @@ export const AssetsTable: FunctionComponent<Props> = observer(
             className="w-full my-5"
             columnDefs={[
               {
-                display: "Asset / Chain",
+                display: t("assets.table.columns.assetChain"),
                 displayCell: AssetNameCell,
                 sort: sortColumnWithKeys(["coinDenom", "chainName"]),
               },
               {
-                display: "Balance",
+                display: t("assets.table.columns.balance"),
                 displayCell: BalanceCell,
                 sort: sortColumnWithKeys(["fiatValueRaw"], "descending"),
                 className: "text-right pr-24 lg:pr-8 1.5md:pr-1",
@@ -471,7 +471,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
               ...(mergeWithdrawCol
                 ? ([
                     {
-                      display: "Transfer",
+                      display: t("assets.table.columns.transfer"),
                       displayCell: (cell) => (
                         <div>
                           <TransferButtonCell type="deposit" {...cell} />
@@ -483,14 +483,14 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                   ] as ColumnDef<TableCell>[])
                 : ([
                     {
-                      display: t("assets.table.columns.transfer"),
+                      display: t("assets.table.columns.deposit"),
                       displayCell: (cell) => (
                         <TransferButtonCell type="deposit" {...cell} />
                       ),
                       className: "text-center max-w-[5rem]",
                     },
                     {
-                      display: "Withdraw",
+                      display: t("assets.table.columns.withdraw"),
                       displayCell: (cell) => (
                         <TransferButtonCell type="withdraw" {...cell} />
                       ),

@@ -214,6 +214,7 @@
       "search": "Rechercher par devise",
       "title": "Actifs",
       "hideZero": "Cacher les fonds à zéro",
+      "buyOsmo": "Acheter",
       "preTransfer": {
         "deposit": "Déposer",
         "withdraw": "Retirer",
@@ -261,7 +262,8 @@
       "SORTMobile": "TRIER",
       "mobileMenu": "Trier par"
     },
-    "MAX": "MAX"
+    "MAX": "MAX",
+    "searchTokens": "Jetons de recherche"
   },
   "menu": {
     "swap": "Échanger",

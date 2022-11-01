@@ -214,6 +214,7 @@
       "search": "Filter by symbol",
       "title": "Assets",
       "hideZero": "Hide zero balances",
+      "buyOsmo": "Buy",
       "preTransfer": {
         "deposit": "Deposit",
         "withdraw": "Withdraw",
@@ -261,7 +262,8 @@
       "SORTMobile": "SORT",
       "mobileMenu": "Sort By"
     },
-    "MAX": "MAX"
+    "MAX": "MAX",
+    "searchTokens": "Search tokens"
   },
   "menu": {
     "swap": "Swap",

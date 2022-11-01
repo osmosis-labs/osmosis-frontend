@@ -8,6 +8,7 @@ import { TokenSelectModal } from "../../modals";
 import { useBooleanWithWindowEvent, useFilteredData } from "../../hooks";
 import { MobileProps } from "../types";
 import classNames from "classnames";
+import { useTranslation } from "react-multi-lang";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelect: FunctionComponent<
@@ -30,6 +31,7 @@ export const TokenSelect: FunctionComponent<
     setDropdownState,
   }) => {
     const { chainStore, priceStore } = useStore();
+    const t = useTranslation();
 
     // parent overrideable state
     const [isSelectOpenLocal, setIsSelectOpenLocal] =
@@ -210,7 +212,7 @@ export const TokenSelect: FunctionComponent<
                   ref={inputRef}
                   type="text"
                   className="px-4 subtitle2 text-white-full bg-transparent font-normal"
-                  placeholder="Search tokens"
+                  placeholder={t("components.searchTokens")}
                   onClick={(e) => e.stopPropagation()}
                   value={searchValue}
                   onInput={(e: any) => setTokenSearch(e.target.value)}
