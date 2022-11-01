@@ -12,6 +12,7 @@ import { InputBox } from "../input";
 import { Button } from "../buttons";
 import { CheckBox } from "../control";
 import { Disableable, InputProps, LoadingProps } from "../types";
+import { useTranslation } from "react-multi-lang";
 
 export type TransferProps = {
   isWithdraw: boolean;
@@ -59,6 +60,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   disablePanel = false,
 }) => {
   const { isMobile } = useWindowSize();
+  const t = useTranslation();
 
   const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
 
@@ -120,7 +122,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                 isOsmosisAccountLoaded ? (
                   Bech32Address.shortenAddress(from.address, maxFromChars)
                 ) : (
-                  <i>Connect Wallet</i>
+                  <i>{t("connectWallet")}</i>
                 )
               ) : (
                 truncateEthAddress(from.address)
@@ -159,7 +161,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                     maxToChars
                   )
                 ) : (
-                  <i>Connect Wallet</i>
+                  <i>{t("connectWallet")}</i>
                 )
               ) : (
                 truncateEthAddress(to.address)
@@ -200,7 +202,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                 }}
                 labelButtons={[
                   {
-                    label: "Enter",
+                    label: t("ibcTransfer.buttonEnter"),
                     className:
                       "bg-wosmongton-100 hover:bg-wosmongton-100 border-0 rounded-md",
                     onClick: () => setIsEditingWithdrawAddr(false),
@@ -269,13 +271,13 @@ export const Transfer: FunctionComponent<TransferProps> = ({
           <GradientView
             className="text-center"
             gradientClassName="bg-superfluid"
-            bgClassName="bg-surface"
+            bgClassName="bg-osmoverse-900"
           >
             <span className="body2 md:caption">{warningMessage}</span>
           </GradientView>
         )}
         {editWithdrawAddrConfig && editWithdrawAddrConfig.customAddress !== "" && (
-          <GradientView className="flex flex-col gap-2 body2 md:caption text-center bg-surface">
+          <GradientView className="flex flex-col gap-2 body2 md:caption text-center bg-osmoverse-900">
             <span>
               Withdrawing to a centralized exchange can result in lost funds.
             </span>

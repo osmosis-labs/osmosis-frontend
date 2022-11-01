@@ -9,6 +9,7 @@ import {
 import { RemoveLiquidity } from "../components/complex/remove-liquidity";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useTranslation } from "react-multi-lang";
+import { tError } from "../components/localization";
 
 export const RemoveLiquidityModal: FunctionComponent<
   {
@@ -36,7 +37,6 @@ export const RemoveLiquidityModal: FunctionComponent<
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      className: "w-full h-16 md:px-1 mt-3",
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () =>
         props.onRemoveLiquidity?.(
@@ -44,15 +44,15 @@ export const RemoveLiquidityModal: FunctionComponent<
           config
         ),
       children: config.error
-        ? config.error.message
-        : t("pool.manageLiquidity.tabRemoveLiquidity"),
+        ? t(...tError(config.error))
+        : t("removeLiquidity.title"),
     },
     props.onRequestClose
   );
 
   return (
     <ModalBase
-      title={t("pool.manageLiquidity.modalTitleRemove", { poolId })}
+      title={t("removeLiquidity.title")}
       {...props}
       isOpen={props.isOpen && showModalBase}
     >

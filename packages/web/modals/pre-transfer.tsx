@@ -1,14 +1,16 @@
 import { FunctionComponent } from "react";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { ModalBase, ModalBaseProps } from "./base";
-import { Button } from "../components/buttons";
+import { NewButton } from "../components/buttons";
 import { TokenSelect } from "../components/control";
 import { Info } from "../components/alert";
 import Image from "next/image";
 import { useWindowSize } from "../hooks";
 import classNames from "classnames";
 import { UNSTABLE_MSG } from "../config";
+import { useStore } from "../stores";
 import { useTranslation } from "react-multi-lang";
+import { observer } from "mobx-react-lite";
 
 export const PreTransferModal: FunctionComponent<
   ModalBaseProps & {
@@ -21,7 +23,7 @@ export const PreTransferModal: FunctionComponent<
     onWithdraw: () => void;
     onDeposit: () => void;
   }
-> = (props) => {
+> = observer((props) => {
   const {
     selectedToken,
     tokens,
@@ -32,8 +34,15 @@ export const PreTransferModal: FunctionComponent<
     onWithdraw,
     onDeposit,
   } = props;
+  const { priceStore } = useStore();
   const { isMobile } = useWindowSize();
   const t = useTranslation();
+
+  const tokenValue = priceStore.calculatePrice(
+    selectedToken,
+    priceStore.defaultVsCurrency
+  );
+
   return (
     <ModalBase
       {...props}
@@ -46,12 +55,17 @@ export const PreTransferModal: FunctionComponent<
         />
       }
     >
-      <div className="flex flex-col gap-5 pt-5">
-        <div className="flex flex-col gap-2 items-center">
-          <h6>{selectedToken.currency.coinDenom}</h6>
-          <span className="subtitle2 text-iconDefault">
-            {selectedToken.trim(true).toString()}
+      <div className="flex flex-col gap-7 pt-5">
+        <div className="flex flex-col gap-2 px-5 items-left">
+          <span className="caption text-osmoverse-400">
+            {t("assets.table.preTransfer.currentBal")}
           </span>
+          <h6>{selectedToken.trim(true).toString()}</h6>
+          {tokenValue && (
+            <span className="subtitle2 text-iconDefault">
+              {tokenValue?.toString()}
+            </span>
+          )}
         </div>
         {isUnstable && <Info message={UNSTABLE_MSG} isMobile={isMobile} />}
         <div className="flex place-content-between gap-5 py-2">
@@ -79,13 +93,13 @@ export const PreTransferModal: FunctionComponent<
               />
             </a>
           ) : (
-            <Button
+            <NewButton
               className="w-full h-10"
               disabled={isUnstable}
               onClick={onDeposit}
             >
               {t("assets.table.preTransfer.deposit")}
-            </Button>
+            </NewButton>
           )}
           {externalWithdrawUrl ? (
             <a
@@ -111,17 +125,16 @@ export const PreTransferModal: FunctionComponent<
               />
             </a>
           ) : (
-            <Button
+            <NewButton
               className="w-full h-10 bg-wosmongton-200/30"
-              type="outline"
               disabled={isUnstable}
               onClick={onWithdraw}
             >
               {t("assets.table.preTransfer.withdraw")}
-            </Button>
+            </NewButton>
           )}
         </div>
       </div>
     </ModalBase>
   );
-};
+});

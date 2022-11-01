@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { NextPage } from "next";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
@@ -30,7 +31,6 @@ import {
   useLockTokenConfig,
   usePoolDetailConfig,
   useSuperfluidPoolConfig,
-  useNavBar,
   useShowDustUserSetting,
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
@@ -55,11 +55,6 @@ const Pools: NextPage = observer(function () {
   const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
-  });
-  useNavBar({
-    ctas: [
-      { label: "Create new Pool", onClick: () => setIsCreatingPool(true) },
-    ],
   });
 
   const { chainId } = chainStore.osmosis;
@@ -209,7 +204,7 @@ const Pools: NextPage = observer(function () {
   );
 
   return (
-    <main className="bg-background px-8">
+    <main className="bg-osmoverse-900 px-8 md:px-3">
       {isCreatingPool && (
         <CreatePoolModal
           isOpen={isCreatingPool}
@@ -245,6 +240,9 @@ const Pools: NextPage = observer(function () {
       )}
       {addLiquidityModalPoolId && (
         <AddLiquidityModal
+          title={t("addLiquidity.titleInPool", {
+            poolId: addLiquidityModalPoolId,
+          })}
           poolId={addLiquidityModalPoolId}
           isOpen={true}
           onRequestClose={() => setAddLiquidityModalPoolId(null)}
@@ -252,6 +250,9 @@ const Pools: NextPage = observer(function () {
       )}
       {removeLiquidityModalPoolId && (
         <RemoveLiquidityModal
+          title={t("removeLiquidity.titleInPool", {
+            poolId: removeLiquidityModalPoolId,
+          })}
           poolId={removeLiquidityModalPoolId}
           isOpen={true}
           onRequestClose={() => setRemoveLiquidityModalPoolId(null)}
@@ -259,7 +260,7 @@ const Pools: NextPage = observer(function () {
       )}
       {lockLpTokenModalPoolId && (
         <LockTokensModal
-          title={`Lock shares in Pool #${lockLpTokenModalPoolId}`}
+          title={t("lockToken.titleInPool", { poolId: lockLpTokenModalPoolId })}
           isOpen={true}
           poolId={lockLpTokenModalPoolId}
           amountConfig={lockLpTokenConfig}
@@ -270,16 +271,12 @@ const Pools: NextPage = observer(function () {
       {superfluidDelegateModalProps && (
         <SuperfluidValidatorModal {...superfluidDelegateModalProps} />
       )}
-      <section className="pt-20 pb-10">
+      <section className="pt-8 md:pt-4 pb-10 md:pb-5">
         <PoolsOverview className="mx-auto" />
       </section>
       <section>
         <div className="mx-auto pb-[3.75rem]">
-          {isMobile ? (
-            <span className="subtitle2">{t("pools.myPools")}</span>
-          ) : (
-            <h5>{t("pools.myPools")}</h5>
-          )}
+          <h5 className="md:px-3">{t("pools.myPools")}</h5>
           <div className="flex flex-col gap-4">
             <div className="mt-5 grid grid-cards md:gap-3">
               {dustFilteredPools.map((myPool) => {
@@ -416,6 +413,7 @@ const Pools: NextPage = observer(function () {
       </section>
       {isMobile ? (
         <section>
+          <h5 className="md:px-3">{t("pools.all")}</h5>
           <TabBox
             tabs={[
               {
@@ -428,7 +426,7 @@ const Pools: NextPage = observer(function () {
                 ),
               },
               {
-                title: t("pools.all"),
+                title: t("pools.allTab"),
                 content: (
                   <AllPoolsTableSet
                     tableSet="all-pools"
@@ -444,11 +442,12 @@ const Pools: NextPage = observer(function () {
               },
               {
                 title: (
-                  <span className="superfluid caption">Superfluid Pools</span>
+                  <span className="text-superfluid">
+                    {t("pools.superfluid.tab")}
+                  </span>
                 ),
                 content: (
                   <CompactPoolTableDisplay
-                    title="Superfluid Pools"
                     pools={
                       sfsPoolsPage?.map(
                         ({ id, poolLiquidity, apr, assets }) => ({
@@ -458,19 +457,19 @@ const Pools: NextPage = observer(function () {
                             ...[
                               sortKeyPath === "poolLiquidity"
                                 ? {
-                                    label: "",
+                                    label: t("pools.allPools.TVL"),
                                     value: poolLiquidity.toString(),
                                   }
                                 : sortKeyPath === "apr"
                                 ? {
-                                    label: "",
+                                    label: t("pools.allPools.APR"),
                                     value: apr
                                       .maxDecimals(2)
                                       .trim(true)
                                       .toString(),
                                   }
                                 : {
-                                    label: "APR",
+                                    label: t("pools.allPools.APR"),
                                     value: apr
                                       .maxDecimals(2)
                                       .trim(true)
@@ -480,14 +479,14 @@ const Pools: NextPage = observer(function () {
                             ...[
                               sortKeyPath === "poolLiquidity"
                                 ? {
-                                    label: "APR",
+                                    label: t("pools.allPools.APR"),
                                     value: apr
                                       .maxDecimals(2)
                                       .trim(true)
                                       .toString(),
                                   }
                                 : {
-                                    label: "TVL",
+                                    label: t("pools.allPools.TVL"),
                                     value: poolLiquidity.toString(),
                                   },
                             ],
@@ -503,9 +502,12 @@ const Pools: NextPage = observer(function () {
                     }}
                     sortMenuProps={{
                       options: [
-                        { id: "id", display: "Pool ID" },
-                        { id: "apr", display: "APR" },
-                        { id: "poolLiquidity", display: "Liquidity" },
+                        { id: "id", display: t("pools.allPools.sort.poolId") },
+                        { id: "apr", display: t("pools.allPools.APR") },
+                        {
+                          id: "poolLiquidity",
+                          display: t("pools.allPools.sort.liquidity"),
+                        },
                       ],
                       selectedOptionId: sortKeyPath,
                       onSelect: (id) =>
@@ -523,12 +525,14 @@ const Pools: NextPage = observer(function () {
                     minTvlToggleProps={{
                       isOn: isPoolTvlFiltered,
                       onToggle: setIsPoolTvlFiltered,
-                      label: `Show pools less than ${new PricePretty(
-                        priceStore.getFiatCurrency(
-                          priceStore.defaultVsCurrency
-                        )!,
-                        TVL_FILTER_THRESHOLD
-                      ).toString()}`,
+                      label: t("pools.allPools.displayLowLiquidity", {
+                        value: new PricePretty(
+                          priceStore.getFiatCurrency(
+                            priceStore.defaultVsCurrency
+                          )!,
+                          TVL_FILTER_THRESHOLD
+                        ).toString(),
+                      }),
                     }}
                   />
                 ),
@@ -628,6 +632,27 @@ const Pools: NextPage = observer(function () {
           </section>
         </>
       )}
+      <section className="pb-4">
+        <div className="w-full flex items-center bg-osmoverse-800 rounded-full px-5 py-4">
+          <span className="subtitle1 md:text-subtitle2 md:font-subtitle2 flex items-center gap-1">
+            {t("pools.createPool.interestedCreate")}{" "}
+            <u
+              className="text-wosmongton-300 flex items-center cursor-pointer"
+              onClick={() => setIsCreatingPool(true)}
+            >
+              {t("pools.createPool.startProcess")}
+              <div className="flex items-center shrink-0">
+                <Image
+                  alt="right arrow"
+                  src="/icons/arrow-right-wosmongton-300.svg"
+                  height={24}
+                  width={24}
+                />
+              </div>
+            </u>
+          </span>
+        </div>
+      </section>
     </main>
   );
 });

@@ -19,5 +19,5 @@ export declare class ObservableSlippageConfig {
         index: number;
         selected: boolean;
     }[];
-    getManualSlippageError: () => Error | undefined;
+    get manualSlippageError(): Error | undefined;
 }

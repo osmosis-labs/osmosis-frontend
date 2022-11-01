@@ -44,7 +44,9 @@ export const TransferButtonCell: FunctionComponent<
         (onBuyOsmo && account.walletStatus !== WalletStatus.Loaded)
       }
       externalUrl={depositUrlOverride}
-      label={onBuyOsmo ? "Buy" : t("assets.table.depositButton")}
+      label={
+        onBuyOsmo ? t("assets.table.buyOsmo") : t("assets.table.depositButton")
+      }
       action={
         onBuyOsmo
           ? onBuyOsmo

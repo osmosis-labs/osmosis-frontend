@@ -49,6 +49,7 @@ const Assets: NextPage = observer(() => {
   } = useStore();
   const { nativeBalances, ibcBalances } = assetsStore;
   const account = accountStore.getAccount(chainId);
+  const t = useTranslation();
 
   const { setUserProperty, logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Assets.pageViewed],
@@ -64,7 +65,10 @@ const Assets: NextPage = observer(() => {
         (ibcBalance) => ibcBalance.balance.denom === coinDenom
       );
 
-      if (!ibcBalance) return;
+      if (!ibcBalance) {
+        console.error("launchPreTransferModal: ibcBalance not found");
+        return;
+      }
 
       setPreTransferModalProps({
         isOpen: true,
@@ -93,7 +97,7 @@ const Assets: NextPage = observer(() => {
         onRequestClose: () => setPreTransferModalProps(null),
       });
     },
-    [ibcBalances]
+    [ibcBalances, transferConfig]
   );
 
   useEffect(() => {
@@ -109,14 +113,14 @@ const Assets: NextPage = observer(() => {
   useNavBar({
     ctas: [
       {
-        label: "Deposit",
+        label: t("assets.table.depositButton"),
         onClick: () => {
           transferConfig?.startTransfer("deposit");
           logEvent([EventName.Assets.depositClicked]);
         },
       },
       {
-        label: "Withdraw",
+        label: t("assets.table.withdrawButton"),
         onClick: () => {
           transferConfig?.startTransfer("withdraw");
           logEvent([EventName.Assets.withdrawClicked]);
@@ -126,7 +130,7 @@ const Assets: NextPage = observer(() => {
   });
 
   return (
-    <main className="flex flex-col gap-20 bg-background p-8">
+    <main className="flex flex-col gap-20 md:gap-8 bg-osmoverse-900 p-8 md:p-4">
       <AssetsOverview />
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
@@ -156,8 +160,6 @@ const Assets: NextPage = observer(() => {
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
-        onDepositIntent={() => transferConfig?.startTransfer("deposit")}
-        onWithdrawIntent={() => transferConfig?.startTransfer("withdraw")}
         onDeposit={(chainId, coinDenom, externalDepositUrl) => {
           if (!externalDepositUrl) {
             isMobile
@@ -173,7 +175,7 @@ const Assets: NextPage = observer(() => {
         onBuyOsmo={() => transferConfig?.buyOsmo()}
       />
       {!isMobile && <PoolAssets />}
-      <section className="bg-surface">
+      <section className="bg-osmoverse-900">
         <DepoolingTable
           className="p-10 md:p-5 max-w-container mx-auto"
           tableClassName="md:w-screen md:-mx-5"
@@ -229,14 +231,16 @@ const AssetsOverview: FunctionComponent = observer(() => {
   ]);
 
   const Metric: FunctionComponent<Metric> = ({ label, value }) => (
-    <div className="flex flex-col gap-5">
-      <h6>{label}</h6>
-      <h2 className="text-wosmongton-100">{value}</h2>
+    <div className="flex flex-col gap-5 md:gap-2 shrink-0">
+      <h6 className="md:text-subtitle1 md:font-subtitle1">{label}</h6>
+      <h2 className="lg:text-h3 lg:font-h3 md:text-h4 md:font-h4 text-wosmongton-100">
+        {value}
+      </h2>
     </div>
   );
 
   return (
-    <div className="w-full flex items-center gap-[100px] bg-osmoverse-800 rounded-[32px] px-20 py-10">
+    <div className="w-full flex md:flex-col items-center md:items-start gap-[100px] lg:gap-5 md:gap-3 bg-osmoverse-800 md:bg-osmoverse-1000 rounded-[32px] px-20 lg:px-10 md:px-4 py-10 md:py-5">
       <Metric
         label={t("assets.totalAssets")}
         value={totalAssetsValue.toString()}

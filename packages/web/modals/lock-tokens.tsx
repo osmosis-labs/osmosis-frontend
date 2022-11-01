@@ -6,12 +6,14 @@ import { Duration } from "dayjs/plugin/duration";
 import { useStore } from "../stores";
 import { InputBox } from "../components/input";
 import { CheckBox } from "../components/control";
+import { tError } from "../components/localization";
 import { ModalBase, ModalBaseProps } from "./base";
 import {
   useConnectWalletModalRedirect,
   useBondLiquidityConfig,
   usePoolDetailConfig,
   useSuperfluidPoolConfig,
+  useCurrentLanguage,
 } from "../hooks";
 import { ExternalIncentiveGaugeAllowList } from "../config";
 import { useTranslation } from "react-multi-lang";
@@ -26,6 +28,7 @@ export const LockTokensModal: FunctionComponent<
 > = observer((props) => {
   const { poolId, amountConfig: config, onLockToken } = props;
   const t = useTranslation();
+  const locale = useCurrentLanguage();
 
   const { chainStore, accountStore, queriesStore } = useStore();
 
@@ -63,14 +66,14 @@ export const LockTokensModal: FunctionComponent<
     selectedDurationIndex === bondableDurations.length - 1;
   const [electSuperfluid, setElectSuperfluid] = useState(true);
 
-  const selectedApr = selectedDurationIndex
-    ? bondableDurations[selectedDurationIndex]?.aggregateApr
-    : undefined;
+  const selectedApr =
+    selectedDurationIndex !== null
+      ? bondableDurations[selectedDurationIndex]?.aggregateApr
+      : undefined;
   const superfluidInEffect = electSuperfluid && highestDurationSelected;
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      className: "h-16",
       disabled:
         config.error !== undefined ||
         selectedDurationIndex === null ||
@@ -94,12 +97,12 @@ export const LockTokensModal: FunctionComponent<
         }
       },
       children:
-        config.error?.message ||
+        (config.error ? t(...tError(config.error)) : false) ||
         (electSuperfluid && !hasSuperfluidValidator && highestDurationSelected
-          ? t("pool.lockToken.buttonNext")
+          ? t("lockToken.buttonNext")
           : superfluidInEffect
-          ? "Bond & Stake"
-          : t("pool.lockToken.buttonBond") || undefined),
+          ? t("lockToken.buttonBondStake")
+          : t("lockToken.buttonBond") || undefined),
     },
     props.onRequestClose
   );
@@ -111,13 +114,13 @@ export const LockTokensModal: FunctionComponent<
 
   return (
     <ModalBase
-      title={`Lock Shares in Pool #${poolId}`}
+      title={t("lockToken.titleInPool", { poolId })}
       {...props}
       isOpen={props.isOpen && showModalBase}
     >
       <div className="flex flex-col gap-8">
         <span className="subtitle1 text-center">
-          {t("pool.lockToken.unbondingPeriod")}
+          {t("lockToken.selectPeriod")}
         </span>
         <h2 className="text-center">
           <span
@@ -125,13 +128,13 @@ export const LockTokensModal: FunctionComponent<
           >
             {selectedApr?.maxDecimals(2).toString() ?? "0%"}
           </span>{" "}
-          APR
+          {t("pool.APR")}
         </h2>
-        <div className="flex md:flex-col gap-4 overflow-x-auto">
+        <div className="flex gap-4 md:gap-1 overflow-x-auto">
           {bondableDurations.map(({ duration, aggregateApr }, index) => (
             <LockupItem
               key={index}
-              duration={duration.humanize()}
+              duration={duration.locale(locale).humanize()}
               isSelected={index === selectedDurationIndex}
               onSelect={() => setSelectedDurationIndex(index)}
               apr={aggregateApr?.maxDecimals(2).trim(true).toString()}
@@ -154,13 +157,16 @@ export const LockTokensModal: FunctionComponent<
               })}
             >
               <h6>
-                Superfluid Stake{" "}
+                {t("lockToken.superfluidStake")}{" "}
                 {superfluidApr && `(+${superfluidApr.maxDecimals(0)} APR)`}
               </h6>
               {poolDetailConfig?.longestDuration && (
                 <span className="caption text-osmoverse-300">
-                  {poolDetailConfig.longestDuration.asDays()} day bonding
-                  requirement
+                  {t("lockToken.bondingRequirement", {
+                    numDays: poolDetailConfig.longestDuration
+                      .asDays()
+                      .toString(),
+                  })}
                 </span>
               )}
             </div>
@@ -168,15 +174,20 @@ export const LockTokensModal: FunctionComponent<
         )}
         <div className="flex flex-col gap-2">
           <div className="flex items-center place-content-between">
-            <span className="subtitle1">Amount To Bond</span>
+            <span className="subtitle1">{t("lockToken.amountToBond")}</span>
             {availableToken && (
               <div className="flex gap-1 caption">
-                <span>Available</span>
+                <span>{t("lockToken.availableToken")}</span>
                 <span
                   className="text-wosmongton-300 cursor-pointer"
                   onClick={() => config.setIsMax(true)}
                 >
-                  {availableToken.trim(true).toString()}
+                  {t("pool.sharesAmount", {
+                    shares: availableToken
+                      .trim(true)
+                      .hideDenom(true)
+                      .toString(),
+                  })}
                 </span>
               </div>
             )}
@@ -204,7 +215,7 @@ const LockupItem: FunctionComponent<{
   <button
     onClick={onSelect}
     className={classNames(
-      "rounded-xl px-5 md:py-3.5 py-5 md:px-4 w-full cursor-pointer min-w-[190px]",
+      "rounded-xl w-full md:px-3 px-5 md:py-3.5 py-5 cursor-pointer",
       isSelected
         ? "bg-osmoverse-700 border-2 border-osmoverse-200"
         : "border border-osmoverse-600"
@@ -213,11 +224,7 @@ const LockupItem: FunctionComponent<{
     <div className="flex w-full place-content-between flex-col text-center">
       <h5>{duration}</h5>
       {apr && (
-        <div className="flex items-center md:text-right text-center md:mx-0 mx-auto gap-2">
-          <p className="subtitle1 md:m-0 mt-1 text-wosmongton-200 md:text-sm text-base">
-            {apr}
-          </p>
-        </div>
+        <p className="subtitle1 md:m-0 mt-1 text-wosmongton-200">{apr}</p>
       )}
     </div>
   </button>

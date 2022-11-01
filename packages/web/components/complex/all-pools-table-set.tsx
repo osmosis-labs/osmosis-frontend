@@ -471,11 +471,6 @@ export const AllPoolsTableSet: FunctionComponent<{
     if (isMobile) {
       return (
         <CompactPoolTableDisplay
-          title={
-            isIncentivizedPools
-              ? t("pools.allPools.titleIncentivized")
-              : t("pools.allPools.title")
-          }
           pools={allData.map((poolData) => ({
             id: poolData.pool.id,
             assets: poolData.pool.poolAssets.map(
@@ -492,13 +487,19 @@ export const AllPoolsTableSet: FunctionComponent<{
               ...[
                 sortKeyPath === "volume24h"
                   ? {
-                      label: "",
+                      label: t("pools.allPools.sort.volume24h"),
                       value: poolData.volume24h.toString(),
                     }
                   : sortKeyPath === "feesSpent7d"
-                  ? { label: "", value: poolData.feesSpent7d.toString() }
+                  ? {
+                      label: t("pools.allPools.sort.fees"),
+                      value: poolData.feesSpent7d.toString(),
+                    }
                   : sortKeyPath === "apr"
-                  ? { label: "", value: poolData.apr?.toString() ?? "0%" }
+                  ? {
+                      label: t("pools.allPools.sort.APRIncentivized"),
+                      value: poolData.apr?.toString() ?? "0%",
+                    }
                   : sortKeyPath === "myLiquidity"
                   ? {
                       label: t("pools.allPools.myLiquidity"),
@@ -539,7 +540,7 @@ export const AllPoolsTableSet: FunctionComponent<{
           sortMenuProps={{
             options: tableCols.filter(
               (col) =>
-                typeof col.display === "string" && col.display.length === 0
+                typeof col.display === "string" && col.display.length !== 0
             ) as MenuOption[],
             selectedOptionId: sortKeyPath,
             onSelect: (id) =>

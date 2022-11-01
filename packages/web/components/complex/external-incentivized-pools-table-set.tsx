@@ -364,7 +364,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
     if (isMobile) {
       return (
         <CompactPoolTableDisplay
-          title={t("pools.externalIncentivized.title")}
           pools={allData.map((poolData) => ({
             id: poolData.pool.id,
             assets: poolData.pool.poolAssets.map(

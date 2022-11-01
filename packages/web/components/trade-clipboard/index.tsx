@@ -6,7 +6,7 @@ import { Pool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { IS_FRONTIER, EventName } from "../../config";
+import { EventName } from "../../config";
 import {
   useBooleanWithWindowEvent,
   useFakeFeeConfig,
@@ -17,11 +17,12 @@ import {
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { Button } from "../buttons";
+import { NewButton } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
 import { useTranslation } from "react-multi-lang";
+import { tError } from "../localization";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -253,9 +254,7 @@ export const TradeClipboard: FunctionComponent<{
             width={isMobile ? 20 : 28}
             height={isMobile ? 20 : 28}
             src={
-              IS_FRONTIER
-                ? "/icons/setting-white.svg"
-                : `/icons/setting${isSettingOpen ? "-selected" : ""}.svg`
+              isSettingOpen ? "/icons/setting-white.svg" : "/icons/setting.svg"
             }
             alt="setting icon"
           />
@@ -308,7 +307,7 @@ export const TradeClipboard: FunctionComponent<{
                     ? "text-white-high"
                     : "text-white-faint",
                   slippageConfig.isManualSlippage
-                    ? slippageConfig.getManualSlippageError()
+                    ? slippageConfig.manualSlippageError
                       ? "bg-missionError"
                       : "bg-wosmongton-200"
                     : "bg-background"
@@ -841,20 +840,18 @@ export const TradeClipboard: FunctionComponent<{
           </div>
         </div>
       </div>
-      <Button
+      <NewButton
         color={
           showPriceImpactWarning && account.walletStatus === WalletStatus.Loaded
             ? "error"
             : "primary"
         }
-        className="flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full"
         disabled={
           account.walletStatus === WalletStatus.Loaded &&
           (tradeTokenInConfig.error !== undefined ||
             tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
             account.txTypeInProgress !== "")
         }
-        loading={account.txTypeInProgress !== ""}
         onClick={async () => {
           if (account.walletStatus !== WalletStatus.Loaded) {
             return account.init();
@@ -1008,24 +1005,24 @@ export const TradeClipboard: FunctionComponent<{
       >
         {account.walletStatus === WalletStatus.Loaded ? (
           tradeTokenInConfig.error ? (
-            tradeTokenInConfig.error.message
+            t(...tError(tradeTokenInConfig.error))
           ) : showPriceImpactWarning ? (
             t("swap.buttonError")
           ) : (
             t("swap.button")
           )
         ) : (
-          <div className="flex items-center gap-1">
+          <h6 className="flex items-center gap-3">
             <Image
               alt="wallet"
               src="/icons/wallet.svg"
               height={24}
               width={24}
             />
-            <span>{t("swap.buttonConnect")}</span>
-          </div>
+            {t("connectWallet")}
+          </h6>
         )}
-      </Button>
+      </NewButton>
     </div>
   );
 });

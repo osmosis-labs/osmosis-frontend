@@ -41,7 +41,7 @@ export const PoolTokenSelect: FunctionComponent<
         )}
       >
         <button
-          className="relative flex md:gap-1 gap-3"
+          className="relative flex items-center md:gap-1.5 gap-3"
           onClick={() => setToggleOpen(!isToggleOpen)}
         >
           <Token
@@ -50,7 +50,7 @@ export const PoolTokenSelect: FunctionComponent<
             isMobile={isMobile}
           />
           <div
-            className={classNames("my-auto transition shrink-0", {
+            className={classNames("my-auto pt-1 transition shrink-0", {
               "rotate-180": isToggleOpen,
             })}
           >

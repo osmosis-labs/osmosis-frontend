@@ -6,6 +6,7 @@ import { useConnectWalletModalRedirect, useAddLiquidityConfig } from "../hooks";
 import { AddLiquidity } from "../components/complex/add-liquidity";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useTranslation } from "react-multi-lang";
+import { tError } from "../components/localization";
 
 export const AddLiquidityModal: FunctionComponent<
   {
@@ -33,7 +34,6 @@ export const AddLiquidityModal: FunctionComponent<
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      className: "w-full h-16 md:px-1 mt-3",
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () =>
         props.onAddLiquidity?.(
@@ -43,15 +43,15 @@ export const AddLiquidityModal: FunctionComponent<
           config
         ),
       children: config.error
-        ? config.error.message
-        : t("pool.manageLiquidity.tabAddLiquidity"),
+        ? t(...tError(config.error))
+        : t("addLiquidity.title"),
     },
     props.onRequestClose
   );
 
   return (
     <ModalBase
-      title={t("pool.manageLiquidity.modalTitleAdd", { poolId })}
+      title={t("addLiquidity.title")}
       {...props}
       isOpen={props.isOpen && showModalBase}
     >

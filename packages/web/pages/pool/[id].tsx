@@ -66,6 +66,8 @@ const Pool: FunctionComponent = observer(() => {
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const { bech32Address } = accountStore.getAccount(chainStore.osmosis.chainId);
   const queryGammPoolFeeMetrics = queriesExternalStore.queryGammPoolFeeMetrics;
+  const queryAccountPoolRewards =
+    queriesExternalStore.queryAccountsPoolRewards.get(bech32Address);
 
   // eject to pools page if pool does not exist
   const poolExists = queryOsmosis.queryGammPools.poolExists(poolId as string);
@@ -269,15 +271,12 @@ const Pool: FunctionComponent = observer(() => {
     ]
   );
 
-  const pageTitle = useMemo(
-    () => (pool ? `Pool #${pool.id}` : undefined),
-    [pool?.id]
-  );
+  const pageTitle = pool ? t("pool.title", { id: pool.id }) : undefined;
   useNavBar({
     title: pageTitle,
     ctas: [
       {
-        label: "Swap Tokens",
+        label: t("pool.swap"),
         onClick: () => {
           logEvent([E.swapTokensClicked, baseEventInfo]);
           setShowTradeTokenModal(true);
@@ -297,7 +296,7 @@ const Pool: FunctionComponent = observer(() => {
   }, [poolDetailConfig?.userAvailableValue, bondableDurations]);
 
   return (
-    <main className="flex flex-col gap-10 bg-osmoverse-900 min-h-screen p-8">
+    <main className="flex flex-col gap-10 md:gap-4 bg-osmoverse-900 min-h-screen p-8 md:p-4">
       <Head>
         <title>
           {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
@@ -305,7 +304,6 @@ const Pool: FunctionComponent = observer(() => {
       </Head>
       {pool && showAddLiquidityModal && (
         <AddLiquidityModal
-          title={t("pool.manageLiquidity.title")}
           isOpen={true}
           poolId={pool.id}
           onRequestClose={() => setShowAddLiquidityModal(false)}
@@ -314,7 +312,6 @@ const Pool: FunctionComponent = observer(() => {
       )}
       {pool && showRemoveLiquidityModal && (
         <RemoveLiquidityModal
-          title="Remove Liquidity"
           isOpen={true}
           poolId={pool.id}
           onRequestClose={() => setShowRemoveLiquidityModal(false)}
@@ -336,7 +333,7 @@ const Pool: FunctionComponent = observer(() => {
           <LockTokensModal
             poolId={poolId}
             isOpen={showLockLPTokenModal}
-            title={t("pool.lockToken.title")}
+            title={t("lockToken.title")}
             onRequestClose={() => setShowLockLPTokenModal(false)}
             amountConfig={lockLPTokensConfig}
             onLockToken={onLockToken}
@@ -367,129 +364,167 @@ const Pool: FunctionComponent = observer(() => {
             onSelectValidator={handleSuperfluidDelegateToValidator}
           />
         )}
-      <div className="flex flex-col gap-4 bg-osmoverse-1000 rounded-4xl pb-5">
-        <div
-          className={classNames(
-            "flex flex-col gap-10 px-10 pt-10 transition-height duration-300 ease-inOutBack overflow-hidden",
-            showPoolDetails ? "h-[250px]" : "h-[120px]"
-          )}
-        >
-          <div className="flex items-start place-content-between">
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                {pool && (
-                  <PoolAssetsIcon
-                    assets={pool.poolAssets.map((asset) => ({
-                      coinDenom: asset.amount.denom,
-                      coinImageUrl: asset.amount.currency.coinImageUrl,
-                    }))}
-                    size="sm"
-                  />
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 bg-osmoverse-1000 rounded-4xl pb-5">
+          <div
+            className={classNames(
+              "flex flex-col gap-10 px-10 pt-10 md:px-5 md:pt-7 transition-height duration-300 ease-inOutBack overflow-hidden",
+              showPoolDetails
+                ? "h-[230px] xl:h-[300px] lg:h-[510px]"
+                : "h-[120px] xl:h-[180px] lg:h-[300px]"
+            )}
+          >
+            <div className="flex items-start gap-2 place-content-between xl:flex-col">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  {pool && (
+                    <PoolAssetsIcon
+                      assets={pool.poolAssets.map((asset) => ({
+                        coinDenom: asset.amount.denom,
+                        coinImageUrl: asset.amount.currency.coinImageUrl,
+                      }))}
+                      size="sm"
+                    />
+                  )}
+                  <h5 className="max-w-xs truncate">{poolName}</h5>
+                </div>
+                {superfluidPoolConfig?.isSuperfluid && (
+                  <span className="body2 superfluid">
+                    {t("pool.superfluidEnabled")}
+                  </span>
                 )}
-                <h5>{poolName}</h5>
               </div>
-              {superfluidPoolConfig?.isSuperfluid && (
-                <span className="body2 text-osmoverse-300">
-                  {t("pool.superfluidEnabled")}
+              <div className="flex items-center gap-10 xl:place-content-between xl:w-full lg:flex-col lg:w-fit lg:items-start">
+                <div>
+                  <span className="text-osmoverse-400 subtitle1 gap-2">
+                    {t("pool.24hrTradingVolume")}
+                  </span>
+                  <h4 className="text-osmoverse-100">
+                    {queryGammPoolFeeMetrics
+                      .getPoolFeesMetrics(poolId, priceStore)
+                      .volume24h.toString()}
+                  </h4>
+                </div>
+                <div>
+                  <span className="text-osmoverse-400 subtitle1 gap-2">
+                    {t("pool.liquidity")}
+                  </span>
+                  <h4 className="text-osmoverse-100">
+                    {poolDetailConfig?.totalValueLocked.toString()}
+                  </h4>
+                </div>
+                <div>
+                  <span className="text-osmoverse-400 subtitle1 gap-2">
+                    {t("pool.swapFee")}
+                  </span>
+                  <h4 className="text-osmoverse-100">
+                    {pool?.swapFee.toString()}
+                  </h4>
+                </div>
+              </div>
+            </div>
+            {pool && (
+              <AssetBreakdownChart
+                assets={pool.poolAssets}
+                totalWeight={pool.totalWeight}
+              />
+            )}
+          </div>
+          <div
+            className="flex items-center mx-auto gap-1 cursor-pointer select-none"
+            onClick={() => setShowPoolDetails(!showPoolDetails)}
+          >
+            <span className="subtitle2 text-wosmongton-200">
+              {showPoolDetails
+                ? t("pool.collapseDetails")
+                : t("pool.showDetails")}
+            </span>
+            <div
+              className={classNames("flex items-center transition-transform", {
+                "rotate-180": showPoolDetails,
+              })}
+            >
+              <Image
+                src="/icons/chevron-down.svg"
+                alt="pool details"
+                height={14}
+                width={14}
+              />
+            </div>
+          </div>
+        </div>
+        {poolDetailConfig?.userStats && (
+          <div className="w-full grid grid-cols-[2fr_1fr] lg:flex lg:flex-col gap-4">
+            <div className="w-full flex flex-col gap-3 bg-osmoverse-1000 px-10 py-7 rounded-4xl">
+              <span className="subtitle1 text-osmoverse-300">
+                {t("pool.yourStats")}
+              </span>
+              <div className="flex items-center md:flex-col md:items-start gap-3 place-content-between">
+                <div className="flex shrink-0 flex-col gap-1">
+                  <h4 className="text-osmoverse-100">
+                    {poolDetailConfig.userStats.totalShareValue.toString()}
+                  </h4>
+                  <h6 className="text-osmoverse-300">
+                    {t("pool.sharesAmount", {
+                      shares: poolDetailConfig.userStats.totalShares
+                        .maxDecimals(6)
+                        .hideDenom(true)
+                        .toString(),
+                    })}
+                  </h6>
+                </div>
+                <div className="w-2/3 md:w-full">
+                  <PriceBreakdownChart
+                    prices={[
+                      {
+                        label: t("pool.bonded"),
+                        price: poolDetailConfig.userStats.bondedValue,
+                      },
+                      {
+                        label: t("pool.unbonded"),
+                        price: poolDetailConfig.userStats.unbondedValue,
+                      },
+                    ]}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="w-full flex flex-col gap-3 place-content-between bg-osmoverse-1000 px-10 py-7 rounded-4xl">
+              <div className="flex flex-col gap-2">
+                <span className="subtitle1 text-osmoverse-300">
+                  {t("pool.currentDailyEarn")}
                 </span>
+                <h4 className="text-osmoverse-100">
+                  {t("pool.dailyEarnAmount", {
+                    amount:
+                      queryAccountPoolRewards
+                        .getUsdRewardsForPool(poolId)
+                        ?.day.toString() ?? "$0",
+                  })}
+                </h4>
+              </div>
+              {poolDetailConfig?.userAvailableValue.toDec().gt(new Dec(0)) && (
+                <button
+                  className="flex items-center gap-1 text-wosmongton-200"
+                  onClick={() => setShowLockLPTokenModal(true)}
+                >
+                  {t("pool.earnMore")}
+                  <Image
+                    alt="earn more"
+                    src="/icons/arrow-right.svg"
+                    height={24}
+                    width={24}
+                  />
+                </button>
               )}
             </div>
-            <div className="flex items-center gap-10">
-              <div>
-                <span className="text-osmoverse-400 subtitle1 gap-2">
-                  24hr Trading volume
-                </span>
-                <h4 className="text-osmoverse-100">
-                  {queryGammPoolFeeMetrics
-                    .getPoolFeesMetrics(poolId, priceStore)
-                    .volume7d.toString()}
-                </h4>
-              </div>
-              <div>
-                <span className="text-osmoverse-400 subtitle1 gap-2">
-                  Pool liquidity
-                </span>
-                <h4 className="text-osmoverse-100">
-                  {poolDetailConfig?.totalValueLocked.toString()}
-                </h4>
-              </div>
-              <div>
-                <span className="text-osmoverse-400 subtitle1 gap-2">
-                  Swap fee
-                </span>
-                <h4 className="text-osmoverse-100">
-                  {pool?.swapFee.toString()}
-                </h4>
-              </div>
-            </div>
           </div>
-          {pool && (
-            <AssetBreakdownChart
-              assets={pool.poolAssets}
-              totalWeight={pool.totalWeight}
-            />
-          )}
-        </div>
-        <div
-          className="flex items-center mx-auto gap-1 cursor-pointer select-none"
-          onClick={() => setShowPoolDetails(!showPoolDetails)}
-        >
-          <span className="subtitle2 text-wosmongton-200">
-            {showPoolDetails ? "Collapse details" : "Show details"}
-          </span>
-          <div
-            className={classNames("flex items-center transition-transform", {
-              "rotate-180": showPoolDetails,
-            })}
-          >
-            <Image
-              src="/icons/chevron-down.svg"
-              alt="pool details"
-              height={14}
-              width={14}
-            />
-          </div>
-        </div>
+        )}
       </div>
-      {poolDetailConfig?.userStats && (
-        <div className="w-full flex items-center gap-4">
-          <div className="w-full flex flex-col gap-3 bg-osmoverse-1000 px-10 py-7 rounded-4xl">
-            <div className="flex items-center gap-3 place-content-between">
-              <div className="flex shrink-0 flex-col gap-1">
-                <h4 className="text-osmoverse-100">
-                  {poolDetailConfig.userStats.bondedValue.toString()}
-                </h4>
-                <h6 className="text-osmoverse-300">
-                  {poolDetailConfig.userStats.totalShares
-                    .maxDecimals(6)
-                    .hideDenom(true)
-                    .toString()}{" "}
-                  shares
-                </h6>
-              </div>
-              <div className="w-2/3 md:w-full">
-                <PriceBreakdownChart
-                  prices={[
-                    {
-                      label: "Bonded",
-                      price: poolDetailConfig.userStats.bondedValue,
-                    },
-                    {
-                      label: "Unbonded",
-                      price: poolDetailConfig.userStats.unbondedValue,
-                    },
-                  ]}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      <div className="flex flex-col gap-7">
-        <h5>Put your assets to work.</h5>
-        <span className="subtitle1 text-osmoverse-300">
-          Add your assets to this pool to unlock exciting APRs. The longer your
-          unbonding period, the more you make. Learn more
+      <div className="flex flex-col gap-7 md:gap-4">
+        <h5 className="md:text-h6 md:font-h6">{t("pool.putAssetsToWork")}</h5>
+        <span className="subtitle1 md:text-body1 md:font-body1 text-osmoverse-300">
+          {t("pool.putAssetsToWorkCaption")} {t("pool.learnMore")}
         </span>
         <div
           className={classNames(
@@ -497,53 +532,71 @@ const Pool: FunctionComponent = observer(() => {
             levelCta === 1 ? "bg-gradient-positive" : "bg-osmoverse-800"
           )}
         >
-          <div className="flex flex-col gap-10 bg-osmoverse-800 rounded-4x4pxlinset p-9">
-            <div className="flex items-start place-content-between">
+          <div className="flex flex-col gap-10 bg-osmoverse-800 rounded-4x4pxlinset p-9 md:p-5">
+            <div className="flex items-start lg:flex-col gap-2 lg:gap-14 place-content-between">
               <div className="flex flex-col gap-4">
                 <div className="flex items-baseline flex-wrap gap-4">
                   <LevelBadge level={1} />
-                  <div className="flex shrink-0 items-center gap-4">
-                    <h5>Earn swap fees</h5>
-                    <h5 className="text-bullish-400">{`${
+                  <div className="flex shrink-0 items-center gap-4 sm:flex-wrap sm:shrink">
+                    <h5 className="md:text-h6 md:font-h6">
+                      {t("pool.earnSwapFees")}
+                    </h5>
+                    <h5 className="md:text-h6 md:font-h6 text-bullish-400">{`${
                       pool
                         ? queryGammPoolFeeMetrics
                             .get7dPoolFeeApr(pool, priceStore)
                             .maxDecimals(2)
                             .toString()
                         : ""
-                    } APR`}</h5>
+                    } ${t("pool.APR")}`}</h5>
                   </div>
                 </div>
-                <span className="caption text-osmoverse-200">
-                  Convert your tokens into shares and earn on every swap.
+                <span className="body2 text-osmoverse-200">
+                  {t("pool.earnSwapFeesCaption")}
                 </span>
               </div>
-              <div className="flex shrink-0 gap-4">
-                <NewButton
-                  className="h-16 px-20 py-4"
-                  mode="secondary"
-                  onClick={() => setShowRemoveLiquidityModal(true)}
-                >
-                  Remove liquidity
-                </NewButton>
-                <NewButton
-                  className={classNames("h-16 px-20 py-4", {
-                    "bg-gradient-positive text-osmoverse-900": levelCta === 1,
-                  })}
-                  onClick={() => setShowAddLiquidityModal(true)}
-                >
-                  Add Liquidity
-                </NewButton>
+              <div className="lg:w-full flex flex-col gap-4">
+                <div className="hidden lg:flex flex-col items-end gap-3">
+                  <h3 className="md:text-h4 md:font-h4">
+                    {t("pool.sharesAmount", {
+                      shares: queryOsmosis.queryGammPoolShare
+                        .getAvailableGammShare(bech32Address, poolId)
+                        .trim(true)
+                        .hideDenom(true)
+                        .maxDecimals(4)
+                        .toString(),
+                    })}
+                  </h3>
+                </div>
+                <div className="flex place-content-end flex-wrap shrink-0 xs:shrink gap-4">
+                  <NewButton
+                    className="w-fit xs:w-full shrink-0"
+                    mode="secondary"
+                    onClick={() => setShowRemoveLiquidityModal(true)}
+                  >
+                    {t("removeLiquidity.title")}
+                  </NewButton>
+                  <NewButton
+                    className={classNames("w-fit xs:w-full shrink-0 ", {
+                      "bg-gradient-positive text-osmoverse-900": levelCta === 1,
+                    })}
+                    onClick={() => setShowAddLiquidityModal(true)}
+                  >
+                    {t("addLiquidity.title")}
+                  </NewButton>
+                </div>
               </div>
             </div>
-            <div className="flex flex-col items-end gap-3">
-              <h3>
-                {`${queryOsmosis.queryGammPoolShare
-                  .getAvailableGammShare(bech32Address, poolId)
-                  .trim(true)
-                  .hideDenom(true)
-                  .maxDecimals(4)
-                  .toString()} shares`}
+            <div className="lg:hidden flex flex-col items-end gap-3">
+              <h3 className="md:text-h4 md:font-h4">
+                {t("pool.sharesAmount", {
+                  shares: queryOsmosis.queryGammPoolShare
+                    .getAvailableGammShare(bech32Address, poolId)
+                    .trim(true)
+                    .hideDenom(true)
+                    .maxDecimals(4)
+                    .toString(),
+                })}
               </h3>
             </div>
           </div>
@@ -554,27 +607,27 @@ const Pool: FunctionComponent = observer(() => {
             levelCta === 2 ? "bg-gradient-positive" : "bg-osmoverse-800"
           )}
         >
-          <div className="flex flex-col gap-10 bg-osmoverse-800 rounded-4x4pxlinset p-9">
-            <div className="flex place-content-between">
+          <div className="flex flex-col gap-10 bg-osmoverse-800 rounded-4x4pxlinset p-9 md:p-5">
+            <div className="flex lg:flex-col gap-10 place-content-between">
               <div className="flex flex-col gap-4">
                 <div className="flex items-baseline flex-wrap gap-4">
                   <LevelBadge level={2} />
-                  <h5>Bond liquidity</h5>
+                  <h5>{t("pool.bondLiquidity")}</h5>
                 </div>
-                <span className="caption text-osmoverse-200">
-                  Lock up your shares for longer durations to earn higher APRs.
+                <span className="body2 text-osmoverse-200">
+                  {t("pool.bondLiquidityCaption")}
                   {superfluidPoolConfig?.isSuperfluid &&
-                    " Go superfluid for maximum rewards."}
+                    ` ${t("pool.bondSuperfluidLiquidityCaption")}`}
                 </span>
               </div>
               <NewButton
-                className={classNames("h-16 w-96 px-20 py-4 border-none", {
+                className={classNames("w-96 md:w-full border-none", {
                   "bg-gradient-positive text-osmoverse-900": levelCta === 2,
                 })}
                 disabled={levelCta !== 2}
                 onClick={() => setShowLockLPTokenModal(true)}
               >
-                Bond shares
+                {t("pool.bondShares")}
               </NewButton>
             </div>
             <div className="flex items-center flex-wrap gap-4">
@@ -603,10 +656,15 @@ const Pool: FunctionComponent = observer(() => {
   );
 });
 
-const LevelBadge: FunctionComponent<{ level: number }> = ({ level }) => (
-  <div className="bg-wosmongton-400 rounded-xl px-5 py-1">
-    <h5>Level {level}</h5>
-  </div>
-);
+const LevelBadge: FunctionComponent<{ level: number }> = ({ level }) => {
+  const t = useTranslation();
+  return (
+    <div className="bg-wosmongton-400 rounded-xl px-5 py-1">
+      <h5 className="md:text-h6 md:font-h6">
+        {t("pool.level", { level: level.toString() })}
+      </h5>
+    </div>
+  );
+};
 
 export default Pool;

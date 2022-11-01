@@ -33,7 +33,7 @@ export const SelectAssetSourceModal: FunctionComponent<
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      className: "h-14 md:w-full w-96 mt-3 mx-auto !px-1",
+      className: "mt-3 mx-auto",
       disabled:
         props.initiallySelectedWalletId === undefined &&
         !selectedAssetSourceKey,
@@ -48,13 +48,9 @@ export const SelectAssetSourceModal: FunctionComponent<
           );
         }
       },
-      children: (
-        <h6 className="md:text-base text-lg">
-          {canOnboardSelectedWallet
-            ? `Install ${selectedWallet.displayInfo.displayName}`
-            : "Next"}
-        </h6>
-      ),
+      children: canOnboardSelectedWallet
+        ? `Install ${selectedWallet.displayInfo.displayName}`
+        : "Next",
     },
     props.onRequestClose,
     "Connect Wallet"

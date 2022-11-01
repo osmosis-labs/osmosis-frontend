@@ -121,7 +121,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
         <div className="bg-gradient-negative rounded-xl md:caption p-[2px]">
           <div className="flex items-center justify-center gap-2 bg-osmoverse-800 rounded-xlinset p-3.5 md:px-12">
             <CheckBox
-              className="after:!bg-transparent after:!border-2 after:!rounded-[10px] -top-0.5 -left-0.5 after:!h-6 after:!w-6 after:!border-rust-700 checked:after:bg-gradient-negative checked:after:border-none"
+              className="after:!bg-transparent after:!border-2 after:!rounded-[10px] -top-px -left-0.5 after:!h-6 after:!w-6 after:!border-rust-700 checked:after:bg-gradient-negative checked:after:border-none"
               isOn={config.acknowledgeFee}
               checkMarkIconUrl="/icons/check-mark-dark.svg"
               checkMarkClassName="top-[1px] left-0 h-6 w-6"

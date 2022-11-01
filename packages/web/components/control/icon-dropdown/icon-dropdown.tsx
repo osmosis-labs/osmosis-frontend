@@ -38,7 +38,7 @@ export const IconDropdown: FunctionComponent<IconDropdownProps> = observer(
             setDropdownOpen(!dropdownOpen);
           }}
         >
-          <span className="flex items-center my-[0.6875rem] m-auto md:ml-1 ml-2 leading-loose select-none text-center body md:caption overflow-hidden">
+          <span className="flex items-center my-[0.6875rem] m-auto md:ml-1.5 ml-3 leading-loose select-none text-center body md:caption overflow-hidden">
             <div className="flex items-center justify-center min-w-[24px]">
               {currentOption &&
                 currentOption.iconUrl &&

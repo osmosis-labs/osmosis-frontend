@@ -2,6 +2,7 @@ import Image from "next/image";
 import { FunctionComponent, ReactNode } from "react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { useTranslation } from "react-multi-lang";
 import { Dec } from "@keplr-wallet/unit";
 import { ObservableRemoveLiquidityConfig } from "@osmosis-labs/stores";
 import { Slider } from "../../components/control";
@@ -16,24 +17,27 @@ export const RemoveLiquidity: FunctionComponent<
   } & CustomClasses
 > = observer(({ className, removeLiquidityConfig, actionButton }) => {
   const { priceStore } = useStore();
+  const t = useTranslation();
 
   return (
     <>
       <div
         className={classNames(
-          "w-[420px] flex flex-col gap-9 mx-auto text-center",
+          "w-[420px] md:w-full flex flex-col gap-9 md:gap-5 mx-auto text-center",
           className
         )}
       >
         <div className="flex flex-col gap-1">
-          <h2 className="mt-12">{`${removeLiquidityConfig.computePoolShareValueWithPercentage(
+          <h2 className="mt-12 md:mt-7">{`${removeLiquidityConfig.computePoolShareValueWithPercentage(
             priceStore
           )}`}</h2>
-          <h5 className="text-osmoverse-100">
-            {removeLiquidityConfig.poolShareWithPercentage
-              .hideDenom(true)
-              .toString()}{" "}
-            shares
+          <h5 className="text-osmoverse-100 md:font-h6 md:text-h6">
+            {t("removeLiquidity.sharesAmount", {
+              shares: removeLiquidityConfig.poolShareWithPercentage
+                .trim(true)
+                .hideDenom(true)
+                .toString(),
+            })}
           </h5>
         </div>
         <div className="flex flex-wrap items-center place-content-around gap-4 rounded-xl border border-osmoverse-600 py-2 px-3 text-osmoverse-300">
@@ -50,7 +54,9 @@ export const RemoveLiquidity: FunctionComponent<
                   width={16}
                 />
               )}
-              <span>{asset.toString()}</span>
+              <span className="max-w-xs truncate">
+                {asset.trim(true).toString()}
+              </span>
             </div>
           ))}
         </div>
@@ -64,7 +70,7 @@ export const RemoveLiquidity: FunctionComponent<
           max={100}
           step={1}
         />
-        <div className="grid grid-cols-4 gap-5 h-9 w-full md:mb-6 mb-14">
+        <div className="grid grid-cols-4 gap-5 md:gap-1 h-9 w-full md:mb-6 mb-14">
           <BorderButton
             onClick={() => removeLiquidityConfig.setPercentage("25")}
             disabled={removeLiquidityConfig.poolShareWithPercentage
@@ -95,7 +101,7 @@ export const RemoveLiquidity: FunctionComponent<
               .toDec()
               .equals(new Dec(0))}
           >
-            MAX
+            {t("components.MAX")}
           </BorderButton>
         </div>
       </div>

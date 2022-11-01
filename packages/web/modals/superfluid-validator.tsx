@@ -5,7 +5,7 @@ import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useStore } from "../stores";
 import { SearchBox } from "../components/input";
-import { Button } from "../components/buttons";
+import { NewButton } from "../components/buttons";
 import { Table } from "../components/table";
 import { ValidatorInfoCell } from "../components/table/cells/";
 import { InfoTooltip } from "../components/tooltip";
@@ -93,13 +93,13 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
         <div className="flex flex-col gap-2.5 mt-8">
           <div className="flex md:flex-col gap-2.5 mb-1 items-center place-content-between">
             <span className="subtitle2 mr-auto">
-              {t("pool.superfluidValidator.choose")}
+              {t("superfluidValidator.choose")}
             </span>
             <SearchBox
               className={isMobile ? "!rounded !w-full h-11" : undefined}
               currentValue={query}
               onInput={setQuery}
-              placeholder={t("pool.superfluidValidator.search")}
+              placeholder={t("superfluidValidator.search")}
             />
           </div>
           <div className="overflow-y-scroll overflow-x-clip h-72">
@@ -109,7 +109,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
               headerTrClassName="body2 text-wireframes-grey !h-11"
               columnDefs={[
                 {
-                  display: t("pool.superfluidValidator.columns.validator"),
+                  display: t("superfluidValidator.columns.validator"),
                   className: isMobile ? "caption" : undefined,
                   sort:
                     sortKey === "validatorName"
@@ -121,7 +121,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
                   displayCell: ValidatorInfoCell,
                 },
                 {
-                  display: t("pool.superfluidValidator.columns.commission"),
+                  display: t("superfluidValidator.columns.commission"),
                   className: `text-right ${isMobile ? "caption" : undefined}`,
                   sort:
                     sortKey === "validatorCommission"
@@ -158,7 +158,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
           <div className="flex flex-col md:gap-2 gap-4 py-3 px-5 rounded-xl border border-white-faint bg-card">
             <div className="flex items-center place-content-between">
               <span className="md:caption subtitle1">
-                {t("pool.superfluidValidator.bondedAmount")}
+                {t("superfluidValidator.bondedAmount")}
               </span>
               <span className="md:caption body1 text-white-mid">
                 {availableBondAmount.trim(true).toString()}
@@ -167,8 +167,8 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
             <div className="flex items-center place-content-between">
               <span className="md:caption subtitle1">
                 {isMobile
-                  ? t("pool.superfluidValidator.estimationMobile")
-                  : t("pool.superfluidValidator.estimation")}
+                  ? t("superfluidValidator.estimationMobile")
+                  : t("superfluidValidator.estimation")}
               </span>
               <span className="md:caption flex items-center body1 text-white-mid">
                 ~
@@ -179,24 +179,21 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
                   .toString() ?? "0"}
                 <InfoTooltip
                   className="ml-1"
-                  content={t("pool.superfluidValidator.estimationInfo")}
+                  content={t("superfluidValidator.estimationInfo")}
                 />
               </span>
             </div>
           </div>
-          <Button
-            className="h-14 md:w-full w-96 mt-3 mx-auto"
-            size="lg"
+          <NewButton
             disabled={selectedValidatorAddress === null || isSendingMsg}
-            loading={isSendingMsg}
             onClick={() => {
               if (selectedValidatorAddress !== null) {
                 onSelectValidator(selectedValidatorAddress);
               }
             }}
           >
-            {t("pool.superfluidValidator.buttonBond")}
-          </Button>
+            {t("superfluidValidator.buttonBond")}
+          </NewButton>
         </div>
       </ModalBase>
     );

@@ -15,7 +15,7 @@ export const NewButton: FunctionComponent<
     <button
       {...props}
       className={classNames(
-        "flex items-center text-center disabled:cursor-default py-2",
+        "flex w-full h-16 items-center text-center place-content-center disabled:cursor-default py-2",
         size === "sm" ? "px-5" : "px-6",
         mode === "tertiary" ? "rounded-md" : "rounded-xl",
         {
@@ -38,9 +38,13 @@ export const NewButton: FunctionComponent<
     >
       {typeof children === "string" ? (
         size === "sm" ? (
-          <span className="button mx-auto">{children}</span>
+          <span className="button mx-auto md:text-subtitle1 md:font-subtitle1">
+            {children}
+          </span>
         ) : (
-          <h6 className="mx-auto">{children}</h6>
+          <h6 className="mx-auto md:text-subtitle1 md:font-subtitle1">
+            {children}
+          </h6>
         )
       ) : (
         children
