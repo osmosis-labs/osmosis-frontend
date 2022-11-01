@@ -121,7 +121,11 @@
     "bondShares": "Bond Shares",
     "amountDaysUnbonding": "{numDays} days unbonding",
     "shares": "shares",
+    "unbonded": "Unbonded",
     "unbond": "Unbond",
+    "bonded": "Bonded",
+    "showDetails": "Show details",
+    "collapseDetails": "Collapse details",
     "sharesAvailableIn": "available in",
     "unbonding": "unbonding",
     "superfluidEarnMore": "Earn {rate} more. Go superfluid",
@@ -210,6 +214,7 @@
       "search": "Filter by symbol",
       "title": "Assets",
       "hideZero": "Hide zero balances",
+      "buyOsmo": "Buy",
       "preTransfer": {
         "deposit": "Deposit",
         "withdraw": "Withdraw",
@@ -257,7 +262,8 @@
       "SORTMobile": "SORT",
       "mobileMenu": "Sort By"
     },
-    "MAX": "MAX"
+    "MAX": "MAX",
+    "searchTokens": "Search tokens"
   },
   "menu": {
     "swap": "Swap",

@@ -37,9 +37,9 @@ export const AddLiquidity: FunctionComponent<
               options={[
                 {
                   id: "all",
-                  display: "All assets",
+                  display: t("addLiquidity.allAssets"),
                 },
-                { id: "single", display: "Single asset" },
+                { id: "single", display: t("addLiquidity.singleAsset") },
               ]}
               onSelect={(id) => {
                 if (id === "single") {
