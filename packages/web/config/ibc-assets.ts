@@ -102,6 +102,20 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "wbnb-wei",
+    sourceChainNameOverride: "Binance Smart Chain",
+    isVerified: false,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.wbnb.binance],
+    },
+  },
+  {
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-42",
     destChannelId: "channel-0",
