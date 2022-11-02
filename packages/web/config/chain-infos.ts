@@ -5,7 +5,7 @@ import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 const OSMOSIS_RPC_OVERWRITE = process.env.NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE;
 const OSMOSIS_REST_OVERWRITE = process.env.NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE;
-const OSMOSIS_EXPLORER_UR_OVERWRITE =
+const OSMOSIS_EXPLORER_URL_OVERWRITE =
   process.env.NEXT_PUBLIC_OSMOSIS_EXPLORER_URL_OVERWRITE;
 const OSMOSIS_CHAIN_ID_OVERWRITE =
   process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE;
@@ -55,7 +55,7 @@ const chainInfos = (
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx:
-        OSMOSIS_EXPLORER_UR_OVERWRITE ?? IS_TESTNET
+        OSMOSIS_EXPLORER_URL_OVERWRITE ?? IS_TESTNET
           ? "https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}"
           : "https://www.mintscan.io/osmosis/txs/{txHash}",
     },
