@@ -6,9 +6,17 @@ import { ObservableQueryExternalBase } from "../base";
 import { IbcStatus } from "./types";
 
 export class ObservableQueryIbcStatus extends ObservableQueryExternalBase<IbcStatus> {
-  constructor(kvStore: KVStore, baseURL: string, _counterPartyChainID: string) {
+  constructor(
+    kvStore: KVStore,
+    baseURL: string,
+    protected readonly counterPartyChainID: string
+  ) {
     super(kvStore, baseURL, `/ibc/v1/all`);
     makeObservable(this);
+  }
+
+  protected canFetch(): boolean {
+    return this.counterPartyChainID !== "";
   }
 
   readonly getIbcStatus = computedFn((counterPartyChainID: string): string => {

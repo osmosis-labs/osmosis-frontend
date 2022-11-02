@@ -5,6 +5,7 @@ import { IbcStatus } from "./types";
 
 export declare class ObservableQueryIbcStatuses extends ObservableQueryExternalBase<IbcStatus> {
   constructor(kvStore: KVStore, baseURL: string, _counterPartyChainID: string);
+  protected canFetch(): boolean;
   readonly getIbcStatus: (counterPartyChainID: string) => string;
 }
 
