@@ -66,7 +66,7 @@ export class RootStore {
   ) {
     this.chainStore = new ChainStore(
       ChainInfos,
-      process.env.NEXT_PUBLIC_CHAIN_ID_OVERWRITE ?? IS_TESTNET
+      process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ?? IS_TESTNET
         ? "osmo-test-4"
         : "osmosis"
     );

@@ -3,25 +3,29 @@ import { Bech32Address } from "@keplr-wallet/cosmos";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
-const RPC_OVERWRITE = process.env.NEXT_PUBLIC_RPC_OVERWRITE;
-const REST_OVERWRITE = process.env.NEXT_PUBLIC_REST_OVERWRITE;
-const EXPLORER_UR_OVERWRITE = process.env.NEXT_PUBLIC_EXPLORER_URL_OVERWRITE;
-const CHAIN_ID_OVERWRITE = process.env.NEXT_PUBLIC_CHAIN_ID_OVERWRITE;
-const CHAIN_NAME_OVERWRITE = process.env.NEXT_PUBLIC_CHAIN_NAME_OVERWRITE;
+const OSMOSIS_RPC_OVERWRITE = process.env.NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE;
+const OSMOSIS_REST_OVERWRITE = process.env.NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE;
+const OSMOSIS_EXPLORER_UR_OVERWRITE =
+  process.env.NEXT_PUBLIC_OSMOSIS_EXPLORER_URL_OVERWRITE;
+const OSMOSIS_CHAIN_ID_OVERWRITE =
+  process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE;
+const OSMOSIS_CHAIN_NAME_OVERWRITE =
+  process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE;
 
 const chainInfos = (
   [
     {
       rpc:
-        RPC_OVERWRITE ?? IS_TESTNET
+        OSMOSIS_RPC_OVERWRITE ?? IS_TESTNET
           ? "https://rpc-test.osmosis.zone/"
           : "https://rpc-osmosis.keplr.app/",
       rest:
-        REST_OVERWRITE ?? IS_TESTNET
+        OSMOSIS_REST_OVERWRITE ?? IS_TESTNET
           ? "https://lcd-test.osmosis.zone/"
           : "https://lcd-osmosis.keplr.app/",
-      chainId: CHAIN_ID_OVERWRITE ?? IS_TESTNET ? "osmo-test-4" : "osmosis-1",
-      chainName: CHAIN_NAME_OVERWRITE ?? "Osmosis",
+      chainId:
+        OSMOSIS_CHAIN_ID_OVERWRITE ?? IS_TESTNET ? "osmo-test-4" : "osmosis-1",
+      chainName: OSMOSIS_CHAIN_NAME_OVERWRITE ?? "Osmosis",
       bip44: {
         coinType: 118,
       },
@@ -51,7 +55,7 @@ const chainInfos = (
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx:
-        EXPLORER_UR_OVERWRITE ?? IS_TESTNET
+        OSMOSIS_EXPLORER_UR_OVERWRITE ?? IS_TESTNET
           ? "https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}"
           : "https://www.mintscan.io/osmosis/txs/{txHash}",
     },
