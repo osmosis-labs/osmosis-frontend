@@ -93,9 +93,9 @@
       "available": "Disponnible",
       "amount": "Montant",
       "token": "Jeton",
-      "swapFee": "Définit les frais de swap",
-      "undersandCost": "Je comprends que la création d'un nouveau pool coûtera {POOL_CREATION_FEE}.",
-      "interestedCreate": "Intéressé par la création d'une nouvelle piscine ?",
+      "swapFee": "Définit les frais d'échange",
+      "undersandCost": "Je comprends que la création d'un nouveau bassin coûtera {POOL_CREATION_FEE}.",
+      "interestedCreate": "Intéressé par la création d'un nouveau bassin ?",
       "startProcess": "Cliquez ici pour démarrer le processus"
     }
   },
@@ -118,8 +118,8 @@
     "earnSwapFees": "Gagner des commissions d'échange",
     "earnSwapFeesCaption": "Convertissez vos jetons en actions et gagnez sur chaque échange.",
     "APR": "TAP",
-    "bondLiquidity": "Liquidité des délégations",
-    "bondLiquidityCaption": "Bloquez vos actions pour des durées plus longues afin de bénéficier de taux d'intérêt plus élevés.",
+    "bondLiquidity": "Liquidités des délégations",
+    "bondLiquidityCaption": "Bloquez vos actifs pour des durées plus longues afin de bénéficier de taux d'intérêt plus élevés.",
     "bondSuperfluidLiquidityCaption": "Passez au superfluide pour un maximum de récompenses.",
     "bondShares": "Déléguer les actifs",
     "amountDaysUnbonding": "{numDays} jours de blocage",
@@ -206,7 +206,7 @@
       "IBCTransfer": "Transfert IBC",
       "from": "Depuis",
       "to": "à",
-      "warningLossFunds": "Attention: un retrait à l'adresse de l'échange central entraînera la perte des fonds.",
+      "warningLossFunds": "Attention: un retrait vers une adresse d'échangeur centralisé entraînera la perte des fonds",
       "buttonEnter": "Entrer",
       "checkboxVerify": "Je vérifie que je n'envoie pas à une adresse d'échangeur",
       "buttonEdit": "Éditer",
@@ -270,7 +270,7 @@
       "mobileMenu": "Trier par"
     },
     "MAX": "MAX",
-    "searchTokens": "Jetons de recherche"
+    "searchTokens": "Recherche de jetons"
   },
   "menu": {
     "swap": "Échanger",
