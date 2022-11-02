@@ -672,7 +672,7 @@ export const TradeClipboard: FunctionComponent<{
               />
               <div
                 className={classNames(
-                  "subtitle1 text-osmoverse-300 transition-opacity",
+                  "subtitle1 md:caption text-osmoverse-300 transition-opacity",
                   inAmountValue ? "opacity-100" : "opacity-0"
                 )}
               >{`≈ ${inAmountValue || "0"}`}</div>
@@ -834,7 +834,7 @@ export const TradeClipboard: FunctionComponent<{
               }`}</h5>
               <div
                 className={classNames(
-                  "subtitle1 text-osmoverse-300 transition-opacity",
+                  "subtitle1 md:caption text-osmoverse-300 transition-opacity",
                   outAmountValue ? "opacity-100" : "opacity-0"
                 )}
               >
