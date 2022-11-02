@@ -580,6 +580,9 @@ const Pool: FunctionComponent = observer(() => {
                   <Button
                     className="w-fit xs:w-full shrink-0"
                     mode="secondary"
+                    disabled={poolDetailConfig?.userAvailableValue
+                      .toDec()
+                      .isZero()}
                     onClick={() => setShowRemoveLiquidityModal(true)}
                   >
                     {t("removeLiquidity.title")}
