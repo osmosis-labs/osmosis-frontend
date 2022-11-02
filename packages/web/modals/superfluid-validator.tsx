@@ -5,7 +5,7 @@ import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useStore } from "../stores";
 import { SearchBox } from "../components/input";
-import { NewButton } from "../components/buttons";
+import { Button } from "../components/buttons";
 import { Table } from "../components/table";
 import { ValidatorInfoCell } from "../components/table/cells/";
 import { InfoTooltip } from "../components/tooltip";
@@ -184,7 +184,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
               </span>
             </div>
           </div>
-          <NewButton
+          <Button
             disabled={selectedValidatorAddress === null || isSendingMsg}
             onClick={() => {
               if (selectedValidatorAddress !== null) {
@@ -193,7 +193,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
             }}
           >
             {t("superfluidValidator.buttonBond")}
-          </NewButton>
+          </Button>
         </div>
       </ModalBase>
     );

@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useState, useEffect, ComponentProps } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { useStore } from "../../stores";
-import { NewButton } from "../../components/buttons";
+import { Button } from "../../components/buttons";
 import { useKeplr } from "./hook";
 import { t } from "react-multi-lang";
 
@@ -20,7 +20,7 @@ import { t } from "react-multi-lang";
  *   * `accountActionButton` - JSXElement containing the wrapped action `<Button />` with the given button props (styles). May be a "Connect Account" button if Keplr not connected. Accepts children.
  */
 export function useConnectWalletModalRedirect(
-  actionButtonProps: ComponentProps<typeof NewButton>,
+  actionButtonProps: ComponentProps<typeof Button>,
   onRequestClose: () => void,
   connectWalletMessage = t("connectWallet")
 ) {
@@ -58,11 +58,9 @@ export function useConnectWalletModalRedirect(
     showModalBase: showSelf,
     accountActionButton:
       osmosisAccount.walletStatus === WalletStatus.Loaded ? (
-        <NewButton {...actionButtonProps}>
-          {actionButtonProps.children}
-        </NewButton>
+        <Button {...actionButtonProps}>{actionButtonProps.children}</Button>
       ) : (
-        <NewButton
+        <Button
           {...actionButtonProps}
           disabled={false}
           onClick={() => {
@@ -79,7 +77,7 @@ export function useConnectWalletModalRedirect(
             />
             {connectWalletMessage}
           </h6>
-        </NewButton>
+        </Button>
       ),
     walletConnected: osmosisAccount.walletStatus === WalletStatus.Loaded,
   };

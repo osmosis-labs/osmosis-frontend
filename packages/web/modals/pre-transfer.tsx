@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { ModalBase, ModalBaseProps } from "./base";
-import { NewButton } from "../components/buttons";
+import { Button } from "../components/buttons";
 import { TokenSelect } from "../components/control";
 import { Info } from "../components/alert";
 import Image from "next/image";
@@ -93,13 +93,13 @@ export const PreTransferModal: FunctionComponent<
               />
             </a>
           ) : (
-            <NewButton
+            <Button
               className="w-full h-10"
               disabled={isUnstable}
               onClick={onDeposit}
             >
               {t("assets.table.preTransfer.deposit")}
-            </NewButton>
+            </Button>
           )}
           {externalWithdrawUrl ? (
             <a
@@ -125,13 +125,13 @@ export const PreTransferModal: FunctionComponent<
               />
             </a>
           ) : (
-            <NewButton
+            <Button
               className="w-full h-10 bg-wosmongton-200/30"
               disabled={isUnstable}
               onClick={onWithdraw}
             >
               {t("assets.table.preTransfer.withdraw")}
-            </NewButton>
+            </Button>
           )}
         </div>
       </div>

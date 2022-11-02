@@ -13,7 +13,7 @@ import {
 import { IBCBalance } from "../../stores/assets";
 import { useStore } from "../../stores";
 import { Transfer } from "../../components/complex/transfer";
-import { NewButton } from "../../components/buttons";
+import { Button } from "../../components/buttons";
 import { getKeyByValue } from "../../components/utils";
 import { displayToast, ToastType } from "../../components/alert";
 import { BridgeIntegrationProps } from "../../modals";
@@ -489,7 +489,7 @@ const AxelarTransfer: FunctionComponent<
         />
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
           {connectCosmosWalletButtonOverride ?? (
-            <NewButton
+            <Button
               className={classNames(
                 "hover:opacity-75 transition-opacity duration-300",
                 { "opacity-30": isDepositAddressLoading }
@@ -517,7 +517,7 @@ const AxelarTransfer: FunctionComponent<
                 : t("assets.transfer.titleDeposit", {
                     coinDenom: originCurrency.coinDenom,
                   })}
-            </NewButton>
+            </Button>
           )}
         </div>
       </>

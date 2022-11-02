@@ -3,7 +3,7 @@ import { ButtonHTMLAttributes, FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
-import { NewButton } from "../buttons";
+import { Button } from "../buttons";
 import { useStore } from "../../stores";
 import { useBooleanWithWindowEvent, useWindowSize } from "../../hooks";
 import { IUserSetting } from "../../stores/user-settings";
@@ -72,14 +72,14 @@ export const NavBar: FunctionComponent<
           </h4>
           <div className="flex items-center gap-3">
             {navBarStore.callToActionButtons.map((button, index) => (
-              <NewButton
+              <Button
                 className="h-fit lg:px-2"
                 mode={index > 0 ? "secondary" : undefined}
                 key={index}
                 {...button}
               >
                 <span className="subtitle1 mx-auto">{button.label}</span>
-              </NewButton>
+              </Button>
             ))}
           </div>
         </div>
@@ -187,7 +187,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     return (
       <div className={classNames("shrink-0", className)}>
         {!walletConnected ? (
-          <NewButton
+          <Button
             className="w-[168px] h-10"
             onClick={() => {
               account.init();
@@ -195,9 +195,9 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
             }}
           >
             <span className="mx-auto button">{t("connectWallet")}</span>
-          </NewButton>
+          </Button>
         ) : hoverWalletInfo || mobileTapInfo ? (
-          <NewButton
+          <Button
             className="w-[168px] h-10"
             mode="secondary"
             onMouseLeave={() => setHoverWalletInfo(false)}
@@ -207,7 +207,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
             }}
           >
             <span className="mx-auto button">{t("menu.signOut")}</span>
-          </NewButton>
+          </Button>
         ) : (
           <div
             className="flex items-center gap-3 px-2 py-1 rounded-xl border border-osmoverse-700"

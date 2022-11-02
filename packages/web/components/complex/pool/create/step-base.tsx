@@ -2,7 +2,7 @@ import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { StepProps } from "./types";
 import { Info } from "../../../alert";
-import { NewButton } from "../../../buttons";
+import { Button } from "../../../buttons";
 import { POOL_CREATION_FEE } from ".";
 import { useWindowSize } from "../../../../hooks";
 import { useTranslation } from "react-multi-lang";
@@ -66,7 +66,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
               isMobile={isMobile}
             />
           )}
-          <NewButton
+          <Button
             onClick={() => advanceStep()}
             disabled={!canAdvance || isSendingMsg}
           >
@@ -75,7 +75,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
               : step === 3
               ? t("pools.createPool.buttonCreate")
               : t("pools.createPool.buttonNext")}
-          </NewButton>
+          </Button>
         </div>
       );
     }

@@ -17,7 +17,7 @@ import {
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { NewButton } from "../buttons";
+import { Button } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
@@ -281,7 +281,9 @@ export const TradeClipboard: FunctionComponent<{
                     key={slippage.index}
                     className={classNames(
                       "flex items-center justify-center w-full h-8 cursor-pointer rounded-full text-white-high",
-                      slippage.selected ? "bg-wosmongton-200" : "bg-background"
+                      slippage.selected
+                        ? "bg-wosmongton-200"
+                        : "bg-osmoverse-900"
                     )}
                     onClick={(e) => {
                       e.preventDefault();
@@ -310,7 +312,7 @@ export const TradeClipboard: FunctionComponent<{
                     ? slippageConfig.manualSlippageError
                       ? "bg-missionError"
                       : "bg-wosmongton-200"
-                    : "bg-background"
+                    : "bg-osmoverse-900"
                 )}
                 onClick={(e) => {
                   e.preventDefault();
@@ -840,7 +842,7 @@ export const TradeClipboard: FunctionComponent<{
           </div>
         </div>
       </div>
-      <NewButton
+      <Button
         color={
           showPriceImpactWarning && account.walletStatus === WalletStatus.Loaded
             ? "error"
@@ -1022,7 +1024,7 @@ export const TradeClipboard: FunctionComponent<{
             {t("connectWallet")}
           </h6>
         )}
-      </NewButton>
+      </Button>
     </div>
   );
 });

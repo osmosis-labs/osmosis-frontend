@@ -32,8 +32,7 @@ export const TempBanner: FunctionComponent<{
       className={classNames(
         "fixed flex place-content-between right-3 top-3 text-white-high md:w-[330px] w-[596px] rounded-2xl",
         {
-          "border border-enabledGold": !IS_FRONTIER,
-          "bg-background": !IS_FRONTIER,
+          "bg-osmoverse-900": !IS_FRONTIER,
         },
         IS_FRONTIER ? "py-3" : "py-2"
       )}

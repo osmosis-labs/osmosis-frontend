@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 
 const Disclaimer: NextPage = () => (
-  <section className="bg-background pt-20">
+  <section className="bg-osmoverse-900 pt-20">
     <div className="max-w-container mx-auto p-5 md:h-full overflow-y-auto">
       <div className="text-center">
         <span>Osmosis Disclaimer</span>

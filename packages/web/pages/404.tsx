@@ -5,7 +5,7 @@ import { useTranslation } from "react-multi-lang";
 const Custom404: NextPage = () => {
   const t = useTranslation();
   return (
-    <div className="bg-background flex gap-3 justify-center items-center h-screen">
+    <div className="bg-osmoverse-900 flex gap-3 justify-center items-center h-screen">
       <Image
         src="/icons/warning.svg"
         alt={t("404.title")}

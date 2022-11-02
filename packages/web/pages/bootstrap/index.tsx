@@ -11,7 +11,7 @@ import { PromotedLBPPoolIds } from "../../config";
 
 const BootstrapPage: NextPage = observer(() => {
   return (
-    <div className="w-full h-full bg-background">
+    <div className="w-full h-full bg-osmoverse-900">
       <div className="pt-10 md:pt-20 px-5 pb-5 md:p-10">
         <div className="max-w-page mx-auto">
           <LBPOverview

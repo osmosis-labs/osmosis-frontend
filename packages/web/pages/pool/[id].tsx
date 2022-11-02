@@ -42,7 +42,7 @@ import {
 } from "../../components/chart";
 import { PoolAssetsIcon } from "../../components/assets";
 import { BondCard } from "../../components/cards";
-import { NewButton } from "../../components/buttons";
+import { Button } from "../../components/buttons";
 import { useTranslation } from "react-multi-lang";
 
 const E = EventName.PoolDetail;
@@ -569,21 +569,21 @@ const Pool: FunctionComponent = observer(() => {
                   </h3>
                 </div>
                 <div className="flex place-content-end flex-wrap shrink-0 xs:shrink gap-4">
-                  <NewButton
+                  <Button
                     className="w-fit xs:w-full shrink-0"
                     mode="secondary"
                     onClick={() => setShowRemoveLiquidityModal(true)}
                   >
                     {t("removeLiquidity.title")}
-                  </NewButton>
-                  <NewButton
+                  </Button>
+                  <Button
                     className={classNames("w-fit xs:w-full shrink-0 ", {
                       "bg-gradient-positive text-osmoverse-900": levelCta === 1,
                     })}
                     onClick={() => setShowAddLiquidityModal(true)}
                   >
                     {t("addLiquidity.title")}
-                  </NewButton>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -620,7 +620,7 @@ const Pool: FunctionComponent = observer(() => {
                     ` ${t("pool.bondSuperfluidLiquidityCaption")}`}
                 </span>
               </div>
-              <NewButton
+              <Button
                 className={classNames("w-96 md:w-full border-none", {
                   "bg-gradient-positive text-osmoverse-900": levelCta === 2,
                 })}
@@ -628,7 +628,7 @@ const Pool: FunctionComponent = observer(() => {
                 onClick={() => setShowLockLPTokenModal(true)}
               >
                 {t("pool.bondShares")}
-              </NewButton>
+              </Button>
             </div>
             <div className="flex items-center flex-wrap gap-4">
               {bondableDurations.map((bondableDuration) => (

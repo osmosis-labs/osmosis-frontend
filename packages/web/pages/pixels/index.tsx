@@ -295,7 +295,7 @@ const Pixels: NextPage = observer(function () {
 
   return (
     <main>
-      <div className="w-full h-screen bg-background">
+      <div className="w-full h-screen bg-osmoverse-900">
         <div className="absolute pointer-events-none top-10 left-1/2 z-[11]  py-2 px-8 bg-wosmongton-200 flex items-center rounded-lg">
           {`${new IntPretty(
             new Dec(status.response?.data.numDots ?? 0)

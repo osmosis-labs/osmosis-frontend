@@ -31,7 +31,7 @@ export const AssetSourceCard: FunctionComponent<
     >
       <div
         className={classNames(
-          "flex flex-col gap-4 bg-background py-8",
+          "flex flex-col gap-4 bg-osmoverse-900 py-8",
           isConnected ? "rounded-2xlinset" : "rounded-2xl",
           {
             "bg-wosmongton-500": isSelected,
