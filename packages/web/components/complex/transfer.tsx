@@ -77,7 +77,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   const panelDisabled = disablePanel || bridge?.isLoading || false;
 
   const maxFromChars = isEditingWithdrawAddr
-    ? 12 // can't be on mobile
+    ? 13 // can't be on mobile
     : !from.address.startsWith("osmo") && selectedWalletDisplay
     ? isMobile
       ? 13
@@ -150,22 +150,22 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         >
           <div className="flex flex-wrap justify-center items-center gap-2 mx-auto md:caption">
             {!isEditingWithdrawAddr &&
-            !panelDisabled &&
-            (!to.address.startsWith("0x") || to.address.length === 0) ? (
-              isOsmosisAccountLoaded ? (
-                Bech32Address.shortenAddress(
-                  editWithdrawAddrConfig &&
-                    editWithdrawAddrConfig.customAddress !== ""
-                    ? editWithdrawAddrConfig.customAddress
-                    : to.address,
-                  maxToChars
+              !panelDisabled &&
+              (!to.address.startsWith("0x") || to.address.length === 0 ? (
+                isOsmosisAccountLoaded ? (
+                  Bech32Address.shortenAddress(
+                    editWithdrawAddrConfig &&
+                      editWithdrawAddrConfig.customAddress !== ""
+                      ? editWithdrawAddrConfig.customAddress
+                      : to.address,
+                    maxToChars
+                  )
+                ) : (
+                  <i>{t("connectWallet")}</i>
                 )
               ) : (
-                <i>{t("connectWallet")}</i>
-              )
-            ) : (
-              truncateEthAddress(to.address)
-            )}
+                truncateEthAddress(to.address)
+              ))}
             {to.address.length > 0 &&
             !to.address.startsWith("osmo") &&
             selectedWalletDisplay ? (
