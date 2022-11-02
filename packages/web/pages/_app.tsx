@@ -49,14 +49,14 @@ function MyApp({ Component, pageProps }: AppProps) {
       {
         label: t("menu.swap"),
         link: "/",
-        icon: IS_FRONTIER ? "/icons/trade-white.svg" : "/icons/trade.svg",
+        icon: "/icons/trade-white.svg",
         iconSelected: "/icons/trade-white.svg",
         selectionTest: /\/$/,
       },
       {
         label: t("menu.pools"),
         link: "/pools",
-        icon: IS_FRONTIER ? "/icons/pool-white.svg" : "/icons/pool.svg",
+        icon: "/icons/pool-white.svg",
         iconSelected: "/icons/pool-white.svg",
         selectionTest: /\/pools/,
       },

@@ -10,8 +10,9 @@ import type {
   SourceChainKey,
 } from "../integrations/bridge-info";
 import type { SourceChain } from "../integrations/axelar";
-import { useConnectWalletModalRedirect, useWindowSize } from "../hooks";
+import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
+import { useTranslation } from "react-multi-lang";
 
 /** Intermediate step to allow a user to select & config an asset before deposit/withdraw. */
 export const TransferAssetSelectModal: FunctionComponent<
@@ -30,7 +31,7 @@ export const TransferAssetSelectModal: FunctionComponent<
   }
 > = observer((props) => {
   const { isWithdraw, tokens, onSelectAsset } = props;
-  const { isMobile } = useWindowSize();
+  const t = useTranslation();
 
   const [selectedTokenDenom, setSelectedTokenDenom] = useState(
     () =>
@@ -88,17 +89,21 @@ export const TransferAssetSelectModal: FunctionComponent<
     {
       className: "mt-3",
       onClick: () => onSelectAsset(selectedTokenDenom, selectedNetwork?.id),
-      children: "Next",
+      children: t("assets.transferAssetSelect.buttonNext"),
     },
     props.onRequestClose,
-    "Connect Wallet"
+    t("connectWallet")
   );
 
   return (
     <ModalBase
       {...props}
       isOpen={props.isOpen && showModalBase}
-      title={`${isWithdraw ? "Withdraw" : "Deposit"} Asset`}
+      title={
+        isWithdraw
+          ? t("assets.transferAssetSelect.withdraw")
+          : t("assets.transferAssetSelect.deposit")
+      }
     >
       <div className="flex flex-col gap-5 my-5">
         <div className="flex items-centerw-full border border-osmoverse-700 rounded-2xl p-4 md:py-6">
@@ -108,7 +113,6 @@ export const TransferAssetSelectModal: FunctionComponent<
               setSelectedTokenDenom(denom);
             }}
             selectedTokenDenom={selectedTokenDenom}
-            isMobile={isMobile}
           />
         </div>
         {selectedToken?.originBridgeInfo && selectedNetwork && keplrConnected && (
@@ -121,7 +125,9 @@ export const TransferAssetSelectModal: FunctionComponent<
               }
             )}
           >
-            <span className="text-white-mid subtitle2">Network</span>
+            <span className="text-white-mid subtitle2">
+              {t("assets.transferAssetSelect.network")}
+            </span>
             <div
               className={classNames("flex items-center gap-2", {
                 "cursor-pointer":
@@ -156,7 +162,7 @@ export const TransferAssetSelectModal: FunctionComponent<
             {isSourceChainDropdownOpen && (
               <div
                 style={{ borderTopStyle: "dashed" }}
-                className="absolute top-[100%] -right-[1px] border border-osmoverse-700 rounded-b-2xl z-50 bg-surface"
+                className="absolute top-[100%] -right-[1px] border border-osmoverse-700 rounded-b-2xl z-50 bg-osmoverse-800"
               >
                 {selectedToken.originBridgeInfo.sourceChains
                   .filter(({ id }) => id !== selectedNetwork.id)

@@ -189,6 +189,12 @@
     "bondedAssets": "Bonded",
     "stakedAssets": "Staked OSMO",
     "myPools": "My Pools",
+    "transferAssetSelect": {
+      "deposit": "Deposit",
+      "withdraw": "Withdraw",
+      "network": "Network",
+      "buttonNext": "Next"
+    },
     "poolCards": {
       "APR": "APR",
       "FeeAPY": "Fee APY",
@@ -231,7 +237,8 @@
         "wrongNetworkInWallet": "Wrong network in {walletName}",
         "insufficientFee": "Insufficient Fee",
         "insufficientBal": "Insufficient Balance"
-      }
+      },
+      "waitTime": "{minutes} minutes"
     },
     "selectAssetSource": {
       "titleWithdraw": "Withdraw to",
@@ -302,7 +309,7 @@
     "assets": "Assets",
     "stake": "Stake",
     "vote": "Vote",
-    "info": "Info",
+    "info": "Stats",
     "signOut": "Disconnect",
     "help": "Get Support Lab Help",
     "learnMoreFrontier": "Learn More<br/>About the <br2/> <name>Osmosis Frontier</name>"

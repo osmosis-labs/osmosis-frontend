@@ -189,6 +189,12 @@
     "bondedAssets": "Actifs liés",
     "stakedAssets": "OSMO cautionné",
     "myPools": "Mes Bassins",
+    "transferAssetSelect": {
+      "deposit": "Déposer",
+      "withdraw": "Retirer",
+      "network": "Réseau",
+      "buttonNext": "Suivant"
+    },
     "poolCards": {
       "APR": "TAP",
       "FeeAPY": "Frais PAR",
@@ -231,7 +237,8 @@
         "wrongNetworkInWallet": "Mauvais réseau dans le {walletName}",
         "insufficientFee": "Frais insuffisants",
         "insufficientBal": "Solde insuffisant"
-      }
+      },
+      "waitTime": "{minutes} minutes"
     },
     "selectAssetSource": {
       "titleWithdraw": "Retirer à",

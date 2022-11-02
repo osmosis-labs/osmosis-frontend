@@ -20,7 +20,7 @@ const BootstrapPage: NextPage = observer(() => {
           />
         </div>
       </div>
-      <div className="bg-surface p-5 md:p-10">
+      <div className="bg-osmoverse-800 p-5 md:p-10">
         <div className="max-w-page mx-auto">
           <SynthesisList />
         </div>
