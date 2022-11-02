@@ -638,7 +638,6 @@ export const TradeClipboard: FunctionComponent<{
                 }
                 closeTokenSelectDropdowns();
               }}
-              isMobile={isMobile}
             />
             <div className="flex flex-col items-end w-full">
               <input
