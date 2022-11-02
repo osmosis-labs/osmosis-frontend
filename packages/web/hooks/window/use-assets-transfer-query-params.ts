@@ -36,8 +36,6 @@ export function useTokenTransferQueryParams(
       router.query.direction = direction;
       if (coinDenom) {
         router.query.transfer = coinDenom;
-      } else {
-        router.query.transfer = "";
       }
       router.push(router);
     },
