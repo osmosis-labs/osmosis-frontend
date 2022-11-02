@@ -14,8 +14,8 @@ export function useTokenTransferQueryParams(
     if (isInModal || !transferConfig || firstQueryEffectChecker.current) {
       return;
     }
-    let directionOfTransfer = router.query.direction;
-    let transferDenom = router.query.transfer;
+    const directionOfTransfer = router.query.direction;
+    const transferDenom = router.query.transfer;
     if (
       directionOfTransfer !== "withdraw" &&
       directionOfTransfer !== "deposit"
