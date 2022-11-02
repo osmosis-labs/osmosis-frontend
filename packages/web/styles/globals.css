@@ -80,7 +80,7 @@
   }
 
   .token-item-list::-webkit-scrollbar-thumb {
-    @apply bg-cardInner rounded-md;
+    @apply bg-card rounded-md;
   }
 
   table {

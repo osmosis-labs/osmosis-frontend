@@ -236,7 +236,7 @@ export const TradeClipboard: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "relative rounded-[18px] flex flex-col gap-8 bg-cardInner px-5 md:px-3 pt-12 md:pt-4 pb-7 md:pb-4",
+        "relative rounded-[18px] flex flex-col gap-8 bg-osmoverse-800 px-5 md:px-3 pt-12 md:pt-4 pb-7 md:pb-4",
         containerClassName
       )}
     >

@@ -97,7 +97,7 @@ export const AddLiquidity: FunctionComponent<
                 {isPeggedCurrency && (
                   <Info
                     size="subtle"
-                    className="border-2 border-secondary-50/30"
+                    className="border-2 border-rust-200/30"
                     message={`You are adding liquidity to ${
                       currency!.originCurrency!.coinDenom
                     }, ${

@@ -346,8 +346,8 @@ const Pool: FunctionComponent = observer(() => {
           <SuperfluidValidatorModal
             title={
               isMobile
-                ? t("pool.superfluidValidator.titleMobile")
-                : t("pool.superfluidValidator.title")
+                ? t("superfluidValidator.titleMobile")
+                : t("superfluidValidator.title")
             }
             availableBondAmount={
               superfluidPoolConfig?.superfluid.upgradeableLpLockIds
