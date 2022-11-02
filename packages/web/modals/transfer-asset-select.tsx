@@ -164,7 +164,7 @@ export const TransferAssetSelectModal: FunctionComponent<
                     <div
                       key={index}
                       className={classNames(
-                        "cursor-pointer px-6 py-1.5 hover:bg-card",
+                        "cursor-pointer px-6 py-1.5 hover:bg-osmoverse-700",
                         {
                           "rounded-b-2xl": scArr.length - 1 === index,
                         }

@@ -27,7 +27,7 @@ export const TokenSelectModal: FunctionComponent<
     overlayClassName="md:-bottom-1/3"
   >
     <div
-      className="flex items-center h-9 pl-4 m-3 rounded-2xl bg-card"
+      className="flex items-center h-9 pl-4 m-3 rounded-2xl bg-osmoverse-700"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="w-[1.125rem] h-[1.125rem] shrink-0">

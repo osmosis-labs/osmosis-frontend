@@ -41,7 +41,7 @@ const Palette = ({
       }}
     >
       <div
-        className="w-full max-w-[424px] rounded-[16px] bg-card p-[20px] mx-auto  border-2 border-enabledGold"
+        className="w-full max-w-[424px] rounded-[16px] bg-osmoverse-700 p-[20px] mx-auto  border-2 border-enabledGold"
         style={{
           pointerEvents: "all",
         }}

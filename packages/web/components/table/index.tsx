@@ -145,7 +145,7 @@ export const Table = <TCell extends BaseCell>({
                 "h-20",
                 rowDef?.makeClass?.(rowIndex),
                 {
-                  "focus-within:bg-card focus-within:outline-none":
+                  "focus-within:bg-osmoverse-700 focus-within:outline-none":
                     rowDef?.link,
                   " hover:bg-osmoverse-800 hover:cursor-pointer":
                     rowDef?.onClick,

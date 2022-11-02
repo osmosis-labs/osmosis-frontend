@@ -97,7 +97,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
           <p className="body2 text-iconDefault mt-1">{t("keplr.mobile")}</p>
         </div>
       </button>
-      <div className="mt-5 p-5 rounded-2xl bg-card">
+      <div className="mt-5 p-5 rounded-2xl bg-osmoverse-700">
         <p className="caption text-white-mid">
           {t("connectDisclaimer")}{" "}
           <Link href="/disclaimer" passHref>
