@@ -9,6 +9,7 @@ import {
 } from "../integrations";
 import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
+import { useTranslation } from "react-multi-lang";
 
 /** Prompts user to connect from a list of wallets. Will onboard a user for an uninstalled wallet if the functionality is available. */
 export const SelectAssetSourceModal: FunctionComponent<
@@ -24,6 +25,7 @@ export const SelectAssetSourceModal: FunctionComponent<
   const [selectedAssetSourceKey, setSelectedAssetSourceKey] = useState<
     string | null
   >(props.initiallySelectedWalletId ?? null);
+  const t = useTranslation();
 
   const selectedWallet = props.wallets.find(
     (w) => w.key === selectedAssetSourceKey
@@ -49,18 +51,24 @@ export const SelectAssetSourceModal: FunctionComponent<
         }
       },
       children: canOnboardSelectedWallet
-        ? `Install ${selectedWallet.displayInfo.displayName}`
-        : "Next",
+        ? t("assets.selectAssetSource.installWallet", {
+            walletName: selectedWallet.displayInfo.displayName,
+          })
+        : t("assets.selectAssetSource.next"),
     },
     props.onRequestClose,
-    "Connect Wallet"
+    t("connectWallet")
   );
 
   return (
     <ModalBase
       {...props}
       isOpen={props.isOpen && showModalBase}
-      title={props.isWithdraw ? "Withdraw to" : "Deposit from"}
+      title={
+        props.isWithdraw
+          ? t("assets.selectAssetSource.titleWithdraw")
+          : t("assets.selectAssetSource.titleDeposit")
+      }
     >
       <div className="grid grid-cols-3 md:grid-cols-2 gap-4 m-4">
         {props.wallets.map((wallet, index) => (

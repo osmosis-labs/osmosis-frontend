@@ -237,7 +237,11 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                   : "opacity-0"
               )}
             >
-              Available{!isMobile && ` on ${from.networkName}`}:{" "}
+              {isMobile
+                ? t("assets.transfer.availableMobile")
+                : t("assets.transfer.availableOn", {
+                    network: from.networkName,
+                  })}{" "}
               <button
                 className="text-wosmongton-100 cursor-pointer disabled:cursor-default"
                 disabled={availableBalance?.toDec().isZero()}
@@ -260,7 +264,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         <div className="flex flex-col gap-2.5 p-2.5 my-2 caption text-wireframes-lightGrey border border-white-faint rounded-lg">
           {transferFee && (
             <div className="flex items-center place-content-between">
-              <span>Transfer Fee</span>
+              <span>{t("assets.transfer.transferFee")}</span>
               <span>{transferFee!.trim(true).toString()}</span>
             </div>
           )}

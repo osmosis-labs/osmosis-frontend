@@ -215,6 +215,30 @@
       "availableBalance": "Available balance:",
       "MAX": "MAX"
     },
+    "transfer": {
+      "titleWithdraw": "Withdraw {coinDenom}",
+      "titleDeposit": "Deposit {coinDenom}",
+      "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with.",
+      "from": "From",
+      "to": "To",
+      "via": "via",
+      "loading": "Loading",
+      "availableOn": "Available on {network}",
+      "availableMobile": "Available",
+      "transferFee": "Transfer Fee",
+      "errors": {
+        "reconnectWallet": "Reconnect {walletName}",
+        "wrongNetworkInWallet": "Wrong network in {walletName}",
+        "insufficientFee": "Insufficient Fee",
+        "insufficientBal": "Insufficient Balance"
+      }
+    },
+    "selectAssetSource": {
+      "titleWithdraw": "Withdraw to",
+      "titleDeposit": "Deposit from",
+      "next": "Next",
+      "installWallet": "Install {walletName}"
+    },
     "table": {
       "depositButton": "Deposit",
       "withdrawButton": "Withdraw",

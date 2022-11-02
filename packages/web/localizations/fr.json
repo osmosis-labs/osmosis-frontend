@@ -215,6 +215,30 @@
       "availableBalance": "Montant des fonds:",
       "MAX": "MAX"
     },
+    "transfer": {
+      "titleWithdraw": "Retirer {coinDenom}",
+      "titleDeposit": "Déposer {coinDenom}",
+      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt.",
+      "from": "De",
+      "to": "À",
+      "via": "via",
+      "loading": "Chargement",
+      "availableOn": "Disponible sur  {network}",
+      "availableMobile": "Disponible",
+      "transferFee": "Frais de transfert",
+      "errors": {
+        "reconnectWallet": "Reconnecter {walletName}",
+        "wrongNetworkInWallet": "Mauvais réseau dans le {walletName}",
+        "insufficientFee": "Frais insuffisants",
+        "insufficientBal": "Solde insuffisant"
+      }
+    },
+    "selectAssetSource": {
+      "titleWithdraw": "Retirer à",
+      "titleDeposit": "Dépôt de",
+      "next": "Suivant",
+      "installWallet": "Installer {walletName}"
+    },
     "table": {
       "depositButton": "Déposer",
       "withdrawButton": "Retirer",

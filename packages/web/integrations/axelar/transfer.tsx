@@ -35,6 +35,7 @@ import {
 } from ".";
 import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
 import { EventName } from "../../config/user-analytics-v2";
+import { useTranslation } from "react-multi-lang";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<
@@ -62,6 +63,8 @@ const AxelarTransfer: FunctionComponent<
   }) => {
     const { chainStore, accountStore, queriesStore, nonIbcBridgeHistoryStore } =
       useStore();
+    const t = useTranslation();
+
     const { chainId } = chainStore.osmosis;
     const osmosisAccount = accountStore.getAccount(chainId);
     const { bech32Address } = osmosisAccount;
@@ -419,13 +422,17 @@ const AxelarTransfer: FunctionComponent<
         .toDec()
         .gt(availableBalance.toDec());
     const buttonErrorMessage = userDisconnectedEthWallet
-      ? `Reconnect ${ethWalletClient.displayInfo.displayName}`
+      ? t("assets.transfer.errors.reconnectWallet", {
+          walletName: ethWalletClient.displayInfo.displayName,
+        })
       : !isWithdraw && !correctChainSelected
-      ? `Wrong network in ${ethWalletClient.displayInfo.displayName}`
+      ? t("assets.transfer.errors.wrongNetworkInWallet", {
+          walletName: ethWalletClient.displayInfo.displayName,
+        })
       : isInsufficientFee
-      ? "Insufficient fee"
+      ? t("assets.transfer.errors.insufficientFee")
       : isInsufficientBal
-      ? "Insufficient balance"
+      ? t("assets.transfer.errors.insufficientBal")
       : undefined;
 
     return (
@@ -459,7 +466,9 @@ const AxelarTransfer: FunctionComponent<
           }
           warningMessage={
             warnOfDifferentDepositAddress
-              ? `Warning: the selected account in ${ethWalletClient.displayInfo.displayName} differs from the account you last deposited with.`
+              ? t("assets.transfer.warnDepositAddressDifferent", {
+                  address: ethWalletClient.displayInfo.displayName,
+                })
               : undefined
           }
           toggleIsMax={() => {
@@ -502,8 +511,12 @@ const AxelarTransfer: FunctionComponent<
               {buttonErrorMessage
                 ? buttonErrorMessage
                 : isWithdraw
-                ? "Withdraw"
-                : "Deposit"}
+                ? t("assets.transfer.titleWithdraw", {
+                    coinDenom: originCurrency.coinDenom,
+                  })
+                : t("assets.transfer.titleDeposit", {
+                    coinDenom: originCurrency.coinDenom,
+                  })}
             </NewButton>
           )}
         </div>
