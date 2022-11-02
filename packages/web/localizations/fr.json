@@ -223,7 +223,7 @@
       "to": "À",
       "via": "via",
       "loading": "Chargement",
-      "availableOn": "Disponible sur  {network}",
+      "availableOn": "Disponible sur {network}",
       "availableMobile": "Disponible",
       "transferFee": "Frais de transfert",
       "errors": {
