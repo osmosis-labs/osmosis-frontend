@@ -180,7 +180,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
               !panelDisabled &&
               !isEditingWithdrawAddr && (
                 <BorderButton
-                  className="border border-wosmongton-100 hover:border-wosmongton-100/60 text-wosmongton-100 hover:text-wosmongton-100/60"
+                  className="h-6 py-0.5 px-1.5 caption border border-wosmongton-300 hover:border-wosmongton-100/60 text-wosmongton-100 hover:text-wosmongton-100/60"
                   onClick={() => {
                     setIsEditingWithdrawAddr(true);
                     editWithdrawAddrConfig.setCustomAddress(to.address);
@@ -282,14 +282,14 @@ export const Transfer: FunctionComponent<TransferProps> = ({
           </GradientView>
         )}
         {editWithdrawAddrConfig && editWithdrawAddrConfig.customAddress !== "" && (
-          <GradientView className="flex flex-col gap-2 body2 md:caption text-center bg-osmoverse-900">
+          <GradientView className="flex flex-col gap-2 body2 md:caption text-center bg-osmoverse-800">
             <span>{t("assets.ibcTransfer.warningLossFunds")}</span>
             <div className="mx-auto">
               <CheckBox
                 isOn={editWithdrawAddrConfig.didAckWithdrawRisk}
                 className="after:!border-superfluid checked:after:bg-superfluid after:rounded-[10px] after:h-6 after:w-6 -top-0.5"
-                checkClassName="-top-0.5 h-6 w-6 bg-superfluid rounded-[10px]"
-                checkMarkClassName="top-[1px] left-[0.5px] h-6 w-6"
+                checkClassName="-top-1 -left-0.5 h-6 w-6 bg-superfluid rounded-[10px]"
+                checkMarkClassName="top-[1px] -left-[0.5px] h-6 w-6"
                 checkMarkIconUrl="/icons/check-mark-dark.svg"
                 onToggle={() =>
                   editWithdrawAddrConfig.setDidAckWithdrawRisk(
