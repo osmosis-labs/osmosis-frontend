@@ -544,6 +544,16 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "juno-network",
   },
   {
+    alternativeCoinId: "pool:stuosmo",
+    poolId: "833",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-326" }],
+      "stuosmo"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmosis",
+  },
+  {
     alternativeCoinId: "pool:rowan",
     poolId: "629",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
@@ -569,6 +579,16 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-382" }],
       "nund"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmosis",
+  },
+  {
+    alternativeCoinId: "pool:jkl",
+    poolId: "832",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-412" }],
+      "ujkl"
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "osmosis",
