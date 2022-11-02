@@ -246,7 +246,7 @@ export class ObservableMetamask implements EthWallet {
 
   makeExplorerUrl = (txHash: string) =>
     IS_TESTNET
-      ? `https://ropsten.etherscan.io/tx/${txHash}`
+      ? `https://goerli.etherscan.io/tx/${txHash}`
       : `https://etherscan.io/tx/${txHash}`;
 
   // ONBOARDING
