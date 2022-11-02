@@ -127,7 +127,7 @@ export class ObservableTransferUIConfig {
   }
 
   /** ### DEPOSIT/WITHDRAW FROM TABLE ROW
-   *  User wants to transfer asset with counterparty IBC chain and coinDenom known. */
+   *  User wants to transfer asset with direction and coinDenom known. */
   @action
   async transferAsset(direction: TransferDir, coinDenom: string) {
     const balance = this.assetsStore.ibcBalances.find(
