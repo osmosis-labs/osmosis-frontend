@@ -382,7 +382,7 @@ export const TradeClipboard: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "relative rounded-[18px] flex flex-col gap-8 bg-osmoverse-800 px-6 md:px-3 pt-12 md:pt-4 pb-8 md:pb-4",
+        "relative rounded-[18px] flex flex-col gap-8 md:gap-6 bg-osmoverse-800 px-6 md:px-3 pt-12 md:pt-4 pb-8 md:pb-4",
         containerClassName
       )}
     >
@@ -681,7 +681,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <button
           className={classNames(
-            "absolute flex items-center left-[45%] top-[124px] md:top-[94px] transition-all duration-500 ease-bounce z-30",
+            "absolute flex items-center left-[45%] top-[124px] md:top-[86px] transition-all duration-500 ease-bounce z-30",
             {
               "w-10 md:w-8 h-10 md:h-8": !isHoveringSwitchButton,
               "w-11 md:w-9 h-11 md:h-9 -translate-x-[2px]":
@@ -814,7 +814,6 @@ export const TradeClipboard: FunctionComponent<{
                 }
                 closeTokenSelectDropdowns();
               }}
-              isMobile={isMobile}
             />
             <div className="flex flex-col items-end w-full">
               <h5

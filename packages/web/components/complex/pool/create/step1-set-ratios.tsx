@@ -37,7 +37,6 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
                     amountConfig.setSendCurrency(currency);
                   }
                 }}
-                isMobile={isMobile}
               />
               <div className="flex items-center md:gap-1 gap-2.5 text-h6 font-h6 md:subtitle1">
                 <BorderButton
