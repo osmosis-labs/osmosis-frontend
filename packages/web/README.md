@@ -48,4 +48,4 @@ Frontier mode is managed by the `NEXT_PUBLIC_IS_FRONTIER=true` env var, deployed
 
 ## Environment Variables
 
-The Osmosis chain connection settings can be overwritten by using custom parameters on the [.env](.env)
+By default, configuration is hardcoded and determined by the NEXT_PUBLIC_IS_TESTNET env var for developer convenience and simplicity. Please directly change those values should the config be changed from here on. For temporary overrides, consult the .env file. To use the testnet version of the frontend use the :testnet versions of the build and dev commands from the root package manifest file.
