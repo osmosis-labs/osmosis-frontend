@@ -80,7 +80,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
     ? 12 // can't be on mobile
     : !from.address.startsWith("osmo") && selectedWalletDisplay
     ? isMobile
-      ? 10
+      ? 13
       : 18 // more space for switch wallet button
     : isMobile
     ? 14
@@ -89,7 +89,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
     (!to.address.startsWith("osmo") && selectedWalletDisplay) || // make room for btns
     editWithdrawAddrConfig
       ? isMobile
-        ? 10
+        ? 13
         : 18
       : isMobile
       ? 14
@@ -103,13 +103,13 @@ export const Transfer: FunctionComponent<TransferProps> = ({
       />
       <div
         className={classNames(
-          "flex gap-4 body1 text-iconDefault transition-opacity duration-300",
+          "flex gap-4 md:gap-2 body1 text-iconDefault transition-opacity duration-300",
           { "opacity-30": panelDisabled }
         )}
       >
         <div
           className={classNames(
-            "flex w-full text-center border border-white-faint rounded-2xl p-4 transition-width",
+            "flex w-full text-center border border-white-faint rounded-2xl p-4 md:p-2 transition-width",
             {
               "w-1/4": isEditingWithdrawAddr,
               "text-iconDefault/30": isEditingWithdrawAddr,
@@ -142,7 +142,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         <div
           className={classNames(
             "w-full text-center border border-white-faint rounded-2xl transition-width",
-            isEditingWithdrawAddr ? "p-[7px]" : "flex p-4",
+            isEditingWithdrawAddr ? "p-[7px]" : "flex p-4 md:p-2",
             {
               "w-3/4": isEditingWithdrawAddr,
             }
@@ -150,22 +150,22 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         >
           <div className="flex flex-wrap justify-center items-center gap-2 mx-auto md:caption">
             {!isEditingWithdrawAddr &&
-              !panelDisabled &&
-              (!to.address.startsWith("0x") || to.address.length === 0 ? (
-                isOsmosisAccountLoaded ? (
-                  Bech32Address.shortenAddress(
-                    editWithdrawAddrConfig &&
-                      editWithdrawAddrConfig.customAddress !== ""
-                      ? editWithdrawAddrConfig.customAddress
-                      : to.address,
-                    maxToChars
-                  )
-                ) : (
-                  <i>{t("connectWallet")}</i>
+            !panelDisabled &&
+            (!to.address.startsWith("0x") || to.address.length === 0) ? (
+              isOsmosisAccountLoaded ? (
+                Bech32Address.shortenAddress(
+                  editWithdrawAddrConfig &&
+                    editWithdrawAddrConfig.customAddress !== ""
+                    ? editWithdrawAddrConfig.customAddress
+                    : to.address,
+                  maxToChars
                 )
               ) : (
-                truncateEthAddress(to.address)
-              ))}
+                <i>{t("connectWallet")}</i>
+              )
+            ) : (
+              truncateEthAddress(to.address)
+            )}
             {to.address.length > 0 &&
             !to.address.startsWith("osmo") &&
             selectedWalletDisplay ? (
