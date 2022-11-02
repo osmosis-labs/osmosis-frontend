@@ -106,7 +106,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
             <Table
               className="w-full"
               tHeadClassName="sticky top-0"
-              headerTrClassName="!h-11 after:content-[''] after:w-full after:h-full after:bg-osmoverse-800"
+              headerTrClassName="!h-11"
               columnDefs={[
                 {
                   display: t("superfluidValidator.columns.validator"),

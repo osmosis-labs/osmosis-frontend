@@ -233,10 +233,156 @@ export const TradeClipboard: FunctionComponent<{
     [tradeTokenInConfig.expectedSwapResult.amount]
   );
 
+  // user action
+  const swap = async () => {
+    if (account.walletStatus !== WalletStatus.Loaded) {
+      return account.init();
+    }
+    if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
+      const routes: {
+        poolId: string;
+        tokenOutCurrency: Currency;
+      }[] = [];
+
+      for (
+        let i = 0;
+        i < tradeTokenInConfig.optimizedRoutePaths[0].pools.length;
+        i++
+      ) {
+        const pool = tradeTokenInConfig.optimizedRoutePaths[0].pools[i];
+        const tokenOutCurrency = chainStore.osmosisObservable.currencies.find(
+          (cur) =>
+            cur.coinMinimalDenom ===
+            tradeTokenInConfig.optimizedRoutePaths[0].tokenOutDenoms[i]
+        );
+
+        if (!tokenOutCurrency) {
+          tradeTokenInConfig.setError(
+            new Error(
+              t("swap.error.findCurrency", {
+                currency:
+                  tradeTokenInConfig.optimizedRoutePaths[0].tokenOutDenoms[i],
+              })
+            )
+          );
+          return;
+        }
+
+        routes.push({
+          poolId: pool.id,
+          tokenOutCurrency,
+        });
+      }
+
+      const tokenInCurrency = chainStore.osmosisObservable.currencies.find(
+        (cur) =>
+          cur.coinMinimalDenom ===
+          tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom
+      );
+
+      if (!tokenInCurrency) {
+        tradeTokenInConfig.setError(
+          new Error(
+            t("swap.error.findCurrency", {
+              currency: tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom,
+            })
+          )
+        );
+        return;
+      }
+
+      const tokenIn = {
+        currency: tokenInCurrency,
+        amount: tradeTokenInConfig.amount,
+      };
+      const maxSlippage = slippageConfig.slippage.symbol("").toString();
+
+      try {
+        logEvent([
+          EventName.Swap.swapStarted,
+          {
+            fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+            tokenAmount: Number(tokenIn.amount),
+            toToken: tradeTokenInConfig.outCurrency.coinDenom,
+            isOnHome: !isInModal,
+            isMultiHop: routes.length !== 1,
+          },
+        ]);
+        if (routes.length === 1) {
+          await account.osmosis.sendSwapExactAmountInMsg(
+            routes[0].poolId,
+            tokenIn,
+            routes[0].tokenOutCurrency,
+            maxSlippage,
+            "",
+            {
+              amount: [
+                {
+                  denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+                  amount: "0",
+                },
+              ],
+            },
+            {
+              preferNoSetFee: preferZeroFee,
+            },
+            () => {
+              logEvent([
+                EventName.Swap.swapCompleted,
+                {
+                  fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                  tokenAmount: Number(tokenIn.amount),
+                  toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                  isOnHome: !isInModal,
+
+                  isMultiHop: false,
+                },
+              ]);
+            }
+          );
+        } else {
+          await account.osmosis.sendMultihopSwapExactAmountInMsg(
+            routes,
+            tokenIn,
+            maxSlippage,
+            "",
+            {
+              amount: [
+                {
+                  denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+                  amount: "0",
+                },
+              ],
+            },
+            {
+              preferNoSetFee: preferZeroFee,
+            },
+            () => {
+              logEvent([
+                EventName.Swap.swapCompleted,
+                {
+                  fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                  tokenAmount: Number(tokenIn.amount),
+                  toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                  isOnHome: !isInModal,
+                  isMultiHop: true,
+                },
+              ]);
+            }
+          );
+        }
+        tradeTokenInConfig.setAmount("");
+        tradeTokenInConfig.setFraction(undefined);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
   return (
     <div
       className={classNames(
-        "relative rounded-[18px] flex flex-col gap-8 bg-osmoverse-800 px-5 md:px-3 pt-12 md:pt-4 pb-7 md:pb-4",
+        "relative rounded-[18px] flex flex-col gap-8 bg-osmoverse-800 px-6 md:px-3 pt-12 md:pt-4 pb-8 md:pb-4",
         containerClassName
       )}
     >
@@ -261,14 +407,12 @@ export const TradeClipboard: FunctionComponent<{
         </button>
         {isSettingOpen && (
           <div
-            className="absolute bottom-[-0.5rem] right-0 translate-y-full bg-card border border-white-faint rounded-2xl p-[1.875rem] md:p-5 z-50 w-full max-w-[23.875rem]"
+            className="absolute bottom-[-0.5rem] right-0 translate-y-full bg-osmoverse-800 rounded-2xl p-[1.875rem] md:p-5 z-50 w-full max-w-[23.875rem]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="subtitle1 text-white-emphasis">
-              {t("swap.settings.title")}
-            </div>
+            <h6>{t("swap.settings.title")}</h6>
             <div className="flex items-center mt-2.5">
-              <div className="body2 text-white-disabled mr-2">
+              <div className="subtitle1 text-osmoverse-200 mr-2">
                 {t("swap.settings.slippage")}
               </div>
               <InfoTooltip content={t("swap.settings.slippageInfo")} />
@@ -280,10 +424,8 @@ export const TradeClipboard: FunctionComponent<{
                   <li
                     key={slippage.index}
                     className={classNames(
-                      "flex items-center justify-center w-full h-8 cursor-pointer rounded-full text-white-high",
-                      slippage.selected
-                        ? "bg-wosmongton-200"
-                        : "bg-osmoverse-900"
+                      "flex items-center justify-center w-full h-8 cursor-pointer rounded-lg bg-osmoverse-700",
+                      { "border-2 border-wosmongton-200": slippage.selected }
                     )}
                     onClick={(e) => {
                       e.preventDefault();
@@ -304,10 +446,10 @@ export const TradeClipboard: FunctionComponent<{
               })}
               <li
                 className={classNames(
-                  "flex items-center justify-center w-full h-8 cursor-pointer rounded-full",
+                  "flex items-center justify-center w-full h-8 cursor-pointer rounded-lg bg-osmoverse-700",
                   slippageConfig.isManualSlippage
-                    ? "text-white-high"
-                    : "text-white-faint",
+                    ? "border-2 border-wosmongton-200 text-white-high"
+                    : "text-osmoverse-500",
                   slippageConfig.isManualSlippage
                     ? slippageConfig.manualSlippageError
                       ? "bg-missionError"
@@ -327,7 +469,7 @@ export const TradeClipboard: FunctionComponent<{
                   className="bg-transparent px-0 w-fit"
                   inputClassName={`bg-transparent text-center ${
                     !slippageConfig.isManualSlippage
-                      ? "text-white-faint"
+                      ? "text-osmoverse-500"
                       : "text-white-high"
                   }`}
                   style="no-border"
@@ -349,7 +491,13 @@ export const TradeClipboard: FunctionComponent<{
                   inputRef={manualSlippageInputRef}
                   isAutosize
                 />
-                <span className="shrink-0">%</span>
+                <span
+                  className={classNames("shrink-0", {
+                    "text-osmoverse-500": !slippageConfig.isManualSlippage,
+                  })}
+                >
+                  %
+                </span>
               </li>
             </ul>
           </div>
@@ -359,7 +507,7 @@ export const TradeClipboard: FunctionComponent<{
       <div className="relative flex flex-col gap-3">
         <div
           className={classNames(
-            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
+            "bg-osmoverse-900 rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
             !switchOutBack ? "ease-outBack" : "ease-inBack",
             {
               "opacity-30": isAnimatingSwitch,
@@ -385,7 +533,7 @@ export const TradeClipboard: FunctionComponent<{
               <span className="caption text-sm md:text-xs text-white-full">
                 {t("swap.available")}
               </span>
-              <span className="caption text-sm md:text-xs text-wosmongton-100 ml-1.5">
+              <span className="caption text-sm md:text-xs text-wosmongton-300 ml-1.5">
                 {queries.queryBalances
                   .getQueryBech32Address(account.bech32Address)
                   .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency)
@@ -398,7 +546,7 @@ export const TradeClipboard: FunctionComponent<{
             <div className="flex items-center gap-1.5">
               <button
                 className={classNames(
-                  "button text-wosmongton-100 hover:bg-wosmongton-100/30 border border-wosmongton-100 text-xs py-1 px-1.5 rounded-md",
+                  "button text-wosmongton-300 hover:bg-wosmongton-300/30 border border-wosmongton-300 text-xs py-1 px-1.5 rounded-md",
                   tradeTokenInConfig.fraction === 1
                     ? "bg-wosmongton-100/40"
                     : "bg-transparent"
@@ -425,7 +573,7 @@ export const TradeClipboard: FunctionComponent<{
               </button>
               <button
                 className={classNames(
-                  "button text-wosmongton-100 hover:bg-wosmongton-100/30 border border-wosmongton-100 text-xs py-1 px-1.5 rounded-md",
+                  "button text-wosmongton-300 hover:bg-wosmongton-300/30 border border-wosmongton-300 text-xs py-1 px-1.5 rounded-md",
                   tradeTokenInConfig.fraction === 0.5
                     ? "bg-wosmongton-100/40"
                     : "bg-transparent"
@@ -524,7 +672,7 @@ export const TradeClipboard: FunctionComponent<{
               />
               <div
                 className={classNames(
-                  "caption text-white-disabled transition-opacity",
+                  "subtitle1 text-osmoverse-300 transition-opacity",
                   inAmountValue ? "opacity-100" : "opacity-0"
                 )}
               >{`≈ ${inAmountValue || "0"}`}</div>
@@ -534,7 +682,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <button
           className={classNames(
-            "absolute flex items-center left-[45%] top-[116px] md:top-[84px] transition-all duration-500 ease-bounce z-30",
+            "absolute flex items-center left-[45%] top-[124px] md:top-[94px] transition-all duration-500 ease-bounce z-30",
             {
               "w-10 md:w-8 h-10 md:h-8": !isHoveringSwitchButton,
               "w-11 md:w-9 h-11 md:h-9 -translate-x-[2px]":
@@ -563,7 +711,7 @@ export const TradeClipboard: FunctionComponent<{
             className={classNames(
               "w-full h-full rounded-full flex items-center",
               {
-                "bg-card": !isHoveringSwitchButton,
+                "bg-osmoverse-700": !isHoveringSwitchButton,
                 "bg-[#4E477C]": isHoveringSwitchButton,
               }
             )}
@@ -606,7 +754,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <div
           className={classNames(
-            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
+            "bg-osmoverse-900 rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
             !switchOutBack ? "ease-outBack" : "ease-inBack",
             {
               "opacity-30": isAnimatingSwitch,
@@ -686,7 +834,7 @@ export const TradeClipboard: FunctionComponent<{
               }`}</h5>
               <div
                 className={classNames(
-                  "caption text-white-disabled transition-opacity",
+                  "subtitle1 text-osmoverse-300 transition-opacity",
                   outAmountValue ? "opacity-100" : "opacity-0"
                 )}
               >
@@ -698,7 +846,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <div
           className={classNames(
-            "relative rounded-lg bg-card px-4 md:px-3 transition-all ease-inOutBack duration-300 overflow-hidden",
+            "relative rounded-lg bg-osmoverse-900 px-4 md:px-3 transition-all ease-inOutBack duration-300 overflow-hidden",
             showEstimateDetails ? "h-56 py-6" : "h-11 py-[10px]"
           )}
         >
@@ -716,7 +864,7 @@ export const TradeClipboard: FunctionComponent<{
           >
             <div
               className={classNames("subtitle2 transition-all", {
-                "text-white-disabled": !isEstimateDetailRelevant,
+                "text-osmoverse-600": !isEstimateDetailRelevant,
               })}
             >
               {`1 ${
@@ -745,9 +893,11 @@ export const TradeClipboard: FunctionComponent<{
                 width={24}
               />
               <Image
-                className={`group-hover:opacity-100 transition-all ${
-                  showEstimateDetails ? "rotate-180" : "rotate-0"
-                } ${isEstimateDetailRelevant ? "opacity-40" : "opacity-0"}`}
+                className={classNames(
+                  "transition-all",
+                  showEstimateDetails ? "rotate-180" : "rotate-0",
+                  isEstimateDetailRelevant ? "opacity-100" : "opacity-0"
+                )}
                 alt="show estimates"
                 src="/icons/chevron-down.svg"
                 height={isMobile ? 14 : 18}
@@ -770,9 +920,7 @@ export const TradeClipboard: FunctionComponent<{
               <div
                 className={classNames(
                   "caption",
-                  showPriceImpactWarning
-                    ? "text-error"
-                    : "text-wireframes-lightGrey"
+                  showPriceImpactWarning ? "text-error" : "text-osmoverse-200"
                 )}
               >
                 {`-${tradeTokenInConfig.expectedSwapResult.priceImpact.toString()}`}
@@ -784,7 +932,7 @@ export const TradeClipboard: FunctionComponent<{
                   fee: tradeTokenInConfig.expectedSwapResult.swapFee.toString(),
                 })}
               </div>
-              <div className="caption text-wireframes-lightGrey">
+              <div className="caption text-osmoverse-200">
                 {`≈ ${
                   priceStore.calculatePrice(
                     tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
@@ -795,22 +943,19 @@ export const TradeClipboard: FunctionComponent<{
             <hr className="text-white-faint" />
             <div className="flex justify-between">
               <div className="caption">{t("swap.expectedOutput")}</div>
-              <div className="caption text-wireframes-lightGrey whitespace-nowrap">
+              <div className="caption text-osmoverse-200 whitespace-nowrap">
                 {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
               </div>
             </div>
             <div className="flex justify-between">
-              <div className="caption text-white-high">
+              <div className="caption">
                 {t("swap.minimumSlippage", {
                   slippage: slippageConfig.slippage.trim(true).toString(),
                 })}
               </div>
               <div
                 className={classNames(
-                  "caption flex flex-col text-right gap-0.5 text-wireframes-lightGrey",
-                  {
-                    "text-white-high": !showPriceImpactWarning,
-                  }
+                  "caption flex flex-col text-right gap-0.5 text-osmoverse-200"
                 )}
               >
                 <span className="whitespace-nowrap">
@@ -854,156 +999,7 @@ export const TradeClipboard: FunctionComponent<{
             tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
             account.txTypeInProgress !== "")
         }
-        onClick={async () => {
-          if (account.walletStatus !== WalletStatus.Loaded) {
-            return account.init();
-          }
-          if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
-            const routes: {
-              poolId: string;
-              tokenOutCurrency: Currency;
-            }[] = [];
-
-            for (
-              let i = 0;
-              i < tradeTokenInConfig.optimizedRoutePaths[0].pools.length;
-              i++
-            ) {
-              const pool = tradeTokenInConfig.optimizedRoutePaths[0].pools[i];
-              const tokenOutCurrency =
-                chainStore.osmosisObservable.currencies.find(
-                  (cur) =>
-                    cur.coinMinimalDenom ===
-                    tradeTokenInConfig.optimizedRoutePaths[0].tokenOutDenoms[i]
-                );
-
-              if (!tokenOutCurrency) {
-                tradeTokenInConfig.setError(
-                  new Error(
-                    t("swap.error.findCurrency", {
-                      currency:
-                        tradeTokenInConfig.optimizedRoutePaths[0]
-                          .tokenOutDenoms[i],
-                    })
-                  )
-                );
-                return;
-              }
-
-              routes.push({
-                poolId: pool.id,
-                tokenOutCurrency,
-              });
-            }
-
-            const tokenInCurrency =
-              chainStore.osmosisObservable.currencies.find(
-                (cur) =>
-                  cur.coinMinimalDenom ===
-                  tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom
-              );
-
-            if (!tokenInCurrency) {
-              tradeTokenInConfig.setError(
-                new Error(
-                  t("swap.error.findCurrency", {
-                    currency:
-                      tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom,
-                  })
-                )
-              );
-              return;
-            }
-
-            const tokenIn = {
-              currency: tokenInCurrency,
-              amount: tradeTokenInConfig.amount,
-            };
-            const maxSlippage = slippageConfig.slippage.symbol("").toString();
-
-            try {
-              logEvent([
-                EventName.Swap.swapStarted,
-                {
-                  fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                  tokenAmount: Number(tokenIn.amount),
-                  toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                  isOnHome: !isInModal,
-                  isMultiHop: routes.length !== 1,
-                },
-              ]);
-              if (routes.length === 1) {
-                await account.osmosis.sendSwapExactAmountInMsg(
-                  routes[0].poolId,
-                  tokenIn,
-                  routes[0].tokenOutCurrency,
-                  maxSlippage,
-                  "",
-                  {
-                    amount: [
-                      {
-                        denom:
-                          chainStore.osmosis.stakeCurrency.coinMinimalDenom,
-                        amount: "0",
-                      },
-                    ],
-                  },
-                  {
-                    preferNoSetFee: preferZeroFee,
-                  },
-                  () => {
-                    logEvent([
-                      EventName.Swap.swapCompleted,
-                      {
-                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                        tokenAmount: Number(tokenIn.amount),
-                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                        isOnHome: !isInModal,
-
-                        isMultiHop: false,
-                      },
-                    ]);
-                  }
-                );
-              } else {
-                await account.osmosis.sendMultihopSwapExactAmountInMsg(
-                  routes,
-                  tokenIn,
-                  maxSlippage,
-                  "",
-                  {
-                    amount: [
-                      {
-                        denom:
-                          chainStore.osmosis.stakeCurrency.coinMinimalDenom,
-                        amount: "0",
-                      },
-                    ],
-                  },
-                  {
-                    preferNoSetFee: preferZeroFee,
-                  },
-                  () => {
-                    logEvent([
-                      EventName.Swap.swapCompleted,
-                      {
-                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                        tokenAmount: Number(tokenIn.amount),
-                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                        isOnHome: !isInModal,
-                        isMultiHop: true,
-                      },
-                    ]);
-                  }
-                );
-              }
-              tradeTokenInConfig.setAmount("");
-              tradeTokenInConfig.setFraction(undefined);
-            } catch (e) {
-              console.error(e);
-            }
-          }
-        }}
+        onClick={swap}
       >
         {account.walletStatus === WalletStatus.Loaded ? (
           tradeTokenInConfig.error ? (
