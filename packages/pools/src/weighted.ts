@@ -124,7 +124,7 @@ export class WeightedPool implements Pool {
 
   hasPoolAsset(denom: string): boolean {
     const poolAsset = this.poolAssets.find((asset) => asset.denom === denom);
-    return poolAsset != null;
+    return poolAsset !== undefined;
   }
 
   get totalWeight(): Int {

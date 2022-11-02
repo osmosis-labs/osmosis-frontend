@@ -1,3 +1,5 @@
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
+
 export interface AxelarBridgeConfig {
   /** Currently just via deposit address, future could be gateway contract call. */
   method: "deposit-address";
@@ -15,29 +17,47 @@ export interface AxelarBridgeConfig {
 }
 
 /** See: https://docs.axelar.dev/dev/build/chain-names/mainnet
+ *  See: https://docs.axelar.dev/dev/build/chain-names/testnet
  *  Testnet: https://axelartest-lcd.quickapi.com/axelar/nexus/v1beta1/chains?status=1
  */
 export type SourceChain =
-  | "Ethereum"
-  | "Ropsten Test Network"
+  | "aurora"
   | "Avalanche"
+  | "binance"
+  | "Ethereum"
+  | "ethereum-2"
   | "Fantom"
-  | "Polygon"
   | "Moonbeam"
-  | "Binance";
+  | "Polygon";
 
 /** Maps eth client chainIDs => axelar chain ids.
+ *
+ *  ethClientChainIDs must be specified in ../ethereuem/types.ts::ChainNames{} to map the name to a chainID, which is in turn used to add the network to EVM-compatible wallets, like Metamask.
+ *
+ * AxelarChainIds must be specified in SourceChain{} and are used in ./source-chain-configs.ts::SourceChainConfigs{} as <asset>::<network>::id values.
  *
  *  Values not included as keys are assumed to be the same across chainlist and Axelar.
  */
 export const EthClientChainIds_AxelarChainIdsMap: {
   [ethClientChainIds: string]: SourceChain;
-} = {
-  "Ropsten Test Network": "Ethereum",
-  "Avalanche C-Chain": "Avalanche",
-  "Binance Smart Chain": "Binance",
-  "Fantom Opera": "Fantom",
-};
+} = IS_TESTNET
+  ? {
+      "Aurora Testnet": "aurora",
+      "Avalanche Fuji Testnet": "Avalanche",
+      "Binance Smart Chain Testnet": "binance",
+      "Goerli Test Network": "ethereum-2",
+      "Fantom Testnet": "Fantom",
+      "Moonbase Alpha": "Moonbeam",
+      Mumbai: "Polygon",
+    }
+  : {
+      "Avalanche C-Chain": "Avalanche",
+      "Binance Smart Chain Mainnet": "binance",
+      "Ethereum Main Network": "Ethereum",
+      "Fantom Opera": "Fantom",
+      "Moonbeam Mainnet": "Moonbeam",
+      "Polygon Mainnet": "Polygon",
+    };
 
 export type SourceChainConfig = {
   /** Axelar-defined identifier. */
