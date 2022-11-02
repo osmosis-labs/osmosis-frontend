@@ -1,4 +1,4 @@
-export interface IbcStatus {
+export interface IbcMetrics {
   data: {
     source: string;
     destination: string;
@@ -9,4 +9,10 @@ export interface IbcStatus {
     size_queue: number;
     duration_minutes: number;
   }[];
+}
+
+export enum IbcStatus {
+  OK = 0,
+  Congested = 1,
+  Blocked = 2,
 }

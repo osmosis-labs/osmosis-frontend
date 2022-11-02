@@ -1,7 +1,10 @@
 import { KVStore } from "@keplr-wallet/common";
 import { DeepReadonly } from "utility-types";
 import { IPriceStore } from "../price";
-import { ObservableQueryIbcStatuses } from "./ibc-status";
+import {
+  ObservableQueryIbcDepositStatuses,
+  ObservableQueryIbcWithdrawStatuses,
+} from "./ibc-status";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
 import {
@@ -13,7 +16,8 @@ import {
 export class QueriesExternalStore {
   public readonly queryGammPoolFeeMetrics: DeepReadonly<ObservableQueryPoolFeesMetrics>;
   public readonly queryAccountsPoolRewards: DeepReadonly<ObservableQueryAccountsPoolRewards>;
-  public readonly queryIbcStatuses: DeepReadonly<ObservableQueryIbcStatuses>;
+  public readonly queryIbcDepositStatuses: DeepReadonly<ObservableQueryIbcDepositStatuses>;
+  public readonly queryIbcWithdrawStatuses: DeepReadonly<ObservableQueryIbcWithdrawStatuses>;
 
   constructor(
     kvStore: KVStore,
@@ -30,7 +34,11 @@ export class QueriesExternalStore {
       priceStore,
       poolRewardsBaseUrl
     );
-    this.queryIbcStatuses = new ObservableQueryIbcStatuses(
+    this.queryIbcDepositStatuses = new ObservableQueryIbcDepositStatuses(
+      kvStore,
+      ibcStatusBaseUrl
+    );
+    this.queryIbcWithdrawStatuses = new ObservableQueryIbcWithdrawStatuses(
       kvStore,
       ibcStatusBaseUrl
     );

@@ -1,16 +1,20 @@
 import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
 import { ObservableQueryExternalBase } from "../base";
-import { IbcStatus } from "./types";
-
-export declare class ObservableQueryIbcStatuses extends ObservableQueryExternalBase<IbcStatus> {
-  constructor(kvStore: KVStore, baseURL: string, _counterPartyChainID: string);
-  protected canFetch(): boolean;
-  readonly getIbcStatus: (counterPartyChainID: string) => string;
+import { IbcMetrics, IbcStatus } from "./types";
+export declare class ObservableQueryIbcDepositStatus extends ObservableQueryExternalBase<IbcMetrics> {
+    constructor(kvStore: KVStore, baseURL: string, counterPartyChainID: string);
+    readonly getIbcStatus: (counterPartyChainID: string) => IbcStatus;
 }
-
-export declare class ObservableQueryIbcStatuses extends HasMapStore<ObservableQueryIbcStatus> {
-  constructor(kvStore: KVStore, ibcStatusBaseUrl: string);
-  get(counterPartyChainID: string): ObservableQueryIbcStatus;
+export declare class ObservableQueryIbcDepositStatuses extends HasMapStore<ObservableQueryIbcDepositStatus> {
+    constructor(kvStore: KVStore, ibcStatusBaseUrl?: string);
+    get(counterPartyChainID: string): ObservableQueryIbcDepositStatus;
 }
-export * from "./types";
+export declare class ObservableQueryIbcWithdrawStatus extends ObservableQueryExternalBase<IbcMetrics> {
+    constructor(kvStore: KVStore, baseURL: string, counterPartyChainID: string);
+    readonly getIbcStatus: (counterPartyChainID: string) => IbcStatus;
+}
+export declare class ObservableQueryIbcWithdrawStatuses extends HasMapStore<ObservableQueryIbcWithdrawStatus> {
+    constructor(kvStore: KVStore, ibcStatusBaseUrl?: string);
+    get(counterPartyChainID: string): ObservableQueryIbcWithdrawStatus;
+}

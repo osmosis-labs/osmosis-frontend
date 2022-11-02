@@ -3,47 +3,46 @@ import { HasMapStore } from "@keplr-wallet/stores";
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { ObservableQueryExternalBase } from "../base";
-import { IbcStatus } from "./types";
+import { IbcMetrics, IbcStatus } from "./types";
 
-export class ObservableQueryIbcStatus extends ObservableQueryExternalBase<IbcStatus> {
-  constructor(
-    kvStore: KVStore,
-    baseURL: string,
-    protected readonly counterPartyChainID: string
-  ) {
-    super(kvStore, baseURL, `/ibc/v1/all`);
+export class ObservableQueryIbcDepositStatus extends ObservableQueryExternalBase<IbcMetrics> {
+  constructor(kvStore: KVStore, baseURL: string, counterPartyChainID: string) {
+    // If we are depositing, destination is osmosis
+    super(
+      kvStore,
+      baseURL,
+      `/ibc/v1/source/${counterPartyChainID}/destinationosmosis?minutes_trigger=-1`
+    );
     makeObservable(this);
   }
 
-  protected canFetch(): boolean {
-    return this.counterPartyChainID !== "";
-  }
+  readonly getIbcStatus = computedFn(
+    (counterPartyChainID: string): IbcStatus => {
+      const ibcRaw = this.response?.data.data.find(
+        (statusMetric) => statusMetric.channel_id === counterPartyChainID
+      );
+      if (!ibcRaw) {
+        return IbcStatus.Blocked;
+      }
 
-  readonly getIbcStatus = computedFn((counterPartyChainID: string): string => {
-    const ibcRaw = this.response?.data.data.find(
-      (statusMetric) => statusMetric.channel_id === counterPartyChainID
-    );
-    if (!ibcRaw) {
-      return "Congested";
+      // TODO: figure out what metrics constitute congested or not
+      if (ibcRaw.size_queue > 1_000) {
+        return IbcStatus.Congested;
+      } else {
+        return IbcStatus.OK;
+      }
     }
-
-    // TODO: figure out what metrics constitute congested or not
-    if (ibcRaw.size_queue > 1_000) {
-      return "Congested";
-    } else {
-      return "OK";
-    }
-  });
+  );
 }
 
-export class ObservableQueryIbcStatuses extends HasMapStore<ObservableQueryIbcStatus> {
+export class ObservableQueryIbcDepositStatuses extends HasMapStore<ObservableQueryIbcDepositStatus> {
   constructor(
     kvStore: KVStore,
     ibcStatusBaseUrl = "https://api-osmosis-chain.imperator.co"
   ) {
     super(
       (counterPartyChainID) =>
-        new ObservableQueryIbcStatus(
+        new ObservableQueryIbcDepositStatus(
           kvStore,
           ibcStatusBaseUrl,
           counterPartyChainID
@@ -52,6 +51,56 @@ export class ObservableQueryIbcStatuses extends HasMapStore<ObservableQueryIbcSt
   }
 
   get(counterPartyChainID: string) {
-    return super.get(counterPartyChainID) as ObservableQueryIbcStatus;
+    return super.get(counterPartyChainID) as ObservableQueryIbcDepositStatus;
+  }
+}
+
+export class ObservableQueryIbcWithdrawStatus extends ObservableQueryExternalBase<IbcMetrics> {
+  constructor(kvStore: KVStore, baseURL: string, counterPartyChainID: string) {
+    // If we are withdrawing, destination is counterPartyChainID
+    super(
+      kvStore,
+      baseURL,
+      `/ibc/v1/source/osmosis/destination${counterPartyChainID}?minutes_trigger=-1`
+    );
+    makeObservable(this);
+  }
+
+  readonly getIbcStatus = computedFn(
+    (counterPartyChainID: string): IbcStatus => {
+      const ibcRaw = this.response?.data.data.find(
+        (statusMetric) => statusMetric.channel_id === counterPartyChainID
+      );
+      if (!ibcRaw) {
+        return IbcStatus.Blocked;
+      }
+
+      // TODO: figure out what metrics constitute congested or not
+      if (ibcRaw.size_queue > 1_000) {
+        return IbcStatus.Congested;
+      } else {
+        return IbcStatus.OK;
+      }
+    }
+  );
+}
+
+export class ObservableQueryIbcWithdrawStatuses extends HasMapStore<ObservableQueryIbcWithdrawStatus> {
+  constructor(
+    kvStore: KVStore,
+    ibcStatusBaseUrl = "https://api-osmosis-chain.imperator.co"
+  ) {
+    super(
+      (counterPartyChainID) =>
+        new ObservableQueryIbcWithdrawStatus(
+          kvStore,
+          ibcStatusBaseUrl,
+          counterPartyChainID
+        )
+    );
+  }
+
+  get(counterPartyChainID: string) {
+    return super.get(counterPartyChainID) as ObservableQueryIbcWithdrawStatus;
   }
 }
