@@ -69,7 +69,7 @@ export const MainMenu: FunctionComponent<{
                     className={classNames(
                       "ml-2.5 text-base overflow-x-hidden font-semibold transition-all max-w-24",
                       {
-                        "text-osmoverse-400 group-hover:text-white-mid":
+                        "text-white-full/40 group-hover:text-white-mid":
                           !selected,
                       }
                     )}

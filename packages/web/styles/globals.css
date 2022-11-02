@@ -71,18 +71,6 @@
     -moz-appearance: textfield;
   }
 
-  .token-item-list::-webkit-scrollbar {
-    @apply border border-osmoverse-700 rounded;
-  }
-
-  .token-item-list::-webkit-scrollbar-track-piece {
-    @apply bg-osmoverse-700 rounded;
-  }
-
-  .token-item-list::-webkit-scrollbar-thumb {
-    @apply bg-osmoverse-700 rounded-md;
-  }
-
   table {
     @apply md:w-screen table-auto border-collapse text-left;
   }
