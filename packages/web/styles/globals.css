@@ -72,15 +72,15 @@
   }
 
   .token-item-list::-webkit-scrollbar {
-    @apply border border-card rounded;
+    @apply border border-osmoverse-700 rounded;
   }
 
   .token-item-list::-webkit-scrollbar-track-piece {
-    @apply bg-card rounded;
+    @apply bg-osmoverse-700 rounded;
   }
 
   .token-item-list::-webkit-scrollbar-thumb {
-    @apply bg-card rounded-md;
+    @apply bg-osmoverse-700 rounded-md;
   }
 
   table {
@@ -88,7 +88,7 @@
   }
 
   thead > tr {
-    @apply bg-card text-iconDefault;
+    @apply bg-osmoverse-700 text-iconDefault;
   }
 
   thead > tr > th:first-child {

@@ -62,7 +62,6 @@ module.exports = {
         lightGrey: "#B7B7B7",
       },
       surface: IS_FRONTIER ? "#282421" : "#231D4B",
-      card: IS_FRONTIER ? "#2E2C2F" : "#3C356D",
       cardInfoPlaceholder: "#3E3866",
       iconDefault: IS_FRONTIER ? "#8E867B" : "#8E83AA",
       error: IS_FRONTIER ? "#E91F4F" : "#EF3456",
