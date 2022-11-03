@@ -118,7 +118,7 @@ export const LockTokensModal: FunctionComponent<
       {...props}
       isOpen={props.isOpen && showModalBase}
     >
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 md:gap-4">
         <span className="subtitle1 text-center">
           {t("lockToken.selectPeriod")}
         </span>
