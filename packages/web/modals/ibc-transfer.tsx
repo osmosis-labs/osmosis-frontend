@@ -16,7 +16,12 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
     const { currency, counterpartyChainId, isWithdraw } = props;
     const t = useTranslation();
-    const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
+    const {
+      chainStore,
+      queriesStore,
+      queriesExternalStore,
+      ibcTransferHistoryStore,
+    } = useStore();
     const { chainId: osmosisChainId } = chainStore.osmosis;
 
     const { logEvent } = useAmplitudeAnalytics();
@@ -138,6 +143,15 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     iconUrl: "/tokens/osmo.svg",
                   },
                 ]
+          }
+          ibcStatus={
+            isWithdraw
+              ? queriesExternalStore.queryIbcWithdrawStatuses
+                  .get(counterpartyChainId)
+                  .getIbcStatus(counterpartyChainId)
+              : queriesExternalStore.queryIbcDepositStatuses
+                  .get(counterpartyChainId)
+                  .getIbcStatus(counterpartyChainId)
           }
           isOsmosisAccountLoaded={walletConnected}
           availableBalance={

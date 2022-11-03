@@ -13,6 +13,7 @@ import { BorderButton } from "../buttons";
 import { CheckBox } from "../control";
 import { Disableable, InputProps, LoadingProps } from "../types";
 import { useTranslation } from "react-multi-lang";
+import { IbcStatus } from "@osmosis-labs/stores/types/queries-external/ibc-status/types";
 
 export type TransferProps = {
   isWithdraw: boolean;
@@ -36,6 +37,7 @@ export type TransferProps = {
   warningMessage?: string;
   toggleIsMax: () => void;
   transferFee?: CoinPretty;
+  ibcStatus?: IbcStatus;
   /** Required, can be hardcoded estimate. */
   waitTime: string;
   disablePanel?: boolean;
@@ -56,6 +58,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   warningMessage,
   toggleIsMax,
   transferFee,
+  ibcStatus,
   waitTime,
   disablePanel = false,
 }) => {
@@ -94,7 +97,8 @@ export const Transfer: FunctionComponent<TransferProps> = ({
       : isMobile
       ? 14
       : 24;
-
+  const ibcCongested = ibcStatus === IbcStatus.Congested;
+  const ibcBlocked = ibcStatus === IbcStatus.Blocked;
   return (
     <div className="flex flex-col gap-11 overflow-x-auto">
       <BridgeAnimation
@@ -279,6 +283,28 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             bgClassName="bg-osmoverse-900"
           >
             <span className="body2 md:caption">{warningMessage}</span>
+          </GradientView>
+        )}
+        {ibcStatus && ibcCongested && (
+          <GradientView
+            className="text-center"
+            gradientClassName="bg-gradient-negative"
+            bgClassName="bg-osmoverse-900"
+          >
+            <span className="body2 text-rust-500 md:caption">
+              {"Network congested. Transfers may take longer than usual."}
+            </span>
+          </GradientView>
+        )}
+        {ibcStatus && ibcBlocked && (
+          <GradientView
+            className="text-center"
+            gradientClassName="bg-gradient-negative"
+            bgClassName="bg-osmoverse-900"
+          >
+            <span className="body2 text-rust-500 md:caption">
+              {"Transfer network currently blocked. Check back later."}
+            </span>
           </GradientView>
         )}
         {editWithdrawAddrConfig && editWithdrawAddrConfig.customAddress !== "" && (
