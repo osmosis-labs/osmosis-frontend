@@ -29,23 +29,31 @@ export const BondCard: FunctionComponent<
   const [drawerUp, setDrawerUp] = useState(false);
   const t = useTranslation();
 
+  const shares = userShares
+    .hideDenom(true)
+    .trim(true)
+    .maxDecimals(3)
+    .toString();
+
   return (
-    <div className="relative flex flex-col gap-[115px] overflow-hidden w-[360px] h-[380px] max-w-[348px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8">
+    <div className="relative flex flex-col gap-[115px] overflow-hidden w-[360px] h-[380px] max-w-[348px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8 md:p-[10px]">
       <div className="flex flex-col gap-4">
         <div className="flex items-start gap-4 place-content-between">
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 max-w-[60%] overflow-visible z-10">
             <span className="subtitle1 text-osmoverse-100">
               {t("pool.amountDaysUnbonding", {
                 numDays: duration.asDays().toString(),
               })}
             </span>
-            <div className="flex flex-col text-osmoverse-100">
-              <h3>
-                {userShares
-                  .hideDenom(true)
-                  .trim(true)
-                  .maxDecimals(3)
-                  .toString()}
+            <div className="flex flex-col text-osmoverse-100 grow">
+              <h3
+                className={classNames("bg-osmoverse-800", {
+                  "text-h4 font-h4": shares.length > 5,
+                  "text-h5 font-h5": shares.length > 8,
+                  "text-h6 font-h6": shares.length > 10,
+                })}
+              >
+                {shares}
               </h3>
               <span>{t("pool.shares")}</span>
             </div>
@@ -65,7 +73,9 @@ export const BondCard: FunctionComponent<
             )}
           </div>
           {splashImageSrc && (
-            <Image alt="splash" src={splashImageSrc} height={90} width={90} />
+            <div className="w-fit h-fit shrink-0">
+              <Image alt="splash" src={splashImageSrc} height={90} width={90} />
+            </div>
           )}
         </div>
         {userUnlockingShares && (
@@ -178,7 +188,7 @@ const Drawer: FunctionComponent<{
     >
       <div
         className={classNames(
-          "flex items-end place-content-between transition-all py-4 px-8",
+          "flex items-end place-content-between transition-all py-4 px-8 md:px-[10px]",
           {
             "border-b border-osmoverse-600": drawerUp,
           }
@@ -252,7 +262,7 @@ const Drawer: FunctionComponent<{
           "bg-osmoverse-700": drawerUp,
         })}
       >
-        <div className="flex flex-col h-[180px] gap-5 py-6 px-8 overflow-y-auto">
+        <div className="flex flex-col h-[180px] gap-5 py-6 px-8 md:px-[10px] overflow-y-auto">
           {incentivesBreakdown.map((breakdown, index) => (
             <div className="flex flex-col gap-5 xs:text-subtitle2" key={index}>
               {index === 0 && superfluid && (
