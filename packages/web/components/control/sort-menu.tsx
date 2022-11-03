@@ -31,7 +31,7 @@ export const SortMenu: FunctionComponent<Props> = ({
   return (
     <div
       className={classNames(
-        "relative px-6 py-2 cursor-pointer",
+        "relative shrink-0 px-6 py-2 cursor-pointer",
         dropdownOpen
           ? "rounded-t-xl border-t border-x border-osmoverse-600"
           : "border rounded-xl border-osmoverse-500"
@@ -52,7 +52,7 @@ export const SortMenu: FunctionComponent<Props> = ({
         )}
       >
         <button
-          className="flex items-center"
+          className="flex items-center shrink-0"
           onClick={(e) => {
             e.stopPropagation();
             if (!disabled) {
@@ -80,10 +80,10 @@ export const SortMenu: FunctionComponent<Props> = ({
             }
           }}
         >
-          <span className="block m-auto md:ml-1 ml-2 leading-loose text-osmoverse-200 min-w-[3.75rem] select-none text-center body2 md:caption overflow-hidden">
+          <span className="block m-auto ml-2 leading-loose text-osmoverse-200 min-w-[3.75rem] select-none text-center body2 md:caption overflow-hidden">
             {isMobile
-              ? t("components.sort.SORT")
-              : t("components.sort.SORTMobile")}
+              ? t("components.sort.SORTMobile")
+              : t("components.sort.SORT")}
           </span>
         </button>
       </div>

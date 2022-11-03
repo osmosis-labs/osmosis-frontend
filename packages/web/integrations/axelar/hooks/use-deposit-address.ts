@@ -5,7 +5,7 @@ export function useDepositAddress(
   sourceChain: string,
   destChain: string,
   address: string | undefined,
-  tokenMinDenom: string,
+  coinMinimalDenom: string,
   generateOnMount = true,
   environment = Environment.MAINNET
 ): {
@@ -20,7 +20,7 @@ export function useDepositAddress(
     if (address && depositAddress === null) {
       setIsLoading(true);
       new AxelarAssetTransfer({ environment })
-        .getDepositAddress(sourceChain, destChain, address, tokenMinDenom)
+        .getDepositAddress(sourceChain, destChain, address, coinMinimalDenom)
         .then((generatedAddress) => {
           setDepositAddress(generatedAddress);
         })
@@ -36,7 +36,7 @@ export function useDepositAddress(
     address,
     sourceChain,
     destChain,
-    tokenMinDenom,
+    coinMinimalDenom,
     setIsLoading,
   ]);
 

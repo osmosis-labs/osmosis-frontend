@@ -35,6 +35,7 @@ import {
 } from ".";
 import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
 import { EventName } from "../../config/user-analytics-v2";
+import { useTranslation } from "react-multi-lang";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<
@@ -56,14 +57,14 @@ const AxelarTransfer: FunctionComponent<
     selectedSourceChainKey,
     onRequestClose,
     onRequestSwitchWallet,
-    tokenMinDenom,
-    transferFeeMinAmount,
     sourceChains,
     isTestNet = process.env.NEXT_PUBLIC_IS_TESTNET === "true",
     connectCosmosWalletButtonOverride,
   }) => {
     const { chainStore, accountStore, queriesStore, nonIbcBridgeHistoryStore } =
       useStore();
+    const t = useTranslation();
+
     const { chainId } = chainStore.osmosis;
     const osmosisAccount = accountStore.getAccount(chainId);
     const { bech32Address } = osmosisAccount;
@@ -98,9 +99,13 @@ const AxelarTransfer: FunctionComponent<
       EthClientChainIds_AxelarChainIdsMap[selectedSourceChainKey] ??
       selectedSourceChainKey;
 
-    const erc20ContractAddress = sourceChains.find(
+    const sourceChainConfig = sourceChains.find(
       ({ id }) => id === selectedSourceChainKey
-    )?.erc20ContractAddress;
+    );
+
+    const erc20ContractAddress = sourceChainConfig?.erc20ContractAddress;
+    const transferFeeMinAmount = sourceChainConfig?.transferFeeMinAmount ?? "0";
+
     const axelarChainId =
       chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
       "axelar-dojo-1";
@@ -222,7 +227,7 @@ const AxelarTransfer: FunctionComponent<
         sourceChain,
         destChain,
         isWithdraw || correctChainSelected ? address : undefined,
-        tokenMinDenom,
+        originCurrency.coinMinimalDenom,
         undefined,
         isTestNet ? Environment.TESTNET : Environment.MAINNET
       );
@@ -230,7 +235,7 @@ const AxelarTransfer: FunctionComponent<
     // notify user they are withdrawing into a different account then they last deposited to
     const [lastDepositAccountAddress, setLastDepositAccountAddress] =
       useLocalStorageState<string | null>(
-        `axelar-last-deposit-addr-${tokenMinDenom}`,
+        `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
         null
       );
     const warnOfDifferentDepositAddress =
@@ -417,13 +422,17 @@ const AxelarTransfer: FunctionComponent<
         .toDec()
         .gt(availableBalance.toDec());
     const buttonErrorMessage = userDisconnectedEthWallet
-      ? `Reconnect ${ethWalletClient.displayInfo.displayName}`
+      ? t("assets.transfer.errors.reconnectWallet", {
+          walletName: ethWalletClient.displayInfo.displayName,
+        })
       : !isWithdraw && !correctChainSelected
-      ? `Wrong network in ${ethWalletClient.displayInfo.displayName}`
+      ? t("assets.transfer.errors.wrongNetworkInWallet", {
+          walletName: ethWalletClient.displayInfo.displayName,
+        })
       : isInsufficientFee
-      ? "Insufficient fee"
+      ? t("assets.transfer.errors.insufficientFee")
       : isInsufficientBal
-      ? "Insufficient balance"
+      ? t("assets.transfer.errors.insufficientBal")
       : undefined;
 
     return (
@@ -457,7 +466,9 @@ const AxelarTransfer: FunctionComponent<
           }
           warningMessage={
             warnOfDifferentDepositAddress
-              ? `Warning: the selected account in ${ethWalletClient.displayInfo.displayName} differs from the account you last deposited with.`
+              ? t("assets.transfer.warnDepositAddressDifferent", {
+                  address: ethWalletClient.displayInfo.displayName,
+                })
               : undefined
           }
           toggleIsMax={() => {
@@ -480,7 +491,7 @@ const AxelarTransfer: FunctionComponent<
           {connectCosmosWalletButtonOverride ?? (
             <Button
               className={classNames(
-                "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl transition-opacity duration-300",
+                "hover:opacity-75 transition-opacity duration-300",
                 { "opacity-30": isDepositAddressLoading }
               )}
               disabled={
@@ -491,20 +502,21 @@ const AxelarTransfer: FunctionComponent<
                 isInsufficientBal ||
                 isSendTxPending
               }
-              loading={isSendTxPending}
               onClick={() => {
                 if (!isWithdraw && userDisconnectedEthWallet)
                   ethWalletClient.enable();
                 else doAxelarTransfer();
               }}
             >
-              <h6 className="md:text-base text-lg">
-                {buttonErrorMessage
-                  ? buttonErrorMessage
-                  : isWithdraw
-                  ? "Withdraw"
-                  : "Deposit"}
-              </h6>
+              {buttonErrorMessage
+                ? buttonErrorMessage
+                : isWithdraw
+                ? t("assets.transfer.titleWithdraw", {
+                    coinDenom: originCurrency.coinDenom,
+                  })
+                : t("assets.transfer.titleDeposit", {
+                    coinDenom: originCurrency.coinDenom,
+                  })}
             </Button>
           )}
         </div>

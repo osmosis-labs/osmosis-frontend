@@ -42,7 +42,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
     const t = useTranslation();
 
     const { chainId } = chainStore.osmosis;
-    const queryExternal = queriesExternalStore.get();
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
     const account = accountStore.getAccount(chainId);
 
@@ -122,7 +121,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
 
           return {
             pool,
-            ...queryExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+            ...queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
               pool.id,
               priceStore
             ),
@@ -140,8 +139,15 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
                     .quo(pool.totalShare)
                 ),
             apr: queryOsmosis.queryIncentivizedPools
-              .computeMostAPY(pool.id, priceStore)
-              .maxDecimals(2),
+              .computeMostApr(pool.id, priceStore)
+              .add(
+                // swap fees
+                queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
+                  pool,
+                  priceStore
+                )
+              )
+              .maxDecimals(0),
             poolName: pool.poolAssets
               .map((asset) => asset.amount.currency.coinDenom)
               .join("/"),
@@ -158,7 +164,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
         chainId,
         externalIncentivizedPools,
         queryOsmosis.queryIncentivizedPools.response,
-        queryExternal.queryGammPoolFeeMetrics.response,
+        queriesExternalStore.queryGammPoolFeeMetrics.response,
         queryOsmosis.queryGammPools.response,
         priceStore,
         account,
@@ -358,7 +364,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
     if (isMobile) {
       return (
         <CompactPoolTableDisplay
-          title={t("pools.externalIncentivized.title")}
           pools={allData.map((poolData) => ({
             id: poolData.pool.id,
             assets: poolData.pool.poolAssets.map(

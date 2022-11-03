@@ -5,13 +5,14 @@ import { PricePretty, CoinPretty } from "@keplr-wallet/unit";
 import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { useWindowSize } from "../../hooks";
-import { CheckBox } from "../../components/control/";
+import { MenuToggle } from "../../components/control";
 import { Token } from "../../components/assets";
 import { InputBox } from "../../components/input";
-import { Error, Info } from "../../components/alert";
-import { InfoTooltip } from "../../components/tooltip";
+import { Info } from "../../components/alert";
 import { PoolTokenSelect } from "../../components/control/pool-token-select";
 import { CustomClasses } from "../types";
+import { BorderButton } from "../buttons";
+import { useTranslation } from "react-multi-lang";
 
 export const AddLiquidity: FunctionComponent<
   {
@@ -23,19 +24,34 @@ export const AddLiquidity: FunctionComponent<
   ({ className, addLiquidityConfig, actionButton, getFiatValue }) => {
     const { chainStore } = useStore();
     const { isMobile } = useWindowSize();
+    const t = useTranslation();
 
     return (
-      <div className={classNames("flex flex-col gap-3", className)}>
-        {!isMobile && (
-          <div className="flex gap-1 text-caption font-caption">
-            <span className="text-white-disabled">LP token balance:</span>
-            <span className="text-secondary-200">
-              {addLiquidityConfig.poolShare.toDec().isZero()
-                ? addLiquidityConfig.poolShare.maxDecimals(0).toString()
-                : addLiquidityConfig.poolShare.toString()}
-            </span>
+      <div className={classNames("flex flex-col gap-8", className)}>
+        <div className="flex flex-col gap-4 text-center">
+          <div className="mx-auto">
+            <MenuToggle
+              selectedOptionId={
+                addLiquidityConfig.isSingleAmountIn ? "single" : "all"
+              }
+              options={[
+                {
+                  id: "all",
+                  display: t("addLiquidity.allAssets"),
+                },
+                { id: "single", display: t("addLiquidity.singleAsset") },
+              ]}
+              onSelect={(id) => {
+                if (id === "single") {
+                  addLiquidityConfig.setIsSingleAmountIn(true);
+                } else addLiquidityConfig.setIsSingleAmountIn(false);
+              }}
+            />
           </div>
-        )}
+          {addLiquidityConfig.isSingleAmountIn && (
+            <span className="caption">{t("addLiquidity.autoswapCaption")}</span>
+          )}
+        </div>
         <div className="flex flex-col gap-2.5 max-h-96 overflow-y-auto">
           {(addLiquidityConfig.isSingleAmountIn &&
           addLiquidityConfig.singleAmountInAsset
@@ -76,12 +92,12 @@ export const AddLiquidity: FunctionComponent<
             return (
               <div
                 key={currency.coinDenom}
-                className="flex flex-col gap-1 w-full md:p-2 p-4 border border-white-faint md:rounded-xl rounded-2xl"
+                className="flex flex-col gap-1 w-full md:p-3 p-4 border border-osmoverse-700 md:rounded-xl rounded-2xl"
               >
                 {isPeggedCurrency && (
                   <Info
                     size="subtle"
-                    className="border-2 border-secondary-50/30"
+                    className="border-2 border-rust-200/30"
                     message={`You are adding liquidity to ${
                       currency!.originCurrency!.coinDenom
                     }, ${
@@ -131,42 +147,26 @@ export const AddLiquidity: FunctionComponent<
                   <div className="flex flex-col gap-2">
                     {!isMobile && (
                       <div className="flex gap-2 text-caption font-caption justify-end">
-                        <span className="my-auto">Available</span>
+                        <span className="my-auto">
+                          {t("addLiquidity.available")}
+                        </span>
                         {assetBalance && (
-                          <span className="text-primary-50 my-auto">
+                          <span
+                            className={classNames(
+                              "text-wosmongton-300 my-auto",
+                              assetBalance?.toDec().isZero()
+                                ? "opacity-70"
+                                : "cursor-pointer"
+                            )}
+                            onClick={() => addLiquidityConfig.setMax()}
+                          >
                             {assetBalance.maxDecimals(6).toString()}
                           </span>
                         )}
-                        <button
-                          className={classNames(
-                            "button py-1 px-1.5 my-1 text-xs rounded-md bg-white-faint",
-                            {
-                              "opacity-30": assetBalance?.toDec().isZero(),
-                            }
-                          )}
-                          onClick={() => addLiquidityConfig.setMax()}
-                          disabled={assetBalance?.toDec().isZero()}
-                        >
-                          MAX
-                        </button>
                       </div>
                     )}
-                    <div className="flex place-content-end gap-1">
-                      {isMobile && (
-                        <button
-                          className={classNames(
-                            "button py-1 px-1.5 my-1 text-xs rounded-md bg-white-faint",
-                            {
-                              "opacity-30": assetBalance?.toDec().isZero(),
-                            }
-                          )}
-                          onClick={() => addLiquidityConfig.setMax()}
-                          disabled={assetBalance?.toDec().isZero()}
-                        >
-                          MAX
-                        </button>
-                      )}
-                      <div className="flex flex-col rounded-lg bg-background p-1">
+                    <div className="flex items-center place-content-end gap-1">
+                      <div className="flex flex-col rounded-lg bg-osmoverse-1000 p-1">
                         <InputBox
                           style="no-border"
                           type="number"
@@ -176,7 +176,7 @@ export const AddLiquidity: FunctionComponent<
                           placeholder=""
                         />
                         {!isMobile && (
-                          <span className="text-right text-xs font-caption text-white-emphasis leading-5 pr-3">
+                          <span className="text-right text-xs font-caption text-osmoverse-400 leading-5 pr-3">
                             {!inputAmountValue ||
                             inputAmountValue.toDec().isZero() ? (
                               <br />
@@ -186,6 +186,14 @@ export const AddLiquidity: FunctionComponent<
                           </span>
                         )}
                       </div>
+                      {isMobile && (
+                        <BorderButton
+                          className="py-0.5"
+                          onClick={() => addLiquidityConfig.setMax()}
+                        >
+                          {t("components.MAX")}
+                        </BorderButton>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -193,37 +201,13 @@ export const AddLiquidity: FunctionComponent<
             );
           })}
         </div>
-        <div className="flex items-center ml-auto">
-          <CheckBox
-            className="mr-2 after:!bg-transparent after:!border-2 after:!border-white-full"
-            isOn={addLiquidityConfig.isSingleAmountIn}
-            onToggle={() =>
-              addLiquidityConfig.setIsSingleAmountIn(
-                !addLiquidityConfig.isSingleAmountIn
-              )
-            }
-          >
-            Auto-swap single asset
-          </CheckBox>
-          <InfoTooltip
-            trigger="click mouseenter"
-            className="mx-2.5"
-            content="'Auto-swap single asset' allows you to provide liquidity using one asset. This will impact the pool price of the asset you’re providing liquidity with."
-          />
-        </div>
         {addLiquidityConfig.singleAmountInPriceImpact && (
-          <div className="flex place-content-between p-4 bg-card border border-white-faint rounded-lg body1">
-            <span className="text-white-mid">Price impact</span>
+          <div className="flex place-content-between p-4 caption text-osmoverse-300">
+            <span>Price impact</span>
             <span>
               {addLiquidityConfig.singleAmountInPriceImpact.toString()}
             </span>
           </div>
-        )}
-        {addLiquidityConfig.error && (
-          <Error
-            className="mx-auto"
-            message={addLiquidityConfig.error?.message ?? ""}
-          />
         )}
         {actionButton}
       </div>

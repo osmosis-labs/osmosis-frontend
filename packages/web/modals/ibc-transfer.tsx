@@ -40,7 +40,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     const { showModalBase, accountActionButton, walletConnected } =
       useConnectWalletModalRedirect(
         {
-          className: "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl",
+          className: "md:mt-4 mt-6 hover:opacity-75",
           disabled:
             !account.isReadyToSendTx ||
             !counterpartyAccount.isReadyToSendTx ||
@@ -81,14 +81,13 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               }
             );
           },
-          loading: inTransit,
-          children: (
-            <h6 className="md:text-base text-lg">
-              {isWithdraw
-                ? t("assets.ibcTransfer.titleWithdraw")
-                : t("assets.ibcTransfer.titleDeposit")}
-            </h6>
-          ),
+          children: isWithdraw
+            ? t("assets.ibcTransfer.titleWithdraw", {
+                coinDenom: currency.coinDenom,
+              })
+            : t("assets.ibcTransfer.titleDeposit", {
+                coinDenom: currency.coinDenom,
+              }),
         },
         props.onRequestClose
       );
@@ -171,9 +170,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           onInput={(value) => amountConfig.setAmount(value)}
           waitTime={t("assets.ibcTransfer.waitTime")}
         />
-        <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
-          {accountActionButton}
-        </div>
+        {accountActionButton}
       </ModalBase>
     );
   });

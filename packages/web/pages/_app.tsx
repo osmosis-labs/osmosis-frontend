@@ -6,9 +6,10 @@ import { useMemo } from "react";
 import { enableStaticRendering } from "mobx-react-lite";
 import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
-import { MainLayout, MainLayoutMenu } from "../components/layouts";
+import { MainLayout } from "../components/layouts";
 import { TempBanner } from "../components/alert/temp-banner";
 import { OgpMeta } from "../components/ogp-meta";
+import { MainLayoutMenu } from "../components/types";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -48,21 +49,21 @@ function MyApp({ Component, pageProps }: AppProps) {
       {
         label: t("menu.swap"),
         link: "/",
-        icon: IS_FRONTIER ? "/icons/trade-white.svg" : "/icons/trade.svg",
+        icon: "/icons/trade-white.svg",
         iconSelected: "/icons/trade-white.svg",
         selectionTest: /\/$/,
       },
       {
         label: t("menu.pools"),
         link: "/pools",
-        icon: IS_FRONTIER ? "/icons/pool-white.svg" : "/icons/pool.svg",
+        icon: "/icons/pool-white.svg",
         iconSelected: "/icons/pool-white.svg",
         selectionTest: /\/pools/,
       },
       {
         label: t("menu.assets"),
         link: "/assets",
-        icon: IS_FRONTIER ? "/icons/asset-white.svg" : "/icons/asset.svg",
+        icon: "/icons/asset-white.svg",
         iconSelected: "/icons/asset-white.svg",
         selectionTest: /\/assets/,
       },

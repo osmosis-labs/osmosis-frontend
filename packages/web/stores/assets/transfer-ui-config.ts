@@ -6,15 +6,16 @@ import { KVStore } from "@keplr-wallet/common";
 import {
   IbcTransferModal,
   BridgeTransferModal,
-  ConnectNonIbcWallet,
+  SelectAssetSourceModal,
   TransferAssetSelectModal,
+  FiatRampsModal,
 } from "../../modals";
 import {
   ObservableMetamask,
   ObservableWalletConnect,
   EthWallet,
 } from "../../integrations/ethereum";
-import { Wallet, SourceChainKey } from "../../integrations";
+import { Wallet, SourceChainKey, FiatRampKey } from "../../integrations";
 import { makeLocalStorageKVStore } from "../../stores/kv-store";
 import { IBCBalance, ObservableAssets } from ".";
 
@@ -27,6 +28,7 @@ export class ObservableTransferUIConfig {
   // * clicking back button
   // * transferring from the global deposit/withdraw buttons
   // * transferring by clicking on an asset table row
+  // * launching fiat on/off ramps
 
   @observable
   protected _ibcTransferModal:
@@ -47,13 +49,13 @@ export class ObservableTransferUIConfig {
   }
 
   @observable
-  protected _connectNonIbcWalletModal:
-    | ComponentProps<typeof ConnectNonIbcWallet>
+  protected _selectAssetSourceModal:
+    | ComponentProps<typeof SelectAssetSourceModal>
     | undefined;
-  get connectNonIbcWalletModal():
-    | ComponentProps<typeof ConnectNonIbcWallet>
+  get selectAssetSourceModal():
+    | ComponentProps<typeof SelectAssetSourceModal>
     | undefined {
-    return this._connectNonIbcWalletModal;
+    return this._selectAssetSourceModal;
   }
 
   @observable
@@ -66,10 +68,17 @@ export class ObservableTransferUIConfig {
     return this._bridgeTransferModal;
   }
 
+  @observable
+  protected _fiatRampsModal: ComponentProps<typeof FiatRampsModal> | undefined;
+  get fiatRampsModal(): ComponentProps<typeof FiatRampsModal> | undefined {
+    return this._fiatRampsModal;
+  }
+
   constructor(
     protected readonly assetsStore: ObservableAssets,
     protected readonly account: AccountSetBase,
-    protected readonly kvStore: KVStore
+    protected readonly kvStore: KVStore,
+    protected readonly isMobile: boolean
   ) {
     makeObservable(this);
   }
@@ -84,7 +93,9 @@ export class ObservableTransferUIConfig {
   );
 
   protected get _ethClientWallets(): EthWallet[] {
-    return [this.metamask, this.walletConnectEth];
+    return [this.metamask, this.walletConnectEth].filter((wallet) =>
+      this.isMobile ? wallet.mobileEnabled : true
+    );
   }
 
   /** ### GLOBAL DEPOSIT/WITHDRAW BUTTONS AT TOP
@@ -155,7 +166,11 @@ export class ObservableTransferUIConfig {
         (wallet) => wallet.isConnected
       );
 
-      if (alreadyConnectedWallet && alreadyConnectedWallet.chainId) {
+      if (
+        alreadyConnectedWallet &&
+        alreadyConnectedWallet.chainId &&
+        (!balance.fiatRamps || balance.fiatRamps.length === 0)
+      ) {
         this.launchBridgeTransferModal(
           direction,
           balance,
@@ -163,20 +178,24 @@ export class ObservableTransferUIConfig {
           sourceChainKey,
           () => {
             this.closeAllModals();
-            this.launchWalletSelectModal(direction, balance, sourceChainKey);
+            this.launchSelectAssetSourceModal(
+              direction,
+              balance,
+              sourceChainKey
+            );
           }
         );
-      } else if (applicableWallets.length > 0) {
-        this.launchWalletSelectModal(direction, balance, sourceChainKey);
       } else {
-        console.warn(
-          "No non-Keplr wallets found for this bridged asset:",
-          balance.balance.currency.coinDenom
-        );
+        this.launchSelectAssetSourceModal(direction, balance, sourceChainKey);
       }
     } else {
       this.launchIbcTransferModal(direction, balance);
     }
+  }
+
+  @action
+  buyOsmo() {
+    this.launchFiatRampsModal("transak", "OSMO");
   }
 
   // SECTION - methods for launching a particular modal
@@ -281,7 +300,7 @@ export class ObservableTransferUIConfig {
   }
 
   @action
-  protected launchWalletSelectModal(
+  protected launchSelectAssetSourceModal(
     direction: TransferDir,
     balanceOnOsmosis: IBCBalance,
     sourceChainKey: SourceChainKey
@@ -294,14 +313,21 @@ export class ObservableTransferUIConfig {
       (wallet) => wallet.isConnected
     );
 
-    this._connectNonIbcWalletModal = {
+    this._selectAssetSourceModal = {
       isOpen: true,
       initiallySelectedWalletId: alreadyConnectedWallet?.key,
       isWithdraw: direction === "withdraw",
       onRequestClose: () => this.closeAllModals(),
       wallets,
-      onSelectWallet: (key) => {
+      fiatRamps: this.isMobile
+        ? []
+        : balanceOnOsmosis.fiatRamps?.map(({ rampKey }) => rampKey),
+      onSelectSource: (key) => {
         const selectedWallet = wallets.find((wallet) => wallet.key === key);
+        const selectedFiatRamp = balanceOnOsmosis.fiatRamps?.find(
+          ({ rampKey }) => rampKey === key
+        );
+
         if (selectedWallet !== undefined) {
           // enable then call back
           const openBridgeModal = () => {
@@ -313,7 +339,7 @@ export class ObservableTransferUIConfig {
               sourceChainKey,
               () => {
                 this.closeAllModals();
-                this.launchWalletSelectModal(
+                this.launchSelectAssetSourceModal(
                   direction,
                   balanceOnOsmosis,
                   sourceChainKey
@@ -321,7 +347,7 @@ export class ObservableTransferUIConfig {
               },
               () => {
                 this.closeAllModals();
-                this.launchWalletSelectModal(
+                this.launchSelectAssetSourceModal(
                   direction,
                   balanceOnOsmosis,
                   sourceChainKey
@@ -334,8 +360,14 @@ export class ObservableTransferUIConfig {
             wallets.forEach((wallet) => wallet.disable());
             selectedWallet.enable().then(openBridgeModal);
           } else openBridgeModal();
+        } else if (selectedFiatRamp !== undefined) {
+          this.closeAllModals();
+          this.launchFiatRampsModal(
+            selectedFiatRamp.rampKey,
+            selectedFiatRamp.assetKey
+          );
         } else {
-          console.error("Given wallet key doesn't match any wallet");
+          console.error("Given wallet or fiat ramp key doesn't match anything");
           this.closeAllModals();
         }
       },
@@ -369,11 +401,22 @@ export class ObservableTransferUIConfig {
   }
 
   @action
+  protected launchFiatRampsModal(fiatRampKey: FiatRampKey, assetKey: string) {
+    this._fiatRampsModal = {
+      isOpen: true,
+      onRequestClose: () => this.closeAllModals(),
+      fiatRampKey,
+      assetKey,
+    };
+  }
+
+  @action
   protected closeAllModals() {
-    this._connectNonIbcWalletModal =
+    this._selectAssetSourceModal =
       this._assetSelectModal =
       this._bridgeTransferModal =
       this._ibcTransferModal =
+      this._fiatRampsModal =
         undefined;
   }
 }

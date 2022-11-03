@@ -19,6 +19,7 @@ import {
   Pool,
   RoutePathWithAmount,
 } from "@osmosis-labs/pools";
+import { NoSendCurrencyError } from "./errors";
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
@@ -375,7 +376,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   get error(): Error | undefined {
     const sendCurrency = this.sendCurrency;
     if (!sendCurrency) {
-      return new Error("Currency to send not set");
+      return new NoSendCurrencyError("Currency to send not set");
     }
 
     if (this.amount) {

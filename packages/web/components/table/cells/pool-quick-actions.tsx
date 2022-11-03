@@ -30,19 +30,19 @@ export const PoolQuickActionCell: FunctionComponent<
     if (onAddLiquidity) {
       m.push({
         id: "add-liquidity",
-        display: t("pool.manageLiquidity.actionAddLiquidity"),
+        display: t("addLiquidity.title"),
       });
     }
     if (onRemoveLiquidity) {
       m.push({
         id: "remove-liquidity",
-        display: t("pool.manageLiquidity.actionRemoveLiquidity"),
+        display: t("removeLiquidity.title"),
       });
     }
     if (onLockTokens) {
       m.push({
         id: "lock-tokens",
-        display: t("pool.manageLiquidity.actionLockTokens"),
+        display: t("lockToken.title"),
       });
     }
 

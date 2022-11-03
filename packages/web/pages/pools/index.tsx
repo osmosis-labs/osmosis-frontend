@@ -1,7 +1,9 @@
+import Image from "next/image";
 import type { NextPage } from "next";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import { useState, ComponentProps } from "react";
+import { useState, ComponentProps, useMemo } from "react";
+import { Duration } from "dayjs/plugin/duration";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
@@ -29,8 +31,7 @@ import {
   useLockTokenConfig,
   usePoolDetailConfig,
   useSuperfluidPoolConfig,
-  usePoolGauges,
-  useNavBarCtas,
+  useShowDustUserSetting,
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
@@ -55,19 +56,10 @@ const Pools: NextPage = observer(function () {
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });
-  useNavBarCtas([
-    { label: "Create new Pool", onClick: () => setIsCreatingPool(true) },
-  ]);
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const queriesExternal = queriesExternalStore.get();
-
   const account = accountStore.getAccount(chainId);
-
-  const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
-    account.bech32Address
-  );
 
   const superfluidPoolIds = queryOsmosis.querySuperfluidPools.superfluidPoolIds;
   const superfluidPools = new DataSorter(
@@ -77,11 +69,11 @@ const Pools: NextPage = observer(function () {
       .map((superfluidPool) => ({
         id: superfluidPool.id,
         poolFeesMetrics:
-          queriesExternal.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+          queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
             superfluidPool.id,
             priceStore
           ),
-        apr: queryOsmosis.queryIncentivizedPools.computeMostAPY(
+        apr: queryOsmosis.queryIncentivizedPools.computeMostApr(
           superfluidPool.id,
           priceStore
         ),
@@ -96,8 +88,6 @@ const Pools: NextPage = observer(function () {
     .process("poolLiquidity")
     .reverse();
   const [showMoreSfsPools, setShowMoreSfsPools] = useState(false);
-
-  const poolCountShowMoreThreshold = isMobile ? 3 : 6;
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
@@ -151,22 +141,15 @@ const Pools: NextPage = observer(function () {
   const { poolDetailConfig } = usePoolDetailConfig(
     lockLpTokenModalPoolId ?? undefined
   );
-  const { allAggregatedGauges } = usePoolGauges(
-    lockLpTokenModalPoolId ?? undefined
-  );
   const { superfluidPoolConfig: _, superfluidDelegateToValidator } =
     useSuperfluidPoolConfig(poolDetailConfig);
   const selectedPoolShareCurrency = lockLpTokenModalPoolId
     ? queryOsmosis.queryGammPoolShare.getShareCurrency(lockLpTokenModalPoolId)
     : undefined;
   const { config: lockLpTokenConfig, lockToken } = useLockTokenConfig(
-    chainStore,
-    queriesStore,
-    chainId,
     selectedPoolShareCurrency
   );
-  const onLockToken = (gaugeId: string, electSuperfluid?: boolean) => {
-    const gauge = allAggregatedGauges?.find((gauge) => gauge.id === gaugeId);
+  const onLockToken = (duration: Duration, electSuperfluid?: boolean) => {
     if (electSuperfluid && selectedPoolShareCurrency) {
       // open superfluid modal
       setSuperfluidDelegateModalProps({
@@ -185,8 +168,8 @@ const Pools: NextPage = observer(function () {
         onRequestClose: () => setSuperfluidDelegateModalProps(null),
       });
       setLockLpTokenModalPoolId(null);
-    } else if (gauge) {
-      lockToken(gauge.duration).finally(() => {
+    } else {
+      lockToken(duration).finally(() => {
         setLockLpTokenModalPoolId(null);
         setSuperfluidDelegateModalProps(null);
         lockLpTokenConfig.setAmount("");
@@ -194,8 +177,34 @@ const Pools: NextPage = observer(function () {
     }
   };
 
+  // my pools
+  const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
+    account.bech32Address
+  );
+  const poolCountShowMoreThreshold = isMobile ? 3 : 6;
+  const myPools = useMemo(
+    () =>
+      (isMobile && !showMoreMyPools
+        ? myPoolIds.slice(0, poolCountShowMoreThreshold)
+        : myPoolIds
+      )
+        .map((myPoolId) => queryOsmosis.queryGammPools.getPool(myPoolId))
+        .filter((pool): pool is ObservableQueryPool => !!pool),
+    [isMobile, showMoreMyPools, myPoolIds, queryOsmosis.queryGammPools.response]
+  );
+  const dustFilteredPools = useShowDustUserSetting(myPools, (pool) =>
+    pool
+      .computeTotalValueLocked(priceStore)
+      .mul(
+        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+          account.bech32Address,
+          pool.id
+        )
+      )
+  );
+
   return (
-    <main className="bg-background px-8">
+    <main className="bg-osmoverse-900 px-8 md:px-3">
       {isCreatingPool && (
         <CreatePoolModal
           isOpen={isCreatingPool}
@@ -231,6 +240,9 @@ const Pools: NextPage = observer(function () {
       )}
       {addLiquidityModalPoolId && (
         <AddLiquidityModal
+          title={t("addLiquidity.titleInPool", {
+            poolId: addLiquidityModalPoolId,
+          })}
           poolId={addLiquidityModalPoolId}
           isOpen={true}
           onRequestClose={() => setAddLiquidityModalPoolId(null)}
@@ -238,6 +250,9 @@ const Pools: NextPage = observer(function () {
       )}
       {removeLiquidityModalPoolId && (
         <RemoveLiquidityModal
+          title={t("removeLiquidity.titleInPool", {
+            poolId: removeLiquidityModalPoolId,
+          })}
           poolId={removeLiquidityModalPoolId}
           isOpen={true}
           onRequestClose={() => setRemoveLiquidityModalPoolId(null)}
@@ -245,7 +260,7 @@ const Pools: NextPage = observer(function () {
       )}
       {lockLpTokenModalPoolId && (
         <LockTokensModal
-          title={`Lock shares in Pool #${lockLpTokenModalPoolId}`}
+          title={t("lockToken.titleInPool", { poolId: lockLpTokenModalPoolId })}
           isOpen={true}
           poolId={lockLpTokenModalPoolId}
           amountConfig={lockLpTokenConfig}
@@ -256,149 +271,133 @@ const Pools: NextPage = observer(function () {
       {superfluidDelegateModalProps && (
         <SuperfluidValidatorModal {...superfluidDelegateModalProps} />
       )}
-      <section className="pt-20 pb-10">
+      <section className="pt-8 md:pt-4 pb-10 md:pb-5">
         <PoolsOverview className="mx-auto" />
       </section>
       <section>
         <div className="mx-auto pb-[3.75rem]">
-          {isMobile ? (
-            <span className="subtitle2">{t("pools.myPools")}</span>
-          ) : (
-            <h5>{t("pools.myPools")}</h5>
-          )}
+          <h5 className="md:px-3">{t("pools.myPools")}</h5>
           <div className="flex flex-col gap-4">
             <div className="mt-5 grid grid-cards md:gap-3">
-              {(isMobile && !showMoreMyPools
-                ? myPoolIds.slice(0, poolCountShowMoreThreshold)
-                : myPoolIds
-              ).map((myPoolId) => {
-                const myPool = queryOsmosis.queryGammPools.getPool(myPoolId);
-                if (myPool) {
-                  const apr =
-                    queryOsmosis.queryIncentivizedPools.computeMostAPY(
-                      myPool.id,
-                      priceStore
-                    );
-                  const poolLiquidity =
-                    myPool.computeTotalValueLocked(priceStore);
-                  const myBonded =
-                    queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
-                      account.bech32Address,
-                      myPoolId,
-                      poolLiquidity,
-                      priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!
-                    );
-
-                  let myPoolMetrics = [
-                    {
-                      label: t("pools.APR"),
-                      value: isMobile ? (
-                        apr.maxDecimals(2).toString()
-                      ) : (
-                        <MetricLoader
-                          isLoading={
-                            queryOsmosis.queryIncentivizedPools.isAprFetching
-                          }
-                        >
-                          {apr.maxDecimals(2).toString()}
-                        </MetricLoader>
-                      ),
-                    },
-                    {
-                      label: isMobile
-                        ? t("pools.available")
-                        : t("pools.liquidity"),
-                      value: isMobile ? (
-                        (!myPool.totalShare.toDec().equals(new Dec(0))
-                          ? myPool
-                              .computeTotalValueLocked(priceStore)
-                              .mul(
-                                queryOsmosis.queryGammPoolShare
-                                  .getAvailableGammShare(
-                                    account.bech32Address,
-                                    myPoolId
-                                  )
-                                  .quo(myPool.totalShare)
-                              )
-                          : new PricePretty(
-                              priceStore.getFiatCurrency(
-                                priceStore.defaultVsCurrency
-                              )!,
-                              new Dec(0)
-                            )
-                        )
-                          .maxDecimals(2)
-                          .toString()
-                      ) : (
-                        <MetricLoader
-                          isLoading={poolLiquidity.toDec().isZero()}
-                        >
-                          {priceFormatter(poolLiquidity)}
-                        </MetricLoader>
-                      ),
-                    },
-                    {
-                      label: t("pools.bonded"),
-                      value: isMobile ? (
-                        myBonded.toString()
-                      ) : (
-                        <MetricLoader
-                          isLoading={poolLiquidity.toDec().isZero()}
-                        >
-                          {priceFormatter(myBonded)}
-                        </MetricLoader>
-                      ),
-                    },
-                  ];
-
-                  // rearrange metrics for mobile pool card
-                  if (isMobile) {
-                    myPoolMetrics = [
-                      myPoolMetrics[2], // Bonded
-                      myPoolMetrics[1], // Available
-                      myPoolMetrics[0], // APR
-                    ];
-                  }
-
-                  return (
-                    <PoolCard
-                      key={myPoolId}
-                      poolId={myPoolId}
-                      poolAssets={myPool.poolAssets.map((poolAsset) => ({
-                        coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-                        coinDenom: poolAsset.amount.currency.coinDenom,
-                      }))}
-                      poolMetrics={myPoolMetrics}
-                      isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
-                        myPoolId
-                      )}
-                      mobileShowFirstLabel
-                      onClick={() =>
-                        logEvent([
-                          EventName.Pools.myPoolsCardClicked,
-                          {
-                            poolId: myPoolId,
-                            poolName: myPool.poolAssets
-                              .map(
-                                (poolAsset) =>
-                                  poolAsset.amount.currency.coinDenom
-                              )
-                              .join(" / "),
-                            poolWeight: myPool.poolAssets
-                              .map((poolAsset) =>
-                                poolAsset.weightFraction.toString()
-                              )
-                              .join(" / "),
-                            isSuperfluidPool:
-                              queryOsmosis.querySuperfluidPools.isSuperfluidPool(
-                                myPoolId
-                              ),
-                          },
-                        ])
-                      }
-                    />
+              {dustFilteredPools.map((myPool) => {
+                const apr = queryOsmosis.queryIncentivizedPools.computeMostApr(
+                  myPool.id,
+                  priceStore
+                );
+                const poolLiquidity =
+                  myPool.computeTotalValueLocked(priceStore);
+                const myBonded =
+                  queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
+                    account.bech32Address,
+                    myPool.id,
+                    poolLiquidity,
+                    priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!
                   );
+
+                let myPoolMetrics = [
+                  {
+                    label: t("pools.APR"),
+                    value: isMobile ? (
+                      apr.maxDecimals(2).toString()
+                    ) : (
+                      <MetricLoader
+                        isLoading={
+                          queryOsmosis.queryIncentivizedPools.isAprFetching
+                        }
+                      >
+                        {apr.maxDecimals(2).toString()}
+                      </MetricLoader>
+                    ),
+                  },
+                  {
+                    label: isMobile
+                      ? t("pools.available")
+                      : t("pools.liquidity"),
+                    value: isMobile ? (
+                      (!myPool.totalShare.toDec().equals(new Dec(0))
+                        ? myPool
+                            .computeTotalValueLocked(priceStore)
+                            .mul(
+                              queryOsmosis.queryGammPoolShare
+                                .getAvailableGammShare(
+                                  account.bech32Address,
+                                  myPool.id
+                                )
+                                .quo(myPool.totalShare)
+                            )
+                        : new PricePretty(
+                            priceStore.getFiatCurrency(
+                              priceStore.defaultVsCurrency
+                            )!,
+                            new Dec(0)
+                          )
+                      )
+                        .maxDecimals(2)
+                        .toString()
+                    ) : (
+                      <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
+                        {priceFormatter(poolLiquidity)}
+                      </MetricLoader>
+                    ),
+                  },
+                  {
+                    label: t("pools.bonded"),
+                    value: isMobile ? (
+                      myBonded.toString()
+                    ) : (
+                      <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
+                        {priceFormatter(myBonded)}
+                      </MetricLoader>
+                    ),
+                  },
+                ];
+
+                // rearrange metrics for mobile pool card
+                if (isMobile) {
+                  myPoolMetrics = [
+                    myPoolMetrics[2], // Bonded
+                    myPoolMetrics[1], // Available
+                    myPoolMetrics[0], // APR
+                  ];
                 }
+
+                return (
+                  <PoolCard
+                    key={myPool.id}
+                    poolId={myPool.id}
+                    poolAssets={myPool.poolAssets.map((poolAsset) => ({
+                      coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+                      coinDenom: poolAsset.amount.currency.coinDenom,
+                    }))}
+                    poolMetrics={myPoolMetrics}
+                    isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
+                      myPool.id
+                    )}
+                    mobileShowFirstLabel
+                    onClick={() =>
+                      logEvent([
+                        EventName.Pools.myPoolsCardClicked,
+                        {
+                          poolId: myPool.id,
+                          poolName: myPool.poolAssets
+                            .map(
+                              (poolAsset) => poolAsset.amount.currency.coinDenom
+                            )
+                            .join(" / "),
+                          poolWeight: myPool.poolAssets
+                            .map((poolAsset) =>
+                              poolAsset.weightFraction.toString()
+                            )
+                            .join(" / "),
+                          isSuperfluidPool:
+                            queryOsmosis.querySuperfluidPools.isSuperfluidPool(
+                              myPool.id
+                            ),
+                        },
+                      ])
+                    }
+                  />
+                );
               })}
             </div>
             {isMobile && myPoolIds.length > poolCountShowMoreThreshold && (
@@ -414,6 +413,7 @@ const Pools: NextPage = observer(function () {
       </section>
       {isMobile ? (
         <section>
+          <h5 className="md:px-3">{t("pools.all")}</h5>
           <TabBox
             tabs={[
               {
@@ -426,7 +426,7 @@ const Pools: NextPage = observer(function () {
                 ),
               },
               {
-                title: t("pools.all"),
+                title: t("pools.allTab"),
                 content: (
                   <AllPoolsTableSet
                     tableSet="all-pools"
@@ -442,11 +442,12 @@ const Pools: NextPage = observer(function () {
               },
               {
                 title: (
-                  <span className="superfluid caption">Superfluid Pools</span>
+                  <span className="text-superfluid">
+                    {t("pools.superfluid.tab")}
+                  </span>
                 ),
                 content: (
                   <CompactPoolTableDisplay
-                    title="Superfluid Pools"
                     pools={
                       sfsPoolsPage?.map(
                         ({ id, poolLiquidity, apr, assets }) => ({
@@ -456,19 +457,19 @@ const Pools: NextPage = observer(function () {
                             ...[
                               sortKeyPath === "poolLiquidity"
                                 ? {
-                                    label: "",
+                                    label: t("pools.allPools.TVL"),
                                     value: poolLiquidity.toString(),
                                   }
                                 : sortKeyPath === "apr"
                                 ? {
-                                    label: "",
+                                    label: t("pools.allPools.APR"),
                                     value: apr
                                       .maxDecimals(2)
                                       .trim(true)
                                       .toString(),
                                   }
                                 : {
-                                    label: "APR",
+                                    label: t("pools.allPools.APR"),
                                     value: apr
                                       .maxDecimals(2)
                                       .trim(true)
@@ -478,14 +479,14 @@ const Pools: NextPage = observer(function () {
                             ...[
                               sortKeyPath === "poolLiquidity"
                                 ? {
-                                    label: "APR",
+                                    label: t("pools.allPools.APR"),
                                     value: apr
                                       .maxDecimals(2)
                                       .trim(true)
                                       .toString(),
                                   }
                                 : {
-                                    label: "TVL",
+                                    label: t("pools.allPools.TVL"),
                                     value: poolLiquidity.toString(),
                                   },
                             ],
@@ -501,9 +502,12 @@ const Pools: NextPage = observer(function () {
                     }}
                     sortMenuProps={{
                       options: [
-                        { id: "id", display: "Pool ID" },
-                        { id: "apr", display: "APR" },
-                        { id: "poolLiquidity", display: "Liquidity" },
+                        { id: "id", display: t("pools.allPools.sort.poolId") },
+                        { id: "apr", display: t("pools.allPools.APR") },
+                        {
+                          id: "poolLiquidity",
+                          display: t("pools.allPools.sort.liquidity"),
+                        },
                       ],
                       selectedOptionId: sortKeyPath,
                       onSelect: (id) =>
@@ -521,12 +525,14 @@ const Pools: NextPage = observer(function () {
                     minTvlToggleProps={{
                       isOn: isPoolTvlFiltered,
                       onToggle: setIsPoolTvlFiltered,
-                      label: `Show pools less than ${new PricePretty(
-                        priceStore.getFiatCurrency(
-                          priceStore.defaultVsCurrency
-                        )!,
-                        TVL_FILTER_THRESHOLD
-                      ).toString()}`,
+                      label: t("pools.allPools.displayLowLiquidity", {
+                        value: new PricePretty(
+                          priceStore.getFiatCurrency(
+                            priceStore.defaultVsCurrency
+                          )!,
+                          TVL_FILTER_THRESHOLD
+                        ).toString(),
+                      }),
                     }}
                   />
                 ),
@@ -626,6 +632,27 @@ const Pools: NextPage = observer(function () {
           </section>
         </>
       )}
+      <section className="pb-4">
+        <div className="w-full flex items-center bg-osmoverse-800 rounded-full px-5 py-4">
+          <span className="subtitle1 md:text-subtitle2 md:font-subtitle2 flex items-center gap-1">
+            {t("pools.createPool.interestedCreate")}{" "}
+            <u
+              className="text-wosmongton-300 flex items-center cursor-pointer"
+              onClick={() => setIsCreatingPool(true)}
+            >
+              {t("pools.createPool.startProcess")}
+              <div className="flex items-center shrink-0">
+                <Image
+                  alt="right arrow"
+                  src="/icons/arrow-right-wosmongton-300.svg"
+                  height={24}
+                  width={24}
+                />
+              </div>
+            </u>
+          </span>
+        </div>
+      </section>
     </main>
   );
 });

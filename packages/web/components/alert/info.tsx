@@ -1,17 +1,27 @@
-import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CustomClasses, MobileProps } from "../types";
 import { Alert } from "./types";
 
 export const Info: FunctionComponent<
-  { size?: "large" | "subtle" } & Alert & { data?: string } & CustomClasses &
+  { size?: "large" | "subtle" } & Alert & {
+      data?: string;
+      borderClassName?: string;
+    } & CustomClasses &
     MobileProps
-> = ({ size = "large", message, caption, data, className, isMobile = false }) =>
+> = ({
+  size = "large",
+  message,
+  caption,
+  data,
+  borderClassName,
+  className,
+  isMobile = false,
+}) =>
   size === "subtle" ? (
     <div
       className={classNames(
-        "w-full p-2 rounded-lg border border-secondary-200",
+        "w-full p-2 rounded-lg border border-rust-500",
         className
       )}
     >
@@ -20,22 +30,18 @@ export const Info: FunctionComponent<
   ) : (
     <div
       className={classNames(
-        "flex gap-3 md:gap-1.5 w-full border border-secondary-200 rounded-2xl px-5 py-4 md:p-2",
-        className
+        "flex gap-3 md:gap-1.5 w-full rounded-2xl bg-gradient-neutral p-px",
+        borderClassName
       )}
     >
-      <div className="flex items-center">
-        <Image
-          alt="error"
-          src="/icons/info-secondary-200.svg"
-          height={isMobile ? 16 : 24}
-          width={isMobile ? 16 : 24}
-        />
-      </div>
       <div
-        className={classNames("flex grow place-content-between md:gap-1", {
-          "items-center": !data,
-        })}
+        className={classNames(
+          "flex grow place-content-between md:gap-1 px-5 py-4 md:p-2 bg-osmoverse-800 rounded-2xlinset",
+          {
+            "items-center": !data,
+          },
+          className
+        )}
       >
         <div className="flex flex-col">
           {isMobile ? (

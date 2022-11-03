@@ -1,14 +1,20 @@
 import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
+import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { useStore } from "../stores";
 import { useConnectWalletModalRedirect, useAddLiquidityConfig } from "../hooks";
 import { AddLiquidity } from "../components/complex/add-liquidity";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useTranslation } from "react-multi-lang";
+import { tError } from "../components/localization";
 
 export const AddLiquidityModal: FunctionComponent<
   {
     poolId: string;
+    onAddLiquidity?: (
+      result: Promise<void>,
+      config: ObservableAddLiquidityConfig
+    ) => void;
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
@@ -28,19 +34,24 @@ export const AddLiquidityModal: FunctionComponent<
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      className: "h-14 md:w-full md:px-1 w-96 mt-3 mx-auto",
-      size: "lg",
-      loading: isSendingMsg,
       disabled: config.error !== undefined || isSendingMsg,
-      onClick: () => addLiquidity().finally(() => props.onRequestClose()),
-      children: t("pool.manageLiquidity.tabAddLiquidity"),
+      onClick: () =>
+        props.onAddLiquidity?.(
+          addLiquidity().finally(() => {
+            props.onRequestClose();
+          }),
+          config
+        ),
+      children: config.error
+        ? t(...tError(config.error))
+        : t("addLiquidity.title"),
     },
     props.onRequestClose
   );
 
   return (
     <ModalBase
-      title={t("pool.manageLiquidity.modalTitleAdd", { poolId })}
+      title={t("addLiquidity.title")}
       {...props}
       isOpen={props.isOpen && showModalBase}
     >

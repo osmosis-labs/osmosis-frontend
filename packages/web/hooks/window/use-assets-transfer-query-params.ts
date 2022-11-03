@@ -4,7 +4,7 @@ import { ObservableTransferUIConfig, TransferDir } from "../../stores/assets";
 
 /** Bidirectionally sets/gets window query params transfer/direction `transfer=DENOM&direction=TransferDir` and sets in assets config object. */
 export function useTokenTransferQueryParams(
-  transferConfig: ObservableTransferUIConfig,
+  transferConfig?: ObservableTransferUIConfig | null,
   isInModal = false
 ) {
   const router = useRouter();
@@ -29,7 +29,7 @@ export function useTokenTransferQueryParams(
       );
     } else transferConfig.startTransfer(directionOfTransfer);
     firstQueryEffectChecker.current = true;
-  }, [router.query.transfer, router.query.direction]);
+  }, [router.query.transfer, router.query.direction, transferConfig]);
 
   return {
     setTransferQueryParams: (direction: TransferDir, coinDenom?: string) => {

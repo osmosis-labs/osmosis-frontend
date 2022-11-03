@@ -1987,7 +1987,7 @@ const chainInfos = (
           coinDenom: "stOSMO",
           coinMinimalDenom: "stuosmo",
           coinDecimals: 6,
-          // coinGeckoId: "osmosis",
+          coinGeckoId: "pool:stuosmo",
           coinImageUrl: "/tokens/stosmo.svg",
         },
         {
@@ -2086,6 +2086,58 @@ const chainInfos = (
       ],
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx: "https://explorer.nodestake.top/lambda/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpc.unification.chainmasters.ninja",
+      rest: "https://rest.unification.chainmasters.ninja",
+      chainId: "FUND-MainNet-2",
+      chainName: "Unification",
+      bip44: {
+        coinType: 5555,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("und"),
+      currencies: [
+        {
+          coinDenom: "FUND",
+          coinMinimalDenom: "nund",
+          coinDecimals: 9,
+          coinGeckoId: "unification",
+          coinImageUrl: "/tokens/fund.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 100,
+        average: 200,
+        high: 300,
+      },
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx:
+        "https://explorer.unification.chainmasters.ninja/unification/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpc.jackalprotocol.com",
+      rest: "https://api.jackalprotocol.com",
+      chainId: "jackal-1",
+      chainName: "Jackal",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("jkl"),
+      currencies: [
+        {
+          coinDenom: "JKL",
+          coinMinimalDenom: "ujkl",
+          coinDecimals: 6,
+          coinGeckoId: "pool:jkl",
+          coinImageUrl: "/tokens/jkl.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://ping.pub/jackal/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
@@ -2248,6 +2300,13 @@ chainInfos.push({
       coinDecimals: 10,
       coinGeckoId: "polkadot",
       coinImageUrl: "/tokens/dot.svg",
+    },
+    {
+      coinDenom: "WBNB",
+      coinMinimalDenom: "wbnb-wei",
+      coinDecimals: 18,
+      coinGeckoId: "wbnb",
+      coinImageUrl: "/tokens/wbnb.svg",
     },
   ],
   feeCurrencies: [

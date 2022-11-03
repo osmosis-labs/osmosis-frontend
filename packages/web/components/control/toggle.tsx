@@ -21,10 +21,10 @@ export const Toggle: FunctionComponent<
             {
               "opacity-30 bg-iconDefault": disabled && isOn,
               "opacity-10 bg-iconDefault": disabled && !isOn,
-              "bg-primary-200": !disabled && isOn,
+              "bg-wosmongton-200": !disabled && isOn,
               "cursor-pointer": isHovered && !disabled,
-              "bg-primary-100": isHovered && !disabled && isOn,
-              "bg-surface": !disabled && !isOn,
+              "bg-wosmongton-100": isHovered && !disabled && isOn,
+              "bg-osmoverse-900": !disabled && !isOn,
             },
             className
           )}

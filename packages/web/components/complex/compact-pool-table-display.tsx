@@ -1,7 +1,5 @@
-import classNames from "classnames";
 import { useRouter } from "next/router";
-import { FunctionComponent, ReactElement } from "react";
-import { useTranslation } from "react-multi-lang";
+import { FunctionComponent } from "react";
 import { PoolAssetInfo } from "../assets";
 import { AssetCard } from "../cards";
 import {
@@ -17,7 +15,6 @@ import { InputProps, Metric } from "../types";
 
 /** Stateless component for displaying & filtering/sorting pools on a compact screen. */
 export const CompactPoolTableDisplay: FunctionComponent<{
-  title: string | ReactElement;
   pools: {
     id: string;
     assets: PoolAssetInfo[];
@@ -30,7 +27,6 @@ export const CompactPoolTableDisplay: FunctionComponent<{
   pageListProps?: NumberSelectProps;
   minTvlToggleProps?: ToggleProps & { label: string };
 }> = ({
-  title,
   pools,
   onClickPoolCard,
   searchBoxProps,
@@ -39,37 +35,32 @@ export const CompactPoolTableDisplay: FunctionComponent<{
   minTvlToggleProps,
 }) => {
   const router = useRouter();
-  const t = useTranslation();
+
+  console.log(sortMenuProps?.options);
 
   return (
-    <div className="flex flex-col gap-5 p-5 pb-8">
+    <div className="flex flex-col gap-5 pb-8">
       {searchBoxProps && (
-        <SearchBox className="!rounded !w-full h-11" {...searchBoxProps} />
+        <SearchBox className="!w-full h-11" {...searchBoxProps} />
       )}
-      <div className="flex flex-col gap-4">
-        {typeof title === "string" ? (
-          <span className="subtitle2">{title}</span>
-        ) : (
-          <>{title}</>
+      <div className="flex flex-wrap gap-3 items-center place-content-between">
+        {minTvlToggleProps && (
+          <Switch {...minTvlToggleProps} containerClassName="shrink flex-wrap">
+            <span className="text-osmoverse-200">
+              {minTvlToggleProps.label}
+            </span>
+          </Switch>
         )}
-        <div
-          className={classNames("flex items-center place-content-between", {})}
-        >
-          {minTvlToggleProps && (
-            <Switch {...minTvlToggleProps}>{minTvlToggleProps.label}</Switch>
-          )}
-          {sortMenuProps && <SortMenu {...sortMenuProps} />}
-        </div>
+        {sortMenuProps && <SortMenu {...sortMenuProps} />}
       </div>
       <div className="flex flex-col gap-3">
         {pools.map(({ id, assets, metrics, isSuperfluid }) => (
           <AssetCard
             key={id}
-            contentClassName="!bg-background"
             coinDenom={assets.map((asset) => asset.coinDenom).join("/")}
             coinImageUrl={assets}
             metrics={metrics}
-            coinDenomCaption={t("pools.poolId", { id })}
+            coinDenomCaption={id}
             isSuperfluid={isSuperfluid}
             onClick={() => {
               if (onClickPoolCard) {

@@ -9,9 +9,10 @@ import { BridgeAnimation } from "../animation/bridge";
 import { SwitchWalletButton } from "../buttons/switch-wallet";
 import { GradientView } from "../assets/gradient-view";
 import { InputBox } from "../input";
-import { Button } from "../buttons";
+import { BorderButton } from "../buttons";
 import { CheckBox } from "../control";
 import { Disableable, InputProps, LoadingProps } from "../types";
+import { useTranslation } from "react-multi-lang";
 
 export type TransferProps = {
   isWithdraw: boolean;
@@ -59,6 +60,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   disablePanel = false,
 }) => {
   const { isMobile } = useWindowSize();
+  const t = useTranslation();
 
   const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
 
@@ -75,10 +77,10 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   const panelDisabled = disablePanel || bridge?.isLoading || false;
 
   const maxFromChars = isEditingWithdrawAddr
-    ? 12 // can't be on mobile
+    ? 13 // can't be on mobile
     : !from.address.startsWith("osmo") && selectedWalletDisplay
     ? isMobile
-      ? 10
+      ? 13
       : 18 // more space for switch wallet button
     : isMobile
     ? 14
@@ -87,7 +89,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
     (!to.address.startsWith("osmo") && selectedWalletDisplay) || // make room for btns
     editWithdrawAddrConfig
       ? isMobile
-        ? 10
+        ? 13
         : 18
       : isMobile
       ? 14
@@ -101,13 +103,13 @@ export const Transfer: FunctionComponent<TransferProps> = ({
       />
       <div
         className={classNames(
-          "flex gap-4 body1 text-iconDefault transition-opacity duration-300",
+          "flex gap-4 md:gap-2 body1 text-iconDefault transition-opacity duration-300",
           { "opacity-30": panelDisabled }
         )}
       >
         <div
           className={classNames(
-            "flex w-full text-center border border-white-faint rounded-2xl p-4 transition-width",
+            "flex w-full text-center border border-white-faint rounded-2xl p-4 md:p-2 transition-width",
             {
               "w-1/4": isEditingWithdrawAddr,
               "text-iconDefault/30": isEditingWithdrawAddr,
@@ -120,7 +122,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                 isOsmosisAccountLoaded ? (
                   Bech32Address.shortenAddress(from.address, maxFromChars)
                 ) : (
-                  <i>Connect Wallet</i>
+                  <i>{t("connectWallet")}</i>
                 )
               ) : (
                 truncateEthAddress(from.address)
@@ -140,7 +142,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         <div
           className={classNames(
             "w-full text-center border border-white-faint rounded-2xl transition-width",
-            isEditingWithdrawAddr ? "p-[7px]" : "flex p-4",
+            isEditingWithdrawAddr ? "p-[7px]" : "flex p-4 md:p-2",
             {
               "w-3/4": isEditingWithdrawAddr,
             }
@@ -159,7 +161,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                     maxToChars
                   )
                 ) : (
-                  <i>Connect Wallet</i>
+                  <i>{t("connectWallet")}</i>
                 )
               ) : (
                 truncateEthAddress(to.address)
@@ -177,16 +179,15 @@ export const Transfer: FunctionComponent<TransferProps> = ({
               editWithdrawAddrConfig &&
               !panelDisabled &&
               !isEditingWithdrawAddr && (
-                <Button
-                  className="border border-primary-50 hover:border-primary-50/60 text-primary-50 hover:text-primary-50/60"
-                  type="outline"
+                <BorderButton
+                  className="h-6 py-0.5 px-1.5 caption border border-wosmongton-300 hover:border-wosmongton-100/60 text-wosmongton-100 hover:text-wosmongton-100/60"
                   onClick={() => {
                     setIsEditingWithdrawAddr(true);
                     editWithdrawAddrConfig.setCustomAddress(to.address);
                   }}
                 >
-                  Edit
-                </Button>
+                  {t("assets.ibcTransfer.buttonEdit")}
+                </BorderButton>
               )}
             {isEditingWithdrawAddr && editWithdrawAddrConfig && (
               <InputBox
@@ -200,9 +201,9 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                 }}
                 labelButtons={[
                   {
-                    label: "Enter",
+                    label: t("assets.ibcTransfer.buttonEnter"),
                     className:
-                      "bg-primary-50 hover:bg-primary-50 border-0 rounded-md",
+                      "bg-wosmongton-100 hover:bg-wosmongton-100 border-0 rounded-md",
                     onClick: () => setIsEditingWithdrawAddr(false),
                     disabled: !editWithdrawAddrConfig.isValid,
                   },
@@ -221,9 +222,11 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         <div className="flex flex-col gap-3">
           <div className="flex items-baseline place-content-between">
             {isMobile ? (
-              <span className="subtitle1">Select Amount</span>
+              <span className="subtitle1">
+                {t("assets.ibcTransfer.selectAmount")}
+              </span>
             ) : (
-              <h6>Select Amount</h6>
+              <h6>{t("assets.ibcTransfer.selectAmount")}</h6>
             )}
             <div
               className={classNames(
@@ -233,9 +236,13 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                   : "opacity-0"
               )}
             >
-              Available{!isMobile && ` on ${from.networkName}`}:{" "}
+              {isMobile
+                ? t("assets.transfer.availableMobile")
+                : t("assets.transfer.availableOn", {
+                    network: from.networkName,
+                  })}{" "}
               <button
-                className="text-primary-50 cursor-pointer disabled:cursor-default"
+                className="text-wosmongton-100 cursor-pointer disabled:cursor-default"
                 disabled={availableBalance?.toDec().isZero()}
                 onClick={() => {
                   toggleIsMax();
@@ -256,12 +263,12 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         <div className="flex flex-col gap-2.5 p-2.5 my-2 caption text-wireframes-lightGrey border border-white-faint rounded-lg">
           {transferFee && (
             <div className="flex items-center place-content-between">
-              <span>Transfer Fee</span>
+              <span>{t("assets.transfer.transferFee")}</span>
               <span>{transferFee!.trim(true).toString()}</span>
             </div>
           )}
           <div className="flex items-center place-content-between">
-            <span>Estimated Time</span>
+            <span>{t("assets.ibcTransfer.estimatedTime")}</span>
             <span>{waitTime}</span>
           </div>
         </div>
@@ -269,30 +276,28 @@ export const Transfer: FunctionComponent<TransferProps> = ({
           <GradientView
             className="text-center"
             gradientClassName="bg-superfluid"
-            bgClassName="bg-surface"
+            bgClassName="bg-osmoverse-900"
           >
             <span className="body2 md:caption">{warningMessage}</span>
           </GradientView>
         )}
         {editWithdrawAddrConfig && editWithdrawAddrConfig.customAddress !== "" && (
-          <GradientView className="flex flex-col gap-2 body2 md:caption text-center bg-surface">
-            <span>
-              Withdrawing to a centralized exchange can result in lost funds.
-            </span>
+          <GradientView className="flex flex-col gap-2 body2 md:caption text-center bg-osmoverse-800">
+            <span>{t("assets.ibcTransfer.warningLossFunds")}</span>
             <div className="mx-auto">
               <CheckBox
                 isOn={editWithdrawAddrConfig.didAckWithdrawRisk}
                 className="after:!border-superfluid checked:after:bg-superfluid after:rounded-[10px] after:h-6 after:w-6 -top-0.5"
-                checkClassName="-top-0.5 h-6 w-6 bg-superfluid rounded-[10px]"
-                checkMarkClassName="top-[1px] left-[0.5px] h-6 w-6"
-                checkMarkIconUrl="/icons/check-mark-surface.svg"
+                checkClassName="-top-1 -left-0.5 h-6 w-6 bg-superfluid rounded-[10px]"
+                checkMarkClassName="top-[1px] -left-[0.5px] h-6 w-6"
+                checkMarkIconUrl="/icons/check-mark-dark.svg"
                 onToggle={() =>
                   editWithdrawAddrConfig.setDidAckWithdrawRisk(
                     !editWithdrawAddrConfig.didAckWithdrawRisk
                   )
                 }
               >
-                I verify that {"I'm"} not sending to an exchange address{"."}
+                {t("assets.ibcTransfer.checkboxVerify")}
               </CheckBox>
             </div>
           </GradientView>

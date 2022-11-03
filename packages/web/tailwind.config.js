@@ -19,7 +19,22 @@ module.exports = {
         disabled: "rgba(255, 255, 255, 0.38)",
         faint: "rgba(255, 255, 255, 0.12)",
       },
-      transparent: "transparent",
+      ion: {
+        500: "#2994D0",
+        700: "#1469AF",
+      },
+      bullish: {
+        400: "#6BDEC9",
+        600: "#00A399",
+      },
+      wosmongton: {
+        100: "#D3D1FF",
+        200: "#B3B1FD",
+        300: "#8C8AF9",
+        400: "#6A67EA",
+        500: "#5B57FA",
+        700: "#462ADF",
+      },
       osmoverse: {
         100: "#E4E1FB",
         200: "#CEC8F3",
@@ -30,78 +45,23 @@ module.exports = {
         700: "#3C356D",
         800: "#282750",
         900: "#140F34",
+        1000: "#090524",
       },
-      wosmongton: {
-        100: "#D3D1FF",
-        200: "#B3B1FD",
-        400: "#6A67EA",
-        500: "#5B57FA",
-        700: "#462ADF",
+      ammelia: {
+        600: "#CA2EBD",
       },
       rust: {
         200: "#F8C2B0",
+        500: "#FA825D",
+        700: "#C6451C",
+        800: "#B03A20",
       },
-      primary: IS_FRONTIER
-        ? {
-            50: "#8A86FF",
-            100: "#D6692E",
-            200: "#A4432D",
-            300: "#2722BB",
-            400: "#1D18A8",
-            500: "#16119E",
-            600: "#110D8B",
-            700: "#92630B",
-            800: "#080559",
-            900: "#02003F",
-          }
-        : {
-            50: "#8A86FF",
-            100: "#4540D8",
-            200: "#322DC2",
-            300: "#2722BB",
-            400: "#1D18A8",
-            500: "#16119E",
-            600: "#110D8B",
-            700: "#0A0674",
-            800: "#080559",
-            900: "#02003F",
-          },
-      primaryVariant: "#0A0674",
-      secondary: IS_FRONTIER
-        ? {
-            50: "#F4CC82",
-            100: "#D9A575",
-            200: "#C68D5A",
-            300: "#BC9856",
-            400: "#B88E42",
-            500: "#AA7E2D",
-            600: "#9C701D",
-            700: "#92630B",
-            800: "#875903",
-            900: "#734B00",
-          }
-        : {
-            50: "#F4CC82",
-            100: "#D9B575",
-            200: "#C4A46A",
-            300: "#BC9856",
-            400: "#B88E42",
-            500: "#AA7E2D",
-            600: "#9C701D",
-            700: "#92630B",
-            800: "#875903",
-            900: "#734B00",
-          },
       wireframes: {
         darkGrey: "#282828",
         grey: "#818181",
         lightGrey: "#B7B7B7",
       },
-      background: IS_FRONTIER ? "#221B18" : "#170F34",
-      modal: IS_FRONTIER ? "rgb(56, 53, 50, 0.8)" : "rgba(23, 15, 52, 0.8)",
       surface: IS_FRONTIER ? "#282421" : "#231D4B",
-      card: IS_FRONTIER ? "#2E2C2F" : "#2D2755",
-      cardInner: IS_FRONTIER ? "#383532" : "#3C356D",
       cardInfoPlaceholder: "#3E3866",
       iconDefault: IS_FRONTIER ? "#8E867B" : "#8E83AA",
       error: IS_FRONTIER ? "#E91F4F" : "#EF3456",
@@ -111,6 +71,7 @@ module.exports = {
       black: "#000000",
       backdrop: "rgba(0, 0, 0, 0.3)",
       superfluid: "#8A86FF",
+      transparent: "transparent",
     },
     fontSize: {
       xxs: "0.5rem",
@@ -191,16 +152,12 @@ module.exports = {
         "linear-gradient(90deg, rgba(138, 134, 255, 0.2) 0.04%, rgba(225, 60, 189, 0.2) 99.5%)",
       "selected-validator":
         "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), linear-gradient(#231d4b, #231d4b)",
-    },
-    boxShadow: {
-      container:
-        "0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)",
-      "elevation-04dp":
-        "0px 4px 5px rgba(0, 0, 0, 0.14), 0px 1px 10px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.2)",
-      "elevation-08dp":
-        "0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)",
-      "elevation-24dp":
-        "0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2)",
+      "gradient-neutral":
+        "linear-gradient(96.42deg, #462ADF -0.59%, #8A86FF 100%);",
+      "gradient-positive":
+        "linear-gradient(96.28deg, #899EFF 0%, #28F6AF 99.28%);",
+      "gradient-negative":
+        "linear-gradient(96.42deg, #B03A20 -0.59%, #FA825D 100%);",
     },
     screens: {
       "3xl": { max: "1792px" },
@@ -238,7 +195,9 @@ module.exports = {
     extend: {
       height: {
         navbar: "88px",
+        "navbar-mobile": "58px",
         content: "calc(100vh - 88px)",
+        "content-mobile": "calc(100vh - 58px)",
       },
       width: {
         loader: {
@@ -280,6 +239,8 @@ module.exports = {
         lginset: "0.438rem", // 1px smaller than rounded-lg
         xlinset: "0.688rem", // 1px smaller than rounded-xl
         "2xlinset": "0.938rem", // 1 px smaller than rounded-2xl
+        "4x4pxlinset": "1.5rem", // 4px smaller than 4xl
+        "4xl": "1.75rem",
       },
       transitionTimingFunction: {
         bounce: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
@@ -288,6 +249,7 @@ module.exports = {
         inBack: "cubic-bezier(0.7, -0.4, 0.52, 0.51)",
       },
       transitionProperty: {
+        height: "height",
         width: "width",
         borderRadius: "border-radius",
       },

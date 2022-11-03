@@ -21,7 +21,7 @@ export const Switch: FunctionComponent<
 }) => (
   <label
     className={classNames(
-      "flex shrink-0 items-center gap-2 subtitle2 md:caption select-none",
+      "flex shrink-0 items-center gap-2 subtitle2 md:subtitle1 select-none",
       {
         "cursor-pointer": !disabled,
       },
@@ -29,7 +29,12 @@ export const Switch: FunctionComponent<
     )}
   >
     {labelPosition === "left" && (
-      <div className={classNames("mr-3", disabled ? "opacity-30" : undefined)}>
+      <div
+        className={classNames(
+          "mr-3 lg:mr-1",
+          disabled ? "opacity-30" : undefined
+        )}
+      >
         {children}
       </div>
     )}
@@ -49,7 +54,12 @@ export const Switch: FunctionComponent<
       onChange={(e) => onToggle(e.target.checked)}
     />
     {labelPosition === "right" && (
-      <div className={classNames("ml-3", disabled ? "opacity-30" : undefined)}>
+      <div
+        className={classNames(
+          "ml-3 lg:ml-1",
+          disabled ? "opacity-30" : undefined
+        )}
+      >
         {children}
       </div>
     )}
