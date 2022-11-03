@@ -32,9 +32,7 @@ export class UserSettings {
       this.kvStore.get(id).then((value: unknown) =>
         runInAction(() => {
           if (!value) return;
-          // value is a stringify object
-          const parsedState = JSON.parse(value as string);
-          setting.setState(parsedState);
+          setting.setState(value);
         })
       );
     });
@@ -45,7 +43,7 @@ export class UserSettings {
       this._settings.forEach((setting) => {
         const id = setting.id;
         const state = toJS(setting.state);
-        this.kvStore.set(id, JSON.stringify(state));
+        this.kvStore.set(id, state);
       });
     });
   }
