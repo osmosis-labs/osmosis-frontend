@@ -346,6 +346,7 @@
     "negativeSlippage": "Le glissement ne peut être négatif",
     "invalidSlippage": "Invalid slippage",
     "noSendCurrency": "Glissement invalide",
+    "insufficientBal": "Solde insuffisant",
     "notInitialized": "Non initialisé",
     "calculatingShareOutAmount": "Problème de calcul du montant de la sortie",
     "noAvailableShares": "Aucun actif {denom} disponnible",

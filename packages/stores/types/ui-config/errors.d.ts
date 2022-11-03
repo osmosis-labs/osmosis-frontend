@@ -31,4 +31,7 @@ export declare class InvalidSlippageError extends Error {
 export declare class NoSendCurrencyError extends Error {
     constructor(m: string);
 }
+export declare class InsufficientBalanceError extends Error {
+    constructor(m: string);
+}
 export * from "./manage-liquidity/errors";

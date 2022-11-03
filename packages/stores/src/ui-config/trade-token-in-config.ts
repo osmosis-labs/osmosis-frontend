@@ -1,9 +1,5 @@
 import { action, computed, makeObservable, observable, override } from "mobx";
-import {
-  AmountConfig,
-  IFeeConfig,
-  InsufficientAmountError,
-} from "@keplr-wallet/hooks";
+import { AmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { AppCurrency } from "@keplr-wallet/types";
 import {
@@ -19,7 +15,7 @@ import {
   Pool,
   RoutePathWithAmount,
 } from "@osmosis-labs/pools";
-import { NoSendCurrencyError } from "./errors";
+import { NoSendCurrencyError, InsufficientBalanceError } from "./errors";
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
@@ -387,7 +383,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         .getBalanceFromCurrency(this.sendCurrency);
       const balanceDec = balance.toDec();
       if (dec.gt(balanceDec)) {
-        return new InsufficientAmountError("Insufficient balance");
+        return new InsufficientBalanceError("Insufficient balance");
       }
     }
 

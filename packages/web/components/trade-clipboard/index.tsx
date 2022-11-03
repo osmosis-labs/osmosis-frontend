@@ -986,9 +986,9 @@ export const TradeClipboard: FunctionComponent<{
         </div>
       </div>
       <Button
-        color={
+        mode={
           showPriceImpactWarning && account.walletStatus === WalletStatus.Loaded
-            ? "error"
+            ? "primary-warning"
             : "primary"
         }
         disabled={

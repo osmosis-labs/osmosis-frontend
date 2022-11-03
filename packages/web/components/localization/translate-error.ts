@@ -17,6 +17,7 @@ import {
   NegativeSlippageError,
   InvalidSlippageError,
   NoSendCurrencyError,
+  InsufficientBalanceError,
   NotInitializedError,
   CalculatingShareOutAmountError,
   NoAvailableSharesError,
@@ -57,6 +58,8 @@ export function tError<TError extends Error>(e?: TError): Parameters<typeof t> {
     return ["errors.invalidSlippage"];
   } else if (e instanceof NoSendCurrencyError) {
     return ["errors.noSendCurrency"];
+  } else if (e instanceof InsufficientBalanceError) {
+    return ["errors.insufficientBal"];
   } else if (e instanceof NotInitializedError) {
     return ["errors.notInitialized"];
   } else if (e instanceof CalculatingShareOutAmountError) {
