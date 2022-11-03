@@ -35,6 +35,10 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
                   );
                   if (currency) {
                     amountConfig.setSendCurrency(currency);
+                  } else {
+                    console.error(
+                      "Unable to find currency selected in TokenSelect to be set in create pool config"
+                    );
                   }
                 }}
               />
