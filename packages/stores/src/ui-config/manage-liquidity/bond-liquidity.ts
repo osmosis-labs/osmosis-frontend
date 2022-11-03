@@ -218,6 +218,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           this.priceStore
         );
         aggregateApr = aggregateApr.add(swapFeeApr);
+        if (superfluid) aggregateApr = aggregateApr.add(superfluid.apr);
 
         return {
           duration: curDuration,

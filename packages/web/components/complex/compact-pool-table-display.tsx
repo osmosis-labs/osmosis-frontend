@@ -36,8 +36,6 @@ export const CompactPoolTableDisplay: FunctionComponent<{
 }) => {
   const router = useRouter();
 
-  console.log(sortMenuProps?.options);
-
   return (
     <div className="flex flex-col gap-5 pb-8">
       {searchBoxProps && (
