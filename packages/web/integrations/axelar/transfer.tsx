@@ -58,6 +58,7 @@ const AxelarTransfer: FunctionComponent<
     onRequestSwitchWallet,
     sourceChains,
     isTestNet = process.env.NEXT_PUBLIC_IS_TESTNET === "true",
+    wrapAssetConfig,
     connectCosmosWalletButtonOverride,
   }) => {
     const { chainStore, accountStore, queriesStore, nonIbcBridgeHistoryStore } =
@@ -96,11 +97,13 @@ const AxelarTransfer: FunctionComponent<
       EthClientChainIds_AxelarChainIdsMap[selectedSourceChainKey] ??
       selectedSourceChainKey;
 
-    const sourceChainConfig = sourceChains.find( ({ id }) => id === selectedSourceChainKey );
+    const sourceChainConfig = sourceChains.find(
+      ({ id }) => id === selectedSourceChainKey
+    );
 
     const erc20ContractAddress = sourceChainConfig?.erc20ContractAddress;
     const transferFeeMinAmount = sourceChainConfig?.transferFeeMinAmount ?? "0";
-    
+
     const axelarChainId =
       chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
       "axelar-dojo-1";
@@ -476,6 +479,13 @@ const AxelarTransfer: FunctionComponent<
             (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
           }
         />
+        {wrapAssetConfig && (
+          <div className="mx-auto text-secondary-200">
+            <a rel="noreferrer" target="_blank" href={wrapAssetConfig.url}>
+              {wrapAssetConfig.displayCaption}
+            </a>
+          </div>
+        )}
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
           {connectCosmosWalletButtonOverride ?? (
             <Button
