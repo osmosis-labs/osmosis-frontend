@@ -133,7 +133,7 @@ const SynthesisItem: FunctionComponent<{
 
   return (
     <li
-      className="w-full rounded-xl p-5 md:py-6 md:px-7.5 bg-osmoverse-700 cursor-pointer border border-transparent hover:border-enabledGold border-opacity-40"
+      className="w-full rounded-xl p-5 md:py-6 md:px-7.5 bg-osmoverse-700 cursor-pointer border border-transparent border-opacity-40"
       onClick={(e) => {
         e.preventDefault();
 
