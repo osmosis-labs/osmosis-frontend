@@ -7,6 +7,9 @@ export const UserAction: { [key: string]: boolean } = {
   CreateNewPool: true,
 };
 
+// Fiat ramps
+export const BUY_OSMO_TRANSAK = false;
+
 export const HiddenPoolIds: string[] = [];
 
 export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
