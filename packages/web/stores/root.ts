@@ -259,10 +259,9 @@ export class RootStore {
     );
 
     const userSettingKvStore = makeLocalStorageKVStore("user_setting");
-    this.userSettings = new UserSettings([
+    this.userSettings = new UserSettings(userSettingKvStore, [
       new LanguageUserSetting(0), // give index of default language in SUPPORTED_LANGUAGES
       new ShowDustUserSetting(
-        userSettingKvStore,
         this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
           ?.symbol ?? "$"
       ),
