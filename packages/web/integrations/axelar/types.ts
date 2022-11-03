@@ -14,6 +14,12 @@ export interface AxelarBridgeConfig {
   /** Ex: `uusdc`. NOTE: Will get currency info from `originCurrency` on the IBC balance (from registrar).
    *  See: https://docs.axelar.dev/resources/mainnet#assets
    */
+
+  /** URL config for users to conveniently swap the native asset for the wrapped version. */
+  wrapAssetConfig?: {
+    url: string;
+    displayCaption: string;
+  };
 }
 
 /** See: https://docs.axelar.dev/dev/build/chain-names/mainnet
@@ -40,23 +46,24 @@ export type SourceChain =
  */
 export const EthClientChainIds_AxelarChainIdsMap: {
   [ethClientChainIds: string]: SourceChain;
-} = IS_TESTNET ?
-  {
-    "Aurora Testnet": "aurora",
-    "Avalanche Fuji Testnet": "Avalanche",
-    "Binance Smart Chain Testnet": "binance",
-    "Goerli Test Network": "ethereum-2",
-    "Fantom Testnet": "Fantom",
-    "Moonbase Alpha": "Moonbeam",
-    "Mumbai": "Polygon",
-  } : {
-    "Avalanche C-Chain": "Avalanche",
-    "Binance Smart Chain Mainnet": "binance",
-    "Ethereum Main Network": "Ethereum",
-    "Fantom Opera": "Fantom",
-    "Moonbeam Mainnet": "Moonbeam",
-    "Polygon Mainnet": "Polygon",
-  };
+} = IS_TESTNET
+  ? {
+      "Aurora Testnet": "aurora",
+      "Avalanche Fuji Testnet": "Avalanche",
+      "Binance Smart Chain Testnet": "binance",
+      "Goerli Test Network": "ethereum-2",
+      "Fantom Testnet": "Fantom",
+      "Moonbase Alpha": "Moonbeam",
+      Mumbai: "Polygon",
+    }
+  : {
+      "Avalanche C-Chain": "Avalanche",
+      "Binance Smart Chain Mainnet": "binance",
+      "Ethereum Main Network": "Ethereum",
+      "Fantom Opera": "Fantom",
+      "Moonbeam Mainnet": "Moonbeam",
+      "Polygon Mainnet": "Polygon",
+    };
 
 export type SourceChainConfig = {
   /** Axelar-defined identifier. */
@@ -74,11 +81,10 @@ export type SourceChainConfig = {
   };
 
   logoUrl: string;
-  
+
   /** Amount of Axelar transfer fee in `originCurrency`.
-  *  TODO: use `useTransferFeeQuery` should fees become dynamic and once APIs become production ready.
-  *  See calculator tool on Axelar docs to get current fee constants: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee.
-  */
+   *  TODO: use `useTransferFeeQuery` should fees become dynamic and once APIs become production ready.
+   *  See calculator tool on Axelar docs to get current fee constants: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee.
+   */
   transferFeeMinAmount: string;
-  
 };
