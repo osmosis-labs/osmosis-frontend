@@ -1,6 +1,14 @@
-import { makeObservable, observable, computed } from "mobx";
+import {
+  makeObservable,
+  observable,
+  computed,
+  autorun,
+  toJS,
+  runInAction,
+} from "mobx";
 import { FunctionComponent } from "react";
 import { computedFn } from "mobx-utils";
+import { KVStore } from "@keplr-wallet/common";
 
 export interface IUserSetting<TState = any> {
   readonly id: string;
@@ -14,9 +22,32 @@ export class UserSettings {
   @observable
   private _settings: IUserSetting[];
 
-  constructor(settings: IUserSetting[]) {
+  constructor(protected readonly kvStore: KVStore, settings: IUserSetting[]) {
     this._settings = settings;
     makeObservable(this);
+
+    // Need to get settings from storage
+    this._settings.forEach((setting) => {
+      const id = setting.id;
+      this.kvStore.get(id).then((value: unknown) =>
+        runInAction(() => {
+          if (!value) return;
+          // value is a stringify object
+          const parsedState = JSON.parse(value as string);
+          setting.setState(parsedState);
+        })
+      );
+    });
+
+    autorun(() => {
+      // Executed when one or more settings was updated
+      // We need to update the storage
+      this._settings.forEach((setting) => {
+        const id = setting.id;
+        const state = toJS(setting.state);
+        this.kvStore.set(id, JSON.stringify(state));
+      });
+    });
   }
 
   @computed
