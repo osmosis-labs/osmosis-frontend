@@ -24,8 +24,7 @@ const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
   },
   {
     value: "pl",
-    display: "settings.languages.pl",
-    iconUrl: "/images/flag-polish.png",
+    display: "Polski",
   },
 ];
 
