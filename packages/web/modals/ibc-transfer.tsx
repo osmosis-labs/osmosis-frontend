@@ -42,12 +42,12 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       ? queriesExternalStore.queryIbcStatuses.getIbcStatus(
           "withdraw",
           counterpartyChainId,
-          "sourceChannelID"
+          props.sourceChannelId
         )
       : queriesExternalStore.queryIbcStatuses.getIbcStatus(
           "deposit",
           counterpartyChainId,
-          "sourceChannelID"
+          props.sourceChannelId
         );
     const transferPathHealth =
       (transferHealth == IbcStatus.OK && "Healthy") ||
