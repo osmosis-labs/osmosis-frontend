@@ -55,6 +55,23 @@ export class ObservableBondLiquidityConfig extends UserConfig {
     makeObservable(this);
   }
 
+  /** Calculates the stop in the bonding process the user is in.
+   *
+   *  1. Liquidity needs to be added
+   *  2. Liquidity needs to be bonded
+   */
+  readonly calculateBondLevel = computedFn(
+    (bondableDurations: BondableDuration[]): 1 | 2 | undefined => {
+      if (
+        this.poolDetails?.userAvailableValue.toDec().gt(new Dec(0)) &&
+        bondableDurations.length > 0
+      )
+        return 2;
+
+      if (this.poolDetails?.userAvailableValue.toDec().isZero()) return 1;
+    }
+  );
+
   /** Gets all available durations for user to bond in, with a breakdown of the assets incentivizing the duration. Internal OSMO incentives & swap fees included in breakdown. */
   readonly getBondableAllowedDurations = computedFn(
     (
