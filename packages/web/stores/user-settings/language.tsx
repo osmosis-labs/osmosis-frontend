@@ -15,6 +15,10 @@ const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
     display: "English",
   },
   {
+    value: "es",
+    display: "Español",
+  },
+  {
     value: "fr",
     display: "Français",
   },
