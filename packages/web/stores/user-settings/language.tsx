@@ -22,6 +22,10 @@ const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
     value: "ko",
     display: "한국어",
   },
+  {
+    value: "pl",
+    display: "Polski",
+  },
 ];
 
 export class LanguageUserSetting implements IUserSetting<LanguageState> {
