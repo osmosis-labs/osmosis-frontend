@@ -11,7 +11,7 @@ import {
 import { EventName } from "../config";
 import { ModalBase, ModalBaseProps } from ".";
 import { useTranslation } from "react-multi-lang";
-import { IbcStatus } from "@osmosis-labs/stores/types/queries-external/ibc-status/index";
+import { IbcStatus } from "@osmosis-labs/stores";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
