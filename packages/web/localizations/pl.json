@@ -317,12 +317,7 @@
   "settings": {
     "title": "Ustawienia",
     "titleLanguage": "Język",
-    "titleShowDust": "Pokaż pule/środki < {fiatSymbol}0.01",
-    "languages": {
-      "pl": "Polski",
-      "fr": "Francuski",
-      "en": "Angielski"
-    }
+    "titleShowDust": "Pokaż pule/środki < {fiatSymbol}0.01"
   },
   "404": {
     "title": "Nie znaleziono"
