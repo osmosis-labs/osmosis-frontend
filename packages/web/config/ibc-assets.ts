@@ -1039,6 +1039,14 @@ export const IBCAssetInfos: (IBCAsset & {
     depositUrlOverride: "https://wrap.scrt.network",
   },
   {
+    // BUTT
+    counterpartyChainId: "secret-4",
+    sourceChannelId: "channel-476",
+    destChannelId: "channel-44",
+    coinMinimalDenom: "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt",
+    depositUrlOverride: "https://wrap.scrt.network",
+  },
+  {
     // SHD
     counterpartyChainId: "secret-4",
     sourceChannelId: "channel-476",

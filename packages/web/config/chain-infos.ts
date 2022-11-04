@@ -148,6 +148,16 @@ const chainInfos = (
         },
         {
           type: "cw20",
+          contractAddress: "secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt",
+          coinDenom: "BUTT",
+          coinMinimalDenom:
+            "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt:BUTT",
+          coinDecimals: 6,
+          coinGeckoId: "button",
+          coinImageUrl: "/tokens/butt.png",
+        },
+        {
+          type: "cw20",
           contractAddress: "secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
           coinDenom: "SHD",
           coinMinimalDenom:
