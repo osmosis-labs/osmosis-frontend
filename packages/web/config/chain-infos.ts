@@ -164,7 +164,7 @@ const chainInfos = (
             "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4:SIENNA",
           coinDecimals: 18,
           coinGeckoId: "sienna",
-          coinImageUrl: "/tokens/sienna.jpg",
+          coinImageUrl: "/tokens/sienna.svg",
         },
       ],
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
