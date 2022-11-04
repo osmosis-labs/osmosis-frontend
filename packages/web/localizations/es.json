@@ -36,17 +36,17 @@
     "liquidity": "Liquidez de la Pool",
     "bonded": "Garantizada",
     "incentivized": "Incentivada",
-    "all": "Todas las Pools",
+    "all": "Todas los Pools",
     "allTab": "Todos",
     "superfluid": {
-      "title": "Pools superflúdicas",
+      "title": "Pools superflúidas",
       "tab": "Superfluido",
       "APR": "ABR",
       "liquidity": "Liquidez de la Pool",
       "fees7D": "Tarifas (7d)"
     },
     "allPools": {
-      "title": "Todas las Pools",
+      "title": "Todas los Pools",
       "myLiquidity": "Mi liquidez",
       "TVL": "TVL",
       "APR": "ABR",
@@ -305,9 +305,9 @@
   },
   "menu": {
     "swap": "Intercambio",
-    "pools": "Quinielas",
+    "pools": "Pools",
     "assets": "Activos",
-    "stake": "Apostar",
+    "stake": "Stake",
     "vote": "Votar",
     "info": "Estadísticas",
     "signOut": "Desconectar",
