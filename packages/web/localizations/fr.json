@@ -320,7 +320,8 @@
     "titleShowDust": "Afficher les pools/actifs < 0.01{fiatSymbol}",
     "languages": {
       "fr": "Français",
-      "en": "Anglais"
+      "en": "Anglais",
+      "ko": "Coréenne"
     }
   },
   "404": {

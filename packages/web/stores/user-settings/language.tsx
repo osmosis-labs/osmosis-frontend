@@ -20,6 +20,11 @@ const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
     display: "settings.languages.fr",
     iconUrl: "/images/flag-french.png",
   },
+  {
+    value: "ko",
+    display: "settings.languages.ko",
+    iconUrl: "/images/flag-korean.png",
+  },
 ];
 
 export class LanguageUserSetting implements IUserSetting<LanguageState> {
