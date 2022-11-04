@@ -310,11 +310,7 @@
   "settings": {
     "title": "설정",
     "titleLanguage": "언어",
-    "titleShowDust": "Show pools/assets < {fiatSymbol}0.01",
-    "languages": {
-      "fr": "French",
-      "en": "English"
-    }
+    "titleShowDust": "Show pools/assets < {fiatSymbol}0.01"
   },
   "404": {
     "title": "페이지를 찾을 수 없습니다"

@@ -317,12 +317,7 @@
   "settings": {
     "title": "Paramètres",
     "titleLanguage": "Langue",
-    "titleShowDust": "Afficher les pools/actifs < 0.01{fiatSymbol}",
-    "languages": {
-      "fr": "Français",
-      "en": "Anglais",
-      "ko": "Coréenne"
-    }
+    "titleShowDust": "Afficher les pools/actifs < 0.01{fiatSymbol}"
   },
   "404": {
     "title": "Page non trouvée"
