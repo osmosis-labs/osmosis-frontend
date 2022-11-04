@@ -58,8 +58,8 @@ export const Radio: FunctionComponent<Props> = ({
             "after:absolute after:h-5 after:w-5 after:rounded-full", // box
             disabled
               ? isOn
-                ? "opacity-30 cursor-default checked:after:bg-iconDefault" // disabled AND on
-                : "opacity-30 cursor-default after:border-2 after:border-iconDefault"
+                ? "opacity-30 cursor-default checked:after:bg-osmoverse-400" // disabled AND on
+                : "opacity-30 cursor-default after:border-2 after:border-osmoverse-400"
               : isOn
               ? "after:bg-wosmongton-200" // not disabled AND on
               : "after:border-2 after:border-wosmongton-200",

@@ -49,7 +49,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
                 height={14}
               />
             </div>
-            <p className="body2 text-iconDefault mt-1">
+            <p className="body2 text-osmoverse-400 mt-1">
               {overrideWithKeplrInstallLink}
             </p>
           </div>
@@ -70,11 +70,11 @@ export const KeplrConnectionSelectModal: FunctionComponent<
           />
           <div className="flex flex-col text-left ml-5">
             <h6>{t("keplr.wallet")}</h6>
-            <p className="body2 text-iconDefault mt-1">
+            <p className="body2 text-osmoverse-400 mt-1">
               {t("keplr.extension")}
             </p>
           </div>
-          <p className="body2 text-iconDefault mt-1">
+          <p className="body2 text-osmoverse-400 mt-1">
             {overrideWithKeplrInstallLink}
           </p>
         </button>
@@ -94,7 +94,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
         />
         <div className="flex flex-col text-left ml-5">
           <h6>{t("keplr.walletConnect")}</h6>
-          <p className="body2 text-iconDefault mt-1">{t("keplr.mobile")}</p>
+          <p className="body2 text-osmoverse-400 mt-1">{t("keplr.mobile")}</p>
         </div>
       </button>
       <div className="mt-5 p-5 rounded-2xl bg-osmoverse-700">

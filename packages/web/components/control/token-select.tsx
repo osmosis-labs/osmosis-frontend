@@ -172,7 +172,7 @@ export const TokenSelect: FunctionComponent<{
                   </div>
                 )}
               </div>
-              <div className="absolute top-1 md:top-1.5 w-24 subtitle2 md:caption text-iconDefault">
+              <div className="absolute top-1 md:top-1.5 w-24 subtitle2 md:caption text-osmoverse-400">
                 {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
                   ?.chainName ?? ""}
               </div>

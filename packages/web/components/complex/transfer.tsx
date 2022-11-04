@@ -103,7 +103,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
       />
       <div
         className={classNames(
-          "flex gap-4 md:gap-2 body1 text-iconDefault transition-opacity duration-300",
+          "flex gap-4 md:gap-2 body1 text-osmoverse-400 transition-opacity duration-300",
           { "opacity-30": panelDisabled }
         )}
       >
@@ -112,7 +112,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             "flex w-full text-center border border-white-faint rounded-2xl p-4 md:p-2 transition-width",
             {
               "w-1/4": isEditingWithdrawAddr,
-              "text-iconDefault/30": isEditingWithdrawAddr,
+              "text-osmoverse-400/30": isEditingWithdrawAddr,
             }
           )}
         >

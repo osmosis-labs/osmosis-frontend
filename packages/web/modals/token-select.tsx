@@ -81,7 +81,7 @@ export const TokenSelectModal: FunctionComponent<
                 )}
                 <div>
                   <h6 className="text-white-full">{justDenom}</h6>
-                  <div className="text-iconDefault text-left md:caption font-semibold">
+                  <div className="text-osmoverse-400 text-left md:caption font-semibold">
                     {showChannel ? `${networkName} ${channel}` : networkName}
                   </div>
                 </div>

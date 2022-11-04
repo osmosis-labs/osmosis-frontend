@@ -53,7 +53,9 @@ export const Info: FunctionComponent<
             <h6>{message}</h6>
           )}
           {caption && (
-            <span className="text-iconDefault body2 md:caption">{caption}</span>
+            <span className="text-osmoverse-400 body2 md:caption">
+              {caption}
+            </span>
           )}
         </div>
         {!isMobile && data && (
