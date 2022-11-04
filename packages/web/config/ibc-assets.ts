@@ -114,6 +114,10 @@ export const IBCAssetInfos: (IBCAsset & {
       wallets: ["metamask" as const],
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.wbnb.binance],
+      wrapAssetConfig: {
+        url: "https://pancakeswap.finance/swap?outputCurrency=0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        displayCaption: "Convert BNB to WBNB on PancakeSwap", // TODO: use translation key instead of raw string
+      },
     },
   },
   {

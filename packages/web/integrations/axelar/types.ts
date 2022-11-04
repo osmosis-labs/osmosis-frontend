@@ -14,6 +14,12 @@ export interface AxelarBridgeConfig {
   /** Ex: `uusdc`. NOTE: Will get currency info from `originCurrency` on the IBC balance (from registrar).
    *  See: https://docs.axelar.dev/resources/mainnet#assets
    */
+
+  /** URL config for users to conveniently swap the native asset for the wrapped version. */
+  wrapAssetConfig?: {
+    url: string;
+    displayCaption: string;
+  };
 }
 
 /** See: https://docs.axelar.dev/dev/build/chain-names/mainnet

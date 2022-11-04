@@ -59,6 +59,7 @@ const AxelarTransfer: FunctionComponent<
     onRequestSwitchWallet,
     sourceChains,
     isTestNet = process.env.NEXT_PUBLIC_IS_TESTNET === "true",
+    wrapAssetConfig,
     connectCosmosWalletButtonOverride,
   }) => {
     const { chainStore, accountStore, queriesStore, nonIbcBridgeHistoryStore } =
@@ -487,6 +488,13 @@ const AxelarTransfer: FunctionComponent<
             (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
           }
         />
+        {wrapAssetConfig && (
+          <div className="mx-auto text-secondary-200">
+            <a rel="noreferrer" target="_blank" href={wrapAssetConfig.url}>
+              {wrapAssetConfig.displayCaption}
+            </a>
+          </div>
+        )}
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
           {connectCosmosWalletButtonOverride ?? (
             <Button
