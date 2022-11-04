@@ -66,11 +66,20 @@ export const LockTokensModal: FunctionComponent<
     selectedDurationIndex === bondableDurations.length - 1;
   const [electSuperfluid, setElectSuperfluid] = useState(true);
 
-  const selectedApr =
+  let selectedApr =
     selectedDurationIndex !== null
       ? bondableDurations[selectedDurationIndex]?.aggregateApr
       : undefined;
   const superfluidInEffect = electSuperfluid && highestDurationSelected;
+
+  if (
+    selectedApr &&
+    superfluidApr &&
+    highestDurationSelected &&
+    !electSuperfluid
+  ) {
+    selectedApr = selectedApr.sub(superfluidApr);
+  }
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
@@ -147,7 +156,7 @@ export const LockTokensModal: FunctionComponent<
             isOn={highestDurationSelected && electSuperfluid}
             onToggle={() => setElectSuperfluid(!electSuperfluid)}
             checkMarkIconUrl="/icons/check-mark-dark.svg"
-            checkMarkClassName="top-[1px] left-0 h-6 w-6"
+            checkMarkClassName="left-0 h-6 w-6"
             disabled={!highestDurationSelected || hasSuperfluidValidator}
           >
             <div
