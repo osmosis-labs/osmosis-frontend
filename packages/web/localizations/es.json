@@ -52,7 +52,7 @@
       "APR": "ABR",
       "APRIncentivized": "7d vol.",
       "search": "Pools de búsqueda",
-      "displayLowLiquidity": "Show Pools <{valor}",
+      "displayLowLiquidity": "Show Pools <{value}",
       "sort": {
         "poolName": "Nombre de la Pool",
         "liquidity": "Liquidez",
@@ -317,7 +317,7 @@
   "settings": {
     "title": "Ajustes",
     "titleLanguage": "Idioma",
-    "titleShowDust": "Mostrar Pools/activos <{FiatSymbol} 0.01"
+    "titleShowDust": "Mostrar Pools/activos <{fiatSymbol} 0.01"
   },
   "404": {
     "title": "Extraviado"
