@@ -8,10 +8,10 @@ const chainInfos = (
   [
     {
       rpc: IS_TESTNET
-        ? "https://rpc-test.osmosis.zone/"
+        ? "https://rpc.testnet.osmosis.zone/"
         : "https://rpc-osmosis.keplr.app/",
       rest: IS_TESTNET
-        ? "https://lcd-test.osmosis.zone/"
+        ? "https://lcd.testnet.osmosis.zone/"
         : "https://lcd-osmosis.keplr.app/",
       chainId: IS_TESTNET ? "osmo-test-4" : "osmosis-1",
       chainName: "Osmosis",
