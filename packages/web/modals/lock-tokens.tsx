@@ -52,6 +52,9 @@ export const LockTokensModal: FunctionComponent<
     poolId
   );
   const isSendingMsg = account.txTypeInProgress !== "";
+  /** If they have a superfluid validator already, they will automatically SFS stake if they select the highest gauge. (Cant be undone)
+   *  TODO: perhaps we should display this in the view somehow
+   */
   const hasSuperfluidValidator =
     superfluidPoolConfig?.superfluid?.delegations &&
     superfluidPoolConfig.superfluid.delegations.length > 0;
