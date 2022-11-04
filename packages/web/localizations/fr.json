@@ -319,6 +319,7 @@
     "titleLanguage": "Langue",
     "titleShowDust": "Afficher les pools/actifs < 0.01{fiatSymbol}",
     "languages": {
+      "pl": "Polonais",
       "fr": "Français",
       "en": "Anglais"
     }
