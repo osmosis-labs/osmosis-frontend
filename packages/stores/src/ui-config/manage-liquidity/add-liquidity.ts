@@ -511,7 +511,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   }
 
   @computed
-  get error() {
+  get error(): Error | undefined {
     if (this.poolAssetConfigs.length === 0) {
       return new NotInitializedError("Not initialized yet");
     }
