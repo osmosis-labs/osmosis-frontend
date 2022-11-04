@@ -136,6 +136,36 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
+        {
+          type: "cw20",
+          contractAddress: "secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej",
+          coinDenom: "ALTER",
+          coinMinimalDenom:
+            "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej:ALTER",
+          coinDecimals: 6,
+          coinGeckoId: "alter",
+          coinImageUrl: "/tokens/alter.jpg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
+          coinDenom: "SHD",
+          coinMinimalDenom:
+            "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d:SHD",
+          coinDecimals: 8,
+          coinGeckoId: "shade-protocol",
+          coinImageUrl: "/tokens/shd.jpg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
+          coinDenom: "SIENNA",
+          coinMinimalDenom:
+            "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4:SIENNA",
+          coinDecimals: 18,
+          coinGeckoId: "sienna",
+          coinImageUrl: "/tokens/sienna.jpg",
+        },
       ],
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
       explorerUrlToTx:

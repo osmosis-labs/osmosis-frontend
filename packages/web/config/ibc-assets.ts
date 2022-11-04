@@ -1030,6 +1030,30 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "ujkl",
     isUnstable: true,
   },
+  {
+    // ALTER
+    counterpartyChainId: "secret-4",
+    sourceChannelId: "channel-476",
+    destChannelId: "channel-44",
+    coinMinimalDenom: "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej",
+    depositUrlOverride: "https://wrap.scrt.network",
+  },
+  {
+    // SHD
+    counterpartyChainId: "secret-4",
+    sourceChannelId: "channel-476",
+    destChannelId: "channel-44",
+    coinMinimalDenom: "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
+    depositUrlOverride: "https://wrap.scrt.network",
+  },
+  {
+    // SIENNA
+    counterpartyChainId: "secret-4",
+    sourceChannelId: "channel-476",
+    destChannelId: "channel-44",
+    coinMinimalDenom: "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
+    depositUrlOverride: "https://wrap.scrt.network",
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
