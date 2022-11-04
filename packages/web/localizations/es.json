@@ -18,7 +18,7 @@
     "button": "Intercambio",
     "buttonError": "Intercambio de todos modos",
     "priceImpact": "Impacto del precio",
-    "fee": "Tarifa de intercambio ({tarifa})",
+    "fee": "Tarifa de intercambio ({fee})",
     "expectedOutput": "Rendimiento esperado",
     "minimumSlippage": "Mínimo recibido después del deslizamiento ({deslizamiento})",
     "error": {
@@ -94,7 +94,7 @@
       "amount": "Monto",
       "token": "Simbólica",
       "swapFee": "Establecer la tarifa de intercambio",
-      "undersandCost": "Entiendo que crear un nuevo grupo costará {Pool_Creation_Fee}.",
+      "undersandCost": "Entiendo que crear un nuevo grupo costará {POOL_CREATION_FEE}.",
       "interestedCreate": "¿Interesado en crear una nueva Pool?",
       "startProcess": "Haga clic aquí para comenzar el proceso"
     }
@@ -107,10 +107,10 @@
     "liquidity": "Liquidez de la Pool",
     "swapFee": "Tarifa de intercambio",
     "yourStats": "Tus estadísticas",
-    "sharesAmount": "{acciones} acciones",
+    "sharesAmount": "{shares} acciones",
     "currentDailyEarn": "Actualmente estás ganando",
     "earnMore": "Gane más por vinculación",
-    "dailyEarnAmount": "{cantidad} / día",
+    "dailyEarnAmount": "{amount} / día",
     "putAssetsToWork": "Pon tus activos a trabajar.",
     "putAssetsToWorkCaption": "Agregue sus activos a esta Pool para desbloquear emocionantes APR. Cuanto más tiempo sea su período de óseo, más hará.",
     "learnMore": "Aprende más",
@@ -122,8 +122,8 @@
     "bondLiquidityCaption": "Bloquee sus acciones para obtener duraciones más largas para ganar APR más altos.",
     "bondSuperfluidLiquidityCaption": "Vaya superfluido para obtener las recompensas máximas.",
     "bondShares": "Acciones de bonos",
-    "amountDaysUnbonding": "{Negeds} Days UnboDing",
-    "shares": "Comparte",
+    "amountDaysUnbonding": "{numDays} dias unbonding",
+    "shares": "Acciones",
     "unbonded": "No acelerado",
     "unbond": "No acelerado",
     "bonded": "Garantizada",
@@ -150,23 +150,23 @@
   },
   "addLiquidity": {
     "title": "Agregar liquidez",
-    "titleInPool": "Agregue liquidez a {PoolID}",
+    "titleInPool": "Agregue liquidez a {poolId}",
     "allAssets": "Todos los activos",
     "singleAsset": "Activo único",
     "available": "Disponible",
     "autoswapCaption": "Use AutoSWAP para agregar liquidez con un solo activo."
   },
   "lockToken": {
-    "title": "Bond LP comparte",
-    "titleInPool": "Bloquear las acciones en {Poolid}",
-    "selectPeriod": "Seleccionar el período de icales",
+    "title": "Bond acciones LP",
+    "titleInPool": "Bloquear las acciones en {poolId}",
+    "selectPeriod": "Seleccionar el período de bonding",
     "availableToken": "Disponible",
     "amountToBond": "Monto a la fianza",
     "superfluidStake": "Estancamiento superflúdico",
-    "bondingRequirement": "{Número} Requisito de unión de día",
+    "bondingRequirement": "{numDays} de dias requeridos para bonding",
     "buttonNext": "Próxima",
     "buttonBond": "Vínculo",
-    "buttonBondStake": "Bond y estaca"
+    "buttonBondStake": "Bond y Stake"
   },
   "superfluidValidator": {
     "title": "Seleccionar validador superfluid",
@@ -187,7 +187,7 @@
     "totalAssets": "Total",
     "unbondedAssets": "No acelerado",
     "bondedAssets": "Garantizada",
-    "stakedAssets": "OSMO estacada",
+    "stakedAssets": "OSMO stakeado",
     "myPools": "Mis Pools",
     "transferAssetSelect": {
       "deposit": "Depósito",
@@ -203,8 +203,8 @@
       "myLiquidity": "Mi liquidez"
     },
     "ibcTransfer": {
-      "titleWithdraw": "Retirar {coindenom}",
-      "titleDeposit": "Depósito {Coindenom}",
+      "titleWithdraw": "Retirar {coinDenom}",
+      "titleDeposit": "Depósito {coinDenom}",
       "selectAmount": "Cantidad de selección",
       "estimatedTime": "Hora prevista",
       "waitTime": "20 segundos",
@@ -222,29 +222,29 @@
       "MAX": "Máximo"
     },
     "transfer": {
-      "titleWithdraw": "Retirar {coindenom}",
-      "titleDeposit": "Depósito {Coindenom}",
-      "warnDepositAddressDifferent": "Advertencia: la cuenta seleccionada en {dirección} difiere de la cuenta con la que se deposita por última vez.",
+      "titleWithdraw": "Retirar {coinDenom}",
+      "titleDeposit": "Depósito {coinDenom}",
+      "warnDepositAddressDifferent": "Advertencia: la cuenta seleccionada en {address} difiere de la cuenta con la que se deposita por última vez.",
       "from": "De",
       "to": "A",
       "via": "a través de",
       "loading": "Cargando",
-      "availableOn": "Disponible en {red}",
+      "availableOn": "Disponible en {network}",
       "availableMobile": "Disponible",
       "transferFee": "Tarifa de transferencia",
       "errors": {
-        "reconnectWallet": "Reconectar {WalletName}",
-        "wrongNetworkInWallet": "Red incorrecta en {WalletName}",
+        "reconnectWallet": "Reconectar {walletName}",
+        "wrongNetworkInWallet": "Red incorrecta en {walletName}",
         "insufficientFee": "Tarifa insuficiente",
         "insufficientBal": "Saldo insuficiente"
       },
-      "waitTime": "{minutos} minutos"
+      "waitTime": "{minutes} minutos"
     },
     "selectAssetSource": {
       "titleWithdraw": "Retraerse a",
       "titleDeposit": "Depositar desde",
       "next": "Próxima",
-      "installWallet": "Instalar {WalletName}"
+      "installWallet": "Instalar {walletName}"
     },
     "table": {
       "depositButton": "Depósito",
