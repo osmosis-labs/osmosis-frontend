@@ -12,13 +12,15 @@ export type LanguageState = { language: string };
 const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
   {
     value: "en",
-    display: "settings.languages.en",
-    iconUrl: "/images/flag-english.png",
+    display: "English",
   },
   {
     value: "fr",
-    display: "settings.languages.fr",
-    iconUrl: "/images/flag-french.png",
+    display: "Français",
+  },
+  {
+    value: "ko",
+    display: "한국어",
   },
   {
     value: "pl",

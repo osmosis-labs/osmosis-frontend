@@ -317,12 +317,7 @@
   "settings": {
     "title": "Settings",
     "titleLanguage": "Language",
-    "titleShowDust": "Show pools/assets < {fiatSymbol}0.01",
-    "languages": {
-      "pl": "Polish",
-      "fr": "French",
-      "en": "English"
-    }
+    "titleShowDust": "Show pools/assets < {fiatSymbol}0.01"
   },
   "404": {
     "title": "Not found"

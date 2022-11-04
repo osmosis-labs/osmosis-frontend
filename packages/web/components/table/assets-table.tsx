@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { Dec } from "@keplr-wallet/unit";
-import { initialAssetsSort } from "../../config";
+import { BUY_OSMO_TRANSAK, initialAssetsSort } from "../../config";
 import {
   IBCBalance,
   IBCCW20ContractBalance,
@@ -121,7 +121,10 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                 ? value?.toDec().toString()
                 : "0",
             isCW20: false,
-            onBuyOsmo: balance.denom === "OSMO" ? onBuyOsmo : undefined,
+            onBuyOsmo:
+              balance.denom === "OSMO" && BUY_OSMO_TRANSAK
+                ? onBuyOsmo
+                : undefined,
           };
         }),
         ...initialAssetsSort(

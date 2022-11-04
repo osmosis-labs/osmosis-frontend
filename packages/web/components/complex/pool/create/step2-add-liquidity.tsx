@@ -46,7 +46,7 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                     ) : (
                       <h5>{justCoinDenom}</h5>
                     )}
-                    <div className="text-iconDefault text-sm md:text-xs md:caption font-semibold">
+                    <div className="text-osmoverse-400 text-sm md:text-xs md:caption font-semibold">
                       {percentage}%
                     </div>
                   </div>

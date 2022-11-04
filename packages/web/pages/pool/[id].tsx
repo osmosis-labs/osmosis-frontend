@@ -285,15 +285,7 @@ const Pool: FunctionComponent = observer(() => {
     ],
   });
 
-  const levelCta: 1 | 2 | undefined = useMemo(() => {
-    if (
-      poolDetailConfig?.userAvailableValue.toDec().gt(new Dec(0)) &&
-      bondableDurations.length > 0
-    )
-      return 2;
-
-    if (poolDetailConfig?.userAvailableValue.toDec().isZero()) return 1;
-  }, [poolDetailConfig?.userAvailableValue, bondableDurations]);
+  const levelCta = bondLiquidityConfig?.calculateBondLevel(bondableDurations);
 
   return (
     <main className="flex flex-col gap-10 md:gap-4 bg-osmoverse-900 min-h-screen p-8 md:p-4">

@@ -62,7 +62,7 @@ export const PreTransferModal: FunctionComponent<
           </span>
           <h6>{selectedToken.trim(true).toString()}</h6>
           {tokenValue && (
-            <span className="subtitle2 text-iconDefault">
+            <span className="subtitle2 text-osmoverse-400">
               {tokenValue?.toString()}
             </span>
           )}

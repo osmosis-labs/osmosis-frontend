@@ -22,7 +22,7 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = ({
           <span className="subtitle1 text-white-high">{coinDenom}</span>
         </div>
         {chainName && (
-          <span className="body2 text-iconDefault">{chainName}</span>
+          <span className="body2 text-osmoverse-400">{chainName}</span>
         )}
       </div>
       {isUnstable && <InfoTooltip content={UNSTABLE_MSG} />}

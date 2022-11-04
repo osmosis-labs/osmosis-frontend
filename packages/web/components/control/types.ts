@@ -24,5 +24,5 @@ export interface NumberSelectProps extends InputProps<number> {
 export interface MenuDropdownIconItemProps {
   value: string;
   display: string;
-  iconUrl: string;
+  iconUrl?: string;
 }

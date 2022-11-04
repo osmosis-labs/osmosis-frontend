@@ -45,6 +45,12 @@ export declare class ObservableBondLiquidityConfig extends UserConfig {
         queryGauge: ObservableQueryGuage;
         queryIncentivizedPools: ObservableQueryIncentivizedPools;
     });
+    /** Calculates the stop in the bonding process the user is in.
+     *
+     *  1. Liquidity needs to be added
+     *  2. Liquidity needs to be bonded
+     */
+    readonly calculateBondLevel: (bondableDurations: BondableDuration[]) => 1 | 2 | undefined;
     /** Gets all available durations for user to bond in, with a breakdown of the assets incentivizing the duration. Internal OSMO incentives & swap fees included in breakdown. */
     readonly getBondableAllowedDurations: (findCurrency: (denom: string) => AppCurrency | undefined, allowedGauges: {
         gaugeId: string;

@@ -35,14 +35,16 @@ export const MenuDropdownIconItem: FunctionComponent<Props> = ({
       key={option.value.toString()}
       onClick={() => onSelect(option)}
     >
-      <div className="flex items-center justify-center min-w-[24px]">
-        <Image
-          src={option.iconUrl}
-          width={24}
-          height={24}
-          alt={`${option.display}`}
-        />
-      </div>
+      {option.iconUrl && (
+        <div className="flex items-center justify-center min-w-[24px]">
+          <Image
+            src={option.iconUrl}
+            width={24}
+            height={24}
+            alt={`${option.display}`}
+          />
+        </div>
+      )}
       <p className="ml-3">{t(option.display.toString())}</p>
     </button>
   );

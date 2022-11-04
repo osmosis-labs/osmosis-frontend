@@ -52,6 +52,9 @@ export const LockTokensModal: FunctionComponent<
     poolId
   );
   const isSendingMsg = account.txTypeInProgress !== "";
+  /** If they have a superfluid validator already, they will automatically SFS stake if they select the highest gauge. (Cant be undone)
+   *  TODO: perhaps we should display this in the view somehow
+   */
   const hasSuperfluidValidator =
     superfluidPoolConfig?.superfluid?.delegations &&
     superfluidPoolConfig.superfluid.delegations.length > 0;
@@ -66,11 +69,20 @@ export const LockTokensModal: FunctionComponent<
     selectedDurationIndex === bondableDurations.length - 1;
   const [electSuperfluid, setElectSuperfluid] = useState(true);
 
-  const selectedApr =
+  let selectedApr =
     selectedDurationIndex !== null
       ? bondableDurations[selectedDurationIndex]?.aggregateApr
       : undefined;
   const superfluidInEffect = electSuperfluid && highestDurationSelected;
+
+  if (
+    selectedApr &&
+    superfluidApr &&
+    highestDurationSelected &&
+    !electSuperfluid
+  ) {
+    selectedApr = selectedApr.sub(superfluidApr);
+  }
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
@@ -118,7 +130,7 @@ export const LockTokensModal: FunctionComponent<
       {...props}
       isOpen={props.isOpen && showModalBase}
     >
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 md:gap-4">
         <span className="subtitle1 text-center">
           {t("lockToken.selectPeriod")}
         </span>
@@ -147,7 +159,7 @@ export const LockTokensModal: FunctionComponent<
             isOn={highestDurationSelected && electSuperfluid}
             onToggle={() => setElectSuperfluid(!electSuperfluid)}
             checkMarkIconUrl="/icons/check-mark-dark.svg"
-            checkMarkClassName="top-[1px] left-0 h-6 w-6"
+            checkMarkClassName="left-0 h-6 w-6"
             disabled={!highestDurationSelected || hasSuperfluidValidator}
           >
             <div

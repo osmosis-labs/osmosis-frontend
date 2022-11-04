@@ -38,7 +38,7 @@ export const IconDropdown: FunctionComponent<IconDropdownProps> = observer(
             setDropdownOpen(!dropdownOpen);
           }}
         >
-          <span className="flex items-center my-[0.6875rem] m-auto md:ml-1.5 ml-3 leading-loose select-none text-center body md:caption overflow-hidden">
+          <span className="flex items-center my-[0.6875rem] m-auto md:ml-1.5 ml-1 leading-loose select-none text-center body md:caption overflow-hidden">
             <div className="flex items-center justify-center min-w-[24px]">
               {currentOption &&
                 currentOption.iconUrl &&
@@ -53,16 +53,14 @@ export const IconDropdown: FunctionComponent<IconDropdownProps> = observer(
             </div>
             <p className="mx-3">{t(currentOption?.display ?? "")}</p>
             <div className="flex items-center justify-center min-w-[24px] mr-3">
-              {currentOption &&
-                currentOption.iconUrl &&
-                currentOption.display && (
-                  <Image
-                    src={"/icons/chevron-down.svg"}
-                    width={13}
-                    height={20}
-                    alt={``}
-                  />
-                )}
+              {currentOption && currentOption.display && (
+                <Image
+                  src={"/icons/chevron-down.svg"}
+                  width={13}
+                  height={20}
+                  alt={``}
+                />
+              )}
             </div>
           </span>
         </button>
