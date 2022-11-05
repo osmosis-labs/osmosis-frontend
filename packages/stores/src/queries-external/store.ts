@@ -6,6 +6,7 @@ import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
 import {
   IMPERATOR_HISTORICAL_DATA_BASEURL,
+  IMPERATOR_IBC_STATUS_BASEURL,
   IMPERATOR_TX_REWARD_BASEURL,
 } from ".";
 
@@ -19,7 +20,8 @@ export class QueriesExternalStore {
     kvStore: KVStore,
     priceStore: IPriceStore,
     feeMetricsBaseURL = IMPERATOR_HISTORICAL_DATA_BASEURL,
-    poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL
+    poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL,
+    ibcStatusBaseUrl = IMPERATOR_IBC_STATUS_BASEURL
   ) {
     this.queryGammPoolFeeMetrics = new ObservableQueryPoolFeesMetrics(
       kvStore,
