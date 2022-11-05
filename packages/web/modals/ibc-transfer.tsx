@@ -50,10 +50,9 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           props.sourceChannelId
         );
     const transferPathHealth =
-      (transferHealth == IbcStatus.OK && "Healthy") ||
       (transferHealth == IbcStatus.Congested && "Congested") ||
       (transferHealth == IbcStatus.Blocked && "Blocked") ||
-      "Undefined";
+      undefined;
     const isCustomWithdrawValid =
       !customCounterpartyConfig ||
       customCounterpartyConfig?.bech32Address === "" || // if not changed, it's valid since it's from Keplr

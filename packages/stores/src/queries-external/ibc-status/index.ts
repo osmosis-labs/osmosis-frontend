@@ -53,22 +53,24 @@ export class ObservableQueryIbcDepositStatus extends ObservableQueryExternalBase
     makeObservable(this);
   }
 
-  readonly getIbcStatus = computedFn((sourceChannelId: string): IbcStatus => {
-    const ibcRaw = this.response?.data.data.find(
-      (statusMetric) => statusMetric.channel_id === sourceChannelId
-    );
-    if (!ibcRaw) {
-      return IbcStatus.Undefined;
-    }
+  readonly getIbcStatus = computedFn(
+    (sourceChannelId: string): IbcStatus | undefined => {
+      const ibcRaw = this.response?.data.data.find(
+        (statusMetric) => statusMetric.channel_id === sourceChannelId
+      );
+      if (!ibcRaw) {
+        return undefined;
+      }
 
-    if (ibcRaw.size_queue >= 1 && ibcRaw.duration_minutes > 5) {
-      return IbcStatus.Congested;
-    } else if (ibcRaw.size_queue >= 1 && ibcRaw.duration_minutes > 20) {
-      return IbcStatus.Blocked;
-    } else {
-      return IbcStatus.OK;
+      if (ibcRaw.size_queue >= 1 && ibcRaw.duration_minutes > 5) {
+        return IbcStatus.Congested;
+      } else if (ibcRaw.size_queue >= 1 && ibcRaw.duration_minutes > 20) {
+        return IbcStatus.Blocked;
+      } else {
+        return IbcStatus.OK;
+      }
     }
-  });
+  );
 }
 
 export class ObservableQueryIbcDepositStatuses extends HasMapStore<ObservableQueryIbcDepositStatus> {
@@ -102,22 +104,24 @@ export class ObservableQueryIbcWithdrawStatus extends ObservableQueryExternalBas
     makeObservable(this);
   }
 
-  readonly getIbcStatus = computedFn((sourceChannelId: string): IbcStatus => {
-    const ibcRaw = this.response?.data.data.find(
-      (statusMetric) => statusMetric.channel_id === sourceChannelId
-    );
-    if (!ibcRaw) {
-      return IbcStatus.Undefined;
-    }
+  readonly getIbcStatus = computedFn(
+    (sourceChannelId: string): IbcStatus | undefined => {
+      const ibcRaw = this.response?.data.data.find(
+        (statusMetric) => statusMetric.channel_id === sourceChannelId
+      );
+      if (!ibcRaw) {
+        return undefined;
+      }
 
-    if (ibcRaw.size_queue >= 1 && ibcRaw.duration_minutes > 5) {
-      return IbcStatus.Congested;
-    } else if (ibcRaw.size_queue >= 1 && ibcRaw.duration_minutes > 20) {
-      return IbcStatus.Blocked;
-    } else {
-      return IbcStatus.OK;
+      if (ibcRaw.size_queue >= 1 && ibcRaw.duration_minutes > 5) {
+        return IbcStatus.Congested;
+      } else if (ibcRaw.size_queue >= 1 && ibcRaw.duration_minutes > 20) {
+        return IbcStatus.Blocked;
+      } else {
+        return IbcStatus.OK;
+      }
     }
-  });
+  );
 }
 
 export class ObservableQueryIbcWithdrawStatuses extends HasMapStore<ObservableQueryIbcWithdrawStatus> {

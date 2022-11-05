@@ -36,7 +36,7 @@ export type TransferProps = {
   warningMessage?: string;
   toggleIsMax: () => void;
   transferFee?: CoinPretty;
-  transferPathHealth?: "Healthy" | "Congested" | "Blocked" | "Undefined";
+  transferPathHealth?: "Congested" | "Blocked";
   /** Required, can be hardcoded estimate. */
   waitTime: string;
   disablePanel?: boolean;

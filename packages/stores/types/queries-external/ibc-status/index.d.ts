@@ -10,7 +10,7 @@ export declare class ObservableQueryIbcStatuses {
 }
 export declare class ObservableQueryIbcDepositStatus extends ObservableQueryExternalBase<IbcMetrics> {
     constructor(kvStore: KVStore, baseURL: string, counterPartyChainID: string);
-    readonly getIbcStatus: (sourceChannelId: string) => IbcStatus;
+    readonly getIbcStatus: (sourceChannelId: string) => IbcStatus | undefined;
 }
 export declare class ObservableQueryIbcDepositStatuses extends HasMapStore<ObservableQueryIbcDepositStatus> {
     constructor(kvStore: KVStore, ibcStatusBaseUrl?: string);
@@ -18,7 +18,7 @@ export declare class ObservableQueryIbcDepositStatuses extends HasMapStore<Obser
 }
 export declare class ObservableQueryIbcWithdrawStatus extends ObservableQueryExternalBase<IbcMetrics> {
     constructor(kvStore: KVStore, baseURL: string, counterPartyChainID: string);
-    readonly getIbcStatus: (sourceChannelId: string) => IbcStatus;
+    readonly getIbcStatus: (sourceChannelId: string) => IbcStatus | undefined;
 }
 export declare class ObservableQueryIbcWithdrawStatuses extends HasMapStore<ObservableQueryIbcWithdrawStatus> {
     constructor(kvStore: KVStore, ibcStatusBaseUrl?: string);
