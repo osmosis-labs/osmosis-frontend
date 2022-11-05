@@ -219,7 +219,8 @@
       "amoutWithdraw": "Amount To Withdraw",
       "amoutDeposit": "Amount To Deposit",
       "availableBalance": "Available balance:",
-      "MAX": "MAX"
+      "MAX": "MAX",
+      "networkBlocked": "Network blocked"
     },
     "transfer": {
       "titleWithdraw": "Withdraw {coinDenom}",

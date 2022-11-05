@@ -68,7 +68,10 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             account.txTypeInProgress !== "" ||
             amountConfig.error != undefined ||
             inTransit ||
-            !isCustomWithdrawValid,
+            !isCustomWithdrawValid ||
+            transferPathHealth == "Blocked",
+          congested: transferPathHealth == "Congested",
+
           onClick: () => {
             logEvent([
               isWithdraw
@@ -103,9 +106,13 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             );
           },
           children: isWithdraw
-            ? t("assets.ibcTransfer.titleWithdraw", {
-                coinDenom: currency.coinDenom,
-              })
+            ? transferPathHealth && transferPathHealth == "Blocked"
+              ? t("assets.ibcTransfer.networkBlocked")
+              : t("assets.ibcTransfer.titleWithdraw", {
+                  coinDenom: currency.coinDenom,
+                })
+            : transferPathHealth && transferPathHealth == "Blocked"
+            ? t("assets.ibcTransfer.networkBlocked")
             : t("assets.ibcTransfer.titleDeposit", {
                 coinDenom: currency.coinDenom,
               }),

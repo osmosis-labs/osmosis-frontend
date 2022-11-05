@@ -219,7 +219,8 @@
       "amoutWithdraw": "Ilość Do Wypłaty",
       "amoutDeposit": "Ilość Do Wpłaty",
       "availableBalance": "Dostępna ilość:",
-      "MAX": "MAKSIMUM"
+      "MAX": "MAKSIMUM",
+      "networkBlocked": "Sieć zablokowana"
     },
     "transfer": {
       "titleWithdraw": "Wypłać {coinDenom}",

@@ -6,10 +6,17 @@ export const Button: FunctionComponent<
   {
     mode?: "primary" | "primary-warning" | "secondary" | "tertiary";
     size?: "sm" | "normal";
+    congested?: boolean;
   } & CustomClasses &
     ButtonHTMLAttributes<HTMLButtonElement>
 > = (props) => {
-  const { mode = "primary", size = "normal", className, children } = props;
+  const {
+    mode = "primary",
+    congested = false,
+    size = "normal",
+    className,
+    children,
+  } = props;
 
   return (
     <button
@@ -32,6 +39,8 @@ export const Button: FunctionComponent<
           "border-osmoverse-600 text-osmoverse-400":
             mode === "secondary" && props.disabled,
           "border-osmoverse-400": mode === "tertiary" && !props.disabled,
+          "bg-rust-700 hover:bg-rust-500":
+            mode === "primary" && !props.disabled && congested,
         },
         className
       )}

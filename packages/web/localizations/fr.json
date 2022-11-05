@@ -219,7 +219,8 @@
       "amoutWithdraw": "Montant à retirer",
       "amoutDeposit": "Montant à déposer",
       "availableBalance": "Montant des fonds:",
-      "MAX": "MAX"
+      "MAX": "MAX",
+      "networkBlocked": "Réseau bloqué"
     },
     "transfer": {
       "titleWithdraw": "Retirer {coinDenom}",

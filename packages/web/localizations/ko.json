@@ -213,7 +213,8 @@
       "amoutWithdraw": "출금할 수량",
       "amoutDeposit": "입금할 수량",
       "availableBalance": "가능한 수량:",
-      "MAX": "최대"
+      "MAX": "최대",
+      "networkBlocked": "네트워크 차단됨"
     },
     "transfer": {
       "titleWithdraw": "{coinDenom} 출금",
