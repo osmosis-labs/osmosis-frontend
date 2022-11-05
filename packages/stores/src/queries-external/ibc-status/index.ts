@@ -29,14 +29,21 @@ export class ObservableQueryIbcStatus extends ObservableQueryExternalBase<IbcSta
 }
 
 export class ObservableQueryIbcStatuses extends HasMapStore<ObservableQueryIbcStatus> {
-  constructor(kvStore: KVStore, baseUrl: string) {
+  constructor(
+    kvStore: KVStore,
+    ibcStatusBaseUrl = "https://api-osmosis-chain.imperator.co"
+  ) {
     super(
       (counterPartyChainID) =>
-        new ObservableQueryIbcStatus(kvStore, baseUrl, counterPartyChainID)
+        new ObservableQueryIbcStatus(
+          kvStore,
+          ibcStatusBaseUrl,
+          counterPartyChainID
+        )
     );
   }
 
-  get(counterPartyChainID: string): ObservableQueryIbcStatus {
-    return super.get(counterPartyChainID);
+  get(counterPartyChainID: string) {
+    return super.get(counterPartyChainID) as ObservableQueryIbcStatus;
   }
 }

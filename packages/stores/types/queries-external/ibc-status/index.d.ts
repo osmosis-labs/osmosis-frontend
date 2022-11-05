@@ -9,7 +9,7 @@ export declare class ObservableQueryIbcStatuses extends ObservableQueryExternalB
 }
 
 export declare class ObservableQueryIbcStatuses extends HasMapStore<ObservableQueryIbcStatus> {
-  constructor(kvStore: KVStore, baseUrl: string);
+  constructor(kvStore: KVStore, ibcStatusBaseUrl: string);
   get(counterPartyChainID: string): ObservableQueryIbcStatus;
 }
 export * from "./types";
