@@ -238,7 +238,9 @@
         "insufficientFee": "Niewystarczająca Prowizja",
         "insufficientBal": "Niewystarczająca Ilość Środków"
       },
-      "waitTime": "{minutes} minut"
+      "waitTime": "{minutes} minut",
+      "warnChainBlocked": "Sieć transferu jest obecnie zablokowana. Sprawdzić później.",
+      "warnChainCongested": "Przeciążona sieć. Transfery mogą potrwać dłużej niż zwykle."
     },
     "selectAssetSource": {
       "titleWithdraw": "Wypłać do",

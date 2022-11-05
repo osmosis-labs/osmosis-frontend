@@ -238,7 +238,9 @@
         "insufficientFee": "Insufficient Fee",
         "insufficientBal": "Insufficient Balance"
       },
-      "waitTime": "{minutes} minutes"
+      "waitTime": "{minutes} minutes",
+      "warnChainBlocked": "Transfer network currently blocked. Check back later.",
+      "warnChainCongested": "Network congested. Transfers may take longer than usual."
     },
     "selectAssetSource": {
       "titleWithdraw": "Withdraw to",

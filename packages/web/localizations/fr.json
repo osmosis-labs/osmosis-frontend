@@ -238,7 +238,9 @@
         "insufficientFee": "Frais insuffisants",
         "insufficientBal": "Solde insuffisant"
       },
-      "waitTime": "{minutes} minutes"
+      "waitTime": "{minutes} minutes",
+      "warnChainBlocked": "Le réseau est actuellement bloqué. Veuillez réessayer plus tard.",
+      "warnChainCongested": "Le réseau est actuellement congestionné. Les transferts peuvent prendre plus de temps que d'habitude"
     },
     "selectAssetSource": {
       "titleWithdraw": "Retirer à",

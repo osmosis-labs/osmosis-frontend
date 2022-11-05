@@ -289,7 +289,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             bgClassName="bg-osmoverse-900"
           >
             <span className="body2 text-rust-500 md:caption">
-              {"Network congested. Transfers may take longer than usual."}
+              {t("assets.transfer.warnChainCongested")}
             </span>
           </GradientView>
         )}
@@ -300,7 +300,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             bgClassName="bg-osmoverse-900"
           >
             <span className="body2 text-rust-500 md:caption">
-              {"Transfer network currently blocked. Check back later."}
+              {t("assets.transfer.warnChainBlocked")}
             </span>
           </GradientView>
         )}
