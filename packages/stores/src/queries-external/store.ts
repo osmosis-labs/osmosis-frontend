@@ -29,4 +29,8 @@ export class QueriesExternalStore {
       poolRewardsBaseUrl
     );
   }
+
+  get(counterPartyChainID: string): ObservableQueryIbcStatus {
+    return super.get(counterPartyChainID);
+  }
 }
