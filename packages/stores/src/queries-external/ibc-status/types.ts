@@ -15,4 +15,5 @@ export enum IbcStatus {
   OK = 0,
   Congested = 1,
   Blocked = 2,
+  Undefined = 3,
 }

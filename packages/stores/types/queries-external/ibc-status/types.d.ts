@@ -13,5 +13,6 @@ export interface IbcMetrics {
 export declare enum IbcStatus {
     OK = 0,
     Congested = 1,
-    Blocked = 2
+    Blocked = 2,
+    Undefined = 3
 }

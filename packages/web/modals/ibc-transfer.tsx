@@ -11,6 +11,7 @@ import {
 import { EventName } from "../config";
 import { ModalBase, ModalBaseProps } from ".";
 import { useTranslation } from "react-multi-lang";
+import { IbcStatus } from "@osmosis-labs/stores/types/queries-external/ibc-status/index";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
@@ -37,6 +38,22 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
 
     const [didAckWithdrawRisk, setDidAckWithdrawRisk] = useState(false);
 
+    const transferHealth = isWithdraw
+      ? queriesExternalStore.queryIbcStatuses.getIbcStatus(
+          "withdraw",
+          counterpartyChainId,
+          "sourceChannelID"
+        )
+      : queriesExternalStore.queryIbcStatuses.getIbcStatus(
+          "deposit",
+          counterpartyChainId,
+          "sourceChannelID"
+        );
+    const transferPathHealth =
+      (transferHealth == IbcStatus.OK && "Healthy") ||
+      (transferHealth == IbcStatus.Congested && "Congested") ||
+      (transferHealth == IbcStatus.Blocked && "Blocked") ||
+      "Undefined";
     const isCustomWithdrawValid =
       !customCounterpartyConfig ||
       customCounterpartyConfig?.bech32Address === "" || // if not changed, it's valid since it's from Keplr
@@ -144,15 +161,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   },
                 ]
           }
-          ibcStatus={
-            isWithdraw
-              ? queriesExternalStore.queryIbcWithdrawStatuses
-                  .get(counterpartyChainId)
-                  .getIbcStatus(counterpartyChainId)
-              : queriesExternalStore.queryIbcDepositStatuses
-                  .get(counterpartyChainId)
-                  .getIbcStatus(counterpartyChainId)
-          }
+          transferPathHealth={transferPathHealth}
           isOsmosisAccountLoaded={walletConnected}
           availableBalance={
             isWithdraw

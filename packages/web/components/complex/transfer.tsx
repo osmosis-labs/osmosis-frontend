@@ -13,7 +13,6 @@ import { BorderButton } from "../buttons";
 import { CheckBox } from "../control";
 import { Disableable, InputProps, LoadingProps } from "../types";
 import { useTranslation } from "react-multi-lang";
-import { IbcStatus } from "@osmosis-labs/stores/types/queries-external/ibc-status/types";
 
 export type TransferProps = {
   isWithdraw: boolean;
@@ -37,7 +36,7 @@ export type TransferProps = {
   warningMessage?: string;
   toggleIsMax: () => void;
   transferFee?: CoinPretty;
-  ibcStatus?: IbcStatus;
+  transferPathHealth?: "Healthy" | "Congested" | "Blocked" | "Undefined";
   /** Required, can be hardcoded estimate. */
   waitTime: string;
   disablePanel?: boolean;
@@ -58,7 +57,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   warningMessage,
   toggleIsMax,
   transferFee,
-  ibcStatus,
+  transferPathHealth,
   waitTime,
   disablePanel = false,
 }) => {
@@ -97,8 +96,6 @@ export const Transfer: FunctionComponent<TransferProps> = ({
       : isMobile
       ? 14
       : 24;
-  const ibcCongested = ibcStatus === IbcStatus.Congested;
-  const ibcBlocked = ibcStatus === IbcStatus.Blocked;
   return (
     <div className="flex flex-col gap-11 overflow-x-auto">
       <BridgeAnimation
@@ -285,7 +282,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             <span className="body2 md:caption">{warningMessage}</span>
           </GradientView>
         )}
-        {ibcStatus && ibcCongested && (
+        {transferPathHealth && transferPathHealth == "Congested" && (
           <GradientView
             className="text-center"
             gradientClassName="bg-gradient-negative"
@@ -296,7 +293,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             </span>
           </GradientView>
         )}
-        {ibcStatus && ibcBlocked && (
+        {transferPathHealth && transferPathHealth == "Blocked" && (
           <GradientView
             className="text-center"
             gradientClassName="bg-gradient-negative"
