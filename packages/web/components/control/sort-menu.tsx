@@ -6,13 +6,10 @@ import { Disableable, CustomClasses } from "../types";
 import { MenuSelectProps } from "./types";
 import { useBooleanWithWindowEvent, useWindowSize } from "../../hooks";
 import { MenuOptionsModal } from "../../modals";
+import { useTranslation } from "react-multi-lang";
 
 interface Props extends MenuSelectProps, Disableable, CustomClasses {
   onToggleSortDirection?: () => void;
-  /** Default: `"left"` */
-  openDropdownHDirection?: "left" | "right";
-  /** Default: `"down"` */
-  openDropdownVDirection?: "down" | "up";
 }
 
 export const SortMenu: FunctionComponent<Props> = ({
@@ -20,23 +17,34 @@ export const SortMenu: FunctionComponent<Props> = ({
   selectedOptionId,
   onSelect,
   disabled,
-  openDropdownHDirection,
-  openDropdownVDirection,
   className,
   onToggleSortDirection,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useBooleanWithWindowEvent(false);
   const { isMobile } = useWindowSize();
+  const t = useTranslation();
 
   const selectedOption = options.find(
     (option) => option.id === selectedOptionId
   );
 
   return (
-    <div className="relative">
+    <div
+      className={classNames(
+        "relative shrink-0 px-6 py-2 cursor-pointer",
+        dropdownOpen
+          ? "rounded-t-xl border-t border-x border-osmoverse-600"
+          : "border rounded-xl border-osmoverse-500"
+      )}
+      onClick={() => {
+        if (!disabled) {
+          setDropdownOpen(!dropdownOpen);
+        }
+      }}
+    >
       <div
         className={classNames(
-          "flex w-fit cursor-pointer",
+          "flex w-fit",
           {
             "opacity-50 cursor-default": disabled,
           },
@@ -44,13 +52,15 @@ export const SortMenu: FunctionComponent<Props> = ({
         )}
       >
         <button
-          className="flex items-center"
+          className="flex items-center shrink-0"
           onClick={(e) => {
             e.stopPropagation();
-            if (onToggleSortDirection && selectedOption) {
-              onToggleSortDirection();
-            } else if (!disabled) {
-              setDropdownOpen(!dropdownOpen);
+            if (!disabled) {
+              if (onToggleSortDirection && selectedOption) {
+                onToggleSortDirection();
+              } else {
+                setDropdownOpen(!dropdownOpen);
+              }
             }
           }}
         >
@@ -70,24 +80,16 @@ export const SortMenu: FunctionComponent<Props> = ({
             }
           }}
         >
-          <span className="block m-auto md:mx-1 mx-2 leading-loose text-secondary-200 min-w-[3.75rem] select-none text-center text-ellipsis font-semibold overflow-hidden md:caption">
-            {selectedOption
-              ? selectedOption.display
-              : isMobile
-              ? "SORT"
-              : "SORT BY"}
+          <span className="block m-auto ml-2 leading-loose text-osmoverse-200 min-w-[3.75rem] select-none text-center body2 md:caption overflow-hidden">
+            {isMobile
+              ? t("components.sort.SORTMobile")
+              : t("components.sort.SORT")}
           </span>
-          <Image
-            alt="open"
-            src="/icons/chevron-down-secondary.svg"
-            height={isMobile ? 12 : 15}
-            width={isMobile ? 12 : 15}
-          />
         </button>
       </div>
       {isMobile ? (
         <MenuOptionsModal
-          title="Sort By"
+          title={t("components.sort.mobileMenu")}
           selectedOptionId={selectedOptionId}
           options={options}
           isOpen={dropdownOpen}
@@ -96,12 +98,11 @@ export const SortMenu: FunctionComponent<Props> = ({
         />
       ) : (
         <MenuDropdown
+          className="w-[calc(100%_+_2px)] top-full -left-px"
           options={options}
           selectedOptionId={selectedOptionId}
           onSelect={onSelect}
           isOpen={dropdownOpen}
-          openDropdownHDirection={openDropdownHDirection}
-          openDropdownVDirection={openDropdownVDirection}
         />
       )}
     </div>

@@ -28,7 +28,9 @@ export class PoolFallbackPriceStore
     protected readonly queryPool: ObservableQueryPools,
     intermidiateRoutes: IntermediateRoute[]
   ) {
-    super(kvStore, supportedVsCurrencies, defaultVsCurrency);
+    super(kvStore, supportedVsCurrencies, defaultVsCurrency, {
+      baseURL: "https://prices.osmosis.zone/api/v3",
+    });
 
     this._intermidiateRoutes = intermidiateRoutes;
 

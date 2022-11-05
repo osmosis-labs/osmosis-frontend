@@ -42,6 +42,7 @@ export const IBCAssetInfos: (IBCAsset & {
         AxelarSourceChainConfigs.usdc.moonbeam,
       ],
     },
+    fiatRamps: [{ rampKey: "kado" as const, assetKey: "USDC" }],
   },
   {
     counterpartyChainId: IS_TESTNET

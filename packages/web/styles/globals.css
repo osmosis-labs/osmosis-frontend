@@ -55,6 +55,9 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+  .text-superfluid {
+    @apply text-transparent bg-clip-text bg-superfluid;
+  }
 
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
@@ -68,28 +71,16 @@
     -moz-appearance: textfield;
   }
 
-  .token-item-list::-webkit-scrollbar {
-    @apply border border-card rounded;
-  }
-
-  .token-item-list::-webkit-scrollbar-track-piece {
-    @apply bg-card rounded;
-  }
-
-  .token-item-list::-webkit-scrollbar-thumb {
-    @apply bg-cardInner rounded-md;
-  }
-
   table {
     @apply md:w-screen table-auto border-collapse text-left;
   }
 
   thead > tr {
-    @apply bg-card text-iconDefault;
+    @apply bg-osmoverse-700 text-osmoverse-400;
   }
 
   thead > tr > th:first-child {
-    @apply md:rounded-none rounded-tl-2xl pl-8 pr-3 py-3;
+    @apply rounded-l-full md:rounded-none pl-8 pr-3 py-3;
   }
 
   thead > tr > th {
@@ -97,7 +88,7 @@
   }
 
   thead > tr > th:last-child {
-    @apply md:rounded-none rounded-tr-2xl pl-3 pr-8 py-3;
+    @apply rounded-r-full md:rounded-none pl-3 pr-8 py-3;
   }
 
   tbody > tr > td:first-child {
@@ -113,7 +104,7 @@
   }
 
   .grid-cards {
-    @apply grid-cols-3 gap-8 1.5xl:grid-cols-2 1.5md:grid-cols-1;
+    @apply grid-cols-4 gap-8 3xl:grid-cols-3 1.5xl:grid-cols-2 1.5md:grid-cols-1;
   }
 
   /* Chrome, Safari and Opera */
@@ -142,46 +133,24 @@
   /* WebKit (Chrome, Safari) */
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    border: solid theme("colors.secondary.200") 1px;
-    @apply relative h-[20px] w-[20px] rounded-full bg-white-full;
-  }
-
-  input[type="range"].showDetail::-webkit-slider-thumb {
-    @apply border border-secondary-50;
-  }
-  input[type="range"].disabled::-webkit-slider-thumb {
-    border: solid #6e6c7c 1px;
+    @apply -translate-y-1/3 h-[24px] w-[24px] rounded-full bg-osmoverse-100;
   }
 
   /* Firefox */
   input[type="range"]::-moz-range-thumb {
-    @apply h-[18.7px] w-[18.7px] border border-secondary-200 mt-[1px] rounded-full bg-white-full;
-  }
-
-  input[type="range"].showDetail::-moz-range-thumb {
-    @apply border border-secondary-50;
-  }
-  input[type="range"].disabled::-moz-range-thumb {
-    border: solid #6e6c7c 1px;
+    @apply h-[20px] w-[20px] mt-[1px] rounded-full bg-osmoverse-100;
   }
 
   /* IE */
   input[type="range"]::-ms-thumb {
-    @apply h-[20px] w-[20px] rounded-full bg-white-full;
-  }
-
-  input[type="range"].showDetail::-ms-thumb {
-    @apply border border-secondary-50;
-  }
-  input[type="range"].disabled::-ms-thumb {
-    border: solid #6e6c7c 1px;
+    @apply h-[24px] w-[24px] rounded-full bg-osmoverse-100;
   }
 
   /* Track */
 
   /* WebKit (Chrome, Safari) */
   input[type="range"]::-webkit-slider-runnable-track {
-    @apply w-full h-[20px];
+    @apply w-full h-[8px];
   }
 
   /* Firefox */
@@ -193,22 +162,11 @@
   input[type="range"]::-ms-track {
     @apply w-full h-[2px] bg-transparent border-transparent text-transparent;
   }
-  input[type="range"]::-ms-fill-lower {
-    @apply bg-secondary-200;
-  }
-  input[type="range"]::-ms-fill-upper {
-    @apply bg-secondary-300;
-  }
-
-  /* Tooltip */
-  .sliderTooltip span {
-    @apply absolute left-[50%] w-[30px] h-[24px] leading-[24px] text-center bg-surface text-white-emphasis text-caption block translate-x-[-50%] rounded-md;
-  }
 }
 
 /* Toasts override styles in `react-toastify/dist/ReactToastify.css` */
 .Toastify__toast-container {
-  z-index: 99 !important;
+  z-index: 200 !important;
   max-width: 360px !important;
   min-width: 360px !important;
 }

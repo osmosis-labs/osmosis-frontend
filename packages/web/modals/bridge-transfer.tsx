@@ -6,6 +6,7 @@ import type { Wallet } from "../integrations/wallets";
 import { IBCBalance } from "../stores/assets";
 import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBaseProps, ModalBase } from "./base";
+import { useTranslation } from "react-multi-lang";
 
 const AxelarTransfer = dynamic(
   () => import("../integrations/axelar/transfer"),
@@ -35,6 +36,7 @@ export const BridgeTransferModal: FunctionComponent<
     onRequestClose,
     onRequestSwitchWallet,
   } = props;
+  const t = useTranslation();
   const {
     showModalBase,
     accountActionButton: connectWalletButton,
@@ -58,8 +60,12 @@ export const BridgeTransferModal: FunctionComponent<
       {...props}
       title={
         isWithdraw
-          ? `Withdraw ${balance.balance.currency.coinDenom}`
-          : `Deposit ${balance.balance.currency.coinDenom}`
+          ? t("assets.transfer.titleWithdraw", {
+              coinDenom: balance.balance.currency.coinDenom,
+            })
+          : t("assets.transfer.titleDeposit", {
+              coinDenom: balance.balance.currency.coinDenom,
+            })
       }
       isOpen={props.isOpen && showModalBase}
     >

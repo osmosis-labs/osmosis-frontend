@@ -10,7 +10,6 @@ import {
 import { PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
-import { Overview } from "../../components/overview";
 import { AssetsTable } from "../../components/table/assets-table";
 import { DepoolingTable } from "../../components/table/depooling-table";
 import { ShowMoreButton } from "../../components/buttons/show-more";
@@ -18,18 +17,23 @@ import { PoolCard } from "../../components/cards/";
 import { Metric } from "../../components/types";
 import { MetricLoader } from "../../components/loaders";
 import { priceFormatter } from "../../components/utils";
+import { useTranslation } from "react-multi-lang";
 import {
   IbcTransferModal,
   BridgeTransferModal,
   TransferAssetSelectModal,
+  FiatRampsModal,
+  SelectAssetSourceModal,
+  PreTransferModal,
+  WalletConnectQRModal,
 } from "../../modals";
-import { ConnectNonIbcWallet, PreTransferModal } from "../../modals";
 import {
   useWindowSize,
   useAmplitudeAnalytics,
+  useNavBar,
+  useShowDustUserSetting,
   useTransferConfig,
 } from "../../hooks";
-import { WalletConnectQRModal } from "../../modals";
 import { EventName } from "../../config";
 
 const INIT_POOL_CARD_COUNT = 6;
@@ -45,8 +49,9 @@ const Assets: NextPage = observer(() => {
   } = useStore();
   const { nativeBalances, ibcBalances } = assetsStore;
   const account = accountStore.getAccount(chainId);
+  const t = useTranslation();
 
-  const { setUserProperty } = useAmplitudeAnalytics({
+  const { setUserProperty, logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Assets.pageViewed],
   });
   const transferConfig = useTransferConfig(assetsStore, account);
@@ -60,7 +65,10 @@ const Assets: NextPage = observer(() => {
         (ibcBalance) => ibcBalance.balance.denom === coinDenom
       );
 
-      if (!ibcBalance) return;
+      if (!ibcBalance) {
+        console.error("launchPreTransferModal: ibcBalance not found");
+        return;
+      }
 
       setPreTransferModalProps({
         isOpen: true,
@@ -89,7 +97,7 @@ const Assets: NextPage = observer(() => {
         onRequestClose: () => setPreTransferModalProps(null),
       });
     },
-    [ibcBalances]
+    [ibcBalances, transferConfig]
   );
 
   useEffect(() => {
@@ -101,26 +109,46 @@ const Assets: NextPage = observer(() => {
     );
   }, [nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()]);
 
+  // set nav bar ctas
+  useNavBar({
+    ctas: [
+      {
+        label: t("assets.table.depositButton"),
+        onClick: () => {
+          transferConfig?.startTransfer("deposit");
+          logEvent([EventName.Assets.depositClicked]);
+        },
+      },
+      {
+        label: t("assets.table.withdrawButton"),
+        onClick: () => {
+          transferConfig?.startTransfer("withdraw");
+          logEvent([EventName.Assets.withdrawClicked]);
+        },
+      },
+    ],
+  });
+
   return (
-    <main className="bg-background">
-      <AssetsOverview
-        onDepositIntent={() => transferConfig?.startTransfer("deposit")}
-        onWithdrawIntent={() => transferConfig?.startTransfer("withdraw")}
-      />
+    <main className="flex flex-col gap-20 md:gap-8 bg-osmoverse-900 p-8 md:p-4">
+      <AssetsOverview />
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
       )}
       {transferConfig?.assetSelectModal && (
         <TransferAssetSelectModal {...transferConfig.assetSelectModal} />
       )}
-      {transferConfig?.connectNonIbcWalletModal && (
-        <ConnectNonIbcWallet {...transferConfig.connectNonIbcWalletModal} />
+      {transferConfig?.selectAssetSourceModal && (
+        <SelectAssetSourceModal {...transferConfig.selectAssetSourceModal} />
       )}
       {transferConfig?.ibcTransferModal && (
         <IbcTransferModal {...transferConfig.ibcTransferModal} />
       )}
       {transferConfig?.bridgeTransferModal && (
         <BridgeTransferModal {...transferConfig.bridgeTransferModal} />
+      )}
+      {transferConfig?.fiatRampsModal && (
+        <FiatRampsModal {...transferConfig.fiatRampsModal} />
       )}
       {transferConfig?.walletConnectEth.sessionConnectUri && (
         <WalletConnectQRModal
@@ -132,8 +160,6 @@ const Assets: NextPage = observer(() => {
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
-        onDepositIntent={() => transferConfig?.startTransfer("deposit")}
-        onWithdrawIntent={() => transferConfig?.startTransfer("withdraw")}
         onDeposit={(chainId, coinDenom, externalDepositUrl) => {
           if (!externalDepositUrl) {
             isMobile
@@ -146,9 +172,10 @@ const Assets: NextPage = observer(() => {
             transferConfig?.transferAsset("withdraw", chainId, coinDenom);
           }
         }}
+        onBuyOsmo={() => transferConfig?.buyOsmo()}
       />
       {!isMobile && <PoolAssets />}
-      <section className="bg-surface">
+      <section className="bg-osmoverse-900">
         <DepoolingTable
           className="p-10 md:p-5 max-w-container mx-auto"
           tableClassName="md:w-screen md:-mx-5"
@@ -158,13 +185,9 @@ const Assets: NextPage = observer(() => {
   );
 });
 
-const AssetsOverview: FunctionComponent<{
-  onWithdrawIntent: () => void;
-  onDepositIntent: () => void;
-}> = observer(({ onDepositIntent, onWithdrawIntent }) => {
+const AssetsOverview: FunctionComponent = observer(() => {
   const { assetsStore } = useStore();
-  const { isMobile } = useWindowSize();
-  const { logEvent, setUserProperty } = useAmplitudeAnalytics();
+  const t = useTranslation();
 
   const totalAssetsValue = assetsStore.calcValueOf([
     ...assetsStore.availableBalance,
@@ -181,6 +204,8 @@ const AssetsOverview: FunctionComponent<{
     assetsStore.unstakingBalance,
   ]);
 
+  // set up user analytics
+  const { setUserProperty } = useAmplitudeAnalytics();
   useEffect(() => {
     setUserProperty(
       "totalAssetsPrice",
@@ -205,59 +230,42 @@ const AssetsOverview: FunctionComponent<{
     stakedAssetsValue.toString(),
   ]);
 
+  const Metric: FunctionComponent<Metric> = ({ label, value }) => (
+    <div className="flex flex-col gap-5 md:gap-2 shrink-0">
+      <h6 className="md:text-subtitle1 md:font-subtitle1">{label}</h6>
+      <h2 className="lg:text-h3 lg:font-h3 md:text-h4 md:font-h4 text-wosmongton-100">
+        {value}
+      </h2>
+    </div>
+  );
+
   return (
-    <Overview
-      title={isMobile ? "My Osmosis Assets" : <h4>My Osmosis Assets</h4>}
-      titleButtons={
-        isMobile
-          ? undefined
-          : [
-              {
-                label: "Deposit",
-                onClick: () => {
-                  logEvent([EventName.Assets.depositClicked]);
-                  onDepositIntent();
-                },
-              },
-              {
-                label: "Withdraw",
-                type: "outline",
-                className: "bg-primary-200/30",
-                onClick: () => {
-                  logEvent([EventName.Assets.withdrawClicked]);
-                  onWithdrawIntent();
-                },
-              },
-            ]
-      }
-      primaryOverviewLabels={[
-        {
-          label: "Total Assets",
-          value: totalAssetsValue.toString(),
-        },
-        {
-          label: "Unbonded Assets",
-          value: availableAssetsValue.toString(),
-        },
-        {
-          label: "Bonded Assets",
-          value: bondedAssetsValue.toString(),
-        },
-        {
-          label: "Staked OSMO",
-          value: stakedAssetsValue.toString(),
-        },
-      ]}
-    />
+    <div className="w-full flex md:flex-col items-center md:items-start gap-[100px] lg:gap-5 md:gap-3 bg-osmoverse-800 md:bg-osmoverse-1000 rounded-[32px] px-20 lg:px-10 md:px-4 py-10 md:py-5">
+      <Metric
+        label={t("assets.totalAssets")}
+        value={totalAssetsValue.toString()}
+      />
+      <Metric
+        label={t("assets.bondedAssets")}
+        value={bondedAssetsValue.toString()}
+      />
+      <Metric
+        label={t("assets.unbondedAssets")}
+        value={availableAssetsValue.toString()}
+      />
+    </div>
   );
 });
 
 const PoolAssets: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const { setUserProperty } = useAmplitudeAnalytics();
+  const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const { bech32Address } = accountStore.getAccount(chainId);
+  const queryOsmosis = queriesStore.get(chainId).osmosis!;
+
   const ownedPoolIds = queriesStore
     .get(chainId)
     .osmosis!.queryGammPoolShare.getOwnPools(bech32Address);
@@ -267,16 +275,28 @@ const PoolAssets: FunctionComponent = observer(() => {
     setUserProperty("myPoolsCount", ownedPoolIds.length);
   }, [ownedPoolIds.length]);
 
-  if (ownedPoolIds.length === 0) {
+  const dustedPoolIds = useShowDustUserSetting(ownedPoolIds, (poolId) =>
+    queryOsmosis.queryGammPools
+      .getPool(poolId)
+      ?.computeTotalValueLocked(priceStore)
+      .mul(
+        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+          bech32Address,
+          poolId
+        )
+      )
+  );
+
+  if (dustedPoolIds.length === 0) {
     return null;
   }
 
   return (
-    <section className="bg-background">
-      <div className="max-w-container mx-auto md:px-4 p-10">
-        <h5>My Pools</h5>
-        <PoolCards {...{ showAllPools, ownedPoolIds, setShowAllPools }} />
-      </div>
+    <section>
+      <h5>{t("assets.myPools")}</h5>
+      <PoolCards
+        {...{ showAllPools, ownedPoolIds: dustedPoolIds, setShowAllPools }}
+      />
     </section>
   );
 });
@@ -326,6 +346,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
       priceStore,
       accountStore,
     } = useStore();
+    const t = useTranslation();
 
     const queriesOsmosis = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;
@@ -362,7 +383,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
           [
             queriesOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
-                  label: "APR",
+                  label: t("assets.poolCards.APR"),
                   value: (
                     <MetricLoader
                       isLoading={
@@ -370,23 +391,17 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                       }
                     >
                       {queriesOsmosis.queryIncentivizedPools
-                        .computeMostAPY(poolId, priceStore)
+                        .computeMostApr(poolId, priceStore)
                         .maxDecimals(2)
                         .toString()}
                     </MetricLoader>
                   ),
                 }
               : {
-                  label: "Fee APY",
+                  label: t("assets.poolCards.FeeAPY"),
                   value: (() => {
-                    const queriesExternal = queriesExternalStore.get();
-                    const poolWithFeeMetrics =
-                      queriesExternal.queryGammPoolFeeMetrics.makePoolWithFeeMetrics(
-                        pool,
-                        priceStore
-                      );
-                    return queriesExternal.queryGammPoolFeeMetrics.get7dPoolFeeApy(
-                      poolWithFeeMetrics,
+                    return queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
+                      pool,
                       priceStore
                     );
                   })()
@@ -394,16 +409,16 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                     .toString(),
                 },
             {
-              label: "Pool Liquidity",
+              label: t("assets.poolCards.liquidity"),
               value: priceFormatter(pool.computeTotalValueLocked(priceStore)),
             },
             queriesOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
-                  label: "Bonded",
+                  label: t("assets.poolCards.bonded"),
                   value: tvl.mul(actualLockedShareRatio).toString(),
                 }
               : {
-                  label: "My Liquidity",
+                  label: t("assets.poolCards.myLiquidity"),
                   value: tvl
                     .mul(actualShareRatio)
                     .moveDecimalPointRight(2)

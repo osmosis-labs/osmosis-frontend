@@ -1,5 +1,6 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
+import { IPriceStore } from "../../price";
 import { ObservableQueryGammPoolShare, ObservableQueryPools } from "../../queries";
 import { ManageLiquidityConfigBase } from "./base";
 /** Use to config user input UI for eventually sending a valid exit pool msg.
@@ -17,4 +18,6 @@ export declare class ObservableRemoveLiquidityConfig extends ManageLiquidityConf
     /** Pool asset amounts equivalent to senders's unbonded gamm share vs percentage. */
     get poolShareAssetsWithPercentage(): CoinPretty[];
     get error(): Error | undefined;
+    /** Calculate value of currently selected pool shares. */
+    readonly computePoolShareValueWithPercentage: (priceStore: IPriceStore) => PricePretty;
 }

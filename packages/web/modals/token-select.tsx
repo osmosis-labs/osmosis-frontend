@@ -4,6 +4,7 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
 import { InputProps } from "../components/types";
 import { ModalBase, ModalBaseProps } from "./base";
+import { t } from "react-multi-lang";
 
 /** Intended for mobile use only - full screen alternative to token select dropdown.
  *
@@ -19,28 +20,23 @@ export const TokenSelectModal: FunctionComponent<
   } & InputProps<string>
 > = (props) => (
   <ModalBase
-    className="border border-white-faint !p-0 !rounded-xl"
+    className="!p-0 !rounded-xl"
     {...props}
     hideCloseButton
     title=""
-    overlayClassName="-bottom-1/3"
+    overlayClassName="md:-bottom-1/3"
   >
     <div
-      className="flex items-center h-9 pl-4 m-3 rounded-2xl bg-card"
+      className="flex items-center h-9 pl-4 m-3 rounded-2xl bg-osmoverse-700"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="w-[1.125rem] h-[1.125rem] shrink-0">
-        <Image
-          src="/icons/search-hollow.svg"
-          alt="search"
-          width={18}
-          height={18}
-        />
+        <Image src="/icons/search.svg" alt="search" width={18} height={18} />
       </div>
       <input
         type="text"
-        className="px-4 subtitle2 text-white-full bg-transparent font-normal"
-        placeholder={props.placeholder ?? "Search tokens"}
+        className="px-4 subtitle2 bg-transparent font-normal"
+        placeholder={props.placeholder ?? t("components.searchTokens")}
         onClick={(e) => e.stopPropagation()}
         value={props.currentValue}
         onInput={(e: any) => props.onInput(e.target.value)}
@@ -64,7 +60,7 @@ export const TokenSelectModal: FunctionComponent<
         return (
           <li
             key={currency.coinDenom}
-            className="flex justify-between items-center rounded-2xl py-2.5 px-4 my-1 hover:bg-card cursor-pointer mr-3"
+            className="flex justify-between items-center rounded-2xl py-2.5 px-4 my-1 hover:bg-osmoverse-900 cursor-pointer mx-3"
             onClick={(e) => {
               e.stopPropagation();
               props.onSelect(coinDenom);
@@ -85,7 +81,7 @@ export const TokenSelectModal: FunctionComponent<
                 )}
                 <div>
                   <h6 className="text-white-full">{justDenom}</h6>
-                  <div className="text-iconDefault text-left md:caption font-semibold">
+                  <div className="text-osmoverse-400 text-left md:caption font-semibold">
                     {showChannel ? `${networkName} ${channel}` : networkName}
                   </div>
                 </div>

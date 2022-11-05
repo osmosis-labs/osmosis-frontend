@@ -108,7 +108,7 @@ const Home: NextPage = observer(function () {
                 break;
               }
             }
-            
+
             // only pools with at least 10,000 JUNO
             if (
               "originChainId" in asset.amount.currency &&
@@ -137,7 +137,7 @@ const Home: NextPage = observer(function () {
   });
 
   return (
-    <main className="relative bg-background h-screen">
+    <main className="relative bg-osmoverse-900 h-full">
       <div className="absolute w-full h-full bg-home-bg-pattern bg-repeat-x bg-cover">
         <svg
           className="absolute w-full h-full lg:hidden"

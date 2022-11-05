@@ -19,7 +19,6 @@ export const CatalystIcon: FunctionComponent<
         "h-20 w-20": size === "md" && !isMobile,
         "h-16 w-16": size === "sm" && !isMobile,
         "h-14 w-14": isMobile,
-        "border border-enabledGold": !isLoading,
       },
       className
     )}
