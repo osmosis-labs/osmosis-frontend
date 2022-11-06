@@ -35,7 +35,7 @@ export const MenuDropdown: FunctionComponent<Props> = ({
           "px-4 py-1.5 cursor-pointer w-full hover:bg-osmoverse-700 text-right",
           {
             "text-rust-200": id === selectedOptionId,
-            " text-osmoverse-200 body2": id !== selectedOptionId,
+            "text-osmoverse-200": id !== selectedOptionId,
             "rounded-b-xlinset": index === options.length - 1,
             "rounded-t-xlinset": isFloating && index === 0,
           }

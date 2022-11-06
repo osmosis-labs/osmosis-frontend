@@ -381,7 +381,7 @@ const Pool: FunctionComponent = observer(() => {
                   <h5 className="max-w-xs truncate">{poolName}</h5>
                 </div>
                 {superfluidPoolConfig?.isSuperfluid && (
-                  <span className="body2 superfluid">
+                  <span className="body2 text-superfluid-gradient">
                     {t("pool.superfluidEnabled")}
                   </span>
                 )}

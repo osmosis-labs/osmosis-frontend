@@ -50,7 +50,12 @@ export const NavBar: FunctionComponent<
             <SettingsDropdown userSettings={userSettings.userSettings} />
           )}
           {mobileNavMenuOptionsOpen && (
-            <div className="absolute flex flex-col gap-2 w-52 top-[100%] top-navbar-mobile py-4 px-3 bg-osmoverse-800 rounded-3xl">
+            <div
+              className="absolute flex flex-col gap-2 w-52 top-[100%] top-navbar-mobile py-4 px-3 bg-osmoverse-800 rounded-3xl"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               <MainMenu
                 menus={menus.concat({
                   label: "Settings",
@@ -185,10 +190,10 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     const [mobileTapInfo, setMobileTapInfo] = useState(false);
 
     return (
-      <div className={classNames("shrink-0", className)}>
+      <div className={classNames("w-40 md:w-full shrink-0", className)}>
         {!walletConnected ? (
           <Button
-            className="w-[168px] h-10"
+            className="w-[168px] md:w-full h-10"
             onClick={() => {
               account.init();
               setHoverWalletInfo(false);
@@ -198,7 +203,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
           </Button>
         ) : hoverWalletInfo || mobileTapInfo ? (
           <Button
-            className="w-[168px] h-10"
+            className="w-[168px] md:w-full h-10"
             mode="secondary"
             onMouseLeave={() => setHoverWalletInfo(false)}
             onClick={() => {
@@ -210,8 +215,10 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
           </Button>
         ) : (
           <div
-            className="flex items-center gap-3 px-2 py-1 rounded-xl border border-osmoverse-700"
-            onMouseOver={() => setHoverWalletInfo(true)}
+            className="flex items-center gap-3 place-content-between px-2 py-1 rounded-xl border border-osmoverse-700"
+            onMouseOver={() => {
+              if (!isMobile) setHoverWalletInfo(true);
+            }}
             onClick={() => {
               if (isMobile) setMobileTapInfo(true);
             }}

@@ -50,12 +50,7 @@
   .overline {
     @apply text-overline font-overline;
   }
-  .superfluid {
-    background: -webkit-linear-gradient(#8a86ff, #e13cbd);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .text-superfluid {
+  .text-superfluid-gradient {
     @apply text-transparent bg-clip-text bg-superfluid;
   }
 

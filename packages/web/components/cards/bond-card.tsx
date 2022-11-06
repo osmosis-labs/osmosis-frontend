@@ -301,7 +301,7 @@ const SuperfluidBreakdownRow: FunctionComponent<
     <div className="flex flex-col gap-2">
       <div className="flex items-start text-right place-content-between">
         <div className="flex items-center gap-2">
-          <h6 className="text-transparent bg-clip-text bg-superfluid">
+          <h6 className="text-transparent bg-clip-text text-superfluid-gradient">
             +{apr.maxDecimals(0).toString()}
           </h6>
           <FallbackImg
