@@ -6,7 +6,9 @@ import {
   LanguageSelect,
   MenuDropdownIconItemProps,
 } from "../../components/control";
+
 export type LanguageState = { language: string };
+
 const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
   {
     value: "en",
@@ -31,7 +33,7 @@ const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
   {
     value: "tr",
     display: "Türkçe",
-  }
+  },
 ];
 
 export class LanguageUserSetting implements IUserSetting<LanguageState> {
@@ -40,8 +42,10 @@ export class LanguageUserSetting implements IUserSetting<LanguageState> {
   readonly controlComponent: FunctionComponent<LanguageState> = ({}) => {
     return <LanguageSelect options={SUPPORTED_LANGUAGES} />;
   };
+
   @observable
   protected _state: LanguageState;
+
   constructor(indexDefaultLanguage: number) {
     makeObservable(this);
     this.defaultLanguage = SUPPORTED_LANGUAGES[indexDefaultLanguage];
@@ -49,13 +53,16 @@ export class LanguageUserSetting implements IUserSetting<LanguageState> {
       language: this.defaultLanguage.value,
     };
   }
+
   getLabel(t: Function): string {
     return t("settings.titleLanguage");
   }
+
   @computed
   get state() {
     return this._state;
   }
+
   @action
   setState(state: LanguageState) {
     this._state = state;
