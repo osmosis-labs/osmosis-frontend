@@ -80,7 +80,7 @@ export const PoolsOverview: FunctionComponent<{} & CustomClasses> = ({
           {timeRemaining}
         </h2>
       </div>
-      <div className="absolute xs:hidden h-[292px] md:h-[100px] 1.5xl:h-[200px] xl:h-[188px] right-0 -bottom-[0.025rem] overflow-clip rounded-br-[32px]">
+      <div className="absolute xs:hidden h-[212px] md:h-[100px] 1.5xl:h-[200px] xl:h-[188px] right-0 -bottom-[0.025rem] overflow-clip rounded-br-[32px]">
         <Image
           alt="lab machine"
           src="/images/lab-machine.svg"
@@ -91,7 +91,7 @@ export const PoolsOverview: FunctionComponent<{} & CustomClasses> = ({
               ? width < Breakpoint.XL
                 ? 190
                 : 200
-              : 292
+              : 212
           }
           width={
             width < Breakpoint.MD
@@ -100,7 +100,7 @@ export const PoolsOverview: FunctionComponent<{} & CustomClasses> = ({
               ? width < Breakpoint.XL
                 ? 280
                 : 380
-              : 480
+              : 425
           }
         />
       </div>
