@@ -286,11 +286,7 @@
   "settings": {
     "title": "Ayarlar",
     "titleLanguage": "Dil",
-    "titleShowDust": "Havuzlar/varlıkları göster < {fiatSymbol}0.01",
-    "languages": {
-      "en": "English"
-	  "tr": "Turkish"
-    }
+    "titleShowDust": "Havuzlar/varlıkları göster < {fiatSymbol}0.01"
   },
   "404": {
     "title": "Bulunamadı"
