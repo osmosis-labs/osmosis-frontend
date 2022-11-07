@@ -130,7 +130,7 @@ const NavBarButton: FunctionComponent<
       {...props}
       onMouseOver={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="flex bg-osmoverse-700 items-center px-3 py-2 rounded-xl hover:bg-osmoverse-600"
+      className="flex bg-osmoverse-700 items-center px-3 py-2 rounded-xl hover:bg-osmoverse-600 transition-colors"
     >
       <Image
         alt="settings"
@@ -193,7 +193,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
       <div className={classNames("w-40 md:w-full shrink-0", className)}>
         {!walletConnected ? (
           <Button
-            className="w-[168px] md:w-full !h-10"
+            className="w-40 md:w-full !h-10"
             onClick={() => {
               account.init();
               setHoverWalletInfo(false);
@@ -203,7 +203,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
           </Button>
         ) : hoverWalletInfo || mobileTapInfo ? (
           <Button
-            className="w-[168px] md:w-full !h-10"
+            className="w-40 md:w-full !h-10"
             mode="secondary"
             onMouseLeave={() => setHoverWalletInfo(false)}
             onClick={() => {

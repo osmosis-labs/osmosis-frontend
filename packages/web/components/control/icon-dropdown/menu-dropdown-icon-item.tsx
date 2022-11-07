@@ -26,7 +26,7 @@ export const MenuDropdownIconItem: FunctionComponent<Props> = ({
   return (
     <button
       className={classNames(
-        "px-4 py-2 cursor-pointer hover:bg-osmoverse-700 flex items-center ",
+        "px-4 py-2 cursor-pointer hover:bg-osmoverse-700 transition-colors flex items-center ",
         {
           "rounded-b-xlinset": index === optionLength - 1,
           "rounded-t-xlinset": index === 0,

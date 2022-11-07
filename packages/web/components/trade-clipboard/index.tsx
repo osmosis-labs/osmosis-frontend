@@ -17,7 +17,7 @@ import {
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { Button } from "../buttons";
+import { BorderButton, Button } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
@@ -544,16 +544,14 @@ export const TradeClipboard: FunctionComponent<{
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <button
+              <BorderButton
                 className={classNames(
-                  "button text-wosmongton-300 hover:bg-wosmongton-300/30 border border-wosmongton-300 text-xs py-1 px-1.5 rounded-md",
+                  "text-xs py-1 px-1.5",
                   tradeTokenInConfig.fraction === 1
                     ? "bg-wosmongton-100/40"
                     : "bg-transparent"
                 )}
-                onClick={(e) => {
-                  e.preventDefault();
-
+                onClick={() => {
                   if (tradeTokenInConfig.fraction !== 1) {
                     logEvent([
                       EventName.Swap.maxClicked,
@@ -570,17 +568,15 @@ export const TradeClipboard: FunctionComponent<{
                 }}
               >
                 {t("swap.MAX")}
-              </button>
-              <button
+              </BorderButton>
+              <BorderButton
                 className={classNames(
-                  "button text-wosmongton-300 hover:bg-wosmongton-300/30 border border-wosmongton-300 text-xs py-1 px-1.5 rounded-md",
+                  "text-xs py-1 px-1.5",
                   tradeTokenInConfig.fraction === 0.5
                     ? "bg-wosmongton-100/40"
                     : "bg-transparent"
                 )}
-                onClick={(e) => {
-                  e.preventDefault();
-
+                onClick={() => {
                   if (tradeTokenInConfig.fraction !== 0.5) {
                     logEvent([
                       EventName.Swap.halfClicked,
@@ -597,7 +593,7 @@ export const TradeClipboard: FunctionComponent<{
                 }}
               >
                 {t("swap.HALF")}
-              </button>
+              </BorderButton>
             </div>
           </div>
           <div className="flex items-center place-content-between mt-3">
