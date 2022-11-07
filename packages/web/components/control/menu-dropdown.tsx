@@ -32,7 +32,7 @@ export const MenuDropdown: FunctionComponent<Props> = ({
     {options.map(({ id, display }, index) => (
       <button
         className={classNames(
-          "px-4 py-1.5 cursor-pointer w-full hover:bg-osmoverse-700 text-right",
+          "px-4 py-1.5 cursor-pointer w-full hover:bg-osmoverse-700 transition-colors text-right",
           {
             "text-rust-200": id === selectedOptionId,
             "text-osmoverse-200": id !== selectedOptionId,

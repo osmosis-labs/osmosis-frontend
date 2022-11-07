@@ -35,13 +35,12 @@ export const AddLiquidityModal: FunctionComponent<
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled: config.error !== undefined || isSendingMsg,
-      onClick: () =>
-        props.onAddLiquidity?.(
-          addLiquidity().finally(() => {
-            props.onRequestClose();
-          }),
-          config
-        ),
+      onClick: () => {
+        const addLiquidityResult = addLiquidity().finally(() => {
+          props.onRequestClose();
+        });
+        props.onAddLiquidity?.(addLiquidityResult, config);
+      },
       children: config.error
         ? t(...tError(config.error))
         : t("addLiquidity.title"),

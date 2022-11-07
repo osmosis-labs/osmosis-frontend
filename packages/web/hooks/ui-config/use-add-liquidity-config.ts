@@ -79,6 +79,7 @@ export function useAddLiquidityConfig(
     account.osmosis,
     config.isSingleAmountIn,
     config.singleAmountInConfig,
+    config.sender,
     config.poolId,
     config.singleAmountInConfig?.sendCurrency,
     config.singleAmountInConfig?.amount,

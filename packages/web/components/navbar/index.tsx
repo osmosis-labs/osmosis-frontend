@@ -236,7 +236,9 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
               <span className="text-button font-button">
                 {navBarStore.walletInfo.balance.toString()}
               </span>
-              <span className="caption truncate">xfsdfsdfasdfasdffsdf</span>
+              <span className="caption truncate">
+                {navBarStore.walletInfo.name}
+              </span>
             </div>
           </div>
         )}
