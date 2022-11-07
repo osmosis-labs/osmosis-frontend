@@ -136,6 +136,46 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
+        {
+          type: "cw20",
+          contractAddress: "secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej",
+          coinDenom: "ALTER",
+          coinMinimalDenom:
+            "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej:ALTER",
+          coinDecimals: 6,
+          coinGeckoId: "alter",
+          coinImageUrl: "/tokens/alter.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt",
+          coinDenom: "BUTT",
+          coinMinimalDenom:
+            "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt:BUTT",
+          coinDecimals: 6,
+          coinGeckoId: "button",
+          coinImageUrl: "/tokens/butt.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
+          coinDenom: "SHD",
+          coinMinimalDenom:
+            "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d:SHD",
+          coinDecimals: 8,
+          coinGeckoId: "shade-protocol",
+          coinImageUrl: "/tokens/shd.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
+          coinDenom: "SIENNA",
+          coinMinimalDenom:
+            "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4:SIENNA",
+          coinDecimals: 18,
+          coinGeckoId: "sienna",
+          coinImageUrl: "/tokens/sienna.svg",
+        },
       ],
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
       explorerUrlToTx:
@@ -1987,7 +2027,7 @@ const chainInfos = (
           coinDenom: "stOSMO",
           coinMinimalDenom: "stuosmo",
           coinDecimals: 6,
-          // coinGeckoId: "osmosis",
+          coinGeckoId: "pool:stuosmo",
           coinImageUrl: "/tokens/stosmo.svg",
         },
         {
@@ -2115,6 +2155,29 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx:
         "https://explorer.unification.chainmasters.ninja/unification/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpc.jackalprotocol.com",
+      rest: "https://api.jackalprotocol.com",
+      chainId: "jackal-1",
+      chainName: "Jackal",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("jkl"),
+      currencies: [
+        {
+          coinDenom: "JKL",
+          coinMinimalDenom: "ujkl",
+          coinDecimals: 6,
+          coinGeckoId: "pool:jkl",
+          coinImageUrl: "/tokens/jkl.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://ping.pub/jackal/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
@@ -2277,6 +2340,13 @@ chainInfos.push({
       coinDecimals: 10,
       coinGeckoId: "polkadot",
       coinImageUrl: "/tokens/dot.svg",
+    },
+    {
+      coinDenom: "WBNB",
+      coinMinimalDenom: "wbnb-wei",
+      coinDecimals: 18,
+      coinGeckoId: "wbnb",
+      coinImageUrl: "/tokens/wbnb.svg",
     },
   ],
   feeCurrencies: [
