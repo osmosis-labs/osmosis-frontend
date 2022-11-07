@@ -65,6 +65,9 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
+  input {
+    @apply caret-osmoverse-100;
+  }
 
   table {
     @apply md:w-screen table-auto border-collapse text-left;
