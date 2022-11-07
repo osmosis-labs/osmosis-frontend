@@ -91,6 +91,7 @@ module.exports = {
       missionError: "#EF3456",
       superfluid: "#8A86FF",
       transparent: "transparent",
+      black: "black",
     },
     fontSize: {
       xxs: "0.5rem",

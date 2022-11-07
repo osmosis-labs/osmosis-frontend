@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { ButtonHTMLAttributes, FunctionComponent } from "react";
 import { CustomClasses } from "../types";
+import { IS_FRONTIER } from "../../config";
 
 export const Button: FunctionComponent<
   {
@@ -32,6 +33,10 @@ export const Button: FunctionComponent<
           "border-osmoverse-600 text-osmoverse-400":
             mode === "secondary" && props.disabled,
           "border-osmoverse-400": mode === "tertiary" && !props.disabled,
+          "text-black":
+            IS_FRONTIER &&
+            !props.disabled &&
+            (mode === "primary" || mode === "primary-warning"),
         },
         className
       )}

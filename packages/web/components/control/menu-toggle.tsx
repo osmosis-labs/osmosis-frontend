@@ -2,6 +2,7 @@ import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CustomClasses } from "../types";
 import { MenuOption } from "./types";
+import { IS_FRONTIER } from "../../config";
 
 interface Props extends CustomClasses {
   options: MenuOption[];
@@ -24,6 +25,7 @@ export const MenuToggle: FunctionComponent<Props> = ({
           "relative h-12 px-4 select-none cursor-pointer",
           {
             "bg-wosmongton-400 rounded-full": id === selectedOptionId,
+            "text-black": id === selectedOptionId && IS_FRONTIER,
           },
           className
         )}
