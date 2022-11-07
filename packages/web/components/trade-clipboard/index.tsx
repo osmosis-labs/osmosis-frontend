@@ -718,7 +718,7 @@ export const TradeClipboard: FunctionComponent<{
             <div className="relative w-full h-full">
               <div
                 className={classNames(
-                  "absolute left-[10.5px] md:left-[8px] top-[11px] md:top-[7px] transition-all duration-500 ease-bounce",
+                  "absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/3 transition-all duration-500 ease-bounce",
                   {
                     "opacity-0 rotate-180": isHoveringSwitchButton,
                   }
@@ -733,7 +733,7 @@ export const TradeClipboard: FunctionComponent<{
               </div>
               <div
                 className={classNames(
-                  "absolute left-[12px] top-1.5 md:left-[10px] md:top-[4px] transition-all duration-500 ease-bounce",
+                  "absolute left-1/2 -translate-x-1/2 top-1/3 -translate-y-1/3 transition-all duration-500 ease-bounce",
                   {
                     "opacity-100 rotate-180": isHoveringSwitchButton,
                     "opacity-0": !isHoveringSwitchButton,
