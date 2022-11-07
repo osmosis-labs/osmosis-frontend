@@ -8,6 +8,7 @@ import {
   useEffect,
   useRef,
 } from "react";
+import EventEmitter from "eventemitter3";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { EventName } from "../../config";
 import {
@@ -384,6 +385,7 @@ export const AllPoolsTableSet: FunctionComponent<{
       [allData]
     );
 
+    const [cellGroupEventEmitter] = useState(() => new EventEmitter());
     const tableData = useMemo(
       () =>
         allData.map((poolWithMetrics) => {
@@ -419,6 +421,7 @@ export const AllPoolsTableSet: FunctionComponent<{
             },
             {
               poolId,
+              cellGroupEventEmitter,
               onAddLiquidity: () => quickAddLiquidity(poolId),
               onRemoveLiquidity: !poolWithMetrics.myAvailableLiquidity
                 .toDec()

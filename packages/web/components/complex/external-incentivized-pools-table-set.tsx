@@ -1,7 +1,8 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useMemo, useCallback } from "react";
+import { FunctionComponent, useMemo, useCallback, useState } from "react";
+import EventEmitter from "eventemitter3";
 import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
 import {
   useFilteredData,
@@ -322,6 +323,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
       [allData]
     );
 
+    const [cellGroupEventEmitter] = useState(() => new EventEmitter());
     const tableData = useMemo(
       () =>
         allData.map((poolWithMetrics) => {
@@ -344,6 +346,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
             { value: poolWithMetrics.myLiquidity?.toString() },
             {
               poolId,
+              cellGroupEventEmitter,
               onAddLiquidity: () => quickAddLiquidity(poolId),
               onRemoveLiquidity: !poolWithMetrics.myAvailableLiquidity
                 .toDec()
