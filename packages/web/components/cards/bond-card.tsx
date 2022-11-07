@@ -36,7 +36,7 @@ export const BondCard: FunctionComponent<
     .toString();
 
   return (
-    <div className="relative flex flex-col gap-[115px] overflow-hidden h-[380px] w-full min-w-[348px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8 md:p-[10px]">
+    <div className="relative flex flex-col gap-[115px] overflow-hidden h-[380px] w-full min-w-[280px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8 md:p-[10px]">
       <div className="flex flex-col gap-4">
         <div className="flex items-start gap-4 place-content-between">
           <div className="flex flex-col gap-3 max-w-[60%] overflow-visible z-10">
@@ -127,7 +127,7 @@ export const BondCard: FunctionComponent<
       <div
         className={classNames(
           "absolute w-full h-full top-0 left-1/2 -translate-x-1/2 bg-osmoverse-1000 transition-opacity duration-300",
-          drawerUp ? "opacity-70" : "opacity-0 -z-10"
+          drawerUp ? "opacity-70 z-20" : "opacity-0 -z-10"
         )}
         onClick={() => setDrawerUp(false)}
       />
