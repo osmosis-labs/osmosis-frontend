@@ -25,7 +25,7 @@ export const MenuToggle: FunctionComponent<Props> = ({
           "relative h-12 px-4 select-none cursor-pointer",
           {
             "bg-wosmongton-400 rounded-full": id === selectedOptionId,
-            "text-black": id === selectedOptionId && IS_FRONTIER,
+            "text-osmoverse-1000": id === selectedOptionId && IS_FRONTIER,
           },
           className
         )}
