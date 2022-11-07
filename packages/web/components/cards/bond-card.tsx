@@ -109,7 +109,7 @@ export const BondCard: FunctionComponent<
           !superfluid.delegated &&
           !superfluid.undelegating && (
             <button
-              className="flex items-center gap-1 superfluid"
+              className="flex items-center gap-1 text-superfluid-gradient"
               onClick={onGoSuperfluid}
             >
               {t("pool.superfluidEarnMore", {
@@ -201,7 +201,7 @@ const Drawer: FunctionComponent<{
           <div className="flex items-center gap-4 md:gap-1.5">
             <h5
               className={classNames(
-                superfluid ? "text-superfluid" : "text-bullish-400"
+                superfluid ? "text-superfluid-gradient" : "text-bullish-400"
               )}
             >
               {aggregateApr.maxDecimals(0).toString()} {t("pool.APR")}
