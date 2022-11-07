@@ -514,18 +514,20 @@ const Pool: FunctionComponent = observer(() => {
         )}
       </div>
       <div className="flex flex-col gap-7 md:gap-4">
-        <h5 className="md:text-h6 md:font-h6">{t("pool.putAssetsToWork")}</h5>
-        <span className="subtitle1 md:text-body1 md:font-body1 text-osmoverse-300">
-          {t("pool.putAssetsToWorkCaption")}{" "}
-          <a
-            rel="noreferrer"
-            className="text-wosmongton-300 underline"
-            target="_blank"
-            href="https://docs.osmosis.zone/overview/getting-started#bonded-liquidity-gauges"
-          >
-            {t("pool.learnMore")}
-          </a>
-        </span>
+        <div>
+          <h5 className="md:text-h6 md:font-h6">{t("pool.putAssetsToWork")}</h5>
+          <span className="subtitle1 md:text-body1 md:font-body1 text-osmoverse-300">
+            {t("pool.putAssetsToWorkCaption")}{" "}
+            <a
+              rel="noreferrer"
+              className="text-wosmongton-300 underline"
+              target="_blank"
+              href="https://docs.osmosis.zone/overview/getting-started#bonded-liquidity-gauges"
+            >
+              {t("pool.learnMore")}
+            </a>
+          </span>
+        </div>
         <div
           className={classNames(
             "rounded-4xl p-1",
