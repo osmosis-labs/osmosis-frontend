@@ -446,14 +446,14 @@ export const TradeClipboard: FunctionComponent<{
               })}
               <li
                 className={classNames(
-                  "flex items-center justify-center w-full h-8 cursor-pointer rounded-lg bg-osmoverse-700",
+                  "flex items-center justify-center w-full h-8 cursor-pointer rounded-lg",
                   slippageConfig.isManualSlippage
                     ? "border-2 border-wosmongton-200 text-white-high"
                     : "text-osmoverse-500",
                   slippageConfig.isManualSlippage
                     ? slippageConfig.manualSlippageError
                       ? "bg-missionError"
-                      : "bg-wosmongton-200"
+                      : "bg-osmoverse-900"
                     : "bg-osmoverse-900"
                 )}
                 onClick={(e) => {
