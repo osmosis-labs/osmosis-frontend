@@ -106,7 +106,7 @@ export const TransferAssetSelectModal: FunctionComponent<
       }
     >
       <div className="flex flex-col gap-5 my-5">
-        <div className="flex items-centerw-full border border-osmoverse-700 rounded-2xl p-4 md:py-6">
+        <div className="flex items-center border border-osmoverse-700 rounded-2xl p-4 md:py-6">
           <TokenSelect
             tokens={tokens.map(({ token }) => token)}
             onSelect={(denom) => {
@@ -118,7 +118,7 @@ export const TransferAssetSelectModal: FunctionComponent<
         {selectedToken?.originBridgeInfo && selectedNetwork && keplrConnected && (
           <div
             className={classNames(
-              "relative w-full flex items-center place-content-between border border-osmoverse-700 p-4 transition-borderRadius",
+              "w-full flex items-center place-content-between border border-osmoverse-700 p-4 transition-borderRadius",
               {
                 "rounded-2xl": !isSourceChainDropdownOpen,
                 "rounded-l-2xl rounded-tr-2xl": isSourceChainDropdownOpen,
