@@ -168,6 +168,16 @@ const chainInfos = (
         },
         {
           type: "cw20",
+          contractAddress: "secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
+          coinDenom: "stkd-SCRT",
+          coinMinimalDenom:
+            "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4:stkd-SCRT",
+          coinDecimals: 6,
+          coinGeckoId: "stkd-scrt",
+          coinImageUrl: "/tokens/stkd-scrt.svg",
+        },
+        {
+          type: "cw20",
           contractAddress: "secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
           coinDenom: "SIENNA",
           coinMinimalDenom:
