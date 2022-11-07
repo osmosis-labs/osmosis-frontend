@@ -1040,7 +1040,7 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "793": [
     {
-      gaugeId: "29635",
+      gaugeId: "29949",
       denom:
         "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
     },
@@ -1085,14 +1085,14 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "807": [
     {
-      gaugeId: "29636",
+      gaugeId: "29950",
       denom:
         "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
     },
   ],
   "808": [
     {
-      gaugeId: "29637",
+      gaugeId: "29951",
       denom:
         "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
     },
