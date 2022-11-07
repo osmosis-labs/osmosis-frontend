@@ -16,7 +16,7 @@ export const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
       className={classNames("flex flex-col gap-1 button", className)}
       onClick={() => onToggle(isOn)}
     >
-      <span className="body2 md:caption text-white-mid">
+      <span className="body2 md:caption text-wosmongton-200">
         {isOn ? t("components.show.less") : t("components.show.more")}
       </span>
       <div className="m-auto">

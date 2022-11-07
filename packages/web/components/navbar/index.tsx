@@ -193,7 +193,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
       <div className={classNames("w-40 md:w-full shrink-0", className)}>
         {!walletConnected ? (
           <Button
-            className="w-[168px] md:w-full h-10"
+            className="w-[168px] md:w-full !h-10"
             onClick={() => {
               account.init();
               setHoverWalletInfo(false);
@@ -203,7 +203,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
           </Button>
         ) : hoverWalletInfo || mobileTapInfo ? (
           <Button
-            className="w-[168px] md:w-full h-10"
+            className="w-[168px] md:w-full !h-10"
             mode="secondary"
             onMouseLeave={() => setHoverWalletInfo(false)}
             onClick={() => {
@@ -223,18 +223,20 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
               if (isMobile) setMobileTapInfo(true);
             }}
           >
-            <Image
-              alt="wallet-icon"
-              src={navBarStore.walletInfo.logoUrl}
-              height={28}
-              width={28}
-            />
+            <div className="w-7 h-7 shrink-0">
+              <Image
+                alt="wallet-icon"
+                src={navBarStore.walletInfo.logoUrl}
+                height={28}
+                width={28}
+              />
+            </div>
 
-            <div className="flex leading-tight flex-col text-center">
+            <div className="flex w-full leading-tight flex-col text-center truncate">
               <span className="text-button font-button">
                 {navBarStore.walletInfo.balance.toString()}
               </span>
-              <span className="caption">{navBarStore.walletInfo.name}</span>
+              <span className="caption truncate">xfsdfsdfasdfasdffsdf</span>
             </div>
           </div>
         )}
