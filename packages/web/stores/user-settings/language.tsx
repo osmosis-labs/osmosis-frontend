@@ -30,6 +30,10 @@ const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
     value: "pl",
     display: "Polski",
   },
+  {
+    value: "tr",
+    display: "Türkçe",
+  },
 ];
 
 export class LanguageUserSetting implements IUserSetting<LanguageState> {
