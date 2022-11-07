@@ -15,8 +15,8 @@ export const Button: FunctionComponent<
     <button
       {...props}
       className={classNames(
-        "flex w-full h-16 items-center text-center place-content-center disabled:cursor-default py-2",
-        size === "sm" ? "px-5" : "px-6",
+        "flex w-full items-center text-center place-content-center disabled:cursor-default transition-colors py-2",
+        size === "sm" ? "h-10 px-5" : "h-[56px] px-6",
         mode === "tertiary" ? "rounded-md" : "rounded-xl",
         {
           "bg-wosmongton-700 hover:bg-wosmongton-400":
