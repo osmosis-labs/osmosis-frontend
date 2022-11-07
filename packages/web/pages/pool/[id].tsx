@@ -633,7 +633,7 @@ const Pool: FunctionComponent = observer(() => {
                 {t("pool.bondShares")}
               </Button>
             </div>
-            <div className="flex items-center flex-wrap gap-4">
+            <div className="grid grid-cols-3 1.5xl:grid-cols-1 gap-4">
               {bondableDurations.map((bondableDuration) => (
                 <BondCard
                   key={bondableDuration.duration.asMilliseconds()}

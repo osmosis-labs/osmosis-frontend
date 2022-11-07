@@ -36,7 +36,7 @@ export const BondCard: FunctionComponent<
     .toString();
 
   return (
-    <div className="relative flex flex-col gap-[115px] overflow-hidden w-[360px] h-[380px] max-w-[348px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8 md:p-[10px]">
+    <div className="relative flex flex-col gap-[115px] overflow-hidden h-[380px] w-full min-w-[348px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8 md:p-[10px]">
       <div className="flex flex-col gap-4">
         <div className="flex items-start gap-4 place-content-between">
           <div className="flex flex-col gap-3 max-w-[60%] overflow-visible z-10">

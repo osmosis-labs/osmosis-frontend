@@ -187,7 +187,7 @@ Not supported in Firefox and IE */
 
 /* Toasts override styles in `react-toastify/dist/ReactToastify.css` */
 .Toastify__toast-container {
-  z-index: 9999 !important;
+  z-index: 99999 !important;
   max-width: 360px !important;
   min-width: 360px !important;
 }
