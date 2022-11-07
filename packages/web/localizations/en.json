@@ -296,9 +296,9 @@
       "poolId": "Pool #{id}"
     },
     "sort": {
-      "SORT": "SORT BY",
-      "SORTMobile": "SORT",
-      "mobileMenu": "Sort By"
+      "SORT": "Sort by",
+      "SORTMobile": "Sort",
+      "mobileMenu": "Sort by"
     },
     "MAX": "MAX",
     "searchTokens": "Search tokens"

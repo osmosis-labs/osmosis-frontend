@@ -89,7 +89,7 @@ export const InputBox: FunctionComponent<Props> = ({
             ref={inputRef}
             id="text-input"
             className={classNames(
-              "w-full appearance-none bg-transparent align-middle leading-10 md:leading-0 pt-px md:p-0",
+              "w-full appearance-none bg-transparent align-middle leading-10 md:leading-0 pt-px md:p-0 placeholder:text-osmoverse-500",
               {
                 "text-white-disabled": disabled,
                 "text-white-high": currentValue != "" && !disabled,
