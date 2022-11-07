@@ -17,7 +17,7 @@ export const SearchBox: FunctionComponent<
   return (
     <div
       className={classNames(
-        "flex items-center flex-nowrap gap-3 justify-between w-max rounded-xl py-[10px] px-5 border border-osmoverse-500",
+        "flex items-center flex-nowrap gap-2 justify-between w-max rounded-xl py-[10px] px-5 border border-osmoverse-500 transition-colors",
         {
           "opacity-50": disabled,
           "-m-px border-2 border-osmoverse-200": isFocused,
@@ -30,7 +30,7 @@ export const SearchBox: FunctionComponent<
       </div>
       <label className="grow shrink">
         <input
-          className="w-full h-full appearance-none bg-transparent placeholder:text-osmoverse-400 placeholder:body2 placeholder:text-osmoverse-500"
+          className="w-full h-full appearance-none bg-transparent placeholder:body2 placeholder:text-osmoverse-500 transition-colors"
           value={currentValue}
           placeholder={placeholder}
           autoComplete="off"
