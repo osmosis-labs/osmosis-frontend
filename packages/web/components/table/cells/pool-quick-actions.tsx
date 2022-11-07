@@ -95,20 +95,20 @@ export const PoolQuickActionCell: FunctionComponent<
         cellGroupEventEmitter.removeListener("select-pool-id", onPoolSelected);
       };
     }
-  }, []);
+  }, [poolId]);
 
   return (
     <div
       className="flex items-center"
       onClick={(e) => {
         e.stopPropagation();
+        setDropdownOpen(!dropdownOpen);
+        cellGroupEventEmitter?.emit("select-pool-id", poolId);
       }}
     >
       <div
         className="absolute hover:pointer-cursor"
         onClick={(e) => {
-          setDropdownOpen(true);
-          cellGroupEventEmitter?.emit("select-pool-id", poolId);
           e.preventDefault();
         }}
       >
