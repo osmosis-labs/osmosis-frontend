@@ -32,7 +32,7 @@ export const NavBar: FunctionComponent<
     <>
       <div
         className={classNames(
-          "fixed z-[100] flex place-content-between md:place-content-start md:gap-3 items-center bg-osmoverse-900 h-navbar md:h-navbar-mobile w-[calc(100vw_-_12.875rem)] md:w-full px-8 md:px-4",
+          "fixed z-[100] flex place-content-between md:place-content-start lg:gap-1 items-center bg-osmoverse-900 h-navbar md:h-navbar-mobile w-[calc(100vw_-_12.875rem)] md:w-full px-8 md:px-4",
           className
         )}
       >
@@ -71,14 +71,14 @@ export const NavBar: FunctionComponent<
             </div>
           )}
         </div>
-        <div className="grow flex items-center md:place-content-between shrink-0 gap-9 lg:gap-6 md:gap-3">
+        <div className="grow flex items-center md:place-content-between shrink-0 gap-9 lg:gap-2 md:gap-1">
           <h4 className="md:font-h6 md:text-h6">
             {navBarStore.title || title}
           </h4>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 lg:gap-1">
             {navBarStore.callToActionButtons.map((button, index) => (
               <Button
-                className="h-fit lg:px-2"
+                className="w-[180px] lg:w-fit h-fit lg:px-2"
                 mode={index > 0 ? "secondary" : undefined}
                 key={index}
                 {...button}
@@ -190,10 +190,12 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     const [mobileTapInfo, setMobileTapInfo] = useState(false);
 
     return (
-      <div className={classNames("w-40 md:w-full shrink-0", className)}>
+      <div
+        className={classNames("w-40 lg:!w-36 md:w-full shrink-0", className)}
+      >
         {!walletConnected ? (
           <Button
-            className="w-40 md:w-full !h-10"
+            className="w-40 lg:!w-36 md:w-full !h-10"
             onClick={() => {
               account.init();
               setHoverWalletInfo(false);
@@ -203,7 +205,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
           </Button>
         ) : hoverWalletInfo || mobileTapInfo ? (
           <Button
-            className="w-40 md:w-full !h-10"
+            className="w-40 lg:!w-36 md:w-full !h-10"
             mode="secondary"
             onMouseLeave={() => setHoverWalletInfo(false)}
             onClick={() => {
