@@ -67,7 +67,12 @@ export const LockTokensModal: FunctionComponent<
   >(null);
   const highestDurationSelected =
     selectedDurationIndex === bondableDurations.length - 1;
-  const [electSuperfluid, setElectSuperfluid] = useState(true);
+  const [electSuperfluid, setElectSuperfluid] = useState(false);
+  useEffect(() => {
+    if (superfluidPoolConfig?.isSuperfluid) {
+      setElectSuperfluid(true);
+    }
+  }, [superfluidPoolConfig?.isSuperfluid]);
 
   let selectedApr =
     selectedDurationIndex !== null
