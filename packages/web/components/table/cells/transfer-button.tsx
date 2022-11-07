@@ -65,7 +65,7 @@ const TransferButton: FunctionComponent<{
   externalUrl ? (
     <a
       className={classNames(
-        "mx-auto flex justify-center items-center gap-1 pt-2 subtitle1 text-wosmongton-200",
+        "flex items-center gap-1 pt-2 lg:pt-0 subtitle1 shrink-0 text-wosmongton-200",
         { "opacity-30": disabled }
       )}
       rel="noreferrer"
@@ -77,16 +77,18 @@ const TransferButton: FunctionComponent<{
       onClick={action}
     >
       {label}
-      <Image
-        alt="external transfer link"
-        src="/icons/external-link.svg"
-        height={13}
-        width={13}
-      />
+      <div className="w-fit shrink-0">
+        <Image
+          alt="external transfer link"
+          src="/icons/external-link.svg"
+          height={13}
+          width={13}
+        />
+      </div>
     </a>
   ) : (
     <button
-      className="flex items-center gap-1 text-wosmongton-200 m-auto subtitle1"
+      className="flex items-center gap-1 text-wosmongton-200 subtitle1"
       onClick={action}
       disabled={disabled}
     >

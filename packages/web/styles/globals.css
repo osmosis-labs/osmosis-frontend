@@ -83,7 +83,7 @@
   }
 
   thead > tr > th:last-child {
-    @apply rounded-r-full md:rounded-none pl-3 pr-8 py-3;
+    @apply rounded-r-full md:rounded-none pl-3 pr-8 lg:pr-4 py-3;
   }
 
   tbody > tr > td:first-child {
@@ -95,7 +95,7 @@
   }
 
   tbody > tr > td:last-child {
-    @apply pl-3 pr-8 py-2;
+    @apply pl-3 pr-8 lg:pr-4 py-2;
   }
 
   .grid-cards {
