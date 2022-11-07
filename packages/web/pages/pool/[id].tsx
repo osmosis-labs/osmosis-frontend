@@ -465,7 +465,7 @@ const Pool: FunctionComponent = observer(() => {
                     })}
                   </h6>
                 </div>
-                <div className="w-2/3 md:w-full">
+                <div className="w-1/2 md:w-full">
                   <PriceBreakdownChart
                     prices={[
                       {
