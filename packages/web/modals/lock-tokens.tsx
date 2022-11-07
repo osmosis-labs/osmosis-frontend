@@ -147,7 +147,7 @@ export const LockTokensModal: FunctionComponent<
           </span>{" "}
           {t("pool.APR")}
         </h2>
-        <div className="flex gap-4 md:gap-1 overflow-x-auto">
+        <div className="flex gap-4 md:gap-1 overflow-x-auto p-[3px]">
           {bondableDurations.map(({ duration, aggregateApr }, index) => (
             <LockupItem
               key={index}
@@ -160,7 +160,7 @@ export const LockTokensModal: FunctionComponent<
         </div>
         {superfluidPoolConfig?.isSuperfluid && (
           <CheckBox
-            className="after:!bg-transparent after:!border-2 after:!rounded-[10px] -top-0.5 -left-0.5 after:!h-6 after:!w-6 after:!border-superfluid checked:after:bg-superfluid checked:after:border-none"
+            className="after:!bg-transparent after:!border-2 after:!rounded-[10px] -top-0.5 -left-0.5 after:!h-6 after:!w-6 after:!border-superfluid checked:after:bg-superfluid checked:after:border-none transition-all"
             isOn={highestDurationSelected && electSuperfluid}
             onToggle={() => setElectSuperfluid(!electSuperfluid)}
             checkMarkIconUrl="/icons/check-mark-dark.svg"
@@ -232,10 +232,10 @@ const LockupItem: FunctionComponent<{
   <button
     onClick={onSelect}
     className={classNames(
-      "rounded-xl w-full md:px-3 px-5 md:py-3.5 py-5 cursor-pointer",
+      "rounded-xl w-full md:px-3 px-5 md:py-3.5 py-5 cursor-pointer transition-colors",
       isSelected
-        ? "bg-osmoverse-700 border-2 border-osmoverse-200"
-        : "border border-osmoverse-600"
+        ? "bg-osmoverse-700 -m-px !border-[3px] border-osmoverse-200"
+        : "border border-osmoverse-600 hover:border-2 hover:border-osmoverse-200 hover:-m-px"
     )}
   >
     <div className="flex w-full place-content-between flex-col text-center">

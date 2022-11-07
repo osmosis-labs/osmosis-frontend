@@ -55,7 +55,7 @@ export const MainMenu: FunctionComponent<{
                   <div
                     className={classNames(
                       "w-5 h-5 z-10",
-                      selected ? "opacity-100" : "opacity-40"
+                      selected ? "opacity-100" : "opacity-60"
                     )}
                   >
                     <Image
@@ -69,7 +69,7 @@ export const MainMenu: FunctionComponent<{
                     className={classNames(
                       "ml-2.5 text-base overflow-x-hidden font-semibold transition-all max-w-24",
                       {
-                        "text-white-full/40 group-hover:text-white-mid":
+                        "text-white-full/60 group-hover:text-white-mid":
                           !selected,
                       }
                     )}
