@@ -114,7 +114,7 @@ export const PoolQuickActionCell: FunctionComponent<
       >
         <Image alt="menu" src="/icons/more-menu.svg" width={24} height={24} />
         <MenuDropdown
-          className="w-40 top-full right-0"
+          className="w-44 top-full right-0"
           isOpen={dropdownOpen}
           options={menuOptions}
           onSelect={(id) => doAction(id)}

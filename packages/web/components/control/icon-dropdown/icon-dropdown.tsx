@@ -30,7 +30,7 @@ export const IconDropdown: FunctionComponent<IconDropdownProps> = observer(
       <div className="relative">
         <button
           className={classNames(
-            "flex items-center border rounded-xl bg-osmoverse-900",
+            "flex items-center border rounded-xl bg-osmoverse-900 transition-colors",
             dropdownOpen ? "border-osmoverse-200" : "border-osmoverse-600"
           )}
           onClick={(e) => {

@@ -39,10 +39,9 @@ export const RemoveLiquidityModal: FunctionComponent<
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
-        const removeLiquidityResult = removeLiquidity().finally(() =>
-          props.onRequestClose()
-        );
+        const removeLiquidityResult = removeLiquidity();
         props.onRemoveLiquidity?.(removeLiquidityResult, config);
+        props.onRequestClose();
       },
       children: config.error
         ? t(...tError(config.error))

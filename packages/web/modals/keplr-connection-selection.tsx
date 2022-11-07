@@ -27,7 +27,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
     >
       {overrideWithKeplrInstallLink ? (
         <button
-          className="bg-osmoverse-900 rounded-2xl p-5 flex items-center"
+          className="bg-osmoverse-900 hover:bg-osmoverse-700 transition-colors rounded-2xl p-5 flex items-center"
           onClick={(e) => {
             e.preventDefault();
             window.open(overrideWithKeplrInstallLink, "_blank");
@@ -56,7 +56,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
         </button>
       ) : (
         <button
-          className="bg-osmoverse-900 rounded-2xl p-5 flex items-center"
+          className="bg-osmoverse-900 hover:bg-osmoverse-700 transition-colors rounded-2xl p-5 flex items-center"
           onClick={(e) => {
             e.preventDefault();
             onSelectExtension();
@@ -80,7 +80,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
         </button>
       )}
       <button
-        className="bg-osmoverse-900 rounded-2xl p-5 flex items-center mt-5"
+        className="bg-osmoverse-900 hover:bg-osmoverse-700 transition-colors rounded-2xl p-5 flex items-center mt-5"
         onClick={(e) => {
           e.preventDefault();
           onSelectWalletConnect();
