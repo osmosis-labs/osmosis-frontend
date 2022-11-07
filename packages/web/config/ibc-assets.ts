@@ -31,52 +31,61 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
     destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
     coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
-    sourceChainNameOverride: IS_TESTNET ? "Ropsten Ethereum" : "Ethereum",
+    sourceChainNameOverride: IS_TESTNET ? "Goerli Ethereum" : "Ethereum",
     isVerified: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChains: [AxelarSourceChainConfigs.usdc.ethereum],
-      tokenMinDenom: IS_TESTNET ? "uausdc" : "uusdc", // test: "uausdc"
-      transferFeeMinAmount: IS_TESTNET ? "150000" : "10500000", // From https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
+      sourceChains: [
+        AxelarSourceChainConfigs.usdc.ethereum,
+        AxelarSourceChainConfigs.usdc.moonbeam,
+      ],
+    },
+  },
+  {
+    counterpartyChainId: IS_TESTNET
+      ? "axelar-testnet-lisbon-3"
+      : "axelar-dojo-1",
+    sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
+    destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
+    coinMinimalDenom: "weth-wei",
+    sourceChainNameOverride: IS_TESTNET ? "Goerli Ethereum" : "Ethereum",
+    isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.weth.ethereum],
     },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
-    coinMinimalDenom: "weth-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=weth-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=weth-wei",
-    sourceChainNameOverride: "Ethereum",
-    isVerified: true,
-  },
-  {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
     coinMinimalDenom: "wbtc-satoshi",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=wbtc-satoshi",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=wbtc-satoshi",
     sourceChainNameOverride: "Ethereum",
     isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.wbtc.ethereum],
+    },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "dai-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=dai-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=dai-wei",
     sourceChainNameOverride: "Ethereum",
     isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.dai.ethereum],
+    },
   },
   {
     counterpartyChainId: "cosmoshub-4",
@@ -93,6 +102,24 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "wbnb-wei",
+    sourceChainNameOverride: "Binance Smart Chain",
+    isVerified: false,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.wbnb.binance],
+      wrapAssetConfig: {
+        url: "https://pancakeswap.finance/swap?outputCurrency=0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        displayCaption: "Convert BNB to WBNB on PancakeSwap", // TODO: use translation key instead of raw string
+      },
+    },
+  },
+  {
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-42",
     destChannelId: "channel-0",
@@ -104,12 +131,14 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "dot-planck",
-    depositUrlOverride:
-      "https://satellite.money/?source=moonbeam&destination=osmosis&asset_denom=dot-planck",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=moonbeam&asset_denom=dot-planck",
     sourceChainNameOverride: "Moonbeam",
     isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.dot.moonbeam],
+    },
   },
   {
     counterpartyChainId: "evmos_9001-2",
@@ -332,7 +361,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-17",
     coinMinimalDenom: "rowan",
     isVerified: true,
-    isUnstable: true,
   },
   {
     counterpartyChainId: "laozi-mainnet",
@@ -471,62 +499,66 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "uusdt",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uusdt",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uusdt",
     sourceChainNameOverride: "Ethereum",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.usdt.ethereum],
+    },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "frax-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=frax-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=frax-wei",
     sourceChainNameOverride: "Ethereum",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.frax.ethereum],
+    },
   },
   {
     counterpartyChainId: "gravity-bridge-3",
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-    depositUrlOverride: "https://spacestation.zone/",
-    withdrawUrlOverride: "https://spacestation.zone/",
+    depositUrlOverride: "https://bridge.blockscape.network/",
+    withdrawUrlOverride: "https://bridge.blockscape.network/",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-    depositUrlOverride: "https://spacestation.zone/",
-    withdrawUrlOverride: "https://spacestation.zone/",
+    depositUrlOverride: "https://bridge.blockscape.network/",
+    withdrawUrlOverride: "https://bridge.blockscape.network/",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-    depositUrlOverride: "https://spacestation.zone/",
-    withdrawUrlOverride: "https://spacestation.zone/",
+    depositUrlOverride: "https://bridge.blockscape.network/",
+    withdrawUrlOverride: "https://bridge.blockscape.network/",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
-    depositUrlOverride: "https://spacestation.zone/",
-    withdrawUrlOverride: "https://spacestation.zone/",
+    depositUrlOverride: "https://bridge.blockscape.network/",
+    withdrawUrlOverride: "https://bridge.blockscape.network/",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
     sourceChannelId: "channel-144",
     destChannelId: "channel-10",
     coinMinimalDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    depositUrlOverride: "https://spacestation.zone/",
-    withdrawUrlOverride: "https://spacestation.zone/",
+    depositUrlOverride: "https://bridge.blockscape.network/",
+    withdrawUrlOverride: "https://bridge.blockscape.network/",
   },
   {
     counterpartyChainId: "juno-1",
@@ -622,12 +654,14 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "link-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=link-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=link-wei",
     sourceChainNameOverride: "Ethereum",
     isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.link.ethereum],
+    },
   },
   {
     counterpartyChainId: "genesis_29-2",
@@ -640,95 +674,115 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "aave-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=aave-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=aave-wei",
     sourceChainNameOverride: "Ethereum",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.aave.ethereum],
+    },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "ape-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=ape-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=ape-wei",
     sourceChainNameOverride: "Ethereum",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.ape.ethereum],
+    },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "axs-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=axs-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=axs-wei",
     sourceChainNameOverride: "Ethereum",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.axs.ethereum],
+    },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "mkr-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=mkr-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=mkr-wei",
     sourceChainNameOverride: "Ethereum",
     isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.mkr.ethereum],
+    },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "rai-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=rai-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=rai-wei",
     sourceChainNameOverride: "Ethereum",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.rai.ethereum],
+    },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "shib-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=shib-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=shib-wei",
     sourceChainNameOverride: "Ethereum",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.shib.ethereum],
+    },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "uni-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uni-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uni-wei",
     sourceChainNameOverride: "Ethereum",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.uni.ethereum],
+    },
   },
   {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
     coinMinimalDenom: "xcn-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=xcn-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=xcn-wei",
     sourceChainNameOverride: "Ethereum",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.xcn.ethereum],
+    },
   },
   {
     counterpartyChainId: "kaiyo-1",
     sourceChannelId: "channel-259",
     destChannelId: "channel-3",
     coinMinimalDenom: "ukuji",
+    depositUrlOverride:
+      "https://blue.kujira.app/ibc?destination=osmosis-1&denom=ukuji",
+    // withdrawUrlOverride:
+    //   "https://blue.kujira.app/ibc?destination=kaiyo-1&source=osmosis-1&denom=ukuji",
     isVerified: true,
   },
   {
@@ -774,15 +828,19 @@ export const IBCAssetInfos: (IBCAsset & {
       "ki1hzz0s0ucrhdp6tue2lxk3c03nj6f60qy463we7lgx0wudd72ctmsd9kgha",
   },
   {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
-    coinMinimalDenom: "wglmr-wei",
-    depositUrlOverride:
-      "https://satellite.money/?source=moonbeam&destination=osmosis&asset_denom=wglmr-wei",
-    withdrawUrlOverride:
-      "https://satellite.money/?source=osmosis&destination=moonbeam&asset_denom=wglmr-wei",
-    sourceChainNameOverride: "Moonbeam",
+    counterpartyChainId: IS_TESTNET
+      ? "axelar-testnet-lisbon-3"
+      : "axelar-dojo-1",
+    sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
+    destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
+    coinMinimalDenom: IS_TESTNET ? "wdev-wei" : "wglmr-wei",
+    sourceChainNameOverride: IS_TESTNET ? "Moonbase Alpha" : "Moonbeam",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.wglmr.moonbeam],
+    },
   },
   {
     counterpartyChainId: "juno-1",
@@ -840,6 +898,12 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "agoric-3",
+    sourceChannelId: "channel-320",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "uist",
+  },
+  {
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-169",
     destChannelId: "channel-47",
@@ -856,18 +920,27 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "stride-1",
     sourceChannelId: "channel-326",
     destChannelId: "channel-5",
     coinMinimalDenom: "ustrd",
+    isVerified: true,
   },
   {
     counterpartyChainId: "stride-1",
     sourceChannelId: "channel-326",
     destChannelId: "channel-5",
     coinMinimalDenom: "stuatom",
+    isVerified: true,
+  },
+  {
+    counterpartyChainId: "stride-1",
+    sourceChannelId: "channel-326",
+    destChannelId: "channel-5",
+    coinMinimalDenom: "stustars",
   },
   {
     counterpartyChainId: "juno-1",
@@ -886,6 +959,76 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno19rqljkh95gh40s7qdx40ksx3zq5tm4qsmsrdz9smw668x9zdr3lqtg33mf",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "uaxl",
+    isVerified: true,
+  },
+  {
+    counterpartyChainId: "reb_1111-1",
+    sourceChannelId: "channel-355",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "arebus",
+  },
+  {
+    counterpartyChainId: "teritori-1",
+    sourceChannelId: "channel-362",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "utori",
+  },
+  {
+    counterpartyChainId: "stride-1",
+    sourceChannelId: "channel-326",
+    destChannelId: "channel-5",
+    coinMinimalDenom: "stujuno",
+  },
+  {
+    counterpartyChainId: "stride-1",
+    sourceChannelId: "channel-326",
+    destChannelId: "channel-5",
+    coinMinimalDenom: "stuosmo",
+  },
+  {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
+    counterpartyChainId: "lambda_92000-1",
+    sourceChannelId: "channel-378",
+    destChannelId: "channel-2",
+    coinMinimalDenom: "ulamb",
+  },
+  {
+    counterpartyChainId: "kaiyo-1",
+    sourceChannelId: "channel-259",
+    destChannelId: "channel-3",
+    coinMinimalDenom:
+      "factory:kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7:uusk",
+    depositUrlOverride:
+      "https://blue.kujira.app/ibc?destination=osmosis-1&source=kaiyo-1&denom=factory%2Fkujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7%2Fuusk",
+    withdrawUrlOverride:
+      "https://blue.kujira.app/ibc?destination=kaiyo-1&source=osmosis-1&denom=ibc%2F44492EAB24B72E3FB59B9FA619A22337FB74F95D8808FE6BC78CC0E6C18DC2EC",
+  },
+  {
+    counterpartyChainId: "FUND-MainNet-2",
+    sourceChannelId: "channel-382",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "nund",
+  },
+  {
+    counterpartyChainId: "jackal-1",
+    sourceChannelId: "channel-412",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "ujkl",
+    isUnstable: true,
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config

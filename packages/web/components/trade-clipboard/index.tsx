@@ -1,25 +1,12 @@
-import {
-  FunctionComponent,
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-  useCallback,
-} from "react";
+import { FunctionComponent, useEffect, useRef, useState, useMemo } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Pool } from "@osmosis-labs/pools";
-import { isError } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import {
-  IS_FRONTIER,
-  PoolDetailEvents,
-  SwapPageEvents,
-  MakeSwapPageEvents,
-} from "../../config";
+import { IS_FRONTIER, EventName } from "../../config";
 import {
   useBooleanWithWindowEvent,
   useFakeFeeConfig,
@@ -27,7 +14,7 @@ import {
   useTokenSwapQueryParams,
   useTradeTokenInConfig,
   useWindowSize,
-  useMatomoAnalytics,
+  useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { Button } from "../buttons";
@@ -51,7 +38,7 @@ export const TradeClipboard: FunctionComponent<{
   } = useStore();
   const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();
-  const { trackEvent } = useMatomoAnalytics();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const allTokenBalances = nativeBalances.concat(ibcBalances);
 
@@ -102,16 +89,7 @@ export const TradeClipboard: FunctionComponent<{
   tradeTokenInConfig.setFeeConfig(feeConfig);
 
   // show details
-  const [showEstimateDetails, do_setShowEstimateDetails] = useState(false);
-  const setShowEstimateDetails = useCallback(
-    (isOpen: boolean) => {
-      if (isOpen) {
-        trackEvent(SwapPageEvents.openSwapDetails);
-      }
-      do_setShowEstimateDetails(isOpen);
-    },
-    [do_setShowEstimateDetails]
-  );
+  const [showEstimateDetails, setShowEstimateDetails] = useState(false);
   const isEstimateDetailRelevant = !(
     tradeTokenInConfig.amount === "" || tradeTokenInConfig.amount === "0"
   );
@@ -309,13 +287,12 @@ export const TradeClipboard: FunctionComponent<{
 
                       slippageConfig.select(slippage.index);
 
-                      trackEvent(
-                        MakeSwapPageEvents.setSlippageTolerance(
-                          tradeTokenInConfig.sendCurrency.coinDenom,
-                          tradeTokenInConfig.outCurrency.coinDenom,
-                          slippageConfig.slippage.toString()
-                        )
-                      );
+                      logEvent([
+                        EventName.Swap.slippageToleranceSet,
+                        {
+                          percentage: slippageConfig.slippage.toString(),
+                        },
+                      ]);
                     }}
                   >
                     <button>{slippage.slippage.toString()}</button>
@@ -355,13 +332,15 @@ export const TradeClipboard: FunctionComponent<{
                   onInput={(value) => {
                     slippageConfig.setManualSlippage(value);
 
-                    trackEvent(
-                      MakeSwapPageEvents.setSlippageTolerance(
-                        tradeTokenInConfig.sendCurrency.coinDenom,
-                        tradeTokenInConfig.outCurrency.coinDenom,
-                        slippageConfig.slippage.toString()
-                      )
-                    );
+                    logEvent([
+                      EventName.Swap.slippageToleranceSet,
+                      {
+                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+                        percentage: slippageConfig.slippage.toString(),
+                      },
+                    ]);
                   }}
                   onFocus={() => slippageConfig.setIsManualSlippage(true)}
                   inputRef={manualSlippageInputRef}
@@ -425,7 +404,14 @@ export const TradeClipboard: FunctionComponent<{
                   e.preventDefault();
 
                   if (tradeTokenInConfig.fraction !== 1) {
-                    trackEvent(SwapPageEvents.swapMaxAmount);
+                    logEvent([
+                      EventName.Swap.maxClicked,
+                      {
+                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+                      },
+                    ]);
                     tradeTokenInConfig.setFraction(1);
                   } else {
                     tradeTokenInConfig.setFraction(undefined);
@@ -445,7 +431,14 @@ export const TradeClipboard: FunctionComponent<{
                   e.preventDefault();
 
                   if (tradeTokenInConfig.fraction !== 0.5) {
-                    trackEvent(SwapPageEvents.swapHalfAmount);
+                    logEvent([
+                      EventName.Swap.halfClicked,
+                      {
+                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+                      },
+                    ]);
                     tradeTokenInConfig.setFraction(0.5);
                   } else {
                     tradeTokenInConfig.setFraction(undefined);
@@ -513,6 +506,14 @@ export const TradeClipboard: FunctionComponent<{
                     Number(e.target.value) <= Number.MAX_SAFE_INTEGER &&
                     e.target.value.length <= (isMobile ? 19 : 26)
                   ) {
+                    logEvent([
+                      EventName.Swap.inputEntered,
+                      {
+                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+                      },
+                    ]);
                     tradeTokenInConfig.setAmount(e.target.value);
                   }
                 }}
@@ -543,7 +544,17 @@ export const TradeClipboard: FunctionComponent<{
           onMouseLeave={() => {
             if (!isMobile) setHoveringSwitchButton(false);
           }}
-          onClick={() => setIsAnimatingSwitch(true)}
+          onClick={() => {
+            logEvent([
+              EventName.Swap.switchClicked,
+              {
+                fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                isOnHome: !isInModal,
+              },
+            ]);
+            setIsAnimatingSwitch(true);
+          }}
         >
           <div
             className={classNames(
@@ -844,7 +855,6 @@ export const TradeClipboard: FunctionComponent<{
           if (account.walletStatus !== WalletStatus.Loaded) {
             return account.init();
           }
-
           if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
             const routes: {
               poolId: string;
@@ -901,24 +911,17 @@ export const TradeClipboard: FunctionComponent<{
             };
             const maxSlippage = slippageConfig.slippage.symbol("").toString();
 
-            const trackSwapEvent = (tx: any) => {
-              if (isInModal) {
-                // Is in pool detail page
-                if (isError(tx)) trackEvent(PoolDetailEvents.poolSwapFailure);
-                else trackEvent(PoolDetailEvents.poolSwapSuccess);
-              } else {
-                const inToken = [
-                  tokenIn.currency.coinMinimalDenom,
-                  tradeTokenInConfig.amount,
-                ];
-                // is on swap page
-                if (isError(tx))
-                  trackEvent(MakeSwapPageEvents.swapFailure(...inToken));
-                else trackEvent(MakeSwapPageEvents.swapSuccess(...inToken));
-              }
-            };
-
             try {
+              logEvent([
+                EventName.Swap.swapStarted,
+                {
+                  fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                  tokenAmount: Number(tokenIn.amount),
+                  toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                  isOnHome: !isInModal,
+                  isMultiHop: routes.length !== 1,
+                },
+              ]);
               if (routes.length === 1) {
                 await account.osmosis.sendSwapExactAmountInMsg(
                   routes[0].poolId,
@@ -938,7 +941,19 @@ export const TradeClipboard: FunctionComponent<{
                   {
                     preferNoSetFee: preferZeroFee,
                   },
-                  trackSwapEvent
+                  () => {
+                    logEvent([
+                      EventName.Swap.swapCompleted,
+                      {
+                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                        tokenAmount: Number(tokenIn.amount),
+                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+
+                        isMultiHop: false,
+                      },
+                    ]);
+                  }
                 );
               } else {
                 await account.osmosis.sendMultihopSwapExactAmountInMsg(
@@ -958,9 +973,17 @@ export const TradeClipboard: FunctionComponent<{
                   {
                     preferNoSetFee: preferZeroFee,
                   },
-                  (tx) => {
-                    trackEvent(SwapPageEvents.multiHopSwap);
-                    trackSwapEvent(tx);
+                  () => {
+                    logEvent([
+                      EventName.Swap.swapCompleted,
+                      {
+                        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                        tokenAmount: Number(tokenIn.amount),
+                        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+                        isMultiHop: true,
+                      },
+                    ]);
                   }
                 );
               }

@@ -1,6 +1,6 @@
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { Dec } from "@keplr-wallet/unit";
-import { initialAssetsSort, AssetsPageEvents } from "../../config";
+import { initialAssetsSort } from "../../config";
 import {
   IBCBalance,
   IBCCW20ContractBalance,
@@ -11,7 +11,7 @@ import { useSortedData, useFilteredData } from "../../hooks/data";
 import {
   useLocalStorageState,
   useWindowSize,
-  useMatomoAnalytics,
+  useAmplitudeAnalytics,
 } from "../../hooks";
 import { ShowMoreButton } from "../buttons/show-more";
 import { SearchBox } from "../input";
@@ -28,6 +28,7 @@ import {
 import { TransferHistoryTable } from "./transfer-history";
 import { ColumnDef } from "./types";
 import { Table } from ".";
+import { EventName } from "../../config/user-analytics-v2";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -38,8 +39,12 @@ interface Props {
   })[];
   onWithdrawIntent: () => void;
   onDepositIntent: () => void;
-  onWithdraw: (chainId: string, coinDenom: string) => void;
-  onDeposit: (chainId: string, coinDenom: string) => void;
+  onWithdraw: (
+    chainId: string,
+    coinDenom: string,
+    externalUrl?: string
+  ) => void;
+  onDeposit: (chainId: string, coinDenom: string, externalUrl?: string) => void;
 }
 
 export const AssetsTable: FunctionComponent<Props> = ({
@@ -52,19 +57,31 @@ export const AssetsTable: FunctionComponent<Props> = ({
 }) => {
   const { chainStore } = useStore();
   const { width, isMobile } = useWindowSize();
-  const { trackEvent } = useMatomoAnalytics();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const onDeposit = useCallback(
     (...depositParams: Parameters<typeof do_onDeposit>) => {
       do_onDeposit(...depositParams);
-      trackEvent(AssetsPageEvents.rowStartDeposit);
+      logEvent([
+        EventName.Assets.assetsItemDepositClicked,
+        {
+          tokenName: depositParams[1],
+          hasExternalUrl: !!depositParams[2],
+        },
+      ]);
     },
     [do_onDeposit]
   );
   const onWithdraw = useCallback(
-    (...depositParams: Parameters<typeof do_onWithdraw>) => {
-      do_onWithdraw(...depositParams);
-      trackEvent(AssetsPageEvents.rowStartWithdraw);
+    (...withdrawParams: Parameters<typeof do_onWithdraw>) => {
+      do_onWithdraw(...withdrawParams);
+      logEvent([
+        EventName.Assets.assetsItemWithdrawClicked,
+        {
+          tokenName: withdrawParams[1],
+          hasExternalUrl: !!withdrawParams[2],
+        },
+      ]);
     },
     [do_onWithdraw]
   );
@@ -165,10 +182,18 @@ export const AssetsTable: FunctionComponent<Props> = ({
   ] = useSortedData(cells);
   const setSortKey = useCallback(
     (term: string) => {
-      trackEvent(AssetsPageEvents.sortAssets);
+      logEvent([
+        EventName.Assets.assetsListSorted,
+        {
+          sortedBy: term,
+          sortDirection,
+
+          sortedOn: "dropdown",
+        },
+      ]);
       do_setSortKey(term);
     },
-    [trackEvent, sortDirection, do_setSortKey]
+    [sortDirection, do_setSortKey]
   );
 
   // Table column def to determine how the first 2 column headers handle user click.
@@ -192,9 +217,28 @@ export const AssetsTable: FunctionComponent<Props> = ({
         // If it wasn't sorting (aka first time it is clicked), then it will sort on the first
         // key by default.
         onClickHeader: isSorting
-          ? toggleSortDirection
+          ? () => {
+              logEvent([
+                EventName.Assets.assetsListSorted,
+                {
+                  sortedBy: firstKey,
+                  sortDirection:
+                    sortDirection === "descending" ? "ascending" : "descending",
+                  sortedOn: "table-head",
+                },
+              ]);
+              toggleSortDirection();
+            }
           : () => {
               if (firstKey) {
+                logEvent([
+                  EventName.Assets.assetsListSorted,
+                  {
+                    sortedBy: firstKey,
+                    sortDirection: onClickSortDirection,
+                    sortedOn: "table-head",
+                  },
+                ]);
                 setSortKey(firstKey);
                 setSortDirection(onClickSortDirection);
               }
@@ -234,7 +278,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 className="w-full h-10"
                 onClick={() => {
                   onDepositIntent();
-                  trackEvent(AssetsPageEvents.rowStartDeposit);
                 }}
               >
                 Deposit
@@ -244,7 +287,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 type="outline"
                 onClick={() => {
                   onWithdrawIntent();
-                  trackEvent(AssetsPageEvents.rowStartWithdraw);
                 }}
               >
                 Withdraw
@@ -257,9 +299,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 setHideZeroBalances(false);
                 setQuery(query);
               }}
-              onFocus={() => {
-                trackEvent(AssetsPageEvents.startSearchAssets);
-              }}
               placeholder="Filter by symbol"
             />
             <h6>Assets</h6>
@@ -268,9 +307,13 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 isOn={hideZeroBalances}
                 disabled={!canHideZeroBalances}
                 onToggle={() => {
-                  if (hideZeroBalances)
-                    trackEvent(AssetsPageEvents.showZeroBalances);
-                  else trackEvent(AssetsPageEvents.hideZeroBalances);
+                  logEvent([
+                    EventName.Assets.assetsListFiltered,
+                    {
+                      filteredBy: "Hide zero balances",
+                      isFilterOn: !hideZeroBalances,
+                    },
+                  ]);
 
                   setHideZeroBalances(!hideZeroBalances);
                 }}
@@ -307,10 +350,6 @@ export const AssetsTable: FunctionComponent<Props> = ({
                 isOn={hideZeroBalances}
                 disabled={!canHideZeroBalances}
                 onToggle={() => {
-                  if (hideZeroBalances)
-                    trackEvent(AssetsPageEvents.showZeroBalances);
-                  else trackEvent(AssetsPageEvents.hideZeroBalances);
-
                   setHideZeroBalances(!hideZeroBalances);
                 }}
               >
@@ -323,15 +362,25 @@ export const AssetsTable: FunctionComponent<Props> = ({
                     setHideZeroBalances(false);
                     setQuery(query);
                   }}
-                  onFocus={() => {
-                    trackEvent(AssetsPageEvents.startSearchAssets);
-                  }}
                   placeholder="Search assets"
                 />
                 <SortMenu
                   selectedOptionId={sortKey}
                   onSelect={setSortKey}
-                  onToggleSortDirection={toggleSortDirection}
+                  onToggleSortDirection={() => {
+                    logEvent([
+                      EventName.Assets.assetsListSorted,
+                      {
+                        sortedBy: sortKey,
+                        sortDirection:
+                          sortDirection === "descending"
+                            ? "ascending"
+                            : "descending",
+                        sortedOn: "dropdown",
+                      },
+                    ]);
+                    toggleSortDirection();
+                  }}
                   options={[
                     {
                       id: "coinDenom",
@@ -438,7 +487,15 @@ export const AssetsTable: FunctionComponent<Props> = ({
             <ShowMoreButton
               className="m-auto"
               isOn={showAllAssets}
-              onToggle={() => setShowAllAssets(!showAllAssets)}
+              onToggle={() => {
+                logEvent([
+                  EventName.Assets.assetsListMoreClicked,
+                  {
+                    isOn: !showAllAssets,
+                  },
+                ]);
+                setShowAllAssets(!showAllAssets);
+              }}
             />
           )}
         </div>

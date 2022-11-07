@@ -378,6 +378,16 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: OSMOSIS_DEST_COIN_ID,
   },
   {
+    alternativeCoinId: "pool:gkey",
+    poolId: "790",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-169" }],
+      "cw20:juno1gz8cf86zr4vw9cjcyyv432vgdaecvr9n254d3uwwkx9rermekddsxzageh"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmosis",
+  },
+  {
     alternativeCoinId: "pool:odin",
     poolId: "777",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
@@ -459,5 +469,131 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: OSMOSIS_DEST_COIN_ID,
+  },
+  {
+    alternativeCoinId: "pool:stustars",
+    poolId: "810",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-326" }],
+      "stustars"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-75" }],
+      "ustars"
+    ),
+    destCoinId: "stargaze",
+  },
+  {
+    alternativeCoinId: "pool:sejuno",
+    poolId: "793",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-169" }],
+      "cw20:juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmosis",
+  },
+  {
+    alternativeCoinId: "pool:seasy",
+    poolId: "808",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-169" }],
+      "cw20:juno19rqljkh95gh40s7qdx40ksx3zq5tm4qsmsrdz9smw668x9zdr3lqtg33mf"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmosis",
+  },
+  {
+    alternativeCoinId: "pool:arebus",
+    poolId: "813",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-355" }],
+      "arebus"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmosis",
+  },
+  {
+    alternativeCoinId: "pool:uaxl",
+    poolId: "812",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "uaxl"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmosis",
+  },
+  {
+    alternativeCoinId: "pool:utori",
+    poolId: "816",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-362" }],
+      "utori"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmosis",
+  },
+  {
+    alternativeCoinId: "pool:stujuno",
+    poolId: "817",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-326" }],
+      "stujuno"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-42" }],
+      "ujuno"
+    ),
+    destCoinId: "juno-network",
+  },
+  {
+    alternativeCoinId: "pool:stuosmo",
+    poolId: "833",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-326" }],
+      "stuosmo"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmosis",
+  },
+  {
+    alternativeCoinId: "pool:rowan",
+    poolId: "629",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-47" }],
+      "rowan"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmosis",
+  },
+  {
+    alternativeCoinId: "pool:lambda",
+    poolId: "826",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-378" }],
+      "ulamb"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmosis",
+  },
+  {
+    alternativeCoinId: "pool:nund",
+    poolId: "830",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-382" }],
+      "nund"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmosis",
+  },
+  {
+    alternativeCoinId: "pool:jkl",
+    poolId: "832",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-412" }],
+      "ujkl"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "osmosis",
   },
 ];

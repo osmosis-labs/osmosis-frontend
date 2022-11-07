@@ -2,7 +2,7 @@ import { FunctionComponent, useState, useEffect, useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { Environment } from "@axelar-network/axelarjs-sdk";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
 import {
@@ -33,6 +33,8 @@ import {
   EthClientChainIds_AxelarChainIdsMap,
   waitBySourceChain,
 } from ".";
+import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
+import { EventName } from "../../config/user-analytics-v2";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<
@@ -54,10 +56,9 @@ const AxelarTransfer: FunctionComponent<
     selectedSourceChainKey,
     onRequestClose,
     onRequestSwitchWallet,
-    tokenMinDenom,
-    transferFeeMinAmount,
     sourceChains,
     isTestNet = process.env.NEXT_PUBLIC_IS_TESTNET === "true",
+    wrapAssetConfig,
     connectCosmosWalletButtonOverride,
   }) => {
     const { chainStore, accountStore, queriesStore, nonIbcBridgeHistoryStore } =
@@ -68,6 +69,8 @@ const AxelarTransfer: FunctionComponent<
     const originCurrency = balanceOnOsmosis.balance.currency.originCurrency!;
 
     useTxEventToasts(ethWalletClient);
+
+    const { logEvent } = useAmplitudeAnalytics();
 
     // notify eth wallet of prev selected preferred chain
     useEffect(() => {
@@ -94,9 +97,13 @@ const AxelarTransfer: FunctionComponent<
       EthClientChainIds_AxelarChainIdsMap[selectedSourceChainKey] ??
       selectedSourceChainKey;
 
-    const erc20ContractAddress = sourceChains.find(
+    const sourceChainConfig = sourceChains.find(
       ({ id }) => id === selectedSourceChainKey
-    )?.erc20ContractAddress;
+    );
+
+    const erc20ContractAddress = sourceChainConfig?.erc20ContractAddress;
+    const transferFeeMinAmount = sourceChainConfig?.transferFeeMinAmount ?? "0";
+
     const axelarChainId =
       chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
       "axelar-dojo-1";
@@ -178,8 +185,15 @@ const AxelarTransfer: FunctionComponent<
         if (amount !== "") {
           nonIbcBridgeHistoryStore.pushTxNow(
             `axelar${txHash}`,
-            new CoinPretty(originCurrency, amount)
-              .moveDecimalPointRight(originCurrency.coinDecimals)
+            new CoinPretty(
+              originCurrency,
+              new Dec(amount).mul(
+                // CoinPretty only accepts whole amounts
+                DecUtils.getTenExponentNInPrecisionRange(
+                  originCurrency.coinDecimals
+                )
+              )
+            )
               .trim(true)
               .toString(),
             isWithdraw,
@@ -211,7 +225,7 @@ const AxelarTransfer: FunctionComponent<
         sourceChain,
         destChain,
         isWithdraw || correctChainSelected ? address : undefined,
-        tokenMinDenom,
+        originCurrency.coinMinimalDenom,
         undefined,
         isTestNet ? Environment.TESTNET : Environment.MAINNET
       );
@@ -219,12 +233,13 @@ const AxelarTransfer: FunctionComponent<
     // notify user they are withdrawing into a different account then they last deposited to
     const [lastDepositAccountAddress, setLastDepositAccountAddress] =
       useLocalStorageState<string | null>(
-        `axelar-last-deposit-addr-${tokenMinDenom}`,
+        `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
         null
       );
     const warnOfDifferentDepositAddress =
       isWithdraw &&
       ethWalletClient.isConnected &&
+      lastDepositAccountAddress &&
       ethWalletClient.accountAddress
         ? ethWalletClient.accountAddress !== lastDepositAccountAddress
         : false;
@@ -233,6 +248,16 @@ const AxelarTransfer: FunctionComponent<
     const [transferInitiated, setTransferInitiated] = useState(false);
     const doAxelarTransfer = useCallback(async () => {
       if (depositAddress) {
+        logEvent([
+          isWithdraw
+            ? EventName.Assets.withdrawAssetStarted
+            : EventName.Assets.depositAssetStarted,
+          {
+            tokenName: originCurrency.coinDenom,
+            tokenAmount: Number(amount),
+            bridge: "axelar",
+          },
+        ]);
         if (isWithdraw) {
           // IBC transfer to generated axelar address
           try {
@@ -249,7 +274,17 @@ const AxelarTransfer: FunctionComponent<
               },
               withdrawAmountConfig,
               undefined,
-              (event) => trackTransferStatus(event.txHash)
+              (event) => {
+                trackTransferStatus(event.txHash);
+                logEvent([
+                  EventName.Assets.withdrawAssetCompleted,
+                  {
+                    tokenName: originCurrency.coinDenom,
+                    tokenAmount: Number(amount),
+                    bridge: "axelar",
+                  },
+                ]);
+              }
             );
           } catch (e) {
             // errors are displayed as toasts from a handler in root store
@@ -263,15 +298,29 @@ const AxelarTransfer: FunctionComponent<
             try {
               await erc20Transfer(
                 ethWalletClient.send,
-                new CoinPretty(originCurrency, depositAmount)
-                  .moveDecimalPointRight(originCurrency.coinDecimals)
-                  .toCoin().amount,
+                new CoinPretty(
+                  originCurrency,
+                  new Dec(amount).mul(
+                    // CoinPretty only accepts whole amounts
+                    DecUtils.getTenExponentNInPrecisionRange(
+                      originCurrency.coinDecimals
+                    )
+                  )
+                ).toCoin().amount,
                 erc20ContractAddress,
                 ethWalletClient.accountAddress!,
                 depositAddress
               ).then((txHash) => {
                 trackTransferStatus(txHash as string);
                 setLastDepositAccountAddress(ethWalletClient.accountAddress!);
+                logEvent([
+                  EventName.Assets.depositAssetCompleted,
+                  {
+                    tokenName: originCurrency.coinDenom,
+                    tokenAmount: Number(amount),
+                    bridge: "axelar",
+                  },
+                ]);
               });
             } catch (e: any) {
               const msg = ethWalletClient.displayError?.(e);
@@ -338,17 +387,36 @@ const AxelarTransfer: FunctionComponent<
       (isWithdraw && osmosisAccount.txTypeInProgress === "");
     const isInsufficientFee =
       amount !== "" &&
-      new CoinPretty(originCurrency, amount)
+      new CoinPretty(
+        originCurrency,
+        new Dec(amount).mul(
+          // CoinPretty only accepts whole amounts
+          DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
+        )
+      )
         .moveDecimalPointRight(originCurrency.coinDecimals)
         .toDec()
         .lt(
-          new CoinPretty(originCurrency, new Dec(transferFeeMinAmount)).toDec()
+          new CoinPretty(
+            originCurrency,
+            new Dec(transferFeeMinAmount).mul(
+              // CoinPretty only accepts whole amounts
+              DecUtils.getTenExponentNInPrecisionRange(
+                originCurrency.coinDecimals
+              )
+            )
+          ).toDec()
         );
     const isInsufficientBal =
       amount !== "" &&
       availableBalance &&
-      new CoinPretty(originCurrency, amount)
-        .moveDecimalPointRight(originCurrency.coinDecimals)
+      new CoinPretty(
+        originCurrency,
+        new Dec(amount).mul(
+          // CoinPretty only accepts whole amounts
+          DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
+        )
+      )
         .toDec()
         .gt(availableBalance.toDec());
     const buttonErrorMessage = userDisconnectedEthWallet
@@ -411,6 +479,13 @@ const AxelarTransfer: FunctionComponent<
             (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
           }
         />
+        {wrapAssetConfig && (
+          <div className="mx-auto text-secondary-200">
+            <a rel="noreferrer" target="_blank" href={wrapAssetConfig.url}>
+              {wrapAssetConfig.displayCaption}
+            </a>
+          </div>
+        )}
         <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
           {connectCosmosWalletButtonOverride ?? (
             <Button

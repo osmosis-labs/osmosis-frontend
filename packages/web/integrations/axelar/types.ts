@@ -14,38 +14,56 @@ export interface AxelarBridgeConfig {
   /** Ex: `uusdc`. NOTE: Will get currency info from `originCurrency` on the IBC balance (from registrar).
    *  See: https://docs.axelar.dev/resources/mainnet#assets
    */
-  tokenMinDenom: string;
-  /** Amount of Axelar transfer fee in `originCurrency`.
-   *  TODO: use `useTransferFeeQuery` should fees become dynamic and once APIs become production ready.
-   *  See calculator tool on Axelar docs to get current fee constants: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee.
-   */
-  transferFeeMinAmount: string;
+
+  /** URL config for users to conveniently swap the native asset for the wrapped version. */
+  wrapAssetConfig?: {
+    url: string;
+    displayCaption: string;
+  };
 }
 
 /** See: https://docs.axelar.dev/dev/build/chain-names/mainnet
+ *  See: https://docs.axelar.dev/dev/build/chain-names/testnet
  *  Testnet: https://axelartest-lcd.quickapi.com/axelar/nexus/v1beta1/chains?status=1
  */
 export type SourceChain =
-  | "Ethereum"
-  | "Ropsten Test Network"
+  | "aurora"
   | "Avalanche"
+  | "binance"
+  | "Ethereum"
+  | "ethereum-2"
   | "Fantom"
-  | "Polygon"
   | "Moonbeam"
-  | "Binance";
+  | "Polygon";
 
 /** Maps eth client chainIDs => axelar chain ids.
+ *
+ *  ethClientChainIDs must be specified in ../ethereuem/types.ts::ChainNames{} to map the name to a chainID, which is in turn used to add the network to EVM-compatible wallets, like Metamask.
+ *
+ * AxelarChainIds must be specified in SourceChain{} and are used in ./source-chain-configs.ts::SourceChainConfigs{} as <asset>::<network>::id values.
  *
  *  Values not included as keys are assumed to be the same across chainlist and Axelar.
  */
 export const EthClientChainIds_AxelarChainIdsMap: {
   [ethClientChainIds: string]: SourceChain;
-} = {
-  "Ropsten Test Network": "Ethereum",
-  "Avalanche C-Chain": "Avalanche",
-  "Binance Smart Chain": "Binance",
-  "Fantom Opera": "Fantom",
-};
+} = IS_TESTNET
+  ? {
+      "Aurora Testnet": "aurora",
+      "Avalanche Fuji Testnet": "Avalanche",
+      "Binance Smart Chain Testnet": "binance",
+      "Goerli Test Network": "ethereum-2",
+      "Fantom Testnet": "Fantom",
+      "Moonbase Alpha": "Moonbeam",
+      Mumbai: "Polygon",
+    }
+  : {
+      "Avalanche C-Chain": "Avalanche",
+      "Binance Smart Chain Mainnet": "binance",
+      "Ethereum Main Network": "Ethereum",
+      "Fantom Opera": "Fantom",
+      "Moonbeam Mainnet": "Moonbeam",
+      "Polygon Mainnet": "Polygon",
+    };
 
 export type SourceChainConfig = {
   /** Axelar-defined identifier. */
@@ -63,48 +81,10 @@ export type SourceChainConfig = {
   };
 
   logoUrl: string;
-};
 
-/** https://axelarscan.io/assets
- *  Ensure that users bridge sufficient amounts from EthMainnet=>NonEthEvm via Axelar before enabling.
- */
-export const SourceChainConfigs: {
-  [asset: string]: { [chain: string]: SourceChainConfig };
-} = {
-  usdc: {
-    ethereum: {
-      id: IS_TESTNET
-        ? ("Ropsten Test Network" as const)
-        : ("Ethereum" as const),
-      erc20ContractAddress: IS_TESTNET
-        ? "0x526f0A95EDC3DF4CBDB7bb37d4F7Ed451dB8e369"
-        : "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // test: 'aUSDC' on metamask/etherscan
-      logoUrl: "/networks/ethereum.svg",
-    },
-    bnbChain: {
-      id: "Binance" as const,
-      erc20ContractAddress: "0x4268B8F0B87b6Eae5d897996E6b845ddbD99Adf3",
-      logoUrl: "/networks/binance.svg",
-    },
-    avalanche: {
-      id: "Avalanche" as const,
-      erc20ContractAddress: "0xfaB550568C688d5D8A52C7d794cb93Edc26eC0eC",
-      logoUrl: "/networks/avalanche.svg",
-    },
-    polygon: {
-      id: "Polygon" as const,
-      erc20ContractAddress: "0x750e4C4984a9e0f12978eA6742Bc1c5D248f40ed",
-      logoUrl: "/networks/polygon.svg",
-    },
-    fantom: {
-      id: "Fantom" as const,
-      erc20ContractAddress: "0x1B6382DBDEa11d97f24495C9A90b7c88469134a4",
-      logoUrl: "/networks/fantom.svg",
-    },
-    moonbeam: {
-      id: "Moonbeam" as const,
-      erc20ContractAddress: "0xCa01a1D0993565291051daFF390892518ACfAD3A",
-      logoUrl: "/networks/moonbeam.svg",
-    },
-  },
+  /** Amount of Axelar transfer fee in `originCurrency`.
+   *  TODO: use `useTransferFeeQuery` should fees become dynamic and once APIs become production ready.
+   *  See calculator tool on Axelar docs to get current fee constants: https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee.
+   */
+  transferFeeMinAmount: string;
 };

@@ -6,6 +6,7 @@ import { ObservableQueryGammPoolShare } from "./pool-share";
 import {
   ObservableQueryIncentivizedPools,
   ObservableQueryLockableDurations,
+  ObservableQueryPoolsGaugeIds,
 } from "./pool-incentives";
 import { ObservableQueryEpochs } from "./epochs";
 import {
@@ -84,6 +85,7 @@ export class OsmosisQueriesImpl {
   public readonly queryDistrInfo: DeepReadonly<ObservableQueryDistrInfo>;
   public readonly queryIncentivizedPools: DeepReadonly<ObservableQueryIncentivizedPools>;
   public readonly queryGauge: DeepReadonly<ObservableQueryGuage>;
+  public readonly queryPoolsGaugeIds: DeepReadonly<ObservableQueryPoolsGaugeIds>;
 
   public readonly queryPoolCreationFee: DeepReadonly<ObservableQueryPoolCreationFee>;
 
@@ -165,6 +167,7 @@ export class OsmosisQueriesImpl {
       chainId,
       chainGetter
     );
+    this.queryGauge = new ObservableQueryGuage(kvStore, chainId, chainGetter);
     this.queryIncentivizedPools = new ObservableQueryIncentivizedPools(
       kvStore,
       chainId,
@@ -174,9 +177,14 @@ export class OsmosisQueriesImpl {
       this.queryGammPools,
       this.queryMintParams,
       this.queryEpochProvisions,
-      this.queryEpochs
+      this.queryEpochs,
+      this.queryGauge
     );
-    this.queryGauge = new ObservableQueryGuage(kvStore, chainId, chainGetter);
+    this.queryPoolsGaugeIds = new ObservableQueryPoolsGaugeIds(
+      kvStore,
+      chainId,
+      chainGetter
+    );
 
     this.queryPoolCreationFee = new ObservableQueryPoolCreationFee(
       kvStore,

@@ -1,3 +1,8 @@
+import { IS_FRONTIER } from "./ibc-assets";
+
+/** UI will go into "halt mode" if `true`. */
+export const IS_HALTED = false;
+
 export const UserAction: { [key: string]: boolean } = {
   CreateNewPool: true,
 };
@@ -30,6 +35,24 @@ export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
   "580": true,
   "635": true,
 };
+
+/** List of pools active in LBP to present in frontend. */
+export const PromotedLBPPoolIds: {
+  poolId: string;
+  name: string;
+  ibcHashDenom: string;
+}[] = IS_FRONTIER
+  ? [
+      /*      {
+        poolId: "813",
+        name: "REBUS Liquidity Bootstrapping Pool",
+        ibcHashDenom: DenomHelper.ibcDenom(
+          [{ portId: "transfer", channelId: "channel-355" }],
+          "arebus"
+        ),
+      },*/
+    ]
+  : [];
 
 /** Gauges to be rendered in pool's respective pool detail page. */
 export const ExternalIncentiveGaugeAllowList: {
@@ -163,14 +186,7 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "553": [
     {
-      gaugeId: "4276",
-      denom:
-        "ibc/9989AD6CCA39D1131523DB0617B50F6442081162294B4795E26746292467B525",
-    },
-  ],
-  "555": [
-    {
-      gaugeId: "4277",
+      gaugeId: "29762",
       denom:
         "ibc/9989AD6CCA39D1131523DB0617B50F6442081162294B4795E26746292467B525",
     },
@@ -470,19 +486,19 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "602": [
     {
-      gaugeId: "21788",
+      gaugeId: "29713",
       denom:
         "ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA",
     },
     {
-      gaugeId: "21790",
+      gaugeId: "29715",
       denom:
         "ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA",
     },
   ],
   "604": [
     {
-      gaugeId: "2912",
+      gaugeId: "29704",
       denom:
         "ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4",
     },
@@ -523,7 +539,7 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "611": [
     {
-      gaugeId: "2913",
+      gaugeId: "29705",
       denom:
         "ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4",
     },
@@ -549,12 +565,12 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "617": [
     {
-      gaugeId: "21792",
+      gaugeId: "29716",
       denom:
         "ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA",
     },
     {
-      gaugeId: "21793",
+      gaugeId: "29717",
       denom:
         "ibc/7A08C6F11EF0F59EB841B9F788A87EC9F2361C7D9703157EC13D940DC53031FA",
     },
@@ -602,12 +618,7 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "625": [
     {
-      gaugeId: "3327",
-      denom:
-        "ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44",
-    },
-    {
-      gaugeId: "3328",
+      gaugeId: "29858",
       denom:
         "ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44",
     },
@@ -631,12 +642,14 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "633": [
     {
-      gaugeId: "4372",
+      gaugeId: "29857",
       denom:
         "ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44",
     },
+  ],
+  "634": [
     {
-      gaugeId: "4373",
+      gaugeId: "29856",
       denom:
         "ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44",
     },
@@ -771,17 +784,12 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "662": [
     {
-      gaugeId: "2591",
+      gaugeId: "29666",
       denom:
         "ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7",
     },
     {
-      gaugeId: "2592",
-      denom:
-        "ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7",
-    },
-    {
-      gaugeId: "2593",
+      gaugeId: "29667",
       denom:
         "ibc/41999DF04D9441DAC0DF5D8291DF4333FBCBA810FFD63FDCE34FDF41EF37B6F7",
     },
@@ -898,7 +906,7 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "722": [
     {
-      gaugeId: "21737",
+      gaugeId: "29822",
       denom:
         "ibc/6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A",
     },
@@ -981,6 +989,23 @@ export const ExternalIncentiveGaugeAllowList: {
         "ibc/9B6FBABA36BB4A3BF127AE5E96B572A5197FD9F3111D895D8919B07BC290764A",
     },
   ],
+  "788": [
+    {
+      gaugeId: "29872",
+      denom:
+        "ibc/FFA652599C77E853F017193E36B5AB2D4D9AFC4B54721A74904F80C9236BF3B7",
+    },
+    {
+      gaugeId: "29892",
+      denom:
+        "ibc/FFA652599C77E853F017193E36B5AB2D4D9AFC4B54721A74904F80C9236BF3B7",
+    },
+    {
+      gaugeId: "29893",
+      denom:
+        "ibc/FFA652599C77E853F017193E36B5AB2D4D9AFC4B54721A74904F80C9236BF3B7",
+    },
+  ],
   "790": [
     {
       gaugeId: "29508",
@@ -1013,6 +1038,13 @@ export const ExternalIncentiveGaugeAllowList: {
         "ibc/52C57FCA7D6854AA178E7A183DDBE4EF322B904B1D719FC485F6FFBC1F72A19E",
     },
   ],
+  "793": [
+    {
+      gaugeId: "29635",
+      denom:
+        "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
+    },
+  ],
   "796": [
     {
       gaugeId: "29545",
@@ -1026,12 +1058,129 @@ export const ExternalIncentiveGaugeAllowList: {
       denom:
         "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
     },
+    {
+      gaugeId: "29757",
+      denom:
+        "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
+    },
+    {
+      gaugeId: "29830",
+      denom:
+        "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
+    },
   ],
   "805": [
     {
       gaugeId: "29615",
       denom:
         "ibc/0CD46223FEABD2AEAAAF1F057D01E63BCA79B7D4BD6B68F1EB973A987344695D",
+    },
+  ],
+  "810": [
+    {
+      gaugeId: "29873",
+      denom:
+        "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
+    },
+  ],
+  "807": [
+    {
+      gaugeId: "29636",
+      denom:
+        "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
+    },
+  ],
+  "808": [
+    {
+      gaugeId: "29637",
+      denom:
+        "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
+    },
+  ],
+  "812": [
+    {
+      gaugeId: "29675",
+      denom:
+        "ibc/903A61A498756EA560B85A85132D3AEE21B5DEDD41213725D22ABF276EA6945E",
+    },
+    {
+      gaugeId: "29674",
+      denom: "uosmo",
+    },
+  ],
+  "806": [
+    {
+      gaugeId: "29683",
+      denom: "uosmo",
+    },
+  ],
+  "816": [
+    {
+      gaugeId: "29758",
+      denom:
+        "ibc/EB7FB9C8B425F289B63703413327C2051030E848CE4EAAEA2E51199D6D39D3EC",
+    },
+    {
+      gaugeId: "29759",
+      denom:
+        "ibc/EB7FB9C8B425F289B63703413327C2051030E848CE4EAAEA2E51199D6D39D3EC",
+    },
+    {
+      gaugeId: "29760",
+      denom:
+        "ibc/EB7FB9C8B425F289B63703413327C2051030E848CE4EAAEA2E51199D6D39D3EC",
+    },
+  ],
+  "817": [
+    {
+      gaugeId: "29724",
+      denom:
+        "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
+    },
+  ],
+  "818": [
+    {
+      gaugeId: "29853",
+      denom:
+        "ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44",
+    },
+  ],
+  "826": [
+    {
+      gaugeId: "29874",
+      denom:
+        "ibc/80825E8F04B12D914ABEADB1F4D39C04755B12C8402F6876EE3168450C0A90BB",
+    },
+    {
+      gaugeId: "29875",
+      denom:
+        "ibc/80825E8F04B12D914ABEADB1F4D39C04755B12C8402F6876EE3168450C0A90BB",
+    },
+    {
+      gaugeId: "29925",
+      denom:
+        "ibc/80825E8F04B12D914ABEADB1F4D39C04755B12C8402F6876EE3168450C0A90BB",
+    },
+  ],
+  "830": [
+    {
+      gaugeId: "29891",
+      denom:
+        "ibc/608EF5C0CE64FEA097500DB39657BDD36CA708CC5DCC2E250A024B6981DD36BC",
+    },
+  ],
+  "832": [
+    {
+      gaugeId: "29882",
+      denom:
+        "ibc/8E697BDABE97ACE8773C6DF7402B2D1D5104DD1EEABE12608E3469B7F64C15BA",
+    },
+  ],
+  "833": [
+    {
+      gaugeId: "29900",
+      denom:
+        "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
     },
   ],
 };

@@ -91,11 +91,12 @@ export class RootStore {
     })();
 
     this.queriesExternalStore = new QueriesExternalStore(
-      makeIndexedKVStore("store_web_queries")
+      makeIndexedKVStore("store_web_queries"),
+      IS_TESTNET ? "https://api.testnet.osmosis.zone/" : undefined
     );
 
     this.queriesStore = new QueriesStore(
-      makeIndexedKVStore("store_web_queries"),
+      makeIndexedKVStore("store_web_queries_v12"),
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
@@ -175,6 +176,8 @@ export class RootStore {
       this.chainStore
     );
     this.nonIbcBridgeHistoryStore = new NonIbcBridgeHistoryStore(
+      this.queriesStore,
+      this.chainStore.osmosis.chainId,
       makeLocalStorageKVStore("nonibc_transfer_history"),
       [
         new AxelarTransferStatusSource(

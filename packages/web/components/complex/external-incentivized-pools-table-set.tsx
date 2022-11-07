@@ -2,13 +2,13 @@ import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useCallback } from "react";
-import { ExternalIncentiveGaugeAllowList, PoolsPageEvents } from "../../config";
+import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
 import {
   useFilteredData,
   usePaginatedData,
   useSortedData,
   useWindowSize,
-  useMatomoAnalytics,
+  useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { PageList, SortMenu } from "../control";
@@ -29,7 +29,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       accountStore,
     } = useStore();
     const { isMobile } = useWindowSize();
-    const { trackEvent } = useMatomoAnalytics();
+    const { logEvent } = useAmplitudeAnalytics();
 
     const { chainId } = chainStore.osmosis;
     const queryExternal = queriesExternalStore.get();
@@ -151,7 +151,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
     const initialSortDirection = "descending";
     const [
       sortKeyPath,
-      do_setSortKeyPath,
+      setSortKeyPath,
       sortDirection,
       setSortDirection,
       toggleSortDirection,
@@ -160,13 +160,6 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       externalIncentivizedPoolsWithMetrics,
       initialKeyPath,
       initialSortDirection
-    );
-    const setSortKeyPath = useCallback(
-      (terms: string) => {
-        trackEvent(PoolsPageEvents.sortPools);
-        do_setSortKeyPath(terms);
-      },
-      [do_setSortKeyPath]
     );
 
     const [query, setQuery, filteredPools] = useFilteredData(
@@ -191,12 +184,32 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
               onClickHeader: () => {
                 switch (sortDirection) {
                   case "ascending":
-                    setSortDirection("descending");
+                    const newSortDirection = "descending";
+                    logEvent([
+                      EventName.Pools.externalIncentivePoolsListSorted,
+                      {
+                        sortedBy: keyPath,
+                        sortDirection: newSortDirection,
+                        sortedOn: "table-head",
+                      },
+                    ]);
+                    setSortDirection(newSortDirection);
                     break;
                   case "descending":
+                    // default sort key toggles forever
+
                     if (sortKeyPath === initialKeyPath) {
-                      // default sort key toggles forever
-                      setSortDirection("ascending");
+                      const newSortDirection = "ascending";
+                      logEvent([
+                        EventName.Pools.externalIncentivePoolsListSorted,
+                        {
+                          sortedBy: keyPath,
+                          sortDirection: newSortDirection,
+                          sortedOn: "table-head",
+                        },
+                      ]);
+                      setSortDirection(newSortDirection);
+                      setSortDirection(newSortDirection);
                     } else {
                       // other keys toggle then go back to default
                       setSortKeyPath(initialKeyPath);
@@ -207,8 +220,17 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             }
           : {
               onClickHeader: () => {
+                const newSortDirection = "ascending";
+                logEvent([
+                  EventName.Pools.externalIncentivePoolsListSorted,
+                  {
+                    sortedBy: keyPath,
+                    sortDirection: newSortDirection,
+                    sortedOn: "table-head",
+                  },
+                ]);
                 setSortKeyPath(keyPath);
-                setSortDirection("ascending");
+                setSortDirection(newSortDirection);
               },
             },
       [sortKeyPath, sortDirection, setSortDirection, setSortKeyPath]
@@ -252,6 +274,24 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
       () =>
         allData.map((poolWithFeeMetrics) => ({
           link: `/pool/${poolWithFeeMetrics.pool.id}`,
+          onClick: () => {
+            logEvent([
+              EventName.Pools.externalIncentivePoolsItemClicked,
+              {
+                poolId: poolWithFeeMetrics.pool.id,
+                poolName: poolWithFeeMetrics.pool.poolAssets
+                  .map((poolAsset) => poolAsset.amount.denom)
+                  .join(" / "),
+                poolWeight: poolWithFeeMetrics.pool.poolAssets
+                  .map((poolAsset) => poolAsset.weightFraction.toString())
+                  .join(" / "),
+                isSuperfluidPool:
+                  queryOsmosis.querySuperfluidPools.isSuperfluidPool(
+                    poolWithFeeMetrics.pool.id
+                  ),
+              },
+            ]);
+          },
         })),
       [allData]
     );
@@ -354,17 +394,27 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent = observer(
             <SearchBox
               currentValue={query}
               onInput={setQuery}
-              onFocus={() => trackEvent(PoolsPageEvents.startPoolsSearch)}
               placeholder="Filter by name"
               className="!w-64"
             />
             <SortMenu
               options={tableCols}
               selectedOptionId={sortKeyPath}
-              onSelect={(id) =>
-                id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id)
-              }
-              onToggleSortDirection={toggleSortDirection}
+              onSelect={(id) => {
+                if (id === sortKeyPath) {
+                  setSortKeyPath("");
+                } else {
+                  logEvent([
+                    EventName.Pools.externalIncentivePoolsListSorted,
+                    {
+                      sortedBy: id,
+                      sortDirection: sortDirection,
+                      sortedOn: "dropdown",
+                    },
+                  ]);
+                  setSortKeyPath(id);
+                }
+              }}
             />
           </div>
         </div>

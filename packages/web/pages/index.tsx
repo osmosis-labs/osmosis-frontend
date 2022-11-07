@@ -3,9 +3,10 @@ import type { NextPage } from "next";
 import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 import { TradeClipboard } from "../components/trade-clipboard";
 import { useStore } from "../stores";
-import { IS_FRONTIER } from "../config";
+import { EventName, IS_FRONTIER } from "../config";
 import { Dec } from "@keplr-wallet/unit";
 import { useMemo, useRef } from "react";
+import { useAmplitudeAnalytics } from "../hooks";
 
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore } = useStore();
@@ -95,6 +96,30 @@ const Home: NextPage = observer(function () {
                 break;
               }
             }
+
+            // only pools with at least 1,000,000 STARS
+            if (
+              "originChainId" in asset.amount.currency &&
+              asset.amount.currency.coinMinimalDenom ===
+                "ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4"
+            ) {
+              if (asset.amount.toDec().gt(new Dec(1_000_000))) {
+                hasEnoughAssets = true;
+                break;
+              }
+            }
+            
+            // only pools with at least 10,000 JUNO
+            if (
+              "originChainId" in asset.amount.currency &&
+              asset.amount.currency.coinMinimalDenom ===
+                "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED"
+            ) {
+              if (asset.amount.toDec().gt(new Dec(10_000))) {
+                hasEnoughAssets = true;
+                break;
+              }
+            }
           }
 
           if (hasEnoughAssets) {
@@ -106,6 +131,10 @@ const Home: NextPage = observer(function () {
         .map((pool) => pool.pool),
     [allPools]
   );
+
+  useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Swap.pageViewed],
+  });
 
   return (
     <main className="relative bg-background h-screen">

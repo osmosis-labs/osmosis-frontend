@@ -3,13 +3,13 @@ import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { PricePretty, Dec } from "@keplr-wallet/unit";
-import { useMatomoAnalytics } from "../../hooks";
+import { useAmplitudeAnalytics } from "../../hooks";
 import { useStore } from "../../stores";
-import { IS_FRONTIER, NavBarEvents } from "../../config";
+import { EventName, IS_FRONTIER } from "../../config";
 
 export const SidebarBottom: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
-  const { trackEvent } = useMatomoAnalytics();
+  const { logEvent, setUserProperty } = useAmplitudeAnalytics();
 
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
   const queries = queriesStore.get(chainStore.osmosis.chainId);
@@ -70,7 +70,8 @@ export const SidebarBottom: FunctionComponent = observer(() => {
             <button
               onClick={(e) => {
                 e.preventDefault();
-                trackEvent(NavBarEvents.disconnectWallet);
+                logEvent([EventName.Sidebar.signOutClicked]);
+                setUserProperty("isWalletConnected", false);
                 account.disconnect();
               }}
               className="button bg-transparent border border-opacity-30 border-secondary-200 h-9 w-full rounded-md py-2 px-1 flex items-center justify-center mb-5"
@@ -91,7 +92,7 @@ export const SidebarBottom: FunctionComponent = observer(() => {
             className="button flex items-center justify-center w-full h-9 py-3.5 rounded-md bg-primary-200 mb-5"
             onClick={(e) => {
               e.preventDefault();
-              trackEvent(NavBarEvents.startConnectWallet);
+              logEvent([EventName.Sidebar.connectWalletClicked]);
               account.init();
             }}
           >
@@ -143,7 +144,9 @@ export const SidebarBottom: FunctionComponent = observer(() => {
               target="_blank"
               className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
               rel="noreferrer"
-              onClick={() => trackEvent(NavBarEvents.twitterLink)}
+              onClick={() => {
+                logEvent([EventName.Sidebar.twitterClicked]);
+              }}
             >
               <Image
                 src="/icons/twitter.svg"
@@ -157,7 +160,9 @@ export const SidebarBottom: FunctionComponent = observer(() => {
               target="_blank"
               className="opacity-80 hover:opacity-100 cursor-pointer px-1 m-auto"
               rel="noreferrer"
-              onClick={() => trackEvent(NavBarEvents.mediumLink)}
+              onClick={() => {
+                logEvent([EventName.Sidebar.mediumClicked]);
+              }}
             >
               <Image
                 src="/icons/medium.svg"
@@ -171,7 +176,9 @@ export const SidebarBottom: FunctionComponent = observer(() => {
               target="_blank"
               className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
               rel="noreferrer"
-              onClick={() => trackEvent(NavBarEvents.commonwealthLink)}
+              onClick={() => {
+                logEvent([EventName.Sidebar.commonwealthClicked]);
+              }}
             >
               <Image
                 className="w-9 h-9"
@@ -186,7 +193,9 @@ export const SidebarBottom: FunctionComponent = observer(() => {
               target="_blank"
               className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
               rel="noreferrer"
-              onClick={() => trackEvent(NavBarEvents.discordLink)}
+              onClick={() => {
+                logEvent([EventName.Sidebar.discordClicked]);
+              }}
             >
               <Image
                 src="/icons/discord.svg"
@@ -200,7 +209,9 @@ export const SidebarBottom: FunctionComponent = observer(() => {
               target="_blank"
               className="opacity-80 hover:opacity-100 cursor-pointer m-auto"
               rel="noreferrer"
-              onClick={() => trackEvent(NavBarEvents.telegramLink)}
+              onClick={() => {
+                logEvent([EventName.Sidebar.telegramClicked]);
+              }}
             >
               <Image
                 src="/icons/telegram.svg"
@@ -216,7 +227,9 @@ export const SidebarBottom: FunctionComponent = observer(() => {
               href="https://support.osmosis.zone/"
               target="_blank"
               rel="noreferrer"
-              onClick={() => trackEvent(NavBarEvents.supportLabLink)}
+              onClick={() => {
+                logEvent([EventName.Sidebar.supportClicked]);
+              }}
             >
               <span className="opacity-30 hover:opacity-40">
                 Get Support Lab Help

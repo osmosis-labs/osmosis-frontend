@@ -21,6 +21,7 @@ const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
 export class ObservableMetamask implements EthWallet {
   readonly key: WalletKey = "metamask";
+  readonly mobileEnabled = false;
 
   readonly displayInfo: WalletDisplay = {
     iconUrl: "/icons/metamask-fox.svg",
@@ -245,7 +246,7 @@ export class ObservableMetamask implements EthWallet {
 
   makeExplorerUrl = (txHash: string) =>
     IS_TESTNET
-      ? `https://ropsten.etherscan.io/tx/${txHash}`
+      ? `https://goerli.etherscan.io/tx/${txHash}`
       : `https://etherscan.io/tx/${txHash}`;
 
   // ONBOARDING

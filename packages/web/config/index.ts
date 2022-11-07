@@ -12,5 +12,4 @@ export * from "./ibc-assets";
 export * from "./initial-assets-sort";
 export * from "./price";
 
-/** Config for user analytics events. Should be in sync with: https://www.notion.so/osmosiszone/8bbbabce67fa4c4289989632633b9052?v=7123ab7319054d9aa63ba9e40b6d6c51 */
-export * from "./user-analytics";
+export * from "./user-analytics-v2";
