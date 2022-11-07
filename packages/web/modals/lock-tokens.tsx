@@ -139,7 +139,7 @@ export const LockTokensModal: FunctionComponent<
         <span className="subtitle1 text-center">
           {t("lockToken.selectPeriod")}
         </span>
-        <h2 className="text-center">
+        <h2 className="text-center md:font-h3 md:text-h3">
           <span
             className={classNames({ "text-superfluid": superfluidInEffect })}
           >
