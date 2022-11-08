@@ -268,106 +268,106 @@
       "sort": {
         "symbol": "Symbol",
         "network": "Network",
-        "balance": "Balance"
+        "balance": "余额"
       }
     },
     "historyTable": {
-      "title": "Transfer History",
-      "pending": "Pending",
-      "success": "Success",
-      "refunded": "Refunded",
-      "pendingRefunded": "Failed: Pending refund",
+      "title": "转账记录",
+      "pending": "处理中",
+      "success": "成功",
+      "refunded": "退款",
+      "pendingRefunded": "失败：等待退款",
       "colums": {
-        "transactionHash": "Transaction Hash",
-        "type": "Type",
-        "amount": "Amount",
-        "status": "Status",
-        "deposit": "Deposit",
-        "withdraw": "Withdraw"
+        "transactionHash": "交易哈希",
+        "type": "类型",
+        "amount": "数量",
+        "status": "状态",
+        "deposit": "存入",
+        "withdraw": "提现"
       }
     }
   },
   "components": {
     "show": {
-      "more": "View more",
-      "less": "View less"
+      "more": "查看更多",
+      "less": "查看更少"
     },
     "table": {
-      "poolId": "Pool #{id}"
+      "poolId": "资金池 #{id}"
     },
     "sort": {
-      "SORT": "Sort by",
-      "SORTMobile": "Sort",
-      "mobileMenu": "Sort by"
+      "SORT": "排序以",
+      "SORTMobile": "排序",
+      "mobileMenu": "排序已"
     },
-    "MAX": "MAX",
-    "searchTokens": "Search tokens"
+    "MAX": "最大",
+    "searchTokens": "搜索代币"
   },
   "menu": {
-    "swap": "Swap",
-    "pools": "Pools",
-    "assets": "Assets",
-    "stake": "Stake",
-    "vote": "Vote",
-    "info": "Stats",
-    "signOut": "Disconnect",
-    "help": "Get Support Lab Help",
-    "learnMoreFrontier": "Learn More<br/>About the <br2/> <name>Osmosis Frontier</name>"
+    "swap": "兑换",
+    "pools": "资金池",
+    "assets": "资产",
+    "stake": "质押",
+    "vote": "投票",
+    "info": "统计数据",
+    "signOut": "断开连接",
+    "help": "获取 Support Lab 帮助",
+    "learnMoreFrontier": "了解更多<br/>关于 <br2/> <name>Osmosis Frontier</name>"
   },
   "settings": {
-    "title": "Settings",
-    "titleLanguage": "Language",
-    "titleShowDust": "Show pools/assets < {fiatSymbol}0.01"
+    "title": "设置",
+    "titleLanguage": "语言",
+    "titleShowDust": "显示资金池/资金 < {fiatSymbol}0.01"
   },
   "404": {
-    "title": "Not found"
+    "title": "未找到"
   },
   "500": {
-    "title": "Server error"
+    "title": "服务器错误"
   },
   "errors": {
-    "emptyAmount": "Amount is empty",
-    "invalidNumberAmount": "Invalid form of number",
-    "zeroAmount": "Amount is zero",
-    "negativeAmount": "Amount is negative",
-    "insufficientAmount": "Insufficient amount",
-    "negativeSwapFee": "Swap fee is negative",
-    "highSwapFee": "Swap fee too high",
-    "invalidSwapFee": "Swap fee is invalid",
-    "minAssetsCount": "Minimum of {num} assets required",
-    "maxAssetsCount": "Maximum of {num} assets allowed",
-    "negativePercentage": "Percentage must be positive",
-    "percentageSum": "Sum of percentages is not 100",
-    "depositNoBalance": "You have no assets to deposit",
-    "negativeSlippage": "Slippage cannot be negative",
-    "invalidSlippage": "Invalid slippage",
-    "noSendCurrency": "Currency to send not set",
-    "insufficientBal": "Insufficient balance",
-    "notInitialized": "Not initialized",
-    "calculatingShareOutAmount": "Problem calculating out amount",
-    "noAvailableShares": "No available {denom} shares",
-    "generic": "Error"
+    "emptyAmount": "数量为空",
+    "invalidNumberAmount": "无效的数字",
+    "zeroAmount": "数量为零",
+    "negativeAmount": "数量为负数",
+    "insufficientAmount": "数量不足",
+    "negativeSwapFee": "兑换费用为负数",
+    "highSwapFee": "兑换费用太高",
+    "invalidSwapFee": "兑换费用无效",
+    "minAssetsCount": "最少需要 {num} 个资产",
+    "maxAssetsCount": "最多允许 {num} 个资产",
+    "negativePercentage": "百分比必须是正数",
+    "percentageSum": "百分比总和不是 100",
+    "depositNoBalance": "您没有可以存入的资产",
+    "negativeSlippage": "滑点不能为负数",
+    "invalidSlippage": "滑点不可用",
+    "noSendCurrency": "未设置发送货币",
+    "insufficientBal": "余额不足",
+    "notInitialized": "未初始化",
+    "calculatingShareOutAmount": "计算金额溢出",
+    "noAvailableShares": "没有可用 {denom} 共享",
+    "generic": "错误"
   },
-  "connectWallet": "Connect wallet",
+  "connectWallet": "连接钱包",
   "keplr": {
-    "install": "Install Keplr",
-    "wallet": "Keplr Wallet",
-    "extension": "Keplr Browser Extension",
+    "install": "安装 Keplr",
+    "wallet": "Keplr 钱包",
+    "extension": "Keplr 浏览器扩展",
     "walletConnect": "WalletConnect",
-    "mobile": "Keplr Mobile"
+    "mobile": "Keplr 手机端"
   },
-  "connectDisclaimer": "By connecting a wallet, you acknowledge that you have read and understand the Osmosis",
-  "protocolDisclaimer": "Protocol Disclaimer",
-  "Transaction Failed": "Transaction Failed",
-  "Transaction Successful": "Transaction Successful",
-  "Transaction Broadcasting": "Transaction Broadcasting",
-  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
-  "Waiting for transaction to be included in the block": "Waiting for transaction to be included in the block",
-  "view explorer": "view explorer",
-  "Unknown error": "Unknown error",
-  "Request rejected": "Request rejected",
-  "Amount is empty": "Amount is empty",
-  "Insufficient amount": "Insufficient amount",
-  "Amount is zero": "Amount is zero",
-  "Minimum of 2 assets required": "Minimum of 2 assets required"
+  "connectDisclaimer": "连接钱包即表示你已经阅读和理解 Osmosis 相关内容",
+  "protocolDisclaimer": "协议免责声明",
+  "Transaction Failed": "交易失败",
+  "Transaction Successful": "交易成功",
+  "Transaction Broadcasting": "广播交易中",
+  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "交易失败。流动性不足。尝试调整允许的滑点。",
+  "Waiting for transaction to be included in the block": "等待交易打包进区块",
+  "view explorer": "查看浏览器",
+  "Unknown error": "未知错误",
+  "Request rejected": "请求拒绝",
+  "Amount is empty": "数量为空",
+  "Insufficient amount": "数量不足",
+  "Amount is zero": "数量为零",
+  "Minimum of 2 assets required": "最少需要两种资产"
 }
