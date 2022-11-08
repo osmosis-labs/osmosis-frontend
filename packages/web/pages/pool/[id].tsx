@@ -42,7 +42,7 @@ import {
 } from "../../components/chart";
 import { PoolAssetsIcon } from "../../components/assets";
 import { BondCard } from "../../components/cards";
-import { Button } from "../../components/buttons";
+import { Button, ArrowButton } from "../../components/buttons";
 import { useTranslation } from "react-multi-lang";
 
 const E = EventName.PoolDetail;
@@ -496,18 +496,9 @@ const Pool: FunctionComponent = observer(() => {
                 </h4>
               </div>
               {poolDetailConfig?.userAvailableValue.toDec().gt(new Dec(0)) && (
-                <button
-                  className="flex items-center gap-1 text-wosmongton-200"
-                  onClick={() => setShowLockLPTokenModal(true)}
-                >
+                <ArrowButton onClick={() => setShowLockLPTokenModal(true)}>
                   {t("pool.earnMore")}
-                  <Image
-                    alt="earn more"
-                    src="/icons/arrow-right.svg"
-                    height={24}
-                    width={24}
-                  />
-                </button>
+                </ArrowButton>
               )}
             </div>
           </div>

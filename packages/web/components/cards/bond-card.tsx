@@ -5,6 +5,7 @@ import moment from "dayjs";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { BondableDuration } from "@osmosis-labs/stores";
 import { FallbackImg } from "../assets";
+import { ArrowButton } from "../buttons";
 import { useTranslation } from "react-multi-lang";
 
 export const BondCard: FunctionComponent<
@@ -58,18 +59,7 @@ export const BondCard: FunctionComponent<
               <span>{t("pool.shares")}</span>
             </div>
             {userShares.toDec().gt(new Dec(0)) && (
-              <button
-                className="flex items-center gap-1 text-wosmongton-200"
-                onClick={onUnbond}
-              >
-                {t("pool.unbond")}
-                <Image
-                  alt="unbond"
-                  src="/icons/arrow-right.svg"
-                  height={24}
-                  width={24}
-                />
-              </button>
+              <ArrowButton onClick={onUnbond}>{t("pool.unbond")}</ArrowButton>
             )}
           </div>
           {splashImageSrc && (
