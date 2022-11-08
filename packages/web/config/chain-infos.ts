@@ -2037,7 +2037,7 @@ const chainInfos = (
           coinDenom: "stOSMO",
           coinMinimalDenom: "stuosmo",
           coinDecimals: 6,
-          // coinGeckoId: "pool:stuosmo",
+          // coinGeckoId: "osmosis",
           coinImageUrl: "/tokens/stosmo.svg",
         },
         {
