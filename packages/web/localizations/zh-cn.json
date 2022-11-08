@@ -2,7 +2,7 @@
   "app": {
     "banner": {
       "title": "您正在查看所有无许可资产",
-      "linkText": "您正在查看所有无许可资产. <link>点击此处返回主应用</link>."
+      "linkText": "您正在查看所有无许可资产，<link>点击此处返回主应用</link>."
     }
   },
   "swap": {
@@ -12,7 +12,7 @@
       "slippage": "滑点上限",
       "slippageInfo": "如果价格的不利变动超过此百分比，您的交易将被撤回."
     },
-    "available": "余额",
+    "available": "可用",
     "MAX": "最大",
     "HALF": "对半",
     "button": "兑换",
@@ -38,7 +38,7 @@
     "incentivized": "激励池",
     "all": "所有池",
     "allTab": "所有",
-    "superfluid": {   
+    "superfluid": {
       "title": "超流质押池",
       "tab": "超流质押",
       "APR": "APR",
@@ -85,12 +85,12 @@
         "three": "步骤 {step} / {nbStep} - 确认资金池的代币比率和总量"
       },
       "infoMessage": "资金池创建费",
-      "infoCaption": "发送到Osmosis社区池",
+      "infoCaption": "已发送到 Osmosis 社区池",
       "buttonCreate": "创建资金池",
       "buttonNext": "下一步",
-      "buttonBack": "前一步",
+      "buttonBack": "上一步",
       "buttonAddToken": "添加新的代币",
-      "available": "余额",
+      "available": "可用",
       "amount": "总量",
       "token": "代币",
       "swapFee": "设置交易费",
@@ -112,7 +112,7 @@
     "earnMore": "通过绑定赚取更多",
     "dailyEarnAmount": "{amount} / 天",
     "putAssetsToWork": "让您的资产发挥作用.",
-    "putAssetsToWorkCaption": "将您的资产添加到此资金池中以解锁令人兴奋的APR. 解绑期越长您赚得越多.",
+    "putAssetsToWorkCaption": "将您的资产添加到此资金池中以解锁令人兴奋的 APR，解绑期越长您赚得越多.",
     "learnMore": "了解更多",
     "level": "等级 {level}",
     "earnSwapFees": "赚取交易费",
@@ -135,34 +135,34 @@
     "incentives": "奖励",
     "details": "详情",
     "rewardDistribution": "向所有流动性提供者发放奖励",
-    "superfluidStaking": "超流动性质押",
+    "superfluidStaking": "超流质押",
     "delegated": "委托",
     "undelegating": "取消委托",
     "commission": "佣金",
-    "from": "来源",
-    "swapFees": "兑换费用",
+    "from": "来自",
+    "swapFees": "交易费",
     "7davg": "(7日平均)"
   },
   "removeLiquidity": {
     "title": "移除流动性",
     "titleInPool": "从#{poolId}号资金池移除流动性",
-    "sharesAmount": "{shares} 占有量"
+    "sharesAmount": "{shares} 份额"
   },
   "addLiquidity": {
     "title": "添加流动性",
     "titleInPool": "向#{poolId}号资金池添加流动性",
     "allAssets": "全部资产",
-    "singleAsset": "单一资产",
+    "singleAsset": "单边资产",
     "available": "可用",
-    "autoswapCaption": "使用自动兑换（autoswap）添加单个资产的流动."
+    "autoswapCaption": "使用自动兑换为单边资产添加流动性."
   },
   "lockToken": {
     "title": "绑定LP份额",
     "titleInPool": "将份额绑定在 #{poolId}号资金池",
     "selectPeriod": "选择解绑周期",
     "availableToken": "可用",
-    "amountToBond": "绑定额度",
-    "superfluidStake": "超流动性质押",
+    "amountToBond": "绑定数量",
+    "superfluidStake": "超流质押",
     "bondingRequirement": "需要绑定{numDays}天",
     "buttonNext": "下一步",
     "buttonBond": "绑定",
@@ -176,7 +176,7 @@
     "bondedAmount": "已绑定数量",
     "estimation": "预估超流委派值",
     "estimationMobile": "预估委派值",
-    "estimationInfo": "此委派值是会改变的，并且根据资金池中的OSMO数量有关",
+    "estimationInfo": "此委派值是会改变的，并且基于资金池中的 OSMO 数量预估",
     "buttonBond": "绑定 & 质押",
     "columns": {
       "validator": "验证节点",
@@ -191,8 +191,8 @@
     "myPools": "我的资金池",
     "transferAssetSelect": {
       "deposit": "存入",
-      "withdraw": "取出",
-      "network": "网络名称",
+      "withdraw": "提币",
+      "network": "网络",
       "buttonNext": "下一步"
     },
     "poolCards": {
@@ -208,18 +208,18 @@
       "selectAmount": "选择数量",
       "estimatedTime": "预估时间",
       "waitTime": "20 秒",
-      "copied": "已复制!",
+      "copied": "已复制！",
       "IBCTransfer": "IBC 转账",
       "from": "从",
       "to": "至",
-      "warningLossFunds": "提示：提币到中心化地址会导致资产损失",
+      "warningLossFunds": "警告：提币到中心化交易所地址会导致资产损失",
       "buttonEnter": "确定",
-      "checkboxVerify": "我确认没有发送到一个变化的地址.",
+      "checkboxVerify": "我确认没有发送到一个交易所的地址.",
       "buttonEdit": "编辑",
       "amoutWithdraw": "提币数量",
       "amoutDeposit": "存入数量",
       "availableBalance": "可用余额：",
-      "MAX": "最大值"
+      "MAX": "最大"
     },
     "transfer": {
       "titleWithdraw": "提币 {coinDenom}",
@@ -229,12 +229,12 @@
       "to": "至",
       "via": "经过",
       "loading": "加载中",
-      "availableOn": "在 {network}网络上可用",
+      "availableOn": "在 {network} 网络上可用",
       "availableMobile": "可用",
       "transferFee": "转账费",
       "errors": {
         "reconnectWallet": "重新连接 {walletName}",
-        "wrongNetworkInWallet": "在 {walletName}中网络错误",
+        "wrongNetworkInWallet": "在 {walletName} 中网络错误",
         "insufficientFee": "费用不足",
         "insufficientBal": "余额不足"
       },
@@ -249,7 +249,7 @@
     "table": {
       "depositButton": "存入",
       "withdrawButton": "提币",
-      "search": "根据名称过滤",
+      "search": "搜索代币",
       "title": "资产",
       "hideZero": "隐藏0余额",
       "buyOsmo": "买入",
@@ -290,7 +290,7 @@
   "components": {
     "show": {
       "more": "查看更多",
-      "less": "收起查看"
+      "less": "收起更多"
     },
     "table": {
       "poolId": "资金池 #{id}"
@@ -331,9 +331,9 @@
     "zeroAmount": "数量为零",
     "negativeAmount": "数量为负数",
     "insufficientAmount": "数量不足",
-    "negativeSwapFee": "兑换费用为负数",
-    "highSwapFee": "兑换费用太高",
-    "invalidSwapFee": "兑换费用无效",
+    "negativeSwapFee": "交易费为负数",
+    "highSwapFee": "交易费太高",
+    "invalidSwapFee": "交易费无效",
     "minAssetsCount": "最少需要 {num} 个资产",
     "maxAssetsCount": "最多允许 {num} 个资产",
     "negativePercentage": "百分比必须是正数",
@@ -361,7 +361,7 @@
   "Transaction Failed": "交易失败",
   "Transaction Successful": "交易成功",
   "Transaction Broadcasting": "广播交易中",
-  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "交易失败.流动性不足.尝试调整允许的滑点.",
+  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "交易失败，流动性不足，尝试调整允许的滑点.",
   "Waiting for transaction to be included in the block": "等待交易打包进区块",
   "view explorer": "浏览器查看",
   "Unknown error": "未知错误",
