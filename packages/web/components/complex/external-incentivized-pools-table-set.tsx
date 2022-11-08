@@ -433,7 +433,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
       <>
         <div className="mt-5 flex flex-wrap gap-3 items-center justify-between">
           <h5>{t("pools.externalIncentivized.title")}</h5>
-          <div className="flex items-center gap-8 lg:w-full lg:place-content-between">
+          <div className="flex items-center gap-3 lg:w-full lg:place-content-between">
             <SearchBox
               currentValue={query}
               onInput={setQuery}

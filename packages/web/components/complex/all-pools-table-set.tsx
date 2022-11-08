@@ -588,7 +588,7 @@ export const AllPoolsTableSet: FunctionComponent<{
               selectedOptionId={activeOptionId}
               onSelect={selectOption}
             />
-            <div className="flex flex-wrap items-center gap-8 lg:w-full lg:place-content-between">
+            <div className="flex flex-wrap items-center gap-3 lg:w-full lg:place-content-between">
               <SearchBox
                 currentValue={query}
                 onInput={setQuery}
