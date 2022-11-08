@@ -145,12 +145,12 @@
   },
   "removeLiquidity": {
     "title": "Remove Liquidity",
-    "titleInPool": "Remove liquidity from {poolId}",
+    "titleInPool": "Remove liquidity from pool #{poolId}",
     "sharesAmount": "{shares} shares"
   },
   "addLiquidity": {
     "title": "Add Liquidity",
-    "titleInPool": "Add liquidity to {poolId}",
+    "titleInPool": "Add liquidity to pool #{poolId}",
     "allAssets": "All assets",
     "singleAsset": "Single asset",
     "available": "Available",
@@ -158,7 +158,7 @@
   },
   "lockToken": {
     "title": "Bond LP Shares",
-    "titleInPool": "Lock shares in {poolId}",
+    "titleInPool": "Lock shares in pool #{poolId}",
     "selectPeriod": "Select unbonding period",
     "availableToken": "Available",
     "amountToBond": "Amount to bond",
