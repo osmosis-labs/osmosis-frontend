@@ -11,7 +11,7 @@ export const SourceChainConfigs: {
   usdc: {
     ethereum: {
       id: IS_TESTNET
-        ? ("Ethereum Goerli Testnet" as const)
+        ? ("Goerli Testnet" as const)
         : ("Ethereum" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x254d06f33bDc5b8ee05b2ea472107E300226659A"
@@ -29,7 +29,7 @@ export const SourceChainConfigs: {
     },
     binance: {
       id: IS_TESTNET
-        ? ("Binance Smart Chain Testnet" as const)
+        ? ("BSC Testnet" as const)
         : ("Binance Smart Chain" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0xc2fA98faB811B785b81c64Ac875b31CC9E40F9D2"
@@ -67,7 +67,7 @@ export const SourceChainConfigs: {
   weth: {
     ethereum: {
       id: IS_TESTNET
-        ? ("Ethereum Goerli Testnet" as const)
+        ? ("Goerli Testnet" as const)
         : ("Ethereum" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"
@@ -203,7 +203,7 @@ export const SourceChainConfigs: {
   wbnb: {
     binance: {
       id: IS_TESTNET
-        ? ("Binance Smart Chain Testnet" as const)
+        ? ("BSC Testnet" as const)
         : ("Binance Smart Chain" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd"

@@ -76,26 +76,17 @@ const AxelarTransfer: FunctionComponent<
     // notify eth wallet of prev selected preferred chain
     useEffect(() => {
 
-      console.log(selectedSourceChainKey);
-
-      let ethChainId: string | undefined = getKeyByValue(
+      let ethClientChainName: string | undefined = getKeyByValue(
         EthClientChainIds_SourceChainMap,
         selectedSourceChainKey
       ) ?? selectedSourceChainKey
 
-      console.log(selectedSourceChainKey);
-      console.log(ethChainId);
-
       let hexChainId: string | undefined = getKeyByValue(
         ChainNames,
-        ethChainId
+        ethClientChainName
       )
-        ? ethChainId
+        ? ethClientChainName
         : undefined;
-
-      console.log(selectedSourceChainKey);
-      console.log(ethChainId);
-      console.log(hexChainId);
 
       if (!hexChainId) return;
 
@@ -230,7 +221,9 @@ const AxelarTransfer: FunctionComponent<
 
     const correctChainSelected =
       (EthClientChainIds_SourceChainMap[ethWalletClient.chainId as string] ??
-        ethWalletClient.chainId) === selectedSourceChainAxelarKey;
+        ethWalletClient.chainId) ===
+      (AxelarChainIds_SourceChainMap[selectedSourceChainAxelarKey] ??
+        selectedSourceChainAxelarKey);
 
     const { depositAddress, isLoading: isDepositAddressLoading } =
       useDepositAddress(

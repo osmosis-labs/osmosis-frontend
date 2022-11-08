@@ -28,9 +28,9 @@ export type SourceChain =
   | "Avalanche"
   | "Avalanche Fuji Testnet"
   | "Binance Smart Chain"
-  | "Binance Smart Chain Testnet"
+  | "BSC Testnet"
   | "Ethereum"
-  | "Ethereum Goerli Testnet"
+  | "Goerli Testnet"
   | "Fantom"
   | "Fantom Testnet"
   | "Moonbeam"
@@ -52,8 +52,8 @@ export const AxelarChainIds_SourceChainMap: {
   ? {
       "aurora": "Aurora Testnet",
       "Avalanche": "Avalanche Fuji Testnet",
-      "binance": "Binance Smart Chain Testnet",
-      "ethereum-2": "Ethereum Goerli Testnet",
+      "binance": "BSC Testnet",
+      "ethereum-2": "Goerli Testnet",
       "Fantom": "Fantom Testnet",
       "Moonbeam": "Moonbase Alpha",
       "Polygon": "Mumbai"
@@ -78,8 +78,8 @@ export const EthClientChainIds_SourceChainMap: {
 } = {
   "Aurora Testnet": "Aurora Testnet",
   "Avalanche Fuji Testnet": "Avalanche Fuji Testnet",
-  "Binance Smart Chain Testnet": "Binance Smart Chain Testnet",
-  "Goerli Test Network": "Ethereum Goerli Testnet",
+  "Binance Smart Chain Testnet": "BSC Testnet",
+  "Goerli Test Network": "Goerli Testnet",
   "Fantom Testnet": "Fantom Testnet",
   "Moonbase Alpha": "Moonbase Alpha",
   "Mumbai": "Mumbai",
