@@ -574,7 +574,8 @@ const Pool: FunctionComponent = observer(() => {
                   </Button>
                   <Button
                     className={classNames("w-fit xs:w-full shrink-0 ", {
-                      "bg-gradient-positive text-osmoverse-900": levelCta === 1,
+                      "bg-gradient-positive text-osmoverse-900 !border-0":
+                        levelCta === 1,
                     })}
                     onClick={() => setShowAddLiquidityModal(true)}
                   >
@@ -618,7 +619,8 @@ const Pool: FunctionComponent = observer(() => {
               </div>
               <Button
                 className={classNames("w-96 md:w-full border-none", {
-                  "bg-gradient-positive text-osmoverse-900": levelCta === 2,
+                  "bg-gradient-positive text-osmoverse-900 !border-0":
+                    levelCta === 2,
                 })}
                 disabled={levelCta !== 2}
                 onClick={() => setShowLockLPTokenModal(true)}
