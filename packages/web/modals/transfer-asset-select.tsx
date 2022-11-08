@@ -13,6 +13,8 @@ import type { SourceChain } from "../integrations/axelar";
 import { useConnectWalletModalRedirect, useWindowSize } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
 
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
+
 /** Intermediate step to allow a user to select & config an asset before deposit/withdraw. */
 export const TransferAssetSelectModal: FunctionComponent<
   ModalBaseProps & {
@@ -47,7 +49,7 @@ export const TransferAssetSelectModal: FunctionComponent<
               token: {
                 currency: { coinDenom },
               },
-            }) => coinDenom === "USDC"
+            }) => coinDenom === (IS_TESTNET ? "aUSDC" : "USDC"),
           )?.token.denom) || tokens[0].token.denom
   );
   const [selectedSourceChainKey, setSelectedSourceChainKey] =
