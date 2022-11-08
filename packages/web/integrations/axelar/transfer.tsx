@@ -23,7 +23,6 @@ import {
   ChainNames,
   EthWallet,
   transfer as erc20Transfer,
-  transfer,
   useTxReceiptState,
 } from "../ethereum";
 import { useGeneralAmountConfig } from "../use-general-amount-config";
