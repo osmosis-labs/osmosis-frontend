@@ -197,7 +197,7 @@
     },
     "poolCards": {
       "APR": "APR",
-      "FeeAPY": "APY费用",
+      "FeeAPY": "费用 APY",
       "liquidity": "资金池流动性",
       "bonded": "已绑定",
       "myLiquidity": "我的流动性"
