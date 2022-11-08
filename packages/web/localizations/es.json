@@ -26,33 +26,33 @@
     }
   },
   "pools": {
-    "title": "piscinas activas",
+    "title": "Pools activas",
     "poolId": "Grupo #{id}",
     "priceOsmo": "Precio de osmo",
     "rewardDistribution": "Distribución de recompensas en",
-    "myPools": "Mis piscinas",
+    "myPools": "Mis Pools",
     "APR": "ABR",
     "available": "Disponible",
-    "liquidity": "Liquidez",
+    "liquidity": "Liquidez de la Pool",
     "bonded": "Garantizada",
     "incentivized": "Incentivada",
-    "all": "Todas los piscinas",
+    "all": "Todas los Pools",
     "allTab": "Todos",
     "superfluid": {
-      "title": "piscinas superflúidas",
+      "title": "Pools superflúidas",
       "tab": "Superfluido",
       "APR": "ABR",
-      "liquidity": "Liquidez",
+      "liquidity": "Liquidez de la Pool",
       "fees7D": "Tarifas (7d)"
     },
     "allPools": {
-      "title": "Todas los piscinas",
+      "title": "Todas los Pools",
       "myLiquidity": "Mi liquidez",
       "TVL": "TVL",
       "APR": "ABR",
       "APRIncentivized": "7d vol.",
-      "search": "piscinas de búsqueda",
-      "displayLowLiquidity": "Show piscinas <{value}",
+      "search": "Pools de búsqueda",
+      "displayLowLiquidity": "Show Pools <{value}",
       "sort": {
         "poolName": "Nombre de la Pool",
         "liquidity": "Liquidez",
@@ -84,7 +84,7 @@
         "two": "Paso {paso} / {nbstep} - cantidad de entrada para agregar",
         "three": "Paso {paso} / {nbstep} - confirmar la relación del grupo y la cantidad de token"
       },
-      "infoMessage": "Tarifa de creación de piscinas",
+      "infoMessage": "Tarifa de creación de Pools",
       "infoCaption": "Transferido a la Pool comunitaria de ósmosis",
       "buttonCreate": "Crear Pool",
       "buttonNext": "Próxima",
@@ -104,7 +104,7 @@
     "swap": "Tokens de intercambio",
     "superfluidEnabled": "Apuesta superfluid habilitada",
     "24hrTradingVolume": "Volumen comercial de 24 h",
-    "liquidity": "Liquidez",
+    "liquidity": "Liquidez de la Pool",
     "swapFee": "Tarifa de intercambio",
     "yourStats": "Tus estadísticas",
     "sharesAmount": "{shares} acciones",
@@ -112,9 +112,9 @@
     "earnMore": "Gane más por vinculación",
     "dailyEarnAmount": "{amount} / día",
     "putAssetsToWork": "Pon tus activos a trabajar.",
-    "putAssetsToWorkCaption": "Agregue sus activos a esta piscina para desbloquear emocionantes APR. Cuanto más tiempo sea su período de óseo, más hará.",
+    "putAssetsToWorkCaption": "Agregue sus activos a esta Pool para desbloquear emocionantes APR. Cuanto más tiempo sea su período de óseo, más hará.",
     "learnMore": "Aprende más",
-    "level": "Nivel {level}",
+    "level": "Nivel {nivel}",
     "earnSwapFees": "Ganar tarifas de intercambio",
     "earnSwapFeesCaption": "Convierta sus tokens en acciones y gane en cada intercambio.",
     "APR": "ABR",
@@ -145,7 +145,7 @@
   },
   "removeLiquidity": {
     "title": "Eliminar liquidez",
-    "titleInPool": "Sacar la liquidez de {PoolId}",
+    "titleInPool": "Eliminar la liquidez de {PoolId}",
     "sharesAmount": "{acciones} acciones"
   },
   "addLiquidity": {
@@ -188,9 +188,9 @@
     "unbondedAssets": "No acelerado",
     "bondedAssets": "Garantizada",
     "stakedAssets": "OSMO stakeado",
-    "myPools": "Mis piscinas",
+    "myPools": "Mis Pools",
     "transferAssetSelect": {
-      "deposit": "Depositar",
+      "deposit": "Depósito",
       "withdraw": "Retirar",
       "network": "La red",
       "buttonNext": "Próxima"
@@ -198,26 +198,26 @@
     "poolCards": {
       "APR": "ABR",
       "FeeAPY": "Tarifa apy",
-      "liquidity": "Liquidez",
+      "liquidity": "Liquidez de la Pool",
       "bonded": "Garantizada",
       "myLiquidity": "Mi liquidez"
     },
     "ibcTransfer": {
       "titleWithdraw": "Retirar {coinDenom}",
-      "titleDeposit": "Depositar {coinDenom}",
-      "selectAmount": "Cantidad seleccionada",
+      "titleDeposit": "Depósito {coinDenom}",
+      "selectAmount": "Cantidad de selección",
       "estimatedTime": "Hora prevista",
       "waitTime": "20 segundos",
-      "copied": "¡Copiado!",
+      "copied": "¡Copiada!",
       "IBCTransfer": "Transferencia de IBC",
       "from": "de",
       "to": "a",
-      "warningLossFunds": "ADVERTENCIA: Retirar a una dirección de intercambio resultara en la pérdida de fondos.",
+      "warningLossFunds": "ADVERTENCIA: Retirar a la dirección de intercambio central dará como resultado la pérdida de fondos.",
       "buttonEnter": "Ingresar",
       "checkboxVerify": "Verifico que no estoy enviando a una dirección de intercambio.",
       "buttonEdit": "Editar",
       "amoutWithdraw": "Cantidad a retirar",
-      "amoutDeposit": "Cantidad a depositar",
+      "amoutDeposit": "La cantidad a depositar",
       "availableBalance": "Saldo disponible:",
       "MAX": "Máximo"
     },
@@ -305,7 +305,7 @@
   },
   "menu": {
     "swap": "Intercambio",
-    "pools": "Piscinas",
+    "pools": "Pools",
     "assets": "Activos",
     "stake": "Stake",
     "vote": "Votar",
@@ -317,7 +317,7 @@
   "settings": {
     "title": "Ajustes",
     "titleLanguage": "Idioma",
-    "titleShowDust": "Mostrar piscinas/activos <{fiatSymbol} 0.01"
+    "titleShowDust": "Mostrar Pools/activos <{fiatSymbol} 0.01"
   },
   "404": {
     "title": "Extraviado"
