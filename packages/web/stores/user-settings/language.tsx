@@ -31,6 +31,10 @@ const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
     display: "Polski",
   },
   {
+    value: "th",
+    display: "ไทย",
+  },
+  {
     value: "tr",
     display: "Türkçe",
   },
