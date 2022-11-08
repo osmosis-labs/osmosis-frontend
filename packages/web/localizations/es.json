@@ -25,12 +25,12 @@
       "findCurrency": "No se pudo encontrar moneda {moneda}"
     }
   },
-  "piscinas": {
+  "pools": {
     "title": "piscinas activas",
     "poolId": "Grupo #{id}",
     "priceOsmo": "Precio de osmo",
     "rewardDistribution": "Distribución de recompensas en",
-    "mypiscinas": "Mis piscinas",
+    "myPools": "Mis piscinas",
     "APR": "ABR",
     "available": "Disponible",
     "liquidity": "Liquidez",
@@ -45,7 +45,7 @@
       "liquidity": "Liquidez",
       "fees7D": "Tarifas (7d)"
     },
-    "allpiscinas": {
+    "allPools": {
       "title": "Todas los piscinas",
       "myLiquidity": "Mi liquidez",
       "TVL": "TVL",
@@ -188,7 +188,7 @@
     "unbondedAssets": "No acelerado",
     "bondedAssets": "Garantizada",
     "stakedAssets": "OSMO stakeado",
-    "mypiscinas": "Mis piscinas",
+    "myPools": "Mis piscinas",
     "transferAssetSelect": {
       "deposit": "Depositar",
       "withdraw": "Retirar",
@@ -305,7 +305,7 @@
   },
   "menu": {
     "swap": "Intercambio",
-    "piscinas": "Piscinas",
+    "pools": "Piscinas",
     "assets": "Activos",
     "stake": "Stake",
     "vote": "Votar",
