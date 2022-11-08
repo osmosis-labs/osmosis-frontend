@@ -141,7 +141,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-476",
     destChannelId: "channel-39",
     coinMinimalDenom: "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d:SHD",
-    ics20ContractAddress: "secret180sjm5790gpgw8r3yepq8ulzvj0p5xft8j0lal",
+    ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
     isVerified: true,
   },
   {
@@ -150,7 +150,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-39",
     coinMinimalDenom:
       "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4:stkd-SCRT",
-    ics20ContractAddress: "secret180sjm5790gpgw8r3yepq8ulzvj0p5xft8j0lal",
+    ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
     isVerified: true,
   },
   {
@@ -159,7 +159,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-39",
     coinMinimalDenom:
       "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4:SIENNA",
-    ics20ContractAddress: "secret180sjm5790gpgw8r3yepq8ulzvj0p5xft8j0lal",
+    ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
     isVerified: true,
   },
   {
@@ -167,7 +167,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-476",
     destChannelId: "channel-39",
     coinMinimalDenom: "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt:BUTT",
-    ics20ContractAddress: "secret180sjm5790gpgw8r3yepq8ulzvj0p5xft8j0lal",
+    ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
     isVerified: true,
   },
   {
@@ -176,7 +176,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-39",
     coinMinimalDenom:
       "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej:ALTER",
-    ics20ContractAddress: "secret180sjm5790gpgw8r3yepq8ulzvj0p5xft8j0lal",
+    ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
     isVerified: true,
   },
   {
