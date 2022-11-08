@@ -1,8 +1,8 @@
 {
   "app": {
     "banner": {
-      "title": "你正在查看所有无许可资产",
-      "linkText": "你正在查看所有无许可资产. <link>点击此处返回主应用</link>."
+      "title": "您正在查看所有无许可资产",
+      "linkText": "您正在查看所有无许可资产. <link>点击此处返回主应用</link>."
     }
   },
   "swap": {
@@ -102,7 +102,7 @@
   "pool": {
     "title": "资金池 #{id}",
     "swap": "兑换代币",
-    "superfluidEnabled": "启用超流质押",
+    "superfluidEnabled": "已启用超流质押",
     "24hrTradingVolume": "24时成交额",
     "liquidity": "资金池流动性",
     "swapFee": "交易费",
@@ -132,8 +132,8 @@
     "sharesAvailableIn": "可用份额",
     "unbonding": "解绑期",
     "superfluidEarnMore": "赚取 {rate} 更多. 去超流质押",
-    "incentives": "Incentives",
-    "details": "Details",
+    "incentives": "奖励",
+    "details": "详情",
     "rewardDistribution": "向所有流动性提供者发放奖励",
     "superfluidStaking": "超流动性质押",
     "delegated": "委托",
@@ -154,7 +154,7 @@
     "allAssets": "全部资产",
     "singleAsset": "单一资产",
     "available": "可用",
-    "autoswapCaption": "使用自动兑换（autoswap）添加单个资产的流动。"
+    "autoswapCaption": "使用自动兑换（autoswap）添加单个资产的流动."
   },
   "lockToken": {
     "title": "绑定LP份额",
@@ -184,7 +184,7 @@
     }
   },
   "assets": {
-    "totalAssets": "资产总量",
+    "totalAssets": "资产总额",
     "unbondedAssets": "未绑定资产",
     "bondedAssets": "已绑定资产",
     "stakedAssets": "质押 OSMO",
@@ -203,7 +203,7 @@
       "myLiquidity": "我的流动性"
     },
     "ibcTransfer": {
-      "titleWithdraw": "提取 {coinDenom}",
+      "titleWithdraw": "提币 {coinDenom}",
       "titleDeposit": "存入 {coinDenom}",
       "selectAmount": "选择数量",
       "estimatedTime": "预估时间",
@@ -212,19 +212,19 @@
       "IBCTransfer": "IBC 转账",
       "from": "从",
       "to": "至",
-      "warningLossFunds": "提示：提取到中心化地址会导致资产损失",
+      "warningLossFunds": "提示：提币到中心化地址会导致资产损失",
       "buttonEnter": "确定",
-      "checkboxVerify": "我确认没有发送到一个变化的地址。",
+      "checkboxVerify": "我确认没有发送到一个变化的地址.",
       "buttonEdit": "编辑",
-      "amoutWithdraw": "提取数量",
+      "amoutWithdraw": "提币数量",
       "amoutDeposit": "存入数量",
       "availableBalance": "可用余额：",
       "MAX": "最大值"
     },
     "transfer": {
-      "titleWithdraw": "提取 {coinDenom}",
+      "titleWithdraw": "提币 {coinDenom}",
       "titleDeposit": "存入 {coinDenom}",
-      "warnDepositAddressDifferent": "警告：{address}中选定的帐户与您上次存入的帐户不同。",
+      "warnDepositAddressDifferent": "警告：{address}中选定的帐户与您上次存入的帐户不同.",
       "from": "从",
       "to": "至",
       "via": "经过",
@@ -241,21 +241,21 @@
       "waitTime": "{minutes} 分钟"
     },
     "selectAssetSource": {
-      "titleWithdraw": "提取至",
+      "titleWithdraw": "提币至",
       "titleDeposit": "存入于",
       "next": "下一步",
       "installWallet": "安装 {walletName}"
     },
     "table": {
       "depositButton": "存入",
-      "withdrawButton": "提取",
+      "withdrawButton": "提币",
       "search": "根据名称过滤",
       "title": "资产",
       "hideZero": "隐藏0余额",
       "buyOsmo": "买入",
       "preTransfer": {
         "deposit": "存入",
-        "withdraw": "提取",
+        "withdraw": "提币",
         "currentBal": "当前余额"
       },
       "columns": {
@@ -263,7 +263,7 @@
         "balance": "余额",
         "transfer": "转账",
         "deposit": "存入",
-        "withdraw": "提取"
+        "withdraw": "提币"
       },
       "sort": {
         "symbol": "符号",
@@ -283,22 +283,22 @@
         "amount": "数量",
         "status": "状态",
         "deposit": "存入",
-        "withdraw": "提现"
+        "withdraw": "提币"
       }
     }
   },
   "components": {
     "show": {
       "more": "查看更多",
-      "less": "查看更少"
+      "less": "收起查看"
     },
     "table": {
       "poolId": "资金池 #{id}"
     },
     "sort": {
-      "SORT": "排序以",
+      "SORT": "排序",
       "SORTMobile": "排序",
-      "mobileMenu": "排序已"
+      "mobileMenu": "排序"
     },
     "MAX": "最大",
     "searchTokens": "搜索代币"
@@ -345,7 +345,7 @@
     "insufficientBal": "余额不足",
     "notInitialized": "未初始化",
     "calculatingShareOutAmount": "计算金额溢出",
-    "noAvailableShares": "没有可用 {denom} 共享",
+    "noAvailableShares": "没有可用 {denom} 份额",
     "generic": "错误"
   },
   "connectWallet": "连接钱包",
@@ -356,14 +356,14 @@
     "walletConnect": "WalletConnect",
     "mobile": "Keplr 手机端"
   },
-  "connectDisclaimer": "连接钱包即表示你已经阅读和理解 Osmosis 相关内容",
+  "connectDisclaimer": "连接钱包即表示您已经阅读和理解 Osmosis 相关内容",
   "protocolDisclaimer": "协议免责声明",
   "Transaction Failed": "交易失败",
   "Transaction Successful": "交易成功",
   "Transaction Broadcasting": "广播交易中",
-  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "交易失败。流动性不足。尝试调整允许的滑点。",
+  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "交易失败.流动性不足.尝试调整允许的滑点.",
   "Waiting for transaction to be included in the block": "等待交易打包进区块",
-  "view explorer": "查看浏览器",
+  "view explorer": "浏览器查看",
   "Unknown error": "未知错误",
   "Request rejected": "请求拒绝",
   "Amount is empty": "数量为空",
