@@ -11,7 +11,7 @@ export const SourceChainConfigs: {
   usdc: {
     ethereum: {
       id: IS_TESTNET
-        ? ("ethereum-2" as const)
+        ? ("Ethereum Goerli Testnet" as const)
         : ("Ethereum" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x254d06f33bDc5b8ee05b2ea472107E300226659A"
@@ -28,7 +28,9 @@ export const SourceChainConfigs: {
       transferFeeMinAmount: IS_TESTNET ? "150000" : "1500000",
     },
     binance: {
-      id: "binance" as const,
+      id: IS_TESTNET
+        ? ("Binance Smart Chain Testnet" as const)
+        : ("Binance Smart Chain" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0xc2fA98faB811B785b81c64Ac875b31CC9E40F9D2"
         : "0x4268B8F0B87b6Eae5d897996E6b845ddbD99Adf3",
@@ -44,7 +46,9 @@ export const SourceChainConfigs: {
       transferFeeMinAmount: IS_TESTNET ? "150000" : "1500000",
     },
     moonbeam: {
-      id: "Moonbeam" as const,
+      id: IS_TESTNET
+        ? ("Moonbase Alpha" as const)
+        : ("Moonbeam" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0xD1633F7Fb3d716643125d6415d4177bC36b7186b"
         : "0xCa01a1D0993565291051daFF390892518ACfAD3A",
@@ -63,7 +67,7 @@ export const SourceChainConfigs: {
   weth: {
     ethereum: {
       id: IS_TESTNET
-        ? ("ethereum-2" as const)
+        ? ("Ethereum Goerli Testnet" as const)
         : ("Ethereum" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"
@@ -74,7 +78,9 @@ export const SourceChainConfigs: {
   },
   wglmr: {
     moonbeam: {
-      id: "Moonbeam" as const,
+      id: IS_TESTNET
+        ? ("Moonbase Alpha" as const)
+        : ("Moonbeam" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x1436aE0dF0A8663F18c0Ec51d7e2E46591730715"
         : "0xAcc15dC74880C9944775448304B263D191c6077F",
@@ -196,7 +202,9 @@ export const SourceChainConfigs: {
   },
   wbnb: {
     binance: {
-      id: ("binance" as const),
+      id: IS_TESTNET
+        ? ("Binance Smart Chain Testnet" as const)
+        : ("Binance Smart Chain" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd"
         : "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",

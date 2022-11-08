@@ -30,7 +30,8 @@ import { useDepositAddress } from "./hooks";
 import {
   AxelarBridgeConfig,
   SourceChain,
-  EthClientChainIds_AxelarChainIdsMap,
+  EthClientChainIds_SourceChainMap,
+  AxelarChainIds_SourceChainMap,
   waitBySourceChain,
 } from ".";
 import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
@@ -74,28 +75,39 @@ const AxelarTransfer: FunctionComponent<
 
     // notify eth wallet of prev selected preferred chain
     useEffect(() => {
+
+      console.log(selectedSourceChainKey);
+
+      let ethChainId: string | undefined = getKeyByValue(
+        EthClientChainIds_SourceChainMap,
+        selectedSourceChainKey
+      ) ?? selectedSourceChainKey
+
+      console.log(selectedSourceChainKey);
+      console.log(ethChainId);
+
       let hexChainId: string | undefined = getKeyByValue(
         ChainNames,
-        selectedSourceChainKey
+        ethChainId
       )
-        ? selectedSourceChainKey
+        ? ethChainId
         : undefined;
 
-      if (!hexChainId) {
-        hexChainId = getKeyByValue(
-          EthClientChainIds_AxelarChainIdsMap,
-          selectedSourceChainKey
-        );
-      }
+      console.log(selectedSourceChainKey);
+      console.log(ethChainId);
+      console.log(hexChainId);
+
       if (!hexChainId) return;
 
       ethWalletClient.setPreferredSourceChain(hexChainId);
     }, [selectedSourceChainKey, ethWalletClient]);
 
     /** Chain key that Axelar accepts in APIs. */
-    const selectedSourceChainAxelarKey =
-      EthClientChainIds_AxelarChainIdsMap[selectedSourceChainKey] ??
-      selectedSourceChainKey;
+    const selectedSourceChainAxelarKey = getKeyByValue(
+      AxelarChainIds_SourceChainMap,
+      selectedSourceChainKey
+    )
+    ?? selectedSourceChainKey;
 
     const sourceChainConfig = sourceChains.find(
       ({ id }) => id === selectedSourceChainKey
@@ -217,7 +229,7 @@ const AxelarTransfer: FunctionComponent<
     }, [ethWalletClient.isConnected, userDisconnectedEthWallet]);
 
     const correctChainSelected =
-      (EthClientChainIds_AxelarChainIdsMap[ethWalletClient.chainId as string] ??
+      (EthClientChainIds_SourceChainMap[ethWalletClient.chainId as string] ??
         ethWalletClient.chainId) === selectedSourceChainAxelarKey;
 
     const { depositAddress, isLoading: isDepositAddressLoading } =
