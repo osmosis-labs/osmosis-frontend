@@ -23,7 +23,9 @@
     "minimumSlippage": "Minimalna wartość uwzględniając odchylenie ({slippage})",
     "error": {
       "findCurrency": "Nie udało się znaleźć waluty {currency}"
-    }
+    },
+    "wrapNativeLink": "Konwertuj {fromDenom} na {toDenom} na {platformName}",
+    "waitTime": "{minutes} minuty"
   },
   "pools": {
     "title": "Aktywne pule",

@@ -238,6 +238,7 @@
         "insufficientFee": "Tarifa insuficiente",
         "insufficientBal": "Saldo insuficiente"
       },
+      "wrapNativeLink": "Convertir {fromDenom} a {toDenom} en {platformName}",
       "waitTime": "{minutes} minutos"
     },
     "selectAssetSource": {

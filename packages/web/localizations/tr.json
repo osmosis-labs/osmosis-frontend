@@ -23,7 +23,9 @@
     "minimumSlippage": "Slipaj dahil elde edilecek minimum ({slippage})",
     "error": {
       "findCurrency": "Para birimi bulunamadı {currency}"
-    }
+    },
+    "wrapNativeLink": "{platformName}'ta {fromDenom}'yi {toDenom}'ye dönüştürün",
+    "waitTime": "{minutes} dakika"
   },
   "pools": {
     "title": "Aktif Havuzlar",
