@@ -34,7 +34,7 @@
     "APR": "APR",
     "available": "Disponible",
     "liquidity": "Liquidez",
-    "bonded": "Garantizada",
+    "bonded": "Garantizado",
     "incentivized": "Incentivada",
     "all": "Todas los piscinas",
     "allTab": "Todos",
@@ -223,7 +223,7 @@
     },
     "transfer": {
       "titleWithdraw": "Retirar {coinDenom}",
-      "titleDeposit": "Depósito {coinDenom}",
+      "titleDeposit": "Depósitar {coinDenom}",
       "warnDepositAddressDifferent": "Advertencia: la cuenta seleccionada en {address} difiere de la cuenta con la que se deposita por última vez.",
       "from": "De",
       "to": "A",
@@ -247,14 +247,14 @@
       "installWallet": "Instalar {walletName}"
     },
     "table": {
-      "depositButton": "Depósito",
+      "depositButton": "Depósitar",
       "withdrawButton": "Retirar",
       "search": "Filtrar por símbolo",
       "title": "Activos",
       "hideZero": "Ocultar saldos cero",
       "buyOsmo": "Comprar",
       "preTransfer": {
-        "deposit": "Depósito",
+        "deposit": "Depósitar",
         "withdraw": "Retirar",
         "currentBal": "Saldo actual"
       },
@@ -262,7 +262,7 @@
         "assetChain": "Activo / cadena",
         "balance": "Balance",
         "transfer": "Transferir",
-        "deposit": "Depósito",
+        "deposit": "Depósitar",
         "withdraw": "Retirar"
       },
       "sort": {
@@ -282,7 +282,7 @@
         "type": "Escribe",
         "amount": "Monto",
         "status": "Estado",
-        "deposit": "Depósito",
+        "deposit": "Depósitar",
         "withdraw": "Retirar"
       }
     }
