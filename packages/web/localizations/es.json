@@ -27,11 +27,11 @@
   },
   "pools": {
     "title": "piscinas activas",
-    "poolId": "Grupo #{id}",
+    "poolId": "Piscina #{id}",
     "priceOsmo": "Precio de osmo",
     "rewardDistribution": "Distribución de recompensas en",
     "myPools": "Mis piscinas",
-    "APR": "ABR",
+    "APR": "APR",
     "available": "Disponible",
     "liquidity": "Liquidez",
     "bonded": "Garantizada",
@@ -39,9 +39,9 @@
     "all": "Todas los piscinas",
     "allTab": "Todos",
     "superfluid": {
-      "title": "piscinas superflúidas",
+      "title": "Piscinas superflúidas",
       "tab": "Superfluido",
-      "APR": "ABR",
+      "APR": "APR",
       "liquidity": "Liquidez",
       "fees7D": "Tarifas (7d)"
     },
@@ -49,7 +49,7 @@
       "title": "Todas los piscinas",
       "myLiquidity": "Mi liquidez",
       "TVL": "TVL",
-      "APR": "ABR",
+      "APR": "APR",
       "APRIncentivized": "7d vol.",
       "search": "piscinas de búsqueda",
       "displayLowLiquidity": "Show piscinas <{value}",
@@ -58,7 +58,7 @@
         "liquidity": "Liquidez",
         "volume24h": "Volumen (24h)",
         "fees": "Tarifas (7d)",
-        "APRIncentivized": "ABR",
+        "APRIncentivized": "APR",
         "APR": "Mi liquidez",
         "poolId": "ID de Pool"
       }
@@ -66,23 +66,23 @@
     "externalIncentivized": {
       "title": "Incentivos externos",
       "TVL": "TVL",
-      "APR": "ABR",
+      "APR": "APR",
       "search": "Buscar por símbolo",
       "sort": {
         "poolName": "Nombre de la Pool",
         "liquidity": "Liquidez",
-        "APR": "ABR",
+        "APR": "APR",
         "epochs": "Épocas restantes",
         "myLiquidity": "Mi liquidez"
       }
     },
     "createPool": {
-      "title": "Crea una nueva Pool",
-      "button": "Crea una nueva Pool",
+      "title": "Crea una nueva Piscina",
+      "button": "Crea una nueva Piscina",
       "step": {
-        "one": "Paso {paso} / {nbstep} - Establecer relaciones de token",
-        "two": "Paso {paso} / {nbstep} - cantidad de entrada para agregar",
-        "three": "Paso {paso} / {nbstep} - confirmar la relación del grupo y la cantidad de token"
+        "one": "Paso {step} / {nbstep} - Establecer relaciones de token",
+        "two": "Paso {step} / {nbstep} - cantidad de entrada para agregar",
+        "three": "Paso {step} / {nbstep} - confirmar la relación del grupo y la cantidad de token"
       },
       "infoMessage": "Tarifa de creación de piscinas",
       "infoCaption": "Transferido a la Pool comunitaria de ósmosis",
@@ -92,7 +92,7 @@
       "buttonAddToken": "Agregar token nuevo",
       "available": "Disponible",
       "amount": "Monto",
-      "token": "Simbólica",
+      "token": "Token",
       "swapFee": "Establecer la tarifa de intercambio",
       "undersandCost": "Entiendo que crear un nuevo grupo costará {POOL_CREATION_FEE}.",
       "interestedCreate": "¿Interesado en crear una nueva Pool?",
@@ -100,10 +100,10 @@
     }
   },
   "pool": {
-    "title": "Grupo #{id}",
+    "title": "Piscina #{id}",
     "swap": "Tokens de intercambio",
     "superfluidEnabled": "Apuesta superfluid habilitada",
-    "24hrTradingVolume": "Volumen comercial de 24 h",
+    "24hrTradingVolume": "Volumen Ultimas 24h",
     "liquidity": "Liquidez",
     "swapFee": "Tarifa de intercambio",
     "yourStats": "Tus estadísticas",
@@ -112,36 +112,36 @@
     "earnMore": "Gane más por vinculación",
     "dailyEarnAmount": "{amount} / día",
     "putAssetsToWork": "Pon tus activos a trabajar.",
-    "putAssetsToWorkCaption": "Agregue sus activos a esta piscina para desbloquear emocionantes APR. Cuanto más tiempo sea su período de óseo, más hará.",
-    "learnMore": "Aprende más",
+    "putAssetsToWorkCaption": "Agregue sus activos a esta piscina para desbloquear APRs. Mientras más tiempo sea su período, más generará.",
+    "learnMore": "Aprender más",
     "level": "Nivel {level}",
     "earnSwapFees": "Ganar tarifas de intercambio",
     "earnSwapFeesCaption": "Convierta sus tokens en acciones y gane en cada intercambio.",
-    "APR": "ABR",
+    "APR": "APR",
     "bondLiquidity": "Liquidez de bonos",
     "bondLiquidityCaption": "Bloquee sus acciones para obtener duraciones más largas para ganar APR más altos.",
     "bondSuperfluidLiquidityCaption": "Vaya superfluido para obtener las recompensas máximas.",
-    "bondShares": "Acciones de bonos",
-    "amountDaysUnbonding": "{numDays} dias unbonding",
+    "bondShares": "Bonar Acciones",
+    "amountDaysUnbonding": "{numDays} dias para desbonar",
     "shares": "Acciones",
     "unbonded": "No acelerado",
     "unbond": "No acelerado",
     "bonded": "Garantizada",
     "showDetails": "Mostrar detalles",
-    "collapseDetails": "Detalles del colapso",
+    "collapseDetails": "Ocultar Detalles",
     "sharesAvailableIn": "disponible en",
     "unbonding": "no acelerado",
-    "superfluidEarnMore": "Gane {tasa} más. Ir superfluid",
+    "superfluidEarnMore": "Gane {rate} más. Haga superfluido",
     "incentives": "Incentivos",
     "details": "Detalles",
     "rewardDistribution": "Recompensas distribuidas a todos los proveedores de liquidez",
-    "superfluidStaking": "Estancamiento superflúdico",
+    "superfluidStaking": "Staking superflúido",
     "delegated": "delegada",
     "undelegating": "sin elegir",
     "commission": "comisión",
     "from": "de",
     "swapFees": "tarifas de intercambio",
-    "7davg": "(7d AVG)"
+    "7davg": "(7d Promedio)"
   },
   "removeLiquidity": {
     "title": "Eliminar liquidez",
@@ -157,16 +157,16 @@
     "autoswapCaption": "Use AutoSWAP para agregar liquidez con un solo activo."
   },
   "lockToken": {
-    "title": "Bond acciones LP",
+    "title": "Bonar acciones LP",
     "titleInPool": "Bloquear las acciones en {poolId}",
-    "selectPeriod": "Seleccionar el período de bonding",
+    "selectPeriod": "Seleccionar el período de bono",
     "availableToken": "Disponible",
     "amountToBond": "Monto a la fianza",
     "superfluidStake": "Estancamiento superflúdico",
-    "bondingRequirement": "{numDays} de dias requeridos para bonding",
+    "bondingRequirement": "{numDays} de dias requeridos para bonar",
     "buttonNext": "Próxima",
     "buttonBond": "Vínculo",
-    "buttonBondStake": "Bond y Stake"
+    "buttonBondStake": "Bonar y Stake"
   },
   "superfluidValidator": {
     "title": "Seleccionar validador superfluid",
@@ -196,7 +196,7 @@
       "buttonNext": "Próxima"
     },
     "poolCards": {
-      "APR": "ABR",
+      "APR": "APR",
       "FeeAPY": "Tarifa apy",
       "liquidity": "Liquidez",
       "bonded": "Garantizada",
