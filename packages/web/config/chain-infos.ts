@@ -1943,7 +1943,7 @@ const chainInfos = (
           coinDenom: "IST",
           coinMinimalDenom: "uist",
           coinDecimals: 6,
-          // coinGeckoId: "cudos",
+          coinGeckoId: "pool:uist",
           coinImageUrl: "/tokens/ist.png",
         },
       ],
