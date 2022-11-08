@@ -1,0 +1,373 @@
+{
+  "app": {
+    "banner": {
+      "title": "คุณกำลังดูสินทรัพย์ที่ไม่มีสิทธิ์ทั้งหมด",
+      "linkText": "คุณกำลังดูสินทรัพย์ที่ไม่มีสิทธิ์ทั้งหมด <link> คลิกที่นี่เพื่อกลับไปที่แอพหลัก </link>"
+    }
+  },
+  "swap": {
+    "title": "แลกเปลี่ยน",
+    "settings": {
+      "title": "การตั้งค่าธุรกรรม",
+      "slippage": "ความอดทนลื่นไถล",
+      "slippageInfo": "การทำธุรกรรมของคุณจะเปลี่ยนกลับหากราคาเปลี่ยนแปลงอย่างไม่น่าพอใจมากกว่าเปอร์เซ็นต์นี้"
+    },
+    "available": "มีอยู่",
+    "MAX": "สูงสุด",
+    "HALF": "ครึ่ง",
+    "button": "แลกเปลี่ยน",
+    "buttonError": "สลับไปแล้ว",
+    "priceImpact": "ผลกระทบด้านราคา",
+    "fee": "ค่าธรรมเนียมการแลกเปลี่ยน ({fee})",
+    "expectedOutput": "ผลผลิตที่คาดหวัง",
+    "minimumSlippage": "ได้รับขั้นต่ำหลังจากลื่นไถล ({slippage})",
+    "error": {
+      "findCurrency": "ไม่พบสกุลเงิน {currency}"
+    }
+  },
+  "pools": {
+    "title": "สระว่ายน้ำที่ใช้งานอยู่",
+    "poolId": "พูล #{id}",
+    "priceOsmo": "ราคา osmo",
+    "rewardDistribution": "รางวัลการกระจายใน",
+    "myPools": "สระว่ายน้ำของฉัน",
+    "APR": "เม.ย.",
+    "available": "มีอยู่",
+    "liquidity": "สภาพคล่องสระว่ายน้ำ",
+    "bonded": "ถูกผูกมัด",
+    "incentivized": "ซึ่งทำให้เกิดแรงจูงใจ",
+    "all": "สระว่ายน้ำทั้งหมด",
+    "allTab": "ทั้งหมด",
+    "superfluid": {
+      "title": "สระว่ายน้ำ superfluid",
+      "tab": "ฟีฟลูอิด",
+      "APR": "เม.ย.",
+      "liquidity": "สภาพคล่องสระว่ายน้ำ",
+      "fees7D": "ค่าธรรมเนียม (7D)"
+    },
+    "allPools": {
+      "title": "สระว่ายน้ำทั้งหมด",
+      "myLiquidity": "สภาพคล่องของฉัน",
+      "TVL": "ทีวี",
+      "APR": "เม.ย.",
+      "APRIncentivized": "7d Vol.",
+      "search": "ค้นหาพูล",
+      "displayLowLiquidity": "แสดงพูล <{value}",
+      "sort": {
+        "poolName": "ชื่อสระว่ายน้ำ",
+        "liquidity": "สภาพคล่อง",
+        "volume24h": "ปริมาณ (24 ชั่วโมง)",
+        "fees": "ค่าธรรมเนียม (7D)",
+        "APRIncentivized": "เม.ย.",
+        "APR": "สภาพคล่องของฉัน",
+        "poolId": "รหัสสระว่ายน้ำ"
+      }
+    },
+    "externalIncentivized": {
+      "title": "สิ่งจูงใจภายนอก",
+      "TVL": "ทีวี",
+      "APR": "เม.ย.",
+      "search": "ค้นหาโดยสัญลักษณ์",
+      "sort": {
+        "poolName": "ชื่อสระว่ายน้ำ",
+        "liquidity": "สภาพคล่อง",
+        "APR": "เม.ย.",
+        "epochs": "ยุคที่เหลืออยู่",
+        "myLiquidity": "สภาพคล่องของฉัน"
+      }
+    },
+    "createPool": {
+      "title": "สร้างพูลใหม่",
+      "button": "สร้างพูลใหม่",
+      "step": {
+        "one": "ขั้นตอน {step} / {nbstep} - ตั้งค่าอัตราส่วนโทเค็น",
+        "two": "ขั้นตอน {step} / {nbstep} - จำนวนอินพุตที่จะเพิ่ม",
+        "three": "ขั้นตอน {step} / {nbstep} - ยืนยันอัตราส่วนพูลและจำนวนโทเค็น"
+      },
+      "infoMessage": "ค่าธรรมเนียมการสร้างพูล",
+      "infoCaption": "โอนไปยังกลุ่มชุมชนออสโมซิส",
+      "buttonCreate": "สร้างพูล",
+      "buttonNext": "ต่อไป",
+      "buttonBack": "ก่อนหน้า",
+      "buttonAddToken": "เพิ่มโทเค็นใหม่",
+      "available": "มีอยู่",
+      "amount": "จำนวน",
+      "token": "โทเค็น",
+      "swapFee": "ตั้งค่าธรรมเนียมการแลกเปลี่ยน",
+      "undersandCost": "ฉันเข้าใจว่าการสร้างพูลใหม่จะมีค่าใช้จ่าย {POOL_CREATION_FEE}",
+      "interestedCreate": "สนใจสร้างพูลใหม่หรือไม่?",
+      "startProcess": "คลิกที่นี่เพื่อเริ่มกระบวนการ"
+    }
+  },
+  "pool": {
+    "title": "พูล #{id}",
+    "swap": "โทเค็นแลกเปลี่ยน",
+    "superfluidEnabled": "เปิดใช้งาน Superfluid Staking",
+    "24hrTradingVolume": "ปริมาณการซื้อขาย 24 ชั่วโมง",
+    "liquidity": "สภาพคล่องสระว่ายน้ำ",
+    "swapFee": "ค่าแลกเปลี่ยน",
+    "yourStats": "สถิติของคุณ",
+    "sharesAmount": "{Shares} หุ้น",
+    "currentDailyEarn": "คุณมีรายได้แล้ว",
+    "earnMore": "รับมากขึ้นโดยการผูกมัด",
+    "dailyEarnAmount": "{amount} / วัน",
+    "putAssetsToWork": "ทำให้สินทรัพย์ของคุณทำงาน",
+    "putAssetsToWorkCaption": "เพิ่มสินทรัพย์ของคุณลงในสระว่ายน้ำนี้เพื่อปลดล็อก APR ที่น่าตื่นเต้น ยิ่งช่วงเวลาที่คุณไม่คาดคิดนานเท่าไหร่คุณก็ยิ่งทำมากขึ้นเท่านั้น",
+    "learnMore": "เรียนรู้เพิ่มเติม",
+    "level": "ระดับ {level}",
+    "earnSwapFees": "รับค่าธรรมเนียมการแลกเปลี่ยน",
+    "earnSwapFeesCaption": "แปลงโทเค็นของคุณเป็นหุ้นและรับการแลกเปลี่ยนทุกครั้ง",
+    "APR": "เม.ย.",
+    "bondLiquidity": "สภาพคล่องพันธะ",
+    "bondLiquidityCaption": "ล็อคหุ้นของคุณสำหรับระยะเวลานานขึ้นเพื่อรับ APR ที่สูงขึ้น",
+    "bondSuperfluidLiquidityCaption": "ไป superfluid เพื่อรับรางวัลสูงสุด",
+    "bondShares": "หุ้นพันธบัตร",
+    "amountDaysUnbonding": "{numdays} วันที่ไม่ได้รับความสนใจ",
+    "shares": "หุ้น",
+    "unbonded": "ที่ไม่มีข้อผูกมัด",
+    "unbond": "ไม่มีข้อผูกมัด",
+    "bonded": "ถูกผูกมัด",
+    "showDetails": "แสดงรายละเอียด",
+    "collapseDetails": "รายละเอียดล่มสลาย",
+    "sharesAvailableIn": "มีอยู่ใน",
+    "unbonding": "ไม่เพิกถอน",
+    "superfluidEarnMore": "รับ {rate} เพิ่มเติม ไป superfluid",
+    "incentives": "สิ่งจูงใจ",
+    "details": "รายละเอียด",
+    "rewardDistribution": "รางวัลแจกจ่ายให้กับผู้ให้บริการสภาพคล่องทั้งหมด",
+    "superfluidStaking": "การปักหลัก superfluid",
+    "delegated": "ที่ได้รับมอบหมาย",
+    "undelegating": "ที่ไม่ได้เลือก",
+    "commission": "คณะกรรมการ",
+    "from": "จาก",
+    "swapFees": "ค่าธรรมเนียมการแลกเปลี่ยน",
+    "7davg": "(7d avg)"
+  },
+  "removeLiquidity": {
+    "title": "กำจัดสภาพคล่อง",
+    "titleInPool": "ลบสภาพคล่องจาก {poolid}",
+    "sharesAmount": "{shares} หุ้น"
+  },
+  "addLiquidity": {
+    "title": "เพิ่มสภาพคล่อง",
+    "titleInPool": "เพิ่มสภาพคล่องลงใน {poolid}",
+    "allAssets": "สินทรัพย์ทั้งหมด",
+    "singleAsset": "สินทรัพย์เดียว",
+    "available": "มีอยู่",
+    "autoswapCaption": "ใช้ AutoSwap เพื่อเพิ่มสภาพคล่องด้วยสินทรัพย์เดียว"
+  },
+  "lockToken": {
+    "title": "หุ้น Bond LP",
+    "titleInPool": "ล็อคแชร์ใน {poolId}",
+    "selectPeriod": "เลือกระยะเวลาที่ไม่ได้รับความสนใจ",
+    "availableToken": "มีอยู่",
+    "amountToBond": "จำนวนพันธบัตร",
+    "superfluidStake": "การปักหลัก superfluid",
+    "bondingRequirement": "{numdays} ข้อกำหนดการผูกมัดวัน",
+    "buttonNext": "ต่อไป",
+    "buttonBond": "พันธะ",
+    "buttonBondStake": "พันธบัตรและสเตค"
+  },
+  "superfluidValidator": {
+    "title": "เลือกตัวตรวจสอบ superfluid",
+    "titleMobile": "เลือก Validator",
+    "choose": "เลือกผู้ตรวจสอบ superfluid ของคุณ",
+    "search": "ค้นหาตามชื่อ",
+    "bondedAmount": "จำนวนที่ถูกผูกมัด",
+    "estimation": "การมอบหมาย superfluid โดยประมาณ",
+    "estimationMobile": "ทิศตะวันออก. การมอบหมาย",
+    "estimationInfo": "ค่าของคณะผู้แทนนี้ผันผวนและประเมินตามจำนวนของ OSMO ในสระว่ายน้ำ",
+    "buttonBond": "พันธบัตรและสเตค",
+    "columns": {
+      "validator": "ผู้ตรวจสอบความถูกต้อง",
+      "commission": "คณะกรรมการ"
+    }
+  },
+  "assets": {
+    "totalAssets": "ทั้งหมด",
+    "unbondedAssets": "ที่ไม่มีข้อผูกมัด",
+    "bondedAssets": "ถูกผูกมัด",
+    "stakedAssets": "osmo staked",
+    "myPools": "สระว่ายน้ำของฉัน",
+    "transferAssetSelect": {
+      "deposit": "เงินฝาก",
+      "withdraw": "ถอน",
+      "network": "เครือข่าย",
+      "buttonNext": "ต่อไป"
+    },
+    "poolCards": {
+      "APR": "เม.ย.",
+      "FeeAPY": "ค่าธรรมเนียม apy",
+      "liquidity": "สภาพคล่องสระว่ายน้ำ",
+      "bonded": "ถูกผูกมัด",
+      "myLiquidity": "สภาพคล่องของฉัน"
+    },
+    "ibcTransfer": {
+      "titleWithdraw": "ถอน {coindenom}",
+      "titleDeposit": "ฝาก {coindenom}",
+      "selectAmount": "เลือกจำนวนเงิน",
+      "estimatedTime": "เวลาโดยประมาณ",
+      "waitTime": "20 วินาที",
+      "copied": "คัดลอก",
+      "IBCTransfer": "IBC Transfer",
+      "from": "จาก",
+      "to": "ถึง",
+      "warningLossFunds": "คำเตือน: การถอนไปยังที่อยู่แลกเปลี่ยนกลางจะส่งผลให้สูญเสียเงินทุน",
+      "buttonEnter": "เข้า",
+      "checkboxVerify": "ฉันยืนยันว่าฉันไม่ได้ส่งไปยังที่อยู่แลกเปลี่ยน",
+      "buttonEdit": "แก้ไข",
+      "amoutWithdraw": "จำนวนเงินที่จะถอน",
+      "amoutDeposit": "จำนวนเงินฝาก",
+      "availableBalance": "ยอดเงินคงเหลือ:",
+      "MAX": "สูงสุด"
+    },
+    "transfer": {
+      "titleWithdraw": "ถอน {coindenom}",
+      "titleDeposit": "ฝาก {coindenom}",
+      "warnDepositAddressDifferent": "คำเตือน: บัญชีที่เลือกใน {address} แตกต่างจากบัญชีที่คุณฝากล่าสุด",
+      "from": "จาก",
+      "to": "ถึง",
+      "via": "ทาง",
+      "loading": "การโหลด",
+      "availableOn": "มีอยู่ใน {network}",
+      "availableMobile": "มีอยู่",
+      "transferFee": "ค่าธรรมเนียมการโอน",
+      "errors": {
+        "reconnectWallet": "เชื่อมต่อ {walletName} อีกครั้ง",
+        "wrongNetworkInWallet": "เครือข่ายผิดใน {walletName}",
+        "insufficientFee": "ค่าธรรมเนียมไม่เพียงพอ",
+        "insufficientBal": "สมดุลไม่เพียงพอ"
+      },
+      "waitTime": "{minutes} นาที"
+    },
+    "selectAssetSource": {
+      "titleWithdraw": "ถอน",
+      "titleDeposit": "เงินฝากจาก",
+      "next": "ต่อไป",
+      "installWallet": "ติดตั้ง {walletName}"
+    },
+    "table": {
+      "depositButton": "เงินฝาก",
+      "withdrawButton": "ถอน",
+      "search": "ตัวกรองตามสัญลักษณ์",
+      "title": "สินทรัพย์",
+      "hideZero": "ซ่อนยอดคงเหลือเป็นศูนย์",
+      "buyOsmo": "ซื้อ",
+      "preTransfer": {
+        "deposit": "เงินฝาก",
+        "withdraw": "ถอน",
+        "currentBal": "ยอดเงินปัจจุบัน"
+      },
+      "columns": {
+        "assetChain": "สินทรัพย์ / โซ่",
+        "balance": "สมดุล",
+        "transfer": "โอนย้าย",
+        "deposit": "เงินฝาก",
+        "withdraw": "ถอน"
+      },
+      "sort": {
+        "symbol": "เครื่องหมาย",
+        "network": "เครือข่าย",
+        "balance": "สมดุล"
+      }
+    },
+    "historyTable": {
+      "title": "ประวัติการถ่ายโอน",
+      "pending": "รอดำเนินการ",
+      "success": "ความสำเร็จ",
+      "refunded": "ได้รับเงินคืน",
+      "pendingRefunded": "ล้มเหลว: รอการคืนเงิน",
+      "colums": {
+        "transactionHash": "แฮชธุรกรรม",
+        "type": "พิมพ์",
+        "amount": "จำนวน",
+        "status": "สถานะ",
+        "deposit": "เงินฝาก",
+        "withdraw": "ถอน"
+      }
+    }
+  },
+  "components": {
+    "show": {
+      "more": "ดูเพิ่มเติม",
+      "less": "ดูน้อยลง"
+    },
+    "table": {
+      "poolId": "พูล #{id}"
+    },
+    "sort": {
+      "SORT": "เรียงตาม",
+      "SORTMobile": "เรียงลำดับ",
+      "mobileMenu": "เรียงตาม"
+    },
+    "MAX": "สูงสุด",
+    "searchTokens": "ค้นหาโทเค็น"
+  },
+  "menu": {
+    "swap": "แลกเปลี่ยน",
+    "pools": "สระว่ายน้ำ",
+    "assets": "สินทรัพย์",
+    "stake": "เงินเดิมพัน",
+    "vote": "ลงคะแนนเสียง",
+    "info": "สถิติ",
+    "signOut": "ตัดการเชื่อมต่อ",
+    "help": "รับความช่วยเหลือจากห้องปฏิบัติการสนับสนุน",
+    "learnMoreFrontier": "เรียนรู้เพิ่มเติม <br/> เกี่ยวกับ <br2/> <name> Osmosis Frontier </name>"
+  },
+  "settings": {
+    "title": "การตั้งค่า",
+    "titleLanguage": "ภาษา",
+    "titleShowDust": "แสดงพูล/สินทรัพย์ <{fiatsymbol} 0.01"
+  },
+  "404": {
+    "title": "ไม่พบ"
+  },
+  "500": {
+    "title": "เซิร์ฟเวอร์ผิดพลาด"
+  },
+  "errors": {
+    "emptyAmount": "จำนวนเงินว่างเปล่า",
+    "invalidNumberAmount": "รูปแบบที่ไม่ถูกต้อง",
+    "zeroAmount": "จำนวนเงินเป็นศูนย์",
+    "negativeAmount": "จำนวนเงินเป็นลบ",
+    "insufficientAmount": "จำนวนไม่เพียงพอ",
+    "negativeSwapFee": "ค่าธรรมเนียมการแลกเปลี่ยนเป็นลบ",
+    "highSwapFee": "ค่าแลกเปลี่ยนสูงเกินไป",
+    "invalidSwapFee": "ค่าธรรมเนียมการแลกเปลี่ยนไม่ถูกต้อง",
+    "minAssetsCount": "ขั้นต่ำของ {num} สินทรัพย์ที่ต้องการ",
+    "maxAssetsCount": "อนุญาตให้ใช้สินทรัพย์สูงสุด {num}",
+    "negativePercentage": "เปอร์เซ็นต์จะต้องเป็นบวก",
+    "percentageSum": "ผลรวมของเปอร์เซ็นต์ไม่ใช่ 100",
+    "depositNoBalance": "คุณไม่มีสินทรัพย์ที่จะฝาก",
+    "negativeSlippage": "การลื่นไถลไม่สามารถเป็นลบได้",
+    "invalidSlippage": "ลื่นไถลไม่ถูกต้อง",
+    "noSendCurrency": "สกุลเงินที่จะส่งไม่ได้ตั้งค่า",
+    "insufficientBal": "สมดุลไม่เพียงพอ",
+    "notInitialized": "ไม่ได้เริ่มต้น",
+    "calculatingShareOutAmount": "ปัญหาการคำนวณจำนวนเงิน",
+    "noAvailableShares": "ไม่มีการแชร์ {denom}",
+    "generic": "ข้อผิดพลาด"
+  },
+  "connectWallet": "เชื่อมต่อกระเป๋าเงิน",
+  "keplr": {
+    "install": "ติดตั้ง keplr",
+    "wallet": "กระเป๋าเงิน keplr",
+    "extension": "ส่วนขยายเบราว์เซอร์ของ KEPLR",
+    "walletConnect": "WalletConnect",
+    "mobile": "มือถือ keplr"
+  },
+  "connectDisclaimer": "โดยการเชื่อมต่อกระเป๋าเงินคุณรับทราบว่าคุณได้อ่านและเข้าใจออสโมซิส",
+  "protocolDisclaimer": "โปรโตคอลการปฏิเสธความรับผิดชอบ",
+  "Transaction Failed": "การทำธุรกรรมล้มเหลว",
+  "Transaction Successful": "การทำธุรกรรมประสบความสำเร็จ",
+  "Transaction Broadcasting": "การออกอากาศธุรกรรม",
+  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "การแลกเปลี่ยนล้มเหลว สภาพคล่องอาจไม่เพียงพอ ลองปรับการลื่นไถลที่อนุญาต",
+  "Waiting for transaction to be included in the block": "กำลังรอการทำธุรกรรมที่จะรวมอยู่ในบล็อก",
+  "view explorer": "ดู Explorer",
+  "Unknown error": "ข้อผิดพลาดที่ไม่รู้จัก",
+  "Request rejected": "คำขอถูกปฏิเสธ",
+  "Amount is empty": "จำนวนเงินว่างเปล่า",
+  "Insufficient amount": "จำนวนไม่เพียงพอ",
+  "Amount is zero": "จำนวนเงินเป็นศูนย์",
+  "Minimum of 2 assets required": "จำเป็นต้องมีสินทรัพย์ขั้นต่ำ 2 รายการ"
+}
