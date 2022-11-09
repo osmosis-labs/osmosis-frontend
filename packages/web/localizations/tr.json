@@ -119,6 +119,8 @@
     "earnSwapFeesCaption": "Tokenlerinizi hisseye dönüştürün ve her takasta kazanın.",
     "APR": "APR",
     "bondLiquidity": "Likiditeyi bağla",
+    "bondLiquidityUnavailable": "Likiditeyi bağla (kullanım dışı)",
+    "checkBackForBondingRewards": "Bağlanma ödülleri için tekrar kontrol edin",
     "bondLiquidityCaption": "Daha yüksek APR kazanmak için hisselerinizi daha uzun süre kilitleyin.",
     "bondSuperfluidLiquidityCaption": "Maksimum kazanç için Superfluid seçin.",
     "bondShares": "Hisseleri bağla",
@@ -189,6 +191,12 @@
     "bondedAssets": "Bağlı",
     "stakedAssets": "Stake Edilmiş OSMO",
     "myPools": "Havuzlarım",
+    "transferAssetSelect": {
+      "deposit": "Yatır",
+      "withdraw": "Çek",
+      "network": "Ağ",
+      "buttonNext": "Sonraki"
+    },
     "poolCards": {
       "APR": "APR",
       "FeeAPY": "Fee APY",
@@ -215,7 +223,33 @@
       "availableBalance": "Kullanılabilir bakiye:",
       "MAX": "MAKS"
     },
-    "table": {
+    "transfer": {
+      "titleWithdraw": "{coinDenom} Çek",
+      "titleDeposit": "{coinDenom} Yatır",
+      "warnDepositAddressDifferent": "Uyarı: {address} te seçtiğiniz adres, son yatırdığınız adresten farklı.",
+      "from": "Ağından",
+      "to": "Ağına",
+      "via": "vasıtasıyla",
+      "loading": "Yükleniyor",
+      "availableOn": "{network} ağında mevcut",
+      "availableMobile": "Kullanılabilir",
+      "transferFee": "İşlem Ücreti",
+      "errors": {
+        "reconnectWallet": "{walletName} tekrar bağlan",
+        "wrongNetworkInWallet": "{walletName} cüzdanda ağ hatası",
+        "insufficientFee": "Yetersiz Ücret",
+        "insufficientBal": "Yetersiz Bakiye"
+      },
+      "wrapNativeLink": "{platformName} üzerinde {fromDenom} dan {fromDenom} a çevir.",
+      "waitTime": "{minutes} dakika"
+    },
+    "selectAssetSource": {
+      "titleWithdraw": "Adrese çek",
+      "titleDeposit": "Adresten yatır",
+      "next": "Next",
+      "installWallet": "{walletName} yükle"
+    },
+	"table": {
       "depositButton": "Yatır",
       "withdrawButton": "Çek",
       "search": "Sembole göre filtrele",
@@ -286,11 +320,7 @@
   "settings": {
     "title": "Ayarlar",
     "titleLanguage": "Dil",
-    "titleShowDust": "Havuzlar/varlıkları göster < {fiatSymbol}0.01",
-    "languages": {
-      "en": "English"
-	  "tr": "Turkish"
-    }
+    "titleShowDust": "Havuzlar/varlıkları göster < {fiatSymbol}0.01"
   },
   "404": {
     "title": "Bulunamadı"
@@ -315,7 +345,8 @@
     "negativeSlippage": "Slipaj negatif olamaz",
     "invalidSlippage": "Geçersiz slipaj",
     "noSendCurrency": "Gönderilecek varlık seçilmedi",
-    "notInitialized": "Başlatılmadı",
+    "insufficientBal": "Yetersiz bakiye",
+	"notInitialized": "Başlatılmadı",
     "calculatingShareOutAmount": "Miktar hesaplamasında sorun",
     "noAvailableShares": "Kullanılabilir {denom} hissesi yok",
     "generic": "Hata"
