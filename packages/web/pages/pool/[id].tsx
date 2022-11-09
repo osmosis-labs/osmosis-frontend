@@ -507,7 +507,7 @@ const Pool: FunctionComponent = observer(() => {
         )}
       </div>
       <div className="flex flex-col gap-7 md:gap-4">
-        <div className="flex flex-wrap md:gap-3">
+        <div className="flex flex-col flex-wrap md:gap-3">
           <h5 className="md:text-h6 md:font-h6">{t("pool.putAssetsToWork")}</h5>
           <span className="subtitle1 md:text-body1 md:font-body1 text-osmoverse-300">
             {t("pool.putAssetsToWorkCaption")}{" "}
