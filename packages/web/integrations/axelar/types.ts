@@ -1,3 +1,5 @@
+import { SourceChain } from "../bridge-info";
+
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
 export interface AxelarBridgeConfig {
@@ -23,22 +25,6 @@ export interface AxelarBridgeConfig {
     platformName: string;
   };
 }
-
-/** Intermediate source chain identifiers */
-export type SourceChain =
-  | "Aurora Testnet"
-  | "Avalanche"
-  | "Avalanche Fuji Testnet"
-  | "Binance Smart Chain"
-  | "BSC Testnet"
-  | "Ethereum"
-  | "Goerli Testnet"
-  | "Fantom"
-  | "Fantom Testnet"
-  | "Moonbeam"
-  | "Moonbase Alpha"
-  | "Polygon"
-  | "Mumbai";
 
 
 /** Maps Axelar chain id agruments => source chain ids. 
@@ -69,29 +55,6 @@ export const AxelarChainIds_SourceChainMap: {
       "Polygon": "Polygon"
     };
 
-
-/** Maps eth client chainIDs => source chain ids.
- *
- *  ethClientChainIDs must be specified in ../ethereuem/types.ts::ChainNames{} to map the name to a chainID, which is in turn used to add the network to EVM-compatible wallets, like Metamask.
- *  SourceChain (IDs) are used in ./source-chain-configs.ts::SourceChainConfigs{} as <asset>::<network>::id values.
- */
-export const EthClientChainIds_SourceChainMap: {
-  [ethClientChainIds: string]: SourceChain;
-} = {
-  "Aurora Testnet": "Aurora Testnet",
-  "Avalanche Fuji Testnet": "Avalanche Fuji Testnet",
-  "Binance Smart Chain Testnet": "BSC Testnet",
-  "Goerli Test Network": "Goerli Testnet",
-  "Fantom Testnet": "Fantom Testnet",
-  "Moonbase Alpha": "Moonbase Alpha",
-  "Mumbai": "Mumbai",
-  "Avalanche C-Chain": "Avalanche",
-  "Binance Smart Chain Mainnet": "Binance Smart Chain",
-  "Ethereum Main Network": "Ethereum",
-  "Fantom Opera": "Fantom",
-  "Moonbeam Mainnet": "Moonbeam",
-  "Polygon Mainnet": "Polygon",
-};
 
 export type SourceChainConfig = {
 

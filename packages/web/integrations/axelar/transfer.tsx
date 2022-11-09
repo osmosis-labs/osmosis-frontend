@@ -29,11 +29,13 @@ import { useGeneralAmountConfig } from "../use-general-amount-config";
 import { useDepositAddress } from "./hooks";
 import {
   AxelarBridgeConfig,
-  SourceChain,
-  EthClientChainIds_SourceChainMap,
   AxelarChainIds_SourceChainMap,
   waitBySourceChain,
 } from ".";
+import {
+  SourceChain,
+  EthClientChainIds_SourceChainMap
+} from "../bridge-info";
 import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
 import { EventName } from "../../config/user-analytics-v2";
 import { useTranslation } from "react-multi-lang";
