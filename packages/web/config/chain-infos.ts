@@ -136,6 +136,56 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
+        {
+          type: "cw20",
+          contractAddress: "secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej",
+          coinDenom: "ALTER",
+          coinMinimalDenom:
+            "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej:ALTER",
+          coinDecimals: 6,
+          coinGeckoId: "alter",
+          coinImageUrl: "/tokens/alter.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt",
+          coinDenom: "BUTT",
+          coinMinimalDenom:
+            "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt:BUTT",
+          coinDecimals: 6,
+          coinGeckoId: "button",
+          coinImageUrl: "/tokens/butt.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
+          coinDenom: "SHD",
+          coinMinimalDenom:
+            "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d:SHD",
+          coinDecimals: 8,
+          coinGeckoId: "shade-protocol",
+          coinImageUrl: "/tokens/shd.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
+          coinDenom: "stkd-SCRT",
+          coinMinimalDenom:
+            "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4:stkd-SCRT",
+          coinDecimals: 6,
+          coinGeckoId: "stkd-scrt",
+          coinImageUrl: "/tokens/stkd-scrt.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
+          coinDenom: "SIENNA",
+          coinMinimalDenom:
+            "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4:SIENNA",
+          coinDecimals: 18,
+          coinGeckoId: "sienna",
+          coinImageUrl: "/tokens/sienna.svg",
+        },
       ],
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
       explorerUrlToTx:
