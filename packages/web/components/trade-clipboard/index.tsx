@@ -411,6 +411,7 @@ export const TradeClipboard: FunctionComponent<{
                   : "/icons/setting.svg"
               }
               alt="setting icon"
+              priority={true}
             />
           </button>
           {isSettingOpen && (
