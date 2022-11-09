@@ -32,7 +32,7 @@ export const NavBar: FunctionComponent<
     <>
       <div
         className={classNames(
-          "fixed z-[100] flex place-content-between md:place-content-start lg:gap-5 md:gap-4 sm:gap-1 items-center bg-osmoverse-900 h-navbar md:h-navbar-mobile w-[calc(100vw_-_12.875rem)] md:w-full px-8 md:px-4",
+          "fixed z-[100] flex place-content-between md:place-content-start lg:gap-5 items-center bg-osmoverse-900 h-navbar md:h-navbar-mobile w-[calc(100vw_-_12.875rem)] md:w-full px-8 md:px-4",
           className
         )}
       >
@@ -190,12 +190,10 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     const [mobileTapInfo, setMobileTapInfo] = useState(false);
 
     return (
-      <div
-        className={classNames("w-40 lg:!w-36 md:w-full shrink-0", className)}
-      >
+      <div className={classNames("w-40 lg:w-36 md:w-full shrink-0", className)}>
         {!walletConnected ? (
           <Button
-            className="w-40 lg:!w-36 md:w-full !h-10"
+            className="w-40 lg:w-36 md:w-full !h-10"
             onClick={() => {
               account.init();
               setHoverWalletInfo(false);
@@ -205,7 +203,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
           </Button>
         ) : hoverWalletInfo || mobileTapInfo ? (
           <Button
-            className="w-40 lg:!w-36 md:w-full !h-10"
+            className="w-40 lg:w-36 md:w-full !h-10"
             mode="secondary"
             onMouseLeave={() => setHoverWalletInfo(false)}
             onClick={() => {
