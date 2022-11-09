@@ -94,23 +94,6 @@ export const AddLiquidity: FunctionComponent<
                 key={currency.coinDenom}
                 className="flex flex-col gap-1 w-full md:p-3 p-4 border border-osmoverse-700 md:rounded-xl rounded-2xl"
               >
-                {isPeggedCurrency && (
-                  <Info
-                    size="subtle"
-                    className="border-2 border-rust-200/30"
-                    message={`You are adding liquidity to ${
-                      currency!.originCurrency!.coinDenom
-                    }, ${
-                      ["a", "e", "i", "o", "u"].some((vowel) =>
-                        currency.originCurrency!.pegMechanism!.startsWith(vowel)
-                      )
-                        ? "an"
-                        : "a"
-                    } ${
-                      currency.originCurrency!.pegMechanism
-                    }-backed stablecoin.`}
-                  />
-                )}
                 <div className="flex items-center w-full place-content-between">
                   {addLiquidityConfig.isSingleAmountIn ? (
                     <PoolTokenSelect
@@ -197,6 +180,17 @@ export const AddLiquidity: FunctionComponent<
                     </div>
                   </div>
                 </div>
+                {isPeggedCurrency && (
+                  <Info
+                    className="text-wosmongton-100"
+                    borderClassName="bg-gradient-neutral"
+                    textClassName="w-full text-center"
+                    message={t("addLiquidity.stablecoinWarning", {
+                      denom: currency!.originCurrency!.coinDenom,
+                      mechanism: currency.originCurrency!.pegMechanism!,
+                    })}
+                  />
+                )}
               </div>
             );
           })}

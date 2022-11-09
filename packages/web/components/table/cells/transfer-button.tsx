@@ -102,6 +102,7 @@ const TransferButton: FunctionComponent<{
           src="/icons/chevron-right-rust.svg"
           height={13}
           width={13}
+          priority={true}
         />
       ) : (
         <Image
@@ -109,6 +110,7 @@ const TransferButton: FunctionComponent<{
           src="/icons/chevron-right.svg"
           height={13}
           width={13}
+          priority={true}
         />
       )}
     </button>

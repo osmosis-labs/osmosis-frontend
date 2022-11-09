@@ -156,7 +156,8 @@
     "allAssets": "All assets",
     "singleAsset": "Single asset",
     "available": "Available",
-    "autoswapCaption": "Use autoswap to add liquidity with a single asset."
+    "autoswapCaption": "Use autoswap to add liquidity with a single asset.",
+    "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin."
   },
   "lockToken": {
     "title": "Bond LP Shares",

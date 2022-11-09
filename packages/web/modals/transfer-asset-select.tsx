@@ -89,6 +89,7 @@ export const TransferAssetSelectModal: FunctionComponent<
     {
       className: "mt-3",
       onClick: () => onSelectAsset(selectedTokenDenom, selectedNetwork?.id),
+      disabled: selectedToken?.originBridgeInfo && !selectedNetwork, // error in bridge integration config
       children: t("assets.transferAssetSelect.buttonNext"),
     },
     props.onRequestClose,
@@ -118,7 +119,7 @@ export const TransferAssetSelectModal: FunctionComponent<
         {selectedToken?.originBridgeInfo && selectedNetwork && keplrConnected && (
           <div
             className={classNames(
-              "w-full flex items-center place-content-between border border-osmoverse-700 p-4 transition-borderRadius",
+              "w-full relative flex items-center place-content-between border border-osmoverse-700 p-4 transition-borderRadius",
               {
                 "rounded-2xl": !isSourceChainDropdownOpen,
                 "rounded-l-2xl rounded-tr-2xl": isSourceChainDropdownOpen,
@@ -162,7 +163,7 @@ export const TransferAssetSelectModal: FunctionComponent<
             {isSourceChainDropdownOpen && (
               <div
                 style={{ borderTopStyle: "dashed" }}
-                className="absolute top-[100%] -right-[1px] border border-osmoverse-700 rounded-b-2xl z-50 bg-osmoverse-800"
+                className="absolute select-none top-[100%] -right-[1px] border border-osmoverse-700 rounded-b-2xl z-50 bg-osmoverse-800"
               >
                 {selectedToken.originBridgeInfo.sourceChains
                   .filter(({ id }) => id !== selectedNetwork.id)
@@ -170,7 +171,7 @@ export const TransferAssetSelectModal: FunctionComponent<
                     <div
                       key={index}
                       className={classNames(
-                        "cursor-pointer px-6 py-1.5 hover:bg-osmoverse-700",
+                        "cursor-pointer px-6 py-1.5 hover:bg-osmoverse-700 transition-colors",
                         {
                           "rounded-b-2xl": scArr.length - 1 === index,
                         }
