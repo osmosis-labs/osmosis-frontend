@@ -50,12 +50,7 @@
   .overline {
     @apply text-overline font-overline;
   }
-  .superfluid {
-    background: -webkit-linear-gradient(#8a86ff, #e13cbd);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .text-superfluid {
+  .text-superfluid-gradient {
     @apply text-transparent bg-clip-text bg-superfluid;
   }
 
@@ -70,6 +65,9 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
+  input {
+    @apply caret-osmoverse-100;
+  }
 
   table {
     @apply md:w-screen table-auto border-collapse text-left;
@@ -80,19 +78,19 @@
   }
 
   thead > tr > th:first-child {
-    @apply rounded-l-full md:rounded-none pl-8 pr-3 py-3;
+    @apply rounded-l-full md:rounded-none pl-10 pr-3 py-[18px];
   }
 
   thead > tr > th {
-    @apply p-3 font-body2;
+    @apply p-3 py-[18px] font-body2;
   }
 
   thead > tr > th:last-child {
-    @apply rounded-r-full md:rounded-none pl-3 pr-8 py-3;
+    @apply rounded-r-full md:rounded-none pl-3 pr-10 lg:pr-4 py-[18px];
   }
 
   tbody > tr > td:first-child {
-    @apply pl-4 pr-3 py-3;
+    @apply pl-10 pr-3 py-3;
   }
 
   tbody > tr > td {
@@ -100,11 +98,11 @@
   }
 
   tbody > tr > td:last-child {
-    @apply pl-3 pr-8 py-2;
+    @apply pl-3 pr-10 lg:pr-4 py-2;
   }
 
   .grid-cards {
-    @apply grid-cols-4 gap-8 3xl:grid-cols-3 1.5xl:grid-cols-2 1.5md:grid-cols-1;
+    @apply grid-cols-4 gap-4 3xl:grid-cols-3 1.5xl:grid-cols-2 1.5md:grid-cols-1;
   }
 
   /* Chrome, Safari and Opera */
@@ -166,7 +164,7 @@
 
 /* Toasts override styles in `react-toastify/dist/ReactToastify.css` */
 .Toastify__toast-container {
-  z-index: 200 !important;
+  z-index: 99999 !important;
   max-width: 360px !important;
   min-width: 360px !important;
 }

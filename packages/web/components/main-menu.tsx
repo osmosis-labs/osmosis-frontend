@@ -34,9 +34,13 @@ export const MainMenu: FunctionComponent<{
                   "rounded-full bg-wosmongton-500": selected,
                 }
               )}
-              onClick={
-                typeof link === "string" ? () => router.push(link) : link
-              }
+              onClick={(e) => {
+                if (typeof link === "string" && !link.startsWith("http")) {
+                  router.push(link);
+                } else if (typeof link === "function") {
+                  link(e);
+                }
+              }}
             >
               <Head>{selected && <title key="title">{label}</title>}</Head>
               <LinkOrDiv href={link}>
@@ -46,6 +50,12 @@ export const MainMenu: FunctionComponent<{
                     selected ? "opacity-100" : "opacity-75"
                   )}
                   target={selectionTest ? "_self" : "_blank"}
+                  href={
+                    typeof link === "string" && link.startsWith("http")
+                      ? link
+                      : undefined
+                  }
+                  rel="noopener noreferrer"
                   onClick={() => {
                     if (amplitudeEvent) {
                       logEvent(amplitudeEvent);
@@ -55,7 +65,7 @@ export const MainMenu: FunctionComponent<{
                   <div
                     className={classNames(
                       "w-5 h-5 z-10",
-                      selected ? "opacity-100" : "opacity-40"
+                      selected ? "opacity-100" : "opacity-60"
                     )}
                   >
                     <Image
@@ -69,7 +79,7 @@ export const MainMenu: FunctionComponent<{
                     className={classNames(
                       "ml-2.5 text-base overflow-x-hidden font-semibold transition-all max-w-24",
                       {
-                        "text-white-full/40 group-hover:text-white-mid":
+                        "text-white-full/60 group-hover:text-white-mid":
                           !selected,
                       }
                     )}
@@ -104,10 +114,10 @@ const LinkOrDiv: FunctionComponent<{ href: string | any }> = ({
   href,
   children,
 }) =>
-  typeof href === "string" ? (
+  typeof href === "string" && !href.startsWith("http") ? (
     <Link href={href} passHref>
       {children}
     </Link>
   ) : (
-    <div>{children}</div>
+    <>{children}</>
   );

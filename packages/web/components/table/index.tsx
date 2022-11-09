@@ -142,7 +142,7 @@ export const Table = <TCell extends BaseCell>({
             <tr
               key={rowIndex}
               className={classNames(
-                "h-20",
+                "h-20 transition-colors",
                 rowDef?.makeClass?.(rowIndex),
                 {
                   "focus-within:bg-osmoverse-700 focus-within:outline-none":

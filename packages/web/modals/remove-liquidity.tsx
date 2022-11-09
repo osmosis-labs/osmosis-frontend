@@ -38,11 +38,12 @@ export const RemoveLiquidityModal: FunctionComponent<
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled: config.error !== undefined || isSendingMsg,
-      onClick: () =>
-        props.onRemoveLiquidity?.(
-          removeLiquidity().finally(() => props.onRequestClose()),
-          config
-        ),
+      onClick: () => {
+        const removeLiquidityResult = removeLiquidity().finally(() =>
+          props.onRequestClose()
+        );
+        props.onRemoveLiquidity?.(removeLiquidityResult, config);
+      },
       children: config.error
         ? t(...tError(config.error))
         : t("removeLiquidity.title"),

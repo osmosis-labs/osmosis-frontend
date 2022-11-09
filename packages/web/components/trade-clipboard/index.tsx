@@ -17,7 +17,7 @@ import {
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { Button } from "../buttons";
+import { BorderButton, Button } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
@@ -446,14 +446,14 @@ export const TradeClipboard: FunctionComponent<{
               })}
               <li
                 className={classNames(
-                  "flex items-center justify-center w-full h-8 cursor-pointer rounded-lg bg-osmoverse-700",
+                  "flex items-center justify-center w-full h-8 cursor-pointer rounded-lg",
                   slippageConfig.isManualSlippage
                     ? "border-2 border-wosmongton-200 text-white-high"
                     : "text-osmoverse-500",
                   slippageConfig.isManualSlippage
                     ? slippageConfig.manualSlippageError
                       ? "bg-missionError"
-                      : "bg-wosmongton-200"
+                      : "bg-osmoverse-900"
                     : "bg-osmoverse-900"
                 )}
                 onClick={(e) => {
@@ -544,16 +544,14 @@ export const TradeClipboard: FunctionComponent<{
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <button
+              <BorderButton
                 className={classNames(
-                  "button text-wosmongton-300 hover:bg-wosmongton-300/30 border border-wosmongton-300 text-xs py-1 px-1.5 rounded-md",
+                  "text-xs py-1 px-1.5",
                   tradeTokenInConfig.fraction === 1
                     ? "bg-wosmongton-100/40"
                     : "bg-transparent"
                 )}
-                onClick={(e) => {
-                  e.preventDefault();
-
+                onClick={() => {
                   if (tradeTokenInConfig.fraction !== 1) {
                     logEvent([
                       EventName.Swap.maxClicked,
@@ -570,17 +568,15 @@ export const TradeClipboard: FunctionComponent<{
                 }}
               >
                 {t("swap.MAX")}
-              </button>
-              <button
+              </BorderButton>
+              <BorderButton
                 className={classNames(
-                  "button text-wosmongton-300 hover:bg-wosmongton-300/30 border border-wosmongton-300 text-xs py-1 px-1.5 rounded-md",
+                  "text-xs py-1 px-1.5",
                   tradeTokenInConfig.fraction === 0.5
                     ? "bg-wosmongton-100/40"
                     : "bg-transparent"
                 )}
-                onClick={(e) => {
-                  e.preventDefault();
-
+                onClick={() => {
                   if (tradeTokenInConfig.fraction !== 0.5) {
                     logEvent([
                       EventName.Swap.halfClicked,
@@ -597,7 +593,7 @@ export const TradeClipboard: FunctionComponent<{
                 }}
               >
                 {t("swap.HALF")}
-              </button>
+              </BorderButton>
             </div>
           </div>
           <div className="flex items-center place-content-between mt-3">
@@ -681,7 +677,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <button
           className={classNames(
-            "absolute flex items-center left-[45%] top-[124px] md:top-[86px] transition-all duration-500 ease-bounce z-30",
+            "absolute flex items-center left-[45%] top-[124px] md:top-[94px] transition-all duration-500 ease-bounce z-30",
             {
               "w-10 md:w-8 h-10 md:h-8": !isHoveringSwitchButton,
               "w-11 md:w-9 h-11 md:h-9 -translate-x-[2px]":
@@ -718,7 +714,7 @@ export const TradeClipboard: FunctionComponent<{
             <div className="relative w-full h-full">
               <div
                 className={classNames(
-                  "absolute left-[10.5px] md:left-[8px] top-[11px] md:top-[7px] transition-all duration-500 ease-bounce",
+                  "absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/3 transition-all duration-500 ease-bounce",
                   {
                     "opacity-0 rotate-180": isHoveringSwitchButton,
                   }
@@ -733,7 +729,7 @@ export const TradeClipboard: FunctionComponent<{
               </div>
               <div
                 className={classNames(
-                  "absolute left-[12px] top-1.5 md:left-[10px] md:top-[4px] transition-all duration-500 ease-bounce",
+                  "absolute left-1/2 -translate-x-1/2 top-1/3 -translate-y-1/3 transition-all duration-500 ease-bounce",
                   {
                     "opacity-100 rotate-180": isHoveringSwitchButton,
                     "opacity-0": !isHoveringSwitchButton,

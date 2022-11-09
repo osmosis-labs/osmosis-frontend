@@ -42,7 +42,8 @@ import {
 } from "../../components/chart";
 import { PoolAssetsIcon } from "../../components/assets";
 import { BondCard } from "../../components/cards";
-import { Button } from "../../components/buttons";
+import { Disableable } from "../../components/types";
+import { Button, ArrowButton } from "../../components/buttons";
 import { useTranslation } from "react-multi-lang";
 
 const E = EventName.PoolDetail;
@@ -286,6 +287,7 @@ const Pool: FunctionComponent = observer(() => {
   });
 
   const levelCta = bondLiquidityConfig?.calculateBondLevel(bondableDurations);
+  const level2Disabled = bondableDurations.length === 0;
 
   return (
     <main className="flex flex-col gap-10 md:gap-4 bg-osmoverse-900 min-h-screen p-8 md:p-4">
@@ -381,7 +383,7 @@ const Pool: FunctionComponent = observer(() => {
                   <h5 className="max-w-xs truncate">{poolName}</h5>
                 </div>
                 {superfluidPoolConfig?.isSuperfluid && (
-                  <span className="body2 superfluid">
+                  <span className="body2 text-superfluid-gradient">
                     {t("pool.superfluidEnabled")}
                   </span>
                 )}
@@ -465,7 +467,7 @@ const Pool: FunctionComponent = observer(() => {
                     })}
                   </h6>
                 </div>
-                <div className="w-2/3 md:w-full">
+                <div className="w-1/2 md:w-full">
                   <PriceBreakdownChart
                     prices={[
                       {
@@ -496,36 +498,29 @@ const Pool: FunctionComponent = observer(() => {
                 </h4>
               </div>
               {poolDetailConfig?.userAvailableValue.toDec().gt(new Dec(0)) && (
-                <button
-                  className="flex items-center gap-1 text-wosmongton-200"
-                  onClick={() => setShowLockLPTokenModal(true)}
-                >
+                <ArrowButton onClick={() => setShowLockLPTokenModal(true)}>
                   {t("pool.earnMore")}
-                  <Image
-                    alt="earn more"
-                    src="/icons/arrow-right.svg"
-                    height={24}
-                    width={24}
-                  />
-                </button>
+                </ArrowButton>
               )}
             </div>
           </div>
         )}
       </div>
       <div className="flex flex-col gap-7 md:gap-4">
-        <h5 className="md:text-h6 md:font-h6">{t("pool.putAssetsToWork")}</h5>
-        <span className="subtitle1 md:text-body1 md:font-body1 text-osmoverse-300">
-          {t("pool.putAssetsToWorkCaption")}{" "}
-          <a
-            rel="noreferrer"
-            className="text-wosmongton-300 underline"
-            target="_blank"
-            href="https://docs.osmosis.zone/overview/getting-started#bonded-liquidity-gauges"
-          >
-            {t("pool.learnMore")}
-          </a>
-        </span>
+        <div>
+          <h5 className="md:text-h6 md:font-h6">{t("pool.putAssetsToWork")}</h5>
+          <span className="subtitle1 md:text-body1 md:font-body1 text-osmoverse-300">
+            {t("pool.putAssetsToWorkCaption")}{" "}
+            <a
+              rel="noreferrer"
+              className="text-wosmongton-300 underline"
+              target="_blank"
+              href="https://docs.osmosis.zone/overview/getting-started#bonded-liquidity-gauges"
+            >
+              {t("pool.learnMore")}
+            </a>
+          </span>
+        </div>
         <div
           className={classNames(
             "rounded-4xl p-1",
@@ -581,7 +576,8 @@ const Pool: FunctionComponent = observer(() => {
                   </Button>
                   <Button
                     className={classNames("w-fit xs:w-full shrink-0 ", {
-                      "bg-gradient-positive text-osmoverse-900": levelCta === 1,
+                      "bg-gradient-positive text-osmoverse-900 !border-0":
+                        levelCta === 1,
                     })}
                     onClick={() => setShowAddLiquidityModal(true)}
                   >
@@ -610,12 +606,23 @@ const Pool: FunctionComponent = observer(() => {
             levelCta === 2 ? "bg-gradient-positive" : "bg-osmoverse-800"
           )}
         >
-          <div className="flex flex-col gap-10 bg-osmoverse-800 rounded-4x4pxlinset p-9 md:p-5">
-            <div className="flex lg:flex-col gap-10 place-content-between">
+          <div
+            className={classNames(
+              "flex flex-col bg-osmoverse-800 rounded-4x4pxlinset p-9 md:p-5",
+              {
+                "gap-10": !level2Disabled,
+              }
+            )}
+          >
+            <div className="flex lg:flex-col place-content-between md:gap-4">
               <div className="flex flex-col gap-4">
                 <div className="flex items-baseline flex-wrap gap-4">
-                  <LevelBadge level={2} />
-                  <h5>{t("pool.bondLiquidity")}</h5>
+                  <LevelBadge level={2} disabled={level2Disabled} />
+                  <h5>
+                    {level2Disabled
+                      ? t("pool.bondLiquidityUnavailable")
+                      : t("pool.bondLiquidity")}
+                  </h5>
                 </div>
                 <span className="body2 text-osmoverse-200">
                   {t("pool.bondLiquidityCaption")}
@@ -623,17 +630,24 @@ const Pool: FunctionComponent = observer(() => {
                     ` ${t("pool.bondSuperfluidLiquidityCaption")}`}
                 </span>
               </div>
-              <Button
-                className={classNames("w-96 md:w-full border-none", {
-                  "bg-gradient-positive text-osmoverse-900": levelCta === 2,
-                })}
-                disabled={levelCta !== 2}
-                onClick={() => setShowLockLPTokenModal(true)}
-              >
-                {t("pool.bondShares")}
-              </Button>
+              {level2Disabled ? (
+                <h6 className="text-osmoverse-100">
+                  {t("pool.checkBackForBondingRewards")}
+                </h6>
+              ) : (
+                <Button
+                  className={classNames("w-96 md:w-full border-none", {
+                    "bg-gradient-positive text-osmoverse-900 !border-0":
+                      levelCta === 2,
+                  })}
+                  disabled={levelCta !== 2}
+                  onClick={() => setShowLockLPTokenModal(true)}
+                >
+                  {t("pool.bondShares")}
+                </Button>
+              )}
             </div>
-            <div className="flex items-center flex-wrap gap-4">
+            <div className="grid grid-cols-3 1.5xl:grid-cols-1 gap-4">
               {bondableDurations.map((bondableDuration) => (
                 <BondCard
                   key={bondableDuration.duration.asMilliseconds()}
@@ -659,10 +673,17 @@ const Pool: FunctionComponent = observer(() => {
   );
 });
 
-const LevelBadge: FunctionComponent<{ level: number }> = ({ level }) => {
+const LevelBadge: FunctionComponent<{ level: number } & Disableable> = ({
+  level,
+  disabled,
+}) => {
   const t = useTranslation();
   return (
-    <div className="bg-wosmongton-400 rounded-xl px-5 py-1">
+    <div
+      className={classNames("bg-wosmongton-400 rounded-xl px-5 py-1", {
+        "text-osmoverse-100 bg-osmoverse-600": disabled,
+      })}
+    >
       <h5 className="md:text-h6 md:font-h6">
         {t("pool.level", { level: level.toString() })}
       </h5>

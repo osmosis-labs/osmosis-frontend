@@ -338,7 +338,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           <div className="flex flex-col gap-5">
             <div className="flex flex-wrap items-center place-content-between">
               <h5 className="shrink-0 mr-5">{t("assets.table.title")}</h5>
-              <div className="flex items-center gap-5 lg:gap-2">
+              <div className="flex items-center gap-3 lg:gap-2">
                 <Switch
                   isOn={hideZeroBalances}
                   disabled={!canHideZeroBalances}
@@ -481,7 +481,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                           <TransferButtonCell type="withdraw" {...cell} />
                         </div>
                       ),
-                      className: "text-center max-w-[5rem]",
+                      className: "text-left max-w-[5rem]",
                     },
                   ] as ColumnDef<TableCell>[])
                 : ([
@@ -490,14 +490,14 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                       displayCell: (cell) => (
                         <TransferButtonCell type="deposit" {...cell} />
                       ),
-                      className: "text-center max-w-[5rem]",
+                      className: "text-left max-w-[5rem]",
                     },
                     {
                       display: t("assets.table.columns.withdraw"),
                       displayCell: (cell) => (
                         <TransferButtonCell type="withdraw" {...cell} />
                       ),
-                      className: "text-center max-w-[5rem]",
+                      className: "text-left max-w-[5rem]",
                     },
                   ] as ColumnDef<TableCell>[])),
             ]}

@@ -5,6 +5,7 @@ import moment from "dayjs";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { BondableDuration } from "@osmosis-labs/stores";
 import { FallbackImg } from "../assets";
+import { ArrowButton } from "../buttons";
 import { useTranslation } from "react-multi-lang";
 
 export const BondCard: FunctionComponent<
@@ -36,8 +37,8 @@ export const BondCard: FunctionComponent<
     .toString();
 
   return (
-    <div className="relative flex flex-col gap-[115px] overflow-hidden w-[360px] h-[380px] max-w-[348px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8 md:p-[10px]">
-      <div className="flex flex-col gap-4">
+    <div className="relative flex flex-col gap-[115px] overflow-hidden h-[380px] w-full min-w-[280px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8 md:p-[10px]">
+      <div className="h-[260px] flex flex-col place-content-between gap-2">
         <div className="flex items-start gap-4 place-content-between">
           <div className="flex flex-col gap-3 max-w-[60%] overflow-visible z-10">
             <span className="subtitle1 text-osmoverse-100">
@@ -58,18 +59,7 @@ export const BondCard: FunctionComponent<
               <span>{t("pool.shares")}</span>
             </div>
             {userShares.toDec().gt(new Dec(0)) && (
-              <button
-                className="flex items-center gap-1 text-wosmongton-200"
-                onClick={onUnbond}
-              >
-                {t("pool.unbond")}
-                <Image
-                  alt="unbond"
-                  src="/icons/arrow-right.svg"
-                  height={24}
-                  width={24}
-                />
-              </button>
+              <ArrowButton onClick={onUnbond}>{t("pool.unbond")}</ArrowButton>
             )}
           </div>
           {splashImageSrc && (
@@ -79,8 +69,8 @@ export const BondCard: FunctionComponent<
           )}
         </div>
         {userUnlockingShares && (
-          <div className="flex flex-col gap-1 bg-osmoverse-900 rounded-lg p-3">
-            <h6>
+          <div className="w-fit flex flex-wrap items-center gap-1 bg-osmoverse-900 rounded-lg p-3 md:p-1.5">
+            <h6 className="lg:text-subtitle1 lg:font-subtitle1">
               ~
               {t("pool.sharesAmount", {
                 shares: userUnlockingShares.shares
@@ -90,7 +80,7 @@ export const BondCard: FunctionComponent<
                   .toString(),
               })}
             </h6>
-            <h6 className="flex items-center gap-1 text-osmoverse-400">
+            <h6 className="flex items-center gap-1 lg:text-subtitle1 lg:font-subtitle1 text-osmoverse-400">
               {userUnlockingShares.endTime ? (
                 <>
                   {t("pool.sharesAvailableIn")}
@@ -109,25 +99,23 @@ export const BondCard: FunctionComponent<
           !superfluid.delegated &&
           !superfluid.undelegating && (
             <button
-              className="flex items-center gap-1 superfluid"
+              className="w-fit bg-superfluid rounded-lg p-[2px]"
               onClick={onGoSuperfluid}
             >
-              {t("pool.superfluidEarnMore", {
-                rate: superfluid.apr.maxDecimals(0).toString(),
-              })}
-              <Image
-                alt="earn more"
-                src="/icons/arrow-right-superfluid.svg"
-                height={24}
-                width={24}
-              />
+              <div className="w-full bg-osmoverse-800 rounded-[6px] p-3 md:p-2">
+                <span className="text-superfluid-gradient">
+                  {t("pool.superfluidEarnMore", {
+                    rate: superfluid.apr.maxDecimals(0).toString(),
+                  })}
+                </span>
+              </div>
             </button>
           )}
       </div>
       <div
         className={classNames(
           "absolute w-full h-full top-0 left-1/2 -translate-x-1/2 bg-osmoverse-1000 transition-opacity duration-300",
-          drawerUp ? "opacity-70" : "opacity-0 -z-10"
+          drawerUp ? "opacity-70 z-20" : "opacity-0 -z-10"
         )}
         onClick={() => setDrawerUp(false)}
       />
@@ -201,7 +189,7 @@ const Drawer: FunctionComponent<{
           <div className="flex items-center gap-4 md:gap-1.5">
             <h5
               className={classNames(
-                superfluid ? "text-superfluid" : "text-bullish-400"
+                superfluid ? "text-superfluid-gradient" : "text-bullish-400"
               )}
             >
               {aggregateApr.maxDecimals(0).toString()} {t("pool.APR")}
@@ -301,7 +289,7 @@ const SuperfluidBreakdownRow: FunctionComponent<
     <div className="flex flex-col gap-2">
       <div className="flex items-start text-right place-content-between">
         <div className="flex items-center gap-2">
-          <h6 className="text-transparent bg-clip-text bg-superfluid">
+          <h6 className="text-transparent bg-clip-text text-superfluid-gradient">
             +{apr.maxDecimals(0).toString()}
           </h6>
           <FallbackImg

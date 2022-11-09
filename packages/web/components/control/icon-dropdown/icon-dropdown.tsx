@@ -30,27 +30,27 @@ export const IconDropdown: FunctionComponent<IconDropdownProps> = observer(
       <div className="relative">
         <button
           className={classNames(
-            "flex items-center border rounded-xl bg-osmoverse-900",
-            dropdownOpen ? "border-osmoverse-200" : "border-osmoverse-600"
+            "flex items-center border rounded-xl bg-osmoverse-900 hover:bg-osmoverse-700 transition-colors",
+            dropdownOpen
+              ? "border-osmoverse-200"
+              : "border-osmoverse-600 hover:border-osmoverse-700"
           )}
           onClick={(e) => {
             e.stopPropagation();
             setDropdownOpen(!dropdownOpen);
           }}
         >
-          <span className="flex items-center my-[0.6875rem] m-auto md:ml-1.5 ml-1 leading-loose select-none text-center body md:caption overflow-hidden">
-            <div className="flex items-center justify-center min-w-[24px]">
-              {currentOption &&
-                currentOption.iconUrl &&
-                currentOption.display && (
-                  <Image
-                    src={currentOption.iconUrl}
-                    width={24}
-                    height={24}
-                    alt={`${currentOption.display}`}
-                  />
-                )}
-            </div>
+          <span className="flex items-center my-1 md:ml-1.5 ml-1 leading-loose select-none text-center body md:caption overflow-hidden">
+            {currentOption && currentOption.iconUrl && currentOption.display && (
+              <div className="flex items-center justify-center min-w-[24px]">
+                <Image
+                  src={currentOption.iconUrl}
+                  width={24}
+                  height={24}
+                  alt={`${currentOption.display}`}
+                />
+              </div>
+            )}
             <p className="mx-3">{t(currentOption?.display ?? "")}</p>
             <div className="flex items-center justify-center min-w-[24px] mr-3">
               {currentOption && currentOption.display && (

@@ -8,6 +8,7 @@ import {
   useEffect,
   useRef,
 } from "react";
+import EventEmitter from "eventemitter3";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { EventName } from "../../config";
 import {
@@ -384,6 +385,7 @@ export const AllPoolsTableSet: FunctionComponent<{
       [allData]
     );
 
+    const [cellGroupEventEmitter] = useState(() => new EventEmitter());
     const tableData = useMemo(
       () =>
         allData.map((poolWithMetrics) => {
@@ -419,6 +421,7 @@ export const AllPoolsTableSet: FunctionComponent<{
             },
             {
               poolId,
+              cellGroupEventEmitter,
               onAddLiquidity: () => quickAddLiquidity(poolId),
               onRemoveLiquidity: !poolWithMetrics.myAvailableLiquidity
                 .toDec()
@@ -585,7 +588,7 @@ export const AllPoolsTableSet: FunctionComponent<{
               selectedOptionId={activeOptionId}
               onSelect={selectOption}
             />
-            <div className="flex flex-wrap items-center gap-8 lg:w-full lg:place-content-between">
+            <div className="flex flex-wrap items-center gap-3 lg:w-full lg:place-content-between">
               <SearchBox
                 currentValue={query}
                 onInput={setQuery}
