@@ -8,7 +8,7 @@ export const UserAction: { [key: string]: boolean } = {
 };
 
 // Fiat ramps
-export const BUY_OSMO_TRANSAK = true;
+export const BUY_OSMO_TRANSAK = false;
 
 export const HiddenPoolIds: string[] = [];
 
