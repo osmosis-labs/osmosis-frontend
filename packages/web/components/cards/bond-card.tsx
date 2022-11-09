@@ -38,7 +38,7 @@ export const BondCard: FunctionComponent<
 
   return (
     <div className="relative flex flex-col gap-[115px] overflow-hidden h-[380px] w-full min-w-[280px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8 md:p-[10px]">
-      <div className="flex flex-col gap-4">
+      <div className="h-[260px] flex flex-col place-content-between gap-2">
         <div className="flex items-start gap-4 place-content-between">
           <div className="flex flex-col gap-3 max-w-[60%] overflow-visible z-10">
             <span className="subtitle1 text-osmoverse-100">
@@ -69,8 +69,8 @@ export const BondCard: FunctionComponent<
           )}
         </div>
         {userUnlockingShares && (
-          <div className="flex flex-col gap-1 bg-osmoverse-900 rounded-lg p-3">
-            <h6>
+          <div className="w-fit flex flex-wrap items-center gap-1 bg-osmoverse-900 rounded-lg p-3 md:p-1.5">
+            <h6 className="lg:text-subtitle1 lg:font-subtitle1">
               ~
               {t("pool.sharesAmount", {
                 shares: userUnlockingShares.shares
@@ -80,7 +80,7 @@ export const BondCard: FunctionComponent<
                   .toString(),
               })}
             </h6>
-            <h6 className="flex items-center gap-1 text-osmoverse-400">
+            <h6 className="flex items-center gap-1 lg:text-subtitle1 lg:font-subtitle1 text-osmoverse-400">
               {userUnlockingShares.endTime ? (
                 <>
                   {t("pool.sharesAvailableIn")}
@@ -99,18 +99,16 @@ export const BondCard: FunctionComponent<
           !superfluid.delegated &&
           !superfluid.undelegating && (
             <button
-              className="flex items-center gap-1 text-superfluid-gradient"
+              className="w-fit bg-superfluid rounded-lg p-[2px]"
               onClick={onGoSuperfluid}
             >
-              {t("pool.superfluidEarnMore", {
-                rate: superfluid.apr.maxDecimals(0).toString(),
-              })}
-              <Image
-                alt="earn more"
-                src="/icons/arrow-right-superfluid.svg"
-                height={24}
-                width={24}
-              />
+              <div className="w-full bg-osmoverse-800 rounded-[6px] p-3 md:p-2">
+                <span className="text-superfluid-gradient">
+                  {t("pool.superfluidEarnMore", {
+                    rate: superfluid.apr.maxDecimals(0).toString(),
+                  })}
+                </span>
+              </div>
             </button>
           )}
       </div>

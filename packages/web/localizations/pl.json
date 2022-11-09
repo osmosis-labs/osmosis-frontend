@@ -23,7 +23,9 @@
     "minimumSlippage": "Minimalna wartość uwzględniając odchylenie ({slippage})",
     "error": {
       "findCurrency": "Nie udało się znaleźć waluty {currency}"
-    }
+    },
+    "wrapNativeLink": "Konwertuj {fromDenom} na {toDenom} na {platformName}",
+    "waitTime": "{minutes} minuty"
   },
   "pools": {
     "title": "Aktywne pule",
@@ -119,6 +121,8 @@
     "earnSwapFeesCaption": "Przekształć swoje tokeny w aktywa i zarabiaj na każdej wymianie.",
     "APR": "APR",
     "bondLiquidity": "Zwiąż płynność",
+    "bondLiquidityUnavailable": "Zwiąż płynność (niedostępne)",
+    "checkBackForBondingRewards": "Sprawdź ponownie po nagrody za wiązanie",
     "bondLiquidityCaption": "Zablokuj swoje aktywa na dłuższy okres, żeby zdobywać wyższy APR.",
     "bondSuperfluidLiquidityCaption": "Maksymalizuj zyski używając superpłynnośći.",
     "bondShares": "Zwiąż Aktywa",

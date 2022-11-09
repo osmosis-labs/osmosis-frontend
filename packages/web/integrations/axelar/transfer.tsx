@@ -489,9 +489,9 @@ const AxelarTransfer: FunctionComponent<
           }
         />
         {wrapAssetConfig && (
-          <div className="mx-auto text-secondary-200">
+          <div className="mx-auto text-wosmongton-300">
             <a rel="noreferrer" target="_blank" href={wrapAssetConfig.url}>
-              {wrapAssetConfig.displayCaption}
+              {t("assets.transfer.wrapNativeLink", wrapAssetConfig)}
             </a>
           </div>
         )}

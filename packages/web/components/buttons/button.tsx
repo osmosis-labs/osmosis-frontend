@@ -20,9 +20,9 @@ export const Button: FunctionComponent<
         size === "sm" ? "h-10 px-5" : "h-[56px] px-6",
         mode === "tertiary" ? "rounded-md" : "rounded-xl",
         {
-          "bg-wosmongton-700 hover:bg-wosmongton-400":
+          "border-2 border-wosmongton-700 bg-wosmongton-700 hover:bg-wosmongton-400 hover:border-wosmongton-400":
             mode === "primary" && !props.disabled,
-          "bg-osmoverse-500 text-osmoverse-100":
+          "border-2 border-osmoverse-500 bg-osmoverse-500 text-osmoverse-100":
             (mode === "primary" || mode === "primary-warning") &&
             props.disabled,
           "bg-gradient-negative": mode === "primary-warning",
