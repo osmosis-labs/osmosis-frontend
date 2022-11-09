@@ -40,21 +40,14 @@ const INIT_POOL_CARD_COUNT = 6;
 
 const Assets: NextPage = observer(() => {
   const { isMobile } = useWindowSize();
-  const {
-    assetsStore,
-    chainStore: {
-      osmosis: { chainId },
-    },
-    accountStore,
-  } = useStore();
+  const { assetsStore } = useStore();
   const { nativeBalances, ibcBalances } = assetsStore;
-  const account = accountStore.getAccount(chainId);
   const t = useTranslation();
 
   const { setUserProperty, logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Assets.pageViewed],
   });
-  const transferConfig = useTransferConfig(assetsStore, account);
+  const transferConfig = useTransferConfig();
 
   // mobile only
   const [preTransferModalProps, setPreTransferModalProps] =
@@ -129,6 +122,25 @@ const Assets: NextPage = observer(() => {
     ],
   });
 
+  const onTableDeposit = useCallback(
+    (chainId, coinDenom, externalDepositUrl) => {
+      if (!externalDepositUrl) {
+        isMobile
+          ? launchPreTransferModal(coinDenom)
+          : transferConfig?.transferAsset("deposit", chainId, coinDenom);
+      }
+    },
+    [isMobile, launchPreTransferModal, transferConfig?.transferAsset]
+  );
+  const onTableWithdraw = useCallback(
+    (chainId, coinDenom, externalWithdrawUrl) => {
+      if (!externalWithdrawUrl) {
+        transferConfig?.transferAsset("withdraw", chainId, coinDenom);
+      }
+    },
+    [transferConfig?.transferAsset]
+  );
+
   return (
     <main className="flex flex-col gap-20 md:gap-8 bg-osmoverse-900 p-8 md:p-4">
       <AssetsOverview />
@@ -160,18 +172,8 @@ const Assets: NextPage = observer(() => {
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
-        onDeposit={(chainId, coinDenom, externalDepositUrl) => {
-          if (!externalDepositUrl) {
-            isMobile
-              ? launchPreTransferModal(coinDenom)
-              : transferConfig?.transferAsset("deposit", chainId, coinDenom);
-          }
-        }}
-        onWithdraw={(chainId, coinDenom, externalWithdrawUrl) => {
-          if (!externalWithdrawUrl) {
-            transferConfig?.transferAsset("withdraw", chainId, coinDenom);
-          }
-        }}
+        onDeposit={onTableDeposit}
+        onWithdraw={onTableWithdraw}
         onBuyOsmo={() => transferConfig?.buyOsmo()}
       />
       {!isMobile && <PoolAssets />}
