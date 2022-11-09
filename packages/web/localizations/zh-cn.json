@@ -119,6 +119,8 @@
     "earnSwapFeesCaption": "将您的代币转为份额并在每次兑换中赚取收益.",
     "APR": "APR",
     "bondLiquidity": "绑定流动性",
+    "bondLiquidityUnavailable": "绑定流动性（不可用）",
+    "checkBackForBondingRewards": "查看绑定奖励",
     "bondLiquidityCaption": "将您的份额锁定更长时间以赚取更高的APRs.",
     "bondSuperfluidLiquidityCaption": "去超流质押获得最大收益.",
     "bondShares": "绑定份额",
@@ -238,6 +240,7 @@
         "insufficientFee": "费用不足",
         "insufficientBal": "余额不足"
       },
+      "wrapNativeLink": "在 {platformName} 上将 {fromDenom} 转换为 {toDenom}",
       "waitTime": "{minutes} 分钟"
     },
     "selectAssetSource": {
