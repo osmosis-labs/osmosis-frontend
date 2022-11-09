@@ -1100,6 +1100,14 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
     depositUrlOverride: "https://wrap.scrt.network",
   },
+  {
+    // stkd-SCRT
+    counterpartyChainId: "secret-4",
+    sourceChannelId: "channel-476",
+    destChannelId: "channel-44",
+    coinMinimalDenom: "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
+    depositUrlOverride: "https://wrap.scrt.network",
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
