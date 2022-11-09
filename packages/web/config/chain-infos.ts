@@ -144,7 +144,7 @@ const chainInfos = (
             "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej:ALTER",
           coinDecimals: 6,
           coinGeckoId: "alter",
-          coinImageUrl: "/tokens/alter.jpg",
+          coinImageUrl: "/tokens/alter.svg",
         },
         {
           type: "cw20",
@@ -154,7 +154,7 @@ const chainInfos = (
             "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt:BUTT",
           coinDecimals: 6,
           coinGeckoId: "button",
-          coinImageUrl: "/tokens/butt.png",
+          coinImageUrl: "/tokens/butt.svg",
         },
         {
           type: "cw20",
@@ -164,7 +164,17 @@ const chainInfos = (
             "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d:SHD",
           coinDecimals: 8,
           coinGeckoId: "shade-protocol",
-          coinImageUrl: "/tokens/shd.jpg",
+          coinImageUrl: "/tokens/shd.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
+          coinDenom: "stkd-SCRT",
+          coinMinimalDenom:
+            "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4:stkd-SCRT",
+          coinDecimals: 6,
+          coinGeckoId: "stkd-scrt",
+          coinImageUrl: "/tokens/stkd-scrt.svg",
         },
         {
           type: "cw20",
