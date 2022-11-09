@@ -1,5 +1,15 @@
-import { observable, computed, makeObservable, action } from "mobx";
-import { TxChainSetter, IFeeConfig } from "@keplr-wallet/hooks";
+import {
+  observable,
+  computed,
+  makeObservable,
+  action,
+  runInAction,
+} from "mobx";
+import {
+  TxChainSetter,
+  IFeeConfig,
+  InvalidNumberAmountError,
+} from "@keplr-wallet/hooks";
 import {
   ObservableQueryBalances,
   ChainGetter,
@@ -8,7 +18,16 @@ import {
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
-import { CREATE_POOL_MAX_ASSETS } from ".";
+import {
+  DepositNoBalanceError,
+  HighSwapFeeError,
+  InvalidSwapFeeError,
+  MaxAssetsCountError,
+  MinAssetsCountError,
+  NegativePercentageError,
+  NegativeSwapFeeError,
+  PercentageSumError,
+} from "./errors";
 
 export interface CreatePoolConfigOpts {
   minAssetsCount: number;
@@ -38,7 +57,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
   protected _swapFee: string = "0";
 
   @observable
-  public acknowledgeFee = false;
+  public _acknowledgeFee = false;
 
   protected _opts: CreatePoolConfigOpts;
 
@@ -51,7 +70,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     feeConfig?: IFeeConfig,
     opts: CreatePoolConfigOpts = {
       minAssetsCount: 2,
-      maxAssetsCount: 8,
+      maxAssetsCount: 4,
     }
   ) {
     super(chainGetter, initialChainId);
@@ -83,7 +102,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
   get canAddAsset(): boolean {
     return (
-      this._assets.length < CREATE_POOL_MAX_ASSETS &&
+      this._assets.length < this._opts.maxAssetsCount &&
       this.remainingSelectableCurrencies.length > 0
     );
   }
@@ -99,6 +118,14 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
   get queryBalances(): ObservableQueryBalances {
     return this._queryBalances;
+  }
+
+  get acknowledgeFee() {
+    return this._acknowledgeFee;
+  }
+
+  set acknowledgeFee(ack: boolean) {
+    runInAction(() => (this._acknowledgeFee = ack));
   }
 
   @computed
@@ -144,18 +171,18 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
   get positiveBalanceError(): Error | undefined {
     if (this.sendableCurrencies.length === 0) {
-      return new Error("You have no assets to deposit");
+      return new DepositNoBalanceError("You have no assets to deposit");
     }
   }
 
   get percentageError(): Error | undefined {
     if (this.assets.length < this._opts.minAssetsCount) {
-      return new Error(
+      return new MinAssetsCountError(
         `Minimum of ${this._opts.minAssetsCount} assets required`
       );
     }
     if (this.assets.length > this._opts.maxAssetsCount) {
-      return new Error(
+      return new MaxAssetsCountError(
         `Maximumm of ${this._opts.maxAssetsCount} assets allowed`
       );
     }
@@ -166,16 +193,16 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
         const percentage = new Dec(asset.percentage);
 
         if (percentage.lte(new Dec(0))) {
-          return new Error("Non-positive percentage");
+          return new NegativePercentageError("Non-positive percentage");
         }
 
         totalPercentage = totalPercentage.add(percentage);
       } catch {
-        return new Error("Invalid number");
+        return new InvalidNumberAmountError("Invalid number");
       }
     }
     if (!totalPercentage.equals(new Dec(100))) {
-      return new Error("Sum of percentages is not 100%");
+      return new PercentageSumError("Sum of percentages is not 100");
     }
   }
 
@@ -183,13 +210,13 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     try {
       const dec = new Dec(this.swapFee);
       if (dec.lt(new Dec(0))) {
-        return new Error("Negative swap fee");
+        return new NegativeSwapFeeError("Negative swap fee");
       }
       if (dec.gte(new Dec(100))) {
-        return new Error("Swap fee too high");
+        return new HighSwapFeeError("Swap fee too high");
       }
     } catch {
-      return new Error("Invalid swap fee");
+      return new InvalidSwapFeeError("Invalid swap fee");
     }
   }
 

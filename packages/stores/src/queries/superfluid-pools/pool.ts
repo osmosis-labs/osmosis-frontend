@@ -1,12 +1,13 @@
-import { computed, makeObservable, observable, action } from "mobx";
+import { computed, makeObservable } from "mobx";
 import { FiatCurrency } from "@keplr-wallet/types";
 import {
   ObservableQueryValidators,
   ObservableQueryInflation,
   Staking,
 } from "@keplr-wallet/stores";
-import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { Dec, RatePretty, CoinPretty } from "@keplr-wallet/unit";
 import { IPriceStore } from "../../price";
+import { UserConfig } from "../../ui-config";
 import { ObservableQueryPoolDetails } from "../pools";
 import { ObservableQueryGammPoolShare } from "../pool-share";
 import {
@@ -22,10 +23,7 @@ import {
 } from "../superfluid-pools";
 
 /** Convenience store getting common superfluid data for a pool via superfluid stores. */
-export class ObservableQuerySuperfluidPool {
-  @observable
-  protected bech32Address: string = "";
-
+export class ObservableQuerySuperfluidPool extends UserConfig {
   constructor(
     protected readonly fiatCurrency: FiatCurrency,
     protected readonly queryPoolDetails: ObservableQueryPoolDetails,
@@ -43,12 +41,8 @@ export class ObservableQuerySuperfluidPool {
     },
     protected readonly priceStore: IPriceStore
   ) {
+    super();
     makeObservable(this);
-  }
-
-  @action
-  setBech32Address(bech32Address: string) {
-    this.bech32Address = bech32Address;
   }
 
   @computed
@@ -61,7 +55,7 @@ export class ObservableQuerySuperfluidPool {
   /** Wraps `gauges` member of pool detail store with potential superfluid APR info. */
   @computed
   get gaugesWithSuperfluidApr() {
-    return this.queryPoolDetails.gauges.map((gaugeInfo) => {
+    return this.queryPoolDetails.internalGauges.map((gaugeInfo) => {
       const lastDuration = this.queryPoolDetails.longestDuration;
       return {
         ...gaugeInfo,
@@ -100,33 +94,32 @@ export class ObservableQuerySuperfluidPool {
   }
 
   @computed
-  get upgradeableLpLockIds() {
+  get superfluid() {
     if (!this.isSuperfluid || !this.queryPoolDetails.longestDuration) return;
 
+    let upgradeableLpLockIds:
+      | {
+          amount: CoinPretty;
+          lockIds: string[];
+        }
+      | undefined;
     if (this.queryPoolDetails.lockableDurations.length > 0) {
-      return this.queries.queryAccountLocked
+      upgradeableLpLockIds = this.queries.queryAccountLocked
         .get(this.bech32Address)
         .getLockedCoinWithDuration(
           this.queryPoolDetails.poolShareCurrency,
           this.queryPoolDetails.longestDuration
         );
     }
-  }
-
-  @computed
-  get superfluid() {
-    if (!this.isSuperfluid || !this.queryPoolDetails.longestDuration) return;
 
     const undelegatedLockedLpShares =
       (this.queries.querySuperfluidDelegations
         .getQuerySuperfluidDelegations(this.bech32Address)
         .getDelegations(this.queryPoolDetails.poolShareCurrency)?.length ===
         0 &&
-        this.upgradeableLpLockIds &&
-        this.upgradeableLpLockIds.lockIds.length > 0) ??
+        upgradeableLpLockIds &&
+        upgradeableLpLockIds.lockIds.length > 0) ??
       false;
-
-    const upgradeableLpLockIds = this.upgradeableLpLockIds;
 
     return undelegatedLockedLpShares
       ? { upgradeableLpLockIds }
@@ -167,7 +160,7 @@ export class ObservableQuerySuperfluidPool {
               );
 
               if (this.queryPoolDetails.lockableDurations.length > 0) {
-                const poolApr = this.queries.queryIncentivizedPools.computeAPY(
+                const poolApr = this.queries.queryIncentivizedPools.computeApr(
                   this.queryPoolDetails.pool.id,
                   this.queryPoolDetails.longestDuration,
                   this.priceStore,

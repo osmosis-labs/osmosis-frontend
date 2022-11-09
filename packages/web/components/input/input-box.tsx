@@ -22,6 +22,8 @@ interface Props extends InputProps<string>, Disableable, CustomClasses {
   labelButtons?: Button[];
   /** Show a clear button when `currentValue !== ""`. */
   clearButton?: boolean;
+  /** Display a symbol after the input box, ex: '%'. */
+  trailingSymbol?: string;
   inputClassName?: string;
   isAutosize?: boolean;
   inputRef?: React.MutableRefObject<HTMLInputElement | null>;
@@ -37,6 +39,7 @@ export const InputBox: FunctionComponent<Props> = ({
   rightEntry = false,
   labelButtons = [],
   clearButton = false,
+  trailingSymbol,
   inputClassName,
   disabled = false,
   className,
@@ -48,20 +51,23 @@ export const InputBox: FunctionComponent<Props> = ({
   return (
     <div
       className={classNames(
-        "flex flex-nowrap justify-between w-full h-fit rounded-lg px-2 text-white-high bg-background",
+        "flex flex-nowrap justify-between w-full h-fit rounded-lg px-2 text-white-high bg-osmoverse-1000",
         {
           border: style !== "no-border",
-          "border-secondary-200":
+          "border-osmoverse-200":
             style !== "no-border" && (style === "active" || inputFocused),
-          "border-background":
+          "border-osmoverse-1000":
             style !== "no-border" && style === "enabled" && !inputFocused,
           "border-missionError": style === "error",
-          "cursor-default bg-[#C4A46A14] border-white-disabled": disabled,
+          "cursor-default bg-osmoverse-800 border-white-disabled": disabled,
         },
         className
       )}
     >
-      <label className="grow shrink w-full" htmlFor="text-input">
+      <label
+        className="flex items-center grow shrink w-full"
+        htmlFor="text-input"
+      >
         {isAutosize ? (
           <AutosizeInput
             inputRef={(ref) => {
@@ -83,11 +89,12 @@ export const InputBox: FunctionComponent<Props> = ({
             ref={inputRef}
             id="text-input"
             className={classNames(
-              "w-full appearance-none bg-transparent align-middle leading-10 md:leading-0 pt-px md:p-0 pr-1",
+              "w-full appearance-none bg-transparent align-middle leading-10 md:leading-0 pt-px md:p-0 placeholder:text-osmoverse-500",
               {
                 "text-white-disabled": disabled,
                 "text-white-high": currentValue != "" && !disabled,
                 "text-right float-right": rightEntry,
+                "pr-1": !trailingSymbol,
               },
               inputClassName
             )}
@@ -105,6 +112,7 @@ export const InputBox: FunctionComponent<Props> = ({
             disabled={disabled}
           />
         )}
+        {trailingSymbol && <span>{trailingSymbol}</span>}
       </label>
       <div className="flex flex-nowrap gap-2">
         {!rightEntry &&
@@ -125,10 +133,10 @@ export const InputBox: FunctionComponent<Props> = ({
                   <button
                     key={index}
                     className={classNames(
-                      "button h-[1.375rem] border-2 border-primary-200 rounded-lg mt-2.5 bg-primary-200/30 select-none",
+                      "button h-[1.375rem] border-2 border-wosmongton-200 rounded-lg mt-2.5 bg-wosmongton-200/30 select-none",
                       {
                         "opacity-30": disabled || labelButtonDisabled,
-                        "hover:bg-primary-200/60":
+                        "hover:bg-wosmongton-200/60":
                           !disabled && !labelButtonDisabled,
                       },
                       className

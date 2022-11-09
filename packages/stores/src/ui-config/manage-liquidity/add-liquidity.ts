@@ -19,6 +19,7 @@ import {
   ObservableQueryGammPoolShare,
 } from "../../queries";
 import { ManageLiquidityConfigBase } from "./base";
+import { NotInitializedError, CalculatingShareOutAmountError } from "./errors";
 import { OSMO_MEDIUM_TX_FEE } from ".";
 
 /** Use to config user input UI for eventually sending a valid add liquidity msg.
@@ -510,9 +511,9 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   }
 
   @computed
-  get error() {
+  get error(): Error | undefined {
     if (this.poolAssetConfigs.length === 0) {
-      return new Error("Not initialized yet");
+      return new NotInitializedError("Not initialized yet");
     }
 
     if (this.isSingleAmountIn && this.singleAmountInConfig) {
@@ -533,7 +534,9 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     }
 
     if (!this.shareOutAmount || this.shareOutAmount.toDec().lte(new Dec(0))) {
-      return new Error("Calculating the share out amount");
+      return new CalculatingShareOutAmountError(
+        "Calculating the share out amount"
+      );
     }
   }
 }

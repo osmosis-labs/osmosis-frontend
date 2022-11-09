@@ -1,3 +1,4 @@
+export * from "./fallback-img";
 export * from "./pool-assets-icon";
 export * from "./pool-assets-name";
 export * from "./rate-ring";

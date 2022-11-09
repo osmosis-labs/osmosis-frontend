@@ -6,6 +6,7 @@ import { truncateString } from "../../utils";
 import { useWindowSize } from "../../../hooks";
 import { CustomClasses, LoadingProps } from "../../types";
 import { Animation as AnimationProps } from "../types";
+import { useTranslation } from "react-multi-lang";
 
 const Lottie = dynamic(() => import("react-lottie"), { ssr: false });
 
@@ -28,6 +29,7 @@ export const BridgeAnimation: FunctionComponent<
     className,
   } = props;
   const { isMobile } = useWindowSize();
+  const t = useTranslation();
 
   const longFromName = from.networkName.length > 7;
   const longToName = to.networkName.length > 7;
@@ -89,7 +91,7 @@ export const BridgeAnimation: FunctionComponent<
             { "opacity-30": bridge?.isLoading }
           )}
         >
-          From{" "}
+          {t("assets.transfer.from")}{" "}
           {truncateString(from.networkName, bridge ? (isMobile ? 10 : 12) : 18)}
         </span>
       </div>
@@ -111,7 +113,10 @@ export const BridgeAnimation: FunctionComponent<
               }
             )}
           >
-            {bridge?.isLoading ? "Loading" : "via"} {bridge.bridgeName}
+            {bridge?.isLoading
+              ? t("assets.transfer.loading")
+              : t("assets.transfer.via")}{" "}
+            {bridge.bridgeName}
           </span>
         </div>
       )}
@@ -135,7 +140,7 @@ export const BridgeAnimation: FunctionComponent<
             { "opacity-30": bridge?.isLoading }
           )}
         >
-          To{" "}
+          {t("assets.transfer.to")}{" "}
           {truncateString(to.networkName, bridge ? (isMobile ? 10 : 12) : 18)}
         </span>
       </div>

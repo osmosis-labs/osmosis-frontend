@@ -151,6 +151,7 @@ export class ObservableAssets {
         withdrawUrlOverride: ibcAsset.withdrawUrlOverride,
         sourceChainNameOverride: ibcAsset.sourceChainNameOverride,
         originBridgeInfo: ibcAsset.originBridgeInfo,
+        fiatRamps: ibcAsset.fiatRamps,
       };
 
       if (ibcAsset.ics20ContractAddress) {
