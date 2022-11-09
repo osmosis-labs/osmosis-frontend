@@ -20,7 +20,8 @@ export const SearchBox: FunctionComponent<
         "flex items-center flex-nowrap gap-2 justify-between w-max rounded-xl py-[10px] px-5 border border-osmoverse-500 transition-colors",
         {
           "opacity-50": disabled,
-          "-my-px px-[19px] border-2 border-osmoverse-200": isFocused,
+          "-m-px mx-0 md:m-0 px-[19px] border-2 border-osmoverse-200":
+            isFocused,
         },
         className
       )}
