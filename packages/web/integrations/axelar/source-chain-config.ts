@@ -86,7 +86,7 @@ export const SourceChainConfigs: {
         : "0xAcc15dC74880C9944775448304B263D191c6077F",
       logoUrl: "/networks/moonbeam.svg",
       transferFeeMinAmount: IS_TESTNET
-        ? "40000000000000000"
+        ? "60000000000000000"
         : "2900000000000000000",
     },
   },
