@@ -9,10 +9,16 @@ export declare class ObservableQueryAccountLockedInner extends ObservableChainQu
     constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, bech32Address: string);
     protected canFetch(): boolean;
     protected setResponse(response: Readonly<QueryResponse<AccountLockedLongerDuration>>): void;
+    get lockedCoins(): {
+        amount: CoinPretty;
+        lockIds: string[];
+        duration: Duration;
+    }[];
     get unlockingCoins(): {
         amount: CoinPretty;
         lockIds: string[];
         endTime: Date;
+        duration: Duration;
     }[];
     readonly getLockedCoinWithDuration: (currency: AppCurrency, duration: Duration) => {
         amount: CoinPretty;

@@ -81,6 +81,10 @@ export class ObservableBondLiquidityConfig extends UserConfig {
       const poolId = this.poolDetails.pool.id;
       const gauges = this.superfluidPool.gaugesWithSuperfluidApr;
 
+      const queryLockedCoin = this.queries.queryAccountLocked.get(
+        this.bech32Address
+      );
+
       const externalGauges = allowedGauges
         ? this.poolDetails.queryAllowedExternalGauges(
             findCurrency,
@@ -90,6 +94,23 @@ export class ObservableBondLiquidityConfig extends UserConfig {
 
       /** Set of all available durations. */
       const durationsMsSet = new Set<number>();
+
+      // Get all durations for locks with this pool's share currency
+      (
+        queryLockedCoin.lockedCoins as {
+          amount: CoinPretty;
+          duration: Duration;
+        }[]
+      )
+        .concat(queryLockedCoin.unlockingCoins)
+        .forEach((coin) => {
+          if (
+            coin.amount.currency.coinMinimalDenom ===
+            this.poolDetails.poolShareCurrency.coinMinimalDenom
+          ) {
+            durationsMsSet.add(coin.duration.asMilliseconds());
+          }
+        });
 
       (gauges as { duration: Duration }[])
         .concat(externalGauges as { duration: Duration }[])
@@ -115,26 +136,23 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           },
           []
         );
-
-        const queryLockedCoin = this.queries.queryAccountLocked.get(
-          this.bech32Address
-        );
-        const userShares = queryLockedCoin.getLockedCoinWithDuration(
+        const lockedUserShares = queryLockedCoin.getLockedCoinWithDuration(
           this.poolDetails.poolShareCurrency,
           curDuration
         ).amount;
-        const allUnlockingCoins = queryLockedCoin.getUnlockingCoinWithDuration(
-          this.poolDetails.poolShareCurrency,
-          curDuration
-        );
+        const unlockingUserShares =
+          queryLockedCoin.getUnlockingCoinWithDuration(
+            this.poolDetails.poolShareCurrency,
+            curDuration
+          );
         const userUnlockingShares =
-          allUnlockingCoins.length > 0
+          unlockingUserShares.length > 0
             ? {
                 // only return soonest unlocking shares
                 shares:
-                  allUnlockingCoins[0]?.amount ??
+                  unlockingUserShares[0].amount ??
                   new CoinPretty(this.poolDetails.poolShareCurrency, 0),
-                endTime: allUnlockingCoins[0]?.endTime,
+                endTime: unlockingUserShares[0].endTime,
               }
             : undefined;
 
@@ -239,7 +257,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
 
         return {
           duration: curDuration,
-          userShares,
+          userShares: lockedUserShares,
           userUnlockingShares,
           aggregateApr,
           swapFeeApr,
