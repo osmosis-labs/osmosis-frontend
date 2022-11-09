@@ -10,6 +10,9 @@
     font-family: Inter, ui-sans-serif, system-ui;
     @apply text-white-full;
   }
+  body {
+    @apply bg-osmoverse-900;
+  }
 
   h1 {
     @apply text-h1 font-h1;
