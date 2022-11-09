@@ -89,6 +89,7 @@ export const TransferAssetSelectModal: FunctionComponent<
     {
       className: "mt-3",
       onClick: () => onSelectAsset(selectedTokenDenom, selectedNetwork?.id),
+      disabled: selectedToken?.originBridgeInfo && !selectedNetwork, // error in bridge integration config
       children: t("assets.transferAssetSelect.buttonNext"),
     },
     props.onRequestClose,
