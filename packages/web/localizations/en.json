@@ -119,6 +119,8 @@
     "earnSwapFeesCaption": "Convert your tokens into shares and earn on every swap.",
     "APR": "APR",
     "bondLiquidity": "Bond liquidity",
+    "bondLiquidityUnavailable": "Bond liquidity (unavailable)",
+    "checkBackForBondingRewards": "Check back for bonding rewards",
     "bondLiquidityCaption": "Lock up your shares for longer durations to earn higher APRs.",
     "bondSuperfluidLiquidityCaption": "Go superfluid for maximum rewards.",
     "bondShares": "Bond Shares",

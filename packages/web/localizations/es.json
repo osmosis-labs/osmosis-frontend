@@ -119,6 +119,8 @@
     "earnSwapFeesCaption": "Convierta sus tokens en acciones y gane en cada intercambio.",
     "APR": "APR",
     "bondLiquidity": "Liquidez de bonos",
+    "bondLiquidityUnavailable": "Liquidez de bonos (indisponible)",
+    "checkBackForBondingRewards": "Vuelva a consultar las recompensas de vinculación",
     "bondLiquidityCaption": "Bloquee sus acciones para obtener duraciones más largas para ganar APR más altos.",
     "bondSuperfluidLiquidityCaption": "Vaya superfluido para obtener las recompensas máximas.",
     "bondShares": "Bonar Acciones",

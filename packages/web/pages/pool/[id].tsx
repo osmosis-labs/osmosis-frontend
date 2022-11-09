@@ -42,6 +42,7 @@ import {
 } from "../../components/chart";
 import { PoolAssetsIcon } from "../../components/assets";
 import { BondCard } from "../../components/cards";
+import { Disableable } from "../../components/types";
 import { Button, ArrowButton } from "../../components/buttons";
 import { useTranslation } from "react-multi-lang";
 
@@ -286,6 +287,7 @@ const Pool: FunctionComponent = observer(() => {
   });
 
   const levelCta = bondLiquidityConfig?.calculateBondLevel(bondableDurations);
+  const level2Disabled = bondableDurations.length === 0;
 
   return (
     <main className="flex flex-col gap-10 md:gap-4 bg-osmoverse-900 min-h-screen p-8 md:p-4">
@@ -604,12 +606,23 @@ const Pool: FunctionComponent = observer(() => {
             levelCta === 2 ? "bg-gradient-positive" : "bg-osmoverse-800"
           )}
         >
-          <div className="flex flex-col gap-10 bg-osmoverse-800 rounded-4x4pxlinset p-9 md:p-5">
-            <div className="flex lg:flex-col gap-10 place-content-between">
+          <div
+            className={classNames(
+              "flex flex-col bg-osmoverse-800 rounded-4x4pxlinset p-9 md:p-5",
+              {
+                "gap-10": !level2Disabled,
+              }
+            )}
+          >
+            <div className="flex lg:flex-col place-content-between md:gap-4">
               <div className="flex flex-col gap-4">
                 <div className="flex items-baseline flex-wrap gap-4">
-                  <LevelBadge level={2} />
-                  <h5>{t("pool.bondLiquidity")}</h5>
+                  <LevelBadge level={2} disabled={level2Disabled} />
+                  <h5>
+                    {level2Disabled
+                      ? t("pool.bondLiquidityUnavailable")
+                      : t("pool.bondLiquidity")}
+                  </h5>
                 </div>
                 <span className="body2 text-osmoverse-200">
                   {t("pool.bondLiquidityCaption")}
@@ -617,16 +630,22 @@ const Pool: FunctionComponent = observer(() => {
                     ` ${t("pool.bondSuperfluidLiquidityCaption")}`}
                 </span>
               </div>
-              <Button
-                className={classNames("w-96 md:w-full border-none", {
-                  "bg-gradient-positive text-osmoverse-900 !border-0":
-                    levelCta === 2,
-                })}
-                disabled={levelCta !== 2}
-                onClick={() => setShowLockLPTokenModal(true)}
-              >
-                {t("pool.bondShares")}
-              </Button>
+              {level2Disabled ? (
+                <h6 className="text-osmoverse-100">
+                  {t("pool.checkBackForBondingRewards")}
+                </h6>
+              ) : (
+                <Button
+                  className={classNames("w-96 md:w-full border-none", {
+                    "bg-gradient-positive text-osmoverse-900 !border-0":
+                      levelCta === 2,
+                  })}
+                  disabled={levelCta !== 2}
+                  onClick={() => setShowLockLPTokenModal(true)}
+                >
+                  {t("pool.bondShares")}
+                </Button>
+              )}
             </div>
             <div className="grid grid-cols-3 1.5xl:grid-cols-1 gap-4">
               {bondableDurations.map((bondableDuration) => (
@@ -654,10 +673,17 @@ const Pool: FunctionComponent = observer(() => {
   );
 });
 
-const LevelBadge: FunctionComponent<{ level: number }> = ({ level }) => {
+const LevelBadge: FunctionComponent<{ level: number } & Disableable> = ({
+  level,
+  disabled,
+}) => {
   const t = useTranslation();
   return (
-    <div className="bg-wosmongton-400 rounded-xl px-5 py-1">
+    <div
+      className={classNames("bg-wosmongton-400 rounded-xl px-5 py-1", {
+        "text-osmoverse-100 bg-osmoverse-600": disabled,
+      })}
+    >
       <h5 className="md:text-h6 md:font-h6">
         {t("pool.level", { level: level.toString() })}
       </h5>

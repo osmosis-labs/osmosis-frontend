@@ -119,6 +119,8 @@
     "earnSwapFeesCaption": "풀에 유동성을 공급하고, 모든 교환에서 수수료를 받으세요",
     "APR": "APR",
     "bondLiquidity": "유동성을 예치하세요",
+    "bondLiquidityUnavailable": "채권 유동성(사용 불가)",
+    "checkBackForBondingRewards": "본딩 보상을 다시 확인하십시오.",
     "bondLiquidityCaption": "더 긴 기간을 예치하면 더 많은 보상 APR이 주어집니다.",
     "bondSuperfluidLiquidityCaption": "Superfluid 를 통해 최대 보상을 받으세요.",
     "bondShares": "유동성 예치",

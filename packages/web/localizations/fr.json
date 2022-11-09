@@ -119,6 +119,8 @@
     "earnSwapFeesCaption": "Convertissez vos jetons en actions et gagnez sur chaque échange.",
     "APR": "TAP",
     "bondLiquidity": "Liquidités des délégations",
+    "bondLiquidityUnavailable": "Liquidité des délégations (non disponible)",
+    "checkBackForBondingRewards": "Revenez pour les récompenses de liaison",
     "bondLiquidityCaption": "Bloquez vos actifs pour des durées plus longues afin de bénéficier de taux d'intérêt plus élevés.",
     "bondSuperfluidLiquidityCaption": "Passez au superfluide pour un maximum de récompenses.",
     "bondShares": "Déléguer les actifs",

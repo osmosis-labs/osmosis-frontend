@@ -121,6 +121,8 @@
     "earnSwapFeesCaption": "Tokenlerinizi hisseye dönüştürün ve her takasta kazanın.",
     "APR": "APR",
     "bondLiquidity": "Likiditeyi bağla",
+    "bondLiquidityUnavailable": "Likiditeyi bağla (kullanım dışı)",
+    "checkBackForBondingRewards": "Bağlanma ödülleri için tekrar kontrol edin",
     "bondLiquidityCaption": "Daha yüksek APR kazanmak için hisselerinizi daha uzun süre kilitleyin.",
     "bondSuperfluidLiquidityCaption": "Maksimum kazanç için Superfluid seçin.",
     "bondShares": "Hisseleri bağla",
