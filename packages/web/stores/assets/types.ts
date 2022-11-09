@@ -1,6 +1,6 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
-import { OriginBridgeInfo } from "../../integrations/bridge-info";
+import { FiatRampKey, OriginBridgeInfo } from "../../integrations/bridge-info";
 
 export interface IBCAsset {
   counterpartyChainId: string;
@@ -21,6 +21,9 @@ export interface IBCAsset {
 
   /** Additional info to support non-IBC bridge integration. */
   originBridgeInfo?: OriginBridgeInfo;
+
+  /** Keys for fiat on/off ramps. Ramp must accept asset's major denom (e.g. `ATOM`). */
+  fiatRamps?: { rampKey: FiatRampKey; assetKey: string }[];
 }
 
 export interface CoinBalance {
@@ -48,6 +51,7 @@ export interface IBCBalance extends CoinBalance {
   destChannelId: string;
   isUnstable?: boolean;
   originBridgeInfo?: OriginBridgeInfo;
+  fiatRamps?: { rampKey: FiatRampKey; assetKey: string }[];
 }
 
 export interface IBCCW20ContractBalance extends IBCBalance {

@@ -7,6 +7,9 @@ export const UserAction: { [key: string]: boolean } = {
   CreateNewPool: true,
 };
 
+// Fiat ramps
+export const BUY_OSMO_TRANSAK = true;
+
 export const HiddenPoolIds: string[] = [];
 
 export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
@@ -1150,7 +1153,7 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "817": [
     {
-      gaugeId: "29724",
+      gaugeId: "29965",
       denom:
         "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
     },

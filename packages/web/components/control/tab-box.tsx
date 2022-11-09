@@ -48,11 +48,6 @@ export const TabBox: FunctionComponent<
             key={index}
             className={classNames(
               "w-full text-center py-1 px-5 cursor-pointer",
-              {
-                "border-b-2 border-secondary-200": selectedTabI === index,
-                "border-b opacity-40 border-white-full/[.12] hover:opacity-60":
-                  selectedTabI !== index,
-              },
               tabClassName
             )}
             onClick={() => {
@@ -61,7 +56,13 @@ export const TabBox: FunctionComponent<
             }}
           >
             {typeof title === "string" ? (
-              <span className="subtitle1 md:caption text-secondary-200">
+              <span
+                className={classNames("subtitle1 text-wosmongton-100", {
+                  "border-b-4 border-wosmongton-100": selectedTabI === index,
+                  "border-b opacity-40 border-white-full/[.12] hover:opacity-60":
+                    selectedTabI !== index,
+                })}
+              >
                 {title}
               </span>
             ) : (

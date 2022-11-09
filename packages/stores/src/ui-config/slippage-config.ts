@@ -1,6 +1,6 @@
 import { Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
-import { computedFn } from "mobx-utils";
+import { InvalidSlippageError, NegativeSlippageError } from "./errors";
 
 export class ObservableSlippageConfig {
   static readonly defaultSelectableSlippages: ReadonlyArray<Dec> = [
@@ -121,20 +121,21 @@ export class ObservableSlippageConfig {
     });
   }
 
-  getManualSlippageError = computedFn((): Error | undefined => {
+  @computed
+  get manualSlippageError(): Error | undefined {
     if (this._isManualSlippage) {
       try {
         const r = new RatePretty(
           new Dec(this._manualSlippage).quo(DecUtils.getTenExponentN(2))
         );
         if (r.toDec().isNegative()) {
-          return new Error("Slippage can not be negative");
+          return new NegativeSlippageError("Slippage can not be negative");
         }
       } catch {
-        return new Error("Invalid slippage");
+        return new InvalidSlippageError("Invalid slippage");
       }
     }
 
     return;
-  });
+  }
 }

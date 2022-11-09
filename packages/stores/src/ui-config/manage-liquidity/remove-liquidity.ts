@@ -1,11 +1,14 @@
 import { observable, makeObservable, action, computed } from "mobx";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { computedFn } from "mobx-utils";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
+import { IPriceStore } from "../../price";
 import {
   ObservableQueryGammPoolShare,
   ObservableQueryPools,
 } from "../../queries";
 import { ManageLiquidityConfigBase } from "./base";
+import { NoAvailableSharesError } from "./errors";
 
 /** Use to config user input UI for eventually sending a valid exit pool msg.
  *  Included convenience functions for deriving pool asset amounts vs current input %.
@@ -84,9 +87,27 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
   @computed
   get error(): Error | undefined {
     if (this.poolShare.toDec().isZero()) {
-      return new Error(
+      return new NoAvailableSharesError(
         `No available ${this.poolShare.currency.coinDenom} shares`
       );
     }
   }
+
+  /** Calculate value of currently selected pool shares. */
+  readonly computePoolShareValueWithPercentage = computedFn(
+    (priceStore: IPriceStore) => {
+      const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
+      return this.poolShareAssetsWithPercentage.reduce(
+        (accummulatedValue, asset) => {
+          const assetPrice = priceStore.calculatePrice(
+            asset,
+            priceStore.defaultVsCurrency
+          );
+          if (assetPrice) return accummulatedValue.add(assetPrice);
+          else return accummulatedValue;
+        },
+        new PricePretty(fiat, 0)
+      );
+    }
+  );
 }

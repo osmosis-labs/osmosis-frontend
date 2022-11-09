@@ -10,20 +10,12 @@ const Tippy = dynamic(() => import("@tippyjs/react"), { ssr: false });
 export const InfoTooltip: FunctionComponent<
   TooltipProps &
     CustomClasses & {
-      style?: "iconDefault" | "secondary-200";
       size?: { height: number; width: number };
       iconSrcOverride?: string;
     }
-> = ({
-  content,
-  trigger,
-  style = "iconDefault",
-  size,
-  iconSrcOverride,
-  className,
-}) => (
+> = ({ content, trigger, size, iconSrcOverride, className }) => (
   <Tippy
-    className="bg-surface border border-secondary-200/30 md:p-1 p-2 rounded-lg text-body2"
+    className="bg-osmoverse-900 border border-osmoverse-600 md:p-1 p-2 rounded-lg body2"
     content={content}
     trigger={trigger ?? "click"}
   >
@@ -33,13 +25,7 @@ export const InfoTooltip: FunctionComponent<
     >
       <Image
         alt="info"
-        src={
-          iconSrcOverride
-            ? iconSrcOverride
-            : style === "secondary-200"
-            ? "/icons/info-secondary-200.svg"
-            : "/icons/info.svg"
-        }
+        src={iconSrcOverride ? iconSrcOverride : "/icons/info.svg"}
         height={16}
         width={16}
         {...size}

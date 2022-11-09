@@ -18,7 +18,9 @@ export interface AxelarBridgeConfig {
   /** URL config for users to conveniently swap the native asset for the wrapped version. */
   wrapAssetConfig?: {
     url: string;
-    displayCaption: string;
+    fromDenom: string;
+    toDenom: string;
+    platformName: string;
   };
 }
 

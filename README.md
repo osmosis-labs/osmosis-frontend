@@ -70,6 +70,8 @@ Otherwise the non-frontier commands can be used with the env var set to true.
 
 ### Testnet
 
+Testnet version of the frontend uses `NEXT_PUBLIC_IS_TESTNET=true`.
+
 Dev:
 
 ```bash

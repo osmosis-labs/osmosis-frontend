@@ -1,8 +1,12 @@
-import * as Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
+import dynamic from "next/dynamic";
+import type { Options } from "highcharts";
 import React, { FunctionComponent, useState, useEffect } from "react";
 
-const defaultOptions: Partial<Highcharts.Options> = {
+const HighchartsReact = dynamic(() => import("highcharts-react-official"), {
+  ssr: false,
+});
+
+const defaultOptions: Partial<Options> = {
   chart: {
     type: "pie",
     style: {
@@ -60,11 +64,12 @@ const defaultOptions: Partial<Highcharts.Options> = {
   },
 };
 
-export const PieChart: FunctionComponent<
-  HighchartsReact.Props & { height?: number; width?: number }
-> = (props) => {
-  const [options, setOptions] =
-    useState<Partial<Highcharts.Options>>(defaultOptions);
+export const PieChart: FunctionComponent<{
+  height?: number;
+  width?: number;
+  options: Options;
+}> = (props) => {
+  const [options, setOptions] = useState<Partial<Options>>(defaultOptions);
   useEffect(() => {
     if (!props.options) return;
     setOptions((v) => {
@@ -74,5 +79,11 @@ export const PieChart: FunctionComponent<
       return { ...v, ...props.options };
     });
   }, [props.options, props.height, props.width]);
-  return <HighchartsReact highcharts={Highcharts} options={options} />;
+
+  const [hc, setHc] = useState<any | null>(null);
+  useEffect(() => {
+    import("highcharts").then((hc) => setHc(hc));
+  }, []);
+
+  return hc ? <HighchartsReact highcharts={hc} options={options} /> : null;
 };
