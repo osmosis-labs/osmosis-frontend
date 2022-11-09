@@ -1,4 +1,3 @@
-export * from "./error";
 export * from "./info";
 export * from "./temp-banner";
 export * from "./toast";

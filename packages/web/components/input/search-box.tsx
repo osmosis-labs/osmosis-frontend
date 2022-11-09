@@ -1,43 +1,49 @@
 import Image from "next/image";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 import classNames from "classnames";
 import { InputProps, Disableable, CustomClasses } from "../types";
 
-interface Props extends InputProps<string>, Disableable, CustomClasses {
-  state?: "error";
-}
-
-export const SearchBox: FunctionComponent<Props> = ({
+export const SearchBox: FunctionComponent<
+  InputProps<string> & Disableable & CustomClasses
+> = ({
   currentValue,
   onInput,
   onFocus,
   placeholder,
-  state = "enabled",
   disabled = false,
   className,
-}) => (
-  <div
-    className={classNames(
-      "flex flex-nowrap gap-3 justify-between w-max h-8 rounded-xl pr-1 pl-3 text-white-high border text-sm border-secondary-200",
-      {
-        "border-missionError": state === "error",
-        "opacity-50": disabled,
-      },
-      className
-    )}
-  >
-    <Image alt="search" src="/icons/search-hollow.svg" height={14} width={14} />
-    <label className="grow shrink h-full">
-      <input
-        className="w-full h-full appearance-none bg-transparent placeholder:text-white-disabled"
-        value={currentValue}
-        placeholder={placeholder}
-        autoComplete="off"
-        onFocus={(e: any) => onFocus?.(e)}
-        onInput={(e: any) => onInput(e.target.value)}
-        onClick={(e: any) => e.target.select()}
-        disabled={disabled}
-      />
-    </label>
-  </div>
-);
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+  return (
+    <div
+      className={classNames(
+        "flex items-center flex-nowrap gap-2 justify-between w-max rounded-xl py-[10px] px-5 border border-osmoverse-500 transition-colors",
+        {
+          "opacity-50": disabled,
+          "-my-px px-[19px] border-2 border-osmoverse-200": isFocused,
+        },
+        className
+      )}
+    >
+      <div className="h-4 w-4 mb-1 shrink-0">
+        <Image alt="search" src="/icons/search.svg" height={16} width={16} />
+      </div>
+      <label className="grow shrink">
+        <input
+          className="w-full h-full appearance-none bg-transparent placeholder:body2 placeholder:text-osmoverse-500 transition-colors"
+          value={currentValue}
+          placeholder={placeholder}
+          autoComplete="off"
+          onFocus={(e: any) => {
+            setIsFocused(true);
+            onFocus?.(e);
+          }}
+          onBlur={() => setIsFocused(false)}
+          onInput={(e: any) => onInput(e.target.value)}
+          onClick={(e: any) => e.target.select()}
+          disabled={disabled}
+        />
+      </label>
+    </div>
+  );
+};

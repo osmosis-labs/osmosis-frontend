@@ -17,7 +17,7 @@ export declare class ObservableCreatePoolConfig extends TxChainSetter {
         amountConfig: AmountConfig;
     }[];
     protected _swapFee: string;
-    acknowledgeFee: boolean;
+    _acknowledgeFee: boolean;
     protected _opts: CreatePoolConfigOpts;
     constructor(chainGetter: ChainGetter, initialChainId: string, sender: string, queriesStore: IQueriesStore, queryBalances: ObservableQueryBalances, feeConfig?: IFeeConfig, opts?: CreatePoolConfigOpts);
     get feeConfig(): IFeeConfig | undefined;
@@ -30,6 +30,8 @@ export declare class ObservableCreatePoolConfig extends TxChainSetter {
     get sender(): string;
     setSender(bech32Address: string): void;
     get queryBalances(): ObservableQueryBalances;
+    get acknowledgeFee(): boolean;
+    set acknowledgeFee(ack: boolean);
     get sendableCurrencies(): AppCurrency[];
     get swapFee(): string;
     /**

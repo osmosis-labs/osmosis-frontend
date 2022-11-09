@@ -1,4 +1,4 @@
-import { PointOptionsObject, SeriesPieOptions } from "highcharts";
+import type { PointOptionsObject, SeriesPieOptions } from "highcharts";
 import { AppCurrency } from "@keplr-wallet/types";
 import { HIGHCHART_GRADIENTS } from "./gradients";
 

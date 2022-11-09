@@ -7,7 +7,7 @@ export const GradientView: FunctionComponent<
   { gradientClassName?: string; bgClassName?: string } & CustomClasses
 > = ({
   gradientClassName = "bg-superfluid",
-  bgClassName = "bg-background",
+  bgClassName = "bg-osmoverse-900",
   className,
   children,
 }) => (

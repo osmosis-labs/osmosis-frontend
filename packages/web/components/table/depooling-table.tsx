@@ -8,11 +8,13 @@ import { Info } from "../alert";
 import { Table } from ".";
 import { UnPoolWhitelistedPoolIds } from "../../config";
 import { CustomClasses } from "../types";
+import { useTranslation } from "react-multi-lang";
 
 export const DepoolingTable: FunctionComponent<
   { poolId?: string; tableClassName?: string } & CustomClasses
 > = observer(({ poolId, tableClassName, className }) => {
   const { chainStore, accountStore, queriesStore } = useStore();
+  const t = useTranslation();
   const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();
 
@@ -53,22 +55,17 @@ export const DepoolingTable: FunctionComponent<
   return (
     <div className={classNames("flex flex-col gap-4", className)}>
       {isMobile ? (
-        <span className="subtitle2">Depoolings</span>
+        <span className="subtitle2">{t("pool.depoolings.titleMobile")}</span>
       ) : (
-        <h6>Depoolings</h6>
+        <h6>{t("pool.depoolings.title")}</h6>
       )}
-      {poolId && (
-        <Info
-          size="subtle"
-          message="Note: Depooling asset balance shown is a total across all pools, not on a per-pool basis"
-        />
-      )}
+      {poolId && <Info size="subtle" message={t("pool.depoolings.note")} />}
       <Table
         className={classNames("w-full md:caption", tableClassName)}
         headerTrClassName="md:h-11"
         columnDefs={[
-          { display: "Amount", className: "!pl-8" },
-          { display: "Unlock Complete" },
+          { display: t("pool.depoolings.amount"), className: "!pl-8" },
+          { display: t("pool.depoolings.unlock") },
         ]}
         data={unlockingTokensExceptLPShares.map((share) => [
           {

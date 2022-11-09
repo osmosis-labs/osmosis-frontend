@@ -1,4 +1,14 @@
-import { ReactElement } from "react";
+import { MouseEventHandler, ReactElement } from "react";
+import { AmplitudeEvent } from "../config";
+
+export type MainLayoutMenu = {
+  label: string;
+  link: string | MouseEventHandler;
+  icon: string;
+  iconSelected?: string;
+  selectionTest?: RegExp;
+  amplitudeEvent?: AmplitudeEvent;
+};
 
 /** PROPS */
 export interface InputProps<T> {
@@ -31,11 +41,16 @@ export interface MobileProps {
   isMobile?: boolean;
 }
 
-// https://tailwindcss.com/docs/responsive-design
+/** Should match settings in tailwind.config.js
+ *
+ *  https://tailwindcss.com/docs/responsive-design
+ */
 export const enum Breakpoint {
   SM = 640,
   MD = 768,
   LG = 1024,
+  XLG = 1152,
   XL = 1280,
+  XLHALF = 1408,
   XXL = 1536,
 }

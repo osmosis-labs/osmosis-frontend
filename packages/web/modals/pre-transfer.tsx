@@ -8,6 +8,9 @@ import Image from "next/image";
 import { useWindowSize } from "../hooks";
 import classNames from "classnames";
 import { UNSTABLE_MSG } from "../config";
+import { useStore } from "../stores";
+import { useTranslation } from "react-multi-lang";
+import { observer } from "mobx-react-lite";
 
 export const PreTransferModal: FunctionComponent<
   ModalBaseProps & {
@@ -20,7 +23,7 @@ export const PreTransferModal: FunctionComponent<
     onWithdraw: () => void;
     onDeposit: () => void;
   }
-> = (props) => {
+> = observer((props) => {
   const {
     selectedToken,
     tokens,
@@ -31,7 +34,14 @@ export const PreTransferModal: FunctionComponent<
     onWithdraw,
     onDeposit,
   } = props;
+  const { priceStore } = useStore();
   const { isMobile } = useWindowSize();
+  const t = useTranslation();
+
+  const tokenValue = priceStore.calculatePrice(
+    selectedToken,
+    priceStore.defaultVsCurrency
+  );
 
   return (
     <ModalBase
@@ -45,19 +55,24 @@ export const PreTransferModal: FunctionComponent<
         />
       }
     >
-      <div className="flex flex-col gap-5 pt-5">
-        <div className="flex flex-col gap-2 items-center">
-          <h6>{selectedToken.currency.coinDenom}</h6>
-          <span className="subtitle2 text-iconDefault">
-            {selectedToken.trim(true).toString()}
+      <div className="flex flex-col gap-7 pt-5">
+        <div className="flex flex-col gap-2 px-5 items-left">
+          <span className="caption text-osmoverse-400">
+            {t("assets.table.preTransfer.currentBal")}
           </span>
+          <h6>{selectedToken.trim(true).toString()}</h6>
+          {tokenValue && (
+            <span className="subtitle2 text-osmoverse-400">
+              {tokenValue?.toString()}
+            </span>
+          )}
         </div>
         {isUnstable && <Info message={UNSTABLE_MSG} isMobile={isMobile} />}
         <div className="flex place-content-between gap-5 py-2">
           {externalDepositUrl ? (
             <a
               className={classNames(
-                "flex w-full gap-1 h-10 text-button font-button justify-center items-center rounded-lg bg-primary-200",
+                "flex w-full gap-1 h-10 text-button font-button justify-center items-center rounded-lg bg-wosmongton-200",
                 { "opacity-30": isUnstable }
               )}
               href={externalDepositUrl}
@@ -69,7 +84,7 @@ export const PreTransferModal: FunctionComponent<
                   : undefined
               }
             >
-              Deposit
+              {t("assets.table.preTransfer.deposit")}
               <Image
                 alt="external transfer link"
                 src="/icons/external-link-white.svg"
@@ -83,13 +98,13 @@ export const PreTransferModal: FunctionComponent<
               disabled={isUnstable}
               onClick={onDeposit}
             >
-              Deposit
+              {t("assets.table.preTransfer.deposit")}
             </Button>
           )}
           {externalWithdrawUrl ? (
             <a
               className={classNames(
-                "flex w-full gap-1 text-button font-button h-10 justify-center items-center rounded-lg bg-primary-200/30 border border-primary-200",
+                "flex w-full gap-1 text-button font-button h-10 justify-center items-center rounded-lg bg-wosmongton-200/30 border border-wosmongton-200",
                 { "opacity-30": isUnstable }
               )}
               href={externalWithdrawUrl}
@@ -101,7 +116,7 @@ export const PreTransferModal: FunctionComponent<
                   : undefined
               }
             >
-              Withdraw
+              {t("assets.table.preTransfer.withdraw")}
               <Image
                 alt="external transfer link"
                 src="/icons/external-link-white.svg"
@@ -111,16 +126,15 @@ export const PreTransferModal: FunctionComponent<
             </a>
           ) : (
             <Button
-              className="w-full h-10 bg-primary-200/30"
-              type="outline"
+              className="w-full h-10 bg-wosmongton-200/30"
               disabled={isUnstable}
               onClick={onWithdraw}
             >
-              Withdraw
+              {t("assets.table.preTransfer.withdraw")}
             </Button>
           )}
         </div>
       </div>
     </ModalBase>
   );
-};
+});

@@ -84,9 +84,6 @@ export function withEthInWindow<T>(
   ) {
     return doTask(window.ethereum);
   }
-  if (typeof window !== "undefined") {
-    console.warn("MetaMask: no window.ethereum found");
-  }
   return defaultRet;
 }
 
