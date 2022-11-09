@@ -16,15 +16,18 @@ const chainInfos = (
   [
     {
       rpc:
-        OSMOSIS_RPC_OVERWRITE ?? IS_TESTNET
+        OSMOSIS_RPC_OVERWRITE ??
+        (IS_TESTNET
           ? "https://rpc.testnet.osmosis.zone/"
-          : "https://rpc-osmosis.keplr.app/",
+          : "https://rpc-osmosis.keplr.app/"),
       rest:
-        OSMOSIS_REST_OVERWRITE ?? IS_TESTNET
+        OSMOSIS_REST_OVERWRITE ??
+        (IS_TESTNET
           ? "https://lcd.testnet.osmosis.zone/"
-          : "https://lcd-osmosis.keplr.app/",
+          : "https://lcd-osmosis.keplr.app/"),
       chainId:
-        OSMOSIS_CHAIN_ID_OVERWRITE ?? IS_TESTNET ? "osmo-test-4" : "osmosis-1",
+        OSMOSIS_CHAIN_ID_OVERWRITE ??
+        (IS_TESTNET ? "osmo-test-4" : "osmosis-1"),
       chainName: OSMOSIS_CHAIN_NAME_OVERWRITE ?? "Osmosis",
       bip44: {
         coinType: 118,
@@ -55,9 +58,10 @@ const chainInfos = (
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx:
-        OSMOSIS_EXPLORER_URL_OVERWRITE ?? IS_TESTNET
+        OSMOSIS_EXPLORER_URL_OVERWRITE ??
+        (IS_TESTNET
           ? "https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}"
-          : "https://www.mintscan.io/osmosis/txs/{txHash}",
+          : "https://www.mintscan.io/osmosis/txs/{txHash}"),
     },
     {
       rpc: "https://rpc-cosmoshub.keplr.app",
