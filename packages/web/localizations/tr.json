@@ -23,9 +23,7 @@
     "minimumSlippage": "Slipaj dahil elde edilecek minimum ({slippage})",
     "error": {
       "findCurrency": "Para birimi bulunamadı {currency}"
-    },
-    "wrapNativeLink": "{platformName}'ta {fromDenom}'yi {toDenom}'ye dönüştürün",
-    "waitTime": "{minutes} dakika"
+    }
   },
   "pools": {
     "title": "Aktif Havuzlar",
@@ -193,6 +191,12 @@
     "bondedAssets": "Bağlı",
     "stakedAssets": "Stake Edilmiş OSMO",
     "myPools": "Havuzlarım",
+    "transferAssetSelect": {
+      "deposit": "Yatır",
+      "withdraw": "Çek",
+      "network": "Ağ",
+      "buttonNext": "Sonraki"
+    },
     "poolCards": {
       "APR": "APR",
       "FeeAPY": "Fee APY",
@@ -219,7 +223,33 @@
       "availableBalance": "Kullanılabilir bakiye:",
       "MAX": "MAKS"
     },
-    "table": {
+    "transfer": {
+      "titleWithdraw": "{coinDenom} Çek",
+      "titleDeposit": "{coinDenom} Yatır",
+      "warnDepositAddressDifferent": "Uyarı: {address} te seçtiğiniz adres, son yatırdığınız adresten farklı.",
+      "from": "Ağından",
+      "to": "Ağına",
+      "via": "vasıtasıyla",
+      "loading": "Yükleniyor",
+      "availableOn": "{network} ağında mevcut",
+      "availableMobile": "Kullanılabilir",
+      "transferFee": "İşlem Ücreti",
+      "errors": {
+        "reconnectWallet": "{walletName} tekrar bağlan",
+        "wrongNetworkInWallet": "{walletName} cüzdanda ağ hatası",
+        "insufficientFee": "Yetersiz Ücret",
+        "insufficientBal": "Yetersiz Bakiye"
+      },
+      "wrapNativeLink": "{platformName} üzerinde {fromDenom} dan {fromDenom} a çevir.",
+      "waitTime": "{minutes} dakika"
+    },
+    "selectAssetSource": {
+      "titleWithdraw": "Adrese çek",
+      "titleDeposit": "Adresten yatır",
+      "next": "Next",
+      "installWallet": "{walletName} yükle"
+    },
+	"table": {
       "depositButton": "Yatır",
       "withdrawButton": "Çek",
       "search": "Sembole göre filtrele",
@@ -315,7 +345,8 @@
     "negativeSlippage": "Slipaj negatif olamaz",
     "invalidSlippage": "Geçersiz slipaj",
     "noSendCurrency": "Gönderilecek varlık seçilmedi",
-    "notInitialized": "Başlatılmadı",
+    "insufficientBal": "Yetersiz bakiye",
+	"notInitialized": "Başlatılmadı",
     "calculatingShareOutAmount": "Miktar hesaplamasında sorun",
     "noAvailableShares": "Kullanılabilir {denom} hissesi yok",
     "generic": "Hata"
