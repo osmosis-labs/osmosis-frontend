@@ -37,4 +37,12 @@ export class ObservableQueryLockableDurations extends ObservableChainQuery<Locka
         return v1.asMilliseconds() > v2.asMilliseconds() ? 1 : -1;
       });
   }
+
+  @computed
+  get highestDuration(): Duration | undefined {
+    if (!this.response || this.response.data.lockable_durations.length === 0)
+      return;
+
+    return this.lockableDurations[this.lockableDurations.length - 1];
+  }
 }

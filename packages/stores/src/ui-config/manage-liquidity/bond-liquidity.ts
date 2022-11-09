@@ -209,8 +209,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
                 poolId,
                 allowedGauge.gaugeId,
                 allowedGauge.denom,
-                this.priceStore,
-                fiatCurrency
+                this.priceStore
               ),
             });
           });
