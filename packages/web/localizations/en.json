@@ -141,6 +141,7 @@
     "delegated": "delegated",
     "undelegating": "undelegating",
     "commission": "commission",
+    "numDaysRemaining": "{numDays} days remaining",
     "from": "from",
     "swapFees": "swap fees",
     "7davg": "(7d avg)"

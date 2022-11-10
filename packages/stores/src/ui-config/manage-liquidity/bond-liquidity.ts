@@ -211,6 +211,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
                 allowedGauge.denom,
                 this.priceStore
               ),
+              numDaysRemaining: queryGauge.remainingEpoch,
             });
           });
 

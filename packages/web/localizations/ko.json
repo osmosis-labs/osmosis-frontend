@@ -141,6 +141,7 @@
     "delegated": "위임된 자산",
     "undelegating": "위임 해제중",
     "commission": "수수료",
+    "numDaysRemaining": "{numDays}일 남음",
     "from": "에서",
     "swapFees": "교환 수수료",
     "7davg": "(7d avg)"
