@@ -141,6 +141,7 @@
     "delegated": "delege edilen",
     "undelegating": "delegasyonu bozulan",
     "commission": "komisyon",
+    "numDaysRemaining": "{numDays} gün kaldı",
     "from": "kimden",
     "swapFees": "takas ücretleri",
     "7davg": "(7g ort)"
@@ -249,7 +250,7 @@
       "next": "Next",
       "installWallet": "{walletName} yükle"
     },
-	"table": {
+    "table": {
       "depositButton": "Yatır",
       "withdrawButton": "Çek",
       "search": "Sembole göre filtrele",
@@ -346,7 +347,7 @@
     "invalidSlippage": "Geçersiz slipaj",
     "noSendCurrency": "Gönderilecek varlık seçilmedi",
     "insufficientBal": "Yetersiz bakiye",
-	"notInitialized": "Başlatılmadı",
+    "notInitialized": "Başlatılmadı",
     "calculatingShareOutAmount": "Miktar hesaplamasında sorun",
     "noAvailableShares": "Kullanılabilir {denom} hissesi yok",
     "generic": "Hata"

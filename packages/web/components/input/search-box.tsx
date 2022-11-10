@@ -4,12 +4,13 @@ import classNames from "classnames";
 import { InputProps, Disableable, CustomClasses } from "../types";
 
 export const SearchBox: FunctionComponent<
-  InputProps<string> & Disableable & CustomClasses
+  InputProps<string> & Disableable & CustomClasses & { type?: string }
 > = ({
   currentValue,
   onInput,
   onFocus,
   placeholder,
+  type,
   disabled = false,
   className,
 }) => {
@@ -33,6 +34,7 @@ export const SearchBox: FunctionComponent<
         <input
           className="w-full h-full appearance-none bg-transparent placeholder:body2 placeholder:text-osmoverse-500 transition-colors"
           value={currentValue}
+          type={type}
           placeholder={placeholder}
           autoComplete="off"
           onFocus={(e: any) => {

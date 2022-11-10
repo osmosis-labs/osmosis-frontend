@@ -141,6 +141,7 @@
     "delegated": "Déléguer",
     "undelegating": "Désengager",
     "commission": "commission",
+    "numDaysRemaining": "{numDays} jours restants",
     "from": "de",
     "swapFees": "frais d'échange",
     "7davg": "(7j moy)"

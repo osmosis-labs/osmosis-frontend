@@ -141,6 +141,7 @@
     "delegated": "delegada",
     "undelegating": "sin elegir",
     "commission": "comisión",
+    "numDaysRemaining": "{numDays} días restantes",
     "from": "de",
     "swapFees": "tarifas de intercambio",
     "7davg": "(7d Promedio)"

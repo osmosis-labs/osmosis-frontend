@@ -143,6 +143,7 @@
     "delegated": "delegowane",
     "undelegating": "oddelegowywane",
     "commission": "prowizja",
+    "numDaysRemaining": "Pozostały {numDays} dni",
     "from": "od",
     "swapFees": "prowizje wymiany",
     "7davg": "(7d śr.)"

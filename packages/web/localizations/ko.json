@@ -114,7 +114,7 @@
     "putAssetsToWork": "자산을 불려보세요.",
     "putAssetsToWorkCaption": "이 풀에 자산을 추가하고 두근되는 APR을 확인하세요. 더 긴 기간동안 예치하면, 더 많은 보상을 얻을 수 있어요",
     "learnMore": "더 알아보기",
-    "level": "Level {level}",
+    "level": "레벨 {level}",
     "earnSwapFees": "교환 수수료를 받으세요",
     "earnSwapFeesCaption": "풀에 유동성을 공급하고, 모든 교환에서 수수료를 받으세요",
     "APR": "APR",
@@ -131,9 +131,9 @@
     "bonded": "예치된 자산",
     "showDetails": "자세히 보기",
     "collapseDetails": "닫기",
-    "sharesAvailableIn": "available in",
+    "sharesAvailableIn": "가능",
     "unbonding": "에치 해제중",
-    "superfluidEarnMore": "Earn {rate} more. Go superfluid",
+    "superfluidEarnMore": "{rate} 더 적립. Go superfluid",
     "incentives": "인센티브",
     "details": "상세정보",
     "rewardDistribution": "모든 유동성 공급자에게 분배된 보상",
@@ -141,6 +141,7 @@
     "delegated": "위임된 자산",
     "undelegating": "위임 해제중",
     "commission": "수수료",
+    "numDaysRemaining": "{numDays}일 남음",
     "from": "에서",
     "swapFees": "교환 수수료",
     "7davg": "(7d avg)"
@@ -148,7 +149,7 @@
   "removeLiquidity": {
     "title": "유동성 해제하기",
     "titleInPool": "{poolId}풀에서 유동성을 제거합니다.",
-    "sharesAmount": "{shares} shares"
+    "sharesAmount": "{shares}주"
   },
   "addLiquidity": {
     "title": "유동성 추가",
@@ -165,7 +166,7 @@
     "availableToken": "입력 가능 수량",
     "amountToBond": "예치할 수량",
     "superfluidStake": "Superfluid 스테이킹",
-    "bondingRequirement": "{numDays} day bonding requirement",
+    "bondingRequirement": "{numDays}일 본딩 요건",
     "buttonNext": "다음",
     "buttonBond": "예치하기",
     "buttonBondStake": "예치 & 스테이킹"
@@ -187,7 +188,7 @@
   },
   "assets": {
     "totalAssets": "전체",
-    "unbondedAssets": "Unbonded",
+    "unbondedAssets": "언본드",
     "bondedAssets": "예치된 자산",
     "stakedAssets": "스테이킹된 OSMO",
     "myPools": "내 풀",
@@ -273,9 +274,9 @@
       "pending": "대기중",
       "success": "성공",
       "refunded": "반환됨",
-      "pendingRefunded": "실패: Pending refund",
+      "pendingRefunded": "실패: 환불 보류 중",
       "colums": {
-        "transactionHash": "Transaction Hash",
+        "transactionHash": "트랜잭션 해시",
         "type": "타입",
         "amount": "수량",
         "status": "상태",
@@ -297,8 +298,8 @@
       "SORTMobile": "정렬",
       "mobileMenu": "정렬"
     },
-    "MAX": "MAX",
-    "searchTokens": "Search tokens"
+    "MAX": "최대",
+    "searchTokens": "토큰 검색"
   },
   "menu": {
     "swap": "교환",
@@ -314,7 +315,7 @@
   "settings": {
     "title": "설정",
     "titleLanguage": "언어",
-    "titleShowDust": "Show pools/assets < {fiatSymbol}0.01"
+    "titleShowDust": "풀/자산 표시 < {fiatSymbol}0.01"
   },
   "404": {
     "title": "페이지를 찾을 수 없습니다"
@@ -352,7 +353,7 @@
     "walletConnect": "WalletConnect",
     "mobile": "Keplr Mobile"
   },
-  "connectDisclaimer": "By connecting a wallet, you acknowledge that you have read and understand the Osmosis",
+  "connectDisclaimer": "지갑을 연결함으로써 귀하는 Osmosis를 읽고 이해했음을 인정합니다",
   "protocolDisclaimer": "프로토콜 면책 조항",
   "Transaction Failed": "전송 실패",
   "Transaction Successful": "전송 성공",

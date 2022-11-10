@@ -363,7 +363,11 @@ const IncentiveBreakdownRow: FunctionComponent<
           })}
         </span>
         {numDaysRemaining && (
-          <span className="caption text-osmoverse-400">{numDaysRemaining}</span>
+          <span className="caption text-osmoverse-400">
+            {t("pool.numDaysRemaining", {
+              numDays: numDaysRemaining.toString(),
+            })}
+          </span>
         )}
       </div>
     </div>
