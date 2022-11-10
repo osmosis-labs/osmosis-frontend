@@ -120,8 +120,8 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
             {
               // Type
               value: history.isWithdraw
-                ? t("assets.historyTable.colums.deposit")
-                : t("assets.historyTable.colums.withdraw"),
+                ? t("assets.historyTable.colums.withdraw")
+                : t("assets.historyTable.colums.deposit"),
             },
             {
               // Amount
