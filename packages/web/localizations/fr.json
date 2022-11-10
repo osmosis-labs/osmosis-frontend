@@ -347,7 +347,7 @@
     "noSendCurrency": "Glissement invalide",
     "insufficientBal": "Solde insuffisant",
     "notInitialized": "Non initialisé",
-    "calculatingShareOutAmount": "Problème de calcul du montant sortant",
+    "calculatingShareOutAmount": "Problème de calcul du montant de sortie",
     "noAvailableShares": "Aucun actif {denom} disponible",
     "generic": "Erreur"
   },
