@@ -13,7 +13,7 @@ export const REGISTRY_ADDRESSES: { [chainId: string]: string } = {
 export const WRAPPER_ADDRESSES: { [chainId: string]: string } = {
   "osmosis-1": "",
   "osmo-test-4":
-    "osmo16ca3u3l8mrgrmz3u48rrfh7dhf3e9y8d9xrxf3w0lla6xy073v7stz3r4e",
+    "osmo1dwpdh2clk7c8csf9ql2xj36336xsryyg4j7622jhaert9htp48gsh8u9ve",
 };
 export const ENABLE_AUTONOMY =
   process.env.NEXT_PUBLIC_ENABLE_AUTONOMY === "enabled";
