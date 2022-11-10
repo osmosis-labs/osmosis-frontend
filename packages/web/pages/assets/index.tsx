@@ -7,7 +7,7 @@ import {
   ComponentProps,
   useCallback,
 } from "react";
-import { PricePretty } from "@keplr-wallet/unit";
+import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { AssetsTable } from "../../components/table/assets-table";
@@ -34,7 +34,7 @@ import {
   useShowDustUserSetting,
   useTransferConfig,
 } from "../../hooks";
-import { EventName } from "../../config";
+import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
 
 const INIT_POOL_CARD_COUNT = 6;
 
@@ -350,29 +350,84 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
     } = useStore();
     const t = useTranslation();
 
-    const queriesOsmosis = queriesStore.get(chainStore.osmosis.chainId)
-      .osmosis!;
+    const queryCosmos = queriesStore.get(chainStore.osmosis.chainId).cosmos;
+    const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
     const { bech32Address } = accountStore.getAccount(
       chainStore.osmosis.chainId
     );
 
     const pools = poolIds
       .map((poolId) => {
-        const pool = queriesOsmosis.queryGammPools.getPool(poolId);
+        const pool = queryOsmosis.queryGammPools.getPool(poolId);
 
         if (!pool) {
           return undefined;
         }
-        const tvl = pool.computeTotalValueLocked(priceStore);
-        const shareRatio =
-          queriesOsmosis.queryGammPoolShare.getAllGammShareRatio(
-            bech32Address,
-            pool.id
+        const internalIncentiveApr =
+          queryOsmosis.queryIncentivizedPools.computeMostApr(
+            pool.id,
+            priceStore
           );
+        const swapFeeApr =
+          queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
+            pool,
+            priceStore
+          );
+        const whitelistedGauges =
+          ExternalIncentiveGaugeAllowList?.[pool.id] ?? undefined;
+        const highestDuration =
+          queryOsmosis.queryLockableDurations.highestDuration;
+
+        const externalApr = (whitelistedGauges ?? []).reduce(
+          (sum, { gaugeId, denom }) => {
+            const gauge = queryOsmosis.queryGauge.get(gaugeId);
+
+            if (
+              !gauge ||
+              !highestDuration ||
+              gauge.lockupDuration.asMilliseconds() !==
+                highestDuration.asMilliseconds()
+            ) {
+              return sum;
+            }
+
+            return sum.add(
+              queryOsmosis.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
+                pool.id,
+                gaugeId,
+                denom,
+                priceStore
+              )
+            );
+          },
+          new RatePretty(0)
+        );
+        const superfluidApr =
+          queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id)
+            ? new RatePretty(
+                queryCosmos.queryInflation.inflation
+                  .mul(
+                    queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
+                      pool.id
+                    )
+                  )
+                  .moveDecimalPointLeft(2)
+              )
+            : new RatePretty(0);
+        const apr = internalIncentiveApr
+          .add(swapFeeApr)
+          .add(externalApr)
+          .add(superfluidApr);
+
+        const tvl = pool.computeTotalValueLocked(priceStore);
+        const shareRatio = queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+          bech32Address,
+          pool.id
+        );
         const actualShareRatio = shareRatio.moveDecimalPointLeft(2);
 
         const lockedShareRatio =
-          queriesOsmosis.queryGammPoolShare.getLockedGammShareRatio(
+          queryOsmosis.queryGammPoolShare.getLockedGammShareRatio(
             bech32Address,
             pool.id
           );
@@ -383,19 +438,16 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
           pool,
           tvl.mul(actualShareRatio).moveDecimalPointRight(2),
           [
-            queriesOsmosis.queryIncentivizedPools.isIncentivized(poolId)
+            queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
                   label: t("assets.poolCards.APR"),
                   value: (
                     <MetricLoader
                       isLoading={
-                        queriesOsmosis.queryIncentivizedPools.isAprFetching
+                        queryOsmosis.queryIncentivizedPools.isAprFetching
                       }
                     >
-                      {queriesOsmosis.queryIncentivizedPools
-                        .computeMostApr(poolId, priceStore)
-                        .maxDecimals(2)
-                        .toString()}
+                      <h6>{apr.maxDecimals(2).toString()}</h6>
                     </MetricLoader>
                   ),
                 }
@@ -414,7 +466,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
               label: t("assets.poolCards.liquidity"),
               value: priceFormatter(pool.computeTotalValueLocked(priceStore)),
             },
-            queriesOsmosis.queryIncentivizedPools.isIncentivized(poolId)
+            queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
                   label: t("assets.poolCards.bonded"),
                   value: tvl.mul(actualLockedShareRatio).toString(),
@@ -449,7 +501,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
             poolId={pool.id}
             poolAssets={pool.poolAssets.map((asset) => asset.amount.currency)}
             poolMetrics={metrics}
-            isSuperfluid={queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+            isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
               pool.id
             )}
             onClick={() =>
@@ -464,9 +516,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                     .map((poolAsset) => poolAsset.weightFraction.toString())
                     .join(" / "),
                   isSuperfluidPool:
-                    queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
-                      pool.id
-                    ),
+                    queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id),
                 },
               ])
             }

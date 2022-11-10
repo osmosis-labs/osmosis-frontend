@@ -211,7 +211,7 @@ const Pools: NextPage = observer(function () {
   );
 
   return (
-    <main className="bg-osmoverse-900 px-8 md:px-3">
+    <main className="max-w-container m-auto bg-osmoverse-900 px-8 md:px-3">
       {isCreatingPool && (
         <CreatePoolModal
           isOpen={isCreatingPool}
@@ -364,7 +364,7 @@ const Pools: NextPage = observer(function () {
                           queryOsmosis.queryIncentivizedPools.isAprFetching
                         }
                       >
-                        {apr.maxDecimals(2).toString()}
+                        <h6>{apr.maxDecimals(2).toString()}</h6>
                       </MetricLoader>
                     ),
                   },
@@ -395,7 +395,7 @@ const Pools: NextPage = observer(function () {
                         .toString()
                     ) : (
                       <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
-                        {priceFormatter(poolLiquidity)}
+                        <h6>{priceFormatter(poolLiquidity)}</h6>
                       </MetricLoader>
                     ),
                   },
@@ -405,7 +405,7 @@ const Pools: NextPage = observer(function () {
                       myBonded.toString()
                     ) : (
                       <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
-                        {priceFormatter(myBonded)}
+                        <h6>{priceFormatter(myBonded)}</h6>
                       </MetricLoader>
                     ),
                   },
@@ -626,7 +626,7 @@ const Pools: NextPage = observer(function () {
                                     .isAprFetching
                                 }
                               >
-                                {apr.maxDecimals(2).toString()}
+                                <h6>{apr.maxDecimals(2).toString()}</h6>
                               </MetricLoader>
                             ),
                           },
@@ -636,7 +636,7 @@ const Pools: NextPage = observer(function () {
                               <MetricLoader
                                 isLoading={poolLiquidity.toDec().isZero()}
                               >
-                                {priceFormatter(poolLiquidity)}
+                                <h6>{priceFormatter(poolLiquidity)}</h6>
                               </MetricLoader>
                             ),
                           },
@@ -646,7 +646,9 @@ const Pools: NextPage = observer(function () {
                               <MetricLoader
                                 isLoading={!poolFeesMetrics.feesSpent7d.isReady}
                               >
-                                {poolFeesMetrics.feesSpent7d.toString()}
+                                <h6>
+                                  {poolFeesMetrics.feesSpent7d.toString()}
+                                </h6>
                               </MetricLoader>
                             ),
                           },

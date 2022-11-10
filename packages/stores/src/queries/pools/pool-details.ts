@@ -319,8 +319,6 @@ export class ObservableQueryPoolDetails extends UserConfig {
 
     if (totalShares.toDec().isZero()) return;
 
-    // TODO: get $/day earned from imperator API
-
     return {
       totalShares,
       totalShareValue: this.userShareValue,

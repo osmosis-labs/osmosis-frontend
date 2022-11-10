@@ -290,7 +290,7 @@ const Pool: FunctionComponent = observer(() => {
   const level2Disabled = bondableDurations.length === 0;
 
   return (
-    <main className="flex flex-col gap-10 md:gap-4 bg-osmoverse-900 min-h-screen p-8 md:p-4">
+    <main className="max-w-container m-auto flex flex-col gap-10 md:gap-4 bg-osmoverse-900 min-h-screen p-8 md:p-4">
       <Head>
         <title>
           {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
