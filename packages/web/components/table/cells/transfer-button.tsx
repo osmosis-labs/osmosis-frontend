@@ -97,21 +97,25 @@ const TransferButton: FunctionComponent<{
     >
       <span>{label}</span>
       {isHovering ? (
-        <Image
-          alt="chevron"
-          src="/icons/chevron-right-rust.svg"
-          height={13}
-          width={13}
-          priority={true}
-        />
+        <div className="h-fit shrink-0">
+          <Image
+            alt="chevron"
+            src="/icons/chevron-right-rust.svg"
+            height={13}
+            width={13}
+            priority={true}
+          />
+        </div>
       ) : (
-        <Image
-          alt="chevron"
-          src="/icons/chevron-right.svg"
-          height={13}
-          width={13}
-          priority={true}
-        />
+        <div className="h-fit shrink-0">
+          <Image
+            alt="chevron"
+            src="/icons/chevron-right.svg"
+            height={13}
+            width={13}
+            priority={true}
+          />
+        </div>
       )}
     </button>
   );
