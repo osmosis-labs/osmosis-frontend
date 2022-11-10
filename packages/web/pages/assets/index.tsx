@@ -142,7 +142,7 @@ const Assets: NextPage = observer(() => {
   );
 
   return (
-    <main className="flex flex-col gap-20 md:gap-8 bg-osmoverse-900 p-8 md:p-4">
+    <main className="max-w-container mx-auto flex flex-col gap-20 md:gap-8 bg-osmoverse-900 p-8 md:p-4">
       <AssetsOverview />
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
