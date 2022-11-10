@@ -12,7 +12,7 @@
       "slippage": "Tolérance de glissement",
       "slippageInfo": "Votre transaction sera annulée si le prix dépasse le pourcentage en votre défaveur."
     },
-    "available": "Disponnible",
+    "available": "Disponible",
     "MAX": "MAX",
     "HALF": "MOITIÉ",
     "button": "Échanger",
@@ -32,7 +32,7 @@
     "rewardDistribution": "Distribution de la récompence dans",
     "myPools": "Mes Bassins",
     "APR": "TAP",
-    "available": "Disponnible",
+    "available": "Disponible",
     "liquidity": "Liquidité Bassin",
     "bonded": "Cautionné",
     "incentivized": "Bassins incités",
@@ -90,7 +90,7 @@
       "buttonNext": "Suivant",
       "buttonBack": "Retour",
       "buttonAddToken": "Ajouter un nouveau jeton",
-      "available": "Disponnible",
+      "available": "Disponible",
       "amount": "Montant",
       "token": "Jeton",
       "swapFee": "Définit les frais d'échange",
@@ -131,7 +131,7 @@
     "bonded": "Bloqués",
     "showDetails": "Afficher details",
     "collapseDetails": "Cacher details",
-    "sharesAvailableIn": "Disponnible dans",
+    "sharesAvailableIn": "Disponible dans",
     "unbonding": "Déblocage",
     "superfluidEarnMore": "Gagner {rate} de plus. Utilisez le superfluide",
     "incentives": "Incitations",
@@ -156,14 +156,14 @@
     "titleInPool": "Ajouter des liquidités au pool {poolId}",
     "allAssets": "Tous les actifs",
     "singleAsset": "Actif unique",
-    "available": "Disponnible",
+    "available": "Disponible",
     "autoswapCaption": "Utilisez l'échange automatique pour ajouter de la liquidité avec un seul actif."
   },
   "lockToken": {
     "title": "Bloquer les actifs RL",
     "titleInPool": "Bloquer les actifs dans {poolId}",
     "selectPeriod": "Sélectionner la période de deblocage",
-    "availableToken": "Disponnible",
+    "availableToken": "Disponible",
     "amountToBond": "Montant à bloquer",
     "superfluidStake": "Jalonnement superfluide",
     "bondingRequirement": "{numDays} jour de blocage requis",
@@ -264,7 +264,7 @@
       },
       "columns": {
         "assetChain": "Actif / Chaine",
-        "balance": "Fonds",
+        "balance": "Solde",
         "transfer": "Transfert",
         "deposit": "Déposer",
         "withdraw": "Retirer"
@@ -272,7 +272,7 @@
       "sort": {
         "symbol": "Devise",
         "network": "Réseau",
-        "balance": "Fonds"
+        "balance": "Solde"
       }
     },
     "historyTable": {
@@ -348,8 +348,8 @@
     "noSendCurrency": "Glissement invalide",
     "insufficientBal": "Solde insuffisant",
     "notInitialized": "Non initialisé",
-    "calculatingShareOutAmount": "Problème de calcul du montant de la sortie",
-    "noAvailableShares": "Aucun actif {denom} disponnible",
+    "calculatingShareOutAmount": "Problème de calcul du montant de sortie",
+    "noAvailableShares": "Aucun actif {denom} disponible",
     "generic": "Erreur"
   },
   "connectWallet": "Connecter le portefeuille",
@@ -364,7 +364,7 @@
   "protocolDisclaimer": "Clause de non-responsabilité du protocole",
   "Transaction Failed": "Échec de la transaction",
   "Transaction Successful": "Succès de la transaction",
-  "Transaction Broadcasting": "Diffustion de la transaction",
+  "Transaction Broadcasting": "Émission de la transaction",
   "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "L'échange a échoué. La liquitité n'est peut-être pas suffisante. Essayez d'ajuster le glissement autorisé.",
   "Waiting for transaction to be included in the block": "Attente de l'inclusion de la transaction dans le bloc",
   "view explorer": "Voir dans l'exploreur",
