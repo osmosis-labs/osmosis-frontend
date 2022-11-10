@@ -38,7 +38,7 @@ export const TokenSelectModal: FunctionComponent<
           className="!w-full"
           placeholder={props.placeholder ?? t("components.searchTokens")}
           currentValue={props.currentValue}
-          onInput={(e: any) => props.onInput(e.target.value)}
+          onInput={(value) => props.onInput(value)}
           onFocus={props.onFocus}
         />
       </div>
