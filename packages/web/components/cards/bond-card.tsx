@@ -186,7 +186,7 @@ const Drawer: FunctionComponent<{
           <span className="subtitle1 text-osmoverse-200">
             {t("pool.incentives")}
           </span>
-          <div className="flex items-center gap-4 md:gap-1.5">
+          <div className="flex items-center gap-2 md:gap-1.5">
             <h5
               className={classNames(
                 superfluid ? "text-superfluid-gradient" : "text-bullish-400"
