@@ -243,11 +243,6 @@ export const TradeClipboard: FunctionComponent<{
       [tradeTokenInConfig.expectedSwapResult.amount]
     );
 
-    // console.log(
-    //   tradeTokenInConfig.optimizedRoutePaths,
-    //   tradeTokenInConfig.sendCurrency
-    // );
-
     // user action
     const swap = async () => {
       if (account.walletStatus !== WalletStatus.Loaded) {
@@ -396,10 +391,6 @@ export const TradeClipboard: FunctionComponent<{
         }
       }
     };
-
-    console.log(
-      estimateDetailsContentRef.current?.getBoundingClientRect().height
-    );
 
     return (
       <div
