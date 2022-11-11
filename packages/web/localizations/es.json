@@ -78,24 +78,24 @@
     },
     "createPool": {
       "title": "Crea una nueva Piscina",
-      "button": "Crea una nueva Piscina",
+      "button": "Crear nueva Piscina",
       "step": {
-        "one": "Paso {step} / {nbstep} - Establecer relaciones de token",
-        "two": "Paso {step} / {nbstep} - cantidad de entrada para agregar",
-        "three": "Paso {step} / {nbstep} - confirmar la relación del grupo y la cantidad de token"
+        "one": "Paso {step} / {nbstep} - Establecer proporción de token",
+        "two": "Paso {step} / {nbstep} - Introduce monto a añadir",
+        "three": "Paso {step} / {nbstep} - Confirmar la proporción de la piscina y la cantidad de token"
       },
-      "infoMessage": "Tarifa de creación de piscinas",
-      "infoCaption": "Transferido a la Pool comunitaria de ósmosis",
-      "buttonCreate": "Crear Pool",
-      "buttonNext": "Próxima",
+      "infoMessage": "Tarifa de creación de piscina",
+      "infoCaption": "Transferido a la piscina comunitaria de Osmosis",
+      "buttonCreate": "Crear Piscina",
+      "buttonNext": "Siguiente",
       "buttonBack": "Anterior",
       "buttonAddToken": "Agregar token nuevo",
       "available": "Disponible",
       "amount": "Monto",
       "token": "Token",
-      "swapFee": "Establecer la tarifa de intercambio",
-      "undersandCost": "Entiendo que crear un nuevo grupo costará {POOL_CREATION_FEE}.",
-      "interestedCreate": "¿Interesado en crear una nueva Pool?",
+      "swapFee": "Establecer tarifa de intercambio",
+      "undersandCost": "Entiendo que crear una nueva piscina costará {POOL_CREATION_FEE}.",
+      "interestedCreate": "¿Interesado en crear una nueva Piscina?",
       "startProcess": "Haga clic aquí para comenzar el proceso"
     }
   },
