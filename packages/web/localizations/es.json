@@ -65,13 +65,13 @@
     },
     "externalIncentivized": {
       "title": "Incentivos externos",
-      "TVL": "TVL",
-      "APR": "APR",
+      "TVL": "VTB",
+      "APR": "TPA",
       "search": "Buscar por símbolo",
       "sort": {
-        "poolName": "Nombre de la Pool",
+        "poolName": "Nombre de la Piscina",
         "liquidity": "Liquidez",
-        "APR": "APR",
+        "APR": "TPA",
         "epochs": "Épocas restantes",
         "myLiquidity": "Mi liquidez"
       }
