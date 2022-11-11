@@ -21,8 +21,14 @@ import { BorderButton, Button } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
+import TradeRoute from "./trade-route";
 import { useTranslation } from "react-multi-lang";
 import { tError } from "../localization";
+
+const ESTIMATE_DETAILS_EXPANDED_MIN_HEIGHT_IN_PX = 288;
+const ESTIMATE_DETAILS_COLLAPSED_HEIGHT_IN_PX = 44;
+const ESTIMATE_DETAILS_COLLAPSED_PADDING_Y_IN_PX = 10;
+const ESTIMATE_DETAILS_EXPANDED_PADDING_Y_IN_PX = 24;
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -52,6 +58,7 @@ export const TradeClipboard: FunctionComponent<{
 
     const [isSettingOpen, setIsSettingOpen] = useBooleanWithWindowEvent(false);
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
+    const estimateDetailsContentRef = useRef<HTMLDivElement | null>(null);
 
     const slippageConfig = useSlippageConfig();
     const tradeTokenInConfig = useTradeTokenInConfig(
@@ -236,6 +243,11 @@ export const TradeClipboard: FunctionComponent<{
       [tradeTokenInConfig.expectedSwapResult.amount]
     );
 
+    // console.log(
+    //   tradeTokenInConfig.optimizedRoutePaths,
+    //   tradeTokenInConfig.sendCurrency
+    // );
+
     // user action
     const swap = async () => {
       if (account.walletStatus !== WalletStatus.Loaded) {
@@ -384,6 +396,10 @@ export const TradeClipboard: FunctionComponent<{
         }
       }
     };
+
+    console.log(
+      estimateDetailsContentRef.current?.getBoundingClientRect().height
+    );
 
     return (
       <div
@@ -850,9 +866,22 @@ export const TradeClipboard: FunctionComponent<{
 
           <div
             className={classNames(
-              "relative rounded-lg bg-osmoverse-900 px-4 md:px-3 transition-all ease-inOutBack duration-300 overflow-hidden",
-              showEstimateDetails ? "h-56 py-6" : "h-11 py-[10px]"
+              "relative rounded-lg bg-osmoverse-900 px-4 md:px-3 transition-all ease-inOutBack duration-300 overflow-hidden"
             )}
+            style={{
+              height: showEstimateDetails
+                ? (estimateDetailsContentRef.current?.getBoundingClientRect()
+                    ?.height ?? ESTIMATE_DETAILS_EXPANDED_MIN_HEIGHT_IN_PX) +
+                  ESTIMATE_DETAILS_COLLAPSED_HEIGHT_IN_PX +
+                  ESTIMATE_DETAILS_COLLAPSED_PADDING_Y_IN_PX * 2
+                : ESTIMATE_DETAILS_COLLAPSED_HEIGHT_IN_PX,
+              paddingTop: showEstimateDetails
+                ? ESTIMATE_DETAILS_EXPANDED_PADDING_Y_IN_PX
+                : ESTIMATE_DETAILS_COLLAPSED_PADDING_Y_IN_PX,
+              paddingBottom: showEstimateDetails
+                ? ESTIMATE_DETAILS_EXPANDED_PADDING_Y_IN_PX
+                : ESTIMATE_DETAILS_COLLAPSED_PADDING_Y_IN_PX,
+            }}
           >
             <button
               className={classNames(
@@ -910,6 +939,7 @@ export const TradeClipboard: FunctionComponent<{
               </div>
             </button>
             <div
+              ref={estimateDetailsContentRef}
               className={classNames(
                 "absolute flex flex-col gap-4 pt-5",
                 isInModal ? "w-[94%]" : "w-[358px] md:w-[94%]"
@@ -988,6 +1018,14 @@ export const TradeClipboard: FunctionComponent<{
                   </span>
                 </div>
               </div>
+              {tradeTokenInConfig.optimizedRoutePaths.map((path, index) => (
+                <TradeRoute
+                  key={index}
+                  sendCurrency={tradeTokenInConfig.sendCurrency}
+                  outCurrency={tradeTokenInConfig.outCurrency}
+                  path={path}
+                />
+              ))}
             </div>
           </div>
         </div>
