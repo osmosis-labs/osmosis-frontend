@@ -12,6 +12,7 @@ export const SearchBox: FunctionComponent<
   placeholder,
   type,
   disabled = false,
+  autoFocus,
   className,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -35,6 +36,7 @@ export const SearchBox: FunctionComponent<
           className="w-full h-full appearance-none bg-transparent placeholder:body2 placeholder:text-osmoverse-500 transition-colors"
           value={currentValue}
           type={type}
+          autoFocus={autoFocus}
           placeholder={placeholder}
           autoComplete="off"
           onFocus={(e: any) => {
