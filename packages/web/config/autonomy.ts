@@ -1,6 +1,7 @@
 export const SUBQUERY_ENDPOINTS: { [chainId: string]: string } = {
   "osmosis-1": "",
-  "osmo-test-4": "https://api.subquery.network/sq/0xlook/autonomy-omosis",
+  "osmo-test-4":
+    "https://api.subquery.network/sq/0xlook/autonomy-omosis-subquery",
 };
 
 export const REGISTRY_ADDRESSES: { [chainId: string]: string } = {
