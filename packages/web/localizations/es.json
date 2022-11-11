@@ -2,7 +2,7 @@
   "app": {
     "banner": {
       "title": "Estás viendo todos los activos sin permiso",
-      "linkText": "Estás viendo todos los activos sin permiso. <Enlace> Haga clic aquí para volver a la aplicación principal </link>."
+      "linkText": "Estás viendo todos los activos sin permiso. <link> Haga clic aquí para volver a la aplicación principal </link>."
     }
   },
   "swap": {
