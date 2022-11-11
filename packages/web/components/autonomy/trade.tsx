@@ -57,7 +57,6 @@ export const TradeClipboard: FunctionComponent<{
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
-  queries.cosmwasm.querycw20ContractInfo;
 
   const [isSettingOpen, setIsSettingOpen] = useBooleanWithWindowEvent(false);
   const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
@@ -81,7 +80,7 @@ export const TradeClipboard: FunctionComponent<{
     if (!isEstimateDetailRelevant) setShowEstimateDetails(false);
   }, [isEstimateDetailRelevant]);
 
-  const [feeAmount, setFeeAmount] = useState("10000");
+  const [feeAmount, setFeeAmount] = useState("100000");
 
   useEffect(() => {
     const queryFeeAmount = async () => {
