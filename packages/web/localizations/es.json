@@ -14,15 +14,15 @@
     },
     "available": "Disponible",
     "MAX": "Máximo",
-    "HALF": "MITAD",
+    "HALF": "Mitad",
     "button": "Intercambio",
     "buttonError": "Intercambio de todos modos",
-    "priceImpact": "Impacto del precio",
+    "priceImpact": "Impacto sobre el precio",
     "fee": "Tarifa de intercambio ({fee})",
     "expectedOutput": "Rendimiento esperado",
-    "minimumSlippage": "Mínimo recibido después del deslizamiento ({deslizamiento})",
+    "minimumSlippage": "Mínimo recibido después del deslizamiento ({slippage})",
     "error": {
-      "findCurrency": "No se pudo encontrar moneda {moneda}"
+      "findCurrency": "No se pudo encontrar la moneda {currency}"
     }
   },
   "pools": {
