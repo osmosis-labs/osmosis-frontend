@@ -15,6 +15,7 @@
   "dependencies": {
     "@amplitude/analytics-browser": "^1.2.3",
     "@axelar-network/axelarjs-sdk": "^0.6.14",
+    "@cosmjs/cosmwasm-stargate": "^0.29.3",
     "@cosmjs/launchpad": "^0.26.5",
     "@keplr-wallet/common": "^0.10.24",
     "@keplr-wallet/cosmos": "^0.10.24",

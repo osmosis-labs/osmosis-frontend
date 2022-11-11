@@ -1,6 +1,7 @@
 import { WalletStatus } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Pool } from "@osmosis-labs/pools";
 import { Buffer } from "buffer";
 import classNames from "classnames";
@@ -33,6 +34,8 @@ import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
 
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
+
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
   pools: Pool[];
@@ -54,6 +57,7 @@ export const TradeClipboard: FunctionComponent<{
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
+  queries.cosmwasm.querycw20ContractInfo;
 
   const [isSettingOpen, setIsSettingOpen] = useBooleanWithWindowEvent(false);
   const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
@@ -76,6 +80,27 @@ export const TradeClipboard: FunctionComponent<{
     // auto collapse on input clear
     if (!isEstimateDetailRelevant) setShowEstimateDetails(false);
   }, [isEstimateDetailRelevant]);
+
+  const [feeAmount, setFeeAmount] = useState("10000");
+
+  useEffect(() => {
+    const queryFeeAmount = async () => {
+      const client = await CosmWasmClient.connect(
+        IS_TESTNET
+          ? "https://rpc.testnet.osmosis.zone/"
+          : "https://rpc-osmosis.keplr.app/"
+      );
+
+      const config = await client.queryContractSmart(
+        REGISTRY_ADDRESSES[chainId],
+        {
+          config: {},
+        }
+      );
+      setFeeAmount(config.fee_amount);
+    };
+    queryFeeAmount();
+  }, []);
 
   // auto focus from amount on token switch
   const fromAmountInput = useRef<HTMLInputElement | null>(null);
@@ -915,7 +940,7 @@ export const TradeClipboard: FunctionComponent<{
                   denom: tokenInCurrency.coinMinimalDenom,
                   amount: tokenInUAmount.toString(),
                 });
-                funds.push({ denom: "uosmo", amount: "1000" }); // fee amount in usomo
+                funds.push({ denom: "uosmo", amount: feeAmount }); // fee amount in usomo
               } else {
                 funds.push({
                   denom: "uosmo",
