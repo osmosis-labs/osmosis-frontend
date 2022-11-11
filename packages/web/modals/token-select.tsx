@@ -8,6 +8,7 @@ import { SearchBox } from "../components/input";
 import { t } from "react-multi-lang";
 import { useStore } from "../stores";
 import { ModalBase, ModalBaseProps } from "./base";
+import classNames from "classnames";
 
 /** Intended for mobile use only - full screen alternative to token select dropdown.
  *
@@ -56,6 +57,15 @@ export const TokenSelectModal: FunctionComponent<
 
           const showChannel = coinDenom.includes("channel");
 
+          const tokenAmount =
+            t.token instanceof CoinPretty
+              ? t.token.hideDenom(true).trim(true).toString()
+              : undefined;
+          const tokenPrice =
+            t.token instanceof CoinPretty
+              ? priceStore.calculatePrice(t.token)?.toString()
+              : undefined;
+
           return (
             <li
               key={currency.coinDenom}
@@ -86,11 +96,18 @@ export const TokenSelectModal: FunctionComponent<
                   </div>
                 </div>
               </button>
-              {t.token instanceof CoinPretty && (
+              {tokenAmount && tokenPrice && (
                 <div className="flex flex-col text-right">
-                  <h6>{t.token.hideDenom(true).trim(true).toString()}</h6>
+                  <h6
+                    className={classNames({
+                      "md:text-subtitle2 md:font-subtitle2":
+                        tokenAmount.length > 10,
+                    })}
+                  >
+                    {tokenAmount}
+                  </h6>
                   <span className="subtitle1 text-osmoverse-400">
-                    {priceStore.calculatePrice(t.token)?.toString()}
+                    {tokenPrice}
                   </span>
                 </div>
               )}
