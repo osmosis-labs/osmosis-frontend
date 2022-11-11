@@ -26,41 +26,41 @@
     }
   },
   "pools": {
-    "title": "piscinas activas",
+    "title": "Piscinas Activas",
     "poolId": "Piscina #{id}",
-    "priceOsmo": "Precio de osmo",
+    "priceOsmo": "Precio de OSMO",
     "rewardDistribution": "Distribución de recompensas en",
-    "myPools": "Mis piscinas",
-    "APR": "APR",
+    "myPools": "Mis Piscinas",
+    "APR": "TPA",
     "available": "Disponible",
     "liquidity": "Liquidez",
-    "bonded": "Garantizado",
+    "bonded": "Abonado",
     "incentivized": "Incentivada",
-    "all": "Todas los piscinas",
-    "allTab": "Todos",
+    "all": "Todas las piscinas",
+    "allTab": "Todas",
     "superfluid": {
-      "title": "Piscinas superflúidas",
+      "title": "Piscinas superfluidas",
       "tab": "Superfluido",
-      "APR": "APR",
+      "APR": "TPA",
       "liquidity": "Liquidez",
       "fees7D": "Tarifas (7d)"
     },
     "allPools": {
-      "title": "Todas los piscinas",
+      "title": "Todas las piscinas",
       "myLiquidity": "Mi liquidez",
-      "TVL": "TVL",
-      "APR": "APR",
+      "TVL": "VTB",
+      "APR": "TPA",
       "APRIncentivized": "7d vol.",
-      "search": "piscinas de búsqueda",
-      "displayLowLiquidity": "Show piscinas <{value}",
+      "search": "Buscar piscinas",
+      "displayLowLiquidity": "Mostrar piscinas < {value}",
       "sort": {
-        "poolName": "Nombre de la Pool",
+        "poolName": "Nombre de la Piscina",
         "liquidity": "Liquidez",
         "volume24h": "Volumen (24h)",
         "fees": "Tarifas (7d)",
-        "APRIncentivized": "APR",
+        "APRIncentivized": "TPA",
         "APR": "Mi liquidez",
-        "poolId": "ID de Pool"
+        "poolId": "ID de Piscina"
       }
     },
     "externalIncentivized": {
