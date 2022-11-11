@@ -1,17 +1,13 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
-import { Pool, RoutePathWithAmount } from "@osmosis-labs/pools";
+import { Pool } from "@osmosis-labs/pools";
 import { observer } from "mobx-react-lite";
+import { FunctionComponent } from "react";
 import { useStore } from "../../stores";
 import { ChainStore } from "../../stores/chain";
 import { DenomImage } from "../denom";
 import { Tooltip } from "../tooltip";
-
-interface TradeRouteProps {
-  sendCurrency: AppCurrency;
-  outCurrency: AppCurrency;
-  path: RoutePathWithAmount;
-}
+import { TradeRouteProps } from "./types";
 
 function getDenomsFromPool(chainStore: ChainStore, pool: Pool) {
   const chainInfo = chainStore.getChain(chainStore.osmosis.chainId);
@@ -56,8 +52,8 @@ function reorderPathDenoms(
   });
 }
 
-const TradeRoute = observer(
-  ({ sendCurrency, outCurrency, path }: TradeRouteProps) => {
+const TradeRoute: FunctionComponent<TradeRouteProps> = observer(
+  ({ sendCurrency, outCurrency, path }) => {
     const { chainStore } = useStore();
 
     const poolsWithDenomAndFee = path?.pools.map((pool) =>
