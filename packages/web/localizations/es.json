@@ -137,7 +137,7 @@
     "incentives": "Incentivos",
     "details": "Detalles",
     "rewardDistribution": "Recompensas distribuidas a todos los proveedores de liquidez",
-    "superfluidStaking": "Abonado superfluido",
+    "superfluidStaking": "Interés superfluido",
     "delegated": "delegado",
     "undelegating": "desautorizando",
     "commission": "comisión",
@@ -147,40 +147,41 @@
     "7davg": "(7d Promedio)"
   },
   "removeLiquidity": {
-    "title": "Eliminar liquidez",
+    "title": "Retirar liquidez",
     "titleInPool": "Sacar la liquidez de {PoolId}",
-    "sharesAmount": "{acciones} acciones"
+    "sharesAmount": "{shares} participaciones"
   },
   "addLiquidity": {
     "title": "Agregar liquidez",
-    "titleInPool": "Agregue liquidez a {poolId}",
+    "titleInPool": "Agregue liquidez a la piscina {poolId}",
     "allAssets": "Todos los activos",
-    "singleAsset": "Activo único",
+    "singleAsset": "Un activo",
     "available": "Disponible",
-    "autoswapCaption": "Use AutoSWAP para agregar liquidez con un solo activo."
+    "autoswapCaption": "Use el intercambio automático para agregar liquidez con un solo activo.",
+    "stablecoinWarning": "Estás agregando liquidez a {denom}, una moneda estable respaldada por {mechanism}."
   },
   "lockToken": {
-    "title": "Bonar acciones LP",
-    "titleInPool": "Bloquear las acciones en {poolId}",
-    "selectPeriod": "Seleccionar el período de bono",
+    "title": "Abone participaciones LP",
+    "titleInPool": "Bloquear acciones en piscina {poolId}",
+    "selectPeriod": "Seleccionar el período para desabonar",
     "availableToken": "Disponible",
-    "amountToBond": "Monto a la fianza",
-    "superfluidStake": "Estancamiento superflúdico",
-    "bondingRequirement": "{numDays} de dias requeridos para bonar",
-    "buttonNext": "Próxima",
-    "buttonBond": "Vínculo",
-    "buttonBondStake": "Bonar y Stake"
+    "amountToBond": "Monto a abonar",
+    "superfluidStake": "Interés superflido",
+    "bondingRequirement": "{numDays} de días requeridos para desabonar",
+    "buttonNext": "Siguiente",
+    "buttonBond": "Abonar",
+    "buttonBondStake": "Abonar y Generar Intereses"
   },
   "superfluidValidator": {
-    "title": "Seleccionar validador superfluid",
-    "titleMobile": "Seleccionar validador",
-    "choose": "Elija su validador superfluid",
+    "title": "Seleccionar validador superfluido",
+    "titleMobile": "Selecciona validador",
+    "choose": "Elija su validador superfluido",
     "search": "Buscar por nombre",
-    "bondedAmount": "Monto adhesado",
+    "bondedAmount": "Monto abonado",
     "estimation": "Delegación superfluida estimada",
     "estimationMobile": "Est. Delegación",
-    "estimationInfo": "El valor de esta delegación fluctúa y se estima en función de la cantidad de OSMO en el grupo.",
-    "buttonBond": "Bond y estaca",
+    "estimationInfo": "El valor de esta delegación fluctúa y se estima en función de la cantidad de OSMO en la piscina.",
+    "buttonBond": "Abonar y Generar Interés",
     "columns": {
       "validator": "Validador",
       "commission": "Comisión"
