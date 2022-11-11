@@ -944,12 +944,12 @@ export const TradeClipboard: FunctionComponent<{
                 funds.push({
                   denom: "uosmo",
                   amount: new Dec(orderTokenInConfig.amount)
-                    .add(new Dec("0.001"))
                     .mul(
                       DecUtils.getTenExponentNInPrecisionRange(
                         tokenInCurrency.coinDecimals
                       )
                     )
+                    .add(new Dec(feeAmount))
                     .truncate()
                     .toString(),
                 });
