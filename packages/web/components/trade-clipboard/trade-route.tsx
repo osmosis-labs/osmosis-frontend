@@ -1,6 +1,7 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
 import { Pool } from "@osmosis-labs/pools";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useStore } from "../../stores";
@@ -65,7 +66,7 @@ const TradeRoute: FunctionComponent<TradeRouteProps> = observer(
     );
 
     return (
-      <div className="space-y-2">
+      <div className="space-y-3">
         <h6 className="body2">Auto Router</h6>
 
         <div className="flex items-center justify-between space-x-2">
@@ -73,8 +74,15 @@ const TradeRoute: FunctionComponent<TradeRouteProps> = observer(
             <DenomImage denom={sendCurrency} size={24} />
           </div>
 
-          <div className="relative w-full flex items-center justify-end">
-            <div className="absolute flex mr-4 space-x-6">
+          <div className="relative w-full flex items-center justify-center">
+            <div className="relative w-full flex items-center space-x-1">
+              <Dots className="animate-[pulse_3s_ease-in-out_0s_infinite]" />
+              <Dots className="animate-[pulse_3s_ease-in-out_0.5s_infinite]" />
+              <Dots className="animate-[pulse_3s_ease-in-out_0.7s_infinite]" />
+              <Dots className="animate-[pulse_3s_ease-in-out_1s_infinite]" />
+            </div>
+
+            <div className="absolute flex mx-4 space-x-6">
               {poolsWithReorderedDenoms?.map(({ denoms, fee }, index) => (
                 <Tooltip
                   key={index}
@@ -95,8 +103,6 @@ const TradeRoute: FunctionComponent<TradeRouteProps> = observer(
                 </Tooltip>
               ))}
             </div>
-
-            <hr className="w-full border-t-4 border-dotted border-t-osmoverse-300 h-[1px]" />
           </div>
 
           <div className="shrink-0 h-[24px]">
@@ -106,6 +112,19 @@ const TradeRoute: FunctionComponent<TradeRouteProps> = observer(
       </div>
     );
   }
+);
+
+interface DotsProps {
+  className?: string;
+}
+
+const Dots: FunctionComponent<DotsProps> = ({ className }) => (
+  <hr
+    className={classNames(
+      "w-1/4 border-t-4 border-dotted border-t-osmoverse-300 h-[1px]",
+      className
+    )}
+  />
 );
 
 export default TradeRoute;
