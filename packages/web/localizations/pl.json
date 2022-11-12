@@ -26,7 +26,8 @@
     },
     "wrapNativeLink": "Konwertuj {fromDenom} na {toDenom} na {platformName}",
     "waitTime": "{minutes} minuty",
-    "autoRouter": "Automatyczny router"
+    "autoRouter": "Automatyczny router",
+    "routerTooltipFee": "opłata"
   },
   "pools": {
     "title": "Aktywne pule",

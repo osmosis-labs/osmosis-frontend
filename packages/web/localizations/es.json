@@ -24,7 +24,8 @@
     "error": {
       "findCurrency": "No se pudo encontrar la moneda {currency}"
     },
-    "autoRouter": "Enrutador automático"
+    "autoRouter": "Enrutador automático",
+    "routerTooltipFee": "tarifa"
   },
   "pools": {
     "title": "Piscinas Activas",

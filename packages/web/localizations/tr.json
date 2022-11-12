@@ -24,7 +24,8 @@
     "error": {
       "findCurrency": "Para birimi bulunamadı {currency}"
     },
-    "autoRouter": "Otomatik yönlendirici"
+    "autoRouter": "Otomatik yönlendirici",
+    "routerTooltipFee": "ücret"
   },
   "pools": {
     "title": "Aktif Havuzlar",

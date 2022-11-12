@@ -90,7 +90,9 @@ const TradeRoute: FunctionComponent<{
             {poolsWithReorderedDenoms?.map(({ denoms, fee }, index) => (
               <Tooltip
                 key={index}
-                content={`${denoms[0].coinDenom}/${denoms[1].coinDenom} ${fee} pool`}
+                content={`${denoms[0].coinDenom}/${
+                  denoms[1].coinDenom
+                } ${fee} ${t("swap.routerTooltipFee")}`}
               >
                 <div className="p-1 rounded-md bg-osmoverse-700 flex items-center space-x-1">
                   <div className="flex">

@@ -24,7 +24,8 @@
     "error": {
       "findCurrency": "Failed to find currency {currency}"
     },
-    "autoRouter": "Auto Router"
+    "autoRouter": "Auto Router",
+    "routerTooltipFee": "fee"
   },
   "pools": {
     "title": "Active Pools",
