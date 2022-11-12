@@ -25,11 +25,6 @@ import TradeRoute from "./trade-route";
 import { useTranslation } from "react-multi-lang";
 import { tError } from "../localization";
 
-const ESTIMATE_DETAILS_EXPANDED_MIN_HEIGHT_IN_PX = 288;
-const ESTIMATE_DETAILS_COLLAPSED_HEIGHT_IN_PX = 44;
-const ESTIMATE_DETAILS_COLLAPSED_PADDING_Y_IN_PX = 10;
-const ESTIMATE_DETAILS_EXPANDED_PADDING_Y_IN_PX = 24;
-
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
   pools: Pool[];
@@ -857,21 +852,16 @@ export const TradeClipboard: FunctionComponent<{
 
           <div
             className={classNames(
-              "relative rounded-lg bg-osmoverse-900 px-4 md:px-3 transition-all ease-inOutBack duration-300 overflow-hidden"
+              "relative rounded-lg bg-osmoverse-900 px-4 md:px-3 transition-all ease-inOutBack duration-300 overflow-hidden",
+              showEstimateDetails ? "py-6" : "py-[10px]"
             )}
             style={{
               height: showEstimateDetails
                 ? (estimateDetailsContentRef.current?.getBoundingClientRect()
-                    ?.height ?? ESTIMATE_DETAILS_EXPANDED_MIN_HEIGHT_IN_PX) +
-                  ESTIMATE_DETAILS_COLLAPSED_HEIGHT_IN_PX +
-                  ESTIMATE_DETAILS_COLLAPSED_PADDING_Y_IN_PX * 2
-                : ESTIMATE_DETAILS_COLLAPSED_HEIGHT_IN_PX,
-              paddingTop: showEstimateDetails
-                ? ESTIMATE_DETAILS_EXPANDED_PADDING_Y_IN_PX
-                : ESTIMATE_DETAILS_COLLAPSED_PADDING_Y_IN_PX,
-              paddingBottom: showEstimateDetails
-                ? ESTIMATE_DETAILS_EXPANDED_PADDING_Y_IN_PX
-                : ESTIMATE_DETAILS_COLLAPSED_PADDING_Y_IN_PX,
+                    ?.height ?? 288) +
+                  44 +
+                  20
+                : 44,
             }}
           >
             <button
