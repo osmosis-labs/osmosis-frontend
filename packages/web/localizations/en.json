@@ -23,7 +23,8 @@
     "minimumSlippage": "Minimum received after slippage ({slippage})",
     "error": {
       "findCurrency": "Failed to find currency {currency}"
-    }
+    },
+    "autoRouter": "Auto Router"
   },
   "pools": {
     "title": "Active Pools",

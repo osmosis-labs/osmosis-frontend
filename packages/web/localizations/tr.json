@@ -23,7 +23,8 @@
     "minimumSlippage": "Slipaj dahil elde edilecek minimum ({slippage})",
     "error": {
       "findCurrency": "Para birimi bulunamadı {currency}"
-    }
+    },
+    "autoRouter": "Otomatik yönlendirici"
   },
   "pools": {
     "title": "Aktif Havuzlar",

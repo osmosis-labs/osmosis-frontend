@@ -23,7 +23,8 @@
     "minimumSlippage": "Mínimo recibido después del deslizamiento ({slippage})",
     "error": {
       "findCurrency": "No se pudo encontrar la moneda {currency}"
-    }
+    },
+    "autoRouter": "Enrutador automático"
   },
   "pools": {
     "title": "Piscinas Activas",

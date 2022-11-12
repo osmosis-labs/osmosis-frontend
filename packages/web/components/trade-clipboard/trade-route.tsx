@@ -4,6 +4,7 @@ import { Pool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
+import { useTranslation } from "react-multi-lang";
 import { useStore } from "../../stores";
 import { ChainStore } from "../../stores/chain";
 import { DenomImage } from "../denom";
@@ -56,6 +57,7 @@ function reorderPathDenoms(
 const TradeRoute: FunctionComponent<TradeRouteProps> = observer(
   ({ sendCurrency, outCurrency, path }) => {
     const { chainStore } = useStore();
+    const t = useTranslation();
 
     const poolsWithDenomAndFee = path?.pools.map((pool) =>
       getPoolsWithDenomAndFee(chainStore, pool)
@@ -67,7 +69,7 @@ const TradeRoute: FunctionComponent<TradeRouteProps> = observer(
 
     return (
       <div className="space-y-3">
-        <h6 className="body2">Auto Router</h6>
+        <h6 className="body2">{t("swap.autoRouter")}</h6>
 
         <div className="flex items-center justify-between space-x-2">
           <div className="shrink-0 h-[24px]">
