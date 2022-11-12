@@ -35,6 +35,7 @@ export const TokenSelectModal: FunctionComponent<
     >
       <div className="p-4" onClick={(e) => e.stopPropagation()}>
         <SearchBox
+          autoFocus
           type="text"
           className="!w-full"
           placeholder={props.placeholder ?? t("components.searchTokens")}
