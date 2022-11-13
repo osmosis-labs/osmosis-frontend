@@ -144,7 +144,7 @@ function cfmmConstantMultiNoV(
     throw Error("reserves must be positive");
 
   const xy = xReserve.mul(yReserve);
-  const x2 = xReserve.mul(yReserve);
+  const x2 = xReserve.mul(xReserve);
   const y2 = yReserve.mul(yReserve);
   return xy.mul(x2.add(y2).add(vSumSquares));
 }
