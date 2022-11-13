@@ -227,28 +227,28 @@
     },
     "transfer": {
       "titleWithdraw": "Retirar {coinDenom}",
-      "titleDeposit": "Depósitar {coinDenom}",
-      "warnDepositAddressDifferent": "Advertencia: la cuenta seleccionada en {address} difiere de la cuenta con la que se deposita por última vez.",
+      "titleDeposit": "Depositar {coinDenom}",
+      "warnDepositAddressDifferent": "Advertencia: la cuenta seleccionada en {address} difiere de la cuenta con la que se depositó por última vez.",
       "from": "De",
       "to": "A",
       "via": "a través de",
       "loading": "Cargando",
       "availableOn": "Disponible en {network}",
       "availableMobile": "Disponible",
-      "transferFee": "Tarifa de transferencia",
+      "transferFee": "Cuota de transferencia",
       "errors": {
         "reconnectWallet": "Reconectar {walletName}",
         "wrongNetworkInWallet": "Red incorrecta en {walletName}",
-        "insufficientFee": "Tarifa insuficiente",
+        "insufficientFee": "Cuota insuficiente",
         "insufficientBal": "Saldo insuficiente"
       },
       "wrapNativeLink": "Convertir {fromDenom} a {toDenom} en {platformName}",
       "waitTime": "{minutes} minutos"
     },
     "selectAssetSource": {
-      "titleWithdraw": "Retraerse a",
+      "titleWithdraw": "Retirar a",
       "titleDeposit": "Depositar desde",
-      "next": "Próxima",
+      "next": "Siguiente",
       "installWallet": "Instalar {walletName}"
     },
     "table": {
