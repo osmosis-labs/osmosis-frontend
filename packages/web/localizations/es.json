@@ -200,10 +200,10 @@
       "buttonNext": "Siguiente"
     },
     "poolCards": {
-      "APR": "APR",
-      "FeeAPY": "Tarifa apy",
+      "APR": "TPA",
+      "FeeAPY": "Tarifa TAI",
       "liquidity": "Liquidez",
-      "bonded": "Garantizada",
+      "bonded": "Abonado",
       "myLiquidity": "Mi liquidez"
     },
     "ibcTransfer": {
