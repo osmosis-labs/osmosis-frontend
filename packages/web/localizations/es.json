@@ -189,15 +189,15 @@
   },
   "assets": {
     "totalAssets": "Total",
-    "unbondedAssets": "No acelerado",
-    "bondedAssets": "Garantizada",
-    "stakedAssets": "OSMO stakeado",
+    "unbondedAssets": "No abonado",
+    "bondedAssets": "Abonado",
+    "stakedAssets": "OSMO Abonado",
     "myPools": "Mis piscinas",
     "transferAssetSelect": {
       "deposit": "Depositar",
       "withdraw": "Retirar",
-      "network": "La red",
-      "buttonNext": "Próxima"
+      "network": "Red",
+      "buttonNext": "Siguiente"
     },
     "poolCards": {
       "APR": "APR",
