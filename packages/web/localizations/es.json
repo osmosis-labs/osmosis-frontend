@@ -252,14 +252,14 @@
       "installWallet": "Instalar {walletName}"
     },
     "table": {
-      "depositButton": "Depósitar",
+      "depositButton": "Depositar",
       "withdrawButton": "Retirar",
       "search": "Filtrar por símbolo",
       "title": "Activos",
       "hideZero": "Ocultar saldos cero",
       "buyOsmo": "Comprar",
       "preTransfer": {
-        "deposit": "Depósitar",
+        "deposit": "Depositar",
         "withdraw": "Retirar",
         "currentBal": "Saldo actual"
       },
@@ -267,27 +267,27 @@
         "assetChain": "Activo / cadena",
         "balance": "Balance",
         "transfer": "Transferir",
-        "deposit": "Depósitar",
+        "deposit": "Depositar",
         "withdraw": "Retirar"
       },
       "sort": {
         "symbol": "Símbolo",
-        "network": "La red",
+        "network": "Red",
         "balance": "Balance"
       }
     },
     "historyTable": {
-      "title": "Historial de transferencia",
+      "title": "Historial de transferencias",
       "pending": "Pendiente",
       "success": "Éxito",
-      "refunded": "Reintegrada",
+      "refunded": "Reembolsado",
       "pendingRefunded": "Fallido: reembolso pendiente",
       "colums": {
         "transactionHash": "Hash de transacción",
         "type": "Escribe",
         "amount": "Monto",
         "status": "Estado",
-        "deposit": "Depósitar",
+        "deposit": "Depositar",
         "withdraw": "Retirar"
       }
     }
@@ -306,7 +306,7 @@
       "mobileMenu": "Ordenar por"
     },
     "MAX": "Máximo",
-    "searchTokens": "Tokens de búsqueda"
+    "searchTokens": "Buscar tokens"
   },
   "menu": {
     "swap": "Intercambio",
