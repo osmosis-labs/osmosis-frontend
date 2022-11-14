@@ -9,7 +9,7 @@ export type StableSwapToken = {
 };
 
 // calculates exact output given an input with no rounding/truncation
-export function solveCalcOutGivenIn(
+function solveCalcOutGivenIn(
   tokens: StableSwapToken[],
   tokenIn: Coin,
   tokenOutDenom: string,
@@ -202,19 +202,19 @@ function solveCfmmBinarySearchMulti(
 function cfmmConstantMultiNoV(
   xReserve: Dec,
   yReserve: Dec,
-  vSumSquares: Dec,
+  wSumSquares: Dec,
 ): Dec {
   if (
     !xReserve.isPositive() ||
     !yReserve.isPositive() ||
-    vSumSquares.isNegative()
+    wSumSquares.isNegative()
   )
     throw Error('reserves must be positive');
 
   const xy = xReserve.mul(yReserve);
   const x2 = xReserve.mul(xReserve);
   const y2 = yReserve.mul(yReserve);
-  return xy.mul(x2.add(y2).add(vSumSquares));
+  return xy.mul(x2.add(y2).add(wSumSquares));
 }
 
 export function binarySearch(
@@ -236,6 +236,7 @@ export function binarySearch(
       targetOutput,
       curOutput,
       errorTolerance,
+      'roundUp',
     );
     if (compare < 0) {
       upperBound = curEstimate;
@@ -248,13 +249,14 @@ export function binarySearch(
     curOutput = makeOutput(curEstimate);
   }
 
-  return new Dec(0);
+  throw Error('binary search did not converge');
 }
 
-function compare_checkMultErrorTolerance(
+export function compare_checkMultErrorTolerance(
   expected: Dec,
   actual: Dec,
   tolerance: Dec,
+  roundingMode: string,
 ) {
   let comparison = 0;
   if (expected.gt(actual)) {
@@ -263,20 +265,25 @@ function compare_checkMultErrorTolerance(
     comparison = -1;
   }
 
-  // assume round up
-  if (expected.gt(actual)) return 1;
+  // roundBankers case is handled by default quo function so we
+  // fall back to that for all other roundingMode inputs
+  if (roundingMode == 'roundDown') {
+    if (expected.lt(actual)) return -1;
+  } else if (roundingMode == 'roundUp') {
+    if (expected.gt(actual)) return 1;
+  }
 
   // multiplicative tolerance
 
   if (tolerance.isZero()) return 0;
 
-  //    get min dec
+  // get min dec
   let min = actual;
   if (expected.lt(min)) {
     min = expected;
   }
 
-  //    check mult tolerance
+  // check mult tolerance
   const diff = expected.sub(actual).abs();
   const errorTerm = diff.quo(min);
   if (errorTerm.gt(tolerance)) {

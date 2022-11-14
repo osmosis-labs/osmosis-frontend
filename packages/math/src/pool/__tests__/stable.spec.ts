@@ -1,5 +1,5 @@
 import * as StableMath from '../stable';
-import { Coin, Dec, Int } from '@keplr-wallet/unit';
+import { Coin, Dec, Int, DecUtils } from '@keplr-wallet/unit';
 
 describe('Test stableswap math', () => {
   describe('calcOutGivenIn', () => {
@@ -184,6 +184,125 @@ describe('Test stableswap math', () => {
       );
 
       expect(outAmount.equals(expectedTokenOut.amount)).toBeTruthy();
+    });
+    */
+  });
+
+  describe('calcSpotPrice', () => {
+    test('foo in terms of bar in even pool', () => {
+      const poolAssets: StableMath.StableSwapToken[] = [
+        {
+          amount: new Dec(1_000_000_000),
+          denom: 'foo',
+          scalingFactor: 1,
+        },
+        {
+          amount: new Dec(1_000_000_000),
+          denom: 'bar',
+          scalingFactor: 1,
+        },
+        {
+          amount: new Dec(1_000_000_000),
+          denom: 'baz',
+          scalingFactor: 1,
+        },
+      ];
+
+      const baseDenom = 'foo';
+      const quoteDenom = 'bar';
+
+      const expectedSpotPrice = new Dec(1.0);
+
+      const actualSpotPrice = StableMath.calcSpotPrice(
+        poolAssets,
+        baseDenom,
+        quoteDenom,
+      );
+
+      const tolerance = new Dec(1).quo(
+        DecUtils.getTenExponentNInPrecisionRange(3),
+      );
+      const comparison = StableMath.compare_checkMultErrorTolerance(
+        expectedSpotPrice,
+        actualSpotPrice,
+        tolerance,
+        'roundBankers',
+      );
+      expect(comparison == 0).toBeTruthy();
+    });
+
+    test('foo in terms of bar in uneven pool', () => {
+      const poolAssets: StableMath.StableSwapToken[] = [
+        {
+          amount: new Dec(10_000_000_000),
+          denom: 'foo',
+          scalingFactor: 1,
+        },
+        {
+          amount: new Dec(20_000_000_000),
+          denom: 'bar',
+          scalingFactor: 1,
+        },
+        {
+          amount: new Dec(30_000_000_000),
+          denom: 'baz',
+          scalingFactor: 1,
+        },
+      ];
+
+      // quote and base definitions following V2 Querier
+      const baseDenom = 'bar';
+      const quoteDenom = 'foo';
+
+      const expectedSpotPrice = new Dec(1.446096575818955898);
+
+      const actualSpotPrice = StableMath.calcSpotPrice(
+        poolAssets,
+        baseDenom,
+        quoteDenom,
+      );
+
+      const tolerance = new Dec(1).quo(
+        DecUtils.getTenExponentNInPrecisionRange(3),
+      );
+      const comparison = StableMath.compare_checkMultErrorTolerance(
+        expectedSpotPrice,
+        actualSpotPrice,
+        tolerance,
+        'roundBankers',
+      );
+
+      expect(comparison == 0).toBeTruthy();
+    });
+
+    /*
+    test('even large pool basic trade (precision test)', () => {
+      const poolAssets: StableMath.StableSwapToken[] = [
+        {
+          amount: new Dec(1_000_000_000_000),
+          denom: 'foo',
+          scalingFactor: 1,
+        },
+        {
+          amount: new Dec(1_000_000_000_000),
+          denom: 'bar',
+          scalingFactor: 1,
+        },
+      ];
+
+      const tokenOut = new Coin('bar', 100);
+      const swapFee = new Dec(0);
+
+      const expectedTokenIn = { denom: 'foo', amount: new Int(101) };
+
+      const inAmount = StableMath.calcInGivenOut(
+        poolAssets,
+        tokenOut,
+        expectedTokenIn.denom,
+        swapFee,
+      );
+
+      expect(inAmount.equals(expectedTokenIn.amount)).toBeTruthy();
     });
     */
   });
