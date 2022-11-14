@@ -1,11 +1,11 @@
-import { Coin, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import { Coin, Dec, DecUtils } from "@keplr-wallet/unit";
 
 const oneDec = new Dec(1);
 
 export type StableSwapToken = {
   amount: Dec;
   denom: string;
-  scalingFactor: Int;
+  scalingFactor: number;
 };
 
 export function calcOutGivenIn(
@@ -22,7 +22,7 @@ export function calcOutGivenIn(
 
   if (!tokenInScalingFactor) throw Error("tokenIn denom not in pool tokens");
 
-  const tokenInScaled = new Dec(tokenIn.amount).quo(
+  const tokenInScaled = new Dec(tokenIn.amount).quoTruncate(
     new Dec(tokenInScalingFactor)
   );
 
@@ -40,11 +40,6 @@ export function calcOutGivenIn(
 
   if (!tokenOutSupply || !tokenInSupply)
     throw new Error("token supply incorrect");
-
-  console.log(
-    tokenOutSupply.amount.toString(),
-    tokenInSupply.amount.toString()
-  );
 
   const cfmmOut = solveCfmm(
     tokenOutSupply.amount,

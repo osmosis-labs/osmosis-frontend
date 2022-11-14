@@ -1,8 +1,8 @@
-import { Coin, Dec, Int } from "@keplr-wallet/unit";
+import { Coin, Dec } from "@keplr-wallet/unit";
 export declare type StableSwapToken = {
     amount: Dec;
     denom: string;
-    scalingFactor: Int;
+    scalingFactor: number;
 };
 export declare function calcOutGivenIn(tokens: StableSwapToken[], tokenIn: Coin, tokenOutDenom: string, swapFee: Dec): Dec;
 export declare function calcInGivenOut(): void;
