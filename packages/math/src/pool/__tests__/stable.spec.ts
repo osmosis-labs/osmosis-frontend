@@ -29,7 +29,6 @@ describe('Test stableswap math', () => {
         swapFee,
       );
 
-      // TODO: rounded amount is right, but decimals still have .999999
       expect(outAmount.equals(expectedTokenOut.amount)).toBeTruthy();
     });
   });
