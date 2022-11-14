@@ -1050,7 +1050,7 @@ export const IBCAssetInfos: (IBCAsset & {
     return false;
   }
 
-  return IS_FRONTIER ? true : ibcAsset.isVerified;
+  return true;
 });
 
 if (IS_TESTNET && typeof window === "undefined") {
