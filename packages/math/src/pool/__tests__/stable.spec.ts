@@ -31,6 +31,161 @@ describe('Test stableswap math', () => {
 
       expect(outAmount.equals(expectedTokenOut.amount)).toBeTruthy();
     });
+
+    test('even large pool basic trade (precision test)', () => {
+      const poolAssets: StableMath.StableSwapToken[] = [
+        {
+          amount: new Dec(1_000_000_000_000),
+          denom: 'foo',
+          scalingFactor: 1,
+        },
+        {
+          amount: new Dec(1_000_000_000_000),
+          denom: 'bar',
+          scalingFactor: 1,
+        },
+      ];
+
+      const tokenIn = new Coin('foo', 100);
+      const swapFee = new Dec(0);
+
+      const expectedTokenOut = { denom: 'bar', amount: new Int(99) };
+
+      const outAmount = StableMath.calcOutGivenIn(
+        poolAssets,
+        tokenIn,
+        expectedTokenOut.denom,
+        swapFee,
+      );
+
+      expect(outAmount.equals(expectedTokenOut.amount)).toBeTruthy();
+    });
+
+    // TODO: add swap fee tests
+
+    /* This test should pass
+    test('even large pool basic trade (precision test)', () => {
+      const poolAssets: StableMath.StableSwapToken[] = [
+        {
+          amount: new Dec(1_000_000_000_000_000),
+          denom: 'foo',
+          scalingFactor: 1,
+        },
+        {
+          amount: new Dec(1_000_000_000_000_000),
+          denom: 'bar',
+          scalingFactor: 1,
+        },
+      ];
+
+      const tokenIn = new Coin('foo', 100);
+      const swapFee = new Dec(0);
+
+      const expectedTokenOut = { denom: 'bar', amount: new Int(99) };
+
+      const outAmount = StableMath.calcOutGivenIn(
+        poolAssets,
+        tokenIn,
+        expectedTokenOut.denom,
+        swapFee,
+      );
+
+      expect(outAmount.equals(expectedTokenOut.amount)).toBeTruthy();
+    });
+    */
+  });
+
+  describe('calcInGivenOut', () => {
+    test('even pool basic trade', () => {
+      const poolAssets: StableMath.StableSwapToken[] = [
+        {
+          amount: new Dec(1_000_000_000),
+          denom: 'foo',
+          scalingFactor: 1,
+        },
+        {
+          amount: new Dec(1_000_000_000),
+          denom: 'bar',
+          scalingFactor: 1,
+        },
+      ];
+
+      const tokenOut = new Coin('bar', 100);
+      const swapFee = new Dec(0);
+
+      const expectedTokenIn = { denom: 'foo', amount: new Int(101) };
+
+      const inAmount = StableMath.calcInGivenOut(
+        poolAssets,
+        tokenOut,
+        expectedTokenIn.denom,
+        swapFee,
+      );
+
+      expect(inAmount.equals(expectedTokenIn.amount)).toBeTruthy();
+    });
+
+    test('even large pool basic trade (precision test)', () => {
+      const poolAssets: StableMath.StableSwapToken[] = [
+        {
+          amount: new Dec(1_000_000_000_000),
+          denom: 'foo',
+          scalingFactor: 1,
+        },
+        {
+          amount: new Dec(1_000_000_000_000),
+          denom: 'bar',
+          scalingFactor: 1,
+        },
+      ];
+
+      const tokenOut = new Coin('bar', 100);
+      const swapFee = new Dec(0);
+
+      const expectedTokenIn = { denom: 'foo', amount: new Int(101) };
+
+      const inAmount = StableMath.calcInGivenOut(
+        poolAssets,
+        tokenOut,
+        expectedTokenIn.denom,
+        swapFee,
+      );
+
+      expect(inAmount.equals(expectedTokenIn.amount)).toBeTruthy();
+    });
+
+    // TODO: add swap fee tests
+
+    /* This test should pass
+    test('even large pool basic trade (precision test)', () => {
+      const poolAssets: StableMath.StableSwapToken[] = [
+        {
+          amount: new Dec(1_000_000_000_000_000),
+          denom: 'foo',
+          scalingFactor: 1,
+        },
+        {
+          amount: new Dec(1_000_000_000_000_000),
+          denom: 'bar',
+          scalingFactor: 1,
+        },
+      ];
+
+      const tokenIn = new Coin('foo', 100);
+      const swapFee = new Dec(0);
+
+      const expectedTokenOut = { denom: 'bar', amount: new Int(99) };
+
+      const outAmount = StableMath.calcOutGivenIn(
+        poolAssets,
+        tokenIn,
+        expectedTokenOut.denom,
+        swapFee,
+      );
+
+      expect(outAmount.equals(expectedTokenOut.amount)).toBeTruthy();
+    });
+    */
   });
 
   describe('solver', () => {

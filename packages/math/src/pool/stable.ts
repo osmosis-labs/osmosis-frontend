@@ -26,6 +26,7 @@ export function calcOutGivenIn(
     new Dec(tokenInScalingFactor),
   );
 
+  // we apply swap fee before running solver since we are going input -> output
   const tokenInLessFee = tokenInScaled.mul(oneDec.sub(swapFee));
 
   const tokenOutSupply = scaledTokens.find(
@@ -51,7 +52,52 @@ export function calcOutGivenIn(
   return cfmmOut.mul(new Dec(tokenOutSupply.scalingFactor)).truncate();
 }
 
-export function calcInGivenOut() {}
+export function calcInGivenOut(
+  tokens: StableSwapToken[],
+  tokenOut: Coin,
+  tokenInDenom: string,
+  swapFee: Dec,
+) {
+  const scaledTokens = scaleTokens(tokens);
+
+  const tokenOutScalingFactor = tokens.find(
+    ({ denom }) => denom === tokenOut.denom,
+  )?.scalingFactor;
+
+  if (!tokenOutScalingFactor) throw Error('tokenIn denom not in pool tokens');
+
+  const tokenOutScaled = new Dec(tokenOut.amount).quoTruncate(
+    new Dec(tokenOutScalingFactor),
+  );
+
+  const tokenInSupply = scaledTokens.find(
+    ({ denom }) => denom === tokenInDenom,
+  );
+  const tokenOutSupply = scaledTokens.find(
+    ({ denom }) => denom === tokenOut.denom,
+  );
+  const remReserves = scaledTokens
+    .filter(({ denom }) => denom !== tokenOut.denom && denom !== tokenInDenom)
+    .map(({ amount }) => amount);
+
+  if (!tokenOutSupply || !tokenInSupply)
+    throw new Error('token supply incorrect');
+
+  const cfmmOut = solveCfmm(
+    tokenInSupply.amount,
+    tokenOutSupply.amount,
+    remReserves,
+    tokenOutScaled.neg(),
+  );
+
+  // we negate the calculated input since our solver is negative in negative out
+  const calculatedInput = cfmmOut.neg();
+
+  // we apply swap fee after running solver since we are going output -> input
+  const tokenInPlusFee = calculatedInput.quoRoundUp(oneDec.sub(swapFee));
+
+  return tokenInPlusFee.mul(new Dec(tokenOutSupply.scalingFactor)).roundUp();
+}
 
 function scaleTokens(tokens: StableSwapToken[]): StableSwapToken[] {
   return tokens.map((token) => ({

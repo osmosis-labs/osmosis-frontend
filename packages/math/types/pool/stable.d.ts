@@ -5,6 +5,6 @@ export declare type StableSwapToken = {
     scalingFactor: number;
 };
 export declare function calcOutGivenIn(tokens: StableSwapToken[], tokenIn: Coin, tokenOutDenom: string, swapFee: Dec): import("@keplr-wallet/unit").Int;
-export declare function calcInGivenOut(): void;
+export declare function calcInGivenOut(tokens: StableSwapToken[], tokenOut: Coin, tokenInDenom: string, swapFee: Dec): import("@keplr-wallet/unit").Int;
 export declare function solveCfmm(xReserve: Dec, yReserve: Dec, remReserves: Dec[], yIn: Dec): Dec;
 export declare function binarySearch(makeOutput: (est: Dec) => Dec, lowerBound: Dec, upperBound: Dec, targetOutput: Dec, maxIterations?: number, errorTolerance?: Dec): Dec;
