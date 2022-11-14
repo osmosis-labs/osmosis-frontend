@@ -8,12 +8,13 @@ export type StableSwapToken = {
   scalingFactor: number;
 };
 
-export function calcOutGivenIn(
+// calculates exact output given an input with no rounding/truncation
+export function solveCalcOutGivenIn(
   tokens: StableSwapToken[],
   tokenIn: Coin,
   tokenOutDenom: string,
   swapFee: Dec,
-) {
+): Dec {
   const scaledTokens = scaleTokens(tokens);
 
   const tokenInScalingFactor = tokens.find(
@@ -49,7 +50,21 @@ export function calcOutGivenIn(
     tokenInLessFee,
   );
 
-  return cfmmOut.mul(new Dec(tokenOutSupply.scalingFactor)).truncate();
+  return cfmmOut.mul(new Dec(tokenOutSupply.scalingFactor));
+}
+
+export function calcOutGivenIn(
+  tokens: StableSwapToken[],
+  tokenIn: Coin,
+  tokenOutDenom: string,
+  swapFee: Dec,
+) {
+  return solveCalcOutGivenIn(
+    tokens,
+    tokenIn,
+    tokenOutDenom,
+    swapFee,
+  ).truncate();
 }
 
 export function calcInGivenOut(
@@ -104,6 +119,18 @@ function scaleTokens(tokens: StableSwapToken[]): StableSwapToken[] {
     ...token,
     amount: token.amount.quo(new Dec(token.scalingFactor)),
   }));
+}
+
+export function calcSpotPrice(
+  tokens: StableSwapToken[],
+  baseDenom: string,
+  quoteDenom: string,
+): Dec {
+  // we approximate spot price by simulating a zero-fee swap of 1 unit against the pool
+  const a = new Coin(quoteDenom, 1);
+  const approxSpotPrice = solveCalcOutGivenIn(tokens, a, baseDenom, new Dec(0));
+
+  return approxSpotPrice;
 }
 
 export function solveCfmm(
