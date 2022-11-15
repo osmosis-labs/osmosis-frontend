@@ -135,8 +135,6 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
       const diffMs = dayjs(endTime).diff(now, "ms");
       const blockTime = 6_000; // allow one block to process unbond before querying
 
-      console.log("set timeout at", diffMs + blockTime);
-
       timeoutIds.push(
         setTimeout(() => {
           queryOsmosis.queryGammPoolShare.fetch(bech32Address);
