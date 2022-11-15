@@ -105,7 +105,7 @@
   }
 
   .grid-cards {
-    @apply grid-cols-4 gap-4 3xl:grid-cols-3 1.5xl:grid-cols-2 1.5md:grid-cols-1;
+    @apply gap-4 grid-cols-3 1.5xl:grid-cols-2 1.5md:grid-cols-1;
   }
 
   /* Chrome, Safari and Opera */

@@ -1,6 +1,11 @@
-import { makeObservable, observable, action, runInAction } from "mobx";
+import {
+  makeObservable,
+  observable,
+  action,
+  runInAction,
+  computed,
+} from "mobx";
 import { ComponentProps } from "react";
-import { AccountSetBase } from "@keplr-wallet/stores";
 import { IBCCurrency } from "@keplr-wallet/types";
 import { KVStore } from "@keplr-wallet/common";
 import {
@@ -74,13 +79,19 @@ export class ObservableTransferUIConfig {
     return this._fiatRampsModal;
   }
 
+  @observable
+  protected _isMobile: boolean = false;
+
   constructor(
     protected readonly assetsStore: ObservableAssets,
-    protected readonly account: AccountSetBase,
-    protected readonly kvStore: KVStore,
-    protected readonly isMobile: boolean
+    protected readonly kvStore: KVStore
   ) {
     makeObservable(this);
+  }
+
+  @action
+  public setIsMobile(isMobile: boolean) {
+    this._isMobile = isMobile;
   }
 
   @observable
@@ -92,9 +103,10 @@ export class ObservableTransferUIConfig {
     makeLocalStorageKVStore("wc-eth")
   );
 
+  @computed
   protected get _ethClientWallets(): EthWallet[] {
     return [this.metamask, this.walletConnectEth].filter((wallet) =>
-      this.isMobile ? wallet.mobileEnabled : true
+      this._isMobile ? wallet.mobileEnabled : true
     );
   }
 
@@ -325,7 +337,7 @@ export class ObservableTransferUIConfig {
       isWithdraw: direction === "withdraw",
       onRequestClose: () => this.closeAllModals(),
       wallets,
-      fiatRamps: this.isMobile
+      fiatRamps: this._isMobile
         ? []
         : balanceOnOsmosis.fiatRamps?.map(({ rampKey }) => rampKey),
       onSelectSource: (key) => {

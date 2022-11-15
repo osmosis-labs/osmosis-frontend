@@ -25,7 +25,7 @@ export const Button: FunctionComponent<
           "border-2 border-osmoverse-500 bg-osmoverse-500 text-osmoverse-100":
             (mode === "primary" || mode === "primary-warning") &&
             props.disabled,
-          "bg-gradient-negative": mode === "primary-warning",
+          "border-0 bg-gradient-negative": mode === "primary-warning",
           "bg-transparent border-2":
             mode === "secondary" || mode === "tertiary",
           "border-wosmongton-400 hover:border-wosmongton-200":

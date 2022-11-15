@@ -141,6 +141,7 @@
     "delegated": "委托",
     "undelegating": "取消委托",
     "commission": "佣金",
+    "numDaysRemaining": "还剩 {numDays} 天",
     "from": "来自",
     "swapFees": "交易费",
     "7davg": "(7日平均)"

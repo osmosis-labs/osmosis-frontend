@@ -12,6 +12,7 @@ import { useStore } from "../stores";
 import { useTranslation } from "react-multi-lang";
 import { observer } from "mobx-react-lite";
 
+/** MOBILE: Pre transfer to select whether to deposit/withdraw */
 export const PreTransferModal: FunctionComponent<
   ModalBaseProps & {
     selectedToken: CoinPretty;
@@ -68,7 +69,40 @@ export const PreTransferModal: FunctionComponent<
           )}
         </div>
         {isUnstable && <Info message={UNSTABLE_MSG} isMobile={isMobile} />}
-        <div className="flex place-content-between gap-5 py-2">
+        <div className="flex place-content-between gap-3 py-2">
+          {externalWithdrawUrl ? (
+            <a
+              className={classNames(
+                "flex w-full gap-1 text-button font-button h-10 justify-center items-center rounded-lg bg-wosmongton-200/30 border border-wosmongton-200",
+                { "opacity-30": isUnstable }
+              )}
+              href={externalWithdrawUrl}
+              rel="noreferrer"
+              target="_blank"
+              style={
+                isUnstable
+                  ? { pointerEvents: "none", cursor: "default" }
+                  : undefined
+              }
+            >
+              {t("assets.table.preTransfer.withdraw")}
+              <Image
+                alt="external transfer link"
+                src="/icons/external-link-white.svg"
+                height={8}
+                width={8}
+              />
+            </a>
+          ) : (
+            <Button
+              className="w-full h-10"
+              mode="secondary"
+              disabled={isUnstable}
+              onClick={onWithdraw}
+            >
+              {t("assets.table.preTransfer.withdraw")}
+            </Button>
+          )}
           {externalDepositUrl ? (
             <a
               className={classNames(
@@ -99,38 +133,6 @@ export const PreTransferModal: FunctionComponent<
               onClick={onDeposit}
             >
               {t("assets.table.preTransfer.deposit")}
-            </Button>
-          )}
-          {externalWithdrawUrl ? (
-            <a
-              className={classNames(
-                "flex w-full gap-1 text-button font-button h-10 justify-center items-center rounded-lg bg-wosmongton-200/30 border border-wosmongton-200",
-                { "opacity-30": isUnstable }
-              )}
-              href={externalWithdrawUrl}
-              rel="noreferrer"
-              target="_blank"
-              style={
-                isUnstable
-                  ? { pointerEvents: "none", cursor: "default" }
-                  : undefined
-              }
-            >
-              {t("assets.table.preTransfer.withdraw")}
-              <Image
-                alt="external transfer link"
-                src="/icons/external-link-white.svg"
-                height={8}
-                width={8}
-              />
-            </a>
-          ) : (
-            <Button
-              className="w-full h-10 bg-wosmongton-200/30"
-              disabled={isUnstable}
-              onClick={onWithdraw}
-            >
-              {t("assets.table.preTransfer.withdraw")}
             </Button>
           )}
         </div>

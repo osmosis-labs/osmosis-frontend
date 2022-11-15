@@ -164,11 +164,22 @@ export class ObservableQueryPoolDetails extends UserConfig {
 
   @computed
   get userLockedAssets() {
+    // aggregate user-applicable durations
+    const durationMap = new Map<number, Duration>();
+    this.queries.queryLockableDurations.lockableDurations.forEach((d) =>
+      durationMap.set(d.asMilliseconds(), d)
+    );
+    this.queries.queryAccountLocked
+      .get(this.bech32Address)
+      .lockedCoins.forEach(({ duration: d }) =>
+        durationMap.set(d.asMilliseconds(), d)
+      );
+
     return this.queries.queryGammPoolShare
       .getShareLockedAssets(
         this.bech32Address,
         this.queryPool.id,
-        this.queries.queryLockableDurations.lockableDurations
+        Array.from(durationMap.values())
       )
       .map((lockedAsset) =>
         // calculate APR% for this pool asset
@@ -192,10 +203,21 @@ export class ObservableQueryPoolDetails extends UserConfig {
 
   @computed
   get userUnlockingAssets() {
+    // aggregate user-applicable durations
+    const durationMap = new Map<number, Duration>();
+    this.queries.queryLockableDurations.lockableDurations.forEach((d) =>
+      durationMap.set(d.asMilliseconds(), d)
+    );
+    this.queries.queryAccountLocked
+      .get(this.bech32Address)
+      .unlockingCoins.forEach(({ duration: d }) =>
+        durationMap.set(d.asMilliseconds(), d)
+      );
+
     const poolShareCurrency = this.queries.queryGammPoolShare.getShareCurrency(
       this.queryPool.id
     );
-    return this.queries.queryLockableDurations.lockableDurations
+    return Array.from(durationMap.values())
       .map(
         (duration) => {
           const unlockings = this.queries.queryAccountLocked
@@ -296,8 +318,6 @@ export class ObservableQueryPoolDetails extends UserConfig {
     );
 
     if (totalShares.toDec().isZero()) return;
-
-    // TODO: get $/day earned from imperator API
 
     return {
       totalShares,

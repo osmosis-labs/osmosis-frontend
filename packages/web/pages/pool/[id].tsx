@@ -290,7 +290,7 @@ const Pool: FunctionComponent = observer(() => {
   const level2Disabled = bondableDurations.length === 0;
 
   return (
-    <main className="flex flex-col gap-10 md:gap-4 bg-osmoverse-900 min-h-screen p-8 md:p-4">
+    <main className="max-w-container m-auto flex flex-col gap-10 md:gap-4 bg-osmoverse-900 min-h-screen p-8 md:p-4">
       <Head>
         <title>
           {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
@@ -507,7 +507,7 @@ const Pool: FunctionComponent = observer(() => {
         )}
       </div>
       <div className="flex flex-col gap-7 md:gap-4">
-        <div className="flex flex-wrap md:gap-3">
+        <div className="flex flex-col flex-wrap md:gap-3">
           <h5 className="md:text-h6 md:font-h6">{t("pool.putAssetsToWork")}</h5>
           <span className="subtitle1 md:text-body1 md:font-body1 text-osmoverse-300">
             {t("pool.putAssetsToWorkCaption")}{" "}
@@ -655,12 +655,20 @@ const Pool: FunctionComponent = observer(() => {
                   onUnbond={() => onUnlockTokens(bondableDuration.duration)}
                   onGoSuperfluid={() => setShowSuperfluidValidatorsModal(true)}
                   splashImageSrc={
-                    bondableDuration.duration.asDays() === 1
-                      ? "/images/small-vial.svg"
-                      : bondableDuration.duration.asDays() === 7
-                      ? "/images/medium-vial.svg"
-                      : bondableDuration.duration.asDays() === 14
-                      ? "/images/large-vial.svg"
+                    poolDetailConfig
+                      ? poolDetailConfig.lockableDurations.length > 0 &&
+                        poolDetailConfig.lockableDurations[0].asDays() ===
+                          bondableDuration.duration.asDays()
+                        ? "/images/small-vial.svg"
+                        : poolDetailConfig.lockableDurations.length > 1 &&
+                          poolDetailConfig.lockableDurations[1].asDays() ===
+                            bondableDuration.duration.asDays()
+                        ? "/images/medium-vial.svg"
+                        : poolDetailConfig.lockableDurations.length > 2 &&
+                          poolDetailConfig.lockableDurations[2].asDays() ===
+                            bondableDuration.duration.asDays()
+                        ? "/images/large-vial.svg"
+                        : undefined
                       : undefined
                   }
                 />

@@ -114,7 +114,7 @@
     "putAssetsToWork": "자산을 불려보세요.",
     "putAssetsToWorkCaption": "이 풀에 자산을 추가하고 두근되는 APR을 확인하세요. 더 긴 해지 긴간을 예치하면, 더 많은 보상을 얻을 수 있어요",
     "learnMore": "더 알아보기",
-    "level": "Level {level}",
+    "level": "레벨 {level}",
     "earnSwapFees": "교환 수수료를 받으세요",
     "earnSwapFeesCaption": "풀에 유동성을 공급하고, 모든 교환에서 수수료를 받으세요",
     "APR": "APR",
@@ -125,7 +125,7 @@
     "bondSuperfluidLiquidityCaption": "Superfluid 를 통해 최대 보상을 받으세요.",
     "bondShares": "유동성 예치",
     "amountDaysUnbonding": "예치 해제 {numDays}일",
-    "shares": "shares",
+    "shares": "주식",
     "unbonded": "예치되지 않은 자산",
     "unbond": "예치 해재하기",
     "bonded": "예치된 자산",
@@ -141,6 +141,7 @@
     "delegated": "위임된 자산",
     "undelegating": "위임 해제중",
     "commission": "수수료",
+    "numDaysRemaining": "{numDays}일 남음",
     "from": "에서",
     "swapFees": "교환 수수료",
     "7davg": "(7d avg)"
@@ -156,7 +157,8 @@
     "allAssets": "모든 자산",
     "singleAsset": "단일 자산",
     "available": "추가 가능 수량",
-    "autoswapCaption": "오토스왑을 통해 단일 자산으로 유동성 추가합니다"
+    "autoswapCaption": "오토스왑을 통해 단일 자산으로 유동성 추가합니다",
+    "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin."
   },
   "lockToken": {
     "title": "유동성 예치",
@@ -191,6 +193,12 @@
     "bondedAssets": "예치된 자산",
     "stakedAssets": "스테이킹된 OSMO",
     "myPools": "내 풀",
+    "transferAssetSelect": {
+      "deposit": "입금",
+      "withdraw": "출금",
+      "network": "회로망",
+      "buttonNext": "다음"
+    },
     "poolCards": {
       "APR": "APR",
       "FeeAPY": "수수료 APY",
@@ -350,7 +358,7 @@
     "wallet": "Keplr 지갑",
     "extension": "Keplr 브라우저 익스텐션",
     "walletConnect": "WalletConnect",
-    "mobile": "Keplr Mobile"
+    "mobile": "Keplr 이동하는"
   },
   "connectDisclaimer": "지갑을 연결함으로써 귀하는 Osmosis를 읽고 이해했음을 인정합니다",
   "protocolDisclaimer": "프로토콜 면책 조항",

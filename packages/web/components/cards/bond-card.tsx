@@ -186,7 +186,7 @@ const Drawer: FunctionComponent<{
           <span className="subtitle1 text-osmoverse-200">
             {t("pool.incentives")}
           </span>
-          <div className="flex items-center gap-4 md:gap-1.5">
+          <div className="flex items-center gap-2 md:gap-1.5">
             <h5
               className={classNames(
                 superfluid ? "text-superfluid-gradient" : "text-bullish-400"
@@ -363,7 +363,11 @@ const IncentiveBreakdownRow: FunctionComponent<
           })}
         </span>
         {numDaysRemaining && (
-          <span className="caption text-osmoverse-400">{numDaysRemaining}</span>
+          <span className="caption text-osmoverse-400">
+            {t("pool.numDaysRemaining", {
+              numDays: numDaysRemaining.toString(),
+            })}
+          </span>
         )}
       </div>
     </div>
