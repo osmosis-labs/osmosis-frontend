@@ -1,6 +1,6 @@
 import Image from "next/image";
 import classNames from "classnames";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { AssetCell as Cell } from "./types";
 import { useStore } from "../../../stores";
@@ -61,8 +61,9 @@ const TransferButton: FunctionComponent<{
   disabled?: boolean;
   label: string;
   action: () => void;
-}> = ({ externalUrl, disabled, label, action }) =>
-  externalUrl ? (
+}> = ({ externalUrl, disabled, label, action }) => {
+  const [isHovering, setIsHovering] = useState(false);
+  return externalUrl ? (
     <a
       className={classNames(
         "flex items-center gap-1 pt-2 lg:pt-0 subtitle1 shrink-0 text-wosmongton-200",
@@ -88,16 +89,28 @@ const TransferButton: FunctionComponent<{
     </a>
   ) : (
     <button
-      className="flex items-center gap-1 text-wosmongton-200 subtitle1"
+      className="flex items-center gap-1 text-wosmongton-200 hover:text-rust-300 transition-colors subtitle1"
       onClick={action}
       disabled={disabled}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
     >
       <span>{label}</span>
-      <Image
-        alt="chevron"
-        src="/icons/chevron-right.svg"
-        height={13}
-        width={13}
-      />
+      {isHovering ? (
+        <Image
+          alt="chevron"
+          src="/icons/chevron-right-rust.svg"
+          height={13}
+          width={13}
+        />
+      ) : (
+        <Image
+          alt="chevron"
+          src="/icons/chevron-right.svg"
+          height={13}
+          width={13}
+        />
+      )}
     </button>
   );
+};

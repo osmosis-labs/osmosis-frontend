@@ -119,6 +119,8 @@
     "earnSwapFeesCaption": "Convert your tokens into shares and earn on every swap.",
     "APR": "APR",
     "bondLiquidity": "Bond liquidity",
+    "bondLiquidityUnavailable": "Bond liquidity (unavailable)",
+    "checkBackForBondingRewards": "Check back for bonding rewards",
     "bondLiquidityCaption": "Lock up your shares for longer durations to earn higher APRs.",
     "bondSuperfluidLiquidityCaption": "Go superfluid for maximum rewards.",
     "bondShares": "Bond Shares",
@@ -145,12 +147,12 @@
   },
   "removeLiquidity": {
     "title": "Remove Liquidity",
-    "titleInPool": "Remove liquidity from {poolId}",
+    "titleInPool": "Remove liquidity from pool #{poolId}",
     "sharesAmount": "{shares} shares"
   },
   "addLiquidity": {
     "title": "Add Liquidity",
-    "titleInPool": "Add liquidity to {poolId}",
+    "titleInPool": "Add liquidity to pool #{poolId}",
     "allAssets": "All assets",
     "singleAsset": "Single asset",
     "available": "Available",
@@ -158,7 +160,7 @@
   },
   "lockToken": {
     "title": "Bond LP Shares",
-    "titleInPool": "Lock shares in {poolId}",
+    "titleInPool": "Lock shares in pool #{poolId}",
     "selectPeriod": "Select unbonding period",
     "availableToken": "Available",
     "amountToBond": "Amount to bond",
@@ -238,6 +240,7 @@
         "insufficientFee": "Insufficient Fee",
         "insufficientBal": "Insufficient Balance"
       },
+      "wrapNativeLink": "Convert {fromDenom} to {toDenom} on {platformName}",
       "waitTime": "{minutes} minutes"
     },
     "selectAssetSource": {
@@ -296,9 +299,9 @@
       "poolId": "Pool #{id}"
     },
     "sort": {
-      "SORT": "SORT BY",
-      "SORTMobile": "SORT",
-      "mobileMenu": "Sort By"
+      "SORT": "Sort by",
+      "SORTMobile": "Sort",
+      "mobileMenu": "Sort by"
     },
     "MAX": "MAX",
     "searchTokens": "Search tokens"

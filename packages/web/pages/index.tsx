@@ -144,7 +144,7 @@ const Home: NextPage = observer(function () {
           pointerEvents="none"
           viewBox="0 0 1300 900"
           height="900"
-          preserveAspectRatio={"xMidYMid slice"}
+          preserveAspectRatio="xMidYMid slice"
         >
           <g>
             {!IS_FRONTIER && (
@@ -152,18 +152,9 @@ const Home: NextPage = observer(function () {
                 lowResXlinkHref="/images/osmosis-home-bg-low.png"
                 xlinkHref="/images/osmosis-home-bg.png"
                 x="56"
-                y="97"
+                y="220"
                 width="578.7462"
                 height="725.6817"
-              />
-            )}
-            {!IS_FRONTIER && (
-              <rect
-                x="-3000"
-                y="778"
-                width="8660"
-                height="244"
-                fill="#120644"
               />
             )}
             <ProgressiveSvgImage
@@ -178,7 +169,7 @@ const Home: NextPage = observer(function () {
                   : "/images/osmosis-home-fg.png"
               }
               x={IS_FRONTIER ? "-100" : "61"}
-              y={IS_FRONTIER ? "100" : "602"}
+              y={IS_FRONTIER ? "100" : "682"}
               width={IS_FRONTIER ? "800" : "448.8865"}
               height={IS_FRONTIER ? "800" : "285.1699"}
             />

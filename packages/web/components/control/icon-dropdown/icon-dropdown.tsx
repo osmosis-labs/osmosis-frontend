@@ -30,8 +30,10 @@ export const IconDropdown: FunctionComponent<IconDropdownProps> = observer(
       <div className="relative">
         <button
           className={classNames(
-            "flex items-center border rounded-xl bg-osmoverse-900 transition-colors",
-            dropdownOpen ? "border-osmoverse-200" : "border-osmoverse-600"
+            "flex items-center border rounded-xl bg-osmoverse-900 hover:bg-osmoverse-700 transition-colors",
+            dropdownOpen
+              ? "border-osmoverse-200"
+              : "border-osmoverse-600 hover:border-osmoverse-700"
           )}
           onClick={(e) => {
             e.stopPropagation();

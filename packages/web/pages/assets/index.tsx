@@ -240,7 +240,7 @@ const AssetsOverview: FunctionComponent = observer(() => {
   );
 
   return (
-    <div className="w-full flex md:flex-col items-center md:items-start gap-[100px] lg:gap-5 md:gap-3 bg-osmoverse-800 md:bg-osmoverse-1000 rounded-[32px] px-20 lg:px-10 md:px-4 py-10 md:py-5">
+    <div className="w-full flex md:flex-col items-center md:items-start gap-[100px] lg:gap-5 md:gap-3 bg-osmoverse-1000 rounded-[32px] px-20 lg:px-10 md:px-4 py-10 md:py-5">
       <Metric
         label={t("assets.totalAssets")}
         value={totalAssetsValue.toString()}

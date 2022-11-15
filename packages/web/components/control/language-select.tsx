@@ -31,7 +31,7 @@ export const LanguageSelect: FunctionComponent<LanguageSelectProps> = observer(
     return (
       <IconDropdown
         onSelect={onSelect}
-        options={options}
+        options={options.filter((option) => option.value !== currentLanguage)}
         currentOption={currentOption ?? languageSetting.defaultLanguage}
         title={t("settings.titleLanguage")}
       />

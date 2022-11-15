@@ -31,7 +31,7 @@ export const SortMenu: FunctionComponent<Props> = ({
   return (
     <div
       className={classNames(
-        "relative shrink-0 px-6 py-2 cursor-pointer",
+        "relative shrink-0 px-6 py-2 cursor-pointer transition-colors",
         dropdownOpen
           ? "rounded-t-xl border-t border-x border-osmoverse-600"
           : "border rounded-xl border-osmoverse-500"

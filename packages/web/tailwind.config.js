@@ -78,6 +78,7 @@ module.exports = {
       },
       rust: {
         200: "#F8C2B0",
+        300: "#F5A68C",
         500: "#FA825D",
         700: "#C6451C",
         800: "#B03A20",
@@ -91,6 +92,7 @@ module.exports = {
       missionError: "#EF3456",
       superfluid: "#8A86FF",
       transparent: "transparent",
+      black: "black",
     },
     fontSize: {
       xxs: "0.5rem",

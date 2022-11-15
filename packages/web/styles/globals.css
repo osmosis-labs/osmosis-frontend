@@ -10,6 +10,9 @@
     font-family: Inter, ui-sans-serif, system-ui;
     @apply text-white-full;
   }
+  body {
+    @apply bg-osmoverse-900;
+  }
 
   h1 {
     @apply text-h1 font-h1;
@@ -65,6 +68,9 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
+  input {
+    @apply caret-osmoverse-100;
+  }
 
   table {
     @apply md:w-screen table-auto border-collapse text-left;
@@ -75,19 +81,19 @@
   }
 
   thead > tr > th:first-child {
-    @apply rounded-l-full md:rounded-none pl-8 pr-3 py-3;
+    @apply rounded-l-full md:rounded-none pl-10 pr-3 py-[18px];
   }
 
   thead > tr > th {
-    @apply p-3 font-body2;
+    @apply p-3 py-[18px] font-body2;
   }
 
   thead > tr > th:last-child {
-    @apply rounded-r-full md:rounded-none pl-3 pr-8 lg:pr-4 py-3;
+    @apply rounded-r-full md:rounded-none pl-3 pr-10 lg:pr-4 py-[18px];
   }
 
   tbody > tr > td:first-child {
-    @apply pl-4 pr-3 py-3;
+    @apply pl-10 pr-3 py-3;
   }
 
   tbody > tr > td {
@@ -95,7 +101,7 @@
   }
 
   tbody > tr > td:last-child {
-    @apply pl-3 pr-8 lg:pr-4 py-2;
+    @apply pl-3 pr-10 lg:pr-4 py-2;
   }
 
   .grid-cards {
@@ -110,32 +116,6 @@
   .no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
-  }
-
-  /* Customize website's scrollbar like Mac OS
-Not supported in Firefox and IE */
-
-  /* total width */
-  body::-webkit-scrollbar {
-    background-color: #fff;
-    width: 16px;
-  }
-
-  /* background of the scrollbar except button or resizer */
-  body::-webkit-scrollbar-track {
-    background-color: #fff;
-  }
-
-  /* scrollbar itself */
-  body::-webkit-scrollbar-thumb {
-    background-color: #babac0;
-    border-radius: 16px;
-    border: 4px solid #fff;
-  }
-
-  /* set button(top and bottom of the scrollbar) */
-  body::-webkit-scrollbar-button {
-    display: none;
   }
 
   /** SLIDER STYLE */
