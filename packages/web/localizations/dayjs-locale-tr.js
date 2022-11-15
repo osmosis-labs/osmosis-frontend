@@ -25,9 +25,7 @@
           "_"
         ),
       monthsShort:
-        "oca._şub._mar_nis._may_haz_tem._ağu_eyl._eki._kas._ara.".split(
-          "_"
-        ),
+        "oca._şub._mar_nis._may_haz_tem._ağu_eyl._eki._kas._ara.".split("_"),
       weekStart: 1,
       yearStart: 4,
       formats: {

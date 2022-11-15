@@ -360,13 +360,6 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: "sifchain-1",
-    sourceChannelId: "channel-47",
-    destChannelId: "channel-17",
-    coinMinimalDenom: "rowan",
-    isVerified: true,
-  },
-  {
     counterpartyChainId: "laozi-mainnet",
     sourceChannelId: "channel-148",
     destChannelId: "channel-83",
@@ -473,6 +466,12 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-16",
     coinMinimalDenom: "utick",
     isUnstable: true,
+  },
+  {
+    counterpartyChainId: "sifchain-1",
+    sourceChannelId: "channel-47",
+    destChannelId: "channel-17",
+    coinMinimalDenom: "rowan",
   },
   {
     counterpartyChainId: "shentu-2.2",
