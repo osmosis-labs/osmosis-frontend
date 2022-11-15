@@ -286,7 +286,7 @@
       "less": "숨기기"
     },
     "table": {
-      "poolId": id}"
+      "poolId": "수영장 {id}"
     },
     "sort": {
       "SORT": "정렬",
