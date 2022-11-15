@@ -9,7 +9,7 @@ import type {
   OriginBridgeInfo,
   SourceChainKey,
 } from "../integrations/bridge-info";
-import type { SourceChain } from "../integrations/axelar";
+import type { SourceChain } from "../integrations";
 import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useTranslation } from "react-multi-lang";
