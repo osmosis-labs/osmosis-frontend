@@ -236,7 +236,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
                 : undefined;
 
             superfluid = {
-              duration: this.poolDetails.longestDuration,
+              duration: sfsDuration,
               apr: this.superfluidPool.superfluidApr,
               commission: delegation?.validatorCommission,
               delegated: !this.superfluidPool.superfluid.upgradeableLpLockIds
