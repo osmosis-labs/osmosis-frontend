@@ -26,8 +26,7 @@ export interface AxelarBridgeConfig {
   };
 }
 
-
-/** Maps Axelar chain id agruments => source chain ids. 
+/** Maps Axelar chain id agruments => source chain ids.
  *  SourceChain (IDs) are used in ./source-chain-configs.ts::SourceChainConfigs{} as <asset>::<network>::id values.
  *  Axelar Chain IDs are accepted as arguments in Axelar's APIs.
  *  Mainnet Docs: https://docs.axelar.dev/dev/build/chain-names/mainnet
@@ -38,30 +37,28 @@ export const AxelarChainIds_SourceChainMap: {
   [axelarChainIds: string]: SourceChain;
 } = IS_TESTNET
   ? {
-      "aurora": "Aurora Testnet",
-      "Avalanche": "Avalanche Fuji Testnet",
-      "binance": "BSC Testnet",
+      aurora: "Aurora Testnet",
+      Avalanche: "Avalanche Fuji Testnet",
+      binance: "BSC Testnet",
       "ethereum-2": "Goerli Testnet",
-      "Fantom": "Fantom Testnet",
-      "Moonbeam": "Moonbase Alpha",
-      "Polygon": "Mumbai"
+      Fantom: "Fantom Testnet",
+      Moonbeam: "Moonbase Alpha",
+      Polygon: "Mumbai",
     }
   : {
-      "Avalanche": "Avalanche",
-      "binance": "Binance Smart Chain",
-      "Ethereum": "Ethereum",
-      "Fantom": "Fantom",
-      "Moonbeam": "Moonbeam",
-      "Polygon": "Polygon"
+      Avalanche: "Avalanche",
+      binance: "Binance Smart Chain",
+      Ethereum: "Ethereum",
+      Fantom: "Fantom",
+      Moonbeam: "Moonbeam",
+      Polygon: "Polygon",
     };
 
-
 export type SourceChainConfig = {
-
   /** Source Chain identifier. */
   id: SourceChain;
 
-  /** Address of origin ERC20 token for that origin chain. Leave blank to 
+  /** Address of origin ERC20 token for that origin chain. Leave blank to
    *  prefer native ETH currency if `id` is not a Cosmos chain in `ChainInfo`.
    */
   erc20ContractAddress?: string;

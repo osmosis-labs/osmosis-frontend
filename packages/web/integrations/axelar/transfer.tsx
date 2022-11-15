@@ -32,10 +32,7 @@ import {
   AxelarChainIds_SourceChainMap,
   waitBySourceChain,
 } from ".";
-import {
-  SourceChain,
-  EthClientChainIds_SourceChainMap
-} from "../bridge-info";
+import { SourceChain, EthClientChainIds_SourceChainMap } from "../bridge-info";
 import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
 import { EventName } from "../../config/user-analytics-v2";
 import { useTranslation } from "react-multi-lang";
@@ -80,11 +77,11 @@ const AxelarTransfer: FunctionComponent<
 
     // notify eth wallet of prev selected preferred chain
     useEffect(() => {
-
-      let ethClientChainName: string | undefined = getKeyByValue(
-        EthClientChainIds_SourceChainMap,
-        selectedSourceChainKey
-      ) ?? selectedSourceChainKey
+      let ethClientChainName: string | undefined =
+        getKeyByValue(
+          EthClientChainIds_SourceChainMap,
+          selectedSourceChainKey
+        ) ?? selectedSourceChainKey;
 
       let hexChainId: string | undefined = getKeyByValue(
         ChainNames,
@@ -99,11 +96,9 @@ const AxelarTransfer: FunctionComponent<
     }, [selectedSourceChainKey, ethWalletClient]);
 
     /** Chain key that Axelar accepts in APIs. */
-    const selectedSourceChainAxelarKey = getKeyByValue(
-      AxelarChainIds_SourceChainMap,
-      selectedSourceChainKey
-    )
-    ?? selectedSourceChainKey;
+    const selectedSourceChainAxelarKey =
+      getKeyByValue(AxelarChainIds_SourceChainMap, selectedSourceChainKey) ??
+      selectedSourceChainKey;
 
     const sourceChainConfig = sourceChains.find(
       ({ id }) => id === selectedSourceChainKey

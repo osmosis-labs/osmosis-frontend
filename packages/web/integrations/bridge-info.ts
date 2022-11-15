@@ -27,7 +27,6 @@ export type SourceChain =
 /** String literal identifiers for a source chain. */
 export type SourceChainKey = SourceChain;
 
-
 /** Maps eth client chainIDs => source chain ids.
  *
  *  ethClientChainIDs must be specified in ../ethereuem/types.ts::ChainNames{}
@@ -43,7 +42,7 @@ export const EthClientChainIds_SourceChainMap: {
   "Goerli Test Network": "Goerli Testnet",
   "Fantom Testnet": "Fantom Testnet",
   "Moonbase Alpha": "Moonbase Alpha",
-  "Mumbai": "Mumbai",
+  Mumbai: "Mumbai",
   "Avalanche C-Chain": "Avalanche",
   "Binance Smart Chain Mainnet": "Binance Smart Chain",
   "Ethereum Main Network": "Ethereum",
@@ -51,7 +50,6 @@ export const EthClientChainIds_SourceChainMap: {
   "Moonbeam Mainnet": "Moonbeam",
   "Polygon Mainnet": "Polygon",
 };
-
 
 // Fiat on/off ramps
 

@@ -10,9 +10,7 @@ export const SourceChainConfigs: {
 } = {
   usdc: {
     ethereum: {
-      id: IS_TESTNET
-        ? ("Goerli Testnet" as const)
-        : ("Ethereum" as const),
+      id: IS_TESTNET ? ("Goerli Testnet" as const) : ("Ethereum" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x254d06f33bDc5b8ee05b2ea472107E300226659A"
         : "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // test: 'aUSDC' on metamask/etherscan
@@ -46,9 +44,7 @@ export const SourceChainConfigs: {
       transferFeeMinAmount: IS_TESTNET ? "150000" : "1500000",
     },
     moonbeam: {
-      id: IS_TESTNET
-        ? ("Moonbase Alpha" as const)
-        : ("Moonbeam" as const),
+      id: IS_TESTNET ? ("Moonbase Alpha" as const) : ("Moonbeam" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0xD1633F7Fb3d716643125d6415d4177bC36b7186b"
         : "0xCa01a1D0993565291051daFF390892518ACfAD3A",
@@ -66,21 +62,19 @@ export const SourceChainConfigs: {
   },
   weth: {
     ethereum: {
-      id: IS_TESTNET
-        ? ("Goerli Testnet" as const)
-        : ("Ethereum" as const),
+      id: IS_TESTNET ? ("Goerli Testnet" as const) : ("Ethereum" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"
         : "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: IS_TESTNET ? "100000000000000" : "20400000000000000",
+      transferFeeMinAmount: IS_TESTNET
+        ? "100000000000000"
+        : "20400000000000000",
     },
   },
   wglmr: {
     moonbeam: {
-      id: IS_TESTNET
-        ? ("Moonbase Alpha" as const)
-        : ("Moonbeam" as const),
+      id: IS_TESTNET ? ("Moonbase Alpha" as const) : ("Moonbeam" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x1436aE0dF0A8663F18c0Ec51d7e2E46591730715"
         : "0xAcc15dC74880C9944775448304B263D191c6077F",

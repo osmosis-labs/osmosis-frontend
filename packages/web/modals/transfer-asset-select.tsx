@@ -50,7 +50,7 @@ export const TransferAssetSelectModal: FunctionComponent<
               token: {
                 currency: { coinDenom },
               },
-            }) => coinDenom === (IS_TESTNET ? "aUSDC" : "USDC"),
+            }) => coinDenom === (IS_TESTNET ? "aUSDC" : "USDC")
           )?.token.denom) || tokens[0].token.denom
   );
   const [selectedSourceChainKey, setSelectedSourceChainKey] =
