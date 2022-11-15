@@ -63,6 +63,7 @@ const TransferButton: FunctionComponent<{
   action: () => void;
 }> = ({ externalUrl, disabled, label, action }) => {
   const [isHovering, setIsHovering] = useState(false);
+  console.log({ disabled });
   return externalUrl ? (
     <a
       className={classNames(
@@ -89,7 +90,7 @@ const TransferButton: FunctionComponent<{
     </a>
   ) : (
     <button
-      className="flex items-center gap-1 text-wosmongton-200 hover:text-rust-300 transition-colors subtitle1"
+      className="flex items-center gap-1 text-wosmongton-200 hover:text-rust-300 transition-colors subtitle1 disabled:opacity-30 hover:disabled:text-wosmongton-200"
       onClick={action}
       disabled={disabled}
       onMouseEnter={() => setIsHovering(true)}
