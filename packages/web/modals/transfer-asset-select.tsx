@@ -9,10 +9,12 @@ import type {
   OriginBridgeInfo,
   SourceChainKey,
 } from "../integrations/bridge-info";
-import type { SourceChain } from "../integrations/axelar";
+import type { SourceChain } from "../integrations/bridge-info";
 import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useTranslation } from "react-multi-lang";
+
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
 /** Intermediate step to allow a user to select & config an asset before deposit/withdraw. */
 export const TransferAssetSelectModal: FunctionComponent<
@@ -48,7 +50,7 @@ export const TransferAssetSelectModal: FunctionComponent<
               token: {
                 currency: { coinDenom },
               },
-            }) => coinDenom === "USDC"
+            }) => coinDenom === (IS_TESTNET ? "aUSDC" : "USDC"),
           )?.token.denom) || tokens[0].token.denom
   );
   const [selectedSourceChainKey, setSelectedSourceChainKey] =
