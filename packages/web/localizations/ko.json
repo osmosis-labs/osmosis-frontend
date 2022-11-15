@@ -90,7 +90,7 @@
       "buttonNext": "다음",
       "buttonBack": "이전",
       "buttonAddToken": "새로운 토큰 추가히기",
-      "available": "Available",
+      "available": "사용 가능",
       "amount": "수량",
       "token": "토큰",
       "swapFee": "교환 수수료 설정",
@@ -129,7 +129,7 @@
     "bonded": "예치된 자산",
     "showDetails": "자세히 보기",
     "collapseDetails": "닫기",
-    "sharesAvailableIn": "available in",
+    "sharesAvailableIn": "가능",
     "unbonding": "에치 해제중",
     "superfluidEarnMore": "Superfluid 스테이킹을 하고 {rate}를 더 받으세요",
     "incentives": "인센티브",
@@ -146,7 +146,7 @@
   "removeLiquidity": {
     "title": "유동성 해제하기",
     "titleInPool": "{poolId}풀에서 유동성을 제거합니다.",
-    "sharesAmount": "{shares} shares"
+    "sharesAmount": "{shares}주"
   },
   "addLiquidity": {
     "title": "유동성 추가",
@@ -163,7 +163,7 @@
     "availableToken": "입력 가능 수량",
     "amountToBond": "예치할 수량",
     "superfluidStake": "Superfluid 스테이킹",
-    "bondingRequirement": "{numDays} day bonding requirement",
+    "bondingRequirement": "{numDays}일 본딩 요건",
     "buttonNext": "다음",
     "buttonBond": "예치하기",
     "buttonBondStake": "예치 & 스테이킹"
@@ -294,7 +294,7 @@
       "mobileMenu": "정렬"
     },
     "MAX": "MAX",
-    "searchTokens": "Search tokens"
+    "searchTokens": "토큰 검색"
   },
   "menu": {
     "swap": "교환",
@@ -348,7 +348,7 @@
     "walletConnect": "WalletConnect",
     "mobile": "Keplr Mobile"
   },
-  "connectDisclaimer": "By connecting a wallet, you acknowledge that you have read and understand the Osmosis",
+  "connectDisclaimer": "지갑을 연결함으로써 귀하는 Osmosis를 읽고 이해했음을 인정합니다",
   "protocolDisclaimer": "프로토콜 면책 조항",
   "Transaction Failed": "전송 실패",
   "Transaction Successful": "전송 성공",
