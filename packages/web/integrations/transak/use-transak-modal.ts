@@ -36,7 +36,7 @@ export function useTransakModal(
           // Examples of some of the customization parameters you can pass
           defaultCryptoCurrency: "OSMO", // Example 'ETH'
           walletAddress: account.bech32Address, // Your customer's wallet address
-          themeColor: "#462ADF", // App theme color // wosmongton-700
+          themeColor: "6A67EA", // App theme color // wosmongton-700
           fiatCurrency: "USD", // If you want to limit fiat selectison eg 'USD'
           email: "", // Your customer's email address
           redirectURL: "",
