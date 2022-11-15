@@ -63,7 +63,6 @@ const TransferButton: FunctionComponent<{
   action: () => void;
 }> = ({ externalUrl, disabled, label, action }) => {
   const [isHovering, setIsHovering] = useState(false);
-  console.log({ disabled });
   return externalUrl ? (
     <a
       className={classNames(
