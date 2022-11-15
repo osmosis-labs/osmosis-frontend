@@ -31,7 +31,7 @@ export function useTransakModal(
             ? "1cb6bc52-acd6-4633-ba31-195843d0c69f" // STAGING API Key
             : "e844549d-f35c-4b3c-9269-48841ad8a561", // PROD API Key
           environment: IS_TESTNET ? "STAGING" : "PRODUCTION", // STAGING/PRODUCTION
-          widgetHeight: "625px",
+          widgetHeight: "635px",
           widgetWidth: "500px",
           // Examples of some of the customization parameters you can pass
           defaultCryptoCurrency: "OSMO", // Example 'ETH'
