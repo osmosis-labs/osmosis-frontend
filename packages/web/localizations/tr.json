@@ -157,7 +157,8 @@
     "allAssets": "Tüm varlıklar",
     "singleAsset": "Tek varlık",
     "available": "Kullanılabilir",
-    "autoswapCaption": "Tek bir varlıkla likidite eklemek için otomatik takası kullanın."
+    "autoswapCaption": "Tek bir varlıkla likidite eklemek için otomatik takası kullanın.",
+    "stablecoinWarning": "{mechanism} destekli bir stabilcoin olan {denom}'a likidite ekliyorsunuz."
   },
   "lockToken": {
     "title": "LP Hisselerini Bağla",
@@ -200,7 +201,7 @@
     },
     "poolCards": {
       "APR": "APR",
-      "FeeAPY": "Fee APY",
+      "FeeAPY": "APY ücreti",
       "liquidity": "Havuz Likiditesi",
       "bonded": "Bağlı",
       "myLiquidity": "Likiditem"
@@ -247,7 +248,7 @@
     "selectAssetSource": {
       "titleWithdraw": "Adrese çek",
       "titleDeposit": "Adresten yatır",
-      "next": "Next",
+      "next": "Sonraki",
       "installWallet": "{walletName} yükle"
     },
     "table": {
