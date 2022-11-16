@@ -333,7 +333,7 @@ const chainInfos = (
           coinMinimalDenom: "ungm",
           coinDecimals: 6,
           //coinGeckoId: "e-money",
-          coinGeckoId: "ungm",
+          coinGeckoId: "pool:ungm",
           coinImageUrl: "/tokens/ngm.png",
           isStakeCurrency: true,
           isFeeCurrency: true,

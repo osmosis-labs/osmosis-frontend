@@ -322,7 +322,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
   },
   {
     alternativeCoinId: "pool:uband",
-    poolId: "613",
+    poolId: "626",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-148" }],
       "uband"
