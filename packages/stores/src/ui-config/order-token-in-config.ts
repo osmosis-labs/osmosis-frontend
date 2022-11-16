@@ -460,11 +460,15 @@ export class ObservableOrderTokenInConfig extends AmountConfig {
 
   @computed
   get priceChangePercentage() {
-    const { amount } = this.expectedSwapResult;
+    const { effectivePriceOutOverIn } = this.expectedSwapResult;
     const price = Number(this.price);
-    const marketPrice = Number(amount.toDec().toString());
+    const marketPrice = Number(effectivePriceOutOverIn.toDec().toString());
     if (price === 0) return 0;
-    return ((price - marketPrice) / price) * 100;
+    return (
+      ((Number(price.toPrecision(6)) - Number(marketPrice.toPrecision(6))) /
+        price) *
+      100
+    );
   }
 
   get largerRateEnabled(): boolean {

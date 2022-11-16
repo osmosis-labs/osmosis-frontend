@@ -227,7 +227,7 @@ export default function OrderHistory({
             },
           });
         });
-        setOrders(allOrders);
+        setOrders(allOrders.sort((a, b) => b.id - a.id));
       }
     };
 
