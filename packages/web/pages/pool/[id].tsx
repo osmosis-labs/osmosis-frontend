@@ -290,7 +290,7 @@ const Pool: FunctionComponent = observer(() => {
   const level2Disabled = bondableDurations.length === 0;
 
   return (
-    <main className="max-w-container m-auto flex flex-col gap-8 md:gap-4 bg-osmoverse-900 min-h-screen p-8 md:p-4">
+    <main className="max-w-container m-auto flex flex-col gap-8 md:gap-4 bg-osmoverse-900 min-h-screen px-8 py-4 md:p-4">
       <Head>
         <title>
           {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
@@ -627,11 +627,11 @@ const Pool: FunctionComponent = observer(() => {
                 <div className="flex flex-col gap-3">
                   <div className="flex md:flex-col items-baseline flex-wrap gap-4 md:gap-3">
                     <LevelBadge level={2} disabled={level2Disabled} />
-                    <h5 className="md:text-h6 md:font-h6">
+                    <h6>
                       {level2Disabled
                         ? t("pool.bondLiquidityUnavailable")
                         : t("pool.bondLiquidity")}
-                    </h5>
+                    </h6>
                   </div>
                   <span className="body2 text-osmoverse-200">
                     {t("pool.bondLiquidityCaption")}
