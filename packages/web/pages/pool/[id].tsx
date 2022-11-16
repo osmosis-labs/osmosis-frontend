@@ -655,7 +655,7 @@ const Pool: FunctionComponent = observer(() => {
                   onUnbond={() => onUnlockTokens(bondableDuration.duration)}
                   onGoSuperfluid={() => setShowSuperfluidValidatorsModal(true)}
                   splashImageSrc={
-                    poolDetailConfig
+                    poolDetailConfig && poolDetailConfig.isIncentivized
                       ? poolDetailConfig.lockableDurations.length > 0 &&
                         poolDetailConfig.lockableDurations[0].asDays() ===
                           bondableDuration.duration.asDays()
