@@ -51,13 +51,13 @@ export const AssetBreakdownChart: FunctionComponent<{
                 {assetPercentages[index].toString()}%
               </span>
             </div>
-            <h5 className="md:subtitle2 text-osmoverse-100">
+            <h6 className="md:subtitle2 text-osmoverse-100">
               {amount.maxDecimals(0).hideDenom(true).toString()}
-            </h5>
+            </h6>
           </div>
           <div
             className={classNames(
-              "md:hidden flex w-full h-3",
+              "md:hidden flex w-full h-2",
               colorCycle[index % colorCycle.length],
               {
                 "rounded-l-full": index === 0,

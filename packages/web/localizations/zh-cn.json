@@ -125,7 +125,6 @@
     "bondSuperfluidLiquidityCaption": "去超流质押获得最大收益.",
     "bondShares": "绑定份额",
     "amountDaysUnbonding": "{numDays} 天解绑期",
-    "shares": "份额",
     "unbonded": "已解绑",
     "unbond": "解绑",
     "bonded": "绑定",
