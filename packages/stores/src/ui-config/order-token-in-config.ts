@@ -433,10 +433,9 @@ export class ObservableOrderTokenInConfig extends AmountConfig {
 
   @action
   setCurrentPrice() {
-    const { amount } = this.expectedSwapResult;
+    const { effectivePriceOutOverIn } = this.expectedSwapResult;
     this.setPrice(
-      amount
-        .hideDenom(true)
+      effectivePriceOutOverIn
         .trim(true)
         .maxDecimals(6)
         .toString()
