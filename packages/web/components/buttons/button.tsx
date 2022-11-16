@@ -47,9 +47,9 @@ export const Button: FunctionComponent<
             {children}
           </span>
         ) : (
-          <h6 className="mx-auto md:text-subtitle1 md:font-subtitle1">
+          <span className="mx-auto text-subtitle1 font-subtitle1">
             {children}
-          </h6>
+          </span>
         )
       ) : (
         children

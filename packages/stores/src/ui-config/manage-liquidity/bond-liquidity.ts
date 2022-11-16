@@ -2,7 +2,13 @@ import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
-import { CoinPretty, RatePretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  RatePretty,
+  Dec,
+  PricePretty,
+  IntPretty,
+} from "@keplr-wallet/unit";
 import { AppCurrency } from "@keplr-wallet/types";
 import {
   ObservableQueryPoolDetails,
@@ -19,6 +25,7 @@ import { UserConfig } from "../user-config";
 export type BondableDuration = {
   duration: Duration;
   userShares: CoinPretty;
+  userShareValue: PricePretty;
   userUnlockingShares?: { shares: CoinPretty; endTime?: Date };
   aggregateApr: RatePretty;
   swapFeeApr: RatePretty;
@@ -142,6 +149,12 @@ export class ObservableBondLiquidityConfig extends UserConfig {
             this.poolDetails.poolShareCurrency,
             curDuration
           ).amount;
+          const totalShares = this.poolDetails.pool.totalShare;
+          const poolTvl = this.poolDetails.totalValueLocked;
+          const userShareValue = poolTvl.mul(
+            new IntPretty(lockedUserShares.quo(totalShares))
+          );
+
           const unlockingUserShares =
             queryLockedCoin.getUnlockingCoinWithDuration(
               this.poolDetails.poolShareCurrency,
@@ -261,6 +274,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           return {
             duration: curDuration,
             userShares: lockedUserShares,
+            userShareValue,
             userUnlockingShares,
             aggregateApr,
             swapFeeApr,
