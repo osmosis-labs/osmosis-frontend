@@ -32,8 +32,7 @@ export const TempBanner: FunctionComponent<{
       className={classNames(
         "fixed flex place-content-between right-3 top-3 text-white-high md:w-[330px] w-[596px] rounded-2xl",
         {
-          "border border-enabledGold": !IS_FRONTIER,
-          "bg-background": !IS_FRONTIER,
+          "bg-osmoverse-900": !IS_FRONTIER,
         },
         IS_FRONTIER ? "py-3" : "py-2"
       )}
@@ -56,11 +55,7 @@ export const TempBanner: FunctionComponent<{
           <div className="pt-1.5 mx-2 shrink-0">
             <Image
               alt="info"
-              src={
-                IS_FRONTIER
-                  ? "/icons/info-white-emphasis.svg"
-                  : "/icons/info-secondary-200.svg"
-              }
+              src="/icons/info-white-emphasis.svg"
               height={20}
               width={20}
             />

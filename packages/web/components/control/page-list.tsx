@@ -57,7 +57,7 @@ export const PageList: FunctionComponent<Props> = ({
         <div className={isEditingText ? "pt-2.5 pr-2" : undefined}>
           <Image
             alt="left"
-            src="/icons/chevron-left-secondary.svg"
+            src="/icons/chevron-left.svg"
             height={18}
             width={18}
             onClick={() =>
@@ -73,7 +73,7 @@ export const PageList: FunctionComponent<Props> = ({
       {editField && isEditingText ? (
         <input
           ref={inputElem}
-          className="leading-tight border border-secondary-200 rounded-lg w-fit appearance-none bg-transparent text-center py-2"
+          className="leading-tight border border-wosmongton-200 rounded-lg w-fit appearance-none bg-transparent text-center py-2"
           type="text"
           size={4}
           value={currentValue}

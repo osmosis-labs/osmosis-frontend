@@ -114,6 +114,18 @@ const Home: NextPage = observer(function () {
                 break;
               }
             }
+
+            // only pools with at least 10,000 JUNO
+            if (
+              "originChainId" in asset.amount.currency &&
+              asset.amount.currency.coinMinimalDenom ===
+                "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED"
+            ) {
+              if (asset.amount.toDec().gt(new Dec(10_000))) {
+                hasEnoughAssets = true;
+                break;
+              }
+            }
           }
 
           if (hasEnoughAssets) {
@@ -131,54 +143,41 @@ const Home: NextPage = observer(function () {
   });
 
   return (
-    <main className="relative bg-background h-screen">
+    <main className="relative bg-osmoverse-900 h-full">
       <div className="absolute w-full h-full bg-home-bg-pattern bg-repeat-x bg-cover">
         <svg
           className="absolute w-full h-full lg:hidden"
           pointerEvents="none"
           viewBox="0 0 1300 900"
           height="900"
-          preserveAspectRatio={"xMidYMid slice"}
+          preserveAspectRatio="xMidYMid slice"
         >
           <g>
-            {/* {!IS_FRONTIER && (
+            {!IS_FRONTIER && (
               <ProgressiveSvgImage
                 lowResXlinkHref="/images/osmosis-home-bg-low.png"
                 xlinkHref="/images/osmosis-home-bg.png"
                 x="56"
-                y="97"
+                y="220"
                 width="578.7462"
                 height="725.6817"
               />
             )}
-            {!IS_FRONTIER && (
-              <rect
-                x="-3000"
-                y="778"
-                width="8660"
-                height="244"
-                fill="#120644"
-              />
-            )} */}
             <ProgressiveSvgImage
               lowResXlinkHref={
                 IS_FRONTIER
-                  ? "/images/halloween2022.png"
-                  : "/images/halloween2022.png"
+                  ? "/images/osmosis-cowboy-woz-low.png"
+                  : "/images/osmosis-home-fg-low.png"
               }
               xlinkHref={
                 IS_FRONTIER
-                  ? "/images/halloween2022.png"
-                  : "/images/halloween2022.png"
+                  ? "/images/osmosis-cowboy-woz.png"
+                  : "/images/osmosis-home-fg.png"
               }
-              // x={IS_FRONTIER ? "-100" : "61"}
-              // y={IS_FRONTIER ? "100" : "602"}
-              // width={IS_FRONTIER ? "800" : "448.8865"}
-              // height={IS_FRONTIER ? "800" : "285.1699"}
-              x={"50"}
-              y={"0"}
-              width={"1000"}
-              height={"1000"}
+              x={IS_FRONTIER ? "-100" : "61"}
+              y={IS_FRONTIER ? "100" : "682"}
+              width={IS_FRONTIER ? "800" : "448.8865"}
+              height={IS_FRONTIER ? "800" : "285.1699"}
             />
           </g>
         </svg>
@@ -198,7 +197,7 @@ const Home: NextPage = observer(function () {
               tradeType !== "Swap" ? "mt-mobile-header" : ""
             )}
           >
-            <div className="relative rounded-[18px] flex flex-row gap-8 bg-cardInner px-5 md:px-3 py-4">
+            <div className="relative rounded-[18px] flex flex-row gap-8 bg-osmoverse-800 px-5 md:px-3 py-4">
               <div
                 className="flex-auto text-center font-bold px-4 py-2 cursor-pointer mr-3"
                 onClick={() => setTradeType("Swap")}

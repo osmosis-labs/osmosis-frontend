@@ -1,8 +1,10 @@
 import Image from "next/image";
 import classNames from "classnames";
-import { FunctionComponent } from "react";
-import { Button } from "../../../components/buttons/button";
+import { FunctionComponent, useState } from "react";
+import { WalletStatus } from "@keplr-wallet/stores";
 import { AssetCell as Cell } from "./types";
+import { useStore } from "../../../stores";
+import { useTranslation } from "react-multi-lang";
 
 export const TransferButtonCell: FunctionComponent<
   {
@@ -19,35 +21,52 @@ export const TransferButtonCell: FunctionComponent<
   isUnstable,
   onWithdraw,
   onDeposit,
-}) =>
-  type === "withdraw" ? (
+  onBuyOsmo,
+}) => {
+  const t = useTranslation();
+  const { chainStore, accountStore } = useStore();
+
+  const account = accountStore.getAccount(chainStore.osmosis.chainId);
+
+  return type === "withdraw" ? (
     chainId && coinDenom && onWithdraw ? (
       <TransferButton
         disabled={isUnstable}
         externalUrl={withdrawUrlOverride}
-        label="Withdraw"
+        label={t("assets.table.withdrawButton")}
         action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
       />
     ) : null
-  ) : chainId && coinDenom && onDeposit ? (
+  ) : chainId && coinDenom && (onDeposit || onBuyOsmo) ? (
     <TransferButton
-      disabled={isUnstable}
+      disabled={
+        isUnstable ||
+        (onBuyOsmo && account.walletStatus !== WalletStatus.Loaded)
+      }
       externalUrl={depositUrlOverride}
-      label="Deposit"
-      action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
+      label={
+        onBuyOsmo ? t("assets.table.buyOsmo") : t("assets.table.depositButton")
+      }
+      action={
+        onBuyOsmo
+          ? onBuyOsmo
+          : () => onDeposit?.(chainId, coinDenom, depositUrlOverride)
+      }
     />
   ) : null;
+};
 
 const TransferButton: FunctionComponent<{
   externalUrl?: string;
   disabled?: boolean;
   label: string;
   action: () => void;
-}> = ({ externalUrl, disabled, label, action }) =>
-  externalUrl ? (
+}> = ({ externalUrl, disabled, label, action }) => {
+  const [isHovering, setIsHovering] = useState(false);
+  return externalUrl ? (
     <a
       className={classNames(
-        "mx-auto flex justify-center items-center gap-0.5 pl-1 pt-2 text-button font-subtitle2 base text-secondary-200",
+        "flex items-center gap-1 pt-2 lg:pt-0 subtitle1 shrink-0 text-wosmongton-200",
         { "opacity-30": disabled }
       )}
       rel="noreferrer"
@@ -59,21 +78,45 @@ const TransferButton: FunctionComponent<{
       onClick={action}
     >
       {label}
-      <Image
-        alt="external transfer link"
-        src="/icons/external-link-secondary-200.svg"
-        height={8}
-        width={8}
-      />
+      <div className="w-fit shrink-0">
+        <Image
+          alt="external transfer link"
+          src="/icons/external-link.svg"
+          height={13}
+          width={13}
+        />
+      </div>
     </a>
   ) : (
-    <Button
-      className="m-auto text-button"
+    <button
+      className="flex items-center gap-1 text-wosmongton-200 hover:text-rust-300 transition-colors subtitle1 disabled:opacity-30 hover:disabled:text-wosmongton-200"
       onClick={action}
       disabled={disabled}
-      size="xs"
-      type="arrow-sm"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
     >
       <span>{label}</span>
-    </Button>
+      {isHovering ? (
+        <div className="h-fit shrink-0">
+          <Image
+            alt="chevron"
+            src="/icons/chevron-right-rust.svg"
+            height={13}
+            width={13}
+            priority={true}
+          />
+        </div>
+      ) : (
+        <div className="h-fit shrink-0">
+          <Image
+            alt="chevron"
+            src="/icons/chevron-right.svg"
+            height={13}
+            width={13}
+            priority={true}
+          />
+        </div>
+      )}
+    </button>
   );
+};

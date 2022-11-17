@@ -2,6 +2,7 @@ import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CustomClasses } from "../types";
 import { MenuOption } from "./types";
+import { IS_FRONTIER } from "../../config";
 
 interface Props extends CustomClasses {
   options: MenuOption[];
@@ -15,15 +16,16 @@ export const MenuToggle: FunctionComponent<Props> = ({
   onSelect,
   className,
 }) => (
-  <div className="flex rounded-full bg-card">
+  <div className="flex h-fit rounded-full bg-osmoverse-700">
     {options.map(({ id, display }) => (
       <label
         key={id}
         htmlFor={"menu-radio"}
         className={classNames(
-          "relative h-12 px-3 select-none cursor-pointer",
+          "relative h-10 px-4 py-2 select-none cursor-pointer",
           {
-            "bg-secondary-200 rounded-full": id === selectedOptionId,
+            "bg-wosmongton-400 rounded-full": id === selectedOptionId,
+            "text-osmoverse-1000": id === selectedOptionId && IS_FRONTIER,
           },
           className
         )}
@@ -35,7 +37,7 @@ export const MenuToggle: FunctionComponent<Props> = ({
             "absolute w-full h-full appearance-none cursor-pointer z-20",
             "after:absolute after:w-full after:h-full",
             {
-              "text-iconDefault": id !== selectedOptionId,
+              "text-osmoverse-300": id !== selectedOptionId,
             }
           )}
           value={id}
@@ -44,8 +46,8 @@ export const MenuToggle: FunctionComponent<Props> = ({
           onChange={() => onSelect(id)}
         ></input>
         <span
-          className={classNames("relative top-3 z-10", {
-            "text-iconDefault": id !== selectedOptionId,
+          className={classNames("relative subtitle2 z-10", {
+            "text-osmoverse-300": id !== selectedOptionId,
           })}
         >
           {display}

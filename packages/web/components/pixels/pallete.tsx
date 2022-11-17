@@ -41,7 +41,7 @@ const Palette = ({
       }}
     >
       <div
-        className="w-full max-w-[424px] rounded-[16px] bg-card p-[20px] mx-auto border border-2 border-enabledGold"
+        className="w-full max-w-[424px] rounded-[16px] bg-osmoverse-700 p-[20px] mx-auto"
         style={{
           pointerEvents: "all",
         }}
@@ -52,7 +52,7 @@ const Palette = ({
           </div>
           <div
             className={`cursor-pointer ${
-              doneEnabled ? "text-secondary-200" : "text-secondary-600"
+              doneEnabled ? "text-rust-200" : "text-rust-600"
             } font-subtitle1 text-base my-auto`}
             onClick={() => {
               openShareModal();

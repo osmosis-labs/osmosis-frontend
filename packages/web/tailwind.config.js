@@ -19,82 +19,83 @@ module.exports = {
         disabled: "rgba(255, 255, 255, 0.38)",
         faint: "rgba(255, 255, 255, 0.12)",
       },
-      transparent: "transparent",
-      primary: IS_FRONTIER
+      wosmongton: IS_FRONTIER
         ? {
-            50: "#8A86FF",
-            100: "#D6692E",
-            200: "#A4432D",
-            300: "#2722BB",
-            400: "#1D18A8",
-            500: "#16119E",
-            600: "#110D8B",
-            700: "#92630B",
-            800: "#080559",
-            900: "#02003F",
+            100: "#FFFAF0",
+            200: "#F5E7CD",
+            300: "#F4D7A0",
+            400: "#EAC378",
+            500: "#E9B34D",
+            700: "#DFA12A",
           }
         : {
-            50: "#8A86FF",
-            100: "#4540D8",
-            200: "#322DC2",
-            300: "#2722BB",
-            400: "#1D18A8",
-            500: "#16119E",
-            600: "#110D8B",
-            700: "#0A0674",
-            800: "#080559",
-            900: "#02003F",
+            100: "#D3D1FF",
+            200: "#B3B1FD",
+            300: "#8C8AF9",
+            400: "#6A67EA",
+            500: "#5B57FA",
+            700: "#462ADF",
           },
-      wosmongton: {
-        200: "#B3B1FD",
-        500: "#5B57FA",
+      ion: IS_FRONTIER
+        ? { 500: "#7DCACE", 700: "#61B5BA" }
+        : {
+            500: "#2994D0",
+            700: "#1469AF",
+          },
+      bullish: IS_FRONTIER
+        ? {}
+        : {
+            400: "#6BDEC9",
+            600: "#00A399",
+          },
+      osmoverse: IS_FRONTIER
+        ? {
+            100: "#D6CDD6",
+            200: "#CBBDCB",
+            300: "#AF9BAF",
+            400: "#8C748C",
+            500: "#6C566C",
+            600: "#563F56",
+            700: "#422F42",
+            800: "#332133",
+            900: "#211321",
+            1000: "#050305",
+          }
+        : {
+            100: "#E4E1FB",
+            200: "#CEC8F3",
+            300: "#B0AADC",
+            400: "#958FC0",
+            500: "#736CA3",
+            600: "#565081",
+            700: "#3C356D",
+            800: "#282750",
+            900: "#140F34",
+            1000: "#090524",
+          },
+      ammelia: {
+        600: "#CA2EBD",
       },
-      primaryVariant: "#0A0674",
-      secondary: IS_FRONTIER
-        ? {
-            50: "#F4CC82",
-            100: "#D9A575",
-            200: "#C68D5A",
-            300: "#BC9856",
-            400: "#B88E42",
-            500: "#AA7E2D",
-            600: "#9C701D",
-            700: "#92630B",
-            800: "#875903",
-            900: "#734B00",
-          }
-        : {
-            50: "#F4CC82",
-            100: "#D9B575",
-            200: "#C4A46A",
-            300: "#BC9856",
-            400: "#B88E42",
-            500: "#AA7E2D",
-            600: "#9C701D",
-            700: "#92630B",
-            800: "#875903",
-            900: "#734B00",
-          },
+      rust: {
+        200: "#F8C2B0",
+        300: "#F5A68C",
+        500: "#FA825D",
+        700: "#C6451C",
+        800: "#B03A20",
+      },
       wireframes: {
         darkGrey: "#282828",
         grey: "#818181",
         lightGrey: "#B7B7B7",
       },
-      background: IS_FRONTIER ? "#221B18" : "#170F34",
-      modal: IS_FRONTIER ? "rgb(56, 53, 50, 0.8)" : "rgba(23, 15, 52, 0.8)",
-      surface: IS_FRONTIER ? "#282421" : "#231D4B",
-      card: IS_FRONTIER ? "#2E2C2F" : "#2D2755",
-      cardInner: IS_FRONTIER ? "#383532" : "#3C356D",
-      cardInfoPlaceholder: "#3E3866",
-      iconDefault: IS_FRONTIER ? "#8E867B" : "#8E83AA",
       error: IS_FRONTIER ? "#E91F4F" : "#EF3456",
       success: IS_FRONTIER ? "#16A34A" : "#16A34A",
       enabledGold: "#C4A46A",
       pass: IS_FRONTIER ? "#64BC3B" : "#34EF52",
       missionError: "#EF3456",
-      black: "#000000",
-      backdrop: "rgba(0, 0, 0, 0.3)",
       superfluid: "#8A86FF",
+      transparent: "transparent",
+      black: "black",
     },
     fontSize: {
       xxs: "0.5rem",
@@ -154,39 +155,29 @@ module.exports = {
     },
     backgroundImage: {
       none: "none",
-      "gradients-socialLive":
-        "linear-gradient(180deg, #89EAFB 0%, #1377B0 100%)",
-      "gradients-greenBeach":
-        "linear-gradient(180deg, #00CEBA 0%, #008A7D 100%)",
-      "gradients-kashmir": "linear-gradient(180deg, #6976FE 0%, #3339FF 100%)",
-      "gradients-frost": "linear-gradient(180deg, #0069C4 0%, #00396A 100%)",
-      "gradients-cherry": "linear-gradient(180deg, #FF652D 0%, #FF0000 100%)",
-      "gradients-sunset": "linear-gradient(180deg, #FFBC00 0%, #FF8E00 100%)",
-      "gradients-orangeCoral":
-        "linear-gradient(180deg, #FF8200 0%, #FF2C00 100%)",
-      "gradients-pinky": "linear-gradient(180deg, #FF7A45 0%, #FF00A7 100%)",
       "home-bg-pattern": IS_FRONTIER
         ? "url('/images/osmosis-home-bg-pattern-frontier.svg')"
         : "url('/images/osmosis-home-bg-pattern.svg')",
       "loading-bar":
         "linear-gradient(to left,rgba(251, 251, 251, 0.1),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.3),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.1))",
       superfluid: "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)",
-      "superfluid-20":
-        "linear-gradient(90deg, rgba(138, 134, 255, 0.2) 0.04%, rgba(225, 60, 189, 0.2) 99.5%)",
-      "selected-validator":
-        "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), linear-gradient(#231d4b, #231d4b)",
-    },
-    boxShadow: {
-      container:
-        "0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)",
-      "elevation-04dp":
-        "0px 4px 5px rgba(0, 0, 0, 0.14), 0px 1px 10px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.2)",
-      "elevation-08dp":
-        "0px 8px 10px rgba(0, 0, 0, 0.14), 0px 3px 14px rgba(0, 0, 0, 0.12), 0px 5px 5px rgba(0, 0, 0, 0.2)",
-      "elevation-24dp":
-        "0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2)",
+      "superfluid-20": IS_FRONTIER
+        ? "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%);"
+        : "linear-gradient(90deg, rgba(138, 134, 255, 0.2) 0.04%, rgba(225, 60, 189, 0.2) 99.5%)",
+      "gradient-neutral": IS_FRONTIER
+        ? "linear-gradient(96.42deg, #9A690A -0.59%, #E9B34D 100%);"
+        : "linear-gradient(96.42deg, #462ADF -0.59%, #8A86FF 100%);",
+      "gradient-positive": IS_FRONTIER
+        ? "linear-gradient(96.5deg, #17848A 1.78%, #2ADF9E 50.4%, #61B5BA 100%);"
+        : "linear-gradient(96.28deg, #899EFF 0%, #28F6AF 99.28%);",
+      "gradient-negative": IS_FRONTIER
+        ? "linear-gradient(96.42deg, #B03A20 -0.59%, #FA825D 100%);"
+        : "linear-gradient(96.42deg, #B03A20 -0.59%, #FA825D 100%);",
     },
     screens: {
+      "3xl": { max: "1792px" },
+      // => @media (max-width: 1792px) { ... }
+
       "2xl": { max: "1536px" },
       // => @media (max-width: 1536px) { ... }
 
@@ -217,6 +208,12 @@ module.exports = {
       xs: { max: "420px" },
     },
     extend: {
+      height: {
+        navbar: "88px",
+        "navbar-mobile": "58px",
+        content: "calc(100vh - 88px)",
+        "content-mobile": "calc(100vh - 58px)",
+      },
       width: {
         loader: {
           1: "3.75rem",
@@ -257,6 +254,8 @@ module.exports = {
         lginset: "0.438rem", // 1px smaller than rounded-lg
         xlinset: "0.688rem", // 1px smaller than rounded-xl
         "2xlinset": "0.938rem", // 1 px smaller than rounded-2xl
+        "4x4pxlinset": "1.5rem", // 4px smaller than 4xl
+        "4xl": "1.75rem",
       },
       transitionTimingFunction: {
         bounce: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
@@ -265,6 +264,7 @@ module.exports = {
         inBack: "cubic-bezier(0.7, -0.4, 0.52, 0.51)",
       },
       transitionProperty: {
+        height: "height",
         width: "width",
         borderRadius: "border-radius",
       },

@@ -1,35 +1,21 @@
-import { useState, useEffect } from "react";
-import { AccountSetBase } from "@keplr-wallet/stores";
-import {
-  ObservableAssets,
-  ObservableTransferUIConfig,
-} from "../../stores/assets";
+import { useState } from "react";
+import { ObservableTransferUIConfig } from "../../stores/assets";
 import { makeLocalStorageKVStore } from "../../stores/kv-store";
+import { useStore } from "../../stores";
 import { useWindowSize } from "../window";
 
-export function useTransferConfig(
-  assetsStore: ObservableAssets,
-  account: AccountSetBase
-) {
+export function useTransferConfig() {
   const { isMobile } = useWindowSize();
+  const { assetsStore } = useStore();
 
-  const [transferConfig, setTransferConfig] =
-    useState<ObservableTransferUIConfig | null>(null);
-  const [transferKvStore] = useState(() =>
-    makeLocalStorageKVStore("transfer-ui-config")
-  );
-  useEffect(
+  const [transferConfig] = useState<ObservableTransferUIConfig>(
     () =>
-      setTransferConfig(
-        new ObservableTransferUIConfig(
-          assetsStore,
-          account,
-          transferKvStore,
-          isMobile
-        )
-      ),
-    [assetsStore, account, isMobile]
+      new ObservableTransferUIConfig(
+        assetsStore,
+        makeLocalStorageKVStore("transfer-ui-config")
+      )
   );
+  transferConfig.setIsMobile(isMobile);
 
   return transferConfig;
 }

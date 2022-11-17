@@ -83,7 +83,7 @@ const OrderRow = ({ order }: { order: Order }) => {
   return (
     <div
       key={order.id}
-      className="w-full p-px rounded-2xl hover:bg-enabledGold text-left bg-superfluid hover:bg-none mb-4"
+      className="w-full p-px rounded-2xl text-left bg-osmoverse-900 hover:bg-none mb-4"
     >
       <div className="flex flex-col place-content-between w-full h-full p-4 bg-card rounded-2xlinset cursor-pointer">
         <div className="flex items-center justify-between">
@@ -122,7 +122,6 @@ const OrderRow = ({ order }: { order: Order }) => {
             <Button
               color="error"
               className="button px-3 py-1 md:px-1 rounded-lg"
-              loading={account.txTypeInProgress !== ""}
               disabled={account.txTypeInProgress !== ""}
               onClick={handleCancelOrder}
             >
@@ -238,7 +237,7 @@ export default function OrderHistory({
   return (
     <div
       className={classNames(
-        "relative rounded-2xl bg-card border-2 md:border-0 border-cardInner px-4 md:p-0 my-4 w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto",
+        "relative rounded-2xl bg-card border-2 md:border-0 bg-osmoverse-800 px-4 md:p-0 my-4 w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto",
         containerClassName
       )}
     >

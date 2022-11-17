@@ -29,7 +29,7 @@ export const MenuOptionsModal: FunctionComponent<
             "p-2 cursor-pointer w-full hover:bg-white-faint",
             {
               "bg-white-faint text-white-full": id === props.selectedOptionId,
-              "text-iconDefault": id !== props.selectedOptionId,
+              "text-osmoverse-400": id !== props.selectedOptionId,
               "rounded-b-xlinset": index === props.options.length - 1,
             }
           )}

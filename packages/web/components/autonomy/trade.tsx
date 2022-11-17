@@ -1,3 +1,4 @@
+import { FunctionComponent, useEffect, useRef, useState, useMemo } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
@@ -7,13 +8,7 @@ import { Buffer } from "buffer";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import React, {
-  FunctionComponent,
-  useEffect,
-  useState,
-  useRef,
-  useMemo,
-} from "react";
+import { EventName } from "../../config";
 import {
   IS_FRONTIER,
   REGISTRY_ADDRESSES,
@@ -25,14 +20,14 @@ import {
   useSlippageConfig,
   useTokenSwapQueryParams,
   useWindowSize,
+  useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
-// import { Error as ErrorBox } from "../alert";
-import { Button } from "../buttons";
-import { CheckBox } from "../control/checkbox";
+import { BorderButton, Button } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
+import { useTranslation } from "react-multi-lang";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -50,8 +45,10 @@ export const TradeClipboard: FunctionComponent<{
     assetsStore: { nativeBalances, ibcBalances },
     priceStore,
   } = useStore();
+  const t = useTranslation();
   const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const allTokenBalances = nativeBalances.concat(ibcBalances);
 
@@ -207,7 +204,7 @@ export const TradeClipboard: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "relative rounded-[18px] flex flex-col gap-8 bg-cardInner px-5 md:px-3 pt-12 md:pt-4 pb-7 md:pb-4",
+        "relative rounded-[18px] flex flex-col gap-8 bg-osmoverse-800 px-5 md:px-3 pt-12 md:pt-4 pb-7 md:pb-4",
         containerClassName
       )}
     >
@@ -236,17 +233,15 @@ export const TradeClipboard: FunctionComponent<{
         </button>
         {isSettingOpen && (
           <div
-            className="absolute bottom-[-0.5rem] right-0 translate-y-full bg-card border border-white-faint rounded-2xl p-[1.875rem] md:p-5 z-50 w-full max-w-[23.875rem]"
+            className="absolute bottom-[-0.5rem] right-0 translate-y-full bg-osmoverse-800 rounded-2xl p-[1.875rem] md:p-5 z-40 w-full max-w-[23.875rem]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="subtitle1 text-white-emphasis">
-              Transaction Settings
-            </div>
+            <h6>{t("swap.settings.title")}</h6>
             <div className="flex items-center mt-2.5">
-              <div className="body2 text-white-disabled mr-2">
-                Slippage tolerance
+              <div className="subtitle1 text-osmoverse-200 mr-2">
+                {t("swap.settings.slippage")}
               </div>
-              <InfoTooltip content="Your transaction will revert if the price changes unfavorably by more than this percentage." />
+              <InfoTooltip content={t("swap.settings.slippageInfo")} />
             </div>
 
             <ul className="flex gap-x-3 w-full mt-3">
@@ -255,13 +250,20 @@ export const TradeClipboard: FunctionComponent<{
                   <li
                     key={slippage.index}
                     className={classNames(
-                      "flex items-center justify-center w-full h-8 cursor-pointer rounded-full text-white-high",
-                      slippage.selected ? "bg-primary-200" : "bg-background"
+                      "flex items-center justify-center w-full h-8 cursor-pointer rounded-lg bg-osmoverse-700",
+                      { "border-2 border-wosmongton-200": slippage.selected }
                     )}
                     onClick={(e) => {
                       e.preventDefault();
 
                       slippageConfig.select(slippage.index);
+
+                      logEvent([
+                        EventName.Swap.slippageToleranceSet,
+                        {
+                          percentage: slippageConfig.slippage.toString(),
+                        },
+                      ]);
                     }}
                   >
                     <button>{slippage.slippage.toString()}</button>
@@ -270,15 +272,15 @@ export const TradeClipboard: FunctionComponent<{
               })}
               <li
                 className={classNames(
-                  "flex items-center justify-center w-full h-8 cursor-pointer rounded-full",
+                  "flex items-center justify-center w-full h-8 cursor-pointer rounded-lg",
                   slippageConfig.isManualSlippage
-                    ? "text-white-high"
-                    : "text-white-faint",
+                    ? "border-2 border-wosmongton-200 text-white-high"
+                    : "text-osmoverse-500",
                   slippageConfig.isManualSlippage
-                    ? slippageConfig.getManualSlippageError()
+                    ? slippageConfig.manualSlippageError
                       ? "bg-missionError"
-                      : "bg-primary-200"
-                    : "bg-background"
+                      : "bg-osmoverse-900"
+                    : "bg-osmoverse-900"
                 )}
                 onClick={(e) => {
                   e.preventDefault();
@@ -293,40 +295,37 @@ export const TradeClipboard: FunctionComponent<{
                   className="bg-transparent px-0 w-fit"
                   inputClassName={`bg-transparent text-center ${
                     !slippageConfig.isManualSlippage
-                      ? "text-white-faint"
+                      ? "text-osmoverse-500"
                       : "text-white-high"
                   }`}
                   style="no-border"
                   currentValue={slippageConfig.manualSlippageStr}
-                  onInput={(value) => slippageConfig.setManualSlippage(value)}
+                  onInput={(value) => {
+                    slippageConfig.setManualSlippage(value);
+
+                    logEvent([
+                      EventName.Swap.slippageToleranceSet,
+                      {
+                        fromToken: orderTokenInConfig.sendCurrency.coinDenom,
+                        toToken: orderTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+                        percentage: slippageConfig.slippage.toString(),
+                      },
+                    ]);
+                  }}
                   onFocus={() => slippageConfig.setIsManualSlippage(true)}
                   inputRef={manualSlippageInputRef}
                   isAutosize
                 />
-                <span className="shrink-0">%</span>
+                <span
+                  className={classNames("shrink-0", {
+                    "text-osmoverse-500": !slippageConfig.isManualSlippage,
+                  })}
+                >
+                  %
+                </span>
               </li>
             </ul>
-
-            <div className="flex items-center mt-4">
-              <CheckBox
-                isOn={
-                  type === "Limit"
-                    ? orderTokenInConfig.smallerRateEnabled
-                    : orderTokenInConfig.largerRateEnabled
-                }
-                onToggle={() =>
-                  type === "Limit"
-                    ? orderTokenInConfig.toggleSmallerRateEnabled()
-                    : orderTokenInConfig.toggleLargerRateEnabled()
-                }
-                className="after:!bg-transparent after:!border-2 after:!border-iconDefault mt-1"
-              >
-                <span className="caption md:text-xs text-sm ml-1">
-                  Enable {type === "Limit" ? "smaller" : "larger"} rate than
-                  market price.
-                </span>
-              </CheckBox>
-            </div>
           </div>
         )}
       </div>
@@ -334,7 +333,7 @@ export const TradeClipboard: FunctionComponent<{
       <div className="relative flex flex-col gap-3">
         <div
           className={classNames(
-            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
+            "bg-osmoverse-900 rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
             !switchOutBack ? "ease-outBack" : "ease-inBack",
             {
               "opacity-30": isAnimatingSwitch,
@@ -358,9 +357,9 @@ export const TradeClipboard: FunctionComponent<{
           >
             <div className="flex">
               <span className="caption text-sm md:text-xs text-white-full">
-                Available
+                {t("swap.available")}
               </span>
-              <span className="caption text-sm md:text-xs text-primary-50 ml-1.5">
+              <span className="caption text-sm md:text-xs text-wosmongton-300 ml-1.5">
                 {queries.queryBalances
                   .getQueryBech32Address(account.bech32Address)
                   .getBalanceFromCurrency(orderTokenInConfig.sendCurrency)
@@ -371,44 +370,56 @@ export const TradeClipboard: FunctionComponent<{
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <button
+              <BorderButton
                 className={classNames(
-                  "button text-primary-50 hover:bg-primary-50/30 border border-primary-50 text-xs py-1 px-1.5 rounded-md",
+                  "text-xs py-1 px-1.5",
                   orderTokenInConfig.fraction === 1
-                    ? "bg-primary-50/40"
+                    ? "bg-wosmongton-100/40"
                     : "bg-transparent"
                 )}
-                onClick={(e) => {
-                  e.preventDefault();
-
+                onClick={() => {
                   if (orderTokenInConfig.fraction !== 1) {
+                    logEvent([
+                      EventName.Swap.maxClicked,
+                      {
+                        fromToken: orderTokenInConfig.sendCurrency.coinDenom,
+                        toToken: orderTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+                      },
+                    ]);
                     orderTokenInConfig.setFraction(1);
                   } else {
                     orderTokenInConfig.setFraction(undefined);
                   }
                 }}
               >
-                MAX
-              </button>
-              <button
+                {t("swap.MAX")}
+              </BorderButton>
+              <BorderButton
                 className={classNames(
-                  "button text-primary-50 hover:bg-primary-50/30 border border-primary-50 text-xs py-1 px-1.5 rounded-md",
+                  "text-xs py-1 px-1.5",
                   orderTokenInConfig.fraction === 0.5
-                    ? "bg-primary-50/40"
+                    ? "bg-wosmongton-100/40"
                     : "bg-transparent"
                 )}
-                onClick={(e) => {
-                  e.preventDefault();
-
+                onClick={() => {
                   if (orderTokenInConfig.fraction !== 0.5) {
+                    logEvent([
+                      EventName.Swap.halfClicked,
+                      {
+                        fromToken: orderTokenInConfig.sendCurrency.coinDenom,
+                        toToken: orderTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+                      },
+                    ]);
                     orderTokenInConfig.setFraction(0.5);
                   } else {
                     orderTokenInConfig.setFraction(undefined);
                   }
                 }}
               >
-                HALF
-              </button>
+                {t("swap.HALF")}
+              </BorderButton>
             </div>
           </div>
           <div className="flex items-center place-content-between mt-3">
@@ -449,17 +460,32 @@ export const TradeClipboard: FunctionComponent<{
                 }
                 closeTokenSelectDropdowns();
               }}
-              isMobile={isMobile}
             />
             <div className="flex flex-col items-end">
               <input
                 ref={fromAmountInput}
                 type="number"
-                className="font-h5 md:font-subtitle1 text-h5 md:text-subtitle1 text-white-full bg-transparent text-right focus:outline-none w-full placeholder:text-white-disabled"
+                className={classNames(
+                  "md:text-subtitle1 text-white-full bg-transparent text-right focus:outline-none w-full placeholder:text-white-disabled",
+                  orderTokenInConfig.amount.length >= 14
+                    ? "caption"
+                    : "font-h5 md:font-subtitle1 text-h5"
+                )}
                 placeholder="0"
                 onChange={(e) => {
                   e.preventDefault();
-                  if (e.target.value.length < 17) {
+                  if (
+                    Number(e.target.value) <= Number.MAX_SAFE_INTEGER &&
+                    e.target.value.length <= (isMobile ? 19 : 26)
+                  ) {
+                    logEvent([
+                      EventName.Swap.inputEntered,
+                      {
+                        fromToken: orderTokenInConfig.sendCurrency.coinDenom,
+                        toToken: orderTokenInConfig.outCurrency.coinDenom,
+                        isOnHome: !isInModal,
+                      },
+                    ]);
                     orderTokenInConfig.setAmount(e.target.value);
                   }
                 }}
@@ -467,7 +493,7 @@ export const TradeClipboard: FunctionComponent<{
               />
               <div
                 className={classNames(
-                  "caption text-white-disabled transition-opacity",
+                  "subtitle1 md:caption text-osmoverse-300 transition-opacity",
                   inAmountValue ? "opacity-100" : "opacity-0"
                 )}
               >{`≈ ${inAmountValue || "0"}`}</div>
@@ -477,26 +503,36 @@ export const TradeClipboard: FunctionComponent<{
 
         <button
           className={classNames(
-            "absolute flex items-center left-[45%] top-[116px] md:top-[84px] transition-all duration-500 ease-bounce z-30",
+            "absolute flex items-center left-[45%] top-[124px] md:top-[94px] transition-all duration-500 ease-bounce z-30",
             {
               "w-10 md:w-8 h-10 md:h-8": !isHoveringSwitchButton,
               "w-11 md:w-9 h-11 md:h-9 -translate-x-[2px]":
                 isHoveringSwitchButton,
             }
           )}
-          onMouseEnter={() => setHoveringSwitchButton(true)}
-          onMouseLeave={() => setHoveringSwitchButton(false)}
-          onClick={(e) => {
-            e.preventDefault();
-
+          onMouseEnter={() => {
+            if (!isMobile) setHoveringSwitchButton(true);
+          }}
+          onMouseLeave={() => {
+            if (!isMobile) setHoveringSwitchButton(false);
+          }}
+          onClick={() => {
+            logEvent([
+              EventName.Swap.switchClicked,
+              {
+                fromToken: orderTokenInConfig.sendCurrency.coinDenom,
+                toToken: orderTokenInConfig.outCurrency.coinDenom,
+                isOnHome: !isInModal,
+              },
+            ]);
             setIsAnimatingSwitch(true);
           }}
         >
           <div
             className={classNames(
-              "w-full h-full rounded-full flex items-center shadow-elevation-04dp",
+              "w-full h-full rounded-full flex items-center",
               {
-                "bg-card": !isHoveringSwitchButton,
+                "bg-osmoverse-700": !isHoveringSwitchButton,
                 "bg-[#4E477C]": isHoveringSwitchButton,
               }
             )}
@@ -504,7 +540,7 @@ export const TradeClipboard: FunctionComponent<{
             <div className="relative w-full h-full">
               <div
                 className={classNames(
-                  "absolute left-[10.5px] md:left-2 top-[11px] md:top-2 transition-all duration-500 ease-bounce",
+                  "absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/3 transition-all duration-500 ease-bounce",
                   {
                     "opacity-0 rotate-180": isHoveringSwitchButton,
                   }
@@ -539,7 +575,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <div
           className={classNames(
-            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all ease-outBack",
+            "bg-osmoverse-900 rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
             {
               "opacity-30": isAnimatingSwitch,
             }
@@ -574,7 +610,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <div
           className={classNames(
-            "bg-surface rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
+            "bg-osmoverse-900 rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
             !switchOutBack ? "ease-outBack" : "ease-inBack",
             {
               "opacity-30": isAnimatingSwitch,
@@ -589,7 +625,7 @@ export const TradeClipboard: FunctionComponent<{
           }
         >
           <div
-            className="flex items-center place-content-between transition-all"
+            className="flex items-center place-content-between transition-transform"
             style={
               isAnimatingSwitch
                 ? {
@@ -635,9 +671,8 @@ export const TradeClipboard: FunctionComponent<{
                 }
                 closeTokenSelectDropdowns();
               }}
-              isMobile={isMobile}
             />
-            <div className="flex flex-col items-end">
+            <div className="flex flex-col items-end w-full">
               <h5
                 className={classNames(
                   "text-right md:subtitle1",
@@ -664,7 +699,7 @@ export const TradeClipboard: FunctionComponent<{
               }`}</h5>
               <div
                 className={classNames(
-                  "caption text-white-disabled transition-opacity",
+                  "subtitle1 md:caption text-osmoverse-300 transition-opacity",
                   outAmountValue ? "opacity-100" : "opacity-0"
                 )}
               >
@@ -676,7 +711,7 @@ export const TradeClipboard: FunctionComponent<{
 
         <div
           className={classNames(
-            "relative rounded-lg bg-card px-4 md:px-3 transition-all ease-inOutBack duration-300 overflow-hidden",
+            "relative rounded-lg bg-osmoverse-900 px-4 md:px-3 transition-all ease-inOutBack duration-300 overflow-hidden",
             showEstimateDetails ? "h-32 py-6" : "h-11 py-[10px]"
           )}
         >
@@ -694,7 +729,7 @@ export const TradeClipboard: FunctionComponent<{
           >
             <div
               className={classNames("subtitle2 transition-all", {
-                "text-white-disabled": !isEstimateDetailRelevant,
+                "text-osmoverse-600": !isEstimateDetailRelevant,
               })}
             >
               {`1 ${
@@ -723,9 +758,11 @@ export const TradeClipboard: FunctionComponent<{
                 width={24}
               />
               <Image
-                className={`group-hover:opacity-100 transition-all ${
-                  showEstimateDetails ? "rotate-180" : "rotate-0"
-                } ${isEstimateDetailRelevant ? "opacity-40" : "opacity-0"}`}
+                className={classNames(
+                  "transition-all",
+                  showEstimateDetails ? "rotate-180" : "rotate-0",
+                  isEstimateDetailRelevant ? "opacity-100" : "opacity-0"
+                )}
                 alt="show estimates"
                 src="/icons/chevron-down.svg"
                 height={isMobile ? 14 : 18}
@@ -744,13 +781,11 @@ export const TradeClipboard: FunctionComponent<{
                 "text-error": showPriceImpactWarning,
               })}
             >
-              <div className="caption">Price Impact</div>
+              <div className="caption">{t("swap.priceImpact")}</div>
               <div
                 className={classNames(
                   "caption",
-                  showPriceImpactWarning
-                    ? "text-error"
-                    : "text-wireframes-lightGrey"
+                  showPriceImpactWarning ? "text-error" : "text-osmoverse-200"
                 )}
               >
                 {`-${orderTokenInConfig.expectedSwapResult.priceImpact.toString()}`}
@@ -779,10 +814,10 @@ export const TradeClipboard: FunctionComponent<{
       <Button
         color={
           showPriceImpactWarning && account.walletStatus === WalletStatus.Loaded
-            ? "error"
+            ? "primary-warning"
             : "primary"
         }
-        className="flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
+        // className="flex justify-center items-center w-full h-[3.75rem] rounded-lg text-h6 md:text-button font-h6 md:font-button text-white-full shadow-elevation-04dp"
         disabled={
           account.walletStatus === WalletStatus.Loaded &&
           (orderTokenInConfig.error !== undefined ||
@@ -795,7 +830,6 @@ export const TradeClipboard: FunctionComponent<{
               orderTokenInConfig.priceChangePercentage >= 0 &&
               !orderTokenInConfig.largerRateEnabled))
         }
-        loading={account.txTypeInProgress !== ""}
         onClick={async () => {
           if (account.walletStatus !== WalletStatus.Loaded) {
             return account.init();
@@ -991,7 +1025,7 @@ export const TradeClipboard: FunctionComponent<{
             "Place Order"
           )
         ) : (
-          <div className="flex items-center gap-1">
+          <h6 className="flex items-center gap-3">
             <Image
               alt="wallet"
               src="/icons/wallet.svg"
@@ -999,7 +1033,7 @@ export const TradeClipboard: FunctionComponent<{
               width={24}
             />
             <span>Connect Wallet</span>
-          </div>
+          </h6>
         )}
       </Button>
     </div>

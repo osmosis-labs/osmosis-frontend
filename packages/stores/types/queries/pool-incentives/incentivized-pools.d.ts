@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
-import { RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 import { ObservableQueryEpochs } from "../epochs";
 import { ObservableQueryEpochProvisions, ObservableQueryMintParmas } from "../mint";
@@ -27,18 +27,19 @@ export declare class ObservableQueryIncentivizedPools extends ObservableChainQue
     /** Internal incentives (OSMO). */
     readonly getIncentivizedGaugeId: (poolId: string, duration: Duration) => string | undefined;
     /**
-     * 가장 긴 lockable duration의 apy를 반환한다.
+     * Returns the APR of the longest lockable duration.
      */
-    readonly computeMostAPY: (poolId: string, priceStore: IPriceStore) => RatePretty;
+    readonly computeMostApr: (poolId: string, priceStore: IPriceStore) => RatePretty;
     /**
      * Computes the external incentive APR for the given gaugeId and denom
      */
-    readonly computeExternalIncentiveGaugeAPR: (poolId: string, gaugeId: string, denom: string, priceStore: IPriceStore, fiatCurrency: FiatCurrency) => RatePretty;
+    readonly computeExternalIncentiveGaugeAPR: (poolId: string, gaugeId: string, denom: string, priceStore: IPriceStore) => RatePretty;
     /**
      * 리워드를 받을 수 있는 풀의 연당 이익률을 반환한다.
      * 리워드를 받을 수 없는 풀일 경우 0를 리턴한다.
      */
-    readonly computeAPY: (poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency) => RatePretty;
-    protected computeAPYForSpecificDuration(poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency): RatePretty;
+    readonly computeApr: (poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency) => RatePretty;
+    readonly computeDailyRewardForDuration: (poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency) => CoinPretty | undefined;
+    protected computeAprForSpecificDuration(poolId: string, duration: Duration, priceStore: IPriceStore, fiatCurrency: FiatCurrency): RatePretty;
     get isAprFetching(): boolean;
 }
