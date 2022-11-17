@@ -191,12 +191,7 @@ const Home: NextPage = observer(function () {
         )}
       >
         {ENABLE_AUTONOMY && (
-          <div
-            className={classNames(
-              "w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto mb-3 z-100",
-              tradeType !== "Swap" ? "mt-mobile-header" : ""
-            )}
-          >
+          <div className="w-[27rem] ml-auto mr-[15%] lg:mx-auto mb-3 z-100">
             <div className="relative rounded-[18px] flex flex-row gap-8 bg-osmoverse-800 px-5 md:px-3 py-4">
               <div
                 className="flex-auto text-center font-bold px-4 py-2 cursor-pointer mr-3"
@@ -221,7 +216,7 @@ const Home: NextPage = observer(function () {
         )}
         {tradeType === "Swap" ? (
           <TradeClipboard
-            containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
+            containerClassName="w-[27rem] ml-auto mr-[15%] lg:mx-auto"
             pools={pools}
           />
         ) : (
@@ -229,7 +224,7 @@ const Home: NextPage = observer(function () {
             <AutonomyTradeClipboard
               pools={pools}
               type={tradeType}
-              containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
+              containerClassName="w-[27rem] ml-auto mr-[15%] lg:mx-auto"
             />
             <OrderHistory
               orderType={tradeType}
