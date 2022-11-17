@@ -85,7 +85,7 @@ const TokensDropdown: FunctionComponent<
     onSelect: (coinDenom: string) => void;
   } & MobileProps
 > = ({ tokens, onSelect, isMobile = false }) => (
-  <div className="absolute flex flex-col bg-osmoverse-700 rounded-b-xl z-50 md:w-52 w-64">
+  <div className="absolute flex flex-col bg-osmoverse-700 rounded-b-xl z-40 md:w-52 w-64">
     {tokens.map((token, index) => (
       <button
         className={classNames(
