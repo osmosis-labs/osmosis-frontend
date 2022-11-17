@@ -285,7 +285,7 @@
         "transactionHash": "Hash Transaction",
         "type": "Type",
         "amount": "Montant",
-        "status": "Status",
+        "status": "Statut",
         "deposit": "Déposer",
         "withdraw": "Retirer"
       }
@@ -344,8 +344,8 @@
     "percentageSum": "La somme des pourcentages n'est pas égale à 100",
     "depositNoBalance": "Vous n'avez pas d'actifs à déposer",
     "negativeSlippage": "Le glissement ne peut être négatif",
-    "invalidSlippage": "Invalid slippage",
-    "noSendCurrency": "Glissement invalide",
+    "invalidSlippage": "Glissement invalide",
+    "noSendCurrency": "Devise à envoyer non définie",
     "insufficientBal": "Solde insuffisant",
     "notInitialized": "Non initialisé",
     "calculatingShareOutAmount": "Problème de calcul du montant de sortie",
