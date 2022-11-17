@@ -32,7 +32,7 @@ export const BondCard: FunctionComponent<
   const t = useTranslation();
 
   return (
-    <div className="relative flex flex-col gap-[115px] overflow-hidden h-[380px] w-full min-w-[280px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8 md:p-[10px]">
+    <div className="relative flex flex-col gap-[115px] overflow-hidden h-[380px] w-full min-w-[280px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-7 md:p-[10px]">
       <div className="h-[260px] flex flex-col place-content-between gap-2">
         <div className="flex items-start gap-4 place-content-between">
           <div className="flex flex-col gap-3 max-w-[60%] overflow-visible z-10">
@@ -173,7 +173,7 @@ const Drawer: FunctionComponent<{
     >
       <div
         className={classNames(
-          "flex items-end place-content-between transition-all py-4 px-8 md:px-[10px]",
+          "flex items-end place-content-between transition-all py-4 px-7 md:px-[10px]",
           {
             "border-b border-osmoverse-600": drawerUp,
           }
