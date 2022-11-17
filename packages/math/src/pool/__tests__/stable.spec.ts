@@ -1,61 +1,65 @@
-import * as StableMath from '../stable';
-import { Coin, Dec, Int, DecUtils } from '@keplr-wallet/unit';
+import { StableSwapToken, StableSwapMath } from "../stable";
+import { Coin, Dec, Int, DecUtils } from "@keplr-wallet/unit";
 
-describe('Test stableswap math', () => {
-  describe('calcOutGivenIn', () => {
-    test('even pool basic trade', () => {
-      const poolAssets: StableMath.StableSwapToken[] = [
+describe("Test stableswap math", () => {
+  describe("calcOutGivenIn", () => {
+    test("even pool basic trade", () => {
+      const poolAssets: StableSwapToken[] = [
         {
           amount: new Dec(1_000_000_000),
-          denom: 'foo',
+          denom: "foo",
           scalingFactor: 1,
         },
         {
           amount: new Dec(1_000_000_000),
-          denom: 'bar',
+          denom: "bar",
           scalingFactor: 1,
         },
       ];
 
-      const tokenIn = new Coin('foo', 100);
+      const tokenIn = new Coin("foo", 100);
       const swapFee = new Dec(0);
 
-      const expectedTokenOut = { denom: 'bar', amount: new Int(99) };
+      const expectedTokenOut = { denom: "bar", amount: new Int(99) };
 
-      const outAmount = StableMath.calcOutGivenIn(
+      const outAmount = StableSwapMath.calcOutGivenIn(
         poolAssets,
         tokenIn,
         expectedTokenOut.denom,
-        swapFee,
+        swapFee
       );
 
       expect(outAmount.equals(expectedTokenOut.amount)).toBeTruthy();
+      console.log(
+        "outAmount: " + outAmount.toString(),
+        "expectedTokenOut: " + expectedTokenOut.amount.toString()
+      );
     });
 
-    test('even large pool basic trade (precision test)', () => {
-      const poolAssets: StableMath.StableSwapToken[] = [
+    test("even large pool basic trade (precision test)", () => {
+      const poolAssets: StableSwapToken[] = [
         {
           amount: new Dec(1_000_000_000_000),
-          denom: 'foo',
+          denom: "foo",
           scalingFactor: 1,
         },
         {
           amount: new Dec(1_000_000_000_000),
-          denom: 'bar',
+          denom: "bar",
           scalingFactor: 1,
         },
       ];
 
-      const tokenIn = new Coin('foo', 100);
+      const tokenIn = new Coin("foo", 100);
       const swapFee = new Dec(0);
 
-      const expectedTokenOut = { denom: 'bar', amount: new Int(99) };
+      const expectedTokenOut = { denom: "bar", amount: new Int(99) };
 
-      const outAmount = StableMath.calcOutGivenIn(
+      const outAmount = StableSwapMath.calcOutGivenIn(
         poolAssets,
         tokenIn,
         expectedTokenOut.denom,
-        swapFee,
+        swapFee
       );
 
       expect(outAmount.equals(expectedTokenOut.amount)).toBeTruthy();
@@ -65,7 +69,7 @@ describe('Test stableswap math', () => {
 
     /* This test should pass
     test('even large pool basic trade (precision test)', () => {
-      const poolAssets: StableMath.StableSwapToken[] = [
+      const poolAssets: StableSwapToken[] = [
         {
           amount: new Dec(1_000_000_000_000_000),
           denom: 'foo',
@@ -83,7 +87,7 @@ describe('Test stableswap math', () => {
 
       const expectedTokenOut = { denom: 'bar', amount: new Int(99) };
 
-      const outAmount = StableMath.calcOutGivenIn(
+      const outAmount = StableSwapMath.calcOutGivenIn(
         poolAssets,
         tokenIn,
         expectedTokenOut.denom,
@@ -95,60 +99,60 @@ describe('Test stableswap math', () => {
     */
   });
 
-  describe('calcInGivenOut', () => {
-    test('even pool basic trade', () => {
-      const poolAssets: StableMath.StableSwapToken[] = [
+  describe("calcInGivenOut", () => {
+    test("even pool basic trade", () => {
+      const poolAssets: StableSwapToken[] = [
         {
           amount: new Dec(1_000_000_000),
-          denom: 'foo',
+          denom: "foo",
           scalingFactor: 1,
         },
         {
           amount: new Dec(1_000_000_000),
-          denom: 'bar',
+          denom: "bar",
           scalingFactor: 1,
         },
       ];
 
-      const tokenOut = new Coin('bar', 100);
+      const tokenOut = new Coin("bar", 100);
       const swapFee = new Dec(0);
 
-      const expectedTokenIn = { denom: 'foo', amount: new Int(101) };
+      const expectedTokenIn = { denom: "foo", amount: new Int(101) };
 
-      const inAmount = StableMath.calcInGivenOut(
+      const inAmount = StableSwapMath.calcInGivenOut(
         poolAssets,
         tokenOut,
         expectedTokenIn.denom,
-        swapFee,
+        swapFee
       );
 
       expect(inAmount.equals(expectedTokenIn.amount)).toBeTruthy();
     });
 
-    test('even large pool basic trade (precision test)', () => {
-      const poolAssets: StableMath.StableSwapToken[] = [
+    test("even large pool basic trade (precision test)", () => {
+      const poolAssets: StableSwapToken[] = [
         {
           amount: new Dec(1_000_000_000_000),
-          denom: 'foo',
+          denom: "foo",
           scalingFactor: 1,
         },
         {
           amount: new Dec(1_000_000_000_000),
-          denom: 'bar',
+          denom: "bar",
           scalingFactor: 1,
         },
       ];
 
-      const tokenOut = new Coin('bar', 100);
+      const tokenOut = new Coin("bar", 100);
       const swapFee = new Dec(0);
 
-      const expectedTokenIn = { denom: 'foo', amount: new Int(101) };
+      const expectedTokenIn = { denom: "foo", amount: new Int(101) };
 
-      const inAmount = StableMath.calcInGivenOut(
+      const inAmount = StableSwapMath.calcInGivenOut(
         poolAssets,
         tokenOut,
         expectedTokenIn.denom,
-        swapFee,
+        swapFee
       );
 
       expect(inAmount.equals(expectedTokenIn.amount)).toBeTruthy();
@@ -158,7 +162,7 @@ describe('Test stableswap math', () => {
 
     /* This test should pass
     test('even large pool basic trade (precision test)', () => {
-      const poolAssets: StableMath.StableSwapToken[] = [
+      const poolAssets: StableSwapToken[] = [
         {
           amount: new Dec(1_000_000_000_000_000),
           denom: 'foo',
@@ -176,7 +180,7 @@ describe('Test stableswap math', () => {
 
       const expectedTokenOut = { denom: 'bar', amount: new Int(99) };
 
-      const outAmount = StableMath.calcOutGivenIn(
+      const outAmount = StableSwapMath.calcOutGivenIn(
         poolAssets,
         tokenIn,
         expectedTokenOut.denom,
@@ -188,88 +192,88 @@ describe('Test stableswap math', () => {
     */
   });
 
-  describe('calcSpotPrice', () => {
-    test('foo in terms of bar in even pool', () => {
-      const poolAssets: StableMath.StableSwapToken[] = [
+  describe("calcSpotPrice", () => {
+    test("foo in terms of bar in even pool", () => {
+      const poolAssets: StableSwapToken[] = [
         {
           amount: new Dec(1_000_000_000),
-          denom: 'foo',
+          denom: "foo",
           scalingFactor: 1,
         },
         {
           amount: new Dec(1_000_000_000),
-          denom: 'bar',
+          denom: "bar",
           scalingFactor: 1,
         },
         {
           amount: new Dec(1_000_000_000),
-          denom: 'baz',
+          denom: "baz",
           scalingFactor: 1,
         },
       ];
 
-      const baseDenom = 'foo';
-      const quoteDenom = 'bar';
+      const baseDenom = "foo";
+      const quoteDenom = "bar";
 
       const expectedSpotPrice = new Dec(1.0);
 
-      const actualSpotPrice = StableMath.calcSpotPrice(
+      const actualSpotPrice = StableSwapMath.calcSpotPrice(
         poolAssets,
         baseDenom,
-        quoteDenom,
+        quoteDenom
       );
 
       const tolerance = new Dec(1).quo(
-        DecUtils.getTenExponentNInPrecisionRange(3),
+        DecUtils.getTenExponentNInPrecisionRange(3)
       );
-      const comparison = StableMath.compare_checkMultErrorTolerance(
+      const comparison = StableSwapMath.compare_checkMultErrorTolerance(
         expectedSpotPrice,
         actualSpotPrice,
         tolerance,
-        'roundBankers',
+        "roundBankers"
       );
       expect(comparison == 0).toBeTruthy();
     });
 
-    test('foo in terms of bar in uneven pool', () => {
-      const poolAssets: StableMath.StableSwapToken[] = [
+    test("foo in terms of bar in uneven pool", () => {
+      const poolAssets: StableSwapToken[] = [
         {
           amount: new Dec(10_000_000_000),
-          denom: 'foo',
+          denom: "foo",
           scalingFactor: 1,
         },
         {
           amount: new Dec(20_000_000_000),
-          denom: 'bar',
+          denom: "bar",
           scalingFactor: 1,
         },
         {
           amount: new Dec(30_000_000_000),
-          denom: 'baz',
+          denom: "baz",
           scalingFactor: 1,
         },
       ];
 
       // quote and base definitions following V2 Querier
-      const baseDenom = 'bar';
-      const quoteDenom = 'foo';
+      const baseDenom = "bar";
+      const quoteDenom = "foo";
 
       const expectedSpotPrice = new Dec(1.446096575818955898);
 
-      const actualSpotPrice = StableMath.calcSpotPrice(
+      const actualSpotPrice = StableSwapMath.calcSpotPrice(
         poolAssets,
         baseDenom,
-        quoteDenom,
+        quoteDenom
       );
 
       const tolerance = new Dec(1).quo(
-        DecUtils.getTenExponentNInPrecisionRange(3),
+        DecUtils.getTenExponentNInPrecisionRange(3)
       );
-      const comparison = StableMath.compare_checkMultErrorTolerance(
+      const comparison = StableSwapMath.compare_checkMultErrorTolerance(
         expectedSpotPrice,
         actualSpotPrice,
         tolerance,
-        'roundBankers',
+        "roundBankers"
       );
 
       expect(comparison == 0).toBeTruthy();
@@ -277,7 +281,7 @@ describe('Test stableswap math', () => {
 
     /*
     test('even large pool basic trade (precision test)', () => {
-      const poolAssets: StableMath.StableSwapToken[] = [
+      const poolAssets: StableSwapToken[] = [
         {
           amount: new Dec(1_000_000_000_000),
           denom: 'foo',
@@ -295,7 +299,7 @@ describe('Test stableswap math', () => {
 
       const expectedTokenIn = { denom: 'foo', amount: new Int(101) };
 
-      const inAmount = StableMath.calcInGivenOut(
+      const inAmount = StableSwapMath.calcInGivenOut(
         poolAssets,
         tokenOut,
         expectedTokenIn.denom,
@@ -307,56 +311,56 @@ describe('Test stableswap math', () => {
     */
   });
 
-  describe('solver', () => {
-    test('even 3-asset small pool, small input', () => {
+  describe("solver", () => {
+    test("even 3-asset small pool, small input", () => {
       const xReserve = new Dec(100);
       const yReserve = new Dec(100);
       const remReserves = [new Dec(100)];
       const yIn = new Dec(1);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('even 3-asset medium pool, small input', () => {
+    test("even 3-asset medium pool, small input", () => {
       const xReserve = new Dec(100_000);
       const yReserve = new Dec(100_000);
       const remReserves = [new Dec(100_000)];
       const yIn = new Dec(100);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('even 4-asset small pool, small input', () => {
+    test("even 4-asset small pool, small input", () => {
       const xReserve = new Dec(100);
       const yReserve = new Dec(100);
       const remReserves = [new Dec(100), new Dec(100)];
       const yIn = new Dec(1);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('even 4-asset medium pool, small input', () => {
+    test("even 4-asset medium pool, small input", () => {
       const xReserve = new Dec(100_000);
       const yReserve = new Dec(100_000);
       const remReserves = [new Dec(100_000), new Dec(100_000)];
       const yIn = new Dec(1);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('even 4-asset large pool (100M each), small input', () => {
+    test("even 4-asset large pool (100M each), small input", () => {
       const xReserve = new Dec(100_000_000);
       const yReserve = new Dec(100_000_000);
       const remReserves = [new Dec(100_000_000), new Dec(100_000_000)];
       const yIn = new Dec(100);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('even 4-asset pool (10B each post-scaled), small input', () => {
+    test("even 4-asset pool (10B each post-scaled), small input", () => {
       const xReserve = new Dec(10_000_000_000);
       const yReserve = new Dec(10_000_000_000);
       const remReserves = [new Dec(10_000_000_000), new Dec(10_000_000_000)];
       const yIn = new Dec(100_000_000);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('even 10-asset pool (10B each post-scaled), small input', () => {
+    test("even 10-asset pool (10B each post-scaled), small input", () => {
       const xReserve = new Dec(10_000_000_000);
       const yReserve = new Dec(10_000_000_000);
       const remReserves = [
@@ -371,9 +375,9 @@ describe('Test stableswap math', () => {
       ];
       const yIn = new Dec(100);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('even 10-asset pool (100B each post-scaled), large input', () => {
+    test("even 10-asset pool (100B each post-scaled), large input", () => {
       const xReserve = new Dec(100_000_000_000);
       const yReserve = new Dec(100_000_000_000);
       const remReserves = [
@@ -388,120 +392,120 @@ describe('Test stableswap math', () => {
       ];
       const yIn = new Dec(10_000_000_000);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
 
     // uneven pools
-    test('uneven 3-asset pool, even swap assets as pool minority', () => {
+    test("uneven 3-asset pool, even swap assets as pool minority", () => {
       const xReserve = new Dec(100);
       const yReserve = new Dec(100);
       const remReserves = [new Dec(100_000)];
       const yIn = new Dec(10);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('uneven 3-asset pool, uneven swap assets as pool minority, y > x', () => {
+    test("uneven 3-asset pool, uneven swap assets as pool minority, y > x", () => {
       const xReserve = new Dec(100);
       const yReserve = new Dec(200);
       const remReserves = [new Dec(100_000)];
       const yIn = new Dec(10);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('uneven 3-asset pool, uneven swap assets as pool minority, x > y', () => {
+    test("uneven 3-asset pool, uneven swap assets as pool minority, x > y", () => {
       const xReserve = new Dec(200);
       const yReserve = new Dec(100);
       const remReserves = [new Dec(100_000)];
       const yIn = new Dec(10);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('uneven 3-asset pool, no round numbers', () => {
+    test("uneven 3-asset pool, no round numbers", () => {
       const xReserve = new Dec(1178349);
       const yReserve = new Dec(8329743);
       const remReserves = [new Dec(329847)];
       const yIn = new Dec(10);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('uneven 4-asset pool, small input and swap assets in pool minority', () => {
+    test("uneven 4-asset pool, small input and swap assets in pool minority", () => {
       const xReserve = new Dec(100);
       const yReserve = new Dec(100);
       const remReserves = [new Dec(100_000), new Dec(100_000)];
       const yIn = new Dec(10);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('uneven 4-asset pool, even swap assets in pool majority', () => {
+    test("uneven 4-asset pool, even swap assets in pool majority", () => {
       const xReserve = new Dec(100_000);
       const yReserve = new Dec(100_000);
       const remReserves = [new Dec(100), new Dec(100)];
       const yIn = new Dec(10);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('uneven 4-asset pool, even swap assets in pool majority', () => {
+    test("uneven 4-asset pool, even swap assets in pool majority", () => {
       const xReserve = new Dec(100_000);
       const yReserve = new Dec(100_000);
       const remReserves = [new Dec(100), new Dec(100)];
       const yIn = new Dec(10);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('uneven 4-asset pool, uneven swap assets in pool majority, y > x', () => {
+    test("uneven 4-asset pool, uneven swap assets in pool majority, y > x", () => {
       const xReserve = new Dec(100_000);
       const yReserve = new Dec(200_000);
       const remReserves = [new Dec(100), new Dec(100)];
       const yIn = new Dec(10);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('uneven 4-asset pool, uneven swap assets in pool majority, y < x', () => {
+    test("uneven 4-asset pool, uneven swap assets in pool majority, y < x", () => {
       const xReserve = new Dec(200_000);
       const yReserve = new Dec(100_000);
       const remReserves = [new Dec(100), new Dec(100)];
       const yIn = new Dec(10);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
-    test('uneven 4-asset pool, no round numbers', () => {
+    test("uneven 4-asset pool, no round numbers", () => {
       const xReserve = new Dec(1178349);
       const yReserve = new Dec(8329743);
       const remReserves = [new Dec(329847), new Dec(4372897)];
       const yIn = new Dec(10);
 
-      StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
     });
 
     // check for expected exceptions to be thrown
-    test('negative xReserve', () => {
+    test("negative xReserve", () => {
       const xReserve = new Dec(-100);
       const yReserve = new Dec(100);
       const remReserves = [new Dec(100), new Dec(100)];
       const yIn = new Dec(1);
 
       expect(() =>
-        StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn),
+        StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn)
       ).toThrowError();
     });
-    test('negative yReserve', () => {
+    test("negative yReserve", () => {
       const xReserve = new Dec(100);
       const yReserve = new Dec(-100);
       const remReserves = [new Dec(100), new Dec(100)];
       const yIn = new Dec(1);
 
       expect(() =>
-        StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn),
+        StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn)
       ).toThrowError();
     });
-    test('input greater than pool reserves (even 4-asset pool)', () => {
+    test("input greater than pool reserves (even 4-asset pool)", () => {
       const xReserve = new Dec(100);
       const yReserve = new Dec(100);
       const remReserves = [new Dec(100), new Dec(100)];
       const yIn = new Dec(1000);
 
       expect(() =>
-        StableMath.solveCfmm(xReserve, yReserve, remReserves, yIn),
+        StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn)
       ).toThrowError();
     });
   });

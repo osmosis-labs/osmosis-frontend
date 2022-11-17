@@ -1,2 +1,3 @@
 export * from "./estimates";
-export * from "./weighted";
+export { StableSwapMath } from "./stable";
+export { WeightedPoolMath } from "./weighted";

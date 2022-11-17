@@ -1,4 +1,13 @@
-import { Coin, Dec, DecUtils } from '@keplr-wallet/unit';
+import { Coin, Dec, DecUtils } from "@keplr-wallet/unit";
+
+export const StableSwapMath = {
+  calcOutGivenIn,
+  calcInGivenOut,
+  calcSpotPrice,
+  // secondary
+  solveCfmm,
+  compare_checkMultErrorTolerance,
+};
 
 const oneDec = new Dec(1);
 
@@ -9,45 +18,45 @@ export type StableSwapToken = {
 };
 
 // calculates exact output given an input with no rounding/truncation
-function solveCalcOutGivenIn(
+export function solveCalcOutGivenIn(
   tokens: StableSwapToken[],
   tokenIn: Coin,
   tokenOutDenom: string,
-  swapFee: Dec,
+  swapFee: Dec
 ): Dec {
   const scaledTokens = scaleTokens(tokens);
 
   const tokenInScalingFactor = tokens.find(
-    ({ denom }) => denom === tokenIn.denom,
+    ({ denom }) => denom === tokenIn.denom
   )?.scalingFactor;
 
-  if (!tokenInScalingFactor) throw Error('tokenIn denom not in pool tokens');
+  if (!tokenInScalingFactor) throw Error("tokenIn denom not in pool tokens");
 
   const tokenInScaled = new Dec(tokenIn.amount).quoTruncate(
-    new Dec(tokenInScalingFactor),
+    new Dec(tokenInScalingFactor)
   );
 
   // we apply swap fee before running solver since we are going input -> output
   const tokenInLessFee = tokenInScaled.mul(oneDec.sub(swapFee));
 
   const tokenOutSupply = scaledTokens.find(
-    ({ denom }) => denom === tokenOutDenom,
+    ({ denom }) => denom === tokenOutDenom
   );
   const tokenInSupply = scaledTokens.find(
-    ({ denom }) => denom === tokenIn.denom,
+    ({ denom }) => denom === tokenIn.denom
   );
   const remReserves = scaledTokens
     .filter(({ denom }) => denom !== tokenIn.denom && denom !== tokenOutDenom)
     .map(({ amount }) => amount);
 
   if (!tokenOutSupply || !tokenInSupply)
-    throw new Error('token supply incorrect');
+    throw new Error("token supply incorrect");
 
   const cfmmOut = solveCfmm(
     tokenOutSupply.amount,
     tokenInSupply.amount,
     remReserves,
-    tokenInLessFee,
+    tokenInLessFee
   );
 
   return cfmmOut.mul(new Dec(tokenOutSupply.scalingFactor));
@@ -57,13 +66,13 @@ export function calcOutGivenIn(
   tokens: StableSwapToken[],
   tokenIn: Coin,
   tokenOutDenom: string,
-  swapFee: Dec,
+  swapFee: Dec
 ) {
   return solveCalcOutGivenIn(
     tokens,
     tokenIn,
     tokenOutDenom,
-    swapFee,
+    swapFee
   ).truncate();
 }
 
@@ -71,38 +80,38 @@ export function calcInGivenOut(
   tokens: StableSwapToken[],
   tokenOut: Coin,
   tokenInDenom: string,
-  swapFee: Dec,
+  swapFee: Dec
 ) {
   const scaledTokens = scaleTokens(tokens);
 
   const tokenOutScalingFactor = tokens.find(
-    ({ denom }) => denom === tokenOut.denom,
+    ({ denom }) => denom === tokenOut.denom
   )?.scalingFactor;
 
-  if (!tokenOutScalingFactor) throw Error('tokenIn denom not in pool tokens');
+  if (!tokenOutScalingFactor) throw Error("tokenIn denom not in pool tokens");
 
   const tokenOutScaled = new Dec(tokenOut.amount).quoTruncate(
-    new Dec(tokenOutScalingFactor),
+    new Dec(tokenOutScalingFactor)
   );
 
   const tokenInSupply = scaledTokens.find(
-    ({ denom }) => denom === tokenInDenom,
+    ({ denom }) => denom === tokenInDenom
   );
   const tokenOutSupply = scaledTokens.find(
-    ({ denom }) => denom === tokenOut.denom,
+    ({ denom }) => denom === tokenOut.denom
   );
   const remReserves = scaledTokens
     .filter(({ denom }) => denom !== tokenOut.denom && denom !== tokenInDenom)
     .map(({ amount }) => amount);
 
   if (!tokenOutSupply || !tokenInSupply)
-    throw new Error('token supply incorrect');
+    throw new Error("token supply incorrect");
 
   const cfmmOut = solveCfmm(
     tokenInSupply.amount,
     tokenOutSupply.amount,
     remReserves,
-    tokenOutScaled.neg(),
+    tokenOutScaled.neg()
   );
 
   // we negate the calculated input since our solver is negative in negative out
@@ -114,7 +123,7 @@ export function calcInGivenOut(
   return tokenInPlusFee.mul(new Dec(tokenOutSupply.scalingFactor)).roundUp();
 }
 
-function scaleTokens(tokens: StableSwapToken[]): StableSwapToken[] {
+export function scaleTokens(tokens: StableSwapToken[]): StableSwapToken[] {
   return tokens.map((token) => ({
     ...token,
     amount: token.amount.quo(new Dec(token.scalingFactor)),
@@ -124,7 +133,7 @@ function scaleTokens(tokens: StableSwapToken[]): StableSwapToken[] {
 export function calcSpotPrice(
   tokens: StableSwapToken[],
   baseDenom: string,
-  quoteDenom: string,
+  quoteDenom: string
 ): Dec {
   // we approximate spot price by simulating a zero-fee swap of 1 unit against the pool
   const a = new Coin(quoteDenom, 1);
@@ -137,7 +146,7 @@ export function solveCfmm(
   xReserve: Dec,
   yReserve: Dec,
   remReserves: Dec[],
-  yIn: Dec,
+  yIn: Dec
 ): Dec {
   let wSumSquares = new Dec(0);
   remReserves.forEach((reserve) => {
@@ -147,27 +156,27 @@ export function solveCfmm(
   return solveCfmmBinarySearchMulti(xReserve, yReserve, wSumSquares, yIn);
 }
 
-function solveCfmmBinarySearchMulti(
+export function solveCfmmBinarySearchMulti(
   xReserve: Dec,
   yReserve: Dec,
   wSumSquares: Dec,
-  yIn: Dec,
+  yIn: Dec
 ): Dec {
   if (
     !xReserve.isPositive() ||
     !yReserve.isPositive() ||
     wSumSquares.isNegative()
   )
-    throw Error('reserves and squares must be positive');
+    throw Error("reserves and squares must be positive");
   else if (yIn.abs().gt(yReserve))
-    throw Error('cannot input more than y reserve');
+    throw Error("cannot input more than y reserve");
 
   const yFinal = yReserve.add(yIn);
   let xLowEst = xReserve;
   let xHighEst = xReserve;
   const k0 = cfmmConstantMultiNoV(xReserve, yFinal, wSumSquares);
   const k = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
-  if (k0.isZero() || k.isZero()) throw Error('k should never be zero');
+  if (k0.isZero() || k.isZero()) throw Error("k should never be zero");
 
   // find change in k
   const kRatio = k0.quo(k);
@@ -187,7 +196,7 @@ function solveCfmmBinarySearchMulti(
   const xOut = xReserve.sub(xEst);
 
   if (xOut.abs().gte(xReserve))
-    throw Error('invalid output: greater than full pool reserves');
+    throw Error("invalid output: greater than full pool reserves");
 
   return xOut;
 }
@@ -199,17 +208,17 @@ function solveCfmmBinarySearchMulti(
  of their squares (e.g. v = w^2 + z^2).
  When u = 1 and v = 0, this is equivalent to solidly's CFMM
  */
-function cfmmConstantMultiNoV(
+export function cfmmConstantMultiNoV(
   xReserve: Dec,
   yReserve: Dec,
-  wSumSquares: Dec,
+  wSumSquares: Dec
 ): Dec {
   if (
     !xReserve.isPositive() ||
     !yReserve.isPositive() ||
     wSumSquares.isNegative()
   )
-    throw Error('reserves must be positive');
+    throw Error("reserves must be positive");
 
   const xy = xReserve.mul(yReserve);
   const x2 = xReserve.mul(xReserve);
@@ -223,7 +232,7 @@ export function binarySearch(
   upperBound: Dec,
   targetOutput: Dec,
   maxIterations = 256,
-  errorTolerance = oneDec.quo(DecUtils.getTenExponentNInPrecisionRange(12)),
+  errorTolerance = oneDec.quo(DecUtils.getTenExponentNInPrecisionRange(12))
 ): Dec {
   // base of loop
   let curEstimate = lowerBound.add(upperBound).quo(new Dec(2));
@@ -236,7 +245,7 @@ export function binarySearch(
       targetOutput,
       curOutput,
       errorTolerance,
-      'roundUp',
+      "roundUp"
     );
     if (compare < 0) {
       upperBound = curEstimate;
@@ -249,14 +258,14 @@ export function binarySearch(
     curOutput = makeOutput(curEstimate);
   }
 
-  throw Error('binary search did not converge');
+  throw Error("binary search did not converge");
 }
 
 export function compare_checkMultErrorTolerance(
   expected: Dec,
   actual: Dec,
   tolerance: Dec,
-  roundingMode: string,
+  roundingMode: string
 ) {
   let comparison = 0;
   if (expected.gt(actual)) {
@@ -267,9 +276,9 @@ export function compare_checkMultErrorTolerance(
 
   // roundBankers case is handled by default quo function so we
   // fall back to that for all other roundingMode inputs
-  if (roundingMode == 'roundDown') {
+  if (roundingMode == "roundDown") {
     if (expected.lt(actual)) return -1;
-  } else if (roundingMode == 'roundUp') {
+  } else if (roundingMode == "roundUp") {
     if (expected.gt(actual)) return 1;
   }
 
