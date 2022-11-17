@@ -40,7 +40,7 @@ export declare class Amino {
                 denom: string;
                 amount: string;
             };
-            token_out_min_amount: string;
+            token_out_min_amount: any;
         };
     };
     static makeSwapExactAmountInMsg(pool: {

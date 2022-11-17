@@ -1,43 +1,55 @@
+import { Pool, SmoothWeightChangeParams } from "./interface";
 import { Dec, Int } from "@keplr-wallet/unit";
-/** Interface for pool data and basic operations on that data. */
-export interface Pool {
-    get type(): "weighted" | "stable";
+import { StableSwapToken } from "@osmosis-labs/math";
+/** Raw query response representation of pool. */
+export interface StablePoolRaw {
+    "@type": string;
+    id: string;
+    pool_params: {
+        lock: boolean;
+        swap_fee: string;
+        exit_fee: string;
+    };
+    total_shares: {
+        denom: string;
+        amount: string;
+    };
+    pool_liquidity: [
+        {
+            denom: string;
+            amount: string;
+        }
+    ];
+    scaling_factors: string[];
+    scaling_factor_controller: string;
+}
+/** Implementation of stableswap Pool interface w/ related calculations. */
+export declare class StablePool implements Pool {
+    readonly raw: StablePoolRaw;
+    constructor(raw: StablePoolRaw);
+    get type(): "stable";
     get id(): string;
     get totalWeight(): Int | undefined;
+    get poolAssets(): {
+        denom: string;
+        amount: Int;
+    }[];
+    protected get stableSwapTokens(): StableSwapToken[];
+    get poolAssetDenoms(): string[];
     get totalShare(): Int;
     get shareDenom(): string;
     get swapFee(): Dec;
     get exitFee(): Dec;
-    /** LBP */
     get smoothWeightChange(): SmoothWeightChangeParams | undefined;
-    get poolAssets(): {
-        denom: string;
-        amount: Int;
-        weight?: Int;
-    }[];
     getPoolAsset(denom: string): {
         denom: string;
         amount: Int;
-        weight?: Int;
     };
     hasPoolAsset(denom: string): boolean;
     getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec;
-    getSpotPriceOutOverIn(tokenInDenom: string, tokenOutDenom: string): Dec;
     getSpotPriceInOverOutWithoutSwapFee(tokenInDenom: string, tokenOutDenom: string): Dec;
+    getSpotPriceOutOverIn(tokenInDenom: string, tokenOutDenom: string): Dec;
     getSpotPriceOutOverInWithoutSwapFee(tokenInDenom: string, tokenOutDenom: string): Dec;
-    getTokenOutByTokenIn(tokenIn: {
-        denom: string;
-        amount: Int;
-    }, tokenOutDenom: string): {
-        amount: Int;
-        beforeSpotPriceInOverOut: Dec;
-        beforeSpotPriceOutOverIn: Dec;
-        afterSpotPriceInOverOut: Dec;
-        afterSpotPriceOutOverIn: Dec;
-        effectivePriceInOverOut: Dec;
-        effectivePriceOutOverIn: Dec;
-        priceImpact: Dec;
-    };
     getTokenInByTokenOut(tokenOut: {
         denom: string;
         amount: Int;
@@ -51,31 +63,19 @@ export interface Pool {
         effectivePriceOutOverIn: Dec;
         priceImpact: Dec;
     };
-    getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;
+    getTokenOutByTokenIn(tokenIn: {
+        denom: string;
+        amount: Int;
+    }, tokenOutDenom: string): {
+        amount: Int;
+        beforeSpotPriceInOverOut: Dec;
+        beforeSpotPriceOutOverIn: Dec;
+        afterSpotPriceInOverOut: Dec;
+        afterSpotPriceOutOverIn: Dec;
+        effectivePriceInOverOut: Dec;
+        effectivePriceOutOverIn: Dec;
+        priceImpact: Dec;
+    };
+    getNormalizedLiquidity(_tokenInDenom: string, tokenOutDenom: string): Dec;
     getLimitAmountByTokenIn(denom: string): Int;
 }
-/** Parameters of LBP. */
-export declare type SmoothWeightChangeParams = {
-    /** Timestamp */
-    startTime: string;
-    /** Seconds with s suffix. Ex) 3600s */
-    duration: string;
-    initialPoolWeights: {
-        token: {
-            denom: string;
-            /** Int */
-            amount: string;
-        };
-        /** Int */
-        weight: string;
-    }[];
-    targetPoolWeights: {
-        token: {
-            denom: string;
-            /** Int */
-            amount: string;
-        };
-        /** Int */
-        weight: string;
-    }[];
-};

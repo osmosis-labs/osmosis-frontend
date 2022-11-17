@@ -1,10 +1,12 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
-/** Interface for raw pool data and basic operations on that data. */
+/** Interface for pool data and basic operations on that data. */
 export interface Pool {
+  get type(): "weighted" | "stable";
+
   get id(): string;
 
-  get totalWeight(): Int;
+  get totalWeight(): Int | undefined;
 
   get totalShare(): Int;
   get shareDenom(): string;
@@ -18,12 +20,12 @@ export interface Pool {
   get poolAssets(): {
     denom: string;
     amount: Int;
-    weight: Int;
+    weight?: Int;
   }[];
   getPoolAsset(denom: string): {
     denom: string;
     amount: Int;
-    weight: Int;
+    weight?: Int;
   };
   hasPoolAsset(denom: string): boolean;
 

@@ -1,9 +1,9 @@
 import { Pool, SmoothWeightChangeParams } from "./interface";
-import { Dec, Int } from "@keplr-wallet/unit";
-import { WeightedPoolMath } from "@osmosis-labs/math";
+import { Coin, Dec, Int } from "@keplr-wallet/unit";
+import { StableSwapToken, StableSwapMath } from "@osmosis-labs/math";
 
 /** Raw query response representation of pool. */
-export interface WeightedPoolRaw {
+export interface StablePoolRaw {
   "@type": string;
   id: string;
   pool_params: {
@@ -12,79 +12,64 @@ export interface WeightedPoolRaw {
     swap_fee: string;
     // Dec
     exit_fee: string;
-    smooth_weight_change_params: {
-      // Timestamp
-      start_time: string;
-      // Seconds with s suffix. Ex) 3600s
-      duration: string;
-      initial_pool_weights: {
-        token: {
-          denom: string;
-          // Int
-          amount: string;
-        };
-        // Int
-        weight: string;
-      }[];
-      target_pool_weights: {
-        token: {
-          denom: string;
-          // Int
-          amount: string;
-        };
-        // Int
-        weight: string;
-      }[];
-    } | null;
   };
-  // Int
-  total_weight: string;
   total_shares: {
     denom: string;
     // Int
     amount: string;
   };
-  pool_assets: [
+  pool_liquidity: [
     {
+      denom: string;
       // Int
-      weight: string;
-      token: {
-        denom: string;
-        // Int
-        amount: string;
-      };
+      amount: string;
     }
   ];
+  scaling_factors: string[];
+  scaling_factor_controller: string;
 }
 
-/** Implementation of Pool interface w/ related calculations. */
-export class WeightedPool implements Pool {
-  constructor(public readonly raw: WeightedPoolRaw) {}
+/** Implementation of stableswap Pool interface w/ related calculations. */
+export class StablePool implements Pool {
+  constructor(public readonly raw: StablePoolRaw) {}
 
-  get type(): "weighted" {
-    return "weighted";
+  get type(): "stable" {
+    return "stable";
   }
 
   get id(): string {
     return this.raw.id;
   }
 
-  get totalWeight(): Int {
-    return new Int(this.raw.total_weight);
+  get totalWeight(): Int | undefined {
+    return;
   }
 
-  get poolAssets(): { denom: string; amount: Int; weight: Int }[] {
-    return this.raw.pool_assets.map((asset) => {
+  get poolAssets(): { denom: string; amount: Int }[] {
+    return this.raw.pool_liquidity.map((asset) => {
       return {
-        denom: asset.token.denom,
-        amount: new Int(asset.token.amount),
-        weight: new Int(asset.weight),
+        denom: asset.denom,
+        amount: new Int(asset.amount),
+      };
+    });
+  }
+
+  protected get stableSwapTokens(): StableSwapToken[] {
+    return this.poolAssets.map((asset, index) => {
+      const scalingFactor = parseInt(this.raw.scaling_factors[index]);
+
+      if (scalingFactor === NaN) throw new Error("Invalid scaling factor");
+
+      return {
+        denom: asset.denom,
+        amount: new Dec(asset.amount.toString()),
+        scalingFactor,
       };
     });
   }
 
   get poolAssetDenoms(): string[] {
-    return this.raw.pool_assets.map((asset) => asset.token.denom);
+    return this.raw.pool_liquidity.map((asset) => asset.denom);
   }
 
   get totalShare(): Int {
@@ -102,23 +87,10 @@ export class WeightedPool implements Pool {
   }
 
   get smoothWeightChange(): SmoothWeightChangeParams | undefined {
-    if (this.raw.pool_params.smooth_weight_change_params !== null) {
-      const {
-        start_time,
-        duration,
-        initial_pool_weights,
-        target_pool_weights,
-      } = this.raw.pool_params.smooth_weight_change_params;
-      return {
-        startTime: start_time,
-        duration,
-        initialPoolWeights: initial_pool_weights,
-        targetPoolWeights: target_pool_weights,
-      };
-    }
+    return;
   }
 
-  getPoolAsset(denom: string): { denom: string; amount: Int; weight: Int } {
+  getPoolAsset(denom: string): { denom: string; amount: Int } {
     const poolAsset = this.poolAssets.find((asset) => asset.denom === denom);
     if (!poolAsset) {
       throw new Error(
@@ -138,12 +110,10 @@ export class WeightedPool implements Pool {
     const inPoolAsset = this.getPoolAsset(tokenInDenom);
     const outPoolAsset = this.getPoolAsset(tokenOutDenom);
 
-    return WeightedPoolMath.calcSpotPrice(
-      new Dec(inPoolAsset.amount),
-      new Dec(inPoolAsset.weight),
-      new Dec(outPoolAsset.amount),
-      new Dec(outPoolAsset.weight),
-      this.swapFee
+    return StableSwapMath.calcSpotPrice(
+      this.stableSwapTokens,
+      inPoolAsset.denom,
+      outPoolAsset.denom
     );
   }
 
@@ -154,12 +124,10 @@ export class WeightedPool implements Pool {
     const inPoolAsset = this.getPoolAsset(tokenInDenom);
     const outPoolAsset = this.getPoolAsset(tokenOutDenom);
 
-    return WeightedPoolMath.calcSpotPrice(
-      new Dec(inPoolAsset.amount),
-      new Dec(inPoolAsset.weight),
-      new Dec(outPoolAsset.amount),
-      new Dec(outPoolAsset.weight),
-      new Dec(0)
+    return StableSwapMath.calcSpotPrice(
+      this.stableSwapTokens,
+      inPoolAsset.denom,
+      outPoolAsset.denom
     );
   }
 
@@ -194,29 +162,39 @@ export class WeightedPool implements Pool {
     const inPoolAsset = this.getPoolAsset(tokenInDenom);
     const outPoolAsset = this.getPoolAsset(tokenOut.denom);
 
-    const beforeSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
-      new Dec(inPoolAsset.amount),
-      new Dec(inPoolAsset.weight),
-      new Dec(outPoolAsset.amount),
-      new Dec(outPoolAsset.weight),
+    const coinOut = new Coin(tokenOut.denom, tokenOut.amount);
+
+    const beforeSpotPriceInOverOut = StableSwapMath.calcSpotPrice(
+      this.stableSwapTokens,
+      inPoolAsset.denom,
+      outPoolAsset.denom
+    );
+
+    const tokenInAmount = StableSwapMath.calcInGivenOut(
+      this.stableSwapTokens,
+      coinOut,
+      tokenInDenom,
       this.swapFee
     );
 
-    const tokenInAmount = WeightedPoolMath.calcInGivenOut(
-      new Dec(inPoolAsset.amount),
-      new Dec(inPoolAsset.weight),
-      new Dec(outPoolAsset.amount),
-      new Dec(outPoolAsset.weight),
-      new Dec(tokenOut.amount),
-      this.swapFee
-    ).truncate();
-
-    const afterSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
-      new Dec(inPoolAsset.amount).add(new Dec(tokenInAmount)),
-      new Dec(inPoolAsset.weight),
-      new Dec(outPoolAsset.amount).sub(new Dec(tokenOut.amount)),
-      new Dec(outPoolAsset.weight),
-      this.swapFee
+    const movedStableTokens: StableSwapToken[] = this.stableSwapTokens.map(
+      (token) => {
+        if (token.denom === tokenInDenom) {
+          return { ...token, amount: token.amount.add(new Dec(tokenInAmount)) };
+        }
+        if (token.denom === tokenOut.denom) {
+          return {
+            ...token,
+            amount: token.amount.sub(new Dec(tokenOut.amount)),
+          };
+        }
+        return token;
+      }
+    );
+    const afterSpotPriceInOverOut = StableSwapMath.calcSpotPrice(
+      movedStableTokens,
+      inPoolAsset.denom,
+      outPoolAsset.denom
     );
 
     if (afterSpotPriceInOverOut.lt(beforeSpotPriceInOverOut)) {
@@ -258,22 +236,20 @@ export class WeightedPool implements Pool {
     const inPoolAsset = this.getPoolAsset(tokenIn.denom);
     const outPoolAsset = this.getPoolAsset(tokenOutDenom);
 
-    const beforeSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
-      new Dec(inPoolAsset.amount),
-      new Dec(inPoolAsset.weight),
-      new Dec(outPoolAsset.amount),
-      new Dec(outPoolAsset.weight),
-      this.swapFee
+    const coinIn = new Coin(tokenIn.denom, tokenIn.amount);
+
+    const beforeSpotPriceInOverOut = StableSwapMath.calcSpotPrice(
+      this.stableSwapTokens,
+      inPoolAsset.denom,
+      outPoolAsset.denom
     );
 
-    const tokenOutAmount = WeightedPoolMath.calcOutGivenIn(
-      new Dec(inPoolAsset.amount),
-      new Dec(inPoolAsset.weight),
-      new Dec(outPoolAsset.amount),
-      new Dec(outPoolAsset.weight),
-      new Dec(tokenIn.amount),
+    const tokenOutAmount = StableSwapMath.calcOutGivenIn(
+      this.stableSwapTokens,
+      coinIn,
+      outPoolAsset.denom,
       this.swapFee
-    ).truncate();
+    );
 
     if (tokenOutAmount.equals(new Int(0))) {
       return {
@@ -288,12 +264,27 @@ export class WeightedPool implements Pool {
       };
     }
 
-    const afterSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
-      new Dec(inPoolAsset.amount).add(new Dec(tokenIn.amount)),
-      new Dec(inPoolAsset.weight),
-      new Dec(outPoolAsset.amount).sub(new Dec(tokenOutAmount)),
-      new Dec(outPoolAsset.weight),
-      this.swapFee
+    const movedStableTokens: StableSwapToken[] = this.stableSwapTokens.map(
+      (token) => {
+        if (token.denom === tokenIn.denom) {
+          return {
+            ...token,
+            amount: token.amount.add(new Dec(tokenIn.amount)),
+          };
+        }
+        if (token.denom === tokenOutDenom) {
+          return {
+            ...token,
+            amount: token.amount.sub(new Dec(tokenOutAmount)),
+          };
+        }
+        return token;
+      }
+    );
+    const afterSpotPriceInOverOut = StableSwapMath.calcSpotPrice(
+      movedStableTokens,
+      tokenIn.denom,
+      outPoolAsset.denom
     );
 
     if (afterSpotPriceInOverOut.lt(beforeSpotPriceInOverOut)) {
@@ -319,14 +310,10 @@ export class WeightedPool implements Pool {
     };
   }
 
-  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec {
-    const tokenIn = this.getPoolAsset(tokenInDenom);
+  getNormalizedLiquidity(_tokenInDenom: string, tokenOutDenom: string): Dec {
     const tokenOut = this.getPoolAsset(tokenOutDenom);
 
-    return tokenOut.amount
-      .toDec()
-      .mul(tokenIn.weight.toDec())
-      .quo(tokenIn.weight.toDec().add(tokenOut.weight.toDec()));
+    return tokenOut.amount.toDec(); // TODO: ensure this works in router
   }
 
   getLimitAmountByTokenIn(denom: string): Int {

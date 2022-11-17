@@ -2,6 +2,7 @@ import { Pool, SmoothWeightChangeParams } from "./interface";
 import { Dec, Int } from "@keplr-wallet/unit";
 /** Raw query response representation of pool. */
 export interface WeightedPoolRaw {
+    "@type": string;
     id: string;
     pool_params: {
         lock: boolean;
@@ -45,17 +46,19 @@ export interface WeightedPoolRaw {
 export declare class WeightedPool implements Pool {
     readonly raw: WeightedPoolRaw;
     constructor(raw: WeightedPoolRaw);
-    get exitFee(): Dec;
+    get type(): "weighted";
     get id(): string;
+    get totalWeight(): Int;
     get poolAssets(): {
         denom: string;
         amount: Int;
         weight: Int;
     }[];
     get poolAssetDenoms(): string[];
+    get totalShare(): Int;
     get shareDenom(): string;
     get swapFee(): Dec;
-    get totalShare(): Int;
+    get exitFee(): Dec;
     get smoothWeightChange(): SmoothWeightChangeParams | undefined;
     getPoolAsset(denom: string): {
         denom: string;
@@ -63,7 +66,6 @@ export declare class WeightedPool implements Pool {
         weight: Int;
     };
     hasPoolAsset(denom: string): boolean;
-    get totalWeight(): Int;
     getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec;
     getSpotPriceInOverOutWithoutSwapFee(tokenInDenom: string, tokenOutDenom: string): Dec;
     getSpotPriceOutOverIn(tokenInDenom: string, tokenOutDenom: string): Dec;
