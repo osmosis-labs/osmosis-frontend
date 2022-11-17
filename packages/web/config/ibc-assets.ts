@@ -797,8 +797,8 @@ export const IBCAssetInfos: (IBCAsset & {
   },
   {
     counterpartyChainId: "echelon_3000-3",
-    sourceChannelId: "channel-262",
-    destChannelId: "channel-8",
+    sourceChannelId: "channel-403",
+    destChannelId: "channel-11",
     coinMinimalDenom: "aechelon",
     depositUrlOverride: "https://app.ech.network/ibc",
     withdrawUrlOverride: "https://app.ech.network/ibc",
