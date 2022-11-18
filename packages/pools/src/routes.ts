@@ -337,7 +337,10 @@ export class OptimizedRoutes {
 
         let poolSwapFee = pool.swapFee;
         // v13 fee discount for multihop swapping through osmo pool. see: https://github.com/osmosis-labs/osmosis/pull/2454
-        if (outDenom === "uosmo" && path.pools.length === 2) {
+        if (
+          (outDenom === "uosmo" || previousInDenom === "uosmo") &&
+          path.pools.length === 2
+        ) {
           isMultihopOsmoFeeDiscount = true;
           poolSwapFee = pool.swapFee.quo(new Dec(2));
         }

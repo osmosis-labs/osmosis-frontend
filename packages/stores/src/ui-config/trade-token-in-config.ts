@@ -259,6 +259,12 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     );
     const result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
 
+    console.log(
+      "discounted",
+      result.multiHopOsmoDiscount,
+      result.swapFee.toString()
+    );
+
     if (!result.amount.gt(new Int(0))) {
       this.setError(new Error("Not enough liquidity"));
       return zero;
