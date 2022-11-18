@@ -37,7 +37,8 @@ export function solveCalcOutGivenIn(
   );
 
   // we apply swap fee before running solver since we are going input -> output
-  const tokenInLessFee = tokenInScaled.mul(oneDec.sub(swapFee));
+  const oneMinusSwapFee = oneDec.sub(swapFee);
+  const tokenInLessFee = tokenInScaled.mul(oneMinusSwapFee);
 
   const tokenOutSupply = scaledTokens.find(
     ({ denom }) => denom === tokenOutDenom
@@ -150,7 +151,8 @@ export function solveCfmm(
 ): Dec {
   let wSumSquares = new Dec(0);
   remReserves.forEach((reserve) => {
-    wSumSquares = wSumSquares.add(reserve.mul(reserve));
+    const reserveSquared = reserve.mul(reserve);
+    wSumSquares = wSumSquares.add(reserveSquared);
   });
 
   return solveCfmmBinarySearchMulti(xReserve, yReserve, wSumSquares, yIn);
@@ -178,27 +180,81 @@ export function solveCfmmBinarySearchMulti(
   const k = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
   if (k0.isZero() || k.isZero()) throw Error("k should never be zero");
 
-  // find change in k
+  // find change in k (if kRatio = 1, bounds remain equal)
   const kRatio = k0.quo(k);
   if (kRatio.lt(oneDec)) {
     xHighEst = xReserve.quo(kRatio).roundUpDec();
   } else if (kRatio.gt(oneDec)) {
     xLowEst = new Dec(0);
-  } else {
-    return new Dec(0);
   }
 
-  const computeFromEst = (xEst: Dec) =>
-    cfmmConstantMultiNoV(xEst, yFinal, wSumSquares);
+  const targetK = targetKCalculator(xReserve, yReserve, wSumSquares, yFinal);
+  const iterKCalc = (xEst: Dec) =>
+    iterKCalculator(xEst, xReserve, yFinal, wSumSquares);
 
-  const xEst = binarySearch(computeFromEst, xLowEst, xHighEst, k);
+  const xEst = binarySearch(iterKCalc, xLowEst, xHighEst, targetK);
 
   const xOut = xReserve.sub(xEst);
+
+  console.log(
+    "xHighEst: ",
+    xHighEst,
+    "xLowEst: ",
+    xLowEst,
+    "xReserve: ",
+    xReserve,
+    "yReserve: ",
+    yReserve,
+    "yIn: ",
+    yIn,
+    "xEst: ",
+    xEst,
+    "final solver output: ",
+    xOut
+  );
 
   if (xOut.abs().gte(xReserve))
     throw Error("invalid output: greater than full pool reserves");
 
   return xOut;
+}
+
+export function targetKCalculator(x0: Dec, y0: Dec, w: Dec, yf: Dec): Dec {
+  // cfmmNoV(x0, y0, w) = x_0 y_0 (x_0^2 + y_0^2 + w)
+  const startK = cfmmConstantMultiNoV(x0, y0, w);
+  // remove extra yf term
+  const yfRemoved = startK.quo(yf);
+  // removed constant term from expression
+  // namely - (x_0 (y_f^2 + w) + x_0^3) = x_0(y_f^2 + w + x_0^2)
+  // innerTerm = y_f^2 + w + x_0^2
+  const yfSquared = yf.mul(yf);
+  const x0Squared = x0.mul(x0);
+  const innerTerm = yfSquared.add(w).add(x0Squared);
+  const constantTerm = innerTerm.mul(x0);
+
+  return yfRemoved.sub(constantTerm);
+}
+
+export function iterKCalculator(xf: Dec, x0: Dec, w: Dec, yf: Dec): Dec {
+  // compute coefficients first
+  const cubicCoeff = oneDec.neg();
+  const quadraticCoeff = x0.mul(new Dec(3));
+  const quadraticCoeffTimesX0 = x0.mul(quadraticCoeff);
+  const yfSquared = yf.mul(yf);
+  const linearCoeffNonNeg = quadraticCoeffTimesX0.add(w).add(yfSquared);
+  const linearCoeff = linearCoeffNonNeg.neg();
+
+  // output amount = initial reserve - final reserve
+  const xOut = x0.sub(xf);
+  // horners method
+  // ax^3 + bx^2 + cx = x(c + x(b + ax))
+  let res = cubicCoeff.mul(xOut);
+  res = res.add(quadraticCoeff);
+  res = res.mul(xOut);
+  res = res.add(linearCoeff);
+  res = res.mul(xOut);
+
+  return res;
 }
 
 /**
@@ -223,7 +279,8 @@ export function cfmmConstantMultiNoV(
   const xy = xReserve.mul(yReserve);
   const x2 = xReserve.mul(xReserve);
   const y2 = yReserve.mul(yReserve);
-  return xy.mul(x2.add(y2).add(wSumSquares));
+  const innerSum = x2.add(y2).add(wSumSquares);
+  return xy.mul(innerSum);
 }
 
 export function binarySearch(
@@ -235,7 +292,8 @@ export function binarySearch(
   errorTolerance = oneDec.quo(DecUtils.getTenExponentNInPrecisionRange(12))
 ): Dec {
   // base of loop
-  let curEstimate = lowerBound.add(upperBound).quo(new Dec(2));
+  let curEstSum = lowerBound.add(upperBound);
+  let curEstimate = curEstSum.quo(new Dec(2));
   let curOutput = makeOutput(curEstimate);
 
   // only need multiplicative error tolerance
@@ -247,14 +305,31 @@ export function binarySearch(
       errorTolerance,
       "roundUp"
     );
+    console.log(
+      "curIteration: ",
+      curIteration,
+      "xHighEst: ",
+      upperBound,
+      "xLowEst: ",
+      lowerBound,
+      "targetOutput: ",
+      targetOutput,
+      "curEstimate: ",
+      curEstimate,
+      "curOutput: ",
+      curOutput
+    );
+
     if (compare < 0) {
       upperBound = curEstimate;
     } else if (compare > 0) {
       lowerBound = curEstimate;
     } else {
+      console.log("exited!");
       return curEstimate;
     }
-    curEstimate = lowerBound.add(upperBound).quo(new Dec(2));
+    curEstSum = lowerBound.add(upperBound);
+    curEstimate = curEstSum.quo(new Dec(2));
     curOutput = makeOutput(curEstimate);
   }
 
@@ -293,11 +368,27 @@ export function compare_checkMultErrorTolerance(
   }
 
   // check mult tolerance
-  const diff = expected.sub(actual).abs();
-  const errorTerm = diff.quo(min);
+  const diff = expected.sub(actual);
+  const diffAbs = diff.abs();
+  const errorTerm = diffAbs.quo(min.abs());
   if (errorTerm.gt(tolerance)) {
     return comparison;
   }
+
+  console.log(
+    "these two are equal!: ",
+    expected,
+    actual,
+    "diff & diffAbs: ",
+    diff,
+    diffAbs,
+    "min term: ",
+    min,
+    "error term: ",
+    errorTerm,
+    "tolerance: ",
+    tolerance
+  );
 
   return 0;
 }
