@@ -30,6 +30,8 @@ export type BondableDuration = {
   }[];
   /** Both `delegated` and `undelegating` will be `undefined` if the user may "Go superfluid". */
   superfluid?: {
+    /** Duration users can bond to for superfluid participation. Assumed to be longest duration on lock durations chain param. */
+    duration: Duration;
     apr: RatePretty;
     commission?: RatePretty;
     validatorMoniker?: string;
@@ -119,7 +121,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
         });
 
       return Array.from(durationsMsSet.values())
-        .sort()
+        .sort((a, b) => b - a)
         .reverse()
         .map((durationMs) => {
           const curDuration = dayjs.duration({
@@ -234,6 +236,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
                 : undefined;
 
             superfluid = {
+              duration: sfsDuration,
               apr: this.superfluidPool.superfluidApr,
               commission: delegation?.validatorCommission,
               delegated: !this.superfluidPool.superfluid.upgradeableLpLockIds

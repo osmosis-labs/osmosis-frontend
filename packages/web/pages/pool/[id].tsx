@@ -614,7 +614,7 @@ const Pool: FunctionComponent = observer(() => {
               }
             )}
           >
-            <div className="flex lg:flex-col place-content-between lg:gap-4">
+            <div className="flex lg:flex-col place-content-between gap-4">
               <div className="flex flex-col gap-4">
                 <div className="flex md:flex-col items-baseline flex-wrap gap-4">
                   <LevelBadge level={2} disabled={level2Disabled} />
@@ -655,7 +655,7 @@ const Pool: FunctionComponent = observer(() => {
                   onUnbond={() => onUnlockTokens(bondableDuration.duration)}
                   onGoSuperfluid={() => setShowSuperfluidValidatorsModal(true)}
                   splashImageSrc={
-                    poolDetailConfig
+                    poolDetailConfig && poolDetailConfig.isIncentivized
                       ? poolDetailConfig.lockableDurations.length > 0 &&
                         poolDetailConfig.lockableDurations[0].asDays() ===
                           bondableDuration.duration.asDays()
