@@ -41,6 +41,7 @@ export declare class StablePool implements Pool {
     getPoolAsset(denom: string): {
         denom: string;
         amount: Int;
+        scalingFactor: number;
     };
     hasPoolAsset(denom: string): boolean;
     getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec;
@@ -73,6 +74,6 @@ export declare class StablePool implements Pool {
         effectivePriceOutOverIn: Dec;
         priceImpact: Dec;
     };
-    getNormalizedLiquidity(_tokenInDenom: string, tokenOutDenom: string): Dec;
+    getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;
     getLimitAmountByTokenIn(denom: string): Int;
 }

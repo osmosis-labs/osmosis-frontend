@@ -84,7 +84,11 @@ export class StablePool implements Pool {
     });
   }
 
-  getPoolAsset(denom: string): { denom: string; amount: Int } {
+  getPoolAsset(denom: string): {
+    denom: string;
+    amount: Int;
+    scalingFactor: number;
+  } {
     const poolAsset = this.poolAssets.find((asset) => asset.denom === denom);
     if (!poolAsset) {
       throw new Error(
@@ -304,10 +308,14 @@ export class StablePool implements Pool {
     };
   }
 
-  getNormalizedLiquidity(_tokenInDenom: string, tokenOutDenom: string): Dec {
+  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec {
     const tokenOut = this.getPoolAsset(tokenOutDenom);
+    const tokenIn = this.getPoolAsset(tokenInDenom);
 
-    return tokenOut.amount.toDec(); // TODO: ensure this works in router
+    return tokenOut.amount
+      .toDec()
+      .mul(new Dec(tokenIn.scalingFactor))
+      .quo(new Dec(tokenIn.scalingFactor).add(new Dec(tokenOut.scalingFactor))); // TODO: ensure this works in router
   }
 
   getLimitAmountByTokenIn(denom: string): Int {
