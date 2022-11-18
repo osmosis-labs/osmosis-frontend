@@ -30,6 +30,7 @@ export declare class OptimizedRoutes {
         effectivePriceOutOverIn: Dec;
         tokenInFeeAmount: Int;
         swapFee: Dec;
+        multiHopOsmoDiscount: boolean;
         priceImpact: Dec;
     };
 }

@@ -279,6 +279,7 @@ export class OptimizedRoutes {
     effectivePriceOutOverIn: Dec;
     tokenInFeeAmount: Int;
     swapFee: Dec;
+    multiHopOsmoDiscount: boolean;
     priceImpact: Dec;
   } {
     if (paths.length === 0) {
@@ -290,6 +291,7 @@ export class OptimizedRoutes {
     let totalAfterSpotPriceInOverOut: Dec = new Dec(0);
     let totalEffectivePriceInOverOut: Dec = new Dec(0);
     let totalSwapFee: Dec = new Dec(0);
+    let isMultihopOsmoFeeDiscount = false;
 
     let sumAmount = new Int(0);
     for (const path of paths) {
@@ -333,13 +335,22 @@ export class OptimizedRoutes {
           outDenom
         );
 
+        let poolSwapFee = pool.swapFee;
+        // v13 fee discount for multihop swapping through osmo pool. see: https://github.com/osmosis-labs/osmosis/pull/2454
+        if (outDenom === "uosmo" && path.pools.length === 2) {
+          isMultihopOsmoFeeDiscount = true;
+          poolSwapFee = pool.swapFee.quo(new Dec(2));
+        }
+
         if (!tokenOut.amount.gt(new Int(0))) {
           // not enough liquidity
-          console.warn("Token out is 0 through pool: ", pool.id);
+          console.warn("Token out is 0 through pool:", pool.id);
+
           return {
             ...tokenOut,
             tokenInFeeAmount: new Int(0),
-            swapFee: pool.swapFee,
+            swapFee,
+            multiHopOsmoDiscount: false,
           };
         }
 
@@ -352,9 +363,7 @@ export class OptimizedRoutes {
         effectivePriceInOverOut = effectivePriceInOverOut.mulTruncate(
           tokenOut.effectivePriceInOverOut
         );
-        swapFee = swapFee.add(
-          new Dec(1).sub(swapFee).mulTruncate(pool.swapFee)
-        );
+        swapFee = swapFee.add(new Dec(1).sub(swapFee).mulTruncate(poolSwapFee));
 
         if (i === path.pools.length - 1) {
           totalOutAmount = totalOutAmount.add(tokenOut.amount);
@@ -398,6 +407,7 @@ export class OptimizedRoutes {
         new Dec(sumAmount).mulTruncate(new Dec(1).sub(totalSwapFee)).round()
       ),
       swapFee: totalSwapFee,
+      multiHopOsmoDiscount: isMultihopOsmoFeeDiscount,
       priceImpact,
     };
   }
