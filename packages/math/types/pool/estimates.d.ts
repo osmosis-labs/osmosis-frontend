@@ -40,12 +40,18 @@ export declare function estimateSwapExactAmountIn(pool: {
         coinDecimals: number;
         coinMinimalDenom: string;
         amount: Int;
-        weight: Int;
+        weight?: Int;
     };
     outPoolAsset: {
+        denom: string;
         amount: Int;
-        weight: Int;
+        weight?: Int;
     };
+    poolAssets: {
+        amount: Int;
+        denom: string;
+        scalingFactor: number;
+    }[];
     swapFee: Dec;
 }, tokenIn: Coin, tokenOutCurrency: Currency): {
     tokenOut: CoinPretty;
@@ -59,12 +65,18 @@ export declare function estimateSwapExactAmountOut(pool: {
         coinDecimals: number;
         coinMinimalDenom: string;
         amount: Int;
-        weight: Int;
+        weight?: Int;
     };
     outPoolAsset: {
+        denom: string;
         amount: Int;
-        weight: Int;
+        weight?: Int;
     };
+    poolAssets: {
+        amount: Int;
+        denom: string;
+        scalingFactor: number;
+    }[];
     swapFee: Dec;
 }, tokenOut: Coin, tokenInCurrency: Currency): {
     tokenIn: CoinPretty;
@@ -82,12 +94,18 @@ export declare function estimateMultihopSwapExactAmountIn(tokenIn: {
             coinDecimals: number;
             coinMinimalDenom: string;
             amount: Int;
-            weight: Int;
+            weight?: Int;
         };
         outPoolAsset: {
+            denom: string;
             amount: Int;
-            weight: Int;
+            weight?: Int;
         };
+        poolAssets: {
+            amount: Int;
+            denom: string;
+            scalingFactor: number;
+        }[];
         swapFee: Dec;
     };
     tokenOutCurrency: Currency;
@@ -99,24 +117,36 @@ export declare function estimateMultihopSwapExactAmountIn(tokenIn: {
     priceImpact: IntPretty;
 };
 declare function estimateSwapExactAmountIn_Raw(inPoolAsset: {
+    denom: string;
     amount: Int;
-    weight: Int;
+    weight?: Int;
 }, outPoolAsset: {
+    denom: string;
     amount: Int;
-    weight: Int;
-}, tokenIn: Coin, swapFee: Dec): {
+    weight?: Int;
+}, poolAssets: {
+    amount: Int;
+    denom: string;
+    scalingFactor: number;
+}[], tokenIn: Coin, swapFee: Dec): {
     tokenOutAmount: Int;
     spotPriceBefore: Dec;
     spotPriceAfter: Dec;
     priceImpact: Dec;
 };
 declare function estimateSwapExactAmountOut_Raw(inPoolAsset: {
+    denom: string;
     amount: Int;
-    weight: Int;
+    weight?: Int;
 }, outPoolAsset: {
+    denom: string;
     amount: Int;
-    weight: Int;
-}, tokenOut: Coin, swapFee: Dec): {
+    weight?: Int;
+}, poolAssets: {
+    amount: Int;
+    denom: string;
+    scalingFactor: number;
+}[], tokenOut: Coin, swapFee: Dec): {
     tokenInAmount: Int;
     spotPriceBefore: Dec;
     spotPriceAfter: Dec;

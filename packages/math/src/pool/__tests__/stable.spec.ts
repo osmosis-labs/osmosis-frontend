@@ -30,10 +30,6 @@ describe("Test stableswap math", () => {
       );
 
       expect(outAmount.equals(expectedTokenOut.amount)).toBeTruthy();
-      console.log(
-        "outAmount: " + outAmount.toString(),
-        "expectedTokenOut: " + expectedTokenOut.amount.toString()
-      );
     });
 
     test("even large pool basic trade (precision test)", () => {

@@ -309,8 +309,8 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
                 poolName: poolWithFeeMetrics.pool.poolAssets
                   .map((poolAsset) => poolAsset.amount.denom)
                   .join(" / "),
-                poolWeight: poolWithFeeMetrics.pool.poolAssets
-                  .map((poolAsset) => poolAsset.weightFraction.toString())
+                poolWeight: poolWithFeeMetrics.pool.weightedPoolInfo?.assets
+                  .map((poolAsset) => poolAsset.weightFraction?.toString())
                   .join(" / "),
                 isSuperfluidPool:
                   queryOsmosis.querySuperfluidPools.isSuperfluidPool(

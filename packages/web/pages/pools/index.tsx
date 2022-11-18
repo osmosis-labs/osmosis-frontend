@@ -1,6 +1,12 @@
 import Image from "next/image";
 import type { NextPage } from "next";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import { useState, ComponentProps, useMemo } from "react";
 import { Duration } from "dayjs/plugin/duration";
@@ -78,11 +84,23 @@ const Pools: NextPage = observer(function () {
           priceStore
         ),
         poolLiquidity: superfluidPool.computeTotalValueLocked(priceStore),
-        assets: superfluidPool.poolAssets.map((poolAsset) => ({
-          coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-          coinDenom: poolAsset.amount.currency.coinDenom,
-          weightFraction: poolAsset.weightFraction,
-        })),
+        assets: superfluidPool.poolAssets.map((asset) => {
+          const weightedAsset = superfluidPool.weightedPoolInfo?.assets.find(
+            (weightedAsset) =>
+              weightedAsset.denom === asset.amount.currency.coinMinimalDenom
+          );
+          const weightFraction =
+            weightedAsset?.weightFraction ??
+            new RatePretty(
+              new Dec(1).quo(new Dec(superfluidPool.poolAssets.length))
+            ); // stableswap pools have consistent weight fraction
+
+          return {
+            coinImageUrl: asset.amount.currency.coinImageUrl,
+            coinDenom: asset.amount.currency.coinDenom,
+            weightFraction,
+          };
+        }),
       })) ?? []
   )
     .process("poolLiquidity")
@@ -384,9 +402,9 @@ const Pools: NextPage = observer(function () {
                               (poolAsset) => poolAsset.amount.currency.coinDenom
                             )
                             .join(" / "),
-                          poolWeight: myPool.poolAssets
+                          poolWeight: myPool.weightedPoolInfo?.assets
                             .map((poolAsset) =>
-                              poolAsset.weightFraction.toString()
+                              poolAsset.weightFraction?.toString()
                             )
                             .join(" / "),
                           isSuperfluidPool:
@@ -602,7 +620,9 @@ const Pools: NextPage = observer(function () {
                                 .map((asset) => asset.coinDenom)
                                 .join(" / "),
                               poolWeight: assets
-                                .map((asset) => asset.weightFraction.toString())
+                                .map((asset) =>
+                                  asset.weightFraction?.toString()
+                                )
                                 .join(" / "),
                             },
                           ])

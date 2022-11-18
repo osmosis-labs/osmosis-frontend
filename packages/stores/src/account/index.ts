@@ -190,6 +190,8 @@ export class OsmosisAccountImpl {
   }
 
   /**
+   * Join pool with multiple assets.
+   *
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#join-pool
    * @param poolId Id of pool.
    * @param shareOutAmount LP share amount.
@@ -313,7 +315,7 @@ export class OsmosisAccountImpl {
   }
 
   /**
-   * Join pool with only one asset.
+   * Join pool with only one asset with a weighted pool.
    *
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#join-swap-extern-amount-in
    * @param poolId Id of pool to swap within.
@@ -347,16 +349,34 @@ export class OsmosisAccountImpl {
           throw new Error("Unknown pool");
         }
 
+        const totalWeight = queryPool.weightedPoolInfo?.totalWeight;
+        if (!totalWeight) {
+          throw new Error("Must be weighted pool");
+        }
+
         const poolAsset = queryPool.getPoolAsset(
           tokenIn.currency.coinMinimalDenom
         );
 
+        const poolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
+          (asset) => {
+            asset.denom === poolAsset.amount.currency.coinMinimalDenom;
+          }
+        )?.weight;
+        if (!poolAssetWeight) {
+          throw new Error("Pool asset not weighted");
+        }
+
         const estimated = WeightedPoolEstimates.estimateJoinSwapExternAmountIn(
           {
             amount: new Int(poolAsset.amount.toCoin().amount),
-            weight: poolAsset.weight.toDec().truncate(),
+            weight: new Int(poolAssetWeight.toString()),
           },
-          pool,
+          {
+            totalShare: pool.totalShare,
+            totalWeight: new Int(totalWeight.toString()),
+            swapFee: pool.swapFee,
+          },
           tokenIn,
           this._msgOpts.joinPool.shareCoinDecimals
         );
@@ -496,6 +516,18 @@ export class OsmosisAccountImpl {
             const outPoolAsset = queryPool.getPoolAsset(
               tokenOutCurrency.coinMinimalDenom
             );
+            const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
+              ({ denom }) =>
+                denom === inPoolAsset.amount.currency.coinMinimalDenom
+            )?.weight;
+            const outPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
+              ({ denom }) =>
+                denom === outPoolAsset.amount.currency.coinMinimalDenom
+            )?.weight;
+
+            const poolAssets = queryPool?.stableSwapInfo
+              ? queryPool.stableSwapInfo.assets
+              : [];
 
             return {
               pool: {
@@ -504,12 +536,18 @@ export class OsmosisAccountImpl {
                 inPoolAsset: {
                   ...inPoolAsset.amount.currency,
                   amount: new Int(inPoolAsset.amount.toCoin().amount),
-                  weight: inPoolAsset.weight.toDec().truncate(),
+                  weight: inPoolAssetWeight
+                    ? new Int(inPoolAssetWeight.toString())
+                    : undefined,
                 },
                 outPoolAsset: {
+                  denom: outPoolAsset.amount.currency.coinMinimalDenom,
                   amount: new Int(outPoolAsset.amount.toCoin().amount),
-                  weight: outPoolAsset.weight.toDec().truncate(),
+                  weight: outPoolAssetWeight
+                    ? new Int(outPoolAsset.toString())
+                    : undefined,
                 },
+                poolAssets,
               },
               tokenOutCurrency,
             };
@@ -618,6 +656,15 @@ export class OsmosisAccountImpl {
         const outPoolAsset = queryPool.getPoolAsset(
           tokenOutCurrency.coinMinimalDenom
         );
+        const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
+          ({ denom }) => denom === inPoolAsset.amount.currency.coinMinimalDenom
+        )?.weight;
+        const outPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
+          ({ denom }) => denom === outPoolAsset.amount.currency.coinMinimalDenom
+        )?.weight;
+        const poolAssets = queryPool?.stableSwapInfo
+          ? queryPool.stableSwapInfo.assets
+          : [];
 
         const msg = Msgs.Amino.makeSwapExactAmountInMsg(
           {
@@ -627,12 +674,18 @@ export class OsmosisAccountImpl {
             inPoolAsset: {
               ...inPoolAsset.amount.currency,
               amount: new Int(inPoolAsset.amount.toCoin().amount),
-              weight: inPoolAsset.weight.toDec().truncate(),
+              weight: inPoolAssetWeight
+                ? new Int(inPoolAssetWeight.toString())
+                : undefined,
             },
             outPoolAsset: {
+              denom: outPoolAsset.amount.currency.coinMinimalDenom,
               amount: new Int(outPoolAsset.amount.toCoin().amount),
-              weight: outPoolAsset.weight.toDec().truncate(),
+              weight: outPoolAssetWeight
+                ? new Int(outPoolAsset.toString())
+                : undefined,
             },
+            poolAssets,
           },
           this._msgOpts.swapExactAmountIn,
           this.base.bech32Address,
@@ -736,6 +789,15 @@ export class OsmosisAccountImpl {
         const outPoolAsset = queryPool.getPoolAsset(
           tokenOut.currency.coinMinimalDenom
         );
+        const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
+          ({ denom }) => denom === inPoolAsset.amount.currency.coinMinimalDenom
+        )?.weight;
+        const outPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
+          ({ denom }) => denom === outPoolAsset.amount.currency.coinMinimalDenom
+        )?.weight;
+        const poolAssets = queryPool?.stableSwapInfo
+          ? queryPool.stableSwapInfo.assets
+          : [];
 
         const msg = Msgs.Amino.makeSwapExactAmountOutMsg(
           {
@@ -744,12 +806,18 @@ export class OsmosisAccountImpl {
             inPoolAsset: {
               ...inPoolAsset.amount.currency,
               amount: new Int(inPoolAsset.amount.toCoin().amount),
-              weight: inPoolAsset.weight.toDec().truncate(),
+              weight: inPoolAssetWeight
+                ? new Int(inPoolAssetWeight.toString())
+                : undefined,
             },
             outPoolAsset: {
+              denom: outPoolAsset.amount.currency.coinMinimalDenom,
               amount: new Int(outPoolAsset.amount.toCoin().amount),
-              weight: outPoolAsset.weight.toDec().truncate(),
+              weight: outPoolAssetWeight
+                ? new Int(outPoolAsset.toString())
+                : undefined,
             },
+            poolAssets,
           },
           this._msgOpts.swapExactAmountOut,
           this.base.bech32Address,

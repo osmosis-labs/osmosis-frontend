@@ -1,9 +1,7 @@
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { pow } from "../utils";
 
 export const WeightedPoolMath = {
-  calcPriceImpactTokenIn,
-  calcPriceImpactTokenOut,
   calcSpotPrice,
   calcOutGivenIn,
   calcInGivenOut,
@@ -11,24 +9,6 @@ export const WeightedPoolMath = {
 };
 
 const oneDec = new Dec(1);
-
-export function calcPriceImpactTokenIn(
-  spotPriceBefore: Dec,
-  tokenIn: Int,
-  priceImpact: Dec
-): Int {
-  const effectivePrice = spotPriceBefore.mul(priceImpact.add(new Dec(1)));
-  return new Dec(tokenIn).quo(effectivePrice).truncate();
-}
-
-export function calcPriceImpactTokenOut(
-  spotPriceBefore: Dec,
-  tokenOut: Int,
-  priceImpact: Dec
-): Int {
-  const effectivePrice = spotPriceBefore.mul(priceImpact.add(new Dec(1)));
-  return new Dec(tokenOut).mul(effectivePrice).truncate();
-}
 
 export function calcSpotPrice(
   tokenBalanceIn: Dec,

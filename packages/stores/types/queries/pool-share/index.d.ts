@@ -31,11 +31,6 @@ export declare class ObservableQueryGammPoolShare {
     readonly getAllGammShare: (bech32Address: string, poolId: string) => CoinPretty;
     /** Gets percentage of user's ownership of pool vs all shares in pool. */
     readonly getAllGammShareRatio: (bech32Address: string, poolId: string) => RatePretty;
-    /** Gets user's ownership ratio and coin balance of each asset in pool. */
-    readonly getShareAssets: (bech32Address: string, poolId: string) => {
-        ratio: RatePretty;
-        asset: CoinPretty;
-    }[];
     /** Gets user's locked assets given a set of durations. */
     readonly getShareLockedAssets: (bech32Address: string, poolId: string, lockableDurations: Duration[]) => {
         duration: Duration;

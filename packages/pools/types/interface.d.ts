@@ -3,22 +3,17 @@ import { Dec, Int } from "@keplr-wallet/unit";
 export interface Pool {
     get type(): "weighted" | "stable";
     get id(): string;
-    get totalWeight(): Int | undefined;
     get totalShare(): Int;
     get shareDenom(): string;
     get swapFee(): Dec;
     get exitFee(): Dec;
-    /** LBP */
-    get smoothWeightChange(): SmoothWeightChangeParams | undefined;
     get poolAssets(): {
         denom: string;
         amount: Int;
-        weight?: Int;
     }[];
     getPoolAsset(denom: string): {
         denom: string;
         amount: Int;
-        weight?: Int;
     };
     hasPoolAsset(denom: string): boolean;
     getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec;
@@ -54,28 +49,3 @@ export interface Pool {
     getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;
     getLimitAmountByTokenIn(denom: string): Int;
 }
-/** Parameters of LBP. */
-export declare type SmoothWeightChangeParams = {
-    /** Timestamp */
-    startTime: string;
-    /** Seconds with s suffix. Ex) 3600s */
-    duration: string;
-    initialPoolWeights: {
-        token: {
-            denom: string;
-            /** Int */
-            amount: string;
-        };
-        /** Int */
-        weight: string;
-    }[];
-    targetPoolWeights: {
-        token: {
-            denom: string;
-            /** Int */
-            amount: string;
-        };
-        /** Int */
-        weight: string;
-    }[];
-};

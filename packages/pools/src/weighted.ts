@@ -1,4 +1,4 @@
-import { Pool, SmoothWeightChangeParams } from "./interface";
+import { Pool } from "./interface";
 import { Dec, Int } from "@keplr-wallet/unit";
 import { WeightedPoolMath } from "@osmosis-labs/math";
 
@@ -57,7 +57,34 @@ export interface WeightedPoolRaw {
   ];
 }
 
-/** Implementation of Pool interface w/ related calculations. */
+// TODO: use Int, and Duration types instead of raw strings
+/** Parameters of LBP. */
+export type SmoothWeightChangeParams = {
+  /** Timestamp */
+  startTime: string;
+  /** Seconds with s suffix. Ex) 3600s */
+  duration: string;
+  initialPoolWeights: {
+    token: {
+      denom: string;
+      /** Int */
+      amount: string;
+    };
+    /** Int */
+    weight: string;
+  }[];
+  targetPoolWeights: {
+    token: {
+      denom: string;
+      /** Int */
+      amount: string;
+    };
+    /** Int */
+    weight: string;
+  }[];
+};
+
+/** Implementation of Pool interface w/ related weighted/balancer calculations & metadata. */
 export class WeightedPool implements Pool {
   constructor(public readonly raw: WeightedPoolRaw) {}
 
@@ -101,6 +128,7 @@ export class WeightedPool implements Pool {
     return new Dec(this.raw.pool_params.exit_fee);
   }
 
+  /** LBP pool */
   get smoothWeightChange(): SmoothWeightChangeParams | undefined {
     if (this.raw.pool_params.smooth_weight_change_params !== null) {
       const {

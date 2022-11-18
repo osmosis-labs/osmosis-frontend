@@ -10,7 +10,7 @@ import {
   useMemo,
 } from "react";
 import classNames from "classnames";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
 import { Staking } from "@keplr-wallet/stores";
 import {
   ObservableAddLiquidityConfig,
@@ -89,7 +89,7 @@ const Pool: FunctionComponent = observer(() => {
       poolName: pool?.poolAssets
         .map((poolAsset) => poolAsset.amount.denom)
         .join(" / "),
-      poolWeight: pool?.poolAssets
+      poolWeight: pool?.weightedPoolInfo?.assets
         .map((poolAsset) => poolAsset.weightFraction.toString())
         .join(" / "),
     }),
@@ -419,8 +419,28 @@ const Pool: FunctionComponent = observer(() => {
             </div>
             {pool && (
               <AssetBreakdownChart
-                assets={pool.poolAssets}
-                totalWeight={pool.totalWeight}
+                assets={pool.poolAssets.map((poolAsset) => {
+                  const weights: {
+                    weight: IntPretty;
+                    weightFraction: RatePretty;
+                  } = pool.weightedPoolInfo?.assets.find(
+                    (asset) =>
+                      asset.denom === poolAsset.amount.currency.coinMinimalDenom
+                  ) ?? {
+                    weight: new IntPretty(1), // Assume stable pools have even weight
+                    weightFraction: new RatePretty(
+                      new Dec(1).quo(new Dec(pool.poolAssets.length))
+                    ),
+                  }; // TODO: test with stable pool
+                  return {
+                    ...poolAsset,
+                    ...weights,
+                  };
+                })}
+                totalWeight={
+                  pool.weightedPoolInfo?.totalWeight ??
+                  new IntPretty(pool.poolAssets.length)
+                }
               />
             )}
           </div>

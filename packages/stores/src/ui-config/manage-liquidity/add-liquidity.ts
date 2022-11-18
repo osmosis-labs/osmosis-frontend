@@ -269,10 +269,24 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     if (!pool) {
       return [];
     }
-    return pool.poolAssets.map((asset) => {
+
+    return pool.poolAssets.map(({ amount }) => {
+      const weights: {
+        weight: IntPretty;
+        weightFraction: RatePretty;
+      } = pool.weightedPoolInfo?.assets.find(
+        (asset) => asset.denom === amount.currency.coinMinimalDenom
+      ) ?? {
+        weight: new IntPretty(1), // Assume stable pools have even weight
+        weightFraction: new RatePretty(
+          new Dec(1).quo(new Dec(pool.poolAssets.length))
+        ),
+      }; // TODO: test with stable pool
+
       return {
-        ...asset,
-        currency: asset.amount.currency as Currency & {
+        ...weights,
+        amount,
+        currency: amount.currency as Currency & {
           originCurrency: Currency & {
             pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
           };

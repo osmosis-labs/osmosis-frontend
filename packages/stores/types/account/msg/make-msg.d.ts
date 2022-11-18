@@ -19,12 +19,18 @@ export declare class Amino {
                 coinDecimals: number;
                 coinMinimalDenom: string;
                 amount: Int;
-                weight: Int;
+                weight?: Int;
             };
             outPoolAsset: {
+                denom: string;
                 amount: Int;
-                weight: Int;
+                weight?: Int;
             };
+            poolAssets: {
+                amount: Int;
+                denom: string;
+                scalingFactor: number;
+            }[];
             swapFee: Dec;
         };
         tokenOutCurrency: Currency;
@@ -40,7 +46,7 @@ export declare class Amino {
                 denom: string;
                 amount: string;
             };
-            token_out_min_amount: any;
+            token_out_min_amount: string;
         };
     };
     static makeSwapExactAmountInMsg(pool: {
@@ -49,12 +55,18 @@ export declare class Amino {
             coinDecimals: number;
             coinMinimalDenom: string;
             amount: Int;
-            weight: Int;
+            weight?: Int;
         };
         outPoolAsset: {
+            denom: string;
             amount: Int;
-            weight: Int;
+            weight?: Int;
         };
+        poolAssets: {
+            amount: Int;
+            denom: string;
+            scalingFactor: number;
+        }[];
         swapFee: Dec;
     }, msgOpt: Pick<MsgOpt, "type">, sender: string, tokenIn: {
         currency: Currency;
@@ -66,12 +78,18 @@ export declare class Amino {
             coinDecimals: number;
             coinMinimalDenom: string;
             amount: Int;
-            weight: Int;
+            weight?: Int;
         };
         outPoolAsset: {
+            denom: string;
             amount: Int;
-            weight: Int;
+            weight?: Int;
         };
+        poolAssets: {
+            amount: Int;
+            denom: string;
+            scalingFactor: number;
+        }[];
         swapFee: Dec;
     }, msgOpt: Pick<MsgOpt, "type">, sender: string, tokenInCurrency: Currency, tokenOut: {
         currency: Currency;

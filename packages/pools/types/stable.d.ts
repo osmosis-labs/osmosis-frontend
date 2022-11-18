@@ -1,4 +1,4 @@
-import { Pool, SmoothWeightChangeParams } from "./interface";
+import { Pool } from "./interface";
 import { Dec, Int } from "@keplr-wallet/unit";
 import { StableSwapToken } from "@osmosis-labs/math";
 /** Raw query response representation of pool. */
@@ -14,33 +14,30 @@ export interface StablePoolRaw {
         denom: string;
         amount: string;
     };
-    pool_liquidity: [
-        {
-            denom: string;
-            amount: string;
-        }
-    ];
+    pool_liquidity: {
+        denom: string;
+        amount: string;
+    }[];
     scaling_factors: string[];
     scaling_factor_controller: string;
 }
-/** Implementation of stableswap Pool interface w/ related calculations. */
+/** Implementation of stableswap Pool interface w/ related stableswap calculations & metadata. */
 export declare class StablePool implements Pool {
     readonly raw: StablePoolRaw;
     constructor(raw: StablePoolRaw);
     get type(): "stable";
     get id(): string;
-    get totalWeight(): Int | undefined;
     get poolAssets(): {
         denom: string;
         amount: Int;
+        scalingFactor: number;
     }[];
-    protected get stableSwapTokens(): StableSwapToken[];
     get poolAssetDenoms(): string[];
     get totalShare(): Int;
     get shareDenom(): string;
     get swapFee(): Dec;
     get exitFee(): Dec;
-    get smoothWeightChange(): SmoothWeightChangeParams | undefined;
+    protected get stableSwapTokens(): StableSwapToken[];
     getPoolAsset(denom: string): {
         denom: string;
         amount: Int;

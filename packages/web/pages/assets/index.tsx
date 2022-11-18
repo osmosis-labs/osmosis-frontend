@@ -458,8 +458,8 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                   poolName: pool.poolAssets
                     .map((poolAsset) => poolAsset.amount.denom)
                     .join(" / "),
-                  poolWeight: pool.poolAssets
-                    .map((poolAsset) => poolAsset.weightFraction.toString())
+                  poolWeight: pool.weightedPoolInfo?.assets
+                    .map((poolAsset) => poolAsset.weightFraction?.toString())
                     .join(" / "),
                   isSuperfluidPool:
                     queriesOsmosis.querySuperfluidPools.isSuperfluidPool(

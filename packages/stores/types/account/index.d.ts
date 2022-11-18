@@ -36,6 +36,8 @@ export declare class OsmosisAccountImpl {
         };
     }[], memo?: string, onFulfill?: (tx: any) => void): Promise<void>;
     /**
+     * Join pool with multiple assets.
+     *
      * https://docs.osmosis.zone/developing/modules/spec-gamm.html#join-pool
      * @param poolId Id of pool.
      * @param shareOutAmount LP share amount.
@@ -45,7 +47,7 @@ export declare class OsmosisAccountImpl {
      */
     sendJoinPoolMsg(poolId: string, shareOutAmount: string, maxSlippage?: string, memo?: string, onFulfill?: (tx: any) => void): Promise<void>;
     /**
-     * Join pool with only one asset.
+     * Join pool with only one asset with a weighted pool.
      *
      * https://docs.osmosis.zone/developing/modules/spec-gamm.html#join-swap-extern-amount-in
      * @param poolId Id of pool to swap within.

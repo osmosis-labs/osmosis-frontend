@@ -1,4 +1,4 @@
-import { Pool, SmoothWeightChangeParams } from "./interface";
+import { Pool } from "./interface";
 import { Coin, Dec, Int } from "@keplr-wallet/unit";
 import { StableSwapToken, StableSwapMath } from "@osmosis-labs/math";
 
@@ -18,18 +18,16 @@ export interface StablePoolRaw {
     // Int
     amount: string;
   };
-  pool_liquidity: [
-    {
-      denom: string;
-      // Int
-      amount: string;
-    }
-  ];
+  pool_liquidity: {
+    denom: string;
+    // Int
+    amount: string;
+  }[];
   scaling_factors: string[];
   scaling_factor_controller: string;
 }
 
-/** Implementation of stableswap Pool interface w/ related calculations. */
+/** Implementation of stableswap Pool interface w/ related stableswap calculations & metadata. */
 export class StablePool implements Pool {
   constructor(public readonly raw: StablePoolRaw) {}
 
@@ -41,28 +39,14 @@ export class StablePool implements Pool {
     return this.raw.id;
   }
 
-  get totalWeight(): Int | undefined {
-    return;
-  }
-
-  get poolAssets(): { denom: string; amount: Int }[] {
-    return this.raw.pool_liquidity.map((asset) => {
-      return {
-        denom: asset.denom,
-        amount: new Int(asset.amount),
-      };
-    });
-  }
-
-  protected get stableSwapTokens(): StableSwapToken[] {
-    return this.poolAssets.map((asset, index) => {
+  get poolAssets(): { denom: string; amount: Int; scalingFactor: number }[] {
+    return this.raw.pool_liquidity.map((asset, index) => {
       const scalingFactor = parseInt(this.raw.scaling_factors[index]);
-
       if (scalingFactor === NaN) throw new Error("Invalid scaling factor");
 
       return {
         denom: asset.denom,
-        amount: new Dec(asset.amount.toString()),
+        amount: new Int(asset.amount),
         scalingFactor,
       };
     });
@@ -86,8 +70,18 @@ export class StablePool implements Pool {
     return new Dec(this.raw.pool_params.exit_fee);
   }
 
-  get smoothWeightChange(): SmoothWeightChangeParams | undefined {
-    return;
+  protected get stableSwapTokens(): StableSwapToken[] {
+    return this.poolAssets.map((asset, index) => {
+      const scalingFactor = parseInt(this.raw.scaling_factors[index]);
+
+      if (scalingFactor === NaN) throw new Error("Invalid scaling factor");
+
+      return {
+        denom: asset.denom,
+        amount: new Dec(asset.amount.toString()),
+        scalingFactor,
+      };
+    });
   }
 
   getPoolAsset(denom: string): { denom: string; amount: Int } {

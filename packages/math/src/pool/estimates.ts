@@ -7,12 +7,8 @@ import {
   CoinPretty,
 } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
-import {
-  calcSpotPrice,
-  calcInGivenOut,
-  calcOutGivenIn,
-  calcPoolOutGivenSingleIn,
-} from "./weighted";
+import { WeightedPoolMath } from "./weighted";
+import { StableSwapMath } from "./stable";
 
 export function estimateJoinSwapExternAmountIn(
   poolAsset: { amount: Int; weight: Int },
@@ -111,9 +107,14 @@ export function estimateSwapExactAmountIn(
       coinDecimals: number;
       coinMinimalDenom: string;
       amount: Int;
-      weight: Int;
+      weight?: Int;
     };
-    outPoolAsset: { amount: Int; weight: Int };
+    outPoolAsset: { denom: string; amount: Int; weight?: Int };
+    poolAssets: {
+      amount: Int;
+      denom: string;
+      scalingFactor: number;
+    }[];
     swapFee: Dec;
   },
   tokenIn: Coin,
@@ -126,8 +127,17 @@ export function estimateSwapExactAmountIn(
   raw: ReturnType<typeof estimateSwapExactAmountIn_Raw>;
 } {
   const estimated = estimateSwapExactAmountIn_Raw(
-    pool.inPoolAsset,
-    pool.outPoolAsset,
+    {
+      denom: pool.inPoolAsset.coinMinimalDenom,
+      amount: pool.inPoolAsset.amount,
+      weight: pool.inPoolAsset.weight,
+    },
+    {
+      denom: pool.outPoolAsset.denom,
+      amount: pool.outPoolAsset.amount,
+      weight: pool.outPoolAsset.weight,
+    },
+    pool.poolAssets,
     tokenIn,
     pool.swapFee
   );
@@ -160,9 +170,14 @@ export function estimateSwapExactAmountOut(
       coinDecimals: number;
       coinMinimalDenom: string;
       amount: Int;
-      weight: Int;
+      weight?: Int;
     };
-    outPoolAsset: { amount: Int; weight: Int };
+    outPoolAsset: { denom: string; amount: Int; weight?: Int };
+    poolAssets: {
+      amount: Int;
+      denom: string;
+      scalingFactor: number;
+    }[];
     swapFee: Dec;
   },
   tokenOut: Coin,
@@ -175,8 +190,17 @@ export function estimateSwapExactAmountOut(
   raw: ReturnType<typeof estimateSwapExactAmountOut_Raw>;
 } {
   const estimated = estimateSwapExactAmountOut_Raw(
-    pool.inPoolAsset,
-    pool.outPoolAsset,
+    {
+      denom: pool.inPoolAsset.coinMinimalDenom,
+      amount: pool.inPoolAsset.amount,
+      weight: pool.inPoolAsset.weight,
+    },
+    {
+      denom: pool.outPoolAsset.denom,
+      amount: pool.outPoolAsset.amount,
+      weight: pool.outPoolAsset.weight,
+    },
+    pool.poolAssets,
     tokenOut,
     pool.swapFee
   );
@@ -211,9 +235,14 @@ export function estimateMultihopSwapExactAmountIn(
         coinDecimals: number;
         coinMinimalDenom: string;
         amount: Int;
-        weight: Int;
+        weight?: Int;
       };
-      outPoolAsset: { amount: Int; weight: Int };
+      outPoolAsset: { denom: string; amount: Int; weight?: Int };
+      poolAssets: {
+        amount: Int;
+        denom: string;
+        scalingFactor: number;
+      }[];
       swapFee: Dec;
     };
     tokenOutCurrency: Currency;
@@ -295,8 +324,9 @@ export function estimateMultihopSwapExactAmountIn(
 }
 
 function estimateSwapExactAmountIn_Raw(
-  inPoolAsset: { amount: Int; weight: Int },
-  outPoolAsset: { amount: Int; weight: Int },
+  inPoolAsset: { denom: string; amount: Int; weight?: Int },
+  outPoolAsset: { denom: string; amount: Int; weight?: Int },
+  poolAssets: { amount: Int; denom: string; scalingFactor: number }[],
   tokenIn: Coin,
   swapFee: Dec
 ): {
@@ -305,30 +335,76 @@ function estimateSwapExactAmountIn_Raw(
   spotPriceAfter: Dec;
   priceImpact: Dec;
 } {
-  const spotPriceBefore = calcSpotPrice(
-    new Dec(inPoolAsset.amount),
-    new Dec(inPoolAsset.weight),
-    new Dec(outPoolAsset.amount),
-    new Dec(outPoolAsset.weight),
-    swapFee
-  );
+  if (!inPoolAsset.weight && !outPoolAsset.weight && poolAssets.length === 0)
+    throw Error("Supplied neither weighted or stable pool metadata");
 
-  const tokenOutAmount = calcOutGivenIn(
-    new Dec(inPoolAsset.amount),
-    new Dec(inPoolAsset.weight),
-    new Dec(outPoolAsset.amount),
-    new Dec(outPoolAsset.weight),
-    new Dec(tokenIn.amount),
-    swapFee
-  ).truncate();
+  const stableSwapTokens = poolAssets.map((asset) => ({
+    ...asset,
+    amount: new Dec(asset.amount),
+  }));
 
-  const spotPriceAfter = calcSpotPrice(
-    new Dec(inPoolAsset.amount).add(new Dec(tokenIn.amount)),
-    new Dec(inPoolAsset.weight),
-    new Dec(outPoolAsset.amount).sub(new Dec(tokenOutAmount)),
-    new Dec(outPoolAsset.weight),
-    swapFee
-  );
+  const spotPriceBefore =
+    inPoolAsset.weight && outPoolAsset.weight
+      ? WeightedPoolMath.calcSpotPrice(
+          new Dec(inPoolAsset.amount),
+          new Dec(inPoolAsset.weight),
+          new Dec(outPoolAsset.amount),
+          new Dec(outPoolAsset.weight),
+          swapFee
+        )
+      : StableSwapMath.calcSpotPrice(
+          stableSwapTokens,
+          inPoolAsset.denom,
+          outPoolAsset.denom
+        );
+
+  const tokenOutAmount =
+    inPoolAsset.weight && outPoolAsset.weight
+      ? WeightedPoolMath.calcOutGivenIn(
+          new Dec(inPoolAsset.amount),
+          new Dec(inPoolAsset.weight),
+          new Dec(outPoolAsset.amount),
+          new Dec(outPoolAsset.weight),
+          new Dec(tokenIn.amount),
+          swapFee
+        ).truncate()
+      : StableSwapMath.calcOutGivenIn(
+          stableSwapTokens,
+          new Coin(tokenIn.denom, tokenIn.amount),
+          outPoolAsset.denom,
+          swapFee
+        );
+
+  const movedStableTokens = stableSwapTokens.map((token) => {
+    if (token.denom === inPoolAsset.denom) {
+      return {
+        ...token,
+        amount: token.amount.add(new Dec(inPoolAsset.amount)),
+      };
+    }
+    if (token.denom === outPoolAsset.denom) {
+      return {
+        ...token,
+        amount: token.amount.sub(new Dec(outPoolAsset.amount)),
+      };
+    }
+    return token;
+  });
+  const spotPriceAfter =
+    inPoolAsset.weight && outPoolAsset.weight
+      ? WeightedPoolMath.calcSpotPrice(
+          new Dec(inPoolAsset.amount).add(new Dec(tokenIn.amount)),
+          new Dec(inPoolAsset.weight),
+          new Dec(outPoolAsset.amount).sub(new Dec(tokenOutAmount)),
+          new Dec(outPoolAsset.weight),
+          swapFee
+        )
+      : StableSwapMath.calcSpotPrice(
+          movedStableTokens,
+          inPoolAsset.denom,
+          outPoolAsset.denom
+        );
+
   if (spotPriceAfter.lt(spotPriceBefore)) {
     throw new Error("spot price can't be decreased after swap");
   }
@@ -345,8 +421,9 @@ function estimateSwapExactAmountIn_Raw(
 }
 
 function estimateSwapExactAmountOut_Raw(
-  inPoolAsset: { amount: Int; weight: Int },
-  outPoolAsset: { amount: Int; weight: Int },
+  inPoolAsset: { denom: string; amount: Int; weight?: Int },
+  outPoolAsset: { denom: string; amount: Int; weight?: Int },
+  poolAssets: { amount: Int; denom: string; scalingFactor: number }[],
   tokenOut: Coin,
   swapFee: Dec
 ): {
@@ -355,30 +432,75 @@ function estimateSwapExactAmountOut_Raw(
   spotPriceAfter: Dec;
   priceImpact: Dec;
 } {
-  const spotPriceBefore = calcSpotPrice(
-    new Dec(inPoolAsset.amount),
-    new Dec(inPoolAsset.weight),
-    new Dec(outPoolAsset.amount),
-    new Dec(outPoolAsset.weight),
-    swapFee
-  );
+  if (!inPoolAsset.weight && !outPoolAsset.weight && poolAssets.length === 0)
+    throw Error("Supplied neither weighted or stable pool metadata");
 
-  const tokenInAmount = calcInGivenOut(
-    new Dec(inPoolAsset.amount),
-    new Dec(inPoolAsset.weight),
-    new Dec(outPoolAsset.amount),
-    new Dec(outPoolAsset.weight),
-    new Dec(tokenOut.amount),
-    swapFee
-  ).truncate();
+  const stableSwapTokens = poolAssets.map((asset) => ({
+    ...asset,
+    amount: new Dec(asset.amount),
+  }));
 
-  const spotPriceAfter = calcSpotPrice(
-    new Dec(inPoolAsset.amount).add(new Dec(tokenInAmount)),
-    new Dec(inPoolAsset.weight),
-    new Dec(outPoolAsset.amount).sub(new Dec(tokenOut.amount)),
-    new Dec(outPoolAsset.weight),
-    swapFee
-  );
+  const spotPriceBefore =
+    inPoolAsset.weight && outPoolAsset.weight
+      ? WeightedPoolMath.calcSpotPrice(
+          new Dec(inPoolAsset.amount),
+          new Dec(inPoolAsset.weight),
+          new Dec(outPoolAsset.amount),
+          new Dec(outPoolAsset.weight),
+          swapFee
+        )
+      : StableSwapMath.calcSpotPrice(
+          stableSwapTokens,
+          inPoolAsset.denom,
+          outPoolAsset.denom
+        );
+
+  const tokenInAmount =
+    inPoolAsset.weight && outPoolAsset.weight
+      ? WeightedPoolMath.calcInGivenOut(
+          new Dec(inPoolAsset.amount),
+          new Dec(inPoolAsset.weight),
+          new Dec(outPoolAsset.amount),
+          new Dec(outPoolAsset.weight),
+          new Dec(tokenOut.amount),
+          swapFee
+        ).truncate()
+      : StableSwapMath.calcInGivenOut(
+          stableSwapTokens,
+          new Coin(outPoolAsset.denom, outPoolAsset.amount),
+          inPoolAsset.denom,
+          swapFee
+        );
+
+  const movedStableTokens = stableSwapTokens.map((token) => {
+    if (token.denom === inPoolAsset.denom) {
+      return {
+        ...token,
+        amount: token.amount.add(new Dec(inPoolAsset.amount)),
+      };
+    }
+    if (token.denom === outPoolAsset.denom) {
+      return {
+        ...token,
+        amount: token.amount.sub(new Dec(outPoolAsset.amount)),
+      };
+    }
+    return token;
+  });
+  const spotPriceAfter =
+    inPoolAsset.weight && outPoolAsset.weight
+      ? WeightedPoolMath.calcSpotPrice(
+          new Dec(inPoolAsset.amount).add(new Dec(inPoolAsset.amount)),
+          new Dec(inPoolAsset.weight),
+          new Dec(outPoolAsset.amount).sub(new Dec(outPoolAsset.amount)),
+          new Dec(outPoolAsset.weight),
+          swapFee
+        )
+      : StableSwapMath.calcSpotPrice(
+          movedStableTokens,
+          inPoolAsset.denom,
+          outPoolAsset.denom
+        );
 
   if (spotPriceAfter.lt(spotPriceBefore)) {
     throw new Error("spot price can't be decreased after swap");
@@ -462,7 +584,7 @@ function estimateJoinSwapExternAmountIn_Raw(
 ): {
   shareOutAmount: Int;
 } {
-  const shareOutAmount = calcPoolOutGivenSingleIn(
+  const shareOutAmount = WeightedPoolMath.calcPoolOutGivenSingleIn(
     new Dec(poolAsset.amount),
     new Dec(poolAsset.weight),
     new Dec(totalShare),

@@ -1,4 +1,4 @@
-import { Pool, SmoothWeightChangeParams } from "./interface";
+import { Pool } from "./interface";
 import { Dec, Int } from "@keplr-wallet/unit";
 /** Raw query response representation of pool. */
 export interface WeightedPoolRaw {
@@ -42,7 +42,32 @@ export interface WeightedPoolRaw {
         }
     ];
 }
-/** Implementation of Pool interface w/ related calculations. */
+/** Parameters of LBP. */
+export declare type SmoothWeightChangeParams = {
+    /** Timestamp */
+    startTime: string;
+    /** Seconds with s suffix. Ex) 3600s */
+    duration: string;
+    initialPoolWeights: {
+        token: {
+            denom: string;
+            /** Int */
+            amount: string;
+        };
+        /** Int */
+        weight: string;
+    }[];
+    targetPoolWeights: {
+        token: {
+            denom: string;
+            /** Int */
+            amount: string;
+        };
+        /** Int */
+        weight: string;
+    }[];
+};
+/** Implementation of Pool interface w/ related weighted/balancer calculations & metadata. */
 export declare class WeightedPool implements Pool {
     readonly raw: WeightedPoolRaw;
     constructor(raw: WeightedPoolRaw);
@@ -59,6 +84,7 @@ export declare class WeightedPool implements Pool {
     get shareDenom(): string;
     get swapFee(): Dec;
     get exitFee(): Dec;
+    /** LBP pool */
     get smoothWeightChange(): SmoothWeightChangeParams | undefined;
     getPoolAsset(denom: string): {
         denom: string;
