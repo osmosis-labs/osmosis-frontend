@@ -43,7 +43,7 @@
       "tab": "超流體",
       "APR": "年利率(APR)",
       "liquidity": "流動性",
-      "fees7D": "累積交易費 (最近7日)"
+      "fees7D": "交易費(7日)"
     },
     "allPools": {
       "title": "全部流動性池",
@@ -200,7 +200,7 @@
     },
     "poolCards": {
       "APR": "年利率(APR)",
-      "FeeAPY": "交易費 年百分比收益率(APY)",
+      "FeeAPY": "交易費 APY",
       "liquidity": "流動性",
       "bonded": "已鎖定",
       "myLiquidity": "我的流動性"
