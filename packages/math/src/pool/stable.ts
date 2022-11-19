@@ -8,6 +8,8 @@ export const StableSwapMath = {
   // secondary
   solveCfmm,
   compare_checkMultErrorTolerance,
+  cfmmConstantMultiNoV,
+  calcWSumSquares,
 };
 
 const oneDec = new Dec(1);
@@ -150,11 +152,7 @@ export function solveCfmm(
   remReserves: Dec[],
   yIn: Dec
 ): Dec {
-  let wSumSquares = new Dec(0);
-  remReserves.forEach((reserve) => {
-    const reserveSquared = reserve.mul(reserve);
-    wSumSquares = wSumSquares.add(reserveSquared);
-  });
+  const wSumSquares = calcWSumSquares(remReserves);
 
   return solveCfmmBinarySearchMulti(xReserve, yReserve, wSumSquares, yIn);
 }
@@ -191,28 +189,11 @@ export function solveCfmmBinarySearchMulti(
 
   const targetK = targetKCalculator(xReserve, yReserve, wSumSquares, yFinal);
   const iterKCalc = (xEst: Dec) =>
-    iterKCalculator(xEst, xReserve, yFinal, wSumSquares);
+    iterKCalculator(xEst, xReserve, wSumSquares, yFinal);
 
   const xEst = binarySearch(iterKCalc, xLowEst, xHighEst, targetK);
 
   const xOut = xReserve.sub(xEst);
-
-  console.log(
-    "xHighEst: ",
-    xHighEst,
-    "xLowEst: ",
-    xLowEst,
-    "xReserve: ",
-    xReserve,
-    "yReserve: ",
-    yReserve,
-    "yIn: ",
-    yIn,
-    "xEst: ",
-    xEst,
-    "final solver output: ",
-    xOut
-  );
 
   if (xOut.abs().gte(xReserve))
     throw Error("invalid output: greater than full pool reserves");
@@ -249,11 +230,11 @@ export function iterKCalculator(xf: Dec, x0: Dec, w: Dec, yf: Dec): Dec {
   const xOut = x0.sub(xf);
   // horners method
   // ax^3 + bx^2 + cx = x(c + x(b + ax))
-  let res = cubicCoeff.mul(xOut);
-  res = res.add(quadraticCoeff);
-  res = res.mul(xOut);
-  res = res.add(linearCoeff);
-  res = res.mul(xOut);
+  const term1 = cubicCoeff.mul(xOut);
+  const term2 = quadraticCoeff.mul(xOut);
+  const term3 = linearCoeff.mul(xOut);
+
+  const res = term1.add(term2).add(term3);
 
   return res;
 }
@@ -306,27 +287,12 @@ export function binarySearch(
       errorTolerance,
       "roundUp"
     );
-    console.log(
-      "curIteration: ",
-      curIteration,
-      "xHighEst: ",
-      upperBound,
-      "xLowEst: ",
-      lowerBound,
-      "targetOutput: ",
-      targetOutput,
-      "curEstimate: ",
-      curEstimate,
-      "curOutput: ",
-      curOutput
-    );
 
     if (compare < 0) {
       upperBound = curEstimate;
     } else if (compare > 0) {
       lowerBound = curEstimate;
     } else {
-      console.log("exited!");
       return curEstimate;
     }
     curEstSum = lowerBound.add(upperBound);
@@ -376,20 +342,14 @@ export function compare_checkMultErrorTolerance(
     return comparison;
   }
 
-  console.log(
-    "these two are equal!: ",
-    expected,
-    actual,
-    "diff & diffAbs: ",
-    diff,
-    diffAbs,
-    "min term: ",
-    min,
-    "error term: ",
-    errorTerm,
-    "tolerance: ",
-    tolerance
-  );
-
   return 0;
+}
+
+export function calcWSumSquares(remReserves: Dec[]): Dec {
+  let wSumSquares = new Dec(0);
+  remReserves.forEach((reserve) => {
+    const reserveSquared = reserve.mul(reserve);
+    wSumSquares = wSumSquares.add(reserveSquared);
+  });
+  return wSumSquares;
 }

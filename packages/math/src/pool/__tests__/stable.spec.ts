@@ -1,17 +1,17 @@
 import { StableSwapToken, StableSwapMath } from "../stable";
-import { Coin, Dec, Int } from "@keplr-wallet/unit"; // removed DecUtils
+import { Coin, Dec, Int, DecUtils } from "@keplr-wallet/unit";
 
 describe("Test stableswap math", () => {
   describe("calcOutGivenIn", () => {
     test("even pool basic trade", () => {
       const poolAssets: StableSwapToken[] = [
         {
-          amount: new Dec(1_000_000_000),
+          amount: new Dec(1_000_000),
           denom: "foo",
           scalingFactor: 1,
         },
         {
-          amount: new Dec(2_000_000_000),
+          amount: new Dec(1_000_000),
           denom: "bar",
           scalingFactor: 1,
         },
@@ -30,12 +30,8 @@ describe("Test stableswap math", () => {
       );
 
       expect(outAmount.equals(expectedTokenOut.amount)).toBeTruthy();
-      console.log(
-        "outAmount: " + outAmount.toString(),
-        "expectedTokenOut: " + expectedTokenOut.amount.toString()
-      );
     });
-    /*
+
     test("even large pool basic trade (precision test)", () => {
       const poolAssets: StableSwapToken[] = [
         {
@@ -64,7 +60,7 @@ describe("Test stableswap math", () => {
 
       expect(outAmount.equals(expectedTokenOut.amount)).toBeTruthy();
     });
-*/
+
     // TODO: add swap fee tests
 
     /* This test should pass
@@ -100,7 +96,6 @@ describe("Test stableswap math", () => {
   });
 
   describe("calcInGivenOut", () => {
-    /*
     test("even pool basic trade", () => {
       const poolAssets: StableSwapToken[] = [
         {
@@ -158,7 +153,7 @@ describe("Test stableswap math", () => {
 
       expect(inAmount.equals(expectedTokenIn.amount)).toBeTruthy();
     });
-    */
+
     // TODO: add swap fee tests
     /* This test should pass
     test('even large pool basic trade (precision test)', () => {
@@ -193,7 +188,6 @@ describe("Test stableswap math", () => {
   });
 
   describe("calcSpotPrice", () => {
-    /*
     test("foo in terms of bar in even pool", () => {
       const poolAssets: StableSwapToken[] = [
         {
@@ -259,15 +253,13 @@ describe("Test stableswap math", () => {
       const baseDenom = "bar";
       const quoteDenom = "foo";
 
-      const expectedSpotPrice = new Dec(1.446096575818955898);
+      const expectedSpotPrice = new Dec(1.45454545454545);
 
       const actualSpotPrice = StableSwapMath.calcSpotPrice(
         poolAssets,
         baseDenom,
         quoteDenom
       );
-
-      console.log(expectedSpotPrice, actualSpotPrice);
 
       const tolerance = new Dec(1).quo(
         DecUtils.getTenExponentNInPrecisionRange(3)
@@ -281,7 +273,7 @@ describe("Test stableswap math", () => {
 
       expect(comparison == 0).toBeTruthy();
     });
-    */
+
     /*
     test('even large pool basic trade (precision test)', () => {
       const poolAssets: StableSwapToken[] = [
@@ -313,31 +305,101 @@ describe("Test stableswap math", () => {
     });
     */
   });
-  /*
+
   describe("solver", () => {
     test("even 3-asset small pool, small input", () => {
-      const xReserve = new Dec(100);
-      const yReserve = new Dec(100);
-      const remReserves = [new Dec(100)];
-      const yIn = new Dec(1);
+      const xReserve = new Dec(100_000_000);
+      const yReserve = new Dec(100_000_000);
+      const remReserves = [new Dec(100_000_000)];
+      const yIn = new Dec(1_000);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = StableSwapMath.solveCfmm(
+        xReserve,
+        yReserve,
+        remReserves,
+        yIn
+      );
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
+      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
+        xReserve,
+        yReserve,
+        wSumSquares
+      );
+      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
+        xFinal,
+        yFinal,
+        wSumSquares
+      );
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
+
     test("even 3-asset medium pool, small input", () => {
       const xReserve = new Dec(100_000);
       const yReserve = new Dec(100_000);
       const remReserves = [new Dec(100_000)];
       const yIn = new Dec(100);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = StableSwapMath.solveCfmm(
+        xReserve,
+        yReserve,
+        remReserves,
+        yIn
+      );
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
+      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
+        xReserve,
+        yReserve,
+        wSumSquares
+      );
+      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
+        xFinal,
+        yFinal,
+        wSumSquares
+      );
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
+
     test("even 4-asset small pool, small input", () => {
       const xReserve = new Dec(100);
       const yReserve = new Dec(100);
       const remReserves = [new Dec(100), new Dec(100)];
       const yIn = new Dec(1);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = StableSwapMath.solveCfmm(
+        xReserve,
+        yReserve,
+        remReserves,
+        yIn
+      );
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
+      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
+        xReserve,
+        yReserve,
+        wSumSquares
+      );
+      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
+        xFinal,
+        yFinal,
+        wSumSquares
+      );
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("even 4-asset medium pool, small input", () => {
       const xReserve = new Dec(100_000);
@@ -345,7 +407,30 @@ describe("Test stableswap math", () => {
       const remReserves = [new Dec(100_000), new Dec(100_000)];
       const yIn = new Dec(1);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = StableSwapMath.solveCfmm(
+        xReserve,
+        yReserve,
+        remReserves,
+        yIn
+      );
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
+      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
+        xReserve,
+        yReserve,
+        wSumSquares
+      );
+      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
+        xFinal,
+        yFinal,
+        wSumSquares
+      );
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("even 4-asset large pool (100M each), small input", () => {
       const xReserve = new Dec(100_000_000);
@@ -353,8 +438,32 @@ describe("Test stableswap math", () => {
       const remReserves = [new Dec(100_000_000), new Dec(100_000_000)];
       const yIn = new Dec(100);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = StableSwapMath.solveCfmm(
+        xReserve,
+        yReserve,
+        remReserves,
+        yIn
+      );
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
+      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
+        xReserve,
+        yReserve,
+        wSumSquares
+      );
+      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
+        xFinal,
+        yFinal,
+        wSumSquares
+      );
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
+    /*
     test("even 4-asset pool (10B each post-scaled), small input", () => {
       const xReserve = new Dec(10_000_000_000);
       const yReserve = new Dec(10_000_000_000);
@@ -511,6 +620,6 @@ describe("Test stableswap math", () => {
         StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn)
       ).toThrowError();
     });
+    */
   });
-  */
 });
