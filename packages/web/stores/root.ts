@@ -179,6 +179,7 @@ export class RootStore {
     this.queriesExternalStore = new QueriesExternalStore(
       makeIndexedKVStore("store_web_queries"),
       this.priceStore,
+      this.chainStore.osmosis.chainId,
       IS_TESTNET ? "https://api.testnet.osmosis.zone/" : undefined
     );
 

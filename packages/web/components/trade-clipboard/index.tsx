@@ -37,6 +37,7 @@ export const TradeClipboard: FunctionComponent<{
       chainStore,
       accountStore,
       queriesStore,
+      queriesExternalStore,
       assetsStore: { nativeBalances, ibcBalances },
       priceStore,
     } = useStore();
