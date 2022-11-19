@@ -5,7 +5,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { computedFn } from "mobx-utils";
 import { IbcStatus } from "./types";
 
-/** Queries */
+/** Queries for ibc chain data*/
 class ObservableQueryIbcChainStatus extends ObservableQueryExternalBase<
   [
     {
