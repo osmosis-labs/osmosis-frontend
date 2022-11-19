@@ -210,6 +210,8 @@
     "ibcTransfer": {
       "titleWithdraw": "Wypłać {coinDenom}",
       "titleDeposit": "Wpłać {coinDenom}",
+      "congested": "przeciążony",
+      "blocked": "zablokowanys",
       "selectAmount": "Wybierz Ilość",
       "estimatedTime": "Szacowany Czas",
       "waitTime": "20 sekund",

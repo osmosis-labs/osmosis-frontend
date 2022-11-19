@@ -2,6 +2,7 @@ import { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../stores";
 import { Transfer } from "../components/complex/transfer";
+import { IbcStatus } from "../../stores/src/queries-external";
 import {
   IbcTransfer,
   useIbcTransfer,
@@ -16,7 +17,12 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
     const { currency, counterpartyChainId, isWithdraw } = props;
     const t = useTranslation();
-    const { chainStore, queriesStore, ibcTransferHistoryStore } = useStore();
+    const {
+      chainStore,
+      queriesStore,
+      ibcTransferHistoryStore,
+      queriesExternalStore,
+    } = useStore();
     const { chainId: osmosisChainId } = chainStore.osmosis;
 
     const { logEvent } = useAmplitudeAnalytics();
@@ -37,10 +43,22 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       customCounterpartyConfig?.bech32Address === "" || // if not changed, it's valid since it's from Keplr
       (customCounterpartyConfig.isValid && didAckWithdrawRisk);
 
+    const chainStatusQuery = queriesExternalStore.queryChainStatus;
+
+    const chainStatus = chainStatusQuery.getIbcStatus(
+      props.isWithdraw ? "withdraw" : "deposit",
+      props.isWithdraw ? props.sourceChannelId : props.destChannelId,
+      props.counterpartyChainId
+    );
+
+    const isChainBlockedOrCongested =
+      chainStatus === "congested" || chainStatus === "blocked";
+    console.log(chainStatus);
     const { showModalBase, accountActionButton, walletConnected } =
       useConnectWalletModalRedirect(
         {
           className: "md:mt-4 mt-6 hover:opacity-75",
+          mode: isChainBlockedOrCongested ? "primary-warning" : "primary",
           disabled:
             !account.isReadyToSendTx ||
             !counterpartyAccount.isReadyToSendTx ||
@@ -81,13 +99,20 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               }
             );
           },
-          children: isWithdraw
-            ? t("assets.ibcTransfer.titleWithdraw", {
-                coinDenom: currency.coinDenom,
-              })
-            : t("assets.ibcTransfer.titleDeposit", {
-                coinDenom: currency.coinDenom,
-              }),
+
+          children:
+            (isWithdraw
+              ? t("assets.ibcTransfer.titleWithdraw", {
+                  coinDenom: currency.coinDenom,
+                })
+              : t("assets.ibcTransfer.titleDeposit", {
+                  coinDenom: currency.coinDenom,
+                })) +
+            (chainStatus === "blocked"
+              ? ` (${t("assets.ibcTransfer.blocked")})`
+              : chainStatus === "congested"
+              ? ` (${t("assets.ibcTransfer.congested")})`
+              : ""),
         },
         props.onRequestClose
       );

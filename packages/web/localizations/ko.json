@@ -209,6 +209,8 @@
     "ibcTransfer": {
       "titleWithdraw": "{coinDenom} 출금",
       "titleDeposit": "{coinDenom} 입금",
+      "congested": "혼잡",
+      "blocked": "막힌",
       "selectAmount": "수량 선택",
       "estimatedTime": "예상 시간",
       "waitTime": "20초",

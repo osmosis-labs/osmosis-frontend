@@ -208,6 +208,8 @@
     "ibcTransfer": {
       "titleWithdraw": "提币 {coinDenom}",
       "titleDeposit": "存入 {coinDenom}",
+      "congested": "拥堵",
+      "blocked": "被封锁",
       "selectAmount": "选择数量",
       "estimatedTime": "预估时间",
       "waitTime": "20 秒",
