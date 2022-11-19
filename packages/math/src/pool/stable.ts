@@ -1,18 +1,22 @@
 import { Coin, Dec, DecUtils } from "@keplr-wallet/unit";
+import { BigDec } from "../big-dec";
 
 export const StableSwapMath = {
   calcOutGivenIn,
   calcInGivenOut,
   calcSpotPrice,
-  // secondary
-  solveCfmm,
-  compare_checkMultErrorTolerance,
 };
 
-const oneDec = new Dec(1);
+const oneBigDec = new BigDec(1);
 
 export type StableSwapToken = {
   amount: Dec;
+  denom: string;
+  scalingFactor: number;
+};
+
+type BigDecStableSwapToken = {
+  amount: BigDec;
   denom: string;
   scalingFactor: number;
 };
@@ -23,7 +27,7 @@ export function solveCalcOutGivenIn(
   tokenIn: Coin,
   tokenOutDenom: string,
   swapFee: Dec
-): Dec {
+): BigDec {
   const scaledTokens = scaleTokens(tokens);
 
   const tokenInScalingFactor = tokens.find(
@@ -32,12 +36,13 @@ export function solveCalcOutGivenIn(
 
   if (!tokenInScalingFactor) throw Error("tokenIn denom not in pool tokens");
 
-  const tokenInScaled = new Dec(tokenIn.amount).quoTruncate(
-    new Dec(tokenInScalingFactor)
+  const tokenInScaled = new BigDec(tokenIn.amount).quoTruncate(
+    new BigDec(tokenInScalingFactor)
   );
 
   // we apply swap fee before running solver since we are going input -> output
-  const tokenInLessFee = tokenInScaled.mul(oneDec.sub(swapFee));
+  const oneMinusSwapFee = oneBigDec.sub(new BigDec(swapFee));
+  const tokenInLessFee = tokenInScaled.mul(oneMinusSwapFee);
 
   const tokenOutSupply = scaledTokens.find(
     ({ denom }) => denom === tokenOutDenom
@@ -59,7 +64,7 @@ export function solveCalcOutGivenIn(
     tokenInLessFee
   );
 
-  return cfmmOut.mul(new Dec(tokenOutSupply.scalingFactor));
+  return cfmmOut.mul(new BigDec(tokenOutSupply.scalingFactor));
 }
 
 export function calcOutGivenIn(
@@ -90,8 +95,8 @@ export function calcInGivenOut(
 
   if (!tokenOutScalingFactor) throw Error("tokenIn denom not in pool tokens");
 
-  const tokenOutScaled = new Dec(tokenOut.amount).quoTruncate(
-    new Dec(tokenOutScalingFactor)
+  const tokenOutScaled = new BigDec(tokenOut.amount).quoTruncate(
+    new BigDec(tokenOutScalingFactor)
   );
 
   const tokenInSupply = scaledTokens.find(
@@ -118,15 +123,19 @@ export function calcInGivenOut(
   const calculatedInput = cfmmOut.neg();
 
   // we apply swap fee after running solver since we are going output -> input
-  const tokenInPlusFee = calculatedInput.quoRoundUp(oneDec.sub(swapFee));
+  const tokenInPlusFee = calculatedInput.quoRoundUp(
+    oneBigDec.sub(new BigDec(swapFee))
+  );
 
-  return tokenInPlusFee.mul(new Dec(tokenOutSupply.scalingFactor)).roundUp();
+  return tokenInPlusFee.mul(new BigDec(tokenOutSupply.scalingFactor)).roundUp();
 }
 
-export function scaleTokens(tokens: StableSwapToken[]): StableSwapToken[] {
+export function scaleTokens(
+  tokens: StableSwapToken[]
+): BigDecStableSwapToken[] {
   return tokens.map((token) => ({
     ...token,
-    amount: token.amount.quo(new Dec(token.scalingFactor)),
+    amount: new BigDec(token.amount).quo(new BigDec(token.scalingFactor)),
   }));
 }
 
@@ -139,29 +148,26 @@ export function calcSpotPrice(
   const a = new Coin(quoteDenom, 1);
   const approxSpotPrice = solveCalcOutGivenIn(tokens, a, baseDenom, new Dec(0));
 
-  return approxSpotPrice;
+  return approxSpotPrice.toDec();
 }
 
 export function solveCfmm(
-  xReserve: Dec,
-  yReserve: Dec,
-  remReserves: Dec[],
-  yIn: Dec
-): Dec {
-  let wSumSquares = new Dec(0);
-  remReserves.forEach((reserve) => {
-    wSumSquares = wSumSquares.add(reserve.mul(reserve));
-  });
+  xReserve: BigDec,
+  yReserve: BigDec,
+  remReserves: BigDec[],
+  yIn: BigDec
+): BigDec {
+  const wSumSquares = calcWSumSquares(remReserves);
 
   return solveCfmmBinarySearchMulti(xReserve, yReserve, wSumSquares, yIn);
 }
 
 export function solveCfmmBinarySearchMulti(
-  xReserve: Dec,
-  yReserve: Dec,
-  wSumSquares: Dec,
-  yIn: Dec
-): Dec {
+  xReserve: BigDec,
+  yReserve: BigDec,
+  wSumSquares: BigDec,
+  yIn: BigDec
+): BigDec {
   if (
     !xReserve.isPositive() ||
     !yReserve.isPositive() ||
@@ -178,20 +184,19 @@ export function solveCfmmBinarySearchMulti(
   const k = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
   if (k0.isZero() || k.isZero()) throw Error("k should never be zero");
 
-  // find change in k
+  // find change in k (if kRatio = 1, bounds remain equal)
   const kRatio = k0.quo(k);
-  if (kRatio.lt(oneDec)) {
+  if (kRatio.lt(oneBigDec)) {
     xHighEst = xReserve.quo(kRatio).roundUpDec();
-  } else if (kRatio.gt(oneDec)) {
-    xLowEst = new Dec(0);
-  } else {
-    return new Dec(0);
+  } else if (kRatio.gt(oneBigDec)) {
+    xLowEst = new BigDec(0);
   }
 
-  const computeFromEst = (xEst: Dec) =>
-    cfmmConstantMultiNoV(xEst, yFinal, wSumSquares);
+  const targetK = targetKCalculator(xReserve, yReserve, wSumSquares, yFinal);
+  const iterKCalc = (xEst: BigDec) =>
+    iterKCalculator(xEst, xReserve, wSumSquares, yFinal);
 
-  const xEst = binarySearch(computeFromEst, xLowEst, xHighEst, k);
+  const xEst = binarySearch(iterKCalc, xLowEst, xHighEst, targetK);
 
   const xOut = xReserve.sub(xEst);
 
@@ -199,6 +204,54 @@ export function solveCfmmBinarySearchMulti(
     throw Error("invalid output: greater than full pool reserves");
 
   return xOut;
+}
+
+export function targetKCalculator(
+  x0: BigDec,
+  y0: BigDec,
+  w: BigDec,
+  yf: BigDec
+): BigDec {
+  // cfmmNoV(x0, y0, w) = x_0 y_0 (x_0^2 + y_0^2 + w)
+  const startK = cfmmConstantMultiNoV(x0, y0, w);
+  // remove extra yf term
+  const yfRemoved = startK.quo(yf);
+  // removed constant term from expression
+  // namely - (x_0 (y_f^2 + w) + x_0^3) = x_0(y_f^2 + w + x_0^2)
+  // innerTerm = y_f^2 + w + x_0^2
+  const yfSquared = yf.mul(yf);
+  const x0Squared = x0.mul(x0);
+  const innerTerm = yfSquared.add(w).add(x0Squared);
+  const constantTerm = innerTerm.mul(x0);
+
+  return yfRemoved.sub(constantTerm);
+}
+
+export function iterKCalculator(
+  xf: BigDec,
+  x0: BigDec,
+  w: BigDec,
+  yf: BigDec
+): BigDec {
+  // compute coefficients first
+  const cubicCoeff = oneBigDec.neg();
+  const quadraticCoeff = x0.mul(new BigDec(3));
+  const quadraticCoeffTimesX0 = x0.mul(quadraticCoeff);
+  const yfSquared = yf.mul(yf);
+  const linearCoeffNonNeg = quadraticCoeffTimesX0.add(w).add(yfSquared);
+  const linearCoeff = linearCoeffNonNeg.neg();
+
+  // output amount = initial reserve - final reserve
+  const xOut = x0.sub(xf);
+  // horners method
+  // ax^3 + bx^2 + cx = x(c + x(b + ax))
+  const term1 = cubicCoeff.mul(xOut);
+  const term2 = quadraticCoeff.mul(xOut);
+  const term3 = linearCoeff.mul(xOut);
+
+  const res = term1.add(term2).add(term3);
+
+  return res;
 }
 
 /**
@@ -209,10 +262,10 @@ export function solveCfmmBinarySearchMulti(
  When u = 1 and v = 0, this is equivalent to solidly's CFMM
  */
 export function cfmmConstantMultiNoV(
-  xReserve: Dec,
-  yReserve: Dec,
-  wSumSquares: Dec
-): Dec {
+  xReserve: BigDec,
+  yReserve: BigDec,
+  wSumSquares: BigDec
+): BigDec {
   if (
     !xReserve.isPositive() ||
     !yReserve.isPositive() ||
@@ -223,30 +276,35 @@ export function cfmmConstantMultiNoV(
   const xy = xReserve.mul(yReserve);
   const x2 = xReserve.mul(xReserve);
   const y2 = yReserve.mul(yReserve);
-  return xy.mul(x2.add(y2).add(wSumSquares));
+  const innerSum = x2.add(y2).add(wSumSquares);
+  return xy.mul(innerSum);
 }
 
 export function binarySearch(
-  makeOutput: (est: Dec) => Dec,
-  lowerBound: Dec,
-  upperBound: Dec,
-  targetOutput: Dec,
+  makeOutput: (est: BigDec) => BigDec,
+  lowerBound: BigDec,
+  upperBound: BigDec,
+  targetOutput: BigDec,
   maxIterations = 256,
-  errorTolerance = oneDec.quo(DecUtils.getTenExponentNInPrecisionRange(12))
-): Dec {
+  errorTolerance = oneBigDec.quo(
+    new BigDec(DecUtils.getTenExponentNInPrecisionRange(12))
+  )
+): BigDec {
   // base of loop
-  let curEstimate = lowerBound.add(upperBound).quo(new Dec(2));
+  let curEstSum = lowerBound.add(upperBound);
+  let curEstimate = curEstSum.quo(new BigDec(2));
   let curOutput = makeOutput(curEstimate);
 
   // only need multiplicative error tolerance
 
   for (let curIteration = 0; curIteration < maxIterations; curIteration++) {
-    const compare = compare_checkMultErrorTolerance(
+    const compare = compareBigDec_checkMultErrorTolerance(
       targetOutput,
       curOutput,
       errorTolerance,
       "roundUp"
     );
+
     if (compare < 0) {
       upperBound = curEstimate;
     } else if (compare > 0) {
@@ -254,14 +312,57 @@ export function binarySearch(
     } else {
       return curEstimate;
     }
-    curEstimate = lowerBound.add(upperBound).quo(new Dec(2));
+    curEstSum = lowerBound.add(upperBound);
+    curEstimate = curEstSum.quo(new BigDec(2));
     curOutput = makeOutput(curEstimate);
   }
 
   throw Error("binary search did not converge");
 }
 
-export function compare_checkMultErrorTolerance(
+export function compareBigDec_checkMultErrorTolerance(
+  expected: BigDec,
+  actual: BigDec,
+  tolerance: BigDec,
+  roundingMode: string
+) {
+  let comparison = 0;
+  if (expected.gt(actual)) {
+    comparison = 1;
+  } else {
+    comparison = -1;
+  }
+
+  // roundBankers case is handled by default quo function so we
+  // fall back to that for all other roundingMode inputs
+  if (roundingMode == "roundDown") {
+    if (expected.lt(actual)) return -1;
+  } else if (roundingMode == "roundUp") {
+    if (expected.gt(actual)) return 1;
+  }
+
+  // multiplicative tolerance
+
+  if (tolerance.isZero()) return 0;
+
+  // get min dec
+  let min = actual;
+  if (expected.lt(min)) {
+    min = expected;
+  }
+
+  // check mult tolerance
+  const diff = expected.sub(actual);
+  const diffAbs = diff.abs();
+  const errorTerm = diffAbs.quo(min.abs());
+  if (errorTerm.gt(tolerance)) {
+    return comparison;
+  }
+
+  return 0;
+}
+
+export function compareDec_checkMultErrorTolerance(
   expected: Dec,
   actual: Dec,
   tolerance: Dec,
@@ -293,11 +394,21 @@ export function compare_checkMultErrorTolerance(
   }
 
   // check mult tolerance
-  const diff = expected.sub(actual).abs();
-  const errorTerm = diff.quo(min);
+  const diff = expected.sub(actual);
+  const diffAbs = diff.abs();
+  const errorTerm = diffAbs.quo(min.abs());
   if (errorTerm.gt(tolerance)) {
     return comparison;
   }
 
   return 0;
+}
+
+export function calcWSumSquares(remReserves: BigDec[]): BigDec {
+  let wSumSquares = new BigDec(0);
+  remReserves.forEach((reserve) => {
+    const reserveSquared = reserve.mul(reserve);
+    wSumSquares = wSumSquares.add(reserveSquared);
+  });
+  return wSumSquares;
 }

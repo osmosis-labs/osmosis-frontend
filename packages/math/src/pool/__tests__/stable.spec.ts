@@ -1,17 +1,25 @@
-import { StableSwapToken, StableSwapMath } from "../stable";
+import {
+  StableSwapToken,
+  StableSwapMath,
+  compareDec_checkMultErrorTolerance,
+  solveCfmm,
+  cfmmConstantMultiNoV,
+  calcWSumSquares,
+} from "../stable";
 import { Coin, Dec, Int, DecUtils } from "@keplr-wallet/unit";
+import { BigDec } from "../../big-dec";
 
 describe("Test stableswap math", () => {
   describe("calcOutGivenIn", () => {
     test("even pool basic trade", () => {
       const poolAssets: StableSwapToken[] = [
         {
-          amount: new Dec(1_000_000_000),
+          amount: new Dec(1_000_000),
           denom: "foo",
           scalingFactor: 1,
         },
         {
-          amount: new Dec(1_000_000_000),
+          amount: new Dec(1_000_000),
           denom: "bar",
           scalingFactor: 1,
         },
@@ -61,38 +69,36 @@ describe("Test stableswap math", () => {
       expect(outAmount.equals(expectedTokenOut.amount)).toBeTruthy();
     });
 
-    // TODO: add swap fee tests
-
-    /* This test should pass
-    test('even large pool basic trade (precision test)', () => {
+    test("even large pool basic trade (precision test)", () => {
       const poolAssets: StableSwapToken[] = [
         {
           amount: new Dec(1_000_000_000_000_000),
-          denom: 'foo',
+          denom: "foo",
           scalingFactor: 1,
         },
         {
           amount: new Dec(1_000_000_000_000_000),
-          denom: 'bar',
+          denom: "bar",
           scalingFactor: 1,
         },
       ];
 
-      const tokenIn = new Coin('foo', 100);
+      const tokenIn = new Coin("foo", 100);
       const swapFee = new Dec(0);
 
-      const expectedTokenOut = { denom: 'bar', amount: new Int(99) };
+      const expectedTokenOut = { denom: "bar", amount: new Int(99) };
 
       const outAmount = StableSwapMath.calcOutGivenIn(
         poolAssets,
         tokenIn,
         expectedTokenOut.denom,
-        swapFee,
+        swapFee
       );
 
       expect(outAmount.equals(expectedTokenOut.amount)).toBeTruthy();
     });
-    */
+
+    // TODO: add swap fee tests
   });
 
   describe("calcInGivenOut", () => {
@@ -154,38 +160,36 @@ describe("Test stableswap math", () => {
       expect(inAmount.equals(expectedTokenIn.amount)).toBeTruthy();
     });
 
-    // TODO: add swap fee tests
-
-    /* This test should pass
-    test('even large pool basic trade (precision test)', () => {
+    test("even large pool basic trade (precision test)", () => {
       const poolAssets: StableSwapToken[] = [
         {
           amount: new Dec(1_000_000_000_000_000),
-          denom: 'foo',
+          denom: "foo",
           scalingFactor: 1,
         },
         {
           amount: new Dec(1_000_000_000_000_000),
-          denom: 'bar',
+          denom: "bar",
           scalingFactor: 1,
         },
       ];
 
-      const tokenIn = new Coin('foo', 100);
+      const tokenIn = new Coin("foo", 100);
       const swapFee = new Dec(0);
 
-      const expectedTokenOut = { denom: 'bar', amount: new Int(99) };
+      const expectedTokenOut = { denom: "bar", amount: new Int(99) };
 
       const outAmount = StableSwapMath.calcOutGivenIn(
         poolAssets,
         tokenIn,
         expectedTokenOut.denom,
-        swapFee,
+        swapFee
       );
 
       expect(outAmount.equals(expectedTokenOut.amount)).toBeTruthy();
     });
-    */
+
+    // TODO: add swap fee tests
   });
 
   describe("calcSpotPrice", () => {
@@ -222,7 +226,7 @@ describe("Test stableswap math", () => {
       const tolerance = new Dec(1).quo(
         DecUtils.getTenExponentNInPrecisionRange(3)
       );
-      const comparison = StableSwapMath.compare_checkMultErrorTolerance(
+      const comparison = compareDec_checkMultErrorTolerance(
         expectedSpotPrice,
         actualSpotPrice,
         tolerance,
@@ -254,7 +258,7 @@ describe("Test stableswap math", () => {
       const baseDenom = "bar";
       const quoteDenom = "foo";
 
-      const expectedSpotPrice = new Dec(1.446096575818955898);
+      const expectedSpotPrice = new Dec(1.45454545454545);
 
       const actualSpotPrice = StableSwapMath.calcSpotPrice(
         poolAssets,
@@ -265,7 +269,7 @@ describe("Test stableswap math", () => {
       const tolerance = new Dec(1).quo(
         DecUtils.getTenExponentNInPrecisionRange(3)
       );
-      const comparison = StableSwapMath.compare_checkMultErrorTolerance(
+      const comparison = compareDec_checkMultErrorTolerance(
         expectedSpotPrice,
         actualSpotPrice,
         tolerance,
@@ -275,233 +279,414 @@ describe("Test stableswap math", () => {
       expect(comparison == 0).toBeTruthy();
     });
 
-    /*
-    test('even large pool basic trade (precision test)', () => {
+    test("even large pool basic trade (precision test)", () => {
       const poolAssets: StableSwapToken[] = [
         {
           amount: new Dec(1_000_000_000_000),
-          denom: 'foo',
+          denom: "foo",
           scalingFactor: 1,
         },
         {
           amount: new Dec(1_000_000_000_000),
-          denom: 'bar',
+          denom: "bar",
           scalingFactor: 1,
         },
       ];
 
-      const tokenOut = new Coin('bar', 100);
+      const tokenOut = new Coin("bar", 100);
       const swapFee = new Dec(0);
 
-      const expectedTokenIn = { denom: 'foo', amount: new Int(101) };
+      const expectedTokenIn = { denom: "foo", amount: new Int(101) };
 
       const inAmount = StableSwapMath.calcInGivenOut(
         poolAssets,
         tokenOut,
         expectedTokenIn.denom,
-        swapFee,
+        swapFee
       );
 
       expect(inAmount.equals(expectedTokenIn.amount)).toBeTruthy();
     });
-    */
   });
 
   describe("solver", () => {
     test("even 3-asset small pool, small input", () => {
-      const xReserve = new Dec(100);
-      const yReserve = new Dec(100);
-      const remReserves = [new Dec(100)];
-      const yIn = new Dec(1);
+      const xReserve = new BigDec(100_000_000);
+      const yReserve = new BigDec(100_000_000);
+      const remReserves = [new BigDec(100_000_000)];
+      const yIn = new BigDec(1_000);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("even 3-asset medium pool, small input", () => {
-      const xReserve = new Dec(100_000);
-      const yReserve = new Dec(100_000);
-      const remReserves = [new Dec(100_000)];
-      const yIn = new Dec(100);
+      const xReserve = new BigDec(100_000);
+      const yReserve = new BigDec(100_000);
+      const remReserves = [new BigDec(100_000)];
+      const yIn = new BigDec(100);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
-    test("even 4-asset small pool, small input", () => {
-      const xReserve = new Dec(100);
-      const yReserve = new Dec(100);
-      const remReserves = [new Dec(100), new Dec(100)];
-      const yIn = new Dec(1);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+    test("even 4-asset small pool, small input", () => {
+      const xReserve = new BigDec(100);
+      const yReserve = new BigDec(100);
+      const remReserves = [new BigDec(100), new BigDec(100)];
+      const yIn = new BigDec(1);
+
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("even 4-asset medium pool, small input", () => {
-      const xReserve = new Dec(100_000);
-      const yReserve = new Dec(100_000);
-      const remReserves = [new Dec(100_000), new Dec(100_000)];
-      const yIn = new Dec(1);
+      const xReserve = new BigDec(100_000);
+      const yReserve = new BigDec(100_000);
+      const remReserves = [new BigDec(100_000), new BigDec(100_000)];
+      const yIn = new BigDec(1);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("even 4-asset large pool (100M each), small input", () => {
-      const xReserve = new Dec(100_000_000);
-      const yReserve = new Dec(100_000_000);
-      const remReserves = [new Dec(100_000_000), new Dec(100_000_000)];
-      const yIn = new Dec(100);
+      const xReserve = new BigDec(100_000_000);
+      const yReserve = new BigDec(100_000_000);
+      const remReserves = [new BigDec(100_000_000), new BigDec(100_000_000)];
+      const yIn = new BigDec(100);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("even 4-asset pool (10B each post-scaled), small input", () => {
-      const xReserve = new Dec(10_000_000_000);
-      const yReserve = new Dec(10_000_000_000);
-      const remReserves = [new Dec(10_000_000_000), new Dec(10_000_000_000)];
-      const yIn = new Dec(100_000_000);
+      const xReserve = new BigDec(10_000_000_000);
+      const yReserve = new BigDec(10_000_000_000);
+      const remReserves = [
+        new BigDec(10_000_000_000),
+        new BigDec(10_000_000_000),
+      ];
+      const yIn = new BigDec(100_000_000);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("even 10-asset pool (10B each post-scaled), small input", () => {
-      const xReserve = new Dec(10_000_000_000);
-      const yReserve = new Dec(10_000_000_000);
+      const xReserve = new BigDec(10_000_000_000);
+      const yReserve = new BigDec(10_000_000_000);
       const remReserves = [
-        new Dec(10_000_000_000), // 3
-        new Dec(10_000_000_000), // 4
-        new Dec(10_000_000_000), // 5
-        new Dec(10_000_000_000), // 6
-        new Dec(10_000_000_000), // 7
-        new Dec(10_000_000_000), // 8
-        new Dec(10_000_000_000), // 9
-        new Dec(10_000_000_000), // 10
+        new BigDec(10_000_000_000), // 3
+        new BigDec(10_000_000_000), // 4
+        new BigDec(10_000_000_000), // 5
+        new BigDec(10_000_000_000), // 6
+        new BigDec(10_000_000_000), // 7
+        new BigDec(10_000_000_000), // 8
+        new BigDec(10_000_000_000), // 9
+        new BigDec(10_000_000_000), // 10
       ];
-      const yIn = new Dec(100);
+      const yIn = new BigDec(100);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("even 10-asset pool (100B each post-scaled), large input", () => {
-      const xReserve = new Dec(100_000_000_000);
-      const yReserve = new Dec(100_000_000_000);
+      const xReserve = new BigDec(100_000_000_000);
+      const yReserve = new BigDec(100_000_000_000);
       const remReserves = [
-        new Dec(100_000_000_000), // 3
-        new Dec(100_000_000_000), // 4
-        new Dec(100_000_000_000), // 5
-        new Dec(100_000_000_000), // 6
-        new Dec(100_000_000_000), // 7
-        new Dec(100_000_000_000), // 8
-        new Dec(100_000_000_000), // 9
-        new Dec(100_000_000_000), // 10
+        new BigDec(100_000_000_000), // 3
+        new BigDec(100_000_000_000), // 4
+        new BigDec(100_000_000_000), // 5
+        new BigDec(100_000_000_000), // 6
+        new BigDec(100_000_000_000), // 7
+        new BigDec(100_000_000_000), // 8
+        new BigDec(100_000_000_000), // 9
+        new BigDec(100_000_000_000), // 10
       ];
-      const yIn = new Dec(10_000_000_000);
+      const yIn = new BigDec(10_000_000_000);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
 
     // uneven pools
     test("uneven 3-asset pool, even swap assets as pool minority", () => {
-      const xReserve = new Dec(100);
-      const yReserve = new Dec(100);
-      const remReserves = [new Dec(100_000)];
-      const yIn = new Dec(10);
+      const xReserve = new BigDec(100);
+      const yReserve = new BigDec(100);
+      const remReserves = [new BigDec(100_000)];
+      const yIn = new BigDec(10);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("uneven 3-asset pool, uneven swap assets as pool minority, y > x", () => {
-      const xReserve = new Dec(100);
-      const yReserve = new Dec(200);
-      const remReserves = [new Dec(100_000)];
-      const yIn = new Dec(10);
+      const xReserve = new BigDec(100);
+      const yReserve = new BigDec(200);
+      const remReserves = [new BigDec(100_000)];
+      const yIn = new BigDec(10);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("uneven 3-asset pool, uneven swap assets as pool minority, x > y", () => {
-      const xReserve = new Dec(200);
-      const yReserve = new Dec(100);
-      const remReserves = [new Dec(100_000)];
-      const yIn = new Dec(10);
+      const xReserve = new BigDec(200);
+      const yReserve = new BigDec(100);
+      const remReserves = [new BigDec(100_000)];
+      const yIn = new BigDec(10);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("uneven 3-asset pool, no round numbers", () => {
-      const xReserve = new Dec(1178349);
-      const yReserve = new Dec(8329743);
-      const remReserves = [new Dec(329847)];
-      const yIn = new Dec(10);
+      const xReserve = new BigDec(1178349);
+      const yReserve = new BigDec(8329743);
+      const remReserves = [new BigDec(329847)];
+      const yIn = new BigDec(10);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("uneven 4-asset pool, small input and swap assets in pool minority", () => {
-      const xReserve = new Dec(100);
-      const yReserve = new Dec(100);
-      const remReserves = [new Dec(100_000), new Dec(100_000)];
-      const yIn = new Dec(10);
+      const xReserve = new BigDec(100);
+      const yReserve = new BigDec(100);
+      const remReserves = [new BigDec(100_000), new BigDec(100_000)];
+      const yIn = new BigDec(10);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("uneven 4-asset pool, even swap assets in pool majority", () => {
-      const xReserve = new Dec(100_000);
-      const yReserve = new Dec(100_000);
-      const remReserves = [new Dec(100), new Dec(100)];
-      const yIn = new Dec(10);
+      const xReserve = new BigDec(100_000);
+      const yReserve = new BigDec(100_000);
+      const remReserves = [new BigDec(100), new BigDec(100)];
+      const yIn = new BigDec(10);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("uneven 4-asset pool, even swap assets in pool majority", () => {
-      const xReserve = new Dec(100_000);
-      const yReserve = new Dec(100_000);
-      const remReserves = [new Dec(100), new Dec(100)];
-      const yIn = new Dec(10);
+      const xReserve = new BigDec(100_000);
+      const yReserve = new BigDec(100_000);
+      const remReserves = [new BigDec(100), new BigDec(100)];
+      const yIn = new BigDec(10);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("uneven 4-asset pool, uneven swap assets in pool majority, y > x", () => {
-      const xReserve = new Dec(100_000);
-      const yReserve = new Dec(200_000);
-      const remReserves = [new Dec(100), new Dec(100)];
-      const yIn = new Dec(10);
+      const xReserve = new BigDec(100_000);
+      const yReserve = new BigDec(200_000);
+      const remReserves = [new BigDec(100), new BigDec(100)];
+      const yIn = new BigDec(10);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("uneven 4-asset pool, uneven swap assets in pool majority, y < x", () => {
-      const xReserve = new Dec(200_000);
-      const yReserve = new Dec(100_000);
-      const remReserves = [new Dec(100), new Dec(100)];
-      const yIn = new Dec(10);
+      const xReserve = new BigDec(200_000);
+      const yReserve = new BigDec(100_000);
+      const remReserves = [new BigDec(100), new BigDec(100)];
+      const yIn = new BigDec(10);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
     test("uneven 4-asset pool, no round numbers", () => {
-      const xReserve = new Dec(1178349);
-      const yReserve = new Dec(8329743);
-      const remReserves = [new Dec(329847), new Dec(4372897)];
-      const yIn = new Dec(10);
+      const xReserve = new BigDec(1178349);
+      const yReserve = new BigDec(8329743);
+      const remReserves = [new BigDec(329847), new BigDec(4372897)];
+      const yIn = new BigDec(10);
 
-      StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn);
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
+
+      const xFinal = xReserve.add(xOut);
+      const yFinal = yReserve.add(yIn);
+
+      // wSumSquares shouldn't change across swaps
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
+
+      expect(kBefore.lt(kAfter)).toBeTruthy();
     });
 
     // check for expected exceptions to be thrown
     test("negative xReserve", () => {
-      const xReserve = new Dec(-100);
-      const yReserve = new Dec(100);
-      const remReserves = [new Dec(100), new Dec(100)];
-      const yIn = new Dec(1);
+      const xReserve = new BigDec(-100);
+      const yReserve = new BigDec(100);
+      const remReserves = [new BigDec(100), new BigDec(100)];
+      const yIn = new BigDec(1);
 
       expect(() =>
-        StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn)
+        solveCfmm(xReserve, yReserve, remReserves, yIn)
       ).toThrowError();
     });
     test("negative yReserve", () => {
-      const xReserve = new Dec(100);
-      const yReserve = new Dec(-100);
-      const remReserves = [new Dec(100), new Dec(100)];
-      const yIn = new Dec(1);
+      const xReserve = new BigDec(100);
+      const yReserve = new BigDec(-100);
+      const remReserves = [new BigDec(100), new BigDec(100)];
+      const yIn = new BigDec(1);
 
       expect(() =>
-        StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn)
+        solveCfmm(xReserve, yReserve, remReserves, yIn)
       ).toThrowError();
     });
     test("input greater than pool reserves (even 4-asset pool)", () => {
-      const xReserve = new Dec(100);
-      const yReserve = new Dec(100);
-      const remReserves = [new Dec(100), new Dec(100)];
-      const yIn = new Dec(1000);
+      const xReserve = new BigDec(100);
+      const yReserve = new BigDec(100);
+      const remReserves = [new BigDec(100), new BigDec(100)];
+      const yIn = new BigDec(1000);
 
       expect(() =>
-        StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn)
+        solveCfmm(xReserve, yReserve, remReserves, yIn)
       ).toThrowError();
     });
   });
