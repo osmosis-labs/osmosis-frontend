@@ -1,4 +1,11 @@
-import { StableSwapToken, StableSwapMath } from "../stable";
+import {
+  StableSwapToken,
+  StableSwapMath,
+  compareDec_checkMultErrorTolerance,
+  solveCfmm,
+  cfmmConstantMultiNoV,
+  calcWSumSquares,
+} from "../stable";
 import { Coin, Dec, Int, DecUtils } from "@keplr-wallet/unit";
 import { BigDec } from "../../big-dec";
 
@@ -219,7 +226,7 @@ describe("Test stableswap math", () => {
       const tolerance = new Dec(1).quo(
         DecUtils.getTenExponentNInPrecisionRange(3)
       );
-      const comparison = StableSwapMath.compareDec_checkMultErrorTolerance(
+      const comparison = compareDec_checkMultErrorTolerance(
         expectedSpotPrice,
         actualSpotPrice,
         tolerance,
@@ -262,7 +269,7 @@ describe("Test stableswap math", () => {
       const tolerance = new Dec(1).quo(
         DecUtils.getTenExponentNInPrecisionRange(3)
       );
-      const comparison = StableSwapMath.compareDec_checkMultErrorTolerance(
+      const comparison = compareDec_checkMultErrorTolerance(
         expectedSpotPrice,
         actualSpotPrice,
         tolerance,
@@ -309,27 +316,14 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100_000_000)];
       const yIn = new BigDec(1_000);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -339,28 +333,15 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100_000)];
       const yIn = new BigDec(100);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -371,28 +352,15 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100), new BigDec(100)];
       const yIn = new BigDec(1);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -402,28 +370,15 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100_000), new BigDec(100_000)];
       const yIn = new BigDec(1);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -433,28 +388,15 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100_000_000), new BigDec(100_000_000)];
       const yIn = new BigDec(100);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -467,28 +409,15 @@ describe("Test stableswap math", () => {
       ];
       const yIn = new BigDec(100_000_000);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -507,28 +436,15 @@ describe("Test stableswap math", () => {
       ];
       const yIn = new BigDec(100);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -547,28 +463,15 @@ describe("Test stableswap math", () => {
       ];
       const yIn = new BigDec(10_000_000_000);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -580,28 +483,15 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100_000)];
       const yIn = new BigDec(10);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -611,28 +501,15 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100_000)];
       const yIn = new BigDec(10);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -642,28 +519,15 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100_000)];
       const yIn = new BigDec(10);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -673,28 +537,15 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(329847)];
       const yIn = new BigDec(10);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -704,28 +555,15 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100_000), new BigDec(100_000)];
       const yIn = new BigDec(10);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -735,28 +573,15 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100), new BigDec(100)];
       const yIn = new BigDec(10);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -766,28 +591,15 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100), new BigDec(100)];
       const yIn = new BigDec(10);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -797,28 +609,15 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100), new BigDec(100)];
       const yIn = new BigDec(10);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -828,28 +627,15 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100), new BigDec(100)];
       const yIn = new BigDec(10);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -859,28 +645,15 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(329847), new BigDec(4372897)];
       const yIn = new BigDec(10);
 
-      const xOut = StableSwapMath.solveCfmm(
-        xReserve,
-        yReserve,
-        remReserves,
-        yIn
-      );
+      const xOut = solveCfmm(xReserve, yReserve, remReserves, yIn);
 
       const xFinal = xReserve.add(xOut);
       const yFinal = yReserve.add(yIn);
 
       // wSumSquares shouldn't change across swaps
-      const wSumSquares = StableSwapMath.calcWSumSquares(remReserves);
-      const kBefore = StableSwapMath.cfmmConstantMultiNoV(
-        xReserve,
-        yReserve,
-        wSumSquares
-      );
-      const kAfter = StableSwapMath.cfmmConstantMultiNoV(
-        xFinal,
-        yFinal,
-        wSumSquares
-      );
+      const wSumSquares = calcWSumSquares(remReserves);
+      const kBefore = cfmmConstantMultiNoV(xReserve, yReserve, wSumSquares);
+      const kAfter = cfmmConstantMultiNoV(xFinal, yFinal, wSumSquares);
 
       expect(kBefore.lt(kAfter)).toBeTruthy();
     });
@@ -893,7 +666,7 @@ describe("Test stableswap math", () => {
       const yIn = new BigDec(1);
 
       expect(() =>
-        StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn)
+        solveCfmm(xReserve, yReserve, remReserves, yIn)
       ).toThrowError();
     });
     test("negative yReserve", () => {
@@ -903,7 +676,7 @@ describe("Test stableswap math", () => {
       const yIn = new BigDec(1);
 
       expect(() =>
-        StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn)
+        solveCfmm(xReserve, yReserve, remReserves, yIn)
       ).toThrowError();
     });
     test("input greater than pool reserves (even 4-asset pool)", () => {
@@ -913,7 +686,7 @@ describe("Test stableswap math", () => {
       const yIn = new BigDec(1000);
 
       expect(() =>
-        StableSwapMath.solveCfmm(xReserve, yReserve, remReserves, yIn)
+        solveCfmm(xReserve, yReserve, remReserves, yIn)
       ).toThrowError();
     });
   });

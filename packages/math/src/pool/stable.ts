@@ -5,11 +5,6 @@ export const StableSwapMath = {
   calcOutGivenIn,
   calcInGivenOut,
   calcSpotPrice,
-  // secondary
-  solveCfmm,
-  compareDec_checkMultErrorTolerance,
-  cfmmConstantMultiNoV,
-  calcWSumSquares,
 };
 
 const oneBigDec = new BigDec(1);
@@ -20,7 +15,7 @@ export type StableSwapToken = {
   scalingFactor: number;
 };
 
-export type BigDecStableSwapToken = {
+type BigDecStableSwapToken = {
   amount: BigDec;
   denom: string;
   scalingFactor: number;
