@@ -209,8 +209,8 @@
     "ibcTransfer": {
       "titleWithdraw": "Retirar {coinDenom}",
       "titleDeposit": "Depositar {coinDenom}",
-      "congested": "congestionado",
-      "blocked": "obstruido",
+      "channelCongested": "Canal impugnado",
+      "channelBlocked": "Canal bloqueado",
       "selectAmount": "Cantidad seleccionada",
       "estimatedTime": "Tiempo estimado",
       "waitTime": "20 segundos",

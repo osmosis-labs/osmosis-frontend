@@ -100,18 +100,17 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           },
 
           children:
-            (isWithdraw
+            chainStatus === "blocked"
+              ? t("assets.ibcTransfer.channelBlocked")
+              : chainStatus === "congested"
+              ? t("assets.ibcTransfer.channelCongested")
+              : isWithdraw
               ? t("assets.ibcTransfer.titleWithdraw", {
                   coinDenom: currency.coinDenom,
                 })
               : t("assets.ibcTransfer.titleDeposit", {
                   coinDenom: currency.coinDenom,
-                })) +
-            (chainStatus === "blocked"
-              ? ` (${t("assets.ibcTransfer.blocked")})`
-              : chainStatus === "congested"
-              ? ` (${t("assets.ibcTransfer.congested")})`
-              : ""),
+                }),
         },
         props.onRequestClose
       );
