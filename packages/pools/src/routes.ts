@@ -447,8 +447,10 @@ export class OptimizedRoutes {
 
     if (routes.length === 1 && this.isOsmoRoutedMultihop(routes[0])) {
       isMultihopOsmoFeeDiscount = true;
-      const { swapFeeSum } = this.getOsmoRoutedMultihopTotalSwapFee(routes[0]);
-      totalSwapFee = totalSwapFee.mul(totalSwapFee.quo(swapFeeSum));
+      const { maxSwapFee, swapFeeSum } = this.getOsmoRoutedMultihopTotalSwapFee(
+        routes[0]
+      );
+      totalSwapFee = maxSwapFee.mul(totalSwapFee.quo(swapFeeSum));
     }
 
     const priceImpact = totalEffectivePriceInOverOut
