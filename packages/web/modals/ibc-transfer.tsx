@@ -2,7 +2,7 @@ import { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../stores";
 import { Transfer } from "../components/complex/transfer";
-import { IbcStatus } from "../../stores/src/queries-external";
+
 import {
   IbcTransfer,
   useIbcTransfer,
@@ -46,9 +46,9 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     const chainStatusQuery = queriesExternalStore.queryChainStatus;
 
     const chainStatus = chainStatusQuery.getIbcStatus(
-      props.isWithdraw ? "withdraw" : "deposit",
-      props.isWithdraw ? props.sourceChannelId : props.destChannelId,
-      props.counterpartyChainId
+      isWithdraw ? "withdraw" : "deposit",
+      isWithdraw ? props.sourceChannelId : props.destChannelId,
+      counterpartyChainId
     );
 
     const isChainBlockedOrCongested =
