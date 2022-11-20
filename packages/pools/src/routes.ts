@@ -18,15 +18,16 @@ export interface RoutePathWithAmount extends RoutePath {
 
 export class OptimizedRoutes {
   protected _pools: ReadonlyArray<Pool>;
+  protected _incentivizedPoolIds: string[];
   protected candidatePathsCache = new Map<string, RoutePath[]>();
 
-  constructor(pools: ReadonlyArray<Pool>) {
+  constructor(
+    pools: ReadonlyArray<Pool>,
+    incventivizedPoolIds: string[],
+    protected readonly stakeCurrencyMinDenom: string
+  ) {
     this._pools = pools;
-  }
-
-  setPools(pools: ReadonlyArray<Pool>) {
-    this._pools = pools;
-    this.clearCache();
+    this._incentivizedPoolIds = incventivizedPoolIds;
   }
 
   get pools(): ReadonlyArray<Pool> {
@@ -212,6 +213,67 @@ export class OptimizedRoutes {
     return filteredRoutePaths;
   }
 
+  /**
+   * Can provide a swap fee discount if true. Introduced in Osmosis v13.
+   *
+   * Osmosis addition: https://github.com/osmosis-labs/osmosis/pull/2454
+   * Invariants should match: `isOsmoRoutedMultihop` https://github.com/osmosis-labs/osmosis/blob/main/x/gamm/keeper/multihop.go#L266 */
+  protected isOsmoRoutedMultihop({
+    pools,
+    tokenOutDenoms,
+  }: RoutePath): boolean {
+    if (pools.length !== 2) {
+      return false;
+    }
+    const intermediateDenom = tokenOutDenoms[0];
+    if (intermediateDenom !== this.stakeCurrencyMinDenom) {
+      return false;
+    }
+    const firstPool = pools[0];
+    const secondPool = pools[1];
+    if (firstPool.id === secondPool.id) {
+      return false;
+    }
+
+    if (
+      !this._incentivizedPoolIds.includes(firstPool.id) ||
+      !this._incentivizedPoolIds.includes(secondPool.id)
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Get's the special swap fee discount for routing through 2 OSMO pools as defined in `isOsmoRoutedMultihop`.
+   *
+   * Should match: https://github.com/osmosis-labs/osmosis/blob/d868b873fe55942d50f1e6e74900cf8bf1f90f25/x/gamm/keeper/multihop.go#L288-L305
+   */
+  protected getOsmoRoutedMultihopTotalSwapFee({ pools }: RoutePath): {
+    swapFeeSum: Dec;
+    maxSwapFee: Dec;
+  } {
+    let swapFeeSum = new Dec(0);
+    let maxSwapFee = new Dec(0);
+
+    pools.forEach((pool) => {
+      swapFeeSum = swapFeeSum.add(pool.swapFee);
+
+      if (pool.swapFee.gt(maxSwapFee)) {
+        maxSwapFee = pool.swapFee;
+      }
+    });
+
+    const averageSwapFee = swapFeeSum.quo(new Dec(pools.length));
+
+    if (averageSwapFee.gt(maxSwapFee)) {
+      maxSwapFee = averageSwapFee;
+    }
+
+    return { swapFeeSum, maxSwapFee };
+  }
+
   getOptimizedRoutesByTokenIn(
     tokenIn: {
       denom: string;
@@ -269,7 +331,7 @@ export class OptimizedRoutes {
     });
   }
 
-  calculateTokenOutByTokenIn(paths: RoutePathWithAmount[]): {
+  calculateTokenOutByTokenIn(routes: RoutePathWithAmount[]): {
     amount: Int;
     beforeSpotPriceInOverOut: Dec;
     beforeSpotPriceOutOverIn: Dec;
@@ -282,7 +344,7 @@ export class OptimizedRoutes {
     multiHopOsmoDiscount: boolean;
     priceImpact: Dec;
   } {
-    if (paths.length === 0) {
+    if (routes.length === 0) {
       throw new Error("Paths are empty");
     }
 
@@ -291,59 +353,52 @@ export class OptimizedRoutes {
     let totalAfterSpotPriceInOverOut: Dec = new Dec(0);
     let totalEffectivePriceInOverOut: Dec = new Dec(0);
     let totalSwapFee: Dec = new Dec(0);
+    /** Special case when routing through _only_ 2 OSMO pools. */
     let isMultihopOsmoFeeDiscount = false;
 
     let sumAmount = new Int(0);
-    for (const path of paths) {
+    for (const path of routes) {
       sumAmount = sumAmount.add(path.amount);
     }
 
     let outDenom: string | undefined;
-    for (const path of paths) {
+    for (const route of routes) {
       if (
-        path.pools.length !== path.tokenOutDenoms.length ||
-        path.pools.length === 0
+        route.pools.length !== route.tokenOutDenoms.length ||
+        route.pools.length === 0
       ) {
         throw new Error("Invalid path");
       }
 
       if (!outDenom) {
-        outDenom = path.tokenOutDenoms[path.tokenOutDenoms.length - 1];
+        outDenom = route.tokenOutDenoms[route.tokenOutDenoms.length - 1];
       } else if (
-        outDenom !== path.tokenOutDenoms[path.tokenOutDenoms.length - 1]
+        outDenom !== route.tokenOutDenoms[route.tokenOutDenoms.length - 1]
       ) {
         throw new Error("Paths have different out denom");
       }
 
-      const amountFraction = path.amount.toDec().quoTruncate(sumAmount.toDec());
+      const amountFraction = route.amount
+        .toDec()
+        .quoTruncate(sumAmount.toDec());
 
-      let previousInDenom = path.tokenInDenom;
-      let previousInAmount = path.amount;
+      let previousInDenom = route.tokenInDenom;
+      let previousInAmount = route.amount;
 
       let beforeSpotPriceInOverOut: Dec = new Dec(1);
       let afterSpotPriceInOverOut: Dec = new Dec(1);
       let effectivePriceInOverOut: Dec = new Dec(1);
       let swapFee: Dec = new Dec(0);
 
-      for (let i = 0; i < path.pools.length; i++) {
-        const pool = path.pools[i];
-        const outDenom = path.tokenOutDenoms[i];
+      for (let i = 0; i < route.pools.length; i++) {
+        const pool = route.pools[i];
+        const outDenom = route.tokenOutDenoms[i];
 
         // less fee
         const tokenOut = pool.getTokenOutByTokenIn(
           { denom: previousInDenom, amount: previousInAmount },
           outDenom
         );
-
-        let poolSwapFee = pool.swapFee;
-        // v13 fee discount for multihop swapping through osmo pool. see: https://github.com/osmosis-labs/osmosis/pull/2454
-        if (
-          (outDenom === "uosmo" || previousInDenom === "uosmo") &&
-          path.pools.length === 2
-        ) {
-          isMultihopOsmoFeeDiscount = true;
-          poolSwapFee = pool.swapFee.quo(new Dec(2));
-        }
 
         if (!tokenOut.amount.gt(new Int(0))) {
           // not enough liquidity
@@ -366,9 +421,11 @@ export class OptimizedRoutes {
         effectivePriceInOverOut = effectivePriceInOverOut.mulTruncate(
           tokenOut.effectivePriceInOverOut
         );
-        swapFee = swapFee.add(new Dec(1).sub(swapFee).mulTruncate(poolSwapFee));
+        swapFee = swapFee.add(
+          new Dec(1).sub(swapFee).mulTruncate(pool.swapFee)
+        );
 
-        if (i === path.pools.length - 1) {
+        if (i === route.pools.length - 1) {
           totalOutAmount = totalOutAmount.add(tokenOut.amount);
 
           totalBeforeSpotPriceInOverOut = totalBeforeSpotPriceInOverOut.add(
@@ -386,6 +443,12 @@ export class OptimizedRoutes {
           previousInAmount = tokenOut.amount;
         }
       }
+    }
+
+    if (routes.length === 1 && this.isOsmoRoutedMultihop(routes[0])) {
+      isMultihopOsmoFeeDiscount = true;
+      const { swapFeeSum } = this.getOsmoRoutedMultihopTotalSwapFee(routes[0]);
+      totalSwapFee = totalSwapFee.mul(totalSwapFee.quo(swapFeeSum));
     }
 
     const priceImpact = totalEffectivePriceInOverOut

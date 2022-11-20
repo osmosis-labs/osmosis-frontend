@@ -4,12 +4,15 @@ import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, IntPretty, RatePretty } from "@keplr-wallet/unit";
 import { OptimizedRoutes, Pool, RoutePathWithAmount } from "@osmosis-labs/pools";
 export declare class ObservableTradeTokenInConfig extends AmountConfig {
+    protected readonly initialChainId: string;
     protected _pools: Pool[];
+    protected _incentivizedPoolIds: string[];
     protected _inCurrencyMinimalDenom: string | undefined;
     protected _outCurrencyMinimalDenom: string | undefined;
     protected _error: Error | undefined;
-    constructor(chainGetter: ChainGetter, queriesStore: IQueriesStore, initialChainId: string, sender: string, feeConfig: IFeeConfig | undefined, pools: Pool[]);
+    constructor(chainGetter: ChainGetter, queriesStore: IQueriesStore, initialChainId: string, sender: string, feeConfig: IFeeConfig | undefined, pools: Pool[], incentivizedPoolIds?: string[]);
     setPools(pools: Pool[]): void;
+    setIncentivizedPoolIds(poolIds: string[]): void;
     setSendCurrency(currency: AppCurrency | undefined): void;
     setOutCurrency(currency: AppCurrency | undefined): void;
     switchInAndOut(): void;
