@@ -2,7 +2,7 @@ import { HasMapStore } from "@keplr-wallet/stores";
 import { ObservableQueryExternalBase } from "../base";
 import { KVStore } from "@keplr-wallet/common";
 import { IbcStatus } from "./types";
-/** Queries */
+/** Queries for ibc chain data*/
 declare class ObservableQueryIbcChainStatus extends ObservableQueryExternalBase<[
     {
         source: string;
