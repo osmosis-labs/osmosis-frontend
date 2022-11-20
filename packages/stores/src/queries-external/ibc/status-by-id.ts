@@ -42,6 +42,8 @@ class ObservableQueryIbcChainStatus extends ObservableQueryExternalBase<
       );
       if (channelData) {
         if (channelData.size_queue > 0) {
+          if (channelData.duration_minutes > 20) return "blocked";
+          else if (channelData.duration_minutes > 5) return "congested";
         }
         return "normal";
       }
@@ -90,11 +92,7 @@ class ObservableQueryDepositIbcChainsStatus extends HasMapStore<ObservableQueryI
 export class ObservableQueryIbcChainsStatus {
   withdrawQueryMapping: ObservableQueryWithdrawIbcChainsStatus;
   depositQueryMapping: ObservableQueryDepositIbcChainsStatus;
-  constructor(
-    kvStore: KVStore,
-    sourceChainId: string,
-    baseUrl = "https://api-osmosis-chain.imperator.co"
-  ) {
+  constructor(kvStore: KVStore, sourceChainId: string, baseUrl: string) {
     this.withdrawQueryMapping = new ObservableQueryWithdrawIbcChainsStatus(
       kvStore,
       sourceChainId,
