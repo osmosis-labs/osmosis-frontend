@@ -45,7 +45,6 @@ class ObservableQueryIbcChainStatus extends ObservableQueryExternalBase<
         }
         return "normal";
       }
-      return undefined;
     }
   );
 }
@@ -90,7 +89,7 @@ class ObservableQueryDepositIbcChainsStatus extends HasMapStore<ObservableQueryI
 
 export class ObservableQueryIbcChainsStatus {
   withdrawQueryMapping: ObservableQueryWithdrawIbcChainsStatus;
-  depositeQueryMapping: ObservableQueryDepositIbcChainsStatus;
+  depositQueryMapping: ObservableQueryDepositIbcChainsStatus;
   constructor(
     kvStore: KVStore,
     sourceChainId: string,
@@ -101,7 +100,7 @@ export class ObservableQueryIbcChainsStatus {
       sourceChainId,
       baseUrl
     );
-    this.depositeQueryMapping = new ObservableQueryDepositIbcChainsStatus(
+    this.depositQueryMapping = new ObservableQueryDepositIbcChainsStatus(
       kvStore,
       sourceChainId,
       baseUrl
@@ -119,7 +118,7 @@ export class ObservableQueryIbcChainsStatus {
         .get(counterPartyChainId)
         .getIbcStatus(channelId);
     else
-      return this.depositeQueryMapping
+      return this.depositQueryMapping
         .get(counterPartyChainId)
         .getIbcStatus(channelId);
   }
