@@ -28,8 +28,8 @@ declare class ObservableQueryDepositIbcChainsStatus extends HasMapStore<Observab
 }
 export declare class ObservableQueryIbcChainsStatus {
     withdrawQueryMapping: ObservableQueryWithdrawIbcChainsStatus;
-    depositeQueryMapping: ObservableQueryDepositIbcChainsStatus;
-    constructor(kvStore: KVStore, sourceChainId: string, baseUrl?: string);
+    depositQueryMapping: ObservableQueryDepositIbcChainsStatus;
+    constructor(kvStore: KVStore, sourceChainId: string, baseUrl: string);
     getIbcStatus(direction: "withdraw" | "deposit", channelId: string, counterPartyChainId: string): IbcStatus | undefined;
 }
 export {};
