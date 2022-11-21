@@ -141,6 +141,7 @@
     "delegated": "已質押",
     "undelegating": "解除質押中",
     "commission": "佣金",
+    "numDaysRemaining": "剩下{numDays}日",
     "from": "來自",
     "swapFees": "兌換費",
     "7davg": "(7日平均)"
