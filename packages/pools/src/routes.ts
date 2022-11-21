@@ -286,18 +286,18 @@ export class OptimizedRoutes {
       throw new Error("Token in amount is zero or negative");
     }
 
-    let paths = this.getCandidatePaths(tokenIn.denom, tokenOutDenom, true);
+    let routes = this.getCandidatePaths(tokenIn.denom, tokenOutDenom, true);
     // TODO: if paths is single pool - confirm enough liquidity otherwise find different route
-    if (paths.length === 0) {
+    if (routes.length === 0) {
       throw new NoPoolsError();
     }
 
-    paths = paths.slice(0, maxPools);
+    routes = routes.slice(0, maxPools);
 
     const initialSwapAmounts: Int[] = [];
     let totalLimitAmount = new Int(0);
-    for (const path of paths) {
-      const limitAmount = path.pools[0].getLimitAmountByTokenIn(tokenIn.denom);
+    for (const route of routes) {
+      const limitAmount = route.pools[0].getLimitAmountByTokenIn(tokenIn.denom);
 
       totalLimitAmount = totalLimitAmount.add(limitAmount);
 
@@ -325,7 +325,7 @@ export class OptimizedRoutes {
 
     return initialSwapAmounts.map((amount, i) => {
       return {
-        ...paths[i],
+        ...routes[i],
         amount,
       };
     });
@@ -401,6 +401,14 @@ export class OptimizedRoutes {
             this.getOsmoRoutedMultihopTotalSwapFee(routes[0]);
           poolSwapFee = maxSwapFee.mul(poolSwapFee.quo(swapFeeSum));
         }
+
+        console.log(
+          "poolFeeFor",
+          outDenom,
+          poolSwapFee.toString(),
+          "oldFee",
+          pool.swapFee.toString()
+        );
 
         // less fee
         const tokenOut = pool.getTokenOutByTokenIn(
