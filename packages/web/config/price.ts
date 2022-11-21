@@ -190,7 +190,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },*/
   {
     alternativeCoinId: "pool:lvn",
     poolId: "774",
@@ -200,7 +200,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },/*
   {
     alternativeCoinId: "pool:umed",
     poolId: "586",
@@ -463,7 +463,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },*/
   {
     alternativeCoinId: "pool:umeme",
     poolId: "701",
@@ -473,7 +473,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },/*
   {
     alternativeCoinId: "pool:utick",
     poolId: "547",
@@ -586,7 +586,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },*/
   {
     alternativeCoinId: "pool:ulumen",
     poolId: "788",
@@ -596,7 +596,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },/*
   {
     alternativeCoinId: "pool:acudos",
     poolId: "796",
@@ -640,6 +640,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     destCoinId: "pool:rowan",
   },
+  */
   {
     alternativeCoinId: "pool:joe",
     poolId: "718",
@@ -669,7 +670,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },/*
   {
     alternativeCoinId: "pool:odin",
     poolId: "777",
@@ -709,7 +710,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },*/
   {
     alternativeCoinId: "pool:geo",
     poolId: "787",
@@ -719,7 +720,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },/*
   {
     alternativeCoinId: "pool:stuatom",
     poolId: "803",
@@ -752,7 +753,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },*/
   {
     alternativeCoinId: "pool:stustars",
     poolId: "810",
@@ -764,8 +765,8 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       [{ portId: "transfer", channelId: "channel-75" }],
       "ustars"
     ),
-    destCoinId: "pool:ustars",
-  },
+    destCoinId: "stargaze",
+  },/*
   {
     alternativeCoinId: "pool:sejuno",
     poolId: "793",
@@ -775,7 +776,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },*/
   {
     alternativeCoinId: "pool:seasy",
     poolId: "808",
@@ -785,7 +786,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },/*
   {
     alternativeCoinId: "pool:arebus",
     poolId: "813",
@@ -815,7 +816,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },*/
   {
     alternativeCoinId: "pool:stujuno",
     poolId: "817",
@@ -827,7 +828,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       [{ portId: "transfer", channelId: "channel-42" }],
       "ujuno"
     ),
-    destCoinId: "pool:ujuno",
+    destCoinId: "juno-network",
   },
   {
     alternativeCoinId: "pool:stuosmo",
@@ -837,8 +838,8 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "stuosmo"
     ),
     spotPriceDestDenom: "uosmo",
-    destCoinId: "pool:uosmo",
-  },
+    destCoinId: "osmosis",
+  },/*
   {
     alternativeCoinId: "pool:rowan",
     poolId: "629",
@@ -868,7 +869,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },*/
   {
     alternativeCoinId: "pool:jkl",
     poolId: "832",
@@ -878,7 +879,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },/*
   {
     alternativeCoinId: "pool:ubld",
     poolId: "795",
@@ -888,7 +889,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },*/
   {
     alternativeCoinId: "pool:uist",
     poolId: "837",
@@ -898,7 +899,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
-  },
+  },/*
   {
     alternativeCoinId: "pool:uusdc.grv",
     poolId: "633",

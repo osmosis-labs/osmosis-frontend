@@ -492,7 +492,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3:JOE",
           coinDecimals: 6,
-          //coinGeckoId: "pool:joe",
+          coinGeckoId: "pool:joe",
           coinImageUrl: "/tokens/joe.png",
         },
         {
@@ -503,7 +503,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se:GLTO",
           coinDecimals: 6,
-          //coinGeckoId: "pool:glto",
+          coinGeckoId: "pool:glto",
           coinImageUrl: "/tokens/glto.svg",
         },
         {
@@ -514,7 +514,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno1gz8cf86zr4vw9cjcyyv432vgdaecvr9n254d3uwwkx9rermekddsxzageh:GKEY",
           coinDecimals: 6,
-          //coinGeckoId: "pool:gkey",
+          coinGeckoId: "pool:gkey",
           coinImageUrl: "/tokens/gkey.svg",
         },
         {
@@ -557,8 +557,8 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno19rqljkh95gh40s7qdx40ksx3zq5tm4qsmsrdz9smw668x9zdr3lqtg33mf:SEASY",
           coinDecimals: 6,
-          coinGeckoId: "seasy",
-          //coinGeckoId: "pool:seasy",
+          //coinGeckoId: "seasy",
+          coinGeckoId: "pool:seasy",
           coinImageUrl: "/tokens/seasy.svg",
         },
         {
@@ -829,7 +829,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:ki1dt3lk455ed360pna38fkhqn0p8y44qndsr77qu73ghyaz2zv4whq83mwdy:LVN",
           coinDecimals: 6,
-          //coinGeckoId: "pool:lvn",
+          coinGeckoId: "pool:lvn",
           coinImageUrl: "/tokens/lvn.png",
         },
       ],
@@ -967,7 +967,7 @@ const chainInfos = (
           coinDenom: "STARS",
           coinMinimalDenom: "ustars",
           coinDecimals: 6,
-          coinGeckoId: "stragaze",
+          coinGeckoId: "stargaze",
           //coinGeckoId: "pool:ustars",
           coinImageUrl: "/tokens/stars.png",
           isStakeCurrency: true,
@@ -1564,7 +1564,7 @@ const chainInfos = (
           coinDenom: "MEME",
           coinMinimalDenom: "umeme",
           coinDecimals: 6,
-          //coinGeckoId: "pool:umeme",
+          coinGeckoId: "pool:umeme",
           coinImageUrl: "/tokens/meme.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -1867,8 +1867,8 @@ const chainInfos = (
           coinDenom: "GEO",
           coinMinimalDenom: "mGeo",
           coinDecimals: 6,
-          coinGeckoId: "geodb",
-          //coinGeckoId: "pool:geo",
+          //coinGeckoId: "geodb",
+          coinGeckoId: "pool:geo",
           coinImageUrl: "/tokens/geo.svg",
         },
         {
@@ -1937,7 +1937,7 @@ const chainInfos = (
           coinDenom: "LUMEN",
           coinMinimalDenom: "ulumen",
           coinDecimals: 6,
-          //coinGeckoId: "pool:ulumen",
+          coinGeckoId: "pool:ulumen",
           coinImageUrl: "/tokens/lumen.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -2032,7 +2032,7 @@ const chainInfos = (
           coinDenom: "IST",
           coinMinimalDenom: "uist",
           coinDecimals: 6,
-          //coinGeckoId: "pool:uist",
+          coinGeckoId: "pool:uist",
           coinImageUrl: "/tokens/ist.png",
         },
       ],
@@ -2071,21 +2071,21 @@ const chainInfos = (
           coinDenom: "stSTARS",
           coinMinimalDenom: "stustars",
           coinDecimals: 6,
-          //coinGeckoId: "pool:stustars",
+          coinGeckoId: "pool:stustars",
           coinImageUrl: "/tokens/ststars.svg",
         },
         {
           coinDenom: "stOSMO",
           coinMinimalDenom: "stuosmo",
           coinDecimals: 6,
-          //coinGeckoId: "pool:stuosmo",
+          coinGeckoId: "pool:stuosmo",
           coinImageUrl: "/tokens/stosmo.svg",
         },
         {
           coinDenom: "stJUNO",
           coinMinimalDenom: "stujuno",
           coinDecimals: 6,
-          //coinGeckoId: "pool:stujuno",
+          coinGeckoId: "pool:stujuno",
           coinImageUrl: "/tokens/stjuno.svg",
         },
         {
@@ -2225,7 +2225,7 @@ const chainInfos = (
           coinDenom: "JKL",
           coinMinimalDenom: "ujkl",
           coinDecimals: 6,
-          //coinGeckoId: "pool:jkl",
+          coinGeckoId: "pool:jkl",
           coinImageUrl: "/tokens/jkl.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
