@@ -146,7 +146,8 @@ export class StablePool implements Pool {
 
   getTokenInByTokenOut(
     tokenOut: { denom: string; amount: Int },
-    tokenInDenom: string
+    tokenInDenom: string,
+    swapFee?: Dec
   ): {
     amount: Int;
     beforeSpotPriceInOverOut: Dec;
@@ -172,7 +173,7 @@ export class StablePool implements Pool {
       this.stableSwapTokens,
       coinOut,
       tokenInDenom,
-      this.swapFee
+      swapFee ?? this.swapFee
     );
 
     const movedStableTokens: StableSwapToken[] = this.stableSwapTokens.map(
@@ -220,7 +221,8 @@ export class StablePool implements Pool {
 
   getTokenOutByTokenIn(
     tokenIn: { denom: string; amount: Int },
-    tokenOutDenom: string
+    tokenOutDenom: string,
+    swapFee?: Dec
   ): {
     amount: Int;
     beforeSpotPriceInOverOut: Dec;
@@ -246,7 +248,7 @@ export class StablePool implements Pool {
       this.stableSwapTokens,
       coinIn,
       outPoolAsset.denom,
-      this.swapFee
+      swapFee ?? this.swapFee
     );
 
     if (tokenOutAmount.equals(new Int(0))) {

@@ -40,5 +40,8 @@
   "dependencies": {
     "@keplr-wallet/unit": "^0.10.24",
     "@osmosis-labs/math": "^3.0.0"
+  },
+  "devDependencies": {
+    "deepmerge": ""
   }
 }
