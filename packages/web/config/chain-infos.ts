@@ -138,7 +138,8 @@ const chainInfos = (
     },
     {
       rpc: "https://rpc-secret.keplr.app",
-      rest: "https://lcd-secret.keplr.app",
+      //rest: "https://lcd-secret.keplr.app",
+      rest: "https://api.scrt.network/",
       chainId: "secret-4",
       chainName: "Secret Network",
       bip44: {
@@ -2101,7 +2102,14 @@ const chainInfos = (
         average: 0,
         high: 0.04,
       },
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: [
+        "stargate",
+        "ibc-transfer",
+        "ibc-go",
+        "no-legacy-stdTx",
+        "wasmd_0.24+",
+        "cosmwasm",
+      ],
       explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
     },
     {
