@@ -50,6 +50,14 @@ const chainInfos = (
           coinGeckoId: "ion",
           coinImageUrl: "/tokens/ion.png",
         },
+        {
+          coinDenom: "FOO",
+          coinMinimalDenom:
+            "factory/osmo1ch9l34p0m9u5pvpj0h63m2f43h599kzfm0shpl/ufoo",
+          coinDecimals: 6,
+          coinGeckoId: "ion",
+          coinImageUrl: "/tokens/juno.svg",
+        },
       ],
       gasPriceStep: {
         low: 0,
