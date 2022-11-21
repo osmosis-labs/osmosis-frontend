@@ -967,7 +967,7 @@ const chainInfos = (
           coinDenom: "STARS",
           coinMinimalDenom: "ustars",
           coinDecimals: 6,
-          coinGeckoId: "stragaze",
+          coinGeckoId: "stargaze",
           //coinGeckoId: "pool:ustars",
           coinImageUrl: "/tokens/stars.png",
           isStakeCurrency: true,
