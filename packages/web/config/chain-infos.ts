@@ -138,7 +138,8 @@ const chainInfos = (
     },
     {
       rpc: "https://rpc-secret.keplr.app",
-      rest: "https://lcd-secret.keplr.app",
+      //rest: "https://lcd-secret.keplr.app",
+      rest: "https://api.scrt.network/",
       chainId: "secret-4",
       chainName: "Secret Network",
       bip44: {
@@ -207,7 +208,14 @@ const chainInfos = (
           coinImageUrl: "/tokens/sienna.svg",
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: [
+        "stargate",
+        "ibc-transfer",
+        "ibc-go",
+        "no-legacy-stdTx",
+        "wasmd_0.24+",
+        "cosmwasm",
+      ],
       explorerUrlToTx:
         "https://secretnodes.com/secret/chains/secret-4/transactions/{txHash}",
     },
@@ -1053,7 +1061,7 @@ const chainInfos = (
         average: 0.03,
         high: 0.035,
       },
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://ping.pub/chihuahua/tx/{txHash}",
     },
     {
