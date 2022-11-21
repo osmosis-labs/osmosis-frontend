@@ -158,7 +158,14 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: [
+        "stargate",
+        "ibc-transfer",
+        "ibc-go",
+        "no-legacy-stdTx",
+        "wasmd_0.24+",
+        "cosmwasm",
+      ],
       explorerUrlToTx:
         "https://secretnodes.com/secret/chains/secret-4/transactions/{txHash}",
     },
@@ -2102,14 +2109,7 @@ const chainInfos = (
         average: 0,
         high: 0.04,
       },
-      features: [
-        "stargate",
-        "ibc-transfer",
-        "ibc-go",
-        "no-legacy-stdTx",
-        "wasmd_0.24+",
-        "cosmwasm",
-      ],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
     },
     {
