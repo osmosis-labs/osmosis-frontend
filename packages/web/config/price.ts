@@ -13,6 +13,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     destCoinId: "usd-coin",
   },
+  /*
   {
     alternativeCoinId: "pool:uion",
     poolId: "2",
@@ -978,4 +979,5 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
   },
+  */
 ];
