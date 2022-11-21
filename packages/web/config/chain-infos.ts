@@ -1003,7 +1003,7 @@ const chainInfos = (
         average: 0.03,
         high: 0.035,
       },
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
       explorerUrlToTx: "https://ping.pub/chihuahua/tx/{txHash}",
     },
     {
