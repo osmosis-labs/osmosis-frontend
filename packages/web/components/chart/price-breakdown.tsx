@@ -44,7 +44,7 @@ export const PriceBreakdownChart: FunctionComponent<{
 
         return (
           <div key={index} className={classNames("flex flex-col gap-2.5")}>
-            <div>
+            <div className="whitespace-nowrap">
               <span className="subtitle1 text-osmoverse-400">{label}</span>
               <h5 className="text-osmoverse-100">
                 {price.maxDecimals(0).toString()}
