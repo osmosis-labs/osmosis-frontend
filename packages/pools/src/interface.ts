@@ -38,7 +38,8 @@ export interface Pool {
       denom: string;
       amount: Int;
     },
-    tokenOutDenom: string
+    tokenOutDenom: string,
+    swapFee?: Dec
   ): {
     amount: Int;
     beforeSpotPriceInOverOut: Dec;
@@ -54,7 +55,8 @@ export interface Pool {
       denom: string;
       amount: Int;
     },
-    tokenInDenom: string
+    tokenInDenom: string,
+    swapFee?: Dec
   ): {
     amount: Int;
     beforeSpotPriceInOverOut: Dec;

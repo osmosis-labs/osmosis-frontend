@@ -51,7 +51,7 @@ export declare class StablePool implements Pool {
     getTokenInByTokenOut(tokenOut: {
         denom: string;
         amount: Int;
-    }, tokenInDenom: string): {
+    }, tokenInDenom: string, swapFee?: Dec): {
         amount: Int;
         beforeSpotPriceInOverOut: Dec;
         beforeSpotPriceOutOverIn: Dec;
@@ -64,7 +64,7 @@ export declare class StablePool implements Pool {
     getTokenOutByTokenIn(tokenIn: {
         denom: string;
         amount: Int;
-    }, tokenOutDenom: string): {
+    }, tokenOutDenom: string, swapFee?: Dec): {
         amount: Int;
         beforeSpotPriceInOverOut: Dec;
         beforeSpotPriceOutOverIn: Dec;

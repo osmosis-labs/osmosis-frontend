@@ -208,7 +208,8 @@ export class WeightedPool implements Pool {
 
   getTokenInByTokenOut(
     tokenOut: { denom: string; amount: Int },
-    tokenInDenom: string
+    tokenInDenom: string,
+    swapFee?: Dec
   ): {
     amount: Int;
     beforeSpotPriceInOverOut: Dec;
@@ -227,7 +228,7 @@ export class WeightedPool implements Pool {
       new Dec(inPoolAsset.weight),
       new Dec(outPoolAsset.amount),
       new Dec(outPoolAsset.weight),
-      this.swapFee
+      swapFee ?? this.swapFee
     );
 
     const tokenInAmount = WeightedPoolMath.calcInGivenOut(
@@ -236,7 +237,7 @@ export class WeightedPool implements Pool {
       new Dec(outPoolAsset.amount),
       new Dec(outPoolAsset.weight),
       new Dec(tokenOut.amount),
-      this.swapFee
+      swapFee ?? this.swapFee
     ).truncate();
 
     const afterSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
@@ -244,7 +245,7 @@ export class WeightedPool implements Pool {
       new Dec(inPoolAsset.weight),
       new Dec(outPoolAsset.amount).sub(new Dec(tokenOut.amount)),
       new Dec(outPoolAsset.weight),
-      this.swapFee
+      swapFee ?? this.swapFee
     );
 
     if (afterSpotPriceInOverOut.lt(beforeSpotPriceInOverOut)) {
@@ -272,7 +273,8 @@ export class WeightedPool implements Pool {
 
   getTokenOutByTokenIn(
     tokenIn: { denom: string; amount: Int },
-    tokenOutDenom: string
+    tokenOutDenom: string,
+    swapFee?: Dec
   ): {
     amount: Int;
     beforeSpotPriceInOverOut: Dec;
@@ -291,7 +293,7 @@ export class WeightedPool implements Pool {
       new Dec(inPoolAsset.weight),
       new Dec(outPoolAsset.amount),
       new Dec(outPoolAsset.weight),
-      this.swapFee
+      swapFee ?? this.swapFee
     );
 
     const tokenOutAmount = WeightedPoolMath.calcOutGivenIn(
@@ -300,7 +302,7 @@ export class WeightedPool implements Pool {
       new Dec(outPoolAsset.amount),
       new Dec(outPoolAsset.weight),
       new Dec(tokenIn.amount),
-      this.swapFee
+      swapFee ?? this.swapFee
     ).truncate();
 
     if (tokenOutAmount.equals(new Int(0))) {
@@ -321,7 +323,7 @@ export class WeightedPool implements Pool {
       new Dec(inPoolAsset.weight),
       new Dec(outPoolAsset.amount).sub(new Dec(tokenOutAmount)),
       new Dec(outPoolAsset.weight),
-      this.swapFee
+      swapFee ?? this.swapFee
     );
 
     if (afterSpotPriceInOverOut.lt(beforeSpotPriceInOverOut)) {
