@@ -416,7 +416,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-212",
     destChannelId: "channel-1",
     coinMinimalDenom: "ucrbrus",
-    isVerified: true,
+    isUnstable: true,
   },
   {
     counterpartyChainId: "fetchhub-4",
