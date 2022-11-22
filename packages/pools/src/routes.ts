@@ -1,4 +1,8 @@
 import { Dec, Int } from "@keplr-wallet/unit";
+import {
+  isOsmoRoutedMultihop,
+  getOsmoRoutedMultihopTotalSwapFee,
+} from "@osmosis-labs/math";
 import { Pool } from "./interface";
 import { NoPoolsError, NotEnoughLiquidityError } from "./errors";
 
@@ -213,67 +217,6 @@ export class OptimizedRoutes {
     return filteredRoutePaths;
   }
 
-  /**
-   * Can provide a swap fee discount if true. Introduced in Osmosis v13.
-   *
-   * Osmosis addition: https://github.com/osmosis-labs/osmosis/pull/2454
-   * Invariants should match: `isOsmoRoutedMultihop` https://github.com/osmosis-labs/osmosis/blob/main/x/gamm/keeper/multihop.go#L266 */
-  protected isOsmoRoutedMultihop({
-    pools,
-    tokenOutDenoms,
-  }: RoutePath): boolean {
-    if (pools.length !== 2) {
-      return false;
-    }
-    const intermediateDenom = tokenOutDenoms[0];
-    if (intermediateDenom !== this.stakeCurrencyMinDenom) {
-      return false;
-    }
-    const firstPool = pools[0];
-    const secondPool = pools[1];
-    if (firstPool.id === secondPool.id) {
-      return false;
-    }
-
-    if (
-      !this._incentivizedPoolIds.includes(firstPool.id) ||
-      !this._incentivizedPoolIds.includes(secondPool.id)
-    ) {
-      return false;
-    }
-
-    return true;
-  }
-
-  /**
-   * Get's the special swap fee discount for routing through 2 OSMO pools as defined in `isOsmoRoutedMultihop`.
-   *
-   * Should match: https://github.com/osmosis-labs/osmosis/blob/d868b873fe55942d50f1e6e74900cf8bf1f90f25/x/gamm/keeper/multihop.go#L288-L305
-   */
-  protected getOsmoRoutedMultihopTotalSwapFee({ pools }: RoutePath): {
-    swapFeeSum: Dec;
-    maxSwapFee: Dec;
-  } {
-    let swapFeeSum = new Dec(0);
-    let maxSwapFee = new Dec(0);
-
-    pools.forEach((pool) => {
-      swapFeeSum = swapFeeSum.add(pool.swapFee);
-
-      if (pool.swapFee.gt(maxSwapFee)) {
-        maxSwapFee = pool.swapFee;
-      }
-    });
-
-    const averageSwapFee = swapFeeSum.quo(new Dec(pools.length));
-
-    if (averageSwapFee.gt(maxSwapFee)) {
-      maxSwapFee = averageSwapFee;
-    }
-
-    return { swapFeeSum, maxSwapFee };
-  }
-
   getOptimizedRoutesByTokenIn(
     tokenIn: {
       denom: string;
@@ -395,10 +338,21 @@ export class OptimizedRoutes {
         const outDenom = route.tokenOutDenoms[i];
 
         let poolSwapFee = pool.swapFee;
-        if (routes.length === 1 && this.isOsmoRoutedMultihop(routes[0])) {
+        if (
+          routes.length === 1 &&
+          isOsmoRoutedMultihop(
+            routes[0].pools.map((routePool) => ({
+              id: routePool.id,
+              isIncentivized: this._incentivizedPoolIds.includes(routePool.id),
+            })),
+            outDenom,
+            this.stakeCurrencyMinDenom
+          )
+        ) {
           isMultihopOsmoFeeDiscount = true;
-          const { maxSwapFee, swapFeeSum } =
-            this.getOsmoRoutedMultihopTotalSwapFee(routes[0]);
+          const { maxSwapFee, swapFeeSum } = getOsmoRoutedMultihopTotalSwapFee(
+            routes[0].pools
+          );
           poolSwapFee = maxSwapFee.mul(poolSwapFee.quo(swapFeeSum));
         }
 

@@ -96,8 +96,8 @@ export class BigDec {
       const reduced = BigDec.reduceDecimalsFromString(value);
       if (reduced.isDownToZero) {
         // However, as a result, if the input becomes 0, a problem may occur in mul or quo. In this case, print a warning.
-        console.log(
-          `WARNING: Got ${value}. BigDec can only handle up to 36 decimals. However, since the decimal point of the input exceeds 36 digits, the remainder is discarded. As a result, input becomes 0.`
+        console.warn(
+          `Got ${value}. BigDec can only handle up to 36 decimals. However, since the decimal point of the input exceeds 36 digits, the remainder is discarded. As a result, input becomes 0.`
         );
       }
       value = reduced.res;

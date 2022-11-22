@@ -88,8 +88,10 @@ export declare function estimateSwapExactAmountOut(pool: {
 export declare function estimateMultihopSwapExactAmountIn(tokenIn: {
     currency: Currency;
     amount: string;
-}, routes: {
+}, pools: {
     pool: {
+        id: string;
+        swapFee: Dec;
         inPoolAsset: {
             coinDecimals: number;
             coinMinimalDenom: string;
@@ -106,10 +108,10 @@ export declare function estimateMultihopSwapExactAmountIn(tokenIn: {
             denom: string;
             scalingFactor: number;
         }[];
-        swapFee: Dec;
+        isIncentivized: boolean;
     };
     tokenOutCurrency: Currency;
-}[]): {
+}[], stakeCurrencyMinDenom: string): {
     tokenOut: CoinPretty;
     spotPriceBeforeRaw: Dec;
     spotPriceBefore: IntPretty;
