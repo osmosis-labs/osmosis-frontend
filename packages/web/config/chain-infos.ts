@@ -875,7 +875,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "ki",
           coinGeckoId: "pool:uxki",
-          // coinImageUrl: "/tokens/xki.svg",
+          coinImageUrl: "/tokens/xki.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
