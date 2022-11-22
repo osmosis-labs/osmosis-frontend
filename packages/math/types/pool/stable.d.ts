@@ -1,4 +1,4 @@
-import { Coin, Dec } from "@keplr-wallet/unit";
+import { Coin, Dec, Int } from "@keplr-wallet/unit";
 import { BigDec } from "../big-dec";
 export declare const StableSwapMath: {
     calcOutGivenIn: typeof calcOutGivenIn;
@@ -16,8 +16,8 @@ declare type BigDecStableSwapToken = {
     scalingFactor: number;
 };
 export declare function solveCalcOutGivenIn(tokens: StableSwapToken[], tokenIn: Coin, tokenOutDenom: string, swapFee: Dec): BigDec;
-export declare function calcOutGivenIn(tokens: StableSwapToken[], tokenIn: Coin, tokenOutDenom: string, swapFee: Dec): import("@keplr-wallet/unit").Int;
-export declare function calcInGivenOut(tokens: StableSwapToken[], tokenOut: Coin, tokenInDenom: string, swapFee: Dec): import("@keplr-wallet/unit").Int;
+export declare function calcOutGivenIn(tokens: StableSwapToken[], tokenIn: Coin, tokenOutDenom: string, swapFee: Dec): Int;
+export declare function calcInGivenOut(tokens: StableSwapToken[], tokenOut: Coin, tokenInDenom: string, swapFee: Dec): Int;
 export declare function scaleTokens(tokens: StableSwapToken[]): BigDecStableSwapToken[];
 export declare function calcSpotPrice(tokens: StableSwapToken[], baseDenom: string, quoteDenom: string): Dec;
 export declare function solveCfmm(xReserve: BigDec, yReserve: BigDec, remReserves: BigDec[], yIn: BigDec): BigDec;

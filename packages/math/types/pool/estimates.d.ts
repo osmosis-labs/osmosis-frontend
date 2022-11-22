@@ -35,6 +35,7 @@ export declare function estimateExitSwap(pool: {
 }, makeCoinPretty: (coin: Coin) => CoinPretty, shareInAmount: string, shareCoinDecimals: number): {
     tokenOuts: CoinPretty[];
 };
+/** Estimate min amount out give a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
 export declare function estimateSwapExactAmountIn(pool: {
     inPoolAsset: {
         coinDecimals: number;
@@ -60,6 +61,7 @@ export declare function estimateSwapExactAmountIn(pool: {
     priceImpact: IntPretty;
     raw: ReturnType<typeof estimateSwapExactAmountIn_Raw>;
 };
+/** Estimate min amount in given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
 export declare function estimateSwapExactAmountOut(pool: {
     inPoolAsset: {
         coinDecimals: number;
@@ -85,6 +87,7 @@ export declare function estimateSwapExactAmountOut(pool: {
     priceImpact: IntPretty;
     raw: ReturnType<typeof estimateSwapExactAmountOut_Raw>;
 };
+/** Estimate min amount out given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
 export declare function estimateMultihopSwapExactAmountIn(tokenIn: {
     currency: Currency;
     amount: string;
@@ -118,6 +121,7 @@ export declare function estimateMultihopSwapExactAmountIn(tokenIn: {
     spotPriceAfter: IntPretty;
     priceImpact: IntPretty;
 };
+/** Estimate min amount out given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
 declare function estimateSwapExactAmountIn_Raw(inPoolAsset: {
     denom: string;
     amount: Int;
@@ -136,6 +140,7 @@ declare function estimateSwapExactAmountIn_Raw(inPoolAsset: {
     spotPriceAfter: Dec;
     priceImpact: Dec;
 };
+/** Estimate min amount in given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
 declare function estimateSwapExactAmountOut_Raw(inPoolAsset: {
     denom: string;
     amount: Int;

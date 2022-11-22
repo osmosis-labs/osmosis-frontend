@@ -3,18 +3,20 @@ import { Currency } from "@keplr-wallet/types";
 import { Dec, Int } from "@keplr-wallet/unit";
 import { Msg } from "@cosmjs/launchpad";
 /**
- * Helpers for constructing Amino messages for Osmosis.
+ * Helpers for constructing Amino messages involving min amount estimates for Osmosis.
  * Amino Ref: https://github.com/tendermint/go-amino/
  *
  * Note: not an exhaustive list.
  */
 export declare class Amino {
+    /** Estimate min amount out givem a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
     static makeMultihopSwapExactAmountInMsg(msgOpt: Pick<MsgOpt, "type">, sender: string, tokenIn: {
         currency: Currency;
         amount: string;
-    }, routes: {
+    }, pools: {
         pool: {
             id: string;
+            swapFee: Dec;
             inPoolAsset: {
                 coinDecimals: number;
                 coinMinimalDenom: string;
@@ -31,10 +33,10 @@ export declare class Amino {
                 denom: string;
                 scalingFactor: number;
             }[];
-            swapFee: Dec;
+            isIncentivized: boolean;
         };
         tokenOutCurrency: Currency;
-    }[], maxSlippage?: string): {
+    }[], stakeCurrencyMinDenom: string, maxSlippage?: string): {
         type: string;
         value: {
             sender: string;
@@ -49,6 +51,7 @@ export declare class Amino {
             token_out_min_amount: string;
         };
     };
+    /** Estimate min amount out given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
     static makeSwapExactAmountInMsg(pool: {
         id: string;
         inPoolAsset: {
@@ -72,6 +75,7 @@ export declare class Amino {
         currency: Currency;
         amount: string;
     }, tokenOutCurrency: Currency, maxSlippage?: string): Msg;
+    /** Estimate min amount in given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
     static makeSwapExactAmountOutMsg(pool: {
         id: string;
         inPoolAsset: {

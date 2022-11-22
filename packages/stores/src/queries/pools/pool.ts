@@ -30,7 +30,7 @@ import dayjs from "dayjs";
 type PoolRaw = WeightedPoolRaw | StablePoolRaw;
 
 const STABLE_POOL_TYPE = "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
-const WEIGHTED_POOL_TYPE = "/osmosis.gamm.v1beta1.Pool";
+// const WEIGHTED_POOL_TYPE = "/osmosis.gamm.v1beta1.Pool";
 
 export class ObservableQueryPool extends ObservableChainQuery<{
   pool: PoolRaw;
@@ -102,10 +102,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   /** Info specific to and relevant if is stableswap pool. */
   @computed
   get stableSwapInfo() {
-    if (
-      this.raw["@type"] !== STABLE_POOL_TYPE &&
-      this.pool instanceof StablePool
-    ) {
+    if (this.pool instanceof StablePool) {
       return {
         assets: this.pool.poolAssets.map((asset) => ({
           ...asset,
@@ -118,10 +115,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   /** Info specific to and relevant if is weighted/balancer pool. */
   @computed
   get weightedPoolInfo() {
-    if (
-      this.raw["@type"] !== WEIGHTED_POOL_TYPE &&
-      this.pool instanceof WeightedPool
-    ) {
+    if (this.pool instanceof WeightedPool) {
       return {
         assets: this.pool.poolAssets.map(({ denom, amount, weight }) => ({
           denom,

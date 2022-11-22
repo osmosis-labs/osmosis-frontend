@@ -105,6 +105,7 @@ export function estimateExitSwap(
   };
 }
 
+/** Estimate min amount out give a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
 export function estimateSwapExactAmountIn(
   pool: {
     inPoolAsset: {
@@ -168,6 +169,7 @@ export function estimateSwapExactAmountIn(
   };
 }
 
+/** Estimate min amount in given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
 export function estimateSwapExactAmountOut(
   pool: {
     inPoolAsset: {
@@ -231,6 +233,7 @@ export function estimateSwapExactAmountOut(
   };
 }
 
+/** Estimate min amount out given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
 export function estimateMultihopSwapExactAmountIn(
   tokenIn: { currency: Currency; amount: string },
   pools: {
@@ -350,6 +353,7 @@ export function estimateMultihopSwapExactAmountIn(
   };
 }
 
+/** Estimate min amount out given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
 function estimateSwapExactAmountIn_Raw(
   inPoolAsset: { denom: string; amount: Int; weight?: Int },
   outPoolAsset: { denom: string; amount: Int; weight?: Int },
@@ -412,7 +416,7 @@ function estimateSwapExactAmountIn_Raw(
     if (token.denom === outPoolAsset.denom) {
       return {
         ...token,
-        amount: token.amount.sub(new Dec(outPoolAsset.amount)),
+        amount: token.amount.sub(new Dec(tokenOutAmount)),
       };
     }
     return token;
@@ -447,6 +451,7 @@ function estimateSwapExactAmountIn_Raw(
   };
 }
 
+/** Estimate min amount in given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
 function estimateSwapExactAmountOut_Raw(
   inPoolAsset: { denom: string; amount: Int; weight?: Int },
   outPoolAsset: { denom: string; amount: Int; weight?: Int },

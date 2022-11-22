@@ -244,6 +244,7 @@ export const TradeClipboard: FunctionComponent<{
         tokenOutCurrency: Currency;
       }[] = [];
 
+      // get currencies
       for (
         let i = 0;
         i < tradeTokenInConfig.optimizedRoutePaths[0].pools.length;

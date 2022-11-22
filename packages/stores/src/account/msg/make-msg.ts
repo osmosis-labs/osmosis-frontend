@@ -5,19 +5,21 @@ import { Msg } from "@cosmjs/launchpad";
 import * as PoolMath from "@osmosis-labs/math";
 
 /**
- * Helpers for constructing Amino messages for Osmosis.
+ * Helpers for constructing Amino messages involving min amount estimates for Osmosis.
  * Amino Ref: https://github.com/tendermint/go-amino/
  *
  * Note: not an exhaustive list.
  */
 export class Amino {
+  /** Estimate min amount out givem a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
   public static makeMultihopSwapExactAmountInMsg(
     msgOpt: Pick<MsgOpt, "type">,
     sender: string,
     tokenIn: { currency: Currency; amount: string },
-    routes: {
+    pools: {
       pool: {
         id: string;
+        swapFee: Dec;
         inPoolAsset: {
           coinDecimals: number;
           coinMinimalDenom: string;
@@ -30,10 +32,11 @@ export class Amino {
           denom: string;
           scalingFactor: number;
         }[];
-        swapFee: Dec;
+        isIncentivized: boolean;
       };
       tokenOutCurrency: Currency;
     }[],
+    stakeCurrencyMinDenom: string,
     maxSlippage: string = "0"
   ) {
     const estimated = PoolMath.estimateMultihopSwapExactAmountIn(
@@ -48,7 +51,8 @@ export class Amino {
           .truncate()
           .toString(),
       },
-      routes
+      pools,
+      stakeCurrencyMinDenom
     );
     const maxSlippageDec = new Dec(maxSlippage).quo(
       DecUtils.getTenExponentNInPrecisionRange(2)
@@ -79,7 +83,7 @@ export class Amino {
       type: msgOpt.type,
       value: {
         sender,
-        routes: routes.map((route) => {
+        routes: pools.map((route) => {
           return {
             pool_id: route.pool.id,
             token_out_denom: route.tokenOutCurrency.coinMinimalDenom,
@@ -94,6 +98,7 @@ export class Amino {
     };
   }
 
+  /** Estimate min amount out given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
   public static makeSwapExactAmountInMsg(
     pool: {
       id: string;
@@ -161,6 +166,7 @@ export class Amino {
     };
   }
 
+  /** Estimate min amount in given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
   public static makeSwapExactAmountOutMsg(
     pool: {
       id: string;
