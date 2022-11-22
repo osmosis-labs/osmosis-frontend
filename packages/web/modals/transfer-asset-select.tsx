@@ -9,9 +9,12 @@ import type {
   OriginBridgeInfo,
   SourceChainKey,
 } from "../integrations/bridge-info";
-import type { SourceChain } from "../integrations/axelar";
-import { useConnectWalletModalRedirect, useWindowSize } from "../hooks";
+import type { SourceChain } from "../integrations";
+import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
+import { useTranslation } from "react-multi-lang";
+
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
 /** Intermediate step to allow a user to select & config an asset before deposit/withdraw. */
 export const TransferAssetSelectModal: FunctionComponent<
@@ -30,7 +33,7 @@ export const TransferAssetSelectModal: FunctionComponent<
   }
 > = observer((props) => {
   const { isWithdraw, tokens, onSelectAsset } = props;
-  const { isMobile } = useWindowSize();
+  const t = useTranslation();
 
   const [selectedTokenDenom, setSelectedTokenDenom] = useState(
     () =>
@@ -47,7 +50,7 @@ export const TransferAssetSelectModal: FunctionComponent<
               token: {
                 currency: { coinDenom },
               },
-            }) => coinDenom === "USDC"
+            }) => coinDenom === (IS_TESTNET ? "aUSDC" : "USDC")
           )?.token.denom) || tokens[0].token.denom
   );
   const [selectedSourceChainKey, setSelectedSourceChainKey] =
@@ -86,43 +89,48 @@ export const TransferAssetSelectModal: FunctionComponent<
     walletConnected: keplrConnected,
   } = useConnectWalletModalRedirect(
     {
-      className: "h-14 md:w-full w-96 mt-3 mx-auto !px-1",
-      size: "lg",
+      className: "mt-3",
       onClick: () => onSelectAsset(selectedTokenDenom, selectedNetwork?.id),
-      children: <span>Next</span>,
+      disabled: selectedToken?.originBridgeInfo && !selectedNetwork, // error in bridge integration config
+      children: t("assets.transferAssetSelect.buttonNext"),
     },
     props.onRequestClose,
-    "Connect Wallet"
+    t("connectWallet")
   );
 
   return (
     <ModalBase
       {...props}
       isOpen={props.isOpen && showModalBase}
-      title={`${isWithdraw ? "Withdraw" : "Deposit"} Asset`}
+      title={
+        isWithdraw
+          ? t("assets.transferAssetSelect.withdraw")
+          : t("assets.transferAssetSelect.deposit")
+      }
     >
       <div className="flex flex-col gap-5 my-5">
-        <div className="flex items-centerw-full border border-white-faint rounded-2xl p-4 md:py-6">
+        <div className="flex items-center border border-osmoverse-700 rounded-2xl p-4 md:py-6">
           <TokenSelect
             tokens={tokens.map(({ token }) => token)}
             onSelect={(denom) => {
               setSelectedTokenDenom(denom);
             }}
             selectedTokenDenom={selectedTokenDenom}
-            isMobile={isMobile}
           />
         </div>
         {selectedToken?.originBridgeInfo && selectedNetwork && keplrConnected && (
           <div
             className={classNames(
-              "relative w-full flex items-center place-content-between border border-white-faint p-4 transition-borderRadius",
+              "w-full relative flex items-center place-content-between border border-osmoverse-700 p-4 transition-borderRadius",
               {
                 "rounded-2xl": !isSourceChainDropdownOpen,
                 "rounded-l-2xl rounded-tr-2xl": isSourceChainDropdownOpen,
               }
             )}
           >
-            <span className="text-white-mid subtitle2">Network</span>
+            <span className="text-white-mid subtitle2">
+              {t("assets.transferAssetSelect.network")}
+            </span>
             <div
               className={classNames("flex items-center gap-2", {
                 "cursor-pointer":
@@ -157,7 +165,7 @@ export const TransferAssetSelectModal: FunctionComponent<
             {isSourceChainDropdownOpen && (
               <div
                 style={{ borderTopStyle: "dashed" }}
-                className="absolute top-[100%] -right-[1px] border border-white-faint rounded-b-2xl z-50 bg-surface"
+                className="absolute select-none top-[100%] -right-[1px] border border-osmoverse-700 rounded-b-2xl z-50 bg-osmoverse-800"
               >
                 {selectedToken.originBridgeInfo.sourceChains
                   .filter(({ id }) => id !== selectedNetwork.id)
@@ -165,7 +173,7 @@ export const TransferAssetSelectModal: FunctionComponent<
                     <div
                       key={index}
                       className={classNames(
-                        "cursor-pointer px-6 py-1.5 hover:bg-card",
+                        "cursor-pointer px-6 py-1.5 hover:bg-osmoverse-700 transition-colors",
                         {
                           "rounded-b-2xl": scArr.length - 1 === index,
                         }

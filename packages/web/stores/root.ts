@@ -33,6 +33,12 @@ import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
 import { PoolPriceRoutes } from "../config";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { OsmoPixelsQueries } from "./pixels";
+import { NavBarStore } from "./nav-bar";
+import {
+  UserSettings,
+  ShowDustUserSetting,
+  LanguageUserSetting,
+} from "./user-settings";
 const semver = require("semver");
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -42,13 +48,14 @@ export class RootStore {
   public readonly queriesStore: QueriesStore<
     [CosmosQueries, CosmwasmQueries, OsmosisQueries]
   >;
-  public readonly queriesExternalStore: QueriesExternalStore;
 
   public readonly accountStore: AccountStore<
     [CosmosAccount, CosmwasmAccount, OsmosisAccount]
   >;
 
   public readonly priceStore: PoolFallbackPriceStore;
+
+  public readonly queriesExternalStore: QueriesExternalStore;
 
   public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
   public readonly nonIbcBridgeHistoryStore: NonIbcBridgeHistoryStore;
@@ -60,13 +67,18 @@ export class RootStore {
 
   public readonly queryOsmoPixels: OsmoPixelsQueries;
 
+  public readonly navBarStore: NavBarStore;
+
+  public readonly userSettings: UserSettings;
+
   constructor(
     getKeplr: () => Promise<Keplr | undefined> = () =>
       Promise.resolve(undefined)
   ) {
     this.chainStore = new ChainStore(
       ChainInfos,
-      IS_TESTNET ? "osmo-test-4" : "osmosis"
+      process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ??
+        (IS_TESTNET ? "osmo-test-4" : "osmosis")
     );
 
     const eventListener = (() => {
@@ -87,11 +99,6 @@ export class RootStore {
         },
       };
     })();
-
-    this.queriesExternalStore = new QueriesExternalStore(
-      makeIndexedKVStore("store_web_queries"),
-      IS_TESTNET ? "https://api.testnet.osmosis.zone/" : undefined
-    );
 
     this.queriesStore = new QueriesStore(
       makeIndexedKVStore("store_web_queries_v12"),
@@ -169,6 +176,12 @@ export class RootStore {
       PoolPriceRoutes
     );
 
+    this.queriesExternalStore = new QueriesExternalStore(
+      makeIndexedKVStore("store_web_queries"),
+      this.priceStore,
+      IS_TESTNET ? "https://api.testnet.osmosis.zone/" : undefined
+    );
+
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
       makeIndexedKVStore("ibc_transfer_history"),
       this.chainStore
@@ -239,5 +252,20 @@ export class RootStore {
       makeIndexedKVStore("query_osmo_pixels"),
       "https://pixels-osmosis.keplr.app"
     );
+
+    this.navBarStore = new NavBarStore(
+      this.chainStore.osmosis.chainId,
+      this.accountStore,
+      this.queriesStore
+    );
+
+    const userSettingKvStore = makeLocalStorageKVStore("user_setting");
+    this.userSettings = new UserSettings(userSettingKvStore, [
+      new LanguageUserSetting(0), // give index of default language in SUPPORTED_LANGUAGES
+      new ShowDustUserSetting(
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
+          ?.symbol ?? "$"
+      ),
+    ]);
   }
 }

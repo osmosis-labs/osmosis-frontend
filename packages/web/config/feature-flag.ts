@@ -7,6 +7,9 @@ export const UserAction: { [key: string]: boolean } = {
   CreateNewPool: true,
 };
 
+// Fiat ramps
+export const BUY_OSMO_TRANSAK = true;
+
 export const HiddenPoolIds: string[] = [];
 
 export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
@@ -1040,7 +1043,7 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "793": [
     {
-      gaugeId: "29635",
+      gaugeId: "29949",
       denom:
         "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
     },
@@ -1068,6 +1071,11 @@ export const ExternalIncentiveGaugeAllowList: {
       denom:
         "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
     },
+    {
+      gaugeId: "30074",
+      denom:
+        "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
+    },
   ],
   "805": [
     {
@@ -1085,14 +1093,14 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "807": [
     {
-      gaugeId: "29636",
+      gaugeId: "29950",
       denom:
         "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
     },
   ],
   "808": [
     {
-      gaugeId: "29637",
+      gaugeId: "29951",
       denom:
         "ibc/18A676A074F73B9B42DA4F9DFC8E5AEF334C9A6636DDEC8D34682F52F1DECDF6",
     },
@@ -1114,6 +1122,23 @@ export const ExternalIncentiveGaugeAllowList: {
       denom: "uosmo",
     },
   ],
+  "813": [
+    {
+      gaugeId: "29945",
+      denom:
+        "ibc/A1AC7F9EE2F643A68E3A35BCEB22040120BEA4059773BB56985C76BDFEBC71D9",
+    },
+    {
+      gaugeId: "29946",
+      denom:
+        "ibc/A1AC7F9EE2F643A68E3A35BCEB22040120BEA4059773BB56985C76BDFEBC71D9",
+    },
+    {
+      gaugeId: "29947",
+      denom:
+        "ibc/A1AC7F9EE2F643A68E3A35BCEB22040120BEA4059773BB56985C76BDFEBC71D9",
+    },
+  ],
   "816": [
     {
       gaugeId: "29758",
@@ -1133,7 +1158,7 @@ export const ExternalIncentiveGaugeAllowList: {
   ],
   "817": [
     {
-      gaugeId: "29724",
+      gaugeId: "29965",
       denom:
         "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
     },
@@ -1181,6 +1206,13 @@ export const ExternalIncentiveGaugeAllowList: {
       gaugeId: "29900",
       denom:
         "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
+    },
+  ],
+  "837": [
+    {
+      gaugeId: "29948",
+      denom:
+        "ibc/2DA9C149E9AD2BD27FEFA635458FB37093C256C1A940392634A16BEA45262604",
     },
   ],
 };

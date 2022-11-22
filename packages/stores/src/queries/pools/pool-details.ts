@@ -1,10 +1,11 @@
-import { action, computed, makeObservable, observable } from "mobx";
+import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
 import { AppCurrency, FiatCurrency } from "@keplr-wallet/types";
 import { PricePretty, Dec, RatePretty, CoinPretty } from "@keplr-wallet/unit";
 import { IPriceStore } from "../../price";
+import { UserConfig } from "../../ui-config";
 import { ObservableQueryGammPoolShare } from "../pool-share";
 import {
   ObservableQueryIncentivizedPools,
@@ -21,10 +22,7 @@ import { ObservableQueryPool } from "./pool";
 import { ExternalGauge } from "./types";
 
 /** Convenience store for getting common details of a pool via many other query stores. */
-export class ObservableQueryPoolDetails {
-  @observable
-  protected bech32Address: string = "";
-
+export class ObservableQueryPoolDetails extends UserConfig {
   constructor(
     protected readonly fiatCurrency: FiatCurrency,
     protected readonly queryPool: ObservableQueryPool,
@@ -40,12 +38,9 @@ export class ObservableQueryPoolDetails {
     },
     protected readonly priceStore: IPriceStore
   ) {
-    makeObservable(this);
-  }
+    super();
 
-  @action
-  setBech32Address(bech32Address: string) {
-    this.bech32Address = bech32Address;
+    makeObservable(this);
   }
 
   @computed
@@ -81,7 +76,7 @@ export class ObservableQueryPoolDetails {
   }
 
   @computed
-  get gauges() {
+  get internalGauges() {
     return this.queries.queryLockableDurations.lockableDurations
       .map((duration) => {
         const gaugeId =
@@ -94,7 +89,7 @@ export class ObservableQueryPoolDetails {
 
         const gauge = this.queries.queryGauge.get(gaugeId);
 
-        const apr = this.queries.queryIncentivizedPools.computeAPY(
+        const apr = this.queries.queryIncentivizedPools.computeApr(
           this.queryPool.id,
           gauge.lockupDuration,
           this.priceStore,
@@ -121,7 +116,7 @@ export class ObservableQueryPoolDetails {
   }
 
   @computed
-  get userLockedValue(): PricePretty {
+  get userShareValue(): PricePretty {
     return this.totalValueLocked.mul(
       this.queries.queryGammPoolShare.getAllGammShareRatio(
         this.bech32Address,
@@ -169,11 +164,22 @@ export class ObservableQueryPoolDetails {
 
   @computed
   get userLockedAssets() {
+    // aggregate user-applicable durations
+    const durationMap = new Map<number, Duration>();
+    this.queries.queryLockableDurations.lockableDurations.forEach((d) =>
+      durationMap.set(d.asMilliseconds(), d)
+    );
+    this.queries.queryAccountLocked
+      .get(this.bech32Address)
+      .lockedCoins.forEach(({ duration: d }) =>
+        durationMap.set(d.asMilliseconds(), d)
+      );
+
     return this.queries.queryGammPoolShare
       .getShareLockedAssets(
         this.bech32Address,
         this.queryPool.id,
-        this.queries.queryLockableDurations.lockableDurations
+        Array.from(durationMap.values())
       )
       .map((lockedAsset) =>
         // calculate APR% for this pool asset
@@ -183,7 +189,7 @@ export class ObservableQueryPoolDetails {
             this.queryPool.id
           )
             ? new RatePretty(
-                this.queries.queryIncentivizedPools.computeAPY(
+                this.queries.queryIncentivizedPools.computeApr(
                   this.queryPool.id,
                   lockedAsset.duration,
                   this.priceStore,
@@ -197,10 +203,21 @@ export class ObservableQueryPoolDetails {
 
   @computed
   get userUnlockingAssets() {
+    // aggregate user-applicable durations
+    const durationMap = new Map<number, Duration>();
+    this.queries.queryLockableDurations.lockableDurations.forEach((d) =>
+      durationMap.set(d.asMilliseconds(), d)
+    );
+    this.queries.queryAccountLocked
+      .get(this.bech32Address)
+      .unlockingCoins.forEach(({ duration: d }) =>
+        durationMap.set(d.asMilliseconds(), d)
+      );
+
     const poolShareCurrency = this.queries.queryGammPoolShare.getShareCurrency(
       this.queryPool.id
     );
-    return this.queries.queryLockableDurations.lockableDurations
+    return Array.from(durationMap.values())
       .map(
         (duration) => {
           const unlockings = this.queries.queryAccountLocked
@@ -248,6 +265,7 @@ export class ObservableQueryPoolDetails {
     return false;
   }
 
+  @computed
   get allExternalGauges(): ExternalGauge[] {
     const queryPoolGuageIds = this.queries.queryPoolsGaugeIds.get(
       this.queryPool.id
@@ -282,6 +300,31 @@ export class ObservableQueryPoolDetails {
         })
         .filter((gauge): gauge is ExternalGauge => gauge !== undefined) ?? []
     );
+  }
+
+  @computed
+  get userStats():
+    | {
+        totalShares: CoinPretty;
+        totalShareValue: PricePretty;
+        bondedValue: PricePretty;
+        unbondedValue: PricePretty;
+        currentDailyEarnings?: PricePretty;
+      }
+    | undefined {
+    const totalShares = this.queries.queryGammPoolShare.getAllGammShare(
+      this.bech32Address,
+      this.queryPool.id
+    );
+
+    if (totalShares.toDec().isZero()) return;
+
+    return {
+      totalShares,
+      totalShareValue: this.userShareValue,
+      bondedValue: this.userBondedValue,
+      unbondedValue: this.userAvailableValue,
+    };
   }
 
   readonly queryAllowedExternalGauges = computedFn(

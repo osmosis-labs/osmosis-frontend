@@ -2,14 +2,17 @@ import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 import Head from "next/head";
 import type { AppProps } from "next/app";
+import { useMemo } from "react";
 import { enableStaticRendering } from "mobx-react-lite";
 import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
-import { MainLayout, MainLayoutMenu } from "../components/layouts";
+import { MainLayout } from "../components/layouts";
 import { TempBanner } from "../components/alert/temp-banner";
 import { OgpMeta } from "../components/ogp-meta";
+import { MainLayoutMenu } from "../components/types";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import updateLocale from "dayjs/plugin/updateLocale";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import { GetKeplrProvider } from "../hooks";
@@ -22,71 +25,90 @@ import {
   PromotedLBPPoolIds,
 } from "../config";
 import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
+import {
+  setDefaultLanguage,
+  setTranslations,
+  useTranslation,
+} from "react-multi-lang";
+
+import en from "../localizations/en.json";
+import { Formatted } from "../components/localization";
+import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
+import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 dayjs.extend(utc);
+dayjs.extend(updateLocale);
+dayjs.updateLocale("es", dayjsLocaleEs);
+dayjs.updateLocale("ko", dayjsLocaleKo);
 enableStaticRendering(typeof window === "undefined");
 
+const DEFAULT_LANGUAGE = "en";
+setTranslations({ en });
+setDefaultLanguage(DEFAULT_LANGUAGE);
+
 function MyApp({ Component, pageProps }: AppProps) {
-  const menus: MainLayoutMenu[] = [
-    {
-      label: "Swap",
-      link: "/",
-      icon: IS_FRONTIER ? "/icons/trade-white.svg" : "/icons/trade.svg",
-      iconSelected: "/icons/trade-selected.svg",
-      selectionTest: /\/$/,
-    },
-    {
-      label: "Pools",
-      link: "/pools",
-      icon: IS_FRONTIER ? "/icons/pool-white.svg" : "/icons/pool.svg",
-      iconSelected: "/icons/pool-selected.svg",
-      selectionTest: /\/pools/,
-    },
-    {
-      label: "Assets",
-      link: "/assets",
-      icon: IS_FRONTIER ? "/icons/asset-white.svg" : "/icons/asset.svg",
-      iconSelected: "/icons/asset-selected.svg",
-      selectionTest: /\/assets/,
-    },
-  ];
-
-  if (PromotedLBPPoolIds.length > 0) {
-    menus.push({
-      label: "Bootstrap",
-      link: "/bootstrap",
-      icon: "/icons/pool-white.svg",
-      selectionTest: /\/bootstrap/,
-    });
-  }
-
-  menus.push(
-    ...[
+  const t = useTranslation();
+  const menus = useMemo(() => {
+    let m: MainLayoutMenu[] = [
       {
-        label: "Stake",
+        label: t("menu.swap"),
+        link: "/",
+        icon: "/icons/trade-white.svg",
+        iconSelected: "/icons/trade-white.svg",
+        selectionTest: /\/$/,
+      },
+      {
+        label: t("menu.pools"),
+        link: "/pools",
+        icon: "/icons/pool-white.svg",
+        iconSelected: "/icons/pool-white.svg",
+        selectionTest: /\/pools/,
+      },
+      {
+        label: t("menu.assets"),
+        link: "/assets",
+        icon: "/icons/asset-white.svg",
+        iconSelected: "/icons/asset-white.svg",
+        selectionTest: /\/assets/,
+      },
+    ];
+
+    if (PromotedLBPPoolIds.length > 0) {
+      m.push({
+        label: "Bootstrap",
+        link: "/bootstrap",
+        icon: "/icons/pool-white.svg",
+        selectionTest: /\/bootstrap/,
+      });
+    }
+
+    m.push(
+      {
+        label: t("menu.stake"),
         link: "https://wallet.keplr.app/chains/osmosis",
-        icon: IS_FRONTIER ? "/icons/ticket-white.svg" : "/icons/ticket.svg",
+        icon: "/icons/ticket-white.svg",
         amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
       },
       {
-        label: "Vote",
+        label: t("menu.vote"),
         link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
-        icon: IS_FRONTIER ? "/icons/vote-white.svg" : "/icons/vote.svg",
+        icon: "/icons/vote-white.svg",
         amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
       },
       {
-        label: "Info",
+        label: t("menu.info"),
         link: "https://info.osmosis.zone",
-        icon: IS_FRONTIER ? "/icons/chart-white.svg" : "/icons/chart.svg",
+        icon: "/icons/chart-white.svg",
         amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
-      },
-    ]
-  );
+      }
+    );
+
+    return m;
+  }, [t]);
 
   useAmplitudeAnalytics({ init: true });
-
   return (
     <GetKeplrProvider>
       <StoreProvider>
@@ -104,17 +126,22 @@ function MyApp({ Component, pageProps }: AppProps) {
         {IS_FRONTIER && !IS_HALTED && (
           <TempBanner
             localStorageKey="show_frontier_banner"
-            title="You're viewing all permissionless assets"
+            title={t("app.banner.title")}
             message={
               <>
-                <a
-                  className="items-center underline"
-                  href="https://app.osmosis.zone/"
-                  target="_self"
-                >
-                  Click here to return to the main app
-                </a>
-                .
+                <Formatted
+                  translationKey="app.banner.linkText"
+                  components={{
+                    "<text>": <></>,
+                    "<link>": (
+                      <a
+                        className="items-center underline"
+                        href="https://app.osmosis.zone/"
+                        target="_self"
+                      />
+                    ),
+                  }}
+                />
               </>
             }
           />
@@ -127,14 +154,14 @@ function MyApp({ Component, pageProps }: AppProps) {
             message="Transactions are temporarily disabled"
           />
         )}
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+          }}
+          transition={Bounce}
+        />
         <MainLayout menus={menus}>
           <Component {...pageProps} />
-          <ToastContainer
-            toastStyle={{
-              backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
-            }}
-            transition={Bounce}
-          />
         </MainLayout>
       </StoreProvider>
     </GetKeplrProvider>

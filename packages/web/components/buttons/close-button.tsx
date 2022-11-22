@@ -9,7 +9,7 @@ export const CloseButton: FunctionComponent<
 > = ({ onClick, className, disabled }) => (
   <div
     className={classNames(
-      "h-6 w-6 bg-primary-200 rounded-full flex items-center justify-center",
+      "h-6 w-6 bg-wosmongton-200 rounded-full flex items-center justify-center",
       disabled ? "opacity-30 cursor-default" : "cursor-pointer",
       className
     )}

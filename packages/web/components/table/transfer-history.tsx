@@ -13,6 +13,7 @@ import { Table, BaseCell } from ".";
 import { Breakpoint, CustomClasses } from "../types";
 import { truncateString } from "../utils";
 import { useWindowSize } from "../../hooks";
+import { useTranslation } from "react-multi-lang";
 
 type History = {
   txHash: string;
@@ -32,7 +33,7 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
       ibcTransferHistoryStore,
       accountStore,
     } = useStore();
-
+    const t = useTranslation();
     const { chainId } = chainStore.osmosis;
     const { bech32Address } = accountStore.getAccount(chainId);
 
@@ -93,7 +94,7 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
     return histories.length > 0 ? (
       <>
         <div className="text-h5 font-h5 md:text-h6 md:font-h6 mt-8">
-          Transfer History
+          {t("assets.historyTable.title")}
         </div>
         <Table<BaseCell & History>
           className={classNames("w-full", className)}
@@ -101,14 +102,14 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
           tBodyClassName="body2 md:caption"
           columnDefs={[
             {
-              display: "Transaction Hash",
+              display: t("assets.historyTable.colums.transactionHash"),
               className: "md:!pl-2",
               displayCell: TxHashDisplayCell,
             },
-            { display: "Type" },
-            { display: "Amount" },
+            { display: t("assets.historyTable.colums.type") },
+            { display: t("assets.historyTable.colums.amount") },
             {
-              display: "Status",
+              display: t("assets.historyTable.colums.status"),
               collapseAt: Breakpoint.SM,
               className: "md:!pr-2",
               displayCell: StatusDisplayCell,
@@ -118,7 +119,9 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
             { ...history, value: history.txHash }, // Tx Hash
             {
               // Type
-              value: history.isWithdraw ? "Withdraw" : "Deposit",
+              value: history.isWithdraw
+                ? t("assets.historyTable.colums.withdraw")
+                : t("assets.historyTable.colums.deposit"),
             },
             {
               // Amount
@@ -160,6 +163,7 @@ const TxHashDisplayCell: FunctionComponent<
 const StatusDisplayCell: FunctionComponent<
   BaseCell & { status?: IBCTransferHistoryStatus | "failed"; reason?: string }
 > = ({ status, reason }) => {
+  const t = useTranslation();
   if (status == null) {
     // Uncommitted history has no status.
     // Show pending for uncommitted history..
@@ -173,7 +177,7 @@ const StatusDisplayCell: FunctionComponent<
             height={24}
           />
         </div>
-        Pending
+        {t("assets.historyTable.pending")}
       </div>
     );
   }
@@ -188,7 +192,7 @@ const StatusDisplayCell: FunctionComponent<
             width={24}
             height={24}
           />
-          <span className="md:hidden">Success</span>
+          <span className="md:hidden">{t("assets.historyTable.success")}</span>
         </div>
       );
     case "pending":
@@ -202,14 +206,14 @@ const StatusDisplayCell: FunctionComponent<
               height={24}
             />
           </div>
-          <span className="md:hidden">Pending</span>
+          <span className="md:hidden">{t("assets.historyTable.pending")}</span>
         </div>
       );
     case "refunded":
       return (
         <div className="flex items-center gap-2">
           <Image alt="failed" src="/icons/error-x.svg" width={24} height={24} />
-          <span className="md:hidden">Refunded</span>
+          <span className="md:hidden">{t("assets.historyTable.refunded")}</span>
         </div>
       );
     case "timeout":
@@ -223,7 +227,9 @@ const StatusDisplayCell: FunctionComponent<
               height={24}
             />
           </div>
-          <span className="md:hidden">Failed: Pending refund</span>
+          <span className="md:hidden">
+            {t("assets.historyTable.pendingRefunded")}
+          </span>
         </div>
       );
     case "failed":

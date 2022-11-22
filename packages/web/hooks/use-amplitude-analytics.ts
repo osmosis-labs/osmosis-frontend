@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import {
   init as amplitudeInit,
   identify,
@@ -17,20 +17,26 @@ export function useAmplitudeAnalytics({
   /** Init analytics environment. Done once per user session. */
   init?: true;
 } = {}) {
-  const logEvent = ([eventName, eventProperties]:
-    | [string, Partial<Record<keyof EventProperties, any>> | undefined]
-    | [string]) => {
-    amplitudeLogEvent(eventName, eventProperties);
-  };
+  const logEvent = useCallback(
+    ([eventName, eventProperties]:
+      | [string, Partial<Record<keyof EventProperties, any>> | undefined]
+      | [string]) => {
+      amplitudeLogEvent(eventName, eventProperties);
+    },
+    []
+  );
 
-  const setUserProperty = (
-    key: keyof UserProperties,
-    value: UserProperties[keyof UserProperties]
-  ) => {
-    const newIdentify = new Identify();
-    newIdentify.set(key, value);
-    identify(newIdentify);
-  };
+  const setUserProperty = useCallback(
+    (
+      key: keyof UserProperties,
+      value: UserProperties[keyof UserProperties]
+    ) => {
+      const newIdentify = new Identify();
+      newIdentify.set(key, value);
+      identify(newIdentify);
+    },
+    []
+  );
 
   useEffect(() => {
     if (init) {

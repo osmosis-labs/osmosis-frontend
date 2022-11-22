@@ -6,8 +6,9 @@ import {
 } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
 import { AccountLockedLongerDuration } from "./types";
-import { makeObservable } from "mobx";
+import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
+import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { AppCurrency } from "@keplr-wallet/types";
@@ -50,11 +51,72 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
     chainInfo.addUnknownCurrencies(...[...new Set(unknownCurrencies)]);
   }
 
+  get lockedCoins(): {
+    amount: CoinPretty;
+    lockIds: string[];
+    duration: Duration;
+  }[] {
+    if (!this.response) {
+      return [];
+    }
+
+    const matchedLocks = this.response.data.locks.filter((lock) => {
+      // Locked tokens have 0 datetime
+      return new Date(lock.end_time).getFullYear() === 0;
+    });
+
+    const map: Map<
+      // key: coinMinimalDenom
+      string,
+      {
+        amount: CoinPretty;
+        lockIds: string[];
+        duration: Duration;
+      }
+    > = new Map();
+
+    for (const lock of matchedLocks) {
+      for (const coin of lock.coins) {
+        const currency = this.chainGetter
+          .getChain(this.chainId)
+          .findCurrency(coin.denom);
+
+        if (currency) {
+          const key = currency.coinMinimalDenom;
+          if (!map.has(key)) {
+            const seconds = parseInt(lock.duration.slice(0, -1));
+
+            map.set(key, {
+              amount: new CoinPretty(currency, new Dec(0)),
+              lockIds: [],
+              duration: dayjs.duration({ seconds }),
+            });
+          }
+
+          const value = map.get(key)!;
+          value.amount = value.amount.add(
+            new CoinPretty(currency, new Dec(coin.amount))
+          );
+          value.lockIds.push(lock.ID);
+
+          map.set(key, value);
+        }
+      }
+    }
+
+    return [...map.values()].sort((v1, v2) => {
+      return v1.duration.asMilliseconds() > v2.duration.asMilliseconds()
+        ? 1
+        : -1;
+    });
+  }
+
+  @computed
   get unlockingCoins(): {
     amount: CoinPretty;
     lockIds: string[];
     endTime: Date;
-    // duration: Duration;
+    duration: Duration;
   }[] {
     if (!this.response) {
       return [];
@@ -71,8 +133,8 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
       {
         amount: CoinPretty;
         lockIds: string[];
-        // duration: Duration;
         endTime: Date;
+        duration: Duration;
       }
     > = new Map();
 
@@ -91,10 +153,13 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
             "/" +
             currency.coinMinimalDenom;
           if (!map.has(key)) {
+            const seconds = parseInt(lock.duration.slice(0, -1));
+
             map.set(key, {
               amount: new CoinPretty(currency, new Dec(0)),
               lockIds: [],
               endTime: new Date(lock.end_time),
+              duration: dayjs.duration({ seconds }),
             });
           }
 
