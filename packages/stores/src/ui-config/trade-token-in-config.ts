@@ -250,7 +250,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       priceImpact: new RatePretty(0).ready(false),
     };
 
-    if (paths.length === 0) {
+    if (paths.length === 0 || this.amount === "" || this.amount === "0") {
       return zero;
     }
 
