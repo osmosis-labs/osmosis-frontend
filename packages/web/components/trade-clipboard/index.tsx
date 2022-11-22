@@ -24,6 +24,7 @@ import { InfoTooltip } from "../tooltip";
 import TradeRoute from "./trade-route";
 import { useTranslation } from "react-multi-lang";
 import { tError } from "../localization";
+import useMeasure from "../../hooks/use-measure";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -53,7 +54,10 @@ export const TradeClipboard: FunctionComponent<{
 
     const [isSettingOpen, setIsSettingOpen] = useBooleanWithWindowEvent(false);
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
-    const estimateDetailsContentRef = useRef<HTMLDivElement | null>(null);
+    const [
+      estimateDetailsContentRef,
+      { height: estimateDetailsContentHeight, y: estimateDetailsContentOffset },
+    ] = useMeasure<HTMLDivElement>();
 
     const slippageConfig = useSlippageConfig();
     const tradeTokenInConfig = useTradeTokenInConfig(
@@ -857,10 +861,10 @@ export const TradeClipboard: FunctionComponent<{
             )}
             style={{
               height: showEstimateDetails
-                ? (estimateDetailsContentRef.current?.getBoundingClientRect()
-                    ?.height ?? 288) +
-                  44 +
-                  20
+                ? (estimateDetailsContentHeight +
+                    estimateDetailsContentOffset ?? 288) +
+                  44 + // collapsed height
+                  20 // padding
                 : 44,
             }}
           >

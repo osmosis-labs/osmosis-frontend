@@ -24,8 +24,10 @@
     "error": {
       "findCurrency": "Failed to find currency {currency}"
     },
-    "autoRouter": "Auto Router",
-    "routerTooltipFee": "fee"
+    "autoRouter": "Optimized Route",
+    "routerTooltipFee": "Fee",
+    "autoRouterToggle": { "show": "Show", "hide": "Hide" },
+    "pool": "Pool #{id}"
   },
   "pools": {
     "title": "Active Pools",

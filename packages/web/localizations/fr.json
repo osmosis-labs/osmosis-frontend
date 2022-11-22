@@ -24,7 +24,10 @@
     "error": {
       "findCurrency": "Impossible de trouver la devise {currency}"
     },
-    "autoRouter": "Routeur automatique"
+    "autoRouter": "Itinéraire optimisé",
+    "routerTooltipFee": "Frais",
+    "autoRouterToggle": { "show": "Montrer", "hide": "Cacher" },
+    "pool": "Bassin n°{id}"
   },
   "pools": {
     "title": "Bassins actifs",

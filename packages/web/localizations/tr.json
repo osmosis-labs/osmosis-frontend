@@ -24,8 +24,10 @@
     "error": {
       "findCurrency": "Para birimi bulunamadı {currency}"
     },
-    "autoRouter": "Otomatik yönlendirici",
-    "routerTooltipFee": "ücret"
+    "autoRouter": "Optimize Rota",
+    "routerTooltipFee": "Ücret",
+    "autoRouterToggle": { "show": "Göstermek", "hide": "Saklamak" },
+    "pool": "Havuz #{id}"
   },
   "pools": {
     "title": "Aktif Havuzlar",
