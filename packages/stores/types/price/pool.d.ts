@@ -1,6 +1,5 @@
 import { CoinGeckoPriceStore, ChainGetter } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
-import { CoinPretty } from "@keplr-wallet/unit";
 import { KVStore } from "@keplr-wallet/common";
 import { ObservableQueryPools } from "../queries";
 import { IntermediateRoute, IPriceStore } from "./types";
@@ -17,6 +16,5 @@ export declare class PoolFallbackPriceStore extends CoinGeckoPriceStore implemen
         [vsCurrency: string]: FiatCurrency;
     }, defaultVsCurrency: string, queryPool: ObservableQueryPools, intermidiateRoutes: IntermediateRoute[]);
     get intermediateRoutesMap(): Map<string, IntermediateRoute>;
-    getPrice(coinId: string, vsCurrency?: string): number | undefined;
-    getPricePretty(coin: CoinPretty, vsCurrency?: string, decimals?: number): string;
+    readonly getPrice: (coinId: string, vsCurrency?: string | undefined) => number | undefined;
 }
