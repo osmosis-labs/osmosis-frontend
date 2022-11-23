@@ -39,6 +39,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [
         AxelarSourceChainConfigs.usdc.ethereum,
+        AxelarSourceChainConfigs.usdc.binance,
         AxelarSourceChainConfigs.usdc.moonbeam,
       ],
     },
@@ -108,7 +109,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "wbnb-wei",
     sourceChainNameOverride: "Binance Smart Chain",
-    isVerified: false,
+    isVerified: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const],
@@ -1049,7 +1050,7 @@ export const IBCAssetInfos: (IBCAsset & {
     return false;
   }
 
-  return IS_FRONTIER ? true : ibcAsset.isVerified;
+  return true;
 });
 
 if (IS_TESTNET && typeof window === "undefined") {

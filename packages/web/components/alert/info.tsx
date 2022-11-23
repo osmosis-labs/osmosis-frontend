@@ -7,6 +7,7 @@ export const Info: FunctionComponent<
   { size?: "large" | "subtle" } & Alert & {
       data?: string;
       borderClassName?: string;
+      textClassName?: string;
     } & CustomClasses &
     MobileProps
 > = ({
@@ -15,6 +16,7 @@ export const Info: FunctionComponent<
   caption,
   data,
   borderClassName,
+  textClassName,
   className,
   isMobile = false,
 }) =>
@@ -25,7 +27,14 @@ export const Info: FunctionComponent<
         className
       )}
     >
-      <span className="subtitle1 text-white-mid md:caption">{message}</span>
+      <span
+        className={classNames(
+          "subtitle1 text-wosmongton-100 md:caption",
+          textClassName
+        )}
+      >
+        {message}
+      </span>
     </div>
   ) : (
     <div
@@ -36,7 +45,7 @@ export const Info: FunctionComponent<
     >
       <div
         className={classNames(
-          "flex grow place-content-between md:gap-1 px-5 py-4 md:p-2 bg-osmoverse-800 rounded-2xlinset",
+          "flex grow place-content-between md:gap-1 px-3 py-2 md:p-2 bg-osmoverse-800 rounded-2xlinset",
           {
             "items-center": !data,
           },
@@ -45,15 +54,22 @@ export const Info: FunctionComponent<
       >
         <div className="flex flex-col">
           {isMobile ? (
-            <span className="caption">
+            <span className={classNames("caption", textClassName)}>
               {message}
               {data && ` - ${data}`}
             </span>
           ) : (
-            <h6>{message}</h6>
+            <span className={classNames("body2", textClassName)}>
+              {message}
+            </span>
           )}
           {caption && (
-            <span className="text-osmoverse-400 body2 md:caption">
+            <span
+              className={classNames(
+                "text-wosmongton-100 body2 md:caption",
+                textClassName
+              )}
+            >
               {caption}
             </span>
           )}

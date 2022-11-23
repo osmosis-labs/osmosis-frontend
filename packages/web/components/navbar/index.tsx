@@ -137,6 +137,7 @@ const NavBarButton: FunctionComponent<
         src={hovered ? hovericonurl : iconurl}
         height={24}
         width={24}
+        priority={true}
       />
     </button>
   );

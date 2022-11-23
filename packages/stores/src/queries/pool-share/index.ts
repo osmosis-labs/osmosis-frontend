@@ -229,4 +229,14 @@ export class ObservableQueryGammPoolShare {
       });
     }
   );
+
+  fetch(bech32Address: string) {
+    return Promise.all([
+      this.queryPools.fetch(),
+      this.queryBalances.getQueryBech32Address(bech32Address).fetch(),
+      this.queryAccountLocked.get(bech32Address).fetch(),
+      this.queryLockedCoins.get(bech32Address).fetch(),
+      this.queryUnlockingCoins.get(bech32Address).fetch(),
+    ]);
+  }
 }
