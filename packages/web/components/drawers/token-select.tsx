@@ -2,7 +2,7 @@ import Image from "next/image";
 import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useRef } from "react";
 import { useTranslation } from "react-multi-lang";
 import { SearchBox } from "../input";
 import { observer } from "mobx-react-lite";
@@ -11,6 +11,7 @@ import { useFilteredData } from "../../hooks";
 import debounce from "debounce";
 import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
 import { RecommendedSwapDenoms } from "../../config";
+import useDraggableScroll from "../../hooks/use-draggable-scroll";
 
 function getJustDenom(coinDenom: string) {
   return coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
@@ -42,6 +43,11 @@ export const TokenSelectDrawer: FunctionComponent<{
       "token.currency.originCurrency.pegMechanism",
     ]
   );
+
+  const quickSelectRef = useRef<HTMLDivElement>(null);
+
+  const { onMouseDown: onMouseDownQuickSelect } =
+    useDraggableScroll(quickSelectRef);
 
   const onClose = () => {
     setTokenSearch("");
@@ -93,7 +99,11 @@ export const TokenSelectDrawer: FunctionComponent<{
           />
         </div>
 
-        <div className="flex px-4 py-2 space-x-4 overflow-x-auto h-full">
+        <div
+          ref={quickSelectRef}
+          onMouseDown={onMouseDownQuickSelect}
+          className="flex px-4 py-2 space-x-4 overflow-x-auto h-full"
+        >
           {quickSelectTokens.map(({ token }) => {
             const currency = getCurrency(token);
             const { coinDenom, coinImageUrl } = currency;

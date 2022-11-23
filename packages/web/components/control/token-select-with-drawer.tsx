@@ -146,7 +146,7 @@ export const TokenSelectWithDrawer: FunctionComponent<{
           </button>
         )}
 
-        <div className={"pt-16"}>
+        <div className="pt-16">
           <TokenSelectDrawer
             isOpen={isSelectOpen}
             onClose={() => setIsSelectOpen(false)}
