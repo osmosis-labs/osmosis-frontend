@@ -23,6 +23,7 @@ import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
 import { useTranslation } from "react-multi-lang";
 import { tError } from "../localization";
+import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -128,9 +129,9 @@ export const TradeClipboard: FunctionComponent<{
 
     // token select dropdown
     const [showFromTokenSelectDropdown, setFromTokenSelectDropdownLocal] =
-      useBooleanWithWindowEvent(false);
+      useState(false);
     const [showToTokenSelectDropdown, setToTokenSelectDropdownLocal] =
-      useBooleanWithWindowEvent(false);
+      useState(false);
     const setOneTokenSelectOpen = (dropdown: "to" | "from") => {
       if (dropdown === "to") {
         setToTokenSelectDropdownLocal(true);
@@ -513,7 +514,7 @@ export const TradeClipboard: FunctionComponent<{
           )}
         </div>
 
-        <div className="relative flex flex-col gap-3">
+        <div className="flex flex-col gap-3">
           <div
             className={classNames(
               "bg-osmoverse-900 rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
@@ -606,7 +607,7 @@ export const TradeClipboard: FunctionComponent<{
               </div>
             </div>
             <div className="flex items-center place-content-between mt-3">
-              <TokenSelect
+              <TokenSelectWithDrawer
                 sortByBalances
                 dropdownOpen={showFromTokenSelectDropdown}
                 setDropdownState={(isOpen) => {
@@ -686,7 +687,7 @@ export const TradeClipboard: FunctionComponent<{
 
           <button
             className={classNames(
-              "absolute flex items-center left-[45%] top-[124px] md:top-[94px] transition-all duration-500 ease-bounce z-30",
+              "absolute flex items-center left-[45%] top-[235px] md:top-[178px] transition-all duration-500 ease-bounce z-30",
               {
                 "w-10 md:w-8 h-10 md:h-8": !isHoveringSwitchButton,
                 "w-11 md:w-9 h-11 md:h-9 -translate-x-[2px]":
@@ -782,7 +783,7 @@ export const TradeClipboard: FunctionComponent<{
                   : undefined
               }
             >
-              <TokenSelect
+              <TokenSelectWithDrawer
                 dropdownOpen={showToTokenSelectDropdown}
                 setDropdownState={(isOpen) => {
                   if (isOpen) {

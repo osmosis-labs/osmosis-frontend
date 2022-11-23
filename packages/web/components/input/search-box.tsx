@@ -4,7 +4,9 @@ import classNames from "classnames";
 import { InputProps, Disableable, CustomClasses } from "../types";
 
 export const SearchBox: FunctionComponent<
-  InputProps<string> & Disableable & CustomClasses & { type?: string }
+  Omit<InputProps<string>, "currentValue"> &
+    Disableable &
+    CustomClasses & { type?: string; currentValue?: string }
 > = ({
   currentValue,
   onInput,
@@ -16,6 +18,7 @@ export const SearchBox: FunctionComponent<
   className,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
+
   return (
     <div
       className={classNames(
