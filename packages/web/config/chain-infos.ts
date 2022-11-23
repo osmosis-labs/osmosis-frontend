@@ -1736,14 +1736,14 @@ const chainInfos = (
       rpc: "https://rpc-echelon.whispernode.com/",
       rest: "https://lcd-echelon.whispernode.com/",
       chainId: "echelon_3000-3",
-      chainName: "Echelon",
+      chainName: "Echelon (current)",
       bip44: {
         coinType: 60,
       },
       bech32Config: Bech32Address.defaultBech32Config("echelon"),
       currencies: [
         {
-          coinDenom: "ECH",
+          coinDenom: "ECH (current)",
           coinMinimalDenom: "aechelon",
           coinDecimals: 18,
           coinGeckoId: "echelon",
@@ -1764,7 +1764,7 @@ const chainInfos = (
       rpc: "https://rpc-echelon.whispernode.com/",
       rest: "https://lcd-echelon.whispernode.com/",
       chainId: "echelon_3000-2",
-      chainName: "Echelon",
+      chainName: "Echelon (legacy)",
       bip44: {
         coinType: 60,
       },
