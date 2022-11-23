@@ -6,6 +6,8 @@ import { ObservableQueryNumPools } from "./num-pools";
 import { ObservableQueryPool } from "./pool";
 import { Pools } from "./types";
 export declare class ObservableQueryPools extends ObservableChainQuery<Pools> {
+    /** Maintain references of ObservableQueryPool objects to prevent breaking observers. */
+    protected _pools: Map<string, ObservableQueryPool>;
     constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, queryNumPools: ObservableQueryNumPools, limit?: number);
     protected setResponse(response: Readonly<QueryResponse<Pools>>): void;
     /** Returns `undefined` if the pool does not exist or the data has not loaded. */

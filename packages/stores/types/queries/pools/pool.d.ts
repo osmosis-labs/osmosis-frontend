@@ -11,6 +11,7 @@ export declare class ObservableQueryPool extends ObservableChainQuery<{
 }> {
     readonly kvStore: KVStore;
     readonly chainGetter: ChainGetter;
+    /** Observe any new references resulting from pool or pools query. */
     protected raw: PoolRaw;
     /** Constructed with the assumption that initial pool data has already been fetched
      *  using the `/pools` endpoint.

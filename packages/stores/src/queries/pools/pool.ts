@@ -35,6 +35,7 @@ const STABLE_POOL_TYPE = "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
 export class ObservableQueryPool extends ObservableChainQuery<{
   pool: PoolRaw;
 }> {
+  /** Observe any new references resulting from pool or pools query. */
   @observable.ref
   protected raw: PoolRaw;
 
