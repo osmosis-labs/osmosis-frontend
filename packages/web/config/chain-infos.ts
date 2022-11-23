@@ -1736,42 +1736,14 @@ const chainInfos = (
       rpc: "https://rpc-echelon.whispernode.com/",
       rest: "https://lcd-echelon.whispernode.com/",
       chainId: "echelon_3000-3",
-      chainName: "Echelon (current)",
+      chainName: "Echelon",
       bip44: {
         coinType: 60,
       },
       bech32Config: Bech32Address.defaultBech32Config("echelon"),
       currencies: [
         {
-          coinDenom: "ECH (current)",
-          coinMinimalDenom: "aechelon",
-          coinDecimals: 18,
-          coinGeckoId: "echelon",
-          coinImageUrl: "/tokens/ech.png",
-          isStakeCurrency: true,
-          isFeeCurrency: true,
-        },
-      ],
-      gasPriceStep: {
-        low: 10000000000,
-        average: 25000000000,
-        high: 40000000000,
-      },
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
-      explorerUrlToTx: "https://ping.pub/echelon/tx/{txHash}",
-    },
-    {//legacy
-      rpc: "https://rpc-echelon.whispernode.com/",
-      rest: "https://lcd-echelon.whispernode.com/",
-      chainId: "echelon_3000-2",
-      chainName: "Echelon (legacy)",
-      bip44: {
-        coinType: 60,
-      },
-      bech32Config: Bech32Address.defaultBech32Config("echelon"),
-      currencies: [
-        {
-          coinDenom: "ECH (legacy)",
+          coinDenom: "ECH",
           coinMinimalDenom: "aechelon",
           coinDecimals: 18,
           coinGeckoId: "echelon",
