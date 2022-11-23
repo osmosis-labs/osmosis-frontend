@@ -42,7 +42,8 @@ export class StablePool implements Pool {
   get poolAssets(): { denom: string; amount: Int; scalingFactor: number }[] {
     return this.raw.pool_liquidity.map((asset, index) => {
       const scalingFactor = parseInt(this.raw.scaling_factors[index]);
-      if (scalingFactor === NaN) throw new Error("Invalid scaling factor");
+      if (scalingFactor === NaN)
+        throw new Error(`Invalid scaling factor in pool id: ${this.raw.id}`);
 
       return {
         denom: asset.denom,

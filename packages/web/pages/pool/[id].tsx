@@ -431,10 +431,11 @@ const Pool: FunctionComponent = observer(() => {
                     weightFraction: new RatePretty(
                       new Dec(1).quo(new Dec(pool.poolAssets.length))
                     ),
-                  }; // TODO: test with stable pool
+                  };
+
                   return {
-                    ...poolAsset,
                     ...weights,
+                    ...poolAsset,
                   };
                 })}
                 totalWeight={
