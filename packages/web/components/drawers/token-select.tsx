@@ -56,7 +56,6 @@ export const TokenSelectDrawer: FunctionComponent<{
 
   useWindowKeyActions({
     escape: () => {
-      console.log("escape");
       onClose?.();
     },
   });
