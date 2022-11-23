@@ -402,7 +402,6 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
-    isVerified: true,
   },
   {
     counterpartyChainId: "carbon-1",
