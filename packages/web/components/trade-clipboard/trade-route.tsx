@@ -62,7 +62,7 @@ const TradeRoute: FunctionComponent<{
 }> = observer(({ sendCurrency, outCurrency, path }) => {
   const { chainStore } = useStore();
 
-  const [showRouter, setShowRouter] = useState(true);
+  const [showRouter, setShowRouter] = useState(false);
 
   const t = useTranslation();
   /** Share same tippy instance to handle animation */
