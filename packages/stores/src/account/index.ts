@@ -182,9 +182,7 @@ export class OsmosisAccountImpl {
             });
         }
 
-        if (onFulfill) {
-          onFulfill(tx);
-        }
+        onFulfill?.(tx);
       }
     );
   }
@@ -473,7 +471,7 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "swapExactAmountIn",
       async () => {
-        await queries.queryGammPools.waitFreshResponse();
+        // refresh data and get pools
         await queries.queryIncentivizedPools.waitFreshResponse();
         const pools: Pool[] = [];
         for (const route of routes) {
@@ -485,6 +483,8 @@ export class OsmosisAccountImpl {
             );
           }
 
+          await queryPool.waitFreshResponse();
+
           const pool = queryPool.pool;
           if (!pool) {
             throw new Error("Unknown pool");
@@ -493,6 +493,7 @@ export class OsmosisAccountImpl {
           pools.push(pool);
         }
 
+        // make message with estimated min out amounts
         const msg = Msgs.Amino.makeMultihopSwapExactAmountInMsg(
           this._msgOpts.swapExactAmountIn,
           this.base.bech32Address,
@@ -562,6 +563,7 @@ export class OsmosisAccountImpl {
           maxSlippage
         );
 
+        // encode proto messages from amino msg data
         return {
           aminoMsgs: [msg],
           protoMsgs: [
@@ -612,7 +614,9 @@ export class OsmosisAccountImpl {
               }
             });
 
-          this.queries.queryGammPools.fetch();
+          routes.forEach(({ poolId }) =>
+            queries.osmosis?.queryGammPools.getPool(poolId)?.fetch()
+          );
         }
 
         onFulfill?.(tx);
@@ -644,14 +648,12 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "swapExactAmountIn",
       async () => {
+        // get pool info and refetch
         const queryPool = queries.queryGammPools.getPool(poolId);
-
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
-
         await queryPool.waitFreshResponse();
-
         const pool = queryPool.pool;
         if (!pool) {
           throw new Error("Unknown pool");
@@ -1500,9 +1502,7 @@ export class OsmosisAccountImpl {
             .fetch();
         }
 
-        if (onFulfill) {
-          onFulfill(tx);
-        }
+        onFulfill?.(tx);
       }
     );
   }
