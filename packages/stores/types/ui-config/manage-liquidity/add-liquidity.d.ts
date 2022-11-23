@@ -30,6 +30,7 @@ export declare class ObservableAddLiquidityConfig extends ManageLiquidityConfigB
             };
         };
     } | undefined;
+    get supportsSingleAmountIn(): boolean;
     get singleAmountInConfig(): AmountConfig | undefined;
     setIsSingleAmountIn(value: boolean): void;
     setSingleAmountInConfigIndex(index: number): void;
