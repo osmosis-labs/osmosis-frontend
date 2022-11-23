@@ -79,6 +79,8 @@
     "createPool": {
       "title": "Créer un nouveau bassin",
       "button": "Créer un nouveau bassin",
+      "weightedPool": "Piscine pondérée",
+      "stablePool": "Piscine stable",
       "step": {
         "one": "Étape {step} / {nbStep} - Configurer le ratio des jetons",
         "two": "Étape {step} / {nbStep} - Entrer le montant à ajouter",

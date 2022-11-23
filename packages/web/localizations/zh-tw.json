@@ -79,6 +79,8 @@
     "createPool": {
       "title": "建立新流動性池",
       "button": "建立新流動性池",
+      "weightedPool": "加權儲存區",
+      "stablePool": "穩定的池",
       "step": {
         "one": "步驟 {step} / {nbStep} - 設定代幣比例",
         "two": "步驟 {step} / {nbStep} - 輸入要加入的幣額",

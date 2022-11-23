@@ -79,6 +79,8 @@
     "createPool": {
       "title": "Crea una nueva Piscina",
       "button": "Crear nueva Piscina",
+      "weightedPool": "Grupo ponderado",
+      "stablePool": "Piscina estable",
       "step": {
         "one": "Paso {step} / {nbstep} - Establecer proporción de token",
         "two": "Paso {step} / {nbstep} - Introduce monto a añadir",

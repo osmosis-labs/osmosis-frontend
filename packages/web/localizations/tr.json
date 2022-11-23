@@ -79,6 +79,8 @@
     "createPool": {
       "title": "Yeni Havuz Oluştur",
       "button": "Yeni Havuz Oluştur",
+      "weightedPool": "Ağırlıklı havuz",
+      "stablePool": "Ahır havuzu",
       "step": {
         "one": "Adım {step} / {nbStep} - Token oranlarını ayarlayın",
         "two": "Adım {step} / {nbStep} - Eklenecek miktarı girin",

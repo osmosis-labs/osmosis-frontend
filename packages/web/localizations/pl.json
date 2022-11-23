@@ -81,6 +81,8 @@
     "createPool": {
       "title": "Stwórz nową pulę",
       "button": "Stwórz nową pulę",
+      "weightedPool": "Basen ważony",
+      "stablePool": "Stabilny basen",
       "step": {
         "one": "Krok {step} / {nbStep} - Ustaw proporcje tokenów",
         "two": "Krok {step} / {nbStep} - Wpisz ilość do dodania",

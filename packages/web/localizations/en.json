@@ -79,6 +79,8 @@
     "createPool": {
       "title": "Create New Pool",
       "button": "Create New Pool",
+      "weightedPool": "Weighted pool",
+      "stablePool": "Stable pool",
       "step": {
         "one": "Step {step} / {nbStep} - Set token ratios",
         "two": "Step {step} / {nbStep} - Input amount to add",
