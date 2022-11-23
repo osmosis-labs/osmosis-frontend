@@ -177,7 +177,7 @@ export class OsmosisAccountImpl {
                     bal.currency.coinMinimalDenom
                 )
               ) {
-                bal.fetch();
+                bal.waitFreshResponse();
               }
             });
         }
@@ -301,10 +301,10 @@ export class OsmosisAccountImpl {
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
               // TODO: Explicitly refresh the share expected to be minted and provided to the pool.
-              bal.fetch();
+              bal.waitFreshResponse();
             });
 
-          this.queries.queryGammPools.getPool(poolId)?.fetch();
+          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -434,9 +434,9 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
-              bal.fetch();
+              bal.waitFreshResponse();
             });
-          this.queries.queryGammPools.getPool(poolId)?.fetch();
+          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -610,12 +610,12 @@ export class OsmosisAccountImpl {
                     bal.currency.coinMinimalDenom
                 )
               ) {
-                bal.fetch();
+                bal.waitFreshResponse();
               }
             });
 
           routes.forEach(({ poolId }) =>
-            queries.osmosis?.queryGammPools.getPool(poolId)?.fetch()
+            queries.osmosis?.queryGammPools.getPool(poolId)?.waitFreshResponse()
           );
         }
 
@@ -745,12 +745,12 @@ export class OsmosisAccountImpl {
                 bal.currency.coinMinimalDenom ===
                   tokenOutCurrency.coinMinimalDenom
               ) {
-                bal.fetch();
+                bal.waitFreshResponse();
               }
             });
 
           // Refresh the pool
-          this.queries.queryGammPools.getPool(poolId)?.fetch();
+          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -877,11 +877,11 @@ export class OsmosisAccountImpl {
                 bal.currency.coinMinimalDenom ===
                   tokenOut.currency.coinMinimalDenom
               ) {
-                bal.fetch();
+                bal.waitFreshResponse();
               }
             });
 
-          this.queries.queryGammPools.getPool(poolId)?.fetch();
+          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -997,7 +997,7 @@ export class OsmosisAccountImpl {
             .getQueryBech32Address(this.base.bech32Address)
             .fetch();
 
-          this.queries.queryGammPools.getPool(poolId)?.fetch();
+          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -1079,8 +1079,12 @@ export class OsmosisAccountImpl {
             .fetch();
 
           // Refresh the locked coins
-          this.queries.queryLockedCoins.get(this.base.bech32Address).fetch();
-          this.queries.queryAccountLocked.get(this.base.bech32Address).fetch();
+          this.queries.queryLockedCoins
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
+          this.queries.queryAccountLocked
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -1144,15 +1148,15 @@ export class OsmosisAccountImpl {
 
           queries.osmosis?.queryAccountLocked
             .get(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
 
           queries.cosmos.queryValidators
             .getQueryStatus(BondStatus.Bonded)
-            .fetch();
+            .waitFreshResponse();
 
           queries.osmosis?.querySuperfluidDelegations
             .getQuerySuperfluidDelegations(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -1229,14 +1233,14 @@ export class OsmosisAccountImpl {
           // Refresh the locked coins
           queries.osmosis?.queryLockedCoins
             .get(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
           queries.osmosis?.queryAccountLocked
             .get(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
 
           queries.osmosis?.querySuperfluidDelegations
             .getQuerySuperfluidDelegations(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -1297,9 +1301,15 @@ export class OsmosisAccountImpl {
             .fetch();
 
           // Refresh the locked coins
-          this.queries.queryLockedCoins.get(this.base.bech32Address).fetch();
-          this.queries.queryUnlockingCoins.get(this.base.bech32Address).fetch();
-          this.queries.queryAccountLocked.get(this.base.bech32Address).fetch();
+          this.queries.queryLockedCoins
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
+          this.queries.queryUnlockingCoins
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
+          this.queries.queryAccountLocked
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -1424,20 +1434,20 @@ export class OsmosisAccountImpl {
           // Refresh the locked coins
           queries.osmosis?.queryLockedCoins
             .get(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
           queries.osmosis?.queryUnlockingCoins
             .get(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
           queries.osmosis?.queryAccountLocked
             .get(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
 
           queries.osmosis?.querySuperfluidDelegations
             .getQuerySuperfluidDelegations(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
           queries.osmosis?.querySuperfluidUndelegations
             .getQuerySuperfluidDelegations(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -1486,20 +1496,20 @@ export class OsmosisAccountImpl {
           // Refresh the unlocking coins
           queries.osmosis?.queryLockedCoins
             .get(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
           queries.osmosis?.queryUnlockingCoins
             .get(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
           queries.osmosis?.queryAccountLocked
             .get(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
 
           queries.osmosis?.querySuperfluidDelegations
             .getQuerySuperfluidDelegations(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
           queries.osmosis?.querySuperfluidUndelegations
             .getQuerySuperfluidDelegations(this.base.bech32Address)
-            .fetch();
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
