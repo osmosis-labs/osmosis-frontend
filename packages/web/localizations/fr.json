@@ -348,6 +348,7 @@
     "minAssetsCount": "Un minimum de {num} actif est requis",
     "maxAssetsCount": "Un maximum de {num} actif est requis",
     "negativePercentage": "Le pourcentage doit être positif",
+    "scalingFactorTooLow": "Facteur d'échelle trop faible",
     "percentageSum": "La somme des pourcentages n'est pas égale à 100",
     "depositNoBalance": "Vous n'avez pas d'actifs à déposer",
     "negativeSlippage": "Le glissement ne peut être négatif",

@@ -349,6 +349,7 @@
     "minAssetsCount": "최소 {num}개의 자산이 필요합니다",
     "maxAssetsCount": "최대 {num}개의 자산만 허용됩니다",
     "negativePercentage": "퍼센티지는 양수여야합니다",
+    "scalingFactorTooLow": "배율 인수가 너무 낮음",
     "percentageSum": "퍼센티지의 합이 100이 아닙니다",
     "depositNoBalance": "입금할 자산이 없습니다",
     "negativeSlippage": "슬리피지가 음수입니다",

@@ -26,8 +26,14 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
       const percentageError = config.percentageError
         ? t(...tError(config.percentageError))
         : undefined;
+      const scalingFactorError = config.scalingFactorError
+        ? t(...tError(config.scalingFactorError))
+        : undefined;
       const amountError = config.amountError
         ? t(...tError(config.amountError))
+        : undefined;
+      const assetCountError = config.assetCountError
+        ? t(...tError(config.assetCountError))
         : undefined;
       const swapFeeError = config.swapFeeError
         ? t(...tError(config.swapFeeError))
@@ -40,6 +46,8 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
         (step === 1 &&
           !percentageError &&
           !positiveBalanceError &&
+          !assetCountError &&
+          !scalingFactorError &&
           !(config.assets.length <= 1)) ||
         (step === 2 && !amountError) ||
         (step === 3 &&
@@ -49,14 +57,17 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
 
       const currentErrorMessage =
         step === 1
-          ? percentageError || positiveBalanceError
+          ? percentageError ||
+            positiveBalanceError ||
+            assetCountError ||
+            scalingFactorError
           : step === 2
           ? amountError
           : swapFeeError || scalingFactorControllerError;
 
       const urgentErrorMessage =
         step === 1
-          ? percentageError
+          ? percentageError || scalingFactorError
           : swapFeeError || scalingFactorControllerError;
 
       return (

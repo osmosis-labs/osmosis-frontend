@@ -349,6 +349,7 @@
     "minAssetsCount": "En az {num} varlık gerekli",
     "maxAssetsCount": "En fazla {num} varlık olabilir",
     "negativePercentage": "Yüzde pozitif olmalı",
+    "scalingFactorTooLow": "Ölçeklendirme faktörü çok düşük",
     "percentageSum": "Yüzdeler toplamı 100'e eşit değil",
     "depositNoBalance": "Yatıracak varlığınız yok",
     "negativeSlippage": "Slipaj negatif olamaz",

@@ -349,6 +349,7 @@
     "minAssetsCount": "Minimum of {num} assets required",
     "maxAssetsCount": "Maximum of {num} assets allowed",
     "negativePercentage": "Percentage must be positive",
+    "scalingFactorTooLow": "Scaling factor too low",
     "percentageSum": "Sum of percentages is not 100",
     "depositNoBalance": "You have no assets to deposit",
     "negativeSlippage": "Slippage cannot be negative",

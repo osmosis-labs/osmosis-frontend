@@ -348,6 +348,7 @@
     "minAssetsCount": "最少需要 {num} 種資產",
     "maxAssetsCount": "最少可有 {num} 種資產",
     "negativePercentage": "百份比值必須為正數",
+    "scalingFactorTooLow": "縮放因數過低",
     "percentageSum": "所有百份比值總和非100",
     "depositNoBalance": "你沒有資產存入",
     "negativeSlippage": "滑價不能為負數",

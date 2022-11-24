@@ -49,7 +49,9 @@ export declare class ObservableCreatePoolConfig extends TxChainSetter {
      */
     get balancedPercentage(): RatePretty;
     get positiveBalanceError(): Error | undefined;
+    get assetCountError(): Error | undefined;
     get percentageError(): Error | undefined;
+    get scalingFactorError(): Error | undefined;
     get swapFeeError(): Error | undefined;
     get amountError(): Error | undefined;
     get scalingFactorControllerError(): Error | undefined;

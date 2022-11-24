@@ -350,6 +350,7 @@
     "minAssetsCount": "Wymagane minimum {num} środków",
     "maxAssetsCount": "Dozwolone maksymalnie {num} środków",
     "negativePercentage": "Procent musi być dodatni",
+    "scalingFactorTooLow": "Zbyt niski współczynnik skalowania",
     "percentageSum": "Suma procentów nie jest równa 100",
     "depositNoBalance": "Nie masz środków do wpłaty",
     "negativeSlippage": "Wartość odchylenia nie może być ujemne",

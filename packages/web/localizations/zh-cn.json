@@ -348,6 +348,7 @@
     "minAssetsCount": "最少需要 {num} 个资产",
     "maxAssetsCount": "最多允许 {num} 个资产",
     "negativePercentage": "百分比必须是正数",
+    "scalingFactorTooLow": "比例因子太低",
     "percentageSum": "百分比总和不是 100",
     "depositNoBalance": "您没有可以存入的资产",
     "negativeSlippage": "滑点不能为负数",

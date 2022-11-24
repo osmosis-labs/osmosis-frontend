@@ -57,6 +57,14 @@ export class NegativePercentageError extends Error {
   }
 }
 
+export class ScalingFactorTooLowError extends Error {
+  constructor(m: string) {
+    super(m);
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, ScalingFactorTooLowError.prototype);
+  }
+}
+
 export class PercentageSumError extends Error {
   constructor(m: string) {
     super(m);

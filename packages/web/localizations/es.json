@@ -349,6 +349,7 @@
     "minAssetsCount": "Mínimo de {num} activos requeridos",
     "maxAssetsCount": "Máximo de {num} activos permitidos",
     "negativePercentage": "El porcentaje debe ser positivo",
+    "scalingFactorTooLow": "Factor de escala demasiado bajo",
     "percentageSum": "La suma de porcentajes no es 100",
     "depositNoBalance": "No tienes activos para depositar",
     "negativeSlippage": "El deslizamiento no puede ser negativo",

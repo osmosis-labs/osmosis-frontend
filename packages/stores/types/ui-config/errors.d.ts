@@ -19,6 +19,9 @@ export declare class MaxAssetsCountError extends Error {
 export declare class NegativePercentageError extends Error {
     constructor(m: string);
 }
+export declare class ScalingFactorTooLowError extends Error {
+    constructor(m: string);
+}
 export declare class PercentageSumError extends Error {
     constructor(m: string);
 }
