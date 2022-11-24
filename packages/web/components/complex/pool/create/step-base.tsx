@@ -6,7 +6,8 @@ import { Button } from "../../../buttons";
 import { POOL_CREATION_FEE } from ".";
 import { useWindowSize } from "../../../../hooks";
 import { tError } from "../../../localization";
-import { useTranslation } from "react-multi-lang";
+import { t, useTranslation } from "react-multi-lang";
+import { PercentageSumError } from "@osmosis-labs/stores";
 
 export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
   observer(
@@ -21,25 +22,23 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
       const t = useTranslation();
 
       const positiveBalanceError = config.positiveBalanceError
-        ? t(...tError(config.positiveBalanceError))
+        ? config.positiveBalanceError
         : undefined;
       const percentageError = config.percentageError
-        ? t(...tError(config.percentageError))
+        ? config.percentageError
         : undefined;
       const scalingFactorError = config.scalingFactorError
-        ? t(...tError(config.scalingFactorError))
+        ? config.scalingFactorError
         : undefined;
-      const amountError = config.amountError
-        ? t(...tError(config.amountError))
-        : undefined;
+      const amountError = config.amountError ? config.amountError : undefined;
       const assetCountError = config.assetCountError
-        ? t(...tError(config.assetCountError))
+        ? config.assetCountError
         : undefined;
       const swapFeeError = config.swapFeeError
-        ? t(...tError(config.swapFeeError))
+        ? config.swapFeeError
         : undefined;
       const scalingFactorControllerError = config.scalingFactorControllerError
-        ? t(...tError(config.scalingFactorControllerError))
+        ? config.scalingFactorControllerError
         : undefined;
 
       const canAdvance =
@@ -55,7 +54,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
           !swapFeeError &&
           !scalingFactorControllerError);
 
-      const currentErrorMessage =
+      const currentError =
         step === 1
           ? percentageError ||
             positiveBalanceError ||
@@ -67,7 +66,9 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
 
       const urgentErrorMessage =
         step === 1
-          ? percentageError || scalingFactorError
+          ? (!(percentageError instanceof PercentageSumError)
+              ? percentageError
+              : undefined) || scalingFactorError
           : swapFeeError || scalingFactorControllerError;
 
       return (
@@ -111,8 +112,8 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
             }
             disabled={!canAdvance || isSendingMsg}
           >
-            {currentErrorMessage
-              ? currentErrorMessage
+            {currentError
+              ? t(...tError(currentError))
               : step === 3
               ? t("pools.createPool.buttonCreate")
               : t("pools.createPool.buttonNext")}
