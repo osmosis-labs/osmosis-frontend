@@ -72,66 +72,77 @@ export const TokenSelectDrawer: FunctionComponent<{
   if (!isOpen) return null;
 
   return (
-    <div>
+    <>
       <div
         onClick={() => onClose?.()}
-        className="absolute z-40 bg-osmoverse-1000/40 inset-0"
+        className="absolute inset-0 z-40 bg-osmoverse-1000/40"
       />
+
       <div
         className={classNames(
-          "bg-osmoverse-800 w-full h-full rounded-[18px] absolute z-50 flex flex-col mt-16",
+          "bg-osmoverse-800 w-full h-full rounded-[24px] absolute z-50 flex flex-col mt-16",
           isOpen && "inset-0"
         )}
       >
-        <div className="pt-8 text-center">
-          {/** Pending Translation */}
-          <h1 className="text-h6">Select a token</h1>
+        <div className="relative flex justify-center pt-8 pb-4">
+          <button className="absolute left-4" onClick={() => onClose()}>
+            <Image src="/icons/left.svg" alt="Close" width={24} height={24} />
+          </button>
+
+          <h1 className="text-h6">{t("components.selectToken.title")}</h1>
         </div>
 
-        <div className="p-4" onClick={(e) => e.stopPropagation()}>
-          <SearchBox
-            autoFocus
-            type="text"
-            className="!w-full"
-            placeholder={t("components.searchTokens")}
-            onInput={debounce((nextValue) => setTokenSearch(nextValue), 200)}
-          />
-        </div>
+        <div className="shadow-[0_4px_8px_0_rgba(9,5,36,0.12)]">
+          <div className="p-4" onClick={(e) => e.stopPropagation()}>
+            <SearchBox
+              autoFocus
+              type="text"
+              className="!w-full"
+              placeholder={t("components.searchTokens")}
+              onInput={debounce((nextValue) => setTokenSearch(nextValue), 200)}
+            />
+          </div>
 
-        <div
-          ref={quickSelectRef}
-          onMouseDown={onMouseDownQuickSelect}
-          className="flex px-4 py-2 space-x-4 overflow-x-auto h-full"
-        >
-          {quickSelectTokens.map(({ token }) => {
-            const currency = getCurrency(token);
-            const { coinDenom, coinImageUrl } = currency;
-            const justDenom = getJustDenom(coinDenom);
+          <div className="mb-3 h-fit">
+            <div
+              ref={quickSelectRef}
+              onMouseDown={onMouseDownQuickSelect}
+              className="flex px-4 space-x-4 overflow-x-auto no-scrollbar"
+            >
+              {quickSelectTokens.map(({ token }) => {
+                const currency = getCurrency(token);
+                const { coinDenom, coinImageUrl } = currency;
+                const justDenom = getJustDenom(coinDenom);
 
-            return (
-              <button
-                key={currency.coinDenom}
-                className="flex space-x-1.5 border border-osmoverse-700 rounded-lg p-2 hover:bg-osmoverse-700"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSelect?.(coinDenom);
-                  onClose?.();
-                }}
-              >
-                {coinImageUrl && (
-                  <div className="w-[23px] h-[23px] rounded-full">
-                    <Image
-                      src={coinImageUrl}
-                      alt="token icon"
-                      width={23}
-                      height={23}
-                    />
-                  </div>
-                )}
-                <p>{justDenom}</p>
-              </button>
-            );
-          })}
+                return (
+                  <button
+                    key={currency.coinDenom}
+                    className={classNames(
+                      "flex items-center space-x-3 border border-osmoverse-700 rounded-lg p-2",
+                      "transition-colors duration-150 ease-out hover:bg-osmoverse-900"
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelect?.(coinDenom);
+                      onClose?.();
+                    }}
+                  >
+                    {coinImageUrl && (
+                      <div className="w-[24px] h-[24px] rounded-full">
+                        <Image
+                          src={coinImageUrl}
+                          alt="token icon"
+                          width={24}
+                          height={24}
+                        />
+                      </div>
+                    )}
+                    <p>{justDenom}</p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         <ul className="flex flex-col overflow-auto">
@@ -159,17 +170,20 @@ export const TokenSelectDrawer: FunctionComponent<{
             return (
               <li
                 key={currency.coinDenom}
-                className="flex justify-between items-center rounded-2xl py-2.5 px-4 my-1 hover:bg-osmoverse-900 cursor-pointer mx-3"
+                className={classNames(
+                  "flex justify-between items-center py-2 px-5 cursor-pointer",
+                  "transition-colors duration-150 ease-out hover:bg-osmoverse-900"
+                )}
                 onClick={(e) => {
                   e.stopPropagation();
                   onSelect?.(coinDenom);
                   onClose();
                 }}
               >
-                <button className="flex items-center justify-between text-left w-full">
+                <button className="flex items-center justify-between w-full text-left">
                   <div className="flex items-center">
                     {coinImageUrl && (
-                      <div className="w-8 h-8 rounded-full mr-4">
+                      <div className="w-8 h-8 mr-4 rounded-full">
                         <Image
                           src={coinImageUrl}
                           alt="token icon"
@@ -180,34 +194,28 @@ export const TokenSelectDrawer: FunctionComponent<{
                     )}
                     <div>
                       <h6 className="text-white-full">{justDenom}</h6>
-                      <div className="text-osmoverse-400 text-left md:caption font-semibold">
+                      <div className="font-semibold text-left text-osmoverse-400 md:caption">
                         {showChannel
                           ? `${networkName} ${channel}`
                           : networkName}
                       </div>
                     </div>
                   </div>
+
+                  {tokenAmount && tokenPrice && (
+                    <div className="flex flex-col text-right">
+                      <p className="subtitle1">{tokenAmount}</p>
+                      <span className="subtitle2 text-osmoverse-400">
+                        {tokenPrice}
+                      </span>
+                    </div>
+                  )}
                 </button>
-                {tokenAmount && tokenPrice && (
-                  <div className="flex flex-col text-right">
-                    <h6
-                      className={classNames({
-                        "md:text-subtitle2 md:font-subtitle2":
-                          tokenAmount.length > 10,
-                      })}
-                    >
-                      {tokenAmount}
-                    </h6>
-                    <span className="subtitle1 text-osmoverse-400">
-                      {tokenPrice}
-                    </span>
-                  </div>
-                )}
               </li>
             );
           })}
         </ul>
       </div>
-    </div>
+    </>
   );
 });

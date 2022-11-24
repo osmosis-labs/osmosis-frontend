@@ -305,7 +305,10 @@
       "mobileMenu": "Ordenar por"
     },
     "MAX": "Máximo",
-    "searchTokens": "Buscar tokens"
+    "searchTokens": "Buscar",
+    "selectToken": {
+      "title": "Seleccione un token"
+    }
   },
   "menu": {
     "swap": "Intercambio",

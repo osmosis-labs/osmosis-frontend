@@ -305,7 +305,10 @@
       "mobileMenu": "Sort by"
     },
     "MAX": "MAX",
-    "searchTokens": "Search tokens"
+    "searchTokens": "Search",
+    "selectToken": {
+      "title": "Select a token"
+    }
   },
   "menu": {
     "swap": "Swap",

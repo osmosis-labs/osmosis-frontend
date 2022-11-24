@@ -305,7 +305,10 @@
       "mobileMenu": "Sırala"
     },
     "MAX": "MAKS",
-    "searchTokens": "Token ara"
+    "searchTokens": "Arama",
+    "selectToken": {
+      "title": "Bir belirteç seçin"
+    }
   },
   "menu": {
     "swap": "Takas",

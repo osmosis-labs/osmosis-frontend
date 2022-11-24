@@ -306,7 +306,10 @@
       "mobileMenu": "Sortuj według"
     },
     "MAX": "MAKSIMUM",
-    "searchTokens": "Szukaj tokenów"
+    "searchTokens": "Szukaj",
+    "selectToken": {
+      "title": "Wybierz token"
+    }
   },
   "menu": {
     "swap": "Wymień",

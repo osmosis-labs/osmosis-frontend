@@ -389,14 +389,14 @@ export const TradeClipboard: FunctionComponent<{
     return (
       <div
         className={classNames(
-          "relative rounded-[18px] flex flex-col gap-8 md:gap-6 bg-osmoverse-800 px-6 md:px-3 pt-12 md:pt-4 pb-8 md:pb-4",
+          "relative rounded-[24px] flex flex-col gap-8 md:gap-6 bg-osmoverse-800 px-6 md:px-3 pt-12 md:pt-4 pb-8 md:pb-4",
           containerClassName
         )}
       >
         <div className="relative flex items-center justify-end w-full">
           <h6 className="w-full text-center">{t("swap.title")}</h6>
           <button
-            className="absolute right-3 top-0"
+            className="absolute top-0 right-3"
             onClick={(e) => {
               e.stopPropagation();
               setIsSettingOpen(!isSettingOpen);
@@ -422,13 +422,13 @@ export const TradeClipboard: FunctionComponent<{
             >
               <h6>{t("swap.settings.title")}</h6>
               <div className="flex items-center mt-2.5">
-                <div className="subtitle1 text-osmoverse-200 mr-2">
+                <div className="mr-2 subtitle1 text-osmoverse-200">
                   {t("swap.settings.slippage")}
                 </div>
                 <InfoTooltip content={t("swap.settings.slippageInfo")} />
               </div>
 
-              <ul className="flex gap-x-3 w-full mt-3">
+              <ul className="flex w-full mt-3 gap-x-3">
                 {slippageConfig.selectableSlippages.map((slippage) => {
                   return (
                     <li
@@ -476,7 +476,7 @@ export const TradeClipboard: FunctionComponent<{
                 >
                   <InputBox
                     type="number"
-                    className="bg-transparent px-0 w-fit"
+                    className="px-0 bg-transparent w-fit"
                     inputClassName={`bg-transparent text-center ${
                       !slippageConfig.isManualSlippage
                         ? "text-osmoverse-500"
@@ -540,7 +540,7 @@ export const TradeClipboard: FunctionComponent<{
               )}
             >
               <div className="flex">
-                <span className="caption text-sm md:text-xs text-white-full">
+                <span className="text-sm caption md:text-xs text-white-full">
                   {t("swap.available")}
                 </span>
                 <span className="caption text-sm md:text-xs text-wosmongton-300 ml-1.5">
@@ -550,35 +550,11 @@ export const TradeClipboard: FunctionComponent<{
                     .trim(true)
                     .hideDenom(true)
                     .maxDecimals(tradeTokenInConfig.sendCurrency.coinDecimals)
-                    .toString()}
+                    .toString()}{" "}
+                  {tradeTokenInConfig.sendCurrency.coinDenom}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <BorderButton
-                  className={classNames(
-                    "text-xs py-1 px-1.5",
-                    tradeTokenInConfig.fraction === 1
-                      ? "bg-wosmongton-100/40"
-                      : "bg-transparent"
-                  )}
-                  onClick={() => {
-                    if (tradeTokenInConfig.fraction !== 1) {
-                      logEvent([
-                        EventName.Swap.maxClicked,
-                        {
-                          fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                          toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                          isOnHome: !isInModal,
-                        },
-                      ]);
-                      tradeTokenInConfig.setFraction(1);
-                    } else {
-                      tradeTokenInConfig.setFraction(undefined);
-                    }
-                  }}
-                >
-                  {t("swap.MAX")}
-                </BorderButton>
                 <BorderButton
                   className={classNames(
                     "text-xs py-1 px-1.5",
@@ -604,9 +580,34 @@ export const TradeClipboard: FunctionComponent<{
                 >
                   {t("swap.HALF")}
                 </BorderButton>
+                <BorderButton
+                  className={classNames(
+                    "text-xs py-1 px-1.5",
+                    tradeTokenInConfig.fraction === 1
+                      ? "bg-wosmongton-100/40"
+                      : "bg-transparent"
+                  )}
+                  onClick={() => {
+                    if (tradeTokenInConfig.fraction !== 1) {
+                      logEvent([
+                        EventName.Swap.maxClicked,
+                        {
+                          fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                          toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                          isOnHome: !isInModal,
+                        },
+                      ]);
+                      tradeTokenInConfig.setFraction(1);
+                    } else {
+                      tradeTokenInConfig.setFraction(undefined);
+                    }
+                  }}
+                >
+                  {t("swap.MAX")}
+                </BorderButton>
               </div>
             </div>
-            <div className="flex items-center place-content-between mt-3">
+            <div className="flex items-center mt-3 place-content-between">
               <TokenSelectWithDrawer
                 sortByBalances
                 dropdownOpen={showFromTokenSelectDropdown}
@@ -774,7 +775,7 @@ export const TradeClipboard: FunctionComponent<{
             }
           >
             <div
-              className="flex items-center place-content-between transition-transform"
+              className="flex items-center transition-transform place-content-between"
               style={
                 isAnimatingSwitch
                   ? {
