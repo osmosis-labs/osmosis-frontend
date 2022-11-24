@@ -1,13 +1,13 @@
 import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
+import { PercentageSumError } from "@osmosis-labs/stores";
 import { StepProps } from "./types";
 import { Info } from "../../../alert";
 import { Button } from "../../../buttons";
 import { POOL_CREATION_FEE } from ".";
 import { useWindowSize } from "../../../../hooks";
 import { tError } from "../../../localization";
-import { t, useTranslation } from "react-multi-lang";
-import { PercentageSumError } from "@osmosis-labs/stores";
+import { useTranslation } from "react-multi-lang";
 
 export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
   observer(
@@ -21,55 +21,35 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
       const { isMobile } = useWindowSize();
       const t = useTranslation();
 
-      const positiveBalanceError = config.positiveBalanceError
-        ? config.positiveBalanceError
-        : undefined;
-      const percentageError = config.percentageError
-        ? config.percentageError
-        : undefined;
-      const scalingFactorError = config.scalingFactorError
-        ? config.scalingFactorError
-        : undefined;
-      const amountError = config.amountError ? config.amountError : undefined;
-      const assetCountError = config.assetCountError
-        ? config.assetCountError
-        : undefined;
-      const swapFeeError = config.swapFeeError
-        ? config.swapFeeError
-        : undefined;
-      const scalingFactorControllerError = config.scalingFactorControllerError
-        ? config.scalingFactorControllerError
-        : undefined;
-
       const canAdvance =
         (step === 1 &&
-          !percentageError &&
-          !positiveBalanceError &&
-          !assetCountError &&
-          !scalingFactorError &&
+          !config.percentageError &&
+          !config.positiveBalanceError &&
+          !config.assetCountError &&
+          !config.scalingFactorError &&
           !(config.assets.length <= 1)) ||
-        (step === 2 && !amountError) ||
+        (step === 2 && !config.amountError) ||
         (step === 3 &&
           config.acknowledgeFee &&
-          !swapFeeError &&
-          !scalingFactorControllerError);
+          !config.swapFeeError &&
+          !config.scalingFactorControllerError);
 
       const currentError =
         step === 1
-          ? percentageError ||
-            positiveBalanceError ||
-            assetCountError ||
-            scalingFactorError
+          ? config.percentageError ||
+            config.positiveBalanceError ||
+            config.assetCountError ||
+            config.scalingFactorError
           : step === 2
-          ? amountError
-          : swapFeeError || scalingFactorControllerError;
+          ? config.amountError
+          : config.swapFeeError || config.scalingFactorControllerError;
 
       const urgentErrorMessage =
         step === 1
-          ? (!(percentageError instanceof PercentageSumError)
-              ? percentageError
-              : undefined) || scalingFactorError
-          : swapFeeError || scalingFactorControllerError;
+          ? (!(config.percentageError instanceof PercentageSumError)
+              ? config.percentageError
+              : undefined) || config.scalingFactorError
+          : config.swapFeeError || config.scalingFactorControllerError;
 
       return (
         <div className="flex flex-col gap-5">
