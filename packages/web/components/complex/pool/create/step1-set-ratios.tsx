@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { TokenSelect } from "../../../control";
@@ -15,16 +15,6 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
     const { createPoolConfig: config } = props;
     const { isMobile } = useWindowSize();
     const t = useTranslation();
-
-    // default scaling factors to 1 at first
-    useEffect(() => {
-      if (config.poolType === "stable") {
-        config.assets.forEach((asset, index) => {
-          if (asset.scalingFactor === undefined)
-            config.setScalingFactorAt(index, "1");
-        });
-      }
-    }, [config, config.assets.length]);
 
     return (
       <StepBase step={1} {...props}>

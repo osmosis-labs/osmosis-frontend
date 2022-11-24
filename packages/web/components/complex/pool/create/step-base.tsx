@@ -1,6 +1,5 @@
 import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
-import { PercentageSumError } from "@osmosis-labs/stores";
 import { StepProps } from "./types";
 import { Info } from "../../../alert";
 import { Button } from "../../../buttons";
@@ -46,9 +45,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
 
       const urgentErrorMessage =
         step === 1
-          ? (!(config.percentageError instanceof PercentageSumError)
-              ? config.percentageError
-              : undefined) || config.scalingFactorError
+          ? config.scalingFactorError
           : config.swapFeeError || config.scalingFactorControllerError;
 
       return (

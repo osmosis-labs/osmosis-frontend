@@ -327,10 +327,17 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     config.setSendCurrency(currency);
 
     if (this.canAddAsset) {
-      this._assets.push({
-        percentage: "",
-        amountConfig: config,
-      });
+      if (this._poolType === "weighted") {
+        this._assets.push({
+          percentage: "0",
+          amountConfig: config,
+        });
+      } else if (this._poolType === "stable") {
+        this._assets.push({
+          scalingFactor: 1,
+          amountConfig: config,
+        });
+      }
     }
   }
 
